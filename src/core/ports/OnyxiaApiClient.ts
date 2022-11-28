@@ -95,6 +95,33 @@ export type DeploymentRegion = {
                   | undefined;
           }
         | undefined;
+    proxyInjection:
+        | {
+              httpProxyUrl: string | undefined;
+              httpsProxyUrl: string | undefined;
+              noProxy: string | undefined;
+          }
+        | undefined;
+    packageRepositoryInjection:
+        | {
+              cranProxyUrl: string | undefined;
+              condaProxyUrl: string | undefined;
+              pypiProxyUrl: string | undefined;
+          }
+        | undefined;
+    certificateAuthorityInjection: { crts: unknown[] | undefined } | undefined;
+    kubernetes:
+        | {
+              url: string;
+              keycloakParams:
+                  | {
+                        url: string;
+                        realm: string;
+                        clientId: string;
+                    }
+                  | undefined;
+          }
+        | undefined;
 };
 export namespace DeploymentRegion {
     export type S3 = S3.Minio | S3.Amazon;
@@ -140,16 +167,21 @@ export type Catalog = {
     location: string;
     description: LocalizedString;
     status: "PROD" | "TEST";
-    catalog: {
-        packages: {
-            description: string;
-            icon?: string;
-            name: string;
-            home?: string;
-        }[];
-    };
+    charts: Catalog.Chart[];
     highlightedCharts?: string[];
 };
+
+export namespace Catalog {
+    export type Chart = {
+        name: string;
+        versions: {
+            description: string;
+            version: string;
+            icon: string | undefined;
+            home: string | undefined;
+        }[];
+    };
+}
 
 export type OnyxiaValues = {
     user: {
@@ -207,6 +239,25 @@ export type OnyxiaValues = {
         randomSubdomain: string;
         initScriptUrl: string;
     };
+    proxyInjection:
+        | {
+              httpProxyUrl: string | undefined;
+              httpsProxyUrl: string | undefined;
+              noProxy: string | undefined;
+          }
+        | undefined;
+    packageRepositoryInjection:
+        | {
+              cranProxyUrl: string | undefined;
+              condaProxyUrl: string | undefined;
+              pypiProxyUrl: string | undefined;
+          }
+        | undefined;
+    certificateAuthorityInjection:
+        | {
+              crts: unknown[] | undefined;
+          }
+        | undefined;
 };
 
 export type RunningService = RunningService.Started | RunningService.Starting;
@@ -280,7 +331,7 @@ export namespace JSONSchemaFormFieldDescription {
         export type Text = Common<string> & {
             type: "string";
             pattern?: string;
-            render?: "textArea";
+            render?: "textArea" | "password";
             //NOTE: Only for init.personalInit
             "x-security"?: {
                 pattern: string;
@@ -343,7 +394,7 @@ export const onyxiaFriendlyNameFormFieldPath = "onyxia.friendlyName";
 export const onyxiaIsSharedFormFieldPath = "onyxia.share";
 
 export const getRandomK8sSubdomain = memoize(
-    () => `${Math.floor(Math.random() * 1000000)}`,
+    () => `${Math.floor(Math.random() * 1000000)}`
 );
 
 export function getServiceId(params: {

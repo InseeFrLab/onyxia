@@ -69,13 +69,13 @@ const isOneRunning = (group: Group) =>
 const compterCpu = (services: Service[]) => (max: number) =>
     Math.min(
         max,
-        services.reduce((a, c) => a + (c.cpus * 10) / services.length, 0),
+        services.reduce((a, c) => a + (c.cpus * 10) / services.length, 0)
     );
 
 const compterRam = (services: Service[]) => (max: number) =>
     Math.min(
         max,
-        services.reduce((a, c) => a + c.mem / 2048 / services.length, 0),
+        services.reduce((a, c) => a + c.mem / 2048 / services.length, 0)
     );
 
 const getLabel = (label: any) => (how: any) => () =>

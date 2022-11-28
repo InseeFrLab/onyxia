@@ -4,9 +4,10 @@ import { getEnv } from "env";
 import { symToStr } from "tsafe/symToStr";
 import memoize from "memoizee";
 import { assert } from "tsafe/assert";
-import type { CreateStoreParams } from "core/setup";
+import type { createCoreProvider } from "core";
 import { getIsDarkModeEnabledOsDefault } from "onyxia-ui";
 import type { NonPostableEvt } from "evt";
+import type { Param0 } from "tsafe";
 
 export type AdminProvidedLink = {
     iconId: string;
@@ -16,7 +17,7 @@ export type AdminProvidedLink = {
 
 const getAdminProvidedLinksFromEnv = memoize(
     (
-        envName: "EXTRA_LEFTBAR_ITEMS" | "HEADER_LINKS",
+        envName: "EXTRA_LEFTBAR_ITEMS" | "HEADER_LINKS"
     ): AdminProvidedLink[] | undefined => {
         const envValue = getEnv()[envName];
 
@@ -43,13 +44,13 @@ const getAdminProvidedLinksFromEnv = memoize(
                             typeof extraLeftBarItem.url === "string" &&
                             (typeof extraLeftBarItem.label === "string" ||
                                 extraLeftBarItem.label instanceof Object)
-                        ),
+                        )
                 ) === undefined,
-            errorMessage,
+            errorMessage
         );
 
         return extraLeftBarItems;
-    },
+    }
 );
 
 export const getExtraLeftBarItemsFromEnv = () =>
@@ -64,8 +65,8 @@ export const getIsHomePageDisabled = memoize((): boolean => {
     assert(
         possibleValues.indexOf(DISABLE_HOME_PAGE) >= 0,
         `${symToStr({ DISABLE_HOME_PAGE })} should either be ${possibleValues.join(
-            " or ",
-        )}`,
+            " or "
+        )}`
     );
 
     return DISABLE_HOME_PAGE === "true";
@@ -79,8 +80,8 @@ export const getDoHideOnyxia = memoize((): boolean => {
     assert(
         possibleValues.indexOf(HEADER_HIDE_ONYXIA) >= 0,
         `${symToStr({ HEADER_HIDE_ONYXIA })} should either be ${possibleValues.join(
-            " or ",
-        )}`,
+            " or "
+        )}`
     );
 
     return HEADER_HIDE_ONYXIA === "true";
@@ -90,7 +91,7 @@ export const getCreateStoreParams = memoize(
     (params: {
         transformUrlBeforeRedirectToLogin: (url: string) => string;
         evtUserActivity: NonPostableEvt<void>;
-    }): CreateStoreParams => {
+    }): Exclude<Param0<typeof createCoreProvider>, Function> => {
         const { transformUrlBeforeRedirectToLogin, evtUserActivity } = params;
 
         const {
@@ -102,15 +103,15 @@ export const getCreateStoreParams = memoize(
             JWT_GROUPS_CLAIM,
             KEYCLOAK_URL,
             KEYCLOAK_REALM,
-            KEYCLOAK_CLIENT_ID,
+            KEYCLOAK_CLIENT_ID
         } = getEnv();
 
         if (KEYCLOAK_URL !== "") {
             assert(
                 KEYCLOAK_REALM !== "",
                 `If ${symToStr({ KEYCLOAK_URL })} is specified ${symToStr({
-                    KEYCLOAK_REALM,
-                })} should be specified too.`,
+                    KEYCLOAK_REALM
+                })} should be specified too.`
             );
         }
 
@@ -126,8 +127,8 @@ export const getCreateStoreParams = memoize(
                               "familyName": "Doe",
                               "firstName": "John",
                               "username": "jdoe",
-                              "groups": [],
-                          },
+                              "groups": []
+                          }
                       }
                     : {
                           "method": "keycloak",
@@ -140,14 +141,14 @@ export const getCreateStoreParams = memoize(
                                   "familyName": JWT_FAMILY_NAME_CLAIM,
                                   "firstName": JWT_FIRST_NAME_CLAIM,
                                   "username": JWT_USERNAME_CLAIM,
-                                  "groups": JWT_GROUPS_CLAIM,
-                              },
+                                  "groups": JWT_GROUPS_CLAIM
+                              }
                           },
-                          transformUrlBeforeRedirectToLogin,
+                          transformUrlBeforeRedirectToLogin
                       },
             "getIsDarkModeEnabledValueForProfileInitialization":
                 getIsDarkModeEnabledOsDefault,
-            evtUserActivity,
+            evtUserActivity
         };
-    },
+    }
 );

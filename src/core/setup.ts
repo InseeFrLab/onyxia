@@ -1,54 +1,35 @@
 /* eslint-disable react-hooks/rules-of-hooks */
-import type { Action, ThunkAction as GenericThunkAction } from "@reduxjs/toolkit";
-import { configureStore } from "@reduxjs/toolkit";
-import { createLocalStorageSecretManagerClient } from "./secondaryAdapters/localStorageSecretsManagerClient";
-import { createVaultSecretsManagerClient } from "./secondaryAdapters/vaultSecretsManagerClient";
-import { createJwtUserApiClient } from "./secondaryAdapters/jwtUserApiClient";
-import { createS3Client, getCreateS3ClientParams } from "./secondaryAdapters/s3Client";
-import { createDummyS3Client } from "./secondaryAdapters/dummyS3Client";
-import * as catalogExplorerUseCase from "./usecases/catalogExplorer";
-import * as deploymentRegionUseCase from "./usecases/deploymentRegion";
-import * as explorersUseCase from "./usecases/explorers";
-import * as launcherUseCase from "./usecases/launcher";
-import * as projectConfigUseCase from "./usecases/projectConfigs";
-import * as projectSelectionUseCase from "./usecases/projectSelection";
-import * as publicIpUseCase from "./usecases/publicIp";
-import * as restorablePackageConfigsUseCase from "./usecases/restorablePackageConfigs";
-import * as runningServiceUseCase from "./usecases/runningService";
-import * as userAuthenticationUseCase from "./usecases/userAuthentication";
-import * as userConfigsUseCase from "./usecases/userConfigs";
-import * as secretsEditorUseCase from "./usecases/secretsEditor";
-import * as s3CredentialsUseCase from "./usecases/s3Credentials";
-
+import type { Action, ThunkAction as ReduxGenericThunkAction } from "@reduxjs/toolkit";
+import {
+    createCoreFromUsecases,
+    createObjectThatThrowsIfAccessed
+} from "redux-clean-architecture";
+import type { GenericCreateEvt, GenericThunks } from "redux-clean-architecture";
+import { createLocalStorageSecretManagerClient } from "./adapters/localStorageSecretsManagerClient";
+import { createVaultSecretsManagerClient } from "./adapters/vaultSecretsManagerClient";
+import { createJwtUserApiClient } from "./adapters/jwtUserApiClient";
+import { createS3Client, getCreateS3ClientParams } from "./adapters/s3Client";
+import { createDummyS3Client } from "./adapters/dummyS3Client";
+import { usecases } from "./usecases";
 import type { UserApiClient } from "./ports/UserApiClient";
 import type { SecretsManagerClient } from "./ports/SecretsManagerClient";
 import type { S3Client } from "./ports/S3Client";
 import type { ReturnType } from "tsafe/ReturnType";
 import { Deferred } from "evt/tools/Deferred";
-import { createObjectThatThrowsIfAccessed } from "./tools/createObjectThatThrowsIfAccessed";
 import {
     createKeycloakOidcClient,
-    creatOrFallbackOidcClient,
-} from "./secondaryAdapters/keycloakOidcClient";
-import { createPhonyOidcClient } from "./secondaryAdapters/phonyOidcClient";
+    creatOrFallbackOidcClient
+} from "./adapters/keycloakOidcClient";
+import { createPhonyOidcClient } from "./adapters/phonyOidcClient";
 import type { OidcClient } from "./ports/OidcClient";
-import type { OnyxiaApiClient } from "./ports/OnyxiaApiClient";
-import { createMockOnyxiaApiClient } from "./secondaryAdapters/mockOnyxiaApiClient";
-import { createOfficialOnyxiaApiClient } from "./secondaryAdapters/officialOnyxiaApiClient";
-import { assert } from "tsafe/assert";
-import { usecasesToReducer } from "redux-clean-architecture";
-import { createMiddlewareEvtActionFactory } from "redux-clean-architecture/middlewareEvtAction";
+import { createMockOnyxiaApiClient } from "./adapters/mockOnyxiaApiClient";
+import { createOfficialOnyxiaApiClient } from "./adapters/officialOnyxiaApiClient";
 import type { User } from "./ports/UserApiClient";
 import type { Param0 } from "tsafe";
 import type { NonPostableEvt } from "evt";
+import { id } from "tsafe/id";
 
-/* ---------- Legacy ---------- */
-import * as myFiles from "js/redux/myFiles";
-import * as myLab from "js/redux/myLab";
-import * as user from "js/redux/user";
-import * as app from "js/redux/app";
-
-export type CreateStoreParams = {
+type CoreParams = {
     /** undefined for a mock implementation, undefined for /api or a specific url */
     onyxiaApiUrl: string | undefined;
 
@@ -79,50 +60,7 @@ export type CreateStoreParams = {
     //NOTE: The s3 params are provided by the region.
 };
 
-export const usecases = [
-    myFiles,
-    myLab,
-    app,
-    user,
-    catalogExplorerUseCase,
-    deploymentRegionUseCase,
-    explorersUseCase,
-    launcherUseCase,
-    projectConfigUseCase,
-    projectSelectionUseCase,
-    publicIpUseCase,
-    restorablePackageConfigsUseCase,
-    runningServiceUseCase,
-    userAuthenticationUseCase,
-    userConfigsUseCase,
-    secretsEditorUseCase,
-    s3CredentialsUseCase,
-];
-
-const { createMiddlewareEvtAction } = createMiddlewareEvtActionFactory(usecases);
-
-export type ThunksExtraArgument = {
-    createStoreParams: CreateStoreParams;
-    secretsManagerClient: SecretsManagerClient;
-    userApiClient: UserApiClient;
-    oidcClient: OidcClient;
-    onyxiaApiClient: OnyxiaApiClient;
-    s3Client: S3Client;
-    evtAction: ReturnType<typeof createMiddlewareEvtAction>["evtAction"];
-};
-
-createStore.isFirstInvocation = true;
-
-export async function createStore(params: CreateStoreParams) {
-    assert(
-        createStore.isFirstInvocation,
-        "createStore has already been called, " +
-            "only one instance of the store is supposed to" +
-            "be created",
-    );
-
-    createStore.isFirstInvocation = false;
-
+export async function createCore(params: CoreParams) {
     const { evtUserActivity } = params;
 
     const { oidcClient, jwtClaims } = await (async () => {
@@ -132,7 +70,7 @@ export async function createStore(params: CreateStoreParams) {
             case "keycloak": {
                 const {
                     keycloakParams: { clientId, realm, url, jwtClaims },
-                    transformUrlBeforeRedirectToLogin,
+                    transformUrlBeforeRedirectToLogin
                 } = userAuthenticationParams;
 
                 const oidcClient = await createKeycloakOidcClient({
@@ -140,7 +78,7 @@ export async function createStore(params: CreateStoreParams) {
                     realm,
                     url,
                     transformUrlBeforeRedirectToLogin,
-                    evtUserActivity,
+                    evtUserActivity
                 });
 
                 return { oidcClient, jwtClaims };
@@ -153,13 +91,13 @@ export async function createStore(params: CreateStoreParams) {
                     "familyName": "b",
                     "firstName": "c",
                     "username": "d",
-                    "groups": "e",
+                    "groups": "e"
                 };
 
                 const oidcClient = createPhonyOidcClient({
                     isUserInitiallyLoggedIn,
                     jwtClaims,
-                    user,
+                    user
                 });
 
                 return { jwtClaims, oidcClient };
@@ -172,11 +110,11 @@ export async function createStore(params: CreateStoreParams) {
 
     const userApiClient = !oidcClient.isUserLoggedIn
         ? createObjectThatThrowsIfAccessed<UserApiClient>({
-              "debugMessage": "User is not logged we should't access the useApiClient",
+              "debugMessage": "User is not logged we should't access the useApiClient"
           })
         : createJwtUserApiClient({
               jwtClaims,
-              "getOidcAccessToken": () => oidcClient.accessToken,
+              "getOidcAccessToken": () => oidcClient.getAccessToken().accessToken
           });
 
     let refGetCurrentlySelectedDeployRegionId:
@@ -196,78 +134,74 @@ export async function createStore(params: CreateStoreParams) {
                   "url": params.onyxiaApiUrl ?? "/api",
                   "getOidcAccessToken": !oidcClient.isUserLoggedIn
                       ? undefined
-                      : () => oidcClient.accessToken,
+                      : () => oidcClient.getAccessToken().accessToken,
                   "refGetCurrentlySelectedDeployRegionId":
                       (refGetCurrentlySelectedDeployRegionId = {
-                          "current": undefined,
+                          "current": undefined
                       }),
                   "refGetCurrentlySelectedProjectId": (refGetCurrentlySelectedProjectId =
                       {
-                          "current": undefined,
-                      }),
+                          "current": undefined
+                      })
               });
 
-    const { evtAction, middlewareEvtAction } = createMiddlewareEvtAction();
-
-    const extraArgument: ThunksExtraArgument = {
+    const thunksExtraArgument = {
         "createStoreParams": params,
         oidcClient,
         onyxiaApiClient,
         userApiClient,
         "secretsManagerClient": createObjectThatThrowsIfAccessed<SecretsManagerClient>({
-            "debugMessage": "secretsManagerClient is not yet initialized",
+            "debugMessage": "secretsManagerClient is not yet initialized"
         }),
         "s3Client": createObjectThatThrowsIfAccessed<S3Client>({
-            "debugMessage": "s3 client is not yet initialized",
-        }),
-        evtAction,
+            "debugMessage": "s3 client is not yet initialized"
+        })
     };
 
-    const store = configureStore({
-        "reducer": usecasesToReducer(usecases),
-        "middleware": getDefaultMiddleware =>
-            getDefaultMiddleware({ "thunk": { extraArgument } }).concat(
-                middlewareEvtAction,
-            ),
+    const core = createCoreFromUsecases({
+        thunksExtraArgument,
+        usecases
     });
 
-    dStoreInstance.resolve(store);
+    refStore.current = (core as any).store;
 
-    await store.dispatch(userAuthenticationUseCase.privateThunks.initialize());
+    dCoreInstance.resolve(core);
 
-    await store.dispatch(deploymentRegionUseCase.privateThunks.initialize());
+    await core.dispatch(usecases.userAuthentication.privateThunks.initialize());
+
+    await core.dispatch(usecases.deploymentRegion.privateThunks.initialize());
 
     if (refGetCurrentlySelectedDeployRegionId !== undefined) {
         refGetCurrentlySelectedDeployRegionId.current = () =>
-            store.getState().deploymentRegion.selectedDeploymentRegionId;
+            core.getState().deploymentRegion.selectedDeploymentRegionId;
     }
 
     if (oidcClient.isUserLoggedIn) {
         const { s3: s3Params, vault: vaultParams } =
-            deploymentRegionUseCase.selectors.selectedDeploymentRegion(store.getState());
+            usecases.deploymentRegion.selectors.selectedDeploymentRegion(core.getState());
 
         const fallbackOidc =
             params.userAuthenticationParams.method !== "keycloak"
                 ? undefined
                 : {
                       "keycloakParams": params.userAuthenticationParams.keycloakParams,
-                      "oidcClient": oidcClient,
+                      "oidcClient": oidcClient
                   };
 
-        extraArgument.s3Client =
+        thunksExtraArgument.s3Client =
             s3Params === undefined
                 ? createDummyS3Client()
                 : await createS3Client({
                       "oidcClient": await creatOrFallbackOidcClient({
                           "keycloakParams": s3Params.keycloakParams,
                           "fallback": fallbackOidc,
-                          evtUserActivity,
+                          evtUserActivity
                       }),
                       ...getCreateS3ClientParams({ s3Params }),
-                      "createAwsBucket": onyxiaApiClient.createAwsBucket,
+                      "createAwsBucket": onyxiaApiClient.createAwsBucket
                   });
 
-        extraArgument.secretsManagerClient =
+        thunksExtraArgument.secretsManagerClient =
             vaultParams === undefined
                 ? createLocalStorageSecretManagerClient()
                 : await createVaultSecretsManagerClient({
@@ -277,41 +211,52 @@ export async function createStore(params: CreateStoreParams) {
                       "oidcClient": await creatOrFallbackOidcClient({
                           "keycloakParams": vaultParams.keycloakParams,
                           "fallback": fallbackOidc,
-                          evtUserActivity,
-                      }),
+                          evtUserActivity
+                      })
                   });
 
-        await store.dispatch(userConfigsUseCase.privateThunks.initialize());
+        await core.dispatch(usecases.userConfigs.privateThunks.initialize());
 
-        await store.dispatch(projectSelectionUseCase.privateThunks.initialize());
+        await core.dispatch(usecases.projectSelection.privateThunks.initialize());
 
         if (refGetCurrentlySelectedProjectId !== undefined) {
             refGetCurrentlySelectedProjectId.current = () =>
-                store.getState().projectSelection.selectedProjectId;
+                core.getState().projectSelection.selectedProjectId;
         }
 
-        store.dispatch(restorablePackageConfigsUseCase.privateThunks.initialize());
+        core.dispatch(usecases.restorablePackageConfigs.privateThunks.initialize());
     }
 
-    store.dispatch(runningServiceUseCase.privateThunks.initialize());
+    core.dispatch(usecases.runningService.privateThunks.initialize());
 
-    return store;
+    return core;
 }
 
-export type Store = ReturnType<typeof createStore>;
+export type Core = ReturnType<typeof createCore>;
 
-export type RootState = ReturnType<Store["getState"]>;
+export type State = ReturnType<Core["getState"]>;
 
-export type Dispatch = Store["dispatch"];
+export type ThunksExtraArgument = Core["thunksExtraArgument"];
 
-export type ThunkAction<ReturnType = Promise<void>> = GenericThunkAction<
-    ReturnType,
-    RootState,
+/** @deprecated: Use Thunks as soon as we cas use 'satisfy' from TS 4.9 */
+export type ThunkAction<RtnType = Promise<void>> = ReduxGenericThunkAction<
+    RtnType,
+    State,
     ThunksExtraArgument,
     Action<string>
 >;
 
-const dStoreInstance = new Deferred<Store>();
+export type Thunks = GenericThunks<Core>;
+
+export type CreateEvt = GenericCreateEvt<Core>;
+
+const dOidcClient = new Deferred<OidcClient>();
+
+/** @deprecated */
+export const prOidcClient = dOidcClient.pr;
+
+/** @deprecated */
+const dCoreInstance = new Deferred<Core>();
 
 /**
  * A promise that resolve to the store instance.
@@ -319,9 +264,7 @@ const dStoreInstance = new Deferred<Store>();
  *
  * @deprecated: use "js/react/hooks" to interact with the store.
  */
-export const { pr: prStore } = dStoreInstance;
-
-const dOidcClient = new Deferred<OidcClient>();
+export const prStore = dCoreInstance.pr;
 
 /** @deprecated */
-export const { pr: prOidcClient } = dOidcClient;
+export const refStore = { current: id<undefined | Record<string, unknown>>(undefined) };

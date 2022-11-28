@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
 import {
     CatalogLauncherConfigurationCard,
-    CatalogLauncherConfigurationCardProps,
+    CatalogLauncherConfigurationCardProps
 } from "ui/components/pages/Catalog/CatalogLauncher/CatalogLauncherConfigurationCard";
 import { sectionName } from "./sectionName";
 import { getStoryFactory } from "stories/getStory";
@@ -12,7 +12,7 @@ function Container(
     props: Omit<
         CatalogLauncherConfigurationCardProps,
         "formFieldsByTabName" | "onFormValueChange"
-    >,
+    >
 ) {
     const [formFields, setFormFields] = useState<
         CatalogLauncherConfigurationCardProps["formFieldsByTabName"][string]["formFields"]
@@ -26,7 +26,7 @@ function Container(
             "pattern": undefined,
             "value": "0.1",
             "defaultValue": "0.1",
-            "doRenderAsTextArea": false,
+            "doRenderAsTextArea": false
         },
         {
             "type": "text",
@@ -37,7 +37,7 @@ function Container(
             "pattern": undefined,
             "value": "512Mi",
             "defaultValue": "512Mi",
-            "doRenderAsTextArea": false,
+            "doRenderAsTextArea": false
         },
         {
             "type": "text",
@@ -48,7 +48,7 @@ function Container(
             "pattern": undefined,
             "value": "512Mi",
             "defaultValue": "512Mi",
-            "doRenderAsTextArea": false,
+            "doRenderAsTextArea": false
         },
         {
             "type": "boolean",
@@ -56,7 +56,7 @@ function Container(
             "title": "s3",
             "isReadonly": false,
             "description": "Add S3 temporary identity inside your environment",
-            "value": true,
+            "value": true
         },
         {
             "type": "boolean",
@@ -64,7 +64,7 @@ function Container(
             "title": "vault",
             "isReadonly": false,
             "description": "Add vault temporary identity inside your environment",
-            "value": true,
+            "value": true
         },
         {
             "type": "boolean",
@@ -72,7 +72,7 @@ function Container(
             "title": "git",
             "isReadonly": false,
             "description": "Add git config inside your environment",
-            "value": true,
+            "value": true
         },
         {
             "type": "boolean",
@@ -80,7 +80,7 @@ function Container(
             "title": "git",
             "isReadonly": false,
             "description": "Add git config inside your environment",
-            "value": true,
+            "value": true
         },
         {
             "type": "boolean",
@@ -88,7 +88,7 @@ function Container(
             "title": "git",
             "isReadonly": false,
             "description": "Add git config inside your environment",
-            "value": true,
+            "value": true
         },
         {
             "type": "enum",
@@ -100,9 +100,9 @@ function Container(
             "enum": [
                 "inseefrlab/rstudio:3.6.3",
                 "inseefrlab/rstudio:4.0.4",
-                "inseefrlab/utilitr:0.7.0",
-            ],
-        },
+                "inseefrlab/utilitr:0.7.0"
+            ]
+        }
     ]);
 
     const formFieldsByTabName = useMemo(() => {
@@ -115,9 +115,9 @@ function Container(
                 (out[formField.path[0]] = {
                     "formFields": [],
                     "description": "tab description",
-                    "assembledSliderRangeFormFields": [],
+                    "assembledSliderRangeFormFields": []
                 })
-            ).formFields.push(formField),
+            ).formFields.push(formField)
         );
 
         return out;
@@ -132,8 +132,8 @@ function Container(
                     formField.value = value;
                 }
                 return formField;
-            }),
-        ),
+            })
+        )
     );
 
     return (
@@ -147,50 +147,50 @@ function Container(
 
 const { meta, getStory } = getStoryFactory({
     sectionName,
-    "wrappedComponent": { "CatalogLauncherConfigurationCard": Container },
+    "wrappedComponent": { "CatalogLauncherConfigurationCard": Container }
 });
 
 export default meta;
 
-export const VueDefault = getStory({
+export const ViewDefault = getStory({
     "meta": { "type": "dependency" },
     "dependencyNamePackageNameOrGlobal": "rstudio",
     "formFieldsIsWellFormed": [
         {
             "path": ["resources", "cpu"],
-            "isWellFormed": true,
+            "isWellFormed": true
         },
         {
             "path": ["resources", "memory"],
-            "isWellFormed": true,
+            "isWellFormed": true
         },
         {
             "path": ["resources", "memory2"],
-            "isWellFormed": true,
+            "isWellFormed": true
         },
         {
             "path": ["environnement", "s3"],
-            "isWellFormed": true,
+            "isWellFormed": true
         },
         {
             "path": ["environnement", "vault"],
-            "isWellFormed": true,
+            "isWellFormed": true
         },
         {
             "path": ["environnement", "git"],
-            "isWellFormed": true,
+            "isWellFormed": true
         },
         {
             "path": ["environnement", "git2"],
-            "isWellFormed": true,
+            "isWellFormed": true
         },
         {
             "path": ["environnement", "git3"],
-            "isWellFormed": true,
+            "isWellFormed": true
         },
         {
             "path": ["r", "version"],
-            "isWellFormed": true,
-        },
-    ],
+            "isWellFormed": true
+        }
+    ]
 });

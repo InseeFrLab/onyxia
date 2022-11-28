@@ -20,8 +20,8 @@ export function getRefFromDepsFactory(params: { max: number }) {
             deps.length,
             memoize((..._deps: DependencyList) => ({}), {
                 "length": deps.length,
-                max,
-            }),
+                max
+            })
         );
 
         return getRefFromDeps(deps);

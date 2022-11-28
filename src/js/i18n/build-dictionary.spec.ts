@@ -4,8 +4,8 @@ import { createDictionary, getLang } from "./build-dictionary";
     test(`should return the french version when the navigator.${property} is FR`, () => {
         const dictionary = {
             welcome: {
-                fr: "bonjour",
-            },
+                fr: "bonjour"
+            }
         };
         expect(createDictionary("fr")(dictionary).welcome).toBe(dictionary.welcome.fr);
     });
@@ -13,8 +13,8 @@ import { createDictionary, getLang } from "./build-dictionary";
     test(`should return the english version when the navigator.${property} is EN`, () => {
         const dictionary = {
             welcome: {
-                en: "welcome",
-            },
+                en: "welcome"
+            }
         };
         expect(createDictionary("en")(dictionary).welcome).toBe(dictionary.welcome.en);
     });
@@ -22,8 +22,8 @@ import { createDictionary, getLang } from "./build-dictionary";
     test(`should return the english version the navigator.${property} is not supported`, () => {
         const dictionary = {
             welcome: {
-                en: "welcome",
-            },
+                en: "welcome"
+            }
         };
         expect(createDictionary("de")(dictionary).welcome).toBeUndefined();
     });
@@ -32,8 +32,8 @@ import { createDictionary, getLang } from "./build-dictionary";
         const dictionary = {
             welcome: {
                 fr: [1, 2],
-                en: [3, 4],
-            },
+                en: [3, 4]
+            }
         };
         expect(createDictionary("en")(dictionary).welcome).toBe(dictionary.welcome.en);
     });
@@ -42,15 +42,15 @@ import { createDictionary, getLang } from "./build-dictionary";
             welcome: {
                 string: {
                     fr: "bonjour",
-                    en: "welcome",
-                },
-            },
+                    en: "welcome"
+                }
+            }
         };
         expect(createDictionary("en")(dictionary).welcome.string).toBe(
-            dictionary.welcome.string.en,
+            dictionary.welcome.string.en
         );
         expect(createDictionary("fr")(dictionary).welcome.string).toBe(
-            dictionary.welcome.string.fr,
+            dictionary.welcome.string.fr
         );
     });
 
@@ -58,8 +58,8 @@ import { createDictionary, getLang } from "./build-dictionary";
         const dictionary = {
             func: {
                 fr: (d: any) => `Bonjour ${d}`,
-                en: (d: any) => `Welcome ${d}`,
-            },
+                en: (d: any) => `Welcome ${d}`
+            }
         };
         expect(createDictionary("en")(dictionary).func("toto")).toBe("Welcome toto");
     });

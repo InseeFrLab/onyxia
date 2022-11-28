@@ -4,13 +4,10 @@ import memoize from "memoizee";
 
 /** We avoid importing app right away to prevent require cycles */
 const getAxiosInstance = memoize(
-    () =>
-        import("core/secondaryAdapters/officialOnyxiaApiClient").then(
-            ns => ns.prAxiosInstance,
-        ),
+    () => import("core/adapters/officialOnyxiaApiClient").then(ns => ns.prAxiosInstance),
     {
-        "promise": true,
-    },
+        "promise": true
+    }
 );
 
 interface ServicesListing {
@@ -24,8 +21,8 @@ export const getServices = async (groupId?: String) => {
     )
         .get<ServicesListing>(restApiPaths.myServices, {
             params: {
-                groupId: groupId,
-            },
+                groupId: groupId
+            }
         })
         .then(({ data }) => data);
 };
@@ -36,8 +33,8 @@ export const getService = async (id: string) => {
     )
         .get<Service>(restApiPaths.getService, {
             params: {
-                serviceId: id,
-            },
+                serviceId: id
+            }
         })
         .then(({ data }) => data);
 };
@@ -50,8 +47,8 @@ export const deleteServices = async (path?: string, bulk?: boolean) => {
         .delete(`${restApiPaths.deleteService}`, {
             params: {
                 path: path,
-                bulk: bulk,
-            },
+                bulk: bulk
+            }
         })
         .then(({ data }) => data);
 };
@@ -63,8 +60,8 @@ export const getLogs = async (serviceId: string, taskId: string) => {
         .get<string>(restApiPaths.getLogs, {
             params: {
                 serviceId: serviceId,
-                taskId: taskId,
-            },
+                taskId: taskId
+            }
         })
         .then(({ data }) => data);
 };

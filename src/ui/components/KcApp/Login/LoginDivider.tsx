@@ -28,21 +28,21 @@ export const LoginDivider = memo((props: Props) => {
 });
 
 export const { i18n } = declareComponentKeys<"or">()({
-    LoginDivider,
+    LoginDivider
 });
 
 const useStyles = makeStyles({ "name": { LoginDivider } })(theme => ({
     "root": {
         "display": "flex",
-        "alignItems": "center",
+        "alignItems": "center"
     },
     "separator": {
         "height": 1,
         "backgroundColor": theme.colors.useCases.typography.textSecondary,
-        "flex": 1,
+        "flex": 1
     },
     "text": {
         ...theme.spacing.rightLeft("margin", 2),
-        "paddingBottom": 2,
-    },
+        "paddingBottom": 2
+    }
 }));

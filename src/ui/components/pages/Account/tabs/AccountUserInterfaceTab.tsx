@@ -4,7 +4,7 @@ import { AccountSectionHeader } from "../AccountSectionHeader";
 import { AccountField } from "../AccountField";
 import { useIsDarkModeEnabled } from "onyxia-ui";
 import { useConstCallback } from "powerhooks/useConstCallback";
-import { useThunks, useSelector, selectors } from "ui/coreApi";
+import { useCoreFunctions, useCoreState, selectors } from "core";
 import { declareComponentKeys } from "i18nifty";
 
 export type Props = {
@@ -19,36 +19,36 @@ export const AccountUserInterfaceTab = memo((props: Props) => {
     const { isDarkModeEnabled, setIsDarkModeEnabled } = useIsDarkModeEnabled();
 
     const onRequestToggleIsDarkModeEnabled = useConstCallback(() =>
-        setIsDarkModeEnabled(!isDarkModeEnabled),
+        setIsDarkModeEnabled(!isDarkModeEnabled)
     );
 
-    const { userConfigsThunks } = useThunks();
+    const { userConfigs } = useCoreFunctions();
 
     const {
-        userConfigs: { isBetaModeEnabled, isDevModeEnabled },
-    } = useSelector(selectors.userConfigs.userConfigs);
+        userConfigs: { isBetaModeEnabled, isDevModeEnabled }
+    } = useCoreState(selectors.userConfigs.userConfigs);
 
     const onRequestToggleIsBetaModeEnabled = useConstCallback(() => {
         const isBetaModeEnabledNew = !isBetaModeEnabled;
 
-        userConfigsThunks.changeValue({
+        userConfigs.changeValue({
             "key": "isBetaModeEnabled",
-            "value": isBetaModeEnabledNew,
+            "value": isBetaModeEnabledNew
         });
 
         if (!isBetaModeEnabledNew) {
-            userConfigsThunks.changeValue({
+            userConfigs.changeValue({
                 "key": "isDevModeEnabled",
-                "value": false,
+                "value": false
             });
         }
     });
 
     const onRequestToggleIsDevModeEnabled = useConstCallback(() =>
-        userConfigsThunks.changeValue({
+        userConfigs.changeValue({
             "key": "isDevModeEnabled",
-            "value": !isDevModeEnabled,
-        }),
+            "value": !isDevModeEnabled
+        })
     );
 
     return (
@@ -82,7 +82,7 @@ export const AccountUserInterfaceTab = memo((props: Props) => {
             )}
             <AccountField
                 type="reset helper dialogs"
-                onResetHelperDialogsClick={userConfigsThunks.resetHelperDialogs}
+                onResetHelperDialogsClick={userConfigs.resetHelperDialogs}
             />
             <AccountField type="language" />
         </div>

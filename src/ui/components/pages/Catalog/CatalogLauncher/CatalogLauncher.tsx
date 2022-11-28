@@ -6,7 +6,7 @@ import { routes } from "ui/routes";
 import type { Route } from "type-route";
 import { CatalogLauncherMainCard } from "./CatalogLauncherMainCard";
 import { CatalogLauncherConfigurationCard } from "./CatalogLauncherConfigurationCard";
-import { useSelector, selectors, pure, useThunks } from "ui/coreApi";
+import { useCoreState, selectors, useCoreFunctions } from "core";
 import { useConstCallback } from "powerhooks/useConstCallback";
 import * as clipboard from "clipboard-polyfill/text";
 import { assert } from "tsafe/assert";
@@ -33,23 +33,24 @@ export type Props = {
 export const CatalogLauncher = memo((props: Props) => {
     const { className, route, scrollableDivRef } = props;
 
-    const { launcherThunks, restorablePackageConfigThunks } = useThunks();
+    const { launcher, restorablePackageConfig: restorablePackageConfigFunctions } =
+        useCoreFunctions();
 
     useEffect(() => {
         const { catalogId, packageName, formFieldsValueDifferentFromDefault } =
             route.params;
 
-        launcherThunks.initialize({
+        launcher.initialize({
             catalogId,
             packageName,
-            formFieldsValueDifferentFromDefault,
+            formFieldsValueDifferentFromDefault
         });
 
-        return () => launcherThunks.reset();
+        return () => launcher.reset();
     }, []);
 
-    const { restorablePackageConfig } = useSelector(
-        selectors.launcher.restorablePackageConfig,
+    const { restorablePackageConfig } = useCoreState(
+        selectors.launcher.restorablePackageConfig
     );
 
     useEffect(() => {
@@ -65,13 +66,13 @@ export const CatalogLauncher = memo((props: Props) => {
                 catalogId,
                 packageName,
                 formFieldsValueDifferentFromDefault,
-                "autoLaunch": route.params.autoLaunch,
+                "autoLaunch": route.params.autoLaunch
             })
             .replace();
     }, [restorablePackageConfig ?? Object]);
 
-    const restorablePackageConfigs = useSelector(
-        state => state.restorablePackageConfig.restorablePackageConfigs,
+    const restorablePackageConfigs = useCoreState(
+        state => state.restorablePackageConfig.restorablePackageConfigs
     );
 
     const [isBookmarked, setIsBookmarked] = useState(false);
@@ -80,14 +81,14 @@ export const CatalogLauncher = memo((props: Props) => {
         useState(false);
 
     const onNoLongerBookmarkedDialogClose = useConstCallback(() =>
-        setIsNoLongerBookmarkedDialogOpen(false),
+        setIsNoLongerBookmarkedDialogOpen(false)
     );
 
     const [overwriteConfigurationDialogState, setOverwriteConfigurationDialogState] =
         useState<
             | {
                   resolveDoOverwriteConfiguration: (
-                      doOverwriteConfiguration: boolean,
+                      doOverwriteConfiguration: boolean
                   ) => void;
                   friendlyName: string;
               }
@@ -106,11 +107,11 @@ export const CatalogLauncher = memo((props: Props) => {
                         case "cancel":
                             return false;
                     }
-                })(),
+                })()
             );
 
             setOverwriteConfigurationDialogState(undefined);
-        },
+        }
     );
 
     useEffect(() => {
@@ -119,9 +120,9 @@ export const CatalogLauncher = memo((props: Props) => {
         }
 
         const isBookmarkedNew =
-            pure.restorablePackageConfig.isRestorablePackageConfigInStore({
+            restorablePackageConfigFunctions.isRestorablePackageConfigInStore({
                 restorablePackageConfigs,
-                restorablePackageConfig,
+                restorablePackageConfig
             });
 
         if (isBookmarked && !isBookmarkedNew) {
@@ -134,17 +135,17 @@ export const CatalogLauncher = memo((props: Props) => {
     const { classes, cx } = useStyles();
 
     const onRequestCancel = useConstCallback(() =>
-        routes.catalogExplorer({ "catalogId": route.params.catalogId }).push(),
+        routes.catalogExplorer({ "catalogId": route.params.catalogId }).push()
     );
 
     const onRequestCopyLaunchUrl = useConstCallback(() =>
-        clipboard.writeText(window.location.href),
+        clipboard.writeText(window.location.href)
     );
 
     const onIsBookmarkedValueChange = useConstCallback((isBookmarked: boolean) => {
         assert(restorablePackageConfig !== undefined);
 
-        restorablePackageConfigThunks[
+        restorablePackageConfigFunctions[
             isBookmarked ? "saveRestorablePackageConfig" : "deleteRestorablePackageConfig"
         ]({
             restorablePackageConfig,
@@ -153,18 +154,18 @@ export const CatalogLauncher = memo((props: Props) => {
 
                 setOverwriteConfigurationDialogState({
                     friendlyName,
-                    "resolveDoOverwriteConfiguration": dDoOverwriteConfiguration.resolve,
+                    "resolveDoOverwriteConfiguration": dDoOverwriteConfiguration.resolve
                 });
 
                 return await dDoOverwriteConfiguration.pr;
-            },
+            }
         });
     });
 
-    const { friendlyName } = useSelector(selectors.launcher.friendlyName);
-    const { isShared } = useSelector(selectors.launcher.isShared);
+    const { friendlyName } = useCoreState(selectors.launcher.friendlyName);
+    const { isShared } = useCoreState(selectors.launcher.isShared);
 
-    const state = useSelector(state => state.launcher);
+    const state = useCoreState(state => state.launcher);
 
     const { showSplashScreen, hideSplashScreen } = useSplashScreen();
 
@@ -181,10 +182,10 @@ export const CatalogLauncher = memo((props: Props) => {
 
                             if (sensitiveConfigurations.length !== 0) {
                                 evtSensitiveConfigurationDialogDialog.post({
-                                    sensitiveConfigurations,
+                                    sensitiveConfigurations
                                 });
                             } else {
-                                launcherThunks.launch();
+                                launcher.launch();
                             }
                         }
 
@@ -205,19 +206,19 @@ export const CatalogLauncher = memo((props: Props) => {
     }, [
         state.stateDescription === "not initialized"
             ? state.stateDescription
-            : state.launchState,
+            : state.launchState
     ]);
 
-    const { indexedFormFields } = useSelector(selectors.launcher.indexedFormFields);
-    const { isLaunchable } = useSelector(selectors.launcher.isLaunchable);
-    const { formFieldsIsWellFormed } = useSelector(
-        selectors.launcher.formFieldsIsWellFormed,
+    const { indexedFormFields } = useCoreState(selectors.launcher.indexedFormFields);
+    const { isLaunchable } = useCoreState(selectors.launcher.isLaunchable);
+    const { formFieldsIsWellFormed } = useCoreState(
+        selectors.launcher.formFieldsIsWellFormed
     );
 
     const { t } = useTranslation({ CatalogLauncher });
 
     const evtSensitiveConfigurationDialogDialog = useConst(() =>
-        Evt.create<UnpackEvt<SensitiveConfigurationDialogProps["evtOpen"]>>(),
+        Evt.create<UnpackEvt<SensitiveConfigurationDialogProps["evtOpen"]>>()
     );
 
     const onSensitiveConfigurationDialogDialogClose = useConstCallback<
@@ -226,7 +227,7 @@ export const CatalogLauncher = memo((props: Props) => {
         if (!doProceedToLaunch) {
             return;
         }
-        launcherThunks.launch();
+        launcher.launch();
     });
 
     if (state.stateDescription !== "ready") {
@@ -254,9 +255,9 @@ export const CatalogLauncher = memo((props: Props) => {
                         onIsBookmarkedValueChange={onIsBookmarkedValueChange}
                         friendlyName={friendlyName}
                         isShared={isShared}
-                        onFriendlyNameChange={launcherThunks.changeFriendlyName}
-                        onIsSharedValueChange={launcherThunks.changeIsShared}
-                        onRequestLaunch={launcherThunks.launch}
+                        onFriendlyNameChange={launcher.changeFriendlyName}
+                        onIsSharedValueChange={launcher.changeIsShared}
+                        onRequestLaunch={launcher.launch}
                         onRequestCancel={onRequestCancel}
                         onRequestCopyLaunchUrl={
                             restorablePackageConfig.formFieldsValueDifferentFromDefault
@@ -274,10 +275,10 @@ export const CatalogLauncher = memo((props: Props) => {
                                     dependencyNamePackageNameOrGlobal
                                 }
                                 {...indexedFormFields[dependencyNamePackageNameOrGlobal]}
-                                onFormValueChange={launcherThunks.changeFormFieldValue}
+                                onFormValueChange={launcher.changeFormFieldValue}
                                 formFieldsIsWellFormed={formFieldsIsWellFormed}
                             />
-                        ),
+                        )
                     )}
                 </div>
             </div>
@@ -295,7 +296,7 @@ export const CatalogLauncher = memo((props: Props) => {
             <Dialog
                 title={t("should overwrite configuration dialog title")}
                 subtitle={t("should overwrite configuration dialog subtitle", {
-                    "friendlyName": overwriteConfigurationDialogState?.friendlyName ?? "",
+                    "friendlyName": overwriteConfigurationDialogState?.friendlyName ?? ""
                 })}
                 body={t("should overwrite configuration dialog body")}
                 buttons={
@@ -309,7 +310,7 @@ export const CatalogLauncher = memo((props: Props) => {
                         </Button>
                         <Button
                             onClick={onOverwriteConfigurationDialogClickFactory(
-                                "overwrite",
+                                "overwrite"
                             )}
                         >
                             {t("replace")}
@@ -343,14 +344,14 @@ export const { i18n } = declareComponentKeys<
 const useStyles = makeStyles({ "name": { CatalogLauncher } })(theme => ({
     "wrapperForScroll": {
         "height": "100%",
-        "overflow": "auto",
+        "overflow": "auto"
     },
     "wrapperForMawWidth": {
         "maxWidth": 1200,
         "& > *": {
-            "marginBottom": theme.spacing(3),
-        },
-    },
+            "marginBottom": theme.spacing(3)
+        }
+    }
 }));
 
 type SensitiveConfigurationDialogProps = {
@@ -375,9 +376,9 @@ const SensitiveConfigurationDialog = memo((props: SensitiveConfigurationDialogPr
     useEvt(
         ctx =>
             evtOpen.attach(ctx, ({ sensitiveConfigurations }) =>
-                setSensitiveConfigurations(sensitiveConfigurations),
+                setSensitiveConfigurations(sensitiveConfigurations)
             ),
-        [evtOpen],
+        [evtOpen]
     );
 
     return (
@@ -389,9 +390,9 @@ const SensitiveConfigurationDialog = memo((props: SensitiveConfigurationDialogPr
                     {sensitiveConfigurations === undefined
                         ? null
                         : sensitiveConfigurations.map(({ path, value }) => (
-                              <Markdown key={path.join()}>
-                                  {`**${path.join(".")}**: \`${value}\``}
-                              </Markdown>
+                              <Markdown key={path.join()}>{`**${path.join(
+                                  "."
+                              )}**: \`${value}\``}</Markdown>
                           ))}
                 </>
             }

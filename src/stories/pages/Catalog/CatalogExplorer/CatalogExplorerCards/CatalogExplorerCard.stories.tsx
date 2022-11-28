@@ -7,12 +7,12 @@ import { css } from "@emotion/css";
 const { meta, getStory } = getStoryFactory({
     sectionName,
     "wrappedComponent": { CatalogExplorerCard },
-    "defaultContainerWidth": 450,
+    "defaultContainerWidth": 450
 });
 
 export default meta;
 
-export const VueDefault = getStory({
+export const ViewDefault = getStory({
     "packageIconUrl": rstudioImgUrl,
     "packageName": "package_name",
     /* spell-checker: disable */
@@ -23,18 +23,18 @@ export const VueDefault = getStory({
     justo varius`,
     /* spell-checker: enable */
     "packageHomeUrl": "https://example.com",
-    ...logCallbacks(["onRequestLaunch"]),
+    ...logCallbacks(["onRequestLaunch"])
 });
 
-export const VueNoDesc = getStory({
+export const ViewNoDesc = getStory({
     "packageIconUrl": rstudioImgUrl,
     "packageName": "package_name",
     "packageDescription": "",
     "packageHomeUrl": "https://example.com",
-    ...logCallbacks(["onRequestLearnMore", "onRequestLaunch"]),
+    ...logCallbacks(["onRequestLearnMore", "onRequestLaunch"])
 });
 
-export const VueNoLearnMore = getStory({
+export const ViewNoLearnMore = getStory({
     "packageIconUrl": rstudioImgUrl,
     "packageName": "package_name",
     /* spell-checker: disable */
@@ -45,10 +45,10 @@ export const VueNoLearnMore = getStory({
     justo varius`,
     /* spell-checker: enable */
     ...logCallbacks(["onRequestLaunch"]),
-    "packageHomeUrl": undefined,
+    "packageHomeUrl": undefined
 });
 
-export const VueScroll = getStory({
+export const ViewScroll = getStory({
     "className": css({ "height": 308 }),
     "packageIconUrl": rstudioImgUrl,
     "packageName": "Service title",
@@ -63,5 +63,5 @@ export const VueScroll = getStory({
     justo varius`,
     /* spell-checker: enable */
     "packageHomeUrl": undefined,
-    ...logCallbacks(["onRequestLearnMore", "onRequestLaunch"]),
+    ...logCallbacks(["onRequestLearnMore", "onRequestLaunch"])
 });

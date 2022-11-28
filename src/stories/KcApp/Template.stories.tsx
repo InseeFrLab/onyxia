@@ -6,12 +6,12 @@ import { kcContextLogin } from "./kcContexts";
 
 const { meta, getStory } = getStoryFactory({
     sectionName,
-    "wrappedComponent": { Template },
+    "wrappedComponent": { Template }
 });
 
 export default meta;
 
-export const Vue1 = getStory({
+export const View1 = getStory({
     "doFetchDefaultThemeResources": false,
     "kcContext": kcContextLogin,
     "displayInfo": true,
@@ -21,5 +21,5 @@ export const Vue1 = getStory({
     "infoNode": <p>Info node</p>,
     //TODO: Fix, find a way to make it work
     "i18n": null as any,
-    ...defaultKcProps,
+    ...defaultKcProps
 });

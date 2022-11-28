@@ -37,15 +37,15 @@ export const AccountSectionHeader = memo((props: Props) => {
 
 const useStyles = makeStyles({ "name": { AccountSectionHeader } })(theme => ({
     "root": {
-        "marginBottom": theme.spacing(4),
+        "marginBottom": theme.spacing(4)
     },
     "title": {
-        "display": "inline-block",
+        "display": "inline-block"
     },
     "helperText": {
-        "marginTop": theme.spacing(2),
+        "marginTop": theme.spacing(2)
     },
     "helpIcon": {
-        "marginLeft": theme.spacing(2),
-    },
+        "marginLeft": theme.spacing(2)
+    }
 }));

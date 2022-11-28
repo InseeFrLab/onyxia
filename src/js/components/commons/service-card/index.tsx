@@ -17,7 +17,7 @@ export const ServicesListe = ({ services, titre, openService, openDetails }: any
                 title={titre}
                 classes={{
                     root: "en-tete",
-                    title: "titre",
+                    title: "titre"
                 }}
             />
             <CardContent>

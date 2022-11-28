@@ -32,11 +32,11 @@ const Terms = memo(
                     ? Promise.resolve(
                           [
                               "There was no therms of service provided in the Onyxia-web configuration.",
-                              "Provide it or disable therms as required action in Keycloak",
-                          ].join(" "),
+                              "Provide it or disable therms as required action in Keycloak"
+                          ].join(" ")
                       )
                     : fetch(url).then(response => response.text());
-            },
+            }
         });
 
         useRerenderOnStateChange(evtTermMarkdown);
@@ -85,7 +85,7 @@ const Terms = memo(
                 }
             />
         );
-    },
+    }
 );
 
 export default Terms;
@@ -94,17 +94,17 @@ const useStyles = makeStyles({ "name": { Terms } })(theme => ({
     "buttonsWrapper": {
         "marginTop": theme.spacing(4),
         "display": "flex",
-        "justifyContent": "flex-end",
+        "justifyContent": "flex-end"
     },
     "buttonSubmit": {
-        "marginLeft": theme.spacing(2),
+        "marginLeft": theme.spacing(2)
     },
     "markdownWrapper": {
         "& a": {
-            "color": theme.colors.useCases.buttons.actionActive,
+            "color": theme.colors.useCases.buttons.actionActive
         },
         "& a:hover": {
-            "textDecoration": "underline",
-        },
-    },
+            "textDecoration": "underline"
+        }
+    }
 }));

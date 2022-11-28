@@ -6,12 +6,12 @@ import rstudioImg from "stories/assets/img/rstudio.png";
 const { meta, getStory } = getStoryFactory({
     sectionName,
     "wrappedComponent": { CatalogLauncherMainCard },
-    "defaultContainerWidth": 900,
+    "defaultContainerWidth": 900
 });
 
 export default meta;
 
-export const VueDefault = getStory({
+export const ViewDefault = getStory({
     "packageName": "rstudio",
     "packageIconUrl": rstudioImg,
     "isBookmarked": true,
@@ -24,6 +24,6 @@ export const VueDefault = getStory({
         "onRequestCancel",
         "onRequestCopyLaunchUrl",
         "onRequestLaunch",
-        "onIsSharedValueChange",
-    ]),
+        "onIsSharedValueChange"
+    ])
 });

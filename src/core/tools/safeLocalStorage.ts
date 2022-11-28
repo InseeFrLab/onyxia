@@ -37,7 +37,7 @@ export const getLocalStorage = memoizee(() => {
             >({
                 "getItem": key => map.get(key) ?? null,
                 "removeItem": key => map.delete(key),
-                "setItem": (key, value) => map.set(key, value),
+                "setItem": (key, value) => map.set(key, value)
             });
         })();
 

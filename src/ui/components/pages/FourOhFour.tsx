@@ -27,8 +27,8 @@ const useStyles = makeStyles({ "name": { FourOhFour } })(theme => ({
         "display": "flex",
         "alignItems": "center",
         "justifyContent": "center",
-        "backgroundColor": theme.colors.useCases.surfaces.background,
-    },
+        "backgroundColor": theme.colors.useCases.surfaces.background
+    }
 }));
 
 export const { i18n } = declareComponentKeys<"not found">()({ FourOhFour });

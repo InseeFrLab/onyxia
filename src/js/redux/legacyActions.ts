@@ -7,7 +7,7 @@ export const actions = {
     ...myFiles.asyncThunks,
     ...myLab.actions,
     ...app.actions,
-    ...user.actions,
+    ...user.actions
 };
 
 /*

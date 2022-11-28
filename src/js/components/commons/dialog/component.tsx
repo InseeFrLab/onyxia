@@ -21,7 +21,7 @@ const DialogConfirm = ({
     body,
     warn,
     onValid,
-    onCancel,
+    onCancel
 }: Props) => (
     <Dialog
         fullScreen={false}
@@ -30,7 +30,7 @@ const DialogConfirm = ({
         aria-labelledby="login-titre"
         classes={{
             root: "login-modal",
-            paper: "container",
+            paper: "container"
         }}
     >
         <DialogTitle id="login-titre" classes={{ root: "en-tete" }}>

@@ -11,7 +11,7 @@ export function emailDomainsToRegExpStr(emailDomains: string[]): string {
             .map(t => t.replace(/\n/, ""))
             .map(t => t.replace(/\./g, "\\\\."))
             .map(t => `(${t})`)
-            .join("|"),
+            .join("|")
     ].map(regExpStr => `${start}${regExpStr}${end}`)[0];
 }
 
@@ -33,6 +33,6 @@ export function regExpStrToEmailDomains(regExpStr: string): string[] {
                 .split("|")
                 .map(part => part.replace(/^\(/, ""))
                 .map(part => part.replace(/\)$/, ""))
-                .map(part => part.replace(/\\\\/g, "")),
+                .map(part => part.replace(/\\\\/g, ""))
         )[0];
 }

@@ -5,11 +5,11 @@ import { routes } from "ui/routes";
 
 const home = {
     "anchorProps": routes.home().link,
-    "component": <Icon className="home-icone">home</Icon>,
+    "component": <Icon className="home-icone">home</Icon>
 };
 const catalog = {
     "anchorProps": routes.catalogExplorer().link,
-    "component": <span>catalogue</span>,
+    "component": <span>catalogue</span>
 };
 
 export const fil: any = {
@@ -17,15 +17,15 @@ export const fil: any = {
         home,
         {
             anchorProps: null,
-            component: <span>A propos</span>,
-        },
+            component: <span>A propos</span>
+        }
     ],
     cluster: [
         home,
         {
             anchorProps: null,
-            component: <span>{D.cluster}</span>,
-        },
+            component: <span>{D.cluster}</span>
+        }
     ],
     catalogues: [home, catalog],
     catalogue: (idCatalogue: any) => [
@@ -33,83 +33,83 @@ export const fil: any = {
         catalog,
         {
             "anchorProps": routes.catalogExplorer({ "catalogId": idCatalogue }),
-            "component": <span>{idCatalogue}</span>,
-        },
+            "component": <span>{idCatalogue}</span>
+        }
     ],
     trainings: [
         home,
         {
             anchorProps: null,
-            component: <span>formations</span>,
-        },
+            component: <span>formations</span>
+        }
     ],
     training: (_id: any, title: any) => [
         home,
         {
             anchorProps: null,
-            component: <span>formations</span>,
+            component: <span>formations</span>
         },
         {
             //pathname: `/trainings/${id}`,
             anchorProps: null,
-            component: <span>{title}</span>,
-        },
+            component: <span>{title}</span>
+        }
     ],
     monCompte: [
         home,
         {
             "anchorProps": routes.home().link,
-            component: <span>Mon compte</span>,
-        },
+            component: <span>Mon compte</span>
+        }
     ],
     servicesCollaboratifs: [
         home,
         {
             //pathname: '/services',
             "anchorProps": null,
-            component: <span>Services partagés</span>,
-        },
+            component: <span>Services partagés</span>
+        }
     ],
     services: ({ id, title }: { id: any; title: any }) => [
         home,
         {
             "anchorProps": routes.myServices().link,
-            component: <span>services</span>,
+            component: <span>services</span>
         },
         {
             "anchorProps": routes.myService({ "serviceId": id }).link,
-            "component": <span>{title}</span>,
-        },
+            "component": <span>{title}</span>
+        }
     ],
     myServices: (id: any) => [
         home,
         {
             "anchorProps": routes.myServices().link,
-            component: <span>services</span>,
+            component: <span>services</span>
         },
         id && {
             "anchorProps": routes.myService({ "serviceId": id }).link,
-            "component": <span>{id}</span>,
-        },
+            "component": <span>{id}</span>
+        }
     ],
     myService: (id: any) => [
         home,
         {
             "anchorProps": routes.myServices().link,
-            component: <span>services</span>,
+            component: <span>services</span>
         },
         {
             "anchorProps": routes.myService({ "serviceId": id }).link,
-            "component": <span>{id}</span>,
-        },
+            "component": <span>{id}</span>
+        }
     ],
     /* */
     mesFichiers: [
         home,
         {
             "anchorProps": routes.myBuckets().link,
-            "component": <span>mes fichiers</span>,
-        },
+            "component": <span>mes fichiers</span>
+        }
     ],
 
     myFiles: (bucketName: any) => (paths: any) =>
@@ -117,20 +117,20 @@ export const fil: any = {
             home,
             {
                 "anchorProps": routes.myBuckets().link,
-                "component": <span>mes fichiers</span>,
+                "component": <span>mes fichiers</span>
             },
             {
                 anchorProps: routes.myFilesLegacy({ bucketName }).link,
-                component: <span>{bucketName}</span>,
+                component: <span>{bucketName}</span>
             },
             ...paths.map(({ label, path }: { label: any; path: any }) => ({
                 "anchorProps": routes.myFilesLegacy({
                     bucketName,
-                    "fileOrDirectoryPath": path,
+                    "fileOrDirectoryPath": path
                 }).link,
-                component: <span>{label}</span>,
-            })),
-        ],
+                component: <span>{label}</span>
+            }))
+        ]
     /* */
 };
 
@@ -140,9 +140,9 @@ FilDAriane.propTypes = {
     fil: PropTypes.arrayOf(
         PropTypes.shape({
             anchorProps: PropTypes.object.isRequired,
-            component: PropTypes.object.isRequired,
-        }),
-    ),
+            component: PropTypes.object.isRequired
+        })
+    )
 };
 
 const makeAll = ([home, ...rest]: any[]) => (

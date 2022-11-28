@@ -50,7 +50,7 @@ export function Terms(props: Props) {
                 hideSplashScreen();
             } else {
                 showSplashScreen({
-                    "enableTransparency": false,
+                    "enableTransparency": false
                 });
             }
         }, [tos]);
@@ -76,14 +76,14 @@ export function Terms(props: Props) {
 }
 
 export const { i18n } = declareComponentKeys<"no terms">()({
-    Terms,
+    Terms
 });
 
 export const useStyles = makeStyles()(theme => ({
     "root": {
         "display": "flex",
         "justifyContent": "center",
-        "height": "100%",
+        "height": "100%"
     },
     "markdown": {
         "borderRadius": theme.spacing(2),
@@ -91,9 +91,9 @@ export const useStyles = makeStyles()(theme => ({
         "maxWidth": 900,
         "padding": theme.spacing(4),
         "&:hover": {
-            "boxShadow": theme.shadows[1],
+            "boxShadow": theme.shadows[1]
         },
         "marginBottom": theme.spacing(2),
-        "overflow": "auto",
-    },
+        "overflow": "auto"
+    }
 }));

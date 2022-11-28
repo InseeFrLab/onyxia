@@ -39,6 +39,6 @@ const useStyles = makeStyles<{
         "padding": 2,
         "borderRadius": "50%",
         "boxSizing": "border-box",
-        "display": "inline-block",
-    },
+        "display": "inline-block"
+    }
 }));
