@@ -340,8 +340,6 @@ export const CatalogLauncher = memo((props: Props) => {
     );
 });
 
-CatalogLauncher.displayName = CatalogLauncher.name;
-
 export const { i18n } = declareComponentKeys<
     | "no longer bookmarked dialog title"
     | "no longer bookmarked dialog body"
