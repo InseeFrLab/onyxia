@@ -133,7 +133,7 @@ export const AccountField = memo((props: Props): ReturnType<FunctionComponent> =
             }, [isSensitiveInformation]);
 
             const toggleIsTextHidden = useConstCallback(() =>
-                setIsTextHidden(!isTextHidden),
+                setIsTextHidden(!isTextHidden)
             );
 
             const { TextWd } = useGuaranteedMemo(() => {
@@ -152,7 +152,7 @@ export const AccountField = memo((props: Props): ReturnType<FunctionComponent> =
                 TextWd,
                 toggleIsTextHidden,
                 isTextHidden,
-                isSensitiveInformation,
+                isSensitiveInformation
             };
         })();
 
@@ -168,7 +168,7 @@ export const AccountField = memo((props: Props): ReturnType<FunctionComponent> =
                     />
                 </Tooltip>
             ),
-        [],
+        []
     );
 
     const {
@@ -180,12 +180,12 @@ export const AccountField = memo((props: Props): ReturnType<FunctionComponent> =
         onTextFieldEscapeKeyDown,
         onSubmitButtonClick,
         onValueBeingTypedChange,
-        onTextFieldSubmit,
+        onTextFieldSubmit
     } = (function useClosure() {
         const [isInEditingState, setIsInEditingState] = useState(false);
 
         const [evtTextFieldAction] = useState(() =>
-            Evt.create<UnpackEvt<NonNullable<TextFieldProps["evtAction"]>>>(),
+            Evt.create<UnpackEvt<NonNullable<TextFieldProps["evtAction"]>>>()
         );
 
         useEvt(
@@ -197,11 +197,11 @@ export const AccountField = memo((props: Props): ReturnType<FunctionComponent> =
                 props.evtAction.attach(
                     action => action === "SUBMIT EDIT",
                     ctx,
-                    () => evtTextFieldAction.post("TRIGGER SUBMIT"),
+                    () => evtTextFieldAction.post("TRIGGER SUBMIT")
                 );
             },
 
-            [props?.type === "editable text" ? props.evtAction : null],
+            [props?.type === "editable text" ? props.evtAction : null]
         );
 
         const onStartEditButtonClick = useConstCallback(() => {
@@ -211,11 +211,11 @@ export const AccountField = memo((props: Props): ReturnType<FunctionComponent> =
         });
 
         const onTextFieldEscapeKeyDown = useConstCallback(() =>
-            evtTextFieldAction.post("RESTORE DEFAULT VALUE"),
+            evtTextFieldAction.post("RESTORE DEFAULT VALUE")
         );
 
         const onSubmitButtonClick = useConstCallback(() =>
-            evtTextFieldAction.post("TRIGGER SUBMIT"),
+            evtTextFieldAction.post("TRIGGER SUBMIT")
         );
 
         const { isValueBeingTypedValid, onValueBeingTypedChange } =
@@ -225,9 +225,9 @@ export const AccountField = memo((props: Props): ReturnType<FunctionComponent> =
 
                 const onValueBeingTypedChange = useConstCallback(
                     ({
-                        isValidValue,
+                        isValidValue
                     }: Param0<TextFieldProps["onValueBeingTypedChange"]>) =>
-                        setIsValueBeingTypedValid(isValidValue),
+                        setIsValueBeingTypedValid(isValidValue)
                 );
 
                 return { isValueBeingTypedValid, onValueBeingTypedChange };
@@ -281,7 +281,7 @@ export const AccountField = memo((props: Props): ReturnType<FunctionComponent> =
             onTextFieldEscapeKeyDown,
             onSubmitButtonClick,
             onValueBeingTypedChange,
-            onTextFieldSubmit,
+            onTextFieldSubmit
         };
     })();
 
@@ -302,7 +302,7 @@ export const AccountField = memo((props: Props): ReturnType<FunctionComponent> =
 
     const [isResetHelperDialogClicked, setIsResetHelperDialogClickedToTrue] = useReducer(
         () => true,
-        false,
+        false
     );
 
     const onResetHelperDialogsClick = useConstCallback(() => {
@@ -353,7 +353,7 @@ export const AccountField = memo((props: Props): ReturnType<FunctionComponent> =
                                         <TextWd
                                             className={cx(
                                                 classes.noText,
-                                                classes.cellMiddleText,
+                                                classes.cellMiddleText
                                             )}
                                         >
                                             {t("not yet defined")}
@@ -479,38 +479,38 @@ export const { i18n } = declareComponentKeys<
 const useStyles = makeStyles<{ isFlashing: boolean }>({ "name": { AccountField } })(
     (theme, { isFlashing }) => ({
         "root": {
-            "marginBottom": theme.spacing(3),
+            "marginBottom": theme.spacing(3)
         },
         "mainLine": {
             "display": "flex",
             "& > div": {
                 "display": "flex",
-                "alignItems": "center",
+                "alignItems": "center"
             },
-            "marginBottom": theme.spacing(2),
+            "marginBottom": theme.spacing(2)
         },
         "cellTitle": {
-            "width": 360,
+            "width": 360
         },
         "cellMiddle": {
             "flex": 1,
             "overflow": "hidden",
             "& .MuiTextField-root": {
                 "width": "100%",
-                "top": 2,
-            },
+                "top": 2
+            }
         },
         "cellMiddleText": {
             "overflow": "hidden",
             "whiteSpace": "nowrap",
             "textOverflow": "ellipsis",
-            "color": !isFlashing ? undefined : theme.colors.useCases.buttons.actionActive,
+            "color": !isFlashing ? undefined : theme.colors.useCases.buttons.actionActive
         },
         "cellActions": {
-            "marginRight": theme.spacing(2),
+            "marginRight": theme.spacing(2)
         },
         "noText": {
-            "color": theme.colors.useCases.typography.textDisabled,
-        },
-    }),
+            "color": theme.colors.useCases.typography.textDisabled
+        }
+    })
 );

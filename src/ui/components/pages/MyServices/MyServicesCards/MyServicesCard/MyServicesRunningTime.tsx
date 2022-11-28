@@ -21,11 +21,11 @@ export const MyServicesRunningTime = memo((props: Props) => {
     const { className } = props;
 
     const { classes, cx } = useStyles({
-        "isOvertime": !props.isRunning ? false : props.doesHaveBeenRunningForTooLong,
+        "isOvertime": !props.isRunning ? false : props.doesHaveBeenRunningForTooLong
     });
 
     const { fromNowText } = useFromNow({
-        "dateTime": props.isRunning ? props.startTime : 0,
+        "dateTime": props.isRunning ? props.startTime : 0
     });
 
     const { t } = useTranslation({ MyServicesRunningTime });
@@ -41,7 +41,7 @@ export const MyServicesRunningTime = memo((props: Props) => {
 export const { i18n } = declareComponentKeys<"launching">()({ MyServicesRunningTime });
 
 const useStyles = makeStyles<{ isOvertime: boolean }>({
-    "name": { MyServicesRunningTime },
+    "name": { MyServicesRunningTime }
 })((theme, { isOvertime }) => {
     const color = isOvertime
         ? theme.colors.useCases.alertSeverity.warning.main
@@ -51,10 +51,10 @@ const useStyles = makeStyles<{ isOvertime: boolean }>({
         "root": {
             color,
             "display": "flex",
-            "alignItems": "center",
+            "alignItems": "center"
         },
         "icon": {
-            color,
-        },
+            color
+        }
     };
 });

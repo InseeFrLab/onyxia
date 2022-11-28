@@ -38,7 +38,7 @@ const Login = memo(
             usernameEditDisabled,
             login,
             auth,
-            registrationDisabled,
+            registrationDisabled
         } = kcContext;
 
         const [isLoginButtonDisabled, setIsLoginButtonDisabled] = useState(false);
@@ -48,7 +48,7 @@ const Login = memo(
         const submitButtonRef = useStateRef<HTMLButtonElement>(null);
 
         const [areTextInputsDisabled, setAreTextInputsDisabled] = useState(
-            () => getBrowser() === "safari",
+            () => getBrowser() === "safari"
         );
 
         useSplashScreen({
@@ -58,7 +58,7 @@ const Login = memo(
                 }
                 setAreTextInputsDisabled(false);
                 usernameInputRef.current!.focus();
-            },
+            }
         });
 
         useEvt(
@@ -85,16 +85,16 @@ const Login = memo(
                                     case "safari":
                                         setTimeout(
                                             () => submitButtonRef.current?.focus(),
-                                            100,
+                                            100
                                         );
                                         break;
                                 }
-                            },
+                            }
                         );
                         break;
                 }
             },
-            [passwordInputRef.current],
+            [passwordInputRef.current]
         );
 
         const onSubmit = useConstCallback(() => {
@@ -110,7 +110,7 @@ const Login = memo(
             if (value.includes(" ")) {
                 return {
                     "isValidValue": false,
-                    "message": "Can't contain spaces",
+                    "message": "Can't contain spaces"
                 };
             }
 
@@ -123,7 +123,7 @@ const Login = memo(
             if (value.includes(" ")) {
                 return {
                     "isValidValue": false,
-                    "message": "Can't contain spaces",
+                    "message": "Can't contain spaces"
                 };
             }
 
@@ -260,7 +260,7 @@ const Login = memo(
                                             name="credentialId"
                                             {...(auth?.selectedCredential !== undefined
                                                 ? {
-                                                      "value": auth.selectedCredential,
+                                                      "value": auth.selectedCredential
                                                   }
                                                 : {})}
                                         />
@@ -300,7 +300,7 @@ const Login = memo(
                 }
             />
         );
-    },
+    }
 );
 
 export default Login;
@@ -311,42 +311,42 @@ const useStyles = makeStyles({ "name": { Login } })(theme => ({
     "root": {
         "& .MuiTextField-root": {
             "width": "100%",
-            "marginTop": theme.spacing(5),
-        },
+            "marginTop": theme.spacing(5)
+        }
     },
     "rememberMeForgotPasswordWrapper": {
         "display": "flex",
-        "marginTop": theme.spacing(4),
+        "marginTop": theme.spacing(4)
     },
     "forgotPassword": {
         "flex": 1,
         "display": "flex",
         "justifyContent": "flex-end",
-        "alignItems": "center",
+        "alignItems": "center"
     },
     "buttonsWrapper": {
         "marginTop": theme.spacing(4),
         "display": "flex",
-        "justifyContent": "flex-end",
+        "justifyContent": "flex-end"
     },
     "buttonSubmit": {
-        "marginLeft": theme.spacing(2),
+        "marginLeft": theme.spacing(2)
     },
     "linkToRegisterWrapper": {
         "marginTop": theme.spacing(5),
         "textAlign": "center",
         "& > *": {
-            "display": "inline-block",
-        },
+            "display": "inline-block"
+        }
     },
     "registerLink": {
-        "paddingLeft": theme.spacing(2),
+        "paddingLeft": theme.spacing(2)
     },
     "divider": {
-        ...theme.spacing.topBottom("margin", 5),
+        ...theme.spacing.topBottom("margin", 5)
     },
     "providers": {
         "listStyleType": "none",
-        "padding": 0,
-    },
+        "padding": 0
+    }
 }));

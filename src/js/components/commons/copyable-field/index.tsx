@@ -35,7 +35,7 @@ class CopyableField extends React.Component<Props, State> {
         edit: false,
         value: null as any as string,
         reset: false,
-        editable: false,
+        editable: false
     };
     constructor(props: Props) {
         super(props);
@@ -73,7 +73,7 @@ class CopyableField extends React.Component<Props, State> {
             }
             return {
                 value: p.value,
-                edit: !this.state.edit,
+                edit: !this.state.edit
             };
         });
     };
@@ -86,7 +86,7 @@ class CopyableField extends React.Component<Props, State> {
             }
             return {
                 value: p.value,
-                edit: !this.state.edit,
+                edit: !this.state.edit
             };
         });
     };
@@ -113,7 +113,7 @@ class CopyableField extends React.Component<Props, State> {
             del = false,
             type = "string",
             options = {},
-            onValidate,
+            onValidate
         } = this.props;
         return (
             <>

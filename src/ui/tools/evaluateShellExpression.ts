@@ -17,9 +17,9 @@ export function evaluateShellExpression(params: {
                     assert(typeof prop === "string");
 
                     return getEnvValue({ "envName": prop }) ?? `$${prop}`;
-                },
-            },
-        ),
+                }
+            }
+        )
     );
 
     if (parsed.find(entry => typeof entry !== "string") !== undefined) {

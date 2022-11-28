@@ -1,6 +1,8 @@
 import { Tabs } from "onyxia-ui/Tabs";
 import { AccountInfoTab } from "./tabs/AccountInfoTab";
 import { AccountIntegrationsTab } from "./tabs/AccountIntegrationsTab";
+import { AccountKubernetesTab } from "./tabs/AccountKubernetesTab";
+import { AccountVaultTab } from "./tabs/AccountVaultTab";
 import { useMemo } from "react";
 import { createGroup } from "type-route";
 import { routes } from "ui/routes";
@@ -14,7 +16,9 @@ import { useConstCallback } from "powerhooks/useConstCallback";
 import type { Route } from "type-route";
 import { makeStyles } from "ui/theme";
 import { declareComponentKeys } from "i18nifty";
-import { useThunks } from "ui/coreApi";
+import { useCoreFunctions } from "core";
+import { assert } from "tsafe/assert";
+import type { Equals } from "tsafe";
 
 Account.routeGroup = createGroup([routes.account]);
 
@@ -32,20 +36,28 @@ export function Account(props: Props) {
 
     const { t } = useTranslation({ Account });
 
-    const { s3CredentialsThunks } = useThunks();
+    const { s3Credentials, k8sCredentials, vaultCredentials } = useCoreFunctions();
 
     const tabs = useMemo(
         () =>
             accountTabIds
                 .filter(accountTabId =>
-                    accountTabId !== "storage" ? true : s3CredentialsThunks.isAvailable(),
+                    accountTabId !== "storage" ? true : s3Credentials.isAvailable()
+                )
+                .filter(accountTabId =>
+                    accountTabId !== "k8sCredentials"
+                        ? true
+                        : k8sCredentials.isAvailable()
+                )
+                .filter(accountTabId =>
+                    accountTabId !== "vault" ? true : vaultCredentials.isAvailable()
                 )
                 .map(id => ({ id, "title": t(id) })),
-        [t],
+        [t]
     );
 
     const onRequestChangeActiveTab = useConstCallback((tabId: AccountTabId) =>
-        routes.account({ tabId }).push(),
+        routes.account({ tabId }).push()
     );
 
     const { classes, cx } = useStyles();
@@ -77,7 +89,12 @@ export function Account(props: Props) {
                             return <AccountStorageTab />;
                         case "user-interface":
                             return <AccountUserInterfaceTab />;
+                        case "k8sCredentials":
+                            return <AccountKubernetesTab />;
+                        case "vault":
+                            return <AccountVaultTab />;
                     }
+                    assert<Equals<typeof route.params.tabId, never>>(false);
                 })()}
             </Tabs>
         </div>
@@ -86,16 +103,18 @@ export function Account(props: Props) {
 
 export const { i18n } = declareComponentKeys<
     AccountTabId | "text1" | "text2" | "text3" | "personal tokens tooltip"
->()({ Account });
+>()({
+    Account
+});
 
 const useStyles = makeStyles({ "name": { Account } })(theme => ({
     "root": {
         "height": "100%",
-        "overflow": "auto",
+        "overflow": "auto"
     },
     "tabs": {
         "borderRadius": 8,
         "overflow": "hidden",
-        "boxShadow": theme.shadows[1],
-    },
+        "boxShadow": theme.shadows[1]
+    }
 }));

@@ -25,7 +25,7 @@ export namespace FormFieldValue {
  *
  */
 export function formFieldsValueToObject(
-    formFieldsValue: FormFieldValue[],
+    formFieldsValue: FormFieldValue[]
 ): Record<string, unknown> {
     return [...formFieldsValue]
         .sort((a, b) => JSON.stringify(a.path).localeCompare(JSON.stringify(b.path)))
@@ -62,13 +62,13 @@ export function formFieldsValueToObject(
                             (launchRequestOptions[key] = {} as any),
                         "formFieldValue": {
                             "path": rest,
-                            "value": formFieldValue.value,
-                        },
+                            "value": formFieldValue.value
+                        }
                     });
                 }
             })({
                 launchRequestOptions,
-                formFieldValue,
+                formFieldValue
             });
 
             return launchRequestOptions;

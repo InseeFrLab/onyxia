@@ -79,7 +79,7 @@ export const isPublicDirectory = (bucketName: any) => async (directory: any) => 
         const path = `arn:aws:s3:::${bucketName}${directory}*`;
         const jp = JSON.parse(policy);
         const {
-            Statement: [{ Resource }],
+            Statement: [{ Resource }]
         } = jp;
         const find = Resource.find((r: any) => r === path) !== undefined;
         return find;
@@ -91,7 +91,7 @@ export const removeDirectoryFromPolicy = (bucketName: any) => async (directory: 
     const policyString = await getBucketPolicy(bucketName);
     const policy = JSON.parse(policyString);
     const {
-        Statement: [{ Resource }],
+        Statement: [{ Resource }]
     } = policy;
     if (Resource) {
         const index = Resource.indexOf(getMinioDirectoryName(bucketName)(directory));
@@ -104,7 +104,7 @@ export const removeDirectoryFromPolicy = (bucketName: any) => async (directory: 
 export const initBucketPolicy = async (bucketName: any) => {
     await setBucketPolicy({
         bucketName: bucketName,
-        policy: { Version: "2012-10-17", Statement: [] },
+        policy: { Version: "2012-10-17", Statement: [] }
     });
     return false;
 };

@@ -6,12 +6,12 @@ import rstudioImgUrl from "stories/assets/img/rstudio.png";
 const { meta, getStory } = getStoryFactory({
     sectionName,
     "wrappedComponent": { MyServicesCard },
-    "defaultContainerWidth": 400,
+    "defaultContainerWidth": 400
 });
 
 export default meta;
 
-export const VueRegular = getStory({
+export const ViewRegular = getStory({
     "packageIconUrl": rstudioImgUrl,
     "friendlyName": "My Rstudio",
     "packageName": "rstudio",
@@ -26,11 +26,11 @@ export const VueRegular = getStory({
     ...logCallbacks([
         "onRequestDelete",
         "onRequestShowPostInstallInstructions",
-        "onRequestShowEnv",
-    ]),
+        "onRequestShowEnv"
+    ])
 });
 
-export const VueStarting = getStory({
+export const ViewStarting = getStory({
     "packageIconUrl": rstudioImgUrl,
     "friendlyName": "My Rstudio",
     "packageName": "rstudio",
@@ -45,6 +45,6 @@ export const VueStarting = getStory({
     ...logCallbacks([
         "onRequestDelete",
         "onRequestShowPostInstallInstructions",
-        "onRequestShowEnv",
-    ]),
+        "onRequestShowEnv"
+    ])
 });

@@ -22,10 +22,10 @@ export const [kcContextLogin, kcContextRegister] = (
                                 "alias": "agentconnect",
                                 "displayName": "Agent Connect",
                                 "loginUrl": "#",
-                                "providerId": "agentconnect",
-                            },
-                        ],
-                    },
+                                "providerId": "agentconnect"
+                            }
+                        ]
+                    }
                 },
                 {
                     "pageId": "register.ftl",
@@ -76,11 +76,11 @@ export const [kcContextLogin, kcContextRegister] = (
                         "monvr.pf",
                         "ac-noumea.nc",
                         "ac-spm.fr",
-                        "*.ensai.fr",
-                    ],
+                        "*.ensai.fr"
+                    ]
                     /* spell-checker: enable */
-                },
-            ],
-        }),
+                }
+            ]
+        })
     )
     .map(({ kcContext }) => kcContext!);

@@ -43,7 +43,7 @@ export default (client: Client) => ({
                         return;
                     }
                     resolve(etag);
-                },
+                }
             );
         }),
     removeObject: ({ bucketName, objectName }: any) =>
@@ -97,7 +97,7 @@ export default (client: Client) => ({
                         return;
                     }
                     resolve(presignedUrl);
-                },
+                }
             );
         }),
     presignedPostBucket: (bucketName: string, keyPrefix: string, duration = 3600) => {
@@ -119,5 +119,5 @@ export default (client: Client) => ({
                 }
                 resolve(true);
             });
-        }),
+        })
 });

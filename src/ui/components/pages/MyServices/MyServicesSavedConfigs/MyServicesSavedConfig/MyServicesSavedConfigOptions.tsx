@@ -23,11 +23,11 @@ export const MyServicesSavedConfigOptions = memo((props: Props) => {
     const { classes } = useStyles();
 
     const [menuElement, setMenuElement] = useState<HTMLButtonElement | undefined>(
-        undefined,
+        undefined
     );
 
     const onOpenMenuClick = useConstCallback<MuiButtonProps["onClick"]>(event =>
-        setMenuElement(event.currentTarget),
+        setMenuElement(event.currentTarget)
     );
 
     const onMenuClose = useConstCallback(() => setMenuElement(undefined));
@@ -36,7 +36,7 @@ export const MyServicesSavedConfigOptions = memo((props: Props) => {
         ([action]: [SavedConfigurationAction]) => {
             callback(action);
             onMenuClose();
-        },
+        }
     );
 
     const { t } = useTranslation({ MyServicesSavedConfigOptions });
@@ -92,7 +92,7 @@ export const MyServicesSavedConfigOptions = memo((props: Props) => {
                                         case "delete":
                                             return "remove bookmark" as const;
                                     }
-                                })(),
+                                })()
                             )}
                         </Text>
                     </MenuItem>
@@ -103,32 +103,32 @@ export const MyServicesSavedConfigOptions = memo((props: Props) => {
 });
 
 export const { i18n } = declareComponentKeys<"edit" | "remove bookmark" | "copy link">()({
-    MyServicesSavedConfigOptions,
+    MyServicesSavedConfigOptions
 });
 
 const useStyles = makeStyles({ "name": { MyServicesSavedConfigOptions } })(theme => ({
     "icon": {
-        "color": theme.colors.useCases.typography.textPrimary,
+        "color": theme.colors.useCases.typography.textPrimary
     },
     "menu": {
         "& .Mui-selected": {
-            "backgroundColor": theme.colors.useCases.surfaces.surface1,
+            "backgroundColor": theme.colors.useCases.surfaces.surface1
         },
         "& .MuiPaper-root": {
-            "backgroundColor": theme.colors.useCases.surfaces.background,
+            "backgroundColor": theme.colors.useCases.surfaces.background
         },
         "& a": {
-            "color": theme.colors.useCases.typography.textPrimary,
-        },
+            "color": theme.colors.useCases.typography.textPrimary
+        }
     },
     "menuTypo": {
         "display": "flex",
-        "alignItems": "center",
+        "alignItems": "center"
     },
     "button": {
         "minWidth": "unset",
-        "marginLeft": theme.spacing(1),
-    },
+        "marginLeft": theme.spacing(1)
+    }
 }));
 
 const menuId = "saved-configurations";

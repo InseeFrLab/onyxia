@@ -4,31 +4,30 @@ import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
 import FormControl from "@mui/material/FormControl";
 import InputLabel from "@mui/material/InputLabel";
-import Select from "@mui/material/Select";
 import type { SelectChangeEvent } from "@mui/material/Select";
+import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 import FormHelperText from "@mui/material/FormHelperText";
 import { same } from "evt/tools/inDepth/same";
-import { useState, useMemo, memo } from "react";
+import { memo, useMemo, useState } from "react";
 import { Tabs } from "onyxia-ui/Tabs";
 import MuiTextField from "@mui/material/TextField";
-import { makeStyles, IconButton, Text } from "ui/theme";
+import { Icon, IconButton, makeStyles, Text } from "ui/theme";
 import { useConstCallback } from "powerhooks/useConstCallback";
 import type { FormField, IndexedFormFields } from "core/usecases/launcher";
 import type { FormFieldValue } from "core/usecases/sharedDataModel/FormFieldValue";
 import { useCallbackFactory } from "powerhooks/useCallbackFactory";
 import { capitalize } from "tsafe/capitalize";
-import { Icon } from "ui/theme";
 import { useTranslation } from "ui/i18n";
 import { Slider } from "onyxia-ui/Slider";
-import { RangeSlider } from "onyxia-ui/RangeSlider";
 import type { RangeSliderProps } from "onyxia-ui/RangeSlider";
+import { RangeSlider } from "onyxia-ui/RangeSlider";
 import type { Param0, ReturnType } from "tsafe";
-import { TextField } from "onyxia-ui/TextField";
+import type { Equals } from "tsafe";
 import type { TextFieldProps } from "onyxia-ui/TextField";
+import { TextField } from "onyxia-ui/TextField";
 import { assert } from "tsafe/assert";
-import type { selectors } from "ui/coreApi";
-import { Equals } from "tsafe";
+import type { selectors } from "core";
 import { declareComponentKeys } from "i18nifty";
 
 export type CatalogLauncherConfigurationCardProps = {
@@ -52,7 +51,7 @@ export const CatalogLauncherConfigurationCard = memo(
             meta,
             formFieldsByTabName,
             onFormValueChange,
-            formFieldsIsWellFormed,
+            formFieldsIsWellFormed
         } = props;
 
         const { classes, cx } = useStyles();
@@ -63,13 +62,13 @@ export const CatalogLauncherConfigurationCard = memo(
             () =>
                 Object.keys(formFieldsByTabName).map(title => ({
                     "id": title,
-                    "title": capitalize(title),
+                    "title": capitalize(title)
                 })),
-            [formFieldsByTabName],
+            [formFieldsByTabName]
         );
 
         const onIsCollapsedValueChange = useConstCallback(() =>
-            setIsCollapsed(!isCollapsed),
+            setIsCollapsed(!isCollapsed)
         );
 
         const [activeTabId, setActiveTabId] = useState<string | undefined>(tabs[0]?.id);
@@ -87,17 +86,17 @@ export const CatalogLauncherConfigurationCard = memo(
                             case "dependency":
                                 return {
                                     "type": "dependency",
-                                    "dependencyName": dependencyNamePackageNameOrGlobal,
+                                    "dependencyName": dependencyNamePackageNameOrGlobal
                                 } as const;
                             case "global":
                                 return {
                                     "type": "global",
-                                    "description": meta.description,
+                                    "description": meta.description
                                 } as const;
                             case "package":
                                 return {
                                     "type": "package",
-                                    "packageName": dependencyNamePackageNameOrGlobal,
+                                    "packageName": dependencyNamePackageNameOrGlobal
                                 } as const;
                         }
                     })()}
@@ -122,7 +121,7 @@ export const CatalogLauncherConfigurationCard = memo(
                 )}
             </div>
         );
-    },
+    }
 );
 
 export const { i18n } = declareComponentKeys<
@@ -166,30 +165,30 @@ const { Header } = (() => {
             "cursor": "pointer",
             "borderBottom": isCollapsed
                 ? undefined
-                : `1px solid ${theme.colors.useCases.typography.textTertiary}`,
+                : `1px solid ${theme.colors.useCases.typography.textTertiary}`
         },
         "expandIcon": {
             "& svg": {
                 "transition": theme.muiTheme.transitions.create(["transform"], {
-                    "duration": theme.muiTheme.transitions.duration.short,
+                    "duration": theme.muiTheme.transitions.duration.short
                 }),
                 "transform": `rotate(${isCollapsed ? 0 : "-180deg"})`,
-                "visibility": isExpandIconVisible ? undefined : "hidden",
-            },
+                "visibility": isExpandIconVisible ? undefined : "hidden"
+            }
         },
         "title": {
             "display": "flex",
-            "alignItems": "center",
+            "alignItems": "center"
         },
         "titleWrapper": {
             "display": "flex",
             "flexDirection": "column",
             "justifyContent": "center",
-            ...theme.spacing.topBottom("margin", 3),
+            ...theme.spacing.topBottom("margin", 3)
         },
         "subtitle": {
-            "marginTop": theme.spacing(2),
-        },
+            "marginTop": theme.spacing(2)
+        }
     }));
 
     const Header = memo((props: Props) => {
@@ -197,7 +196,7 @@ const { Header } = (() => {
 
         const { classes, cx } = useStyles({
             isCollapsed,
-            "isExpandIconVisible": onIsCollapsedValueChange !== undefined,
+            "isExpandIconVisible": onIsCollapsedValueChange !== undefined
         });
 
         const onClick = useConstCallback(() => onIsCollapsedValueChange?.());
@@ -217,8 +216,8 @@ const { Header } = (() => {
                                             &nbsp;
                                             {t("dependency", {
                                                 "dependencyName": capitalize(
-                                                    props.dependencyName,
-                                                ),
+                                                    props.dependencyName
+                                                )
                                             })}
                                         </>
                                     );
@@ -226,7 +225,7 @@ const { Header } = (() => {
                                     return t("global config");
                                 case "package":
                                     return t("configuration", {
-                                        "packageName": capitalize(props.packageName),
+                                        "packageName": capitalize(props.packageName)
                                     });
                             }
                         })()}
@@ -238,8 +237,8 @@ const { Header } = (() => {
                                     <Text typo="body 2" className={classes.subtitle}>
                                         {t("launch of a service", {
                                             "dependencyName": capitalize(
-                                                props.dependencyName,
-                                            ),
+                                                props.dependencyName
+                                            )
                                         })}
                                     </Text>
                                 );
@@ -281,17 +280,17 @@ const { TabContent } = (() => {
         "root": {
             "display": "grid",
             "gridTemplateColumns": "repeat(3, 1fr)",
-            "gap": theme.spacing(5),
+            "gap": theme.spacing(5)
         },
         "textField": {
             //Hacky... to accommodate the helper text
             //"marginBottom": 32,
-            "width": "100%",
+            "width": "100%"
         },
         "tabDescription": {
             "marginTop": theme.spacing(2),
-            "marginBottom": theme.spacing(5),
-        },
+            "marginBottom": theme.spacing(5)
+        }
     }));
 
     const TabContent = memo((props: Props) => {
@@ -301,37 +300,37 @@ const { TabContent } = (() => {
             onFormValueChange,
             description,
             assembledSliderRangeFormFields,
-            formFieldsIsWellFormed,
+            formFieldsIsWellFormed
         } = props;
 
         const onValueBeingChangeFactory = useCallbackFactory(
             (
                 //NOTE: To be memoized it needs to be a primitive value
                 [pathStr]: [string],
-                [{ value }]: [Param0<TextFieldProps["onValueBeingTypedChange"]>],
-            ) => onFormValueChange({ "path": JSON.parse(pathStr), value }),
+                [{ value }]: [Param0<TextFieldProps["onValueBeingTypedChange"]>]
+            ) => onFormValueChange({ "path": JSON.parse(pathStr), value })
         );
 
         const onYamlValueBeingChangeFactory = useCallbackFactory(
             (
                 //NOTE: To be memoized it needs to be a primitive value
                 [pathStr]: [string],
-                [{ value }]: [Param0<TextFieldProps["onValueBeingTypedChange"]>],
+                [{ value }]: [Param0<TextFieldProps["onValueBeingTypedChange"]>]
             ) =>
                 onFormValueChange({
                     "path": JSON.parse(pathStr),
                     "value": {
                         "type": "yaml",
-                        "yamlStr": value,
-                    },
-                }),
+                        "yamlStr": value
+                    }
+                })
         );
 
         const { t } = useTranslation({ CatalogLauncherConfigurationCard });
 
         const onEscapeKeyDownFactory = useCallbackFactory(
             ([pathStr, defaultValue]: [string, string | FormFieldValue.Value.Yaml]) =>
-                onFormValueChange({ "path": JSON.parse(pathStr), "value": defaultValue }),
+                onFormValueChange({ "path": JSON.parse(pathStr), "value": defaultValue })
         );
 
         const onCheckboxChangeFactory = useCallbackFactory(([pathStr]: [string]) => {
@@ -339,7 +338,7 @@ const { TabContent } = (() => {
 
             onFormValueChange({
                 path,
-                "value": !formFields.find(formField => same(formField.path, path))!.value,
+                "value": !formFields.find(formField => same(formField.path, path))!.value
             });
         });
 
@@ -347,33 +346,33 @@ const { TabContent } = (() => {
             ([pathStr]: [string], [event]: [SelectChangeEvent<string>]) =>
                 onFormValueChange({
                     "path": JSON.parse(pathStr),
-                    "value": event.target.value,
-                }),
+                    "value": event.target.value
+                })
         );
 
         const onNumberTextFieldChangeFactory = useCallbackFactory(
             (
                 [pathStr]: [string],
-                [{ target }]: [React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>],
+                [{ target }]: [React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>]
             ) =>
                 onFormValueChange({
                     "path": JSON.parse(pathStr),
-                    "value": parseFloat(target.value),
-                }),
+                    "value": parseFloat(target.value)
+                })
         );
 
         const onSimpleSliderValueChange = useCallbackFactory(
             ([pathStr, unit]: [string, string], [value]: [number]) =>
                 onFormValueChange({
                     "path": JSON.parse(pathStr),
-                    "value": `${value}${unit}`,
-                }),
+                    "value": `${value}${unit}`
+                })
         );
 
         const onRangeSliderValueChange = useCallbackFactory(
             (
                 [pathDownStr, pathUpStr, unit]: [string, string, string],
-                [params]: [Param0<RangeSliderProps["onValueChange"]>],
+                [params]: [Param0<RangeSliderProps["onValueChange"]>]
             ) =>
                 onFormValueChange({
                     "path": (() => {
@@ -384,8 +383,8 @@ const { TabContent } = (() => {
                                 return JSON.parse(pathUpStr);
                         }
                     })(),
-                    "value": `${params.value}${unit}`,
-                }),
+                    "value": `${params.value}${unit}`
+                })
         );
 
         const { classes, cx, css } = useStyles();
@@ -405,8 +404,8 @@ const { TabContent } = (() => {
                                 className={css(
                                     formField.type === "text" &&
                                         formField.doRenderAsTextArea && {
-                                            "gridColumn": "span 3",
-                                        },
+                                            "gridColumn": "span 3"
+                                        }
                                 )}
                             >
                                 {(() => {
@@ -416,7 +415,7 @@ const { TabContent } = (() => {
                                         (() => {
                                             const formFieldIsWellFormed =
                                                 formFieldsIsWellFormed.find(({ path }) =>
-                                                    same(path, formField.path),
+                                                    same(path, formField.path)
                                                 );
 
                                             assert(formFieldIsWellFormed !== undefined);
@@ -433,12 +432,12 @@ const { TabContent } = (() => {
                                                         formFieldIsWellFormed.message,
                                                         {
                                                             "pattern":
-                                                                formFieldIsWellFormed.pattern,
-                                                        },
+                                                                formFieldIsWellFormed.pattern
+                                                        }
                                                     );
                                                 default: {
                                                     return t(
-                                                        formFieldIsWellFormed.message,
+                                                        formFieldIsWellFormed.message
                                                     );
                                                 }
                                             }
@@ -462,13 +461,13 @@ const { TabContent } = (() => {
                                                     disabled={formField.isReadonly}
                                                     selectAllTextOnFocus={false}
                                                     onValueBeingTypedChange={onYamlValueBeingChangeFactory(
-                                                        JSON.stringify(formField.path),
+                                                        JSON.stringify(formField.path)
                                                     )}
                                                     inputProps_spellCheck={false}
                                                     autoComplete="off"
                                                     onEscapeKeyDown={onEscapeKeyDownFactory(
                                                         JSON.stringify(formField.path),
-                                                        formField.defaultValue,
+                                                        formField.defaultValue
                                                     )}
                                                     doOnlyValidateInputAfterFistFocusLost={
                                                         false
@@ -486,8 +485,8 @@ const { TabContent } = (() => {
                                                                 checked={formField.value}
                                                                 onChange={onCheckboxChangeFactory(
                                                                     JSON.stringify(
-                                                                        formField.path,
-                                                                    ),
+                                                                        formField.path
+                                                                    )
                                                                 )}
                                                             />
                                                         }
@@ -510,9 +509,7 @@ const { TabContent } = (() => {
                                                         labelId={labelId}
                                                         value={formField.value}
                                                         onChange={onSelectChangeFactory(
-                                                            JSON.stringify(
-                                                                formField.path,
-                                                            ),
+                                                            JSON.stringify(formField.path)
                                                         )}
                                                     >
                                                         {formField.enum.map(value => (
@@ -530,9 +527,11 @@ const { TabContent } = (() => {
                                                 </FormControl>
                                             );
                                         }
+                                        case "password":
                                         case "text":
                                             return (
                                                 <TextField
+                                                    type={formField.type}
                                                     doRenderAsTextArea={
                                                         formField.doRenderAsTextArea
                                                     }
@@ -543,14 +542,14 @@ const { TabContent } = (() => {
                                                     helperText={helperText}
                                                     disabled={formField.isReadonly}
                                                     onValueBeingTypedChange={onValueBeingChangeFactory(
-                                                        JSON.stringify(formField.path),
+                                                        JSON.stringify(formField.path)
                                                     )}
                                                     inputProps_spellCheck={false}
                                                     autoComplete="off"
                                                     selectAllTextOnFocus={true}
                                                     onEscapeKeyDown={onEscapeKeyDownFactory(
                                                         JSON.stringify(formField.path),
-                                                        formField.defaultValue,
+                                                        formField.defaultValue
                                                     )}
                                                     doOnlyValidateInputAfterFistFocusLost={
                                                         false
@@ -562,15 +561,15 @@ const { TabContent } = (() => {
                                                 <MuiTextField
                                                     value={formField.value}
                                                     onChange={onNumberTextFieldChangeFactory(
-                                                        JSON.stringify(formField.path),
+                                                        JSON.stringify(formField.path)
                                                     )}
                                                     inputProps={{
-                                                        "min": formField.minimum,
+                                                        "min": formField.minimum
                                                     }}
                                                     label={label}
                                                     type="number"
                                                     InputLabelProps={{
-                                                        "shrink": true,
+                                                        "shrink": true
                                                     }}
                                                     helperText={helperText}
                                                 />
@@ -585,12 +584,12 @@ const { TabContent } = (() => {
                                                     unit={formField.sliderUnit}
                                                     value={Number.parseFloat(
                                                         formField.value.split(
-                                                            formField.sliderUnit,
-                                                        )[0],
+                                                            formField.sliderUnit
+                                                        )[0]
                                                     )}
                                                     onValueChange={onSimpleSliderValueChange(
                                                         JSON.stringify(formField.path),
-                                                        formField.sliderUnit,
+                                                        formField.sliderUnit
                                                     )}
                                                     extraInfo={formField.description}
                                                 />
@@ -598,7 +597,7 @@ const { TabContent } = (() => {
                                     }
 
                                     assert<Equals<typeof formField["type"], never>>(
-                                        false,
+                                        false
                                     );
                                 })()}
                             </div>
@@ -608,7 +607,7 @@ const { TabContent } = (() => {
                                 <RangeSlider
                                     key={assembledSliderRangeFormField.title}
                                     label={capitalize(
-                                        assembledSliderRangeFormField.title,
+                                        assembledSliderRangeFormField.title
                                     )}
                                     max={assembledSliderRangeFormField.sliderMax}
                                     min={assembledSliderRangeFormField.sliderMin}
@@ -616,13 +615,13 @@ const { TabContent } = (() => {
                                     unit={assembledSliderRangeFormField.sliderUnit}
                                     valueHigh={Number.parseFloat(
                                         assembledSliderRangeFormField.extremities.up.value.split(
-                                            assembledSliderRangeFormField.sliderUnit,
-                                        )[0],
+                                            assembledSliderRangeFormField.sliderUnit
+                                        )[0]
                                     )}
                                     valueLow={Number.parseFloat(
                                         assembledSliderRangeFormField.extremities.down.value.split(
-                                            assembledSliderRangeFormField.sliderUnit,
-                                        )[0],
+                                            assembledSliderRangeFormField.sliderUnit
+                                        )[0]
                                     )}
                                     highExtremitySemantic={
                                         assembledSliderRangeFormField.extremities.up
@@ -635,17 +634,17 @@ const { TabContent } = (() => {
                                     onValueChange={onRangeSliderValueChange(
                                         JSON.stringify(
                                             assembledSliderRangeFormField.extremities.down
-                                                .path,
+                                                .path
                                         ),
                                         JSON.stringify(
                                             assembledSliderRangeFormField.extremities.up
-                                                .path,
+                                                .path
                                         ),
-                                        assembledSliderRangeFormField.sliderUnit,
+                                        assembledSliderRangeFormField.sliderUnit
                                     )}
                                 />
-                            ),
-                        ),
+                            )
+                        )
                     ]}
                 </div>
             </>
@@ -659,17 +658,17 @@ const useStyles = makeStyles({ "name": { CatalogLauncherConfigurationCard } })(t
     "root": {
         "borderRadius": 8,
         "overflow": "hidden",
-        "boxShadow": theme.shadows[1],
+        "boxShadow": theme.shadows[1]
     },
     // eslint-disable-next-line tss-unused-classes/unused-classes
     "collapsedPanel": {
         "maxHeight": 0,
-        "transform": "scaleY(0)",
+        "transform": "scaleY(0)"
     },
     // eslint-disable-next-line tss-unused-classes/unused-classes
     "expandedPanel": {
         "transition": "transform 150ms cubic-bezier(0.4, 0, 0.2, 1)",
         "transform": "scaleY(1)",
-        "transformOrigin": "top",
-    },
+        "transformOrigin": "top"
+    }
 }));

@@ -5,16 +5,16 @@ import { sectionName } from "./sectionName";
 const { meta, getStory } = getStoryFactory({
     sectionName,
     "wrappedComponent": { Footer },
-    "defaultContainerWidth": 1000,
+    "defaultContainerWidth": 1000
 });
 
 export default meta;
 
-export const Vue1 = getStory({
+export const View1 = getStory({
     "packageJsonVersion": "0.9.3",
     "contributeUrl": "#",
     "termsLink": {
         "href": "https://example.com",
-        "onClick": () => {},
-    },
+        "onClick": () => {}
+    }
 });

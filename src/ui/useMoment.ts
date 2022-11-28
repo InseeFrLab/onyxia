@@ -10,7 +10,7 @@ export const { getFormattedDate } = (() => {
         /* spell-checker: disable */
         "fr": `dddd Do MMMM${isSameYear ? "" : " YYYY"} à H[h]mm`,
         "en": `dddd, MMMM Do${isSameYear ? "" : " YYYY"}, h:mm a`,
-        "zh-CN": `dddd, MMMM Do${isSameYear ? "" : " YYYY"}, h:mm a`,
+        "zh-CN": `dddd, MMMM Do${isSameYear ? "" : " YYYY"}, h:mm a`
         /* spell-checker: enable */
     });
 
@@ -48,7 +48,7 @@ export function useValidUntil(params: { millisecondsLeft: number }): string {
                 .calendar()
                 .toLowerCase(),
 
-        [lang, millisecondsLeft],
+        [lang, millisecondsLeft]
     );
 
     return validUntil;
@@ -98,9 +98,9 @@ export const { fromNow } = (() => {
                             "past1": text,
                             "pastN": text,
                             "future1": text,
-                            "futureN": text,
+                            "futureN": text
                         };
-                    })(),
+                    })()
                 },
                 {
                     "max": MINUTE,
@@ -112,7 +112,7 @@ export const { fromNow } = (() => {
                                     "past1": "a second ago",
                                     "pastN": "# seconds ago",
                                     "future1": "in a second",
-                                    "futureN": "in # seconds",
+                                    "futureN": "in # seconds"
                                 } as const;
                             /* spell-checker: disable */
                             case "fr":
@@ -120,7 +120,7 @@ export const { fromNow } = (() => {
                                     "past1": "il y a une seconde",
                                     "pastN": "il y a # secondes",
                                     "future1": "dans une seconde",
-                                    "futureN": "dans # secondes",
+                                    "futureN": "dans # secondes"
                                 } as const;
 
                             case "zh-CN":
@@ -128,11 +128,11 @@ export const { fromNow } = (() => {
                                     "past1": "在一秒钟前",
                                     "pastN": "在 # 秒前",
                                     "future1": "在一秒钟后",
-                                    "futureN": "在 # 秒后",
+                                    "futureN": "在 # 秒后"
                                 } as const;
                             /* spell-checker: enable */
                         }
-                    })(),
+                    })()
                 },
                 {
                     "max": HOUR,
@@ -144,7 +144,7 @@ export const { fromNow } = (() => {
                                     "past1": "a minute ago",
                                     "pastN": "# minutes ago",
                                     "future1": "in a minute",
-                                    "futureN": "in # minutes",
+                                    "futureN": "in # minutes"
                                 } as const;
                             /* spell-checker: disable */
                             case "fr":
@@ -152,18 +152,18 @@ export const { fromNow } = (() => {
                                     "past1": "il y a une minute",
                                     "pastN": "il y a # minutes",
                                     "future1": "dans une minute",
-                                    "futureN": "dans # minutes",
+                                    "futureN": "dans # minutes"
                                 } as const;
                             case "zh-CN":
                                 return {
                                     "past1": "在一分钟前",
                                     "pastN": "在 # 分钟前",
                                     "future1": "在几分钟后",
-                                    "futureN": "在 # 分钟后",
+                                    "futureN": "在 # 分钟后"
                                 } as const;
                             /* spell-checker: enable */
                         }
-                    })(),
+                    })()
                 },
                 {
                     "max": DAY,
@@ -175,7 +175,7 @@ export const { fromNow } = (() => {
                                     "past1": "an hour ago",
                                     "pastN": "# hours ago",
                                     "future1": "in an hour",
-                                    "futureN": "in # hours",
+                                    "futureN": "in # hours"
                                 } as const;
                             /* spell-checker: disable */
                             case "fr":
@@ -183,18 +183,18 @@ export const { fromNow } = (() => {
                                     "past1": "il y a une heure",
                                     "pastN": "il y a # heures",
                                     "future1": "dans une heure",
-                                    "futureN": "dans # heures",
+                                    "futureN": "dans # heures"
                                 } as const;
                             case "zh-CN":
                                 return {
                                     "past1": "在一小时前",
                                     "pastN": "在 # 小时前",
                                     "future1": "在一小时后",
-                                    "futureN": "在 # 小时后",
+                                    "futureN": "在 # 小时后"
                                 } as const;
                             /* spell-checker: enable */
                         }
-                    })(),
+                    })()
                 },
                 {
                     "max": WEEK,
@@ -206,7 +206,7 @@ export const { fromNow } = (() => {
                                     "past1": "yesterday",
                                     "pastN": "# days ago",
                                     "future1": "tomorrow",
-                                    "futureN": "in # days",
+                                    "futureN": "in # days"
                                 } as const;
                             /* spell-checker: disable */
                             case "fr":
@@ -214,18 +214,18 @@ export const { fromNow } = (() => {
                                     "past1": "hier",
                                     "pastN": "il y a # jours",
                                     "future1": "demain",
-                                    "futureN": "dans # jours",
+                                    "futureN": "dans # jours"
                                 } as const;
                             case "zh-CN":
                                 return {
                                     "past1": "昨天",
                                     "pastN": "在 # 天前",
                                     "future1": "明天",
-                                    "futureN": "在 # 天后",
+                                    "futureN": "在 # 天后"
                                 } as const;
                             /* spell-checker: enable */
                         }
-                    })(),
+                    })()
                 },
                 {
                     "max": 4 * WEEK,
@@ -237,7 +237,7 @@ export const { fromNow } = (() => {
                                     "past1": "last week",
                                     "pastN": "# weeks ago",
                                     "future1": "in a week",
-                                    "futureN": "in # weeks",
+                                    "futureN": "in # weeks"
                                 } as const;
                             /* spell-checker: disable */
                             case "fr":
@@ -245,18 +245,18 @@ export const { fromNow } = (() => {
                                     "past1": "la semaine dernière",
                                     "pastN": "il y a # semaines",
                                     "future1": "dans une semaine",
-                                    "futureN": "dans # semaines",
+                                    "futureN": "dans # semaines"
                                 } as const;
                             case "zh-CN":
                                 return {
                                     "past1": "在一星期前",
                                     "pastN": "在 # 星期前",
                                     "future1": "在一星期后",
-                                    "futureN": "在 # 星期后",
+                                    "futureN": "在 # 星期后"
                                 } as const;
                             /* spell-checker: enable */
                         }
-                    })(),
+                    })()
                 },
                 {
                     "max": YEAR,
@@ -268,7 +268,7 @@ export const { fromNow } = (() => {
                                     "past1": "last month",
                                     "pastN": "# months ago",
                                     "future1": "in a month",
-                                    "futureN": "in # months",
+                                    "futureN": "in # months"
                                 } as const;
                             /* spell-checker: disable */
                             case "fr":
@@ -276,18 +276,18 @@ export const { fromNow } = (() => {
                                     "past1": "le mois dernier",
                                     "pastN": "il y a # mois",
                                     "future1": "dans un mois",
-                                    "futureN": "dans # mois",
+                                    "futureN": "dans # mois"
                                 } as const;
                             case "zh-CN":
                                 return {
                                     "past1": "在一个月前",
                                     "pastN": "在 # 个月前",
                                     "future1": "在一个月后",
-                                    "futureN": "在 # 个月后",
+                                    "futureN": "在 # 个月后"
                                 } as const;
                             /* spell-checker: enable */
                         }
-                    })(),
+                    })()
                 },
                 {
                     "max": 100 * YEAR,
@@ -299,7 +299,7 @@ export const { fromNow } = (() => {
                                     "past1": "last year",
                                     "pastN": "# years ago",
                                     "future1": "in a year",
-                                    "futureN": "in # years",
+                                    "futureN": "in # years"
                                 } as const;
                             /* spell-checker: disable */
                             case "fr":
@@ -307,18 +307,18 @@ export const { fromNow } = (() => {
                                     "past1": "l'année dernière",
                                     "pastN": "il y a # ans",
                                     "future1": "dans un ans",
-                                    "futureN": "dans # ans",
+                                    "futureN": "dans # ans"
                                 } as const;
                             case "zh-CN":
                                 return {
                                     "past1": "在去年",
                                     "pastN": "在 # 年前",
                                     "future1": "在明年",
-                                    "futureN": "在 # 年后",
+                                    "futureN": "在 # 年后"
                                 } as const;
                             /* spell-checker: enable */
                         }
-                    })(),
+                    })()
                 },
                 {
                     "max": 1000 * YEAR,
@@ -330,7 +330,7 @@ export const { fromNow } = (() => {
                                     "past1": "last century",
                                     "pastN": "# centuries ago",
                                     "future1": "in a century",
-                                    "futureN": "in # centuries",
+                                    "futureN": "in # centuries"
                                 } as const;
                             /* spell-checker: disable */
                             case "fr":
@@ -338,18 +338,18 @@ export const { fromNow } = (() => {
                                     "past1": "le siècle dernier",
                                     "pastN": "il y a # siècle",
                                     "future1": "dans un siècle",
-                                    "futureN": "dans # siècle",
+                                    "futureN": "dans # siècle"
                                 } as const;
                             case "zh-CN":
                                 return {
                                     "past1": "在上个世纪",
                                     "pastN": "在 # 个世纪前",
                                     "future1": "在下个世纪",
-                                    "futureN": "在 # 个世纪后",
+                                    "futureN": "在 # 个世纪后"
                                 } as const;
                             /* spell-checker: enable */
                         }
-                    })(),
+                    })()
                 },
                 {
                     "max": Infinity,
@@ -361,7 +361,7 @@ export const { fromNow } = (() => {
                                     "past1": "last millennium",
                                     "pastN": "# millennia ago",
                                     "future1": "in a millennium",
-                                    "futureN": "in # millennia",
+                                    "futureN": "in # millennia"
                                 } as const;
                             /* spell-checker: disable */
                             case "fr":
@@ -369,19 +369,19 @@ export const { fromNow } = (() => {
                                     "past1": "au cour du millénaire",
                                     "pastN": "Il y a # millénaires",
                                     "future1": "dans un millénaire",
-                                    "futureN": "dans # millétaire",
+                                    "futureN": "dans # millétaire"
                                 } as const;
                             case "zh-CN":
                                 return {
                                     "past1": "在一千年前",
                                     "pastN": "在 # 千年前",
                                     "future1": "在一千年后",
-                                    "futureN": "在 # 千年后",
+                                    "futureN": "在 # 千年后"
                                 } as const;
                             /* spell-checker: enable */
                         }
-                    })(),
-                },
+                    })()
+                }
             ];
         }
 
@@ -425,7 +425,7 @@ export function useFromNow(params: { dateTime: number }) {
     const fromNowText = useMemo(
         () => fromNow({ dateTime, lang }),
 
-        [lang, trigger, dateTime],
+        [lang, trigger, dateTime]
     );
 
     return { fromNowText };

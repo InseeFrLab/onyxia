@@ -2,7 +2,7 @@ import { useEffect, useReducer, memo } from "react";
 import { useTranslation } from "ui/i18n";
 import { AccountSectionHeader } from "../AccountSectionHeader";
 import { AccountField } from "../AccountField";
-import { useSelector, useThunks } from "ui/coreApi";
+import { useCoreState, useCoreFunctions } from "core";
 import { useCallbackFactory } from "powerhooks/useCallbackFactory";
 import { copyToClipboard } from "ui/tools/copyToClipboard";
 import Divider from "@mui/material/Divider";
@@ -21,45 +21,48 @@ export const AccountInfoTab = memo((props: Props) => {
 
     const { t } = useTranslation({ AccountInfoTab });
 
-    const { publicIpThunks, projectConfigsThunks, userAuthenticationThunks } =
-        useThunks();
+    const {
+        publicIp: publicIpFunctions,
+        projectConfigs,
+        userAuthentication
+    } = useCoreFunctions();
 
     const onRequestCopyFactory = useCallbackFactory(([textToCopy]: [string]) =>
-        copyToClipboard(textToCopy),
+        copyToClipboard(textToCopy)
     );
 
-    const publicIp = useSelector(state => state.publicIp) ?? "Loading...";
+    const publicIp = useCoreState(state => state.publicIp) ?? "Loading...";
 
-    const selectedProjectId = useSelector(
-        state => state.projectSelection.selectedProjectId,
+    const selectedProjectId = useCoreState(
+        state => state.projectSelection.selectedProjectId
     );
 
     useEffect(() => {
-        publicIpThunks.fetch();
+        publicIpFunctions.fetch();
     }, []);
 
     const [refreshServicePasswordTrigger, pullRefreshServicePasswordTrigger] = useReducer(
         n => n + 1,
-        0,
+        0
     );
 
     const servicePasswordAsync = useAsync(
-        () => projectConfigsThunks.getValue({ "key": "servicePassword" }),
-        [refreshServicePasswordTrigger, selectedProjectId],
+        () => projectConfigs.getValue({ "key": "servicePassword" }),
+        [refreshServicePasswordTrigger, selectedProjectId]
     );
 
     const onRequestServicePasswordRenewal = useConstCallback(async () => {
-        await projectConfigsThunks.renewServicePassword();
+        await projectConfigs.renewServicePassword();
 
         pullRefreshServicePasswordTrigger();
     });
 
-    const user = userAuthenticationThunks.getUser();
+    const user = userAuthentication.getUser();
 
     const fullName = `${user.firstName} ${user.familyName}`;
 
     const keycloakAccountConfigurationUrl =
-        userAuthenticationThunks.getKeycloakAccountConfigurationUrl();
+        userAuthentication.getKeycloakAccountConfigurationUrl();
 
     const { classes } = useStyles();
 
@@ -133,10 +136,10 @@ export const { i18n } = declareComponentKeys<
 
 const useStyles = makeStyles({ "name": { AccountInfoTab } })(theme => ({
     "divider": {
-        ...theme.spacing.topBottom("margin", 4),
+        ...theme.spacing.topBottom("margin", 4)
     },
     "link": {
         "marginTop": theme.spacing(2),
-        "display": "inline-block",
-    },
+        "display": "inline-block"
+    }
 }));

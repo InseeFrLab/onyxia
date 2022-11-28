@@ -22,7 +22,7 @@ export const Ligne: React.FC<Props> = ({
     color = "secondary",
     handleCheck,
     checked,
-    onClick,
+    onClick
 }) => (
     <>
         <div className="entry">

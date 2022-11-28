@@ -1,10 +1,11 @@
 import { createI18nApi } from "i18nifty";
-import type { Language, LocalizedString } from "ui/coreApi";
+import type { Language, LocalizedString } from "core";
 import { assert } from "tsafe/assert";
 import {} from "tsafe";
 import type { Equals } from "tsafe";
 import { id } from "tsafe/id";
 import { statefulObservableToStatefulEvt } from "powerhooks/tools/StatefulObservable/statefulObservableToStatefulEvt";
+import MuiLink from "@mui/material/Link";
 
 export type { Language, LocalizedString };
 
@@ -42,7 +43,7 @@ const common = id<
         "delete": "delete",
         "ok": "Ok",
         "here": "here",
-        "do not display again": "Don't display again",
+        "do not display again": "Don't display again"
     },
     "fr": {
         /* spell-checker: disable */
@@ -54,7 +55,7 @@ const common = id<
         "delete": "supprimer",
         "ok": "Ok",
         "here": "ici",
-        "do not display again": "Ne plus afficher",
+        "do not display again": "Ne plus afficher"
         /* spell-checker: enable */
     },
     "zh-CN": {
@@ -67,9 +68,9 @@ const common = id<
         "delete": "删除",
         "ok": "好的",
         "here": "这里",
-        "do not display again": "不要再显示",
+        "do not display again": "不要再显示"
         /* spell-checker: enable */
-    },
+    }
 });
 
 const {
@@ -77,17 +78,23 @@ const {
     resolveLocalizedString,
     useLang,
     $lang,
-    useResolveLocalizedString,
+    useResolveLocalizedString
 } = createI18nApi<
-    | typeof import("ui/components/pages/MyFilesMySecrets/Explorer/ExplorerButtonBar").i18n
-    | typeof import("ui/components/pages/MyFilesMySecrets/Explorer").i18n
-    | typeof import("ui/components/pages/MyFilesMySecrets/Explorer/ExplorerItems").i18n
-    | typeof import("ui/components/pages/MyFilesMySecrets/Explorer/ExplorerItems/ExplorerItem").i18n
-    | typeof import("ui/components/pages/MyFilesMySecrets/MySecretsEditor").i18n
-    | typeof import("ui/components/pages/MyFilesMySecrets/MySecretsEditor/MySecretsEditorRow").i18n
-    | typeof import("ui/components/pages/MyFilesMySecrets/Explorer/ExplorerUploadModal/ExplorerUploadModalDropArea").i18n
-    | typeof import("ui/components/pages/MyFilesMySecrets/Explorer/ExplorerUploadModal/ExplorerUploadProgress").i18n
-    | typeof import("ui/components/pages/MyFilesMySecrets/Explorer/ExplorerUploadModal/ExplorerUploadModal").i18n
+    | typeof import("ui/components/pages/MySecrets/MySecrets").i18n
+    | typeof import("ui/components/pages/MySecrets/SecretsExplorer").i18n
+    | typeof import("ui/components/pages/MySecrets/MySecretsEditor").i18n
+    | typeof import("ui/components/pages/MySecrets/SecretsExplorer/SecretsExplorerButtonBar").i18n
+    | typeof import("ui/components/pages/MySecrets/SecretsExplorer/SecretsExplorerItems").i18n
+    | typeof import("ui/components/pages/MySecrets/SecretsExplorer/SecretsExplorerItems/SecretsExplorerItem").i18n
+    | typeof import("ui/components/pages/MySecrets/MySecretsEditor/MySecretsEditorRow").i18n
+    | typeof import("ui/components/pages/MyFiles/MyFiles").i18n
+    | typeof import("ui/components/pages/MyFiles/Explorer/Explorer").i18n
+    | typeof import("ui/components/pages/MyFiles/Explorer/ExplorerButtonBar").i18n
+    | typeof import("ui/components/pages/MyFiles/Explorer/ExplorerItems").i18n
+    | typeof import("ui/components/pages/MyFiles/Explorer/ExplorerItems/ExplorerItem").i18n
+    | typeof import("ui/components/pages/MyFiles/Explorer/ExplorerUploadModal/ExplorerUploadModalDropArea").i18n
+    | typeof import("ui/components/pages/MyFiles/Explorer/ExplorerUploadModal/ExplorerUploadProgress").i18n
+    | typeof import("ui/components/pages/MyFiles/Explorer/ExplorerUploadModal/ExplorerUploadModal").i18n
     | typeof import("ui/components/shared/Header").i18n
     | typeof import("ui/components/App/App").i18n
     | typeof import("ui/components/pages/FourOhFour").i18n
@@ -99,7 +106,9 @@ const {
     | typeof import("ui/components/pages/Account/tabs/AccountInfoTab").i18n
     | typeof import("ui/components/pages/Account/tabs/AccountIntegrationsTab").i18n
     | typeof import("ui/components/pages/Account/tabs/AccountStorageTab").i18n
+    | typeof import("ui/components/pages/Account/tabs/AccountKubernetesTab").i18n
     | typeof import("ui/components/pages/Account/tabs/AccountUserInterfaceTab").i18n
+    | typeof import("ui/components/pages/Account/tabs/AccountVaultTab").i18n
     | typeof import("ui/components/pages/Catalog/CatalogLauncher/CatalogLauncher").i18n
     | typeof import("ui/components/pages/Catalog/CatalogExplorer/CatalogExplorerCards").i18n
     | typeof import("ui/components/pages/Catalog/CatalogExplorer/CatalogExplorerCards/CatalogExplorerCard").i18n
@@ -116,7 +125,6 @@ const {
     | typeof import("ui/components/pages/MyServices/MyServicesSavedConfigs").i18n
     | typeof import("ui/components/pages/MyServices/MyServicesCards").i18n
     | typeof import("ui/components/KcApp/Login/LoginDivider").i18n
-    | typeof import("ui/components/pages/MyFilesMySecrets/MyFilesMySecrets").i18n
     | typeof import("ui/components/pages/Terms").i18n
     | typeof import("ui/components/KcApp/Login").i18n
 >()(
@@ -127,6 +135,7 @@ const {
                 "infos": "Account infos",
                 "third-party-integration": "external services",
                 "storage": "Connect to storage",
+                "k8sCredentials": "Kubernetes",
                 "user-interface": "Interface preferences",
                 "text1": "My account",
                 "text2": "Access your different account information.",
@@ -134,6 +143,7 @@ const {
                     "Configure your usernames, emails, passwords and personal access tokens directly connected to your services.",
                 "personal tokens tooltip":
                     "Password that are generated for you and that have a given validity period",
+                "vault": "Vault"
             },
             "AccountInfoTab": {
                 "general information": "General information",
@@ -144,7 +154,7 @@ const {
                 "auth information": "Onyxia authentication information",
                 "auth information helper": `Theses information allows you to identify yourself
             within the platform and the various services.`,
-                "ip address": "IP Address",
+                "ip address": "IP Address"
             },
             "AccountIntegrationsTab": {
                 "git section title": "Git configuration",
@@ -163,7 +173,7 @@ const {
                 "link for token creation": ({ serviceName }) =>
                     `Create your ${serviceName} token.`,
                 "accessible as env":
-                    "Accessible withing your services as the environnement variable",
+                    "Accessible withing your services as the environnement variable"
             },
             "AccountStorageTab": {
                 "credentials section title": "Connect your data to your services",
@@ -175,7 +185,39 @@ const {
                     "To access your storage outside of datalab services",
                 "init script section helper":
                     "Download or copy the init script in the programming language of your choice.",
-                "expires in": ({ howMuchTime }) => `Expires in ${howMuchTime}`,
+                "expires in": ({ howMuchTime }) => `Expires in ${howMuchTime}`
+            },
+            "AccountKubernetesTab": {
+                "credentials section title": "Connect to the Kubernetes cluster",
+                "credentials section helper":
+                    "Credentials to manage the Kubernetes cluster",
+                "init script section title":
+                    "To connect to the Kubernetes cluster via your local kubectl",
+                "init script section helper": "Download or copy the script",
+                "expires in": ({ howMuchTime }) => `The token expires in ${howMuchTime}`
+            },
+            "AccountVaultTab": {
+                "credentials section title": "Vault credentials",
+                "credentials section helper": ({ vaultDocHref, mySecretLink }) => (
+                    <>
+                        <MuiLink href={vaultDocHref} target="_blank">
+                            Vault
+                        </MuiLink>{" "}
+                        is the system where &nbsp;
+                        <MuiLink {...mySecretLink}>your secrets</MuiLink> are stored.
+                    </>
+                ),
+                "init script section title": "Use vault from your terminal",
+                "init script section helper": ({ vaultCliDocLink }) => (
+                    <>
+                        Download or copy the <code>ENV</code> variables that configures
+                        your local{" "}
+                        <MuiLink href={vaultCliDocLink} target="_blank">
+                            Vault CLI
+                        </MuiLink>
+                    </>
+                ),
+                "expires in": ({ howMuchTime }) => `The token expires in ${howMuchTime}`
             },
             "AccountUserInterfaceTab": {
                 "title": "Interface preferences",
@@ -185,7 +227,7 @@ const {
                 "enable beta": "Enable beta-test mode",
                 "beta mode helper": "For advanced platform configurations and features.",
                 "enable dev mode": "Enable developer mode",
-                "dev mode helper": "Enable features that are currently being developed",
+                "dev mode helper": "Enable features that are currently being developed"
             },
             "AccountField": {
                 "copy tooltip": "Copy in clipboard",
@@ -197,7 +239,7 @@ const {
                 "reset helper dialogs": "Reset instructions windows",
                 "reset": "Reset",
                 "reset helper dialogs helper text":
-                    "Reset message windows that have been requested not to be shown again",
+                    "Reset message windows that have been requested not to be shown again"
             },
             "RegisterUserProfile": {
                 "allowed email domains": "Allowed domains",
@@ -207,9 +249,28 @@ const {
                 "go back": "Go back",
                 "form not filled properly yet":
                     "Please make sure the form is properly filled out",
-                "must respect the pattern": "Must respect the pattern",
+                "must respect the pattern": "Must respect the pattern"
             },
-            "MyFilesMySecrets": {
+            "MyFiles": {
+                "page title - my files": "My Files",
+                "page title - my secrets": "My Secrets",
+                "what this page is used for - my files":
+                    "Here you can browse your S3 Buckets.",
+                "what this page is used for - my secrets":
+                    "Here can be defined variables that will be accessible in you services under the form of environnement variable.",
+                "help content": ({ accountTabLink, docHref }) => (
+                    <>
+                        Read{" "}
+                        <MuiLink href={docHref} target="_blank">
+                            our documentation
+                        </MuiLink>
+                        . &nbsp;
+                        <MuiLink {...accountTabLink}>Configure the minio clients</MuiLink>
+                        .
+                    </>
+                )
+            },
+            "MySecrets": {
                 "page title - my files": "My Files",
                 "page title - my secrets": "My Secrets",
                 "what this page is used for - my files":
@@ -217,13 +278,27 @@ const {
                 "what this page is used for - my secrets":
                     "Here can be defined variables that will be accessible in you services under the form of environnement variable.",
                 "learn more - my files": "To learn more about file management,",
-                "to learn more - my secrets": "To learn more about secrets management,",
-                "read our documentation": "read our documentation.",
+                "help content": ({ accountTabLink, docHref }) => (
+                    <>
+                        Read{" "}
+                        <MuiLink href={docHref} target="_blank">
+                            our documentation
+                        </MuiLink>
+                        . &nbsp;
+                        <MuiLink {...accountTabLink}>
+                            Configure your local Vault CLI
+                        </MuiLink>
+                        .
+                    </>
+                )
+            },
+            "SecretsExplorerItem": {
+                "description": "description"
             },
             "ExplorerItem": {
-                "description": "description",
+                "description": "description"
             },
-            "ExplorerButtonBar": {
+            "SecretsExplorerButtonBar": {
                 ...common.en,
                 "create secret": "Create secret",
                 "upload file": "Upload file",
@@ -231,7 +306,38 @@ const {
                 "create directory": "Create directory",
                 "refresh": "refresh",
                 "create what": ({ what }) => `Create ${what}`,
-                "new": "New",
+                "new": "New"
+            },
+            "ExplorerButtonBar": {
+                ...common.en,
+                "create secret": "Create secret",
+                "upload file": "Upload file",
+                "copy path": "Copy S3 object name",
+                "create directory": "Create directory",
+                "refresh": "refresh",
+                "create what": ({ what }) => `Create ${what}`,
+                "new": "New"
+            },
+            "ExplorerItems": {
+                "empty directory": "This directory is empty"
+            },
+            "SecretsExplorerItems": {
+                "empty directory": "This directory is empty"
+            },
+            "SecretsExplorer": {
+                ...common.en,
+                "untitled what": ({ what }) => `untitled_${what}`,
+                "directory": "folder",
+                "deletion dialog title": ({ deleteWhat }) => `Delete a ${deleteWhat} ?`,
+                "deletion dialog body": ({
+                    deleteWhat
+                }) => `You are about to delete ${deleteWhat}.
+            This action can't be reverted.`,
+                "already a directory with this name":
+                    "There is already a directory with this name",
+                "can't be empty": "Can't be empty",
+                "create": "create",
+                "new directory": "New directory"
             },
             "Explorer": {
                 ...common.en,
@@ -239,17 +345,14 @@ const {
                 "directory": "folder",
                 "deletion dialog title": ({ deleteWhat }) => `Delete a ${deleteWhat} ?`,
                 "deletion dialog body": ({
-                    deleteWhat,
+                    deleteWhat
                 }) => `You are about to delete ${deleteWhat}.
             This action can't be reverted.`,
                 "already a directory with this name":
                     "There is already a directory with this name",
                 "can't be empty": "Can't be empty",
                 "create": "create",
-                "new directory": "New directory",
-            },
-            "ExplorerItems": {
-                "empty directory": "This directory is empty",
+                "new directory": "New directory"
             },
             "MySecretsEditor": {
                 ...common.en,
@@ -280,24 +383,24 @@ const {
                 purpose.
                 The values will be injected as environnement variable.
             `,
-                "use secret dialog ok": "Got it",
+                "use secret dialog ok": "Got it"
             },
             "MySecretsEditorRow": {
                 "key input desc": "Environnement variable name",
-                "value input desc": "Environnement variable value",
+                "value input desc": "Environnement variable value"
             },
             "ExplorerUploadModalDropArea": {
                 "browse files": "browse files",
-                "drag and drop or": "Drag and drop or",
+                "drag and drop or": "Drag and drop or"
             },
             "ExplorerUploadProgress": {
                 "over": "over",
-                "importing": "Importing",
+                "importing": "Importing"
             },
             "ExplorerUploadModal": {
                 "import files": "Import files",
                 "cancel": "Cancel",
-                "minimize": "Minimize",
+                "minimize": "Minimize"
             },
 
             "Header": {
@@ -305,7 +408,7 @@ const {
                 "logout": "Logout",
                 "trainings": "Trainings",
                 "documentation": "Documentation",
-                "project": "Project",
+                "project": "Project"
             },
             "App": {
                 "reduce": "Reduce",
@@ -314,15 +417,15 @@ const {
                 "catalog": "Services catalog",
                 "myServices": "My Services",
                 "mySecrets": "My Secrets",
-                "myFiles": "My Files",
+                "myFiles": "My Files"
             },
             "FourOhFour": {
-                "not found": "Page not found",
+                "not found": "Page not found"
             },
             "PortraitModeUnsupported": {
                 "portrait mode not supported": "Portrait mode isn't supported yet",
                 "instructions":
-                    "To use this app on your phone please enable the rotation sensor and turn your phone.",
+                    "To use this app on your phone please enable the rotation sensor and turn your phone."
             },
             "Home": {
                 "welcome": ({ who }) => `Welcome ${who}!`,
@@ -342,11 +445,11 @@ const {
                     "To easily access your data and those made available to you from your programs - S3 API implementation",
                 "cardButton1": "Consult the catalog",
                 "cardButton2": "Join the community",
-                "cardButton3": "Consult the data",
+                "cardButton3": "Consult the data"
             },
             "CatalogExplorerCard": {
                 "launch": "Launch",
-                "learn more": "Learn more",
+                "learn more": "Learn more"
             },
             "CatalogExplorerCards": {
                 "show more": "Show more",
@@ -358,7 +461,7 @@ const {
                 "main services": "Main services",
                 "all services": "All services",
                 "search results": "Search result",
-                "search": "Search",
+                "search": "Search"
             },
             "Catalog": {
                 "header text1": "Services catalog",
@@ -368,7 +471,7 @@ const {
                     `Contribute to the ${catalogName} catalog`,
                 "contribute to the package": ({ packageName }) =>
                     `Find the sources of the ${packageName} package `,
-                "here": "here",
+                "here": "here"
             },
             "CatalogLauncher": {
                 "no longer bookmarked dialog title": "Your changes wont be saved",
@@ -385,12 +488,12 @@ const {
                 "replace": "Replace it",
                 "sensitive configuration dialog title":
                     "Launching this service may be dangerous",
-                "proceed to launch": "Proceed to launch",
+                "proceed to launch": "Proceed to launch"
             },
             "Footer": {
                 "contribute": "Contribute",
                 "terms of service": "Terms of service",
-                "change language": "Change language",
+                "change language": "Change language"
             },
             "CatalogLauncherMainCard": {
                 "card title": "Create your personal services",
@@ -401,7 +504,7 @@ const {
                 "save configuration": "Save this configuration",
                 "share the service": "Share the service",
                 "share the service - explain":
-                    "Make the service accessible to the group members",
+                    "Make the service accessible to the group members"
             },
             "CatalogLauncherConfigurationCard": {
                 "global config": "Global configuration",
@@ -411,7 +514,7 @@ const {
                     `A ${dependencyName} service will be launched`,
                 "mismatching pattern": ({ pattern }) => `Should match ${pattern}`,
                 "Invalid YAML Object": "Invalid YAML Object",
-                "Invalid YAML Array": "Invalid YAML Array",
+                "Invalid YAML Array": "Invalid YAML Array"
             },
             "MyServices": {
                 "text1": "My Services",
@@ -427,14 +530,14 @@ const {
                 "confirm delete body":
                     "Don't forget to push your code on GitHub or GitLab before terminating your services",
                 "cancel": "cancel",
-                "confirm": "Yes, delete",
+                "confirm": "Yes, delete"
             },
             "MyServicesButtonBar": {
                 "refresh": "Refresh",
                 "launch": "New service",
                 "password": "Copy the services password",
                 "trash": "Delete all",
-                "trash my own": "Delete all my services",
+                "trash my own": "Delete all my services"
             },
             "MyServicesCard": {
                 "service": "Service",
@@ -447,23 +550,23 @@ const {
                 "which token expired": ({ which }) => `The ${which} token is expired.`,
                 "reminder to delete services": "Remember to delete your services.",
                 "this is a shared service":
-                    "This service is shared among project's member",
+                    "This service is shared among project's member"
             },
             "MyServicesRunningTime": {
-                "launching": "Launching...",
+                "launching": "Launching..."
             },
             "MyServicesSavedConfigOptions": {
                 "edit": "Edit",
                 "copy link": "Copy URL link",
-                "remove bookmark": "Delete",
+                "remove bookmark": "Delete"
             },
             "MyServicesSavedConfig": {
                 "edit": "Edit",
-                "launch": "Launch",
+                "launch": "Launch"
             },
             "MyServicesSavedConfigs": {
                 "saved": "Saved",
-                "show all": "Show all",
+                "show all": "Show all"
             },
             "MyServicesCards": {
                 "running services": "Running services",
@@ -475,18 +578,18 @@ const {
                     "Everything have been printed to the console",
                 "first copy the password": "First, copy the service...",
                 "open the service": "Open the service 🚀",
-                "return": "Return",
+                "return": "Return"
             },
             "LoginDivider": {
-                "or": "or",
+                "or": "or"
             },
             "Terms": {
                 "no terms":
-                    "No terms of service document provided for this instance of Onyxia",
+                    "No terms of service document provided for this instance of Onyxia"
             },
             "Login": {
-                "doRegister": "Create an account",
-            },
+                "doRegister": "Create an account"
+            }
         },
         "fr": {
             /* spell-checker: disable */
@@ -494,12 +597,14 @@ const {
                 "infos": "Information du compte",
                 "third-party-integration": "Services externes",
                 "storage": "Connexion au stockage",
+                "k8sCredentials": "Connexion a Kubernetes",
                 "user-interface": "Modes d'interface",
                 "text1": "Mon compte",
                 "text2": "Accédez à vos différentes informations de compte.",
                 "text3":
                     "Configurez vos identifiants, e-mails, mots de passe et jetons d'accès personnels directement connectés à vos services.",
                 "personal tokens tooltip": 'Ou en anglais "token".',
+                "vault": undefined
             },
             "AccountInfoTab": {
                 "general information": "Informations générales",
@@ -511,7 +616,7 @@ const {
                 "auth information": "Informations d'authentification Onyxia",
                 "auth information helper": `Ces informations vous permettent de vous identifier 
             au sein de la plateforme et des différents services.`,
-                "ip address": "Adresse IP",
+                "ip address": "Adresse IP"
             },
             "AccountIntegrationsTab": {
                 "git section title": "Configurations Git",
@@ -528,7 +633,7 @@ const {
                 "link for token creation": ({ serviceName }) =>
                     `Créer votre jeton ${serviceName}.`,
                 "accessible as env":
-                    "Accessible au sein de vos services en tant que la variable d'environnement",
+                    "Accessible au sein de vos services en tant que la variable d'environnement"
             },
             "AccountStorageTab": {
                 "credentials section title": "Connecter vos données à vos services",
@@ -539,7 +644,40 @@ const {
                 "init script section title":
                     "Pour accéder au stockage en dehors des services du datalab",
                 "init script section helper": `Téléchargez ou copiez le script d'initialisation dans le langage de programmation de votre choix.`,
-                "expires in": ({ howMuchTime }) => `Expire dans ${howMuchTime}`,
+                "expires in": ({ howMuchTime }) => `Expire dans ${howMuchTime}`
+            },
+            "AccountKubernetesTab": {
+                "credentials section title": "Connection a Kubernetes",
+                "credentials section helper":
+                    "Identifiants pour interagir directement avec le cluster Kubernetes.",
+                "init script section title":
+                    "Pour vous connecter au cluster Kubernetes via votre kubectl local",
+                "init script section helper": `Téléchargez ou copiez le script.`,
+                "expires in": ({ howMuchTime }) => `Le token expire dans ${howMuchTime}`
+            },
+            "AccountVaultTab": {
+                "credentials section title": "Identifiants Vault",
+                "credentials section helper": ({ vaultDocHref, mySecretLink }) => (
+                    <>
+                        <MuiLink href={vaultDocHref} target="_blank">
+                            Vault
+                        </MuiLink>{" "}
+                        est le système ou &nbsp;
+                        <MuiLink {...mySecretLink}>vos secret</MuiLink> sont enregistré.
+                    </>
+                ),
+                "init script section title": "Utiliser Vault depuis votre terminal",
+                "init script section helper": ({ vaultCliDocLink }) => (
+                    <>
+                        Telecharger ou copier les variables d'<code>ENV</code> pour
+                        configurer votre{" "}
+                        <MuiLink href={vaultCliDocLink} target="_blank">
+                            Vault CLI
+                        </MuiLink>{" "}
+                        local.
+                    </>
+                ),
+                "expires in": ({ howMuchTime }) => `Le token expire in ${howMuchTime}`
             },
             "AccountUserInterfaceTab": {
                 "title": "Configurer le mode d'interface",
@@ -550,8 +688,7 @@ const {
                 "beta mode helper":
                     "Pour des configurations et fonctionnalités avancées de la plateforme.",
                 "enable dev mode": "Activer le mode développeur",
-                "dev mode helper":
-                    "Activer les fonctionnalités en cours de développement",
+                "dev mode helper": "Activer les fonctionnalités en cours de développement"
             },
             "AccountField": {
                 "copy tooltip": "Copier dans le presse-papier",
@@ -563,7 +700,7 @@ const {
                 "reset helper dialogs": "Réinitialiser les fenêtres d'instructions",
                 "reset": "Réinitialiser",
                 "reset helper dialogs helper text":
-                    "Réinitialiser les fenêtres de messages que vous avez demandé de ne plus afficher",
+                    "Réinitialiser les fenêtres de messages que vous avez demandé de ne plus afficher"
             },
             "RegisterUserProfile": {
                 "allowed email domains": "Domaines autorisés",
@@ -574,9 +711,30 @@ const {
                 "go back": "Retour",
                 "form not filled properly yet":
                     "Veuillez vérifier que vous avez bien rempli le formulaire",
-                "must respect the pattern": "Doit respecter le format",
+                "must respect the pattern": "Doit respecter le format"
             },
-            "MyFilesMySecrets": {
+            "MyFiles": {
+                "page title - my files": "Mes fichiers",
+                "page title - my secrets": "My Secrets",
+                "what this page is used for - my files":
+                    "Stocker ici vos fichiers de donnée.",
+                "what this page is used for - my secrets":
+                    "Stockez ici des secrets qui seront accessibles sous forme de variables d'environnement dans vos services.",
+                "help content": ({ accountTabLink, docHref }) => (
+                    <>
+                        Lire{" "}
+                        <MuiLink href={docHref} target="_blank">
+                            notre documentation
+                        </MuiLink>
+                        . &nbsp;
+                        <MuiLink {...accountTabLink}>
+                            Configurer les clients minio
+                        </MuiLink>
+                        .
+                    </>
+                )
+            },
+            "MySecrets": {
                 "page title - my files": "Mes fichiers",
                 "page title - my secrets": "My Secrets",
                 "what this page is used for - my files":
@@ -585,14 +743,37 @@ const {
                     "Stockez ici des secrets qui seront accessibles sous forme de variables d'environnement dans vos services.",
                 "learn more - my files":
                     "Pour en savoir plus sur l'utilisation du stockage S3,",
-                "to learn more - my secrets":
-                    "Pour en savoir plus sur l'utilisation de secrets,",
-                "read our documentation": "lisez notre documentation.",
+                "help content": ({ accountTabLink, docHref }) => (
+                    <>
+                        Lire{" "}
+                        <MuiLink href={docHref} target="_blank">
+                            notre documentation
+                        </MuiLink>
+                        . &nbsp;
+                        <MuiLink {...accountTabLink}>
+                            Configurer votre Vault CLI local
+                        </MuiLink>
+                        .
+                    </>
+                )
             },
             "ExplorerItem": {
-                "description": "description",
+                "description": "description"
+            },
+            "SecretsExplorerItem": {
+                "description": "description"
             },
             "ExplorerButtonBar": {
+                ...common.fr,
+                "create secret": "Nouveau secret",
+                "upload file": "Téléverser un fichier",
+                "copy path": "Copier le nom de l'objet S3",
+                "create directory": "Nouveau dossier",
+                "refresh": "rafraîchir",
+                "create what": ({ what }) => `Nouveau ${what}`,
+                "new": "Nouveau"
+            },
+            "SecretsExplorerButtonBar": {
                 ...common.fr,
                 "create secret": "Nouveau secret",
                 "upload file": "Téléverser un fichier",
@@ -600,7 +781,7 @@ const {
                 "create directory": "Nouveau dossier",
                 "refresh": "rafraîchir",
                 "create what": ({ what }) => `Nouveau ${what}`,
-                "new": "Nouveau",
+                "new": "Nouveau"
             },
             "Explorer": {
                 ...common.fr,
@@ -615,11 +796,30 @@ const {
                 "already a directory with this name":
                     "Il y a déjà un dossier avec ce nom",
                 "can't be empty": "Ne peut être vide",
-                "create": "Crée",
-                "new directory": "Nouveau dossier",
+                "create": "Créer",
+                "new directory": "Nouveau dossier"
+            },
+            "SecretsExplorer": {
+                ...common.fr,
+                "untitled what": ({ what }) => `${what}_sans_nom`,
+                "directory": "dossier",
+                "deletion dialog title": ({ deleteWhat }) =>
+                    `Supprimer un ${deleteWhat} ?`,
+                "deletion dialog body": ({ deleteWhat }) => `
+            Vous êtes sur le point de supprimer un ${deleteWhat}. 
+            Cette action entraînera la perte potentielle des données liées à ce ${deleteWhat}.
+            `,
+                "already a directory with this name":
+                    "Il y a déjà un dossier avec ce nom",
+                "can't be empty": "Ne peut être vide",
+                "create": "Créer",
+                "new directory": "Nouveau dossier"
             },
             "ExplorerItems": {
-                "empty directory": "Ce répertoire est vide",
+                "empty directory": "Ce répertoire est vide"
+            },
+            "SecretsExplorerItems": {
+                "empty directory": "Ce répertoire est vide"
             },
             "MySecretsEditor": {
                 ...common.fr,
@@ -650,31 +850,31 @@ const {
                 dans l'onglet 'VAULT' et collez le chemin du secret dans le champ prévu à cet effet.
                 Vos clefs valeurs seront disponibles sous forme de variables d'environnement.
             `,
-                "use secret dialog ok": "J'ai compris",
+                "use secret dialog ok": "J'ai compris"
             },
             "MySecretsEditorRow": {
                 "key input desc": "Nom de la variable d'environnement",
-                "value input desc": "Valeur de la variable d'environnement",
+                "value input desc": "Valeur de la variable d'environnement"
             },
             "ExplorerUploadModalDropArea": {
                 "browse files": "parcourir vos fichiers",
-                "drag and drop or": "Glisser et déposer ou",
+                "drag and drop or": "Glisser et déposer ou"
             },
             "ExplorerUploadProgress": {
                 "over": "sur",
-                "importing": "importation",
+                "importing": "importation"
             },
             "ExplorerUploadModal": {
                 "import files": "Importer des fichiers",
                 "cancel": "Annuler",
-                "minimize": "Minimiser",
+                "minimize": "Minimiser"
             },
             "Header": {
                 "login": "Connexion",
                 "logout": "Déconnexion",
                 "trainings": "Formations",
                 "documentation": "Documentation",
-                "project": "Projet",
+                "project": "Projet"
             },
             "App": {
                 "reduce": "Réduire",
@@ -683,16 +883,16 @@ const {
                 "catalog": "Catalogue de services",
                 "myServices": "Mes services",
                 "mySecrets": "Mes secrets",
-                "myFiles": "Mes fichiers",
+                "myFiles": "Mes fichiers"
             },
             "FourOhFour": {
-                "not found": "Page non trouvée",
+                "not found": "Page non trouvée"
             },
             "PortraitModeUnsupported": {
                 "portrait mode not supported":
                     "Le mode portrait n'est pas encore supporté",
                 "instructions":
-                    "Pour utiliser cette application depuis votre mobile, veuillez activer le capteur de rotation et tourner votre téléphone.",
+                    "Pour utiliser cette application depuis votre mobile, veuillez activer le capteur de rotation et tourner votre téléphone."
             },
             "Home": {
                 "welcome": ({ who }) => `Bienvenue ${who}!`,
@@ -713,11 +913,11 @@ const {
                     "Pour accéder facilement à vos données et à celles mises à votre disposition depuis vos programmes - Implémentation API S3",
                 "cardButton1": "Consulter le catalogue",
                 "cardButton2": "Rejoindre la communauté",
-                "cardButton3": "Consulter des données",
+                "cardButton3": "Consulter des données"
             },
             "CatalogExplorerCard": {
                 "launch": "Lancer",
-                "learn more": "En savoir plus",
+                "learn more": "En savoir plus"
             },
             "CatalogExplorerCards": {
                 "show more": "Afficher tous",
@@ -730,7 +930,7 @@ const {
                 "main services": "Principaux services",
                 "all services": "Tous les services",
                 "search results": "Résultats de la recherche",
-                "search": "Rechercher",
+                "search": "Rechercher"
             },
             "Catalog": {
                 "header text1": "Catalogue de services",
@@ -740,7 +940,7 @@ const {
                     `Contribuer au catalogue ${catalogName}`,
                 "contribute to the package": ({ packageName }) =>
                     `Accéder aux sources du package ${packageName} `,
-                "here": "ici",
+                "here": "ici"
             },
             "CatalogLauncher": {
                 "no longer bookmarked dialog title": "Changements non enregistrés",
@@ -750,19 +950,19 @@ const {
                 "should overwrite configuration dialog title":
                     "Souhaitez-vous le remplacer ?",
                 "should overwrite configuration dialog subtitle": ({ friendlyName }) =>
-                    `«${friendlyName}» exsiste déjà dans vos enregistrements.`,
+                    `«${friendlyName}» existe déjà dans vos enregistrements.`,
                 "should overwrite configuration dialog body":
                     "Un service enregistré du même nom existe déjà. Si vous le remplacez, le contenu d'origine sera perdu.",
                 "cancel": "Annuler",
                 "replace": "Remplacer",
                 "sensitive configuration dialog title":
                     "Lancer ce service pourrait être dangereux",
-                "proceed to launch": "Lancer en conscience",
+                "proceed to launch": "Lancer en conscience"
             },
             "Footer": {
                 "contribute": "Contribuer au projet",
                 "terms of service": "Conditions d'utilisation",
-                "change language": "Changer la langue",
+                "change language": "Changer la langue"
             },
             "CatalogLauncherMainCard": {
                 "card title": "Créer votre propre service",
@@ -774,7 +974,7 @@ const {
                 "save configuration": "Enregistrer cette configuration",
                 "share the service": "Partager le service",
                 "share the service - explain":
-                    "Rendre accessible le service aux collaborateurs du groupe",
+                    "Rendre accessible le service aux collaborateurs du groupe"
             },
             "CatalogLauncherConfigurationCard": {
                 "global config": "Configurations globales",
@@ -784,7 +984,7 @@ const {
                     `Lancement d'un service ${dependencyName}`,
                 "mismatching pattern": ({ pattern }) => `Doit respecter ${pattern}`,
                 "Invalid YAML Object": "Objet YAML non valide",
-                "Invalid YAML Array": "Tableau YAML non valide",
+                "Invalid YAML Array": "Tableau YAML non valide"
             },
             "MyServices": {
                 "text1": "Mes services",
@@ -801,14 +1001,14 @@ const {
                 "confirm delete body shared services":
                     "Attention, certains de vos services sont partagés aux autres membres du projet.",
                 "cancel": "Annuler",
-                "confirm": "Oui, supprimer",
+                "confirm": "Oui, supprimer"
             },
             "MyServicesButtonBar": {
                 "refresh": "Rafraîchir",
                 "launch": "Nouveau service",
                 "password": "Copier le mot de passe",
                 "trash": "Supprimer tous",
-                "trash my own": "Supprimer tous mes services",
+                "trash my own": "Supprimer tous mes services"
             },
             "MyServicesCard": {
                 "service": "Service",
@@ -821,23 +1021,23 @@ const {
                 "which token expired": ({ which }) => `Le token ${which} a expiré.`,
                 "reminder to delete services":
                     "Rappelez-vous de supprimer vos services après utilisation.",
-                "this is a shared service": "Ce service est partagé au sein du projet",
+                "this is a shared service": "Ce service est partagé au sein du projet"
             },
             "MyServicesRunningTime": {
-                "launching": "En cours...",
+                "launching": "En cours..."
             },
             "MyServicesSavedConfigOptions": {
                 "edit": "Modifier",
                 "copy link": "Copier l'URL",
-                "remove bookmark": "Supprimer",
+                "remove bookmark": "Supprimer"
             },
             "MyServicesSavedConfig": {
                 "edit": "Modifier",
-                "launch": "Lancer",
+                "launch": "Lancer"
             },
             "MyServicesSavedConfigs": {
                 "saved": "Enregistrés",
-                "show all": "Afficher tous",
+                "show all": "Afficher tous"
             },
             "MyServicesCards": {
                 "running services": "Services en cours",
@@ -850,18 +1050,18 @@ const {
                     "Tout a été loggé dans la console",
                 "first copy the password": "Commencez par copier le mot de passe...",
                 "open the service": "Ouvrir le service 🚀",
-                "return": "Retour",
+                "return": "Retour"
             },
             "LoginDivider": {
-                "or": "ou",
+                "or": "ou"
             },
             "Terms": {
                 "no terms":
-                    "Pas de document de terms et condition fournis pour cette instance d'Onyxia",
+                    "Pas de document de terms et condition fournis pour cette instance d'Onyxia"
             },
             "Login": {
-                "doRegister": "Créer un compte",
-            },
+                "doRegister": "Créer un compte"
+            }
             /* spell-checker: enable */
         },
         "zh-CN": {
@@ -871,10 +1071,12 @@ const {
                 "third-party-integration": "外部服务",
                 "storage": "链接到储存器",
                 "user-interface": "变换显示模式",
+                "k8sCredentials": undefined,
                 "text1": "我的账号",
                 "text2": "访问我的账号信息",
                 "text3": "设置您的用户名, 电子邮件, 密码和访问令牌",
                 "personal tokens tooltip": "服务的访问令牌",
+                "vault": undefined
             },
             "AccountInfoTab": {
                 "general information": "一般信息",
@@ -884,7 +1086,7 @@ const {
                 "change account info": "修改帐户信息（例如您的密码）",
                 "auth information": "Onyxia的认证信息",
                 "auth information helper": `此信息可让您在平台内和平台内的各种服务中认证自己.`,
-                "ip address": "IP地址",
+                "ip address": "IP地址"
             },
             "AccountIntegrationsTab": {
                 "git section title": "Git 配置",
@@ -899,7 +1101,7 @@ const {
                 "personal token": ({ serviceName }) => `个人访问令牌 ${serviceName}`,
                 "link for token creation": ({ serviceName }) =>
                     `创建您的令牌 ${serviceName}.`,
-                "accessible as env": "可在您的服务中作为环境变量被访问",
+                "accessible as env": "可在您的服务中作为环境变量被访问"
             },
             "AccountStorageTab": {
                 "credentials section title": "将您的数据连接到您的服务",
@@ -908,7 +1110,21 @@ const {
                 "accessible as env": "可在您的服务中作为环境变量被访问",
                 "init script section title": "访问datalab服务之外的存储器",
                 "init script section helper": `下载或复制用您选择的编程语言编写的初始化脚本.`,
-                "expires in": undefined,
+                "expires in": undefined
+            },
+            "AccountKubernetesTab": {
+                "credentials section title": undefined,
+                "credentials section helper": undefined,
+                "init script section title": undefined,
+                "init script section helper": undefined,
+                "expires in": undefined
+            },
+            "AccountVaultTab": {
+                "credentials section title": undefined,
+                "credentials section helper": undefined,
+                "init script section title": undefined,
+                "init script section helper": undefined,
+                "expires in": undefined
             },
             "AccountUserInterfaceTab": {
                 "title": "配置界面模式",
@@ -917,7 +1133,7 @@ const {
                 "enable beta": "启用 Beta 测试模式",
                 "beta mode helper": "用于平台高级配置和功能.",
                 "enable dev mode": "启用开发者模式",
-                "dev mode helper": "启用正在开发的功能",
+                "dev mode helper": "启用正在开发的功能"
             },
             "AccountField": {
                 "copy tooltip": "复制到剪贴板",
@@ -928,7 +1144,7 @@ const {
                 "not yet defined": "没有定义",
                 "reset helper dialogs": "重置指令窗口",
                 "reset": "重置",
-                "reset helper dialogs helper text": "重置您要求不再显示的消息窗口",
+                "reset helper dialogs helper text": "重置您要求不再显示的消息窗口"
             },
             "RegisterUserProfile": {
                 "allowed email domains": "授权域",
@@ -937,22 +1153,42 @@ const {
                 "password mismatch": "两个密码不匹配",
                 "go back": "返回",
                 "form not filled properly yet": "请检查您是否正确填写了表格.",
-                "must respect the pattern": "必须尊守格式",
+                "must respect the pattern": "必须尊守格式"
             },
-            "MyFilesMySecrets": {
+            "MyFiles": {
+                "page title - my files": "我的文件",
+                "page title - my secrets": "我的密钥",
+                "what this page is used for - my files": "在此处存储您的数据.",
+                "what this page is used for - my secrets":
+                    "在此处存储可作为服务中的环境变量访问的密钥.",
+                "help content": undefined
+            },
+            "MySecrets": {
                 "page title - my files": "我的文件",
                 "page title - my secrets": "我的密钥",
                 "what this page is used for - my files": "在此处存储您的数据.",
                 "what this page is used for - my secrets":
                     "在此处存储可作为服务中的环境变量访问的密钥.",
                 "learn more - my files": "了解有关使用 S3 存储的更多信息,",
-                "to learn more - my secrets": "要了解有关使用密钥的更多信息",
-                "read our documentation": "阅读我们的文档",
+                "help content": undefined
             },
             "ExplorerItem": {
-                "description": "描述",
+                "description": "描述"
+            },
+            "SecretsExplorerItem": {
+                "description": "描述"
             },
             "ExplorerButtonBar": {
+                ...common.fr,
+                "create secret": "新的密钥",
+                "upload file": "上传文件",
+                "copy path": undefined,
+                "create directory": "新建文件夹",
+                "refresh": "刷新",
+                "create what": ({ what }) => `新 ${what}`,
+                "new": undefined
+            },
+            "SecretsExplorerButtonBar": {
                 ...common.fr,
                 "create secret": "新的密钥",
                 "upload file": "上传文件",
@@ -960,7 +1196,7 @@ const {
                 "create directory": "新建文件夹",
                 "refresh": "刷新",
                 "create what": ({ what }) => `新 ${what}`,
-                "new": undefined,
+                "new": undefined
             },
             "Explorer": {
                 ...common.fr,
@@ -974,10 +1210,27 @@ const {
                 "already a directory with this name": "已经有一个同名的文件夹",
                 "can't be empty": "不能为空",
                 "create": "建立",
-                "new directory": "新建文件夹",
+                "new directory": "新建文件夹"
+            },
+            "SecretsExplorer": {
+                ...common.fr,
+                "untitled what": undefined,
+                "directory": "目录",
+                "deletion dialog title": ({ deleteWhat }) => `删除 ${deleteWhat} ?`,
+                "deletion dialog body": ({ deleteWhat }) => `
+            您即将删除 ${deleteWhat} 服务.
+            此操作将导致与此 ${deleteWhat} 服务相关的数据的潜在丢失
+            `,
+                "already a directory with this name": "已经有一个同名的文件夹",
+                "can't be empty": "不能为空",
+                "create": "建立",
+                "new directory": "新建文件夹"
             },
             "ExplorerItems": {
-                "empty directory": "此目录为空",
+                "empty directory": "此目录为空"
+            },
+            "SecretsExplorerItems": {
+                "empty directory": "此目录为空"
             },
             "MySecretsEditor": {
                 ...common.fr,
@@ -1005,31 +1258,31 @@ const {
                 "use secret dialog body": `启动服务（RStudio，Jupyter）时，
                                     如果在"VAULT"选项卡中，将路径粘贴到提供的字段中。
                                     您的键值将被作为环境变量.`,
-                "use secret dialog ok": "我知道了",
+                "use secret dialog ok": "我知道了"
             },
             "MySecretsEditorRow": {
                 "key input desc": "环境变量名称",
-                "value input desc": "环境变量值",
+                "value input desc": "环境变量值"
             },
             "ExplorerUploadModalDropArea": {
                 "browse files": "浏览您的文件",
-                "drag and drop or": "拖拽，放置或",
+                "drag and drop or": "拖拽，放置或"
             },
             "ExplorerUploadProgress": {
                 "over": "over",
-                "importing": "导入",
+                "importing": "导入"
             },
             "ExplorerUploadModal": {
                 "import files": "导入文件",
                 "cancel": "取消",
-                "minimize": "最小化",
+                "minimize": "最小化"
             },
             "Header": {
                 "login": "登录",
                 "logout": "登出",
                 "trainings": "培训",
                 "documentation": "文档",
-                "project": "项目",
+                "project": "项目"
             },
             "App": {
                 "reduce": "缩小",
@@ -1038,15 +1291,15 @@ const {
                 "catalog": "服务目录",
                 "myServices": "我的服务",
                 "mySecrets": "我的密钥",
-                "myFiles": "我的文档",
+                "myFiles": "我的文档"
             },
             "FourOhFour": {
-                "not found": "网页未找到",
+                "not found": "网页未找到"
             },
             "PortraitModeUnsupported": {
                 "portrait mode not supported": "尚不支持纵向模式",
                 "instructions":
-                    "要在您的手机中使用此应用程序，请激活旋转传感器并转动您的手机",
+                    "要在您的手机中使用此应用程序，请激活旋转传感器并转动您的手机"
             },
             "Home": {
                 "welcome": ({ who }) => `你好 ${who}!`,
@@ -1064,11 +1317,11 @@ const {
                 "cardText3": "轻松访问您的个人数据以及您的项目提供给您的数据 - S3 API",
                 "cardButton1": "查阅目录",
                 "cardButton2": "加入社区",
-                "cardButton3": "查看数据",
+                "cardButton3": "查看数据"
             },
             "CatalogExplorerCard": {
                 "launch": "启动",
-                "learn more": "了解更多",
+                "learn more": "了解更多"
             },
             "CatalogExplorerCards": {
                 "show more": "显示所有",
@@ -1079,7 +1332,7 @@ const {
                 "main services": "主要服务",
                 "all services": "所有服务",
                 "search results": "搜索结果",
-                "search": "收索服务",
+                "search": "收索服务"
             },
             "Catalog": {
                 "header text1": "服务目录",
@@ -1088,7 +1341,7 @@ const {
                     `为目录 ${catalogName} 做贡献`,
                 "contribute to the package": ({ packageName }) =>
                     `访问源包 ${packageName} `,
-                "here": "此处",
+                "here": "此处"
             },
             "CatalogLauncher": {
                 "no longer bookmarked dialog title": "更改未保存",
@@ -1102,12 +1355,12 @@ const {
                 "cancel": "取消",
                 "replace": "取代",
                 "sensitive configuration dialog title": "您想更换它吗?", //TODO
-                "proceed to launch": "继续启动", //TODO
+                "proceed to launch": "继续启动" //TODO
             },
             "Footer": {
                 "contribute": "为项目做贡献",
                 "terms of service": "使用条款",
-                "change language": "切换语言",
+                "change language": "切换语言"
             },
             "CatalogLauncherMainCard": {
                 "card title": "创建自定义服务",
@@ -1117,7 +1370,7 @@ const {
                 "copy url helper text": "复制 URL 以恢复此配置",
                 "save configuration": "保存当前服务",
                 "share the service": "分享服务",
-                "share the service - explain": "让其他组员可以访问该服务",
+                "share the service - explain": "让其他组员可以访问该服务"
             },
             "CatalogLauncherConfigurationCard": {
                 "global config": "全局设置",
@@ -1127,7 +1380,7 @@ const {
                     `启动一个服务 ${dependencyName}`,
                 "mismatching pattern": undefined,
                 "Invalid YAML Object": undefined,
-                "Invalid YAML Array": undefined,
+                "Invalid YAML Array": undefined
             },
             "MyServices": {
                 "text1": "我的服务",
@@ -1141,14 +1394,14 @@ const {
                 "confirm delete body shared services":
                     "请注意，您的某些服务正在与项目的其他成员共享.",
                 "cancel": "取消",
-                "confirm": "是的, 删除",
+                "confirm": "是的, 删除"
             },
             "MyServicesButtonBar": {
                 "refresh": "刷新",
                 "launch": "新的服务",
                 "password": "复制密码",
                 "trash": "删除所有",
-                "trash my own": "删除您的所有服务",
+                "trash my own": "删除您的所有服务"
             },
             "MyServicesCard": {
                 "service": "服务",
@@ -1160,23 +1413,23 @@ const {
                     `令牌 ${which} 在 ${howMuchTime} 后过期.`,
                 "which token expired": ({ which }) => `令牌 ${which} 已经过期.`,
                 "reminder to delete services": "请在使用后删除您的服务。",
-                "this is a shared service": "该服务在项目内共享",
+                "this is a shared service": "该服务在项目内共享"
             },
             "MyServicesRunningTime": {
-                "launching": "启动中",
+                "launching": "启动中"
             },
             "MyServicesSavedConfigOptions": {
                 "edit": "编辑服务",
                 "copy link": "复制链接",
-                "remove bookmark": "删除书签",
+                "remove bookmark": "删除书签"
             },
             "MyServicesSavedConfig": {
                 "edit": "编辑服务",
-                "launch": "启动服务",
+                "launch": "启动服务"
             },
             "MyServicesSavedConfigs": {
                 "saved": "已经保存",
-                "show all": "显示所有",
+                "show all": "显示所有"
             },
             "MyServicesCards": {
                 "running services": "正在运行的服务",
@@ -1188,24 +1441,24 @@ const {
                     "所有的信息都会记录在日志里",
                 "first copy the password": "请复制您的密码",
                 "open the service": "打开服务 🚀",
-                "return": "返回",
+                "return": "返回"
             },
             "LoginDivider": {
-                "or": "或者",
+                "or": "或者"
             },
             "Terms": {
-                "no terms": undefined,
+                "no terms": undefined
             },
             "Login": {
-                "doRegister": "创建帐户",
-            },
+                "doRegister": "创建帐户"
+            }
             /* spell-checker: enable */
-        },
-    },
+        }
+    }
 );
 
 export { useTranslation, resolveLocalizedString, useLang, useResolveLocalizedString };
 
 export const evtLang = statefulObservableToStatefulEvt({
-    "statefulObservable": $lang,
+    "statefulObservable": $lang
 });

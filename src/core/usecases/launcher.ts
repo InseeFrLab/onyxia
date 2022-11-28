@@ -1,38 +1,37 @@
 import "minimal-polyfills/Object.fromEntries";
-import type { ThunkAction } from "../setup";
+import type { State, ThunkAction } from "../setup";
 import type { PayloadAction } from "@reduxjs/toolkit";
-import { createSlice } from "@reduxjs/toolkit";
+import { createSelector, createSlice } from "@reduxjs/toolkit";
 import { id } from "tsafe/id";
 import { assert } from "tsafe/assert";
 import { selectors as userConfigsSelectors } from "./userConfigs";
 import { same } from "evt/tools/inDepth/same";
 import type { FormFieldValue } from "./sharedDataModel/FormFieldValue";
 import { formFieldsValueToObject } from "./sharedDataModel/FormFieldValue";
-import {
-    onyxiaFriendlyNameFormFieldPath,
-    onyxiaIsSharedFormFieldPath,
-} from "core/ports/OnyxiaApiClient";
 import type {
     Contract,
-    OnyxiaValues,
-    JSONSchemaObject,
     JSONSchemaFormFieldDescription,
+    JSONSchemaObject,
+    OnyxiaValues
 } from "core/ports/OnyxiaApiClient";
-import { createSelector } from "@reduxjs/toolkit";
-import type { RootState } from "../setup";
+import {
+    onyxiaFriendlyNameFormFieldPath,
+    onyxiaIsSharedFormFieldPath
+} from "core/ports/OnyxiaApiClient";
 import type { RestorablePackageConfig } from "./restorablePackageConfigs";
 import type { WritableDraft } from "immer/dist/types/types-external";
 import { thunks as publicIpThunks } from "./publicIp";
 import { thunks as userAuthenticationThunk } from "./userAuthentication";
 import { selectors as deploymentRegionSelectors } from "./deploymentRegion";
 import { exclude } from "tsafe/exclude";
-import { thunks as projectConfigsThunks } from "./projectConfigs";
+import { thunks as projectConfigs } from "./projectConfigs";
 import { selectors as projectSelectionSelectors } from "./projectSelection";
 import { parseUrl } from "core/tools/parseUrl";
 import { typeGuard } from "tsafe/typeGuard";
 import { getRandomK8sSubdomain, getServiceId } from "../ports/OnyxiaApiClient";
-import { getS3UrlAndRegion } from "../secondaryAdapters/s3Client";
-import { interUsecasesThunks as explorersThunks } from "./explorers";
+import { getS3UrlAndRegion } from "../adapters/s3Client";
+import { interUsecasesThunks as secretExplorerThunks } from "./secretExplorer";
+
 import * as yaml from "yaml";
 import type { Equals } from "tsafe";
 
@@ -82,7 +81,7 @@ export declare namespace FormField {
     };
 
     export type Text = Common & {
-        type: "text";
+        type: "text" | "password";
         pattern: string | undefined;
         value: string;
         defaultValue: string;
@@ -224,20 +223,20 @@ const { scaffoldingIndexedFormFieldsToFinal } = (() => {
         const { assembleRangeSliderFormField } = (() => {
             const { assembleExtremities } = (() => {
                 function toExtremities(
-                    formField: FormField.Slider.Range,
+                    formField: FormField.Slider.Range
                 ): IndexedFormFields.AssembledSliderRangeFormField["extremities"][
                     | "up"
                     | "down"] {
                     return {
                         "path": formField.path,
                         "semantic": formField.sliderExtremitySemantic,
-                        "value": formField.value,
+                        "value": formField.value
                     };
                 }
 
                 function assembleExtremities(
                     formField1: FormField.Slider.Range,
-                    formField2: FormField.Slider.Range,
+                    formField2: FormField.Slider.Range
                 ): IndexedFormFields.AssembledSliderRangeFormField {
                     const formFieldUp =
                         formField1.sliderExtremity === "up" ? formField1 : formField2;
@@ -245,21 +244,21 @@ const { scaffoldingIndexedFormFieldsToFinal } = (() => {
                     assert(formFieldUp.sliderExtremity === "up");
 
                     const formFieldDown = [formField1, formField2].find(
-                        formField => formField !== formFieldUp,
+                        formField => formField !== formFieldUp
                     );
 
                     assert(
                         formFieldDown !== undefined &&
-                            formFieldDown.sliderExtremity === "down",
+                            formFieldDown.sliderExtremity === "down"
                     );
 
                     return {
                         "extremities": {
                             "down": toExtremities(formFieldDown),
-                            "up": toExtremities(formFieldUp),
+                            "up": toExtremities(formFieldUp)
                         },
                         "sliderMax": formFieldUp.sliderMax,
-                        ...formFieldDown,
+                        ...formFieldDown
                     };
                 }
 
@@ -271,24 +270,24 @@ const { scaffoldingIndexedFormFieldsToFinal } = (() => {
                     | IndexedFormFields.AssembledSliderRangeFormField
                     | FormField.Slider.Range
                 )[],
-                formField: FormField.Slider.Range,
+                formField: FormField.Slider.Range
             ): void {
                 const otherExtremity = acc
                     .map(assembledSliderRangeFormFieldOrFormFieldSliderRange =>
                         "extremities" in
                         assembledSliderRangeFormFieldOrFormFieldSliderRange
                             ? undefined
-                            : assembledSliderRangeFormFieldOrFormFieldSliderRange,
+                            : assembledSliderRangeFormFieldOrFormFieldSliderRange
                     )
                     .filter(exclude(undefined))
                     .find(
-                        ({ sliderRangeId }) => sliderRangeId === formField.sliderRangeId,
+                        ({ sliderRangeId }) => sliderRangeId === formField.sliderRangeId
                     );
 
                 if (otherExtremity !== undefined) {
                     acc[acc.indexOf(otherExtremity)] = assembleExtremities(
                         otherExtremity,
-                        formField,
+                        formField
                     );
                 } else {
                     acc.push(formField);
@@ -299,7 +298,7 @@ const { scaffoldingIndexedFormFieldsToFinal } = (() => {
         })();
 
         function assembleFormFields(
-            formFields: FormField.Slider.Range[],
+            formFields: FormField.Slider.Range[]
         ): IndexedFormFields.AssembledSliderRangeFormField[] {
             let acc: (
                 | IndexedFormFields.AssembledSliderRangeFormField
@@ -313,7 +312,7 @@ const { scaffoldingIndexedFormFieldsToFinal } = (() => {
                     throw new Error(
                         `${assembledSliderRangeFormField.path.join("/")} only has ${
                             assembledSliderRangeFormField.sliderExtremity
-                        } extremity`,
+                        } extremity`
                     );
                 }
                 return assembledSliderRangeFormField;
@@ -324,14 +323,14 @@ const { scaffoldingIndexedFormFieldsToFinal } = (() => {
     })();
 
     function scaffoldingIndexedFormFieldsToFinal(
-        scaffoldingIndexedFormFields: IndexedFormFields.Scaffolding,
+        scaffoldingIndexedFormFields: IndexedFormFields.Scaffolding
     ): IndexedFormFields.Final {
         const indexedFormFields: IndexedFormFields.Final = {};
 
         Object.entries(scaffoldingIndexedFormFields).forEach(
             ([
                 dependencyNamePackageNameOrGlobal,
-                { meta, formFieldsByTabName: scaffoldingFormFieldsByTabName },
+                { meta, formFieldsByTabName: scaffoldingFormFieldsByTabName }
             ]) => {
                 const formFieldsByTabName: IndexedFormFields.Final[string]["formFieldsByTabName"] =
                     {};
@@ -359,16 +358,16 @@ const { scaffoldingIndexedFormFieldsToFinal } = (() => {
                             description,
                             "formFields": nonSliderRangeFormFields,
                             "assembledSliderRangeFormFields":
-                                assembleFormFields(sliderRangeFormFields),
+                                assembleFormFields(sliderRangeFormFields)
                         };
-                    },
+                    }
                 );
 
                 indexedFormFields[dependencyNamePackageNameOrGlobal] = {
                     meta,
-                    formFieldsByTabName,
+                    formFieldsByTabName
                 };
-            },
+            }
         );
 
         return indexedFormFields;
@@ -384,8 +383,8 @@ export const { reducer, actions } = createSlice({
     "initialState": id<LauncherState>(
         id<LauncherState.NotInitialized>({
             "stateDescription": "not initialized",
-            "isInitializing": false,
-        }),
+            "isInitializing": false
+        })
     ),
     "reducers": {
         "initializationStarted": state => {
@@ -395,7 +394,7 @@ export const { reducer, actions } = createSlice({
         "initialized": (
             state,
             {
-                payload,
+                payload
             }: PayloadAction<{
                 catalogId: string;
                 packageName: string;
@@ -407,7 +406,7 @@ export const { reducer, actions } = createSlice({
                 dependencies: string[];
                 formFieldsValueDifferentFromDefault: FormFieldValue[];
                 sensitiveConfigurations: FormFieldValue[];
-            }>,
+            }>
         ) => {
             const {
                 catalogId,
@@ -419,7 +418,7 @@ export const { reducer, actions } = createSlice({
                 config,
                 dependencies,
                 formFieldsValueDifferentFromDefault,
-                sensitiveConfigurations,
+                sensitiveConfigurations
             } = payload;
 
             Object.assign(
@@ -435,27 +434,27 @@ export const { reducer, actions } = createSlice({
                         infosAboutWhenFieldsShouldBeHidden,
                         "defaultFormFieldsValue": formFields.map(({ path, value }) => ({
                             path,
-                            value,
+                            value
                         })),
                         dependencies,
                         "pathOfFormFieldsWhoseValuesAreDifferentFromDefault": [],
-                        config,
+                        config
                     },
                     "launchState": "not launching",
-                    sensitiveConfigurations,
-                }),
+                    sensitiveConfigurations
+                })
             );
 
             assert(state.stateDescription === "ready");
 
             formFieldsValueDifferentFromDefault.forEach(formFieldValue =>
-                formFieldValueChangedReducer({ state, formFieldValue }),
+                formFieldValueChangedReducer({ state, formFieldValue })
             );
         },
         "reset": () =>
             id<LauncherState.NotInitialized>({
                 "stateDescription": "not initialized",
-                "isInitializing": false,
+                "isInitializing": false
             }),
         "formFieldValueChanged": (state, { payload }: PayloadAction<FormFieldValue>) => {
             assert(state.stateDescription === "ready");
@@ -472,8 +471,8 @@ export const { reducer, actions } = createSlice({
             state.launchState = "launched";
             assert(state.launchState === "launched");
             state.serviceId = serviceId;
-        },
-    },
+        }
+    }
 });
 
 const privateThunks = {
@@ -498,20 +497,20 @@ const privateThunks = {
                 "catalogId": state.catalogId,
                 "packageName": state.packageName,
                 "options": formFieldsValueToObject(state["~internal"].formFields),
-                "isDryRun": isForContractPreview,
+                "isDryRun": isForContractPreview
             });
 
             if (!isForContractPreview) {
                 const { serviceId } = getServiceId({
                     "packageName": state.packageName,
-                    "randomK8sSubdomain": getRandomK8sSubdomain(),
+                    "randomK8sSubdomain": getRandomK8sSubdomain()
                 });
 
                 dispatch(actions.launchCompleted({ serviceId }));
             }
 
             return { contract };
-        },
+        }
 };
 
 export const thunks = {
@@ -529,7 +528,7 @@ export const thunks = {
 
             assert(
                 getState().launcher.stateDescription === "not initialized",
-                "the reset thunk need to be called before initializing again",
+                "the reset thunk need to be called before initializing again"
             );
 
             dispatch(actions.initializationStarted());
@@ -537,7 +536,7 @@ export const thunks = {
             const { dependencies, sources, getValuesSchemaJson } =
                 await onyxiaApiClient.getPackageConfig({
                     catalogId,
-                    packageName,
+                    packageName
                 });
 
             {
@@ -553,13 +552,13 @@ export const thunks = {
             assert(oidcClient.isUserLoggedIn);
 
             const valuesSchemaJson = getValuesSchemaJson({
-                "onyxiaValues": await dispatch(thunks.getOnyxiaValues()),
+                "onyxiaValues": await dispatch(thunks.getOnyxiaValues())
             });
 
             const {
                 formFields,
                 infosAboutWhenFieldsShouldBeHidden,
-                sensitiveConfigurations,
+                sensitiveConfigurations
             } = (() => {
                 const formFields: LauncherState.Ready["~internal"]["formFields"] = [];
                 const infosAboutWhenFieldsShouldBeHidden: LauncherState.Ready["~internal"]["infosAboutWhenFieldsShouldBeHidden"] =
@@ -572,8 +571,8 @@ export const thunks = {
                                 same(restorablePackageConfig, {
                                     packageName,
                                     catalogId,
-                                    formFieldsValueDifferentFromDefault,
-                                }),
+                                    formFieldsValueDifferentFromDefault
+                                })
                         ) !== undefined
                     ) {
                         return undefined;
@@ -588,7 +587,7 @@ export const thunks = {
                 }): void {
                     const {
                         jsonSchemaObject: { properties },
-                        currentPath,
+                        currentPath
                     } = params;
 
                     Object.entries(properties).forEach(
@@ -605,7 +604,7 @@ export const thunks = {
 
                                 callee({
                                     "currentPath": newCurrentPath,
-                                    jsonSchemaObject,
+                                    jsonSchemaObject
                                 });
                                 return;
                             }
@@ -624,20 +623,20 @@ export const thunks = {
                                             jsonSchemaFormFieldDescription.description,
                                         "isReadonly":
                                             jsonSchemaFormFieldDescription["x-onyxia"]
-                                                ?.readonly ?? false,
+                                                ?.readonly ?? false
                                     };
 
                                     //TODO: The JSON schema should be tested in entry of the system.
                                     if ("render" in jsonSchemaFormFieldDescription) {
                                         assert(
-                                            ["slider", "textArea"].find(
+                                            ["slider", "textArea", "password"].find(
                                                 render =>
                                                     render ===
-                                                    jsonSchemaFormFieldDescription.render,
+                                                    jsonSchemaFormFieldDescription.render
                                             ) !== undefined,
                                             `${common.path.join("/")} has render: "${
                                                 jsonSchemaFormFieldDescription.render
-                                            }" and it's not supported`,
+                                            }" and it's not supported`
                                         );
                                     }
 
@@ -655,7 +654,7 @@ export const thunks = {
                                             const scopCommon = {
                                                 ...common,
                                                 "type": "slider",
-                                                "sliderVariation": "range",
+                                                "sliderVariation": "range"
                                             } as const;
 
                                             switch (
@@ -676,8 +675,8 @@ export const thunks = {
                                                                 jsonSchemaFormFieldDescription.sliderUnit,
                                                             "sliderStep":
                                                                 jsonSchemaFormFieldDescription.sliderStep,
-                                                            value,
-                                                        },
+                                                            value
+                                                        }
                                                     );
                                                 case "up":
                                                     return id<FormField.Slider.Range.Up>({
@@ -689,7 +688,7 @@ export const thunks = {
                                                         "sliderExtremity": "up",
                                                         "sliderMax":
                                                             jsonSchemaFormFieldDescription.sliderMax,
-                                                        value,
+                                                        value
                                                     });
                                             }
                                         }
@@ -706,7 +705,7 @@ export const thunks = {
                                                 jsonSchemaFormFieldDescription.sliderStep,
                                             "sliderMax":
                                                 jsonSchemaFormFieldDescription.sliderMax,
-                                            value,
+                                            value
                                         });
                                     }
 
@@ -717,7 +716,7 @@ export const thunks = {
                                             ...common,
                                             "value":
                                                 jsonSchemaFormFieldDescription.default,
-                                            "type": "boolean",
+                                            "type": "boolean"
                                         });
                                     }
 
@@ -729,8 +728,8 @@ export const thunks = {
                                         const value = {
                                             "type": "yaml" as const,
                                             "yamlStr": yaml.stringify(
-                                                jsonSchemaFormFieldDescription.default,
-                                            ),
+                                                jsonSchemaFormFieldDescription.default
+                                            )
                                         };
 
                                         switch (jsonSchemaFormFieldDescription.type) {
@@ -739,14 +738,14 @@ export const thunks = {
                                                     ...common,
                                                     value,
                                                     "defaultValue": value,
-                                                    "type": jsonSchemaFormFieldDescription.type,
+                                                    "type": jsonSchemaFormFieldDescription.type
                                                 });
                                             case "object":
                                                 return id<FormField.Object>({
                                                     ...common,
                                                     value,
                                                     "defaultValue": value,
-                                                    "type": jsonSchemaFormFieldDescription.type,
+                                                    "type": jsonSchemaFormFieldDescription.type
                                                 });
                                         }
 
@@ -764,7 +763,7 @@ export const thunks = {
                                             jsonSchemaFormFieldDescription.type ===
                                                 "integer" ||
                                                 jsonSchemaFormFieldDescription.type ===
-                                                    "number",
+                                                    "number"
                                         )
                                     ) {
                                         return id<FormField.Integer>({
@@ -773,7 +772,7 @@ export const thunks = {
                                                 jsonSchemaFormFieldDescription.default,
                                             "minimum":
                                                 jsonSchemaFormFieldDescription.minimum,
-                                            "type": "integer",
+                                            "type": "integer"
                                         });
                                     }
 
@@ -783,7 +782,7 @@ export const thunks = {
                                             "value":
                                                 jsonSchemaFormFieldDescription.default,
                                             "enum": jsonSchemaFormFieldDescription.enum,
-                                            "type": "enum",
+                                            "type": "enum"
                                         });
                                     }
 
@@ -803,7 +802,7 @@ export const thunks = {
 
                                         const value =
                                             formFieldsValueDifferentFromDefault.find(
-                                                ({ path }) => same(path, common.path),
+                                                ({ path }) => same(path, common.path)
                                             )?.value;
 
                                         if (value === undefined) {
@@ -816,7 +815,7 @@ export const thunks = {
 
                                         sensitiveConfigurations.push({
                                             "path": common.path,
-                                            value,
+                                            value
                                         });
                                     }
 
@@ -824,14 +823,18 @@ export const thunks = {
                                         ...common,
                                         "pattern": jsonSchemaFormFieldDescription.pattern,
                                         "value": jsonSchemaFormFieldDescription.default,
-                                        "type": "text",
+                                        "type":
+                                            jsonSchemaFormFieldDescription.render ===
+                                            "password"
+                                                ? "password"
+                                                : "text",
                                         "defaultValue":
                                             jsonSchemaFormFieldDescription.default,
                                         "doRenderAsTextArea":
                                             jsonSchemaFormFieldDescription.render ===
-                                            "textArea",
+                                            "textArea"
                                     });
-                                })(),
+                                })()
                             );
 
                             infosAboutWhenFieldsShouldBeHidden.push({
@@ -857,21 +860,21 @@ export const thunks = {
 
                                     return {
                                         "path": hidden.path.split("/"),
-                                        "value": hidden.value,
+                                        "value": hidden.value
                                     };
-                                })(),
+                                })()
                             });
-                        },
+                        }
                     );
                 })({
                     "currentPath": [],
-                    "jsonSchemaObject": valuesSchemaJson,
+                    "jsonSchemaObject": valuesSchemaJson
                 });
 
                 return {
                     formFields,
                     infosAboutWhenFieldsShouldBeHidden,
-                    sensitiveConfigurations,
+                    sensitiveConfigurations
                 };
             })();
 
@@ -879,24 +882,23 @@ export const thunks = {
                 actions.initialized({
                     catalogId,
                     packageName,
-                    "icon": await onyxiaApiClient
-                        .getCatalogs()
-                        .then(
-                            apiRequestResult =>
-                                apiRequestResult
-                                    .find(({ id }) => id === catalogId)!
-                                    .catalog.packages.find(
-                                        ({ name }) => name === packageName,
-                                    )!.icon,
-                        ),
+                    "icon": await onyxiaApiClient.getCatalogs().then(
+                        apiRequestResult =>
+                            //TODO: Sort in the adapter of even better, assumes version sorted
+                            //and validate this assertion with zod
+                            apiRequestResult
+                                .find(({ id }) => id === catalogId)!
+                                .charts.find(({ name }) => name === packageName)!
+                                .versions[0].icon
+                    ),
                     sources,
                     formFields,
                     infosAboutWhenFieldsShouldBeHidden,
                     config: valuesSchemaJson,
                     dependencies,
                     formFieldsValueDifferentFromDefault,
-                    "sensitiveConfigurations": sensitiveConfigurations ?? [],
-                }),
+                    "sensitiveConfigurations": sensitiveConfigurations ?? []
+                })
             );
         },
     "reset": (): ThunkAction<void> => dispatch => dispatch(actions.reset()),
@@ -907,15 +909,15 @@ export const thunks = {
     "launch": (): ThunkAction => async dispatch => {
         dispatch(
             privateThunks.launchOrPreviewContract({
-                "isForContractPreview": false,
-            }),
+                "isForContractPreview": false
+            })
         );
     },
     "getContract": (): ThunkAction<Promise<{ contract: Contract }>> => async dispatch =>
         dispatch(
             privateThunks.launchOrPreviewContract({
-                "isForContractPreview": true,
-            }),
+                "isForContractPreview": true
+            })
         ),
     "changeFriendlyName":
         (friendlyName: string): ThunkAction<void> =>
@@ -923,8 +925,8 @@ export const thunks = {
             dispatch(
                 thunks.changeFormFieldValue({
                     "path": onyxiaFriendlyNameFormFieldPath.split("."),
-                    "value": friendlyName,
-                }),
+                    "value": friendlyName
+                })
             ),
     "changeIsShared":
         (params: { isShared: boolean }): ThunkAction<void> =>
@@ -932,8 +934,8 @@ export const thunks = {
             dispatch(
                 thunks.changeFormFieldValue({
                     "path": onyxiaIsSharedFormFieldPath.split("."),
-                    "value": params.isShared,
-                }),
+                    "value": params.isShared
+                })
             ),
     /** This thunk can be used outside of the launcher page,
      *  even if the slice isn't initialized */
@@ -953,7 +955,7 @@ export const thunks = {
                 deploymentRegionSelectors.selectedDeploymentRegion(getState());
 
             const servicePassword = await dispatch(
-                projectConfigsThunks.getValue({ "key": "servicePassword" }),
+                projectConfigs.getValue({ "key": "servicePassword" })
             );
 
             const project = projectSelectionSelectors.selectedProject(getState());
@@ -964,20 +966,20 @@ export const thunks = {
                     "name": `${user.familyName} ${user.firstName}`,
                     "email": user.email,
                     "password": servicePassword,
-                    "ip": publicIp,
+                    "ip": publicIp
                 },
                 "project": {
                     "id": project.id,
                     "password": servicePassword,
                     "basic": btoa(
-                        unescape(encodeURIComponent(`${project.id}:${servicePassword}`)),
-                    ),
+                        unescape(encodeURIComponent(`${project.id}:${servicePassword}`))
+                    )
                 },
                 "git": {
                     "name": userConfigs.gitName,
                     "email": userConfigs.gitEmail,
                     "credentials_cache_duration": userConfigs.gitCredentialCacheDuration,
-                    "token": userConfigs.githubPersonalAccessToken ?? undefined,
+                    "token": userConfigs.githubPersonalAccessToken ?? undefined
                 },
                 "vault": await (async () => {
                     const { vault } = selectedDeploymentRegion;
@@ -987,7 +989,7 @@ export const thunks = {
                             "VAULT_ADDR": "",
                             "VAULT_TOKEN": "",
                             "VAULT_MOUNT": "",
-                            "VAULT_TOP_DIR": "",
+                            "VAULT_TOP_DIR": ""
                         };
                     }
 
@@ -996,10 +998,8 @@ export const thunks = {
                         "VAULT_TOKEN": (await secretsManagerClient.getToken()).token,
                         "VAULT_MOUNT": vault.kvEngine,
                         "VAULT_TOP_DIR": dispatch(
-                            explorersThunks.getProjectHomePath({
-                                "explorerType": "secrets",
-                            }),
-                        ),
+                            secretExplorerThunks.getProjectHomePath()
+                        )
                     };
                 })(),
                 "kaggleApiToken": userConfigs.kaggleApiToken ?? undefined,
@@ -1013,7 +1013,7 @@ export const thunks = {
                         await s3Client.getToken({
                             "restrictToBucketName": isDefaultProject
                                 ? undefined
-                                : project.bucket,
+                                : project.bucket
                         });
 
                     s3Client.createBucketIfNotExist(project.bucket);
@@ -1026,14 +1026,14 @@ export const thunks = {
                         ...(() => {
                             const { s3: s3Params } =
                                 deploymentRegionSelectors.selectedDeploymentRegion(
-                                    getState(),
+                                    getState()
                                 );
 
                             if (s3Params === undefined) {
                                 return {
                                     "AWS_DEFAULT_REGION": "",
                                     "AWS_S3_ENDPOINT": "",
-                                    "port": 443,
+                                    "port": 443
                                 };
                             }
 
@@ -1048,9 +1048,9 @@ export const thunks = {
                             return {
                                 "AWS_DEFAULT_REGION": region,
                                 "AWS_S3_ENDPOINT": host,
-                                port,
+                                port
                             };
-                        })(),
+                        })()
                     };
                 })(),
                 "region": {
@@ -1062,25 +1062,30 @@ export const thunks = {
                     "from": selectedDeploymentRegion.from,
                     "tolerations": selectedDeploymentRegion.tolerations,
                     "nodeSelector": selectedDeploymentRegion.nodeSelector,
-                    "startupProbe": selectedDeploymentRegion.startupProbe,
+                    "startupProbe": selectedDeploymentRegion.startupProbe
                 },
                 "k8s": {
                     "domain": selectedDeploymentRegion.kubernetesClusterDomain,
                     "ingressClassName": selectedDeploymentRegion.ingressClassName,
                     "randomSubdomain":
                         (getRandomK8sSubdomain.clear(), getRandomK8sSubdomain()),
-                    "initScriptUrl": selectedDeploymentRegion.initScriptUrl,
+                    "initScriptUrl": selectedDeploymentRegion.initScriptUrl
                 },
+                "proxyInjection": selectedDeploymentRegion.proxyInjection,
+                "packageRepositoryInjection":
+                    selectedDeploymentRegion.packageRepositoryInjection,
+                "certificateAuthorityInjection":
+                    selectedDeploymentRegion.certificateAuthorityInjection
             };
 
             console.log(onyxiaValues);
 
             return onyxiaValues;
-        },
+        }
 };
 
 export const selectors = (() => {
-    const readyLauncher = (rootState: RootState): LauncherState.Ready | undefined => {
+    const readyLauncher = (rootState: State): LauncherState.Ready | undefined => {
         const state = rootState.launcher;
         switch (state.stateDescription) {
             case "ready":
@@ -1094,17 +1099,17 @@ export const selectors = (() => {
 
     const formFields = createSelector(
         readyLauncher,
-        state => state?.["~internal"].formFields,
+        state => state?.["~internal"].formFields
     );
 
     const infosAboutWhenFieldsShouldBeHidden = createSelector(
         readyLauncher,
-        state => state?.["~internal"].infosAboutWhenFieldsShouldBeHidden,
+        state => state?.["~internal"].infosAboutWhenFieldsShouldBeHidden
     );
 
     const dependencies = createSelector(
         readyLauncher,
-        state => state?.["~internal"].dependencies,
+        state => state?.["~internal"].dependencies
     );
 
     const friendlyName = createSelector(formFields, formFields => {
@@ -1113,7 +1118,7 @@ export const selectors = (() => {
         }
 
         const friendlyName = formFields.find(({ path }) =>
-            same(path, onyxiaFriendlyNameFormFieldPath.split(".")),
+            same(path, onyxiaFriendlyNameFormFieldPath.split("."))
         )!.value;
 
         assert(typeof friendlyName === "string");
@@ -1127,7 +1132,7 @@ export const selectors = (() => {
         }
 
         const isShared = formFields.find(({ path }) =>
-            same(path, onyxiaIsSharedFormFieldPath.split(".")),
+            same(path, onyxiaIsSharedFormFieldPath.split("."))
         )!.value;
 
         assert(typeof isShared === "boolean");
@@ -1148,7 +1153,7 @@ export const selectors = (() => {
 
             for (const onyxiaSpecialFormFieldPath of [
                 onyxiaFriendlyNameFormFieldPath,
-                onyxiaIsSharedFormFieldPath,
+                onyxiaIsSharedFormFieldPath
             ]) {
                 if (same(onyxiaSpecialFormFieldPath.split("."), path)) {
                     return true;
@@ -1157,7 +1162,7 @@ export const selectors = (() => {
 
             const infoAboutWhenFieldsShouldBeHidden =
                 infosAboutWhenFieldsShouldBeHidden.find(({ path: path_i }) =>
-                    same(path, path_i),
+                    same(path, path_i)
                 );
 
             if (infoAboutWhenFieldsShouldBeHidden === undefined) {
@@ -1171,7 +1176,7 @@ export const selectors = (() => {
             }
 
             const targetFormField = formFields.find(({ path }) =>
-                same(path, isHidden.path),
+                same(path, isHidden.path)
             );
 
             assert(
@@ -1180,8 +1185,8 @@ export const selectors = (() => {
                     `We can't tell if ${path.join("/")} should be shown or hidden.`,
                     "It is supposed to depend on the value of",
                     isHidden.path.join("/"),
-                    "but this field doesn't exists in the chart.",
-                ].join(" "),
+                    "but this field doesn't exists in the chart."
+                ].join(" ")
             );
 
             return targetFormField.value === isHidden.value;
@@ -1201,7 +1206,7 @@ export const selectors = (() => {
             formFields,
             infosAboutWhenFieldsShouldBeHidden,
             packageName,
-            dependencies,
+            dependencies
         ): IndexedFormFields | undefined => {
             if (
                 !formFields ||
@@ -1216,11 +1221,11 @@ export const selectors = (() => {
 
             const { isFieldHidden } = createIsFieldHidden({
                 formFields,
-                infosAboutWhenFieldsShouldBeHidden,
+                infosAboutWhenFieldsShouldBeHidden
             });
 
             const nonHiddenFormField = formFields.filter(
-                ({ path }) => !isFieldHidden({ path }),
+                ({ path }) => !isFieldHidden({ path })
             );
 
             [...dependencies, "global"].forEach(dependencyOrGlobal => {
@@ -1238,12 +1243,12 @@ export const selectors = (() => {
 
                                 return o.properties[formField.path[1]].description;
                             })(),
-                            "formFields": [],
+                            "formFields": []
                         }).formFields.push(formField);
 
                         nonHiddenFormField.splice(
                             nonHiddenFormField.indexOf(formField),
-                            1,
+                            1
                         );
                     });
 
@@ -1260,11 +1265,11 @@ export const selectors = (() => {
                         dependencyOrGlobal === "global"
                             ? {
                                   "type": "global",
-                                  "description": config?.properties["global"].description,
+                                  "description": config?.properties["global"].description
                               }
                             : {
-                                  "type": "dependency",
-                              },
+                                  "type": "dependency"
+                              }
                 };
             });
 
@@ -1278,24 +1283,24 @@ export const selectors = (() => {
                         (formFieldsByTabName[formField.path[0]] = {
                             "description":
                                 config?.properties[formField.path[0]].description,
-                            "formFields": [],
+                            "formFields": []
                         })
-                    ).formFields.push(formField),
+                    ).formFields.push(formField)
                 );
 
                 indexedFormFields[packageName] = {
                     formFieldsByTabName,
-                    "meta": { "type": "package" },
+                    "meta": { "type": "package" }
                 };
             }
 
             //Re assign packageName so it appears before other cards
             return Object.fromEntries(
                 Object.entries(
-                    scaffoldingIndexedFormFieldsToFinal(indexedFormFields),
-                ).sort(([key]) => (key === packageName ? -1 : 0)),
+                    scaffoldingIndexedFormFieldsToFinal(indexedFormFields)
+                ).sort(([key]) => (key === packageName ? -1 : 0))
             );
-        },
+        }
     );
 
     const formFieldsIsWellFormed = createSelector(
@@ -1308,7 +1313,7 @@ export const selectors = (() => {
 
             const { isFieldHidden } = createIsFieldHidden({
                 formFields,
-                infosAboutWhenFieldsShouldBeHidden,
+                infosAboutWhenFieldsShouldBeHidden
             });
 
             return formFields
@@ -1336,7 +1341,7 @@ export const selectors = (() => {
 
                                 if (pattern === undefined) {
                                     return {
-                                        "isWellFormed": true,
+                                        "isWellFormed": true
                                     };
                                 }
 
@@ -1346,12 +1351,12 @@ export const selectors = (() => {
 
                                 return isWellFormed
                                     ? {
-                                          "isWellFormed": true,
+                                          "isWellFormed": true
                                       }
                                     : {
                                           "isWellFormed": false,
                                           "message": "mismatching pattern",
-                                          pattern,
+                                          pattern
                                       };
                             }
                             case "object": {
@@ -1374,11 +1379,11 @@ export const selectors = (() => {
 
                                 return isWellFormed
                                     ? {
-                                          "isWellFormed": true,
+                                          "isWellFormed": true
                                       }
                                     : {
                                           "isWellFormed": false,
-                                          "message": "Invalid YAML Object",
+                                          "message": "Invalid YAML Object"
                                       };
                             }
                             case "array": {
@@ -1400,21 +1405,21 @@ export const selectors = (() => {
 
                                 return isWellFormed
                                     ? {
-                                          "isWellFormed": true,
+                                          "isWellFormed": true
                                       }
                                     : {
                                           "isWellFormed": false,
-                                          "message": "Invalid YAML Array",
+                                          "message": "Invalid YAML Array"
                                       };
                             }
                             default:
                                 return {
-                                    "isWellFormed": true,
+                                    "isWellFormed": true
                                 } as const;
                         }
-                    })(),
+                    })()
                 }));
-        },
+        }
     );
 
     const isLaunchable = createSelector(
@@ -1425,12 +1430,12 @@ export const selectors = (() => {
             }
 
             return formFieldsIsWellFormed.every(({ isWellFormed }) => isWellFormed);
-        },
+        }
     );
 
     const pathOfFormFieldsWhoseValuesAreDifferentFromDefault = createSelector(
         readyLauncher,
-        state => state?.["~internal"].pathOfFormFieldsWhoseValuesAreDifferentFromDefault,
+        state => state?.["~internal"].pathOfFormFieldsWhoseValuesAreDifferentFromDefault
     );
 
     const catalogId = createSelector(readyLauncher, state => state?.catalogId);
@@ -1444,7 +1449,7 @@ export const selectors = (() => {
             catalogId,
             packageName,
             formFields,
-            pathOfFormFieldsWhoseValuesAreDifferentFromDefault,
+            pathOfFormFieldsWhoseValuesAreDifferentFromDefault
         ) =>
             !catalogId ||
             !packageName ||
@@ -1459,11 +1464,11 @@ export const selectors = (() => {
                               ({ path }) => ({
                                   path,
                                   "value": formFields.find(formField =>
-                                      same(formField.path, path),
-                                  )!.value,
-                              }),
-                          ),
-                  }),
+                                      same(formField.path, path)
+                                  )!.value
+                              })
+                          )
+                  })
     );
 
     return {
@@ -1472,7 +1477,7 @@ export const selectors = (() => {
         indexedFormFields,
         isLaunchable,
         formFieldsIsWellFormed,
-        restorablePackageConfig,
+        restorablePackageConfig
     };
 })();
 
@@ -1482,12 +1487,12 @@ function formFieldValueChangedReducer(params: {
 }): void {
     const {
         state,
-        formFieldValue: { path, value },
+        formFieldValue: { path, value }
     } = params;
 
     {
         const formField = state["~internal"].formFields.find(formField =>
-            same(formField.path, path),
+            same(formField.path, path)
         )!;
 
         if (same(formField.value, value)) {
@@ -1502,21 +1507,21 @@ function formFieldValueChangedReducer(params: {
 
         if (
             state["~internal"].defaultFormFieldsValue.find(formField =>
-                same(formField.path, path),
+                same(formField.path, path)
             )!.value !== value
         ) {
             if (
                 !pathOfFormFieldsWhoseValuesAreDifferentFromDefault.find(
-                    ({ path: path_i }) => same(path_i, path),
+                    ({ path: path_i }) => same(path_i, path)
                 )
             ) {
                 pathOfFormFieldsWhoseValuesAreDifferentFromDefault.push({
-                    path,
+                    path
                 });
             }
         } else {
             const index = pathOfFormFieldsWhoseValuesAreDifferentFromDefault.findIndex(
-                ({ path: path_i }) => same(path_i, path),
+                ({ path: path_i }) => same(path_i, path)
             );
 
             if (index >= 0) {

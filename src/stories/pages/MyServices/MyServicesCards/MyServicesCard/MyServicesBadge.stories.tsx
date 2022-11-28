@@ -5,27 +5,27 @@ import rstudioLogoUrl from "stories/assets/img/rstudio.png";
 
 const { meta, getStory } = getStoryFactory({
     sectionName,
-    "wrappedComponent": { MyServicesRoundLogo },
+    "wrappedComponent": { MyServicesRoundLogo }
 });
 
 export default meta;
 
-export const VueSuccess = getStory({
+export const ViewSuccess = getStory({
     "url": rstudioLogoUrl,
-    "severity": "success",
+    "severity": "success"
 });
 
-export const VueWarning = getStory({
+export const ViewWarning = getStory({
     "url": rstudioLogoUrl,
-    "severity": "warning",
+    "severity": "warning"
 });
 
-export const VueError = getStory({
+export const ViewError = getStory({
     "url": rstudioLogoUrl,
-    "severity": "error",
+    "severity": "error"
 });
 
-export const VuePending = getStory({
+export const ViewPending = getStory({
     "url": rstudioLogoUrl,
-    "severity": "pending",
+    "severity": "pending"
 });

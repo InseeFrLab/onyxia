@@ -6,39 +6,39 @@ import { css } from "@emotion/css";
 
 const { meta, getStory } = getStoryFactory({
     sectionName,
-    "wrappedComponent": { MyServicesSavedConfig },
+    "wrappedComponent": { MyServicesSavedConfig }
 });
 
 export default meta;
 
 const link = { "href": "https://example.com", "onClick": () => {} };
 
-export const VueShortVariant = getStory({
+export const ViewShortVariant = getStory({
     "className": css({ "width": 400 }),
     "isShortVariant": true,
     "logoUrl": rstudioImgUrl,
     "friendlyName": "My RStudio a bit long",
     "launchLink": link,
     "editLink": link,
-    ...logCallbacks(["callback"]),
+    ...logCallbacks(["callback"])
 });
 
-export const VueLongVariant = getStory({
+export const ViewLongVariant = getStory({
     "className": css({ "width": 1000 }),
     "isShortVariant": false,
     "logoUrl": rstudioImgUrl,
     "friendlyName": "My RStudio a bit long",
     "launchLink": link,
     "editLink": link,
-    ...logCallbacks(["callback"]),
+    ...logCallbacks(["callback"])
 });
 
-export const VueNoLogo = getStory({
+export const ViewNoLogo = getStory({
     "className": css({ "width": 1000 }),
     "logoUrl": undefined,
     "isShortVariant": false,
     "friendlyName": "My RStudio a bit long",
     "launchLink": link,
     "editLink": link,
-    ...logCallbacks(["callback"]),
+    ...logCallbacks(["callback"])
 });

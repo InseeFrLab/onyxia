@@ -14,7 +14,7 @@ type Props = {
 export const CustomService: React.FC<Props> = ({
     initialValues,
     fieldsValues,
-    setInit,
+    setInit
 }) => {
     const { pathname } = useLocation();
 

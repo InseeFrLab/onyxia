@@ -3,7 +3,7 @@ import { MyFiles } from "./my-files/my-files.container";
 import { MyFile } from "./my-file/my-file.container";
 import * as minioTools from "js/minio-client/minio-tools";
 import { actions } from "js/redux/legacyActions";
-import { useSelector } from "ui/coreApi";
+import { useCoreState } from "core";
 import { relative as pathRelative } from "path";
 import { LegacyThemeProvider } from "js/components/LegacyThemeProvider";
 import { createGroup } from "type-route";
@@ -29,13 +29,13 @@ export function NavigationFile(props: {
     const [pathname, setPathname] = useState(decodeURI(window_location_pathname));
     const [racine] = useState(`/mes-fichiers/${bucketName}`);
     const [bucketExist, setBucketExist] = useState(false);
-    const userBuckets = useSelector(state => state.myFiles.userBuckets);
+    const userBuckets = useCoreState(state => state.myFiles.userBuckets);
 
-    const currentObjects = useSelector(state => state.myFiles.currentObjects);
-    const currentDirectories = useSelector(state => state.myFiles.currentDirectories);
+    const currentObjects = useCoreState(state => state.myFiles.currentObjects);
+    const currentDirectories = useCoreState(state => state.myFiles.currentDirectories);
     const [isInitializationCompleted, completeInitialization] = useReducer(
         () => true,
-        false,
+        false
     );
 
     //NOTE: There is a new render when the location is changed
@@ -50,8 +50,8 @@ export function NavigationFile(props: {
             actions.loadBucketContent({
                 bucketName,
                 "prefix": where.replace(`${racine}`, ""),
-                "rec": false,
-            }),
+                "rec": false
+            })
         );
 
         setPathname(where);
@@ -62,8 +62,8 @@ export function NavigationFile(props: {
             actions.loadBucketContent({
                 bucketName,
                 "prefix": pathname.replace(`${racine}`, ""),
-                "rec": false,
-            }),
+                "rec": false
+            })
         );
     }, [bucketName, pathname, racine, dispatch]);
 
@@ -84,7 +84,7 @@ export function NavigationFile(props: {
 
         (async () => {
             const bucket = userBuckets.find(({ id }) => id === bucketName) ?? {
-                "id": bucketName,
+                "id": bucketName
             };
 
             // eslint-disable-next-line

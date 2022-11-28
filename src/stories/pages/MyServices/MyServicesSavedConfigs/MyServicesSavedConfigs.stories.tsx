@@ -1,6 +1,6 @@
 import {
     MyServicesSavedConfigs,
-    Props,
+    Props
 } from "ui/components/pages/MyServices/MyServicesSavedConfigs";
 import { sectionName } from "./sectionName";
 import { getStoryFactory, logCallbacks } from "stories/getStory";
@@ -9,7 +9,7 @@ import { css } from "@emotion/css";
 
 const { meta, getStory } = getStoryFactory({
     sectionName,
-    "wrappedComponent": { MyServicesSavedConfigs },
+    "wrappedComponent": { MyServicesSavedConfigs }
 });
 
 export default meta;
@@ -24,18 +24,18 @@ const props: Props = {
             "launchLink": link,
             "editLink": link,
             "logoUrl": rstudioImgUrl,
-            "friendlyName": `RStudio ${i}`,
+            "friendlyName": `RStudio ${i}`
         };
 
         return out;
     }),
-    ...logCallbacks(["callback", "onRequestToggleIsShortVariant"]),
+    ...logCallbacks(["callback", "onRequestToggleIsShortVariant"])
 };
 
-export const VueShortVariant = getStory(props);
+export const ViewShortVariant = getStory(props);
 
-export const VueFullPage = getStory({
+export const ViewFullPage = getStory({
     ...props,
     "className": css({ "width": 800, "height": 300 }),
-    "isShortVariant": false,
+    "isShortVariant": false
 });

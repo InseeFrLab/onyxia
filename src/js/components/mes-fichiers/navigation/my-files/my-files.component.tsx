@@ -10,7 +10,7 @@ import {
     DialogTitle,
     DialogContent,
     DialogActions,
-    MenuItem,
+    MenuItem
 } from "@mui/material";
 import Checkbox from "@mui/material/Checkbox";
 import TextField from "@mui/material/TextField";
@@ -79,7 +79,7 @@ export class MyFiles extends React.Component<Props, State> {
         "policy": undefined,
         "isInPublicDirectory": false,
         "isPublicDirectory": false,
-        "popupUploadLink": false,
+        "popupUploadLink": false
     };
     input = React.createRef<HTMLInputElement>();
     stream: (Blob["stream"] & { destroy?: () => void }) | null = null;
@@ -94,9 +94,9 @@ export class MyFiles extends React.Component<Props, State> {
         const checkedFiles = files.reduce(
             (a, { name }) => ({
                 ...a,
-                [name]: state.checkedFiles[name] || false,
+                [name]: state.checkedFiles[name] || false
             }),
-            {},
+            {}
         );
         return { ...state, checkedFiles };
     }
@@ -115,29 +115,29 @@ export class MyFiles extends React.Component<Props, State> {
         this.setState({
             checkedFiles: {
                 ...this.state.checkedFiles,
-                [name]: e.target.checked,
-            },
+                [name]: e.target.checked
+            }
         });
 
     checkedAllFiles = (e: { target: { checked: boolean } }) =>
         this.setState({
             checkedFiles: Object.keys(this.state.checkedFiles).reduce(
                 (a, k) => ({ ...a, [k]: e.target.checked }),
-                {},
-            ),
+                {}
+            )
         });
 
     deleteFiles = () => {
         const checked = Object.entries(this.state.checkedFiles).reduce(
             (a, [name, etat]) => (etat ? [...a, name] : a),
-            id<string[]>([]),
+            id<string[]>([])
         );
         if (checked.length > 0) {
             const promises = checked.map(name =>
                 this.props.removeObjectFromBucket({
                     objectName: name,
-                    bucketName: this.props.bucketName,
-                }),
+                    bucketName: this.props.bucketName
+                })
             );
 
             Promise.all(promises).then(() => {
@@ -151,7 +151,7 @@ export class MyFiles extends React.Component<Props, State> {
 
         this.setState({
             "files": Object.values(e.target.files),
-            "filePath": e.target.value,
+            "filePath": e.target.value
         });
     };
 
@@ -172,7 +172,7 @@ export class MyFiles extends React.Component<Props, State> {
         this.setState({
             uploadSeq: true,
             sizeTotal: files.reduce((a, { size }) => a + size, 0),
-            sizeCurrent: 0,
+            sizeCurrent: 0
         });
 
         const promises = files.map(file =>
@@ -180,15 +180,15 @@ export class MyFiles extends React.Component<Props, State> {
                 path: path[path.length - 1] === "/" ? path.slice(1, -1) : path.slice(1),
                 file,
                 bucketName: bucketName,
-                notify: this.notifyUpload,
-            }),
+                notify: this.notifyUpload
+            })
         );
 
         Promise.all(promises).then(() => {
             this.setState({
                 files: undefined,
                 filePath: undefined,
-                uploadSeq: false,
+                uploadSeq: false
             });
             this.props.refresh();
         });
@@ -197,7 +197,9 @@ export class MyFiles extends React.Component<Props, State> {
     createDirectory = () => {
         const file: NonNullable<State["files"]>[number] = Object.assign(
             new Blob(["Test,Text"], { type: "text/csv" }),
-            { "name": ".keep" },
+            {
+                "name": ".keep"
+            }
         );
 
         var path =
@@ -213,7 +215,7 @@ export class MyFiles extends React.Component<Props, State> {
                 path: completePath,
                 file,
                 bucketName: this.props.bucketName,
-                notify: () => null,
+                notify: () => null
             })
             .then(() => {
                 this.props.refresh();
@@ -253,20 +255,20 @@ export class MyFiles extends React.Component<Props, State> {
                         const { Resource } = policy;
                         const isInPublicDirectory = subDirectories.reduce(
                             (a, path) => Resource.indexOf(path) !== -1 || a,
-                            false,
+                            false
                         );
                         const isPublicDirectory =
                             policy.Resource.indexOf(minioPath) !== -1;
                         this.setState({
                             policy,
                             isInPublicDirectory,
-                            isPublicDirectory,
+                            isPublicDirectory
                         });
                     } else {
                         this.setState({
                             policy: undefined,
                             isInPublicDirectory: false,
-                            isPublicDirectory: false,
+                            isPublicDirectory: false
                         });
                     }
                 }
@@ -290,7 +292,7 @@ export class MyFiles extends React.Component<Props, State> {
         try {
             const minioPath = getMinioPath(bucketName)(path);
             const policy = await minioPolicy.createPolicyWithDirectory(bucketName)(
-                `${minioPath}*`,
+                `${minioPath}*`
             );
             await minioTools.setBucketPolicy({ bucketName, policy });
             await this.checkFolderStatus();
@@ -306,7 +308,7 @@ export class MyFiles extends React.Component<Props, State> {
         try {
             const minioPath = getMinioPath(bucketName)(path);
             const policy = await minioPolicy.createPolicyWithoutDirectory(bucketName)(
-                `${minioPath}*`,
+                `${minioPath}*`
             );
             await minioTools.setBucketPolicy({ bucketName, policy });
             await this.checkFolderStatus();
@@ -321,7 +323,7 @@ export class MyFiles extends React.Component<Props, State> {
         const { bucketName } = this.props;
         try {
             const policy = await minioPolicy.createPolicyWithoutDirectory(bucketName)(
-                minioPath,
+                minioPath
             );
             await minioTools.setBucketPolicy({ bucketName, policy });
             await this.checkFolderStatus();
@@ -347,10 +349,10 @@ export class MyFiles extends React.Component<Props, State> {
                               ...a,
                               {
                                   label: f,
-                                  path: `${a[a.length - 1].path}${f}/`,
-                              },
+                                  path: `${a[a.length - 1].path}${f}/`
+                              }
                           ],
-                id<{ label: string; path: string }[]>([]),
+                id<{ label: string; path: string }[]>([])
             );
         return (
             <>
@@ -407,7 +409,7 @@ export class MyFiles extends React.Component<Props, State> {
                                     linkProps={
                                         routes.myFilesLegacy({
                                             bucketName,
-                                            "fileOrDirectoryPath": d.prefix,
+                                            "fileOrDirectoryPath": d.prefix
                                         }).link
                                     }
                                     icone="folder"
@@ -420,7 +422,7 @@ export class MyFiles extends React.Component<Props, State> {
                                     linkProps={
                                         routes.myFilesLegacy({
                                             bucketName,
-                                            "fileOrDirectoryPath": name,
+                                            "fileOrDirectoryPath": name
                                         }).link
                                     }
                                     icone="description"
@@ -532,11 +534,11 @@ const DialogShare: React.FC<{
                                 ...signedData,
                                 formData: {
                                     ...signedData.formData,
-                                    "x-amz-security-token": sessionToken,
-                                },
-                            }),
-                        ),
-                    ),
+                                    "x-amz-security-token": sessionToken
+                                }
+                            })
+                        )
+                    )
             );
         }
     }, [folder, duration, bucket]);
@@ -544,16 +546,16 @@ const DialogShare: React.FC<{
     const durations = [
         {
             value: 2 * 3600,
-            label: "2 heures",
+            label: "2 heures"
         },
         {
             value: 8 * 3600,
-            label: "8 heures",
+            label: "8 heures"
         },
         {
             value: 12 * 3600,
-            label: "12 heures",
-        },
+            label: "12 heures"
+        }
     ];
 
     return (
@@ -648,10 +650,10 @@ const getSubDirectories = (bucketName: string) => (directory: string) => {
             current: `${a.current}${subpath}/`,
             stack: [
                 ...a.stack,
-                minioTools.getMinioDirectoryName(bucketName)(`${a.current}${subpath}/*`),
-            ],
+                minioTools.getMinioDirectoryName(bucketName)(`${a.current}${subpath}/*`)
+            ]
         }),
-        { current: "", stack: id<string[]>([]) },
+        { current: "", stack: id<string[]>([]) }
     );
     const { stack } = tmp;
     return stack;
@@ -661,7 +663,7 @@ const fetchPolicy = async (bucketName: string) => {
     const policyString = await minioTools.getBucketPolicy(bucketName);
 
     const {
-        Statement: [policy],
+        Statement: [policy]
     } = JSON.parse(policyString);
 
     return policy;

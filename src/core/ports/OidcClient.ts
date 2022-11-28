@@ -8,8 +8,8 @@ export declare namespace OidcClient {
 
     export type LoggedIn = {
         isUserLoggedIn: true;
-        //NOTE: It changes when renewed, don't store it.
-        accessToken: string;
+        renewToken(): Promise<void>;
+        getAccessToken: () => { accessToken: string; expirationTime: number };
         logout: (params: { redirectTo: "home" | "current page" }) => Promise<never>;
     };
 }
