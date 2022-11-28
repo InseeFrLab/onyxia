@@ -82,33 +82,44 @@ export const MyServicesSavedConfig = memo((props: Props) => {
                     {friendlyName}
                 </Text>
             </div>
-            <div className={classes.linkAndEditButtonWrapper}>
-                <IconButton
-                    className={classes.linkIcon}
-                    iconId="link"
-                    onClick={onLinkClick}
-                />
+            {editLink.href.includes("version") && (
+                <div className={classes.linkAndEditButtonWrapper}>
+                    <IconButton
+                        className={classes.linkIcon}
+                        iconId="link"
+                        onClick={onLinkClick}
+                    />
+                    <Button
+                        className={classes.editIcon}
+                        ref={editButtonRef}
+                        {...editLink}
+                        doOpenNewTabIfHref={false}
+                        variant="secondary"
+                    >
+                        {t("edit")}
+                    </Button>
+                </div>
+            )}
+            {(launchLink.href.includes("version") && (
+                <Button {...launchLink} doOpenNewTabIfHref={false} variant="secondary">
+                    {t("launch")}
+                </Button>
+            )) || (
                 <Button
-                    className={classes.editIcon}
-                    ref={editButtonRef}
-                    {...editLink}
-                    doOpenNewTabIfHref={false}
+                    onClick={() => configOptionsCallback("delete")}
                     variant="secondary"
                 >
-                    {t("edit")}
+                    {t("remove bookmark")}
                 </Button>
-            </div>
-            <Button {...launchLink} doOpenNewTabIfHref={false} variant="secondary">
-                {t("launch")}
-            </Button>
-            {isShortVariant && (
+            )}
+            {isShortVariant && launchLink.href.includes("version") && (
                 <MyServicesSavedConfigOptions callback={configOptionsCallback} />
             )}
         </div>
     );
 });
 
-export const { i18n } = declareComponentKeys<"edit" | "launch">()({
+export const { i18n } = declareComponentKeys<"edit" | "launch" | "remove bookmark">()({
     MyServicesSavedConfig
 });
 

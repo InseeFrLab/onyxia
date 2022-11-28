@@ -507,7 +507,8 @@ const {
             },
             "MyServicesSavedConfig": {
                 "edit": "Edit",
-                "launch": "Launch"
+                "launch": "Launch",
+                "remove bookmark": "Delete"
             },
             "MyServicesSavedConfigs": {
                 "saved": "Saved",
@@ -927,7 +928,8 @@ const {
             },
             "MyServicesSavedConfig": {
                 "edit": "Modifier",
-                "launch": "Lancer"
+                "launch": "Lancer",
+                "remove bookmark": "Supprimer"
             },
             "MyServicesSavedConfigs": {
                 "saved": "Enregistrés",
@@ -1308,7 +1310,8 @@ const {
             },
             "MyServicesSavedConfig": {
                 "edit": "编辑服务",
-                "launch": "启动服务"
+                "launch": "启动服务",
+                "remove bookmark": "删除书签"
             },
             "MyServicesSavedConfigs": {
                 "saved": "已经保存",
