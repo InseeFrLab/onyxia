@@ -3,7 +3,7 @@ import { makeStyles, PageHeader } from "ui/theme";
 
 import { useTranslation } from "ui/i18n";
 import { MyServicesButtonBar } from "./MyServicesButtonBar";
-import { MyServicesCards } from "./MyServicesCards";
+import { MyServicesCards, Renewparams } from "./MyServicesCards";
 import type { Props as MyServicesCardsProps } from "./MyServicesCards";
 import { MyServicesSavedConfigs } from "./MyServicesSavedConfigs";
 import type { Props as MyServicesSavedConfigsProps } from "./MyServicesSavedConfigs";
@@ -253,10 +253,16 @@ export function MyServices(props: Props) {
         }
     );
     const onRequestRenew = useConstCallback<MyServicesCardsProps["onRequestRenew"]>(
-        ({ serviceId }) => {
-            console.log(serviceId);
-            // TODO Make launcher init
-            // launcher.launch();
+        async (params: Renewparams) => {
+            console.log(params.name);
+            await launcher.reset();
+            await launcher.initialize({
+                catalogId: params.catalogId!,
+                packageName: params.packageName!,
+                name: params.name,
+                formFieldsValueDifferentFromDefault: []
+            });
+            await launcher.launch();
         }
     );
     const deletableRunningServices = useMemo(

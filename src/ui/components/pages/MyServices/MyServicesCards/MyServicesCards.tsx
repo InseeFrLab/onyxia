@@ -20,6 +20,14 @@ import { useDomRect } from "powerhooks/useDomRect";
 import { CircularProgress } from "onyxia-ui/CircularProgress";
 import { declareComponentKeys } from "i18nifty";
 
+export type Renewparams = {
+    catalogId?: string;
+    packageName?: string;
+    options?: Record<string, unknown>;
+    // isDryRun: boolean;
+    name: string | undefined;
+};
+
 export type Props = {
     className?: string;
     cards:
@@ -44,7 +52,7 @@ export type Props = {
         | undefined;
     catalogExplorerLink: Link;
     onRequestDelete(params: { serviceId: string }): void;
-    onRequestRenew(params: { serviceId: string }): void;
+    onRequestRenew(params: Renewparams): void;
     evtAction: NonPostableEvt<{
         action: "TRIGGER SHOW POST INSTALL INSTRUCTIONS";
         serviceId: string;
@@ -73,8 +81,8 @@ export const MyServicesCards = memo((props: Props) => {
         onRequestDelete({ serviceId })
     );
 
-    const onRequestRenewFactory = useCallbackFactory(([serviceId]: [string]) =>
-        onRequestRenew({ serviceId })
+    const onRequestRenewFactory = useCallbackFactory(([params]: [Renewparams]) =>
+        onRequestRenew(params)
     );
 
     const [dialogDesc, setDialogDesc] = useState<
@@ -222,7 +230,12 @@ export const MyServicesCards = memo((props: Props) => {
                         <MyServicesCard
                             key={card.serviceId}
                             {...card}
-                            onRequestRenew={onRequestRenewFactory(card.serviceId)}
+                            onRequestRenew={onRequestRenewFactory({
+                                catalogId: "ide", //TODO aller chercher catalogId correspondant au name donné
+                                name: card.serviceId,
+                                packageName: card.packageName,
+                                options: {}
+                            })}
                             onRequestShowEnv={onRequestShowEnvOrPostInstallInstructionFactory(
                                 "env",
                                 card.serviceId

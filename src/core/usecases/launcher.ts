@@ -140,6 +140,7 @@ export declare namespace LauncherState {
         icon: string | undefined;
         catalogId: string;
         packageName: string;
+        name?: string | undefined;
         sources: string[];
         "~internal": {
             pathOfFormFieldsWhoseValuesAreDifferentFromDefault: {
@@ -398,6 +399,7 @@ export const { reducer, actions } = createSlice({
             }: PayloadAction<{
                 catalogId: string;
                 packageName: string;
+                name?: string | undefined;
                 icon: string | undefined;
                 sources: string[];
                 formFields: LauncherState.Ready["~internal"]["formFields"];
@@ -411,6 +413,7 @@ export const { reducer, actions } = createSlice({
             const {
                 catalogId,
                 packageName,
+                name,
                 icon,
                 sources,
                 formFields,
@@ -427,6 +430,7 @@ export const { reducer, actions } = createSlice({
                     "stateDescription": "ready",
                     catalogId,
                     packageName,
+                    name,
                     icon,
                     sources,
                     "~internal": {
@@ -519,6 +523,7 @@ export const thunks = {
         (params: {
             catalogId: string;
             packageName: string;
+            name?: string | undefined;
             formFieldsValueDifferentFromDefault: FormFieldValue[];
         }): ThunkAction =>
         async (...args) => {
@@ -883,6 +888,7 @@ export const thunks = {
                 actions.initialized({
                     catalogId,
                     packageName,
+                    name,
                     "icon": await onyxiaApiClient.getCatalogs().then(
                         apiRequestResult =>
                             //TODO: Sort in the adapter of even better, assumes version sorted
