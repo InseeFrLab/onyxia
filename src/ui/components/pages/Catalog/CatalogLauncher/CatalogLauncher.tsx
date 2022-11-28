@@ -196,7 +196,10 @@ export const CatalogLauncher = memo((props: Props) => {
             case "ready":
                 switch (state.launchState) {
                     case "not launching":
-                        if (route.params.autoLaunch) {
+                        if (
+                            route.params.autoLaunch &&
+                            route.params.version !== undefined
+                        ) {
                             const { sensitiveConfigurations } = state;
 
                             if (sensitiveConfigurations.length !== 0) {
