@@ -152,8 +152,6 @@ export const CatalogLauncherMainCard = memo((props: Props) => {
     );
 });
 
-CatalogLauncherMainCard.displayName = CatalogLauncherMainCard.name;
-
 export const { i18n } = declareComponentKeys<
     | "card title"
     | "cancel"
