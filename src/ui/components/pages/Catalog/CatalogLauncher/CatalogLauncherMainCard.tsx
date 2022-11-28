@@ -32,6 +32,7 @@ export type Props = {
 
     onRequestLaunch: () => void;
     onRequestCancel: () => void;
+    onRequestReset: () => void;
 
     //Undefined when the configuration is the default one
     onRequestCopyLaunchUrl: (() => void) | undefined;
@@ -51,7 +52,8 @@ export const CatalogLauncherMainCard = memo((props: Props) => {
         onIsSharedValueChange,
         onRequestLaunch,
         onRequestCancel,
-        onRequestCopyLaunchUrl
+        onRequestCopyLaunchUrl,
+        onRequestReset
     } = props;
 
     const { classes, cx } = useStyles();
@@ -80,9 +82,19 @@ export const CatalogLauncherMainCard = memo((props: Props) => {
                 <div style={{ "flex": 1 }} />
 
                 {onRequestCopyLaunchUrl !== undefined && (
-                    <Tooltip title={t("copy url helper text")}>
-                        <IconButton iconId="link" onClick={onRequestCopyLaunchUrl} />
-                    </Tooltip>
+                    <>
+                        <Button
+                            variant="ternary"
+                            className={classes.learnMoreButton}
+                            onClick={onRequestReset}
+                        >
+                            Reinitialiser les configurations
+                        </Button>
+
+                        <Tooltip title={t("copy url helper text")}>
+                            <IconButton iconId="link" onClick={onRequestCopyLaunchUrl} />
+                        </Tooltip>
+                    </>
                 )}
                 <Tooltip title={t("save configuration")}>
                     <IconButton
@@ -203,5 +215,8 @@ const useStyles = makeStyles({ "name": { CatalogLauncherMainCard } })(theme => (
     },
     "launchButton": {
         "marginLeft": theme.spacing(2)
+    },
+    "learnMoreButton": {
+        "marginRight": theme.spacing(2)
     }
 }));

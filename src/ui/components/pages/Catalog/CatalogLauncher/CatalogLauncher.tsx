@@ -138,6 +138,19 @@ export const CatalogLauncher = memo((props: Props) => {
         routes.catalogExplorer({ "catalogId": route.params.catalogId }).push()
     );
 
+    const onRequestReset = useConstCallback(() => {
+        const { catalogId, packageName, formFieldsValueDifferentFromDefault } =
+            route.params;
+
+        launcher.reset();
+
+        launcher.initialize({
+            catalogId,
+            packageName,
+            formFieldsValueDifferentFromDefault
+        });
+    });
+
     const onRequestCopyLaunchUrl = useConstCallback(() =>
         clipboard.writeText(window.location.href)
     );
@@ -259,6 +272,7 @@ export const CatalogLauncher = memo((props: Props) => {
                         onIsSharedValueChange={launcher.changeIsShared}
                         onRequestLaunch={launcher.launch}
                         onRequestCancel={onRequestCancel}
+                        onRequestReset={onRequestReset}
                         onRequestCopyLaunchUrl={
                             restorablePackageConfig.formFieldsValueDifferentFromDefault
                                 .length !== 0
