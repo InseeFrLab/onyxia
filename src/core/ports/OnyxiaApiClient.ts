@@ -111,6 +111,18 @@ export type DeploymentRegion = {
           }
         | undefined;
     certificateAuthorityInjection: { crts: unknown[] | undefined } | undefined;
+    kubernetes:
+        | {
+              url: string;
+              keycloakParams:
+                  | {
+                        url: string;
+                        realm: string;
+                        clientId: string;
+                    }
+                  | undefined;
+          }
+        | undefined;
 };
 export namespace DeploymentRegion {
     export type S3 = S3.Minio | S3.Amazon;

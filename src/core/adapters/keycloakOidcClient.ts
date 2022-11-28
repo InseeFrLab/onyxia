@@ -12,7 +12,7 @@ export async function createKeycloakOidcClient(params: {
     realm: string;
     clientId: string;
     transformUrlBeforeRedirectToLogin: ((url: string) => string) | undefined;
-    evtUserActivity: NonPostableEvt<void>;
+    evtUserActivity: NonPostableEvt<void> | undefined;
     log?: typeof console.log;
 }): Promise<OidcClient> {
     const {
@@ -69,9 +69,38 @@ export async function createKeycloakOidcClient(params: {
         });
     }
 
+    const renewTokenNow = async () => {
+        const error = await keycloakInstance.updateToken(-1).then(
+            () => undefined,
+            (error: Error) => error
+        );
+
+        if (error) {
+            log?.("Can't refresh OIDC access token, getting a new one");
+            //NOTE: Never resolves
+            await login({ "doesCurrentHrefRequiresAuth": true });
+        }
+
+        const { token } = keycloakInstance;
+        assert(token !== undefined);
+
+        return token;
+    };
+
     const oidcClient = id<OidcClient.LoggedIn>({
         "isUserLoggedIn": true,
-        "accessToken": keycloakInstance.token!,
+        "getAccessToken": () => {
+            const { token } = keycloakInstance;
+            assert(token !== undefined);
+
+            return {
+                "accessToken": token,
+                "expirationTime": getAccessTokenExpirationTime(token)
+            };
+        },
+        "renewToken": async () => {
+            await renewTokenNow();
+        },
         "logout": async ({ redirectTo }) => {
             await keycloakInstance.logout({
                 "redirectUri": (() => {
@@ -90,29 +119,24 @@ export async function createKeycloakOidcClient(params: {
 
     (function callee() {
         const msBeforeExpiration =
-            jwtSimple.decode(oidcClient.accessToken, "", true)["exp"] * 1000 - Date.now();
+            getAccessTokenExpirationTime(oidcClient.getAccessToken().accessToken) -
+            Date.now();
 
         setTimeout(async () => {
             log?.(
                 `OIDC access token will expire in ${minValiditySecond} seconds, waiting for user activity before renewing`
             );
 
-            await evtUserActivity.waitFor();
+            await evtUserActivity?.waitFor();
 
             log?.("User activity detected. Refreshing access token now");
 
-            const error = await keycloakInstance.updateToken(-1).then(
-                () => undefined,
-                (error: Error) => error
-            );
+            const token = await renewTokenNow();
 
-            if (error) {
-                log?.("Can't refresh OIDC access token, getting a new one");
-                //NOTE: Never resolves
-                await login({ "doesCurrentHrefRequiresAuth": true });
-            }
-
-            oidcClient.accessToken = keycloakInstance.token!;
+            oidcClient.getAccessToken = () => ({
+                "accessToken": token,
+                "expirationTime": getAccessTokenExpirationTime(token)
+            });
 
             callee();
         }, msBeforeExpiration - minValiditySecond * 1000);
@@ -141,7 +165,7 @@ export async function creatOrFallbackOidcClient(params: {
               oidcClient: OidcClient.LoggedIn;
           }
         | undefined;
-    evtUserActivity: NonPostableEvt<void>;
+    evtUserActivity: NonPostableEvt<void> | undefined;
 }): Promise<OidcClient.LoggedIn> {
     const { keycloakParams, fallback, evtUserActivity } = params;
 
@@ -193,4 +217,8 @@ export async function creatOrFallbackOidcClient(params: {
             return oidcClient;
         }
     }
+}
+
+function getAccessTokenExpirationTime(accessToken: string): number {
+    return jwtSimple.decode(accessToken, "", true)["exp"] * 1000;
 }

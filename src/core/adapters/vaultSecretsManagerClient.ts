@@ -29,27 +29,28 @@ export async function createVaultSecretsManagerClient(
 
     const createAxiosInstance = () => axios.create({ "baseURL": url });
 
-    const { getNewlyRequestedOrCachedToken } = getNewlyRequestedOrCachedTokenFactory({
-        "requestNewToken": async () => {
-            const now = Date.now();
+    const { getNewlyRequestedOrCachedToken, clearCachedToken } =
+        getNewlyRequestedOrCachedTokenFactory({
+            "requestNewToken": async () => {
+                const now = Date.now();
 
-            const {
-                data: { auth }
-            } = await createAxiosInstance().post<{
-                auth: { lease_duration: number; client_token: string };
-            }>(`/${version}/auth/jwt/login`, {
-                role,
-                "jwt": oidcClient.accessToken
-            });
+                const {
+                    data: { auth }
+                } = await createAxiosInstance().post<{
+                    auth: { lease_duration: number; client_token: string };
+                }>(`/${version}/auth/jwt/login`, {
+                    role,
+                    "jwt": oidcClient.getAccessToken().accessToken
+                });
 
-            return id<ReturnType<SecretsManagerClient["getToken"]>>({
-                "token": auth.client_token,
-                "expirationTime": now + auth.lease_duration * 1000,
-                "acquisitionTime": now
-            });
-        },
-        "returnCachedTokenIfStillValidForXPercentOfItsTTL": "90%"
-    });
+                return id<ReturnType<SecretsManagerClient["getToken"]>>({
+                    "token": auth.client_token,
+                    "expirationTime": now + auth.lease_duration * 1000,
+                    "acquisitionTime": now
+                });
+            },
+            "returnCachedTokenIfStillValidForXPercentOfItsTTL": "90%"
+        });
 
     const { axiosInstance } = (() => {
         const axiosInstance = createAxiosInstance();
@@ -106,7 +107,15 @@ export async function createVaultSecretsManagerClient(
         "delete": async ({ path }) => {
             await axiosInstance.delete(ctxPathJoin("metadata", path));
         },
-        "getToken": getNewlyRequestedOrCachedToken
+        "getToken": params => {
+            const { doForceRefresh } = params ?? {};
+
+            if (doForceRefresh) {
+                clearCachedToken();
+            }
+
+            return getNewlyRequestedOrCachedToken();
+        }
     };
 
     dVaultClient.resolve(secretsManagerClient);

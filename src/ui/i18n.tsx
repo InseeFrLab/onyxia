@@ -5,6 +5,7 @@ import {} from "tsafe";
 import type { Equals } from "tsafe";
 import { id } from "tsafe/id";
 import { statefulObservableToStatefulEvt } from "powerhooks/tools/StatefulObservable/statefulObservableToStatefulEvt";
+import MuiLink from "@mui/material/Link";
 
 export type { Language, LocalizedString };
 
@@ -105,7 +106,9 @@ const {
     | typeof import("ui/components/pages/Account/tabs/AccountInfoTab").i18n
     | typeof import("ui/components/pages/Account/tabs/AccountIntegrationsTab").i18n
     | typeof import("ui/components/pages/Account/tabs/AccountStorageTab").i18n
+    | typeof import("ui/components/pages/Account/tabs/AccountKubernetesTab").i18n
     | typeof import("ui/components/pages/Account/tabs/AccountUserInterfaceTab").i18n
+    | typeof import("ui/components/pages/Account/tabs/AccountVaultTab").i18n
     | typeof import("ui/components/pages/Catalog/CatalogLauncher/CatalogLauncher").i18n
     | typeof import("ui/components/pages/Catalog/CatalogExplorer/CatalogExplorerCards").i18n
     | typeof import("ui/components/pages/Catalog/CatalogExplorer/CatalogExplorerCards/CatalogExplorerCard").i18n
@@ -132,13 +135,15 @@ const {
                 "infos": "Account infos",
                 "third-party-integration": "external services",
                 "storage": "Connect to storage",
+                "k8sCredentials": "Kubernetes",
                 "user-interface": "Interface preferences",
                 "text1": "My account",
                 "text2": "Access your different account information.",
                 "text3":
                     "Configure your usernames, emails, passwords and personal access tokens directly connected to your services.",
                 "personal tokens tooltip":
-                    "Password that are generated for you and that have a given validity period"
+                    "Password that are generated for you and that have a given validity period",
+                "vault": "Vault"
             },
             "AccountInfoTab": {
                 "general information": "General information",
@@ -182,6 +187,38 @@ const {
                     "Download or copy the init script in the programming language of your choice.",
                 "expires in": ({ howMuchTime }) => `Expires in ${howMuchTime}`
             },
+            "AccountKubernetesTab": {
+                "credentials section title": "Connect to the Kubernetes cluster",
+                "credentials section helper":
+                    "Credentials to manage the Kubernetes cluster",
+                "init script section title":
+                    "To connect to the Kubernetes cluster via your local kubectl",
+                "init script section helper": "Download or copy the script",
+                "expires in": ({ howMuchTime }) => `The token expires in ${howMuchTime}`
+            },
+            "AccountVaultTab": {
+                "credentials section title": "Vault credentials",
+                "credentials section helper": ({ vaultDocHref, mySecretLink }) => (
+                    <>
+                        <MuiLink href={vaultDocHref} target="_blank">
+                            Vault
+                        </MuiLink>{" "}
+                        is the system where &nbsp;
+                        <MuiLink {...mySecretLink}>your secrets</MuiLink> are stored.
+                    </>
+                ),
+                "init script section title": "Use vault from your terminal",
+                "init script section helper": ({ vaultCliDocLink }) => (
+                    <>
+                        Download or copy the <code>ENV</code> variables that configures
+                        your local{" "}
+                        <MuiLink href={vaultCliDocLink} target="_blank">
+                            Vault CLI
+                        </MuiLink>
+                    </>
+                ),
+                "expires in": ({ howMuchTime }) => `The token expires in ${howMuchTime}`
+            },
             "AccountUserInterfaceTab": {
                 "title": "Interface preferences",
                 "enable dark mode": "Enable dark mode",
@@ -221,9 +258,17 @@ const {
                     "Here you can browse your S3 Buckets.",
                 "what this page is used for - my secrets":
                     "Here can be defined variables that will be accessible in you services under the form of environnement variable.",
-                "learn more - my files": "To learn more about file management,",
-                "to learn more - my secrets": "To learn more about secrets management,",
-                "read our documentation": "read our documentation."
+                "help content": ({ accountTabLink, docHref }) => (
+                    <>
+                        Read{" "}
+                        <MuiLink href={docHref} target="_blank">
+                            our documentation
+                        </MuiLink>
+                        . &nbsp;
+                        <MuiLink {...accountTabLink}>Configure the minio clients</MuiLink>
+                        .
+                    </>
+                )
             },
             "MySecrets": {
                 "page title - my files": "My Files",
@@ -233,8 +278,19 @@ const {
                 "what this page is used for - my secrets":
                     "Here can be defined variables that will be accessible in you services under the form of environnement variable.",
                 "learn more - my files": "To learn more about file management,",
-                "to learn more - my secrets": "To learn more about secrets management,",
-                "read our documentation": "read our documentation."
+                "help content": ({ accountTabLink, docHref }) => (
+                    <>
+                        Read{" "}
+                        <MuiLink href={docHref} target="_blank">
+                            our documentation
+                        </MuiLink>
+                        . &nbsp;
+                        <MuiLink {...accountTabLink}>
+                            Configure your local Vault CLI
+                        </MuiLink>
+                        .
+                    </>
+                )
             },
             "SecretsExplorerItem": {
                 "description": "description"
@@ -541,12 +597,14 @@ const {
                 "infos": "Information du compte",
                 "third-party-integration": "Services externes",
                 "storage": "Connexion au stockage",
+                "k8sCredentials": "Connexion a Kubernetes",
                 "user-interface": "Modes d'interface",
                 "text1": "Mon compte",
                 "text2": "Accédez à vos différentes informations de compte.",
                 "text3":
                     "Configurez vos identifiants, e-mails, mots de passe et jetons d'accès personnels directement connectés à vos services.",
-                "personal tokens tooltip": 'Ou en anglais "token".'
+                "personal tokens tooltip": 'Ou en anglais "token".',
+                "vault": undefined
             },
             "AccountInfoTab": {
                 "general information": "Informations générales",
@@ -587,6 +645,39 @@ const {
                     "Pour accéder au stockage en dehors des services du datalab",
                 "init script section helper": `Téléchargez ou copiez le script d'initialisation dans le langage de programmation de votre choix.`,
                 "expires in": ({ howMuchTime }) => `Expire dans ${howMuchTime}`
+            },
+            "AccountKubernetesTab": {
+                "credentials section title": "Connection a Kubernetes",
+                "credentials section helper":
+                    "Identifiants pour interagir directement avec le cluster Kubernetes.",
+                "init script section title":
+                    "Pour vous connecter au cluster Kubernetes via votre kubectl local",
+                "init script section helper": `Téléchargez ou copiez le script.`,
+                "expires in": ({ howMuchTime }) => `Le token expire dans ${howMuchTime}`
+            },
+            "AccountVaultTab": {
+                "credentials section title": "Identifiants Vault",
+                "credentials section helper": ({ vaultDocHref, mySecretLink }) => (
+                    <>
+                        <MuiLink href={vaultDocHref} target="_blank">
+                            Vault
+                        </MuiLink>{" "}
+                        est le système ou &nbsp;
+                        <MuiLink {...mySecretLink}>vos secret</MuiLink> sont enregistré.
+                    </>
+                ),
+                "init script section title": "Utiliser Vault depuis votre terminal",
+                "init script section helper": ({ vaultCliDocLink }) => (
+                    <>
+                        Telecharger ou copier les variables d'<code>ENV</code> pour
+                        configurer votre{" "}
+                        <MuiLink href={vaultCliDocLink} target="_blank">
+                            Vault CLI
+                        </MuiLink>{" "}
+                        local.
+                    </>
+                ),
+                "expires in": ({ howMuchTime }) => `Le token expire in ${howMuchTime}`
             },
             "AccountUserInterfaceTab": {
                 "title": "Configurer le mode d'interface",
@@ -629,11 +720,19 @@ const {
                     "Stocker ici vos fichiers de donnée.",
                 "what this page is used for - my secrets":
                     "Stockez ici des secrets qui seront accessibles sous forme de variables d'environnement dans vos services.",
-                "learn more - my files":
-                    "Pour en savoir plus sur l'utilisation du stockage S3,",
-                "to learn more - my secrets":
-                    "Pour en savoir plus sur l'utilisation de secrets,",
-                "read our documentation": "lisez notre documentation."
+                "help content": ({ accountTabLink, docHref }) => (
+                    <>
+                        Lire{" "}
+                        <MuiLink href={docHref} target="_blank">
+                            notre documentation
+                        </MuiLink>
+                        . &nbsp;
+                        <MuiLink {...accountTabLink}>
+                            Configurer les clients minio
+                        </MuiLink>
+                        .
+                    </>
+                )
             },
             "MySecrets": {
                 "page title - my files": "Mes fichiers",
@@ -644,9 +743,19 @@ const {
                     "Stockez ici des secrets qui seront accessibles sous forme de variables d'environnement dans vos services.",
                 "learn more - my files":
                     "Pour en savoir plus sur l'utilisation du stockage S3,",
-                "to learn more - my secrets":
-                    "Pour en savoir plus sur l'utilisation de secrets,",
-                "read our documentation": "lisez notre documentation."
+                "help content": ({ accountTabLink, docHref }) => (
+                    <>
+                        Lire{" "}
+                        <MuiLink href={docHref} target="_blank">
+                            notre documentation
+                        </MuiLink>
+                        . &nbsp;
+                        <MuiLink {...accountTabLink}>
+                            Configurer votre Vault CLI local
+                        </MuiLink>
+                        .
+                    </>
+                )
             },
             "ExplorerItem": {
                 "description": "description"
@@ -962,10 +1071,12 @@ const {
                 "third-party-integration": "外部服务",
                 "storage": "链接到储存器",
                 "user-interface": "变换显示模式",
+                "k8sCredentials": undefined,
                 "text1": "我的账号",
                 "text2": "访问我的账号信息",
                 "text3": "设置您的用户名, 电子邮件, 密码和访问令牌",
-                "personal tokens tooltip": "服务的访问令牌"
+                "personal tokens tooltip": "服务的访问令牌",
+                "vault": undefined
             },
             "AccountInfoTab": {
                 "general information": "一般信息",
@@ -999,6 +1110,20 @@ const {
                 "accessible as env": "可在您的服务中作为环境变量被访问",
                 "init script section title": "访问datalab服务之外的存储器",
                 "init script section helper": `下载或复制用您选择的编程语言编写的初始化脚本.`,
+                "expires in": undefined
+            },
+            "AccountKubernetesTab": {
+                "credentials section title": undefined,
+                "credentials section helper": undefined,
+                "init script section title": undefined,
+                "init script section helper": undefined,
+                "expires in": undefined
+            },
+            "AccountVaultTab": {
+                "credentials section title": undefined,
+                "credentials section helper": undefined,
+                "init script section title": undefined,
+                "init script section helper": undefined,
                 "expires in": undefined
             },
             "AccountUserInterfaceTab": {
@@ -1036,9 +1161,7 @@ const {
                 "what this page is used for - my files": "在此处存储您的数据.",
                 "what this page is used for - my secrets":
                     "在此处存储可作为服务中的环境变量访问的密钥.",
-                "learn more - my files": "了解有关使用 S3 存储的更多信息,",
-                "to learn more - my secrets": "要了解有关使用密钥的更多信息",
-                "read our documentation": "阅读我们的文档"
+                "help content": undefined
             },
             "MySecrets": {
                 "page title - my files": "我的文件",
@@ -1047,8 +1170,7 @@ const {
                 "what this page is used for - my secrets":
                     "在此处存储可作为服务中的环境变量访问的密钥.",
                 "learn more - my files": "了解有关使用 S3 存储的更多信息,",
-                "to learn more - my secrets": "要了解有关使用密钥的更多信息",
-                "read our documentation": "阅读我们的文档"
+                "help content": undefined
             },
             "ExplorerItem": {
                 "description": "描述"

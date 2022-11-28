@@ -3,7 +3,6 @@ import { CopyBlock, atomOneLight, atomOneDark } from "react-code-blocks";
 
 export type Props = {
     initScript: {
-        fileBasename: string;
         scriptCode: string;
         programingLanguage: string;
     };
