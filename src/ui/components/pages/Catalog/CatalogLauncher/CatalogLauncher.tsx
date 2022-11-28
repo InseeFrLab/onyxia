@@ -139,15 +139,13 @@ export const CatalogLauncher = memo((props: Props) => {
     );
 
     const onRequestReset = useConstCallback(() => {
-        const { catalogId, packageName, formFieldsValueDifferentFromDefault } =
-            route.params;
+        const { catalogId, packageName } = route.params;
 
         launcher.reset();
-
         launcher.initialize({
             catalogId,
             packageName,
-            formFieldsValueDifferentFromDefault
+            formFieldsValueDifferentFromDefault: []
         });
     });
 
@@ -341,6 +339,8 @@ export const CatalogLauncher = memo((props: Props) => {
         </>
     );
 });
+
+CatalogLauncher.displayName = CatalogLauncher.name;
 
 export const { i18n } = declareComponentKeys<
     | "no longer bookmarked dialog title"

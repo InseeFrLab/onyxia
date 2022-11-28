@@ -124,6 +124,8 @@ export const CatalogLauncherConfigurationCard = memo(
     }
 );
 
+CatalogLauncherConfigurationCard.displayName = CatalogLauncherConfigurationCard.name;
+
 export const { i18n } = declareComponentKeys<
     | "global config"
     | { K: "configuration"; P: { packageName: string } }
