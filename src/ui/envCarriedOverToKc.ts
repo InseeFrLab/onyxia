@@ -26,7 +26,7 @@ import { id } from "tsafe/id";
 import { objectKeys } from "tsafe/objectKeys";
 import type { Language } from "ui/i18n";
 
-const paletteIds = ["onyxia", "france", "ultraviolet"] as const;
+const paletteIds = ["onyxia", "france", "ultraviolet", "verdant"] as const;
 
 export type PaletteId = typeof paletteIds[number];
 
