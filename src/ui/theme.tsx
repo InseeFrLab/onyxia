@@ -3,6 +3,7 @@ import {
     defaultPalette,
     francePalette,
     ultravioletPalette,
+    verdantPalette,
     defaultGetTypographyDesc,
     getIsPortraitOrientation,
     ViewPortOutOfRangeError
@@ -81,6 +82,7 @@ const { ThemeProvider, useTheme } = createThemeProvider({
                     return "Marianne";
                 case "onyxia":
                 case "ultraviolet":
+                case "verdant":
                     return '"Work Sans"';
             }
         })()}, sans-serif`
@@ -94,6 +96,8 @@ const { ThemeProvider, useTheme } = createThemeProvider({
                     return francePalette;
                 case "ultraviolet":
                     return ultravioletPalette;
+                case "verdant":
+                    return verdantPalette;
             }
         })(),
         "limeGreen": {
