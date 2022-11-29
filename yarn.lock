@@ -7779,6 +7779,15 @@ evt@^2.4.11:
     run-exclusive "^2.2.18"
     tsafe "^1.3.4"
 
+evt@^2.4.13:
+  version "2.4.13"
+  resolved "https://registry.yarnpkg.com/evt/-/evt-2.4.13.tgz#5ef873159ce62e099d58801a3e4b8e0f5b648017"
+  integrity sha512-haTVOsmjzk+28zpzvVwan9Zw2rLQF2izgi7BKjAPRzZAfcv+8scL0TpM8MzvGNKFYHiy+Bq3r6FYIIUPl9kt3A==
+  dependencies:
+    minimal-polyfills "^2.2.2"
+    run-exclusive "^2.2.18"
+    tsafe "^1.4.1"
+
 exec-sh@^0.3.2:
   version "0.3.6"
   resolved "https://registry.yarnpkg.com/exec-sh/-/exec-sh-0.3.6.tgz#ff264f9e325519a60cb5e273692943483cca63bc"
@@ -11740,19 +11749,19 @@ onetime@^5.1.0, onetime@^5.1.2:
   dependencies:
     mimic-fn "^2.1.0"
 
-onyxia-ui@^0.47.21:
-  version "0.47.21"
-  resolved "https://registry.yarnpkg.com/onyxia-ui/-/onyxia-ui-0.47.21.tgz#644fbaaa71511656aae83228b2e07d8ce960106a"
-  integrity sha512-a9lsnKnY2LMdrEs2CeuH1ULI2zhtSJ9/ih0gy04GHeK0MrNJUySgcN2jJKJM0UiT6ge50hbdTHILTeW2Mf29Aw==
+onyxia-ui@^0.48.1:
+  version "0.48.1"
+  resolved "https://registry.yarnpkg.com/onyxia-ui/-/onyxia-ui-0.48.1.tgz#a59789c3179eb4a9108854f70c2b8d3f21bc63b4"
+  integrity sha512-uNj1s88AVx4e69EaYpJ3f4LZKPZDVnD9eDPN8IRb8MhH8/L55pjtVuZMl89Et4Y9T8lOBgjF3/Hg1H/F9a3d6A==
   dependencies:
     "@mui/icons-material" "^5.10.15"
     color "3.1.3"
-    evt "^2.4.11"
+    evt "^2.4.13"
     memoizee "^0.4.15"
     minimal-polyfills "^2.2.2"
-    powerhooks "^0.20.30"
+    powerhooks "^0.20.32"
     run-exclusive "^2.2.18"
-    tsafe "^1.3.4"
+    tsafe "^1.4.1"
     tss-react "^4.4.4"
 
 open@^7.0.3:
@@ -12874,6 +12883,16 @@ powerhooks@^0.20.30:
     memoizee "^0.4.15"
     resize-observer-polyfill "^1.5.1"
     tsafe "^1.3.4"
+
+powerhooks@^0.20.32:
+  version "0.20.32"
+  resolved "https://registry.yarnpkg.com/powerhooks/-/powerhooks-0.20.32.tgz#c9ddff1dcd7d7bb250e54ea284a6c65d9c228e09"
+  integrity sha512-lp0rW5sAl8xrenhtB5eZOCwMFcPTtm55pn5++jeEMT1KaO/Rvd7hjaai+PPpDdwIbi5TaF+Zf5XhVO6gvfmXZQ==
+  dependencies:
+    evt "^2.4.13"
+    memoizee "^0.4.15"
+    resize-observer-polyfill "^1.5.1"
+    tsafe "^1.4.1"
 
 prelude-ls@^1.2.1:
   version "1.2.1"
@@ -15488,6 +15507,11 @@ tsafe@^1.4.0:
   version "1.4.0"
   resolved "https://registry.yarnpkg.com/tsafe/-/tsafe-1.4.0.tgz#06eb4d25600e73a43dfb9391af5ba0b14100740d"
   integrity sha512-Tu1qe0djo7eQ1Wcg/b8bezbrfW5yHrUHUEvHynFRo3oDyWd7FxnZOrGWQg+hfk1U1+vk9Z9u0J7JoaY17aBhdw==
+
+tsafe@^1.4.1:
+  version "1.4.1"
+  resolved "https://registry.yarnpkg.com/tsafe/-/tsafe-1.4.1.tgz#59cdad8ac41babf88e56dcd1a683ae2fb145d059"
+  integrity sha512-3IDBalvf6SyvHFS14UiwCWzqdSdo+Q0k2J7DZyJYaHW/iraW9DJpaBKDJpry3yQs3o/t/A+oGaRW3iVt2lKxzA==
 
 tsconfig-paths@^3.14.1:
   version "3.14.1"
