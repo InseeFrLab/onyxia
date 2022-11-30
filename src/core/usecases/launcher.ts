@@ -902,6 +902,26 @@ export const thunks = {
             );
         },
     "reset": (): ThunkAction<void> => dispatch => dispatch(actions.reset()),
+    "restoreAllDefault":
+        (): ThunkAction<void> =>
+        (...params) => {
+            const [dispatch, getState] = params;
+
+            const state = getState().launcher;
+
+            assert(state.stateDescription === "ready");
+
+            const { defaultFormFieldsValue } = state["~internal"];
+
+            defaultFormFieldsValue.forEach(({ path, value }) => {
+                dispatch(
+                    actions.formFieldValueChanged({
+                        path,
+                        value
+                    })
+                );
+            });
+        },
     "changeFormFieldValue":
         (params: FormFieldValue): ThunkAction<void> =>
         dispatch =>
@@ -1471,13 +1491,25 @@ export const selectors = (() => {
                   })
     );
 
+    const areAllFieldsDefault = createSelector(
+        pathOfFormFieldsWhoseValuesAreDifferentFromDefault,
+        pathOfFormFieldsWhoseValuesAreDifferentFromDefault => {
+            if (pathOfFormFieldsWhoseValuesAreDifferentFromDefault === undefined) {
+                return undefined;
+            }
+
+            return pathOfFormFieldsWhoseValuesAreDifferentFromDefault.length === 0;
+        }
+    );
+
     return {
         friendlyName,
         isShared,
         indexedFormFields,
         isLaunchable,
         formFieldsIsWellFormed,
-        restorablePackageConfig
+        restorablePackageConfig,
+        areAllFieldsDefault
     };
 })();
 

@@ -504,7 +504,8 @@ const {
                 "save configuration": "Save this configuration",
                 "share the service": "Share the service",
                 "share the service - explain":
-                    "Make the service accessible to the group members"
+                    "Make the service accessible to the group members",
+                "restore all default": "Restore default configurations"
             },
             "CatalogLauncherConfigurationCard": {
                 "global config": "Global configuration",
@@ -974,7 +975,8 @@ const {
                 "save configuration": "Enregistrer cette configuration",
                 "share the service": "Partager le service",
                 "share the service - explain":
-                    "Rendre accessible le service aux collaborateurs du groupe"
+                    "Rendre accessible le service aux collaborateurs du groupe",
+                "restore all default": "Réinitialiser les configurations"
             },
             "CatalogLauncherConfigurationCard": {
                 "global config": "Configurations globales",
@@ -1370,7 +1372,8 @@ const {
                 "copy url helper text": "复制 URL 以恢复此配置",
                 "save configuration": "保存当前服务",
                 "share the service": "分享服务",
-                "share the service - explain": "让其他组员可以访问该服务"
+                "share the service - explain": "让其他组员可以访问该服务",
+                "restore all default": undefined
             },
             "CatalogLauncherConfigurationCard": {
                 "global config": "全局设置",
