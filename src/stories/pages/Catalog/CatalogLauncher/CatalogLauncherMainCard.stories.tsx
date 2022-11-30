@@ -25,6 +25,6 @@ export const ViewDefault = getStory({
         "onRequestCopyLaunchUrl",
         "onRequestLaunch",
         "onIsSharedValueChange",
-        "onRequestReset"
+        "onRequestRestoreAllDefault"
     ])
 });
