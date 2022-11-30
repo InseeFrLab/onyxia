@@ -14,6 +14,7 @@ import FormControlLabel from "@mui/material/FormControlLabel";
 import FormHelperText from "@mui/material/FormHelperText";
 import Checkbox from "@mui/material/Checkbox";
 import { declareComponentKeys } from "i18nifty";
+import { symToStr } from "tsafe/symToStr";
 
 export type Props = {
     className?: string;
@@ -34,6 +35,9 @@ export type Props = {
     onRequestCancel: () => void;
 
     //Undefined when the configuration is the default one
+    onRequestRestoreAllDefault: (() => void) | undefined;
+
+    //Undefined when the configuration is the default one
     onRequestCopyLaunchUrl: (() => void) | undefined;
 };
 
@@ -51,7 +55,8 @@ export const CatalogLauncherMainCard = memo((props: Props) => {
         onIsSharedValueChange,
         onRequestLaunch,
         onRequestCancel,
-        onRequestCopyLaunchUrl
+        onRequestCopyLaunchUrl,
+        onRequestRestoreAllDefault
     } = props;
 
     const { classes, cx } = useStyles();
@@ -79,6 +84,11 @@ export const CatalogLauncherMainCard = memo((props: Props) => {
                 </Text>
                 <div style={{ "flex": 1 }} />
 
+                {onRequestRestoreAllDefault !== undefined && (
+                    <Button variant="ternary" onClick={onRequestRestoreAllDefault}>
+                        {t("restore all default")}
+                    </Button>
+                )}
                 {onRequestCopyLaunchUrl !== undefined && (
                     <Tooltip title={t("copy url helper text")}>
                         <IconButton iconId="link" onClick={onRequestCopyLaunchUrl} />
@@ -144,6 +154,8 @@ export const CatalogLauncherMainCard = memo((props: Props) => {
     );
 });
 
+CatalogLauncherMainCard.displayName = symToStr({ CatalogLauncherMainCard });
+
 export const { i18n } = declareComponentKeys<
     | "card title"
     | "cancel"
@@ -153,6 +165,7 @@ export const { i18n } = declareComponentKeys<
     | "save configuration"
     | "share the service"
     | "share the service - explain"
+    | "restore all default"
 >()({ CatalogLauncherMainCard });
 
 const useStyles = makeStyles({ "name": { CatalogLauncherMainCard } })(theme => ({

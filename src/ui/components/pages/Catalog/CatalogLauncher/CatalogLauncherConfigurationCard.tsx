@@ -29,6 +29,7 @@ import { TextField } from "onyxia-ui/TextField";
 import { assert } from "tsafe/assert";
 import type { selectors } from "core";
 import { declareComponentKeys } from "i18nifty";
+import { symToStr } from "tsafe/symToStr";
 
 export type CatalogLauncherConfigurationCardProps = {
     className?: string;
@@ -123,6 +124,10 @@ export const CatalogLauncherConfigurationCard = memo(
         );
     }
 );
+
+CatalogLauncherConfigurationCard.displayName = symToStr({
+    CatalogLauncherConfigurationCard
+});
 
 export const { i18n } = declareComponentKeys<
     | "global config"

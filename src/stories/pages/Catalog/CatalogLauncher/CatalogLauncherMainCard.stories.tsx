@@ -24,6 +24,7 @@ export const ViewDefault = getStory({
         "onRequestCancel",
         "onRequestCopyLaunchUrl",
         "onRequestLaunch",
-        "onIsSharedValueChange"
+        "onIsSharedValueChange",
+        "onRequestRestoreAllDefault"
     ])
 });
