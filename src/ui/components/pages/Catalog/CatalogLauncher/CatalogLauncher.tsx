@@ -139,17 +139,6 @@ export const CatalogLauncher = memo((props: Props) => {
         routes.catalogExplorer({ "catalogId": route.params.catalogId }).push()
     );
 
-    const onRequestReset = useConstCallback(() => {
-        const { catalogId, packageName } = route.params;
-
-        launcher.reset();
-        launcher.initialize({
-            catalogId,
-            packageName,
-            formFieldsValueDifferentFromDefault: []
-        });
-    });
-
     const onRequestCopyLaunchUrl = useConstCallback(() =>
         clipboard.writeText(window.location.href)
     );
@@ -176,6 +165,7 @@ export const CatalogLauncher = memo((props: Props) => {
 
     const { friendlyName } = useCoreState(selectors.launcher.friendlyName);
     const { isShared } = useCoreState(selectors.launcher.isShared);
+    const { areAllFieldsDefault } = useCoreState(selectors.launcher.areAllFieldsDefault);
 
     const state = useCoreState(state => state.launcher);
 
@@ -271,13 +261,8 @@ export const CatalogLauncher = memo((props: Props) => {
                         onIsSharedValueChange={launcher.changeIsShared}
                         onRequestLaunch={launcher.launch}
                         onRequestCancel={onRequestCancel}
-                        onRequestReset={onRequestReset}
-                        onRequestCopyLaunchUrl={
-                            restorablePackageConfig.formFieldsValueDifferentFromDefault
-                                .length !== 0
-                                ? onRequestCopyLaunchUrl
-                                : undefined
-                        }
+                        onRequestRestoreAllDefault={areAllFieldsDefault ? undefined : launcher.restoreAllDefault}
+                        onRequestCopyLaunchUrl={areAllFieldsDefault ? undefined : onRequestCopyLaunchUrl}
                         isLaunchable={isLaunchable}
                     />
                     {Object.keys(indexedFormFields).map(

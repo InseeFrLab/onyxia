@@ -33,7 +33,9 @@ export type Props = {
 
     onRequestLaunch: () => void;
     onRequestCancel: () => void;
-    onRequestReset: () => void;
+
+    //Undefined when the configuration is the default one
+    onRequestRestoreAllDefault: (() => void) | undefined;
 
     //Undefined when the configuration is the default one
     onRequestCopyLaunchUrl: (() => void) | undefined;
@@ -54,7 +56,7 @@ export const CatalogLauncherMainCard = memo((props: Props) => {
         onRequestLaunch,
         onRequestCancel,
         onRequestCopyLaunchUrl,
-        onRequestReset
+        onRequestRestoreAllDefault
     } = props;
 
     const { classes, cx } = useStyles();
@@ -82,16 +84,15 @@ export const CatalogLauncherMainCard = memo((props: Props) => {
                 </Text>
                 <div style={{ "flex": 1 }} />
 
+                {onRequestRestoreAllDefault !== undefined && (
+                    <Button variant="ternary" onClick={onRequestRestoreAllDefault}>
+                        {t("restore all default")}
+                    </Button>
+                )}
                 {onRequestCopyLaunchUrl !== undefined && (
-                    <>
-                        <Button variant="ternary" onClick={onRequestReset}>
-                            Reinitialiser les configurations
-                        </Button>
-
-                        <Tooltip title={t("copy url helper text")}>
-                            <IconButton iconId="link" onClick={onRequestCopyLaunchUrl} />
-                        </Tooltip>
-                    </>
+                    <Tooltip title={t("copy url helper text")}>
+                        <IconButton iconId="link" onClick={onRequestCopyLaunchUrl} />
+                    </Tooltip>
                 )}
                 <Tooltip title={t("save configuration")}>
                     <IconButton
@@ -164,6 +165,7 @@ export const { i18n } = declareComponentKeys<
     | "save configuration"
     | "share the service"
     | "share the service - explain"
+    | "restore all default"
 >()({ CatalogLauncherMainCard });
 
 const useStyles = makeStyles({ "name": { CatalogLauncherMainCard } })(theme => ({
