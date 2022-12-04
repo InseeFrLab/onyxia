@@ -432,7 +432,7 @@ export function createOfficialOnyxiaApiClient(params: {
 
                             const assertWeHaveADefault = () => {
                                 //NOTE: Actually, the default can be undefined in the value.schema.json
-                                //      but it would be to complicated to specify in the type system
+                                //      but it would be too complicated to specify in the type system
                                 //      thus the any.
                                 if (
                                     (jsonSchemaFormFieldDescription.default as any) !==
