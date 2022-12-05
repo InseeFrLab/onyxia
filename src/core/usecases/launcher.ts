@@ -22,6 +22,10 @@ import type { RestorablePackageConfig } from "./restorablePackageConfigs";
 import type { WritableDraft } from "immer/dist/types/types-external";
 import { thunks as publicIpThunks } from "./publicIp";
 import { thunks as userAuthenticationThunk } from "./userAuthentication";
+import {
+    RestorableLaunchPackageConfig,
+    thunks as restorableLaunchPackageConfigsThunk
+} from "./restorableLaunchPackageConfigs";
 import { selectors as deploymentRegionSelectors } from "./deploymentRegion";
 import { exclude } from "tsafe/exclude";
 import { thunks as projectConfigs } from "./projectConfigs";
@@ -931,10 +935,21 @@ export const thunks = {
         (params: FormFieldValue): ThunkAction<void> =>
         dispatch =>
             dispatch(actions.formFieldValueChanged(params)),
-    "launch": (): ThunkAction => async dispatch => {
+    "launch": (): ThunkAction => async (dispatch, getState) => {
         await dispatch(
             privateThunks.launchOrPreviewContract({
                 "isForContractPreview": false
+            })
+        );
+        const restorableLaunchPackageConfig = selectors.restorableLaunchPackageConfig(
+            getState()
+        );
+        if (restorableLaunchPackageConfig === undefined) {
+            return;
+        }
+        await dispatch(
+            restorableLaunchPackageConfigsThunk.saveRestorableLaunchPackageConfig({
+                restorableLaunchPackageConfig
             })
         );
     },
@@ -1473,6 +1488,42 @@ export const selectors = (() => {
     );
 
     const catalogId = createSelector(readyLauncher, state => state?.catalogId);
+    const name = createSelector(readyLauncher, state => state?.name);
+
+    const restorableLaunchPackageConfig = createSelector(
+        name,
+        catalogId,
+        packageName,
+        formFields,
+        pathOfFormFieldsWhoseValuesAreDifferentFromDefault,
+        (
+            name,
+            catalogId,
+            packageName,
+            formFields,
+            pathOfFormFieldsWhoseValuesAreDifferentFromDefault
+        ) =>
+            !name ||
+            !catalogId ||
+            !packageName ||
+            !formFields ||
+            !pathOfFormFieldsWhoseValuesAreDifferentFromDefault
+                ? undefined
+                : id<RestorableLaunchPackageConfig>({
+                      name,
+                      catalogId,
+                      packageName,
+                      "formFieldsValueDifferentFromDefault":
+                          pathOfFormFieldsWhoseValuesAreDifferentFromDefault.map(
+                              ({ path }) => ({
+                                  path,
+                                  "value": formFields.find(formField =>
+                                      same(formField.path, path)
+                                  )!.value
+                              })
+                          )
+                  })
+    );
 
     const restorablePackageConfig = createSelector(
         catalogId,
@@ -1523,6 +1574,7 @@ export const selectors = (() => {
         isLaunchable,
         isLaunching,
         formFieldsIsWellFormed,
+        restorableLaunchPackageConfig,
         restorablePackageConfig,
         areAllFieldsDefault
     };
