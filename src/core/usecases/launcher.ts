@@ -423,7 +423,6 @@ export const { reducer, actions } = createSlice({
                 formFieldsValueDifferentFromDefault,
                 sensitiveConfigurations
             } = payload;
-
             Object.assign(
                 state,
                 id<LauncherState.Ready>({
@@ -502,7 +501,7 @@ const privateThunks = {
                 "packageName": state.packageName,
                 "options": formFieldsValueToObject(state["~internal"].formFields),
                 "isDryRun": isForContractPreview,
-                "name": undefined
+                "name": state.name
             });
 
             if (!isForContractPreview) {
@@ -527,7 +526,7 @@ export const thunks = {
             formFieldsValueDifferentFromDefault: FormFieldValue[];
         }): ThunkAction =>
         async (...args) => {
-            const { catalogId, packageName, formFieldsValueDifferentFromDefault } =
+            const { catalogId, packageName, name, formFieldsValueDifferentFromDefault } =
                 params;
 
             const [dispatch, getState, { onyxiaApiClient, oidcClient }] = args;
