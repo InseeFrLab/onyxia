@@ -285,7 +285,6 @@ export const selectors = (() => {
             "notShownCount": search !== "" ? 0 : catalog.length - packages.length
         };
     };
-
     const selectedCatalog = (rootState: State): Omit<Catalog, "charts"> | undefined => {
         const state = rootState.catalogExplorer;
 

@@ -50,18 +50,18 @@ export function MyServices(props: Props) {
     const isRunningServicesUpdating = useCoreState(
         state => state.runningService.isUpdating
     );
-
+    const { isLaunching } = useCoreState(selectors.launcher.isLaunching);
+    const isLoading = isLaunching || isRunningServicesUpdating;
     const { runningServices } = useCoreState(selectors.runningService.runningServices);
-
     const { hideSplashScreen, showSplashScreen } = useSplashScreen();
 
     useEffect(() => {
-        if (isRunningServicesUpdating) {
+        if (isLoading) {
             showSplashScreen({ "enableTransparency": true });
         } else {
             hideSplashScreen();
         }
-    }, [isRunningServicesUpdating]);
+    }, [isLoading]);
 
     const [password, setPassword] = useState<string | undefined>(undefined);
 
@@ -254,7 +254,6 @@ export function MyServices(props: Props) {
     );
     const onRequestRenew = useConstCallback<MyServicesCardsProps["onRequestRenew"]>(
         async (params: Renewparams) => {
-            console.log(params.name);
             await launcher.reset();
             await launcher.initialize({
                 catalogId: params.catalogId!,
@@ -263,6 +262,7 @@ export function MyServices(props: Props) {
                 formFieldsValueDifferentFromDefault: []
             });
             await launcher.launch();
+            runningService.update();
         }
     );
     const deletableRunningServices = useMemo(

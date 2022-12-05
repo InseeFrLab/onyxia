@@ -503,7 +503,6 @@ const privateThunks = {
                 "isDryRun": isForContractPreview,
                 "name": state.name
             });
-
             if (!isForContractPreview) {
                 const { serviceId } = getServiceId({
                     "packageName": state.packageName,
@@ -933,7 +932,7 @@ export const thunks = {
         dispatch =>
             dispatch(actions.formFieldValueChanged(params)),
     "launch": (): ThunkAction => async dispatch => {
-        dispatch(
+        await dispatch(
             privateThunks.launchOrPreviewContract({
                 "isForContractPreview": false
             })
@@ -1459,6 +1458,15 @@ export const selectors = (() => {
         }
     );
 
+    const isLaunching = createSelector(
+        readyLauncher,
+        (readyLauncher): boolean | undefined => {
+            if (readyLauncher) {
+                return readyLauncher.launchState === "launching";
+            }
+        }
+    );
+
     const pathOfFormFieldsWhoseValuesAreDifferentFromDefault = createSelector(
         readyLauncher,
         state => state?.["~internal"].pathOfFormFieldsWhoseValuesAreDifferentFromDefault
@@ -1513,6 +1521,7 @@ export const selectors = (() => {
         isShared,
         indexedFormFields,
         isLaunchable,
+        isLaunching,
         formFieldsIsWellFormed,
         restorablePackageConfig,
         areAllFieldsDefault
