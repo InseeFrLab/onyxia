@@ -29,6 +29,7 @@ export type UserConfigs = Id<
         githubPersonalAccessToken: string | null;
         doDisplayMySecretsUseInServiceDialog: boolean;
         bookmarkedServiceConfigurationStr: string | null;
+        launchServicesConfigurationStr: string | null;
         selectedProjectId: string | null;
     }
 >;
@@ -145,6 +146,7 @@ export const privateThunks = {
                 "githubPersonalAccessToken": null,
                 "doDisplayMySecretsUseInServiceDialog": true,
                 "bookmarkedServiceConfigurationStr": null,
+                "launchServicesConfigurationStr": null,
                 "selectedProjectId": null
             };
 
