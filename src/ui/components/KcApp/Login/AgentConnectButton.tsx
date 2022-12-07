@@ -1,9 +1,11 @@
-import { memo } from "react";
+import { memo, useState } from "react";
 import { makeStyles } from "ui/theme";
-
-import { ReactComponent as AgentConnectLightSvg } from "ui/assets/svg/agentConnectLight.svg";
-import { ReactComponent as AgentConnectDarkSvg } from "ui/assets/svg/agentConnectDark.svg";
+import { ReactComponent as AgentconnectBtnPrincipal } from "ui/assets/svg/agentconnect-btn-principal.svg";
+import { ReactComponent as AgentconnectBtnPrincipalHover } from "ui/assets/svg/agentconnect-btn-principal-hover.svg";
+import { ReactComponent as AgentconnectBtnAlternatif } from "ui/assets/svg/agentconnect-btn-alternatif.svg";
+import { ReactComponent as AgentconnectBtnAlternatifHover } from "ui/assets/svg/agentconnect-btn-alternatif-hover.svg";
 import { useIsDarkModeEnabled } from "onyxia-ui";
+import Link from "@mui/material/Link";
 
 export type Props = {
     className?: string;
@@ -13,44 +15,50 @@ export type Props = {
 export const AgentConnectButton = memo((props: Props) => {
     const { className, url } = props;
 
+    const [isMouseHover, setIsMouseHover] = useState(false);
+
     const { classes, cx } = useStyles();
 
     const { isDarkModeEnabled } = useIsDarkModeEnabled();
 
     const AgentConnectSvg = isDarkModeEnabled
-        ? AgentConnectDarkSvg
-        : AgentConnectLightSvg;
+        ? isMouseHover
+            ? AgentconnectBtnAlternatifHover
+            : AgentconnectBtnAlternatif
+        : isMouseHover
+        ? AgentconnectBtnPrincipalHover
+        : AgentconnectBtnPrincipal;
 
     return (
-        <a className={cx(classes.root, className)} href={url}>
-            <AgentConnectSvg className={classes.svg} />
-        </a>
+        <div className={cx(classes.root, className)}>
+            <a
+                className={classes.link}
+                href={url}
+                onMouseEnter={() => setIsMouseHover(true)}
+                onMouseLeave={() => setIsMouseHover(false)}
+            >
+                <AgentConnectSvg />
+            </a>
+            <Link
+                className={classes.docLink}
+                href="https://agentconnect.gouv.fr/"
+                target="_blank"
+            >
+                Qu'est-ce qu'AgentConnect?
+            </Link>
+        </div>
     );
 });
 
-const useStyles = makeStyles({ "name": { AgentConnectButton } })(theme => ({
+const useStyles = makeStyles({ "name": { AgentConnectButton } })({
     "root": {
-        ...theme.spacing.topBottom("padding", 2),
-        "display": "flex",
-        "justifyContent": "center",
-        "borderRadius": 8,
-        "borderWidth": 2,
-        "borderStyle": "solid",
-        "borderColor": "transparent",
-        "backgroundColor": theme.isDarkModeEnabled
-            ? theme.colors.useCases.typography.textPrimary
-            : theme.colors.palette.agentConnectBlue.main,
-        "boxSizing": "border-box",
-        "&:hover": {
-            "backgroundColor": theme.isDarkModeEnabled
-                ? theme.colors.palette.agentConnectBlue.lighter
-                : theme.colors.palette.agentConnectBlue.light,
-            "borderColor": theme.isDarkModeEnabled
-                ? theme.colors.palette.agentConnectBlue.light
-                : undefined
-        }
+        "textAlign": "center"
     },
-    "svg": {
-        "height": 48
+    "link": {
+        "display": "block"
+    },
+    "docLink": {
+        "display": "inline-block",
+        "marginTop": 8
     }
-}));
+});

@@ -2,7 +2,7 @@ import { getKcContext } from "keycloakify/lib/getKcContext";
 
 /** It's the Keycloak context, it is undefined unless we are on Keycloak, rendering the login pages. */
 export const { kcContext } = getKcContext({
-    //"mockPageId": "register-user-profile.ftl",
+    //"mockPageId": "login.ftl",
     /**
      * Customize the simulated kcContext that will let us
      * dev the page outside keycloak (with auto-reload)
