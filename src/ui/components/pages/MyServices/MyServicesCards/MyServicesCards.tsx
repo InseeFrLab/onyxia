@@ -21,11 +21,9 @@ import { CircularProgress } from "onyxia-ui/CircularProgress";
 import { declareComponentKeys } from "i18nifty";
 
 export type UpgradeParams = {
-    catalogId?: string;
-    packageName?: string;
-    options?: Record<string, unknown>;
-    // isDryRun: boolean;
-    name: string | undefined;
+    catalogId: string | undefined;
+    packageName: string;
+    name: string;
 };
 
 export type Props = {
