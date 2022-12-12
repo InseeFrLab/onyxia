@@ -3,7 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 import { same } from "evt/tools/inDepth/same";
 import { allEquals } from "evt/tools/reducers/allEquals";
 import { createObjectThatThrowsIfAccessed } from "redux-clean-architecture";
-import type { ThunkAction } from "../setup";
+import type { State, ThunkAction } from "../setup";
 import type { FormFieldValue } from "./sharedDataModel/FormFieldValue";
 import { formFieldsValueToObject } from "./sharedDataModel/FormFieldValue";
 import { thunks as userConfigsThunks } from "./userConfigs";
@@ -204,5 +204,18 @@ function areSamerestorableLaunchPackageConfig(
 }
 
 export const selectors = (() => {
-    return {};
+    function restorableContainerConfigs(rootState: State) {
+        const { restorableLaunchPackageConfigs } =
+            rootState.restorableLaunchPackageConfig;
+
+        return restorableLaunchPackageConfigs
+            .map(restorableLaunchPackageConfig => {
+                return {
+                    restorableLaunchPackageConfig
+                };
+            })
+            .reverse();
+    }
+
+    return { restorableContainerConfigs };
 })();

@@ -46,6 +46,9 @@ export function MyServices(props: Props) {
     const { displayableConfigs } = useCoreState(
         selectors.restorablePackageConfig.displayableConfigs
     );
+    const { restorableContainerConfigs } = useCoreState(
+        selectors.restorableLaunchPackageConfig.restorableContainerConfigs
+    );
 
     const isRunningServicesUpdating = useCoreState(
         state => state.runningService.isUpdating
@@ -254,13 +257,18 @@ export function MyServices(props: Props) {
     );
     const onRequestRenew = useConstCallback<MyServicesCardsProps["onRequestRenew"]>(
         async (params: Renewparams) => {
+            const formFieldsValueDifferentFromDefault = restorableContainerConfigs.find(
+                e => e.restorableLaunchPackageConfig.name === params.name
+            )?.restorableLaunchPackageConfig.formFieldsValueDifferentFromDefault;
+            assert(formFieldsValueDifferentFromDefault !== undefined);
             await launcher.reset();
             await launcher.initialize({
                 catalogId: params.catalogId!,
                 packageName: params.packageName!,
                 name: params.name,
-                formFieldsValueDifferentFromDefault: []
+                formFieldsValueDifferentFromDefault
             });
+
             await launcher.launch();
             runningService.update();
         }
