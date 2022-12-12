@@ -1502,18 +1502,6 @@ export const selectors = (() => {
             formFields,
             pathOfFormFieldsWhoseValuesAreDifferentFromDefault
         ) => {
-            console.log(
-                name,
-                catalogId,
-                packageName,
-                formFields,
-                pathOfFormFieldsWhoseValuesAreDifferentFromDefault,
-                !name ||
-                    !catalogId ||
-                    !packageName ||
-                    !formFields ||
-                    !pathOfFormFieldsWhoseValuesAreDifferentFromDefault
-            );
             return !name ||
                 !catalogId ||
                 !packageName ||
