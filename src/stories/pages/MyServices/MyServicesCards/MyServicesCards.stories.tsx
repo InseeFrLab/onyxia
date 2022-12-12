@@ -46,12 +46,12 @@ const props: Props = {
               }),
         "vaultTokenExpirationTime": Infinity,
         "s3TokenExpirationTime": Infinity,
-        "isRenewable": true
+        "isUpgradable": true
     })),
     "catalogExplorerLink": { "href": url, "onClick": () => {} },
     "evtAction": new Evt(),
     "getServicePassword": () => Promise.resolve("xyz"),
-    ...logCallbacks(["onRequestDelete", "onRequestRenew"])
+    ...logCallbacks(["onRequestDelete", "onRequestUpgrade"])
 };
 
 export const ViewDefault = getStory({

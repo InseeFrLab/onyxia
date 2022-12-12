@@ -3,7 +3,7 @@ import { makeStyles, PageHeader } from "ui/theme";
 
 import { useTranslation } from "ui/i18n";
 import { MyServicesButtonBar } from "./MyServicesButtonBar";
-import { MyServicesCards, Renewparams } from "./MyServicesCards";
+import { MyServicesCards, UpgradeParams } from "./MyServicesCards";
 import type { Props as MyServicesCardsProps } from "./MyServicesCards";
 import { MyServicesSavedConfigs } from "./MyServicesSavedConfigs";
 import type { Props as MyServicesSavedConfigsProps } from "./MyServicesSavedConfigs";
@@ -203,7 +203,7 @@ export function MyServices(props: Props) {
                           "ownerUsername": rest.isOwned ? undefined : rest.ownerUsername,
                           vaultTokenExpirationTime,
                           s3TokenExpirationTime,
-                          isRenewable:
+                          isUpgradable:
                               restorableContainerConfigs.find(
                                   r => r.restorableLaunchPackageConfig.name === id
                               ) !== undefined
@@ -259,8 +259,8 @@ export function MyServices(props: Props) {
             setIsDialogDeleteOpen(true);
         }
     );
-    const onRequestRenew = useConstCallback<MyServicesCardsProps["onRequestRenew"]>(
-        async (params: Renewparams) => {
+    const onRequestUpgrade = useConstCallback<MyServicesCardsProps["onRequestUpgrade"]>(
+        async (params: UpgradeParams) => {
             const formFieldsValueDifferentFromDefault = restorableContainerConfigs.find(
                 e => e.restorableLaunchPackageConfig.name === params.name
             )?.restorableLaunchPackageConfig.formFieldsValueDifferentFromDefault;
@@ -332,7 +332,7 @@ export function MyServices(props: Props) {
                         className={classes.cards}
                         cards={cards}
                         onRequestDelete={onRequestDelete}
-                        onRequestRenew={onRequestRenew}
+                        onRequestUpgrade={onRequestUpgrade}
                         catalogExplorerLink={catalogExplorerLink}
                         evtAction={evtMyServiceCardsAction}
                         getServicePassword={getServicePassword}

@@ -23,12 +23,12 @@ export const ViewRegular = getStory({
     "ownerUsername": "jdoe",
     "s3TokenExpirationTime": Date.now() + 3600 * 1000,
     "vaultTokenExpirationTime": Infinity,
-    "isRenewable": true,
+    "isUpgradable": true,
     ...logCallbacks([
         "onRequestDelete",
         "onRequestShowPostInstallInstructions",
         "onRequestShowEnv",
-        "onRequestRenew"
+        "onRequestUpgrade"
     ])
 });
 
@@ -44,11 +44,11 @@ export const ViewStarting = getStory({
     "ownerUsername": undefined,
     "s3TokenExpirationTime": Infinity,
     "vaultTokenExpirationTime": Infinity,
-    "isRenewable": true,
+    "isUpgradable": true,
     ...logCallbacks([
         "onRequestDelete",
         "onRequestShowPostInstallInstructions",
         "onRequestShowEnv",
-        "onRequestRenew"
+        "onRequestUpgrade"
     ])
 });

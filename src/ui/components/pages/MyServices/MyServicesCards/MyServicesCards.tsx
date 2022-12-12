@@ -20,7 +20,7 @@ import { useDomRect } from "powerhooks/useDomRect";
 import { CircularProgress } from "onyxia-ui/CircularProgress";
 import { declareComponentKeys } from "i18nifty";
 
-export type Renewparams = {
+export type UpgradeParams = {
     catalogId?: string;
     packageName?: string;
     options?: Record<string, unknown>;
@@ -44,7 +44,7 @@ export type Props = {
               postInstallInstructions: string | undefined;
               isShared: boolean;
               isOwned: boolean;
-              isRenewable: boolean;
+              isUpgradable: boolean;
               /** undefined when isOwned === true*/
               ownerUsername: string | undefined;
               vaultTokenExpirationTime: number | undefined;
@@ -53,7 +53,7 @@ export type Props = {
         | undefined;
     catalogExplorerLink: Link;
     onRequestDelete(params: { serviceId: string }): void;
-    onRequestRenew(params: Renewparams): void;
+    onRequestUpgrade(params: UpgradeParams): void;
     evtAction: NonPostableEvt<{
         action: "TRIGGER SHOW POST INSTALL INSTRUCTIONS";
         serviceId: string;
@@ -65,7 +65,7 @@ export const MyServicesCards = memo((props: Props) => {
     const {
         className,
         onRequestDelete,
-        onRequestRenew,
+        onRequestUpgrade,
         cards,
         catalogExplorerLink,
         evtAction,
@@ -82,8 +82,8 @@ export const MyServicesCards = memo((props: Props) => {
         onRequestDelete({ serviceId })
     );
 
-    const onRequestRenewFactory = useCallbackFactory(([params]: [Renewparams]) =>
-        onRequestRenew(params)
+    const onRequestUpgradeFactory = useCallbackFactory(([params]: [UpgradeParams]) =>
+        onRequestUpgrade(params)
     );
 
     const [dialogDesc, setDialogDesc] = useState<
@@ -231,7 +231,7 @@ export const MyServicesCards = memo((props: Props) => {
                         <MyServicesCard
                             key={card.serviceId}
                             {...card}
-                            onRequestRenew={onRequestRenewFactory({
+                            onRequestUpgrade={onRequestUpgradeFactory({
                                 catalogId: "ide", //TODO aller chercher catalogId correspondant au name donné
                                 name: card.serviceId,
                                 packageName: card.packageName,

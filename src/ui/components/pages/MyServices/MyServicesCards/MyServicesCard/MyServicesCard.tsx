@@ -30,7 +30,7 @@ export type Props = {
     onRequestDelete: (() => void) | undefined;
     onRequestShowPostInstallInstructions: (() => void) | undefined;
     onRequestShowEnv: () => void;
-    onRequestRenew: () => void;
+    onRequestUpgrade: () => void;
     openUrl: string | undefined;
     monitoringUrl: string | undefined;
     /** undefined when the service is not yey launched */
@@ -41,7 +41,7 @@ export type Props = {
     ownerUsername: string | undefined;
     vaultTokenExpirationTime: number | undefined;
     s3TokenExpirationTime: number | undefined;
-    isRenewable: boolean;
+    isUpgradable: boolean;
 };
 
 export const MyServicesCard = memo((props: Props) => {
@@ -53,7 +53,7 @@ export const MyServicesCard = memo((props: Props) => {
         onRequestDelete,
         onRequestShowPostInstallInstructions,
         onRequestShowEnv,
-        onRequestRenew,
+        onRequestUpgrade,
         monitoringUrl,
         openUrl,
         startTime,
@@ -62,7 +62,7 @@ export const MyServicesCard = memo((props: Props) => {
         ownerUsername,
         vaultTokenExpirationTime,
         s3TokenExpirationTime,
-        isRenewable
+        isUpgradable
     } = props;
 
     const { t } = useTranslation({ MyServicesCard });
@@ -195,7 +195,9 @@ export const MyServicesCard = memo((props: Props) => {
                 <Text className={classes.title} typo="object heading">
                     {capitalize(friendlyName)}
                 </Text>
-                {isRenewable && <IconButton iconId="refresh" onClick={onRequestRenew} />}
+                {isUpgradable && (
+                    <IconButton iconId="refresh" onClick={onRequestUpgrade} />
+                )}
                 <div style={{ "flex": 1 }} />
                 {isShared && (
                     <Tooltip title={t("this is a shared service")}>
