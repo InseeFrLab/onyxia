@@ -46,7 +46,8 @@ const props: Props = {
               }),
         "vaultTokenExpirationTime": Infinity,
         "s3TokenExpirationTime": Infinity,
-        "isUpgradable": true
+        "isUpgradable": true,
+        "catalogId": "ide"
     })),
     "catalogExplorerLink": { "href": url, "onClick": () => {} },
     "evtAction": new Evt(),

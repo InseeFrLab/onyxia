@@ -45,6 +45,7 @@ export type Props = {
               isShared: boolean;
               isOwned: boolean;
               isUpgradable: boolean;
+              catalogId: string | undefined;
               /** undefined when isOwned === true*/
               ownerUsername: string | undefined;
               vaultTokenExpirationTime: number | undefined;
@@ -232,10 +233,9 @@ export const MyServicesCards = memo((props: Props) => {
                             key={card.serviceId}
                             {...card}
                             onRequestUpgrade={onRequestUpgradeFactory({
-                                catalogId: "ide", //TODO aller chercher catalogId correspondant au name donné
+                                catalogId: card.catalogId,
                                 name: card.serviceId,
-                                packageName: card.packageName,
-                                options: {}
+                                packageName: card.packageName
                             })}
                             onRequestShowEnv={onRequestShowEnvOrPostInstallInstructionFactory(
                                 "env",
