@@ -508,12 +508,8 @@ const privateThunks = {
                 "name": state.name
             });
             if (!isForContractPreview) {
-                const { serviceId } = getServiceId({
-                    "packageName": state.packageName,
-                    "randomK8sSubdomain": getRandomK8sSubdomain()
-                });
-
-                dispatch(actions.launchCompleted({ serviceId }));
+                assert(state.name !== undefined);
+                dispatch(actions.launchCompleted({ serviceId: state.name }));
             }
 
             return { contract };
@@ -885,12 +881,15 @@ export const thunks = {
                     sensitiveConfigurations
                 };
             })();
-
+            const { serviceId } = getServiceId({
+                "packageName": packageName,
+                "randomK8sSubdomain": getRandomK8sSubdomain()
+            });
             dispatch(
                 actions.initialized({
                     catalogId,
                     packageName,
-                    name,
+                    name: name || serviceId,
                     "icon": await onyxiaApiClient.getCatalogs().then(
                         apiRequestResult =>
                             //TODO: Sort in the adapter of even better, assumes version sorted
@@ -936,13 +935,13 @@ export const thunks = {
         dispatch =>
             dispatch(actions.formFieldValueChanged(params)),
     "launch": (): ThunkAction => async (dispatch, getState) => {
+        const restorableLaunchPackageConfig = selectors.restorableLaunchPackageConfig(
+            getState()
+        );
         await dispatch(
             privateThunks.launchOrPreviewContract({
                 "isForContractPreview": false
             })
-        );
-        const restorableLaunchPackageConfig = selectors.restorableLaunchPackageConfig(
-            getState()
         );
         if (restorableLaunchPackageConfig === undefined) {
             return;
@@ -1502,12 +1501,24 @@ export const selectors = (() => {
             packageName,
             formFields,
             pathOfFormFieldsWhoseValuesAreDifferentFromDefault
-        ) =>
-            !name ||
-            !catalogId ||
-            !packageName ||
-            !formFields ||
-            !pathOfFormFieldsWhoseValuesAreDifferentFromDefault
+        ) => {
+            console.log(
+                name,
+                catalogId,
+                packageName,
+                formFields,
+                pathOfFormFieldsWhoseValuesAreDifferentFromDefault,
+                !name ||
+                    !catalogId ||
+                    !packageName ||
+                    !formFields ||
+                    !pathOfFormFieldsWhoseValuesAreDifferentFromDefault
+            );
+            return !name ||
+                !catalogId ||
+                !packageName ||
+                !formFields ||
+                !pathOfFormFieldsWhoseValuesAreDifferentFromDefault
                 ? undefined
                 : id<RestorableLaunchPackageConfig>({
                       name,
@@ -1522,7 +1533,8 @@ export const selectors = (() => {
                                   )!.value
                               })
                           )
-                  })
+                  });
+        }
     );
 
     const restorablePackageConfig = createSelector(

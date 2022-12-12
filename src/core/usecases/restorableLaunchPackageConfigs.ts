@@ -116,7 +116,6 @@ export const thunks = {
         }): ThunkAction =>
         async (dispatch, getState) => {
             const { restorableLaunchPackageConfig } = params;
-
             if (
                 isrestorableLaunchPackageConfigInStore({
                     "restorableLaunchPackageConfigs":
@@ -150,7 +149,6 @@ export const thunks = {
                     restorableLaunchPackageConfig
                 })
             );
-
             await dispatch(privateThunks.syncWithUserConfig());
         },
     "deleterestorableLaunchPackageConfig":
@@ -165,7 +163,6 @@ export const thunks = {
                     restorableLaunchPackageConfig
                 })
             );
-
             await dispatch(privateThunks.syncWithUserConfig());
         },
     /** Pure */
