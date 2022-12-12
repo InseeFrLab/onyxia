@@ -5,6 +5,7 @@ import { id } from "tsafe/id";
 import { selectors as deploymentRegionSelectors } from "./deploymentRegion";
 import { selectors as projectSelectionSelectors } from "./projectSelection";
 import type { ThunkAction, State } from "../setup";
+import { thunks as restorableLaunchPackageConfigsThunk } from "./restorableLaunchPackageConfigs";
 import { exclude } from "tsafe/exclude";
 import { createUsecaseContextApi } from "redux-clean-architecture";
 
@@ -282,6 +283,12 @@ export const thunks = {
             const [dispatch, , { onyxiaApiClient }] = args;
 
             dispatch(actions.serviceStopped({ serviceId }));
+
+            dispatch(
+                restorableLaunchPackageConfigsThunk.deleterestorableLaunchPackageConfig({
+                    serviceId
+                })
+            );
 
             await onyxiaApiClient.stopService({ serviceId });
         }

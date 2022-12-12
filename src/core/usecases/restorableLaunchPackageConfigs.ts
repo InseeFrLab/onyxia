@@ -1,11 +1,8 @@
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { createSlice } from "@reduxjs/toolkit";
-import { same } from "evt/tools/inDepth/same";
-import { allEquals } from "evt/tools/reducers/allEquals";
 import { createObjectThatThrowsIfAccessed } from "redux-clean-architecture";
 import type { State, ThunkAction } from "../setup";
 import type { FormFieldValue } from "./sharedDataModel/FormFieldValue";
-import { formFieldsValueToObject } from "./sharedDataModel/FormFieldValue";
 import { thunks as userConfigsThunks } from "./userConfigs";
 
 type RestorableLaunchPackageConfigsState = {
@@ -63,17 +60,14 @@ export const { reducer, actions } = createSlice({
             {
                 payload
             }: PayloadAction<{
-                restorableLaunchPackageConfig: RestorableLaunchPackageConfig;
+                serviceId: string;
             }>
         ) => {
-            const { restorableLaunchPackageConfig } = payload;
+            const { serviceId } = payload;
 
             const index = state.restorableLaunchPackageConfigs.findIndex(
                 restorableLaunchPackageConfig_i =>
-                    areSamerestorableLaunchPackageConfig(
-                        restorableLaunchPackageConfig_i,
-                        restorableLaunchPackageConfig
-                    )
+                    restorableLaunchPackageConfig_i.name === serviceId
             );
 
             if (index <= -1) {
@@ -138,8 +132,7 @@ export const thunks = {
             if (restorableLaunchPackageConfigWithSameName !== undefined) {
                 dispatch(
                     actions.restorableLaunchPackageConfigDeleted({
-                        "restorableLaunchPackageConfig":
-                            restorableLaunchPackageConfigWithSameName
+                        "serviceId": restorableLaunchPackageConfigWithSameName.name
                     })
                 );
             }
@@ -152,15 +145,13 @@ export const thunks = {
             await dispatch(privateThunks.syncWithUserConfig());
         },
     "deleterestorableLaunchPackageConfig":
-        (params: {
-            restorableLaunchPackageConfig: RestorableLaunchPackageConfig;
-        }): ThunkAction =>
+        (params: { serviceId: string }): ThunkAction =>
         async dispatch => {
-            const { restorableLaunchPackageConfig } = params;
+            const { serviceId } = params;
 
             dispatch(
                 actions.restorableLaunchPackageConfigDeleted({
-                    restorableLaunchPackageConfig
+                    serviceId
                 })
             );
             await dispatch(privateThunks.syncWithUserConfig());
@@ -193,14 +184,10 @@ function areSamerestorableLaunchPackageConfig(
     restorableLaunchPackageConfiguration1: RestorableLaunchPackageConfig,
     restorableLaunchPackageConfiguration2: RestorableLaunchPackageConfig
 ): boolean {
-    return [restorableLaunchPackageConfiguration1, restorableLaunchPackageConfiguration2]
-        .map(({ name, catalogId, packageName, formFieldsValueDifferentFromDefault }) => [
-            name,
-            catalogId,
-            packageName,
-            formFieldsValueToObject(formFieldsValueDifferentFromDefault)
-        ])
-        .reduce(...allEquals(same));
+    return (
+        restorableLaunchPackageConfiguration1.name ===
+        restorableLaunchPackageConfiguration2.name
+    );
 }
 
 export const selectors = (() => {
