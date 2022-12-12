@@ -44,6 +44,13 @@ Onyxia is developed by the French National institute of statistics and economic 
 ## Media
 
 <p align="center">
+    <i>Open Source Experience 2022</i><br>
+    <a href="https://www.youtube.com/watch?v=QBHyAKcNmS0">
+        <img src="https://user-images.githubusercontent.com/6702424/206958731-32480b6c-4fab-432f-8afa-bc7922df9857.png" width="640">
+    </a>
+</p>
+
+<p align="center">
     <i>Energy Data Hack</i><br>
     <a href="https://www.youtube.com/watch?v=1G0J950sWso">
         <img src="https://user-images.githubusercontent.com/6702424/170261575-e5c2345e-4de2-4878-ac06-f362b7affd2a.png">
