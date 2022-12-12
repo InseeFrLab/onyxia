@@ -23,6 +23,7 @@ const props: Props = {
         "packageName": "rstudio",
         "infoUrl": url,
         "openUrl": url + "/" + i,
+
         "monitoringUrl": url,
         "startTime": Date.now(),
         "postInstallInstructions":
@@ -44,7 +45,8 @@ const props: Props = {
                   "ownerUsername": undefined
               }),
         "vaultTokenExpirationTime": Infinity,
-        "s3TokenExpirationTime": Infinity
+        "s3TokenExpirationTime": Infinity,
+        "isRenewable": true
     })),
     "catalogExplorerLink": { "href": url, "onClick": () => {} },
     "evtAction": new Evt(),

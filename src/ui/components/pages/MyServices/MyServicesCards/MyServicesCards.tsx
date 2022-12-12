@@ -44,6 +44,7 @@ export type Props = {
               postInstallInstructions: string | undefined;
               isShared: boolean;
               isOwned: boolean;
+              isRenewable: boolean;
               /** undefined when isOwned === true*/
               ownerUsername: string | undefined;
               vaultTokenExpirationTime: number | undefined;

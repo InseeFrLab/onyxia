@@ -41,6 +41,7 @@ export type Props = {
     ownerUsername: string | undefined;
     vaultTokenExpirationTime: number | undefined;
     s3TokenExpirationTime: number | undefined;
+    isRenewable: boolean;
 };
 
 export const MyServicesCard = memo((props: Props) => {
@@ -60,7 +61,8 @@ export const MyServicesCard = memo((props: Props) => {
         isOwned,
         ownerUsername,
         vaultTokenExpirationTime,
-        s3TokenExpirationTime
+        s3TokenExpirationTime,
+        isRenewable
     } = props;
 
     const { t } = useTranslation({ MyServicesCard });
@@ -193,7 +195,7 @@ export const MyServicesCard = memo((props: Props) => {
                 <Text className={classes.title} typo="object heading">
                     {capitalize(friendlyName)}
                 </Text>
-                <IconButton iconId="refresh" onClick={onRequestRenew} />
+                {isRenewable && <IconButton iconId="refresh" onClick={onRequestRenew} />}
                 <div style={{ "flex": 1 }} />
                 {isShared && (
                     <Tooltip title={t("this is a shared service")}>
@@ -218,7 +220,6 @@ export const MyServicesCard = memo((props: Props) => {
                                     text={isOwned ? t("shared by you") : ownerUsername!}
                                 />
                             )}
-                            <IconButton iconId="refresh" onClick={onRequestRenew} />
                         </div>
                     </div>
                     <div className={classes.timeContainer}>

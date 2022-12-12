@@ -202,10 +202,14 @@ export function MyServices(props: Props) {
                           "isOwned": rest.isOwned,
                           "ownerUsername": rest.isOwned ? undefined : rest.ownerUsername,
                           vaultTokenExpirationTime,
-                          s3TokenExpirationTime
+                          s3TokenExpirationTime,
+                          isRenewable:
+                              restorableContainerConfigs.find(
+                                  r => r.restorableLaunchPackageConfig.name === id
+                              ) !== undefined
                       })
                   ),
-        [runningServices, isRunningServicesUpdating]
+        [runningServices, isRunningServicesUpdating, restorableContainerConfigs]
     );
 
     const evtMyServiceCardsAction = useConst(() =>
