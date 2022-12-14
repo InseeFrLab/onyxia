@@ -45,7 +45,7 @@ export function Home(props: Props) {
 
     const { t } = useTranslation({ Home });
 
-    const myBucketsLink = useMemo(() => routes.myBuckets().link, []);
+    const myFilesLink = useMemo(() => routes.myFiles().link, []);
     const catalogExplorerLink = useMemo(() => routes.catalogExplorer().link, []);
 
     const onLoginClick = useConstCallback(() =>
@@ -97,7 +97,7 @@ export function Home(props: Props) {
                     title={t("cardTitle3")}
                     text={t("cardText3")}
                     buttonText={t("cardButton3")}
-                    link={myBucketsLink}
+                    link={myFilesLink}
                 />
             </div>
         </div>
@@ -242,7 +242,9 @@ const { Card } = (() => {
                         <div style={{ "flex": 1 }} />
                         <Button
                             variant="secondary"
-                            {...(typeof link === "string" ? { "href": link } : link)}
+                            {...(typeof link === "string"
+                                ? { "href": link }
+                                : { ...link, "doOpenNewTabIfHref": false })}
                         >
                             {buttonText}
                         </Button>
