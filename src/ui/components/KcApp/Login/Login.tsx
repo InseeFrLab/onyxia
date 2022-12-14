@@ -221,27 +221,28 @@ const Login = memo(
                                         }
                                     >
                                         <div>
-                                            {realm.rememberMe && !usernameEditDisabled && (
-                                                <div className="checkbox">
-                                                    <FormControlLabel
-                                                        control={
-                                                            <Checkbox
-                                                                tabIndex={3}
-                                                                defaultChecked={
-                                                                    !!login.rememberMe
-                                                                }
-                                                                name="rememberMe"
-                                                                color="primary"
-                                                            />
-                                                        }
-                                                        label={
-                                                            <Text typo="body 2">
-                                                                {msg("rememberMe")!}
-                                                            </Text>
-                                                        }
-                                                    />
-                                                </div>
-                                            )}
+                                            {realm.rememberMe &&
+                                                !usernameEditDisabled && (
+                                                    <div className="checkbox">
+                                                        <FormControlLabel
+                                                            control={
+                                                                <Checkbox
+                                                                    tabIndex={3}
+                                                                    defaultChecked={
+                                                                        !!login.rememberMe
+                                                                    }
+                                                                    name="rememberMe"
+                                                                    color="primary"
+                                                                />
+                                                            }
+                                                            label={
+                                                                <Text typo="body 2">
+                                                                    {msg("rememberMe")!}
+                                                                </Text>
+                                                            }
+                                                        />
+                                                    </div>
+                                                )}
                                         </div>
                                         <div className={classes.forgotPassword}>
                                             {realm.resetPasswordAllowed && (

@@ -3,7 +3,6 @@ import { /*IconButton, */ Button, ButtonBarButton } from "ui/theme";
 import { useTranslation } from "ui/i18n";
 import { useConstCallback } from "powerhooks/useConstCallback";
 import { makeStyles, Text } from "ui/theme";
-import type { useIsCloudShellVisible } from "js/components/cloud-shell/cloud-shell";
 import { ReactComponent as OnyxiaLogoSvg } from "ui/assets/svg/OnyxiaLogo.svg";
 import { HEADER_ORGANIZATION, HEADER_USECASE_DESCRIPTION } from "ui/envCarriedOverToKc";
 import InputLabel from "@mui/material/InputLabel";
@@ -36,7 +35,6 @@ export declare namespace Props {
     export type UserLoggedIn = Common & {
         useCase: "core app";
         isUserLoggedIn: true;
-        useIsCloudShellVisible: typeof useIsCloudShellVisible;
         onLogoutClick: () => void;
     } & Omit<ProjectSelectProps, "className">;
 }
@@ -180,38 +178,6 @@ const useStyles = makeStyles<{ logoContainerWidth: number }>({ "name": { Header 
         }
     })
 );
-
-/*
-const { ToggleCloudShell } = (() => {
-    type Props = {
-        useIsCloudShellVisible: typeof useIsCloudShellVisible;
-    };
-
-    const ToggleCloudShell = memo((props: Props) => {
-        const { useIsCloudShellVisible } = props;
-
-        const { toggleCloudShellVisibility } = (function useClosure() {
-            const { setIsCloudShellVisible } = useIsCloudShellVisible();
-
-            return {
-                "toggleCloudShellVisibility": useConstCallback(() =>
-                    setIsCloudShellVisible(value => !value),
-                ),
-            };
-        })();
-
-        return (
-            <IconButton
-                iconId="bash"
-                size="medium"
-                onClick={toggleCloudShellVisibility}
-            />
-        );
-    });
-
-    return { ToggleCloudShell };
-})();
-*/
 
 const labelId = "project-select-id";
 

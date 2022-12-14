@@ -15,17 +15,7 @@ import * as s3Credentials from "./s3Credentials";
 import * as k8sCredentials from "./k8sCredentials";
 import * as vaultCredentials from "./vaultCredentials";
 
-/* ---------- Legacy ---------- */
-import * as myFiles from "js/redux/myFiles";
-import * as myLab from "js/redux/myLab";
-import * as user from "js/redux/user";
-import * as app from "js/redux/app";
-
 export const usecases = {
-    myFiles,
-    myLab,
-    app,
-    user,
     catalogExplorer,
     deploymentRegion,
     fileExplorer,

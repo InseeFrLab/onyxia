@@ -10,7 +10,6 @@ import { useCoreState, useCoreFunctions } from "core";
 import { useConstCallback } from "powerhooks/useConstCallback";
 import { useRoute, routes } from "ui/routes";
 import { Home } from "ui/components/pages/Home";
-import { assert } from "tsafe/assert";
 import { useEffectOnValueChange } from "powerhooks/useEffectOnValueChange";
 import { useDomRect, useSplashScreen } from "onyxia-ui";
 import { Account } from "ui/components/pages/Account";
@@ -22,14 +21,6 @@ import { id } from "tsafe/id";
 import { useIsDarkModeEnabled } from "onyxia-ui";
 import { MyFiles } from "ui/components/pages/MyFiles";
 import { MySecrets } from "ui/components/pages/MySecrets";
-
-//Legacy
-import { MyBuckets } from "js/components/mes-fichiers/MyBuckets";
-import { NavigationFile } from "js/components/mes-fichiers/navigation/NavigationFile";
-import {
-    CloudShell,
-    useIsCloudShellVisible
-} from "js/components/cloud-shell/cloud-shell";
 import type { Item } from "onyxia-ui/LeftBar";
 import { getExtraLeftBarItemsFromEnv, getIsHomePageDisabled } from "ui/env";
 import { declareComponentKeys } from "i18nifty";
@@ -60,19 +51,6 @@ export const App = memo((props: Props) => {
         }, [rootWidth === 0]);
     }
 
-    const isWaiting = useCoreState(state => state.app.waiting);
-
-    {
-        const { hideSplashScreen, showSplashScreen } = useSplashScreen();
-
-        useEffectOnValueChange(() => {
-            if (isWaiting) {
-                showSplashScreen({ "enableTransparency": true });
-            } else {
-                hideSplashScreen();
-            }
-        }, [isWaiting]);
-    }
     const { classes, cx } = useStyles();
 
     const logoContainerWidth = Math.max(
@@ -87,10 +65,6 @@ export const App = memo((props: Props) => {
     const { userAuthentication, fileExplorer, secretExplorer } = useCoreFunctions();
 
     const isUserLoggedIn = userAuthentication.getIsUserLoggedIn();
-
-    const isDevModeEnabled = useCoreState(state =>
-        isUserLoggedIn ? state.userConfigs.isDevModeEnabled.value : false
-    );
 
     const onHeaderAuthClick = useConstCallback(() =>
         isUserLoggedIn
@@ -173,25 +147,9 @@ export const App = memo((props: Props) => {
                                   })
                               ])
                           );
-                })(),
-                ...(() => {
-                    if (!isDevModeEnabled) {
-                        return {} as never;
-                    }
-
-                    return {
-                        "myFilesLegacy": {
-                            "iconId": "files",
-                            "label": t("myFiles") + " Legacy",
-                            "link": routes.myBuckets().link,
-                            "availability": fileExplorer.getIsEnabled()
-                                ? "available"
-                                : "greyed"
-                        }
-                    } as const;
                 })()
             } as const),
-        [t, lang, isDevModeEnabled]
+        [t, lang]
     );
 
     return (
@@ -208,7 +166,6 @@ export const App = memo((props: Props) => {
                     <Header
                         {...common}
                         isUserLoggedIn={true}
-                        useIsCloudShellVisible={useIsCloudShellVisible}
                         onLogoutClick={onHeaderAuthClick}
                         {...projectsSlice!}
                     />
@@ -240,8 +197,6 @@ export const App = memo((props: Props) => {
                                 return "myServices";
                             case "mySecrets":
                                 return "mySecrets";
-                            case "myBuckets":
-                                return "myFiles";
                             case "myFiles":
                                 return "myFiles";
                         }
@@ -259,7 +214,6 @@ export const App = memo((props: Props) => {
                 contributeUrl={"https://github.com/InseeFrLab/onyxia-web"}
                 termsLink={routes.terms().link}
             />
-            {isUserLoggedIn && <CloudShell />}
         </div>
     );
 });
@@ -316,49 +270,6 @@ const PageSelector = memo((props: { route: ReturnType<typeof useRoute> }) => {
     const { userAuthentication } = useCoreFunctions();
 
     const isUserLoggedIn = userAuthentication.getIsUserLoggedIn();
-
-    const legacyRoute = useMemo(() => {
-        const Page = [MyBuckets, NavigationFile].find(({ routeGroup }) =>
-            routeGroup.has(route)
-        );
-
-        if (Page === undefined) {
-            return undefined;
-        }
-
-        if (Page.getDoRequireUserLoggedIn && !isUserLoggedIn) {
-            userAuthentication.login({ "doesCurrentHrefRequiresAuth": true });
-            return null;
-        }
-
-        switch (Page) {
-            case NavigationFile:
-                assert(Page.routeGroup.has(route));
-                return (
-                    <div
-                        style={{
-                            "height": "100%",
-                            "overflow": "auto"
-                        }}
-                    >
-                        <Page route={route} />
-                    </div>
-                );
-            case MyBuckets:
-                return (
-                    <div
-                        style={{
-                            "height": "100%",
-                            "overflow": "auto"
-                        }}
-                    >
-                        <Page />
-                    </div>
-                );
-        }
-
-        assert(false, "Not all cases have been dealt with in the above switch");
-    }, [route]);
 
     /*
     Here is one of the few places in the codebase where we tolerate code duplication.
@@ -453,10 +364,6 @@ const PageSelector = memo((props: { route: ReturnType<typeof useRoute> }) => {
 
             return <Page route={route} />;
         }
-    }
-
-    if (legacyRoute !== undefined) {
-        return legacyRoute;
     }
 
     return <FourOhFour />;
