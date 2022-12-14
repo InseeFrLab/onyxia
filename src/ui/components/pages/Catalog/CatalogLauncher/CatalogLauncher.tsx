@@ -261,8 +261,12 @@ export const CatalogLauncher = memo((props: Props) => {
                         onIsSharedValueChange={launcher.changeIsShared}
                         onRequestLaunch={launcher.launch}
                         onRequestCancel={onRequestCancel}
-                        onRequestRestoreAllDefault={areAllFieldsDefault ? undefined : launcher.restoreAllDefault}
-                        onRequestCopyLaunchUrl={areAllFieldsDefault ? undefined : onRequestCopyLaunchUrl}
+                        onRequestRestoreAllDefault={
+                            areAllFieldsDefault ? undefined : launcher.restoreAllDefault
+                        }
+                        onRequestCopyLaunchUrl={
+                            areAllFieldsDefault ? undefined : onRequestCopyLaunchUrl
+                        }
                         isLaunchable={isLaunchable}
                     />
                     {Object.keys(indexedFormFields).map(

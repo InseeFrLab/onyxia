@@ -9,7 +9,6 @@ import { getCreateStoreParams } from "ui/env";
 import { injectTransferableEnvsInSearchParams } from "ui/envCarriedOverToKc";
 import { injectGlobalStatesInSearchParams } from "powerhooks/useGlobalState";
 import { addParamToUrl } from "powerhooks/tools/urlSearchParams";
-import { StoreProvider } from "js/StoreProvider";
 import { Evt } from "evt";
 import "./envCarriedOverToKc";
 import { Buffer } from "buffer";
@@ -56,9 +55,7 @@ createRoot(document.getElementById("root")!).render(
                     <KcApp kcContext={kcContext} />
                 ) : (
                     <CoreProvider>
-                        <StoreProvider>
-                            <App />
-                        </StoreProvider>
+                        <App />
                     </CoreProvider>
                 )}
             </ThemeProvider>
