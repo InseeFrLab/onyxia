@@ -195,10 +195,12 @@ export const MyServicesCard = memo((props: Props) => {
                 <Text className={classes.title} typo="object heading">
                     {capitalize(friendlyName)}
                 </Text>
-                {isUpgradable && (
-                    <IconButton iconId="refresh" onClick={onRequestUpgrade} />
-                )}
                 <div style={{ "flex": 1 }} />
+                {isUpgradable && (
+                    <Tooltip title={t("upgrade service")}>
+                        <IconButton iconId="refresh" onClick={onRequestUpgrade} />
+                    </Tooltip>
+                )}
                 {isShared && (
                     <Tooltip title={t("this is a shared service")}>
                         <Icon iconId="people" />
@@ -283,6 +285,7 @@ export const { i18n } = declareComponentKeys<
     | { K: "which token expired"; P: { which: "vault" | "s3" } }
     | "reminder to delete services"
     | "this is a shared service"
+    | "upgrade service"
 >()({ MyServicesCard });
 
 const useStyles = makeStyles<{

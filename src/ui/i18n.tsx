@@ -551,7 +551,8 @@ const {
                 "which token expired": ({ which }) => `The ${which} token is expired.`,
                 "reminder to delete services": "Remember to delete your services.",
                 "this is a shared service":
-                    "This service is shared among project's member"
+                    "This service is shared among project's member",
+                "upgrade service": "Upgrade tokens"
             },
             "MyServicesRunningTime": {
                 "launching": "Launching..."
@@ -1023,7 +1024,8 @@ const {
                 "which token expired": ({ which }) => `Le token ${which} a expiré.`,
                 "reminder to delete services":
                     "Rappelez-vous de supprimer vos services après utilisation.",
-                "this is a shared service": "Ce service est partagé au sein du projet"
+                "this is a shared service": "Ce service est partagé au sein du projet",
+                "upgrade service": "Mettre à jour les tokens"
             },
             "MyServicesRunningTime": {
                 "launching": "En cours..."
@@ -1416,7 +1418,8 @@ const {
                     `令牌 ${which} 在 ${howMuchTime} 后过期.`,
                 "which token expired": ({ which }) => `令牌 ${which} 已经过期.`,
                 "reminder to delete services": "请在使用后删除您的服务。",
-                "this is a shared service": "该服务在项目内共享"
+                "this is a shared service": "该服务在项目内共享",
+                "upgrade service": undefined
             },
             "MyServicesRunningTime": {
                 "launching": "启动中"
