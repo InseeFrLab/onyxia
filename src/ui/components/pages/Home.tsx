@@ -18,7 +18,6 @@ import { getIsHomePageDisabled } from "ui/env";
 import { useConst } from "powerhooks/useConst";
 import { useStateRef } from "powerhooks/useStateRef";
 import { declareComponentKeys } from "i18nifty";
-import { useConstCallback } from "powerhooks/useConstCallback";
 
 Home.routeGroup = createGroup([routes.home]);
 
@@ -48,10 +47,6 @@ export function Home(props: Props) {
     const myFilesLink = useMemo(() => routes.myFiles().link, []);
     const catalogExplorerLink = useMemo(() => routes.catalogExplorer().link, []);
 
-    const onLoginClick = useConstCallback(() =>
-        userAuthentication.login({ "doesCurrentHrefRequiresAuth": false })
-    );
-
     return (
         <div className={cx(classes.root, className)}>
             <div className={classes.hero}>
@@ -67,9 +62,7 @@ export function Home(props: Props) {
                     <Text typo="subtitle" className={classes.heroSubtitle}>
                         {t("subtitle")}
                     </Text>
-                    {!isUserLoggedIn ? (
-                        <Button onClick={onLoginClick}>{t("login")}</Button>
-                    ) : (
+                    {isUserLoggedIn && (
                         <Button href="https://docs.sspcloud.fr/">{t("new user")}</Button>
                     )}
                 </div>
