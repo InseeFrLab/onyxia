@@ -23,8 +23,8 @@ import type { WritableDraft } from "immer/dist/types/types-external";
 import { thunks as publicIpThunks } from "./publicIp";
 import { thunks as userAuthenticationThunk } from "./userAuthentication";
 import {
-    RestorableLaunchPackageConfig,
-    thunks as restorableLaunchPackageConfigsThunk
+    RunningPackageConfig,
+    thunks as runningPackageConfigsThunk
 } from "./runningPackageConfigs";
 import { selectors as deploymentRegionSelectors } from "./deploymentRegion";
 import { exclude } from "tsafe/exclude";
@@ -935,20 +935,18 @@ export const thunks = {
         dispatch =>
             dispatch(actions.formFieldValueChanged(params)),
     "launch": (): ThunkAction => async (dispatch, getState) => {
-        const restorableLaunchPackageConfig = selectors.restorableLaunchPackageConfig(
-            getState()
-        );
+        const runningPackageConfig = selectors.runningPackageConfig(getState());
         await dispatch(
             privateThunks.launchOrPreviewContract({
                 "isForContractPreview": false
             })
         );
-        if (restorableLaunchPackageConfig === undefined) {
+        if (runningPackageConfig === undefined) {
             return;
         }
         await dispatch(
-            restorableLaunchPackageConfigsThunk.saveRunningPackageConfig({
-                restorableLaunchPackageConfig
+            runningPackageConfigsThunk.saveRunningPackageConfig({
+                runningPackageConfig: runningPackageConfig
             })
         );
     },
@@ -1489,7 +1487,7 @@ export const selectors = (() => {
     const catalogId = createSelector(readyLauncher, state => state?.catalogId);
     const name = createSelector(readyLauncher, state => state?.name);
 
-    const restorableLaunchPackageConfig = createSelector(
+    const runningPackageConfig = createSelector(
         name,
         catalogId,
         packageName,
@@ -1508,7 +1506,7 @@ export const selectors = (() => {
                 !formFields ||
                 !pathOfFormFieldsWhoseValuesAreDifferentFromDefault
                 ? undefined
-                : id<RestorableLaunchPackageConfig>({
+                : id<RunningPackageConfig>({
                       name,
                       catalogId,
                       packageName,
@@ -1574,7 +1572,7 @@ export const selectors = (() => {
         isLaunchable,
         isLaunching,
         formFieldsIsWellFormed,
-        restorableLaunchPackageConfig,
+        runningPackageConfig,
         restorablePackageConfig,
         areAllFieldsDefault
     };

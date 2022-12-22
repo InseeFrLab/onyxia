@@ -7,7 +7,7 @@ import * as projectConfig from "./projectConfigs";
 import * as projectSelection from "./projectSelection";
 import * as publicIp from "./publicIp";
 import * as restorablePackageConfigs from "./restorablePackageConfigs";
-import * as restorableLaunchPackageConfigs from "./runningPackageConfigs";
+import * as runningPackageConfigs from "./runningPackageConfigs";
 import * as runningService from "./runningService";
 import * as userAuthentication from "./userAuthentication";
 import * as userConfigs from "./userConfigs";
@@ -26,7 +26,7 @@ export const usecases = {
     projectSelection,
     publicIp,
     restorablePackageConfigs,
-    restorableLaunchPackageConfigs,
+    runningPackageConfigs,
     runningService,
     userAuthentication,
     userConfigs,

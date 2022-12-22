@@ -5,11 +5,11 @@ import type { State, ThunkAction } from "../setup";
 import type { FormFieldValue } from "./sharedDataModel/FormFieldValue";
 import { thunks as userConfigsThunks } from "./userConfigs";
 
-type RestorableLaunchPackageConfigsState = {
-    restorableLaunchPackageConfigs: RestorableLaunchPackageConfig[];
+type RunningPackageConfigsState = {
+    runningPackageConfigs: RunningPackageConfig[];
 };
 
-export type RestorableLaunchPackageConfig = {
+export type RunningPackageConfig = {
     name: string;
     catalogId: string;
     packageName: string;
@@ -20,42 +20,40 @@ export const name = "runningPackageConfigs";
 
 export const { reducer, actions } = createSlice({
     name,
-    "initialState": createObjectThatThrowsIfAccessed<RestorableLaunchPackageConfigsState>(
-        {
-            "debugMessage": [
-                "The restorableLaunchPackageConfigstate should have been",
-                "initialized during the store initialization"
-            ].join(" ")
-        }
-    ),
+    "initialState": createObjectThatThrowsIfAccessed<RunningPackageConfigsState>({
+        "debugMessage": [
+            "The runningPackageConfigstate should have been",
+            "initialized during the store initialization"
+        ].join(" ")
+    }),
     "reducers": {
         "initializationCompleted": (
             _,
             {
                 payload
             }: PayloadAction<{
-                restorableLaunchPackageConfigs: RestorableLaunchPackageConfig[];
+                runningPackageConfigs: RunningPackageConfig[];
             }>
         ) => {
-            const { restorableLaunchPackageConfigs } = payload;
+            const { runningPackageConfigs } = payload;
             return {
-                restorableLaunchPackageConfigs
+                runningPackageConfigs
             };
         },
 
-        "restorableLaunchPackageConfigsaved": (
+        "runningPackageConfigSaved": (
             state,
             {
                 payload
             }: PayloadAction<{
-                restorableLaunchPackageConfig: RestorableLaunchPackageConfig;
+                runningPackageConfig: RunningPackageConfig;
             }>
         ) => {
-            const { restorableLaunchPackageConfig } = payload;
+            const { runningPackageConfig } = payload;
 
-            state.restorableLaunchPackageConfigs.push(restorableLaunchPackageConfig);
+            state.runningPackageConfigs.push(runningPackageConfig);
         },
-        "restorableLaunchPackageConfigDeleted": (
+        "runningPackageConfigDeleted": (
             state,
             {
                 payload
@@ -65,16 +63,15 @@ export const { reducer, actions } = createSlice({
         ) => {
             const { serviceId } = payload;
 
-            const index = state.restorableLaunchPackageConfigs.findIndex(
-                restorableLaunchPackageConfig_i =>
-                    restorableLaunchPackageConfig_i.name === serviceId
+            const index = state.runningPackageConfigs.findIndex(
+                runningPackageConfig_i => runningPackageConfig_i.name === serviceId
             );
 
             if (index <= -1) {
                 return;
             }
 
-            state.restorableLaunchPackageConfigs.splice(index, 1);
+            state.runningPackageConfigs.splice(index, 1);
         }
     }
 });
@@ -83,7 +80,7 @@ export const privateThunks = {
     "initialize": (): ThunkAction<void> => async (dispatch, getState) =>
         dispatch(
             actions.initializationCompleted({
-                "restorableLaunchPackageConfigs": (() => {
+                "runningPackageConfigs": (() => {
                     const { value } =
                         getState().userConfigs.runningPackagesConfigurationStr;
 
@@ -96,7 +93,7 @@ export const privateThunks = {
             userConfigsThunks.changeValue({
                 "key": "runningPackagesConfigurationStr",
                 "value": JSON.stringify(
-                    getState().runningPackageConfigs.restorableLaunchPackageConfigs
+                    getState().runningPackageConfigs.runningPackageConfigs
                 )
             })
         )
@@ -104,40 +101,38 @@ export const privateThunks = {
 
 export const thunks = {
     "saveRunningPackageConfig":
-        (params: {
-            restorableLaunchPackageConfig: RestorableLaunchPackageConfig;
-        }): ThunkAction =>
+        (params: { runningPackageConfig: RunningPackageConfig }): ThunkAction =>
         async (dispatch, getState) => {
-            const { restorableLaunchPackageConfig } = params;
+            const { runningPackageConfig } = params;
             if (
                 isRunningPackageConfigInStore({
-                    "restorableLaunchPackageConfigs":
-                        getState().runningPackageConfigs.restorableLaunchPackageConfigs,
-                    restorableLaunchPackageConfig
+                    "runningPackageConfigs":
+                        getState().runningPackageConfigs.runningPackageConfigs,
+                    runningPackageConfig: runningPackageConfig
                 })
             ) {
                 return;
             }
 
-            const restorableLaunchPackageConfigWithSameName = getState()
-                .runningPackageConfigs.restorableLaunchPackageConfigs.filter(
+            const runningPackageConfigWithSameName = getState()
+                .runningPackageConfigs.runningPackageConfigs.filter(
                     ({ catalogId, packageName }) =>
-                        restorableLaunchPackageConfig.catalogId === catalogId &&
-                        restorableLaunchPackageConfig.packageName === packageName
+                        runningPackageConfig.catalogId === catalogId &&
+                        runningPackageConfig.packageName === packageName
                 )
-                .find(({ name }) => restorableLaunchPackageConfig.name === name);
+                .find(({ name }) => runningPackageConfig.name === name);
 
-            if (restorableLaunchPackageConfigWithSameName !== undefined) {
+            if (runningPackageConfigWithSameName !== undefined) {
                 dispatch(
-                    actions.restorableLaunchPackageConfigDeleted({
-                        "serviceId": restorableLaunchPackageConfigWithSameName.name
+                    actions.runningPackageConfigDeleted({
+                        "serviceId": runningPackageConfigWithSameName.name
                     })
                 );
             }
 
             dispatch(
-                actions.restorableLaunchPackageConfigsaved({
-                    restorableLaunchPackageConfig
+                actions.runningPackageConfigSaved({
+                    runningPackageConfig: runningPackageConfig
                 })
             );
             await dispatch(privateThunks.syncWithUserConfig());
@@ -148,7 +143,7 @@ export const thunks = {
             const { serviceId } = params;
 
             dispatch(
-                actions.restorableLaunchPackageConfigDeleted({
+                actions.runningPackageConfigDeleted({
                     serviceId
                 })
             );
@@ -157,45 +152,39 @@ export const thunks = {
     /** Pure */
     "isRestorableRunningConfigInStore":
         (params: {
-            restorableLaunchPackageConfigs: RestorableLaunchPackageConfig[];
-            restorableLaunchPackageConfig: RestorableLaunchPackageConfig;
+            runningPackageConfigs: RunningPackageConfig[];
+            runningPackageConfig: RunningPackageConfig;
         }): ThunkAction<boolean> =>
         () =>
             isRunningPackageConfigInStore(params)
 };
 
 function isRunningPackageConfigInStore(params: {
-    restorableLaunchPackageConfigs: RestorableLaunchPackageConfig[];
-    restorableLaunchPackageConfig: RestorableLaunchPackageConfig;
+    runningPackageConfigs: RunningPackageConfig[];
+    runningPackageConfig: RunningPackageConfig;
 }) {
-    const { restorableLaunchPackageConfig, restorableLaunchPackageConfigs } = params;
+    const { runningPackageConfig, runningPackageConfigs } = params;
 
-    return !!restorableLaunchPackageConfigs.find(restorableLaunchPackageConfig_i =>
-        areSamerestorableLaunchPackageConfig(
-            restorableLaunchPackageConfig_i,
-            restorableLaunchPackageConfig
-        )
+    return !!runningPackageConfigs.find(runningPackageConfig_i =>
+        areSameRunningPackageConfig(runningPackageConfig_i, runningPackageConfig)
     );
 }
 
-function areSamerestorableLaunchPackageConfig(
-    restorableLaunchPackageConfiguration1: RestorableLaunchPackageConfig,
-    restorableLaunchPackageConfiguration2: RestorableLaunchPackageConfig
+function areSameRunningPackageConfig(
+    runningPackageConfiguration1: RunningPackageConfig,
+    runningPackageConfiguration2: RunningPackageConfig
 ): boolean {
-    return (
-        restorableLaunchPackageConfiguration1.name ===
-        restorableLaunchPackageConfiguration2.name
-    );
+    return runningPackageConfiguration1.name === runningPackageConfiguration2.name;
 }
 
 export const selectors = (() => {
     function restorableRunnigPackageConfigs(rootState: State) {
-        const { restorableLaunchPackageConfigs } = rootState.runningPackageConfigs;
+        const { runningPackageConfigs } = rootState.runningPackageConfigs;
 
-        return restorableLaunchPackageConfigs
-            .map(restorableLaunchPackageConfig => {
+        return runningPackageConfigs
+            .map(runningPackageConfig => {
                 return {
-                    restorableLaunchPackageConfig
+                    runningPackageConfig
                 };
             })
             .reverse();

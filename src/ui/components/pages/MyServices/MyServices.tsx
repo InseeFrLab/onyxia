@@ -209,11 +209,11 @@ export function MyServices(props: Props) {
                           vaultTokenExpirationTime,
                           s3TokenExpirationTime,
                           "catalogId": restorableRunnigPackageConfigs.find(
-                              r => r.restorableLaunchPackageConfig.name === id
-                          )?.restorableLaunchPackageConfig.catalogId,
+                              r => r.runningPackageConfig.name === id
+                          )?.runningPackageConfig.catalogId,
                           "isUpgradable":
                               restorableRunnigPackageConfigs.find(
-                                  r => r.restorableLaunchPackageConfig.name === id
+                                  r => r.runningPackageConfig.name === id
                               ) !== undefined
                       })
                   ),

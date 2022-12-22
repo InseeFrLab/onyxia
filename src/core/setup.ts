@@ -219,7 +219,7 @@ export async function createCore(params: CoreParams) {
                 core.getState().projectSelection.selectedProjectId;
         }
 
-        core.dispatch(usecases.restorableLaunchPackageConfigs.privateThunks.initialize());
+        core.dispatch(usecases.runningPackageConfigs.privateThunks.initialize());
         core.dispatch(usecases.restorablePackageConfigs.privateThunks.initialize());
     }
 

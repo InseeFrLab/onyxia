@@ -155,8 +155,8 @@ export const thunks = {
             const restorableRunningPackageConfigs =
                 runningPackageConfigSelectors.restorableRunnigPackageConfigs(getState());
             const restorableRunningPackageConfig = restorableRunningPackageConfigs.find(
-                e => e.restorableLaunchPackageConfig.name === serviceId
-            )?.restorableLaunchPackageConfig;
+                e => e.runningPackageConfig.name === serviceId
+            )?.runningPackageConfig;
             assert(restorableRunningPackageConfig !== undefined);
 
             await dispatch(
