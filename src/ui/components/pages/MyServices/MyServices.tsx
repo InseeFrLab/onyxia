@@ -208,10 +208,10 @@ export function MyServices(props: Props) {
                           "ownerUsername": rest.isOwned ? undefined : rest.ownerUsername,
                           vaultTokenExpirationTime,
                           s3TokenExpirationTime,
-                          catalogId: restorableRunnigPackageConfigs.find(
+                          "catalogId": restorableRunnigPackageConfigs.find(
                               r => r.restorableLaunchPackageConfig.name === id
                           )?.restorableLaunchPackageConfig.catalogId,
-                          isUpgradable:
+                          "isUpgradable":
                               restorableRunnigPackageConfigs.find(
                                   r => r.restorableLaunchPackageConfig.name === id
                               ) !== undefined
