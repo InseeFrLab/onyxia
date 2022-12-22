@@ -3,7 +3,7 @@ import { makeStyles, PageHeader } from "ui/theme";
 
 import { useTranslation } from "ui/i18n";
 import { MyServicesButtonBar } from "./MyServicesButtonBar";
-import { MyServicesCards, UpgradeParams } from "./MyServicesCards";
+import { MyServicesCards } from "./MyServicesCards";
 import type { Props as MyServicesCardsProps } from "./MyServicesCards";
 import { MyServicesSavedConfigs } from "./MyServicesSavedConfigs";
 import type { Props as MyServicesSavedConfigsProps } from "./MyServicesSavedConfigs";
@@ -40,7 +40,7 @@ export function MyServices(props: Props) {
 
     const { t } = useTranslation({ MyServices });
 
-    const { runningService, restorablePackageConfig, projectConfigs, launcher } =
+    const { runningService, restorablePackageConfig, projectConfigs } =
         useCoreFunctions();
 
     const { displayableConfigs } = useCoreState(
@@ -268,22 +268,8 @@ export function MyServices(props: Props) {
         }
     );
     const onRequestUpgrade = useConstCallback<MyServicesCardsProps["onRequestUpgrade"]>(
-        async (params: UpgradeParams) => {
-            const formFieldsValueDifferentFromDefault =
-                restorableRunnigPackageConfigs.find(
-                    e => e.restorableLaunchPackageConfig.name === params.name
-                )?.restorableLaunchPackageConfig.formFieldsValueDifferentFromDefault;
-            assert(formFieldsValueDifferentFromDefault !== undefined);
-            await launcher.reset();
-            await launcher.initialize({
-                catalogId: params.catalogId!,
-                packageName: params.packageName!,
-                name: params.name,
-                formFieldsValueDifferentFromDefault
-            });
-
-            await launcher.launch();
-            runningService.update();
+        async (serviceName: string) => {
+            runningService.upgradeService(serviceName);
         }
     );
     const deletableRunningServices = useMemo(

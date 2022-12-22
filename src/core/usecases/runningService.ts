@@ -5,9 +5,13 @@ import { id } from "tsafe/id";
 import { selectors as deploymentRegionSelectors } from "./deploymentRegion";
 import { selectors as projectSelectionSelectors } from "./projectSelection";
 import type { ThunkAction, State } from "../setup";
-import { thunks as restorableLaunchPackageConfigsThunk } from "./runningPackageConfigs";
+import {
+    thunks as runningPackageConfigsThunk,
+    selectors as runningPackageConfigSelectors
+} from "./runningPackageConfigs";
 import { exclude } from "tsafe/exclude";
 import { createUsecaseContextApi } from "redux-clean-architecture";
+import { thunks as launcherThunk } from "./launcher";
 
 type RunningServicesState = {
     isUserWatching: boolean;
@@ -135,6 +139,38 @@ export const thunks = {
             const [dispatch] = args;
 
             dispatch(actions.isUserWatchingChanged({ isUserWatching }));
+        },
+    "upgradeService":
+        (serviceId: string): ThunkAction<void> =>
+        async (...args) => {
+            const [dispatch, getState] = args;
+
+            {
+                const state = getState().runningService;
+
+                if (state.isUpdating) {
+                    return;
+                }
+            }
+            const restorableRunningPackageConfigs =
+                runningPackageConfigSelectors.restorableRunnigPackageConfigs(getState());
+            const restorableRunningPackageConfig = restorableRunningPackageConfigs.find(
+                e => e.restorableLaunchPackageConfig.name === serviceId
+            )?.restorableLaunchPackageConfig;
+            assert(restorableRunningPackageConfig !== undefined);
+
+            await dispatch(
+                launcherThunk.initialize({
+                    catalogId: restorableRunningPackageConfig.catalogId,
+                    packageName: restorableRunningPackageConfig.packageName,
+                    name: restorableRunningPackageConfig.name,
+                    formFieldsValueDifferentFromDefault:
+                        restorableRunningPackageConfig.formFieldsValueDifferentFromDefault
+                })
+            );
+            await dispatch(launcherThunk.launch());
+            dispatch(launcherThunk.reset());
+            dispatch(thunks.update());
         },
     "update":
         (): ThunkAction<void> =>
@@ -285,7 +321,7 @@ export const thunks = {
             dispatch(actions.serviceStopped({ serviceId }));
 
             dispatch(
-                restorableLaunchPackageConfigsThunk.deleteRunningPackageConfig({
+                runningPackageConfigsThunk.deleteRunningPackageConfig({
                     serviceId
                 })
             );

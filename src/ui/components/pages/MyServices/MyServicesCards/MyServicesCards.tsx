@@ -20,12 +20,6 @@ import { useDomRect } from "powerhooks/useDomRect";
 import { CircularProgress } from "onyxia-ui/CircularProgress";
 import { declareComponentKeys } from "i18nifty";
 
-export type UpgradeParams = {
-    catalogId: string | undefined;
-    packageName: string;
-    name: string;
-};
-
 export type Props = {
     className?: string;
     cards:
@@ -52,7 +46,7 @@ export type Props = {
         | undefined;
     catalogExplorerLink: Link;
     onRequestDelete(params: { serviceId: string }): void;
-    onRequestUpgrade(params: UpgradeParams): void;
+    onRequestUpgrade(serviceName: string): void;
     evtAction: NonPostableEvt<{
         action: "TRIGGER SHOW POST INSTALL INSTRUCTIONS";
         serviceId: string;
@@ -81,9 +75,8 @@ export const MyServicesCards = memo((props: Props) => {
         onRequestDelete({ serviceId })
     );
 
-    const onRequestUpgradeFactory = useCallbackFactory(
-        ([catalogId, packageName, name]: [string | undefined, string, string]) =>
-            onRequestUpgrade({ catalogId, packageName, name })
+    const onRequestUpgradeFactory = useCallbackFactory(([name]: [string]) =>
+        onRequestUpgrade(name)
     );
 
     const [dialogDesc, setDialogDesc] = useState<
@@ -231,11 +224,7 @@ export const MyServicesCards = memo((props: Props) => {
                         <MyServicesCard
                             key={card.serviceId}
                             {...card}
-                            onRequestUpgrade={onRequestUpgradeFactory(
-                                card.catalogId,
-                                card.packageName,
-                                card.serviceId
-                            )}
+                            onRequestUpgrade={onRequestUpgradeFactory(card.serviceId)}
                             onRequestShowEnv={onRequestShowEnvOrPostInstallInstructionFactory(
                                 "env",
                                 card.serviceId
