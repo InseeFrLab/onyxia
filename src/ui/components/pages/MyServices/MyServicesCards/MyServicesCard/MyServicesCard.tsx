@@ -30,7 +30,8 @@ export type Props = {
     onRequestDelete: (() => void) | undefined;
     onRequestShowPostInstallInstructions: (() => void) | undefined;
     onRequestShowEnv: () => void;
-    onRequestUpgrade: () => void;
+    /** undefined if not upgradable */
+    onRequestUpgrade: (() => void) | undefined;
     openUrl: string | undefined;
     monitoringUrl: string | undefined;
     /** undefined when the service is not yey launched */
@@ -64,7 +65,6 @@ export const MyServicesCard = memo((props: Props) => {
         s3TokenExpirationTime,
         isUpgradable
     } = props;
-
     const { t } = useTranslation({ MyServicesCard });
 
     const tokensStatus = useMemo(() => {
@@ -196,7 +196,7 @@ export const MyServicesCard = memo((props: Props) => {
                     {capitalize(friendlyName)}
                 </Text>
                 <div style={{ "flex": 1 }} />
-                {isUpgradable && (
+                {isUpgradable && onRequestUpgrade && (
                     <Tooltip title={t("upgrade service")}>
                         <IconButton iconId="refresh" onClick={onRequestUpgrade} />
                     </Tooltip>

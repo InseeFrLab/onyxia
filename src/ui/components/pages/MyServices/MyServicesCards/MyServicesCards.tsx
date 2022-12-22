@@ -81,8 +81,9 @@ export const MyServicesCards = memo((props: Props) => {
         onRequestDelete({ serviceId })
     );
 
-    const onRequestUpgradeFactory = useCallbackFactory(([params]: [UpgradeParams]) =>
-        onRequestUpgrade(params)
+    const onRequestUpgradeFactory = useCallbackFactory(
+        ([catalogId, packageName, name]: [string | undefined, string, string]) =>
+            onRequestUpgrade({ catalogId, packageName, name })
     );
 
     const [dialogDesc, setDialogDesc] = useState<
@@ -230,11 +231,11 @@ export const MyServicesCards = memo((props: Props) => {
                         <MyServicesCard
                             key={card.serviceId}
                             {...card}
-                            onRequestUpgrade={onRequestUpgradeFactory({
-                                catalogId: card.catalogId,
-                                name: card.serviceId,
-                                packageName: card.packageName
-                            })}
+                            onRequestUpgrade={onRequestUpgradeFactory(
+                                card.catalogId,
+                                card.packageName,
+                                card.serviceId
+                            )}
                             onRequestShowEnv={onRequestShowEnvOrPostInstallInstructionFactory(
                                 "env",
                                 card.serviceId

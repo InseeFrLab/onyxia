@@ -46,15 +46,20 @@ export function MyServices(props: Props) {
     const { displayableConfigs } = useCoreState(
         selectors.restorablePackageConfig.displayableConfigs
     );
-    const { restorableContainerConfigs } = useCoreState(
-        selectors.restorableLaunchPackageConfig.restorableContainerConfigs
+    const { restorableRunnigPackageConfigs } = useCoreState(
+        selectors.runningPackageConfigs.restorableRunnigPackageConfigs
     );
+    const { isLoading } = (function useClosure() {
+        const { isLaunching } = useCoreState(selectors.launcher.isLaunching);
 
-    const isRunningServicesUpdating = useCoreState(
-        state => state.runningService.isUpdating
-    );
-    const { isLaunching } = useCoreState(selectors.launcher.isLaunching);
-    const isLoading = isLaunching || isRunningServicesUpdating;
+        const isRunningServicesUpdating = useCoreState(
+            state => state.runningService.isUpdating
+        );
+
+        const isLoading = isLaunching || isRunningServicesUpdating;
+
+        return { isLoading };
+    })();
     const { runningServices } = useCoreState(selectors.runningService.runningServices);
     const { hideSplashScreen, showSplashScreen } = useSplashScreen();
 
@@ -170,7 +175,7 @@ export function MyServices(props: Props) {
 
     const cards = useMemo(
         (): MyServicesCardsProps["cards"] =>
-            isRunningServicesUpdating
+            isLoading
                 ? undefined
                 : runningServices.map(
                       ({
@@ -203,16 +208,16 @@ export function MyServices(props: Props) {
                           "ownerUsername": rest.isOwned ? undefined : rest.ownerUsername,
                           vaultTokenExpirationTime,
                           s3TokenExpirationTime,
-                          catalogId: restorableContainerConfigs.find(
+                          catalogId: restorableRunnigPackageConfigs.find(
                               r => r.restorableLaunchPackageConfig.name === id
                           )?.restorableLaunchPackageConfig.catalogId,
                           isUpgradable:
-                              restorableContainerConfigs.find(
+                              restorableRunnigPackageConfigs.find(
                                   r => r.restorableLaunchPackageConfig.name === id
                               ) !== undefined
                       })
                   ),
-        [runningServices, isRunningServicesUpdating, restorableContainerConfigs]
+        [runningServices, isLoading, restorableRunnigPackageConfigs]
     );
 
     const evtMyServiceCardsAction = useConst(() =>
@@ -264,9 +269,10 @@ export function MyServices(props: Props) {
     );
     const onRequestUpgrade = useConstCallback<MyServicesCardsProps["onRequestUpgrade"]>(
         async (params: UpgradeParams) => {
-            const formFieldsValueDifferentFromDefault = restorableContainerConfigs.find(
-                e => e.restorableLaunchPackageConfig.name === params.name
-            )?.restorableLaunchPackageConfig.formFieldsValueDifferentFromDefault;
+            const formFieldsValueDifferentFromDefault =
+                restorableRunnigPackageConfigs.find(
+                    e => e.restorableLaunchPackageConfig.name === params.name
+                )?.restorableLaunchPackageConfig.formFieldsValueDifferentFromDefault;
             assert(formFieldsValueDifferentFromDefault !== undefined);
             await launcher.reset();
             await launcher.initialize({

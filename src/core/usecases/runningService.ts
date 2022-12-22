@@ -5,7 +5,7 @@ import { id } from "tsafe/id";
 import { selectors as deploymentRegionSelectors } from "./deploymentRegion";
 import { selectors as projectSelectionSelectors } from "./projectSelection";
 import type { ThunkAction, State } from "../setup";
-import { thunks as restorableLaunchPackageConfigsThunk } from "./restorableLaunchPackageConfigs";
+import { thunks as restorableLaunchPackageConfigsThunk } from "./runningPackageConfigs";
 import { exclude } from "tsafe/exclude";
 import { createUsecaseContextApi } from "redux-clean-architecture";
 
@@ -285,7 +285,7 @@ export const thunks = {
             dispatch(actions.serviceStopped({ serviceId }));
 
             dispatch(
-                restorableLaunchPackageConfigsThunk.deleterestorableLaunchPackageConfig({
+                restorableLaunchPackageConfigsThunk.deleteRunningPackageConfig({
                     serviceId
                 })
             );

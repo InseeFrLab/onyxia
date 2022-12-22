@@ -25,7 +25,7 @@ import { thunks as userAuthenticationThunk } from "./userAuthentication";
 import {
     RestorableLaunchPackageConfig,
     thunks as restorableLaunchPackageConfigsThunk
-} from "./restorableLaunchPackageConfigs";
+} from "./runningPackageConfigs";
 import { selectors as deploymentRegionSelectors } from "./deploymentRegion";
 import { exclude } from "tsafe/exclude";
 import { thunks as projectConfigs } from "./projectConfigs";
@@ -947,7 +947,7 @@ export const thunks = {
             return;
         }
         await dispatch(
-            restorableLaunchPackageConfigsThunk.saveRestorableLaunchPackageConfig({
+            restorableLaunchPackageConfigsThunk.saveRunningPackageConfig({
                 restorableLaunchPackageConfig
             })
         );
