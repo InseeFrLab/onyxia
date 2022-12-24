@@ -29,6 +29,8 @@ export function createMockOnyxiaApiClient(): OnyxiaApiClient {
                         "servicesMonitoringUrlPattern": undefined,
                         "kubernetesClusterDomain": "kub.sspcloud.fr",
                         "ingressClassName": undefined,
+                        "ingress": true,
+                        "route": undefined,
                         "initScriptUrl":
                             "https://InseeFrLab.github.io/onyxia/onyxia-init.sh",
                         "s3": undefined,

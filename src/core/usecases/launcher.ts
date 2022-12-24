@@ -1087,6 +1087,8 @@ export const thunks = {
                 "k8s": {
                     "domain": selectedDeploymentRegion.kubernetesClusterDomain,
                     "ingressClassName": selectedDeploymentRegion.ingressClassName,
+                    "ingress": selectedDeploymentRegion.ingress,
+                    "route": selectedDeploymentRegion.route,
                     "randomSubdomain":
                         (getRandomK8sSubdomain.clear(), getRandomK8sSubdomain()),
                     "initScriptUrl": selectedDeploymentRegion.initScriptUrl
