@@ -139,8 +139,8 @@ export function createOfficialOnyxiaApiClient(params: {
                             expose: {
                                 domain: string;
                                 ingressClassName: string;
-                                ingress: boolean;
-                                route: boolean;
+                                ingress?: boolean;
+                                route? : boolean;
                             };
                             defaultConfiguration?: {
                                 ipprotection?: boolean;
