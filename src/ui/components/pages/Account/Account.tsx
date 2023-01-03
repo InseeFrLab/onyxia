@@ -1,6 +1,8 @@
 import { Tabs } from "onyxia-ui/Tabs";
 import { AccountInfoTab } from "./tabs/AccountInfoTab";
 import { AccountIntegrationsTab } from "./tabs/AccountIntegrationsTab";
+import { AccountKubernetesTab } from "./tabs/AccountKubernetesTab";
+import { AccountVaultTab } from "./tabs/AccountVaultTab";
 import { useMemo } from "react";
 import { createGroup } from "type-route";
 import { routes } from "ui/routes";
@@ -15,6 +17,8 @@ import type { Route } from "type-route";
 import { makeStyles } from "ui/theme";
 import { declareComponentKeys } from "i18nifty";
 import { useCoreFunctions } from "core";
+import { assert } from "tsafe/assert";
+import type { Equals } from "tsafe";
 
 Account.routeGroup = createGroup([routes.account]);
 
@@ -32,13 +36,21 @@ export function Account(props: Props) {
 
     const { t } = useTranslation({ Account });
 
-    const { s3Credentials } = useCoreFunctions();
+    const { s3Credentials, k8sCredentials, vaultCredentials } = useCoreFunctions();
 
     const tabs = useMemo(
         () =>
             accountTabIds
                 .filter(accountTabId =>
                     accountTabId !== "storage" ? true : s3Credentials.isAvailable()
+                )
+                .filter(accountTabId =>
+                    accountTabId !== "k8sCredentials"
+                        ? true
+                        : k8sCredentials.isAvailable()
+                )
+                .filter(accountTabId =>
+                    accountTabId !== "vault" ? true : vaultCredentials.isAvailable()
                 )
                 .map(id => ({ id, "title": t(id) })),
         [t]
@@ -77,7 +89,12 @@ export function Account(props: Props) {
                             return <AccountStorageTab />;
                         case "user-interface":
                             return <AccountUserInterfaceTab />;
+                        case "k8sCredentials":
+                            return <AccountKubernetesTab />;
+                        case "vault":
+                            return <AccountVaultTab />;
                     }
+                    assert<Equals<typeof route.params.tabId, never>>(false);
                 })()}
             </Tabs>
         </div>

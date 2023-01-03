@@ -25,7 +25,7 @@ type RestorablePackageConfigsState = {
 };
 
 type IconsUrl = {
-    [catalogId: string]: { [packageName: string]: string };
+    [catalogId: string]: { [packageName: string]: string | undefined };
 };
 
 export type RestorablePackageConfig = {
@@ -157,21 +157,22 @@ export const thunks = {
 
             const iconsUrl: IconsUrl = {};
 
-            apiRequestForIconsResult.forEach(
-                ({ id: catalogId, catalog: { packages } }) => {
-                    const urlByPackageName: IconsUrl[string] = {};
+            apiRequestForIconsResult.forEach(({ id: catalogId, charts }) => {
+                const urlByPackageName: IconsUrl[string] = {};
 
-                    packages.forEach(({ name: packageName, icon }) => {
+                charts.forEach(chart => {
+                    for (const { icon } of chart.versions) {
                         if (icon === undefined) {
-                            return;
+                            continue;
                         }
+                        urlByPackageName[chart.name] = icon;
+                        return;
+                    }
+                    urlByPackageName[chart.name] = undefined;
+                });
 
-                        urlByPackageName[packageName] = icon;
-                    });
-
-                    iconsUrl[catalogId] = urlByPackageName;
-                }
-            );
+                iconsUrl[catalogId] = urlByPackageName;
+            });
 
             dispatch(actions.iconsFetched({ iconsUrl }));
         },

@@ -18,7 +18,6 @@ import { getIsHomePageDisabled } from "ui/env";
 import { useConst } from "powerhooks/useConst";
 import { useStateRef } from "powerhooks/useStateRef";
 import { declareComponentKeys } from "i18nifty";
-import { useConstCallback } from "powerhooks/useConstCallback";
 
 Home.routeGroup = createGroup([routes.home]);
 
@@ -45,12 +44,8 @@ export function Home(props: Props) {
 
     const { t } = useTranslation({ Home });
 
-    const myBucketsLink = useMemo(() => routes.myBuckets().link, []);
+    const myFilesLink = useMemo(() => routes.myFiles().link, []);
     const catalogExplorerLink = useMemo(() => routes.catalogExplorer().link, []);
-
-    const onLoginClick = useConstCallback(() =>
-        userAuthentication.login({ "doesCurrentHrefRequiresAuth": false })
-    );
 
     return (
         <div className={cx(classes.root, className)}>
@@ -67,9 +62,7 @@ export function Home(props: Props) {
                     <Text typo="subtitle" className={classes.heroSubtitle}>
                         {t("subtitle")}
                     </Text>
-                    {!isUserLoggedIn ? (
-                        <Button onClick={onLoginClick}>{t("login")}</Button>
-                    ) : (
+                    {isUserLoggedIn && (
                         <Button href="https://docs.sspcloud.fr/">{t("new user")}</Button>
                     )}
                 </div>
@@ -97,7 +90,7 @@ export function Home(props: Props) {
                     title={t("cardTitle3")}
                     text={t("cardText3")}
                     buttonText={t("cardButton3")}
-                    link={myBucketsLink}
+                    link={myFilesLink}
                 />
             </div>
         </div>
@@ -242,7 +235,9 @@ const { Card } = (() => {
                         <div style={{ "flex": 1 }} />
                         <Button
                             variant="secondary"
-                            {...(typeof link === "string" ? { "href": link } : link)}
+                            {...(typeof link === "string"
+                                ? { "href": link }
+                                : { ...link, "doOpenNewTabIfHref": false })}
                         >
                             {buttonText}
                         </Button>

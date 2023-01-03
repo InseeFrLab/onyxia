@@ -6,7 +6,6 @@ import { useCoreState, useCoreFunctions, selectors } from "core";
 import { Explorer } from "./Explorer";
 import { ExplorerProps } from "./Explorer";
 import { useTranslation } from "ui/i18n";
-import Link from "@mui/material/Link";
 import { routes } from "ui/routes";
 import { createGroup } from "type-route";
 import { useSplashScreen } from "onyxia-ui";
@@ -17,6 +16,7 @@ import type { Param0 } from "tsafe";
 import { useStateRef } from "powerhooks/useStateRef";
 import { declareComponentKeys } from "i18nifty";
 import { useConst } from "powerhooks/useConst";
+import type { Link } from "type-route";
 
 MyFiles.routeGroup = createGroup([routes.myFiles]);
 
@@ -157,23 +157,6 @@ export function MyFiles(props: Props) {
         []
     );
 
-    const helpContent = useMemo(
-        () => (
-            <>
-                {t("learn more - my files")}
-                &nbsp;
-                <Link
-                    href="https://docs.sspcloud.fr/onyxia-guide/utiliser-des-variables-denvironnement"
-                    target="_blank"
-                    underline="hover"
-                >
-                    {t("read our documentation")}
-                </Link>
-            </>
-        ),
-        [t]
-    );
-
     const onOpenFile = useConstCallback<
         Extract<ExplorerProps, { isFileOpen: false }>["onOpenFile"]
     >(({ basename }) => fileExplorer.getFileDownloadUrl({ basename }).then(window.open));
@@ -201,7 +184,11 @@ export function MyFiles(props: Props) {
                 mainIcon="files"
                 title={t("page title - my files")}
                 helpTitle={t("what this page is used for - my files")}
-                helpContent={helpContent}
+                helpContent={t("help content", {
+                    "docHref":
+                        "https://docs.sspcloud.fr/onyxia-guide/utiliser-des-variables-denvironnement",
+                    "accountTabLink": routes.account({ "tabId": "storage" }).link
+                })}
                 helpIcon="sentimentSatisfied"
                 titleCollapseParams={titleCollapseParams}
                 helpCollapseParams={helpCollapseParams}
@@ -242,9 +229,14 @@ export const { i18n } = declareComponentKeys<
     | "page title - my secrets"
     | "what this page is used for - my files"
     | "what this page is used for - my secrets"
-    | "learn more - my files"
-    | "to learn more - my secrets"
-    | "read our documentation"
+    | {
+          K: "help content";
+          P: {
+              docHref: string;
+              accountTabLink: Link;
+          };
+          R: JSX.Element;
+      }
 >()({ MyFiles });
 
 const useStyles = makeStyles({ "name": { MyFiles } })({
