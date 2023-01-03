@@ -29,6 +29,8 @@ export function createMockOnyxiaApiClient(): OnyxiaApiClient {
                         "servicesMonitoringUrlPattern": undefined,
                         "kubernetesClusterDomain": "kub.sspcloud.fr",
                         "ingressClassName": undefined,
+                        "ingress": true,
+                        "route": undefined,
                         "initScriptUrl":
                             "https://InseeFrLab.github.io/onyxia/onyxia-init.sh",
                         "s3": undefined,
@@ -41,7 +43,8 @@ export function createMockOnyxiaApiClient(): OnyxiaApiClient {
                         "vault": undefined,
                         "proxyInjection": undefined,
                         "packageRepositoryInjection": undefined,
-                        "certificateAuthorityInjection": undefined
+                        "certificateAuthorityInjection": undefined,
+                        "kubernetes": undefined
                     }
                 ]),
             { "promise": true }

@@ -27,7 +27,6 @@ import { createOfficialOnyxiaApiClient } from "./adapters/officialOnyxiaApiClien
 import type { User } from "./ports/UserApiClient";
 import type { Param0 } from "tsafe";
 import type { NonPostableEvt } from "evt";
-import { id } from "tsafe/id";
 
 type CoreParams = {
     /** undefined for a mock implementation, undefined for /api or a specific url */
@@ -114,7 +113,7 @@ export async function createCore(params: CoreParams) {
           })
         : createJwtUserApiClient({
               jwtClaims,
-              "getOidcAccessToken": () => oidcClient.accessToken
+              "getOidcAccessToken": () => oidcClient.getAccessToken().accessToken
           });
 
     let refGetCurrentlySelectedDeployRegionId:
@@ -134,7 +133,7 @@ export async function createCore(params: CoreParams) {
                   "url": params.onyxiaApiUrl ?? "/api",
                   "getOidcAccessToken": !oidcClient.isUserLoggedIn
                       ? undefined
-                      : () => oidcClient.accessToken,
+                      : () => oidcClient.getAccessToken().accessToken,
                   "refGetCurrentlySelectedDeployRegionId":
                       (refGetCurrentlySelectedDeployRegionId = {
                           "current": undefined
@@ -162,10 +161,6 @@ export async function createCore(params: CoreParams) {
         thunksExtraArgument,
         usecases
     });
-
-    refStore.current = (core as any).store;
-
-    dCoreInstance.resolve(core);
 
     await core.dispatch(usecases.userAuthentication.privateThunks.initialize());
 
@@ -251,20 +246,3 @@ export type Thunks = GenericThunks<Core>;
 export type CreateEvt = GenericCreateEvt<Core>;
 
 const dOidcClient = new Deferred<OidcClient>();
-
-/** @deprecated */
-export const prOidcClient = dOidcClient.pr;
-
-/** @deprecated */
-const dCoreInstance = new Deferred<Core>();
-
-/**
- * A promise that resolve to the store instance.
- * If createStore isn't called it's pending forever.
- *
- * @deprecated: use "js/react/hooks" to interact with the store.
- */
-export const prStore = dCoreInstance.pr;
-
-/** @deprecated */
-export const refStore = { current: id<undefined | Record<string, unknown>>(undefined) };

@@ -2,6 +2,8 @@ export const accountTabIds = [
     "infos",
     "third-party-integration",
     "storage",
+    "k8sCredentials",
+    "vault",
     "user-interface"
 ] as const;
 

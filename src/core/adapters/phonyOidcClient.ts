@@ -39,20 +39,25 @@ export function createPhonyOidcClient(params: {
         });
     }
 
+    let key = "xxx";
+
     return id<OidcClient.LoggedIn>({
         "isUserLoggedIn": true,
-        ...(() => {
+        "renewToken": async () => {
+            key = `${Date.now()}`;
+        },
+        "getAccessToken": () => {
             const { jwtClaims, user } = params;
 
             const accessToken = jwtSimple.encode(
                 Object.fromEntries(
                     objectKeys(jwtClaims).map(key => [jwtClaims[key], user[key]])
                 ),
-                "xxx"
+                key
             );
 
-            return { accessToken };
-        })(),
+            return { accessToken, "expirationTime": Infinity };
+        },
         "logout": () => {
             const { newUrl } = addParamToUrl({
                 "url": window.location.href,

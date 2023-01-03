@@ -882,16 +882,15 @@ export const thunks = {
                 actions.initialized({
                     catalogId,
                     packageName,
-                    "icon": await onyxiaApiClient
-                        .getCatalogs()
-                        .then(
-                            apiRequestResult =>
-                                apiRequestResult
-                                    .find(({ id }) => id === catalogId)!
-                                    .catalog.packages.find(
-                                        ({ name }) => name === packageName
-                                    )!.icon
-                        ),
+                    "icon": await onyxiaApiClient.getCatalogs().then(
+                        apiRequestResult =>
+                            //TODO: Sort in the adapter of even better, assumes version sorted
+                            //and validate this assertion with zod
+                            apiRequestResult
+                                .find(({ id }) => id === catalogId)!
+                                .charts.find(({ name }) => name === packageName)!
+                                .versions[0].icon
+                    ),
                     sources,
                     formFields,
                     infosAboutWhenFieldsShouldBeHidden,
@@ -903,6 +902,26 @@ export const thunks = {
             );
         },
     "reset": (): ThunkAction<void> => dispatch => dispatch(actions.reset()),
+    "restoreAllDefault":
+        (): ThunkAction<void> =>
+        (...params) => {
+            const [dispatch, getState] = params;
+
+            const state = getState().launcher;
+
+            assert(state.stateDescription === "ready");
+
+            const { defaultFormFieldsValue } = state["~internal"];
+
+            defaultFormFieldsValue.forEach(({ path, value }) => {
+                dispatch(
+                    actions.formFieldValueChanged({
+                        path,
+                        value
+                    })
+                );
+            });
+        },
     "changeFormFieldValue":
         (params: FormFieldValue): ThunkAction<void> =>
         dispatch =>
@@ -1068,6 +1087,8 @@ export const thunks = {
                 "k8s": {
                     "domain": selectedDeploymentRegion.kubernetesClusterDomain,
                     "ingressClassName": selectedDeploymentRegion.ingressClassName,
+                    "ingress": selectedDeploymentRegion.ingress,
+                    "route": selectedDeploymentRegion.route,
                     "randomSubdomain":
                         (getRandomK8sSubdomain.clear(), getRandomK8sSubdomain()),
                     "initScriptUrl": selectedDeploymentRegion.initScriptUrl
@@ -1472,13 +1493,25 @@ export const selectors = (() => {
                   })
     );
 
+    const areAllFieldsDefault = createSelector(
+        pathOfFormFieldsWhoseValuesAreDifferentFromDefault,
+        pathOfFormFieldsWhoseValuesAreDifferentFromDefault => {
+            if (pathOfFormFieldsWhoseValuesAreDifferentFromDefault === undefined) {
+                return undefined;
+            }
+
+            return pathOfFormFieldsWhoseValuesAreDifferentFromDefault.length === 0;
+        }
+    );
+
     return {
         friendlyName,
         isShared,
         indexedFormFields,
         isLaunchable,
         formFieldsIsWellFormed,
-        restorablePackageConfig
+        restorablePackageConfig,
+        areAllFieldsDefault
     };
 })();
 

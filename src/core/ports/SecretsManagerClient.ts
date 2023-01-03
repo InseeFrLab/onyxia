@@ -32,7 +32,7 @@ export type SecretsManagerClient = {
 
     delete: (params: { path: string }) => Promise<void>;
 
-    getToken: () => Promise<{
+    getToken: (params?: { doForceRefresh: boolean }) => Promise<{
         token: string;
         expirationTime: number;
         acquisitionTime: number;

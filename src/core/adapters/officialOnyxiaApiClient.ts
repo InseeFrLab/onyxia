@@ -18,7 +18,7 @@ import { symToStr } from "tsafe/symToStr";
 //This should be used only in ui/coreApi/StoreProvider but we break the rule
 //here because we use it only for debugging purpose.
 import { getEnv } from "env";
-import { getRandomK8sSubdomain, getServiceId } from "../ports/OnyxiaApiClient";
+import { Catalog, getRandomK8sSubdomain, getServiceId } from "../ports/OnyxiaApiClient";
 import type {
     JSONSchemaObject,
     JSONSchemaFormFieldDescription
@@ -139,6 +139,8 @@ export function createOfficialOnyxiaApiClient(params: {
                             expose: {
                                 domain: string;
                                 ingressClassName: string;
+                                ingress?: boolean;
+                                route? : boolean;
                             };
                             defaultConfiguration?: {
                                 ipprotection?: boolean;
@@ -165,6 +167,14 @@ export function createOfficialOnyxiaApiClient(params: {
                                 //"https://grafana.lab.sspcloud.fr/d/kYYgRWBMz/users-services?orgId=1&refresh=5s&var-namespace=$NAMESPACE&var-instance=$INSTANCE"
                             };
                             initScript: string;
+                            k8sPublicEndpoint?: {
+                                keycloakParams?: {
+                                    clientId: string;
+                                    realm: string;
+                                    URL: string;
+                                };
+                                URL: string;
+                            };
                         };
                         data?: {
                             S3?: {
@@ -227,6 +237,8 @@ export function createOfficialOnyxiaApiClient(params: {
                             region.services.defaultConfiguration?.networkPolicy,
                         "kubernetesClusterDomain": region.services.expose.domain,
                         "ingressClassName": region.services.expose.ingressClassName,
+                        "ingress": region.services.expose.ingress,
+                        "route": region.services.expose.route,
                         "initScriptUrl": region.services.initScript,
                         "s3": (() => {
                             const { S3 } = region.data ?? {};
@@ -310,7 +322,28 @@ export function createOfficialOnyxiaApiClient(params: {
                         "proxyInjection": region.proxyInjection,
                         "packageRepositoryInjection": region.packageRepositoryInjection,
                         "certificateAuthorityInjection":
-                            region.certificateAuthorityInjection
+                            region.certificateAuthorityInjection,
+                        "kubernetes": (() => {
+                            const { k8sPublicEndpoint } = region.services;
+                            return k8sPublicEndpoint === undefined
+                                ? undefined
+                                : {
+                                      "url": k8sPublicEndpoint.URL,
+                                      "keycloakParams":
+                                          k8sPublicEndpoint.keycloakParams === undefined
+                                              ? undefined
+                                              : {
+                                                    "url": k8sPublicEndpoint
+                                                        .keycloakParams.URL,
+                                                    "realm":
+                                                        k8sPublicEndpoint.keycloakParams
+                                                            .realm,
+                                                    "clientId":
+                                                        k8sPublicEndpoint.keycloakParams
+                                                            .clientId
+                                                }
+                                  };
+                        })()
                     }))
                 )
         ),
@@ -325,34 +358,57 @@ export function createOfficialOnyxiaApiClient(params: {
                             description: LocalizedString;
                             status: "PROD" | "TEST";
                             catalog: {
-                                packages: {
-                                    description: string;
-                                    icon?: string;
-                                    name: string;
-                                    home?: string;
-                                }[];
+                                entries: Record<
+                                    string,
+                                    {
+                                        description: string;
+                                        version: string;
+                                        icon: string | undefined;
+                                        home: string | undefined;
+                                    }[]
+                                >;
                             };
+                            highlightedCharts: string[];
                         }[];
-                    }>("/public/catalog")
-                    .then(({ data }) => data.catalogs),
+                    }>("/public/catalogs")
+                    .then(({ data }) =>
+                        data.catalogs.map(catalog =>
+                            id<Catalog>({
+                                "id": catalog.id,
+                                "name": catalog.name,
+                                "location": catalog.location,
+                                "description": catalog.description,
+                                "status": catalog.status,
+                                "charts": Object.entries(catalog.catalog.entries)
+                                    .filter(([key]) => key !== "library-chart")
+                                    .map(([name, versions]) => ({
+                                        name,
+                                        versions
+                                    })),
+                                "highlightedCharts": catalog.highlightedCharts
+                            })
+                        )
+                    ),
             { "promise": true }
         ),
         "getPackageConfig": ({ catalogId, packageName }) =>
             axiosInstance
-                .get<{
-                    config: JSONSchemaObject;
-                    sources?: string[];
-                    dependencies?: {
-                        name: string;
-                    }[];
-                }>(`/public/catalog/${catalogId}/${packageName}`)
+                .get<
+                    {
+                        config: JSONSchemaObject;
+                        sources?: string[];
+                        dependencies?: {
+                            name: string;
+                        }[];
+                    }[]
+                >(`/public/catalogs/${catalogId}/charts/${packageName}`)
                 .then(({ data }) => ({
-                    "dependencies": data.dependencies?.map(({ name }) => name) ?? [],
-                    "sources": data.sources ?? [],
+                    "dependencies": data[0].dependencies?.map(({ name }) => name) ?? [],
+                    "sources": data[0].sources ?? [],
                     "getValuesSchemaJson": ({ onyxiaValues }) => {
                         //WARNING: The type is not exactly correct here. JSONSchemaFormFieldDescription["default"] can be undefined.
                         const configCopy = JSON.parse(
-                            JSON.stringify(data.config)
+                            JSON.stringify(data[0].config)
                         ) as JSONSchemaObject;
 
                         function overrideDefaultsRec(
@@ -380,7 +436,7 @@ export function createOfficialOnyxiaApiClient(params: {
 
                             const assertWeHaveADefault = () => {
                                 //NOTE: Actually, the default can be undefined in the value.schema.json
-                                //      but it would be to complicated to specify in the type system
+                                //      but it would be too complicated to specify in the type system
                                 //      thus the any.
                                 if (
                                     (jsonSchemaFormFieldDescription.default as any) !==

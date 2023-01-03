@@ -68,6 +68,8 @@ export type DeploymentRegion = {
     defaultNetworkPolicy: boolean | undefined;
     kubernetesClusterDomain: string;
     ingressClassName: string | undefined;
+    ingress: boolean | undefined;
+    route: boolean | undefined;
     initScriptUrl: string;
     s3: DeploymentRegion.S3 | undefined;
     allowedURIPatternForUserDefinedInitScript: string;
@@ -110,6 +112,18 @@ export type DeploymentRegion = {
           }
         | undefined;
     certificateAuthorityInjection: { crts: unknown[] | undefined } | undefined;
+    kubernetes:
+        | {
+              url: string;
+              keycloakParams:
+                  | {
+                        url: string;
+                        realm: string;
+                        clientId: string;
+                    }
+                  | undefined;
+          }
+        | undefined;
 };
 export namespace DeploymentRegion {
     export type S3 = S3.Minio | S3.Amazon;
@@ -155,16 +169,21 @@ export type Catalog = {
     location: string;
     description: LocalizedString;
     status: "PROD" | "TEST";
-    catalog: {
-        packages: {
-            description: string;
-            icon?: string;
-            name: string;
-            home?: string;
-        }[];
-    };
+    charts: Catalog.Chart[];
     highlightedCharts?: string[];
 };
+
+export namespace Catalog {
+    export type Chart = {
+        name: string;
+        versions: {
+            description: string;
+            version: string;
+            icon: string | undefined;
+            home: string | undefined;
+        }[];
+    };
+}
 
 export type OnyxiaValues = {
     user: {
@@ -219,6 +238,8 @@ export type OnyxiaValues = {
     k8s: {
         domain: string;
         ingressClassName: string | undefined;
+        ingress: boolean | undefined;
+        route: boolean | undefined;
         randomSubdomain: string;
         initScriptUrl: string;
     };

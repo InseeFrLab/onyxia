@@ -12,18 +12,10 @@ import * as userAuthentication from "./userAuthentication";
 import * as userConfigs from "./userConfigs";
 import * as secretsEditor from "./secretsEditor";
 import * as s3Credentials from "./s3Credentials";
-
-/* ---------- Legacy ---------- */
-import * as myFiles from "js/redux/myFiles";
-import * as myLab from "js/redux/myLab";
-import * as user from "js/redux/user";
-import * as app from "js/redux/app";
+import * as k8sCredentials from "./k8sCredentials";
+import * as vaultCredentials from "./vaultCredentials";
 
 export const usecases = {
-    myFiles,
-    myLab,
-    app,
-    user,
     catalogExplorer,
     deploymentRegion,
     fileExplorer,
@@ -37,5 +29,7 @@ export const usecases = {
     userAuthentication,
     userConfigs,
     secretsEditor,
-    s3Credentials
+    s3Credentials,
+    k8sCredentials,
+    vaultCredentials
 };
