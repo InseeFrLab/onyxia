@@ -140,7 +140,7 @@ export function createOfficialOnyxiaApiClient(params: {
                                 domain: string;
                                 ingressClassName: string;
                                 ingress?: boolean;
-                                route? : boolean;
+                                route?: boolean;
                             };
                             defaultConfiguration?: {
                                 ipprotection?: boolean;
@@ -222,7 +222,8 @@ export function createOfficialOnyxiaApiClient(params: {
                             pypiProxyUrl: string;
                         };
                         certificateAuthorityInjection?: {
-                            crts: unknown[];
+                            cacerts: string;
+                            pathToCaBundle: string;
                         };
                     }[];
                 }>("/public/configuration")

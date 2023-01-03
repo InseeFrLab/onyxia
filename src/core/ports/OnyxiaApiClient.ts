@@ -111,7 +111,12 @@ export type DeploymentRegion = {
               pypiProxyUrl: string | undefined;
           }
         | undefined;
-    certificateAuthorityInjection: { crts: unknown[] | undefined } | undefined;
+    certificateAuthorityInjection:
+        | {
+              cacerts: string | undefined;
+              pathToCaBundle: string | undefined;
+          }
+        | undefined;
     kubernetes:
         | {
               url: string;
@@ -259,7 +264,8 @@ export type OnyxiaValues = {
         | undefined;
     certificateAuthorityInjection:
         | {
-              crts: unknown[] | undefined;
+              cacerts: string | undefined;
+              pathToCaBundle: string | undefined;
           }
         | undefined;
 };
