@@ -74,9 +74,12 @@ const useStyles = makeStyles<Props>({ "name": { Footer } })(theme => ({
         "backgroundColor": theme.colors.useCases.surfaces.background,
         "display": "flex",
         "alignItems": "center",
-        "& a:hover": {
-            "textDecoration": "underline",
-            "textDecorationColor": theme.colors.useCases.typography.textPrimary
+        "& a": {
+            "textDecoration": "none",
+            "&:hover": {
+                "textDecoration": "underline",
+                "textDecorationColor": theme.colors.useCases.typography.textPrimary
+            }
         }
     },
     "icon": {
