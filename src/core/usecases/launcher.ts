@@ -626,14 +626,15 @@ export const thunks = {
                                                 ?.readonly ?? false
                                     };
 
-                                    //TODO: The JSON schema should be tested in entry of the system.
-                                    if ("render" in jsonSchemaFormFieldDescription) {
-                                        assert(
-                                            ["slider", "textArea", "password"].find(
-                                                render =>
-                                                    render ===
-                                                    jsonSchemaFormFieldDescription.render
-                                            ) !== undefined,
+                                    if (
+                                        "render" in jsonSchemaFormFieldDescription &&
+                                        ["slider", "textArea", "password"].find(
+                                            render =>
+                                                render ===
+                                                jsonSchemaFormFieldDescription.render
+                                        ) === undefined
+                                    ) {
+                                        console.warn(
                                             `${common.path.join("/")} has render: "${
                                                 jsonSchemaFormFieldDescription.render
                                             }" and it's not supported`
