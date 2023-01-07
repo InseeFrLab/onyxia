@@ -140,7 +140,7 @@ export function createOfficialOnyxiaApiClient(params: {
                                 domain: string;
                                 ingressClassName: string;
                                 ingress?: boolean;
-                                route? : boolean;
+                                route?: boolean;
                             };
                             defaultConfiguration?: {
                                 ipprotection?: boolean;
@@ -472,7 +472,12 @@ export function createOfficialOnyxiaApiClient(params: {
                             }
 
                             const resolvedValue = overwriteDefaultWith.includes("{{")
-                                ? Mustache.render(overwriteDefaultWith, onyxiaValues)
+                                ? Mustache.render(
+                                      overwriteDefaultWith
+                                          .replace(/{{/g, "{{{")
+                                          .replace(/}}/g, "}}}"),
+                                      onyxiaValues
+                                  )
                                 : getValueAtPathInObject({
                                       "path": overwriteDefaultWith.split("."),
                                       "obj": onyxiaValues

@@ -894,7 +894,7 @@ export const thunks = {
                     sources,
                     formFields,
                     infosAboutWhenFieldsShouldBeHidden,
-                    config: valuesSchemaJson,
+                    "config": valuesSchemaJson,
                     dependencies,
                     formFieldsValueDifferentFromDefault,
                     "sensitiveConfigurations": sensitiveConfigurations ?? []
