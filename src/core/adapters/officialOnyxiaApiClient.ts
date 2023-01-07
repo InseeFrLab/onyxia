@@ -222,7 +222,8 @@ export function createOfficialOnyxiaApiClient(params: {
                             pypiProxyUrl: string;
                         };
                         certificateAuthorityInjection?: {
-                            crts: unknown[];
+                            cacerts: string;
+                            pathToCaBundle: string;
                         };
                     }[];
                 }>("/public/configuration")
