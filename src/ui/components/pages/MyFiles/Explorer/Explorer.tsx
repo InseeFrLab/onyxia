@@ -50,6 +50,7 @@ export type ExplorerProps = {
     doShowHidden: boolean;
 
     directoryPath: string;
+    directoryBrowsingHasFailed: boolean;
     isNavigating: boolean;
     apiLogs: ApiLogs;
     evtAction: NonPostableEvt<"TRIGGER COPY PATH">;
@@ -92,6 +93,7 @@ export const Explorer = memo((props: ExplorerProps) => {
         className,
         doShowHidden,
         directoryPath,
+        directoryBrowsingHasFailed,
         isNavigating,
         apiLogs,
         evtAction,
@@ -336,7 +338,7 @@ export const Explorer = memo((props: ExplorerProps) => {
                 <div ref={buttonBarRef}>
                     <ExplorerButtonBar
                         selectedItemKind={selectedItemKind}
-                        //isFileOpen={props.isFileOpen}
+                        directoryBrowsingHasFailed={directoryBrowsingHasFailed}
                         callback={buttonBarCallback}
                     />
                 </div>
@@ -393,6 +395,7 @@ export const Explorer = memo((props: ExplorerProps) => {
                     ) : (
                         <ExplorerItems
                             isNavigating={isNavigating}
+                            directoryBrowsingHasFailed={directoryBrowsingHasFailed}
                             files={files}
                             directories={directories}
                             directoriesBeingCreated={directoriesBeingCreated}

@@ -20,6 +20,7 @@ export type ExplorerItemsProps = {
     className?: string;
 
     isNavigating: boolean;
+    directoryBrowsingHasFailed: boolean;
 
     /** Assert all uniq */
     files: string[];
@@ -49,6 +50,7 @@ export const ExplorerItems = memo((props: ExplorerItemsProps) => {
         className,
         isNavigating,
         files,
+        directoryBrowsingHasFailed,
         directories,
         onNavigate,
         onOpenFile,
@@ -231,14 +233,21 @@ export const ExplorerItems = memo((props: ExplorerItemsProps) => {
 
     const { t } = useTranslation({ ExplorerItems });
 
+    const getMessage = () => {
+        if (directoryBrowsingHasFailed) {
+            return t("failed repository access");
+        } else return t("empty directory");
+    };
+
     return (
         <div
             className={cx(classes.root, className)}
             ref={containerRef}
             onMouseDown={onGridMouseDown}
         >
-            {files.length === 0 && directories.length === 0 ? (
-                <Text typo="body 1">{t("empty directory")}</Text>
+            {(files.length === 0 && directories.length === 0) ||
+            directoryBrowsingHasFailed ? (
+                <Text typo="body 1">{getMessage()}</Text>
             ) : (
                 <>
                     {(["directory", "file"] as const).map(kind =>
@@ -283,7 +292,9 @@ export const ExplorerItems = memo((props: ExplorerItemsProps) => {
     );
 });
 
-export const { i18n } = declareComponentKeys<"empty directory">()({ ExplorerItems });
+export const { i18n } = declareComponentKeys<
+    "empty directory" | "failed repository access"
+>()({ ExplorerItems });
 
 const useStyles = makeStyles<{ isEmpty: boolean }>({ "name": { ExplorerItems } })(
     (theme, { isEmpty }) => ({

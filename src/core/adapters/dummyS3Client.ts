@@ -5,7 +5,8 @@ export function createDummyS3Client(): S3Client {
         "list": () =>
             Promise.resolve({
                 "directories": [],
-                "files": []
+                "files": [],
+                "errors": []
             }),
         "getToken": () =>
             Promise.resolve({

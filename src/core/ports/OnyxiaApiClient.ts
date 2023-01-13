@@ -136,6 +136,7 @@ export namespace DeploymentRegion {
         export type Common = {
             defaultDurationSeconds: number | undefined;
             monitoringUrlPattern: string | undefined;
+            acceptBucketCreation: boolean;
             keycloakParams:
                 | {
                       url: string | undefined;

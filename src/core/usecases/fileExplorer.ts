@@ -49,6 +49,8 @@ export type FileExplorerState = {
             uploadPercent: number;
         }[];
     };
+} & {
+    hasFailed: boolean;
 };
 
 export const name = "fileExplorer";
@@ -63,7 +65,8 @@ export const { reducer, actions } = createSlice({
         "~internal": {
             "s3FilesBeingUploaded": [],
             "isUserWatching": false
-        }
+        },
+        "hasFailed": false
     }),
     "reducers": {
         "fileUploadStarted": (
@@ -116,6 +119,7 @@ export const { reducer, actions } = createSlice({
         },
         "navigationStarted": state => {
             state.isNavigationOngoing = true;
+            state.hasFailed = false;
         },
         "navigationCompleted": (
             state,
@@ -189,6 +193,11 @@ export const { reducer, actions } = createSlice({
                     }
                 })()
             });
+        },
+        "operationFailed": state => {
+            state.hasFailed = true;
+            state.directoryPath = "";
+            state.directoryItems = [];
         },
         "operationCompleted": (
             state,
@@ -383,13 +392,16 @@ const privateThunks = {
                 })
             );
 
-            const { directories, files } = await Evt.from(
+            const { directories, files, errors } = await Evt.from(
                 ctx,
                 loggedS3Client.list({ "path": directoryPath })
             ).waitFor();
 
             ctx.done();
 
+            if (errors.length > 0) {
+                dispatch(actions.operationFailed());
+            }
             dispatch(
                 actions.navigationCompleted({
                     directoryPath,
@@ -785,6 +797,7 @@ export const selectors = (() => {
         isNavigationOngoing: boolean;
         directories: string[];
         files: string[];
+        directoryBrowsingHasFailed: boolean;
         directoriesBeingCreated: string[];
         filesBeingCreated: string[];
     };
@@ -793,8 +806,13 @@ export const selectors = (() => {
         rootState: State
     ): CurrentWorkingDirectoryView | undefined => {
         const state = rootState.fileExplorer;
-        const { directoryPath, isNavigationOngoing, directoryItems, ongoingOperations } =
-            state;
+        const {
+            directoryPath,
+            isNavigationOngoing,
+            hasFailed,
+            directoryItems,
+            ongoingOperations
+        } = state;
 
         return ((): CurrentWorkingDirectoryView | undefined => {
             if (directoryPath === undefined) {
@@ -804,6 +822,7 @@ export const selectors = (() => {
             return {
                 directoryPath,
                 isNavigationOngoing,
+                directoryBrowsingHasFailed: hasFailed,
                 ...(() => {
                     const selectOngoing = memoize(
                         (kind: "directory" | "file", operation: "create" | "rename") =>

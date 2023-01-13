@@ -7,14 +7,14 @@ import { declareComponentKeys } from "i18nifty";
 
 export type Props = {
     selectedItemKind: "file" | "directory" | "none";
+    directoryBrowsingHasFailed: boolean;
     //TODO: Restore when we have fileViewer usecase
-    //isFileOpen: boolean;
 
     callback: (buttonId: ButtonId) => void;
 };
 
 export const ExplorerButtonBar = memo((props: Props) => {
-    const { selectedItemKind, callback } = props;
+    const { selectedItemKind, directoryBrowsingHasFailed, callback } = props;
 
     const { t } = useTranslation({ ExplorerButtonBar });
 
@@ -45,20 +45,22 @@ export const ExplorerButtonBar = memo((props: Props) => {
                         case "refresh":
                             return false;
                         case "new":
+                            return directoryBrowsingHasFailed;
                         case "create directory":
-                            //return isFileOpen;
-                            return false;
+                            return directoryBrowsingHasFailed;
                         case "delete":
-                            //return selectedItemKind === "none" || isFileOpen;
-                            return selectedItemKind === "none";
+                            return (
+                                directoryBrowsingHasFailed || selectedItemKind === "none"
+                            );
                         case "copy path":
-                            //return selectedItemKind === "none" || isFileOpen;
-                            return selectedItemKind !== "file";
+                            return (
+                                directoryBrowsingHasFailed || selectedItemKind !== "file"
+                            );
                     }
                 })(),
                 "label": buttonId === "new" ? t("upload file") : t(buttonId)
             })),
-        [selectedItemKind, t]
+        [selectedItemKind, directoryBrowsingHasFailed, t]
     );
 
     return <ButtonBar buttons={buttons} onClick={onClick} />;

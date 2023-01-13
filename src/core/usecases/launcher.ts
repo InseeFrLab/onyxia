@@ -1037,8 +1037,6 @@ export const thunks = {
                                 : project.bucket
                         });
 
-                    s3Client.createBucketIfNotExist(project.bucket);
-
                     return {
                         "AWS_ACCESS_KEY_ID": accessKeyId,
                         "AWS_BUCKET_NAME": project.bucket,

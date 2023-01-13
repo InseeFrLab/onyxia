@@ -319,7 +319,9 @@ const {
                 "new": "New"
             },
             "ExplorerItems": {
-                "empty directory": "This directory is empty"
+                "empty directory": "This directory is empty",
+                "failed repository access":
+                    "This directory is not reachable or does not exist"
             },
             "SecretsExplorerItems": {
                 "empty directory": "This directory is empty"
@@ -817,7 +819,9 @@ const {
                 "new directory": "Nouveau dossier"
             },
             "ExplorerItems": {
-                "empty directory": "Ce répertoire est vide"
+                "empty directory": "Ce répertoire est vide",
+                "failed repository access":
+                    "Le répertoire n'est pas accessible ou n'existe pas"
             },
             "SecretsExplorerItems": {
                 "empty directory": "Ce répertoire est vide"
@@ -1229,7 +1233,9 @@ const {
                 "new directory": "新建文件夹"
             },
             "ExplorerItems": {
-                "empty directory": "此目录为空"
+                "empty directory": "此目录为空",
+                "failed repository access":
+                    "Le répertoire n'est pas accessible ou n'existe pas"
             },
             "SecretsExplorerItems": {
                 "empty directory": "此目录为空"

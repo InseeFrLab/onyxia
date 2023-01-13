@@ -93,6 +93,7 @@ export default {
 
 export const View1 = getStory({
     "containerWidth": 500,
+    "directoryBrowsingHasFailed": false,
     "files": [
         ...new Array(30).fill("").map((_, i) => `aaa${i}`),
         "this-is-a-file",

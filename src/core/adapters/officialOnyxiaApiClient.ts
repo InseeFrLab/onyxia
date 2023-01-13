@@ -186,6 +186,7 @@ export function createOfficialOnyxiaApiClient(params: {
                                     realm?: string;
                                     clientId: string;
                                 };
+                                acceptBucketCreation?: boolean;
                                 defaultDurationSeconds?: number;
                             } & (
                                 | {
@@ -251,6 +252,7 @@ export function createOfficialOnyxiaApiClient(params: {
                             const common: DeploymentRegion.S3.Common = {
                                 "monitoringUrlPattern": S3.monitoring?.URLPattern,
                                 "defaultDurationSeconds": S3.defaultDurationSeconds,
+                                "acceptBucketCreation": S3.acceptBucketCreation ?? true,
                                 "keycloakParams":
                                     S3.keycloakParams === undefined
                                         ? undefined

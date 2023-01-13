@@ -204,6 +204,9 @@ export function MyFiles(props: Props) {
                 evtAction={evtExplorerAction}
                 files={currentWorkingDirectoryView.files}
                 directories={currentWorkingDirectoryView.directories}
+                directoryBrowsingHasFailed={
+                    currentWorkingDirectoryView.directoryBrowsingHasFailed
+                }
                 directoriesBeingCreated={
                     currentWorkingDirectoryView.directoriesBeingCreated
                 }

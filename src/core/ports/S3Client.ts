@@ -18,6 +18,7 @@ export type S3Client = {
     list: (params: { path: string }) => Promise<{
         directories: string[];
         files: string[];
+        errors: string[];
     }>;
 
     /** Completed when 100% uploaded */

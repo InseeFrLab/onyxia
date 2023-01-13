@@ -17,6 +17,7 @@ import { addParamToUrl } from "powerhooks/tools/urlSearchParams";
 
 export type Params = {
     url: string;
+    acceptBucketCreation: boolean;
     region: string;
     oidcClient: OidcClient.LoggedIn;
     durationSeconds: number;
@@ -36,7 +37,15 @@ export type Params = {
 };
 
 export async function createS3Client(params: Params): Promise<S3Client> {
-    const { url, region, amazon, oidcClient, durationSeconds, createAwsBucket } = params;
+    const {
+        url,
+        acceptBucketCreation,
+        region,
+        amazon,
+        oidcClient,
+        durationSeconds,
+        createAwsBucket
+    } = params;
 
     const { host, port = 443 } = parseUrl(params.url);
 
@@ -273,7 +282,9 @@ export async function createS3Client(params: Params): Promise<S3Client> {
                 };
             })();
 
-            await s3Client.createBucketIfNotExist(bucketName);
+            if (acceptBucketCreation) {
+                await s3Client.createBucketIfNotExist(bucketName);
+            }
 
             const { minioClient } = await getMinioClient({
                 "restrictToBucketName": bucketName
@@ -283,10 +294,16 @@ export async function createS3Client(params: Params): Promise<S3Client> {
 
             const out: ReturnType<S3Client["list"]> = {
                 "directories": [],
-                "files": []
+                "files": [],
+                "errors": []
             };
 
             stream.once("end", () => dOut.resolve(out));
+            stream.on("error", e => {
+                console.log(e.message);
+                out.errors.push(e.message);
+                dOut.resolve(out);
+            });
             stream.on("data", bucketItem => {
                 if (bucketItem.prefix) {
                     out.directories.push(
@@ -341,8 +358,6 @@ export async function createS3Client(params: Params): Promise<S3Client> {
         },
         "deleteFile": async ({ path }) => {
             const { bucketName, objectName } = bucketNameAndObjectNameFromPath({ path });
-
-            await s3Client.createBucketIfNotExist(bucketName);
 
             const { minioClient } = await getMinioClient({
                 "restrictToBucketName": bucketName
@@ -451,13 +466,14 @@ export function getCreateS3ClientParams(params: {
 }): Omit<Params, "createAwsBucket" | "oidcClient"> {
     const { s3Params } = params;
 
-    const { url, region } = getS3UrlAndRegion(s3Params);
+    const { url, region, acceptBucketCreation } = getS3UrlAndRegion(s3Params);
 
     return (() => {
         switch (s3Params.type) {
             case "minio":
                 return {
                     url,
+                    acceptBucketCreation,
                     region,
                     "amazon": undefined,
                     "durationSeconds": s3Params.defaultDurationSeconds ?? 7 * 24 * 3600
@@ -465,6 +481,7 @@ export function getCreateS3ClientParams(params: {
             case "amazon":
                 return {
                     url,
+                    acceptBucketCreation,
                     region,
                     "amazon": {
                         "roleARN": s3Params.roleARN,
@@ -482,12 +499,14 @@ export function getS3UrlAndRegion(s3Params: DeploymentRegion.S3) {
             case "minio":
                 return {
                     "url": s3Params.url,
-                    "region": s3Params.region ?? "us-east-1"
+                    "region": s3Params.region ?? "us-east-1",
+                    "acceptBucketCreation": s3Params.acceptBucketCreation
                 };
             case "amazon":
                 return {
                     "url": "https://s3.amazonaws.com",
-                    "region": s3Params.region
+                    "region": s3Params.region,
+                    "acceptBucketCreation": s3Params.acceptBucketCreation
                 };
         }
     })();

@@ -11,5 +11,6 @@ export default meta;
 
 export const View = getStory({
     "selectedItemKind": "none",
+    "directoryBrowsingHasFailed": false,
     ...logCallbacks(["callback"])
 });
