@@ -10404,10 +10404,10 @@ keycloak-js@^18.0.0:
     base64-js "^1.5.1"
     js-sha256 "^0.9.0"
 
-keycloakify@^6.8.13:
-  version "6.8.13"
-  resolved "https://registry.yarnpkg.com/keycloakify/-/keycloakify-6.8.13.tgz#4cf80a3f7b839758d2c8c2efab19401ef9b795e8"
-  integrity sha512-Mpk06md5nqqY/ZToBmNay0EdXwOPIgxuGjDkwZ/LVBYVYN5JcWN3g4P6I7ejW4iphokjw7sXfl90rhAYQLZFGQ==
+keycloakify@^6.8.14:
+  version "6.8.14"
+  resolved "https://registry.yarnpkg.com/keycloakify/-/keycloakify-6.8.14.tgz#f0e8a36f64226c8a3d53d79d636187cb10f7d33e"
+  integrity sha512-WO6a21dIKg1Sr/VnUfeNTf/Tvh7k5IT+MFhSsqHfptFgzTjKG5ksQrUDVP6utI8BET97PZoGVplnzShdVb4Q7w==
   dependencies:
     "@octokit/rest" "^18.12.0"
     cheerio "^1.0.0-rc.5"
@@ -10417,7 +10417,7 @@ keycloakify@^6.8.13:
     minimal-polyfills "^2.2.2"
     minimist "^1.2.6"
     path-browserify "^1.0.1"
-    powerhooks "^0.21.0"
+    powerhooks "^0.22.0"
     react-markdown "^5.0.3"
     rfc4648 "^1.5.2"
     scripting-tools "^0.19.13"
@@ -12689,16 +12689,6 @@ powerhooks@^0.20.27:
   version "0.20.32"
   resolved "https://registry.yarnpkg.com/powerhooks/-/powerhooks-0.20.32.tgz#c9ddff1dcd7d7bb250e54ea284a6c65d9c228e09"
   integrity sha512-lp0rW5sAl8xrenhtB5eZOCwMFcPTtm55pn5++jeEMT1KaO/Rvd7hjaai+PPpDdwIbi5TaF+Zf5XhVO6gvfmXZQ==
-  dependencies:
-    evt "^2.4.13"
-    memoizee "^0.4.15"
-    resize-observer-polyfill "^1.5.1"
-    tsafe "^1.4.1"
-
-powerhooks@^0.21.0:
-  version "0.21.0"
-  resolved "https://registry.yarnpkg.com/powerhooks/-/powerhooks-0.21.0.tgz#bafe67c2ce8c4c38cd26dec08de27fdf0d81da70"
-  integrity sha512-O9JG79YKv3yJ6Tkcx+eNWUC/rUKPCFUBkDIDbnoKM29P0+8VAx9pjp/C9eE2qnKNXr5azgnGtEoyLzGB/UKorQ==
   dependencies:
     evt "^2.4.13"
     memoizee "^0.4.15"
