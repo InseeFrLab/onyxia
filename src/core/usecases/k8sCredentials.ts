@@ -81,7 +81,7 @@ export const thunks = {
 
             const region = deploymentRegionSelectors.selectedDeploymentRegion(getState());
 
-            return region.kubernetes !== undefined;
+            return region.kubernetes?.url !== undefined;
         },
     /** Refresh is expected to be called whenever the component that use this slice mounts */
     "refresh":
