@@ -10386,10 +10386,10 @@ keycloak-js@^18.0.0:
     base64-js "^1.5.1"
     js-sha256 "^0.9.0"
 
-keycloakify@^6.8.9:
-  version "6.8.9"
-  resolved "https://registry.yarnpkg.com/keycloakify/-/keycloakify-6.8.9.tgz#b209174f4079a35b83e90932cb71a257432b4093"
-  integrity sha512-GbkifoJYBamfADxrpyXu8TeCoV372qqNe4IC774wU8T88ASxXH4AmtH4YFay9gfuV3tRGSQZvpg3wBf3Js2HGQ==
+keycloakify@^6.8.14:
+  version "6.8.14"
+  resolved "https://registry.yarnpkg.com/keycloakify/-/keycloakify-6.8.14.tgz#f0e8a36f64226c8a3d53d79d636187cb10f7d33e"
+  integrity sha512-WO6a21dIKg1Sr/VnUfeNTf/Tvh7k5IT+MFhSsqHfptFgzTjKG5ksQrUDVP6utI8BET97PZoGVplnzShdVb4Q7w==
   dependencies:
     "@octokit/rest" "^18.12.0"
     cheerio "^1.0.0-rc.5"
@@ -10399,7 +10399,7 @@ keycloakify@^6.8.9:
     minimal-polyfills "^2.2.2"
     minimist "^1.2.6"
     path-browserify "^1.0.1"
-    powerhooks "^0.20.32"
+    powerhooks "^0.22.0"
     react-markdown "^5.0.3"
     rfc4648 "^1.5.2"
     scripting-tools "^0.19.13"
@@ -11559,17 +11559,17 @@ onetime@^5.1.0, onetime@^5.1.2:
   dependencies:
     mimic-fn "^2.1.0"
 
-onyxia-ui@^0.49.4:
-  version "0.49.4"
-  resolved "https://registry.yarnpkg.com/onyxia-ui/-/onyxia-ui-0.49.4.tgz#90df26ede5748bf807b9881be76744f13ddb935f"
-  integrity sha512-LrKWjpetkj4+f1UtBB+V8jtMLkq/88OdqE6QRv2985YicbRkEGzyYTahrtKqP85vfHvdY3IO1PLTLK1ft1Y7KA==
+onyxia-ui@^0.49.6:
+  version "0.49.6"
+  resolved "https://registry.yarnpkg.com/onyxia-ui/-/onyxia-ui-0.49.6.tgz#996352f9140137a2455187bf80f30dcbd2430e91"
+  integrity sha512-pCMsHavbrtFtHvi0srW6jgmGri3Q+uvSFrqHJbeq9+DlN9pQRtQqSjtG648HLy2VqzpgkiEg7VG+kkOV/6m/bA==
   dependencies:
     "@mui/icons-material" "^5.10.15"
     color "3.1.3"
     evt "^2.4.13"
     memoizee "^0.4.15"
     minimal-polyfills "^2.2.2"
-    powerhooks "^0.20.32"
+    powerhooks "^0.22.0"
     run-exclusive "^2.2.18"
     tsafe "^1.4.1"
     tss-react "^4.5.2"
@@ -12667,10 +12667,20 @@ postcss@^8.2.15, postcss@^8.3.5, postcss@^8.4.18, postcss@^8.4.4:
     picocolors "^1.0.0"
     source-map-js "^1.0.2"
 
-powerhooks@^0.20.27, powerhooks@^0.20.32:
+powerhooks@^0.20.27:
   version "0.20.32"
   resolved "https://registry.yarnpkg.com/powerhooks/-/powerhooks-0.20.32.tgz#c9ddff1dcd7d7bb250e54ea284a6c65d9c228e09"
   integrity sha512-lp0rW5sAl8xrenhtB5eZOCwMFcPTtm55pn5++jeEMT1KaO/Rvd7hjaai+PPpDdwIbi5TaF+Zf5XhVO6gvfmXZQ==
+  dependencies:
+    evt "^2.4.13"
+    memoizee "^0.4.15"
+    resize-observer-polyfill "^1.5.1"
+    tsafe "^1.4.1"
+
+powerhooks@^0.22.0:
+  version "0.22.0"
+  resolved "https://registry.yarnpkg.com/powerhooks/-/powerhooks-0.22.0.tgz#501cbdd28fd5427dd54e1796cd1089a02a101543"
+  integrity sha512-3HTG7MA9i8rE9Pk25TTO9bXAY12WWi+bypO5ZWGUN03MlqM1gWQDtxrTPJjx2zR3e6DbO+0jaunTdHv22fYNbg==
   dependencies:
     evt "^2.4.13"
     memoizee "^0.4.15"
