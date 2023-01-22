@@ -10,6 +10,7 @@ import { selectors as projectSelectionSelectors } from "./projectSelection";
 import { selectors as deploymentRegionSelectors } from "./deploymentRegion";
 import { parseUrl } from "core/tools/parseUrl";
 import { assert } from "tsafe/assert";
+import { createUsecaseContextApi } from "redux-clean-architecture";
 
 export type Technology =
     | "R (aws.S3)"
@@ -116,7 +117,26 @@ export const thunks = {
         async (...args) => {
             const { doForceRenewToken } = params;
 
-            const [dispatch, getState, { s3Client }] = args;
+            const [dispatch, getState, thunkExtraArguments] = args;
+
+            const { s3Client, evtAction } = thunkExtraArguments;
+
+            initialize: {
+                const context = getContext(thunkExtraArguments);
+
+                if (context.isInitialized) {
+                    break initialize;
+                }
+
+                evtAction.attach(
+                    action =>
+                        action.sliceName === "projectSelection" &&
+                        action.actionName === "projectChanged",
+                    () => dispatch(thunks.refresh({ "doForceRenewToken": false }))
+                );
+
+                context.isInitialized = true;
+            }
 
             if (getState().s3Credentials.isRefreshing) {
                 return;
@@ -169,6 +189,8 @@ export const thunks = {
             dispatch(actions.technologyChanged({ technology }));
         }
 };
+
+const { getContext } = createUsecaseContextApi(() => ({ "isInitialized": false }));
 
 export const selectors = (() => {
     const readyState = (rootState: State): s3CredentialsState.Ready | undefined => {
