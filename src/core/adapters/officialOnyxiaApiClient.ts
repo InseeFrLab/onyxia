@@ -167,13 +167,13 @@ export function createOfficialOnyxiaApiClient(params: {
                                 //"https://grafana.lab.sspcloud.fr/d/kYYgRWBMz/users-services?orgId=1&refresh=5s&var-namespace=$NAMESPACE&var-instance=$INSTANCE"
                             };
                             initScript: string;
-                            k8sPublicEndpoint?: {
+                            k8sPublicEndpoint: {
                                 keycloakParams?: {
                                     clientId: string;
                                     realm: string;
                                     URL: string;
                                 };
-                                URL: string;
+                                URL?: string;
                             };
                         };
                         data?: {
@@ -326,7 +326,7 @@ export function createOfficialOnyxiaApiClient(params: {
                             region.certificateAuthorityInjection,
                         "kubernetes": (() => {
                             const { k8sPublicEndpoint } = region.services;
-                            return k8sPublicEndpoint === undefined
+                            return k8sPublicEndpoint?.URL === undefined
                                 ? undefined
                                 : {
                                       "url": k8sPublicEndpoint.URL,
