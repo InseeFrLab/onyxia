@@ -1,4 +1,4 @@
-import { useState, memo } from "react";
+import { useState, memo, useEffect } from "react";
 import type { RefObject } from "react";
 import { makeStyles } from "ui/theme";
 import { useCallbackFactory } from "powerhooks/useCallbackFactory";
@@ -55,6 +55,16 @@ export const CatalogExplorerCards = memo((props: Props) => {
         notShownPackageCount
     } = props;
 
+    const [searchBarElement, setSearchBarElement] = useState<HTMLElement | null>(null);
+
+    useEffect(() => {
+        if (searchBarElement === null) {
+            return;
+        }
+
+        searchBarElement.click();
+    }, [searchBarElement]);
+
     const onRequestLaunchFactory = useCallbackFactory(
         ([packageName, catalogId]: [string, string]) =>
             onRequestLaunch({ packageName, catalogId })
@@ -83,6 +93,7 @@ export const CatalogExplorerCards = memo((props: Props) => {
     return (
         <div className={cx(classes.root, className)}>
             <SearchBar
+                ref={setSearchBarElement}
                 className={classes.searchBar}
                 search={search}
                 evtAction={evtSearchBarAction}
