@@ -44,7 +44,9 @@ export function createMockOnyxiaApiClient(): OnyxiaApiClient {
                         "proxyInjection": undefined,
                         "packageRepositoryInjection": undefined,
                         "certificateAuthorityInjection": undefined,
-                        "kubernetes": undefined
+                        "kubernetes": undefined,
+                        "sliders": {},
+                        "resources": undefined
                     }
                 ]),
             { "promise": true }

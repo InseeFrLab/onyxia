@@ -154,13 +154,32 @@ export function createOfficialOnyxiaApiClient(params: {
                                 nodeSelector?: Record<string, unknown>;
                                 startupProbe:
                                     | {
-                                          failureThreshold: number | undefined;
-                                          initialDelaySeconds: number | undefined;
-                                          periodSeconds: number | undefined;
-                                          successThreshold: number | undefined;
-                                          timeoutSeconds: number | undefined;
+                                          failureThreshold?: number;
+                                          initialDelaySeconds?: number;
+                                          periodSeconds?: number;
+                                          successThreshold?: number;
+                                          timeoutSeconds?: number;
                                       }
                                     | undefined;
+                                sliders:
+                                    | Record<
+                                          string,
+                                          {
+                                              sliderMin: number;
+                                              sliderMax: number;
+                                              sliderStep: number;
+                                              sliderUnit: string;
+                                          }
+                                      >
+                                    | undefined;
+                                resources: {
+                                    cpuRequest?: string;
+                                    cpuLimit?: string;
+                                    memoryRequest?: string;
+                                    memoryLimit?: string;
+                                    disk?: string;
+                                    gpu?: string;
+                                };
                             };
                             monitoring?: {
                                 URLPattern?: string;
@@ -344,6 +363,33 @@ export function createOfficialOnyxiaApiClient(params: {
                                                             .clientId
                                                 }
                                   };
+                        })(),
+                        "sliders": region.services.defaultConfiguration?.sliders ?? {},
+                        "resources": (() => {
+                            const { resources } =
+                                region.services.defaultConfiguration ?? {};
+
+                            if (resources === undefined) {
+                                return undefined;
+                            }
+
+                            const {
+                                cpuLimit,
+                                cpuRequest,
+                                disk,
+                                gpu,
+                                memoryLimit,
+                                memoryRequest
+                            } = resources;
+
+                            return {
+                                cpuRequest,
+                                cpuLimit,
+                                memoryRequest,
+                                memoryLimit,
+                                disk,
+                                "gpu": gpu === undefined ? undefined : parseInt(gpu)
+                            };
                         })()
                     }))
                 )
