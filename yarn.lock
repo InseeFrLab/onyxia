@@ -10386,10 +10386,10 @@ keycloak-js@^18.0.0:
     base64-js "^1.5.1"
     js-sha256 "^0.9.0"
 
-keycloakify@^6.8.14:
-  version "6.8.14"
-  resolved "https://registry.yarnpkg.com/keycloakify/-/keycloakify-6.8.14.tgz#f0e8a36f64226c8a3d53d79d636187cb10f7d33e"
-  integrity sha512-WO6a21dIKg1Sr/VnUfeNTf/Tvh7k5IT+MFhSsqHfptFgzTjKG5ksQrUDVP6utI8BET97PZoGVplnzShdVb4Q7w==
+keycloakify@^6.8.16:
+  version "6.8.16"
+  resolved "https://registry.yarnpkg.com/keycloakify/-/keycloakify-6.8.16.tgz#09e5ce139072b7341d1dd3eaa0a1b74775cf9397"
+  integrity sha512-oTmULaLfjjvMqz+rknCE6sD7iaI6kPiOSMZh3s+18jzstejudPeOft/YRncMr9MZcpcFNNWk4hv36xrVHSZ1lw==
   dependencies:
     "@octokit/rest" "^18.12.0"
     cheerio "^1.0.0-rc.5"
@@ -13343,10 +13343,10 @@ redent@^1.0.0:
     indent-string "^2.1.0"
     strip-indent "^1.0.1"
 
-redux-clean-architecture@^3.2.4:
-  version "3.2.4"
-  resolved "https://registry.yarnpkg.com/redux-clean-architecture/-/redux-clean-architecture-3.2.4.tgz#508a7082aba77ee7de0c7c51cbba35589df566b8"
-  integrity sha512-agXg+UIYRabsdpU7DfNtFoldOSxV5n/CFmlO2d6cyKVnoaNsuuS19rpEieiQbh4FCLFnQzU+p0MeZ5fXt5LzEg==
+redux-clean-architecture@^3.2.5:
+  version "3.2.5"
+  resolved "https://registry.yarnpkg.com/redux-clean-architecture/-/redux-clean-architecture-3.2.5.tgz#5ccb845925b39c598dc7503c1216ec9a545700cb"
+  integrity sha512-gs4NpH9mW9graGtnyMHOKx/FW8DBH2ovDJHdjKGfAZBlEuK1PDOIXBitepLHCNRLpL4OHpruBVHVA+Ka512N1w==
   dependencies:
     minimal-polyfills "^2.2.2"
     tsafe "^1.4.1"
