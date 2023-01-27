@@ -386,10 +386,22 @@ export namespace JSONSchemaFormFieldDescription {
             };
         };
 
-        export type Enum<T extends string = string> = Common<T> & {
-            type: "string";
-            enum: T[];
-        };
+        export type Enum = Enum.HelmValue | Enum.UIValue;
+
+        export namespace Enum {
+            type EnumCommon<T extends string = string> = Common<T> & {
+                type: "string";
+            };
+
+            export type HelmValue<T extends string = string> = EnumCommon & {
+                enum: T[];
+            };
+
+            export type UIValue<T extends string = string> = EnumCommon & {
+                render: "list";
+                listEnum: T[];
+            };
+        }
 
         export type Slider = Slider.Simple | Slider.Range;
         export namespace Slider {

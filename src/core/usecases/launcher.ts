@@ -593,7 +593,6 @@ export const thunks = {
                     Object.entries(properties).forEach(
                         ([key, jsonSchemaObjectOrFormFieldDescription]) => {
                             const newCurrentPath = [...currentPath, key];
-
                             if (
                                 jsonSchemaObjectOrFormFieldDescription.type ===
                                     "object" &&
@@ -628,7 +627,7 @@ export const thunks = {
 
                                     if (
                                         "render" in jsonSchemaFormFieldDescription &&
-                                        ["slider", "textArea", "password"].find(
+                                        ["slider", "textArea", "password", "list"].find(
                                             render =>
                                                 render ===
                                                 jsonSchemaFormFieldDescription.render
@@ -774,6 +773,19 @@ export const thunks = {
                                             "minimum":
                                                 jsonSchemaFormFieldDescription.minimum,
                                             "type": "integer"
+                                        });
+                                    }
+
+                                    if (
+                                        "render" in jsonSchemaFormFieldDescription &&
+                                        jsonSchemaFormFieldDescription.render === "list"
+                                    ) {
+                                        return id<FormField.Enum>({
+                                            ...common,
+                                            "value":
+                                                jsonSchemaFormFieldDescription.default,
+                                            "enum": jsonSchemaFormFieldDescription.listEnum,
+                                            "type": "enum"
                                         });
                                     }
 
@@ -1102,8 +1114,6 @@ export const thunks = {
                 "sliders": selectedDeploymentRegion.sliders,
                 "resources": selectedDeploymentRegion.resources
             };
-
-            console.log(onyxiaValues);
 
             return onyxiaValues;
         }
