@@ -140,12 +140,12 @@ export type DeploymentRegion = {
     >;
     resources:
         | {
-              cpuRequest: string | undefined;
-              cpuLimit: string | undefined;
-              memoryRequest: string | undefined;
-              memoryLimit: string | undefined;
-              disk: string | undefined;
-              gpu: number | undefined;
+              cpuRequest?: `${number}${string}`;
+              cpuLimit?: `${number}${string}`;
+              memoryRequest?: `${number}${string}`;
+              memoryLimit?: `${number}${string}`;
+              disk?: `${number}${string}`;
+              gpu?: `${number}`;
           }
         | undefined;
 };
@@ -258,6 +258,25 @@ export type OnyxiaValues = {
         from: unknown[] | undefined;
         nodeSelector: Record<string, unknown> | undefined;
         startupProbe: Record<string, unknown> | undefined;
+        sliders: Record<
+            string,
+            {
+                sliderMin: number;
+                sliderMax: number;
+                sliderStep: number;
+                sliderUnit: string;
+            }
+        >;
+        resources:
+            | {
+                  cpuRequest?: `${number}${string}`;
+                  cpuLimit?: `${number}${string}`;
+                  memoryRequest?: `${number}${string}`;
+                  memoryLimit?: `${number}${string}`;
+                  disk?: `${number}${string}`;
+                  gpu?: `${number}`;
+              }
+            | undefined;
     };
     k8s: {
         domain: string;
@@ -285,25 +304,6 @@ export type OnyxiaValues = {
         | {
               cacerts: string | undefined;
               pathToCaBundle: string | undefined;
-          }
-        | undefined;
-    sliders: Record<
-        string,
-        {
-            sliderMin: number;
-            sliderMax: number;
-            sliderStep: number;
-            sliderUnit: string;
-        }
-    >;
-    resources:
-        | {
-              cpuRequest: string | undefined;
-              cpuLimit: string | undefined;
-              memoryRequest: string | undefined;
-              memoryLimit: string | undefined;
-              disk: string | undefined;
-              gpu: number | undefined;
           }
         | undefined;
 };
@@ -356,6 +356,7 @@ export namespace JSONSchemaFormFieldDescription {
             hidden?: boolean;
             readonly?: boolean;
             overwriteDefaultWith?: string;
+            useRegionSliderConfig?: string;
         };
         hidden?:
             | boolean

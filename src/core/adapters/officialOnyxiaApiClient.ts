@@ -1,7 +1,9 @@
 import type {
     OnyxiaApiClient,
     DeploymentRegion,
-    LocalizedString
+    LocalizedString,
+    JSONSchemaObject,
+    JSONSchemaFormFieldDescription
 } from "../ports/OnyxiaApiClient";
 import axios from "axios";
 import type { AxiosInstance } from "axios";
@@ -12,6 +14,7 @@ import {
 } from "core/ports/OnyxiaApiClient";
 import Mustache from "mustache";
 import { assert } from "tsafe/assert";
+import type { Equals } from "tsafe";
 import { id } from "tsafe/id";
 import { Deferred } from "evt/tools/Deferred";
 import { symToStr } from "tsafe/symToStr";
@@ -19,10 +22,6 @@ import { symToStr } from "tsafe/symToStr";
 //here because we use it only for debugging purpose.
 import { getEnv } from "env";
 import { Catalog, getRandomK8sSubdomain, getServiceId } from "../ports/OnyxiaApiClient";
-import type {
-    JSONSchemaObject,
-    JSONSchemaFormFieldDescription
-} from "../ports/OnyxiaApiClient";
 import { getValueAtPathInObject } from "core/tools/getValueAtPathInObject";
 
 /** @deprecated */
@@ -161,24 +160,22 @@ export function createOfficialOnyxiaApiClient(params: {
                                           timeoutSeconds?: number;
                                       }
                                     | undefined;
-                                sliders:
-                                    | Record<
-                                          string,
-                                          {
-                                              sliderMin: number;
-                                              sliderMax: number;
-                                              sliderStep: number;
-                                              sliderUnit: string;
-                                          }
-                                      >
-                                    | undefined;
-                                resources: {
-                                    cpuRequest?: string;
-                                    cpuLimit?: string;
-                                    memoryRequest?: string;
-                                    memoryLimit?: string;
-                                    disk?: string;
-                                    gpu?: string;
+                                sliders?: Record<
+                                    string,
+                                    {
+                                        sliderMin: number;
+                                        sliderMax: number;
+                                        sliderStep: number;
+                                        sliderUnit: string;
+                                    }
+                                >;
+                                resources?: {
+                                    cpuRequest?: `${number}${string}`;
+                                    cpuLimit?: `${number}${string}`;
+                                    memoryRequest?: `${number}${string}`;
+                                    memoryLimit?: `${number}${string}`;
+                                    disk?: `${number}${string}`;
+                                    gpu?: `${number}`;
                                 };
                             };
                             monitoring?: {
@@ -240,6 +237,7 @@ export function createOfficialOnyxiaApiClient(params: {
                             condaProxyUrl: string;
                             pypiProxyUrl: string;
                         };
+
                         certificateAuthorityInjection?: {
                             cacerts: string;
                             pathToCaBundle: string;
@@ -247,151 +245,134 @@ export function createOfficialOnyxiaApiClient(params: {
                     }[];
                 }>("/public/configuration")
                 .then(({ data }) =>
-                    data.regions.map(region => ({
-                        "id": region.id,
-                        "servicesMonitoringUrlPattern":
-                            region.services.monitoring?.URLPattern,
-                        "defaultIpProtection":
-                            region.services.defaultConfiguration?.ipprotection,
-                        "defaultNetworkPolicy":
-                            region.services.defaultConfiguration?.networkPolicy,
-                        "kubernetesClusterDomain": region.services.expose.domain,
-                        "ingressClassName": region.services.expose.ingressClassName,
-                        "ingress": region.services.expose.ingress,
-                        "route": region.services.expose.route,
-                        "initScriptUrl": region.services.initScript,
-                        "s3": (() => {
-                            const { S3 } = region.data ?? {};
+                    data.regions.map(
+                        (region): DeploymentRegion => ({
+                            "id": region.id,
+                            "servicesMonitoringUrlPattern":
+                                region.services.monitoring?.URLPattern,
+                            "defaultIpProtection":
+                                region.services.defaultConfiguration?.ipprotection,
+                            "defaultNetworkPolicy":
+                                region.services.defaultConfiguration?.networkPolicy,
+                            "kubernetesClusterDomain": region.services.expose.domain,
+                            "ingressClassName": region.services.expose.ingressClassName,
+                            "ingress": region.services.expose.ingress,
+                            "route": region.services.expose.route,
+                            "initScriptUrl": region.services.initScript,
+                            "s3": (() => {
+                                const { S3 } = region.data ?? {};
 
-                            if (S3 === undefined) {
-                                return undefined;
-                            }
-
-                            const common: DeploymentRegion.S3.Common = {
-                                "monitoringUrlPattern": S3.monitoring?.URLPattern,
-                                "defaultDurationSeconds": S3.defaultDurationSeconds,
-                                "keycloakParams":
-                                    S3.keycloakParams === undefined
-                                        ? undefined
-                                        : {
-                                              "url": S3.keycloakParams.URL,
-                                              "realm": S3.keycloakParams.realm,
-                                              "clientId": S3.keycloakParams.clientId
-                                          }
-                            };
-
-                            return (() => {
-                                switch (S3.type) {
-                                    case "minio":
-                                        _s3url = S3.URL;
-                                        return id<DeploymentRegion.S3.Minio>({
-                                            "type": "minio",
-                                            "url": S3.URL,
-                                            "region": S3.region,
-                                            ...common
-                                        });
-                                    case "amazon":
-                                        _s3url = "https://s3.amazonaws.com";
-                                        return id<DeploymentRegion.S3.Amazon>({
-                                            "type": "amazon",
-                                            "region": S3.region,
-                                            "roleARN": S3.roleARN,
-                                            "roleSessionName": S3.roleSessionName,
-                                            ...common
-                                        });
+                                if (S3 === undefined) {
+                                    return undefined;
                                 }
-                            })();
-                        })(),
-                        "allowedURIPatternForUserDefinedInitScript":
-                            region.services.allowedURIPattern,
-                        "kafka": (() => {
-                            const { kafka } = region.services.defaultConfiguration ?? {};
 
-                            if (kafka === undefined) {
-                                return undefined;
-                            }
-                            const { URL, topicName } = kafka;
+                                const common: DeploymentRegion.S3.Common = {
+                                    "monitoringUrlPattern": S3.monitoring?.URLPattern,
+                                    "defaultDurationSeconds": S3.defaultDurationSeconds,
+                                    "keycloakParams":
+                                        S3.keycloakParams === undefined
+                                            ? undefined
+                                            : {
+                                                  "url": S3.keycloakParams.URL,
+                                                  "realm": S3.keycloakParams.realm,
+                                                  "clientId": S3.keycloakParams.clientId
+                                              }
+                                };
 
-                            return { "url": URL, topicName };
-                        })(),
-                        "from": region.services?.defaultConfiguration?.from,
-                        "tolerations": region.services?.defaultConfiguration?.tolerations,
-                        "nodeSelector":
-                            region.services.defaultConfiguration?.nodeSelector,
-                        "startupProbe":
-                            region.services.defaultConfiguration?.startupProbe,
-                        "vault": (() => {
-                            const { vault } = region;
-                            return vault === undefined
-                                ? undefined
-                                : {
-                                      "url": vault.URL,
-                                      "kvEngine": vault.kvEngine,
-                                      "role": vault.role,
-                                      "keycloakParams":
-                                          vault.keycloakParams === undefined
-                                              ? undefined
-                                              : {
-                                                    "url": vault.keycloakParams.URL,
-                                                    "realm": vault.keycloakParams.realm,
-                                                    "clientId":
-                                                        vault.keycloakParams.clientId
-                                                }
-                                  };
-                        })(),
-                        "proxyInjection": region.proxyInjection,
-                        "packageRepositoryInjection": region.packageRepositoryInjection,
-                        "certificateAuthorityInjection":
-                            region.certificateAuthorityInjection,
-                        "kubernetes": (() => {
-                            const { k8sPublicEndpoint } = region.services;
-                            return k8sPublicEndpoint?.URL === undefined
-                                ? undefined
-                                : {
-                                      "url": k8sPublicEndpoint.URL,
-                                      "keycloakParams":
-                                          k8sPublicEndpoint.keycloakParams === undefined
-                                              ? undefined
-                                              : {
-                                                    "url": k8sPublicEndpoint
-                                                        .keycloakParams.URL,
-                                                    "realm":
-                                                        k8sPublicEndpoint.keycloakParams
-                                                            .realm,
-                                                    "clientId":
-                                                        k8sPublicEndpoint.keycloakParams
-                                                            .clientId
-                                                }
-                                  };
-                        })(),
-                        "sliders": region.services.defaultConfiguration?.sliders ?? {},
-                        "resources": (() => {
-                            const { resources } =
-                                region.services.defaultConfiguration ?? {};
+                                return (() => {
+                                    switch (S3.type) {
+                                        case "minio":
+                                            _s3url = S3.URL;
+                                            return id<DeploymentRegion.S3.Minio>({
+                                                "type": "minio",
+                                                "url": S3.URL,
+                                                "region": S3.region,
+                                                ...common
+                                            });
+                                        case "amazon":
+                                            _s3url = "https://s3.amazonaws.com";
+                                            return id<DeploymentRegion.S3.Amazon>({
+                                                "type": "amazon",
+                                                "region": S3.region,
+                                                "roleARN": S3.roleARN,
+                                                "roleSessionName": S3.roleSessionName,
+                                                ...common
+                                            });
+                                    }
+                                })();
+                            })(),
+                            "allowedURIPatternForUserDefinedInitScript":
+                                region.services.allowedURIPattern,
+                            "kafka": (() => {
+                                const { kafka } =
+                                    region.services.defaultConfiguration ?? {};
 
-                            if (resources === undefined) {
-                                return undefined;
-                            }
+                                if (kafka === undefined) {
+                                    return undefined;
+                                }
+                                const { URL, topicName } = kafka;
 
-                            const {
-                                cpuLimit,
-                                cpuRequest,
-                                disk,
-                                gpu,
-                                memoryLimit,
-                                memoryRequest
-                            } = resources;
-
-                            return {
-                                cpuRequest,
-                                cpuLimit,
-                                memoryRequest,
-                                memoryLimit,
-                                disk,
-                                "gpu": gpu === undefined ? undefined : parseInt(gpu)
-                            };
-                        })()
-                    }))
+                                return { "url": URL, topicName };
+                            })(),
+                            "from": region.services?.defaultConfiguration?.from,
+                            "tolerations":
+                                region.services?.defaultConfiguration?.tolerations,
+                            "nodeSelector":
+                                region.services.defaultConfiguration?.nodeSelector,
+                            "startupProbe":
+                                region.services.defaultConfiguration?.startupProbe,
+                            "vault": (() => {
+                                const { vault } = region;
+                                return vault === undefined
+                                    ? undefined
+                                    : {
+                                          "url": vault.URL,
+                                          "kvEngine": vault.kvEngine,
+                                          "role": vault.role,
+                                          "keycloakParams":
+                                              vault.keycloakParams === undefined
+                                                  ? undefined
+                                                  : {
+                                                        "url": vault.keycloakParams.URL,
+                                                        "realm":
+                                                            vault.keycloakParams.realm,
+                                                        "clientId":
+                                                            vault.keycloakParams.clientId
+                                                    }
+                                      };
+                            })(),
+                            "proxyInjection": region.proxyInjection,
+                            "packageRepositoryInjection":
+                                region.packageRepositoryInjection,
+                            "certificateAuthorityInjection":
+                                region.certificateAuthorityInjection,
+                            "kubernetes": (() => {
+                                const { k8sPublicEndpoint } = region.services;
+                                return k8sPublicEndpoint?.URL === undefined
+                                    ? undefined
+                                    : {
+                                          "url": k8sPublicEndpoint.URL,
+                                          "keycloakParams":
+                                              k8sPublicEndpoint.keycloakParams ===
+                                              undefined
+                                                  ? undefined
+                                                  : {
+                                                        "url": k8sPublicEndpoint
+                                                            .keycloakParams.URL,
+                                                        "realm":
+                                                            k8sPublicEndpoint
+                                                                .keycloakParams.realm,
+                                                        "clientId":
+                                                            k8sPublicEndpoint
+                                                                .keycloakParams.clientId
+                                                    }
+                                      };
+                            })(),
+                            "sliders":
+                                region.services.defaultConfiguration?.sliders ?? {},
+                            "resources": region.services.defaultConfiguration?.resources
+                        })
+                    )
                 )
         ),
         "getCatalogs": memoize(
@@ -481,127 +462,211 @@ export function createOfficialOnyxiaApiClient(params: {
                             const jsonSchemaFormFieldDescription =
                                 jsonSchemaObjectOrFormFieldDescription;
 
-                            const assertWeHaveADefault = () => {
-                                //NOTE: Actually, the default can be undefined in the value.schema.json
-                                //      but it would be too complicated to specify in the type system
-                                //      thus the any.
-                                if (
-                                    (jsonSchemaFormFieldDescription.default as any) !==
-                                    undefined
-                                ) {
-                                    return;
-                                }
-
-                                if (jsonSchemaFormFieldDescription.type === "string") {
-                                    jsonSchemaFormFieldDescription.default = "";
-                                    return;
-                                }
-
-                                if (jsonSchemaFormFieldDescription.type === "object") {
-                                    jsonSchemaFormFieldDescription.default = {};
-                                    return;
-                                }
-
-                                if (jsonSchemaFormFieldDescription.type === "array") {
-                                    jsonSchemaFormFieldDescription.default = [];
-                                    return;
-                                }
-
-                                assert(false, `${path} has no default value`);
-                            };
-
-                            const { overwriteDefaultWith } =
-                                jsonSchemaFormFieldDescription["x-onyxia"] ?? {};
-
-                            if (overwriteDefaultWith === undefined) {
-                                assertWeHaveADefault();
-                                return;
-                            }
-
-                            const resolvedValue = overwriteDefaultWith.includes("{{")
-                                ? Mustache.render(
-                                      overwriteDefaultWith
-                                          .replace(/{{/g, "{{{")
-                                          .replace(/}}/g, "}}}"),
-                                      onyxiaValues
-                                  )
-                                : getValueAtPathInObject({
-                                      "path": overwriteDefaultWith.split("."),
-                                      "obj": onyxiaValues
-                                  });
-
-                            if (resolvedValue === undefined || resolvedValue === null) {
-                                assertWeHaveADefault();
-                                return;
-                            }
-
-                            switch (jsonSchemaFormFieldDescription.type) {
-                                case "string":
-                                    jsonSchemaFormFieldDescription.default =
-                                        typeof resolvedValue !== "object"
-                                            ? `${resolvedValue}`
-                                            : JSON.stringify(resolvedValue);
-                                    break;
-                                case "array":
-                                    assert(
-                                        resolvedValue instanceof Array,
-                                        `${overwriteDefaultWith} is not an array (${path})`
-                                    );
-                                    jsonSchemaFormFieldDescription.default =
-                                        resolvedValue;
-                                    break;
-                                case "object":
-                                    assert(
-                                        resolvedValue instanceof Object,
-                                        `${overwriteDefaultWith} is not an object (${path})`
-                                    );
-                                    jsonSchemaFormFieldDescription.default =
-                                        resolvedValue;
-                                    break;
-                                case "boolean":
-                                    assert(
-                                        typeof resolvedValue !== "object",
-                                        `${overwriteDefaultWith} can't be interpreted as a boolean (${path})`
-                                    );
-                                    jsonSchemaFormFieldDescription.default =
-                                        !!resolvedValue;
-                                    break;
-                                case "number":
-                                case "integer":
-                                    {
-                                        const x = (() => {
-                                            if (typeof resolvedValue === "number") {
-                                                return resolvedValue;
-                                            }
-
-                                            const interpretedValue =
-                                                typeof resolvedValue === "string"
-                                                    ? parseFloat(resolvedValue)
-                                                    : undefined;
-
-                                            assert(
-                                                interpretedValue !== undefined &&
-                                                    !isNaN(interpretedValue),
-                                                `${overwriteDefaultWith} can't be interpreted as a number (${path})`
-                                            );
-
-                                            return interpretedValue;
-                                        })();
-
-                                        jsonSchemaFormFieldDescription.default = (() => {
-                                            switch (jsonSchemaFormFieldDescription.type) {
-                                                case "number":
-                                                    return x;
-                                                case "integer":
-                                                    assert(
-                                                        Number.isInteger(x),
-                                                        `${overwriteDefaultWith} (${x}) is not an integer (${path})`
-                                                    );
-                                                    return x;
-                                            }
-                                        })();
+                            overwrite_default: {
+                                const assertWeHaveADefault = () => {
+                                    //NOTE: Actually, the default can be undefined in the value.schema.json
+                                    //      but it would be too complicated to specify in the type system
+                                    //      thus the any.
+                                    if (
+                                        (jsonSchemaFormFieldDescription.default as any) !==
+                                        undefined
+                                    ) {
+                                        return;
                                     }
-                                    break;
+
+                                    if (
+                                        jsonSchemaFormFieldDescription.type === "string"
+                                    ) {
+                                        jsonSchemaFormFieldDescription.default = "";
+                                        return;
+                                    }
+
+                                    if (
+                                        jsonSchemaFormFieldDescription.type === "object"
+                                    ) {
+                                        jsonSchemaFormFieldDescription.default = {};
+                                        return;
+                                    }
+
+                                    if (jsonSchemaFormFieldDescription.type === "array") {
+                                        jsonSchemaFormFieldDescription.default = [];
+                                        return;
+                                    }
+
+                                    assert(false, `${path} has no default value`);
+                                };
+
+                                const { overwriteDefaultWith } =
+                                    jsonSchemaFormFieldDescription["x-onyxia"] ?? {};
+
+                                if (overwriteDefaultWith === undefined) {
+                                    assertWeHaveADefault();
+                                    break overwrite_default;
+                                }
+
+                                const resolvedValue = overwriteDefaultWith.includes("{{")
+                                    ? Mustache.render(
+                                          overwriteDefaultWith
+                                              .replace(/{{/g, "{{{")
+                                              .replace(/}}/g, "}}}"),
+                                          onyxiaValues
+                                      )
+                                    : getValueAtPathInObject({
+                                          "path": overwriteDefaultWith.split("."),
+                                          "obj": onyxiaValues
+                                      });
+
+                                if (
+                                    resolvedValue === undefined ||
+                                    resolvedValue === null
+                                ) {
+                                    assertWeHaveADefault();
+                                    break overwrite_default;
+                                }
+
+                                switch (jsonSchemaFormFieldDescription.type) {
+                                    case "string":
+                                        jsonSchemaFormFieldDescription.default =
+                                            typeof resolvedValue !== "object"
+                                                ? `${resolvedValue}`
+                                                : JSON.stringify(resolvedValue);
+                                        break;
+                                    case "array":
+                                        assert(
+                                            resolvedValue instanceof Array,
+                                            `${overwriteDefaultWith} is not an array (${path})`
+                                        );
+                                        jsonSchemaFormFieldDescription.default =
+                                            resolvedValue;
+                                        break;
+                                    case "object":
+                                        assert(
+                                            resolvedValue instanceof Object,
+                                            `${overwriteDefaultWith} is not an object (${path})`
+                                        );
+                                        jsonSchemaFormFieldDescription.default =
+                                            resolvedValue;
+                                        break;
+                                    case "boolean":
+                                        assert(
+                                            typeof resolvedValue !== "object",
+                                            `${overwriteDefaultWith} can't be interpreted as a boolean (${path})`
+                                        );
+                                        jsonSchemaFormFieldDescription.default =
+                                            !!resolvedValue;
+                                        break;
+                                    case "number":
+                                    case "integer":
+                                        {
+                                            const x = (() => {
+                                                if (typeof resolvedValue === "number") {
+                                                    return resolvedValue;
+                                                }
+
+                                                const interpretedValue =
+                                                    typeof resolvedValue === "string"
+                                                        ? parseFloat(resolvedValue)
+                                                        : undefined;
+
+                                                assert(
+                                                    interpretedValue !== undefined &&
+                                                        !isNaN(interpretedValue),
+                                                    `${overwriteDefaultWith} can't be interpreted as a number (${path})`
+                                                );
+
+                                                return interpretedValue;
+                                            })();
+
+                                            jsonSchemaFormFieldDescription.default =
+                                                (() => {
+                                                    switch (
+                                                        jsonSchemaFormFieldDescription.type
+                                                    ) {
+                                                        case "number":
+                                                            return x;
+                                                        case "integer":
+                                                            assert(
+                                                                Number.isInteger(x),
+                                                                `${overwriteDefaultWith} (${x}) is not an integer (${path})`
+                                                            );
+                                                            return x;
+                                                    }
+                                                })();
+                                        }
+                                        break;
+                                }
+                            }
+
+                            use_region_slider_config: {
+                                if (
+                                    !(
+                                        jsonSchemaFormFieldDescription.type ===
+                                            "string" &&
+                                        "render" in jsonSchemaFormFieldDescription &&
+                                        jsonSchemaFormFieldDescription.render === "slider"
+                                    )
+                                ) {
+                                    break use_region_slider_config;
+                                }
+
+                                const { useRegionSliderConfig } =
+                                    jsonSchemaFormFieldDescription["x-onyxia"] ?? {};
+
+                                if (useRegionSliderConfig === undefined) {
+                                    break use_region_slider_config;
+                                }
+
+                                const sliderConfig = getValueAtPathInObject<
+                                    typeof onyxiaValues["region"]["sliders"][string]
+                                >({
+                                    "path": ["region", "sliders", useRegionSliderConfig],
+                                    "obj": onyxiaValues
+                                });
+
+                                if (sliderConfig === undefined) {
+                                    console.warn(
+                                        `There is no slider configuration ${useRegionSliderConfig} in the current deployment region`
+                                    );
+                                    break use_region_slider_config;
+                                }
+
+                                const {
+                                    sliderMax,
+                                    sliderMin,
+                                    sliderStep,
+                                    sliderUnit,
+                                    ...rest
+                                } = sliderConfig;
+
+                                assert<Equals<typeof rest, {}>>();
+
+                                if ("sliderExtremity" in jsonSchemaFormFieldDescription) {
+                                    switch (
+                                        jsonSchemaFormFieldDescription.sliderExtremity
+                                    ) {
+                                        case "down":
+                                            jsonSchemaFormFieldDescription.sliderMin =
+                                                sliderConfig.sliderMin;
+                                            jsonSchemaFormFieldDescription.sliderUnit =
+                                                sliderConfig.sliderUnit;
+                                            jsonSchemaFormFieldDescription.sliderStep =
+                                                sliderConfig.sliderStep;
+                                            break;
+                                        case "up":
+                                            jsonSchemaFormFieldDescription.sliderMax =
+                                                sliderConfig.sliderMax;
+                                            break;
+                                    }
+                                } else {
+                                    jsonSchemaFormFieldDescription.sliderMax =
+                                        sliderConfig.sliderMax;
+                                    jsonSchemaFormFieldDescription.sliderMin =
+                                        sliderConfig.sliderMin;
+                                    jsonSchemaFormFieldDescription.sliderUnit =
+                                        sliderConfig.sliderUnit;
+                                    jsonSchemaFormFieldDescription.sliderStep =
+                                        sliderConfig.sliderStep;
+                                }
                             }
                         }
 
