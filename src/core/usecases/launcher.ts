@@ -1083,7 +1083,9 @@ export const thunks = {
                     "from": selectedDeploymentRegion.from,
                     "tolerations": selectedDeploymentRegion.tolerations,
                     "nodeSelector": selectedDeploymentRegion.nodeSelector,
-                    "startupProbe": selectedDeploymentRegion.startupProbe
+                    "startupProbe": selectedDeploymentRegion.startupProbe,
+                    "sliders": selectedDeploymentRegion.sliders,
+                    "resources": selectedDeploymentRegion.resources
                 },
                 "k8s": {
                     "domain": selectedDeploymentRegion.kubernetesClusterDomain,
@@ -1098,9 +1100,7 @@ export const thunks = {
                 "packageRepositoryInjection":
                     selectedDeploymentRegion.packageRepositoryInjection,
                 "certificateAuthorityInjection":
-                    selectedDeploymentRegion.certificateAuthorityInjection,
-                "sliders": selectedDeploymentRegion.sliders,
-                "resources": selectedDeploymentRegion.resources
+                    selectedDeploymentRegion.certificateAuthorityInjection
             };
 
             console.log(onyxiaValues);
