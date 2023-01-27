@@ -287,6 +287,25 @@ export type OnyxiaValues = {
               pathToCaBundle: string | undefined;
           }
         | undefined;
+    sliders: Record<
+        string,
+        {
+            sliderMin: number;
+            sliderMax: number;
+            sliderStep: number;
+            sliderUnit: string;
+        }
+    >;
+    resources:
+        | {
+              cpuRequest: string | undefined;
+              cpuLimit: string | undefined;
+              memoryRequest: string | undefined;
+              memoryLimit: string | undefined;
+              disk: string | undefined;
+              gpu: number | undefined;
+          }
+        | undefined;
 };
 
 export type RunningService = RunningService.Started | RunningService.Starting;
