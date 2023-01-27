@@ -1098,7 +1098,9 @@ export const thunks = {
                 "packageRepositoryInjection":
                     selectedDeploymentRegion.packageRepositoryInjection,
                 "certificateAuthorityInjection":
-                    selectedDeploymentRegion.certificateAuthorityInjection
+                    selectedDeploymentRegion.certificateAuthorityInjection,
+                "sliders": selectedDeploymentRegion.sliders,
+                "resources": selectedDeploymentRegion.resources
             };
 
             console.log(onyxiaValues);
