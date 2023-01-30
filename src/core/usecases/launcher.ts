@@ -1115,6 +1115,8 @@ export const thunks = {
                 "resources": selectedDeploymentRegion.resources
             };
 
+            console.log(onyxiaValues);
+
             return onyxiaValues;
         }
 };
