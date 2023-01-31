@@ -11559,17 +11559,17 @@ onetime@^5.1.0, onetime@^5.1.2:
   dependencies:
     mimic-fn "^2.1.0"
 
-onyxia-ui@^0.49.8:
-  version "0.49.8"
-  resolved "https://registry.yarnpkg.com/onyxia-ui/-/onyxia-ui-0.49.8.tgz#e90ddc288369e77cf253cd5e19f29cd5003d9710"
-  integrity sha512-NocIqyenV9Lo3e11oXpoIOn096kgqRxCNvu/45uYbvoGIRKfrG+6j+Oi7aTnXSurXWktkDtxcA/SmsckLr+r6Q==
+onyxia-ui@^0.49.9:
+  version "0.49.9"
+  resolved "https://registry.yarnpkg.com/onyxia-ui/-/onyxia-ui-0.49.9.tgz#99b86f2272d9400ebe7a7322621114d0b0bea8ff"
+  integrity sha512-T+JnG6Rb0/6hYfq4zO8Ih7e0J293R+VwGkpgEJ+6M+KJ/jl3ibE5Tr++sTA+QtMIdqfi3I6+keJLRQ90zCMM5A==
   dependencies:
     "@mui/icons-material" "^5.10.15"
     color "3.1.3"
     evt "^2.4.13"
     memoizee "^0.4.15"
     minimal-polyfills "^2.2.2"
-    powerhooks "^0.22.0"
+    powerhooks "^0.22.1"
     run-exclusive "^2.2.18"
     tsafe "^1.4.2"
     tss-react "^4.6.0"
@@ -13353,13 +13353,13 @@ redent@^1.0.0:
     indent-string "^2.1.0"
     strip-indent "^1.0.1"
 
-redux-clean-architecture@^3.2.5:
-  version "3.2.5"
-  resolved "https://registry.yarnpkg.com/redux-clean-architecture/-/redux-clean-architecture-3.2.5.tgz#5ccb845925b39c598dc7503c1216ec9a545700cb"
-  integrity sha512-gs4NpH9mW9graGtnyMHOKx/FW8DBH2ovDJHdjKGfAZBlEuK1PDOIXBitepLHCNRLpL4OHpruBVHVA+Ka512N1w==
+redux-clean-architecture@^3.2.6:
+  version "3.2.6"
+  resolved "https://registry.yarnpkg.com/redux-clean-architecture/-/redux-clean-architecture-3.2.6.tgz#93d46b6c75f7883286f311658694e5fb77637216"
+  integrity sha512-J/35xFCFVxa/qCdUc3QW2FERU/91zV1DlK7nUpDXTlcG7f+3uy0HGvXt1OJ1Lzlkre4jubpPN9mEqtxVi7ia2w==
   dependencies:
     minimal-polyfills "^2.2.2"
-    tsafe "^1.4.1"
+    tsafe "^1.4.2"
 
 redux-thunk@^2.4.2:
   version "2.4.2"
