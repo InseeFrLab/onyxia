@@ -11559,17 +11559,17 @@ onetime@^5.1.0, onetime@^5.1.2:
   dependencies:
     mimic-fn "^2.1.0"
 
-onyxia-ui@^0.49.10:
-  version "0.49.10"
-  resolved "https://registry.yarnpkg.com/onyxia-ui/-/onyxia-ui-0.49.10.tgz#db91534a76976e02da006d185bbace0855d8a6bb"
-  integrity sha512-pktSxSA6G4FoIdCObxkRfzkxkf14Ma865FPCDK2E/ir1im0IzHuhk7VIJxJHEWwsoGVx8UMvOteF3aZURbApnw==
+onyxia-ui@^0.49.11:
+  version "0.49.11"
+  resolved "https://registry.yarnpkg.com/onyxia-ui/-/onyxia-ui-0.49.11.tgz#165401ec32103c46f4f2c0a6798eb4909f4dcb22"
+  integrity sha512-O2BZl+SUgN/pqcyrL4GLPQOpTl+6b/RAxvMsqu8LYwLtX/sCyAtRccMEPO/CJUDo1DkTUNH+sElSwq4wxQXhGQ==
   dependencies:
     "@mui/icons-material" "^5.10.15"
     color "3.1.3"
     evt "^2.4.13"
     memoizee "^0.4.15"
     minimal-polyfills "^2.2.2"
-    powerhooks "^0.23.0"
+    powerhooks "^0.24.0"
     run-exclusive "^2.2.18"
     tsafe "^1.4.2"
     tss-react "^4.6.0"
@@ -12687,10 +12687,20 @@ powerhooks@^0.22.1:
     resize-observer-polyfill "^1.5.1"
     tsafe "^1.4.2"
 
-powerhooks@^0.23.0:
-  version "0.23.0"
-  resolved "https://registry.yarnpkg.com/powerhooks/-/powerhooks-0.23.0.tgz#7cc6d232edbfa16735c4226798f5f535888941cf"
-  integrity sha512-EDkWYxzfQxaYp1n78PQNnFO7UIYFnjqrWjWIr4N9W6k8zYq2aPsvNvdxNKmD762B8FYI9/vzQz/dcwcy2U45KQ==
+powerhooks@^0.24.0:
+  version "0.24.0"
+  resolved "https://registry.yarnpkg.com/powerhooks/-/powerhooks-0.24.0.tgz#0116790da1c0e61210bb98ec971411f8e0f65353"
+  integrity sha512-U1LSgT7g1DUc1Um+Pm+83VcDVrVRgVVIfV+i3PaVKsEY87RipngaYrFgQoqSly7v3PhDyz3l50U/4zGBV0cksQ==
+  dependencies:
+    evt "^2.4.13"
+    memoizee "^0.4.15"
+    resize-observer-polyfill "^1.5.1"
+    tsafe "^1.4.2"
+
+powerhooks@^0.25.0:
+  version "0.25.0"
+  resolved "https://registry.yarnpkg.com/powerhooks/-/powerhooks-0.25.0.tgz#ea373a8ef6383a90e748a3f63cf829c14de0c821"
+  integrity sha512-BQMUdPyQfxNiM58IWS8AFwxyKahyA7d0b8CdI45S/j99J9bufyRAJVwNwhYLMBCUYEpkgIa028Cm4UBXZ0zU/w==
   dependencies:
     evt "^2.4.13"
     memoizee "^0.4.15"
