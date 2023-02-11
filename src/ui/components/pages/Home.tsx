@@ -129,9 +129,9 @@ const useStyles = makeStyles({ "name": { Home } })(theme => ({
                 ? onyxiaNeumorphismDarkModeUrl
                 : onyxiaNeumorphismLightModeUrl
         })`,
-        "backgroundPosition": "121% 0%, 100% 0%",
+        "backgroundPosition": "115% 0%, 100% 0%",
         "backgroundRepeat": "no-repeat, no-repeat",
-        "backgroundSize": "55%, 80%"
+        "backgroundSize": "47%, 80%"
     },
     "heroTextWrapper": {
         "paddingLeft": theme.spacing(3),
