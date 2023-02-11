@@ -129,7 +129,7 @@ const useStyles = makeStyles({ "name": { Home } })(theme => ({
                 ? onyxiaNeumorphismDarkModeUrl
                 : onyxiaNeumorphismLightModeUrl
         })`,
-        "backgroundPosition": "115% 0%, 100% 0%",
+        "backgroundPosition": "109% 0%, 100% 0%",
         "backgroundRepeat": "no-repeat, no-repeat",
         "backgroundSize": "47%, 80%"
     },
