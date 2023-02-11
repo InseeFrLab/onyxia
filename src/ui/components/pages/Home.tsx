@@ -13,7 +13,7 @@ import { Card as OnyxiaUiCard } from "onyxia-ui/Card";
 import type { Link } from "type-route";
 import onyxiaNeumorphismDarkModeUrl from "ui/assets/svg/OnyxiaNeumorphismDarkMode.svg";
 import onyxiaNeumorphismLightModeUrl from "ui/assets/svg/OnyxiaNeumorphismLightMode.svg";
-import homeIllustrationImgUrl from "ui/assets/img/homeIllustration.png";
+import dragoonSvgUrl from "ui/assets/svg/Dragoon.svg";
 import { getIsHomePageDisabled } from "ui/env";
 import { useConst } from "powerhooks/useConst";
 import { useStateRef } from "powerhooks/useStateRef";
@@ -124,14 +124,14 @@ const useStyles = makeStyles({ "name": { Home } })(theme => ({
     },
     "hero": {
         "flex": 1,
-        "backgroundImage": `url(${homeIllustrationImgUrl}), url(${
+        "backgroundImage": `url(${dragoonSvgUrl}), url(${
             theme.isDarkModeEnabled
                 ? onyxiaNeumorphismDarkModeUrl
                 : onyxiaNeumorphismLightModeUrl
         })`,
-        "backgroundPosition": "171% 38%, 100% 0%",
+        "backgroundPosition": "121% 0%, 100% 0%",
         "backgroundRepeat": "no-repeat, no-repeat",
-        "backgroundSize": "76%, 80%"
+        "backgroundSize": "55%, 80%"
     },
     "heroTextWrapper": {
         "paddingLeft": theme.spacing(3),
