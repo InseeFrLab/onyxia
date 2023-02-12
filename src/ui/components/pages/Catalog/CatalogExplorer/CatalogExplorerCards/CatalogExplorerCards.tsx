@@ -105,7 +105,7 @@ export const CatalogExplorerCards = memo((props: Props) => {
                     {catalogs.map(({ id, name }) => (
                         <CustomButton
                             key={id}
-                            isSelected={id === selectedCatalogId}
+                            isSelected={search !== "" ? false : id === selectedCatalogId}
                             text={resolveLocalizedString(name)}
                             onClick={onSelectedCatalogIdChangeFactory(id)}
                         />
