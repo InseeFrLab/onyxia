@@ -11559,19 +11559,19 @@ onetime@^5.1.0, onetime@^5.1.2:
   dependencies:
     mimic-fn "^2.1.0"
 
-onyxia-ui@^0.49.13:
-  version "0.49.13"
-  resolved "https://registry.yarnpkg.com/onyxia-ui/-/onyxia-ui-0.49.13.tgz#2b87c85d87931a52a301f1a7b770e6335a00b814"
-  integrity sha512-hgOxGz8pzKr7cWsBIHxMh56q7vQiGBzx8DYnvNuCodK1VRVTeFMXsvHqG5iTrotJmM8D8z3jKDjyHngYGjNNbA==
+onyxia-ui@^0.49.15:
+  version "0.49.15"
+  resolved "https://registry.yarnpkg.com/onyxia-ui/-/onyxia-ui-0.49.15.tgz#83974e4f664fc3a1a9041cff5e167bf2fc942570"
+  integrity sha512-rtDp7LNFLhElfO7/l4OV7oMbAcjtY3iLlQxgvwVa0SdmeM1b/DawLby2gbLs/2kaX2X+VfWkwzHvKIyZVE0j4A==
   dependencies:
     "@mui/icons-material" "^5.10.15"
     color "3.1.3"
     evt "^2.4.13"
     memoizee "^0.4.15"
     minimal-polyfills "^2.2.2"
-    powerhooks "^0.26.0"
+    powerhooks "^0.26.2"
     run-exclusive "^2.2.18"
-    tsafe "^1.4.2"
+    tsafe "^1.4.3"
     tss-react "^4.6.0"
 
 open@^7.0.3:
@@ -12687,15 +12687,15 @@ powerhooks@^0.22.1:
     resize-observer-polyfill "^1.5.1"
     tsafe "^1.4.2"
 
-powerhooks@^0.26.0:
-  version "0.26.0"
-  resolved "https://registry.yarnpkg.com/powerhooks/-/powerhooks-0.26.0.tgz#260f8e5c019ea117911c880bf3b371ecd09786df"
-  integrity sha512-FvoEuj340Jm9HPGV98gjDVVdlolaIYXvQ4Xg7fiNtYdeClAJk264uFHAwFo9isXP92OW2ksvy9wVMCwMhFUGGQ==
+powerhooks@^0.26.2:
+  version "0.26.2"
+  resolved "https://registry.yarnpkg.com/powerhooks/-/powerhooks-0.26.2.tgz#020056e8b35c5959bf7b28c47a1015cfafd81412"
+  integrity sha512-NOHpRXMCnPxjvQMt0rEtPjHrid+wEh567+xY6OR3sdy+XKA2TI0T3o+KlDcFxtixTvz/kO4/Ok430Dip9D/5TQ==
   dependencies:
     evt "^2.4.13"
     memoizee "^0.4.15"
     resize-observer-polyfill "^1.5.1"
-    tsafe "^1.4.2"
+    tsafe "^1.4.3"
 
 prelude-ls@^1.2.1:
   version "1.2.1"
@@ -15155,6 +15155,11 @@ tsafe@^1.4.2:
   version "1.4.2"
   resolved "https://registry.yarnpkg.com/tsafe/-/tsafe-1.4.2.tgz#1cc597f6e286ef8a64b918a0a6284bd04347e11f"
   integrity sha512-KfP0PYzRjl1LY1DnJPNlD4a0tZSg4uUuZxI4aG04T+j7WJvKZbh1zpaukphhSmtoJMgX1RV8eZVKTEiH8wOGbA==
+
+tsafe@^1.4.3:
+  version "1.4.3"
+  resolved "https://registry.yarnpkg.com/tsafe/-/tsafe-1.4.3.tgz#a98ce83616f0d9c01e3c6167a2ead45ba455b2ae"
+  integrity sha512-KjCdgjIqsbKW9oeJGSMVC23jhWm/VXJwkaZ7jffo/WaTioLGTHJqliHe9dECEVzIACNVNs/fwtKwU8wWK4jY4g==
 
 tsconfig-paths@^3.14.1:
   version "3.14.1"
