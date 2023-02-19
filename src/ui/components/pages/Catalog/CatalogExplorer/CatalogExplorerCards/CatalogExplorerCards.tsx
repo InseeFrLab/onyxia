@@ -100,12 +100,12 @@ export const CatalogExplorerCards = memo((props: Props) => {
                 onSearchChange={onSearchChange}
                 placeholder={t("search")}
             />
-            {catalogs.length > 1 && (
+            {catalogs.length > 1 && search === "" && (
                 <div className={classes.catalogSwitcher}>
                     {catalogs.map(({ id, name }) => (
                         <CustomButton
                             key={id}
-                            isSelected={search !== "" ? false : id === selectedCatalogId}
+                            isSelected={id === selectedCatalogId}
                             text={resolveLocalizedString(name)}
                             onClick={onSelectedCatalogIdChangeFactory(id)}
                         />
