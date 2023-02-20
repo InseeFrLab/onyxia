@@ -2202,7 +2202,7 @@
     prop-types "^15.6.1"
     react-lifecycles-compat "^3.0.4"
 
-"@reduxjs/toolkit@^1.9.0":
+"@reduxjs/toolkit@^1.9.1":
   version "1.9.1"
   resolved "https://registry.yarnpkg.com/@reduxjs/toolkit/-/toolkit-1.9.1.tgz#4c34dc4ddcec161535288c60da5c19c3ef15180e"
   integrity sha512-HikrdY+IDgRfRYlCTGUQaiCxxDDgM1mQrRbZ6S1HFZX5ZYuJ4o8EstNmhTwHdPl2rTmLxzwSu0b3AyeyTlR+RA==
@@ -3674,14 +3674,6 @@
   resolved "https://registry.yarnpkg.com/@types/history/-/history-4.7.11.tgz#56588b17ae8f50c53983a524fc3cc47437969d64"
   integrity sha512-qjDJRrmvBMiTx+jyLxvLfJU7UznFuokDv4f3WRuriHKERccVpFU+8XMQUAbDzoiJCsmexxRExQeMwwCdamSKDA==
 
-"@types/hoist-non-react-statics@^3.3.0":
-  version "3.3.1"
-  resolved "https://registry.yarnpkg.com/@types/hoist-non-react-statics/-/hoist-non-react-statics-3.3.1.tgz#1124aafe5118cb591977aeb1ceaaed1070eb039f"
-  integrity sha512-iMIqiko6ooLrTh1joXodJK5X9xeEALT1kM5G3ZLhD3hszxBdIEd5C75U834D9mLcINgD4OyZf5uQXjkuYydWvA==
-  dependencies:
-    "@types/react" "*"
-    hoist-non-react-statics "^3.3.0"
-
 "@types/html-minifier-terser@^5.0.0":
   version "5.1.2"
   resolved "https://registry.yarnpkg.com/@types/html-minifier-terser/-/html-minifier-terser-5.1.2.tgz#693b316ad323ea97eed6b38ed1a3cc02b1672b57"
@@ -3772,7 +3764,7 @@
   dependencies:
     "@types/node" "*"
 
-"@types/mustache@^4.0.1":
+"@types/mustache@^4.2.2":
   version "4.2.2"
   resolved "https://registry.yarnpkg.com/@types/mustache/-/mustache-4.2.2.tgz#825bf5c214c3ab84d0b23fef2c8eb898f3ff8717"
   integrity sha512-MUSpfpW0yZbTgjekDbH0shMYBUD+X/uJJJMm9LXN1d5yjl5lCY1vN/eWKD6D1tOtjA6206K0zcIPnUaFMurdNA==
@@ -3875,16 +3867,6 @@
   integrity sha512-aBTIWg1emtu95bLTLx0cpkxwGW3ueZv71nE2YFBpL8k/z5czEW8yYpOo8Dp+UUAFAtKwNaOsh/ioSeQnWlZcfw==
   dependencies:
     "@types/react" "*"
-
-"@types/react-redux@^7.1.12":
-  version "7.1.24"
-  resolved "https://registry.yarnpkg.com/@types/react-redux/-/react-redux-7.1.24.tgz#6caaff1603aba17b27d20f8ad073e4c077e975c0"
-  integrity sha512-7FkurKcS1k0FHZEtdbbgN8Oc6b+stGSfZYjQGicofJ0j4U0qIn/jaSvnP2pLwZKiai3/17xqqxkkrxTgN8UNbQ==
-  dependencies:
-    "@types/hoist-non-react-statics" "^3.3.0"
-    "@types/react" "*"
-    hoist-non-react-statics "^3.3.0"
-    redux "^4.0.0"
 
 "@types/react-router-dom@^5.1.5":
   version "5.3.3"
@@ -10404,10 +10386,10 @@ keycloak-js@^18.0.0:
     base64-js "^1.5.1"
     js-sha256 "^0.9.0"
 
-keycloakify@^6.8.9:
-  version "6.8.9"
-  resolved "https://registry.yarnpkg.com/keycloakify/-/keycloakify-6.8.9.tgz#b209174f4079a35b83e90932cb71a257432b4093"
-  integrity sha512-GbkifoJYBamfADxrpyXu8TeCoV372qqNe4IC774wU8T88ASxXH4AmtH4YFay9gfuV3tRGSQZvpg3wBf3Js2HGQ==
+keycloakify@^6.10.1:
+  version "6.10.1"
+  resolved "https://registry.yarnpkg.com/keycloakify/-/keycloakify-6.10.1.tgz#ec5fb4149cca10bb4771211c06cf96e17397cde2"
+  integrity sha512-Z5D/wDp+MWJs+9VlBF4JH8Qczr7p6At0UE8KYZ/BUEW+HEZZjZNrhB23aTX9ytEFETKIH2GQ4nF2Z5KWYcN+zw==
   dependencies:
     "@octokit/rest" "^18.12.0"
     cheerio "^1.0.0-rc.5"
@@ -10417,11 +10399,11 @@ keycloakify@^6.8.9:
     minimal-polyfills "^2.2.2"
     minimist "^1.2.6"
     path-browserify "^1.0.1"
-    powerhooks "^0.20.32"
+    powerhooks "^0.22.1"
     react-markdown "^5.0.3"
     rfc4648 "^1.5.2"
     scripting-tools "^0.19.13"
-    tsafe "^1.4.1"
+    tsafe "^1.4.2"
     tss-react "4.4.1-rc.0"
     zod "^3.17.10"
 
@@ -11230,7 +11212,7 @@ multicast-dns@^7.2.5:
     dns-packet "^5.2.2"
     thunky "^1.0.2"
 
-mustache@^4.0.1:
+mustache@^4.2.0:
   version "4.2.0"
   resolved "https://registry.yarnpkg.com/mustache/-/mustache-4.2.0.tgz#e5892324d60a12ec9c2a73359edca52972bf6f64"
   integrity sha512-71ippSywq5Yb7/tVYyGbkBggbU8H3u5Rz56fH60jGFgr8uHwxs+aSKeqmluIVzM0m0kB7xQjKS6qPfd0b2ZoqQ==
@@ -11577,20 +11559,20 @@ onetime@^5.1.0, onetime@^5.1.2:
   dependencies:
     mimic-fn "^2.1.0"
 
-onyxia-ui@^0.49.2:
-  version "0.49.2"
-  resolved "https://registry.yarnpkg.com/onyxia-ui/-/onyxia-ui-0.49.2.tgz#265bc783577ba151b24819d7921c98786ec15047"
-  integrity sha512-cAyPlPLfrVTwTjR5y4DRTsM/CLpy6ohGOVKlhPj+1V0fGf0ieOctqgwdfD3xbgsSFDl27+uVCRCzY4LsQz0KhA==
+onyxia-ui@^0.49.17:
+  version "0.49.17"
+  resolved "https://registry.yarnpkg.com/onyxia-ui/-/onyxia-ui-0.49.17.tgz#9aa5cdd01438776bec9c4d66c152c12bf3d14ce4"
+  integrity sha512-pttgo5Wb7uMcNGU9ce/vcTkCJlszGtkGOlU9igulD3fL/gWEY1CBIn0XS+Sp0Etew6CtpnH6xW6ro0/UMk7QiA==
   dependencies:
     "@mui/icons-material" "^5.10.15"
     color "3.1.3"
     evt "^2.4.13"
     memoizee "^0.4.15"
     minimal-polyfills "^2.2.2"
-    powerhooks "^0.20.32"
+    powerhooks "^0.26.2"
     run-exclusive "^2.2.18"
-    tsafe "^1.4.1"
-    tss-react "^4.5.0"
+    tsafe "^1.4.3"
+    tss-react "^4.6.1"
 
 open@^7.0.3:
   version "7.4.2"
@@ -12685,7 +12667,7 @@ postcss@^8.2.15, postcss@^8.3.5, postcss@^8.4.18, postcss@^8.4.4:
     picocolors "^1.0.0"
     source-map-js "^1.0.2"
 
-powerhooks@^0.20.27, powerhooks@^0.20.32:
+powerhooks@^0.20.27:
   version "0.20.32"
   resolved "https://registry.yarnpkg.com/powerhooks/-/powerhooks-0.20.32.tgz#c9ddff1dcd7d7bb250e54ea284a6c65d9c228e09"
   integrity sha512-lp0rW5sAl8xrenhtB5eZOCwMFcPTtm55pn5++jeEMT1KaO/Rvd7hjaai+PPpDdwIbi5TaF+Zf5XhVO6gvfmXZQ==
@@ -12694,6 +12676,26 @@ powerhooks@^0.20.27, powerhooks@^0.20.32:
     memoizee "^0.4.15"
     resize-observer-polyfill "^1.5.1"
     tsafe "^1.4.1"
+
+powerhooks@^0.22.1:
+  version "0.22.1"
+  resolved "https://registry.yarnpkg.com/powerhooks/-/powerhooks-0.22.1.tgz#4e6c720e702e138c0869447e0d04bd0550530bbb"
+  integrity sha512-wR/gVPtpOeVAkjJXAHbTB6IBAIWL3RZo69DqxPZ2rXV108cwzOW978KZKd2h7m0QHJdg4ZXYwOsZ13E1EGrTFA==
+  dependencies:
+    evt "^2.4.13"
+    memoizee "^0.4.15"
+    resize-observer-polyfill "^1.5.1"
+    tsafe "^1.4.2"
+
+powerhooks@^0.26.2:
+  version "0.26.2"
+  resolved "https://registry.yarnpkg.com/powerhooks/-/powerhooks-0.26.2.tgz#020056e8b35c5959bf7b28c47a1015cfafd81412"
+  integrity sha512-NOHpRXMCnPxjvQMt0rEtPjHrid+wEh567+xY6OR3sdy+XKA2TI0T3o+KlDcFxtixTvz/kO4/Ok430Dip9D/5TQ==
+  dependencies:
+    evt "^2.4.13"
+    memoizee "^0.4.15"
+    resize-observer-polyfill "^1.5.1"
+    tsafe "^1.4.3"
 
 prelude-ls@^1.2.1:
   version "1.2.1"
@@ -13351,20 +13353,20 @@ redent@^1.0.0:
     indent-string "^2.1.0"
     strip-indent "^1.0.1"
 
-redux-clean-architecture@^3.2.4:
-  version "3.2.4"
-  resolved "https://registry.yarnpkg.com/redux-clean-architecture/-/redux-clean-architecture-3.2.4.tgz#508a7082aba77ee7de0c7c51cbba35589df566b8"
-  integrity sha512-agXg+UIYRabsdpU7DfNtFoldOSxV5n/CFmlO2d6cyKVnoaNsuuS19rpEieiQbh4FCLFnQzU+p0MeZ5fXt5LzEg==
+redux-clean-architecture@^3.2.6:
+  version "3.2.6"
+  resolved "https://registry.yarnpkg.com/redux-clean-architecture/-/redux-clean-architecture-3.2.6.tgz#93d46b6c75f7883286f311658694e5fb77637216"
+  integrity sha512-J/35xFCFVxa/qCdUc3QW2FERU/91zV1DlK7nUpDXTlcG7f+3uy0HGvXt1OJ1Lzlkre4jubpPN9mEqtxVi7ia2w==
   dependencies:
     minimal-polyfills "^2.2.2"
-    tsafe "^1.4.1"
+    tsafe "^1.4.2"
 
 redux-thunk@^2.4.2:
   version "2.4.2"
   resolved "https://registry.yarnpkg.com/redux-thunk/-/redux-thunk-2.4.2.tgz#b9d05d11994b99f7a91ea223e8b04cf0afa5ef3b"
   integrity sha512-+P3TjtnP0k/FEjcBL5FZpoovtvrTNT/UXd4/sluaSyrURlSlhLSzEdfsTBW7WsKB6yPvgd7q/iZPICFjW4o57Q==
 
-redux@^4.0.0, redux@^4.2.0:
+redux@^4.2.0:
   version "4.2.0"
   resolved "https://registry.yarnpkg.com/redux/-/redux-4.2.0.tgz#46f10d6e29b6666df758780437651eeb2b969f13"
   integrity sha512-oSBmcKKIuIR4ME29/AeNUnl5L+hvBq7OaJWzaptTQJAntaPvxIJqfnjbaEiCzzaIz+XmVILfqAM3Ob0aXLPfjA==
@@ -15149,6 +15151,16 @@ tsafe@^1.2.1, tsafe@^1.4.1:
   resolved "https://registry.yarnpkg.com/tsafe/-/tsafe-1.4.1.tgz#59cdad8ac41babf88e56dcd1a683ae2fb145d059"
   integrity sha512-3IDBalvf6SyvHFS14UiwCWzqdSdo+Q0k2J7DZyJYaHW/iraW9DJpaBKDJpry3yQs3o/t/A+oGaRW3iVt2lKxzA==
 
+tsafe@^1.4.2:
+  version "1.4.2"
+  resolved "https://registry.yarnpkg.com/tsafe/-/tsafe-1.4.2.tgz#1cc597f6e286ef8a64b918a0a6284bd04347e11f"
+  integrity sha512-KfP0PYzRjl1LY1DnJPNlD4a0tZSg4uUuZxI4aG04T+j7WJvKZbh1zpaukphhSmtoJMgX1RV8eZVKTEiH8wOGbA==
+
+tsafe@^1.4.3:
+  version "1.4.3"
+  resolved "https://registry.yarnpkg.com/tsafe/-/tsafe-1.4.3.tgz#a98ce83616f0d9c01e3c6167a2ead45ba455b2ae"
+  integrity sha512-KjCdgjIqsbKW9oeJGSMVC23jhWm/VXJwkaZ7jffo/WaTioLGTHJqliHe9dECEVzIACNVNs/fwtKwU8wWK4jY4g==
+
 tsconfig-paths@^3.14.1:
   version "3.14.1"
   resolved "https://registry.yarnpkg.com/tsconfig-paths/-/tsconfig-paths-3.14.1.tgz#ba0734599e8ea36c862798e920bcf163277b137a"
@@ -15174,10 +15186,19 @@ tss-react@4.4.1-rc.0:
   resolved "https://registry.yarnpkg.com/tss-react/-/tss-react-4.4.1-rc.0.tgz#96f9c2edcb9208ae39e845e6bafc9a50c9b96c66"
   integrity sha512-ozltdpdDrB/6Ml6UpaL/eGwGZzTXXcHnJxwwO7mxcFaZnLaetbbbQHNUerRmqr21i9vgA6HFBAzOv9pa2PUsww==
 
-tss-react@^4.5.0:
-  version "4.5.0"
-  resolved "https://registry.yarnpkg.com/tss-react/-/tss-react-4.5.0.tgz#76a798408b298e9108fb37ce51b304dbd62cabff"
-  integrity sha512-PVdh5vR9/syxLi7xshz8+WCG46dp9sA8VD0NsMAvVAriKKsogqImkSe7IBwGO1UgjlDPM7zN1B+7xBk0fR0gOw==
+tss-react@^4.6.0:
+  version "4.6.0"
+  resolved "https://registry.yarnpkg.com/tss-react/-/tss-react-4.6.0.tgz#9bf6133d7dd4f7723cf887fb50e37a5670a536af"
+  integrity sha512-GWIduTQpV2B5iEvVSDkYTjvtLi+irTckO5tR28vCYwIOzvgUcK/Gr9xZ/NuJY1Qdb0pasNda5lCecjSnzj1Y0A==
+  dependencies:
+    "@emotion/cache" "*"
+    "@emotion/serialize" "*"
+    "@emotion/utils" "*"
+
+tss-react@^4.6.1:
+  version "4.6.1"
+  resolved "https://registry.yarnpkg.com/tss-react/-/tss-react-4.6.1.tgz#a584d720d417350bcca327752e0a4ea77868726c"
+  integrity sha512-4MktjVhHqEav6JxipiTqFU7YcXbAt0DHD4CIGFpqQdYKkUHK6URLf/2hYjwDcHkiC22K5f3vTo8q2O1WQs1H3Q==
   dependencies:
     "@emotion/cache" "*"
     "@emotion/serialize" "*"

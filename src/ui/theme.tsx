@@ -193,7 +193,7 @@ export function createGetViewPortConfig(params: {
         }
 
         return {
-            "targetWindowInnerWidth": Math.max(windowInnerWidth, 1100),
+            "targetWindowInnerWidth": 1920,
             "targetBrowserFontSizeFactor": 1
         };
     };

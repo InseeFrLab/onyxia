@@ -597,7 +597,6 @@ export const thunks = {
                     Object.entries(properties).forEach(
                         ([key, jsonSchemaObjectOrFormFieldDescription]) => {
                             const newCurrentPath = [...currentPath, key];
-
                             if (
                                 jsonSchemaObjectOrFormFieldDescription.type ===
                                     "object" &&
@@ -630,14 +629,15 @@ export const thunks = {
                                                 ?.readonly ?? false
                                     };
 
-                                    //TODO: The JSON schema should be tested in entry of the system.
-                                    if ("render" in jsonSchemaFormFieldDescription) {
-                                        assert(
-                                            ["slider", "textArea", "password"].find(
-                                                render =>
-                                                    render ===
-                                                    jsonSchemaFormFieldDescription.render
-                                            ) !== undefined,
+                                    if (
+                                        "render" in jsonSchemaFormFieldDescription &&
+                                        ["slider", "textArea", "password", "list"].find(
+                                            render =>
+                                                render ===
+                                                jsonSchemaFormFieldDescription.render
+                                        ) === undefined
+                                    ) {
+                                        console.warn(
                                             `${common.path.join("/")} has render: "${
                                                 jsonSchemaFormFieldDescription.render
                                             }" and it's not supported`
@@ -780,6 +780,19 @@ export const thunks = {
                                         });
                                     }
 
+                                    if (
+                                        "render" in jsonSchemaFormFieldDescription &&
+                                        jsonSchemaFormFieldDescription.render === "list"
+                                    ) {
+                                        return id<FormField.Enum>({
+                                            ...common,
+                                            "value":
+                                                jsonSchemaFormFieldDescription.default,
+                                            "enum": jsonSchemaFormFieldDescription.listEnum,
+                                            "type": "enum"
+                                        });
+                                    }
+
                                     if ("enum" in jsonSchemaFormFieldDescription) {
                                         return id<FormField.Enum>({
                                             ...common,
@@ -902,7 +915,7 @@ export const thunks = {
                     sources,
                     formFields,
                     infosAboutWhenFieldsShouldBeHidden,
-                    config: valuesSchemaJson,
+                    "config": valuesSchemaJson,
                     dependencies,
                     formFieldsValueDifferentFromDefault,
                     "sensitiveConfigurations": sensitiveConfigurations ?? []
@@ -1099,11 +1112,15 @@ export const thunks = {
                     "from": selectedDeploymentRegion.from,
                     "tolerations": selectedDeploymentRegion.tolerations,
                     "nodeSelector": selectedDeploymentRegion.nodeSelector,
-                    "startupProbe": selectedDeploymentRegion.startupProbe
+                    "startupProbe": selectedDeploymentRegion.startupProbe,
+                    "sliders": selectedDeploymentRegion.sliders,
+                    "resources": selectedDeploymentRegion.resources
                 },
                 "k8s": {
                     "domain": selectedDeploymentRegion.kubernetesClusterDomain,
                     "ingressClassName": selectedDeploymentRegion.ingressClassName,
+                    "ingress": selectedDeploymentRegion.ingress,
+                    "route": selectedDeploymentRegion.route,
                     "randomSubdomain":
                         (getRandomK8sSubdomain.clear(), getRandomK8sSubdomain()),
                     "initScriptUrl": selectedDeploymentRegion.initScriptUrl

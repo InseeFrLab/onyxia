@@ -69,6 +69,8 @@ export type DeploymentRegion = {
     defaultNetworkPolicy: boolean | undefined;
     kubernetesClusterDomain: string;
     ingressClassName: string | undefined;
+    ingress: boolean | undefined;
+    route: boolean | undefined;
     initScriptUrl: string;
     s3: DeploymentRegion.S3 | undefined;
     allowedURIPatternForUserDefinedInitScript: string;
@@ -110,7 +112,12 @@ export type DeploymentRegion = {
               pypiProxyUrl: string | undefined;
           }
         | undefined;
-    certificateAuthorityInjection: { crts: unknown[] | undefined } | undefined;
+    certificateAuthorityInjection:
+        | {
+              cacerts: string | undefined;
+              pathToCaBundle: string | undefined;
+          }
+        | undefined;
     kubernetes:
         | {
               url: string;
@@ -121,6 +128,25 @@ export type DeploymentRegion = {
                         clientId: string;
                     }
                   | undefined;
+          }
+        | undefined;
+    sliders: Record<
+        string,
+        {
+            sliderMin: number;
+            sliderMax: number;
+            sliderStep: number;
+            sliderUnit: string;
+        }
+    >;
+    resources:
+        | {
+              cpuRequest?: `${number}${string}`;
+              cpuLimit?: `${number}${string}`;
+              memoryRequest?: `${number}${string}`;
+              memoryLimit?: `${number}${string}`;
+              disk?: `${number}${string}`;
+              gpu?: `${number}`;
           }
         | undefined;
 };
@@ -233,10 +259,31 @@ export type OnyxiaValues = {
         from: unknown[] | undefined;
         nodeSelector: Record<string, unknown> | undefined;
         startupProbe: Record<string, unknown> | undefined;
+        sliders: Record<
+            string,
+            {
+                sliderMin: number;
+                sliderMax: number;
+                sliderStep: number;
+                sliderUnit: string;
+            }
+        >;
+        resources:
+            | {
+                  cpuRequest?: `${number}${string}`;
+                  cpuLimit?: `${number}${string}`;
+                  memoryRequest?: `${number}${string}`;
+                  memoryLimit?: `${number}${string}`;
+                  disk?: `${number}${string}`;
+                  gpu?: `${number}`;
+              }
+            | undefined;
     };
     k8s: {
         domain: string;
         ingressClassName: string | undefined;
+        ingress: boolean | undefined;
+        route: boolean | undefined;
         randomSubdomain: string;
         initScriptUrl: string;
     };
@@ -256,7 +303,8 @@ export type OnyxiaValues = {
         | undefined;
     certificateAuthorityInjection:
         | {
-              crts: unknown[] | undefined;
+              cacerts: string | undefined;
+              pathToCaBundle: string | undefined;
           }
         | undefined;
 };
@@ -309,6 +357,7 @@ export namespace JSONSchemaFormFieldDescription {
             hidden?: boolean;
             readonly?: boolean;
             overwriteDefaultWith?: string;
+            useRegionSliderConfig?: string;
         };
         hidden?:
             | boolean
@@ -339,10 +388,22 @@ export namespace JSONSchemaFormFieldDescription {
             };
         };
 
-        export type Enum<T extends string = string> = Common<T> & {
-            type: "string";
-            enum: T[];
-        };
+        export type Enum = Enum.HelmValue | Enum.UIValue;
+
+        export namespace Enum {
+            type EnumCommon<T extends string = string> = Common<T> & {
+                type: "string";
+            };
+
+            export type HelmValue<T extends string = string> = EnumCommon & {
+                enum: T[];
+            };
+
+            export type UIValue<T extends string = string> = EnumCommon & {
+                render: "list";
+                listEnum: T[];
+            };
+        }
 
         export type Slider = Slider.Simple | Slider.Range;
         export namespace Slider {

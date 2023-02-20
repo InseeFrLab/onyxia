@@ -296,7 +296,8 @@ const useStyles = makeStyles<{ isThereServicesRunning: boolean }>({
                   "display": "grid",
                   "gridTemplateColumns": "repeat(2,1fr)",
                   "gap": theme.spacing(4)
-              })
+              }),
+        "paddingBottom": theme.spacing(4)
     },
     "noRunningServices": {
         "height": "100%"
