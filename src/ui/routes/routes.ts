@@ -2,8 +2,8 @@ import "minimal-polyfills/Object.fromEntries";
 import { createRouter, defineRoute, param, noMatch } from "type-route";
 import type { ValueSerializer } from "type-route";
 import { id } from "tsafe/id";
-import type { AccountTabId } from "ui/components/pages/Account/accountTabIds";
-import { accountTabIds } from "ui/components/pages/Account/accountTabIds";
+import type { AccountTabId } from "ui/pages/Account/accountTabIds";
+import { accountTabIds } from "ui/pages/Account/accountTabIds";
 import { routerOpts, formFieldsDefineRouteParam } from "./formFieldsQueryParameters";
 import { paramPathTrailingOptional } from "ui/tools/typeRouteParamPathTrailingOptional";
 

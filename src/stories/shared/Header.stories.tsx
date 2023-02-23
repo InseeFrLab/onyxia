@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Header } from "ui/components/shared/Header";
+import { Header } from "ui/shared/Header";
 import { getStoryFactory, logCallbacks } from "stories/getStory";
 import { sectionName } from "./sectionName";
 import { css } from "@emotion/css";

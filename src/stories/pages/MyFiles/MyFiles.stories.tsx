@@ -1,8 +1,8 @@
 import { css } from "@emotion/css";
 import { getStoryFactory } from "stories/getStory";
 import { sectionName } from "../sectionName";
-import { MyFiles } from "ui/components/pages/MyFiles";
-import type { Props } from "ui/components/pages/MyFiles";
+import { MyFiles } from "ui/pages/MyFiles";
+import type { Props } from "ui/pages/MyFiles";
 import { symToStr } from "tsafe/symToStr";
 
 type StoryProps = {

@@ -1,7 +1,7 @@
 import { css } from "@emotion/css";
 import { useState, useCallback, useEffect } from "react";
-import { SecretsExplorerItems } from "ui/components/pages/MySecrets/SecretsExplorer/SecretsExplorerItems/SecretsExplorerItems";
-import type { SecretsExplorerItemsProps } from "ui/components/pages/MySecrets/SecretsExplorer/SecretsExplorerItems/SecretsExplorerItems";
+import { SecretsExplorerItems } from "ui/pages/MySecrets/SecretsExplorer/SecretsExplorerItems/SecretsExplorerItems";
+import type { SecretsExplorerItemsProps } from "ui/pages/MySecrets/SecretsExplorer/SecretsExplorerItems/SecretsExplorerItems";
 import { sectionName } from "./sectionName";
 import { getStoryFactory, logCallbacks } from "stories/getStory";
 import { symToStr } from "tsafe/symToStr";

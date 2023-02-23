@@ -1,4 +1,4 @@
-import { ExplorerItem } from "ui/components/pages/MyFiles/Explorer/ExplorerItems/ExplorerItem";
+import { ExplorerItem } from "ui/pages/MyFiles/Explorer/ExplorerItems/ExplorerItem";
 import { sectionName } from "./sectionName";
 import { getStoryFactory, logCallbacks } from "stories/getStory";
 

@@ -1,4 +1,4 @@
-import { MyServicesSavedConfig } from "ui/components/pages/MyServices/MyServicesSavedConfigs/MyServicesSavedConfig";
+import { MyServicesSavedConfig } from "ui/pages/MyServices/MyServicesSavedConfigs/MyServicesSavedConfig";
 import { sectionName } from "./sectionName";
 import { getStoryFactory, logCallbacks } from "stories/getStory";
 import rstudioImgUrl from "stories/assets/img/rstudio.png";

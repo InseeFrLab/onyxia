@@ -1,6 +1,6 @@
 import { memo } from "react";
 import { makeStyles } from "ui/theme";
-import { RoundLogo } from "ui/components/shared/RoundLogo";
+import { RoundLogo } from "ui/shared/RoundLogo";
 
 export type Props = {
     className?: string;

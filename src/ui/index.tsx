@@ -2,8 +2,8 @@ import { createRoot } from "react-dom/client";
 import { RouteProvider } from "./routes";
 import { ThemeProvider, splashScreen, createGetViewPortConfig } from "./theme";
 import { lazy, Suspense } from "react";
-import { kcContext } from "./components/KcApp/kcContext";
-import { PortraitModeUnsupported } from "ui/components/pages/PortraitModeUnsupported";
+import { kcContext } from "ui/KcApp/kcContext";
+import { PortraitModeUnsupported } from "ui/pages/PortraitModeUnsupported";
 import { createCoreProvider } from "core";
 import { getCreateStoreParams } from "ui/env";
 import { injectTransferableEnvsInSearchParams } from "ui/envCarriedOverToKc";
@@ -18,8 +18,8 @@ import { evtLang } from "ui/i18n";
 
 const { getViewPortConfig } = createGetViewPortConfig({ PortraitModeUnsupported });
 
-const App = lazy(() => import("./components/App"));
-const KcApp = lazy(() => import("./components/KcApp"));
+const App = lazy(() => import("ui/App"));
+const KcApp = lazy(() => import("ui/KcApp"));
 
 const { CoreProvider } = createCoreProvider(() =>
     getCreateStoreParams({

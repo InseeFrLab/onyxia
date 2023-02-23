@@ -1,5 +1,5 @@
-import { AccountField } from "ui/components/pages/Account/AccountField";
-import type { Props } from "ui/components/pages/Account/AccountField";
+import { AccountField } from "ui/pages/Account/AccountField";
+import type { Props } from "ui/pages/Account/AccountField";
 import { sectionName } from "./sectionName";
 import { getStoryFactory, logCallbacks } from "stories/getStory";
 import { id } from "tsafe/id";

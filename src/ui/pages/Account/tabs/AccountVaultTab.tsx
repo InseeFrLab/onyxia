@@ -15,29 +15,32 @@ import { IconButton } from "ui/theme";
 import { CircularProgress } from "onyxia-ui/CircularProgress";
 import { useCoreState, selectors, useCoreFunctions } from "core";
 import { useFromNow } from "ui/useMoment";
+import type { Link } from "type-route";
+import { routes } from "ui/routes";
+import { capitalize } from "tsafe/capitalize";
 
-const CodeBlock = lazy(() => import("ui/components/shared/CodeBlock"));
+const CodeBlock = lazy(() => import("ui/shared/CodeBlock"));
 
 export type Props = {
     className?: string;
 };
 
-export const AccountKubernetesTab = memo((props: Props) => {
+export const AccountVaultTab = memo((props: Props) => {
     const { className } = props;
 
     const { classes, theme } = useStyles();
 
-    const { k8sCredentials } = useCoreFunctions();
+    const { vaultCredentials } = useCoreFunctions();
 
-    const { uiState } = useCoreState(selectors.k8sCredentials.uiState);
+    const { uiState } = useCoreState(selectors.vaultCredentials.uiState);
 
     const { fromNowText } = useFromNow({ "dateTime": uiState?.expirationTime ?? 0 });
 
     useEffect(() => {
-        k8sCredentials.refresh({ "doForceRenewToken": false });
+        vaultCredentials.refresh({ "doForceRenewToken": false });
     }, []);
 
-    const { t } = useTranslation({ AccountKubernetesTab });
+    const { t } = useTranslation({ AccountVaultTab });
 
     const onFieldRequestCopyFactory = useCallbackFactory(([textToCopy]: [string]) =>
         copyToClipboard(textToCopy)
@@ -54,7 +57,7 @@ export const AccountKubernetesTab = memo((props: Props) => {
     });
 
     const onRefreshIconButtonClick = useConstCallback(() =>
-        k8sCredentials.refresh({ "doForceRenewToken": true })
+        vaultCredentials.refresh({ "doForceRenewToken": true })
     );
 
     if (uiState === undefined) {
@@ -67,7 +70,10 @@ export const AccountKubernetesTab = memo((props: Props) => {
                 title={t("credentials section title")}
                 helperText={
                     <>
-                        {t("credentials section helper")}
+                        {t("credentials section helper", {
+                            "vaultDocHref": "https://developer.hashicorp.com/vault",
+                            "mySecretLink": routes.mySecrets().link
+                        })}
                         &nbsp;
                         <strong>
                             {t("expires in", { "howMuchTime": fromNowText })}{" "}
@@ -81,17 +87,13 @@ export const AccountKubernetesTab = memo((props: Props) => {
                     </>
                 }
             />
-            {(
-                [
-                    "kubernetesNamespace",
-                    "kubernetesClusterUrl",
-                    "oidcAccessToken"
-                ] as const
-            ).map(key => (
+            {(["vaultUrl", "vaultToken"] as const).map(key => (
                 <AccountField
                     type="text"
                     key={key}
-                    title={key}
+                    title={capitalize(
+                        key.replace(/([a-z])([A-Z])/g, "$1 $2").toLowerCase()
+                    )}
                     text={smartTrim({
                         "maxLength": 50,
                         "minCharAtTheEnd": 20,
@@ -103,7 +105,10 @@ export const AccountKubernetesTab = memo((props: Props) => {
             <Divider className={classes.divider} variant="middle" />
             <AccountSectionHeader
                 title={t("init script section title")}
-                helperText={t("init script section helper")}
+                helperText={t("init script section helper", {
+                    "vaultCliDocLink":
+                        "https://developer.hashicorp.com/vault/docs/commands"
+                })}
             />
             <div className={classes.codeBlockHeaderWrapper}>
                 <div style={{ "flex": 1 }} />
@@ -129,13 +134,17 @@ export const AccountKubernetesTab = memo((props: Props) => {
 
 export const { i18n } = declareComponentKeys<
     | "credentials section title"
-    | "credentials section helper"
+    | {
+          K: "credentials section helper";
+          P: { vaultDocHref: string; mySecretLink: Link };
+          R: JSX.Element;
+      }
     | "init script section title"
-    | "init script section helper"
+    | { K: "init script section helper"; P: { vaultCliDocLink: string }; R: JSX.Element }
     | { K: "expires in"; P: { howMuchTime: string } }
->()({ AccountKubernetesTab });
+>()({ AccountVaultTab });
 
-const useStyles = makeStyles({ "name": { AccountKubernetesTab } })(theme => ({
+const useStyles = makeStyles({ "name": { AccountVaultTab } })(theme => ({
     "divider": {
         ...theme.spacing.topBottom("margin", 4)
     },

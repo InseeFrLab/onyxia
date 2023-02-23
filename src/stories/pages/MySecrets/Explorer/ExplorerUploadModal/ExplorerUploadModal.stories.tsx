@@ -1,4 +1,4 @@
-import { ExplorerUploadModal } from "ui/components/pages/MyFiles/Explorer/ExplorerUploadModal/ExplorerUploadModal";
+import { ExplorerUploadModal } from "ui/pages/MyFiles/Explorer/ExplorerUploadModal/ExplorerUploadModal";
 import { sectionName } from "./sectionName";
 import { getStoryFactory, logCallbacks } from "stories/getStory";
 
