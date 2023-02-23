@@ -81,9 +81,7 @@ export function Home(props: Props) {
                     title={t("cardTitle2")}
                     text={t("cardText2")}
                     buttonText={t("cardButton2")}
-                    link={
-                        "https://tchap.gouv.fr/#/room/#SSPCloudXDpAw6v:agent.finances.tchap.gouv.fr"
-                    }
+                    link="https://join.slack.com/t/3innovation/shared_invite/zt-1hnzukjcn-6biCSmVy4qvyDGwbNI~sWg"
                 />
                 <Card
                     Icon={IconStorageSvg}
