@@ -2,7 +2,7 @@ import { useState, useMemo } from "react";
 import {
     CatalogLauncherConfigurationCard,
     CatalogLauncherConfigurationCardProps
-} from "ui/components/pages/Catalog/CatalogLauncher/CatalogLauncherConfigurationCard";
+} from "ui/pages/Catalog/CatalogLauncher/CatalogLauncherConfigurationCard";
 import { sectionName } from "./sectionName";
 import { getStoryFactory } from "stories/getStory";
 import { same } from "evt/tools/inDepth/same";

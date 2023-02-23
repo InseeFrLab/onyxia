@@ -1,7 +1,7 @@
 import { css } from "@emotion/css";
 import { useState, useEffect } from "react";
-import { ExplorerItems } from "ui/components/pages/MyFiles/Explorer/ExplorerItems/ExplorerItems";
-import type { ExplorerItemsProps } from "ui/components/pages/MyFiles/Explorer/ExplorerItems/ExplorerItems";
+import { ExplorerItems } from "ui/pages/MyFiles/Explorer/ExplorerItems/ExplorerItems";
+import type { ExplorerItemsProps } from "ui/pages/MyFiles/Explorer/ExplorerItems/ExplorerItems";
 import { sectionName } from "./sectionName";
 import { getStoryFactory, logCallbacks } from "stories/getStory";
 import { symToStr } from "tsafe/symToStr";

@@ -1,4 +1,4 @@
-import { LoginDivider } from "ui/components/KcApp/Login/LoginDivider";
+import { LoginDivider } from "ui/KcApp/Login/LoginDivider";
 import { sectionName } from "./sectionName";
 import { getStoryFactory } from "stories/getStory";
 

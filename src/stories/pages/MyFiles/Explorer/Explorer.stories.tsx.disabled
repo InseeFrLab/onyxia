@@ -1,6 +1,6 @@
 import { css } from "@emotion/css";
 import { useState, useCallback, useEffect } from "react";
-import { Explorer, ExplorerProps } from "ui/components/pages/MyFiles/Explorer/Explorer";
+import { Explorer, ExplorerProps } from "ui/pages/MyFiles/Explorer/Explorer";
 import { sectionName } from "./sectionName";
 import { getStoryFactory, logCallbacks } from "stories/getStory";
 import { symToStr } from "tsafe/symToStr";

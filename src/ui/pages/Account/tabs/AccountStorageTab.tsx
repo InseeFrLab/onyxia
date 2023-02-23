@@ -23,7 +23,7 @@ import { IconButton } from "ui/theme";
 import { CircularProgress } from "onyxia-ui/CircularProgress";
 import { capitalize } from "tsafe/capitalize";
 
-const CodeBlock = lazy(() => import("ui/components/shared/CodeBlock"));
+const CodeBlock = lazy(() => import("ui/shared/CodeBlock"));
 
 const technologies = [
     "R (aws.S3)",

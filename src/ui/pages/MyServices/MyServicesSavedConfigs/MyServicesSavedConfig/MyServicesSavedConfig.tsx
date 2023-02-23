@@ -1,6 +1,6 @@
 import { memo, useReducer } from "react";
 import { makeStyles } from "ui/theme";
-import { RoundLogo } from "ui/components/shared/RoundLogo";
+import { RoundLogo } from "ui/shared/RoundLogo";
 import { Button, Text } from "ui/theme";
 import { MyServicesSavedConfigOptions } from "./MyServicesSavedConfigOptions";
 import type { SavedConfigurationAction } from "./MyServicesSavedConfigOptions";

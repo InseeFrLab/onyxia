@@ -12,7 +12,7 @@
 
 import "minimal-polyfills/Object.fromEntries";
 import { getEnv } from "env";
-import { kcContext } from "ui/components/KcApp/kcContext";
+import { kcContext } from "ui/KcApp/kcContext";
 import {
     retrieveParamFromUrl,
     addParamToUrl,

@@ -1,7 +1,7 @@
 import {
     CatalogExplorerCards,
     Props
-} from "ui/components/pages/Catalog/CatalogExplorer/CatalogExplorerCards";
+} from "ui/pages/Catalog/CatalogExplorer/CatalogExplorerCards";
 import { sectionName } from "../sectionName";
 import { getStoryFactory, logCallbacks } from "stories/getStory";
 import rstudioImg from "stories/assets/img/rstudio.png";
