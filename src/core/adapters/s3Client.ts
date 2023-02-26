@@ -9,7 +9,7 @@ import * as Minio from "minio";
 import { parseUrl } from "core/tools/parseUrl";
 import memoize from "memoizee";
 import type { ApiLogger } from "core/tools/apiLogger";
-import { join as pathJoin } from "path";
+import { join as pathJoin, basename as pathBasename } from "path";
 import type { DeploymentRegion } from "../ports/OnyxiaApiClient";
 import fileReaderStream from "filereader-stream";
 import type { OidcClient } from "../ports/OidcClient";
@@ -429,10 +429,7 @@ export const s3ApiLogger: ApiLogger<S3Client> = {
             "fmtResult": () => `# Done`
         },
         "uploadFile": {
-            "buildCmd": ({ path }) => {
-                const fileName = path.split("/").pop();
-                return `mc cp ${fileName} s3/${path}`;
-            },
+            "buildCmd": ({ path }) => `mc cp ${pathBasename(path)} s3${path}`,
             "fmtResult": () => `# File uploaded`
         },
         "deleteFile": {
@@ -440,7 +437,7 @@ export const s3ApiLogger: ApiLogger<S3Client> = {
             "fmtResult": () => `# File deleted`
         },
         "getFileDownloadUrl": {
-            "buildCmd": ({ path }) => `mc cp s3/${path}`,
+            "buildCmd": ({ path }) => `mc cp s3${path}`,
             "fmtResult": ({ result: downloadUrl }) => downloadUrl
         }
     }
