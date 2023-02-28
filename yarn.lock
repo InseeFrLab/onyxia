@@ -10386,25 +10386,21 @@ keycloak-js@^18.0.0:
     base64-js "^1.5.1"
     js-sha256 "^0.9.0"
 
-keycloakify@^6.10.1:
-  version "6.10.1"
-  resolved "https://registry.yarnpkg.com/keycloakify/-/keycloakify-6.10.1.tgz#ec5fb4149cca10bb4771211c06cf96e17397cde2"
-  integrity sha512-Z5D/wDp+MWJs+9VlBF4JH8Qczr7p6At0UE8KYZ/BUEW+HEZZjZNrhB23aTX9ytEFETKIH2GQ4nF2Z5KWYcN+zw==
+keycloakify@^6.12.4:
+  version "6.12.4"
+  resolved "https://registry.yarnpkg.com/keycloakify/-/keycloakify-6.12.4.tgz#96aa3cab5e3f76e550f20e9b4de7e6b425df79ad"
+  integrity sha512-Po3GfnAsAUVVEzIuNiVi/Wz2Jxb4VCLHre8FheLAZilt0MFZ6h2NJ5EK7oaCb6I5pe4Ip4LsxnrM2DP2/kqcaQ==
   dependencies:
     "@octokit/rest" "^18.12.0"
     cheerio "^1.0.0-rc.5"
     cli-select "^1.1.2"
     evt "^2.4.13"
-    memoizee "^0.4.15"
     minimal-polyfills "^2.2.2"
     minimist "^1.2.6"
     path-browserify "^1.0.1"
-    powerhooks "^0.22.1"
     react-markdown "^5.0.3"
     rfc4648 "^1.5.2"
-    scripting-tools "^0.19.13"
-    tsafe "^1.4.2"
-    tss-react "4.4.1-rc.0"
+    tsafe "^1.4.3"
     zod "^3.17.10"
 
 kind-of@^3.0.2, kind-of@^3.0.3, kind-of@^3.2.0:
@@ -12676,16 +12672,6 @@ powerhooks@^0.20.27:
     memoizee "^0.4.15"
     resize-observer-polyfill "^1.5.1"
     tsafe "^1.4.1"
-
-powerhooks@^0.22.1:
-  version "0.22.1"
-  resolved "https://registry.yarnpkg.com/powerhooks/-/powerhooks-0.22.1.tgz#4e6c720e702e138c0869447e0d04bd0550530bbb"
-  integrity sha512-wR/gVPtpOeVAkjJXAHbTB6IBAIWL3RZo69DqxPZ2rXV108cwzOW978KZKd2h7m0QHJdg4ZXYwOsZ13E1EGrTFA==
-  dependencies:
-    evt "^2.4.13"
-    memoizee "^0.4.15"
-    resize-observer-polyfill "^1.5.1"
-    tsafe "^1.4.2"
 
 powerhooks@^0.26.2:
   version "0.26.2"
@@ -15180,11 +15166,6 @@ tslib@^2.0.0, tslib@^2.0.1, tslib@^2.0.3, tslib@^2.1.0:
   version "2.4.1"
   resolved "https://registry.yarnpkg.com/tslib/-/tslib-2.4.1.tgz#0d0bfbaac2880b91e22df0768e55be9753a5b17e"
   integrity sha512-tGyy4dAjRIEwI7BzsB0lynWgOpfqjUdq91XXAlIWD2OwKBH7oCl/GZG/HT4BOHrTlPMOASlMQ7veyTqpmRcrNA==
-
-tss-react@4.4.1-rc.0:
-  version "4.4.1-rc.0"
-  resolved "https://registry.yarnpkg.com/tss-react/-/tss-react-4.4.1-rc.0.tgz#96f9c2edcb9208ae39e845e6bafc9a50c9b96c66"
-  integrity sha512-ozltdpdDrB/6Ml6UpaL/eGwGZzTXXcHnJxwwO7mxcFaZnLaetbbbQHNUerRmqr21i9vgA6HFBAzOv9pa2PUsww==
 
 tss-react@^4.6.0:
   version "4.6.0"

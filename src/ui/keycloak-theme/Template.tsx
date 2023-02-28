@@ -1,6 +1,5 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
-
-import { useReducer, useEffect, memo } from "react";
+import { memo } from "react";
 import type { ReactNode } from "react";
 import { useConstCallback } from "powerhooks/useConstCallback";
 import type { KcTemplateProps } from "keycloakify";
@@ -12,27 +11,81 @@ import onyxiaNeumorphismDarkModeUrl from "ui/assets/svg/OnyxiaNeumorphismDarkMod
 import onyxiaNeumorphismLightModeUrl from "ui/assets/svg/OnyxiaNeumorphismLightMode.svg";
 import { Card } from "onyxia-ui/Card";
 import { Alert } from "onyxia-ui/Alert";
-import { headInsert } from "keycloakify/lib/tools/headInsert";
-import type { KcContext } from "./kcContext";
 import { symToStr } from "tsafe/symToStr";
-import { pathJoin } from "keycloakify/bin/tools/pathJoin";
 import type { I18n } from "./i18n";
+import type { TemplateProps } from "keycloakify/lib/KcProps";
+import { usePrepareTemplate } from "keycloakify/lib/Template";
+import type { KcContext } from "./kcContext";
 
-export type TemplateProps = {
-    doFetchDefaultThemeResources: boolean;
-    className?: string;
-    displayInfo?: boolean;
-    displayMessage?: boolean;
-    displayRequiredFields?: boolean;
-    displayWide?: boolean;
-    showAnotherWayIfPresent?: boolean;
-    headerNode: ReactNode;
-    showUsernameNode?: ReactNode;
-    formNode: ReactNode;
-    infoNode?: ReactNode;
-    onClickCross?: () => void;
-    i18n: I18n;
-} & { kcContext: KcContext } & KcTemplateProps;
+export default function Template(
+    props: TemplateProps<KcContext, I18n> & {
+        onClickCross?: () => void;
+    }
+) {
+    const {
+        kcContext,
+        i18n,
+        doFetchDefaultThemeResources,
+        stylesCommon,
+        styles,
+        scripts,
+        kcHtmlClass,
+        onClickCross
+    } = props;
+
+    const { url } = kcContext;
+
+    const { isReady } = usePrepareTemplate({
+        doFetchDefaultThemeResources,
+        stylesCommon,
+        styles,
+        scripts,
+        url,
+        kcHtmlClass
+    });
+
+    const {
+        domRect: { width: rootWidth },
+        ref: rootRef
+    } = useDomRect();
+
+    const logoContainerWidth = Math.max(
+        Math.floor((Math.min(rootWidth, 1920) * logoContainerWidthInPercent) / 100),
+        45
+    );
+
+    const { windowInnerWidth, windowInnerHeight } = useWindowInnerSize();
+
+    const { classes } = useStyles({
+        windowInnerWidth,
+        "aspectRatio": windowInnerWidth / windowInnerHeight,
+        windowInnerHeight
+    });
+
+    const onHeaderLogoClick = useConstCallback(
+        () => (window.location.href = "https://docs.sspcloud.fr")
+    );
+
+    if (!isReady) {
+        return null;
+    }
+
+    return (
+        <div ref={rootRef} className={classes.root}>
+            {windowInnerHeight > 700 && (
+                <Header
+                    useCase="login pages"
+                    className={classes.header}
+                    logoContainerWidth={logoContainerWidth}
+                    onLogoClick={onHeaderLogoClick}
+                />
+            )}
+            <section className={classes.betweenHeaderAndFooter}>
+                <Page {...props} className={classes.page} onClickCross={onClickCross} />
+            </section>
+        </div>
+    );
+}
 
 const useStyles = makeStyles<{
     windowInnerWidth: number;
@@ -68,117 +121,6 @@ const useStyles = makeStyles<{
         "overflow": "auto"
     }
 }));
-
-export const Template = memo((props: TemplateProps) => {
-    const { kcContext, className, doFetchDefaultThemeResources, onClickCross } = props;
-
-    useEffect(() => {
-        console.log("Rendering this page with react using keycloakify");
-    }, []);
-
-    const {
-        domRect: { width: rootWidth },
-        ref: rootRef
-    } = useDomRect();
-
-    const logoContainerWidth = Math.max(
-        Math.floor((Math.min(rootWidth, 1920) * logoContainerWidthInPercent) / 100),
-        45
-    );
-
-    const { windowInnerWidth, windowInnerHeight } = useWindowInnerSize();
-
-    const { classes, cx } = useStyles({
-        windowInnerWidth,
-        "aspectRatio": windowInnerWidth / windowInnerHeight,
-        windowInnerHeight
-    });
-
-    const onHeaderLogoClick = useConstCallback(
-        () => (window.location.href = "https://docs.sspcloud.fr")
-    );
-
-    const [isExtraCssLoaded, setExtraCssLoaded] = useReducer(() => true, false);
-
-    useEffect(() => {
-        if (!doFetchDefaultThemeResources) {
-            setExtraCssLoaded();
-            return;
-        }
-
-        let isUnmounted = false;
-        const cleanups: (() => void)[] = [];
-
-        const toArr = (x: string | readonly string[] | undefined) =>
-            typeof x === "string" ? x.split(" ") : x ?? [];
-
-        Promise.all(
-            [
-                ...toArr(props.stylesCommon).map(relativePath =>
-                    pathJoin(kcContext.url.resourcesCommonPath, relativePath)
-                ),
-                ...toArr(props.styles).map(relativePath =>
-                    pathJoin(kcContext.url.resourcesPath, relativePath)
-                )
-            ].map(href =>
-                headInsert({
-                    "type": "css",
-                    href,
-                    "position": "prepend"
-                })
-            )
-        ).then(() => {
-            if (isUnmounted) {
-                return;
-            }
-
-            setExtraCssLoaded();
-        });
-
-        toArr(props.scripts).forEach(relativePath =>
-            headInsert({
-                "type": "javascript",
-                "src": pathJoin(kcContext.url.resourcesPath, relativePath)
-            })
-        );
-
-        if (props.kcHtmlClass !== undefined) {
-            const htmlClassList = document.getElementsByTagName("html")[0].classList;
-
-            const tokens = cx(props.kcHtmlClass).split(" ");
-
-            htmlClassList.add(...tokens);
-
-            cleanups.push(() => htmlClassList.remove(...tokens));
-        }
-
-        return () => {
-            isUnmounted = true;
-
-            cleanups.forEach(f => f());
-        };
-    }, [props.kcHtmlClass]);
-
-    if (!isExtraCssLoaded) {
-        return null;
-    }
-
-    return (
-        <div ref={rootRef} className={cx(classes.root, className)}>
-            {windowInnerHeight > 700 && (
-                <Header
-                    useCase="login pages"
-                    className={classes.header}
-                    logoContainerWidth={logoContainerWidth}
-                    onLogoClick={onHeaderLogoClick}
-                />
-            )}
-            <section className={classes.betweenHeaderAndFooter}>
-                <Page {...props} className={classes.page} onClickCross={onClickCross} />
-            </section>
-        </div>
-    );
-});
 
 const { Page } = (() => {
     type Props = {
