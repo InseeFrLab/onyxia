@@ -1,5 +1,5 @@
 import type { CreateDecodeJwt } from "../port/CreateDecodeJwt";
-import * as jwtSimple from "jwt-simple";
+import * as jwtSimple from "core/tools/jwt-simple";
 import { jwtContentToDecodedJwt } from "../tools/jwtContentToDecodedJwt";
 
 export const createDecodeJwtNoVerify: CreateDecodeJwt = ({ jwtClaims }) => {

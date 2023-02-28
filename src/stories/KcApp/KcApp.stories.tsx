@@ -1,4 +1,4 @@
-import KcApp from "ui/KcApp";
+import KcApp from "ui/keycloak-theme";
 import { sectionName } from "./sectionName";
 import { getStoryFactory } from "stories/getStory";
 import { kcContextLogin, kcContextRegister } from "./kcContexts";

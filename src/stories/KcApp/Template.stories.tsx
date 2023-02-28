@@ -1,4 +1,4 @@
-import { Template } from "ui/KcApp/Template";
+import { Template } from "ui/keycloak-theme/Template";
 import { sectionName } from "./sectionName";
 import { getStoryFactory } from "stories/getStory";
 import { defaultKcProps } from "keycloakify";

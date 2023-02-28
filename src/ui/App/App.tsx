@@ -24,16 +24,49 @@ import { MySecrets } from "ui/pages/MySecrets";
 import type { Item } from "onyxia-ui/LeftBar";
 import { getExtraLeftBarItemsFromEnv, getIsHomePageDisabled } from "ui/env";
 import { declareComponentKeys } from "i18nifty";
+import { RouteProvider } from "ui/routes";
+import { createCoreProvider } from "core";
+import { getCreateStoreParams } from "ui/env";
+import { injectTransferableEnvsInSearchParams } from "ui/envCarriedOverToKc";
+import { injectGlobalStatesInSearchParams } from "powerhooks/useGlobalState";
+import { addParamToUrl } from "powerhooks/tools/urlSearchParams";
+import { Evt } from "evt";
+import { evtLang } from "ui/i18n";
+
+const { CoreProvider } = createCoreProvider(() =>
+    getCreateStoreParams({
+        "transformUrlBeforeRedirectToLogin": url =>
+            [url]
+                .map(injectTransferableEnvsInSearchParams)
+                .map(injectGlobalStatesInSearchParams)
+                .map(
+                    url =>
+                        addParamToUrl({
+                            url,
+                            "name": "ui_locales",
+                            "value": evtLang.state
+                        }).newUrl
+                )[0],
+        "evtUserActivity": Evt.merge([
+            Evt.from(document, "mousemove"),
+            Evt.from(document, "keydown")
+        ]).pipe(() => [undefined as void])
+    })
+);
+
+export default function App() {
+    return (
+        <CoreProvider>
+            <RouteProvider>
+                <ContextualizedApp />
+            </RouteProvider>
+        </CoreProvider>
+    );
+}
 
 export const logoContainerWidthInPercent = 4;
 
-export type Props = {
-    className?: string;
-};
-
-export const App = memo((props: Props) => {
-    const { className } = props;
-
+function ContextualizedApp() {
     const { t } = useTranslation({ App });
 
     useSyncDarkModeWithValueInProfile();
@@ -51,7 +84,7 @@ export const App = memo((props: Props) => {
         }, [rootWidth === 0]);
     }
 
-    const { classes, cx } = useStyles();
+    const { classes } = useStyles();
 
     const logoContainerWidth = Math.max(
         Math.floor((Math.min(rootWidth, 1920) * logoContainerWidthInPercent) / 100),
@@ -153,7 +186,7 @@ export const App = memo((props: Props) => {
     );
 
     return (
-        <div ref={rootRef} className={cx(classes.root, className)}>
+        <div ref={rootRef} className={classes.root}>
             {(() => {
                 const common = {
                     "className": classes.header,
@@ -216,7 +249,7 @@ export const App = memo((props: Props) => {
             />
         </div>
     );
-});
+}
 
 export const { i18n } = declareComponentKeys<
     "reduce" | "home" | "account" | "catalog" | "myServices" | "mySecrets" | "myFiles"

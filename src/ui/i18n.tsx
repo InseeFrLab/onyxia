@@ -100,7 +100,7 @@ const {
     | typeof import("ui/pages/FourOhFour").i18n
     | typeof import("ui/pages/PortraitModeUnsupported").i18n
     | typeof import("ui/pages/Home").i18n
-    | typeof import("ui/KcApp/RegisterUserProfile").i18n
+    | typeof import("ui/keycloak-theme/RegisterUserProfile").i18n
     | typeof import("ui/pages/Account/AccountField").i18n
     | typeof import("ui/pages/Account/Account").i18n
     | typeof import("ui/pages/Account/tabs/AccountInfoTab").i18n
@@ -124,9 +124,9 @@ const {
     | typeof import("ui/pages/MyServices/MyServicesSavedConfigs/MyServicesSavedConfig").i18n
     | typeof import("ui/pages/MyServices/MyServicesSavedConfigs").i18n
     | typeof import("ui/pages/MyServices/MyServicesCards").i18n
-    | typeof import("ui/KcApp/Login/LoginDivider").i18n
+    | typeof import("ui/keycloak-theme/Login/LoginDivider").i18n
     | typeof import("ui/pages/Terms").i18n
-    | typeof import("ui/KcApp/Login").i18n
+    | typeof import("ui/keycloak-theme/Login").i18n
 >()(
     { languages, fallbackLanguage },
     {

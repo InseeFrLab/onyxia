@@ -1,7 +1,7 @@
 import "minimal-polyfills/Object.fromEntries";
 import type { OidcClient } from "../ports/OidcClient";
 import { id } from "tsafe/id";
-import * as jwtSimple from "jwt-simple";
+import * as jwtSimple from "core/tools/jwt-simple";
 import { addParamToUrl, retrieveParamFromUrl } from "powerhooks/tools/urlSearchParams";
 import { objectKeys } from "tsafe/objectKeys";
 import type { User } from "../ports/UserApiClient";

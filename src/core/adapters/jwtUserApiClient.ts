@@ -1,5 +1,5 @@
 import type { UserApiClient, User } from "../ports/UserApiClient";
-import * as jwtSimple from "jwt-simple";
+import * as jwtSimple from "core/tools/jwt-simple";
 import { parseJwtPayload } from "../tools/parseJwtPayload";
 import { z } from "zod";
 import type { Equals } from "tsafe";

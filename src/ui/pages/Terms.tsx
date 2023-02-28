@@ -8,7 +8,7 @@ import { Markdown } from "onyxia-ui/Markdown";
 import { useLang, useTranslation } from "ui/i18n";
 import { Text } from "ui/theme";
 import { makeStyles } from "ui/theme";
-import { getTosMarkdownUrl } from "ui/KcApp/getTosMarkdownUrl";
+import { getTosMarkdownUrl } from "ui/keycloak-theme/getTosMarkdownUrl";
 
 Terms.routeGroup = createGroup([routes.terms]);
 

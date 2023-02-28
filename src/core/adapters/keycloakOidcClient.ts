@@ -3,7 +3,7 @@ import Keycloak_js from "keycloak-js";
 import { id } from "tsafe/id";
 import { createKeycloakAdapter } from "keycloakify";
 import type { NonPostableEvt } from "evt";
-import * as jwtSimple from "jwt-simple";
+import * as jwtSimple from "core/tools/jwt-simple";
 import type { Param0, ReturnType } from "tsafe";
 import { assert } from "tsafe/assert";
 
