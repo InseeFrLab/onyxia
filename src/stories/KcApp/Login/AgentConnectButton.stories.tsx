@@ -1,4 +1,4 @@
-import { AgentConnectButton } from "ui/KcApp/Login/AgentConnectButton";
+import { AgentConnectButton } from "ui/keycloak-theme/Login/AgentConnectButton";
 import { sectionName } from "./sectionName";
 import { getStoryFactory } from "stories/getStory";
 //import { css } from "tss-react/compat";
