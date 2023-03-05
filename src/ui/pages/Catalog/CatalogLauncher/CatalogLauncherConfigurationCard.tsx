@@ -111,7 +111,7 @@ export const CatalogLauncherConfigurationCard = memo(
                         activeTabId={activeTabId}
                         onRequestChangeActiveTab={setActiveTabId}
                         size="small"
-                        maxTabCount={5}
+                        maxTabCount={4}
                     >
                         <TabContent
                             {...formFieldsByTabName[activeTabId]}
