@@ -398,7 +398,7 @@ const { TabContent } = (() => {
             <>
                 {description !== undefined && (
                     <Text typo="label 1" className={classes.tabDescription}>
-                        {capitalize(description)}
+                        {capitalize(description).split(".")[0]}
                     </Text>
                 )}
                 <div className={cx(classes.root, className)}>
