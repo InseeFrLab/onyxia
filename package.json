@@ -60,7 +60,7 @@
         "i18nifty": "^1.4.0",
         "jwt-simple": "^0.5.6",
         "keycloak-js": "^18.0.0",
-        "keycloakify": "^6.10.1",
+        "keycloakify": "^6.12.6",
         "memoizee": "^0.4.14",
         "minio": "^7.0.32",
         "moment": "^2.29.1",
@@ -90,7 +90,7 @@
     "scripts": {
         "start": "react-app-rewired start",
         "build": "react-app-rewired build yarn",
-        "keycloak": "yarn build && keycloakify",
+        "build-keycloak-theme": "yarn build && keycloakify",
         "storybook": "start-storybook -p 6006",
         "postinstall": "generate-env-getter",
         "prestart": "generate-env-getter",

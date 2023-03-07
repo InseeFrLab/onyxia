@@ -7711,6 +7711,15 @@ evt@^2.4.13:
     run-exclusive "^2.2.18"
     tsafe "^1.4.1"
 
+evt@^2.4.15:
+  version "2.4.15"
+  resolved "https://registry.yarnpkg.com/evt/-/evt-2.4.15.tgz#bf673dd2b409067fcdc182becd8e7dbed13692e1"
+  integrity sha512-jlDDDWdoDg2wIZa9m08HVelHzEAlZLpLbDcWMqlc6nqKHG1Z3ZqC7teDoNH3upClx3SKwJTC0H7RIMfxe7zX2g==
+  dependencies:
+    minimal-polyfills "^2.2.2"
+    run-exclusive "^2.2.18"
+    tsafe "^1.4.3"
+
 exec-sh@^0.3.2:
   version "0.3.6"
   resolved "https://registry.yarnpkg.com/exec-sh/-/exec-sh-0.3.6.tgz#ff264f9e325519a60cb5e273692943483cca63bc"
@@ -10386,25 +10395,21 @@ keycloak-js@^18.0.0:
     base64-js "^1.5.1"
     js-sha256 "^0.9.0"
 
-keycloakify@^6.10.1:
-  version "6.10.1"
-  resolved "https://registry.yarnpkg.com/keycloakify/-/keycloakify-6.10.1.tgz#ec5fb4149cca10bb4771211c06cf96e17397cde2"
-  integrity sha512-Z5D/wDp+MWJs+9VlBF4JH8Qczr7p6At0UE8KYZ/BUEW+HEZZjZNrhB23aTX9ytEFETKIH2GQ4nF2Z5KWYcN+zw==
+keycloakify@^6.12.6:
+  version "6.12.6"
+  resolved "https://registry.yarnpkg.com/keycloakify/-/keycloakify-6.12.6.tgz#5f00373e2f3238a435145b6f78b182456428b4a1"
+  integrity sha512-4gqfCkx6UYfNVMkI+LyO1F5BaK7SHYX/ZBnSyYyiOY6B4RqSYX+P0QWk4R523e0OXZhULFUlow2sfWz1LTMojw==
   dependencies:
     "@octokit/rest" "^18.12.0"
     cheerio "^1.0.0-rc.5"
     cli-select "^1.1.2"
-    evt "^2.4.13"
-    memoizee "^0.4.15"
+    evt "^2.4.15"
     minimal-polyfills "^2.2.2"
     minimist "^1.2.6"
     path-browserify "^1.0.1"
-    powerhooks "^0.22.1"
     react-markdown "^5.0.3"
     rfc4648 "^1.5.2"
-    scripting-tools "^0.19.13"
-    tsafe "^1.4.2"
-    tss-react "4.4.1-rc.0"
+    tsafe "^1.4.3"
     zod "^3.17.10"
 
 kind-of@^3.0.2, kind-of@^3.0.3, kind-of@^3.2.0:
@@ -12676,16 +12681,6 @@ powerhooks@^0.20.27:
     memoizee "^0.4.15"
     resize-observer-polyfill "^1.5.1"
     tsafe "^1.4.1"
-
-powerhooks@^0.22.1:
-  version "0.22.1"
-  resolved "https://registry.yarnpkg.com/powerhooks/-/powerhooks-0.22.1.tgz#4e6c720e702e138c0869447e0d04bd0550530bbb"
-  integrity sha512-wR/gVPtpOeVAkjJXAHbTB6IBAIWL3RZo69DqxPZ2rXV108cwzOW978KZKd2h7m0QHJdg4ZXYwOsZ13E1EGrTFA==
-  dependencies:
-    evt "^2.4.13"
-    memoizee "^0.4.15"
-    resize-observer-polyfill "^1.5.1"
-    tsafe "^1.4.2"
 
 powerhooks@^0.26.2:
   version "0.26.2"
@@ -15180,11 +15175,6 @@ tslib@^2.0.0, tslib@^2.0.1, tslib@^2.0.3, tslib@^2.1.0:
   version "2.4.1"
   resolved "https://registry.yarnpkg.com/tslib/-/tslib-2.4.1.tgz#0d0bfbaac2880b91e22df0768e55be9753a5b17e"
   integrity sha512-tGyy4dAjRIEwI7BzsB0lynWgOpfqjUdq91XXAlIWD2OwKBH7oCl/GZG/HT4BOHrTlPMOASlMQ7veyTqpmRcrNA==
-
-tss-react@4.4.1-rc.0:
-  version "4.4.1-rc.0"
-  resolved "https://registry.yarnpkg.com/tss-react/-/tss-react-4.4.1-rc.0.tgz#96f9c2edcb9208ae39e845e6bafc9a50c9b96c66"
-  integrity sha512-ozltdpdDrB/6Ml6UpaL/eGwGZzTXXcHnJxwwO7mxcFaZnLaetbbbQHNUerRmqr21i9vgA6HFBAzOv9pa2PUsww==
 
 tss-react@^4.6.0:
   version "4.6.0"
