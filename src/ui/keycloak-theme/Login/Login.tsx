@@ -1,5 +1,5 @@
 import { useState, memo } from "react";
-import type { KcProps } from "keycloakify/lib/components/KcProps";
+import type { KcProps } from "keycloakify/lib/KcProps";
 import { useConstCallback } from "powerhooks/useConstCallback";
 import { Template } from "../Template";
 import { Button } from "ui/theme";

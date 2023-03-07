@@ -7,7 +7,7 @@ import { makeStyles } from "ui/theme";
 import { getTosMarkdownUrl } from "./getTosMarkdownUrl";
 import type { KcContext } from "./kcContext";
 import type { I18n } from "./i18n";
-import { evtTermMarkdown } from "keycloakify/lib/components/Terms";
+import { evtTermMarkdown } from "keycloakify/lib/pages/Terms";
 import { useRerenderOnStateChange } from "evt/hooks";
 import { Markdown } from "keycloakify/lib/tools/Markdown";
 
