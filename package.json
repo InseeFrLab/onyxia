@@ -1,7 +1,7 @@
 {
     "homepage": "https://datalab.sspcloud.fr",
     "name": "onyxia-web",
-    "version": "2.13.32",
+    "version": "2.13.33",
     "license": "MIT",
     "devDependencies": {
         "@emotion/css": "^11.10.0",
@@ -60,7 +60,7 @@
         "i18nifty": "^1.4.0",
         "jwt-simple": "^0.5.6",
         "keycloak-js": "^18.0.0",
-        "keycloakify": "^6.13.0",
+        "keycloakify": "^6.13.1",
         "memoizee": "^0.4.14",
         "minio": "^7.0.32",
         "moment": "^2.29.1",
