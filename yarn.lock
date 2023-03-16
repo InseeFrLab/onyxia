@@ -13506,13 +13506,13 @@ redent@^1.0.0:
     indent-string "^2.1.0"
     strip-indent "^1.0.1"
 
-redux-clean-architecture@^3.3.3:
-  version "3.3.3"
-  resolved "https://registry.yarnpkg.com/redux-clean-architecture/-/redux-clean-architecture-3.3.3.tgz#9c00931ad09c672db78475bcfc4e7140a130127a"
-  integrity sha512-M/cbIvRY7LvnWV/iO57/Z0yquv/p74sQwT7ucxu+2Zy1IScsBWZNqxfmyWIRxKhLcujBhq2G7EDdnmuXwUlHEw==
+redux-clean-architecture@^3.3.4:
+  version "3.3.4"
+  resolved "https://registry.yarnpkg.com/redux-clean-architecture/-/redux-clean-architecture-3.3.4.tgz#4e4fd9ac15a312378bbbcb6d85efabc436ca669d"
+  integrity sha512-X+V7MaL3H33dbAdnMlXlSY8tIQajbO/+B3Pu1SCyNptmEQwno+5F7bK2xntUBPFaGjTlFRzWpNgQiEZ3gK+M4Q==
   dependencies:
     minimal-polyfills "^2.2.2"
-    tsafe "^1.5.1"
+    tsafe "^1.5.2"
 
 redux-thunk@^2.4.2:
   version "2.4.2"
@@ -15342,11 +15342,6 @@ tsafe@^1.4.3:
   version "1.4.3"
   resolved "https://registry.yarnpkg.com/tsafe/-/tsafe-1.4.3.tgz#a98ce83616f0d9c01e3c6167a2ead45ba455b2ae"
   integrity sha512-KjCdgjIqsbKW9oeJGSMVC23jhWm/VXJwkaZ7jffo/WaTioLGTHJqliHe9dECEVzIACNVNs/fwtKwU8wWK4jY4g==
-
-tsafe@^1.5.1:
-  version "1.5.1"
-  resolved "https://registry.yarnpkg.com/tsafe/-/tsafe-1.5.1.tgz#b23b0e677a33efe6682ff5e50e8c1944eb331f0e"
-  integrity sha512-xLkNkdIzIXmfGiOYU+rGxeOcdEwlMHpfE6B9KnW51BFhvc+r+yMXe9+u5DgfrLXWSahUcqFRLZiA/oOmy+kcwg==
 
 tsafe@^1.5.2:
   version "1.5.2"
