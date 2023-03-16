@@ -7781,6 +7781,15 @@ evt@^2.4.16:
     run-exclusive "^2.2.18"
     tsafe "^1.5.1"
 
+evt@^2.4.17:
+  version "2.4.17"
+  resolved "https://registry.yarnpkg.com/evt/-/evt-2.4.17.tgz#d8e308aa0091f34434a437954deb7e8a9cefcf7c"
+  integrity sha512-fXt455jAUaoAIYifHRnY0LBkAdgUKNqKbd65mtwxC+4iZ4vVqkHYNe2DIAKgGrW5oF3Dp8e+6mFsFnchC+mLYA==
+  dependencies:
+    minimal-polyfills "^2.2.2"
+    run-exclusive "^2.2.18"
+    tsafe "^1.5.2"
+
 exec-sh@^0.3.2:
   version "0.3.6"
   resolved "https://registry.yarnpkg.com/exec-sh/-/exec-sh-0.3.6.tgz#ff264f9e325519a60cb5e273692943483cca63bc"
@@ -11714,10 +11723,10 @@ onetime@^5.1.0, onetime@^5.1.2:
   dependencies:
     mimic-fn "^2.1.0"
 
-onyxia-ui@^0.49.26:
-  version "0.49.26"
-  resolved "https://registry.yarnpkg.com/onyxia-ui/-/onyxia-ui-0.49.26.tgz#51e02d5e81ce50a49f3b64f6a59285d2e4de4274"
-  integrity sha512-YT9no2n/26smKH68ZzhpO9QaU3s3K9DAImLh4QgYgd0p39yOd+ImUoQLZYMaVrAiZ37+AEVzpT3cUQNXwkKHDw==
+onyxia-ui@^0.49.27:
+  version "0.49.27"
+  resolved "https://registry.yarnpkg.com/onyxia-ui/-/onyxia-ui-0.49.27.tgz#7c5db1f3b993c773a94b71bc5f09717f3d72afe4"
+  integrity sha512-peaEcH4jmrhP1qqauHvVgBZg4q2m/XskCcHKsJBLqv02UTEpxzDDcOjfZ63CwLLjA9h+mbC51f0kFhnYJE44PQ==
   dependencies:
     "@mui/icons-material" "^5.10.15"
     color "3.1.3"
@@ -11726,7 +11735,7 @@ onyxia-ui@^0.49.26:
     minimal-polyfills "^2.2.2"
     powerhooks "^0.26.4"
     run-exclusive "^2.2.18"
-    tsafe "^1.5.1"
+    tsafe "^1.5.2"
     tss-react "^4.7.7"
 
 open@^7.0.3:
@@ -13506,10 +13515,10 @@ redent@^1.0.0:
     indent-string "^2.1.0"
     strip-indent "^1.0.1"
 
-redux-clean-architecture@^3.3.2:
-  version "3.3.2"
-  resolved "https://registry.yarnpkg.com/redux-clean-architecture/-/redux-clean-architecture-3.3.2.tgz#7c123bbab1a7786c5414d62ecb69584b0b572ff1"
-  integrity sha512-+RvCzDLPNONOs+aInvs4tmoyxE76pEt04LbLrRBYbujri+S1e3Lbqu83hfgMBsxcBUc0m4QVfPPfyqU+FOnpMQ==
+redux-clean-architecture@^3.3.3:
+  version "3.3.3"
+  resolved "https://registry.yarnpkg.com/redux-clean-architecture/-/redux-clean-architecture-3.3.3.tgz#9c00931ad09c672db78475bcfc4e7140a130127a"
+  integrity sha512-M/cbIvRY7LvnWV/iO57/Z0yquv/p74sQwT7ucxu+2Zy1IScsBWZNqxfmyWIRxKhLcujBhq2G7EDdnmuXwUlHEw==
   dependencies:
     minimal-polyfills "^2.2.2"
     tsafe "^1.5.1"
@@ -15347,6 +15356,11 @@ tsafe@^1.5.1:
   version "1.5.1"
   resolved "https://registry.yarnpkg.com/tsafe/-/tsafe-1.5.1.tgz#b23b0e677a33efe6682ff5e50e8c1944eb331f0e"
   integrity sha512-xLkNkdIzIXmfGiOYU+rGxeOcdEwlMHpfE6B9KnW51BFhvc+r+yMXe9+u5DgfrLXWSahUcqFRLZiA/oOmy+kcwg==
+
+tsafe@^1.5.2:
+  version "1.5.2"
+  resolved "https://registry.yarnpkg.com/tsafe/-/tsafe-1.5.2.tgz#c5bc8c3d663b41dcd6c05793a02d50f781bd03ef"
+  integrity sha512-2DfRSqP2TnumYaIc/4LIb4SK0jyHnAwJgvr+EVrVwHGdsxuBjwh736uPrdYEvXQ9oqxV1P3gfspmAImbHp4N5A==
 
 tsconfig-paths@^3.14.1:
   version "3.14.1"
