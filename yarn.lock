@@ -13515,13 +13515,13 @@ redent@^1.0.0:
     indent-string "^2.1.0"
     strip-indent "^1.0.1"
 
-redux-clean-architecture@^3.3.4:
-  version "3.3.4"
-  resolved "https://registry.yarnpkg.com/redux-clean-architecture/-/redux-clean-architecture-3.3.4.tgz#4e4fd9ac15a312378bbbcb6d85efabc436ca669d"
-  integrity sha512-X+V7MaL3H33dbAdnMlXlSY8tIQajbO/+B3Pu1SCyNptmEQwno+5F7bK2xntUBPFaGjTlFRzWpNgQiEZ3gK+M4Q==
+redux-clean-architecture@^3.3.5:
+  version "3.3.5"
+  resolved "https://registry.yarnpkg.com/redux-clean-architecture/-/redux-clean-architecture-3.3.5.tgz#cbb6fb92e627450441a566375c2b6ddcb3a3c45a"
+  integrity sha512-HI5/Klul5jF7rux2bqd2vpV4dpVIa13yJ2MKGVSv6K16OLKeKZ205JvE2kG9ivBG6ZsNyVTxyTborNH1xKGeQw==
   dependencies:
     minimal-polyfills "^2.2.2"
-    tsafe "^1.5.2"
+    tsafe "^1.6.0"
 
 redux-thunk@^2.4.2:
   version "2.4.2"
