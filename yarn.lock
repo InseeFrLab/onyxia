@@ -7763,15 +7763,6 @@ evt@^2.4.13:
     run-exclusive "^2.2.18"
     tsafe "^1.4.1"
 
-evt@^2.4.15:
-  version "2.4.15"
-  resolved "https://registry.yarnpkg.com/evt/-/evt-2.4.15.tgz#bf673dd2b409067fcdc182becd8e7dbed13692e1"
-  integrity sha512-jlDDDWdoDg2wIZa9m08HVelHzEAlZLpLbDcWMqlc6nqKHG1Z3ZqC7teDoNH3upClx3SKwJTC0H7RIMfxe7zX2g==
-  dependencies:
-    minimal-polyfills "^2.2.2"
-    run-exclusive "^2.2.18"
-    tsafe "^1.4.3"
-
 evt@^2.4.17:
   version "2.4.17"
   resolved "https://registry.yarnpkg.com/evt/-/evt-2.4.17.tgz#d8e308aa0091f34434a437954deb7e8a9cefcf7c"
@@ -10509,22 +10500,22 @@ keycloak-js@^18.0.0:
     base64-js "^1.5.1"
     js-sha256 "^0.9.0"
 
-keycloakify@^6.13.1:
-  version "6.13.1"
-  resolved "https://registry.yarnpkg.com/keycloakify/-/keycloakify-6.13.1.tgz#258a6b0d55f7e520bcfec8616aa9f38783c674e8"
-  integrity sha512-bLrWYomKUodEFWdI0p/Y30FBh4j/LRFUM7di5pxnF/GDC2WGT6QXntid5QK55tkLTUY/GNTWdWN8of2KxdwBjw==
+keycloakify@^6.13.2:
+  version "6.13.2"
+  resolved "https://registry.yarnpkg.com/keycloakify/-/keycloakify-6.13.2.tgz#6e8456d3c22b5e3f265781086b03a38b18c4ce1b"
+  integrity sha512-2u4wwU/kdAcE2U2a6jJCDeXo838un4sG8vk/MT9F8djeSs+pGk7w7ZViHbFBve26n3QBojtbjj7DkHF0lVFLSw==
   dependencies:
     "@octokit/rest" "^18.12.0"
     cheerio "^1.0.0-rc.5"
     cli-select "^1.1.2"
-    evt "^2.4.15"
+    evt "^2.4.18"
     make-fetch-happen "^11.0.3"
     minimal-polyfills "^2.2.2"
     minimist "^1.2.6"
     path-browserify "^1.0.1"
     react-markdown "^5.0.3"
     rfc4648 "^1.5.2"
-    tsafe "^1.4.3"
+    tsafe "^1.6.0"
     zod "^3.17.10"
 
 kind-of@^3.0.2, kind-of@^3.0.3, kind-of@^3.2.0:
@@ -15346,11 +15337,6 @@ tsafe@^1.2.1, tsafe@^1.4.1:
   version "1.4.1"
   resolved "https://registry.yarnpkg.com/tsafe/-/tsafe-1.4.1.tgz#59cdad8ac41babf88e56dcd1a683ae2fb145d059"
   integrity sha512-3IDBalvf6SyvHFS14UiwCWzqdSdo+Q0k2J7DZyJYaHW/iraW9DJpaBKDJpry3yQs3o/t/A+oGaRW3iVt2lKxzA==
-
-tsafe@^1.4.3:
-  version "1.4.3"
-  resolved "https://registry.yarnpkg.com/tsafe/-/tsafe-1.4.3.tgz#a98ce83616f0d9c01e3c6167a2ead45ba455b2ae"
-  integrity sha512-KjCdgjIqsbKW9oeJGSMVC23jhWm/VXJwkaZ7jffo/WaTioLGTHJqliHe9dECEVzIACNVNs/fwtKwU8wWK4jY4g==
 
 tsafe@^1.5.2:
   version "1.5.2"
