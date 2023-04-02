@@ -174,7 +174,7 @@ const useStyles = makeStyles<{ logoContainerWidth: number }>({ "name": { Header 
             "alignItems": "center"
         },
         "projectSelect": {
-            "marginLeft": theme.spacing(2)
+            "marginLeft": theme.spacing(4)
         }
     })
 );
