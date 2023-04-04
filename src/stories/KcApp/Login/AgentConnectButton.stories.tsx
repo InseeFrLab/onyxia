@@ -1,7 +1,7 @@
 import { AgentConnectButton } from "ui/keycloak-theme/Login/AgentConnectButton";
 import { sectionName } from "./sectionName";
 import { getStoryFactory } from "stories/getStory";
-//import { css } from "tss-react/compat";
+//import { css } from "tss-react";
 
 const { meta, getStory } = getStoryFactory({
     sectionName,
