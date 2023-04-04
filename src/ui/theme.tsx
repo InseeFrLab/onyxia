@@ -16,7 +16,7 @@ import { createButtonBarButton } from "onyxia-ui/ButtonBarButton";
 import { createButtonBar } from "onyxia-ui/ButtonBar";
 import { createText } from "onyxia-ui/Text";
 import { createPageHeader } from "onyxia-ui/PageHeader_legacy";
-import { createMakeStyles } from "tss-react/compat";
+import { createMakeStyles } from "tss-react";
 import { createLanguageSelect } from "onyxia-ui/LanguageSelect";
 import { createLeftBar } from "onyxia-ui/LeftBar";
 import { ReactComponent as TourSvg } from "./assets/svg/Tour.svg";
