@@ -1,7 +1,6 @@
 import { createI18nApi } from "i18nifty";
 import type { Language, LocalizedString } from "core";
 import { assert } from "tsafe/assert";
-import {} from "tsafe";
 import type { Equals } from "tsafe";
 import { id } from "tsafe/id";
 import { statefulObservableToStatefulEvt } from "powerhooks/tools/StatefulObservable/statefulObservableToStatefulEvt";
@@ -493,7 +492,8 @@ const {
             "Footer": {
                 "contribute": "Contribute",
                 "terms of service": "Terms of service",
-                "change language": "Change language"
+                "change language": "Change language",
+                "dark mode switch": "Dark mode switch"
             },
             "CatalogLauncherMainCard": {
                 "card title": "Create your personal services",
@@ -963,7 +963,8 @@ const {
             "Footer": {
                 "contribute": "Contribuer au projet",
                 "terms of service": "Conditions d'utilisation",
-                "change language": "Changer la langue"
+                "change language": "Changer la langue",
+                "dark mode switch": "Interrupteur pour le mode sombre"
             },
             "CatalogLauncherMainCard": {
                 "card title": "Créer votre propre service",
@@ -1362,7 +1363,8 @@ const {
             "Footer": {
                 "contribute": "为项目做贡献",
                 "terms of service": "使用条款",
-                "change language": "切换语言"
+                "change language": "切换语言",
+                "dark mode switch": "黑暗模式切换" // or maybe 黑暗模式开关
             },
             "CatalogLauncherMainCard": {
                 "card title": "创建自定义服务",
