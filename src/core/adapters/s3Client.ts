@@ -409,11 +409,7 @@ export const s3ApiLogger: ApiLogger<S3Client> = {
         "list": {
             "buildCmd": ({ path }) => `mc ls s3${pathJoin(path)}`,
             "fmtResult": ({ result: { directories, files } }) =>
-                [
-                    "Keys",
-                    "----",
-                    ...[...directories.map(directory => `${directory}/`), ...files]
-                ].join("\n")
+                [...directories.map(directory => `${directory}/`), ...files].join("\n")
         },
         "getToken": {
             "buildCmd": ({ restrictToBucketName }) =>
