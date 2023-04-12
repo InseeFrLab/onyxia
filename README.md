@@ -1,5 +1,5 @@
 <p align="center">
-    <img src="https://user-images.githubusercontent.com/6702424/139264787-37efc793-1d55-4fa4-a4a9-782af8357cff.png">
+    <img src="https://user-images.githubusercontent.com/6702424/231329083-180fe7a2-22a8-470f-910a-ef66300b6f35.png">
 </p>
 <p align="center">
     <a href="https://github.com/InseeFrLab/onyxia-web/actions">
