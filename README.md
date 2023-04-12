@@ -13,18 +13,18 @@
 <p align="center">
     <b>Don't know Onyxia yet?</b> <a href="https://www.onyxia.sh">Learn about the project</a>
     <br>
-    <b>Want to see what it looks like?</b> <a href="https://datalab.sspcloud.fr/catalog/inseefrlab-helm-charts-datascience">datalab.sspcloud.fr</a>
+    <b>Looking for our public instance?</b> <a href="https://datalab.sspcloud.fr">datalab.sspcloud.fr</a>
     <br>
     <b>Let's get in touch! Join </b> <a href="https://join.slack.com/t/3innovation/shared_invite/zt-1hnzukjcn-6biCSmVy4qvyDGwbNI~sWg">our Slack</a>
 </p>
 
-> 🗣 v1 (of onyxia-web) have been released with a breaking change. Please checkout [the migration guide](https://docs.onyxia.sh/update-to-v1)
-
 Onyxia is a web app that aims at being the glue between multiple open source backend technologies to
 provide a state of art working environnement for data scientists.  
-Onyxia is developed by the French National institute of statistics and economic studies ([INSEE](https://insee.fr)).
+Onyxia is developed by the French National institute of statistics and economic studies ([INSEE](https://insee.fr)) and the Interministerial Digital Directorate (DINUM, [CodeGouvFr](https://twitter.com/codegouvfr)).
 
-[onyxia.webm](https://user-images.githubusercontent.com/6702424/201488175-27402595-2917-4143-ad0c-dfdd59f9678e.webm)
+<a href="https://youtu.be/2aewcmK8kmk">
+  <img width="1712" alt="image" src="https://user-images.githubusercontent.com/6702424/231314534-2eeb1ab5-5460-4caa-b78d-55afd400c9fc.png">
+</a>
 
 **Core feature set**:
 
@@ -42,6 +42,13 @@ Onyxia is developed by the French National institute of statistics and economic 
 -   [Keycloak integration](https://user-images.githubusercontent.com/6702424/137821446-ed908862-69e3-464c-b347-bd8776a425cc.png).
 
 ## Media
+
+<p align="center">
+    <i>KCD France 2023</i><br>
+    <a href="https://youtu.be/sOOVg4I19BI">
+        <img src="https://user-images.githubusercontent.com/6702424/231315763-1a56522d-42a4-4872-ae9b-3f8d3028e09c.png" width="640">
+    </a>
+</p>
 
 <p align="center">
     <i>Open Source Experience 2022</i><br>
