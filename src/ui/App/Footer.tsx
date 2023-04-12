@@ -60,13 +60,17 @@ export const Footer = memo((props: Props) => {
                 <Text typo="body 2">v{packageJsonVersion} </Text>
             </a>
             {spacing}
-            <DarkModeSwitch size="extra small" className={classes.darkModeSwitch} />
+            <DarkModeSwitch
+                size="extra small"
+                className={classes.darkModeSwitch}
+                ariaLabel={t("dark mode switch")}
+            />
         </footer>
     );
 });
 
 export const { i18n } = declareComponentKeys<
-    "contribute" | "terms of service" | "change language"
+    "contribute" | "terms of service" | "change language" | "dark mode switch"
 >()({ Footer });
 
 const useStyles = makeStyles<Props>({ "name": { Footer } })(theme => ({
