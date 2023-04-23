@@ -1,4 +1,4 @@
-import type { ThunkAction } from "../setup";
+import type { ThunkAction } from "../core";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { createSlice } from "@reduxjs/toolkit";
 import { id } from "tsafe/id";
@@ -30,9 +30,9 @@ export const thunks = {
         async (...args) => {
             const [dispatch, , extraArg] = args;
 
-            const { onyxiaApiClient } = extraArg;
+            const { onyxiaApi } = extraArg;
 
-            const publicIp = await onyxiaApiClient.getIp();
+            const publicIp = await onyxiaApi.getIp();
 
             const context = getContext(extraArg);
 
@@ -40,7 +40,7 @@ export const thunks = {
                 Evt.from(window, "online").attach(() => {
                     dispatch(actions.publicIpMightHaveChanged());
 
-                    onyxiaApiClient.getIp.clear();
+                    onyxiaApi.getIp.clear();
 
                     dispatch(thunks.fetch());
                 });

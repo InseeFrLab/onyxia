@@ -20,7 +20,7 @@ export type SecretWithMetadata = {
     };
 };
 
-export type SecretsManagerClient = {
+export type SecretsManager = {
     list: (params: { path: string }) => Promise<{
         directories: string[];
         files: string[];

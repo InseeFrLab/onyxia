@@ -2,7 +2,7 @@ import "minimal-polyfills/Object.fromEntries";
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { id } from "tsafe/id";
-import type { ThunkAction, ThunksExtraArgument } from "../setup";
+import type { ThunkAction, ThunksExtraArgument } from "../core";
 import {
     join as pathJoin,
     relative as pathRelative,
@@ -10,13 +10,12 @@ import {
 } from "path";
 import type { ApiLogs } from "core/tools/apiLogger";
 import { logApi } from "core/tools/apiLogger";
-import { S3Client } from "../ports/S3Client";
-import { s3ApiLogger } from "../adapters/s3Client";
+import type { S3Client } from "../ports/S3Client";
 import { assert } from "tsafe/assert";
 import { selectors as projectSelectionSelectors } from "./projectSelection";
 import { Evt } from "evt";
 import type { Ctx } from "evt";
-import type { State } from "../setup";
+import type { State } from "../core";
 import memoize from "memoizee";
 import type { WritableDraft } from "immer/dist/types/types-external";
 import { selectors as deploymentRegionSelectors } from "./deploymentRegion";
@@ -24,6 +23,7 @@ import type { Param0 } from "tsafe";
 import { createExtendedFsApi } from "core/tools/extendedFsApi";
 import type { ExtendedFsApi } from "core/tools/extendedFsApi";
 import { createObjectThatThrowsIfAccessed } from "redux-clean-architecture";
+import { mcApiLogger } from "../adapters/s3client/mcApiLogger";
 
 //All explorer path are expected to be absolute (start with /)
 
@@ -725,7 +725,7 @@ const { getSliceContext } = (() => {
         sliceContext = (() => {
             const { apiLogs: s3ClientLogs, loggedApi: loggedS3Client } = logApi({
                 "api": extraArg.s3Client,
-                "apiLogger": s3ApiLogger
+                "apiLogger": mcApiLogger
             });
 
             return {

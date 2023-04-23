@@ -1,9 +1,9 @@
 import "minimal-polyfills/Object.fromEntries";
-import type { ThunkAction } from "../setup";
+import type { ThunkAction } from "../core";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { createSlice } from "@reduxjs/toolkit";
 import { id } from "tsafe/id";
-import type { State } from "../setup";
+import type { State } from "../core";
 import { createSelector } from "@reduxjs/toolkit";
 import { selectors as deploymentRegionSelectors } from "./deploymentRegion";
 import { assert } from "tsafe/assert";
@@ -84,7 +84,7 @@ export const thunks = {
         async (...args) => {
             const { doForceRenewToken } = params;
 
-            const [dispatch, getState, { secretsManagerClient }] = args;
+            const [dispatch, getState, { secretsManager }] = args;
 
             if (getState().s3Credentials.isRefreshing) {
                 return;
@@ -92,7 +92,7 @@ export const thunks = {
 
             dispatch(actions.refreshStarted());
 
-            const { token, expirationTime } = await secretsManagerClient.getToken({
+            const { token, expirationTime } = await secretsManager.getToken({
                 "doForceRefresh": doForceRenewToken
             });
 

@@ -26,33 +26,32 @@ import { getExtraLeftBarItemsFromEnv, getIsHomePageDisabled } from "ui/env";
 import { declareComponentKeys } from "i18nifty";
 import { RouteProvider } from "ui/routes";
 import { createCoreProvider } from "core";
-import { getCreateStoreParams } from "ui/env";
 import { injectTransferableEnvsInSearchParams } from "ui/envCarriedOverToKc";
 import { injectGlobalStatesInSearchParams } from "powerhooks/useGlobalState";
-import { addParamToUrl } from "powerhooks/tools/urlSearchParams";
-import { Evt } from "evt";
 import { evtLang } from "ui/i18n";
+import { getEnv } from "env";
 
-const { CoreProvider } = createCoreProvider(() =>
-    getCreateStoreParams({
-        "transformUrlBeforeRedirectToLogin": url =>
-            [url]
-                .map(injectTransferableEnvsInSearchParams)
-                .map(injectGlobalStatesInSearchParams)
-                .map(
-                    url =>
-                        addParamToUrl({
-                            url,
-                            "name": "ui_locales",
-                            "value": evtLang.state
-                        }).newUrl
-                )[0],
-        "evtUserActivity": Evt.merge([
-            Evt.from(document, "mousemove"),
-            Evt.from(document, "keydown")
-        ]).pipe(() => [undefined as void])
-    })
-);
+const { CoreProvider } = createCoreProvider({
+    "apiUrl": getEnv().ONYXIA_API_URL,
+    "isUserInitiallyLoggedIn": getEnv().KEYCLOAK_URL === undefined ? false : undefined,
+    "jwtClaimByUserKey": {
+        "email": getEnv().JWT_EMAIL_CLAIM,
+        "familyName": getEnv().JWT_FAMILY_NAME_CLAIM,
+        "firstName": getEnv().JWT_FIRST_NAME_CLAIM,
+        "username": getEnv().JWT_USERNAME_CLAIM,
+        "groups": getEnv().JWT_GROUPS_CLAIM
+    },
+    "keycloakParams": {
+        "url": getEnv().KEYCLOAK_URL,
+        "realm": getEnv().KEYCLOAK_REALM,
+        "clientId": getEnv().KEYCLOAK_CLIENT_ID
+    },
+    "getCurrentLang": () => evtLang.state,
+    "transformUrlBeforeRedirectToLogin": url =>
+        [url]
+            .map(injectTransferableEnvsInSearchParams)
+            .map(injectGlobalStatesInSearchParams)[0]
+});
 
 export default function App() {
     return (

@@ -1,10 +1,10 @@
-import type { ThunkAction } from "../setup";
+import type { ThunkAction } from "../core";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { createSlice } from "@reduxjs/toolkit";
-import type { Catalog } from "../ports/OnyxiaApiClient";
+import type { Catalog } from "../ports/OnyxiaApi";
 import { id } from "tsafe/id";
 import { assert } from "tsafe/assert";
-import type { State } from "../setup";
+import type { State } from "../core";
 import { waitForDebounceFactory } from "core/tools/waitForDebounce";
 import { createUsecaseContextApi } from "redux-clean-architecture";
 import { exclude } from "tsafe/exclude";
@@ -140,12 +140,12 @@ export const thunks = {
                   }
         ): ThunkAction =>
         async (...args) => {
-            const [dispatch, , { onyxiaApiClient }] = args;
+            const [dispatch, , { onyxiaApi }] = args;
 
             dispatch(actions.catalogsFetching());
 
             const { catalogs } = await (async () => {
-                let catalogs = await onyxiaApiClient.getCatalogs();
+                let catalogs = await onyxiaApi.getCatalogs();
 
                 catalogs = JSON.parse(JSON.stringify(catalogs));
 

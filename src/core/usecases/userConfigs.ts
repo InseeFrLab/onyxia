@@ -1,14 +1,15 @@
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
-import type { ThunkAction } from "../setup";
+import type { ThunkAction } from "../core";
 import { Id } from "tsafe/id";
 import { objectKeys } from "tsafe/objectKeys";
 import { assert } from "tsafe/assert";
 import { createObjectThatThrowsIfAccessed } from "redux-clean-architecture";
 import "minimal-polyfills/Object.fromEntries";
 import { thunks as userAuthentication } from "./userAuthentication";
-import type { State } from "../setup";
+import type { State } from "../core";
 import { join as pathJoin } from "path";
+import { getIsDarkModeEnabledOsDefault } from "onyxia-ui/lib/color";
 
 /*
  * Values of the user profile that can be changed.
@@ -85,9 +86,9 @@ export const thunks = {
     "changeValue":
         <K extends keyof UserConfigs>(params: ChangeValueParams<K>): ThunkAction =>
         async (...args) => {
-            const [dispatch, getState, { secretsManagerClient, oidcClient }] = args;
+            const [dispatch, getState, { secretsManager, oidc }] = args;
 
-            assert(oidcClient.isUserLoggedIn);
+            assert(oidc.isUserLoggedIn);
 
             if (getState().userConfigs[params.key].value === params.value) {
                 return;
@@ -97,7 +98,7 @@ export const thunks = {
 
             const dirPath = await dispatch(privateThunks.getDirPath());
 
-            await secretsManagerClient.put({
+            await secretsManager.put({
                 "path": pathJoin(dirPath, params.key),
                 "secret": { "value": params.value }
             });
@@ -117,19 +118,10 @@ export const privateThunks = {
     "initialize":
         (): ThunkAction =>
         async (...args) => {
-            const [
-                dispatch,
-                ,
-                {
-                    secretsManagerClient,
-                    oidcClient,
-                    createStoreParams: {
-                        getIsDarkModeEnabledValueForProfileInitialization
-                    }
-                }
-            ] = args;
+            /* prettier-ignore */
+            const [dispatch, , { secretsManager, oidc }] = args;
 
-            assert(oidcClient.isUserLoggedIn);
+            assert(oidc.isUserLoggedIn);
 
             const { username, email } = dispatch(userAuthentication.getUser());
 
@@ -141,7 +133,7 @@ export const privateThunks = {
                 "gitCredentialCacheDuration": 0,
                 "isBetaModeEnabled": false,
                 "isDevModeEnabled": false,
-                "isDarkModeEnabled": getIsDarkModeEnabledValueForProfileInitialization(),
+                "isDarkModeEnabled": getIsDarkModeEnabledOsDefault(),
                 "githubPersonalAccessToken": null,
                 "doDisplayMySecretsUseInServiceDialog": true,
                 "bookmarkedServiceConfigurationStr": null,
@@ -154,14 +146,14 @@ export const privateThunks = {
                 objectKeys(userConfigs).map(async key => {
                     const path = pathJoin(dirPath, key);
 
-                    const value = await secretsManagerClient
+                    const value = await secretsManager
                         .get({ path })
                         .then(({ secret }) => secret["value"])
                         .catch(() => undefined);
 
                     if (value === undefined) {
                         //Store default value.
-                        await secretsManagerClient.put({
+                        await secretsManager.put({
                             path,
                             "secret": { "value": userConfigs[key] }
                         });
@@ -178,11 +170,11 @@ export const privateThunks = {
     "getDirPath":
         (): ThunkAction<Promise<string>> =>
         async (...args) => {
-            const [, , { onyxiaApiClient }] = args;
+            const [, , { onyxiaApi }] = args;
 
             //We can't use the slice project selection yet because the slice userConfig
             //is initialized first.
-            const { vaultTopDir } = (await onyxiaApiClient.getUserProjects())[0];
+            const { vaultTopDir } = (await onyxiaApi.getUserProjects())[0];
 
             return pathJoin("/", vaultTopDir, hiddenDirectoryBasename);
         }

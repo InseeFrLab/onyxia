@@ -1,10 +1,10 @@
 import { assert } from "tsafe/assert";
-import type { ThunkAction } from "../setup";
-import type { DeploymentRegion } from "../ports/OnyxiaApiClient";
+import type { ThunkAction } from "../core";
+import type { DeploymentRegion } from "../ports/OnyxiaApi";
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { createObjectThatThrowsIfAccessed } from "redux-clean-architecture";
-import type { State } from "../setup";
+import type { State } from "../core";
 
 type DeploymentRegionState = {
     availableDeploymentRegions: DeploymentRegion[];
@@ -43,10 +43,9 @@ export const privateThunks = {
     "initialize":
         (): ThunkAction =>
         async (...args) => {
-            const [dispatch, , { onyxiaApiClient }] = args;
+            const [dispatch, , { onyxiaApi }] = args;
 
-            const availableDeploymentRegions =
-                await onyxiaApiClient.getAvailableRegions();
+            const availableDeploymentRegions = await onyxiaApi.getAvailableRegions();
 
             let previouslySelectedRegionIdFromLocalStorage =
                 localStorage.getItem(localStorageKey);

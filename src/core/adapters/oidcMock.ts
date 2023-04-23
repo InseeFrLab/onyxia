@@ -1,16 +1,16 @@
 import "minimal-polyfills/Object.fromEntries";
-import type { OidcClient } from "../ports/OidcClient";
 import { id } from "tsafe/id";
-import * as jwtSimple from "core/tools/jwt-simple";
+import { encodeJwt } from "core/tools/jwt";
 import { addParamToUrl, retrieveParamFromUrl } from "powerhooks/tools/urlSearchParams";
 import { objectKeys } from "tsafe/objectKeys";
-import type { User } from "../ports/UserApiClient";
+import type { Oidc } from "../ports/Oidc";
+import type { User } from "../ports/GetUser";
 
-export function createPhonyOidcClient(params: {
-    jwtClaims: Record<keyof User, string>;
+export function createOidc(params: {
     isUserInitiallyLoggedIn: boolean;
+    jwtClaimByUserKey: Record<keyof User, string>;
     user: User;
-}): OidcClient {
+}): Oidc {
     const isUserLoggedIn = (() => {
         const result = retrieveParamFromUrl({
             "url": window.location.href,
@@ -23,7 +23,7 @@ export function createPhonyOidcClient(params: {
     })();
 
     if (!isUserLoggedIn) {
-        return id<OidcClient.NotLoggedIn>({
+        return id<Oidc.NotLoggedIn>({
             "isUserLoggedIn": false,
             "login": async () => {
                 const { newUrl } = addParamToUrl({
@@ -39,25 +39,25 @@ export function createPhonyOidcClient(params: {
         });
     }
 
-    let key = "xxx";
-
-    return id<OidcClient.LoggedIn>({
+    return id<Oidc.LoggedIn>({
         "isUserLoggedIn": true,
-        "renewToken": async () => {
-            key = `${Date.now()}`;
-        },
-        "getAccessToken": () => {
-            const { jwtClaims, user } = params;
+        "getAccessToken": (() => {
+            const { jwtClaimByUserKey, user } = params;
 
-            const accessToken = jwtSimple.encode(
+            const accessToken = encodeJwt(
                 Object.fromEntries(
-                    objectKeys(jwtClaims).map(key => [jwtClaims[key], user[key]])
-                ),
-                key
+                    objectKeys(jwtClaimByUserKey).map(key => [
+                        jwtClaimByUserKey[key],
+                        user[key]
+                    ])
+                )
             );
 
-            return { accessToken, "expirationTime": Infinity };
-        },
+            return () => ({
+                accessToken,
+                "expirationTime": Infinity
+            });
+        })(),
         "logout": () => {
             const { newUrl } = addParamToUrl({
                 "url": window.location.href,
@@ -68,7 +68,8 @@ export function createPhonyOidcClient(params: {
             window.location.href = newUrl;
 
             return new Promise<never>(() => {});
-        }
+        },
+        "renewToken": () => Promise.reject("Not implemented")
     });
 }
 

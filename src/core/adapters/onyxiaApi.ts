@@ -1,17 +1,17 @@
 import type {
-    OnyxiaApiClient,
+    OnyxiaApi,
     DeploymentRegion,
     LocalizedString,
     JSONSchemaObject,
     JSONSchemaFormFieldDescription
-} from "../ports/OnyxiaApiClient";
+} from "../ports/OnyxiaApi";
 import axios from "axios";
 import type { AxiosInstance } from "axios";
 import memoize from "memoizee";
 import {
     onyxiaFriendlyNameFormFieldPath,
     onyxiaIsSharedFormFieldPath
-} from "core/ports/OnyxiaApiClient";
+} from "core/ports/OnyxiaApi";
 import Mustache from "mustache";
 import { assert } from "tsafe/assert";
 import type { Equals } from "tsafe";
@@ -21,7 +21,7 @@ import { symToStr } from "tsafe/symToStr";
 //This should be used only in ui/coreApi/StoreProvider but we break the rule
 //here because we use it only for debugging purpose.
 import { getEnv } from "env";
-import { Catalog, getRandomK8sSubdomain, getServiceId } from "../ports/OnyxiaApiClient";
+import { Catalog, getRandomK8sSubdomain, getServiceId } from "../ports/OnyxiaApi";
 import { getValueAtPathInObject } from "core/tools/getValueAtPathInObject";
 
 /** @deprecated */
@@ -29,10 +29,11 @@ const dAxiosInstance = new Deferred<AxiosInstance>();
 
 export const { pr: prAxiosInstance } = dAxiosInstance;
 
-export function createOfficialOnyxiaApiClient(params: {
+export function createOnyxiaApi(params: {
     url: string;
     /** undefined if user not logged in */
-    getOidcAccessToken: (() => string) | undefined;
+    getOidcAccessToken: () => string | undefined;
+
     //NOTE: We can't know at initialization what region and project is selected.
     //we first have to query the API to know what region and projects are available
     //for the user.
@@ -43,7 +44,7 @@ export function createOfficialOnyxiaApiClient(params: {
     //that can be updated later on by the caller of the function.
     refGetCurrentlySelectedDeployRegionId: { current: (() => string) | undefined };
     refGetCurrentlySelectedProjectId: { current: (() => string) | undefined };
-}): OnyxiaApiClient {
+}): OnyxiaApi {
     const {
         url,
         getOidcAccessToken,
@@ -60,7 +61,17 @@ export function createOfficialOnyxiaApiClient(params: {
                     ...(config as any),
                     "headers": {
                         ...config.headers,
-                        "Authorization": `Bearer ${getOidcAccessToken()}`
+                        ...(() => {
+                            const accessToken = getOidcAccessToken();
+
+                            if (accessToken === undefined) {
+                                return {};
+                            }
+
+                            return {
+                                "Authorization": `Bearer ${accessToken}`
+                            };
+                        })()
                     },
                     "Content-Type": "application/json;charset=utf-8",
                     "Accept": "application/json;charset=utf-8"
@@ -124,7 +135,7 @@ export function createOfficialOnyxiaApiClient(params: {
         dAxiosInstance.resolve(axiosInstance);
     }
 
-    const onyxiaApiClient: OnyxiaApiClient = {
+    const onyxiaApi: OnyxiaApi = {
         "getIp": memoize(() =>
             axiosInstance.get<{ ip: string }>("/public/ip").then(({ data }) => data.ip)
         ),
@@ -679,7 +690,7 @@ export function createOfficialOnyxiaApiClient(params: {
             const getMyLab_App = (params: { serviceId: string }) =>
                 axiosInstance.get("/my-lab/app", { params });
 
-            const launchPackage = id<OnyxiaApiClient["launchPackage"]>(
+            const launchPackage = id<OnyxiaApi["launchPackage"]>(
                 async ({ catalogId, packageName, options, isDryRun }) => {
                     const { serviceId } = getServiceId({
                         packageName,
@@ -905,7 +916,7 @@ export function createOfficialOnyxiaApiClient(params: {
                 .then(() => undefined)
     };
 
-    return onyxiaApiClient;
+    return onyxiaApi;
 }
 
 let _s3url: string | undefined = undefined;

@@ -2,8 +2,8 @@ import "minimal-polyfills/Object.fromEntries";
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { id } from "tsafe/id";
-import type { ThunkAction, ThunksExtraArgument } from "../setup";
-import type { SecretsManagerClient, Secret } from "core/ports/SecretsManagerClient";
+import type { ThunkAction, ThunksExtraArgument } from "../core";
+import type { SecretsManager, Secret } from "core/ports/SecretsManager";
 import {
     join as pathJoin,
     relative as pathRelative,
@@ -11,18 +11,18 @@ import {
 } from "path";
 import type { ApiLogs } from "core/tools/apiLogger";
 import { logApi } from "core/tools/apiLogger";
-import { getVaultApiLogger } from "../adapters/vaultSecretsManagerClient";
 import { assert } from "tsafe/assert";
 import { selectors as projectSelectionSelectors } from "./projectSelection";
 import { Evt } from "evt";
 import type { Ctx } from "evt";
-import type { State } from "../setup";
+import type { State } from "../core";
 import memoize from "memoizee";
 import type { WritableDraft } from "immer/dist/types/types-external";
 import { selectors as deploymentRegionSelectors } from "./deploymentRegion";
 import type { Param0 } from "tsafe";
 import { createExtendedFsApi } from "core/tools/extendedFsApi";
 import type { ExtendedFsApi } from "core/tools/extendedFsApi";
+import { getVaultApiLogger } from "core/adapters/secretsManager/vaultApiLogger";
 
 //All explorer path are expected to be absolute (start with /)
 
@@ -707,7 +707,7 @@ export const thunks = {
 };
 
 type SliceContexts = {
-    loggedSecretClient: SecretsManagerClient;
+    loggedSecretClient: SecretsManager;
     secretClientLogs: ApiLogs;
     onNavigate?: Param0<typeof thunks["notifyThatUserIsWatching"]>["onNavigate"];
     isLazilyInitialized: boolean;
@@ -730,7 +730,7 @@ const { getSliceContexts } = (() => {
 
         sliceContext = (() => {
             const { apiLogs: secretClientLogs, loggedApi: loggedSecretClient } = logApi({
-                "api": extraArg.secretsManagerClient,
+                "api": extraArg.secretsManager,
                 "apiLogger": getVaultApiLogger({
                     "clientType": "CLI",
                     "engine":

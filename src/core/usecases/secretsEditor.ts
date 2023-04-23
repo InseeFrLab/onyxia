@@ -1,8 +1,8 @@
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { id } from "tsafe/id";
-import type { ThunkAction } from "../setup";
-import type { SecretWithMetadata } from "core/ports/SecretsManagerClient";
+import type { ThunkAction } from "../core";
+import type { SecretWithMetadata } from "core/ports/SecretsManager";
 import { assert } from "tsafe/assert";
 import { join as pathJoin } from "path";
 import { unwrapWritableDraft } from "core/tools/unwrapWritableDraft";

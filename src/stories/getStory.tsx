@@ -20,25 +20,21 @@ import { RouteProvider } from "ui/routes";
 import { useLang, fallbackLanguage, languages } from "ui/i18n";
 import type { Language } from "ui/i18n";
 import type { ReactNode } from "react";
-import { Evt } from "evt";
 
 //NOTE: Storybook bug hotfix.
 const propsByTitle = new Map<string, any>();
 
 const { CoreProvider } = createCoreProvider({
-    "evtUserActivity": new Evt(),
-    "getIsDarkModeEnabledValueForProfileInitialization": () => false,
-    "onyxiaApiUrl": "",
-    "userAuthenticationParams": {
-        "method": "mock",
-        "isUserInitiallyLoggedIn": false,
-        "user": {
-            "email": "joseph.garrone@data.gouv.fr",
-            "familyName": "Garrone",
-            "firstName": "Joseph",
-            "groups": ["projet-onyxia"],
-            "username": "jgarrone"
-        }
+    "apiUrl": "",
+    "keycloakParams": undefined,
+    "getCurrentLang": () => "en",
+    "transformUrlBeforeRedirectToLogin": url => url,
+    "jwtClaimByUserKey": {
+        "email": "a",
+        "familyName": "b",
+        "firstName": "c",
+        "groups": "e",
+        "username": "f"
     }
 });
 

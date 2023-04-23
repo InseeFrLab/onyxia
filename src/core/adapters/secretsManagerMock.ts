@@ -1,13 +1,12 @@
 import { join as pathJoin, relative as pathRelative } from "path";
 import { partition } from "evt/tools/reducers/partition";
 import { removeDuplicates } from "evt/tools/reducers/removeDuplicates";
-import { SecretWithMetadata, SecretsManagerClient } from "../ports/SecretsManagerClient";
+import { SecretWithMetadata, SecretsManager } from "../ports/SecretsManager";
 import { assert } from "tsafe/assert";
-import { symToStr } from "tsafe/symToStr";
 
-createLocalStorageSecretManagerClient.artificialDelayMs = 0;
+createSecretManager.artificialDelayMs = 0;
 
-export function createLocalStorageSecretManagerClient(): SecretsManagerClient {
+export function createSecretManager(): SecretsManager {
     const record: { [path: string]: SecretWithMetadata } = (() => {
         const serializedRecord = localStorage.getItem(storageKey);
 
@@ -19,7 +18,7 @@ export function createLocalStorageSecretManagerClient(): SecretsManagerClient {
 
     const sleep = () =>
         new Promise(resolve =>
-            setTimeout(resolve, createLocalStorageSecretManagerClient.artificialDelayMs)
+            setTimeout(resolve, createSecretManager.artificialDelayMs)
         );
 
     return {
@@ -94,8 +93,4 @@ function formatPath(path: string): string {
     return pathJoin("/", path).replace(/\/$/, "");
 }
 
-const storageKey = symToStr({ createLocalStorageSecretManagerClient });
-
-export function clearLocalStorage() {
-    localStorage.removeItem(storageKey);
-}
+const storageKey = "createLocalStorageSecretManagerClient";

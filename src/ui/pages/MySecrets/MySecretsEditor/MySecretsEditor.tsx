@@ -2,7 +2,7 @@ import { makeStyles } from "ui/theme";
 import { useMemo, useState, memo } from "react";
 import { useCallbackFactory } from "powerhooks/useCallbackFactory";
 import { useConstCallback } from "powerhooks/useConstCallback";
-import type { SecretWithMetadata, Secret } from "core/ports/SecretsManagerClient";
+import type { SecretWithMetadata, Secret } from "core/ports/SecretsManager";
 import type { EditSecretParams } from "core/usecases/secretsEditor";
 import memoize from "memoizee";
 import { useTranslation } from "ui/i18n";

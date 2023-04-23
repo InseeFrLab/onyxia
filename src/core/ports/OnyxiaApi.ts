@@ -1,11 +1,11 @@
 import type { LocalizedString as GenericLocalizedString } from "i18nifty";
 import memoize from "memoizee";
 
-export type OnyxiaApiClient = {
+export type OnyxiaApi = {
     /**
      * This is basically a function that is expected that return
      * a promise of string. It's called like this:
-     * const ip = await onyxiaApiClient.getIp();
+     * const ip = await onyxiaApi.getIp();
      * The fact that it also have clear() means that we expect the result
      * to be memoized meaning unless onyxiaApiCLient.getIp.clear() is called
      * the cached result will be returned on subsequent calls.
