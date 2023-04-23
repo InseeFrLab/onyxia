@@ -1,6 +1,6 @@
 import axios from "axios";
 import type { ReturnType } from "tsafe";
-import { S3Client } from "../ports/S3Client";
+import { S3Client } from "../../ports/S3Client";
 import { getNewlyRequestedOrCachedTokenFactory } from "core/tools/getNewlyRequestedOrCachedToken";
 import { id } from "tsafe/id";
 import { assert } from "tsafe/assert";
@@ -8,17 +8,18 @@ import { Deferred } from "evt/tools/Deferred";
 import * as Minio from "minio";
 import { parseUrl } from "core/tools/parseUrl";
 import memoize from "memoizee";
-import type { ApiLogger } from "core/tools/apiLogger";
-import { join as pathJoin, basename as pathBasename } from "path";
-import type { DeploymentRegion } from "../ports/OnyxiaApiClient";
+import type { DeploymentRegion } from "../../ports/OnyxiaApi";
 import fileReaderStream from "filereader-stream";
-import type { OidcClient } from "../ports/OidcClient";
+import type { Oidc } from "../../ports/Oidc";
 import { addParamToUrl } from "powerhooks/tools/urlSearchParams";
+import { getS3UrlAndRegion } from "core/adapters/s3client/getS3UrlAndRegion";
+import { Buffer } from "buffer";
+(window as any).Buffer = Buffer;
 
 export type Params = {
     url: string;
     region: string;
-    oidcClient: OidcClient.LoggedIn;
+    oidc: Oidc.LoggedIn;
     durationSeconds: number;
     amazon:
         | undefined
@@ -36,7 +37,7 @@ export type Params = {
 };
 
 export async function createS3Client(params: Params): Promise<S3Client> {
-    const { url, region, amazon, oidcClient, durationSeconds, createAwsBucket } = params;
+    const { url, region, amazon, oidc, durationSeconds, createAwsBucket } = params;
 
     const { host, port = 443 } = parseUrl(params.url);
 
@@ -57,8 +58,7 @@ export async function createS3Client(params: Params): Promise<S3Client> {
                         "/?" +
                             Object.entries({
                                 "Action": "AssumeRoleWithWebIdentity",
-                                "WebIdentityToken":
-                                    oidcClient.getAccessToken().accessToken,
+                                "WebIdentityToken": oidc.getAccessToken().accessToken,
                                 //Desired TTL of the token, depending of the configuration
                                 //and version of minio we could get less than that but never more.
                                 "DurationSeconds": durationSeconds,
@@ -402,46 +402,9 @@ const dS3Client = new Deferred<S3Client>();
 /** @deprecated */
 export const { pr: prS3Client } = dS3Client;
 
-export const s3ApiLogger: ApiLogger<S3Client> = {
-    "initialHistory": [],
-    "methods": {
-        //TODO, this is dummy
-        "list": {
-            "buildCmd": ({ path }) => `mc ls s3${pathJoin(path)}`,
-            "fmtResult": ({ result: { directories, files } }) =>
-                [...directories.map(directory => `${directory}/`), ...files].join("\n")
-        },
-        "getToken": {
-            "buildCmd": ({ restrictToBucketName }) =>
-                [
-                    `# We generate a token restricted to the bucket ${restrictToBucketName}`,
-                    `# See https://docs.min.io/docs/minio-sts-quickstart-guide.html`
-                ].join("\n"),
-            "fmtResult": ({ result }) => `The token we got is ${JSON.stringify(result)}`
-        },
-        "createBucketIfNotExist": {
-            "buildCmd": bucketName =>
-                `# We create the token ${bucketName} if it doesn't exist.`,
-            "fmtResult": () => `# Done`
-        },
-        "uploadFile": {
-            "buildCmd": ({ path }) => `mc cp ${pathBasename(path)} s3${path}`,
-            "fmtResult": () => `# File uploaded`
-        },
-        "deleteFile": {
-            "buildCmd": ({ path }) => `mc rm s3${path}`,
-            "fmtResult": () => `# File deleted`
-        },
-        "getFileDownloadUrl": {
-            "buildCmd": ({ path }) => `mc cp s3${path}`,
-            "fmtResult": ({ result: downloadUrl }) => downloadUrl
-        }
-    }
-};
-
 export function getCreateS3ClientParams(params: {
     s3Params: DeploymentRegion.S3;
-}): Omit<Params, "createAwsBucket" | "oidcClient"> {
+}): Omit<Params, "createAwsBucket" | "oidc"> {
     const { s3Params } = params;
 
     const { url, region } = getS3UrlAndRegion(s3Params);
@@ -464,23 +427,6 @@ export function getCreateS3ClientParams(params: {
                         "roleSessionName": s3Params.roleSessionName
                     },
                     "durationSeconds": s3Params.defaultDurationSeconds ?? 12 * 3600
-                };
-        }
-    })();
-}
-
-export function getS3UrlAndRegion(s3Params: DeploymentRegion.S3) {
-    return (() => {
-        switch (s3Params.type) {
-            case "minio":
-                return {
-                    "url": s3Params.url,
-                    "region": s3Params.region ?? "us-east-1"
-                };
-            case "amazon":
-                return {
-                    "url": "https://s3.amazonaws.com",
-                    "region": s3Params.region
                 };
         }
     })();

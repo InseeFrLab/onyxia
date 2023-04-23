@@ -1,18 +1,18 @@
 import "minimal-polyfills/Object.fromEntries";
-import type { ThunkAction } from "../setup";
+import type { ThunkAction } from "../core";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { createSlice } from "@reduxjs/toolkit";
 import { id } from "tsafe/id";
-import type { State } from "../setup";
+import type { State } from "../core";
 import { createSelector } from "@reduxjs/toolkit";
 import { selectors as projectSelectionSelectors } from "./projectSelection";
 import { selectors as deploymentRegionSelectors } from "./deploymentRegion";
 import { parseUrl } from "core/tools/parseUrl";
 import { assert } from "tsafe/assert";
 import { thunks as userAuthenticationThunks } from "./userAuthentication";
-import { creatOrFallbackOidcClient } from "core/adapters/keycloakOidcClient";
+import { createOidcOrFallback } from "core/adapters/oidc/createOidcOrFallback";
 import { createUsecaseContextApi } from "redux-clean-architecture";
-import type { OidcClient } from "core/ports/OidcClient";
+import type { Oidc } from "core/ports/Oidc";
 
 type K8sCredentialState = K8sCredentialState.NotRefreshed | K8sCredentialState.Ready;
 
@@ -91,7 +91,7 @@ export const thunks = {
 
             const [dispatch, getState, extraArg] = args;
 
-            const { oidcClient, createStoreParams } = extraArg;
+            const { oidc, createStoreParams } = extraArg;
 
             if (getState().s3Credentials.isRefreshing) {
                 return;
@@ -105,26 +105,25 @@ export const thunks = {
 
             assert(kubernetes !== undefined);
 
-            assert(oidcClient.isUserLoggedIn);
+            assert(oidc.isUserLoggedIn);
 
             const context = getContext(extraArg);
 
             let { kubernetesOidcClient } = context;
 
             if (kubernetesOidcClient === undefined) {
-                kubernetesOidcClient = await creatOrFallbackOidcClient({
+                kubernetesOidcClient = await createOidcOrFallback({
                     "fallback": {
-                        oidcClient,
+                        oidc,
                         "keycloakParams": (() => {
-                            const { userAuthenticationParams } = createStoreParams;
+                            const { keycloakParams } = createStoreParams;
 
-                            assert(userAuthenticationParams.method === "keycloak");
+                            assert(keycloakParams !== undefined);
 
-                            return userAuthenticationParams.keycloakParams;
+                            return keycloakParams;
                         })()
                     },
-                    "keycloakParams": kubernetes.keycloakParams,
-                    "evtUserActivity": undefined
+                    "keycloakParams": kubernetes.keycloakParams
                 });
 
                 context.kubernetesOidcClient = kubernetesOidcClient;
@@ -147,7 +146,7 @@ export const thunks = {
 };
 
 const { getContext } = createUsecaseContextApi<{
-    kubernetesOidcClient: OidcClient.LoggedIn | undefined;
+    kubernetesOidcClient: Oidc.LoggedIn | undefined;
 }>(() => ({
     "kubernetesOidcClient": undefined
 }));

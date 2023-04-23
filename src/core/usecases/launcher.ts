@@ -1,5 +1,5 @@
 import "minimal-polyfills/Object.fromEntries";
-import type { State, ThunkAction } from "../setup";
+import type { State, ThunkAction } from "../core";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { createSelector, createSlice } from "@reduxjs/toolkit";
 import { id } from "tsafe/id";
@@ -13,11 +13,11 @@ import type {
     JSONSchemaFormFieldDescription,
     JSONSchemaObject,
     OnyxiaValues
-} from "core/ports/OnyxiaApiClient";
+} from "core/ports/OnyxiaApi";
 import {
     onyxiaFriendlyNameFormFieldPath,
     onyxiaIsSharedFormFieldPath
-} from "core/ports/OnyxiaApiClient";
+} from "core/ports/OnyxiaApi";
 import type { RestorablePackageConfig } from "./restorablePackageConfigs";
 import type { WritableDraft } from "immer/dist/types/types-external";
 import { thunks as publicIpThunks } from "./publicIp";
@@ -28,8 +28,8 @@ import { thunks as projectConfigs } from "./projectConfigs";
 import { selectors as projectSelectionSelectors } from "./projectSelection";
 import { parseUrl } from "core/tools/parseUrl";
 import { typeGuard } from "tsafe/typeGuard";
-import { getRandomK8sSubdomain, getServiceId } from "../ports/OnyxiaApiClient";
-import { getS3UrlAndRegion } from "../adapters/s3Client";
+import { getRandomK8sSubdomain, getServiceId } from "../ports/OnyxiaApi";
+import { getS3UrlAndRegion } from "../adapters/s3client/getS3UrlAndRegion";
 import { interUsecasesThunks as secretExplorerThunks } from "./secretExplorer";
 
 import * as yaml from "yaml";
@@ -483,7 +483,7 @@ const privateThunks = {
         async (...args) => {
             const { isForContractPreview } = params;
 
-            const [dispatch, getState, { onyxiaApiClient }] = args;
+            const [dispatch, getState, { onyxiaApi }] = args;
 
             if (!isForContractPreview) {
                 dispatch(actions.launchStarted());
@@ -493,7 +493,7 @@ const privateThunks = {
 
             assert(state.stateDescription === "ready");
 
-            const { contract } = await onyxiaApiClient.launchPackage({
+            const { contract } = await onyxiaApi.launchPackage({
                 "catalogId": state.catalogId,
                 "packageName": state.packageName,
                 "options": formFieldsValueToObject(state["~internal"].formFields),
@@ -524,7 +524,7 @@ export const thunks = {
             const { catalogId, packageName, formFieldsValueDifferentFromDefault } =
                 params;
 
-            const [dispatch, getState, { onyxiaApiClient, oidcClient }] = args;
+            const [dispatch, getState, { onyxiaApi, oidc }] = args;
 
             assert(
                 getState().launcher.stateDescription === "not initialized",
@@ -534,7 +534,7 @@ export const thunks = {
             dispatch(actions.initializationStarted());
 
             const { dependencies, sources, getValuesSchemaJson } =
-                await onyxiaApiClient.getPackageConfig({
+                await onyxiaApi.getPackageConfig({
                     catalogId,
                     packageName
                 });
@@ -549,7 +549,7 @@ export const thunks = {
                 }
             }
 
-            assert(oidcClient.isUserLoggedIn);
+            assert(oidc.isUserLoggedIn);
 
             const valuesSchemaJson = getValuesSchemaJson({
                 "onyxiaValues": await dispatch(thunks.getOnyxiaValues())
@@ -895,7 +895,7 @@ export const thunks = {
                 actions.initialized({
                     catalogId,
                     packageName,
-                    "icon": await onyxiaApiClient.getCatalogs().then(
+                    "icon": await onyxiaApi.getCatalogs().then(
                         apiRequestResult =>
                             //TODO: Sort in the adapter of even better, assumes version sorted
                             //and validate this assertion with zod
@@ -976,7 +976,7 @@ export const thunks = {
     "getOnyxiaValues":
         (): ThunkAction<Promise<OnyxiaValues>> =>
         async (...args) => {
-            const [dispatch, getState, { secretsManagerClient, s3Client }] = args;
+            const [dispatch, getState, { secretsManager, s3Client }] = args;
 
             const { publicIp } = await dispatch(publicIpThunks.fetch());
 
@@ -1028,7 +1028,7 @@ export const thunks = {
 
                     return {
                         "VAULT_ADDR": vault.url,
-                        "VAULT_TOKEN": (await secretsManagerClient.getToken()).token,
+                        "VAULT_TOKEN": (await secretsManager.getToken()).token,
                         "VAULT_MOUNT": vault.kvEngine,
                         "VAULT_TOP_DIR": dispatch(
                             secretExplorerThunks.getProjectHomePath()

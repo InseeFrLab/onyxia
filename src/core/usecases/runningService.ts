@@ -4,7 +4,7 @@ import type { PayloadAction } from "@reduxjs/toolkit";
 import { id } from "tsafe/id";
 import { selectors as deploymentRegionSelectors } from "./deploymentRegion";
 import { selectors as projectSelectionSelectors } from "./projectSelection";
-import type { ThunkAction, State } from "../setup";
+import type { ThunkAction, State } from "../core";
 import { exclude } from "tsafe/exclude";
 import { createUsecaseContextApi } from "redux-clean-architecture";
 
@@ -138,7 +138,7 @@ export const thunks = {
     "update":
         (): ThunkAction<void> =>
         async (...args) => {
-            const [dispatch, getState, { onyxiaApiClient, userApiClient }] = args;
+            const [dispatch, getState, { onyxiaApi, getUser }] = args;
 
             {
                 const state = getState().runningService;
@@ -150,11 +150,11 @@ export const thunks = {
 
             dispatch(actions.updateStarted());
 
-            const runningServicesRaw = await onyxiaApiClient.getRunningServices();
+            const runningServicesRaw = await onyxiaApi.getRunningServices();
 
             //NOTE: We do not have the catalog id so we search in every catalog.
             const { getLogoUrl } = await (async () => {
-                const apiRequestResult = await onyxiaApiClient.getCatalogs();
+                const apiRequestResult = await onyxiaApi.getCatalogs();
 
                 function getLogoUrl(params: { packageName: string }): string | undefined {
                     const { packageName } = params;
@@ -191,7 +191,7 @@ export const thunks = {
                     .replace("$INSTANCE", serviceId.replace(/^\//, ""));
             };
 
-            const { username } = await userApiClient.getUser();
+            const { username } = await getUser();
 
             const { s3TokensTTLms, vaultTokenTTLms } = await dispatch(
                 privateThunks.getDefaultTokenTTL()
@@ -279,11 +279,11 @@ export const thunks = {
         async (...args) => {
             const { serviceId } = params;
 
-            const [dispatch, , { onyxiaApiClient }] = args;
+            const [dispatch, , { onyxiaApi }] = args;
 
             dispatch(actions.serviceStopped({ serviceId }));
 
-            await onyxiaApiClient.stopService({ serviceId });
+            await onyxiaApi.stopService({ serviceId });
         }
 };
 
@@ -331,7 +331,7 @@ export const privateThunks = {
                 return sliceContext.prDefaultTokenTTL;
             }
 
-            const { s3Client, secretsManagerClient } = extraArgs;
+            const { s3Client, secretsManager } = extraArgs;
 
             return (sliceContext.prDefaultTokenTTL = Promise.all([
                 (async () => {
@@ -350,7 +350,7 @@ export const privateThunks = {
                 })(),
                 (async () => {
                     const { acquisitionTime, expirationTime } =
-                        await secretsManagerClient.getToken();
+                        await secretsManager.getToken();
 
                     return { "vaultTokenTTLms": expirationTime - acquisitionTime };
                 })()

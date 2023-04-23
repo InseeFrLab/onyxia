@@ -6,6 +6,4 @@ export type User = {
     groups?: string[];
 };
 
-export type UserApiClient = {
-    getUser: () => Promise<User>;
-};
+export type GetUser = () => Promise<User>;

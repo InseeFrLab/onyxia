@@ -1,16 +1,16 @@
 import "minimal-polyfills/Object.fromEntries";
-import type { ThunkAction } from "../setup";
+import type { ThunkAction } from "../core";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { createSlice } from "@reduxjs/toolkit";
 import { id } from "tsafe/id";
-import type { State } from "../setup";
+import type { State } from "../core";
 import { createSelector } from "@reduxjs/toolkit";
-import { getS3UrlAndRegion } from "../adapters/s3Client";
 import { selectors as projectSelectionSelectors } from "./projectSelection";
 import { selectors as deploymentRegionSelectors } from "./deploymentRegion";
 import { parseUrl } from "core/tools/parseUrl";
 import { assert } from "tsafe/assert";
 import { createUsecaseContextApi } from "redux-clean-architecture";
+import { getS3UrlAndRegion } from "core/adapters/s3client/getS3UrlAndRegion";
 
 export type Technology =
     | "R (aws.S3)"

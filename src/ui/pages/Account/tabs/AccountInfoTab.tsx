@@ -22,24 +22,24 @@ export const AccountInfoTab = memo((props: Props) => {
     const { t } = useTranslation({ AccountInfoTab });
 
     const {
-        publicIp: publicIpFunctions,
+        publicIp: { fetch: fetchPublicIp },
         projectConfigs,
-        userAuthentication
+        userAuthentication,
+        userAccountManagement
     } = useCoreFunctions();
 
     const onRequestCopyFactory = useCallbackFactory(([textToCopy]: [string]) =>
         copyToClipboard(textToCopy)
     );
 
+    /* prettier-ignore */
     const publicIp = useCoreState(state => state.publicIp) ?? "Loading...";
 
-    const selectedProjectId = useCoreState(
-        state => state.projectSelection.selectedProjectId
-    );
+    /* prettier-ignore */
+    const selectedProjectId = useCoreState(state => state.projectSelection.selectedProjectId);
 
-    useEffect(() => {
-        publicIpFunctions.fetch();
-    }, []);
+    /* prettier-ignore */
+    useEffect(() => { fetchPublicIp(); }, []);
 
     const [refreshServicePasswordTrigger, pullRefreshServicePasswordTrigger] = useReducer(
         n => n + 1,
@@ -61,8 +61,8 @@ export const AccountInfoTab = memo((props: Props) => {
 
     const fullName = `${user.firstName} ${user.familyName}`;
 
-    const keycloakAccountConfigurationUrl =
-        userAuthentication.getKeycloakAccountConfigurationUrl();
+    /* prettier-ignore */
+    const keycloakAccountConfigurationUrl = userAccountManagement.getPasswordResetUrl();
 
     const { classes } = useStyles();
 

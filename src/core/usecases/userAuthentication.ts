@@ -1,8 +1,7 @@
 import { assert } from "tsafe/assert";
-import type { User } from "../ports/UserApiClient";
-import type { ThunkAction } from "../setup";
+import type { User } from "../ports/GetUser";
+import type { ThunkAction } from "../core";
 import { createUsecaseContextApi } from "redux-clean-architecture";
-import { urlJoin } from "url-join-ts";
 
 export const name = "userAuthentication";
 
@@ -23,38 +22,31 @@ export const thunks = {
     "getIsUserLoggedIn":
         (): ThunkAction<boolean> =>
         (...args) => {
-            const [, , { oidcClient }] = args;
+            const [, , { oidc }] = args;
 
-            return oidcClient.isUserLoggedIn;
+            return oidc.isUserLoggedIn;
         },
     "login":
         (params: { doesCurrentHrefRequiresAuth: boolean }): ThunkAction<Promise<never>> =>
         (...args) => {
             const { doesCurrentHrefRequiresAuth } = params;
 
-            const [, , { oidcClient }] = args;
+            const [, , { oidc }] = args;
 
-            assert(!oidcClient.isUserLoggedIn);
+            assert(!oidc.isUserLoggedIn);
 
-            return oidcClient.login({ doesCurrentHrefRequiresAuth });
+            return oidc.login({ doesCurrentHrefRequiresAuth });
         },
     "logout":
         (params: { redirectTo: "home" | "current page" }): ThunkAction<Promise<never>> =>
         (...args) => {
             const { redirectTo } = params;
 
-            const [, , { oidcClient }] = args;
+            const [, , { oidc }] = args;
 
-            assert(oidcClient.isUserLoggedIn);
+            assert(oidc.isUserLoggedIn);
 
-            return oidcClient.logout({ redirectTo });
-        },
-    "getKeycloakAccountConfigurationUrl":
-        (): ThunkAction<string | undefined> =>
-        (...args) => {
-            const [, , extraArgs] = args;
-
-            return getContext(extraArgs).keycloakAccountConfigurationUrl;
+            return oidc.logout({ redirectTo });
         }
 };
 
@@ -63,30 +55,15 @@ export const privateThunks = {
         (): ThunkAction =>
         async (...[, , extraArg]) =>
             setContext(extraArg, {
-                "user": !extraArg.oidcClient.isUserLoggedIn
+                "user": !extraArg.oidc.isUserLoggedIn
                     ? undefined
-                    : await extraArg.userApiClient.getUser(),
-
-                "keycloakAccountConfigurationUrl": (() => {
-                    const { userAuthenticationParams } = extraArg.createStoreParams;
-
-                    return userAuthenticationParams.method !== "keycloak"
-                        ? undefined
-                        : urlJoin(
-                              userAuthenticationParams.keycloakParams.url,
-                              "realms",
-                              userAuthenticationParams.keycloakParams.realm,
-                              "account"
-                          );
-                })()
+                    : await extraArg.getUser()
             })
 };
 
 type SliceContext = {
     /** undefined when not authenticated */
     user: User | undefined;
-    /** Undefined it authentication is not keycloak */
-    keycloakAccountConfigurationUrl: string | undefined;
 };
 
 const { getContext, setContext } = createUsecaseContextApi<SliceContext>();

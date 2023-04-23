@@ -5,11 +5,11 @@ import { same } from "evt/tools/inDepth/same";
 import { assert } from "tsafe/assert";
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
-import type { ThunkAction } from "../setup";
+import type { ThunkAction } from "../core";
 import { thunks as userConfigsThunks } from "./userConfigs";
 import { createObjectThatThrowsIfAccessed } from "redux-clean-architecture";
-import type { State } from "../setup";
-import { onyxiaFriendlyNameFormFieldPath } from "core/ports/OnyxiaApiClient";
+import type { State } from "../core";
+import { onyxiaFriendlyNameFormFieldPath } from "core/ports/OnyxiaApi";
 
 type RestorablePackageConfigsState = {
     restorablePackageConfigs: RestorablePackageConfig[];
@@ -141,7 +141,7 @@ export const thunks = {
     "fetchIconsIfNotAlreadyDone":
         (): ThunkAction =>
         async (...args) => {
-            const [dispatch, getState, { onyxiaApiClient }] = args;
+            const [dispatch, getState, { onyxiaApi }] = args;
 
             {
                 const state = getState().restorablePackageConfig;
@@ -153,7 +153,7 @@ export const thunks = {
 
             dispatch(actions.fetchIconStarted());
 
-            const apiRequestForIconsResult = await onyxiaApiClient.getCatalogs();
+            const apiRequestForIconsResult = await onyxiaApi.getCatalogs();
 
             const iconsUrl: IconsUrl = {};
 

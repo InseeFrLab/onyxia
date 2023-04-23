@@ -1,11 +1,11 @@
 import { assert } from "tsafe/assert";
-import type { ThunkAction } from "../setup";
-import type { Project } from "../ports/OnyxiaApiClient";
+import type { ThunkAction } from "../core";
+import type { Project } from "../ports/OnyxiaApi";
 import { createSlice } from "@reduxjs/toolkit";
 import { thunks as userConfigsThunks } from "./userConfigs";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { createObjectThatThrowsIfAccessed } from "redux-clean-architecture";
-import type { State } from "../setup";
+import type { State } from "../core";
 
 type ProjectsState = {
     projects: Project[];
@@ -58,9 +58,9 @@ export const privateThunks = {
     "initialize":
         (): ThunkAction =>
         async (...args) => {
-            const [dispatch, getState, { onyxiaApiClient }] = args;
+            const [dispatch, getState, { onyxiaApi }] = args;
 
-            const projects = await onyxiaApiClient.getUserProjects();
+            const projects = await onyxiaApi.getUserProjects();
 
             let selectedProjectId = getState().userConfigs.selectedProjectId.value;
 

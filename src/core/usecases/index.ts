@@ -14,6 +14,7 @@ import * as secretsEditor from "./secretsEditor";
 import * as s3Credentials from "./s3Credentials";
 import * as k8sCredentials from "./k8sCredentials";
 import * as vaultCredentials from "./vaultCredentials";
+import * as userAccountManagement from "./userAccountManagement";
 
 export const usecases = {
     catalogExplorer,
@@ -31,5 +32,6 @@ export const usecases = {
     secretsEditor,
     s3Credentials,
     k8sCredentials,
-    vaultCredentials
+    vaultCredentials,
+    userAccountManagement
 };

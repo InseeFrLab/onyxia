@@ -1,6 +1,6 @@
-export declare type OidcClient = OidcClient.LoggedIn | OidcClient.NotLoggedIn;
+export declare type Oidc = Oidc.LoggedIn | Oidc.NotLoggedIn;
 
-export declare namespace OidcClient {
+export declare namespace Oidc {
     export type NotLoggedIn = {
         isUserLoggedIn: false;
         login: (params: { doesCurrentHrefRequiresAuth: boolean }) => Promise<never>;

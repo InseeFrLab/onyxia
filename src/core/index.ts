@@ -7,9 +7,9 @@ export an API more adapted to our new front. (But we don't plan to leave React)
 */
 
 import { createReactApi } from "redux-clean-architecture/react";
-import { createCore } from "./setup";
+import { createCore } from "./core";
 import { usecases } from "./usecases";
-export type { Language, LocalizedString } from "./ports/OnyxiaApiClient";
+export type { Language, LocalizedString } from "./ports/OnyxiaApi";
 
 export const {
     createCoreProvider,

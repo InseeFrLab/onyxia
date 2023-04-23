@@ -1,4 +1,4 @@
-import type { ThunkAction } from "../setup";
+import type { ThunkAction } from "../core";
 import { Id } from "tsafe/id";
 import { assert } from "tsafe/assert";
 import { join as pathJoin } from "path";
@@ -46,11 +46,11 @@ export const thunks = {
     "changeValue":
         <K extends keyof ProjectConfigs>(params: ChangeValueParams<K>): ThunkAction =>
         async (...args) => {
-            const [dispatch, , { secretsManagerClient }] = args;
+            const [dispatch, , { secretsManager }] = args;
 
             const dirPath = dispatch(privateThunks.getDirPath());
 
-            await secretsManagerClient.put({
+            await secretsManager.put({
                 "path": pathJoin(dirPath, params.key),
                 "secret": { "value": params.value }
             });
@@ -69,11 +69,11 @@ export const thunks = {
         async (...args) => {
             const { key } = params;
 
-            const [dispatch, , { secretsManagerClient }] = args;
+            const [dispatch, , { secretsManager }] = args;
 
             const dirPath = dispatch(privateThunks.getDirPath());
 
-            const value = await secretsManagerClient
+            const value = await secretsManager
                 .get({ "path": pathJoin(dirPath, key) })
                 .then(({ secret }) => secret["value"] as ProjectConfigs[K])
                 .catch(() => undefined);
