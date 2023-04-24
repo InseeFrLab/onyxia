@@ -9,7 +9,7 @@ import "minimal-polyfills/Object.fromEntries";
 import { thunks as userAuthentication } from "./userAuthentication";
 import type { State } from "../core";
 import { join as pathJoin } from "path";
-import { getIsDarkModeEnabledOsDefault } from "onyxia-ui/lib/color";
+import { getIsDarkModeEnabledOsDefault } from "onyxia-ui/tools/getIsDarkModeEnabledOsDefault";
 
 /*
  * Values of the user profile that can be changed.

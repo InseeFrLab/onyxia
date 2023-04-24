@@ -8,7 +8,6 @@ import { CatalogLauncherMainCard } from "./CatalogLauncherMainCard";
 import { CatalogLauncherConfigurationCard } from "./CatalogLauncherConfigurationCard";
 import { useCoreState, selectors, useCoreFunctions } from "core";
 import { useConstCallback } from "powerhooks/useConstCallback";
-import * as clipboard from "clipboard-polyfill/text";
 import { assert } from "tsafe/assert";
 import { useSplashScreen } from "onyxia-ui";
 import { Dialog } from "onyxia-ui/Dialog";
@@ -140,7 +139,7 @@ export const CatalogLauncher = memo((props: Props) => {
     );
 
     const onRequestCopyLaunchUrl = useConstCallback(() =>
-        clipboard.writeText(window.location.href)
+        navigator.clipboard.writeText(window.location.href)
     );
 
     const onIsBookmarkedValueChange = useConstCallback((isBookmarked: boolean) => {

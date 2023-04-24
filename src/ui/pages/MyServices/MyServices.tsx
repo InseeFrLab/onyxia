@@ -10,7 +10,6 @@ import type { Props as MyServicesSavedConfigsProps } from "./MyServicesSavedConf
 import { ButtonId } from "./MyServicesButtonBar";
 import { useConstCallback } from "powerhooks/useConstCallback";
 import { useCoreFunctions, useCoreState, selectors } from "core";
-import * as clipboard from "clipboard-polyfill/text";
 import { routes } from "ui/routes";
 import { createGroup } from "type-route";
 import type { Route } from "type-route";
@@ -91,7 +90,7 @@ export function MyServices(props: Props) {
             case "password":
                 assert(password !== undefined);
 
-                clipboard.writeText(password);
+                navigator.clipboard.writeText(password);
 
                 pullRefreshPasswordTrigger();
 
@@ -128,7 +127,9 @@ export function MyServices(props: Props) {
     >(({ launchLinkHref, action }) => {
         switch (action) {
             case "copy link":
-                clipboard.writeText(`${window.location.origin}${launchLinkHref}`);
+                navigator.clipboard.writeText(
+                    `${window.location.origin}${launchLinkHref}`
+                );
                 return;
             case "delete":
                 restorablePackageConfig.deleteRestorablePackageConfig({
