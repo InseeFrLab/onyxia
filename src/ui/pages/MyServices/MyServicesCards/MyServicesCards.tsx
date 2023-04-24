@@ -15,7 +15,6 @@ import { Markdown } from "onyxia-ui/Markdown";
 import { symToStr } from "tsafe/symToStr";
 import { NonPostableEvt } from "evt";
 import { useEvt } from "evt/hooks";
-import * as clipboard from "clipboard-polyfill/text";
 import { useDomRect } from "powerhooks/useDomRect";
 import { CircularProgress } from "onyxia-ui/CircularProgress";
 import { declareComponentKeys } from "i18nifty";
@@ -379,7 +378,8 @@ const { CopyOpenButton } = (() => {
         );
 
         const copyPasswordToClipBoard = useConstCallback(() => {
-            clipboard.writeText(servicePassword!);
+            assert(servicePassword !== undefined);
+            navigator.clipboard.writeText(servicePassword);
             setReadyToOpen();
         });
 
