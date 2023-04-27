@@ -5,7 +5,7 @@ import type { ReactNode } from "react";
 import { useConstCallback } from "powerhooks/useConstCallback";
 import type { KcTemplateProps } from "keycloakify";
 import { Header } from "ui/shared/Header";
-import { logoContainerWidthInPercent } from "ui/App";
+import { logoContainerWidthInPercent } from "ui/App/logoContainerWidthInPercent";
 import { makeStyles, IconButton, Text } from "ui/theme";
 import { useDomRect, useWindowInnerSize } from "onyxia-ui";
 import onyxiaNeumorphismDarkModeUrl from "ui/assets/svg/OnyxiaNeumorphismDarkMode.svg";

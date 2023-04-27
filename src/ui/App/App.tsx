@@ -30,6 +30,7 @@ import { injectTransferableEnvsInSearchParams } from "ui/envCarriedOverToKc";
 import { injectGlobalStatesInSearchParams } from "powerhooks/useGlobalState";
 import { evtLang } from "ui/i18n";
 import { getEnv } from "env";
+import { logoContainerWidthInPercent } from "./logoContainerWidthInPercent";
 
 const { CoreProvider } = createCoreProvider({
     "apiUrl": getEnv().ONYXIA_API_URL,
@@ -62,8 +63,6 @@ export default function App() {
         </CoreProvider>
     );
 }
-
-export const logoContainerWidthInPercent = 4;
 
 function ContextualizedApp() {
     const { t } = useTranslation({ App });
