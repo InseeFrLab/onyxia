@@ -44,6 +44,13 @@ Onyxia is developed by the French National institute of statistics and economic 
 ## Media
 
 <p align="center">
+    <i>Devoxx France 2023</i><br>
+    <a href="https://youtu.be/GXINfnVB21E">
+        <img src="https://user-images.githubusercontent.com/6702424/234834115-28a5fc8d-4819-4f6d-abf5-9a9ba25e3749.png" width="640">
+    </a>
+</p>
+
+<p align="center">
     <i>KCD France 2023</i><br>
     <a href="https://youtu.be/sOOVg4I19BI">
         <img src="https://user-images.githubusercontent.com/6702424/231315763-1a56522d-42a4-4872-ae9b-3f8d3028e09c.png" width="640">
