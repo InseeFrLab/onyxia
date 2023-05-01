@@ -9,155 +9,84 @@ on:
 
 jobs:
 
-  build:
+  test:
     runs-on: ubuntu-latest
-    if: github.event.head_commit.author.name != 'actions'
-    outputs:
-      cra_envs_version: ${{ steps.step1.outputs.out }}
     steps:
     - uses: actions/checkout@v2
       with:
         lfs: true
-    - uses: actions/setup-node@v2.1.3
-      with:
-        node-version: '16'
-    - uses: bahmutov/npm-install@v1.8.17
+    - uses: actions/setup-node@v2
+    - uses: bahmutov/npm-install@v1
     - run: yarn build
     - run: npx keycloakify
-    - uses: actions/upload-artifact@v2
-      with:
-        name: standalone_keycloak_theme
-        path: build_keycloak/target/*keycloak-theme*.jar
-    - run: npx keycloakify --external-assets
-    - uses: actions/upload-artifact@v2
-      with:
-        name: keycloak_theme
-        path: build_keycloak/target/*keycloak-theme*.jar
-    - uses: actions/upload-artifact@v2
-      with:
-        name: build
-        path: build
-    - id: step1
-      run: |
-        echo ::set-output name=out::$(
-          node -e 'console.log(require("./node_modules/cra-envs/package.json")["version"])'
-        )
-#  deploy_storybook:
-#    runs-on: ubuntu-latest
-#    needs: build
-#    steps:
-#    - uses: actions/checkout@v2
-#    - uses: actions/setup-node@v2.1.3
-#      with:
-#        node-version: '16'
-#    - uses: bahmutov/npm-install@v1
-#    - run: npx build-storybook -o ./build_storybook
-#    - run: echo "storybook.onyxia.dev" > build_storybook/CNAME
-#    - run: git remote set-url origin https://git:${GITHUB_TOKEN}@github.com/${{github.repository}}.git
-#      env:
-#        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-#    - run: npx -y -p gh-pages@3.0.0 gh-pages -d ./build_storybook -u "github-actions-bot <actions@github.com>"
-
+    - run: npx build-storybook
 
   check_if_version_upgraded:
     name: Check if version upgrade
+    if: github.event_name == 'push'
     runs-on: ubuntu-latest
-    needs: build
+    needs: test
     outputs:
       from_version: ${{ steps.step1.outputs.from_version }}
       to_version: ${{ steps.step1.outputs.to_version }}
       is_upgraded_version: ${{ steps.step1.outputs.is_upgraded_version }}
     steps:
-    - uses: garronej/ts-ci@v1.1.3
+    - uses: garronej/ts-ci@v2.1.0
       id: step1
       with: 
         action_name: is_package_json_version_upgraded
-
-  docker:
-    needs: 
-      - check_if_version_upgraded
-      - build
-    runs-on: ubuntu-latest
-    # We publish the the docker image only if it's a push on the default branch or if it's a PR from a 
-    # branch (meaning not a PR from a fork). It would be more straightforward to test if secrets.DOCKERHUB_TOKEN is 
-    # defined but GitHub Action don't allow it.
-    if: |
-      github.event_name == 'push' || 
-      github.event.pull_request.head.repo.owner.login == github.event.pull_request.base.repo.owner.login 
-    steps:
-       - run: echo "Uncomment once we have the etalab dockerhub token"
-       - uses: actions/checkout@v2
-       - uses: docker/setup-qemu-action@v1
-       - uses: docker/setup-buildx-action@v1
-       - uses: docker/login-action@v1
-         with:
-           username: ${{ secrets.DOCKERHUB_USERNAME }}
-           password: ${{ secrets.DOCKERHUB_TOKEN }}
-       - name: Computing Docker image tags
-         id: step1
-         env: 
-           IS_UPGRADED_VERSION: ${{ needs.check_if_version_upgraded.outputs.is_upgraded_version }}
-           TO_VERSION: ${{ needs.check_if_version_upgraded.outputs.to_version }}
-         run: |
-           OUT=$GITHUB_REPOSITORY:$(
-           [ "$GITHUB_EVENT_NAME" == "pull_request" ] &&
-             echo "$GITHUB_HEAD_REF" ||
-             echo "${GITHUB_REF#refs/*/}"
-           )
-           if [ "$IS_UPGRADED_VERSION" = "true" ]; then
-             OUT=$OUT,$GITHUB_REPOSITORY:$TO_VERSION,$GITHUB_REPOSITORY:latest
-           fi
-           OUT=$(echo "$OUT" | awk '{print tolower($0)}') 
-           echo ::set-output name=docker_tags::$OUT
-       - run: echo "{\"version\":\"$VER\"}" > cra-envs_package.json
-         env: 
-           VER: ${{ needs.build.outputs.cra_envs_version }}
-       - uses: actions/download-artifact@v2
-         with:
-           name: build
-           path: build
-       - run: tar -cvf build.tar ./build
-       - uses: docker/build-push-action@v2
-         with:
-           push: true
-           context: .
-           tags: ${{ steps.step1.outputs.docker_tags }}
+        branch: ${{ github.head_ref || github.ref }}
 
   create_github_release:
     runs-on: ubuntu-latest
-    needs: 
-      - check_if_version_upgraded
+    needs: check_if_version_upgraded
     # We create a release only if the version have been upgraded and we are on a default branch
-    # PR on the default branch can release beta but not real release
-    if: |
-      needs.check_if_version_upgraded.outputs.is_upgraded_version == 'true' &&
-      (
-        github.event_name == 'push' ||
-        needs.check_if_version_upgraded.outputs.is_release_beta == 'true'
-      )
+    if: needs.check_if_version_upgraded.outputs.is_upgraded_version == 'true' && github.event_name == 'push'
     steps:
-    - uses: actions/download-artifact@v2
-      with:
-        name: keycloak_theme
-    - run: mkdir jars
-    - run: mv *keycloak-theme*.jar jars/keycloak-theme.jar
-    - uses: actions/download-artifact@v2
-      with:
-        name: standalone_keycloak_theme
-    - run: mv *keycloak-theme*.jar jars/standalone-keycloak-theme.jar
-    - uses: softprops/action-gh-release@v0.1.14
+    - uses: actions/checkout@v2
+    - uses: actions/setup-node@v2
+    - uses: bahmutov/npm-install@v1
+    - run: yarn build
+    - run: npx keycloakify
+    - run: mv build_keycloak/target/*.jar keycloak-theme.jar
+    - uses: softprops/action-gh-release@v1
       with:
         name: Release v${{ needs.check_if_version_upgraded.outputs.to_version }}
         tag_name: v${{ needs.check_if_version_upgraded.outputs.to_version }}
         target_commitish: ${{ github.head_ref || github.ref }}
         generate_release_notes: true
-        files: |
-          jars/keycloak-theme.jar
-          jars/standalone-keycloak-theme.jar
+        files: keycloak-theme.jar
         draft: false
-        prerelease: ${{ needs.check_if_version_upgraded.outputs.is_release_beta == 'true' }}
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  docker:
+    runs-on: ubuntu-latest
+    needs: 
+      - check_if_version_upgraded
+      - create_github_release
+    steps:
+      - uses: actions/checkout@v2
+      - uses: docker/setup-qemu-action@v1
+      - uses: docker/setup-buildx-action@v1
+      - uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Computing Docker image tags
+        id: step1
+        env: 
+          IS_UPGRADED_VERSION: ${{ needs.check_if_version_upgraded.outputs.is_upgraded_version }}
+          TO_VERSION: ${{ needs.check_if_version_upgraded.outputs.to_version }}
+        run: |
+          OUT=$GITHUB_REPOSITORY:$TO_VERSION,$GITHUB_REPOSITORY:latest
+          OUT=$(echo "$OUT" | awk '{print tolower($0)}') 
+          echo ::set-output name=docker_tags::$OUT
+      - uses: docker/build-push-action@v2
+        with:
+          push: true
+          context: .
+          tags: ${{ steps.step1.outputs.docker_tags }}
 
   poke_gitops:
     runs-on: ubuntu-latest
@@ -170,13 +99,3 @@ jobs:
         token: ${{ secrets.PAT_PRIVATE_REPO_DISPATCH }}
         event-type: update_onyxia_web
         repository: InseeFrLab/paris-sspcloud
-    - uses: peter-evans/repository-dispatch@v1
-      with:
-        token: ${{ secrets.PAT_PRIVATE_REPO_DISPATCH }}
-        event-type: update_onyxia_web
-        repository: InseeFrLab/dev.insee.io
-    #- uses: peter-evans/repository-dispatch@v1
-    #  with:
-    #    token: ${{ secrets.PAT_DISPATCH_ETALAB }}
-    #    event-type: update_onyxia_web
-    #    repository: etalab/paris-sspcloud
