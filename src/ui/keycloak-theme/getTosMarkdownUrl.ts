@@ -1,6 +1,6 @@
 import { fallbackLanguage } from "ui/i18n";
 import { createResolveLocalizedString } from "i18nifty";
-import { THERMS_OF_SERVICES as thermsOfServices } from "ui/envCarriedOverToKc";
+import { THERMS_OF_SERVICES as thermsOfServices } from "ui/keycloak-theme/envCarriedOverToKc";
 
 export function getTosMarkdownUrl(kcLanguageTag: string): string | undefined {
     if (thermsOfServices === undefined) {

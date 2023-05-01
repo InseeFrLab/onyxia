@@ -28,7 +28,7 @@ import type { Language } from "ui/i18n";
 
 const paletteIds = ["onyxia", "france", "ultraviolet", "verdant"] as const;
 
-export type PaletteId = typeof paletteIds[number];
+export type PaletteId = (typeof paletteIds)[number];
 
 const { THEME_ID, injectTHEME_IDInSearchParams } = getTransferableEnv({
     "name": "THEME_ID" as const,
