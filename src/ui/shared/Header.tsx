@@ -4,7 +4,10 @@ import { useTranslation } from "ui/i18n";
 import { useConstCallback } from "powerhooks/useConstCallback";
 import { makeStyles, Text } from "ui/theme";
 import { ReactComponent as OnyxiaLogoSvg } from "ui/assets/svg/OnyxiaLogo.svg";
-import { HEADER_ORGANIZATION, HEADER_USECASE_DESCRIPTION } from "ui/envCarriedOverToKc";
+import {
+    HEADER_ORGANIZATION,
+    HEADER_USECASE_DESCRIPTION
+} from "ui/keycloak-theme/envCarriedOverToKc";
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";

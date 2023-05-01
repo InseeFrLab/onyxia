@@ -26,11 +26,13 @@ import { getExtraLeftBarItemsFromEnv, getIsHomePageDisabled } from "ui/env";
 import { declareComponentKeys } from "i18nifty";
 import { RouteProvider } from "ui/routes";
 import { createCoreProvider } from "core";
-import { injectTransferableEnvsInSearchParams } from "ui/envCarriedOverToKc";
+import { injectTransferableEnvsInSearchParams } from "keycloak-theme/login/envCarriedOverToKc";
 import { injectGlobalStatesInSearchParams } from "powerhooks/useGlobalState";
 import { evtLang } from "ui/i18n";
 import { getEnv } from "env";
 import { logoContainerWidthInPercent } from "./logoContainerWidthInPercent";
+import { ThemeProvider, splashScreen, createGetViewPortConfig } from "ui/theme";
+import { PortraitModeUnsupported } from "ui/pages/PortraitModeUnsupported";
 
 const { CoreProvider } = createCoreProvider({
     "apiUrl": getEnv().ONYXIA_API_URL,
@@ -54,13 +56,17 @@ const { CoreProvider } = createCoreProvider({
             .map(injectGlobalStatesInSearchParams)[0]
 });
 
+const { getViewPortConfig } = createGetViewPortConfig({ PortraitModeUnsupported });
+
 export default function App() {
     return (
-        <CoreProvider>
-            <RouteProvider>
-                <ContextualizedApp />
-            </RouteProvider>
-        </CoreProvider>
+        <ThemeProvider getViewPortConfig={getViewPortConfig} splashScreen={splashScreen}>
+            <CoreProvider>
+                <RouteProvider>
+                    <ContextualizedApp />
+                </RouteProvider>
+            </CoreProvider>
+        </ThemeProvider>
     );
 }
 
