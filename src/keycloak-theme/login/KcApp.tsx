@@ -3,108 +3,62 @@ import { lazy, Suspense } from "react";
 import Fallback, { type PageProps } from "keycloakify/login";
 import type { KcContext } from "./kcContext";
 import { useI18n } from "./i18n";
+import { makeStyles } from "ui/theme";
+import onyxiaNeumorphismDarkModeUrl from "ui/assets/svg/OnyxiaNeumorphismDarkMode.svg";
+import onyxiaNeumorphismLightModeUrl from "ui/assets/svg/OnyxiaNeumorphismLightMode.svg";
 
-const Template = lazy(() => import("./Template"));
 const DefaultTemplate = lazy(() => import("keycloakify/login/Template"));
-
-// You can uncomment this to see the values passed by the main app before redirecting.
-//import { foo, bar } from "./valuesTransferredOverUrl";
-//console.log(`Values passed by the main app in the URL parameter:`, { foo, bar });
-
+const Template = lazy(() => import("./Template"));
 const Login = lazy(() => import("./pages/Login"));
-// If you can, favor register-user-profile.ftl over register.ftl, see: https://docs.keycloakify.dev/realtime-input-validation
-const Register = lazy(() => import("./pages/Register"));
 const RegisterUserProfile = lazy(() => import("./pages/RegisterUserProfile"));
 const Terms = lazy(() => import("./pages/Terms"));
-const MyExtraPage1 = lazy(() => import("./pages/MyExtraPage1"));
-const MyExtraPage2 = lazy(() => import("./pages/MyExtraPage2"));
-const Info = lazy(() => import("keycloakify/login/pages/Info"));
-
-// This is like adding classes to theme.properties
-// https://github.com/keycloak/keycloak/blob/11.0.3/themes/src/main/resources/theme/keycloak/login/theme.properties
-const classes: PageProps<any, any>["classes"] = {
-    // NOTE: The classes are defined in ./KcApp.css
-    "kcHtmlClass": "my-root-class",
-    "kcHeaderWrapperClass": "my-color my-font"
-};
 
 export default function KcApp(props: { kcContext: KcContext }) {
     const { kcContext } = props;
 
     const i18n = useI18n({ kcContext });
 
+    const { classes } = useStyles();
+
     if (i18n === null) {
-        //NOTE: Locales not yet downloaded, we could as well display a loading progress but it's usually a matter of milliseconds.
         return null;
     }
 
-    /*
-     * Examples assuming i18n.currentLanguageTag === "en":
-     * i18n.msg("access-denied") === <span>Access denied</span>
-     * i18n.msg("foo") === <span>foo in English</span>
-     */
+    const pageProps: Omit<PageProps<any, typeof i18n>, "kcContext"> = {
+        i18n,
+        Template,
+        "doUseDefaultCss": false,
+        "classes": {
+            "kcHtmlClass": classes.kcHtmlClass
+        }
+    };
 
     return (
         <Suspense>
             {(() => {
                 switch (kcContext.pageId) {
                     case "login.ftl":
-                        return (
-                            <Login
-                                {...{ kcContext, i18n, Template, classes }}
-                                doUseDefaultCss={true}
-                            />
-                        );
-                    case "register.ftl":
-                        return (
-                            <Register
-                                {...{ kcContext, i18n, Template, classes }}
-                                doUseDefaultCss={true}
-                            />
-                        );
+                        return <Login kcContext={kcContext} {...pageProps} />;
                     case "register-user-profile.ftl":
                         return (
-                            <RegisterUserProfile
-                                {...{ kcContext, i18n, Template, classes }}
-                                doUseDefaultCss={true}
-                            />
+                            <RegisterUserProfile kcContext={kcContext} {...pageProps} />
                         );
                     case "terms.ftl":
-                        return (
-                            <Terms
-                                {...{ kcContext, i18n, Template, classes }}
-                                doUseDefaultCss={true}
-                            />
-                        );
-                    case "my-extra-page-1.ftl":
-                        return (
-                            <MyExtraPage1
-                                {...{ kcContext, i18n, Template, classes }}
-                                doUseDefaultCss={true}
-                            />
-                        );
-                    case "my-extra-page-2.ftl":
-                        return (
-                            <MyExtraPage2
-                                {...{ kcContext, i18n, Template, classes }}
-                                doUseDefaultCss={true}
-                            />
-                        );
-                    // We choose to use the default Template for the Info page and to download the theme resources.
-                    case "info.ftl":
-                        return (
-                            <Info
-                                {...{ kcContext, i18n, classes }}
-                                Template={DefaultTemplate}
-                                doUseDefaultCss={true}
-                            />
-                        );
+                        return <Terms kcContext={kcContext} {...pageProps} />;
                     default:
                         return (
                             <Fallback
-                                {...{ kcContext, i18n, classes }}
+                                kcContext={kcContext}
+                                i18n={i18n}
                                 Template={DefaultTemplate}
                                 doUseDefaultCss={true}
+                                classes={{
+                                    "kcHtmlClass": classes.kcHtmlClass,
+                                    "kcLoginClass": classes.kcLoginClass,
+                                    "kcFormCardClass": classes.kcFormCardClass,
+                                    "kcButtonPrimaryClass": classes.kcButtonPrimaryClass,
+                                    "kcInputClass": classes.kcInputClass
+                                }}
                             />
                         );
                 }
@@ -112,3 +66,62 @@ export default function KcApp(props: { kcContext: KcContext }) {
         </Suspense>
     );
 }
+
+const useStyles = makeStyles({ "name": { KcApp } })(theme => ({
+    "kcLoginClass": {
+        "& #kc-locale": {
+            "zIndex": 5
+        }
+    },
+    "kcHtmlClass": {
+        "& body": {
+            "background": `url(${
+                theme.isDarkModeEnabled
+                    ? onyxiaNeumorphismDarkModeUrl
+                    : onyxiaNeumorphismLightModeUrl
+            }) no-repeat center center fixed`,
+            "fontFamily": theme.typography.fontFamily
+        },
+        "background": `${theme.colors.useCases.surfaces.background}`,
+        "& a": {
+            "color": `${theme.colors.useCases.typography.textFocus}`
+        },
+        "& #kc-current-locale-link": {
+            "color": `${theme.colors.palette.light.greyVariant3}`
+        },
+        "& label": {
+            "fontSize": 14,
+            "color": theme.colors.palette.light.greyVariant3,
+            "fontWeight": "normal"
+        },
+        "& #kc-page-title": {
+            ...theme.typography.variants["page heading"].style,
+            "color": theme.colors.palette.dark.main
+        },
+        "& #kc-header-wrapper": {
+            "visibility": "hidden"
+        }
+    },
+    "kcFormCardClass": {
+        "borderRadius": 10
+    },
+    "kcButtonPrimaryClass": {
+        "backgroundColor": "unset",
+        "backgroundImage": "unset",
+        "borderColor": `${theme.colors.useCases.typography.textFocus}`,
+        "borderWidth": "2px",
+        "borderRadius": `20px`,
+        "color": `${theme.colors.useCases.typography.textFocus}`,
+        "textTransform": "uppercase"
+    },
+    "kcInputClass": {
+        "borderRadius": "unset",
+        "border": "unset",
+        "boxShadow": "unset",
+        "borderBottom": `1px solid ${theme.colors.useCases.typography.textTertiary}`,
+        "&:focus": {
+            "borderColor": "unset",
+            "borderBottom": `1px solid ${theme.colors.useCases.typography.textFocus}`
+        }
+    }
+}));
