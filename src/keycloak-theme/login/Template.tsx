@@ -1,35 +1,67 @@
-// Copy pasted from: https://github.com/InseeFrLab/keycloakify/blob/main/src/login/Template.tsx
+/* eslint-disable jsx-a11y/anchor-is-valid */
 
-import { assert } from "keycloakify/tools/assert";
-import { clsx } from "keycloakify/tools/clsx";
 import { usePrepareTemplate } from "keycloakify/lib/usePrepareTemplate";
-import { type TemplateProps } from "keycloakify/login/TemplateProps";
+import { type TemplateProps as GenericTemplateProps } from "keycloakify/login/TemplateProps";
 import { useGetClassName } from "keycloakify/login/lib/useGetClassName";
 import type { KcContext } from "./kcContext";
 import type { I18n } from "./i18n";
+import { memo } from "react";
+import { useConstCallback } from "powerhooks/useConstCallback";
+import { Header } from "ui/shared/Header";
+import { logoContainerWidthInPercent } from "ui/App/logoContainerWidthInPercent";
+import { ThemeProvider, makeStyles, IconButton, Text } from "ui/theme";
+import { useDomRect, useWindowInnerSize } from "onyxia-ui";
+import onyxiaNeumorphismDarkModeUrl from "ui/assets/svg/OnyxiaNeumorphismDarkMode.svg";
+import onyxiaNeumorphismLightModeUrl from "ui/assets/svg/OnyxiaNeumorphismLightMode.svg";
+import { Card } from "onyxia-ui/Card";
+import { Alert } from "onyxia-ui/Alert";
+import { symToStr } from "tsafe/symToStr";
 
-export default function Template(props: TemplateProps<KcContext, I18n>) {
+type TemplateProps = GenericTemplateProps<KcContext, I18n> & {
+    onClickCross?: () => void;
+};
+
+export default function Template(props: TemplateProps) {
+    return (
+        <ThemeProvider>
+            <ContextualizedTemplate {...props} />
+        </ThemeProvider>
+    );
+}
+
+function ContextualizedTemplate(props: TemplateProps) {
     const {
-        displayInfo = false,
-        displayMessage = true,
-        displayRequiredFields = false,
-        displayWide = false,
-        showAnotherWayIfPresent = true,
-        headerNode,
-        showUsernameNode = null,
-        infoNode = null,
         kcContext,
-        i18n,
         doUseDefaultCss,
-        classes,
+        classes: classes_props,
+        onClickCross,
         children
     } = props;
 
-    const { getClassName } = useGetClassName({ doUseDefaultCss, classes });
+    const {
+        domRect: { width: rootWidth },
+        ref: rootRef
+    } = useDomRect();
 
-    const { msg, changeLocale, labelBySupportedLanguageTag, currentLanguageTag } = i18n;
+    const logoContainerWidth = Math.max(
+        Math.floor((Math.min(rootWidth, 1920) * logoContainerWidthInPercent) / 100),
+        45
+    );
 
-    const { realm, locale, auth, url, message, isAppInitiatedAction } = kcContext;
+    const { windowInnerWidth, windowInnerHeight } = useWindowInnerSize();
+
+    const { classes, cx } = useStyles({
+        windowInnerWidth,
+        "aspectRatio": windowInnerWidth / windowInnerHeight,
+        windowInnerHeight
+    });
+
+    const { getClassName } = useGetClassName({
+        doUseDefaultCss,
+        "classes": classes_props
+    });
+
+    const { url } = kcContext;
 
     const { isReady } = usePrepareTemplate({
         "doFetchDefaultThemeResources": doUseDefaultCss,
@@ -49,75 +81,209 @@ export default function Template(props: TemplateProps<KcContext, I18n>) {
     }
 
     return (
-        <div className={getClassName("kcLoginClass")}>
-            <div id="kc-header" className={getClassName("kcHeaderClass")}>
-                <div
-                    id="kc-header-wrapper"
-                    className={getClassName("kcHeaderWrapperClass")}
-                >
-                    {msg("loginTitleHtml", realm.displayNameHtml)}
-                </div>
-            </div>
+        <div ref={rootRef} className={cx(classes.root, getClassName("kcLoginClass"))}>
+            {windowInnerHeight > 700 && (
+                <Header
+                    useCase="login pages"
+                    className={classes.header}
+                    logoContainerWidth={logoContainerWidth}
+                    onLogoClick={() =>
+                        (window.location.href = "https://docs.sspcloud.fr")
+                    }
+                />
+            )}
+            <section className={classes.betweenHeaderAndFooter}>
+                <Page {...props} className={classes.page} onClickCross={onClickCross}>
+                    {children}
+                </Page>
+            </section>
+        </div>
+    );
+}
 
-            <div
-                className={clsx(
-                    getClassName("kcFormCardClass"),
-                    displayWide && getClassName("kcFormCardAccountClass")
-                )}
-            >
-                <header className={getClassName("kcFormHeaderClass")}>
-                    {realm.internationalizationEnabled &&
-                        (assert(locale !== undefined), true) &&
-                        locale.supported.length > 1 && (
-                            <div id="kc-locale">
-                                <div
-                                    id="kc-locale-wrapper"
-                                    className={getClassName("kcLocaleWrapperClass")}
-                                >
-                                    <div className="kc-dropdown" id="kc-locale-dropdown">
-                                        {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
-                                        <a href="#" id="kc-current-locale-link">
-                                            {
-                                                labelBySupportedLanguageTag[
-                                                    currentLanguageTag
-                                                ]
-                                            }
-                                        </a>
-                                        <ul>
-                                            {locale.supported.map(({ languageTag }) => (
-                                                <li
-                                                    key={languageTag}
-                                                    className="kc-dropdown-item"
-                                                >
-                                                    {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
-                                                    <a
-                                                        href="#"
-                                                        onClick={() =>
-                                                            changeLocale(languageTag)
-                                                        }
-                                                    >
-                                                        {
-                                                            labelBySupportedLanguageTag[
-                                                                languageTag
-                                                            ]
-                                                        }
-                                                    </a>
-                                                </li>
-                                            ))}
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
-                        )}
+const useStyles = makeStyles<{
+    windowInnerWidth: number;
+    aspectRatio: number;
+    windowInnerHeight: number;
+}>()(theme => ({
+    "root": {
+        "height": "100vh",
+        "display": "flex",
+        "flexDirection": "column",
+        "backgroundColor": theme.colors.useCases.surfaces.background
+    },
+
+    "header": {
+        "width": "100%",
+        "paddingRight": "2%",
+        "height": 64
+    },
+    "betweenHeaderAndFooter": {
+        "flex": 1,
+        "overflow": "hidden",
+        "backgroundImage": `url( ${
+            theme.isDarkModeEnabled
+                ? onyxiaNeumorphismDarkModeUrl
+                : onyxiaNeumorphismLightModeUrl
+        })`,
+        "backgroundSize": "auto 90%",
+        "backgroundPosition": "center",
+        "backgroundRepeat": "no-repeat"
+    },
+    "page": {
+        "height": "100%",
+        "overflow": "auto"
+    }
+}));
+
+const { Page } = (() => {
+    type Props = { className: string } & Pick<
+        TemplateProps,
+        | "displayInfo"
+        | "displayMessage"
+        | "displayRequiredFields"
+        | "displayWide"
+        | "showAnotherWayIfPresent"
+        | "headerNode"
+        | "showUsernameNode"
+        | "infoNode"
+        | "kcContext"
+        | "onClickCross"
+        | "i18n"
+        | "children"
+        | "doUseDefaultCss"
+    >;
+
+    const Page = memo((props: Props) => {
+        const {
+            className,
+            displayInfo = false,
+            displayMessage = true,
+            displayRequiredFields = false,
+            displayWide = false,
+            showAnotherWayIfPresent = true,
+            headerNode,
+            showUsernameNode = null,
+            infoNode = null,
+            kcContext,
+            onClickCross,
+            doUseDefaultCss,
+            i18n,
+            children
+        } = props;
+
+        const {
+            ref: containerRef,
+            domRect: { height: containerHeight }
+        } = useDomRect();
+        const {
+            ref: paperRef,
+            domRect: { height: paperHeight }
+        } = useDomRect();
+
+        const { classes, cx } = useStyles({
+            "isPaperBiggerThanContainer": paperHeight > containerHeight
+        });
+        return (
+            <div ref={containerRef} className={cx(classes.root, className)}>
+                <Card ref={paperRef} className={classes.paper}>
+                    {onClickCross !== undefined && (
+                        <div className={classes.crossButtonWrapper}>
+                            <div style={{ "flex": 1 }} />
+                            <IconButton iconId="close" onClick={onClickCross} />
+                        </div>
+                    )}
+                    <Head
+                        kcContext={kcContext}
+                        displayRequiredFields={displayRequiredFields}
+                        headerNode={headerNode}
+                        showUsernameNode={showUsernameNode}
+                        i18n={i18n}
+                        doUseDefaultCss={doUseDefaultCss}
+                    />
+                    <Main
+                        kcContext={kcContext}
+                        displayMessage={displayMessage}
+                        showAnotherWayIfPresent={showAnotherWayIfPresent}
+                        displayWide={displayWide}
+                        displayInfo={displayInfo}
+                        infoNode={infoNode}
+                        i18n={i18n}
+                        doUseDefaultCss={doUseDefaultCss}
+                    >
+                        {children}
+                    </Main>
+                </Card>
+            </div>
+        );
+    });
+
+    const useStyles = makeStyles<{ isPaperBiggerThanContainer: boolean }>({
+        "name": { Page }
+    })((theme, { isPaperBiggerThanContainer }) => ({
+        "root": {
+            "display": "flex",
+            "justifyContent": "center",
+            "alignItems": isPaperBiggerThanContainer ? undefined : "center"
+        },
+        "paper": {
+            "padding": theme.spacing(5),
+            "width": 490,
+            "height": "fit-content",
+            "marginBottom": theme.spacing(4),
+            "borderRadius": 8
+        },
+        "alert": {
+            "alignItems": "center"
+        },
+        "crossButtonWrapper": {
+            "display": "flex"
+        }
+    }));
+
+    const { Head } = (() => {
+        type Props = Pick<
+            TemplateProps,
+            | "displayRequiredFields"
+            | "headerNode"
+            | "showUsernameNode"
+            | "i18n"
+            | "classes"
+            | "doUseDefaultCss"
+            | "kcContext"
+        >;
+
+        const Head = memo((props: Props) => {
+            const {
+                kcContext,
+                displayRequiredFields,
+                headerNode,
+                showUsernameNode,
+                i18n,
+                classes: classes_props,
+                doUseDefaultCss
+            } = props;
+
+            const { msg } = i18n;
+
+            const { classes, cx } = useStyles();
+
+            const { getClassName } = useGetClassName({
+                doUseDefaultCss,
+                "classes": classes_props
+            });
+
+            return (
+                <header>
                     {!(
-                        auth !== undefined &&
-                        auth.showUsername &&
-                        !auth.showResetCredentials
+                        kcContext.auth !== undefined &&
+                        kcContext.auth.showUsername &&
+                        !kcContext.auth.showResetCredentials
                     ) ? (
                         displayRequiredFields ? (
                             <div className={getClassName("kcContentWrapperClass")}>
                                 <div
-                                    className={clsx(
+                                    className={cx(
                                         getClassName("kcLabelWrapperClass"),
                                         "subtitle"
                                     )}
@@ -128,16 +294,20 @@ export default function Template(props: TemplateProps<KcContext, I18n>) {
                                     </span>
                                 </div>
                                 <div className="col-md-10">
-                                    <h1 id="kc-page-title">{headerNode}</h1>
+                                    <Text className={classes.root} typo="section heading">
+                                        {headerNode!}
+                                    </Text>
                                 </div>
                             </div>
                         ) : (
-                            <h1 id="kc-page-title">{headerNode}</h1>
+                            <Text className={classes.root} typo="section heading">
+                                {headerNode!}
+                            </Text>
                         )
                     ) : displayRequiredFields ? (
                         <div className={getClassName("kcContentWrapperClass")}>
                             <div
-                                className={clsx(
+                                className={cx(
                                     getClassName("kcLabelWrapperClass"),
                                     "subtitle"
                                 )}
@@ -152,11 +322,11 @@ export default function Template(props: TemplateProps<KcContext, I18n>) {
                                 <div className={getClassName("kcFormGroupClass")}>
                                     <div id="kc-username">
                                         <label id="kc-attempted-username">
-                                            {auth?.attemptedUsername}
+                                            {kcContext.auth?.attemptedUsername}
                                         </label>
                                         <a
                                             id="reset-login"
-                                            href={url.loginRestartFlowUrl}
+                                            href={kcContext.url.loginRestartFlowUrl}
                                         >
                                             <div className="kc-login-tooltip">
                                                 <i
@@ -179,9 +349,12 @@ export default function Template(props: TemplateProps<KcContext, I18n>) {
                             <div className={getClassName("kcFormGroupClass")}>
                                 <div id="kc-username">
                                     <label id="kc-attempted-username">
-                                        {auth?.attemptedUsername}
+                                        {kcContext.auth?.attemptedUsername}
                                     </label>
-                                    <a id="reset-login" href={url.loginRestartFlowUrl}>
+                                    <a
+                                        id="reset-login"
+                                        href={kcContext.url.loginRestartFlowUrl}
+                                    >
                                         <div className="kc-login-tooltip">
                                             <i
                                                 className={getClassName(
@@ -198,62 +371,101 @@ export default function Template(props: TemplateProps<KcContext, I18n>) {
                         </>
                     )}
                 </header>
+            );
+        });
+
+        const useStyles = makeStyles({
+            "name": `${symToStr({ Template })}${symToStr({ Head })}`
+        })(theme => ({
+            "root": {
+                "textAlign": "center",
+                "marginTop": theme.spacing(3),
+                "marginBottom": theme.spacing(3)
+            }
+        }));
+
+        return { Head };
+    })();
+
+    const { Main } = (() => {
+        type Props = Pick<
+            TemplateProps,
+            | "displayMessage"
+            | "children"
+            | "showAnotherWayIfPresent"
+            | "displayWide"
+            | "displayInfo"
+            | "infoNode"
+            | "i18n"
+            | "kcContext"
+            | "doUseDefaultCss"
+            | "classes"
+        >;
+
+        const Main = memo((props: Props) => {
+            const {
+                displayMessage,
+                showAnotherWayIfPresent,
+                displayInfo,
+                displayWide,
+                kcContext,
+                children,
+                infoNode,
+                i18n,
+                doUseDefaultCss,
+                classes: classes_props
+            } = props;
+
+            const onTryAnotherWayClick = useConstCallback(() => {
+                document.forms["kc-select-try-another-way-form" as never].submit();
+                return false;
+            });
+
+            const { getClassName } = useGetClassName({
+                doUseDefaultCss,
+                "classes": classes_props
+            });
+
+            const { msg } = i18n;
+
+            const { classes, cx } = useStyles();
+
+            return (
                 <div id="kc-content">
                     <div id="kc-content-wrapper">
-                        {/* App-initiated actions should not see warning messages about the need to complete the action during login. */}
+                        {/* App-initiated actions should not see warning messages about the need to complete the action during login.*/}
                         {displayMessage &&
-                            message !== undefined &&
-                            (message.type !== "warning" || !isAppInitiatedAction) && (
-                                <div className={clsx("alert", `alert-${message.type}`)}>
-                                    {message.type === "success" && (
+                            kcContext.message !== undefined &&
+                            (kcContext.message.type !== "warning" ||
+                                !kcContext.isAppInitiatedAction) && (
+                                <Alert
+                                    className={classes.alert}
+                                    severity={kcContext.message.type}
+                                >
+                                    <Text typo="label 2">
                                         <span
-                                            className={getClassName(
-                                                "kcFeedbackSuccessIcon"
-                                            )}
-                                        ></span>
-                                    )}
-                                    {message.type === "warning" && (
-                                        <span
-                                            className={getClassName(
-                                                "kcFeedbackWarningIcon"
-                                            )}
-                                        ></span>
-                                    )}
-                                    {message.type === "error" && (
-                                        <span
-                                            className={getClassName(
-                                                "kcFeedbackErrorIcon"
-                                            )}
-                                        ></span>
-                                    )}
-                                    {message.type === "info" && (
-                                        <span
-                                            className={getClassName("kcFeedbackInfoIcon")}
-                                        ></span>
-                                    )}
-                                    <span
-                                        className="kc-feedback-text"
-                                        dangerouslySetInnerHTML={{
-                                            "__html": message.summary
-                                        }}
-                                    />
-                                </div>
+                                            dangerouslySetInnerHTML={{
+                                                "__html": kcContext.message.summary
+                                            }}
+                                        />
+                                    </Text>
+                                </Alert>
                             )}
                         {children}
-                        {auth !== undefined &&
-                            auth.showTryAnotherWayLink &&
+                        {kcContext.auth !== undefined &&
+                            kcContext.auth.showTryAnotherWayLink &&
                             showAnotherWayIfPresent && (
                                 <form
                                     id="kc-select-try-another-way-form"
-                                    action={url.loginAction}
+                                    action={kcContext.url.loginAction}
                                     method="post"
-                                    className={clsx(
+                                    className={cx(
                                         displayWide &&
                                             getClassName("kcContentWrapperClass")
                                     )}
                                 >
                                     <div
-                                        className={clsx(
+                                        className={cx(
                                             displayWide && [
                                                 getClassName(
                                                     "kcFormSocialAccountContentClass"
@@ -262,22 +474,20 @@ export default function Template(props: TemplateProps<KcContext, I18n>) {
                                             ]
                                         )}
                                     >
-                                        <div className={getClassName("kcFormGroupClass")}>
+                                        <div
+                                            className={cx(
+                                                getClassName("kcFormGroupClass")
+                                            )}
+                                        >
                                             <input
                                                 type="hidden"
                                                 name="tryAnotherWay"
                                                 value="on"
                                             />
-                                            {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
                                             <a
                                                 href="#"
                                                 id="try-another-way"
-                                                onClick={() => {
-                                                    document.forms[
-                                                        "kc-select-try-another-way-form" as never
-                                                    ].submit();
-                                                    return false;
-                                                }}
+                                                onClick={onTryAnotherWayClick}
                                             >
                                                 {msg("doTryAnotherWay")}
                                             </a>
@@ -286,10 +496,13 @@ export default function Template(props: TemplateProps<KcContext, I18n>) {
                                 </form>
                             )}
                         {displayInfo && (
-                            <div id="kc-info" className={getClassName("kcSignUpClass")}>
+                            <div
+                                id="kc-info"
+                                className={cx(getClassName("kcSignUpClass"))}
+                            >
                                 <div
                                     id="kc-info-wrapper"
-                                    className={getClassName("kcInfoAreaWrapperClass")}
+                                    className={cx(getClassName("kcInfoAreaWrapperClass"))}
                                 >
                                     {infoNode}
                                 </div>
@@ -297,7 +510,19 @@ export default function Template(props: TemplateProps<KcContext, I18n>) {
                         )}
                     </div>
                 </div>
-            </div>
-        </div>
-    );
-}
+            );
+        });
+
+        const useStyles = makeStyles({
+            "name": `${symToStr({ Template })}${symToStr({ Main })}`
+        })(() => ({
+            "alert": {
+                "alignItems": "center"
+            }
+        }));
+
+        return { Main };
+    })();
+
+    return { Page };
+})();

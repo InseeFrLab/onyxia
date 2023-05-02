@@ -59,7 +59,7 @@
         "jwt-decode": "^3.1.2",
         "jwt-simple": "^0.5.6",
         "keycloak-js": "21.0.2",
-        "keycloakify": "^6.13.2",
+        "keycloakify": "^7.11.6",
         "memoizee": "^0.4.14",
         "minio": "^7.0.32",
         "moment": "^2.29.1",
