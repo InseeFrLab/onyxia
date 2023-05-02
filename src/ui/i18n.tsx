@@ -122,7 +122,6 @@ const {
     | typeof import("ui/pages/MyServices/MyServicesSavedConfigs/MyServicesSavedConfig").i18n
     | typeof import("ui/pages/MyServices/MyServicesSavedConfigs").i18n
     | typeof import("ui/pages/MyServices/MyServicesCards").i18n
-    | typeof import("ui/pages/Terms").i18n
 >()(
     { languages, fallbackLanguage },
     {
@@ -567,10 +566,6 @@ const {
                 "first copy the password": "First, copy the service...",
                 "open the service": "Open the service 🚀",
                 "return": "Return"
-            },
-            "Terms": {
-                "no terms":
-                    "No terms of service document provided for this instance of Onyxia"
             }
         },
         "fr": {
@@ -1024,10 +1019,6 @@ const {
                 "first copy the password": "Commencez par copier le mot de passe...",
                 "open the service": "Ouvrir le service 🚀",
                 "return": "Retour"
-            },
-            "Terms": {
-                "no terms":
-                    "Pas de document de terms et condition fournis pour cette instance d'Onyxia"
             }
             /* spell-checker: enable */
         },
@@ -1112,15 +1103,6 @@ const {
                 "reset helper dialogs": "重置指令窗口",
                 "reset": "重置",
                 "reset helper dialogs helper text": "重置您要求不再显示的消息窗口"
-            },
-            "RegisterUserProfile": {
-                "allowed email domains": "授权域",
-                "minimum length": ({ n }) => `最小长度 ${n}`,
-                "must be different from username": "用户名不可用",
-                "password mismatch": "两个密码不匹配",
-                "go back": "返回",
-                "form not filled properly yet": "请检查您是否正确填写了表格.",
-                "must respect the pattern": "必须尊守格式"
             },
             "MyFiles": {
                 "page title - my files": "我的文件",
@@ -1411,15 +1393,6 @@ const {
                 "first copy the password": "请复制您的密码",
                 "open the service": "打开服务 🚀",
                 "return": "返回"
-            },
-            "LoginDivider": {
-                "or": "或者"
-            },
-            "Terms": {
-                "no terms": undefined
-            },
-            "Login": {
-                "doRegister": "创建帐户"
             }
             /* spell-checker: enable */
         }

@@ -20,22 +20,7 @@ export default function Terms(
     // KcApp.tsx, see: https://docs.keycloakify.dev/terms-and-conditions
     useDownloadTerms({
         kcContext,
-        "downloadTermMarkdown": async ({ currentLanguageTag }) => {
-            if (THERMS_OF_SERVICES === undefined) {
-                return "No terms provided";
-            }
-
-            const { resolveLocalizedString } = createResolveLocalizedString({
-                "currentLanguage": currentLanguageTag,
-                "fallbackLanguage": "en"
-            });
-
-            const tos_url = resolveLocalizedString(THERMS_OF_SERVICES);
-
-            const markdownString = await fetch(tos_url).then(response => response.text());
-
-            return markdownString;
-        }
+        downloadTermMarkdown
     });
 
     useRerenderOnStateChange(evtTermMarkdown);
@@ -99,3 +84,22 @@ const useStyles = makeStyles({ "name": { Terms } })(theme => ({
         }
     }
 }));
+
+export async function downloadTermMarkdown(params: { currentLanguageTag: string }) {
+    const { currentLanguageTag } = params;
+
+    if (THERMS_OF_SERVICES === undefined) {
+        return "No terms provided";
+    }
+
+    const { resolveLocalizedString } = createResolveLocalizedString({
+        "currentLanguage": currentLanguageTag,
+        "fallbackLanguage": "en"
+    });
+
+    const tos_url = resolveLocalizedString(THERMS_OF_SERVICES);
+
+    const markdownString = await fetch(tos_url).then(response => response.text());
+
+    return markdownString;
+}
