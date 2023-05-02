@@ -7,7 +7,7 @@ import { ReactComponent as OnyxiaLogoSvg } from "ui/assets/svg/OnyxiaLogo.svg";
 import {
     HEADER_ORGANIZATION,
     HEADER_USECASE_DESCRIPTION
-} from "ui/keycloak-theme/envCarriedOverToKc";
+} from "keycloak-theme/login/envCarriedOverToKc";
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";

@@ -1,14 +1,12 @@
 import { useEffect, useState } from "react";
-import { declareComponentKeys } from "i18nifty";
 import type { Route } from "type-route";
 import { createGroup } from "type-route";
 import { routes } from "ui/routes";
 import { useSplashScreen } from "onyxia-ui";
 import { Markdown } from "onyxia-ui/Markdown";
-import { useLang, useTranslation } from "ui/i18n";
-import { Text } from "ui/theme";
+import { useLang } from "ui/i18n";
 import { makeStyles } from "ui/theme";
-import { getTosMarkdownUrl } from "ui/keycloak-theme/getTosMarkdownUrl";
+import { downloadTermMarkdown } from "keycloak-theme/login/pages/Terms";
 
 Terms.routeGroup = createGroup([routes.terms]);
 
@@ -24,23 +22,13 @@ export type Props = {
 export function Terms(props: Props) {
     const { className } = props;
 
-    const { tosUrl } = (function useClosure() {
-        const { lang } = useLang();
-        const tosUrl = getTosMarkdownUrl(lang);
-        return { tosUrl };
-    })();
-
     const [tos, setTos] = useState<string | undefined>(undefined);
 
-    useEffect(() => {
-        if (tosUrl === undefined) {
-            return;
-        }
+    const { lang } = useLang();
 
-        fetch(tosUrl)
-            .then(res => res.text())
-            .then(setTos);
-    }, [tosUrl]);
+    useEffect(() => {
+        downloadTermMarkdown({ "currentLanguageTag": lang }).then(setTos);
+    }, [lang]);
 
     {
         const { showSplashScreen, hideSplashScreen } = useSplashScreen();
@@ -56,13 +44,7 @@ export function Terms(props: Props) {
         }, [tos]);
     }
 
-    const { t } = useTranslation({ Terms });
-
     const { classes, cx } = useStyles();
-
-    if (tosUrl === undefined) {
-        return <Text typo="display heading">{t("no terms")}</Text>;
-    }
 
     if (tos === undefined) {
         return null;
@@ -74,10 +56,6 @@ export function Terms(props: Props) {
         </div>
     );
 }
-
-export const { i18n } = declareComponentKeys<"no terms">()({
-    Terms
-});
 
 export const useStyles = makeStyles()(theme => ({
     "root": {

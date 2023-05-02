@@ -12,7 +12,7 @@
 
 import "minimal-polyfills/Object.fromEntries";
 import { getEnv } from "env";
-import { kcContext } from "ui/keycloak-theme/kcContext";
+import { kcContext } from "./kcContext";
 import {
     retrieveParamFromUrl,
     addParamToUrl,

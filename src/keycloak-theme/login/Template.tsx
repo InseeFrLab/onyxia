@@ -17,9 +17,7 @@ import { Card } from "onyxia-ui/Card";
 import { Alert } from "onyxia-ui/Alert";
 import { symToStr } from "tsafe/symToStr";
 
-type TemplateProps = GenericTemplateProps<KcContext, I18n> & {
-    onClickCross?: () => void;
-};
+type TemplateProps = GenericTemplateProps<KcContext, I18n>;
 
 export default function Template(props: TemplateProps) {
     return (
@@ -30,13 +28,7 @@ export default function Template(props: TemplateProps) {
 }
 
 function ContextualizedTemplate(props: TemplateProps) {
-    const {
-        kcContext,
-        doUseDefaultCss,
-        classes: classes_props,
-        onClickCross,
-        children
-    } = props;
+    const { kcContext, doUseDefaultCss, classes: classes_props, children } = props;
 
     const {
         domRect: { width: rootWidth },
@@ -93,7 +85,7 @@ function ContextualizedTemplate(props: TemplateProps) {
                 />
             )}
             <section className={classes.betweenHeaderAndFooter}>
-                <Page {...props} className={classes.page} onClickCross={onClickCross}>
+                <Page {...props} className={classes.page}>
                     {children}
                 </Page>
             </section>
@@ -148,7 +140,6 @@ const { Page } = (() => {
         | "showUsernameNode"
         | "infoNode"
         | "kcContext"
-        | "onClickCross"
         | "i18n"
         | "children"
         | "doUseDefaultCss"
@@ -166,7 +157,6 @@ const { Page } = (() => {
             showUsernameNode = null,
             infoNode = null,
             kcContext,
-            onClickCross,
             doUseDefaultCss,
             i18n,
             children
@@ -187,10 +177,13 @@ const { Page } = (() => {
         return (
             <div ref={containerRef} className={cx(classes.root, className)}>
                 <Card ref={paperRef} className={classes.paper}>
-                    {onClickCross !== undefined && (
+                    {kcContext.pageId === "login.ftl" && (
                         <div className={classes.crossButtonWrapper}>
                             <div style={{ "flex": 1 }} />
-                            <IconButton iconId="close" onClick={onClickCross} />
+                            <IconButton
+                                iconId="close"
+                                onClick={() => window.history.back()}
+                            />
                         </div>
                     )}
                     <Head
