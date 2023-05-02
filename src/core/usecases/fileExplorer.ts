@@ -706,7 +706,7 @@ export const thunks = {
 type SliceContext = {
     loggedS3Client: S3Client;
     s3ClientLogs: ApiLogs;
-    onNavigate?: Param0<typeof thunks["notifyThatUserIsWatching"]>["onNavigate"];
+    onNavigate?: Param0<(typeof thunks)["notifyThatUserIsWatching"]>["onNavigate"];
     isLazilyInitialized: boolean;
     loggedExtendedFsApi: ExtendedFsApi;
 };

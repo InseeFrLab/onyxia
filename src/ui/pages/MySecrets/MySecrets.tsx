@@ -46,7 +46,7 @@ export function MySecrets(props: Props) {
 
     {
         const onNavigate = useConstCallback<
-            Param0<typeof secretExplorer["notifyThatUserIsWatching"]>["onNavigate"]
+            Param0<(typeof secretExplorer)["notifyThatUserIsWatching"]>["onNavigate"]
         >(({ directoryPath, doRestoreOpenedFile }) =>
             routes[route.name]({
                 "path": directoryPath,

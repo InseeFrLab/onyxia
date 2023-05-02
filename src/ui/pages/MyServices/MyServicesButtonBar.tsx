@@ -7,7 +7,7 @@ import { declareComponentKeys } from "i18nifty";
 
 const buttonIds = ["refresh", "launch", "password", "trash"] as const;
 
-export type ButtonId = typeof buttonIds[number];
+export type ButtonId = (typeof buttonIds)[number];
 
 export type Props = {
     className?: string;

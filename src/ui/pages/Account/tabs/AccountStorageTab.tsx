@@ -36,7 +36,7 @@ const technologies = [
     "rclone"
 ] as const;
 
-assert<Equals<typeof technologies[number], Technology>>();
+assert<Equals<(typeof technologies)[number], Technology>>();
 
 export type Props = {
     className?: string;

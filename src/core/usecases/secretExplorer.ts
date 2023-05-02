@@ -709,7 +709,7 @@ export const thunks = {
 type SliceContexts = {
     loggedSecretClient: SecretsManager;
     secretClientLogs: ApiLogs;
-    onNavigate?: Param0<typeof thunks["notifyThatUserIsWatching"]>["onNavigate"];
+    onNavigate?: Param0<(typeof thunks)["notifyThatUserIsWatching"]>["onNavigate"];
     isLazilyInitialized: boolean;
     loggedExtendedFsApi: ExtendedFsApi;
 };

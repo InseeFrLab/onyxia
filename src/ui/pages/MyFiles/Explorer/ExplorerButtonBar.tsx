@@ -76,4 +76,4 @@ export const { i18n } = declareComponentKeys<
 
 const buttonIds = ["refresh", "new", "create directory", "delete", "copy path"] as const;
 
-export type ButtonId = typeof buttonIds[number];
+export type ButtonId = (typeof buttonIds)[number];

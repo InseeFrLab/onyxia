@@ -751,7 +751,7 @@ export const thunks = {
 
                                         assert<
                                             Equals<
-                                                typeof jsonSchemaFormFieldDescription["type"],
+                                                (typeof jsonSchemaFormFieldDescription)["type"],
                                                 never
                                             >
                                         >();

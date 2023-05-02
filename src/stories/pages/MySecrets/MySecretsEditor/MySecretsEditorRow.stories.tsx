@@ -34,7 +34,7 @@ const baseParams: Parameters<typeof getStory>[0] = {
 export const ViewDefault = getStory(baseParams);
 
 export const { ViewEditing } = (() => {
-    const evtAction: typeof baseParams["evtAction"] = new Evt();
+    const evtAction: (typeof baseParams)["evtAction"] = new Evt();
 
     const ViewEditing = getStory({
         ...baseParams,

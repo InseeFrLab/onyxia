@@ -89,4 +89,4 @@ const buttonIds = [
     "copy path"
 ] as const;
 
-export type ButtonId = typeof buttonIds[number];
+export type ButtonId = (typeof buttonIds)[number];

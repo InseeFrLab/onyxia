@@ -11,7 +11,7 @@ import { declareComponentKeys } from "i18nifty";
 
 const actions = ["edit", "copy link", "delete"] as const;
 
-export type SavedConfigurationAction = typeof actions[number];
+export type SavedConfigurationAction = (typeof actions)[number];
 
 export type Props = {
     callback: (action: SavedConfigurationAction) => void;
