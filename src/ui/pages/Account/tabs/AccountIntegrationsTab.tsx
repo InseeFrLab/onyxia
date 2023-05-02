@@ -21,7 +21,7 @@ const editableFieldKeys = [
     "kaggleApiToken"
 ] as const;
 
-type EditableFieldKey = typeof editableFieldKeys[number];
+type EditableFieldKey = (typeof editableFieldKeys)[number];
 
 export type Props = {
     className?: string;

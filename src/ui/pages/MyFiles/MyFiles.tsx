@@ -42,7 +42,7 @@ export function MyFiles(props: Props) {
 
     {
         const onNavigate = useConstCallback<
-            Param0<typeof fileExplorer["notifyThatUserIsWatching"]>["onNavigate"]
+            Param0<(typeof fileExplorer)["notifyThatUserIsWatching"]>["onNavigate"]
         >(({ directoryPath, doRestoreOpenedFile: _doRestoreOpenedFile }) =>
             routes[route.name]({
                 "path": directoryPath

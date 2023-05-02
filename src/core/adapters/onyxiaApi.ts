@@ -628,7 +628,7 @@ export function createOnyxiaApi(params: {
                                 }
 
                                 const sliderConfig = getValueAtPathInObject<
-                                    typeof onyxiaValues["region"]["sliders"][string]
+                                    (typeof onyxiaValues)["region"]["sliders"][string]
                                 >({
                                     "path": ["region", "sliders", useRegionSliderConfig],
                                     "obj": onyxiaValues

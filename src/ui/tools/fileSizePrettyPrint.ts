@@ -4,7 +4,7 @@ const dp = 1;
 
 const units = ["kB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"] as const;
 
-type Unit = "B" | typeof units[number];
+type Unit = "B" | (typeof units)[number];
 
 export function fileSizePrettyPrint(params: { bytes: number; unit?: Unit }): {
     value: string;

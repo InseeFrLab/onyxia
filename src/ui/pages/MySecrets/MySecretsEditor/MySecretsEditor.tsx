@@ -404,7 +404,7 @@ export function getIsValidKey(params: { key: string }):
     | {
           isValidKey: false;
           message: Id<
-              typeof i18n[number],
+              (typeof i18n)[number],
               | "invalid key _ not valid"
               | "invalid key start with digit"
               | "invalid key invalid character"

@@ -7,4 +7,4 @@ export const accountTabIds = [
     "user-interface"
 ] as const;
 
-export type AccountTabId = typeof accountTabIds[number];
+export type AccountTabId = (typeof accountTabIds)[number];

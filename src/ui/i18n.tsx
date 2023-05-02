@@ -14,7 +14,7 @@ assert<typeof fallbackLanguage extends Language ? true : false>();
 
 export const languages = ["en", "fr", "zh-CN"] as const;
 
-assert<Equals<typeof languages[number], Language>>();
+assert<Equals<(typeof languages)[number], Language>>();
 
 const common = id<
     Record<
@@ -99,7 +99,6 @@ const {
     | typeof import("ui/pages/FourOhFour").i18n
     | typeof import("ui/pages/PortraitModeUnsupported").i18n
     | typeof import("ui/pages/Home").i18n
-    | typeof import("ui/keycloak-theme/RegisterUserProfile").i18n
     | typeof import("ui/pages/Account/AccountField").i18n
     | typeof import("ui/pages/Account/Account").i18n
     | typeof import("ui/pages/Account/tabs/AccountInfoTab").i18n
@@ -123,9 +122,7 @@ const {
     | typeof import("ui/pages/MyServices/MyServicesSavedConfigs/MyServicesSavedConfig").i18n
     | typeof import("ui/pages/MyServices/MyServicesSavedConfigs").i18n
     | typeof import("ui/pages/MyServices/MyServicesCards").i18n
-    | typeof import("ui/keycloak-theme/Login/LoginDivider").i18n
     | typeof import("ui/pages/Terms").i18n
-    | typeof import("ui/keycloak-theme/Login").i18n
 >()(
     { languages, fallbackLanguage },
     {
@@ -239,16 +236,6 @@ const {
                 "reset": "Reset",
                 "reset helper dialogs helper text":
                     "Reset message windows that have been requested not to be shown again"
-            },
-            "RegisterUserProfile": {
-                "allowed email domains": "Allowed domains",
-                "minimum length": ({ n }) => `Minimum length: ${n}`,
-                "must be different from username": "Pass can't be the username",
-                "password mismatch": "Passwords mismatch",
-                "go back": "Go back",
-                "form not filled properly yet":
-                    "Please make sure the form is properly filled out",
-                "must respect the pattern": "Must respect the pattern"
             },
             "MyFiles": {
                 "page title - my files": "My Files",
@@ -581,15 +568,9 @@ const {
                 "open the service": "Open the service 🚀",
                 "return": "Return"
             },
-            "LoginDivider": {
-                "or": "or"
-            },
             "Terms": {
                 "no terms":
                     "No terms of service document provided for this instance of Onyxia"
-            },
-            "Login": {
-                "doRegister": "Create an account"
             }
         },
         "fr": {
@@ -702,17 +683,6 @@ const {
                 "reset": "Réinitialiser",
                 "reset helper dialogs helper text":
                     "Réinitialiser les fenêtres de messages que vous avez demandé de ne plus afficher"
-            },
-            "RegisterUserProfile": {
-                "allowed email domains": "Domaines autorisés",
-                "minimum length": ({ n }) => `Longueur minimum ${n}`,
-                "must be different from username":
-                    "Ne peut pas être le nom d'utilisateur",
-                "password mismatch": "Les deux mots de passe ne correspondent pas",
-                "go back": "Retour",
-                "form not filled properly yet":
-                    "Veuillez vérifier que vous avez bien rempli le formulaire",
-                "must respect the pattern": "Doit respecter le format"
             },
             "MyFiles": {
                 "page title - my files": "Mes fichiers",
@@ -1055,15 +1025,9 @@ const {
                 "open the service": "Ouvrir le service 🚀",
                 "return": "Retour"
             },
-            "LoginDivider": {
-                "or": "ou"
-            },
             "Terms": {
                 "no terms":
                     "Pas de document de terms et condition fournis pour cette instance d'Onyxia"
-            },
-            "Login": {
-                "doRegister": "Créer un compte"
             }
             /* spell-checker: enable */
         },

@@ -39,7 +39,7 @@ export type CatalogLauncherConfigurationCardProps = {
     onFormValueChange(params: FormFieldValue): void;
     formFieldsIsWellFormed: NonNullable<
         NonNullable<
-            ReturnType<typeof selectors["launcher"]["formFieldsIsWellFormed"]>
+            ReturnType<(typeof selectors)["launcher"]["formFieldsIsWellFormed"]>
         >["formFieldsIsWellFormed"]
     >;
 };
@@ -601,7 +601,7 @@ const { TabContent } = (() => {
                                             );
                                     }
 
-                                    assert<Equals<typeof formField["type"], never>>(
+                                    assert<Equals<(typeof formField)["type"], never>>(
                                         false
                                     );
                                 })()}
