@@ -3,16 +3,14 @@ import type { Thunks } from "../core";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { createSlice } from "@reduxjs/toolkit";
 import { id } from "tsafe/id";
-import type { State } from "../core";
+import type { State as RootState } from "../core";
 import { createSelector } from "@reduxjs/toolkit";
 import { selectors as deploymentRegionSelectors } from "./deploymentRegion";
 import { assert } from "tsafe/assert";
 
-type VaultCredentialState =
-    | VaultCredentialState.NotRefreshed
-    | VaultCredentialState.Ready;
+type State = State.NotRefreshed | State.Ready;
 
-namespace VaultCredentialState {
+namespace State {
     type Common = {
         isRefreshing: boolean;
     };
@@ -32,8 +30,8 @@ export const name = "vaultCredentials";
 
 export const { reducer, actions } = createSlice({
     name,
-    "initialState": id<VaultCredentialState>(
-        id<VaultCredentialState.NotRefreshed>({
+    "initialState": id<State>(
+        id<State.NotRefreshed>({
             "stateDescription": "not refreshed",
             "isRefreshing": false
         })
@@ -53,7 +51,7 @@ export const { reducer, actions } = createSlice({
         ) => {
             const { expirationTime, token } = payload;
 
-            return id<VaultCredentialState.Ready>({
+            return id<State.Ready>({
                 "isRefreshing": false,
                 "stateDescription": "ready",
                 expirationTime,
@@ -106,7 +104,7 @@ export const thunks = {
 } satisfies Thunks;
 
 export const selectors = (() => {
-    const readyState = (rootState: State): VaultCredentialState.Ready | undefined => {
+    const readyState = (rootState: RootState): State.Ready | undefined => {
         const state = rootState.vaultCredentials;
         switch (state.stateDescription) {
             case "ready":
@@ -163,7 +161,7 @@ export const selectors = (() => {
         }
     );
 
-    const isRefreshing = (rootState: State) => {
+    const isRefreshing = (rootState: RootState) => {
         const state = rootState.vaultCredentials;
         return state.isRefreshing;
     };

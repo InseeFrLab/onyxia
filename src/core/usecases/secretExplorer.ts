@@ -15,7 +15,7 @@ import { assert } from "tsafe/assert";
 import { selectors as projectSelectionSelectors } from "./projectSelection";
 import { Evt } from "evt";
 import type { Ctx } from "evt";
-import type { State } from "../core";
+import type { State as RootState } from "../core";
 import memoize from "memoizee";
 import type { WritableDraft } from "immer/dist/types/types-external";
 import { selectors as deploymentRegionSelectors } from "./deploymentRegion";
@@ -26,7 +26,7 @@ import { getVaultApiLogger } from "core/adapters/secretsManager/vaultApiLogger";
 
 //All explorer path are expected to be absolute (start with /)
 
-export type SecretExplorerState = {
+export type State = {
     directoryPath: string | undefined;
     directoryItems: {
         kind: "file" | "directory";
@@ -56,7 +56,7 @@ export const name = "secretExplorer";
 
 export const { reducer, actions } = createSlice({
     name,
-    "initialState": id<SecretExplorerState>({
+    "initialState": id<State>({
         "directoryPath": undefined,
         "directoryItems": [],
         "isNavigationOngoing": false,
@@ -800,7 +800,7 @@ export const selectors = (() => {
     };
 
     const currentWorkingDirectoryView = (
-        rootState: State
+        rootState: RootState
     ): CurrentWorkingDirectoryView | undefined => {
         const state = rootState.secretExplorer;
 

@@ -7,7 +7,7 @@ import { assert } from "tsafe/assert";
 import { createObjectThatThrowsIfAccessed } from "redux-clean-architecture";
 import "minimal-polyfills/Object.fromEntries";
 import { thunks as userAuthentication } from "./userAuthentication";
-import type { State } from "../core";
+import type { State as RootState } from "../core";
 import { join as pathJoin } from "path";
 import { getIsDarkModeEnabledOsDefault } from "onyxia-ui/tools/getIsDarkModeEnabledOsDefault";
 
@@ -34,7 +34,7 @@ export type UserConfigs = Id<
     }
 >;
 
-export type UserConfigsState = {
+export type State = {
     [K in keyof UserConfigs]: {
         value: UserConfigs[K];
         isBeingChanged: boolean;
@@ -45,7 +45,7 @@ export const name = "userConfigs";
 
 export const { reducer, actions } = createSlice({
     name,
-    "initialState": createObjectThatThrowsIfAccessed<UserConfigsState>({
+    "initialState": createObjectThatThrowsIfAccessed<State>({
         "debugMessage":
             "The userConfigState should have been initialized during the store initialization"
     }),
@@ -187,7 +187,7 @@ export const privateThunks = {
 
 export const selectors = (() => {
     /** Give the value directly (without isBeingChanged) */
-    const userConfigs = (rootState: State): UserConfigs => {
+    const userConfigs = (rootState: RootState): UserConfigs => {
         const userConfigs: any = {};
 
         const state = rootState.userConfigs;

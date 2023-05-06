@@ -8,7 +8,7 @@ import { join as pathJoin } from "path";
 import { unwrapWritableDraft } from "core/tools/unwrapWritableDraft";
 import { interUsecasesThunks as secretExplorersThunks } from "./secretExplorer";
 
-export type SecretsEditorState = {
+type State = {
     directoryPath: string;
     basename: string;
     /** undefined when is being opened */
@@ -50,7 +50,7 @@ export const name = "secretsEditor";
 
 export const { reducer, actions } = createSlice({
     name,
-    "initialState": id<SecretsEditorState | null>(null),
+    "initialState": id<State | null>(null),
     "reducers": {
         "openStarted": (
             _state,
@@ -63,7 +63,7 @@ export const { reducer, actions } = createSlice({
         ) => {
             const { basename, directoryPath } = payload;
 
-            return id<SecretsEditorState>({
+            return id<State>({
                 directoryPath,
                 basename,
                 "secretWithMetadata": undefined,

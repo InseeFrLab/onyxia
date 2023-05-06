@@ -1,5 +1,5 @@
 import "minimal-polyfills/Object.fromEntries";
-import type { State, Thunks } from "../core";
+import type { State as RootState, Thunks } from "../core";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { createSelector, createSlice } from "@reduxjs/toolkit";
 import { id } from "tsafe/id";
@@ -127,9 +127,9 @@ export declare namespace FormField {
     }
 }
 
-type LauncherState = LauncherState.NotInitialized | LauncherState.Ready;
+type State = State.NotInitialized | State.Ready;
 
-export declare namespace LauncherState {
+export declare namespace State {
     export type NotInitialized = {
         stateDescription: "not initialized";
         isInitializing: boolean;
@@ -380,8 +380,8 @@ export const name = "launcher";
 
 export const { reducer, actions } = createSlice({
     name,
-    "initialState": id<LauncherState>(
-        id<LauncherState.NotInitialized>({
+    "initialState": id<State>(
+        id<State.NotInitialized>({
             "stateDescription": "not initialized",
             "isInitializing": false
         })
@@ -400,9 +400,9 @@ export const { reducer, actions } = createSlice({
                 packageName: string;
                 icon: string | undefined;
                 sources: string[];
-                formFields: LauncherState.Ready["~internal"]["formFields"];
-                infosAboutWhenFieldsShouldBeHidden: LauncherState.Ready["~internal"]["infosAboutWhenFieldsShouldBeHidden"];
-                config: LauncherState.Ready["~internal"]["config"];
+                formFields: State.Ready["~internal"]["formFields"];
+                infosAboutWhenFieldsShouldBeHidden: State.Ready["~internal"]["infosAboutWhenFieldsShouldBeHidden"];
+                config: State.Ready["~internal"]["config"];
                 dependencies: string[];
                 formFieldsValueDifferentFromDefault: FormFieldValue[];
                 sensitiveConfigurations: FormFieldValue[];
@@ -423,7 +423,7 @@ export const { reducer, actions } = createSlice({
 
             Object.assign(
                 state,
-                id<LauncherState.Ready>({
+                id<State.Ready>({
                     "stateDescription": "ready",
                     catalogId,
                     packageName,
@@ -452,7 +452,7 @@ export const { reducer, actions } = createSlice({
             );
         },
         "reset": () =>
-            id<LauncherState.NotInitialized>({
+            id<State.NotInitialized>({
                 "stateDescription": "not initialized",
                 "isInitializing": false
             }),
@@ -558,8 +558,8 @@ export const thunks = {
                 infosAboutWhenFieldsShouldBeHidden,
                 sensitiveConfigurations
             } = (() => {
-                const formFields: LauncherState.Ready["~internal"]["formFields"] = [];
-                const infosAboutWhenFieldsShouldBeHidden: LauncherState.Ready["~internal"]["infosAboutWhenFieldsShouldBeHidden"] =
+                const formFields: State.Ready["~internal"]["formFields"] = [];
+                const infosAboutWhenFieldsShouldBeHidden: State.Ready["~internal"]["infosAboutWhenFieldsShouldBeHidden"] =
                     [];
 
                 const sensitiveConfigurations: FormFieldValue[] | undefined = (() => {
@@ -1139,7 +1139,7 @@ export const thunks = {
 } satisfies Thunks;
 
 export const selectors = (() => {
-    const readyLauncher = (rootState: State): LauncherState.Ready | undefined => {
+    const readyLauncher = (rootState: RootState): State.Ready | undefined => {
         const state = rootState.launcher;
         switch (state.stateDescription) {
             case "ready":
@@ -1198,7 +1198,7 @@ export const selectors = (() => {
 
     function createIsFieldHidden(params: {
         formFields: FormField[];
-        infosAboutWhenFieldsShouldBeHidden: LauncherState.Ready["~internal"]["infosAboutWhenFieldsShouldBeHidden"];
+        infosAboutWhenFieldsShouldBeHidden: State.Ready["~internal"]["infosAboutWhenFieldsShouldBeHidden"];
     }) {
         const { formFields, infosAboutWhenFieldsShouldBeHidden } = params;
 
@@ -1548,7 +1548,7 @@ export const selectors = (() => {
 })();
 
 function formFieldValueChangedReducer(params: {
-    state: WritableDraft<LauncherState.Ready>;
+    state: WritableDraft<State.Ready>;
     formFieldValue: FormFieldValue;
 }): void {
     const {
