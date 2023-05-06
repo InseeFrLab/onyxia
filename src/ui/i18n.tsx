@@ -79,49 +79,49 @@ const {
     $lang,
     useResolveLocalizedString
 } = createI18nApi<
-    | typeof import("ui/pages/MySecrets/MySecrets").i18n
-    | typeof import("ui/pages/MySecrets/SecretsExplorer").i18n
-    | typeof import("ui/pages/MySecrets/MySecretsEditor").i18n
-    | typeof import("ui/pages/MySecrets/SecretsExplorer/SecretsExplorerButtonBar").i18n
-    | typeof import("ui/pages/MySecrets/SecretsExplorer/SecretsExplorerItems").i18n
-    | typeof import("ui/pages/MySecrets/SecretsExplorer/SecretsExplorerItems/SecretsExplorerItem").i18n
-    | typeof import("ui/pages/MySecrets/MySecretsEditor/MySecretsEditorRow").i18n
-    | typeof import("ui/pages/MyFiles/MyFiles").i18n
-    | typeof import("ui/pages/MyFiles/Explorer/Explorer").i18n
-    | typeof import("ui/pages/MyFiles/Explorer/ExplorerButtonBar").i18n
-    | typeof import("ui/pages/MyFiles/Explorer/ExplorerItems").i18n
-    | typeof import("ui/pages/MyFiles/Explorer/ExplorerItems/ExplorerItem").i18n
-    | typeof import("ui/pages/MyFiles/Explorer/ExplorerUploadModal/ExplorerUploadModalDropArea").i18n
-    | typeof import("ui/pages/MyFiles/Explorer/ExplorerUploadModal/ExplorerUploadProgress").i18n
-    | typeof import("ui/pages/MyFiles/Explorer/ExplorerUploadModal/ExplorerUploadModal").i18n
+    | typeof import("ui/pages/mySecrets/MySecrets").i18n
+    | typeof import("ui/pages/mySecrets/SecretsExplorer").i18n
+    | typeof import("ui/pages/mySecrets/MySecretsEditor").i18n
+    | typeof import("ui/pages/mySecrets/SecretsExplorer/SecretsExplorerButtonBar").i18n
+    | typeof import("ui/pages/mySecrets/SecretsExplorer/SecretsExplorerItems").i18n
+    | typeof import("ui/pages/mySecrets/SecretsExplorer/SecretsExplorerItems/SecretsExplorerItem").i18n
+    | typeof import("ui/pages/mySecrets/MySecretsEditor/MySecretsEditorRow").i18n
+    | typeof import("ui/pages/myFiles/MyFiles").i18n
+    | typeof import("ui/pages/myFiles/Explorer/Explorer").i18n
+    | typeof import("ui/pages/myFiles/Explorer/ExplorerButtonBar").i18n
+    | typeof import("ui/pages/myFiles/Explorer/ExplorerItems").i18n
+    | typeof import("ui/pages/myFiles/Explorer/ExplorerItems/ExplorerItem").i18n
+    | typeof import("ui/pages/myFiles/Explorer/ExplorerUploadModal/ExplorerUploadModalDropArea").i18n
+    | typeof import("ui/pages/myFiles/Explorer/ExplorerUploadModal/ExplorerUploadProgress").i18n
+    | typeof import("ui/pages/myFiles/Explorer/ExplorerUploadModal/ExplorerUploadModal").i18n
     | typeof import("ui/shared/Header").i18n
     | typeof import("ui/App/App").i18n
-    | typeof import("ui/pages/FourOhFour").i18n
-    | typeof import("ui/pages/PortraitModeUnsupported").i18n
-    | typeof import("ui/pages/Home").i18n
-    | typeof import("ui/pages/Account/AccountField").i18n
-    | typeof import("ui/pages/Account/Account").i18n
-    | typeof import("ui/pages/Account/tabs/AccountInfoTab").i18n
-    | typeof import("ui/pages/Account/tabs/AccountIntegrationsTab").i18n
-    | typeof import("ui/pages/Account/tabs/AccountStorageTab").i18n
-    | typeof import("ui/pages/Account/tabs/AccountKubernetesTab").i18n
-    | typeof import("ui/pages/Account/tabs/AccountUserInterfaceTab").i18n
-    | typeof import("ui/pages/Account/tabs/AccountVaultTab").i18n
-    | typeof import("ui/pages/Catalog/CatalogLauncher/CatalogLauncher").i18n
-    | typeof import("ui/pages/Catalog/CatalogExplorer/CatalogExplorerCards").i18n
-    | typeof import("ui/pages/Catalog/CatalogExplorer/CatalogExplorerCards/CatalogExplorerCard").i18n
-    | typeof import("ui/pages/Catalog").i18n
+    | typeof import("ui/pages/page404/Page404").i18n
+    | typeof import("ui/shared/PortraitModeUnsupported").i18n
+    | typeof import("ui/pages/home/Home").i18n
+    | typeof import("ui/pages/account/AccountField").i18n
+    | typeof import("ui/pages/account/Account").i18n
+    | typeof import("ui/pages/account/tabs/AccountInfoTab").i18n
+    | typeof import("ui/pages/account/tabs/AccountIntegrationsTab").i18n
+    | typeof import("ui/pages/account/tabs/AccountStorageTab").i18n
+    | typeof import("ui/pages/account/tabs/AccountKubernetesTab").i18n
+    | typeof import("ui/pages/account/tabs/AccountUserInterfaceTab").i18n
+    | typeof import("ui/pages/account/tabs/AccountVaultTab").i18n
+    | typeof import("ui/pages/catalog/CatalogLauncher/CatalogLauncher").i18n
+    | typeof import("ui/pages/catalog/CatalogExplorer/CatalogExplorerCards").i18n
+    | typeof import("ui/pages/catalog/CatalogExplorer/CatalogExplorerCards/CatalogExplorerCard").i18n
+    | typeof import("ui/pages/catalog/Catalog").i18n
     | typeof import("ui/App/Footer").i18n
-    | typeof import("ui/pages/Catalog/CatalogLauncher/CatalogLauncherMainCard").i18n
-    | typeof import("ui/pages/Catalog/CatalogLauncher/CatalogLauncherConfigurationCard").i18n
-    | typeof import("ui/pages/MyServices").i18n
-    | typeof import("ui/pages/MyServices/MyServicesButtonBar").i18n
-    | typeof import("ui/pages/MyServices/MyServicesCards/MyServicesCard").i18n
-    | typeof import("ui/pages/MyServices/MyServicesCards/MyServicesCard/MyServicesRunningTime").i18n
-    | typeof import("ui/pages/MyServices/MyServicesSavedConfigs/MyServicesSavedConfig/MyServicesSavedConfigOptions").i18n
-    | typeof import("ui/pages/MyServices/MyServicesSavedConfigs/MyServicesSavedConfig").i18n
-    | typeof import("ui/pages/MyServices/MyServicesSavedConfigs").i18n
-    | typeof import("ui/pages/MyServices/MyServicesCards").i18n
+    | typeof import("ui/pages/catalog/CatalogLauncher/CatalogLauncherMainCard").i18n
+    | typeof import("ui/pages/catalog/CatalogLauncher/CatalogLauncherConfigurationCard").i18n
+    | typeof import("ui/pages/myServices/MyServices").i18n
+    | typeof import("ui/pages/myServices/MyServicesButtonBar").i18n
+    | typeof import("ui/pages/myServices/MyServicesCards/MyServicesCard").i18n
+    | typeof import("ui/pages/myServices/MyServicesCards/MyServicesCard/MyServicesRunningTime").i18n
+    | typeof import("ui/pages/myServices/MyServicesSavedConfigs/MyServicesSavedConfig/MyServicesSavedConfigOptions").i18n
+    | typeof import("ui/pages/myServices/MyServicesSavedConfigs/MyServicesSavedConfig").i18n
+    | typeof import("ui/pages/myServices/MyServicesSavedConfigs").i18n
+    | typeof import("ui/pages/myServices/MyServicesCards").i18n
 >()(
     { languages, fallbackLanguage },
     {
@@ -404,7 +404,7 @@ const {
                 "mySecrets": "My Secrets",
                 "myFiles": "My Files"
             },
-            "FourOhFour": {
+            "Page404": {
                 "not found": "Page not found"
             },
             "PortraitModeUnsupported": {
@@ -851,7 +851,7 @@ const {
                 "mySecrets": "Mes secrets",
                 "myFiles": "Mes fichiers"
             },
-            "FourOhFour": {
+            "Page404": {
                 "not found": "Page non trouvée"
             },
             "PortraitModeUnsupported": {
@@ -1242,7 +1242,7 @@ const {
                 "mySecrets": "我的密钥",
                 "myFiles": "我的文档"
             },
-            "FourOhFour": {
+            "Page404": {
                 "not found": "网页未找到"
             },
             "PortraitModeUnsupported": {

@@ -1,4 +1,4 @@
-import { MyServicesRoundLogo } from "ui/pages/MyServices/MyServicesCards/MyServicesCard/MyServicesRoundLogo";
+import { MyServicesRoundLogo } from "ui/pages/myServices/MyServicesCards/MyServicesCard/MyServicesRoundLogo";
 import { sectionName } from "./sectionName";
 import { getStoryFactory } from "stories/getStory";
 import rstudioLogoUrl from "stories/assets/img/rstudio.png";

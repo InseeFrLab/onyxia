@@ -27,7 +27,6 @@ export type Props = {
               packageIconUrl?: string;
               friendlyName: string;
               packageName: string;
-              infoUrl: string;
               env: Record<string, string>;
               openUrl: string | undefined;
               monitoringUrl: string | undefined;

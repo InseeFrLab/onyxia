@@ -1,4 +1,4 @@
-import { MyServicesRunningTime } from "ui/pages/MyServices/MyServicesCards/MyServicesCard/MyServicesRunningTime";
+import { MyServicesRunningTime } from "ui/pages/myServices/MyServicesCards/MyServicesCard/MyServicesRunningTime";
 import { sectionName } from "./sectionName";
 import { getStoryFactory } from "stories/getStory";
 

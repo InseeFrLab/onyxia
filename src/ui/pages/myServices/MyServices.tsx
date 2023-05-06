@@ -11,8 +11,6 @@ import { ButtonId } from "./MyServicesButtonBar";
 import { useConstCallback } from "powerhooks/useConstCallback";
 import { useCoreFunctions, useCoreState, selectors } from "core";
 import { routes } from "ui/routes";
-import { createGroup } from "type-route";
-import type { Route } from "type-route";
 import { useSplashScreen } from "onyxia-ui";
 import { Dialog } from "onyxia-ui/Dialog";
 import { useCallbackFactory } from "powerhooks/useCallbackFactory";
@@ -22,19 +20,14 @@ import { Evt } from "evt";
 import type { UnpackEvt } from "evt";
 import { assert } from "tsafe/assert";
 import { declareComponentKeys } from "i18nifty";
-
-MyServices.routeGroup = createGroup([routes.myServices]);
-
-type PageRoute = Route<typeof MyServices.routeGroup>;
-
-MyServices.getDoRequireUserLoggedIn = () => true;
+import type { PageRoute } from "./route";
 
 export type Props = {
     route: PageRoute;
     className?: string;
 };
 
-export function MyServices(props: Props) {
+export default function MyServices(props: Props) {
     const { className, route } = props;
 
     const { t } = useTranslation({ MyServices });
@@ -190,7 +183,6 @@ export function MyServices(props: Props) {
                           "packageIconUrl": logoUrl,
                           friendlyName,
                           packageName,
-                          "infoUrl": routes.myService({ "serviceId": id }).href,
                           "openUrl": urls[0],
                           monitoringUrl,
                           "startTime": isStarting ? undefined : startedAt,

@@ -1,6 +1,5 @@
 import { useEffect, useMemo, memo } from "react";
 import { Button } from "ui/theme";
-import { createGroup } from "type-route";
 import { routes } from "ui/routes";
 import { makeStyles, Text, useStyles as useClasslessStyles } from "ui/theme";
 import { ReactComponent as OnyxiaLogoSvg } from "ui/assets/svg/OnyxiaLogo.svg";
@@ -18,16 +17,14 @@ import { getIsHomePageDisabled } from "ui/env";
 import { useConst } from "powerhooks/useConst";
 import { useStateRef } from "powerhooks/useStateRef";
 import { declareComponentKeys } from "i18nifty";
-
-Home.routeGroup = createGroup([routes.home]);
-
-Home.getDoRequireUserLoggedIn = () => false;
+import type { PageRoute } from "./route";
 
 type Props = {
+    route: PageRoute;
     className?: string;
 };
 
-export function Home(props: Props) {
+export default function Home(props: Props) {
     const { className } = props;
 
     useConst(() => {

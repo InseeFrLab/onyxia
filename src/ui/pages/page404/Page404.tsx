@@ -1,4 +1,3 @@
-import { memo } from "react";
 import { useTranslation } from "ui/i18n";
 import { makeStyles, Text } from "ui/theme";
 import { declareComponentKeys } from "i18nifty";
@@ -7,10 +6,10 @@ export type Props = {
     className?: string;
 };
 
-export const FourOhFour = memo((props: Props) => {
+export default function Page404(props: Props) {
     const { className } = props;
 
-    const { t } = useTranslation({ FourOhFour });
+    const { t } = useTranslation({ Page404 });
 
     const { classes, cx } = useStyles();
 
@@ -19,9 +18,9 @@ export const FourOhFour = memo((props: Props) => {
             <Text typo="display heading">{t("not found")} 😥</Text>
         </div>
     );
-});
+}
 
-const useStyles = makeStyles({ "name": { FourOhFour } })(theme => ({
+const useStyles = makeStyles({ "name": { Page404 } })(theme => ({
     "root": {
         "height": "100%",
         "display": "flex",
@@ -31,4 +30,4 @@ const useStyles = makeStyles({ "name": { FourOhFour } })(theme => ({
     }
 }));
 
-export const { i18n } = declareComponentKeys<"not found">()({ FourOhFour });
+export const { i18n } = declareComponentKeys<"not found">()({ Page404 });

@@ -1,7 +1,7 @@
 import {
     MyServicesSavedConfigs,
     Props
-} from "ui/pages/MyServices/MyServicesSavedConfigs";
+} from "ui/pages/myServices/MyServicesSavedConfigs";
 import { sectionName } from "./sectionName";
 import { getStoryFactory, logCallbacks } from "stories/getStory";
 import rstudioImgUrl from "stories/assets/img/rstudio.png";
