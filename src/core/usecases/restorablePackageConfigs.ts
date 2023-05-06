@@ -8,10 +8,10 @@ import type { PayloadAction } from "@reduxjs/toolkit";
 import type { Thunks } from "../core";
 import { thunks as userConfigsThunks } from "./userConfigs";
 import { createObjectThatThrowsIfAccessed } from "redux-clean-architecture";
-import type { State } from "../core";
+import type { State as RootState } from "../core";
 import { onyxiaFriendlyNameFormFieldPath } from "core/ports/OnyxiaApi";
 
-type RestorablePackageConfigsState = {
+type State = {
     restorablePackageConfigs: RestorablePackageConfig[];
     packageIcons:
         | {
@@ -38,7 +38,7 @@ export const name = "restorablePackageConfig";
 
 export const { reducer, actions } = createSlice({
     name,
-    "initialState": createObjectThatThrowsIfAccessed<RestorablePackageConfigsState>({
+    "initialState": createObjectThatThrowsIfAccessed<State>({
         "debugMessage": [
             "The restorablePackageConfigState should have been",
             "initialized during the store initialization"
@@ -311,7 +311,7 @@ function areSameRestorablePackageConfig(
 }
 
 export const selectors = (() => {
-    function displayableConfigs(rootState: State) {
+    function displayableConfigs(rootState: RootState) {
         const { restorablePackageConfigs, packageIcons } =
             rootState.restorablePackageConfig;
 

@@ -4,11 +4,11 @@ import type { PayloadAction } from "@reduxjs/toolkit";
 import { id } from "tsafe/id";
 import { selectors as deploymentRegionSelectors } from "./deploymentRegion";
 import { selectors as projectSelectionSelectors } from "./projectSelection";
-import type { Thunks, State } from "../core";
+import type { Thunks, State as RootState } from "../core";
 import { exclude } from "tsafe/exclude";
 import { createUsecaseContextApi } from "redux-clean-architecture";
 
-type RunningServicesState = {
+type State = {
     isUserWatching: boolean;
     isUpdating: boolean;
     "~internal": {
@@ -53,7 +53,7 @@ export const name = "runningService";
 
 export const { reducer, actions } = createSlice({
     name,
-    "initialState": id<RunningServicesState>({
+    "initialState": id<State>({
         "isUserWatching": false,
         "isUpdating": false,
         "~internal": {
@@ -78,7 +78,7 @@ export const { reducer, actions } = createSlice({
         ) => {
             const { runningServices } = payload;
 
-            return id<RunningServicesState>({
+            return id<State>({
                 "isUpdating": false,
                 "isUserWatching": state.isUserWatching,
                 "~internal": {
@@ -372,7 +372,7 @@ const { getContext } = createUsecaseContextApi<SliceContext>(() => ({
 }));
 
 export const selectors = (() => {
-    const runningServices = (rootState: State): RunningService[] => {
+    const runningServices = (rootState: RootState): RunningService[] => {
         const { runningServices } = rootState.runningService["~internal"];
 
         return runningServices === undefined

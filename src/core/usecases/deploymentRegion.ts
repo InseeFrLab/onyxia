@@ -4,9 +4,9 @@ import type { DeploymentRegion } from "../ports/OnyxiaApi";
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { createObjectThatThrowsIfAccessed } from "redux-clean-architecture";
-import type { State } from "../core";
+import type { State as RootState } from "../core";
 
-type DeploymentRegionState = {
+type State = {
     availableDeploymentRegions: DeploymentRegion[];
     selectedDeploymentRegionId: string;
 };
@@ -15,9 +15,9 @@ export const name = "deploymentRegion";
 
 export const { reducer, actions } = createSlice({
     name,
-    "initialState": createObjectThatThrowsIfAccessed<DeploymentRegionState>(),
+    "initialState": createObjectThatThrowsIfAccessed<State>(),
     "reducers": {
-        "initialize": (_, { payload }: PayloadAction<DeploymentRegionState>) => payload
+        "initialize": (_, { payload }: PayloadAction<State>) => payload
     }
 });
 
@@ -69,7 +69,7 @@ export const privateThunks = {
 } satisfies Thunks;
 
 export const selectors = (() => {
-    const selectedDeploymentRegion = (rootState: State): DeploymentRegion => {
+    const selectedDeploymentRegion = (rootState: RootState): DeploymentRegion => {
         const { selectedDeploymentRegionId, availableDeploymentRegions } =
             rootState.deploymentRegion;
 

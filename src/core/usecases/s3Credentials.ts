@@ -3,7 +3,7 @@ import type { Thunks } from "../core";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { createSlice } from "@reduxjs/toolkit";
 import { id } from "tsafe/id";
-import type { State } from "../core";
+import type { State as RootState } from "../core";
 import { createSelector } from "@reduxjs/toolkit";
 import { selectors as projectSelectionSelectors } from "./projectSelection";
 import { selectors as deploymentRegionSelectors } from "./deploymentRegion";
@@ -23,9 +23,9 @@ export type Technology =
     | "s3cmd"
     | "rclone";
 
-type s3CredentialsState = s3CredentialsState.NotRefreshed | s3CredentialsState.Ready;
+type State = State.NotRefreshed | State.Ready;
 
-namespace s3CredentialsState {
+namespace State {
     type Common = {
         isRefreshing: boolean;
     };
@@ -52,8 +52,8 @@ export const name = "s3Credentials";
 
 export const { reducer, actions } = createSlice({
     name,
-    "initialState": id<s3CredentialsState>(
-        id<s3CredentialsState.NotRefreshed>({
+    "initialState": id<State>(
+        id<State.NotRefreshed>({
             "stateDescription": "not refreshed",
             "isRefreshing": false
         })
@@ -67,7 +67,7 @@ export const { reducer, actions } = createSlice({
             {
                 payload
             }: PayloadAction<{
-                credentials: s3CredentialsState.Ready["credentials"];
+                credentials: State.Ready["credentials"];
                 expirationTime: number;
             }>
         ) => {
@@ -78,7 +78,7 @@ export const { reducer, actions } = createSlice({
                     ? state.selectedTechnology
                     : "R (paws)";
 
-            return id<s3CredentialsState.Ready>({
+            return id<State.Ready>({
                 "isRefreshing": false,
                 "stateDescription": "ready",
                 selectedTechnology,
@@ -193,7 +193,7 @@ export const thunks = {
 const { getContext } = createUsecaseContextApi(() => ({ "isInitialized": false }));
 
 export const selectors = (() => {
-    const readyState = (rootState: State): s3CredentialsState.Ready | undefined => {
+    const readyState = (rootState: RootState): State.Ready | undefined => {
         const state = rootState.s3Credentials;
         switch (state.stateDescription) {
             case "ready":

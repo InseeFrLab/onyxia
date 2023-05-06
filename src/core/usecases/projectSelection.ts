@@ -5,9 +5,9 @@ import { createSlice } from "@reduxjs/toolkit";
 import { thunks as userConfigsThunks } from "./userConfigs";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { createObjectThatThrowsIfAccessed } from "redux-clean-architecture";
-import type { State } from "../core";
+import type { State as RootState } from "../core";
 
-type ProjectsState = {
+type State = {
     projects: Project[];
     selectedProjectId: string;
 };
@@ -16,9 +16,9 @@ export const name = "projectSelection";
 
 export const { reducer, actions } = createSlice({
     name,
-    "initialState": createObjectThatThrowsIfAccessed<ProjectsState>(),
+    "initialState": createObjectThatThrowsIfAccessed<State>(),
     "reducers": {
-        "initialize": (_, { payload }: PayloadAction<ProjectsState>) => payload,
+        "initialize": (_, { payload }: PayloadAction<State>) => payload,
         "projectChanged": (state, { payload }: PayloadAction<{ projectId: string }>) => {
             const { projectId } = payload;
 
@@ -88,7 +88,7 @@ export const privateThunks = {
 } satisfies Thunks;
 
 export const selectors = (() => {
-    const selectedProject = (rootState: State): Project => {
+    const selectedProject = (rootState: RootState): Project => {
         const { projects, selectedProjectId } = rootState.projectSelection;
 
         const selectedProject = projects.find(({ id }) => id === selectedProjectId);

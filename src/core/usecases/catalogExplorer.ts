@@ -4,15 +4,15 @@ import { createSlice } from "@reduxjs/toolkit";
 import type { Catalog } from "../ports/OnyxiaApi";
 import { id } from "tsafe/id";
 import { assert } from "tsafe/assert";
-import type { State } from "../core";
+import type { State as RootState } from "../core";
 import { waitForDebounceFactory } from "core/tools/waitForDebounce";
 import { createUsecaseContextApi } from "redux-clean-architecture";
 import { exclude } from "tsafe/exclude";
 import { compareVersions } from "compare-versions";
 
-type CatalogExplorerState = CatalogExplorerState.NotFetched | CatalogExplorerState.Ready;
+type State = State.NotFetched | State.Ready;
 
-namespace CatalogExplorerState {
+namespace State {
     export type NotFetched = {
         stateDescription: "not fetched";
         isFetching: boolean;
@@ -33,8 +33,8 @@ export const name = "catalogExplorer";
 
 export const { reducer, actions } = createSlice({
     name,
-    "initialState": id<CatalogExplorerState>(
-        id<CatalogExplorerState.NotFetched>({
+    "initialState": id<State>(
+        id<State.NotFetched>({
             "stateDescription": "not fetched",
             "isFetching": false
         })
@@ -58,7 +58,7 @@ export const { reducer, actions } = createSlice({
                 catalogs?.find(catalog => catalog.id === selectedCatalogId)
                     ?.highlightedCharts || [];
 
-            return id<CatalogExplorerState.Ready>({
+            return id<State.Ready>({
                 "stateDescription": "ready",
                 "~internal": { catalogs, selectedCatalogId },
                 "doShowOnlyHighlighted":
@@ -236,7 +236,7 @@ export const selectors = (() => {
         return { getPackageWeight };
     }
 
-    const filteredPackages = (rootState: State) => {
+    const filteredPackages = (rootState: RootState) => {
         const state = rootState.catalogExplorer;
 
         if (state.stateDescription !== "ready") {
@@ -290,7 +290,9 @@ export const selectors = (() => {
         };
     };
 
-    const selectedCatalog = (rootState: State): Omit<Catalog, "charts"> | undefined => {
+    const selectedCatalog = (
+        rootState: RootState
+    ): Omit<Catalog, "charts"> | undefined => {
         const state = rootState.catalogExplorer;
 
         if (state.stateDescription !== "ready") {
@@ -311,7 +313,7 @@ export const selectors = (() => {
     };
 
     const productionCatalogs = (
-        rootState: State
+        rootState: RootState
     ): ReturnType<typeof filterProductionCatalogs> | undefined => {
         const state = rootState.catalogExplorer;
 

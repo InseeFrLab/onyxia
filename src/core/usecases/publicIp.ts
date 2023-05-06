@@ -5,13 +5,13 @@ import { id } from "tsafe/id";
 import { Evt } from "evt";
 import { createUsecaseContextApi } from "redux-clean-architecture";
 
-type PublicIpState = string | null;
+type State = string | null;
 
 export const name = "publicIp";
 
 export const { reducer, actions } = createSlice({
     name,
-    "initialState": id<PublicIpState>(null),
+    "initialState": id<State>(null),
     "reducers": {
         "fetched": (_, { payload }: PayloadAction<string>) => payload,
         "publicIpMightHaveChanged": () => null

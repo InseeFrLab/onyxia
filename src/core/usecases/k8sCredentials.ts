@@ -3,7 +3,7 @@ import type { Thunks } from "../core";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { createSlice } from "@reduxjs/toolkit";
 import { id } from "tsafe/id";
-import type { State } from "../core";
+import type { State as RootState } from "../core";
 import { createSelector } from "@reduxjs/toolkit";
 import { selectors as projectSelectionSelectors } from "./projectSelection";
 import { selectors as deploymentRegionSelectors } from "./deploymentRegion";
@@ -14,9 +14,9 @@ import { createOidcOrFallback } from "core/adapters/oidc/createOidcOrFallback";
 import { createUsecaseContextApi } from "redux-clean-architecture";
 import type { Oidc } from "core/ports/Oidc";
 
-type K8sCredentialState = K8sCredentialState.NotRefreshed | K8sCredentialState.Ready;
+type State = State.NotRefreshed | State.Ready;
 
-namespace K8sCredentialState {
+namespace State {
     type Common = {
         isRefreshing: boolean;
     };
@@ -37,8 +37,8 @@ export const name = "k8sCredentials";
 
 export const { reducer, actions } = createSlice({
     name,
-    "initialState": id<K8sCredentialState>(
-        id<K8sCredentialState.NotRefreshed>({
+    "initialState": id<State>(
+        id<State.NotRefreshed>({
             "stateDescription": "not refreshed",
             "isRefreshing": false
         })
@@ -59,7 +59,7 @@ export const { reducer, actions } = createSlice({
         ) => {
             const { expirationTime, oidcAccessToken, username } = payload;
 
-            return id<K8sCredentialState.Ready>({
+            return id<State.Ready>({
                 "isRefreshing": false,
                 "stateDescription": "ready",
                 expirationTime,
@@ -152,7 +152,7 @@ const { getContext } = createUsecaseContextApi<{
 }));
 
 export const selectors = (() => {
-    const readyState = (rootState: State): K8sCredentialState.Ready | undefined => {
+    const readyState = (rootState: RootState): State.Ready | undefined => {
         const state = rootState.k8sCredentials;
         switch (state.stateDescription) {
             case "ready":

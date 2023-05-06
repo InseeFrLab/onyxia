@@ -15,7 +15,7 @@ import { assert } from "tsafe/assert";
 import { selectors as projectSelectionSelectors } from "./projectSelection";
 import { Evt } from "evt";
 import type { Ctx } from "evt";
-import type { State } from "../core";
+import type { State as RootState } from "../core";
 import memoize from "memoizee";
 import type { WritableDraft } from "immer/dist/types/types-external";
 import { selectors as deploymentRegionSelectors } from "./deploymentRegion";
@@ -27,7 +27,7 @@ import { mcApiLogger } from "../adapters/s3client/mcApiLogger";
 
 //All explorer path are expected to be absolute (start with /)
 
-export type FileExplorerState = {
+export type State = {
     directoryPath: string | undefined;
     directoryItems: {
         kind: "file" | "directory";
@@ -55,7 +55,7 @@ export const name = "fileExplorer";
 
 export const { reducer, actions } = createSlice({
     name,
-    "initialState": id<FileExplorerState>({
+    "initialState": id<State>({
         "directoryPath": undefined,
         "directoryItems": [],
         "isNavigationOngoing": false,
@@ -790,7 +790,7 @@ export const selectors = (() => {
     };
 
     const currentWorkingDirectoryView = (
-        rootState: State
+        rootState: RootState
     ): CurrentWorkingDirectoryView | undefined => {
         const state = rootState.fileExplorer;
         const { directoryPath, isNavigationOngoing, directoryItems, ongoingOperations } =
@@ -840,7 +840,7 @@ export const selectors = (() => {
     };
 
     type UploadProgress = {
-        s3FilesBeingUploaded: FileExplorerState["~internal"]["s3FilesBeingUploaded"];
+        s3FilesBeingUploaded: State["~internal"]["s3FilesBeingUploaded"];
         overallProgress: {
             completedFileCount: number;
             remainingFileCount: number;
@@ -849,7 +849,7 @@ export const selectors = (() => {
         };
     };
 
-    const uploadProgress = (rootState: State): UploadProgress => {
+    const uploadProgress = (rootState: RootState): UploadProgress => {
         const { s3FilesBeingUploaded } = rootState.fileExplorer["~internal"];
 
         const completedFileCount = s3FilesBeingUploaded.map(
