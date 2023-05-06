@@ -38,8 +38,7 @@ export type Props = {
               ownerUsername: string | undefined;
               vaultTokenExpirationTime: number | undefined;
               s3TokenExpirationTime: number | undefined;
-          }[]
-        | undefined;
+          }[];
     catalogExplorerLink: Link;
     onRequestDelete(params: { serviceId: string }): void;
     evtAction: NonPostableEvt<{
@@ -60,7 +59,7 @@ export const MyServicesCards = memo((props: Props) => {
     } = props;
 
     const { classes, cx } = useStyles({
-        "isThereServicesRunning": (cards ?? []).length !== 0
+        "isThereServicesRunning": cards.length !== 0
     });
 
     const { t } = useTranslation({ MyServicesCards });
@@ -118,8 +117,6 @@ export const MyServicesCards = memo((props: Props) => {
         if (dialogDesc === undefined) {
             return {};
         }
-
-        assert(cards !== undefined);
 
         const { postInstallInstructions, env, openUrl, startTime } = cards.find(
             card => card.serviceId === dialogDesc.serviceId
@@ -204,13 +201,13 @@ export const MyServicesCards = memo((props: Props) => {
                 {t("running services")}
             </Text>
             <div className={classes.wrapper}>
-                {cards !== undefined && cards.length === 0 ? (
+                {cards.length === 0 ? (
                     <NoRunningService
                         className={classes.noRunningServices}
                         catalogExplorerLink={catalogExplorerLink}
                     />
                 ) : (
-                    cards?.map(card => (
+                    cards.map(card => (
                         <MyServicesCard
                             key={card.serviceId}
                             {...card}

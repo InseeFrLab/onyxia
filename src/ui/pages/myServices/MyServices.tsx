@@ -160,7 +160,7 @@ export default function MyServices(props: Props) {
     );
 
     const cards = useMemo(
-        (): MyServicesCardsProps["cards"] =>
+        (): MyServicesCardsProps["cards"] | undefined =>
             isRunningServicesUpdating
                 ? undefined
                 : runningServices.map(
@@ -296,23 +296,27 @@ export default function MyServices(props: Props) {
                 isThereDeletableServices={deletableRunningServices.length !== 0}
             />
             <div className={classes.payload}>
-                {!isSavedConfigsExtended && (
-                    <MyServicesCards
-                        className={classes.cards}
-                        cards={cards}
-                        onRequestDelete={onRequestDelete}
-                        catalogExplorerLink={catalogExplorerLink}
-                        evtAction={evtMyServiceCardsAction}
-                        getServicePassword={getServicePassword}
-                    />
+                {cards !== undefined && (
+                    <>
+                        {!isSavedConfigsExtended && (
+                            <MyServicesCards
+                                className={classes.cards}
+                                cards={cards}
+                                onRequestDelete={onRequestDelete}
+                                catalogExplorerLink={catalogExplorerLink}
+                                evtAction={evtMyServiceCardsAction}
+                                getServicePassword={getServicePassword}
+                            />
+                        )}
+                        <MyServicesSavedConfigs
+                            isShortVariant={!isSavedConfigsExtended}
+                            savedConfigs={savedConfigs}
+                            className={classes.savedConfigs}
+                            callback={onSavedConfigsCallback}
+                            onRequestToggleIsShortVariant={onRequestToggleIsShortVariant}
+                        />
+                    </>
                 )}
-                <MyServicesSavedConfigs
-                    isShortVariant={!isSavedConfigsExtended}
-                    savedConfigs={savedConfigs}
-                    className={classes.savedConfigs}
-                    callback={onSavedConfigsCallback}
-                    onRequestToggleIsShortVariant={onRequestToggleIsShortVariant}
-                />
             </div>
             <Dialog
                 title={t("confirm delete title")}
