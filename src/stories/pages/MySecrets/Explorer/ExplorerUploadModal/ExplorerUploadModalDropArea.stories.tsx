@@ -1,4 +1,4 @@
-import { ExplorerUploadModalDropArea } from "ui/pages/MyFiles/Explorer/ExplorerUploadModal/ExplorerUploadModalDropArea";
+import { ExplorerUploadModalDropArea } from "ui/pages/myFiles/Explorer/ExplorerUploadModal/ExplorerUploadModalDropArea";
 import { sectionName } from "./sectionName";
 import { getStoryFactory, logCallbacks } from "stories/getStory";
 

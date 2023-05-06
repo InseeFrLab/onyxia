@@ -1,9 +1,6 @@
 import { useMemo, memo } from "react";
-import { createGroup } from "type-route";
 import { useResolveLocalizedString, useLang, useTranslation } from "ui/i18n";
 import { makeStyles, PageHeader } from "ui/theme";
-import { routes } from "ui/routes";
-import type { Route } from "type-route";
 import { CatalogExplorer } from "./CatalogExplorer";
 import { CatalogLauncher } from "./CatalogLauncher";
 import Link from "@mui/material/Link";
@@ -13,26 +10,14 @@ import type { CollapseParams } from "onyxia-ui/tools/CollapsibleWrapper_legacy";
 import { assert } from "tsafe/assert";
 import { useStateRef } from "powerhooks/useStateRef";
 import { declareComponentKeys } from "i18nifty";
-
-Catalog.routeGroup = createGroup([routes.catalogExplorer, routes.catalogLauncher]);
-
-type PageRoute = Route<typeof Catalog.routeGroup>;
-
-Catalog.getDoRequireUserLoggedIn = (route: PageRoute) => {
-    switch (route.name) {
-        case "catalogExplorer":
-            return false;
-        case "catalogLauncher":
-            return true;
-    }
-};
+import type { PageRoute } from "./route";
 
 export type Props = {
     route: PageRoute;
     className?: string;
 };
 
-export function Catalog(props: Props) {
+export default function Catalog(props: Props) {
     const { className, route } = props;
 
     const { t } = useTranslation({ Catalog });

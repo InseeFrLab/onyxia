@@ -7,9 +7,7 @@ import { Explorer } from "./Explorer";
 import { ExplorerProps } from "./Explorer";
 import { useTranslation } from "ui/i18n";
 import { routes } from "ui/routes";
-import { createGroup } from "type-route";
 import { useSplashScreen } from "onyxia-ui";
-import type { Route } from "type-route";
 import { Evt } from "evt";
 import type { CollapseParams } from "onyxia-ui/tools/CollapsibleWrapper_legacy";
 import type { Param0 } from "tsafe";
@@ -17,19 +15,14 @@ import { useStateRef } from "powerhooks/useStateRef";
 import { declareComponentKeys } from "i18nifty";
 import { useConst } from "powerhooks/useConst";
 import type { Link } from "type-route";
-
-MyFiles.routeGroup = createGroup([routes.myFiles]);
-
-type PageRoute = Route<typeof MyFiles.routeGroup>;
-
-MyFiles.getDoRequireUserLoggedIn = () => true;
+import type { PageRoute } from "./route";
 
 export type Props = {
     route: PageRoute;
     className?: string;
 };
 
-export function MyFiles(props: Props) {
+export default function MyFiles(props: Props) {
     const { className, route } = props;
 
     const { t } = useTranslation({ MyFiles });

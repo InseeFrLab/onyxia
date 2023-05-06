@@ -1,4 +1,4 @@
-import { AccountSectionHeader } from "ui/pages/Account/AccountSectionHeader";
+import { AccountSectionHeader } from "ui/pages/account/AccountSectionHeader";
 import { sectionName } from "./sectionName";
 import { getStoryFactory } from "stories/getStory";
 import { css } from "@emotion/css";

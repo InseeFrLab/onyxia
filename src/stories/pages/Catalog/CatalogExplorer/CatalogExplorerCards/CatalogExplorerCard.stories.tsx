@@ -1,4 +1,4 @@
-import { CatalogExplorerCard } from "ui/pages/Catalog/CatalogExplorer/CatalogExplorerCards/CatalogExplorerCard";
+import { CatalogExplorerCard } from "ui/pages/catalog/CatalogExplorer/CatalogExplorerCards/CatalogExplorerCard";
 import { sectionName } from "./sectionName";
 import { getStoryFactory, logCallbacks } from "stories/getStory";
 import rstudioImgUrl from "stories/assets/img/rstudio.png";

@@ -1,4 +1,4 @@
-import { ExplorerIcon } from "ui/pages/MyFiles/Explorer/ExplorerIcon";
+import { ExplorerIcon } from "ui/pages/myFiles/Explorer/ExplorerIcon";
 import { sectionName } from "./sectionName";
 import { getStoryFactory } from "stories/getStory";
 import { css } from "@emotion/css";

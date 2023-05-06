@@ -4,7 +4,6 @@ import { AccountIntegrationsTab } from "./tabs/AccountIntegrationsTab";
 import { AccountKubernetesTab } from "./tabs/AccountKubernetesTab";
 import { AccountVaultTab } from "./tabs/AccountVaultTab";
 import { useMemo } from "react";
-import { createGroup } from "type-route";
 import { routes } from "ui/routes";
 import { accountTabIds } from "./accountTabIds";
 import type { AccountTabId } from "./accountTabIds";
@@ -13,25 +12,19 @@ import { AccountStorageTab } from "./tabs/AccountStorageTab";
 import { AccountUserInterfaceTab } from "./tabs/AccountUserInterfaceTab";
 import { PageHeader } from "ui/theme";
 import { useConstCallback } from "powerhooks/useConstCallback";
-import type { Route } from "type-route";
 import { makeStyles } from "ui/theme";
 import { declareComponentKeys } from "i18nifty";
 import { useCoreFunctions } from "core";
 import { assert } from "tsafe/assert";
 import type { Equals } from "tsafe";
-
-Account.routeGroup = createGroup([routes.account]);
-
-type PageRoute = Route<typeof Account.routeGroup>;
-
-Account.getDoRequireUserLoggedIn = () => true;
+import type { PageRoute } from "./route";
 
 export type Props = {
     route: PageRoute;
     className?: string;
 };
 
-export function Account(props: Props) {
+export default function Account(props: Props) {
     const { className, route } = props;
 
     const { t } = useTranslation({ Account });

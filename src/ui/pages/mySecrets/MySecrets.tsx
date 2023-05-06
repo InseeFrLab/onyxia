@@ -7,9 +7,7 @@ import { SecretsExplorer } from "./SecretsExplorer";
 import { ExplorerProps } from "./SecretsExplorer";
 import { useTranslation } from "ui/i18n";
 import { routes } from "ui/routes";
-import { createGroup } from "type-route";
 import { useSplashScreen } from "onyxia-ui";
-import type { Route } from "type-route";
 import { Evt } from "evt";
 import type { UnpackEvt } from "evt";
 import type { CollapseParams } from "onyxia-ui/tools/CollapsibleWrapper_legacy";
@@ -19,19 +17,14 @@ import { MySecretsEditor } from "./MySecretsEditor";
 import { useStateRef } from "powerhooks/useStateRef";
 import { declareComponentKeys } from "i18nifty";
 import type { Link } from "type-route";
-
-MySecrets.routeGroup = createGroup([routes.mySecrets]);
-
-type PageRoute = Route<typeof MySecrets.routeGroup>;
-
-MySecrets.getDoRequireUserLoggedIn = () => true;
+import type { PageRoute } from "./route";
 
 export type Props = {
     route: PageRoute;
     className?: string;
 };
 
-export function MySecrets(props: Props) {
+export default function MySecrets(props: Props) {
     const { className, route } = props;
 
     const { t } = useTranslation({ MySecrets });

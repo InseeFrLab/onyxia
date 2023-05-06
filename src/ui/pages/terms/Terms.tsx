@@ -1,25 +1,17 @@
 import { useEffect, useState } from "react";
-import type { Route } from "type-route";
-import { createGroup } from "type-route";
-import { routes } from "ui/routes";
 import { useSplashScreen } from "onyxia-ui";
 import { Markdown } from "onyxia-ui/Markdown";
 import { useLang } from "ui/i18n";
 import { makeStyles } from "ui/theme";
 import { downloadTermMarkdown } from "keycloak-theme/login/pages/Terms";
-
-Terms.routeGroup = createGroup([routes.terms]);
-
-type PageRoute = Route<typeof Terms.routeGroup>;
-
-Terms.getDoRequireUserLoggedIn = () => false;
+import type { PageRoute } from "./route";
 
 export type Props = {
     className?: string;
     route: PageRoute;
 };
 
-export function Terms(props: Props) {
+export default function Terms(props: Props) {
     const { className } = props;
 
     const [tos, setTos] = useState<string | undefined>(undefined);
@@ -57,7 +49,7 @@ export function Terms(props: Props) {
     );
 }
 
-export const useStyles = makeStyles()(theme => ({
+const useStyles = makeStyles({ "name": { Terms } })(theme => ({
     "root": {
         "display": "flex",
         "justifyContent": "center",

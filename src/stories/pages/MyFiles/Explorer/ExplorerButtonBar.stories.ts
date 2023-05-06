@@ -1,4 +1,4 @@
-import { ExplorerButtonBar } from "ui/pages/MyFiles/Explorer/ExplorerButtonBar";
+import { ExplorerButtonBar } from "ui/pages/myFiles/Explorer/ExplorerButtonBar";
 import { sectionName } from "./sectionName";
 import { getStoryFactory, logCallbacks } from "stories/getStory";
 

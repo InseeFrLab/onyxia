@@ -1,5 +1,5 @@
 import "minimal-polyfills/Object.fromEntries";
-import { useMemo, useEffect, memo } from "react";
+import { useMemo, useEffect, Suspense } from "react";
 import { Header } from "ui/shared/Header";
 import { LeftBar } from "ui/theme";
 import { Footer } from "./Footer";
@@ -9,18 +9,10 @@ import { useTranslation, useResolveLocalizedString } from "ui/i18n";
 import { useCoreState, useCoreFunctions } from "core";
 import { useConstCallback } from "powerhooks/useConstCallback";
 import { useRoute, routes } from "ui/routes";
-import { Home } from "ui/pages/Home";
 import { useEffectOnValueChange } from "powerhooks/useEffectOnValueChange";
 import { useDomRect, useSplashScreen } from "onyxia-ui";
-import { Account } from "ui/pages/Account";
-import { FourOhFour } from "ui/pages/FourOhFour";
-import { Catalog } from "ui/pages/Catalog";
-import { MyServices } from "ui/pages/MyServices";
-import { Terms } from "ui/pages/Terms";
 import { id } from "tsafe/id";
 import { useIsDarkModeEnabled } from "onyxia-ui";
-import { MyFiles } from "ui/pages/MyFiles";
-import { MySecrets } from "ui/pages/MySecrets";
 import type { Item } from "onyxia-ui/LeftBar";
 import { getExtraLeftBarItemsFromEnv, getIsHomePageDisabled } from "ui/env";
 import { declareComponentKeys } from "i18nifty";
@@ -32,7 +24,10 @@ import { evtLang } from "ui/i18n";
 import { getEnv } from "env";
 import { logoContainerWidthInPercent } from "./logoContainerWidthInPercent";
 import { ThemeProvider, splashScreen, createGetViewPortConfig } from "ui/theme";
-import { PortraitModeUnsupported } from "ui/pages/PortraitModeUnsupported";
+import { PortraitModeUnsupported } from "ui/shared/PortraitModeUnsupported";
+import { objectKeys } from "tsafe/objectKeys";
+import { pages } from "ui/pages";
+import { assert } from "tsafe/assert";
 
 const { CoreProvider } = createCoreProvider({
     "apiUrl": getEnv().ONYXIA_API_URL,
@@ -79,14 +74,6 @@ function ContextualizedApp() {
         domRect: { width: rootWidth },
         ref: rootRef
     } = useDomRect();
-
-    {
-        const { hideRootSplashScreen } = useSplashScreen();
-
-        useEffectOnValueChange(() => {
-            hideRootSplashScreen();
-        }, [rootWidth === 0]);
-    }
 
     const { classes } = useStyles();
 
@@ -199,14 +186,20 @@ function ContextualizedApp() {
                     "onLogoClick": onHeaderLogoClick
                 } as const;
 
-                return isUserLoggedIn ? (
-                    <Header
-                        {...common}
-                        isUserLoggedIn={true}
-                        onLogoutClick={onHeaderAuthClick}
-                        {...projectsSlice!}
-                    />
-                ) : (
+                if (isUserLoggedIn) {
+                    assert(projectsSlice !== null);
+
+                    return (
+                        <Header
+                            {...common}
+                            isUserLoggedIn={true}
+                            onLogoutClick={onHeaderAuthClick}
+                            {...projectsSlice}
+                        />
+                    );
+                }
+
+                return (
                     <Header
                         {...common}
                         isUserLoggedIn={false}
@@ -241,7 +234,29 @@ function ContextualizedApp() {
                 />
 
                 <main className={classes.main}>
-                    <PageSelector route={route} />
+                    <Suspense fallback={<Fallback />}>
+                        {(() => {
+                            for (const pageName of objectKeys(pages)) {
+                                //You must be able to replace "home" by any other page and get no type error.
+                                const page = pages[pageName as "home"];
+
+                                if (page.routeGroup.has(route)) {
+                                    if (
+                                        page.getDoRequireUserLoggedIn(route) &&
+                                        !userAuthentication.getIsUserLoggedIn()
+                                    ) {
+                                        /* prettier-ignore */
+                                        userAuthentication.login({ "doesCurrentHrefRequiresAuth": true });
+                                        return null;
+                                    }
+
+                                    return <page.LazyComponent route={route} />;
+                                }
+                            }
+
+                            return <pages.page404.LazyComponent />;
+                        })()}
+                    </Suspense>
                 </main>
             </section>
             <Footer
@@ -253,6 +268,18 @@ function ContextualizedApp() {
             />
         </div>
     );
+}
+
+function Fallback() {
+    const { hideRootSplashScreen } = useSplashScreen();
+
+    useEffect(() => {
+        return () => {
+            hideRootSplashScreen();
+        };
+    }, []);
+
+    return null;
 }
 
 export const { i18n } = declareComponentKeys<
@@ -299,111 +326,6 @@ const useStyles = makeStyles({ "name": { App } })(theme => {
             "overflow": "hidden"
         }
     };
-});
-
-const PageSelector = memo((props: { route: ReturnType<typeof useRoute> }) => {
-    const { route } = props;
-
-    const { userAuthentication } = useCoreFunctions();
-
-    const isUserLoggedIn = userAuthentication.getIsUserLoggedIn();
-
-    /*
-    Here is one of the few places in the codebase where we tolerate code duplication.
-    We sacrifice dryness for the sake of type safety and flexibility.
-    */
-    {
-        const Page = Catalog;
-
-        if (Page.routeGroup.has(route)) {
-            if (Page.getDoRequireUserLoggedIn(route) && !isUserLoggedIn) {
-                userAuthentication.login({ "doesCurrentHrefRequiresAuth": true });
-                return null;
-            }
-
-            return <Page route={route} />;
-        }
-    }
-
-    {
-        const Page = Home;
-
-        if (Page.routeGroup.has(route)) {
-            if (Page.getDoRequireUserLoggedIn() && !isUserLoggedIn) {
-                userAuthentication.login({ "doesCurrentHrefRequiresAuth": true });
-                return null;
-            }
-
-            return <Page />;
-        }
-    }
-
-    {
-        const Page = Account;
-
-        if (Page.routeGroup.has(route)) {
-            if (Page.getDoRequireUserLoggedIn() && !isUserLoggedIn) {
-                userAuthentication.login({ "doesCurrentHrefRequiresAuth": true });
-                return null;
-            }
-
-            return <Page route={route} />;
-        }
-    }
-
-    {
-        const Page = MyServices;
-
-        if (Page.routeGroup.has(route)) {
-            if (Page.getDoRequireUserLoggedIn() && !isUserLoggedIn) {
-                userAuthentication.login({ "doesCurrentHrefRequiresAuth": true });
-                return null;
-            }
-
-            return <Page route={route} />;
-        }
-    }
-
-    {
-        const Page = MyFiles;
-
-        if (Page.routeGroup.has(route)) {
-            if (Page.getDoRequireUserLoggedIn() && !isUserLoggedIn) {
-                userAuthentication.login({ "doesCurrentHrefRequiresAuth": true });
-                return null;
-            }
-
-            return <Page route={route} />;
-        }
-    }
-
-    {
-        const Page = MySecrets;
-
-        if (Page.routeGroup.has(route)) {
-            if (Page.getDoRequireUserLoggedIn() && !isUserLoggedIn) {
-                userAuthentication.login({ "doesCurrentHrefRequiresAuth": true });
-                return null;
-            }
-
-            return <Page route={route} />;
-        }
-    }
-
-    {
-        const Page = Terms;
-
-        if (Page.routeGroup.has(route)) {
-            if (Page.getDoRequireUserLoggedIn() && !isUserLoggedIn) {
-                userAuthentication.login({ "doesCurrentHrefRequiresAuth": true });
-                return null;
-            }
-
-            return <Page route={route} />;
-        }
-    }
-
-    return <FourOhFour />;
 });
 
 /**

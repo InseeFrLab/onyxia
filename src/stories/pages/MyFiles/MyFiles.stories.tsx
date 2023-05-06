@@ -1,8 +1,7 @@
 import { css } from "@emotion/css";
-import { getStoryFactory } from "stories/getStory";
+import { getStoryFactory, createMockRoute } from "stories/getStory";
 import { sectionName } from "../sectionName";
-import { MyFiles } from "ui/pages/MyFiles";
-import type { Props } from "ui/pages/MyFiles";
+import MyFiles, { type Props } from "ui/pages/myFiles/MyFiles";
 import { symToStr } from "tsafe/symToStr";
 
 type StoryProps = {
@@ -17,7 +16,7 @@ function Component(
 
     return (
         <MyFiles
-            route={null as any}
+            route={createMockRoute("myFiles", {})}
             className={css({
                 width,
                 height
@@ -28,7 +27,7 @@ function Component(
 
 const { meta, getStory } = getStoryFactory({
     sectionName,
-    "doUseLib": true,
+    "doNeedCore": true,
     "wrappedComponent": { [symToStr({ MyFiles })]: Component }
 });
 

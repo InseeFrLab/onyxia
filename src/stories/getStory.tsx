@@ -20,6 +20,10 @@ import { RouteProvider } from "ui/routes";
 import { useLang, fallbackLanguage, languages } from "ui/i18n";
 import type { Language } from "ui/i18n";
 import type { ReactNode } from "react";
+import { Evt } from "evt";
+import { createMockRouteFactory } from "ui/routes";
+
+const evtTriggerReRender = Evt.create(0);
 
 //NOTE: Storybook bug hotfix.
 const propsByTitle = new Map<string, any>();
@@ -38,10 +42,16 @@ const { CoreProvider } = createCoreProvider({
     }
 });
 
+export const { createMockRoute } = createMockRouteFactory({
+    "triggerReRender": () => {
+        evtTriggerReRender.state++;
+    }
+});
+
 export function getStoryFactory<Props>(params: {
     sectionName: string;
     wrappedComponent: Record<string, (props: Props) => ReturnType<React.FC>>;
-    doUseLib?: boolean;
+    doNeedCore?: boolean;
     /** https://storybook.js.org/docs/react/essentials/controls */
     argTypes?: Partial<Record<keyof Props, ArgType>>;
     defaultContainerWidth?: number;
@@ -50,7 +60,7 @@ export function getStoryFactory<Props>(params: {
         sectionName,
         wrappedComponent,
         argTypes = {},
-        doUseLib,
+        doNeedCore,
         defaultContainerWidth
     } = params;
 
@@ -89,7 +99,7 @@ export function getStoryFactory<Props>(params: {
     }
 
     const StoreProviderOrFragment: React.ComponentType<{ children: ReactNode }> =
-        !doUseLib
+        !doNeedCore
             ? ({ children }) => <>{children}</>
             : ({ children }) => <CoreProvider>{children}</CoreProvider>;
 
