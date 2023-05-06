@@ -1,5 +1,5 @@
 import "minimal-polyfills/Object.fromEntries";
-import type { ThunkAction } from "../core";
+import type { Thunks } from "../core";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { createSlice } from "@reduxjs/toolkit";
 import { id } from "tsafe/id";
@@ -74,9 +74,9 @@ export const thunks = {
     /** Can, and must be called before the slice is refreshed,
      * tels if the feature is available.
      */
-    "isAvailable":
-        (): ThunkAction<boolean> =>
-        (...args) => {
+    "getIsAvailable":
+        () =>
+        (...args): boolean => {
             const [, getState] = args;
 
             const region = deploymentRegionSelectors.selectedDeploymentRegion(getState());
@@ -85,7 +85,7 @@ export const thunks = {
         },
     /** Refresh is expected to be called whenever the component that use this slice mounts */
     "refresh":
-        (params: { doForceRenewToken: boolean }): ThunkAction =>
+        (params: { doForceRenewToken: boolean }) =>
         async (...args) => {
             const { doForceRenewToken } = params;
 
@@ -143,7 +143,7 @@ export const thunks = {
                 })
             );
         }
-};
+} satisfies Thunks;
 
 const { getContext } = createUsecaseContextApi<{
     kubernetesOidcClient: Oidc.LoggedIn | undefined;

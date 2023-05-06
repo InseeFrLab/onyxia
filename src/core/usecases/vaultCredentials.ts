@@ -1,5 +1,5 @@
 import "minimal-polyfills/Object.fromEntries";
-import type { ThunkAction } from "../core";
+import type { Thunks } from "../core";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { createSlice } from "@reduxjs/toolkit";
 import { id } from "tsafe/id";
@@ -68,8 +68,8 @@ export const thunks = {
      * tels if the feature is available.
      */
     "isAvailable":
-        (): ThunkAction<boolean> =>
-        (...args) => {
+        () =>
+        (...args): boolean => {
             const [, getState] = args;
 
             const deploymentRegion = deploymentRegionSelectors.selectedDeploymentRegion(
@@ -80,7 +80,7 @@ export const thunks = {
         },
     /** Refresh is expected to be called whenever the component that use this slice mounts */
     "refresh":
-        (params: { doForceRenewToken: boolean }): ThunkAction =>
+        (params: { doForceRenewToken: boolean }) =>
         async (...args) => {
             const { doForceRenewToken } = params;
 
@@ -103,7 +103,7 @@ export const thunks = {
                 })
             );
         }
-};
+} satisfies Thunks;
 
 export const selectors = (() => {
     const readyState = (rootState: State): VaultCredentialState.Ready | undefined => {

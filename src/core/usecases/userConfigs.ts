@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
-import type { ThunkAction } from "../core";
+import type { Thunks } from "../core";
 import { Id } from "tsafe/id";
 import { objectKeys } from "tsafe/objectKeys";
 import { assert } from "tsafe/assert";
@@ -84,7 +84,7 @@ export type ChangeValueParams<K extends keyof UserConfigs = keyof UserConfigs> =
 
 export const thunks = {
     "changeValue":
-        <K extends keyof UserConfigs>(params: ChangeValueParams<K>): ThunkAction =>
+        <K extends keyof UserConfigs>(params: ChangeValueParams<K>) =>
         async (...args) => {
             const [dispatch, getState, { secretsManager, oidc }] = args;
 
@@ -105,18 +105,23 @@ export const thunks = {
 
             dispatch(actions.changeCompleted(params));
         },
-    "resetHelperDialogs": (): ThunkAction => dispatch =>
-        dispatch(
-            thunks.changeValue({
-                "key": "doDisplayMySecretsUseInServiceDialog",
-                "value": true
-            })
-        )
-};
+    "resetHelperDialogs":
+        () =>
+        (...args) => {
+            const [dispatch] = args;
+
+            dispatch(
+                thunks.changeValue({
+                    "key": "doDisplayMySecretsUseInServiceDialog",
+                    "value": true
+                })
+            );
+        }
+} satisfies Thunks;
 
 export const privateThunks = {
     "initialize":
-        (): ThunkAction =>
+        () =>
         async (...args) => {
             /* prettier-ignore */
             const [dispatch, , { secretsManager, oidc }] = args;
@@ -168,8 +173,8 @@ export const privateThunks = {
             dispatch(actions.initializationCompleted({ userConfigs }));
         },
     "getDirPath":
-        (): ThunkAction<Promise<string>> =>
-        async (...args) => {
+        () =>
+        async (...args): Promise<string> => {
             const [, , { onyxiaApi }] = args;
 
             //We can't use the slice project selection yet because the slice userConfig
@@ -178,7 +183,7 @@ export const privateThunks = {
 
             return pathJoin("/", vaultTopDir, hiddenDirectoryBasename);
         }
-};
+} satisfies Thunks;
 
 export const selectors = (() => {
     /** Give the value directly (without isBeingChanged) */

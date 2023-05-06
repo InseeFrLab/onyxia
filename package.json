@@ -74,7 +74,7 @@
         "react-code-blocks": "^0.0.9-0",
         "react-dom": "^18.2.0",
         "react-scripts": "5.0.1",
-        "redux-clean-architecture": "^3.4.2",
+        "redux-clean-architecture": "^3.5.2",
         "run-exclusive": "^2.2.18",
         "shell-quote": "^1.7.2",
         "stream-browserify": "^3.0.0",

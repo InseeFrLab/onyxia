@@ -1,5 +1,5 @@
 import { assert } from "tsafe/assert";
-import type { ThunkAction } from "../core";
+import type { Thunks } from "../core";
 import type { DeploymentRegion } from "../ports/OnyxiaApi";
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
@@ -24,11 +24,8 @@ export const { reducer, actions } = createSlice({
 export const thunks = {
     /** NOTE: We don't try to hot swap, if the region is changed, we reload the app */
     "changeDeploymentRegion":
-        (params: {
-            deploymentRegionId: string;
-            reload: () => never;
-        }): ThunkAction<Promise<never>> =>
-        async () => {
+        (params: { deploymentRegionId: string; reload: () => never }) =>
+        async (): Promise<never> => {
             const { deploymentRegionId, reload } = params;
 
             localStorage.setItem(localStorageKey, deploymentRegionId);
@@ -37,11 +34,11 @@ export const thunks = {
 
             assert(false);
         }
-};
+} satisfies Thunks;
 
 export const privateThunks = {
     "initialize":
-        (): ThunkAction =>
+        () =>
         async (...args) => {
             const [dispatch, , { onyxiaApi }] = args;
 
@@ -69,7 +66,7 @@ export const privateThunks = {
                 })
             );
         }
-};
+} satisfies Thunks;
 
 export const selectors = (() => {
     const selectedDeploymentRegion = (rootState: State): DeploymentRegion => {

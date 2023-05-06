@@ -1,5 +1,5 @@
 import { assert } from "tsafe/assert";
-import type { ThunkAction } from "../core";
+import type { Thunks } from "../core";
 import type { Project } from "../ports/OnyxiaApi";
 import { createSlice } from "@reduxjs/toolkit";
 import { thunks as userConfigsThunks } from "./userConfigs";
@@ -33,7 +33,7 @@ export const thunks = {
             projectId: string;
             /** Default false, only use if we reload just after */
             doPreventDispatch?: boolean;
-        }): ThunkAction =>
+        }) =>
         async (...args) => {
             const [dispatch] = args;
 
@@ -52,11 +52,11 @@ export const thunks = {
 
             dispatch(actions.projectChanged({ projectId }));
         }
-};
+} satisfies Thunks;
 
 export const privateThunks = {
     "initialize":
-        (): ThunkAction =>
+        () =>
         async (...args) => {
             const [dispatch, getState, { onyxiaApi }] = args;
 
@@ -85,7 +85,7 @@ export const privateThunks = {
                 })
             );
         }
-};
+} satisfies Thunks;
 
 export const selectors = (() => {
     const selectedProject = (rootState: State): Project => {

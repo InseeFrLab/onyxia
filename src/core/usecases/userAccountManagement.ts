@@ -1,4 +1,4 @@
-import type { ThunkAction } from "../core";
+import type { Thunks } from "../core";
 import { addParamToUrl } from "powerhooks/tools/urlSearchParams";
 
 export const name = "userAccountManagement";
@@ -7,8 +7,8 @@ export const reducer = null;
 
 export const thunks = {
     "getPasswordResetUrl":
-        (): ThunkAction<string | undefined> =>
-        (...args) => {
+        () =>
+        (...args): string | undefined => {
             const [
                 ,
                 ,
@@ -61,4 +61,4 @@ export const thunks = {
 
             return url;
         }
-};
+} satisfies Thunks;
