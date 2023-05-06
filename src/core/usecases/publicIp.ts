@@ -1,4 +1,4 @@
-import type { ThunkAction } from "../core";
+import type { Thunks } from "../core";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { createSlice } from "@reduxjs/toolkit";
 import { id } from "tsafe/id";
@@ -26,8 +26,8 @@ const { getContext } = createUsecaseContextApi(() => ({
 
 export const thunks = {
     "fetch":
-        (): ThunkAction<Promise<{ publicIp: string }>> =>
-        async (...args) => {
+        () =>
+        async (...args): Promise<{ publicIp: string }> => {
             const [dispatch, , extraArg] = args;
 
             const { onyxiaApi } = extraArg;
@@ -52,4 +52,4 @@ export const thunks = {
 
             return { publicIp };
         }
-};
+} satisfies Thunks;

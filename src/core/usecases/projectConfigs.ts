@@ -1,4 +1,4 @@
-import type { ThunkAction } from "../core";
+import type { Thunks } from "../core";
 import { Id } from "tsafe/id";
 import { assert } from "tsafe/assert";
 import { join as pathJoin } from "path";
@@ -44,7 +44,7 @@ export type ChangeValueParams<K extends keyof ProjectConfigs = keyof ProjectConf
 
 export const thunks = {
     "changeValue":
-        <K extends keyof ProjectConfigs>(params: ChangeValueParams<K>): ThunkAction =>
+        <K extends keyof ProjectConfigs>(params: ChangeValueParams<K>) =>
         async (...args) => {
             const [dispatch, , { secretsManager }] = args;
 
@@ -55,18 +55,20 @@ export const thunks = {
                 "secret": { "value": params.value }
             });
         },
-    "renewServicePassword": (): ThunkAction => dispatch =>
-        dispatch(
-            thunks.changeValue({
-                "key": "servicePassword",
-                "value": getDefault("servicePassword")
-            })
-        ),
+    "renewServicePassword":
+        () =>
+        (...args) => {
+            const [dispatch] = args;
+            dispatch(
+                thunks.changeValue({
+                    "key": "servicePassword",
+                    "value": getDefault("servicePassword")
+                })
+            );
+        },
     "getValue":
-        <K extends keyof ProjectConfigs>(params: {
-            key: K;
-        }): ThunkAction<Promise<ProjectConfigs[K]>> =>
-        async (...args) => {
+        <K extends keyof ProjectConfigs>(params: { key: K }) =>
+        async (...args): Promise<ProjectConfigs[K]> => {
             const { key } = params;
 
             const [dispatch, , { secretsManager }] = args;
@@ -93,16 +95,16 @@ export const thunks = {
 
             return value;
         }
-};
+} satisfies Thunks;
 
 const privateThunks = {
     "getDirPath":
-        (): ThunkAction<string> =>
-        (...args) => {
+        () =>
+        (...args): string => {
             const [, getState] = args;
 
             const project = projectSelectionSelectors.selectedProject(getState());
 
             return pathJoin("/", project.vaultTopDir, hiddenDirectoryBasename);
         }
-};
+} satisfies Thunks;

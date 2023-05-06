@@ -4,7 +4,7 @@ import type { PayloadAction } from "@reduxjs/toolkit";
 import { id } from "tsafe/id";
 import { selectors as deploymentRegionSelectors } from "./deploymentRegion";
 import { selectors as projectSelectionSelectors } from "./projectSelection";
-import type { ThunkAction, State } from "../core";
+import type { Thunks, State } from "../core";
 import { exclude } from "tsafe/exclude";
 import { createUsecaseContextApi } from "redux-clean-architecture";
 
@@ -129,14 +129,14 @@ export const { reducer, actions } = createSlice({
 
 export const thunks = {
     "setIsUserWatching":
-        (isUserWatching: boolean): ThunkAction<void> =>
-        async (...args) => {
+        (isUserWatching: boolean) =>
+        (...args) => {
             const [dispatch] = args;
 
             dispatch(actions.isUserWatchingChanged({ isUserWatching }));
         },
     "update":
-        (): ThunkAction<void> =>
+        () =>
         async (...args) => {
             const [dispatch, getState, { onyxiaApi, getUser }] = args;
 
@@ -275,7 +275,7 @@ export const thunks = {
             );
         },
     "stopService":
-        (params: { serviceId: string }): ThunkAction<void> =>
+        (params: { serviceId: string }) =>
         async (...args) => {
             const { serviceId } = params;
 
@@ -285,11 +285,11 @@ export const thunks = {
 
             await onyxiaApi.stopService({ serviceId });
         }
-};
+} satisfies Thunks;
 
 export const privateThunks = {
     "initialize":
-        (): ThunkAction<void> =>
+        () =>
         async (...args) => {
             const [dispatch, getState, { evtAction }] = args;
 
@@ -321,8 +321,8 @@ export const privateThunks = {
         },
     /** We ask tokens just to tel how long is their lifespan */
     "getDefaultTokenTTL":
-        (): ThunkAction<Promise<{ s3TokensTTLms: number; vaultTokenTTLms: number }>> =>
-        async (...args) => {
+        () =>
+        async (...args): Promise<{ s3TokensTTLms: number; vaultTokenTTLms: number }> => {
             const [, getState, extraArgs] = args;
 
             const sliceContext = getContext(extraArgs);
@@ -359,7 +359,7 @@ export const privateThunks = {
                 vaultTokenTTLms
             })));
         }
-};
+} satisfies Thunks;
 
 type SliceContext = {
     prDefaultTokenTTL:

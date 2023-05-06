@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { id } from "tsafe/id";
-import type { ThunkAction } from "../core";
+import type { Thunks } from "../core";
 import type { SecretWithMetadata } from "core/ports/SecretsManager";
 import { assert } from "tsafe/assert";
 import { join as pathJoin } from "path";
@@ -186,7 +186,7 @@ export const thunks = {
      * NOTE: It IS possible to navigate to a secret currently being renamed or created.
      */
     "openSecret":
-        (params: { directoryPath: string; basename: string }): ThunkAction =>
+        (params: { directoryPath: string; basename: string }) =>
         async (...args) => {
             const [dispatch] = args;
 
@@ -246,9 +246,14 @@ export const thunks = {
                 })
             );
         },
-    "closeSecret": (): ThunkAction<void> => dispatch => dispatch(actions.closeSecret()),
+    "closeSecret":
+        () =>
+        (...args) => {
+            const [dispatch] = args;
+            dispatch(actions.closeSecret());
+        },
     "editCurrentlyShownSecret":
-        (params: EditSecretParams): ThunkAction =>
+        (params: EditSecretParams) =>
         async (...args) => {
             const [dispatch] = args;
 
@@ -334,4 +339,4 @@ export const thunks = {
 
             dispatch(actions.editSecretCompleted());
         }
-};
+} satisfies Thunks;

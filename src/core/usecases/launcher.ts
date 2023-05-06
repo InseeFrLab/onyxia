@@ -1,5 +1,5 @@
 import "minimal-polyfills/Object.fromEntries";
-import type { State, ThunkAction } from "../core";
+import type { State, Thunks } from "../core";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { createSelector, createSlice } from "@reduxjs/toolkit";
 import { id } from "tsafe/id";
@@ -477,10 +477,8 @@ export const { reducer, actions } = createSlice({
 
 const privateThunks = {
     "launchOrPreviewContract":
-        (params: {
-            isForContractPreview: boolean;
-        }): ThunkAction<Promise<{ contract: Contract }>> =>
-        async (...args) => {
+        (params: { isForContractPreview: boolean }) =>
+        async (...args): Promise<{ contract: Contract }> => {
             const { isForContractPreview } = params;
 
             const [dispatch, getState, { onyxiaApi }] = args;
@@ -511,7 +509,7 @@ const privateThunks = {
 
             return { contract };
         }
-};
+} satisfies Thunks;
 
 export const thunks = {
     "initialize":
@@ -519,7 +517,7 @@ export const thunks = {
             catalogId: string;
             packageName: string;
             formFieldsValueDifferentFromDefault: FormFieldValue[];
-        }): ThunkAction =>
+        }) =>
         async (...args) => {
             const { catalogId, packageName, formFieldsValueDifferentFromDefault } =
                 params;
@@ -914,11 +912,16 @@ export const thunks = {
                 })
             );
         },
-    "reset": (): ThunkAction<void> => dispatch => dispatch(actions.reset()),
+    "reset":
+        () =>
+        (...args) => {
+            const [dispatch] = args;
+            dispatch(actions.reset());
+        },
     "restoreAllDefault":
-        (): ThunkAction<void> =>
-        (...params) => {
-            const [dispatch, getState] = params;
+        () =>
+        (...args) => {
+            const [dispatch, getState] = args;
 
             const state = getState().launcher;
 
@@ -936,46 +939,60 @@ export const thunks = {
             });
         },
     "changeFormFieldValue":
-        (params: FormFieldValue): ThunkAction<void> =>
-        dispatch =>
-            dispatch(actions.formFieldValueChanged(params)),
-    "launch": (): ThunkAction => async dispatch => {
-        dispatch(
-            privateThunks.launchOrPreviewContract({
-                "isForContractPreview": false
-            })
-        );
-    },
-    "getContract": (): ThunkAction<Promise<{ contract: Contract }>> => async dispatch =>
-        dispatch(
-            privateThunks.launchOrPreviewContract({
-                "isForContractPreview": true
-            })
-        ),
+        (params: FormFieldValue) =>
+        (...args) => {
+            const [dispatch] = args;
+            dispatch(actions.formFieldValueChanged(params));
+        },
+    "launch":
+        () =>
+        async (...args) => {
+            const [dispatch] = args;
+            dispatch(
+                privateThunks.launchOrPreviewContract({
+                    "isForContractPreview": false
+                })
+            );
+        },
+    "getContract":
+        () =>
+        async (...args): Promise<{ contract: Contract }> => {
+            const [dispatch] = args;
+            return dispatch(
+                privateThunks.launchOrPreviewContract({
+                    "isForContractPreview": true
+                })
+            );
+        },
     "changeFriendlyName":
-        (friendlyName: string): ThunkAction<void> =>
-        dispatch =>
+        (friendlyName: string) =>
+        (...args) => {
+            const [dispatch] = args;
             dispatch(
                 thunks.changeFormFieldValue({
                     "path": onyxiaFriendlyNameFormFieldPath.split("."),
                     "value": friendlyName
                 })
-            ),
+            );
+        },
     "changeIsShared":
-        (params: { isShared: boolean }): ThunkAction<void> =>
-        dispatch =>
+        (params: { isShared: boolean }) =>
+        (...args) => {
+            const [dispatch] = args;
+
             dispatch(
                 thunks.changeFormFieldValue({
                     "path": onyxiaIsSharedFormFieldPath.split("."),
                     "value": params.isShared
                 })
-            ),
+            );
+        },
     /** This thunk can be used outside of the launcher page,
      *  even if the slice isn't initialized */
     //@deprecated should be moved to privateThunks
     "getOnyxiaValues":
-        (): ThunkAction<Promise<OnyxiaValues>> =>
-        async (...args) => {
+        () =>
+        async (...args): Promise<OnyxiaValues> => {
             const [dispatch, getState, { secretsManager, s3Client }] = args;
 
             const { publicIp } = await dispatch(publicIpThunks.fetch());
@@ -1119,7 +1136,7 @@ export const thunks = {
 
             return onyxiaValues;
         }
-};
+} satisfies Thunks;
 
 export const selectors = (() => {
     const readyLauncher = (rootState: State): LauncherState.Ready | undefined => {

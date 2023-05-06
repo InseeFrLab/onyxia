@@ -5,7 +5,7 @@ import { same } from "evt/tools/inDepth/same";
 import { assert } from "tsafe/assert";
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
-import type { ThunkAction } from "../core";
+import type { Thunks } from "../core";
 import { thunks as userConfigsThunks } from "./userConfigs";
 import { createObjectThatThrowsIfAccessed } from "redux-clean-architecture";
 import type { State } from "../core";
@@ -115,31 +115,39 @@ export const { reducer, actions } = createSlice({
 });
 
 export const privateThunks = {
-    "initialize": (): ThunkAction<void> => async (dispatch, getState) =>
-        dispatch(
-            actions.initializationCompleted({
-                "restorablePackageConfigs": (() => {
-                    const { value } =
-                        getState().userConfigs.bookmarkedServiceConfigurationStr;
+    "initialize":
+        () =>
+        async (...args) => {
+            const [dispatch, getState] = args;
+            dispatch(
+                actions.initializationCompleted({
+                    "restorablePackageConfigs": (() => {
+                        const { value } =
+                            getState().userConfigs.bookmarkedServiceConfigurationStr;
 
-                    return value === null ? [] : JSON.parse(value);
-                })()
-            })
-        ),
-    "syncWithUserConfig": (): ThunkAction => async (dispatch, getState) =>
-        dispatch(
-            userConfigsThunks.changeValue({
-                "key": "bookmarkedServiceConfigurationStr",
-                "value": JSON.stringify(
-                    getState().restorablePackageConfig.restorablePackageConfigs
-                )
-            })
-        )
-};
+                        return value === null ? [] : JSON.parse(value);
+                    })()
+                })
+            );
+        },
+    "syncWithUserConfig":
+        () =>
+        async (...args) => {
+            const [dispatch, getState] = args;
+            dispatch(
+                userConfigsThunks.changeValue({
+                    "key": "bookmarkedServiceConfigurationStr",
+                    "value": JSON.stringify(
+                        getState().restorablePackageConfig.restorablePackageConfigs
+                    )
+                })
+            );
+        }
+} satisfies Thunks;
 
 export const thunks = {
     "fetchIconsIfNotAlreadyDone":
-        (): ThunkAction =>
+        () =>
         async (...args) => {
             const [dispatch, getState, { onyxiaApi }] = args;
 
@@ -182,12 +190,14 @@ export const thunks = {
             getDoOverwriteConfiguration: (params: {
                 friendlyName: string;
             }) => Promise<boolean>;
-        }): ThunkAction =>
-        async (dispatch, getState) => {
+        }) =>
+        async (...args) => {
+            const [dispatch, getState] = args;
+
             const { restorablePackageConfig, getDoOverwriteConfiguration } = params;
 
             if (
-                isRestorablePackageConfigInStore({
+                getIsRestorablePackageConfigInStore({
                     "restorablePackageConfigs":
                         getState().restorablePackageConfig.restorablePackageConfigs,
                     restorablePackageConfig
@@ -247,8 +257,10 @@ export const thunks = {
             await dispatch(privateThunks.syncWithUserConfig());
         },
     "deleteRestorablePackageConfig":
-        (params: { restorablePackageConfig: RestorablePackageConfig }): ThunkAction =>
-        async dispatch => {
+        (params: { restorablePackageConfig: RestorablePackageConfig }) =>
+        async (...args) => {
+            const [dispatch] = args;
+
             const { restorablePackageConfig } = params;
 
             dispatch(
@@ -264,19 +276,24 @@ export const thunks = {
         (params: {
             restorablePackageConfigs: RestorablePackageConfig[];
             restorablePackageConfig: RestorablePackageConfig;
-        }): ThunkAction<boolean> =>
-        () =>
-            isRestorablePackageConfigInStore(params)
-};
+        }) =>
+        (): boolean =>
+            getIsRestorablePackageConfigInStore(params)
+} satisfies Thunks;
 
-function isRestorablePackageConfigInStore(params: {
+function getIsRestorablePackageConfigInStore(params: {
     restorablePackageConfigs: RestorablePackageConfig[];
     restorablePackageConfig: RestorablePackageConfig;
 }) {
     const { restorablePackageConfig, restorablePackageConfigs } = params;
 
-    return !!restorablePackageConfigs.find(restorablePackageConfig_i =>
-        areSameRestorablePackageConfig(restorablePackageConfig_i, restorablePackageConfig)
+    return (
+        restorablePackageConfigs.find(restorablePackageConfig_i =>
+            areSameRestorablePackageConfig(
+                restorablePackageConfig_i,
+                restorablePackageConfig
+            )
+        ) !== undefined
     );
 }
 

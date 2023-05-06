@@ -1,4 +1,4 @@
-import type { ThunkAction } from "../core";
+import type { Thunks } from "../core";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { createSlice } from "@reduxjs/toolkit";
 import type { Catalog } from "../ports/OnyxiaApi";
@@ -138,7 +138,7 @@ export const thunks = {
                           selectedCatalogId: string;
                       }) => void;
                   }
-        ): ThunkAction =>
+        ) =>
         async (...args) => {
             const [dispatch, , { onyxiaApi }] = args;
 
@@ -178,7 +178,7 @@ export const thunks = {
             }
         },
     "setSearch":
-        (params: { search: string }): ThunkAction =>
+        (params: { search: string }) =>
         async (...args) => {
             const { search } = params;
             const [dispatch, getState, extra] = args;
@@ -193,10 +193,14 @@ export const thunks = {
 
             dispatch(actions.setSearch({ search }));
         },
-    "revealAllPackages": (): ThunkAction<void> => async dispatch =>
-        dispatch(actions.setDoShowOnlyHighlightedToFalse()),
+    "revealAllPackages":
+        () =>
+        (...args) => {
+            const [dispatch] = args;
+            dispatch(actions.setDoShowOnlyHighlightedToFalse());
+        },
     "changeSelectedCatalogId":
-        (params: { catalogId: string }): ThunkAction<void> =>
+        (params: { catalogId: string }) =>
         (...args) => {
             const { catalogId } = params;
             const [dispatch, getState] = args;
@@ -207,7 +211,7 @@ export const thunks = {
 
             dispatch(actions.changeSelectedCatalogue({ "selectedCatalogId": catalogId }));
         }
-};
+} satisfies Thunks;
 
 const { getContext } = createUsecaseContextApi(() => {
     const { waitForDebounce } = waitForDebounceFactory({ "delay": 500 });

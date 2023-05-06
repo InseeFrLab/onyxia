@@ -47,7 +47,7 @@ export function Account(props: Props) {
                 .filter(accountTabId =>
                     accountTabId !== "k8sCredentials"
                         ? true
-                        : k8sCredentials.isAvailable()
+                        : k8sCredentials.getIsAvailable()
                 )
                 .filter(accountTabId =>
                     accountTabId !== "vault" ? true : vaultCredentials.isAvailable()

@@ -1,6 +1,6 @@
 import { assert } from "tsafe/assert";
 import type { User } from "../ports/GetUser";
-import type { ThunkAction } from "../core";
+import type { Thunks } from "../core";
 import { createUsecaseContextApi } from "redux-clean-architecture";
 
 export const name = "userAuthentication";
@@ -9,8 +9,8 @@ export const reducer = null;
 
 export const thunks = {
     "getUser":
-        (): ThunkAction<User> =>
-        (...args) => {
+        () =>
+        (...args): User => {
             const [, , extraArg] = args;
 
             const { user } = getContext(extraArg);
@@ -20,15 +20,15 @@ export const thunks = {
             return user;
         },
     "getIsUserLoggedIn":
-        (): ThunkAction<boolean> =>
-        (...args) => {
+        () =>
+        (...args): boolean => {
             const [, , { oidc }] = args;
 
             return oidc.isUserLoggedIn;
         },
     "login":
-        (params: { doesCurrentHrefRequiresAuth: boolean }): ThunkAction<Promise<never>> =>
-        (...args) => {
+        (params: { doesCurrentHrefRequiresAuth: boolean }) =>
+        (...args): Promise<never> => {
             const { doesCurrentHrefRequiresAuth } = params;
 
             const [, , { oidc }] = args;
@@ -38,8 +38,8 @@ export const thunks = {
             return oidc.login({ doesCurrentHrefRequiresAuth });
         },
     "logout":
-        (params: { redirectTo: "home" | "current page" }): ThunkAction<Promise<never>> =>
-        (...args) => {
+        (params: { redirectTo: "home" | "current page" }) =>
+        (...args): Promise<never> => {
             const { redirectTo } = params;
 
             const [, , { oidc }] = args;
@@ -48,22 +48,21 @@ export const thunks = {
 
             return oidc.logout({ redirectTo });
         }
-};
+} satisfies Thunks;
 
 export const privateThunks = {
     "initialize":
-        (): ThunkAction =>
-        async (...[, , extraArg]) =>
+        () =>
+        async (...args) => {
+            const [, , extraArg] = args;
             setContext(extraArg, {
                 "user": !extraArg.oidc.isUserLoggedIn
                     ? undefined
                     : await extraArg.getUser()
-            })
-};
+            });
+        }
+} satisfies Thunks;
 
-type SliceContext = {
-    /** undefined when not authenticated */
+const { getContext, setContext } = createUsecaseContextApi<{
     user: User | undefined;
-};
-
-const { getContext, setContext } = createUsecaseContextApi<SliceContext>();
+}>();

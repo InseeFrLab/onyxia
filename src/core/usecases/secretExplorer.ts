@@ -2,7 +2,7 @@ import "minimal-polyfills/Object.fromEntries";
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { id } from "tsafe/id";
-import type { ThunkAction, ThunksExtraArgument } from "../core";
+import type { Thunks, ThunksExtraArgument } from "../core";
 import type { SecretsManager, Secret } from "core/ports/SecretsManager";
 import {
     join as pathJoin,
@@ -246,7 +246,7 @@ export declare namespace ExplorersCreateParams {
 
 const privateThunks = {
     "lazyInitialization":
-        (): ThunkAction<void> =>
+        () =>
         (...args) => {
             const [dispatch, getState, extraArg] = args;
 
@@ -314,7 +314,7 @@ const privateThunks = {
      * NOTE: It IS possible to navigate to a directory currently being renamed or created.
      */
     "navigate":
-        (params: { directoryPath: string; forceReload: boolean }): ThunkAction =>
+        (params: { directoryPath: string; forceReload: boolean }) =>
         async (...args) => {
             const { directoryPath, forceReload } = params;
 
@@ -377,25 +377,24 @@ const privateThunks = {
                 })
             );
         }
-};
+} satisfies Thunks;
 
 export const interUsecasesThunks = {
     "getLoggedSecretsApis":
-        (): ThunkAction<
-            Pick<
-                SliceContexts,
-                "loggedSecretClient" | "loggedExtendedFsApi" | "secretClientLogs"
-            >
-        > =>
-        (...args) =>
-            getSliceContexts(args),
+        () =>
+        (...args) => {
+            const { loggedSecretClient, loggedExtendedFsApi, secretClientLogs } =
+                getSliceContexts(args);
+
+            return { loggedSecretClient, loggedExtendedFsApi, secretClientLogs };
+        },
     "waitForNoOngoingOperation":
         (params: {
             kind: "file" | "directory";
             basename: string;
             directoryPath: string;
             ctx?: Ctx;
-        }): ThunkAction =>
+        }) =>
         async (...args) => {
             const [, getState, { evtAction }] = args;
 
@@ -428,15 +427,15 @@ export const interUsecasesThunks = {
             );
         },
     "getProjectHomePath":
-        (): ThunkAction<string> =>
+        () =>
         (...args) => {
             const [, getState] = args;
 
-            return (
-                "/" + projectSelectionSelectors.selectedProject(getState()).vaultTopDir
-            );
+            return `/${
+                projectSelectionSelectors.selectedProject(getState()).vaultTopDir
+            }`;
         }
-};
+} satisfies Thunks;
 
 export const thunks = {
     "notifyThatUserIsWatching":
@@ -446,7 +445,7 @@ export const thunks = {
                 directoryPath: string;
                 doRestoreOpenedFile: boolean;
             }) => void;
-        }): ThunkAction<void> =>
+        }) =>
         (...args) => {
             const { directNavigationDirectoryPath, onNavigate } = params;
             const [dispatch] = args;
@@ -469,7 +468,7 @@ export const thunks = {
             );
         },
     "notifyThatUserIsNoLongerWatching":
-        (): ThunkAction<void> =>
+        () =>
         (...args) => {
             const [dispatch] = args;
 
@@ -483,7 +482,7 @@ export const thunks = {
      * NOTE: It IS possible to navigate to a directory currently being renamed or created.
      */
     "navigate":
-        (params: { directoryPath: string }): ThunkAction =>
+        (params: { directoryPath: string }) =>
         async (...args) => {
             const { directoryPath } = params;
 
@@ -498,7 +497,7 @@ export const thunks = {
         },
     //Not used by the UI so far but we want to later
     "cancelNavigation":
-        (): ThunkAction<void> =>
+        () =>
         (...args) => {
             const [dispatch, getState] = args;
             if (!getState().secretExplorer.isNavigationOngoing) {
@@ -507,7 +506,7 @@ export const thunks = {
             dispatch(actions.navigationCanceled());
         },
     "refresh":
-        (): ThunkAction =>
+        () =>
         async (...args) => {
             const [dispatch, getState] = args;
 
@@ -529,7 +528,7 @@ export const thunks = {
             renamingWhat: "file" | "directory";
             basename: string;
             newBasename: string;
-        }): ThunkAction =>
+        }) =>
         async (...args) => {
             const { renamingWhat, basename, newBasename } = params;
 
@@ -582,7 +581,7 @@ export const thunks = {
         },
 
     "create":
-        (params: ExplorersCreateParams): ThunkAction =>
+        (params: ExplorersCreateParams) =>
         async (...args) => {
             const [dispatch, getState] = args;
 
@@ -639,7 +638,7 @@ export const thunks = {
      * currently listed.
      */
     "delete":
-        (params: { deleteWhat: "file" | "directory"; basename: string }): ThunkAction =>
+        (params: { deleteWhat: "file" | "directory"; basename: string }) =>
         async (...args) => {
             const { deleteWhat, basename } = params;
 
@@ -691,12 +690,11 @@ export const thunks = {
             );
         },
     "getFsApiLogs":
-        (): ThunkAction<ApiLogs> =>
-        (...args) => {
-            return getSliceContexts(args).secretClientLogs;
-        },
+        () =>
+        (...args) =>
+            getSliceContexts(args).secretClientLogs,
     "getIsEnabled":
-        (): ThunkAction<boolean> =>
+        () =>
         (...args) => {
             const [, getState] = args;
 
@@ -704,7 +702,7 @@ export const thunks = {
 
             return region.vault !== undefined;
         }
-};
+} satisfies Thunks;
 
 type SliceContexts = {
     loggedSecretClient: SecretsManager;
@@ -717,7 +715,9 @@ type SliceContexts = {
 const { getSliceContexts } = (() => {
     const weakMap = new WeakMap<ThunksExtraArgument, SliceContexts>();
 
-    function getSliceContexts(args: Parameters<ThunkAction<unknown>>): SliceContexts {
+    function getSliceContexts(
+        args: Parameters<ReturnType<Thunks[string]>>
+    ): SliceContexts {
         const [, getState, extraArg] = args;
 
         let sliceContext = weakMap.get(extraArg);
