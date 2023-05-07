@@ -14,7 +14,9 @@ export type Props = {
 export default function Terms(props: Props) {
     const { className } = props;
 
-    const [tos, setTos] = useState<string | undefined>(undefined);
+    const [tos, setTos] = useState<
+        { markdownString: string; lang: string | undefined } | undefined
+    >(undefined);
 
     const { lang } = useLang();
 
@@ -26,7 +28,7 @@ export default function Terms(props: Props) {
         const { showSplashScreen, hideSplashScreen } = useSplashScreen();
 
         useEffect(() => {
-            if (typeof tos === "string") {
+            if (tos !== undefined) {
                 hideSplashScreen();
             } else {
                 showSplashScreen({
@@ -43,8 +45,11 @@ export default function Terms(props: Props) {
     }
 
     return (
-        <div className={cx(classes.root, className)}>
-            <Markdown className={classes.markdown}>{tos}</Markdown>
+        <div
+            className={cx(classes.root, className)}
+            lang={lang !== tos.lang ? tos.lang : undefined}
+        >
+            <Markdown className={classes.markdown}>{tos.markdownString}</Markdown>
         </div>
     );
 }

@@ -2,7 +2,7 @@ import { memo } from "react";
 import { makeStyles, Text } from "ui/theme";
 import { RoundLogo } from "ui/shared/RoundLogo";
 import { Button } from "ui/theme";
-import { useTranslation } from "ui/i18n";
+import { useTranslation, type LocalizedString, useResolveLocalizedString } from "ui/i18n";
 import { capitalize } from "tsafe/capitalize";
 import { declareComponentKeys } from "i18nifty";
 
@@ -10,7 +10,7 @@ export type Props = {
     className?: string;
     packageIconUrl?: string;
     packageName: string;
-    packageDescription: string;
+    packageDescription: LocalizedString;
     onRequestLaunch(): void;
     packageHomeUrl: string | undefined;
 };
@@ -29,6 +29,10 @@ export const CatalogExplorerCard = memo((props: Props) => {
 
     const { t } = useTranslation({ CatalogExplorerCard });
 
+    const { resolveLocalizedString } = useResolveLocalizedString({
+        "labelWhenMismatchingLanguage": true
+    });
+
     return (
         <div className={cx(classes.root, className)}>
             <div className={classes.aboveDivider}>
@@ -42,7 +46,7 @@ export const CatalogExplorerCard = memo((props: Props) => {
             <div className={classes.belowDivider}>
                 <div className={classes.body}>
                     <Text typo="body 1" className={classes.bodyTypo}>
-                        {packageDescription}
+                        {resolveLocalizedString(packageDescription)}
                     </Text>
                 </div>
                 <div className={classes.buttonsWrapper}>

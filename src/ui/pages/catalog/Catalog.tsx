@@ -113,7 +113,7 @@ export default function Catalog(props: Props) {
 export const { i18n } = declareComponentKeys<
     | "header text1"
     | "header text2"
-    | { K: "contribute to the catalog"; P: { catalogName: string } }
+    | { K: "contribute to the catalog"; P: { catalogName: JSX.Element } }
     | { K: "contribute to the package"; P: { packageName: string } }
     | "here"
 >()({ Catalog });
@@ -141,7 +141,9 @@ const PageHeaderHelpContent = memo((params: { routeName: PageRoute["name"] }) =>
 
     const { lang } = useLang();
 
-    const { resolveLocalizedString } = useResolveLocalizedString();
+    const { resolveLocalizedString } = useResolveLocalizedString({
+        "labelWhenMismatchingLanguage": true
+    });
 
     switch (routeName) {
         case "catalogExplorer":
