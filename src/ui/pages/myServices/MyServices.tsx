@@ -32,28 +32,32 @@ export default function MyServices(props: Props) {
 
     const { t } = useTranslation({ MyServices });
 
-    const { runningService, restorablePackageConfig, projectConfigs } =
-        useCoreFunctions();
-
-    const { displayableConfigs } = useCoreState(
-        selectors.restorablePackageConfig.displayableConfigs
-    );
-
-    const isRunningServicesUpdating = useCoreState(
-        state => state.runningService.isUpdating
-    );
-
+    /* prettier-ignore */
+    const { runningService, restorablePackageConfig, projectConfigs } = useCoreFunctions();
+    /* prettier-ignore */
+    const { displayableConfigs } = useCoreState(selectors.restorablePackageConfig.displayableConfigs);
+    /* prettier-ignore */
+    const { shouldOverlaysBeDisplayed } = useCoreState(selectors.runningService.shouldOverlaysBeDisplayed);
     const { runningServices } = useCoreState(selectors.runningService.runningServices);
+    const { deletableRunningServices } = useCoreState(
+        selectors.runningService.deletableRunningServices
+    );
+    const { isThereOwnedSharedServices } = useCoreState(
+        selectors.runningService.isThereOwnedSharedServices
+    );
+    const { isThereNonOwnedServices } = useCoreState(
+        selectors.runningService.isThereNonOwnedServices
+    );
 
     const { hideSplashScreen, showSplashScreen } = useSplashScreen();
 
     useEffect(() => {
-        if (isRunningServicesUpdating) {
+        if (shouldOverlaysBeDisplayed) {
             showSplashScreen({ "enableTransparency": true });
         } else {
             hideSplashScreen();
         }
-    }, [isRunningServicesUpdating]);
+    }, [shouldOverlaysBeDisplayed]);
 
     const [password, setPassword] = useState<string | undefined>(undefined);
 
@@ -160,42 +164,40 @@ export default function MyServices(props: Props) {
     );
 
     const cards = useMemo(
-        (): MyServicesCardsProps["cards"] | undefined =>
-            isRunningServicesUpdating
-                ? undefined
-                : runningServices.map(
-                      ({
-                          id,
-                          logoUrl,
-                          friendlyName,
-                          packageName,
-                          urls,
-                          startedAt,
-                          monitoringUrl,
-                          isStarting,
-                          postInstallInstructions,
-                          vaultTokenExpirationTime,
-                          s3TokenExpirationTime,
-                          env,
-                          ...rest
-                      }) => ({
-                          "serviceId": id,
-                          "packageIconUrl": logoUrl,
-                          friendlyName,
-                          packageName,
-                          "openUrl": urls[0],
-                          monitoringUrl,
-                          "startTime": isStarting ? undefined : startedAt,
-                          postInstallInstructions,
-                          env,
-                          "isShared": rest.isShared,
-                          "isOwned": rest.isOwned,
-                          "ownerUsername": rest.isOwned ? undefined : rest.ownerUsername,
-                          vaultTokenExpirationTime,
-                          s3TokenExpirationTime
-                      })
-                  ),
-        [runningServices, isRunningServicesUpdating]
+        (): MyServicesCardsProps["cards"] =>
+            runningServices.map(
+                ({
+                    id,
+                    logoUrl,
+                    friendlyName,
+                    packageName,
+                    urls,
+                    startedAt,
+                    monitoringUrl,
+                    isStarting,
+                    postInstallInstructions,
+                    vaultTokenExpirationTime,
+                    s3TokenExpirationTime,
+                    env,
+                    ...rest
+                }) => ({
+                    "serviceId": id,
+                    "packageIconUrl": logoUrl,
+                    friendlyName,
+                    packageName,
+                    "openUrl": urls[0],
+                    monitoringUrl,
+                    "startTime": isStarting ? undefined : startedAt,
+                    postInstallInstructions,
+                    env,
+                    "isShared": rest.isShared,
+                    "isOwned": rest.isOwned,
+                    "ownerUsername": rest.isOwned ? undefined : rest.ownerUsername,
+                    vaultTokenExpirationTime,
+                    s3TokenExpirationTime
+                })
+            ),
+        [runningServices]
     );
 
     const evtMyServiceCardsAction = useConst(() =>
@@ -205,7 +207,7 @@ export default function MyServices(props: Props) {
     useEffect(() => {
         const { autoLaunchServiceId } = route.params;
 
-        if (autoLaunchServiceId === undefined || cards === undefined) {
+        if (autoLaunchServiceId === undefined) {
             return;
         }
 
@@ -246,11 +248,6 @@ export default function MyServices(props: Props) {
         }
     );
 
-    const deletableRunningServices = useMemo(
-        () => runningServices.filter(({ isOwned }) => isOwned),
-        [runningServices]
-    );
-
     const onDialogCloseFactory = useCallbackFactory(([doDelete]: [boolean]) => {
         if (doDelete) {
             if (serviceIdRequestedToBeDeleted) {
@@ -267,16 +264,6 @@ export default function MyServices(props: Props) {
         setIsDialogOpen(false);
     });
 
-    const isThereNonOwnedServicesShown = useMemo(
-        () => !!runningServices.find(({ isOwned }) => !isOwned),
-        [runningServices]
-    );
-
-    const isThereOwnedSharedServices = useMemo(
-        () => !!runningServices.find(({ isOwned, isShared }) => isOwned && isShared),
-        [runningServices]
-    );
-
     const getServicePassword = useConstCallback(() =>
         projectConfigs.getValue({ "key": "servicePassword" })
     );
@@ -292,31 +279,29 @@ export default function MyServices(props: Props) {
             />
             <MyServicesButtonBar
                 onClick={onButtonBarClick}
-                isThereNonOwnedServicesShown={isThereNonOwnedServicesShown}
+                isThereNonOwnedServicesShown={isThereNonOwnedServices}
                 isThereDeletableServices={deletableRunningServices.length !== 0}
             />
             <div className={classes.payload}>
-                {cards !== undefined && (
-                    <>
-                        {!isSavedConfigsExtended && (
-                            <MyServicesCards
-                                className={classes.cards}
-                                cards={cards}
-                                onRequestDelete={onRequestDelete}
-                                catalogExplorerLink={catalogExplorerLink}
-                                evtAction={evtMyServiceCardsAction}
-                                getServicePassword={getServicePassword}
-                            />
-                        )}
-                        <MyServicesSavedConfigs
-                            isShortVariant={!isSavedConfigsExtended}
-                            savedConfigs={savedConfigs}
-                            className={classes.savedConfigs}
-                            callback={onSavedConfigsCallback}
-                            onRequestToggleIsShortVariant={onRequestToggleIsShortVariant}
+                <>
+                    {!isSavedConfigsExtended && (
+                        <MyServicesCards
+                            className={classes.cards}
+                            cards={cards}
+                            onRequestDelete={onRequestDelete}
+                            catalogExplorerLink={catalogExplorerLink}
+                            evtAction={evtMyServiceCardsAction}
+                            getServicePassword={getServicePassword}
                         />
-                    </>
-                )}
+                    )}
+                    <MyServicesSavedConfigs
+                        isShortVariant={!isSavedConfigsExtended}
+                        savedConfigs={savedConfigs}
+                        className={classes.savedConfigs}
+                        callback={onSavedConfigsCallback}
+                        onRequestToggleIsShortVariant={onRequestToggleIsShortVariant}
+                    />
+                </>
             </div>
             <Dialog
                 title={t("confirm delete title")}
