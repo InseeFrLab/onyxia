@@ -53,6 +53,10 @@ export const CatalogLauncher = memo((props: Props) => {
         selectors.launcher.restorablePackageConfig
     );
 
+    const restorablePackageConfigs = useCoreState(
+        state => state.restorablePackageConfig.restorablePackageConfigs
+    );
+
     useEffect(() => {
         if (restorablePackageConfig === undefined) {
             return;
@@ -70,10 +74,6 @@ export const CatalogLauncher = memo((props: Props) => {
             })
             .replace();
     }, [restorablePackageConfig ?? Object]);
-
-    const restorablePackageConfigs = useCoreState(
-        state => state.restorablePackageConfig.restorablePackageConfigs
-    );
 
     const [isBookmarked, setIsBookmarked] = useState(false);
 
@@ -120,7 +120,7 @@ export const CatalogLauncher = memo((props: Props) => {
         }
 
         const isBookmarkedNew =
-            restorablePackageConfigFunctions.isRestorablePackageConfigInStore({
+            restorablePackageConfigFunctions.getIsRestorablePackageConfigInStore({
                 restorablePackageConfigs,
                 restorablePackageConfig
             });

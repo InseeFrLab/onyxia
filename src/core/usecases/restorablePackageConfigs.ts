@@ -272,7 +272,7 @@ export const thunks = {
             await dispatch(privateThunks.syncWithUserConfig());
         },
     /** Pure */
-    "isRestorablePackageConfigInStore":
+    "getIsRestorablePackageConfigInStore":
         (params: {
             restorablePackageConfigs: RestorablePackageConfig[];
             restorablePackageConfig: RestorablePackageConfig;
