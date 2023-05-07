@@ -102,7 +102,6 @@ function ContextualizedApp() {
 
     const { resolveLocalizedString } = useResolveLocalizedString();
 
-    //TODO: The LefBar types assertion is broken, see what is up.
     const leftBarItems = useMemo(
         () =>
             ({
