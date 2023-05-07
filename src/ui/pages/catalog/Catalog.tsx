@@ -81,7 +81,7 @@ export default function Catalog(props: Props) {
                 mainIcon="catalog"
                 title={t("header text1")}
                 helpTitle={t("header text2")}
-                helpContent={<PageHeaderHelpContent />}
+                helpContent={<PageHeaderHelpContent routeName={route.name} />}
                 helpIcon="sentimentSatisfied"
                 titleCollapseParams={titleCollapseParams}
                 helpCollapseParams={helpCollapseParams}
@@ -130,31 +130,12 @@ const useStyles = makeStyles({ "name": { Catalog } })({
     }
 });
 
-const PageHeaderHelpContent = memo(() => {
-    const sourcesUrls = useCoreState(state => {
-        const { catalogExplorer, launcher } = state;
+const PageHeaderHelpContent = memo((params: { routeName: PageRoute["name"] }) => {
+    const { routeName } = params;
 
-        if (launcher.stateDescription === "ready") {
-            return {
-                "type": "package",
-                "sources": launcher.sources,
-                "packageName": launcher.packageName
-            } as const;
-        }
-
-        if (catalogExplorer.stateDescription !== "ready") {
-            return undefined;
-        }
-
-        const { selectedCatalog } = selectors.catalogExplorer.selectedCatalog(state);
-
-        assert(selectedCatalog !== undefined);
-
-        return {
-            "type": "catalog",
-            selectedCatalog
-        } as const;
-    });
+    const { selectedCatalog } = useCoreState(selectors.catalogExplorer.selectedCatalog);
+    const { sources } = useCoreState(selectors.launcher.sources);
+    const { packageName } = useCoreState(selectors.launcher.packageName);
 
     const { t } = useTranslation({ Catalog });
 
@@ -162,13 +143,12 @@ const PageHeaderHelpContent = memo(() => {
 
     const { resolveLocalizedString } = useResolveLocalizedString();
 
-    if (sourcesUrls === undefined) {
-        return null;
-    }
+    switch (routeName) {
+        case "catalogExplorer":
+            if (selectedCatalog === undefined) {
+                return null;
+            }
 
-    switch (sourcesUrls.type) {
-        case "catalog":
-            const { selectedCatalog } = sourcesUrls;
             return (
                 <>
                     {resolveLocalizedString(selectedCatalog.description)}
@@ -184,11 +164,17 @@ const PageHeaderHelpContent = memo(() => {
                     </Link>
                 </>
             );
-        case "package":
-            const { packageName, sources } = sourcesUrls;
+        case "catalogLauncher":
+            if (packageName === undefined) {
+                return null;
+            }
+
+            assert(sources !== undefined);
+
             if (sources.length === 0) {
                 return null;
             }
+
             return (
                 <>
                     {t("contribute to the package", {
