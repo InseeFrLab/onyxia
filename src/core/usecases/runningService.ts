@@ -7,15 +7,12 @@ import { selectors as projectSelectionSelectors } from "./projectSelection";
 import type { Thunks, State as RootState } from "../core";
 import { exclude } from "tsafe/exclude";
 import { createUsecaseContextApi } from "redux-clean-architecture";
+import { createSelector } from "@reduxjs/toolkit";
 
 type State = {
     isUserWatching: boolean;
     isUpdating: boolean;
-    "~internal": {
-        /**NOTE: Access using selectors
-         * undefined when not initially fetched */
-        runningServices: undefined | RunningService[];
-    };
+    runningServices: undefined | RunningService[];
 };
 
 export type RunningService = RunningService.Owned | RunningService.NotOwned;
@@ -56,9 +53,7 @@ export const { reducer, actions } = createSlice({
     "initialState": id<State>({
         "isUserWatching": false,
         "isUpdating": false,
-        "~internal": {
-            "runningServices": undefined
-        }
+        "runningServices": undefined
     }),
     "reducers": {
         "isUserWatchingChanged": (
@@ -81,9 +76,7 @@ export const { reducer, actions } = createSlice({
             return id<State>({
                 "isUpdating": false,
                 "isUserWatching": state.isUserWatching,
-                "~internal": {
-                    runningServices
-                }
+                runningServices
             });
         },
         "serviceStarted": (
@@ -96,7 +89,7 @@ export const { reducer, actions } = createSlice({
             }>
         ) => {
             const { serviceId, doOverwriteStaredAtToNow } = payload;
-            const { runningServices } = state["~internal"];
+            const { runningServices } = state;
 
             assert(runningServices !== undefined);
 
@@ -116,7 +109,7 @@ export const { reducer, actions } = createSlice({
         "serviceStopped": (state, { payload }: PayloadAction<{ serviceId: string }>) => {
             const { serviceId } = payload;
 
-            const { runningServices } = state["~internal"];
+            const { runningServices } = state;
             assert(runningServices !== undefined);
 
             runningServices.splice(
@@ -361,24 +354,49 @@ export const privateThunks = {
         }
 } satisfies Thunks;
 
-type SliceContext = {
-    prDefaultTokenTTL:
-        | Promise<{ s3TokensTTLms: number; vaultTokenTTLms: number }>
-        | undefined;
-};
-
-const { getContext } = createUsecaseContextApi<SliceContext>(() => ({
-    "prDefaultTokenTTL": undefined
+const { getContext } = createUsecaseContextApi(() => ({
+    "prDefaultTokenTTL": id<
+        Promise<{ s3TokensTTLms: number; vaultTokenTTLms: number }> | undefined
+    >(undefined)
 }));
 
 export const selectors = (() => {
     const runningServices = (rootState: RootState): RunningService[] => {
-        const { runningServices } = rootState.runningService["~internal"];
+        const { runningServices } = rootState[name];
 
-        return runningServices === undefined
-            ? []
-            : [...runningServices].sort((a, b) => b.startedAt - a.startedAt);
+        if (runningServices === undefined) {
+            return [];
+        }
+
+        return [...runningServices].sort((a, b) => b.startedAt - a.startedAt);
     };
 
-    return { runningServices };
+    const shouldOverlaysBeDisplayed = (rootState: RootState): boolean => {
+        const { runningServices, isUpdating } = rootState[name];
+        return runningServices === undefined || isUpdating;
+    };
+
+    const deletableRunningServices = createSelector(runningServices, runningServices =>
+        runningServices.filter(({ isOwned }) => isOwned)
+    );
+
+    const isThereNonOwnedServices = createSelector(
+        runningServices,
+        runningServices => runningServices.find(({ isOwned }) => !isOwned) !== undefined
+    );
+
+    const isThereOwnedSharedServices = createSelector(
+        runningServices,
+        runningServices =>
+            runningServices.find(({ isOwned, isShared }) => isOwned && isShared) !==
+            undefined
+    );
+
+    return {
+        runningServices,
+        deletableRunningServices,
+        shouldOverlaysBeDisplayed,
+        isThereNonOwnedServices,
+        isThereOwnedSharedServices
+    };
 })();

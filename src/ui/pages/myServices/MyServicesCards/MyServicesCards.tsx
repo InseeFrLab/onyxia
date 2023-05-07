@@ -21,24 +21,23 @@ import { declareComponentKeys } from "i18nifty";
 
 export type Props = {
     className?: string;
-    cards:
-        | {
-              serviceId: string;
-              packageIconUrl?: string;
-              friendlyName: string;
-              packageName: string;
-              env: Record<string, string>;
-              openUrl: string | undefined;
-              monitoringUrl: string | undefined;
-              startTime: number | undefined;
-              postInstallInstructions: string | undefined;
-              isShared: boolean;
-              isOwned: boolean;
-              /** undefined when isOwned === true*/
-              ownerUsername: string | undefined;
-              vaultTokenExpirationTime: number | undefined;
-              s3TokenExpirationTime: number | undefined;
-          }[];
+    cards: {
+        serviceId: string;
+        packageIconUrl?: string;
+        friendlyName: string;
+        packageName: string;
+        env: Record<string, string>;
+        openUrl: string | undefined;
+        monitoringUrl: string | undefined;
+        startTime: number | undefined;
+        postInstallInstructions: string | undefined;
+        isShared: boolean;
+        isOwned: boolean;
+        /** undefined when isOwned === true*/
+        ownerUsername: string | undefined;
+        vaultTokenExpirationTime: number | undefined;
+        s3TokenExpirationTime: number | undefined;
+    }[];
     catalogExplorerLink: Link;
     onRequestDelete(params: { serviceId: string }): void;
     evtAction: NonPostableEvt<{
