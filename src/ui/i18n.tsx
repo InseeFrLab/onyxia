@@ -402,7 +402,11 @@ const {
                 "catalog": "Services catalog",
                 "myServices": "My Services",
                 "mySecrets": "My Secrets",
-                "myFiles": "My Files"
+                "myFiles": "My Files",
+                "divider: services features": "Services features",
+                "divider: external services features": "External services features",
+                "divider: onyxia instance specific features":
+                    "Onyxia instance specific features"
             },
             "Page404": {
                 "not found": "Page not found"
@@ -849,7 +853,12 @@ const {
                 "catalog": "Catalogue de services",
                 "myServices": "Mes services",
                 "mySecrets": "Mes secrets",
-                "myFiles": "Mes fichiers"
+                "myFiles": "Mes fichiers",
+                "divider: services features": "Fontionnalités relative aux services",
+                "divider: external services features":
+                    "Fontionnalités relative aux services externes",
+                "divider: onyxia instance specific features":
+                    "Fontionnalités spécifiques à cette instance d'Onyxia"
             },
             "Page404": {
                 "not found": "Page non trouvée"
@@ -1240,7 +1249,10 @@ const {
                 "catalog": "服务目录",
                 "myServices": "我的服务",
                 "mySecrets": "我的密钥",
-                "myFiles": "我的文档"
+                "myFiles": "我的文档",
+                "divider: services features": "服务功能",
+                "divider: external services features": "外部服务功能",
+                "divider: onyxia instance specific features": "Onyxia实例特定功能"
             },
             "Page404": {
                 "not found": "网页未找到"
