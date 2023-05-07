@@ -9,6 +9,7 @@ import { waitForDebounceFactory } from "core/tools/waitForDebounce";
 import { createUsecaseContextApi } from "redux-clean-architecture";
 import { exclude } from "tsafe/exclude";
 import { compareVersions } from "compare-versions";
+import { createSelector } from "@reduxjs/toolkit";
 
 type State = State.NotFetched | State.Ready;
 
@@ -236,10 +237,18 @@ export const selectors = (() => {
         return { getPackageWeight };
     }
 
-    const filteredPackages = (rootState: RootState) => {
-        const state = rootState.catalogExplorer;
+    const readyState = (rootState: RootState) => {
+        const state = rootState[name];
 
         if (state.stateDescription !== "ready") {
+            return undefined;
+        }
+
+        return state;
+    };
+
+    const filteredPackages = createSelector(readyState, state => {
+        if (state === undefined) {
             return undefined;
         }
 
@@ -288,14 +297,10 @@ export const selectors = (() => {
             packages,
             "notShownCount": search !== "" ? 0 : catalog.length - packages.length
         };
-    };
+    });
 
-    const selectedCatalog = (
-        rootState: RootState
-    ): Omit<Catalog, "charts"> | undefined => {
-        const state = rootState.catalogExplorer;
-
-        if (state.stateDescription !== "ready") {
+    const selectedCatalog = createSelector(readyState, state => {
+        if (state === undefined) {
             return undefined;
         }
 
@@ -310,19 +315,15 @@ export const selectors = (() => {
         const { charts: _, ...rest } = catalog;
 
         return rest;
-    };
+    });
 
-    const productionCatalogs = (
-        rootState: RootState
-    ): ReturnType<typeof filterProductionCatalogs> | undefined => {
-        const state = rootState.catalogExplorer;
-
-        if (state.stateDescription !== "ready") {
+    const productionCatalogs = createSelector(readyState, state => {
+        if (state === undefined) {
             return undefined;
         }
 
         return filterProductionCatalogs(state["~internal"].catalogs);
-    };
+    });
 
     return { filteredPackages, selectedCatalog, productionCatalogs };
 })();

@@ -1140,7 +1140,7 @@ export const thunks = {
 
 export const selectors = (() => {
     const readyLauncher = (rootState: RootState): State.Ready | undefined => {
-        const state = rootState.launcher;
+        const state = rootState[name];
         switch (state.stateDescription) {
             case "ready":
                 return state;
@@ -1150,6 +1150,8 @@ export const selectors = (() => {
     };
 
     const packageName = createSelector(readyLauncher, state => state?.packageName);
+
+    const sources = createSelector(readyLauncher, state => state?.sources);
 
     const formFields = createSelector(
         readyLauncher,
@@ -1543,7 +1545,9 @@ export const selectors = (() => {
         isLaunchable,
         formFieldsIsWellFormed,
         restorablePackageConfig,
-        areAllFieldsDefault
+        areAllFieldsDefault,
+        sources,
+        packageName
     };
 })();
 
