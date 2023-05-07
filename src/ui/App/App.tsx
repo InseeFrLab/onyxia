@@ -1,10 +1,10 @@
 import "minimal-polyfills/Object.fromEntries";
 import { useMemo, useEffect, Suspense } from "react";
 import { Header } from "ui/shared/Header";
-import { LeftBar } from "ui/theme";
+import { LeftBar, makeStyles, type IconId } from "ui/theme";
+import type { LeftBarProps } from "onyxia-ui/LeftBar";
 import { Footer } from "./Footer";
 import { useLang } from "ui/i18n";
-import { makeStyles } from "ui/theme";
 import { useTranslation, useResolveLocalizedString } from "ui/i18n";
 import { useCoreState, useCoreFunctions } from "core";
 import { useConstCallback } from "powerhooks/useConstCallback";
@@ -27,7 +27,7 @@ import { ThemeProvider, splashScreen, createGetViewPortConfig } from "ui/theme";
 import { PortraitModeUnsupported } from "ui/shared/PortraitModeUnsupported";
 import { objectKeys } from "tsafe/objectKeys";
 import { pages } from "ui/pages";
-import { assert } from "tsafe/assert";
+import { assert, type Equals } from "tsafe/assert";
 
 const { CoreProvider } = createCoreProvider({
     "apiUrl": getEnv().ONYXIA_API_URL,
@@ -107,7 +107,7 @@ function ContextualizedApp() {
         () =>
             ({
                 ...(getIsHomePageDisabled()
-                    ? {}
+                    ? ({} as never)
                     : {
                           "home": {
                               "iconId": "home",
@@ -119,7 +119,7 @@ function ContextualizedApp() {
                     "iconId": "account",
                     "label": t("account"),
                     "link": routes.account().link,
-                    "hasDividerBelow": true
+                    "belowDivider": t("divider: services features")
                 },
                 "catalog": {
                     "iconId": "catalog",
@@ -130,7 +130,7 @@ function ContextualizedApp() {
                     "iconId": "services",
                     "label": t("myServices"),
                     "link": routes.myServices().link,
-                    "hasDividerBelow": true
+                    "belowDivider": t("divider: external services features")
                 },
                 ...(!secretExplorer.getIsEnabled()
                     ? ({} as never)
@@ -148,16 +148,17 @@ function ContextualizedApp() {
                               "iconId": "files",
                               "label": t("myFiles"),
                               "link": routes.myFiles().link,
-                              //TODO: This usage of getEnv should be removed as soon as we have the new explorer
-                              //we should get the info "is file enabled" from the core.
-                              "hasDividerBelow": true
+                              "belowDivider":
+                                  getExtraLeftBarItemsFromEnv() === undefined
+                                      ? true
+                                      : t("divider: onyxia instance specific features")
                           } as const
                       }),
                 ...(() => {
                     const extraLeftBarItems = getExtraLeftBarItemsFromEnv();
 
                     return extraLeftBarItems === undefined
-                        ? {}
+                        ? ({} as never)
                         : Object.fromEntries(
                               extraLeftBarItems.map(({ iconId, label, url }, i) => [
                                   `extraItem${i}`,
@@ -172,7 +173,7 @@ function ContextualizedApp() {
                               ])
                           );
                 })()
-            } as const),
+            } satisfies LeftBarProps<IconId, string>["items"]),
         [t, lang]
     );
 
@@ -216,7 +217,7 @@ function ContextualizedApp() {
                     currentItemId={(() => {
                         switch (route.name) {
                             case "home":
-                                return "home";
+                                return "home" as const;
                             case "account":
                                 return "account";
                             case "catalogExplorer":
@@ -229,7 +230,14 @@ function ContextualizedApp() {
                                 return "mySecrets";
                             case "myFiles":
                                 return "myFiles";
+                            case "page404":
+                                return null;
+                            case "terms":
+                                return null;
+                            case false:
+                                return null;
                         }
+                        assert<Equals<typeof route, never>>(false);
                     })()}
                 />
 
@@ -287,7 +295,16 @@ function Fallback() {
 }
 
 export const { i18n } = declareComponentKeys<
-    "reduce" | "home" | "account" | "catalog" | "myServices" | "mySecrets" | "myFiles"
+    | "reduce"
+    | "home"
+    | "account"
+    | "catalog"
+    | "myServices"
+    | "mySecrets"
+    | "myFiles"
+    | "divider: services features"
+    | "divider: external services features"
+    | "divider: onyxia instance specific features"
 >()({ App });
 
 const useStyles = makeStyles({ "name": { App } })(theme => {
