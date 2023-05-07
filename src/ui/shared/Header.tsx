@@ -49,7 +49,9 @@ export const Header = memo((props: Props) => {
 
     const { classes, cx, css, theme } = useStyles({ logoContainerWidth });
 
-    const { resolveLocalizedString } = useResolveLocalizedString();
+    const { resolveLocalizedString } = useResolveLocalizedString({
+        "labelWhenMismatchingLanguage": true
+    });
 
     const doShowOnyxia = props.useCase === "core app" && !getDoHideOnyxia();
 

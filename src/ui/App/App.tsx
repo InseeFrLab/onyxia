@@ -100,7 +100,9 @@ function ContextualizedApp() {
 
     const { lang } = useLang();
 
-    const { resolveLocalizedString } = useResolveLocalizedString();
+    const { resolveLocalizedString } = useResolveLocalizedString({
+        "labelWhenMismatchingLanguage": true
+    });
 
     const leftBarItems = useMemo(
         () =>

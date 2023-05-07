@@ -7813,7 +7813,7 @@ evp_bytestokey@^1.0.0, evp_bytestokey@^1.0.3:
     md5.js "^1.3.4"
     safe-buffer "^5.1.1"
 
-evt@^2.4.13, evt@^2.4.18:
+evt@^2.4.18:
   version "2.4.18"
   resolved "https://registry.yarnpkg.com/evt/-/evt-2.4.18.tgz#931012610dcd3bc7c0877d61018a704e9e5511db"
   integrity sha512-kMYW3DPrUWvFsOUf3cN1NMdg0MEFYLMLqC7hPSasNs8TOZCOBsDgazr6nXda2iUur/2L6BtRu0oCl2++oGYZxA==
@@ -9158,13 +9158,13 @@ husky@^4.3.8:
     slash "^3.0.0"
     which-pm-runs "^1.0.0"
 
-i18nifty@^1.4.0:
-  version "1.4.0"
-  resolved "https://registry.yarnpkg.com/i18nifty/-/i18nifty-1.4.0.tgz#7aec0cec9aeb2edfd1f9a26a5b904cbf8840dab2"
-  integrity sha512-i3BhReNdTGRPleY2CvWEhHcVgMfzTl8ZRuqw9c0FQ2BB1PVY3zvhRZ0KrIYXdZFpkORdpGDF/itHbJyUFDEVQQ==
+i18nifty@^1.5.2:
+  version "1.5.2"
+  resolved "https://registry.yarnpkg.com/i18nifty/-/i18nifty-1.5.2.tgz#afa30c88aa8f54a7c733468bbe441a33cfebdfba"
+  integrity sha512-AinJ/mhDAmZnQK92t0bSSCDipAXWMZ/EsT283oA4zkUVEnuKeF1dyzGFqez6A863Dbxv5wHWkFTtMSyNwpfE8g==
   dependencies:
-    powerhooks "^0.20.27"
-    tsafe "^1.2.1"
+    powerhooks "^0.26.8"
+    tsafe "^1.6.0"
 
 iconv-lite@0.4.24:
   version "0.4.24"
@@ -11852,10 +11852,10 @@ onetime@^5.1.0, onetime@^5.1.2:
   dependencies:
     mimic-fn "^2.1.0"
 
-onyxia-ui@^0.54.0:
-  version "0.54.0"
-  resolved "https://registry.yarnpkg.com/onyxia-ui/-/onyxia-ui-0.54.0.tgz#d4d2bd824f68aad92449f042bb86fc37b3365733"
-  integrity sha512-tuJOPHZyQnHP75OykDW+xnZWKVNS4J3APIQ3p/fNrKNwRipn78szjq1wmPpze1kOumayUsyzXHlRSdAPUYkAtQ==
+onyxia-ui@^0.55.0:
+  version "0.55.0"
+  resolved "https://registry.yarnpkg.com/onyxia-ui/-/onyxia-ui-0.55.0.tgz#2daf6b04347208cd54f73dea60b45995e0877aaf"
+  integrity sha512-0WnY8F5/Wz2JiVQV2yCL5MTU6v6rATAi5Elv6ntu4VflhT1S3a3rGZ7/hBT4OCXFMV7WNu3wxxe19vUQf7Xh7Q==
   dependencies:
     "@mui/icons-material" "^5.10.15"
     color "3.1.3"
@@ -12972,16 +12972,6 @@ postcss@^8.0.9, postcss@^8.2.15, postcss@^8.3.5, postcss@^8.4.19, postcss@^8.4.4
     nanoid "^3.3.6"
     picocolors "^1.0.0"
     source-map-js "^1.0.2"
-
-powerhooks@^0.20.27:
-  version "0.20.32"
-  resolved "https://registry.yarnpkg.com/powerhooks/-/powerhooks-0.20.32.tgz#c9ddff1dcd7d7bb250e54ea284a6c65d9c228e09"
-  integrity sha512-lp0rW5sAl8xrenhtB5eZOCwMFcPTtm55pn5++jeEMT1KaO/Rvd7hjaai+PPpDdwIbi5TaF+Zf5XhVO6gvfmXZQ==
-  dependencies:
-    evt "^2.4.13"
-    memoizee "^0.4.15"
-    resize-observer-polyfill "^1.5.1"
-    tsafe "^1.4.1"
 
 powerhooks@^0.26.8:
   version "0.26.8"
@@ -15540,7 +15530,7 @@ ts-pnp@^1.1.6:
   resolved "https://registry.yarnpkg.com/ts-pnp/-/ts-pnp-1.2.0.tgz#a500ad084b0798f1c3071af391e65912c86bca92"
   integrity sha512-csd+vJOb/gkzvcCHgTGSChYpy5f1/XKNsmvBGO4JXS+z1v2HobugDz4s1IeFXM3wZB44uczs+eazB5Q/ccdhQw==
 
-tsafe@^1.2.1, tsafe@^1.4.1, tsafe@^1.6.0:
+tsafe@^1.6.0:
   version "1.6.0"
   resolved "https://registry.yarnpkg.com/tsafe/-/tsafe-1.6.0.tgz#48a9bd0a4c43df43d289bdfc1d89f0d7fffbd612"
   integrity sha512-wlUeRBnyN3EN2chXznpLm7vBEvJLEOziDU+MN6NRlD99AkwmXgtChNQhp+V97VyRa3Bp05IaL4Cocsc7JlyEUg==

@@ -84,7 +84,9 @@ export const CatalogExplorerCards = memo((props: Props) => {
 
     const onGoBackClick = useConstCallback(() => evtSearchBarAction.post("CLEAR SEARCH"));
 
-    const { resolveLocalizedString } = useResolveLocalizedString();
+    const { resolveLocalizedString } = useResolveLocalizedString({
+        "labelWhenMismatchingLanguage": true
+    });
 
     const onSelectedCatalogIdChangeFactory = useCallbackFactory(([catalogId]: [string]) =>
         onSelectedCatalogIdChange(catalogId)
@@ -321,7 +323,7 @@ const { CustomButton } = (() => {
         className?: string;
         isSelected: boolean;
         onClick: () => void;
-        text: string;
+        text: JSX.Element;
     };
 
     const CustomButton = memo((props: CustomButtonProps) => {

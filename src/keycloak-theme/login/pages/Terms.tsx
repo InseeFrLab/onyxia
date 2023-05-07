@@ -5,9 +5,11 @@ import { evtTermMarkdown } from "keycloakify/login/lib/useDownloadTerms";
 import type { KcContext } from "../kcContext";
 import type { I18n } from "../i18n";
 import { useDownloadTerms } from "keycloakify/login";
-import { createResolveLocalizedString } from "i18nifty";
+import { createResolveLocalizedStringFactory } from "i18nifty/LocalizedString/LocalizedString";
 import { THERMS_OF_SERVICES } from "../envCarriedOverToKc";
 import { makeStyles, Button } from "ui/theme";
+import { useConst } from "powerhooks/useConst";
+import { id } from "tsafe/id";
 
 export default function Terms(
     props: PageProps<Extract<KcContext, { pageId: "terms.ftl" }>, I18n>
@@ -16,11 +18,20 @@ export default function Terms(
 
     const { msgStr } = i18n;
 
+    const refTosLang = useConst(() => ({ "current": id<string | undefined>(undefined) }));
+
     // NOTE: If you aren't going to customize the layout of the page you can move this hook to
     // KcApp.tsx, see: https://docs.keycloakify.dev/terms-and-conditions
     useDownloadTerms({
         kcContext,
-        downloadTermMarkdown
+        "downloadTermMarkdown": ({ currentLanguageTag }) =>
+            downloadTermMarkdown({ currentLanguageTag }).then(
+                ({ markdownString, lang }) => {
+                    refTosLang.current = lang;
+
+                    return markdownString;
+                }
+            )
     });
 
     useRerenderOnStateChange(evtTermMarkdown);
@@ -43,8 +54,15 @@ export default function Terms(
             headerNode={null}
             i18n={i18n}
         >
-            <div className={classes.markdownWrapper}>
-                {evtTermMarkdown.state && <Markdown>{evtTermMarkdown.state}</Markdown>}
+            <div
+                className={classes.markdownWrapper}
+                lang={
+                    kcContext.locale?.currentLanguageTag !== refTosLang.current
+                        ? refTosLang.current
+                        : undefined
+                }
+            >
+                {evtTermMarkdown.state && <Markdown>{termMarkdown}</Markdown>}
             </div>
             <form className="form-actions" action={url.loginAction} method="POST">
                 <div className={classes.buttonsWrapper}>
@@ -85,21 +103,26 @@ const useStyles = makeStyles({ "name": { Terms } })(theme => ({
     }
 }));
 
+const { createResolveLocalizedString } = createResolveLocalizedStringFactory({
+    "createJsxElement": ({ text, lang }) => ({ text, lang })
+});
+
 export async function downloadTermMarkdown(params: { currentLanguageTag: string }) {
     const { currentLanguageTag } = params;
 
     if (THERMS_OF_SERVICES === undefined) {
-        return "No terms provided";
+        return { "markdownString": "No terms provided", "lang": "en" };
     }
 
     const { resolveLocalizedString } = createResolveLocalizedString({
         "currentLanguage": currentLanguageTag,
-        "fallbackLanguage": "en"
+        "fallbackLanguage": "en",
+        "labelWhenMismatchingLanguage": true
     });
 
-    const tos_url = resolveLocalizedString(THERMS_OF_SERVICES);
+    const { text: tos_url, lang } = resolveLocalizedString(THERMS_OF_SERVICES);
 
     const markdownString = await fetch(tos_url).then(response => response.text());
 
-    return markdownString;
+    return { markdownString, lang };
 }
