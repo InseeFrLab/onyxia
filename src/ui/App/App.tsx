@@ -271,10 +271,14 @@ function ContextualizedApp() {
 }
 
 function Fallback() {
-    const { hideRootSplashScreen } = useSplashScreen();
+    const { hideRootSplashScreen, showSplashScreen, hideSplashScreen } =
+        useSplashScreen();
 
     useEffect(() => {
+        showSplashScreen({ "enableTransparency": false });
+
         return () => {
+            hideSplashScreen();
             hideRootSplashScreen();
         };
     }, []);
