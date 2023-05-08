@@ -456,8 +456,9 @@ const {
                 "header text1": "Services catalog",
                 "header text2":
                     "Explore, launch and configure services with just a few clicks.",
-                "contribute to the catalog": ({ catalogName }) =>
-                    `Contribute to the ${catalogName} catalog`,
+                "contribute to the catalog": ({ catalogName }) => (
+                    <>Contribute to the {catalogName} catalog</>
+                ),
                 "contribute to the package": ({ packageName }) =>
                     `Find the sources of the ${packageName} package `,
                 "here": "here"
@@ -911,8 +912,9 @@ const {
                 "header text1": "Catalogue de services",
                 "header text2":
                     "Explorez, lancez et configurez des services en quelques clics seulement.",
-                "contribute to the catalog": ({ catalogName }) =>
-                    `Contribuer au catalogue ${catalogName}`,
+                "contribute to the catalog": ({ catalogName }) => (
+                    <>Contribuer au catalogue {catalogName}</>
+                ),
                 "contribute to the package": ({ packageName }) =>
                     `Accéder aux sources du package ${packageName} `,
                 "here": "ici"
@@ -1298,8 +1300,9 @@ const {
             "Catalog": {
                 "header text1": "服务目录",
                 "header text2": "只需单击几下即可探索、启动和配置服务.",
-                "contribute to the catalog": ({ catalogName }) =>
-                    `为目录 ${catalogName} 做贡献`,
+                "contribute to the catalog": ({ catalogName }) => (
+                    <>为目录 {catalogName} 做贡献</>
+                ),
                 "contribute to the package": ({ packageName }) =>
                     `访问源包 ${packageName} `,
                 "here": "此处"

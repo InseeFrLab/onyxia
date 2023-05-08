@@ -113,7 +113,7 @@ export default function Catalog(props: Props) {
 export const { i18n } = declareComponentKeys<
     | "header text1"
     | "header text2"
-    | { K: "contribute to the catalog"; P: { catalogName: JSX.Element } }
+    | { K: "contribute to the catalog"; P: { catalogName: JSX.Element }; R: JSX.Element }
     | { K: "contribute to the package"; P: { packageName: string } }
     | "here"
 >()({ Catalog });
