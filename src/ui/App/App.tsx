@@ -28,6 +28,7 @@ import { PortraitModeUnsupported } from "ui/shared/PortraitModeUnsupported";
 import { objectKeys } from "tsafe/objectKeys";
 import { pages } from "ui/pages";
 import { assert, type Equals } from "tsafe/assert";
+import { useIsI18nFetching } from "ui/i18n";
 
 const { CoreProvider } = createCoreProvider({
     "apiUrl": getEnv().ONYXIA_API_URL,
@@ -54,13 +55,13 @@ const { CoreProvider } = createCoreProvider({
 const { getViewPortConfig } = createGetViewPortConfig({ PortraitModeUnsupported });
 
 export default function App() {
+    const isI18nFetching = useIsI18nFetching();
+
     return (
         <ThemeProvider getViewPortConfig={getViewPortConfig} splashScreen={splashScreen}>
-            <CoreProvider>
-                <RouteProvider>
-                    <ContextualizedApp />
-                </RouteProvider>
-            </CoreProvider>
+            <RouteProvider>
+                <CoreProvider>{!isI18nFetching && <ContextualizedApp />}</CoreProvider>
+            </RouteProvider>
         </ThemeProvider>
     );
 }
