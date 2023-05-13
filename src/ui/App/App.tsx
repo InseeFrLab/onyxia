@@ -13,6 +13,7 @@ import { useEffectOnValueChange } from "powerhooks/useEffectOnValueChange";
 import { useDomRect, useSplashScreen } from "onyxia-ui";
 import { id } from "tsafe/id";
 import { useIsDarkModeEnabled } from "onyxia-ui";
+import { keyframes } from "onyxia-ui/tss";
 import type { Item } from "onyxia-ui/LeftBar";
 import { getExtraLeftBarItemsFromEnv, getIsHomePageDisabled } from "ui/env";
 import { declareComponentKeys } from "i18nifty";
@@ -260,7 +261,12 @@ function ContextualizedApp() {
                                         return null;
                                     }
 
-                                    return <page.LazyComponent route={route} />;
+                                    return (
+                                        <page.LazyComponent
+                                            className={classes.page}
+                                            route={route}
+                                        />
+                                    );
                                 }
                             }
 
@@ -343,6 +349,16 @@ const useStyles = makeStyles({ "name": { App } })(theme => {
             //TODO: See if scroll delegation works if we put auto here instead of "hidden"
             "paddingLeft": theme.spacing(4),
             "overflow": "hidden"
+        },
+        "page": {
+            "animation": `${keyframes`
+            0% {
+                opacity: 0;
+            }
+            100% {
+                opacity: 1;
+            }
+            `} 400ms`
         }
     };
 });
