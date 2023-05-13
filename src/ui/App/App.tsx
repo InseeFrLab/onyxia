@@ -244,7 +244,7 @@ function ContextualizedApp() {
                 />
 
                 <main className={classes.main}>
-                    <Suspense fallback={<Fallback />}>
+                    <Suspense fallback={<SuspenseFallback />}>
                         {(() => {
                             for (const pageName of objectKeys(pages)) {
                                 //You must be able to replace "home" by any other page and get no type error.
@@ -280,15 +280,11 @@ function ContextualizedApp() {
     );
 }
 
-function Fallback() {
-    const { hideRootSplashScreen, showSplashScreen, hideSplashScreen } =
-        useSplashScreen();
+function SuspenseFallback() {
+    const { hideRootSplashScreen } = useSplashScreen();
 
     useEffect(() => {
-        showSplashScreen({ "enableTransparency": false });
-
         return () => {
-            hideSplashScreen();
             hideRootSplashScreen();
         };
     }, []);

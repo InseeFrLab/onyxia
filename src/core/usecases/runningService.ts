@@ -361,41 +361,43 @@ const { getContext } = createUsecaseContextApi(() => ({
 }));
 
 export const selectors = (() => {
-    const runningServices = (rootState: RootState): RunningService[] => {
+    const runningServices = (rootState: RootState): RunningService[] | undefined => {
         const { runningServices } = rootState[name];
 
         if (runningServices === undefined) {
-            return [];
+            return undefined;
         }
 
         return [...runningServices].sort((a, b) => b.startedAt - a.startedAt);
     };
 
-    const shouldOverlaysBeDisplayed = (rootState: RootState): boolean => {
-        const { runningServices, isUpdating } = rootState[name];
-        return runningServices === undefined || isUpdating;
+    const isUpdating = (rootState: RootState): boolean => {
+        const { isUpdating } = rootState[name];
+        return isUpdating;
     };
 
     const deletableRunningServices = createSelector(runningServices, runningServices =>
-        runningServices.filter(({ isOwned }) => isOwned)
+        (runningServices ?? []).filter(({ isOwned }) => isOwned)
     );
 
     const isThereNonOwnedServices = createSelector(
         runningServices,
-        runningServices => runningServices.find(({ isOwned }) => !isOwned) !== undefined
+        runningServices =>
+            (runningServices ?? []).find(({ isOwned }) => !isOwned) !== undefined
     );
 
     const isThereOwnedSharedServices = createSelector(
         runningServices,
         runningServices =>
-            runningServices.find(({ isOwned, isShared }) => isOwned && isShared) !==
-            undefined
+            (runningServices ?? []).find(
+                ({ isOwned, isShared }) => isOwned && isShared
+            ) !== undefined
     );
 
     return {
         runningServices,
         deletableRunningServices,
-        shouldOverlaysBeDisplayed,
+        isUpdating,
         isThereNonOwnedServices,
         isThereOwnedSharedServices
     };

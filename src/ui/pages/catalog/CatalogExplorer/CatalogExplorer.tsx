@@ -4,7 +4,6 @@ import type { RefObject } from "react";
 import { CatalogExplorerCards } from "./CatalogExplorerCards";
 import type { Props as CatalogExplorerCardsProps } from "./CatalogExplorerCards";
 import { useConstCallback } from "powerhooks/useConstCallback";
-import { useSplashScreen } from "onyxia-ui";
 import { useCoreState, useCoreFunctions, selectors } from "core";
 import { routes } from "ui/routes";
 import type { Route } from "type-route";
@@ -23,14 +22,10 @@ export const CatalogExplorer = memo((props: Props) => {
 
     const { catalogExplorer } = useCoreFunctions();
 
-    const { showSplashScreen, hideSplashScreen } = useSplashScreen();
-
     useEffect(() => {
         switch (catalogExplorerState.stateDescription) {
             case "not fetched":
                 if (!catalogExplorerState.isFetching) {
-                    showSplashScreen({ "enableTransparency": true });
-
                     const { catalogId } = route.params;
 
                     catalogExplorer.fetchCatalogs(
@@ -52,7 +47,6 @@ export const CatalogExplorer = memo((props: Props) => {
                 }
                 break;
             case "ready":
-                hideSplashScreen();
                 //NOTE: When coming back to the catalog.
                 assert(selectedCatalog !== undefined);
                 if (route.params.catalogId !== selectedCatalog.id) {

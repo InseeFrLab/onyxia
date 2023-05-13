@@ -21,23 +21,26 @@ import { declareComponentKeys } from "i18nifty";
 
 export type Props = {
     className?: string;
-    cards: {
-        serviceId: string;
-        packageIconUrl?: string;
-        friendlyName: string;
-        packageName: string;
-        env: Record<string, string>;
-        openUrl: string | undefined;
-        monitoringUrl: string | undefined;
-        startTime: number | undefined;
-        postInstallInstructions: string | undefined;
-        isShared: boolean;
-        isOwned: boolean;
-        /** undefined when isOwned === true*/
-        ownerUsername: string | undefined;
-        vaultTokenExpirationTime: number | undefined;
-        s3TokenExpirationTime: number | undefined;
-    }[];
+    isUpdating: boolean;
+    cards:
+        | {
+              serviceId: string;
+              packageIconUrl?: string;
+              friendlyName: string;
+              packageName: string;
+              env: Record<string, string>;
+              openUrl: string | undefined;
+              monitoringUrl: string | undefined;
+              startTime: number | undefined;
+              postInstallInstructions: string | undefined;
+              isShared: boolean;
+              isOwned: boolean;
+              /** undefined when isOwned === true*/
+              ownerUsername: string | undefined;
+              vaultTokenExpirationTime: number | undefined;
+              s3TokenExpirationTime: number | undefined;
+          }[]
+        | undefined;
     catalogExplorerLink: Link;
     onRequestDelete(params: { serviceId: string }): void;
     evtAction: NonPostableEvt<{
@@ -54,11 +57,12 @@ export const MyServicesCards = memo((props: Props) => {
         cards,
         catalogExplorerLink,
         evtAction,
+        isUpdating,
         getServicePassword
     } = props;
 
     const { classes, cx } = useStyles({
-        "isThereServicesRunning": cards.length !== 0
+        "isThereServicesRunning": (cards ?? []).length !== 0
     });
 
     const { t } = useTranslation({ MyServicesCards });
@@ -117,7 +121,7 @@ export const MyServicesCards = memo((props: Props) => {
             return {};
         }
 
-        const { postInstallInstructions, env, openUrl, startTime } = cards.find(
+        const { postInstallInstructions, env, openUrl, startTime } = (cards ?? []).find(
             card => card.serviceId === dialogDesc.serviceId
         )!;
 
@@ -198,15 +202,25 @@ export const MyServicesCards = memo((props: Props) => {
         <div className={cx(classes.root, className)}>
             <Text typo="section heading" className={classes.header}>
                 {t("running services")}
+                &nbsp; &nbsp;
+                {isUpdating && <CircularProgress color="textPrimary" size={20} />}
             </Text>
             <div className={classes.wrapper}>
-                {cards.length === 0 ? (
-                    <NoRunningService
-                        className={classes.noRunningServices}
-                        catalogExplorerLink={catalogExplorerLink}
-                    />
-                ) : (
-                    cards.map(card => (
+                {(() => {
+                    if (cards === undefined) {
+                        return null;
+                    }
+
+                    if (cards.length === 0) {
+                        return (
+                            <NoRunningService
+                                className={classes.noRunningServices}
+                                catalogExplorerLink={catalogExplorerLink}
+                            />
+                        );
+                    }
+
+                    return cards.map(card => (
                         <MyServicesCard
                             key={card.serviceId}
                             {...card}
@@ -228,8 +242,8 @@ export const MyServicesCards = memo((props: Props) => {
                                     : undefined
                             }
                         />
-                    ))
-                )}
+                    ));
+                })()}
             </div>
             <Dialog
                 body={
