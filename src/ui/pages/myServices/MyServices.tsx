@@ -11,7 +11,6 @@ import { ButtonId } from "./MyServicesButtonBar";
 import { useConstCallback } from "powerhooks/useConstCallback";
 import { useCoreFunctions, useCoreState, selectors } from "core";
 import { routes } from "ui/routes";
-import { useSplashScreen } from "onyxia-ui";
 import { Dialog } from "onyxia-ui/Dialog";
 import { useCallbackFactory } from "powerhooks/useCallbackFactory";
 import { Button } from "ui/theme";
@@ -37,27 +36,14 @@ export default function MyServices(props: Props) {
     /* prettier-ignore */
     const { displayableConfigs } = useCoreState(selectors.restorablePackageConfig.displayableConfigs);
     /* prettier-ignore */
-    const { shouldOverlaysBeDisplayed } = useCoreState(selectors.runningService.shouldOverlaysBeDisplayed);
+    const { isUpdating } = useCoreState(selectors.runningService.isUpdating);
     const { runningServices } = useCoreState(selectors.runningService.runningServices);
-    const { deletableRunningServices } = useCoreState(
-        selectors.runningService.deletableRunningServices
-    );
-    const { isThereOwnedSharedServices } = useCoreState(
-        selectors.runningService.isThereOwnedSharedServices
-    );
-    const { isThereNonOwnedServices } = useCoreState(
-        selectors.runningService.isThereNonOwnedServices
-    );
-
-    const { hideSplashScreen, showSplashScreen } = useSplashScreen();
-
-    useEffect(() => {
-        if (shouldOverlaysBeDisplayed) {
-            showSplashScreen({ "enableTransparency": true });
-        } else {
-            hideSplashScreen();
-        }
-    }, [shouldOverlaysBeDisplayed]);
+    /* prettier-ignore */
+    const { deletableRunningServices } = useCoreState(selectors.runningService.deletableRunningServices);
+    /* prettier-ignore */
+    const { isThereOwnedSharedServices } = useCoreState(selectors.runningService.isThereOwnedSharedServices);
+    /* prettier-ignore */
+    const { isThereNonOwnedServices } = useCoreState(selectors.runningService.isThereNonOwnedServices);
 
     const [password, setPassword] = useState<string | undefined>(undefined);
 
@@ -164,8 +150,8 @@ export default function MyServices(props: Props) {
     );
 
     const cards = useMemo(
-        (): MyServicesCardsProps["cards"] =>
-            runningServices.map(
+        (): MyServicesCardsProps["cards"] | undefined =>
+            runningServices?.map(
                 ({
                     id,
                     logoUrl,
@@ -211,9 +197,11 @@ export default function MyServices(props: Props) {
             return;
         }
 
-        const card = cards.find(({ serviceId }) => serviceId === autoLaunchServiceId);
+        const runningService = (runningServices ?? []).find(
+            ({ id }) => id === autoLaunchServiceId
+        );
 
-        if (card === undefined) {
+        if (runningService === undefined) {
             return;
         }
 
@@ -229,9 +217,9 @@ export default function MyServices(props: Props) {
 
         evtMyServiceCardsAction.post({
             "action": "TRIGGER SHOW POST INSTALL INSTRUCTIONS",
-            "serviceId": card.serviceId
+            "serviceId": runningService.id
         });
-    }, [route.params.autoLaunchServiceId, cards]);
+    }, [route.params.autoLaunchServiceId, runningServices]);
 
     const catalogExplorerLink = useMemo(() => routes.catalogExplorer().link, []);
 
@@ -286,6 +274,7 @@ export default function MyServices(props: Props) {
                 <>
                     {!isSavedConfigsExtended && (
                         <MyServicesCards
+                            isUpdating={isUpdating}
                             className={classes.cards}
                             cards={cards}
                             onRequestDelete={onRequestDelete}
