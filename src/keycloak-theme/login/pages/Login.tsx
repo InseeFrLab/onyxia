@@ -7,8 +7,6 @@ import type { I18n } from "../i18n";
 import Link from "@mui/material/Link";
 import { TextField } from "onyxia-ui/TextField";
 import { Button } from "ui/theme";
-import { getBrowser } from "ui/tools/getBrowser";
-import { useSplashScreen } from "onyxia-ui";
 import { useStateRef } from "powerhooks/useStateRef";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import { Checkbox } from "onyxia-ui/Checkbox";
@@ -58,24 +56,6 @@ export default function Login(
     const usernameInputRef = useStateRef<HTMLInputElement>(null);
     const passwordInputRef = useStateRef<HTMLInputElement>(null);
     const submitButtonRef = useStateRef<HTMLButtonElement>(null);
-
-    const { areTextInputsDisabled } = (function useClosure() {
-        const [areTextInputsDisabled, setAreTextInputsDisabled] = useState(
-            () => getBrowser() === "safari"
-        );
-
-        useSplashScreen({
-            "onHidden": () => {
-                if (!areTextInputsDisabled) {
-                    return;
-                }
-                setAreTextInputsDisabled(false);
-                usernameInputRef.current!.focus();
-            }
-        });
-
-        return { areTextInputsDisabled };
-    })();
 
     return (
         <Template
@@ -133,16 +113,12 @@ export default function Login(
                         <form onSubmit={onSubmit} action={url.loginAction} method="post">
                             <div>
                                 <TextField
-                                    disabled={
-                                        usernameEditDisabled || areTextInputsDisabled
-                                    }
+                                    disabled={usernameEditDisabled}
                                     defaultValue={login.username ?? ""}
                                     id="username"
                                     name="username"
                                     inputProps_ref={usernameInputRef}
                                     inputProps_aria-label="username"
-                                    inputProps_tabIndex={1}
-                                    inputProps_autoFocus={!areTextInputsDisabled}
                                     inputProps_spellCheck={false}
                                     label={
                                         !realm.loginWithEmailAllowed
@@ -156,14 +132,12 @@ export default function Login(
                             </div>
                             <div>
                                 <TextField
-                                    disabled={areTextInputsDisabled}
                                     type="password"
                                     defaultValue={""}
                                     id="password"
                                     name="password"
                                     inputProps_ref={passwordInputRef}
                                     inputProps_aria-label={"password"}
-                                    inputProps_tabIndex={2}
                                     label={msg("password")}
                                     autoComplete="off"
                                 />
@@ -175,7 +149,6 @@ export default function Login(
                                             <FormControlLabel
                                                 control={
                                                     <Checkbox
-                                                        tabIndex={3}
                                                         defaultChecked={
                                                             !!login.rememberMe
                                                         }
@@ -215,7 +188,6 @@ export default function Login(
                                 />
                                 <Button
                                     ref={submitButtonRef}
-                                    tabIndex={3}
                                     className={classes.buttonSubmit}
                                     name="login"
                                     type="submit"
