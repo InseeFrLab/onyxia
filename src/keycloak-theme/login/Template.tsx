@@ -182,7 +182,7 @@ const { Page } = (() => {
                             <div style={{ "flex": 1 }} />
                             <IconButton
                                 iconId="close"
-                                tabIndex={1000}
+                                tabIndex={-1}
                                 onClick={() => window.history.back()}
                             />
                         </div>
