@@ -72,7 +72,7 @@ export const translations: Translations<"fr"> = {
                     Vault
                 </MuiLink>{" "}
                 est le système ou &nbsp;
-                <MuiLink {...mySecretLink}>vos secret</MuiLink> sont enregistré.
+                <MuiLink {...mySecretLink}>vos secrets</MuiLink> sont enregistrés.
             </>
         ),
         "init script section title": "Utiliser Vault depuis votre terminal",
