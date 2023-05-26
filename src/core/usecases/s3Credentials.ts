@@ -175,7 +175,11 @@ export const thunks = {
                         "AWS_SECRET_ACCESS_KEY": secretAccessKey,
                         "AWS_DEFAULT_REGION": region,
                         "AWS_SESSION_TOKEN": sessionToken,
-                        "AWS_S3_ENDPOINT": `${host}${port === 443 ? "" : `:${port}`}`
+                        "AWS_S3_ENDPOINT": `${
+                            host === "s3.amazonaws.com"
+                                ? `s3.${region}.amazonaws.com`
+                                : host
+                        }${port === 443 ? "" : `:${port}`}`
                     },
                     expirationTime
                 })
