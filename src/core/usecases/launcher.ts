@@ -1121,6 +1121,7 @@ export const thunks = {
                     "ingressClassName": selectedDeploymentRegion.ingressClassName,
                     "ingress": selectedDeploymentRegion.ingress,
                     "route": selectedDeploymentRegion.route,
+                    "istio": selectedDeploymentRegion.istio,
                     "randomSubdomain":
                         (getRandomK8sSubdomain.clear(), getRandomK8sSubdomain()),
                     "initScriptUrl": selectedDeploymentRegion.initScriptUrl
