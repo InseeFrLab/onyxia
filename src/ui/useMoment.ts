@@ -10,7 +10,8 @@ export const { getFormattedDate } = (() => {
         /* spell-checker: disable */
         "fr": `dddd Do MMMM${isSameYear ? "" : " YYYY"} à H[h]mm`,
         "en": `dddd, MMMM Do${isSameYear ? "" : " YYYY"}, h:mm a`,
-        "zh-CN": `dddd, MMMM Do${isSameYear ? "" : " YYYY"}, h:mm a`
+        "zh-CN": `dddd, MMMM Do${isSameYear ? "" : " YYYY"}, h:mm a`,
+        "no": `dddd, Do MMMM${isSameYear ? "" : " YYYY"}, HH:mm`
         /* spell-checker: enable */
     });
 
@@ -91,6 +92,9 @@ export const { fromNow } = (() => {
                                 case "zh-CN":
                                     /* cspell: disable-next-line */
                                     return "几分钟前";
+                                case "no":
+                                    /* cspell: disable-next-line */
+                                    return "akkurat nå";
                             }
                         })();
 
@@ -122,13 +126,19 @@ export const { fromNow } = (() => {
                                     "future1": "dans une seconde",
                                     "futureN": "dans # secondes"
                                 } as const;
-
                             case "zh-CN":
                                 return {
                                     "past1": "在一秒钟前",
                                     "pastN": "在 # 秒前",
                                     "future1": "在一秒钟后",
                                     "futureN": "在 # 秒后"
+                                } as const;
+                            case "no":
+                                return {
+                                    "past1": "for et sekund siden",
+                                    "pastN": "for # sekunder siden",
+                                    "future1": "om et sekund",
+                                    "futureN": "om # sekunder"
                                 } as const;
                             /* spell-checker: enable */
                         }
@@ -161,6 +171,13 @@ export const { fromNow } = (() => {
                                     "future1": "在几分钟后",
                                     "futureN": "在 # 分钟后"
                                 } as const;
+                            case "no":
+                                return {
+                                    "past1": "for et minutt siden",
+                                    "pastN": "for # minutter siden",
+                                    "future1": "om et minutt",
+                                    "futureN": "om # minutter"
+                                } as const;
                             /* spell-checker: enable */
                         }
                     })()
@@ -191,6 +208,13 @@ export const { fromNow } = (() => {
                                     "pastN": "在 # 小时前",
                                     "future1": "在一小时后",
                                     "futureN": "在 # 小时后"
+                                } as const;
+                            case "no":
+                                return {
+                                    "past1": "for en time siden",
+                                    "pastN": "for # timer siden",
+                                    "future1": "om en time",
+                                    "futureN": "om # timer"
                                 } as const;
                             /* spell-checker: enable */
                         }
@@ -223,6 +247,13 @@ export const { fromNow } = (() => {
                                     "future1": "明天",
                                     "futureN": "在 # 天后"
                                 } as const;
+                            case "no":
+                                return {
+                                    "past1": "i går",
+                                    "pastN": "for # dager siden",
+                                    "future1": "i morgen",
+                                    "futureN": "om # dager"
+                                } as const;
                             /* spell-checker: enable */
                         }
                     })()
@@ -253,6 +284,13 @@ export const { fromNow } = (() => {
                                     "pastN": "在 # 星期前",
                                     "future1": "在一星期后",
                                     "futureN": "在 # 星期后"
+                                } as const;
+                            case "no":
+                                return {
+                                    "past1": "forrige uke",
+                                    "pastN": "for # uker siden",
+                                    "future1": "om en uke",
+                                    "futureN": "om # uker"
                                 } as const;
                             /* spell-checker: enable */
                         }
@@ -285,6 +323,13 @@ export const { fromNow } = (() => {
                                     "future1": "在一个月后",
                                     "futureN": "在 # 个月后"
                                 } as const;
+                            case "no":
+                                return {
+                                    "past1": "forrige måned",
+                                    "pastN": "for # måneder siden",
+                                    "future1": "om en måned",
+                                    "futureN": "om # måneder"
+                                } as const;
                             /* spell-checker: enable */
                         }
                     })()
@@ -315,6 +360,13 @@ export const { fromNow } = (() => {
                                     "pastN": "在 # 年前",
                                     "future1": "在明年",
                                     "futureN": "在 # 年后"
+                                } as const;
+                            case "no":
+                                return {
+                                    "past1": "i fjor",
+                                    "pastN": "for # år siden",
+                                    "future1": "om et år",
+                                    "futureN": "om # år"
                                 } as const;
                             /* spell-checker: enable */
                         }
@@ -347,6 +399,13 @@ export const { fromNow } = (() => {
                                     "future1": "在下个世纪",
                                     "futureN": "在 # 个世纪后"
                                 } as const;
+                            case "no":
+                                return {
+                                    "past1": "forrige århundre",
+                                    "pastN": "for # århundrer siden",
+                                    "future1": "om et århundre",
+                                    "futureN": "om # århundrer"
+                                } as const;
                             /* spell-checker: enable */
                         }
                     })()
@@ -377,6 +436,13 @@ export const { fromNow } = (() => {
                                     "pastN": "在 # 千年前",
                                     "future1": "在一千年后",
                                     "futureN": "在 # 千年后"
+                                } as const;
+                            case "no":
+                                return {
+                                    "past1": "forrige årtusen",
+                                    "pastN": "for # årtusener siden",
+                                    "future1": "om et årtusen",
+                                    "futureN": "om # årtusener"
                                 } as const;
                             /* spell-checker: enable */
                         }
