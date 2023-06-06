@@ -216,7 +216,8 @@ export const { LanguageSelect } = createLanguageSelect<Language>({
         "en": "English",
         "fr": "Français",
         "zh-CN": "简体中文",
-        "no": "Norsk"
+        "no": "Norsk",
+        "fi": "Suomalainen"
     }
 });
 
