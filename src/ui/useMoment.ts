@@ -96,10 +96,9 @@ export const { fromNow } = (() => {
                                 case "no":
                                     /* cspell: disable-next-line */
                                     return "akkurat nå";
-                                case "no":
+                                case "fi":
                                     /* cspell: disable-next-line */
                                     return "juuri nyt";
-    
                             }
                         })();
 
