@@ -58,18 +58,10 @@ const { getViewPortConfig } = createGetViewPortConfig({ PortraitModeUnsupported 
 export default function App() {
     const isI18nFetching = useIsI18nFetching();
 
-    const { lang } = useLang();
-
-    console.log({ isI18nFetching });
-
-    useEffectOnValueChange(() => {
-        window.location.reload();
-    }, [lang]);
-
     return (
         <ThemeProvider getViewPortConfig={getViewPortConfig} splashScreen={splashScreen}>
             <RouteProvider>
-                <CoreProvider>{<ContextualizedApp />}</CoreProvider>
+                <CoreProvider>{!isI18nFetching && <ContextualizedApp />}</CoreProvider>
             </RouteProvider>
         </ThemeProvider>
     );
