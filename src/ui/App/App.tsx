@@ -4,7 +4,6 @@ import { Header } from "ui/shared/Header";
 import { LeftBar, makeStyles, type IconId } from "ui/theme";
 import type { LeftBarProps } from "onyxia-ui/LeftBar";
 import { Footer } from "./Footer";
-import { useLang } from "ui/i18n";
 import { useTranslation, useResolveLocalizedString } from "ui/i18n";
 import { useCoreState, useCoreFunctions } from "core";
 import { useConstCallback } from "powerhooks/useConstCallback";
@@ -30,6 +29,7 @@ import { objectKeys } from "tsafe/objectKeys";
 import { pages } from "ui/pages";
 import { assert, type Equals } from "tsafe/assert";
 import { useIsI18nFetching } from "ui/i18n";
+import { useLang } from "ui/i18n";
 
 const { CoreProvider } = createCoreProvider({
     "apiUrl": getEnv().ONYXIA_API_URL,
@@ -58,7 +58,13 @@ const { getViewPortConfig } = createGetViewPortConfig({ PortraitModeUnsupported 
 export default function App() {
     const isI18nFetching = useIsI18nFetching();
 
+    const { lang } = useLang();
+
     console.log({ isI18nFetching });
+
+    useEffectOnValueChange(() => {
+        window.location.reload();
+    }, [lang]);
 
     return (
         <ThemeProvider getViewPortConfig={getViewPortConfig} splashScreen={splashScreen}>
