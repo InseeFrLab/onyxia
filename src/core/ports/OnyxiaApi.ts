@@ -70,6 +70,7 @@ export type DeploymentRegion = {
     ingressClassName: string | undefined;
     ingress: boolean | undefined;
     route: boolean | undefined;
+    istio: boolean | undefined;
     initScriptUrl: string;
     s3: DeploymentRegion.S3 | undefined;
     allowedURIPatternForUserDefinedInitScript: string;
@@ -283,6 +284,7 @@ export type OnyxiaValues = {
         ingressClassName: string | undefined;
         ingress: boolean | undefined;
         route: boolean | undefined;
+        istio: boolean | undefined;
         randomSubdomain: string;
         initScriptUrl: string;
     };

@@ -29,6 +29,7 @@ export const onyxiaApi: OnyxiaApi = {
                     "ingressClassName": undefined,
                     "ingress": true,
                     "route": undefined,
+                    "istio": undefined,
                     "initScriptUrl": "https://InseeFrLab.github.io/onyxia/onyxia-init.sh",
                     "s3": undefined,
                     "allowedURIPatternForUserDefinedInitScript": "^https://",

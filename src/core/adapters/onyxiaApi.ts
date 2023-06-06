@@ -151,6 +151,7 @@ export function createOnyxiaApi(params: {
                                 ingressClassName: string;
                                 ingress?: boolean;
                                 route?: boolean;
+                                istio?: boolean;
                             };
                             defaultConfiguration?: {
                                 ipprotection?: boolean;
@@ -269,6 +270,7 @@ export function createOnyxiaApi(params: {
                             "ingressClassName": region.services.expose.ingressClassName,
                             "ingress": region.services.expose.ingress,
                             "route": region.services.expose.route,
+                            "istio": region.services.expose.istio,
                             "initScriptUrl": region.services.initScript,
                             "s3": (() => {
                                 const { S3 } = region.data ?? {};
