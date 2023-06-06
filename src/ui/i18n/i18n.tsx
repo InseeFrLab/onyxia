@@ -21,7 +21,9 @@ export const {
         "en": () => import("./resources/en").then(({ translations }) => translations),
         "fr": () => import("./resources/fr").then(({ translations }) => translations),
         "zh-CN": () =>
-            import("./resources/zh-CN").then(({ translations }) => translations)
+            import("./resources/zh-CN").then(({ translations }) => translations),
+        "no": () => import("./resources/no").then(({ translations }) => translations),
+  
     }
 );
 
