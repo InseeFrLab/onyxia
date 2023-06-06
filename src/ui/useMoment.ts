@@ -11,7 +11,8 @@ export const { getFormattedDate } = (() => {
         "fr": `dddd Do MMMM${isSameYear ? "" : " YYYY"} à H[h]mm`,
         "en": `dddd, MMMM Do${isSameYear ? "" : " YYYY"}, h:mm a`,
         "zh-CN": `dddd, MMMM Do${isSameYear ? "" : " YYYY"}, h:mm a`,
-        "no": `dddd, Do MMMM${isSameYear ? "" : " YYYY"}, HH:mm`
+        "no": `dddd, Do MMMM${isSameYear ? "" : " YYYY"}, HH:mm`,
+        "fi": `dddd, Do MMMM${isSameYear ? "" : " YYYY"}, HH:mm`
         /* spell-checker: enable */
     });
 
@@ -95,6 +96,10 @@ export const { fromNow } = (() => {
                                 case "no":
                                     /* cspell: disable-next-line */
                                     return "akkurat nå";
+                                case "no":
+                                    /* cspell: disable-next-line */
+                                    return "juuri nyt";
+    
                             }
                         })();
 
@@ -140,6 +145,15 @@ export const { fromNow } = (() => {
                                     "future1": "om et sekund",
                                     "futureN": "om # sekunder"
                                 } as const;
+                            case "fi":
+                                return {
+                                    "past1": "sekunti sitten",
+                                    "pastN": "# sekuntia sitten",
+                                    "future1": "sekunnin kuluttua",
+                                    "futureN": "# sekunnin kuluttua"
+                                } as const;
+                                
+                            
                             /* spell-checker: enable */
                         }
                     })()
@@ -178,6 +192,13 @@ export const { fromNow } = (() => {
                                     "future1": "om et minutt",
                                     "futureN": "om # minutter"
                                 } as const;
+                            case "fi":
+                                return {
+                                    "past1": "minuutti sitten",
+                                    "pastN": "# minuuttia sitten",
+                                    "future1": "minuutin kuluttua",
+                                    "futureN": "# minuutin kuluttua"
+                                } as const;                                                            
                             /* spell-checker: enable */
                         }
                     })()
@@ -215,6 +236,13 @@ export const { fromNow } = (() => {
                                     "pastN": "for # timer siden",
                                     "future1": "om en time",
                                     "futureN": "om # timer"
+                                } as const;
+                            case "fi":
+                                return {
+                                    "past1": "tunti sitten",
+                                    "pastN": "# tuntia sitten",
+                                    "future1": "tunnin kuluttua",
+                                    "futureN": "# tunnin kuluttua"
                                 } as const;
                             /* spell-checker: enable */
                         }
@@ -254,6 +282,13 @@ export const { fromNow } = (() => {
                                     "future1": "i morgen",
                                     "futureN": "om # dager"
                                 } as const;
+                            case "fi":
+                                return {
+                                    "past1": "eilen",
+                                    "pastN": "for # päivää sitten",
+                                    "future1": "huomenna",
+                                    "futureN": "# päivän päästä"
+                                } as const;      
                             /* spell-checker: enable */
                         }
                     })()
@@ -291,6 +326,13 @@ export const { fromNow } = (() => {
                                     "pastN": "for # uker siden",
                                     "future1": "om en uke",
                                     "futureN": "om # uker"
+                                } as const;
+                            case "fi":
+                                return {
+                                    "past1": "viime viikolla",
+                                    "pastN": "for # viikkoa sitten",
+                                    "future1": "viikon kuluttua",
+                                    "futureN": "om # viikkoa"
                                 } as const;
                             /* spell-checker: enable */
                         }
@@ -330,6 +372,13 @@ export const { fromNow } = (() => {
                                     "future1": "om en måned",
                                     "futureN": "om # måneder"
                                 } as const;
+                            case "fi":
+                                return {
+                                    "past1": "viime kuussa",
+                                    "pastN": "for # kuukautta sitten",
+                                    "future1": "kuukauden kuluttua",
+                                    "futureN": "om # kuukautta"
+                                } as const;                     
                             /* spell-checker: enable */
                         }
                     })()
@@ -367,6 +416,13 @@ export const { fromNow } = (() => {
                                     "pastN": "for # år siden",
                                     "future1": "om et år",
                                     "futureN": "om # år"
+                                } as const;
+                            case "fi":
+                                return {
+                                    "past1": "viime vuonna",
+                                    "pastN": "for # vuotta sitten",
+                                    "future1": "vuoden kuluttua",
+                                    "futureN": "om # vuotta"
                                 } as const;
                             /* spell-checker: enable */
                         }
@@ -406,6 +462,14 @@ export const { fromNow } = (() => {
                                     "future1": "om et århundre",
                                     "futureN": "om # århundrer"
                                 } as const;
+                            case "fi":
+                                return {
+                                    "past1": "viime vuosisadalla",
+                                    "pastN": "for # vuosisataa sitten",
+                                    "future1": "vuosisadan kuluttua",
+                                    "futureN": "om # vuosisataa"
+                                } as const;
+                                
                             /* spell-checker: enable */
                         }
                     })()
@@ -444,6 +508,14 @@ export const { fromNow } = (() => {
                                     "future1": "om et årtusen",
                                     "futureN": "om # årtusener"
                                 } as const;
+                            case "fi":
+                                return {
+                                    "past1": "viime vuosituhanneksella",
+                                    "pastN": "for # vuosituhatta sitten",
+                                    "future1": "vuosituhannen kuluttua",
+                                    "futureN": "om # vuosituhatta"
+                                } as const;
+                                
                             /* spell-checker: enable */
                         }
                     })()

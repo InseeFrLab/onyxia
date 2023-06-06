@@ -58,7 +58,7 @@ export type OnyxiaApi = {
     }) => Promise<void>;
 };
 
-export type Language = "en" | "fr" | "zh-CN" | "no";
+export type Language = "en" | "fr" | "zh-CN" | "no" | "fi";
 export type LocalizedString = GenericLocalizedString<Language>;
 
 export type DeploymentRegion = {
