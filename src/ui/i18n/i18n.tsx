@@ -23,7 +23,7 @@ export const {
         "zh-CN": () =>
             import("./resources/zh-CN").then(({ translations }) => translations),
         "no": () => import("./resources/no").then(({ translations }) => translations),
-        "fi": () => import("./resources/no").then(({ translations }) => translations)
+        "fi": () => import("./resources/fi").then(({ translations }) => translations)
     }
 );
 
