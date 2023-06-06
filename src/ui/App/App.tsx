@@ -41,11 +41,14 @@ const { CoreProvider } = createCoreProvider({
         "username": getEnv().JWT_USERNAME_CLAIM,
         "groups": getEnv().JWT_GROUPS_CLAIM
     },
-    "keycloakParams": {
-        "url": getEnv().KEYCLOAK_URL,
-        "realm": getEnv().KEYCLOAK_REALM,
-        "clientId": getEnv().KEYCLOAK_CLIENT_ID
-    },
+    "keycloakParams":
+        getEnv().KEYCLOAK_URL === ""
+            ? undefined
+            : {
+                  "url": getEnv().KEYCLOAK_URL,
+                  "realm": getEnv().KEYCLOAK_REALM,
+                  "clientId": getEnv().KEYCLOAK_CLIENT_ID
+              },
     "getCurrentLang": () => evtLang.state,
     "transformUrlBeforeRedirectToLogin": url =>
         [url]
