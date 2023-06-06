@@ -12,7 +12,7 @@ import { useEffectOnValueChange } from "powerhooks/useEffectOnValueChange";
 import { useDomRect, useSplashScreen } from "onyxia-ui";
 import { id } from "tsafe/id";
 import { useIsDarkModeEnabled } from "onyxia-ui";
-import { keyframes } from "onyxia-ui/tss";
+import { keyframes } from "tss-react";
 import type { Item } from "onyxia-ui/LeftBar";
 import { getExtraLeftBarItemsFromEnv, getIsHomePageDisabled } from "ui/env";
 import { declareComponentKeys } from "i18nifty";
