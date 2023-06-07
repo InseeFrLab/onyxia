@@ -10,9 +10,9 @@ export const translations: Translations<"no"> = {
         "user-interface": "Grensesnittspreferanser",
         "text1": "Min konto",
         "text2": "Få tilgang til ulik kontoinformasjon.",
-        "text3": 
+        "text3":
             "Konfigurer brukernavn, e-postadresser, passord og personlige tilgangstokens direkte tilkoblet tjenestene dine.",
-        "personal tokens tooltip": 
+        "personal tokens tooltip":
             "Passord som genereres for deg og har en gitt gyldighetsperiode",
         "vault": "Vault"
     },
@@ -41,16 +41,15 @@ export const translations: Translations<"no"> = {
         "personal token": ({ serviceName }) => `${serviceName}-personlig tilgangstoken`,
         "link for token creation": ({ serviceName }) =>
             `Opprett ${serviceName}-tokenet ditt.`,
-        "accessible as env":
-            "Tilgjengelig i tjenestene dine som en miljøvariabel"
+        "accessible as env": "Tilgjengelig i tjenestene dine som en miljøvariabel"
     },
     "AccountStorageTab": {
         "credentials section title": "Koble dataene dine til tjenestene dine",
         "credentials section helper":
             "Amazon-kompatibel MinIO-objektlagring (AWS S3). Denne informasjonen fylles allerede automatisk ut.",
-        "accessible as env":
-            "Tilgjengelig i tjenestene dine som en miljøvariabel:",
-        "init script section title": "For å få tilgang til lagringen din utenfor datalabtjenestene",
+        "accessible as env": "Tilgjengelig i tjenestene dine som en miljøvariabel:",
+        "init script section title":
+            "For å få tilgang til lagringen din utenfor datalabtjenestene",
         "init script section helper":
             "Last ned eller kopier initialiseringskriptet i programingsspråket du foretrekker.",
         "expires in": ({ howMuchTime }) => `Utløper om ${howMuchTime}`
@@ -77,7 +76,8 @@ export const translations: Translations<"no"> = {
         "init script section title": "Bruk vault fra terminalen din",
         "init script section helper": ({ vaultCliDocLink }) => (
             <>
-                Last ned eller kopier <code>ENV</code> variabler som konfigurerer din lokale{" "}
+                Last ned eller kopier <code>ENV</code> variabler som konfigurerer din
+                lokale{" "}
                 <MuiLink href={vaultCliDocLink} target="_blank">
                     Vault CLI
                 </MuiLink>
@@ -93,7 +93,7 @@ export const translations: Translations<"no"> = {
         "beta mode helper": "For avanserte plattformkonfigurasjoner og funksjoner.",
         "enable dev mode": "Aktiver utviklermodus",
         "dev mode helper": "Aktiver funksjoner som for øyeblikket er under utvikling"
-    },    
+    },
     "AccountField": {
         "copy tooltip": "Kopier til utklippstavlen",
         "language": "Bytt språk",
@@ -137,7 +137,10 @@ export const translations: Translations<"no"> = {
                     dokumentasjonen vår
                 </MuiLink>
                 . &nbsp;
-                <MuiLink {...accountTabLink}>Konfigurer den lokale Vault CLI-en din</MuiLink>.
+                <MuiLink {...accountTabLink}>
+                    Konfigurer den lokale Vault CLI-en din
+                </MuiLink>
+                .
             </>
         )
     },
@@ -281,7 +284,8 @@ export const translations: Translations<"no"> = {
         "myFiles": "Mine filer",
         "divider: services features": "Tjenestefunksjoner",
         "divider: external services features": "Eksterne tjenestefunksjoner",
-        "divider: onyxia instance specific features": "Onyxia-instansspesifikke funksjoner"
+        "divider: onyxia instance specific features":
+            "Onyxia-instansspesifikke funksjoner"
     },
     "Page404": {
         "not found": "Side ikke funnet"
@@ -296,7 +300,8 @@ export const translations: Translations<"no"> = {
         "title": "Velkommen til Onyxia datalab",
         "new user": "Ny på datalaben?",
         "login": "Logg inn",
-        "subtitle": "Arbeid med Python eller R, nyt all databehandlingskraften du trenger!",
+        "subtitle":
+            "Arbeid med Python eller R, nyt all databehandlingskraften du trenger!",
         "cardTitle1": "Et ergonomisk miljø og behovstilpassede tjenester",
         "cardTitle2": "Et aktivt og entusiastisk fellesskap til din tjeneste",
         "cardTitle3": "Rask, fleksibel og nettbasert dataoppbevaring",
@@ -347,7 +352,8 @@ export const translations: Translations<"no"> = {
             "Du har allerede en lagret tjeneste med dette navnet. Hvis du erstatter den, vil den forrige konfigurasjonen gå tapt",
         "cancel": "Avbryt",
         "replace": "Erstatt den",
-        "sensitive configuration dialog title": "Å starte denne tjenesten kan være farlig",
+        "sensitive configuration dialog title":
+            "Å starte denne tjenesten kan være farlig",
         "proceed to launch": "Fortsett til oppstart"
     },
     "Footer": {
@@ -364,7 +370,8 @@ export const translations: Translations<"no"> = {
         "copy url helper text": "Kopier URL for å gjenopprette denne konfigurasjonen",
         "save configuration": "Lagre denne konfigurasjonen",
         "share the service": "Del tjenesten",
-        "share the service - explain": "Gjør tjenesten tilgjengelig for prosjektmedlemmene",
+        "share the service - explain":
+            "Gjør tjenesten tilgjengelig for prosjektmedlemmene",
         "restore all default": "Gjenopprett standardkonfigurasjoner"
     },
     "CatalogLauncherConfigurationCard": {
@@ -383,7 +390,8 @@ export const translations: Translations<"no"> = {
         "text3": "Tjenestene skal avsluttes så snart du slutter å bruke dem aktivt.",
         "running services": "Kjørende tjenester",
         "confirm delete title": "Er du sikker?",
-        "confirm delete subtitle": "Forsikre deg om at tjenestene dine er klare til å bli slettet",
+        "confirm delete subtitle":
+            "Forsikre deg om at tjenestene dine er klare til å bli slettet",
         "confirm delete body shared services":
             "Vær oppmerksom på at noen av tjenestene dine deles med de andre prosjektmedlemmene.",
         "confirm delete body":

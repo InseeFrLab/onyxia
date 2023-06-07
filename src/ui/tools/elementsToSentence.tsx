@@ -16,7 +16,6 @@ export function elementsToSentence(params: {
                 return "og";
             case "fi":
                 return "ja";
-    
         }
     })();
 
