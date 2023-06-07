@@ -151,8 +151,7 @@ export const { fromNow } = (() => {
                                     "future1": "sekunnin kuluttua",
                                     "futureN": "# sekunnin kuluttua"
                                 } as const;
-                                
-                            
+
                             /* spell-checker: enable */
                         }
                     })()
@@ -197,7 +196,7 @@ export const { fromNow } = (() => {
                                     "pastN": "# minuuttia sitten",
                                     "future1": "minuutin kuluttua",
                                     "futureN": "# minuutin kuluttua"
-                                } as const;                                                            
+                                } as const;
                             /* spell-checker: enable */
                         }
                     })()
@@ -287,7 +286,7 @@ export const { fromNow } = (() => {
                                     "pastN": "for # päivää sitten",
                                     "future1": "huomenna",
                                     "futureN": "# päivän päästä"
-                                } as const;      
+                                } as const;
                             /* spell-checker: enable */
                         }
                     })()
@@ -377,7 +376,7 @@ export const { fromNow } = (() => {
                                     "pastN": "for # kuukautta sitten",
                                     "future1": "kuukauden kuluttua",
                                     "futureN": "om # kuukautta"
-                                } as const;                     
+                                } as const;
                             /* spell-checker: enable */
                         }
                     })()
@@ -468,7 +467,7 @@ export const { fromNow } = (() => {
                                     "future1": "vuosisadan kuluttua",
                                     "futureN": "om # vuosisataa"
                                 } as const;
-                                
+
                             /* spell-checker: enable */
                         }
                     })()
@@ -514,7 +513,7 @@ export const { fromNow } = (() => {
                                     "future1": "vuosituhannen kuluttua",
                                     "futureN": "om # vuosituhatta"
                                 } as const;
-                                
+
                             /* spell-checker: enable */
                         }
                     })()
