@@ -10598,10 +10598,10 @@ keycloak-js@21.0.2:
     base64-js "^1.5.1"
     js-sha256 "^0.9.0"
 
-keycloakify@^7.11.11:
-  version "7.11.11"
-  resolved "https://registry.yarnpkg.com/keycloakify/-/keycloakify-7.11.11.tgz#8ea8acb222e3dad846eeb2afeb8ac0f573d9ad6a"
-  integrity sha512-+qyExJHO+eUTntjRvWaqtNMiKzaCGkUjYV3ocXmh55Th3IbrO0AcqQ8xMBciEqSqJMwlb+6cgNj3kc6HQaDN1A==
+keycloakify@^7.12.6:
+  version "7.12.6"
+  resolved "https://registry.yarnpkg.com/keycloakify/-/keycloakify-7.12.6.tgz#bc60608a184f33c88dcc403f2d7ef9cb223b08b8"
+  integrity sha512-+08XqwkQoTjPV62RKOLjC0YMdC1combvAzB0HnSaqQSaTfYL3ep9obCHPbYiOeUQdxruSweVE3FpT2Kt2gSO4Q==
   dependencies:
     "@octokit/rest" "^18.12.0"
     "@types/yazl" "^2.4.2"
