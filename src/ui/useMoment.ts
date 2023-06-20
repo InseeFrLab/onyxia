@@ -12,7 +12,8 @@ export const { getFormattedDate } = (() => {
         "en": `dddd, MMMM Do${isSameYear ? "" : " YYYY"}, h:mm a`,
         "zh-CN": `dddd, MMMM Do${isSameYear ? "" : " YYYY"}, h:mm a`,
         "no": `dddd, Do MMMM${isSameYear ? "" : " YYYY"}, HH:mm`,
-        "fi": `dddd, Do MMMM${isSameYear ? "" : " YYYY"}, HH:mm`
+        "fi": `dddd, Do MMMM${isSameYear ? "" : " YYYY"}, HH:mm`,
+        "nl": `dddd, Do MMMM${isSameYear ? "" : " YYYY"}, HH:mm`
         /* spell-checker: enable */
     });
 
@@ -99,6 +100,9 @@ export const { fromNow } = (() => {
                                 case "fi":
                                     /* cspell: disable-next-line */
                                     return "juuri nyt";
+                                case "nl":
+                                    /* cspell: disable-next-line */
+                                    return "zojuist";
                             }
                         })();
 
@@ -151,7 +155,13 @@ export const { fromNow } = (() => {
                                     "future1": "sekunnin kuluttua",
                                     "futureN": "# sekunnin kuluttua"
                                 } as const;
-
+                            case "nl":
+                                return {
+                                    "past1": "een seconde geleden",
+                                    "pastN": "# seconden geleden",
+                                    "future1": "over een seconde",
+                                    "futureN": "over # seconden"
+                                } as const;
                             /* spell-checker: enable */
                         }
                     })()
@@ -196,6 +206,13 @@ export const { fromNow } = (() => {
                                     "pastN": "# minuuttia sitten",
                                     "future1": "minuutin kuluttua",
                                     "futureN": "# minuutin kuluttua"
+                                } as const;
+                            case "nl":
+                                return {
+                                    "past1": "een minuut geleden",
+                                    "pastN": "# minuten geleden",
+                                    "future1": "over een minuut",
+                                    "futureN": "over # minuten"
                                 } as const;
                             /* spell-checker: enable */
                         }
@@ -242,6 +259,13 @@ export const { fromNow } = (() => {
                                     "future1": "tunnin kuluttua",
                                     "futureN": "# tunnin kuluttua"
                                 } as const;
+                            case "nl":
+                                return {
+                                    "past1": "een uur geleden",
+                                    "pastN": "# uur geleden",
+                                    "future1": "over een uur",
+                                    "futureN": "over # uur"
+                                } as const;
                             /* spell-checker: enable */
                         }
                     })()
@@ -286,6 +310,13 @@ export const { fromNow } = (() => {
                                     "pastN": "for # päivää sitten",
                                     "future1": "huomenna",
                                     "futureN": "# päivän päästä"
+                                } as const;
+                            case "nl":
+                                return {
+                                    "past1": "gisteren",
+                                    "pastN": "# dagen geleden",
+                                    "future1": "morgen",
+                                    "futureN": "over # dagen"
                                 } as const;
                             /* spell-checker: enable */
                         }
@@ -332,6 +363,13 @@ export const { fromNow } = (() => {
                                     "future1": "viikon kuluttua",
                                     "futureN": "om # viikkoa"
                                 } as const;
+                            case "nl":
+                                return {
+                                    "past1": "vorige week",
+                                    "pastN": "# weken geleden",
+                                    "future1": "over een week",
+                                    "futureN": "over # weken"
+                                } as const;
                             /* spell-checker: enable */
                         }
                     })()
@@ -376,6 +414,13 @@ export const { fromNow } = (() => {
                                     "pastN": "for # kuukautta sitten",
                                     "future1": "kuukauden kuluttua",
                                     "futureN": "om # kuukautta"
+                                } as const;
+                            case "nl":
+                                return {
+                                    "past1": "vorige maand",
+                                    "pastN": "# maanden geleden",
+                                    "future1": "over een maand",
+                                    "futureN": "over # maanden"
                                 } as const;
                             /* spell-checker: enable */
                         }
@@ -422,6 +467,13 @@ export const { fromNow } = (() => {
                                     "future1": "vuoden kuluttua",
                                     "futureN": "om # vuotta"
                                 } as const;
+                            case "nl":
+                                return {
+                                    "past1": "vorig jaar",
+                                    "pastN": "# jaar geleden",
+                                    "future1": "over een jaar",
+                                    "futureN": "over # jaar"
+                                } as const;
                             /* spell-checker: enable */
                         }
                     })()
@@ -467,7 +519,13 @@ export const { fromNow } = (() => {
                                     "future1": "vuosisadan kuluttua",
                                     "futureN": "om # vuosisataa"
                                 } as const;
-
+                            case "nl":
+                                return {
+                                    "past1": "vorige eeuw",
+                                    "pastN": "# eeuwen geleden",
+                                    "future1": "over een eeuw",
+                                    "futureN": "over # eeuwen"
+                                } as const;
                             /* spell-checker: enable */
                         }
                     })()
@@ -513,7 +571,13 @@ export const { fromNow } = (() => {
                                     "future1": "vuosituhannen kuluttua",
                                     "futureN": "om # vuosituhatta"
                                 } as const;
-
+                            case "nl":
+                                return {
+                                    "past1": "vorig millennium",
+                                    "pastN": "# millennia geleden",
+                                    "future1": "over een millennium",
+                                    "futureN": "over # millennia"
+                                } as const;
                             /* spell-checker: enable */
                         }
                     })()

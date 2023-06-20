@@ -1,7 +1,7 @@
 import type { GenericTranslations } from "i18nifty";
 
 //List the languages you with to support
-export const languages = ["en", "fr", "zh-CN", "no", "fi"] as const;
+export const languages = ["en", "fr", "zh-CN", "no", "fi", "nl"] as const;
 
 //If the user's browser language doesn't match any
 //of the languages above specify the language to fallback to:
