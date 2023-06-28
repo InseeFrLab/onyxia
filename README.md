@@ -16,6 +16,8 @@
     <b>Looking for our public instance?</b> <a href="https://datalab.sspcloud.fr">datalab.sspcloud.fr</a>
     <br>
     <b>Let's get in touch! Join </b> <a href="https://join.slack.com/t/3innovation/shared_invite/zt-1hnzukjcn-6biCSmVy4qvyDGwbNI~sWg">our Slack</a>
+    <br>
+    <b>What's next? Checkout our</b> <a href="https://docs.onyxia.sh/roadmap">roadmap</a>
 </p>
 
 Onyxia is a web app that aims at being the glue between multiple open source backend technologies to
@@ -42,6 +44,13 @@ Onyxia is developed by the French National institute of statistics and economic 
 -   [Keycloak integration](https://user-images.githubusercontent.com/6702424/137821446-ed908862-69e3-464c-b347-bd8776a425cc.png).
 
 ## Media
+
+<p align="center">
+    <i>OW2Con'23</i><br>
+    <a href="https://youtu.be/wBYWEwF7pK8">
+        <img src="https://github.com/InseeFrLab/onyxia-web/assets/6702424/48206b71-020c-449e-88f4-5e18323fd3a1" width="640">
+    </a>
+</p>
 
 <p align="center">
     <i>Devoxx France 2023</i><br>

@@ -8,14 +8,13 @@ on:
       - main
 
 jobs:
-
   test:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       with:
         lfs: true
-    - uses: actions/setup-node@v2
+    - uses: actions/setup-node@v3
     - uses: bahmutov/npm-install@v1
     - run: yarn build
     - run: npx keycloakify
@@ -33,7 +32,7 @@ jobs:
     steps:
     - uses: garronej/ts-ci@v2.1.0
       id: step1
-      with: 
+      with:
         action_name: is_package_json_version_upgraded
         branch: ${{ github.head_ref || github.ref }}
 
@@ -43,10 +42,10 @@ jobs:
     # We create a release only if the version have been upgraded and we are on a default branch
     if: needs.check_if_version_upgraded.outputs.is_upgraded_version == 'true' && github.event_name == 'push'
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       with:
         lfs: true
-    - uses: actions/setup-node@v2
+    - uses: actions/setup-node@v3
     - uses: bahmutov/npm-install@v1
     - run: yarn build
     - run: npx keycloakify
@@ -68,7 +67,7 @@ jobs:
       - check_if_version_upgraded
       - create_github_release
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           lfs: true
       - uses: docker/setup-qemu-action@v1
@@ -85,7 +84,7 @@ jobs:
         run: |
           OUT=$GITHUB_REPOSITORY:$TO_VERSION,$GITHUB_REPOSITORY:latest
           OUT=$(echo "$OUT" | awk '{print tolower($0)}') 
-          echo ::set-output name=docker_tags::$OUT
+          echo "docker_tags=$OUT" >> "$GITHUB_OUTPUT"
       - uses: docker/build-push-action@v2
         with:
           push: true
