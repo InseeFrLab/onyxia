@@ -316,7 +316,7 @@ export AWS_S3_ENDPOINT=${credentials.AWS_S3_ENDPOINT}
 						`;
                         case "MC client":
                             return `
-export MC_HOST_minio=https://${credentials.AWS_ACCESS_KEY_ID}:${credentials.AWS_SECRET_ACCESS_KEY}:${credentials.AWS_SESSION_TOKEN}@${credentials.AWS_S3_ENDPOINT}
+export MC_HOST_s3=https://${credentials.AWS_ACCESS_KEY_ID}:${credentials.AWS_SECRET_ACCESS_KEY}:${credentials.AWS_SESSION_TOKEN}@${credentials.AWS_S3_ENDPOINT}
 						`;
                         case "s3cmd":
                             return `
