@@ -3,31 +3,36 @@ import MuiLink from "@mui/material/Link";
 
 export const translations: Translations<"it"> = {
     /* spell-checker: disable */
-    "Account": {  /* ICIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII */
-        "infos": "Information du compte",
-        "third-party-integration": "Services externes",
-        "storage": "Connexion au stockage",
-        "k8sCredentials": "Connexion a Kubernetes",
-        "user-interface": "Modes d'interface",
-        "text1": "Mon compte",
-        "text2": "Accédez à vos différentes informations de compte.",
+    "Account": {
+        "infos": "Informazioni dell'account",
+        "third-party-integration": "Servizi esterni",
+        "storage": "Connessionne allo storage",
+        "k8sCredentials": "Connessionne a Kubernetes",
+        "user-interface": "Modalità d'interfaccia",
+        "text1": "Il mio account",
+        "text2": "Accedi alle diverse informazioni del tuo account.",
         "text3":
-            "Configurez vos identifiants, e-mails, mots de passe et jetons d'accès personnels directement connectés à vos services.",
-        "personal tokens tooltip": 'Ou en anglais "token".',
+            "Configura le tue credenziali, email, password e token di accesso personale direttamente collegati ai tuoi servizi.",
+        "personal tokens tooltip": 'O in inglese "token".',
         "vault": "Vault"
     },
     "AccountInfoTab": {
-        "general information": "Informations générales",
-        "user id": "Identifiant (IDEP)",
-        "full name": "Nom complet",
-        "email": "Adresse mail",
+        "general information": "Informazioni generali",
+        "user id": "Identificatore (IDEP)",
+        "full name": "Nome completo",
+        "email": "Indirizzo email",
         "change account info":
-            "Modifier les informations du compte (comme, par exemple, votre mot de passe)",
-        "auth information": "Informations d'authentification Onyxia",
-        "auth information helper": `Ces informations vous permettent de vous identifier 
-            au sein de la plateforme et des différents services.`,
-        "ip address": "Adresse IP"
+            "Modifica le informazioni dell'account (ad esempio, la password)",
+        "auth information": "Informazioni di autenticazione Onyxia",
+        "auth information helper":
+            `Queste informazioni ti permettono di identificarti all'interno della piattaforma e dei vari servizi.`,
+        "ip address": "Indirizzo IP"
     },
+
+
+
+
+
     "AccountIntegrationsTab": {
         "git section title": "Configurations Git",
         "git section helper": `Pour vous assurez que vous apparaissiez depuis vos
