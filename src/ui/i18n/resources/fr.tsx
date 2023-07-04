@@ -309,9 +309,9 @@ export const translations: Translations<"fr"> = {
         "cardTitle2": "Une communauté active et enthousiaste à votre écoute",
         "cardTitle3": "Un espace de stockage de données rapide, flexible et en ligne",
         "cardText1":
-            "Analysez les données, faites du calcul distribué et profitez d’un large catalogue de services. Réservez la puissance de calcul dont vous avez besoin.",
+            "Analysez les données, faites du calcul distribué et profitez d'un large catalogue de services. Réservez la puissance de calcul dont vous avez besoin.",
         "cardText2":
-            "Profitez et partagez des ressources mises à votre disposition : tutoriels, formations et canaux d’échanges.",
+            "Profitez et partagez des ressources mises à votre disposition : tutoriels, formations et canaux d'échanges.",
         "cardText3":
             "Pour accéder facilement à vos données et à celles mises à votre disposition depuis vos programmes - Implémentation API S3",
         "cardButton1": "Consulter le catalogue",

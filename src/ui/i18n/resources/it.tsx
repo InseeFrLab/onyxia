@@ -6,14 +6,14 @@ export const translations: Translations<"it"> = {
     "Account": {
         "infos": "Informazioni dell'account",
         "third-party-integration": "Servizi esterni",
-        "storage": "Connessionne allo storage",
-        "k8sCredentials": "Connessionne a Kubernetes",
+        "storage": "Connessione allo storage",
+        "k8sCredentials": "Connessione a Kubernetes",
         "user-interface": "Modalità d'interfaccia",
         "text1": "Il mio account",
         "text2": "Accedi alle diverse informazioni del tuo account.",
         "text3":
             "Configura le tue credenziali, email, password e token di accesso personale direttamente collegati ai tuoi servizi.",
-        "personal tokens tooltip": 'O in inglese "token".',
+        "personal tokens tooltip": 'O in inglese solo "token".',
         "vault": "Vault"
     },
     "AccountInfoTab": {
@@ -54,7 +54,7 @@ export const translations: Translations<"it"> = {
         "expires in": ({ howMuchTime }) => `Scade in ${howMuchTime}`
     },
     "AccountKubernetesTab": {
-        "credentials section title": "Connessionne a Kubernetes",
+        "credentials section title": "Connessione a Kubernetes",
         "credentials section helper":
             "Credenziali per interagire direttamente con il cluster Kubernetes.",
         "init script section title":
@@ -185,7 +185,7 @@ export const translations: Translations<"it"> = {
 
         "untitled what": ({ what }) => `${what}_senza_nome`,
         "directory": "cartella",
-        "deletion dialog title": ({ deleteWhat }) => `Eliminare un ${deleteWhat} ?`,
+        "deletion dialog title": ({ deleteWhat }) => `Eliminare un ${deleteWhat}?`,
         "deletion dialog body": ({ deleteWhat }) => `
             Stai per eliminare un ${deleteWhat}. 
             Questa azione potrebbe comportare la potenziale perdita dei dati associati a questo ${deleteWhat}.
@@ -202,7 +202,7 @@ export const translations: Translations<"it"> = {
         "do not display again": "Non mostrare più",
         "untitled what": ({ what }) => `${what}_senza_nome`,
         "directory": "cartella",
-        "deletion dialog title": ({ deleteWhat }) => `Eliminare un ${deleteWhat} ?`,
+        "deletion dialog title": ({ deleteWhat }) => `Eliminare un ${deleteWhat}?`,
         "deletion dialog body": ({ deleteWhat }) => `
             Stai per eliminare un ${deleteWhat}. 
             Questa azione potrebbe comportare la potenziale perdita dei dati associati a questo ${deleteWhat}.
@@ -267,7 +267,7 @@ export const translations: Translations<"it"> = {
         "minimize": "Minimizzare"
     },
     "Header": {
-        "login": "Connessionne",
+        "login": "Connessione",
         "logout": "Disconnessione",
         "trainings": "Formazioni",
         "documentation": "Documentazione",
@@ -285,172 +285,171 @@ export const translations: Translations<"it"> = {
         "divider: external services features":
             "Funzioni relative ai servizi esterni",
         "divider: onyxia instance specific features":
-            "Fonctionnalités spécifiques à cette instance d'Onyxia"
+            "Funzioni specifiche di questa istanza di Onyxia"
     },
     "Page404": {
-        "not found": "Page non trouvée"
+        "not found": "Pagina non trovata"
     },
     "PortraitModeUnsupported": {
-        "portrait mode not supported": "Le mode portrait n'est pas encore supporté",
+        "portrait mode not supported": "La modalità ritratto non è ancora supportata",
         "instructions":
-            "Pour utiliser cette application depuis votre mobile, veuillez activer le capteur de rotation et tourner votre téléphone."
+            "Per utilizzare questa applicazione dal tuo cellulare, attiva il sensore di rotazione e ruota il tuo telefono."
     },
     "Home": {
-        "welcome": ({ who }) => `Bienvenue ${who}!`,
-        "title": "Bienvenue sur le datalab",
-        "login": "Connexion",
-        "new user": "Nouvel utilisateur du datalab ?",
+        "welcome": ({ who }) => `Benvenuto ${who}!`,
+        "title": "Benvenuto sul datalab",
+        "login": "Connessione",
+        "new user": "Nuovo utente del datalab?",
         "subtitle":
-            "Travaillez avec Python ou R et disposez de la puissance dont vous avez besoin !",
-        "cardTitle1": "Un environnement ergonomique et des services à la demande",
-        "cardTitle2": "Une communauté active et enthousiaste à votre écoute",
-        "cardTitle3": "Un espace de stockage de données rapide, flexible et en ligne",
+            "Lavora con Python o R e goditi la potenza di cui hai bisogno!",
+        "cardTitle1": "Un ambiente ergonomico e servizi su richiesta",
+        "cardTitle2": "Una comunità attiva ed entusiasta pronta ad ascoltarti",
+        "cardTitle3": "Uno spazio di archiviazione dati veloce, flessibile e online",
         "cardText1":
-            "Analysez les données, faites du calcul distribué et profitez d’un large catalogue de services. Réservez la puissance de calcul dont vous avez besoin.",
+            "Analizza i dati, esegui calcoli distribuiti e approfitta di un ampio catalogo di servizi. Prenota la potenza di calcolo di cui hai bisogno.",
         "cardText2":
-            "Profitez et partagez des ressources mises à votre disposition : tutoriels, formations et canaux d’échanges.",
+            "Approfitta e condividi le risorse messe a tua disposizione: tutorial, formazione e canali di comunicazione.",
         "cardText3":
-            "Pour accéder facilement à vos données et à celles mises à votre disposition depuis vos programmes - Implémentation API S3",
-        "cardButton1": "Consulter le catalogue",
-        "cardButton2": "Rejoindre la communauté",
-        "cardButton3": "Consulter des données"
+            "Per accedere facilmente ai tuoi dati e a quelli messi a tua disposizione dai tuoi programmi - Implementazione dell'API S3",
+        "cardButton1": "Consultare il catalogo",
+        "cardButton2": "Uniscirsi alla comunità",
+        "cardButton3": "Consultare i dati"
     },
     "CatalogExplorerCard": {
-        "launch": "Lancer",
-        "learn more": "En savoir plus"
+        "launch": "Avviare",
+        "learn more": "Per saperne di più"
     },
     "CatalogExplorerCards": {
-        "show more": "Afficher tous",
-        "no service found": "Service non trouvé",
-        "no result found": ({ forWhat }) => `Aucun résultat trouvé pour ${forWhat}`,
-        "check spelling": `Vérifiez que le nom du service est correctement 
-            orthographié ou essayez d'élargir votre recherche.`,
-        "go back": "Retourner aux principaux services",
-        "main services": "Principaux services",
-        "all services": "Tous les services",
-        "search results": "Résultats de la recherche",
-        "search": "Rechercher"
+        "show more": "Mostrare tutto",
+        "no service found": "Servizio non trovato",
+        "no result found": ({ forWhat }) => `Nessun risultato trovato per ${forWhat}`,
+        "check spelling": `Verifica che il nome del servizio sia correttamente scritto o prova ad ampliare la tua ricerca.`,
+        "go back": "Torna ai servizi principali",
+        "main services": "Servizi principali",
+        "all services": "Tutti i servizi",
+        "search results": "Risultati della ricerca",
+        "search": "Cercare"
     },
     "Catalog": {
-        "header text1": "Catalogue de services",
+        "header text1": "Catalogo di servizi",
         "header text2":
-            "Explorez, lancez et configurez des services en quelques clics seulement.",
+            "Esplora, avvia e configura servizi con pochi clic.",
         "contribute to the catalog": ({ catalogName }) => (
-            <>Contribuer au catalogue {catalogName}</>
+            <>Contribuire al catalogo {catalogName}</>
         ),
         "contribute to the package": ({ packageName }) =>
-            `Accéder aux sources du package ${packageName} `,
-        "here": "ici"
+            `Accedere alle fonti del pacchetto ${packageName} `,
+        "here": "Qui"
     },
     "CatalogLauncher": {
-        "no longer bookmarked dialog title": "Changements non enregistrés",
+        "no longer bookmarked dialog title": "Modifiche non salvate",
         "no longer bookmarked dialog body":
-            "Cliquer une nouvelle fois sur le symbole marque-page pour mettre à jour votre configuration enregistrée.",
+            "Clicca nuovamente sull'icona del segnalibro per aggiornare la configurazione salvata.",
         "ok": "Ok",
-        "should overwrite configuration dialog title": "Souhaitez-vous le remplacer ?",
+        "should overwrite configuration dialog title": "Vuoi sostituirlo?",
         "should overwrite configuration dialog subtitle": ({ friendlyName }) =>
-            `«${friendlyName}» existe déjà dans vos enregistrements.`,
+            `«${friendlyName}» esiste già nelle tuoi registrazioni.`,
         "should overwrite configuration dialog body":
-            "Un service enregistré du même nom existe déjà. Si vous le remplacez, le contenu d'origine sera perdu.",
-        "cancel": "Annuler",
-        "replace": "Remplacer",
+            "Esiste già un servizio registrato con lo stesso nome. Se lo sostituisci, il contenuto originale verrà perso.",
+        "cancel": "Annullare",
+        "replace": "Sostituire",
         "sensitive configuration dialog title":
-            "Lancer ce service pourrait être dangereux",
-        "proceed to launch": "Lancer en conscience"
+            "Avviare questo servizio potrebbe essere pericoloso.",
+        "proceed to launch": "Lanciare con consapevolezza"
     },
     "Footer": {
-        "contribute": "Contribuer au projet",
-        "terms of service": "Conditions d'utilisation",
-        "change language": "Changer la langue",
-        "dark mode switch": "Interrupteur pour le mode sombre"
+        "contribute": "Contribuire al proggetto",
+        "terms of service": "Condizioni d'uso",
+        "change language": "Cambiare la lingua",
+        "dark mode switch": "Interruttore per la modalità scura"
     },
     "CatalogLauncherMainCard": {
-        "card title": "Créer votre propre service",
-        "friendly name": "Nom personnalisé",
-        "launch": "Lancer",
-        "cancel": "Annuler",
+        "card title": "Crea il tuo proprio servizio",
+        "friendly name": "Nome personalizzato",
+        "launch": "Avviare",
+        "cancel": "Annullare",
         "copy url helper text":
-            "Copier l'URL permettant de restaurer cette configuration",
-        "save configuration": "Enregistrer cette configuration",
-        "share the service": "Partager le service",
+            "Copiare l'URL per ripristinare questa configurazione",
+        "save configuration": "Salvare questa configurazione",
+        "share the service": "Condividire il servizio",
         "share the service - explain":
-            "Rendre accessible le service aux collaborateurs du groupe",
-        "restore all default": "Réinitialiser les configurations"
+            "Rendere il servizio accessibile ai membri del gruppo",
+        "restore all default": "Ripristinare le configurazioni"
     },
     "CatalogLauncherConfigurationCard": {
-        "global config": "Configurations globales",
-        "configuration": ({ packageName }) => `Configuration ${packageName}`,
-        "dependency": ({ dependencyName }) => `Dépendance ${dependencyName}`,
+        "global config": "Configurazioni globali",
+        "configuration": ({ packageName }) => `Configurazione ${packageName}`,
+        "dependency": ({ dependencyName }) => `Dipendenza ${dependencyName}`,
         "launch of a service": ({ dependencyName }) =>
-            `Lancement d'un service ${dependencyName}`,
-        "mismatching pattern": ({ pattern }) => `Doit respecter ${pattern}`,
-        "Invalid YAML Object": "Objet YAML non valide",
-        "Invalid YAML Array": "Tableau YAML non valide"
+            `Avvio di un servizio ${dependencyName}`,
+        "mismatching pattern": ({ pattern }) => `Deve rispettare ${pattern}`,
+        "Invalid YAML Object": "Oggetto YAML non valido",
+        "Invalid YAML Array": "Tabella YAML non valida"
     },
     "MyServices": {
-        "text1": "Mes services",
+        "text1": "I miei servizi",
         "text2":
-            "Lancer, visualiser et gérer rapidement vos différents services en cours d'exécution.",
+            "Avvia, visualizza e gestisci rapidamente i tuoi vari servizi in esecuzione.",
         "text3":
-            "Il est recommandé de supprimer vos services après chaque session de travail.",
-        "running services": "Services en cours",
-        "confirm delete title": "Êtes-vous sûr?",
+            "Si consiglia di eliminare i servizi dopo ogni sessione di lavoro.",
+        "running services": "Servizi in corso",
+        "confirm delete title": "Sei sicuro?",
         "confirm delete subtitle":
-            "Assurez-vous que vos services ne contiennent pas de travail non sauvegardé.",
+            "Assicurati che i tuoi servizi non contengano lavori non salvati.",
         "confirm delete body":
-            "N'oubliez pas de pusher votre code sur GitHub ou GitLab avant de continuer.",
+            "Non dimenticare di fare un push del tuo codice su GitHub o GitLab prima di procedere.",
         "confirm delete body shared services":
-            "Attention, certains de vos services sont partagés aux autres membres du projet.",
-        "cancel": "Annuler",
-        "confirm": "Oui, supprimer"
+            "Attenzione, alcuni dei tuoi servizi sono condivisi con gli altri membri del progetto.",
+        "cancel": "Annullare",
+        "confirm": "Sì, eliminare"
     },
     "MyServicesButtonBar": {
-        "refresh": "Rafraîchir",
-        "launch": "Nouveau service",
-        "password": "Copier le mot de passe",
-        "trash": "Supprimer tous",
-        "trash my own": "Supprimer tous mes services"
+        "refresh": "Aggiornare",
+        "launch": "Nuovo servizio",
+        "password": "Copiare la password",
+        "trash": "Eliminare tutti",
+        "trash my own": "Eliminare tutti i miei servizi."
     },
     "MyServicesCard": {
-        "service": "Service",
-        "running since": "En exécution depuis : ",
-        "open": "ouvrir",
+        "service": "Servizio",
+        "running since": "In esecuzione da: ",
+        "open": "Aprire",
         "readme": "readme",
-        "shared by you": "partagé par vous",
+        "shared by you": "Condiviso da te",
         "which token expire when": ({ which, howMuchTime }) =>
-            `Le token ${which} expire ${howMuchTime}.`,
-        "which token expired": ({ which }) => `Le token ${which} a expiré.`,
+            `Il token ${which} scade ${howMuchTime}.`,
+        "which token expired": ({ which }) => `Il token ${which} è scaduto.`,
         "reminder to delete services":
-            "Rappelez-vous de supprimer vos services après utilisation.",
-        "this is a shared service": "Ce service est partagé au sein du projet"
+            "Ricordati di eliminare i tuoi servizi dopo l'utilizzo.",
+        "this is a shared service": "Questo servizio è condiviso all'interno del progetto"
     },
     "MyServicesRunningTime": {
-        "launching": "En cours..."
+        "launching": "In corso..."
     },
     "MyServicesSavedConfigOptions": {
-        "edit": "Modifier",
-        "copy link": "Copier l'URL",
-        "remove bookmark": "Supprimer"
+        "edit": "Modificare",
+        "copy link": "Copiare l'URL",
+        "remove bookmark": "Eliminare"
     },
     "MyServicesSavedConfig": {
-        "edit": "Modifier",
-        "launch": "Lancer"
+        "edit": "Modificare",
+        "launch": "Avviare"
     },
     "MyServicesSavedConfigs": {
-        "saved": "Enregistrés",
-        "show all": "Afficher tous"
+        "saved": "Salvati",
+        "show all": "Mostrare tutti"
     },
     "MyServicesCards": {
-        "running services": "Services en cours",
+        "running services": "Servizi in corso",
         "no services running":
-            "Vous n'avez actuellement aucun service en cours d'exécution",
-        "launch one": "Cliquez ici pour en lancer un",
+            "Attualmente non hai alcun servizio in esecuzione",
+        "launch one": "Clicca qui per avviarne uno",
         "ok": "ok",
-        "need to copy": "Besoin de copier les valeurs non tronquées ?",
-        "everything have been printed to the console": "Tout a été loggé dans la console",
-        "first copy the password": "Commencez par copier le mot de passe...",
-        "open the service": "Ouvrir le service 🚀",
-        "return": "Retour"
+        "need to copy": "Hai bisogno di copiare i valori non troncati?",
+        "everything have been printed to the console": "Tutto è stato registrato nella console.",
+        "first copy the password": "Inizia copiando la password...",
+        "open the service": "Aprire il servizio 🚀",
+        "return": "Ritorno"
     }
     /* spell-checker: enable */
 };
