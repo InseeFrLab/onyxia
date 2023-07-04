@@ -28,272 +28,264 @@ export const translations: Translations<"it"> = {
             `Queste informazioni ti permettono di identificarti all'interno della piattaforma e dei vari servizi.`,
         "ip address": "Indirizzo IP"
     },
-
-
-
-
-
     "AccountIntegrationsTab": {
-        "git section title": "Configurations Git",
-        "git section helper": `Pour vous assurez que vous apparaissiez depuis vos
-            services comme l'auteur des contributions Git`,
-        "gitName": "Nom d'utilisateur pour Git",
-        "gitEmail": "Email pour Git",
+        "git section title": "Configurazioni Git",
+        "git section helper": `Per assicurarti di apparire come l'autore delle contribuzioni Git dai tuoi servizi`,
+        "gitName": "Nome utente per Git",
+        "gitEmail": "Email per Git",
         "third party tokens section title":
-            "Connecter vos comptes Gitlab, Github et Kaggle",
-        "third party tokens section helper": `Connectez vos services à des comptes extérieurs à l'aide
-            de jetons d'accès personnel et de variables d'environnement.`,
-        "personal token": ({ serviceName }) => `Jeton d'accès personnel ${serviceName}`,
+            "Collegare in tuoi account Gitlab, Github e Kaggle",
+        "third party tokens section helper": `Collega i tuoi servizi a account esterni utilizzando token di accesso personale e variabili d'ambiente.`,
+        "personal token": ({ serviceName }) => `Token di accesso personale ${serviceName}`,
         "link for token creation": ({ serviceName }) =>
-            `Créer votre jeton ${serviceName}.`,
+            `Creare il tuo token ${serviceName}.`,
         "accessible as env":
-            "Accessible au sein de vos services en tant que la variable d'environnement"
+            "Accessibile all'interno dei tuoi servizi come variabile d'ambiente"
     },
     "AccountStorageTab": {
-        "credentials section title": "Connecter vos données à vos services",
+        "credentials section title": "Collega i tuoi dati ai tuoi servizi",
         "credentials section helper":
-            "Stockage object MinIO compatible Amazon (AWS S3). Ces informations sont déjà renseignées automatiquement.",
+            "Archiviazione oggetti MinIO compatibile con Amazon (AWS S3). Queste informazioni sono già precompilate automaticamente.",
         "accessible as env":
-            "Accessible au sein de vos services en tant que la variable d'environnement",
+            "Accessibile all'interno dei tuoi servizi come variabile d'ambiente",
         "init script section title":
-            "Pour accéder au stockage en dehors des services du datalab",
-        "init script section helper": `Téléchargez ou copiez le script d'initialisation dans le langage de programmation de votre choix.`,
-        "expires in": ({ howMuchTime }) => `Expire dans ${howMuchTime}`
+            "Per accedere allo storage al di fuori dei servizi del datalab",
+        "init script section helper": `Scarica o copia lo script di inizializzazione nel linguaggio di programmazione di tua scelta.`,
+        "expires in": ({ howMuchTime }) => `Scade in ${howMuchTime}`
     },
     "AccountKubernetesTab": {
-        "credentials section title": "Connection a Kubernetes",
+        "credentials section title": "Connessionne a Kubernetes",
         "credentials section helper":
-            "Identifiants pour interagir directement avec le cluster Kubernetes.",
+            "Credenziali per interagire direttamente con il cluster Kubernetes.",
         "init script section title":
-            "Pour vous connecter au cluster Kubernetes via votre kubectl local",
-        "init script section helper": `Téléchargez ou copiez le script.`,
-        "expires in": ({ howMuchTime }) => `Le token expire dans ${howMuchTime}`
+            "Per connetterti al cluster Kubernetes tramite il tuo kubectl locale",
+        "init script section helper": `Scarica o copia lo script.`,
+        "expires in": ({ howMuchTime }) => `Il token scade in ${howMuchTime}`
     },
     "AccountVaultTab": {
-        "credentials section title": "Identifiants Vault",
+        "credentials section title": "Credenziali Vault",
         "credentials section helper": ({ vaultDocHref, mySecretLink }) => (
             <>
                 <MuiLink href={vaultDocHref} target="_blank">
                     Vault
                 </MuiLink>{" "}
-                est le système ou &nbsp;
-                <MuiLink {...mySecretLink}>vos secret</MuiLink> sont enregistré.
+                è il sistema in cui &nbsp;
+                <MuiLink {...mySecretLink}>i tuoi segreti</MuiLink> sono archiviati.
             </>
         ),
-        "init script section title": "Utiliser Vault depuis votre terminal",
+        "init script section title": "Utilizzare Vault dal tuo terminale",
         "init script section helper": ({ vaultCliDocLink }) => (
             <>
-                Telecharger ou copier les variables d'<code>ENV</code> pour configurer
-                votre{" "}
+                Scaricare o copiare le varabili d'<code>ENV</code> per configurare il tuo{" "}
                 <MuiLink href={vaultCliDocLink} target="_blank">
                     Vault CLI
                 </MuiLink>{" "}
-                local.
+                locale.
             </>
         ),
-        "expires in": ({ howMuchTime }) => `Le token expire in ${howMuchTime}`
+        "expires in": ({ howMuchTime }) => `Il token scade in ${howMuchTime}`
     },
     "AccountUserInterfaceTab": {
-        "title": "Configurer le mode d'interface",
-        "enable dark mode": "Activer le mode sombre",
+        "title": "Configurare la modalità di interfaccia",
+        "enable dark mode": "Attivare la modalità scura",
         "dark mode helper":
-            "Thème de l'interface à faible luminosité avec un fond de couleur sombre.",
-        "enable beta": "Activer le mode béta-testeur",
+            "Tema dell'interfaccia a bassa luminosità con sfondo di colore scuro",
+        "enable beta": "Attivare la modalità di beta testing",
         "beta mode helper":
-            "Pour des configurations et fonctionnalités avancées de la plateforme.",
-        "enable dev mode": "Activer le mode développeur",
-        "dev mode helper": "Activer les fonctionnalités en cours de développement"
+            "Per configurazioni e funzionalità avanzate della piattaforma.",
+        "enable dev mode": "Attivare la modalità sviluppatore",
+        "dev mode helper": "Attivare le funzionalità in fase di sviluppo"
     },
     "AccountField": {
-        "copy tooltip": "Copier dans le presse-papier",
-        "language": "Changer la langue",
-        "service password": "Mot de passe pour vos services",
-        "service password helper text": `Ce mot de passe est nécessaire pour vous connecter à tous vos services. 
-            Il est généré automatiquement et se renouvelle régulièrement.`,
-        "not yet defined": "Non définie",
-        "reset helper dialogs": "Réinitialiser les fenêtres d'instructions",
-        "reset": "Réinitialiser",
+        "copy tooltip": "Copiare negli appunti.",
+        "language": "Cambiare la lingua",
+        "service password": "Password per i tuoi servizi",
+        "service password helper text": `Questa password è necessaria per accedere a tutti i tuoi servizi.
+            Viene generata automaticamente e viene rinnovata regolarmente.`,
+        "not yet defined": "Non definita",
+        "reset helper dialogs": "Ripristinare le finestre di istruzioni",
+        "reset": "Ripristinare",
         "reset helper dialogs helper text":
-            "Réinitialiser les fenêtres de messages que vous avez demandé de ne plus afficher"
+            "Ripristinare le finestre di messaggi che hai richiesto di non mostrare più"
     },
     "MyFiles": {
-        "page title - my files": "Mes fichiers",
-        "page title - my secrets": "My Secrets",
-        "what this page is used for - my files": "Stocker ici vos fichiers de donnée.",
+        "page title - my files": "I miei file",
+        "page title - my secrets": "I miei segreti",
+        "what this page is used for - my files": "Archivia qui i tuoi file di dati.",
         "what this page is used for - my secrets":
-            "Stockez ici des secrets qui seront accessibles sous forme de variables d'environnement dans vos services.",
+            "Archivia qui i segreti che saranno accessibili come variabili d'ambiente nei tuoi servizi.",
         "help content": ({ accountTabLink, docHref }) => (
             <>
-                Lire{" "}
+                Leggere{" "}
                 <MuiLink href={docHref} target="_blank">
-                    notre documentation
+                    la nostra documentazione
                 </MuiLink>
                 . &nbsp;
-                <MuiLink {...accountTabLink}>Configurer les clients minio</MuiLink>.
+                <MuiLink {...accountTabLink}>Configurare i client MinIO</MuiLink>.
             </>
         )
     },
     "MySecrets": {
-        "page title - my files": "Mes fichiers",
-        "page title - my secrets": "My Secrets",
-        "what this page is used for - my files": "Stockez ici vos fichiers de données.",
+        "page title - my files": "I miei file",
+        "page title - my secrets": "I miei segreti",
+        "what this page is used for - my files": "Archivia qui i tuoi file di dati.",
         "what this page is used for - my secrets":
-            "Stockez ici des secrets qui seront accessibles sous forme de variables d'environnement dans vos services.",
-        "learn more - my files": "Pour en savoir plus sur l'utilisation du stockage S3,",
+            "Archivia qui i segreti che saranno accessibili come variabili d'ambiente nei tuoi servizi.",
+        "learn more - my files": "Per saperne di più sull'utilizzo dello storage S3,",
         "help content": ({ accountTabLink, docHref }) => (
             <>
-                Lire{" "}
+                Leggere{" "}
                 <MuiLink href={docHref} target="_blank">
-                    notre documentation
+                    la nostra documentazione
                 </MuiLink>
                 . &nbsp;
-                <MuiLink {...accountTabLink}>Configurer votre Vault CLI local</MuiLink>.
+                <MuiLink {...accountTabLink}>Configurare il tuo Vault CLI locale</MuiLink>.
             </>
         )
     },
     "ExplorerItem": {
-        "description": "description"
+        "description": "descrizione"
     },
     "SecretsExplorerItem": {
-        "description": "description"
+        "description": "descrizione"
     },
     "ExplorerButtonBar": {
-        "file": "fichier",
-        "secret": "secret",
-        "delete": "supprimer",
-        "create secret": "Nouveau secret",
-        "upload file": "Téléverser un fichier",
-        "copy path": "Copier le nom de l'objet S3",
-        "create directory": "Nouveau dossier",
-        "refresh": "rafraîchir",
-        "create what": ({ what }) => `Nouveau ${what}`,
-        "new": "Nouveau"
+        "file": "file",
+        "secret": "segreto",
+        "delete": "eliminare",
+        "create secret": "Nuovo segreto",
+        "upload file": "Caricare un file",
+        "copy path": "Copia il nome dell'oggetto S3",
+        "create directory": "Nuova cartella",
+        "refresh": "aggiornare",
+        "create what": ({ what }) => `Nuovo ${what}`,
+        "new": "Nuovo"
     },
     "SecretsExplorerButtonBar": {
-        "file": "fichier",
-        "secret": "secret",
-        "rename": "renommer",
-        "delete": "supprimer",
+        "file": "file",
+        "secret": "segreto",
+        "rename": "rinominare",
+        "delete": "eliminare",
 
-        "create secret": "Nouveau secret",
-        "upload file": "Téléverser un fichier",
-        "copy path": "Utiliser dans le service",
-        "create directory": "Nouveau dossier",
-        "refresh": "rafraîchir",
-        "create what": ({ what }) => `Nouveau ${what}`,
-        "new": "Nouveau"
+        "create secret": "Nuovo segreto",
+        "upload file": "Caricare un file",
+        "copy path": "Utilizzare nel servizio",
+        "create directory": "Nuova cartella",
+        "refresh": "aggiornare",
+        "create what": ({ what }) => `Nuovo ${what}`,
+        "new": "Nuovo"
     },
     "Explorer": {
-        "file": "fichier",
-        "secret": "secret",
-        "create": "crée",
-        "cancel": "annuler",
-        "delete": "supprimer",
-        "do not display again": "Ne plus afficher",
+        "file": "file",
+        "secret": "segreto",
+        "create": "creare",
+        "cancel": "annullare",
+        "delete": "eliminare",
+        "do not display again": "Non mostrare più",
 
-        "untitled what": ({ what }) => `${what}_sans_nom`,
-        "directory": "dossier",
-        "deletion dialog title": ({ deleteWhat }) => `Supprimer un ${deleteWhat} ?`,
+        "untitled what": ({ what }) => `${what}_senza_nome`,
+        "directory": "cartella",
+        "deletion dialog title": ({ deleteWhat }) => `Eliminare un ${deleteWhat} ?`,
         "deletion dialog body": ({ deleteWhat }) => `
-            Vous êtes sur le point de supprimer un ${deleteWhat}. 
-            Cette action entraînera la perte potentielle des données liées à ce ${deleteWhat}.
+            Stai per eliminare un ${deleteWhat}. 
+            Questa azione potrebbe comportare la potenziale perdita dei dati associati a questo ${deleteWhat}.
             `,
-        "already a directory with this name": "Il y a déjà un dossier avec ce nom",
-        "can't be empty": "Ne peut être vide",
-        "new directory": "Nouveau dossier"
+        "already a directory with this name": "Esiste già una cartella con questo nome",
+        "can't be empty": "Non può essere vuoto",
+        "new directory": "Nuova cartella"
     },
     "SecretsExplorer": {
-        "file": "fichier",
-        "secret": "secret",
-        "cancel": "annuler",
-        "delete": "supprimer",
-        "do not display again": "Ne plus afficher",
-        "untitled what": ({ what }) => `${what}_sans_nom`,
-        "directory": "dossier",
-        "deletion dialog title": ({ deleteWhat }) => `Supprimer un ${deleteWhat} ?`,
+        "file": "file",
+        "secret": "segreto",
+        "cancel": "annullare",
+        "delete": "eliminare",
+        "do not display again": "Non mostrare più",
+        "untitled what": ({ what }) => `${what}_senza_nome`,
+        "directory": "cartella",
+        "deletion dialog title": ({ deleteWhat }) => `Eliminare un ${deleteWhat} ?`,
         "deletion dialog body": ({ deleteWhat }) => `
-            Vous êtes sur le point de supprimer un ${deleteWhat}. 
-            Cette action entraînera la perte potentielle des données liées à ce ${deleteWhat}.
+            Stai per eliminare un ${deleteWhat}. 
+            Questa azione potrebbe comportare la potenziale perdita dei dati associati a questo ${deleteWhat}.
             `,
-        "already a directory with this name": "Il y a déjà un dossier avec ce nom",
-        "can't be empty": "Ne peut être vide",
-        "create": "Créer",
-        "new directory": "Nouveau dossier"
+        "already a directory with this name": "Esiste già una cartella con questo nome",
+        "can't be empty": "Non può essere vuoto",
+        "create": "creare",
+        "new directory": "Nuova cartella"
     },
     "ExplorerItems": {
-        "empty directory": "Ce répertoire est vide"
+        "empty directory": "Questa cartella è vuota"
     },
     "SecretsExplorerItems": {
-        "empty directory": "Ce répertoire est vide"
+        "empty directory": "Questa cartella è vuota"
     },
     "MySecretsEditor": {
-        "do not display again": "Ne plus afficher",
-        "add an entry": "Ajouter une variable",
-        "environnement variable default name": "NOUVELLE_VARENV",
-        "table of secret": "table de secret",
+        "do not display again": "Non mostrare più",
+        "add an entry": "Aggiungiere una variabile",
+        "environnement variable default name": "NUOVA_VARENV",
+        "table of secret": "Tabella dei segreti",
 
-        "key column name": "Nom de la variable",
-        "value column name": "Valeur",
-        "resolved value column name": "Valeur résolue",
+        "key column name": "Nome della variabile",
+        "value column name": "Valore",
+        "resolved value column name": "Valore risolto",
         "what's a resolved value": `
-            Une variable d'environement peut en référencer une autre, si par example vous avez
-            défini la variable PRENOM=Louis vous pouvez définir la variable NOM_COMPLET="$PRENOM"-Dupon
-            qui aura comme valeur résolue «Louis-Dupon»
+        Una variabile di ambiente può fare riferimento a un'altra,
+        ad esempio se hai definito la variabile NOME=Louis,
+        puoi definire la variabile NOME_COMPLETO="$NOME"-Dupon che avrà come valore risolto "Louis-Dupon".
             `,
-        "unavailable key": "Déjà utilisé",
-        "invalid key empty string": "Un nom est requis",
-        "invalid key _ not valid": "Ne peut pas être juste _",
-        "invalid key start with digit": "Ne doit pas commencer par un chiffre",
+        "unavailable key": "Già utilizzato",
+        "invalid key empty string": "È richiesto un nome",
+        "invalid key _ not valid": "Non può essere semplicemente _",
+        "invalid key start with digit": "Non deve iniziare con un numero",
         "invalid key invalid character": "Caractère non valide",
-        "invalid value cannot eval": "Expression shell non valide",
-        "use this secret": "Utiliser dans un service",
+        "invalid value cannot eval": "Carattere non valido",
+        "use this secret": "Utilizzare in un servizio",
 
-        "use secret dialog title": "Utiliser dans un service",
-        "use secret dialog subtitle": "Le chemin du secret a été copié.",
+        "use secret dialog title": "Utilizzare in un servizio",
+        "use secret dialog subtitle": "Il percorso del segreto è stato copiato.",
         "use secret dialog body": `
-                Au moment de lancer un service (RStudio, Jupyter), rendez-vous
-                dans l'onglet 'VAULT' et collez le chemin du secret dans le champ prévu à cet effet.
-                Vos clefs valeurs seront disponibles sous forme de variables d'environnement.
+                Prima di avviare un servizio (come RStudio, Jupyter), vai nella scheda "VAULT"
+                e incolla il percorso del segreto nel campo apposito. Le tue chiavi e valori
+                saranno disponibili come variabili d'ambiente.
             `,
-        "use secret dialog ok": "J'ai compris"
+        "use secret dialog ok": "Ho capito"
     },
     "MySecretsEditorRow": {
-        "key input desc": "Nom de la variable d'environnement",
-        "value input desc": "Valeur de la variable d'environnement"
+        "key input desc": "Nome della variabile di ambiente",
+        "value input desc": "Valore della variabile di ambiente"
     },
     "ExplorerUploadModalDropArea": {
-        "browse files": "parcourir vos fichiers",
-        "drag and drop or": "Glisser et déposer ou"
+        "browse files": "Sfoglia i tuoi file",
+        "drag and drop or": "Trascina e rilascia o"
     },
     "ExplorerUploadProgress": {
-        "over": "sur",
-        "importing": "importation"
+        "over": "su",
+        "importing": "importazione"
     },
     "ExplorerUploadModal": {
-        "import files": "Importer des fichiers",
-        "cancel": "Annuler",
-        "minimize": "Minimiser"
+        "import files": "Importare file",
+        "cancel": "Annullare",
+        "minimize": "Minimizzare"
     },
     "Header": {
-        "login": "Connexion",
-        "logout": "Déconnexion",
-        "trainings": "Formations",
-        "documentation": "Documentation",
-        "project": "Projet"
+        "login": "Connessionne",
+        "logout": "Disconnessione",
+        "trainings": "Formazioni",
+        "documentation": "Documentazione",
+        "project": "Proggetto"
     },
     "App": {
-        "reduce": "Réduire",
-        "home": "Accueil",
-        "account": "Mon compte",
-        "catalog": "Catalogue de services",
-        "myServices": "Mes services",
-        "mySecrets": "Mes secrets",
-        "myFiles": "Mes fichiers",
-        "divider: services features": "Fontionnalités relative aux services",
+        "reduce": "Ridurre",
+        "home": "Home",
+        "account": "Il mio account",
+        "catalog": "Catalogo di servizi",
+        "myServices": "I miei servizi",
+        "mySecrets": "I miei segreti",
+        "myFiles": "I miei file",
+        "divider: services features": "Funzioni relative ai servizi",
         "divider: external services features":
-            "Fontionnalités relative aux services externes",
+            "Funzioni relative ai servizi esterni",
         "divider: onyxia instance specific features":
-            "Fontionnalités spécifiques à cette instance d'Onyxia"
+            "Fonctionnalités spécifiques à cette instance d'Onyxia"
     },
     "Page404": {
         "not found": "Page non trouvée"
