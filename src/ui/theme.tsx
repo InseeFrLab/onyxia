@@ -218,7 +218,8 @@ export const { LanguageSelect } = createLanguageSelect<Language>({
         "zh-CN": "简体中文",
         "no": "Norsk",
         "fi": "Suomi",
-        "nl": "Nederlands"
+        "nl": "Nederlands",
+        "it": "Italiano"
     }
 });
 

@@ -13,7 +13,8 @@ export const { getFormattedDate } = (() => {
         "zh-CN": `dddd, MMMM Do${isSameYear ? "" : " YYYY"}, h:mm a`,
         "no": `dddd, Do MMMM${isSameYear ? "" : " YYYY"}, HH:mm`,
         "fi": `dddd, Do MMMM${isSameYear ? "" : " YYYY"}, HH:mm`,
-        "nl": `dddd, Do MMMM${isSameYear ? "" : " YYYY"}, HH:mm`
+        "nl": `dddd, Do MMMM${isSameYear ? "" : " YYYY"}, HH:mm`,
+        "it": `dddd, Do MMMM${isSameYear ? "" : " YYYY"}, HH:mm`
         /* spell-checker: enable */
     });
 
@@ -103,6 +104,9 @@ export const { fromNow } = (() => {
                                 case "nl":
                                     /* cspell: disable-next-line */
                                     return "zojuist";
+                                case "it":
+                                    /* cspell: disable-next-line */
+                                    return "proprio ora";
                             }
                         })();
 
@@ -162,6 +166,13 @@ export const { fromNow } = (() => {
                                     "future1": "over een seconde",
                                     "futureN": "over # seconden"
                                 } as const;
+                            case "it":
+                                return {
+                                    "past1": "un secondo fa",
+                                    "pastN": "# secondi fa",
+                                    "future1": "fra un secondo",
+                                    "futureN": "fra # secondi"
+                                } as const;
                             /* spell-checker: enable */
                         }
                     })()
@@ -213,6 +224,13 @@ export const { fromNow } = (() => {
                                     "pastN": "# minuten geleden",
                                     "future1": "over een minuut",
                                     "futureN": "over # minuten"
+                                } as const;
+                            case "it":
+                                return {
+                                    "past1": "un minuto fa",
+                                    "pastN": "# minuti fa",
+                                    "future1": "fra un minuto",
+                                    "futureN": "fra # minuti"
                                 } as const;
                             /* spell-checker: enable */
                         }
@@ -266,6 +284,13 @@ export const { fromNow } = (() => {
                                     "future1": "over een uur",
                                     "futureN": "over # uur"
                                 } as const;
+                            case "it":
+                                return {
+                                    "past1": "un'ora fa",
+                                    "pastN": "# ore fa",
+                                    "future1": "fra un'ora",
+                                    "futureN": "fra # ore"
+                                } as const;
                             /* spell-checker: enable */
                         }
                     })()
@@ -317,6 +342,13 @@ export const { fromNow } = (() => {
                                     "pastN": "# dagen geleden",
                                     "future1": "morgen",
                                     "futureN": "over # dagen"
+                                } as const;
+                            case "it":
+                                return {
+                                    "past1": "ieri",
+                                    "pastN": "# giorni fa",
+                                    "future1": "domani",
+                                    "futureN": "fra # giorni"
                                 } as const;
                             /* spell-checker: enable */
                         }
@@ -370,6 +402,13 @@ export const { fromNow } = (() => {
                                     "future1": "over een week",
                                     "futureN": "over # weken"
                                 } as const;
+                            case "it":
+                                return {
+                                    "past1": "la settimana scorsa",
+                                    "pastN": "fra # settimane",
+                                    "future1": "fra una settimana",
+                                    "futureN": "fra # settimane"
+                                } as const;
                             /* spell-checker: enable */
                         }
                     })()
@@ -421,6 +460,13 @@ export const { fromNow } = (() => {
                                     "pastN": "# maanden geleden",
                                     "future1": "over een maand",
                                     "futureN": "over # maanden"
+                                } as const;
+                            case "it":
+                                return {
+                                    "past1": "il mese scorso",
+                                    "pastN": "fra # mesi",
+                                    "future1": "fra un mese",
+                                    "futureN": "fra # mesi"
                                 } as const;
                             /* spell-checker: enable */
                         }
@@ -474,6 +520,13 @@ export const { fromNow } = (() => {
                                     "future1": "over een jaar",
                                     "futureN": "over # jaar"
                                 } as const;
+                            case "it":
+                                return {
+                                    "past1": "l'anno scorso",
+                                    "pastN": "fra # anni",
+                                    "future1": "fra un anno",
+                                    "futureN": "fra # anni"
+                                } as const;
                             /* spell-checker: enable */
                         }
                     })()
@@ -526,6 +579,13 @@ export const { fromNow } = (() => {
                                     "future1": "over een eeuw",
                                     "futureN": "over # eeuwen"
                                 } as const;
+                            case "it":
+                                return {
+                                    "past1": "il secolo scorso",
+                                    "pastN": "fra # secoli",
+                                    "future1": "fra un secolo",
+                                    "futureN": "fra # secoli"
+                                } as const;
                             /* spell-checker: enable */
                         }
                     })()
@@ -577,6 +637,13 @@ export const { fromNow } = (() => {
                                     "pastN": "# millennia geleden",
                                     "future1": "over een millennium",
                                     "futureN": "over # millennia"
+                                } as const;
+                            case "it":
+                                return {
+                                    "past1": "l'ultimo millennio",
+                                    "pastN": "fra # millenni",
+                                    "future1": "fra un millennio",
+                                    "futureN": "fra # millenni"
                                 } as const;
                             /* spell-checker: enable */
                         }
