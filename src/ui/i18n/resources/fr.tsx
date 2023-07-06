@@ -30,7 +30,7 @@ export const translations: Translations<"fr"> = {
     },
     "AccountIntegrationsTab": {
         "git section title": "Configurations Git",
-        "git section helper": `Pour vous assurez que vous apparaissiez depuis vos
+        "git section helper": `Pour vous assurer que vous apparaissez depuis vos
             services comme l'auteur des contributions Git`,
         "gitName": "Nom d'utilisateur pour Git",
         "gitEmail": "Email pour Git",
@@ -56,7 +56,7 @@ export const translations: Translations<"fr"> = {
         "expires in": ({ howMuchTime }) => `Expire dans ${howMuchTime}`
     },
     "AccountKubernetesTab": {
-        "credentials section title": "Connection a Kubernetes",
+        "credentials section title": "Connexion a Kubernetes",
         "credentials section helper":
             "Identifiants pour interagir directement avec le cluster Kubernetes.",
         "init script section title":
@@ -71,14 +71,14 @@ export const translations: Translations<"fr"> = {
                 <MuiLink href={vaultDocHref} target="_blank">
                     Vault
                 </MuiLink>{" "}
-                est le système ou &nbsp;
-                <MuiLink {...mySecretLink}>vos secret</MuiLink> sont enregistré.
+                est le système où &nbsp;
+                <MuiLink {...mySecretLink}>vos secrets</MuiLink> sont enregistrés.
             </>
         ),
         "init script section title": "Utiliser Vault depuis votre terminal",
         "init script section helper": ({ vaultCliDocLink }) => (
             <>
-                Telecharger ou copier les variables d'<code>ENV</code> pour configurer
+                Télécharger ou copier les variables d'<code>ENV</code> pour configurer
                 votre{" "}
                 <MuiLink href={vaultCliDocLink} target="_blank">
                     Vault CLI
@@ -114,7 +114,7 @@ export const translations: Translations<"fr"> = {
     "MyFiles": {
         "page title - my files": "Mes fichiers",
         "page title - my secrets": "My Secrets",
-        "what this page is used for - my files": "Stocker ici vos fichiers de donnée.",
+        "what this page is used for - my files": "Stocker ici vos fichiers de données.",
         "what this page is used for - my secrets":
             "Stockez ici des secrets qui seront accessibles sous forme de variables d'environnement dans vos services.",
         "help content": ({ accountTabLink, docHref }) => (
@@ -124,7 +124,7 @@ export const translations: Translations<"fr"> = {
                     notre documentation
                 </MuiLink>
                 . &nbsp;
-                <MuiLink {...accountTabLink}>Configurer les clients minio</MuiLink>.
+                <MuiLink {...accountTabLink}>Configurer les clients MinIO</MuiLink>.
             </>
         )
     },
@@ -181,7 +181,7 @@ export const translations: Translations<"fr"> = {
     "Explorer": {
         "file": "fichier",
         "secret": "secret",
-        "create": "crée",
+        "create": "créer",
         "cancel": "annuler",
         "delete": "supprimer",
         "do not display again": "Ne plus afficher",
@@ -225,7 +225,7 @@ export const translations: Translations<"fr"> = {
         "do not display again": "Ne plus afficher",
         "add an entry": "Ajouter une variable",
         "environnement variable default name": "NOUVELLE_VARENV",
-        "table of secret": "table de secret",
+        "table of secret": "table de secrets",
 
         "key column name": "Nom de la variable",
         "value column name": "Valeur",
@@ -257,7 +257,7 @@ export const translations: Translations<"fr"> = {
         "value input desc": "Valeur de la variable d'environnement"
     },
     "ExplorerUploadModalDropArea": {
-        "browse files": "parcourir vos fichiers",
+        "browse files": "Parcourir vos fichiers",
         "drag and drop or": "Glisser et déposer ou"
     },
     "ExplorerUploadProgress": {
@@ -284,11 +284,11 @@ export const translations: Translations<"fr"> = {
         "myServices": "Mes services",
         "mySecrets": "Mes secrets",
         "myFiles": "Mes fichiers",
-        "divider: services features": "Fontionnalités relative aux services",
+        "divider: services features": "Fonctionnalités relative aux services",
         "divider: external services features":
-            "Fontionnalités relative aux services externes",
+            "Fonctionnalités relative aux services externes",
         "divider: onyxia instance specific features":
-            "Fontionnalités spécifiques à cette instance d'Onyxia"
+            "Fonctionnalités spécifiques à cette instance d'Onyxia"
     },
     "Page404": {
         "not found": "Page non trouvée"
@@ -309,9 +309,9 @@ export const translations: Translations<"fr"> = {
         "cardTitle2": "Une communauté active et enthousiaste à votre écoute",
         "cardTitle3": "Un espace de stockage de données rapide, flexible et en ligne",
         "cardText1":
-            "Analysez les données, faites du calcul distribué et profitez d’un large catalogue de services. Réservez la puissance de calcul dont vous avez besoin.",
+            "Analysez les données, faites du calcul distribué et profitez d'un large catalogue de services. Réservez la puissance de calcul dont vous avez besoin.",
         "cardText2":
-            "Profitez et partagez des ressources mises à votre disposition : tutoriels, formations et canaux d’échanges.",
+            "Profitez et partagez des ressources mises à votre disposition : tutoriels, formations et canaux d'échanges.",
         "cardText3":
             "Pour accéder facilement à vos données et à celles mises à votre disposition depuis vos programmes - Implémentation API S3",
         "cardButton1": "Consulter le catalogue",
