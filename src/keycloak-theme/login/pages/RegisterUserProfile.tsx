@@ -41,7 +41,7 @@ export default function RegisterUserProfile(
             {...{ kcContext, i18n, doUseDefaultCss }}
             classes={classes_props}
             displayMessage={messagesPerField.exists("global")}
-            displayRequiredFields={true}
+            displayRequiredFields={false}
             headerNode={msg("registerTitle")}
         >
             <form className={classes.root} action={url.registrationAction} method="post">
