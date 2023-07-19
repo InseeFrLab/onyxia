@@ -93,7 +93,7 @@ export const getGlobalAlert = memoize(() => {
         return undefined;
     }
 
-    if (/^\s*\{.*\}\s*$/.test(envValue)) {
+    if (/^\s*\{.*\}\s*$/.test(envValue.replace(/\r?\n/g, " "))) {
         const zSchema = z.object({
             "severity": z.enum(["error", "warning", "info", "success"]),
             "message": zLocalizedString
