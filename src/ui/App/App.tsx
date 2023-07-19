@@ -1,5 +1,5 @@
 import "minimal-polyfills/Object.fromEntries";
-import { useMemo, useEffect, Suspense } from "react";
+import { useMemo, useEffect, useReducer, Suspense } from "react";
 import { Header } from "ui/shared/Header";
 import { LeftBar, makeStyles, type IconId } from "ui/theme";
 import type { LeftBarProps } from "onyxia-ui/LeftBar";
@@ -30,6 +30,11 @@ import { pages } from "ui/pages";
 import { assert, type Equals } from "tsafe/assert";
 import { useIsI18nFetching } from "ui/i18n";
 import { useLang } from "ui/i18n";
+import { Alert } from "onyxia-ui/Alert";
+import { simpleHash } from "ui/tools/simpleHash";
+import { Markdown } from "onyxia-ui/Markdown";
+import { type LocalizedString } from "ui/i18n";
+import { getGlobalAlert } from "ui/env";
 
 const { CoreProvider } = createCoreProvider({
     "apiUrl": getEnv().ONYXIA_API_URL,
@@ -190,6 +195,21 @@ function ContextualizedApp() {
     return (
         <div ref={rootRef} className={classes.root}>
             {(() => {
+                const globalAlert = getGlobalAlert();
+
+                if (globalAlert === undefined) {
+                    return null;
+                }
+
+                return (
+                    <GlobalAlert
+                        className={classes.globalAlert}
+                        severity={globalAlert.severity}
+                        message={globalAlert.message}
+                    />
+                );
+            })()}
+            {(() => {
                 const common = {
                     "className": classes.header,
                     "useCase": "core app",
@@ -321,14 +341,21 @@ export const { i18n } = declareComponentKeys<
 const useStyles = makeStyles({ "name": { App } })(theme => {
     const footerHeight = 32;
 
+    const rootRightLeftMargin = theme.spacing(4);
+
     return {
         "root": {
             "height": "100%",
             "display": "flex",
             "flexDirection": "column",
             "backgroundColor": theme.colors.useCases.surfaces.background,
-            "margin": theme.spacing({ "topBottom": 0, "rightLeft": 4 }),
+            "margin": `0 ${rootRightLeftMargin}px`,
             "position": "relative"
+        },
+        "globalAlert": {
+            "position": "relative",
+            "width": `calc(100% + 2 * ${rootRightLeftMargin}px)`,
+            "left": -rootRightLeftMargin
         },
         "header": {
             "paddingBottom": 0 //For the LeftBar shadow
@@ -369,6 +396,74 @@ const useStyles = makeStyles({ "name": { App } })(theme => {
         }
     };
 });
+
+const { GlobalAlert } = (() => {
+    type GlobalAlertProps = {
+        className?: string;
+        // Default value is "info"
+        severity: "success" | "info" | "warning" | "error" | undefined;
+        message: LocalizedString;
+    };
+
+    const localStorageKeyPrefix = "global-alert-";
+
+    function GlobalAlert(props: GlobalAlertProps) {
+        const { className, severity = "info", message } = props;
+
+        const { resolveLocalizedStringDetailed } = useResolveLocalizedString({
+            "labelWhenMismatchingLanguage": true
+        });
+
+        const localStorageKey = useMemo(
+            () => `${localStorageKeyPrefix}${simpleHash(severity + message)}-closed`,
+            [severity, message]
+        );
+
+        const [trigger, pullTrigger] = useReducer(() => ({}), {});
+
+        const isClosed = useMemo(() => {
+            // Remove all the local storage keys that are not used anymore.
+            for (const key of Object.keys(localStorage)) {
+                if (!key.startsWith(localStorageKeyPrefix) || key === localStorageKey) {
+                    continue;
+                }
+                localStorage.removeItem(key);
+            }
+
+            const value = localStorage.getItem(localStorageKey);
+
+            return value === "true";
+        }, [localStorageKey, trigger]);
+
+        return (
+            <Alert
+                className={className}
+                severity={severity}
+                doDisplayCross
+                isClosed={isClosed}
+                onClose={() => {
+                    localStorage.setItem(localStorageKey, "true");
+                    pullTrigger();
+                }}
+            >
+                {(() => {
+                    const { str, langAttrValue } =
+                        resolveLocalizedStringDetailed(message);
+
+                    const markdownNode = <Markdown>{str}</Markdown>;
+
+                    return langAttrValue === undefined ? (
+                        markdownNode
+                    ) : (
+                        <div lang={langAttrValue}>{markdownNode}</div>
+                    );
+                })()}
+            </Alert>
+        );
+    }
+
+    return { GlobalAlert };
+})();
 
 /**
  * This hook to two things:

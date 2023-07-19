@@ -9162,12 +9162,12 @@ husky@^4.3.8:
     slash "^3.0.0"
     which-pm-runs "^1.0.0"
 
-i18nifty@^1.5.10:
-  version "1.5.10"
-  resolved "https://registry.yarnpkg.com/i18nifty/-/i18nifty-1.5.10.tgz#359b10965bbacb20fc1090df467bd3b4dd5c913e"
-  integrity sha512-jjKOG/tA3Ih1DRGN6ZQO2TKOg2eyk426mX+NSlVdwmI4ghhcAD/Dwz7uS9PZ7lsRomYh5W1oVQbMsBrL8TkmKg==
+i18nifty@^1.6.1:
+  version "1.6.1"
+  resolved "https://registry.yarnpkg.com/i18nifty/-/i18nifty-1.6.1.tgz#5c30ea51a84e816a7f3c1c298f08bb9e5feb9c24"
+  integrity sha512-J4EgG6CNMtLbOqMtHBa82ZaxvQLNUBHXlmjtYtW29y49J6E59BpsvKtxoiz4xiefk6dK6YoT2oSjh0TX5Vyt3Q==
   dependencies:
-    powerhooks "^0.26.14"
+    powerhooks "^0.27.0"
     tsafe "^1.6.4"
 
 iconv-lite@0.4.24:
@@ -11858,10 +11858,10 @@ onetime@^5.1.0, onetime@^5.1.2:
   dependencies:
     mimic-fn "^2.1.0"
 
-onyxia-ui@^0.56.0:
-  version "0.56.0"
-  resolved "https://registry.yarnpkg.com/onyxia-ui/-/onyxia-ui-0.56.0.tgz#9ed10f12210cda995c4d7292e1bd111be56ff53f"
-  integrity sha512-CGXcR26wQhkba4tBaIv7+GqTFrzDkv3rgaL+u4btKL5hUIAxTWhVLcJUHLAMOcxG2+2wPU1xC/daYlWlUTcpnA==
+onyxia-ui@^0.57.1:
+  version "0.57.1"
+  resolved "https://registry.yarnpkg.com/onyxia-ui/-/onyxia-ui-0.57.1.tgz#3603769e462ed8d6f1201777baa52e45554e6f0b"
+  integrity sha512-wwAKE/2qJCR8C1tc3tiF4PbOj0LKB4J4mQBV7A8UAyKbyju1RpNCR+AzbOD57rxRsn76pZqBGRYzrVI8hRLxGA==
   dependencies:
     "@mui/icons-material" "^5.11.16"
     color "3.1.3"
@@ -12983,6 +12983,16 @@ powerhooks@^0.26.14:
   version "0.26.14"
   resolved "https://registry.yarnpkg.com/powerhooks/-/powerhooks-0.26.14.tgz#178f2ef4c98102ec4c1b14c8a6e01a41918aeb19"
   integrity sha512-ytk5JmgcYjhpSg/EPuBfSjH/wH+nlr5YEJcPZNG73yd0Uor0QhDJy6EWdvLoq9gf24V8xYQmTMBPaebUylrlRw==
+  dependencies:
+    evt "^2.4.22"
+    memoizee "^0.4.15"
+    resize-observer-polyfill "^1.5.1"
+    tsafe "^1.6.4"
+
+powerhooks@^0.27.0:
+  version "0.27.0"
+  resolved "https://registry.yarnpkg.com/powerhooks/-/powerhooks-0.27.0.tgz#600e750fae6c42682639634e80e1b12f59cfea4d"
+  integrity sha512-oA5t6jFI5wqxs5PSJrp5Q3DK51Z8k4/htlD6Hdpqzstth25wT44MOuBlEJITZnNMpOVWLpEzQnakSC4vV0Eaew==
   dependencies:
     evt "^2.4.22"
     memoizee "^0.4.15"
