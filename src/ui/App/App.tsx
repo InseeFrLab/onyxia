@@ -414,10 +414,11 @@ const { GlobalAlert } = (() => {
             "labelWhenMismatchingLanguage": true
         });
 
-        const localStorageKey = useMemo(
-            () => `${localStorageKeyPrefix}${simpleHash(severity + message)}-closed`,
-            [severity, message]
-        );
+        const localStorageKey = useMemo(() => {
+            const { str } = resolveLocalizedStringDetailed(message);
+
+            return `${localStorageKeyPrefix}${simpleHash(severity + str)}-closed`;
+        }, [severity, message]);
 
         const [trigger, pullTrigger] = useReducer(() => ({}), {});
 
