@@ -1,8 +1,9 @@
 import "minimal-polyfills/Object.fromEntries";
-import type { LocalizedString } from "ui/i18n";
+import { type LocalizedString, zLocalizedString } from "ui/i18n";
 import { getEnv } from "env";
 import { symToStr } from "tsafe/symToStr";
 import memoize from "memoizee";
+import { z } from "zod";
 import { assert } from "tsafe/assert";
 
 export type AdminProvidedLink = {
@@ -81,4 +82,38 @@ export const getDoHideOnyxia = memoize((): boolean => {
     );
 
     return HEADER_HIDE_ONYXIA === "true";
+});
+
+export const getGlobalAlert = memoize(() => {
+    const key = "GLOBAL_ALERT";
+
+    const envValue = getEnv()[key];
+
+    if (envValue === "") {
+        return undefined;
+    }
+
+    if (/^\s*\{.*\}\s*$/.test(envValue)) {
+        const zSchema = z.object({
+            "severity": z.enum(["error", "warning", "info", "success"]),
+            "message": zLocalizedString
+        });
+
+        let parsedEnvValue: z.infer<typeof zSchema>;
+
+        try {
+            parsedEnvValue = JSON.parse(envValue);
+
+            zSchema.parse(parsedEnvValue);
+        } catch {
+            throw new Error(`${key} is malformed, ${envValue}`);
+        }
+
+        return parsedEnvValue;
+    }
+
+    return {
+        "severity": "info" as const,
+        "message": envValue
+    };
 });
