@@ -89,6 +89,7 @@ export type DeploymentRegion = {
               url: string;
               kvEngine: string;
               role: string;
+              authPath: string | undefined;
               keycloakParams:
                   | {
                         url: string | undefined;

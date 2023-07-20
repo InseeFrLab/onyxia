@@ -233,6 +233,7 @@ export function createOnyxiaApi(params: {
                             URL: string;
                             kvEngine: string;
                             role: string;
+                            authPath?: string;
                             keycloakParams?: {
                                 URL?: string;
                                 realm?: string;
@@ -342,6 +343,7 @@ export function createOnyxiaApi(params: {
                                           "url": vault.URL,
                                           "kvEngine": vault.kvEngine,
                                           "role": vault.role,
+                                          "authPath": vault.authPath,
                                           "keycloakParams":
                                               vault.keycloakParams === undefined
                                                   ? undefined
