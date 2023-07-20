@@ -184,6 +184,7 @@ export async function createCore(params: CoreParams) {
                 "kvEngine": vaultParams.kvEngine,
                 "role": vaultParams.role,
                 "url": vaultParams.url,
+                "authPath": vaultParams.authPath,
                 "oidc": await createOidcOrFallback({
                     "keycloakParams": vaultParams.keycloakParams,
                     "fallback": fallbackOidc
