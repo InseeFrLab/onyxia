@@ -4,6 +4,7 @@ import memoize from "memoizee";
 
 export const onyxiaApi: OnyxiaApi = {
     "getIp": memoize(() => Promise.resolve("0.0.0.0"), { "promise": true }),
+    "onboard": () => Promise.resolve(),
     "getUserProjects": memoize(
         () =>
             Promise.resolve([

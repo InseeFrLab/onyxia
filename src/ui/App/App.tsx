@@ -512,6 +512,28 @@ function useProjectsSlice() {
 
     const route = useRoute();
 
+    {
+        const { isOnboarding } = projectsState ?? {};
+
+        const { showSplashScreen, hideSplashScreen } = useSplashScreen({
+            "minimumDisplayDuration": 200
+        });
+
+        useEffect(() => {
+            if (isOnboarding === undefined) {
+                return;
+            }
+
+            if (isOnboarding) {
+                showSplashScreen({
+                    "enableTransparency": true
+                });
+            } else {
+                hideSplashScreen();
+            }
+        }, [isOnboarding]);
+    }
+
     const onSelectedProjectChange = useConstCallback(
         async (props: { projectId: string }) => {
             const { projectId } = props;

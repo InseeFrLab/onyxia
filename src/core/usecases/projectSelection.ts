@@ -10,6 +10,7 @@ import type { State as RootState } from "../core";
 type State = {
     projects: Project[];
     selectedProjectId: string;
+    isOnboarding: boolean;
 };
 
 export const name = "projectSelection";
@@ -23,6 +24,12 @@ export const { reducer, actions } = createSlice({
             const { projectId } = payload;
 
             state.selectedProjectId = projectId;
+        },
+        "onboardingStarted": state => {
+            state.isOnboarding = true;
+        },
+        "onboardingCompleted": state => {
+            state.isOnboarding = false;
         }
     }
 });
@@ -51,6 +58,8 @@ export const thunks = {
             }
 
             dispatch(actions.projectChanged({ projectId }));
+
+            await dispatch(internalThunks.onboard());
         }
 } satisfies Thunks;
 
@@ -81,15 +90,33 @@ export const privateThunks = {
             dispatch(
                 actions.initialize({
                     projects,
-                    selectedProjectId
+                    selectedProjectId,
+                    "isOnboarding": false
                 })
             );
+
+            // refGetCurrentlySelectedProjectId is set  after this function completes
+            setTimeout(() => {
+                dispatch(internalThunks.onboard());
+            }, 0);
+        }
+} satisfies Thunks;
+
+const internalThunks = {
+    "onboard":
+        () =>
+        async (...args) => {
+            const [dispatch, , { onyxiaApi }] = args;
+            dispatch(actions.onboardingStarted());
+            await onyxiaApi.onboard();
+            dispatch(actions.onboardingCompleted());
         }
 } satisfies Thunks;
 
 export const selectors = (() => {
     const selectedProject = (rootState: RootState): Project => {
-        const { projects, selectedProjectId } = rootState.projectSelection;
+        const state = rootState[name];
+        const { projects, selectedProjectId } = state;
 
         const selectedProject = projects.find(({ id }) => id === selectedProjectId);
 
