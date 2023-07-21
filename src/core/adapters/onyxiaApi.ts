@@ -83,13 +83,7 @@ export function createOnyxiaApi(params: {
         }
 
         {
-            const errorMessage = [
-                `There isn't an onyxia-api hosted at ${url}`,
-                `Check the ${(() => {
-                    const { ONYXIA_API_URL } = getEnv();
-                    return symToStr({ ONYXIA_API_URL });
-                })()} environnement variable you provided with docker run.`
-            ].join(" ");
+            const errorMessage = "API Error (see console for more details)";
 
             axiosInstance.interceptors.response.use(
                 res => {
@@ -98,7 +92,9 @@ export function createOnyxiaApi(params: {
                         res.headers["content-type"] !== "application/json"
                     ) {
                         alert(errorMessage);
-                        throw new Error(errorMessage);
+                        throw new Error(
+                            `API response: ${res.status} ${res.statusText} and content-type is not application/json`
+                        );
                     }
 
                     return res;
