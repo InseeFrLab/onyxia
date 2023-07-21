@@ -196,6 +196,8 @@ export async function createCore(params: CoreParams) {
 
         await core.dispatch(usecases.projectSelection.privateThunks.initialize());
 
+        console.log("after");
+
         /* prettier-ignore */
         refGetCurrentlySelectedProjectId.current = () => core.getState().projectSelection.selectedProjectId;
 

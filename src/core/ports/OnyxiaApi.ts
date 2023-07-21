@@ -56,6 +56,8 @@ export type OnyxiaApi = {
         sessionToken: string;
         bucketName: string;
     }) => Promise<void>;
+
+    onboard: () => Promise<void>;
 };
 
 export type Language = "en" | "fr" | "zh-CN" | "no" | "fi" | "nl" | "it";

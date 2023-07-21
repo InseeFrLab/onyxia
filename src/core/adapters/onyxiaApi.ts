@@ -434,6 +434,13 @@ export function createOnyxiaApi(params: {
                     ),
             { "promise": true }
         ),
+        "onboard": async () => {
+            assert(refGetCurrentlySelectedProjectId.current !== undefined);
+
+            axiosInstance.post("/onboarding", {
+                "group": refGetCurrentlySelectedProjectId.current()
+            });
+        },
         "getPackageConfig": ({ catalogId, packageName }) =>
             axiosInstance
                 .get<
