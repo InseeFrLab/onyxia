@@ -17,10 +17,6 @@ import { assert } from "tsafe/assert";
 import type { Equals } from "tsafe";
 import { id } from "tsafe/id";
 import { Deferred } from "evt/tools/Deferred";
-import { symToStr } from "tsafe/symToStr";
-//This should be used only in ui/coreApi/StoreProvider but we break the rule
-//here because we use it only for debugging purpose.
-import { getEnv } from "env";
 import { Catalog, getRandomK8sSubdomain, getServiceId } from "../ports/OnyxiaApi";
 import { getValueAtPathInObject } from "core/tools/getValueAtPathInObject";
 
