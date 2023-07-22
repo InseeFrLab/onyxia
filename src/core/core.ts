@@ -5,9 +5,7 @@ import {
     type GenericCreateEvt,
     type GenericThunks
 } from "redux-clean-architecture";
-import { createGetUser } from "./adapters/getUser";
 import { usecases } from "./usecases";
-import type { GetUser, User } from "./ports/GetUser";
 import type { SecretsManager } from "./ports/SecretsManager";
 import type { S3Client } from "./ports/S3Client";
 import type { ReturnType } from "tsafe/ReturnType";
@@ -27,7 +25,6 @@ type CoreParams = {
               clientId: string;
           }
         | undefined;
-    jwtClaimByUserKey: Record<keyof User, string>;
 };
 
 export async function createCore(params: CoreParams) {
@@ -36,24 +33,14 @@ export async function createCore(params: CoreParams) {
         isUserInitiallyLoggedIn = false,
         transformUrlBeforeRedirectToLogin,
         getCurrentLang,
-        keycloakParams,
-        jwtClaimByUserKey
+        keycloakParams
     } = params;
 
     const oidc = await (async () => {
         if (keycloakParams === undefined) {
             const { createOidc } = await import("core/adapters/oidcMock");
 
-            return createOidc({
-                isUserInitiallyLoggedIn,
-                jwtClaimByUserKey,
-                "user": {
-                    "username": "doej",
-                    "email": "john.doe@insee.fr",
-                    "familyName": "Doe",
-                    "firstName": "John"
-                }
-            });
+            return createOidc({ isUserInitiallyLoggedIn });
         }
 
         const { createOidc } = await import("core/adapters/oidc");
@@ -111,24 +98,10 @@ export async function createCore(params: CoreParams) {
         return sillApi;
     })();
 
-    const getUser = (() => {
-        if (!oidc.isUserLoggedIn) {
-            return createObjectThatThrowsIfAccessed<GetUser>();
-        }
-
-        const { getUser } = createGetUser({
-            jwtClaimByUserKey,
-            "getOidcAccessToken": () => oidc.getAccessToken().accessToken
-        });
-
-        return getUser;
-    })();
-
     const thunksExtraArgument = {
         "createStoreParams": params,
         oidc,
         onyxiaApi,
-        getUser,
         /** prettier-ignore */
         "secretsManager": createObjectThatThrowsIfAccessed<SecretsManager>({
             "debugMessage": "secretsManager is not yet initialized"

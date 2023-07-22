@@ -3,7 +3,8 @@ import type {
     DeploymentRegion,
     LocalizedString,
     JSONSchemaObject,
-    JSONSchemaFormFieldDescription
+    JSONSchemaFormFieldDescription,
+    User
 } from "../ports/OnyxiaApi";
 import axios from "axios";
 import type { AxiosResponse, AxiosRequestConfig } from "axios";
@@ -940,7 +941,28 @@ export function createOnyxiaApi(params: {
                         .join("&")
                 )
                 .then(() => undefined)
-                .catch(onError)
+                .catch(onError),
+        "getUser": memoize(
+            async () => {
+                const { data } = await axiosInstance
+                    .get<{
+                        email: string;
+                        idep: string;
+                        nomComplet: string;
+                    }>("/user/info")
+                    .catch(onError);
+
+                const [firstName, familyName] = data.nomComplet.split(" ");
+
+                return id<User>({
+                    "username": data.idep,
+                    "email": data.email,
+                    firstName,
+                    familyName
+                });
+            },
+            { "promise": true }
+        )
     };
 
     return onyxiaApi;

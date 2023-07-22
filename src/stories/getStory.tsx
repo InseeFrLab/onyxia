@@ -32,14 +32,7 @@ const { CoreProvider } = createCoreProvider({
     "apiUrl": "",
     "keycloakParams": undefined,
     "getCurrentLang": () => "en",
-    "transformUrlBeforeRedirectToLogin": url => url,
-    "jwtClaimByUserKey": {
-        "email": "a",
-        "familyName": "b",
-        "firstName": "c",
-        "groups": "e",
-        "username": "f"
-    }
+    "transformUrlBeforeRedirectToLogin": url => url
 });
 
 export const { createMockRoute } = createMockRouteFactory({
