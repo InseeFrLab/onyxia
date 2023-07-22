@@ -1,16 +1,17 @@
 import {
     createCoreFromUsecases,
-    createObjectThatThrowsIfAccessed
+    createObjectThatThrowsIfAccessed,
+    AccessError,
+    type GenericCreateEvt,
+    type GenericThunks
 } from "redux-clean-architecture";
-import type { GenericCreateEvt, GenericThunks } from "redux-clean-architecture";
 import { createGetUser } from "./adapters/getUser";
 import { usecases } from "./usecases";
 import type { GetUser, User } from "./ports/GetUser";
 import type { SecretsManager } from "./ports/SecretsManager";
 import type { S3Client } from "./ports/S3Client";
 import type { ReturnType } from "tsafe/ReturnType";
-import type { Language, Project } from "./ports/OnyxiaApi";
-import { id } from "tsafe/id";
+import type { Language } from "./ports/OnyxiaApi";
 
 type CoreParams = {
     /** Empty string for using mock */
@@ -64,11 +65,6 @@ export async function createCore(params: CoreParams) {
         });
     })();
 
-    /* prettier-ignore */
-    const refGetCurrentlySelectedDeployRegionId = { "current": id<undefined | (() => string)>(undefined) };
-    /* prettier-ignore */
-    const refGetCurrentlySelectedProject = { "current": id<undefined | (() => Project)>(undefined) };
-
     const onyxiaApi = await (async () => {
         if (apiUrl === "") {
             const { onyxiaApi } = await import("core/adapters/onyxiaApiMock");
@@ -86,8 +82,30 @@ export async function createCore(params: CoreParams) {
                 }
                 return oidc.getAccessToken().accessToken;
             },
-            refGetCurrentlySelectedDeployRegionId,
-            refGetCurrentlySelectedProject
+            "getRegionId": () => {
+                try {
+                    return usecases.deploymentRegion.selectors.selectedDeploymentRegion(
+                        core.getState()
+                    ).id;
+                } catch (error) {
+                    if (error instanceof AccessError) {
+                        return undefined;
+                    }
+                    throw error;
+                }
+            },
+            "getProject": () => {
+                try {
+                    return usecases.projectConfigs.selectors.selectedProject(
+                        core.getState()
+                    );
+                } catch (error) {
+                    if (error instanceof AccessError) {
+                        return undefined;
+                    }
+                    throw error;
+                }
+            }
         });
 
         return sillApi;
@@ -130,10 +148,6 @@ export async function createCore(params: CoreParams) {
 
     await core.dispatch(usecases.deploymentRegion.protectedThunks.initialize());
 
-    /** prettier-ignore */
-    refGetCurrentlySelectedDeployRegionId.current = () =>
-        core.getState().deploymentRegion.selectedDeploymentRegionId;
-
     if (oidc.isUserLoggedIn) {
         /* prettier-ignore */
         const { s3: s3Params, vault: vaultParams } = usecases.deploymentRegion.selectors.selectedDeploymentRegion(core.getState());
@@ -144,9 +158,8 @@ export async function createCore(params: CoreParams) {
             "oidc": oidc
         };
 
-        const { createOidcOrFallback } = await import(
-            "core/adapters/oidc/createOidcOrFallback"
-        );
+        /* prettier-ignore */
+        const { createOidcOrFallback } = await import("core/adapters/oidc/createOidcOrFallback");
 
         thunksExtraArgument.s3Client = await (async () => {
             if (s3Params === undefined) {
@@ -155,6 +168,7 @@ export async function createCore(params: CoreParams) {
                 return s3client;
             }
 
+            /** prettier-ignore */
             const { createS3Client, getCreateS3ClientParams } = await import(
                 "core/adapters/s3client"
             );
@@ -171,9 +185,8 @@ export async function createCore(params: CoreParams) {
 
         thunksExtraArgument.secretsManager = await (async () => {
             if (vaultParams === undefined) {
-                const { createSecretManager } = await import(
-                    "core/adapters/secretsManagerMock"
-                );
+                /* prettier-ignore */
+                const { createSecretManager } = await import("core/adapters/secretsManagerMock");
 
                 return createSecretManager();
             }
@@ -196,9 +209,7 @@ export async function createCore(params: CoreParams) {
 
         await core.dispatch(usecases.projectConfigs.protectedThunks.initialize());
 
-        /* prettier-ignore */
-        refGetCurrentlySelectedProject.current = () => usecases.projectConfigs.selectors.selectedProject(core.getState());
-
+        /** prettier-ignore */
         await core.dispatch(
             usecases.restorablePackageConfigs.protectedThunks.initialize()
         );

@@ -21,8 +21,7 @@ export const translations: Translations<"nl"> = {
         "user id": "Gebruikersnaam (IDEP)",
         "full name": "Volledige naam",
         "email": "E-mailadres",
-        "change account info":
-            "Accountgegevens (zoals uw wachtwoord) wijzigen",
+        "change account info": "Accountgegevens (zoals uw wachtwoord) wijzigen",
         "auth information": "Authenticatiegegevens Onyxia",
         "auth information helper": `Met deze informatie kunt u zich identificeren  
             binnen het platform en de verschillende diensten.`,
@@ -41,15 +40,13 @@ export const translations: Translations<"nl"> = {
         "personal token": ({ serviceName }) => `Persoonlijk toegangstoken ${serviceName}`,
         "link for token creation": ({ serviceName }) =>
             `Uw token aanmaken ${serviceName}.`,
-        "accessible as env":
-            "Toegankelijk binnen uw diensten als omgevingsvariabele"
+        "accessible as env": "Toegankelijk binnen uw diensten als omgevingsvariabele"
     },
     "AccountStorageTab": {
         "credentials section title": "Uw gegevens verbinden met uw diensten",
         "credentials section helper":
             "Opslag object MinIO compatible Amazon (AWS S3). Deze informatie is al automatisch ingevuld.",
-        "accessible as env":
-            "Toegankelijk binnen uw diensten als omgevingsvariabele",
+        "accessible as env": "Toegankelijk binnen uw diensten als omgevingsvariabele",
         "init script section title":
             "Om toegang te krijgen tot opslag buiten de diensten van het datalab",
         "init script section helper": `Download of kopieer het initialisatiescript in de programmeertaal van uw keuze.`,
@@ -78,8 +75,7 @@ export const translations: Translations<"nl"> = {
         "init script section title": "Vault gebruiken vanuit uw terminal",
         "init script section helper": ({ vaultCliDocLink }) => (
             <>
-                Download of kopieer de <code>ENV</code> -om
-                uw{" "}
+                Download of kopieer de <code>ENV</code> -om uw{" "}
                 <MuiLink href={vaultCliDocLink} target="_blank">
                     lokale Vault CLI
                 </MuiLink>{" "}
@@ -303,8 +299,7 @@ export const translations: Translations<"nl"> = {
         "title": "Welkom in het datalab",
         "login": "Inloggen",
         "new user": "Nieuwe gebruiker van het datalab ?",
-        "subtitle":
-            "Werk met Python of R en krijg de kracht die je nodig hebt !",
+        "subtitle": "Werk met Python of R en krijg de kracht die je nodig hebt !",
         "cardTitle1": "Een ergonomische omgeving en diensten op aanvraag",
         "cardTitle2": "Een actieve en enthousiaste gemeenschap die naar u luistert",
         "cardTitle3": "Snelle, flexibele, online opslagplaats van gegevens",
@@ -372,8 +367,7 @@ export const translations: Translations<"nl"> = {
         "friendly name": "Gepersonaliseerde naam",
         "launch": "Opstarten",
         "cancel": "Annuleren",
-        "copy url helper text":
-            "URL kopiëren om deze configuratie te herstellen",
+        "copy url helper text": "URL kopiëren om deze configuratie te herstellen",
         "save configuration": "Deze configuratie opslaan",
         "share the service": "De dienst delen",
         "share the service - explain":
@@ -394,8 +388,7 @@ export const translations: Translations<"nl"> = {
         "text1": "Mijn diensten",
         "text2":
             "Snel uw verschillende diensten in uitvoering starten, bekijken en beheren.",
-        "text3":
-            "We raden u aan uw diensten te verwijderen na elke werksessie.",
+        "text3": "We raden u aan uw diensten te verwijderen na elke werksessie.",
         "running services": "Diensten in uitvoering",
         "confirm delete title": "Bent u zeker?",
         "confirm delete subtitle":
@@ -445,8 +438,7 @@ export const translations: Translations<"nl"> = {
     },
     "MyServicesCards": {
         "running services": "Diensten in uitvoering",
-        "no services running":
-            "U heeft momenteel geen dienst in uitvoering",
+        "no services running": "U heeft momenteel geen dienst in uitvoering",
         "launch one": "Klik hier om er een te starten",
         "ok": "ok",
         "need to copy": "Wilt u de niet-afgeknotte waarden kopiëren ?",

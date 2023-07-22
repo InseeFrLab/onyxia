@@ -24,8 +24,7 @@ export const translations: Translations<"it"> = {
         "change account info":
             "Modifica le informazioni dell'account (ad esempio, la password)",
         "auth information": "Informazioni di autenticazione Onyxia",
-        "auth information helper":
-            `Queste informazioni ti permettono di identificarti all'interno della piattaforma e dei vari servizi.`,
+        "auth information helper": `Queste informazioni ti permettono di identificarti all'interno della piattaforma e dei vari servizi.`,
         "ip address": "Indirizzo IP"
     },
     "AccountIntegrationsTab": {
@@ -36,7 +35,8 @@ export const translations: Translations<"it"> = {
         "third party tokens section title":
             "Collegare in tuoi account Gitlab, Github e Kaggle",
         "third party tokens section helper": `Collega i tuoi servizi a account esterni utilizzando token di accesso personale e variabili d'ambiente.`,
-        "personal token": ({ serviceName }) => `Token di accesso personale ${serviceName}`,
+        "personal token": ({ serviceName }) =>
+            `Token di accesso personale ${serviceName}`,
         "link for token creation": ({ serviceName }) =>
             `Creare il tuo token ${serviceName}.`,
         "accessible as env":
@@ -139,7 +139,8 @@ export const translations: Translations<"it"> = {
                     la nostra documentazione
                 </MuiLink>
                 . &nbsp;
-                <MuiLink {...accountTabLink}>Configurare il tuo Vault CLI locale</MuiLink>.
+                <MuiLink {...accountTabLink}>Configurare il tuo Vault CLI locale</MuiLink>
+                .
             </>
         )
     },
@@ -282,8 +283,7 @@ export const translations: Translations<"it"> = {
         "mySecrets": "I miei segreti",
         "myFiles": "I miei file",
         "divider: services features": "Funzioni relative ai servizi",
-        "divider: external services features":
-            "Funzioni relative ai servizi esterni",
+        "divider: external services features": "Funzioni relative ai servizi esterni",
         "divider: onyxia instance specific features":
             "Funzioni specifiche di questa istanza di Onyxia"
     },
@@ -300,8 +300,7 @@ export const translations: Translations<"it"> = {
         "title": "Benvenuto sul datalab",
         "login": "Connessione",
         "new user": "Nuovo utente del datalab?",
-        "subtitle":
-            "Lavora con Python o R e goditi la potenza di cui hai bisogno!",
+        "subtitle": "Lavora con Python o R e goditi la potenza di cui hai bisogno!",
         "cardTitle1": "Un ambiente ergonomico e servizi su richiesta",
         "cardTitle2": "Una comunità attiva ed entusiasta pronta ad ascoltarti",
         "cardTitle3": "Uno spazio di archiviazione dati veloce, flessibile e online",
@@ -332,8 +331,7 @@ export const translations: Translations<"it"> = {
     },
     "Catalog": {
         "header text1": "Catalogo di servizi",
-        "header text2":
-            "Esplora, avvia e configura servizi con pochi clic.",
+        "header text2": "Esplora, avvia e configura servizi con pochi clic.",
         "contribute to the catalog": ({ catalogName }) => (
             <>Contribuire al catalogo {catalogName}</>
         ),
@@ -368,8 +366,7 @@ export const translations: Translations<"it"> = {
         "friendly name": "Nome personalizzato",
         "launch": "Avviare",
         "cancel": "Annullare",
-        "copy url helper text":
-            "Copiare l'URL per ripristinare questa configurazione",
+        "copy url helper text": "Copiare l'URL per ripristinare questa configurazione",
         "save configuration": "Salvare questa configurazione",
         "share the service": "Condividire il servizio",
         "share the service - explain":
@@ -390,8 +387,7 @@ export const translations: Translations<"it"> = {
         "text1": "I miei servizi",
         "text2":
             "Avvia, visualizza e gestisci rapidamente i tuoi vari servizi in esecuzione.",
-        "text3":
-            "Si consiglia di eliminare i servizi dopo ogni sessione di lavoro.",
+        "text3": "Si consiglia di eliminare i servizi dopo ogni sessione di lavoro.",
         "running services": "Servizi in corso",
         "confirm delete title": "Sei sicuro?",
         "confirm delete subtitle":
@@ -441,12 +437,12 @@ export const translations: Translations<"it"> = {
     },
     "MyServicesCards": {
         "running services": "Servizi in corso",
-        "no services running":
-            "Attualmente non hai alcun servizio in esecuzione",
+        "no services running": "Attualmente non hai alcun servizio in esecuzione",
         "launch one": "Clicca qui per avviarne uno",
         "ok": "ok",
         "need to copy": "Hai bisogno di copiare i valori non troncati?",
-        "everything have been printed to the console": "Tutto è stato registrato nella console.",
+        "everything have been printed to the console":
+            "Tutto è stato registrato nella console.",
         "first copy the password": "Inizia copiando la password...",
         "open the service": "Aprire il servizio 🚀",
         "return": "Ritorno"
