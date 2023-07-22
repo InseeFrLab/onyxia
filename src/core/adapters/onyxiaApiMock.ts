@@ -51,6 +51,16 @@ export const onyxiaApi: OnyxiaApi = {
             ]),
         { "promise": true }
     ),
+    "getUser": memoize(
+        () =>
+            Promise.resolve({
+                "username": "doej",
+                "email": "john.doe@insee.fr",
+                "familyName": "Doe",
+                "firstName": "John"
+            }),
+        { "promise": true }
+    ),
     ...createPropertyThatThrowIfAccessed("getCatalogs", "Not mocked"),
     ...createPropertyThatThrowIfAccessed("getPackageConfig", "Not mocked"),
     ...createPropertyThatThrowIfAccessed("launchPackage", "Not mocked"),

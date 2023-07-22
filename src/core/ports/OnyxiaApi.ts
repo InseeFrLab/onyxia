@@ -58,6 +58,15 @@ export type OnyxiaApi = {
     }) => Promise<void>;
 
     onboard: () => Promise<void>;
+
+    getUser: () => Promise<User>;
+};
+
+export type User = {
+    email: string;
+    familyName?: string;
+    firstName?: string;
+    username: string;
 };
 
 export type Language = "en" | "fr" | "zh-CN" | "no" | "fi" | "nl" | "it";

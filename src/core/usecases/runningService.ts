@@ -131,7 +131,7 @@ export const thunks = {
     "update":
         () =>
         async (...args) => {
-            const [dispatch, getState, { onyxiaApi, getUser }] = args;
+            const [dispatch, getState, { onyxiaApi }] = args;
 
             {
                 const state = getState().runningService;
@@ -184,7 +184,7 @@ export const thunks = {
                     .replace("$INSTANCE", serviceId.replace(/^\//, ""));
             };
 
-            const { username } = await getUser();
+            const { username } = await onyxiaApi.getUser();
 
             const { s3TokensTTLms, vaultTokenTTLms } = await dispatch(
                 privateThunks.getDefaultTokenTTL()

@@ -39,13 +39,6 @@ import { getGlobalAlert } from "ui/env";
 const { CoreProvider } = createCoreProvider({
     "apiUrl": getEnv().ONYXIA_API_URL,
     "isUserInitiallyLoggedIn": getEnv().KEYCLOAK_URL === undefined ? false : undefined,
-    "jwtClaimByUserKey": {
-        "email": getEnv().JWT_EMAIL_CLAIM,
-        "familyName": getEnv().JWT_FAMILY_NAME_CLAIM,
-        "firstName": getEnv().JWT_FIRST_NAME_CLAIM,
-        "username": getEnv().JWT_USERNAME_CLAIM,
-        "groups": getEnv().JWT_GROUPS_CLAIM
-    },
     "keycloakParams":
         getEnv().KEYCLOAK_URL === ""
             ? undefined

@@ -1,5 +1,5 @@
 import { assert } from "tsafe/assert";
-import type { User } from "../ports/GetUser";
+import type { User } from "../ports/OnyxiaApi";
 import type { Thunks } from "../core";
 import { createUsecaseContextApi } from "redux-clean-architecture";
 
@@ -58,7 +58,7 @@ export const protectedThunks = {
             setContext(extraArg, {
                 "user": !extraArg.oidc.isUserLoggedIn
                     ? undefined
-                    : await extraArg.getUser()
+                    : await extraArg.onyxiaApi.getUser()
             });
         }
 } satisfies Thunks;
