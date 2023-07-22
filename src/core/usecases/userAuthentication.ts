@@ -50,7 +50,7 @@ export const thunks = {
         }
 } satisfies Thunks;
 
-export const privateThunks = {
+export const protectedThunks = {
     "initialize":
         () =>
         async (...args) => {

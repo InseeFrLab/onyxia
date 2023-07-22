@@ -5,7 +5,7 @@ import { createSlice } from "@reduxjs/toolkit";
 import { id } from "tsafe/id";
 import type { State as RootState } from "../core";
 import { createSelector } from "@reduxjs/toolkit";
-import { selectors as deploymentRegionSelectors } from "./deploymentRegion";
+import * as deploymentRegion from "./deploymentRegion";
 import { assert } from "tsafe/assert";
 
 type State = State.NotRefreshed | State.Ready;
@@ -70,11 +70,11 @@ export const thunks = {
         (...args): boolean => {
             const [, getState] = args;
 
-            const deploymentRegion = deploymentRegionSelectors.selectedDeploymentRegion(
+            const region = deploymentRegion.selectors.selectedDeploymentRegion(
                 getState()
             );
 
-            return deploymentRegion.vault !== undefined;
+            return region.vault !== undefined;
         },
     /** Refresh is expected to be called whenever the component that use this slice mounts */
     "refresh":
@@ -117,7 +117,7 @@ export const selectors = (() => {
     const isReady = createSelector(readyState, readyState => readyState !== undefined);
 
     const vaultUrl = createSelector(
-        deploymentRegionSelectors.selectedDeploymentRegion,
+        deploymentRegion.selectors.selectedDeploymentRegion,
         region => {
             const { vault } = region;
             assert(

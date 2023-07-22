@@ -6,7 +6,7 @@ import { objectKeys } from "tsafe/objectKeys";
 import { assert } from "tsafe/assert";
 import { createObjectThatThrowsIfAccessed } from "redux-clean-architecture";
 import "minimal-polyfills/Object.fromEntries";
-import { thunks as userAuthentication } from "./userAuthentication";
+import * as userAuthentication from "./userAuthentication";
 import type { State as RootState } from "../core";
 import { join as pathJoin } from "path";
 import { getIsDarkModeEnabledOsDefault } from "onyxia-ui/tools/getIsDarkModeEnabledOsDefault";
@@ -96,7 +96,7 @@ export const thunks = {
 
             dispatch(actions.changeStarted(params));
 
-            const dirPath = await dispatch(internalThunks.getDirPath());
+            const dirPath = await dispatch(privateThunks.getDirPath());
 
             await secretsManager.put({
                 "path": pathJoin(dirPath, params.key),
@@ -119,7 +119,7 @@ export const thunks = {
         }
 } satisfies Thunks;
 
-export const privateThunks = {
+export const protectedThunks = {
     "initialize":
         () =>
         async (...args) => {
@@ -128,7 +128,7 @@ export const privateThunks = {
 
             assert(oidc.isUserLoggedIn);
 
-            const { username, email } = dispatch(userAuthentication.getUser());
+            const { username, email } = dispatch(userAuthentication.thunks.getUser());
 
             //Default values
             const userConfigs: UserConfigs = {
@@ -145,7 +145,7 @@ export const privateThunks = {
                 "selectedProjectId": null
             };
 
-            const dirPath = await dispatch(internalThunks.getDirPath());
+            const dirPath = await dispatch(privateThunks.getDirPath());
 
             await Promise.all(
                 objectKeys(userConfigs).map(async key => {
@@ -174,7 +174,7 @@ export const privateThunks = {
         }
 } satisfies Thunks;
 
-export const internalThunks = {
+const privateThunks = {
     "getDirPath":
         () =>
         async (...args): Promise<string> => {
