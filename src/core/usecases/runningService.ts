@@ -283,7 +283,7 @@ export const thunks = {
 export const protectedThunks = {
     "initialize":
         () =>
-        async (...args) => {
+        (...args) => {
             const [dispatch, getState, { evtAction }] = args;
 
             evtAction.attach(

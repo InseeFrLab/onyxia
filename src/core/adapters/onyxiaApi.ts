@@ -27,26 +27,10 @@ export function createOnyxiaApi(params: {
     url: string;
     /** undefined if user not logged in */
     getOidcAccessToken: () => string | undefined;
-
-    //NOTE: We can't know at initialization what region and project is selected.
-    //we first have to query the API to know what region and projects are available
-    //for the user.
-    //We can't do that internally in the adapter as it's not it's its responsibility
-    //to decide what region or project should be selected.
-    //As consequence, instead of providing simple function that return the currently
-    //selected project and region we take a reference of a function (in the like of ReactRefs )
-    //that can be updated later on by the caller of the function.
-    refGetCurrentlySelectedDeployRegionId: { current: (() => string) | undefined };
-    refGetCurrentlySelectedProject: {
-        current: (() => Pick<Project, "id" | "group">) | undefined;
-    };
+    getRegionId: () => string | undefined;
+    getProject: () => Pick<Project, "id" | "group"> | undefined;
 }): OnyxiaApi {
-    const {
-        url,
-        getOidcAccessToken,
-        refGetCurrentlySelectedDeployRegionId,
-        refGetCurrentlySelectedProject
-    } = params;
+    const { url, getOidcAccessToken, getRegionId, getProject } = params;
 
     const { axiosInstance } = (() => {
         const axiosInstance = axios.create({ "baseURL": url, "timeout": 120_000 });
@@ -82,16 +66,8 @@ export function createOnyxiaApi(params: {
             ...config,
             "headers": {
                 ...config?.headers,
-                ...(refGetCurrentlySelectedDeployRegionId.current === undefined
-                    ? {}
-                    : {
-                          "ONYXIA-REGION": refGetCurrentlySelectedDeployRegionId.current()
-                      }),
-                ...(refGetCurrentlySelectedProject.current === undefined
-                    ? {}
-                    : {
-                          "ONYXIA-PROJECT": refGetCurrentlySelectedProject.current().id
-                      })
+                "ONYXIA-REGION": getRegionId(),
+                "ONYXIA-PROJECT": getProject()?.id
             }
         }));
 
@@ -411,12 +387,14 @@ export function createOnyxiaApi(params: {
                     .catch(onError),
             { "promise": true }
         ),
-        "onboard": async () => {
-            assert(refGetCurrentlySelectedProject.current !== undefined);
-
-            await axiosInstance
+        "onboard": () =>
+            axiosInstance
                 .post("/onboarding", {
-                    "group": refGetCurrentlySelectedProject.current().group
+                    "group": (() => {
+                        const project = getProject();
+                        assert(project !== undefined);
+                        return project.group;
+                    })()
                 })
                 .catch(error => {
                     if (error.response?.status === 409) {
@@ -426,8 +404,8 @@ export function createOnyxiaApi(params: {
 
                     throw error;
                 })
-                .catch(onError);
-        },
+                .catch(onError)
+                .then(() => undefined),
         "getPackageConfig": ({ catalogId, packageName }) =>
             axiosInstance
                 .get<

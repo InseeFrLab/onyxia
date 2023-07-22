@@ -30,7 +30,7 @@ export const { reducer, actions } = createSlice({
     name,
     "initialState": createObjectThatThrowsIfAccessed<State>(),
     "reducers": {
-        "initialize": (_, { payload }: PayloadAction<State>) => payload,
+        "initialized": (_, { payload }: PayloadAction<State>) => payload,
         "projectChanged": (state, { payload }: PayloadAction<{ projectId: string }>) => {
             const { projectId } = payload;
 
@@ -104,13 +104,9 @@ export const protectedThunks = {
             evtAction.attach(
                 data =>
                     data.sliceName === name &&
-                    (data.actionName === "initialize" ||
+                    (data.actionName === "initialized" ||
                         data.actionName === "projectChanged"),
                 async () => {
-                    //We need to wait for initialize to resolve
-                    // refGetCurrentlySelectedProject need to be set for this request.
-                    await new Promise(resolve => setTimeout(resolve, 0));
-
                     const isOnboarded = await dispatch(
                         privateThunks.getConfigValue({ "key": "isOnboarded" })
                     );
@@ -153,7 +149,7 @@ export const protectedThunks = {
             }
 
             dispatch(
-                actions.initialize({
+                actions.initialized({
                     projects,
                     selectedProjectId,
                     "isOnboarding": false
