@@ -18,7 +18,7 @@ import type { Ctx } from "evt";
 import type { State as RootState } from "../core";
 import memoize from "memoizee";
 import type { WritableDraft } from "immer/dist/types/types-external";
-import { selectors as deploymentRegionSelectors } from "./deploymentRegion";
+import * as deploymentRegion from "./deploymentRegion";
 import type { Param0 } from "tsafe";
 import { createExtendedFsApi } from "core/tools/extendedFsApi";
 import type { ExtendedFsApi } from "core/tools/extendedFsApi";
@@ -292,7 +292,7 @@ const privateThunks = {
                         }
 
                         const defaultDirectoryPath = dispatch(
-                            interUsecasesThunks.getProjectHomePath()
+                            protectedThunks.getProjectHomePath()
                         );
 
                         const currentDirectoryPath =
@@ -349,7 +349,7 @@ const privateThunks = {
             );
 
             await dispatch(
-                interUsecasesThunks.waitForNoOngoingOperation({
+                protectedThunks.waitForNoOngoingOperation({
                     "kind": "directory",
                     "directoryPath": pathJoin(directoryPath, ".."),
                     "basename": pathBasename(directoryPath),
@@ -379,7 +379,7 @@ const privateThunks = {
         }
 } satisfies Thunks;
 
-export const interUsecasesThunks = {
+export const protectedThunks = {
     "getLoggedSecretsApis":
         () =>
         (...args) => {
@@ -539,7 +539,7 @@ export const thunks = {
             assert(directoryPath !== undefined);
 
             await dispatch(
-                interUsecasesThunks.waitForNoOngoingOperation({
+                protectedThunks.waitForNoOngoingOperation({
                     "kind": renamingWhat,
                     directoryPath,
                     basename
@@ -590,7 +590,7 @@ export const thunks = {
             assert(directoryPath !== undefined);
 
             await dispatch(
-                interUsecasesThunks.waitForNoOngoingOperation({
+                protectedThunks.waitForNoOngoingOperation({
                     "kind": params.createWhat,
                     directoryPath,
                     "basename": params.basename
@@ -649,7 +649,7 @@ export const thunks = {
             assert(directoryPath !== undefined);
 
             await dispatch(
-                interUsecasesThunks.waitForNoOngoingOperation({
+                protectedThunks.waitForNoOngoingOperation({
                     "kind": deleteWhat,
                     directoryPath,
                     basename
@@ -696,7 +696,9 @@ export const thunks = {
         (...args) => {
             const [, getState] = args;
 
-            const region = deploymentRegionSelectors.selectedDeploymentRegion(getState());
+            const region = deploymentRegion.selectors.selectedDeploymentRegion(
+                getState()
+            );
 
             return region.vault !== undefined;
         }
@@ -732,7 +734,7 @@ const { getSliceContexts } = (() => {
                 "apiLogger": getVaultApiLogger({
                     "clientType": "CLI",
                     "engine":
-                        deploymentRegionSelectors.selectedDeploymentRegion(getState())
+                        deploymentRegion.selectors.selectedDeploymentRegion(getState())
                             .vault?.kvEngine ?? "onyxia-kv"
                 })
             });

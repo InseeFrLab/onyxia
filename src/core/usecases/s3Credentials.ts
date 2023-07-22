@@ -6,7 +6,7 @@ import { id } from "tsafe/id";
 import type { State as RootState } from "../core";
 import { createSelector } from "@reduxjs/toolkit";
 import * as projectConfigs from "./projectConfigs";
-import { selectors as deploymentRegionSelectors } from "./deploymentRegion";
+import * as deploymentRegion from "./deploymentRegion";
 import { parseUrl } from "core/tools/parseUrl";
 import { assert } from "tsafe/assert";
 import { createUsecaseContextApi } from "redux-clean-architecture";
@@ -107,7 +107,7 @@ export const thunks = {
             const [, getState] = args;
 
             return (
-                deploymentRegionSelectors.selectedDeploymentRegion(getState()).s3 !==
+                deploymentRegion.selectors.selectedDeploymentRegion(getState()).s3 !==
                 undefined
             );
         },
@@ -146,7 +146,7 @@ export const thunks = {
 
             const { region, host, port } = (() => {
                 const { s3: s3Params } =
-                    deploymentRegionSelectors.selectedDeploymentRegion(getState());
+                    deploymentRegion.selectors.selectedDeploymentRegion(getState());
 
                 assert(s3Params !== undefined);
 

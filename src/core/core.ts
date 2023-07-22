@@ -126,9 +126,9 @@ export async function createCore(params: CoreParams) {
         usecases
     });
 
-    await core.dispatch(usecases.userAuthentication.privateThunks.initialize());
+    await core.dispatch(usecases.userAuthentication.protectedThunks.initialize());
 
-    await core.dispatch(usecases.deploymentRegion.privateThunks.initialize());
+    await core.dispatch(usecases.deploymentRegion.protectedThunks.initialize());
 
     /** prettier-ignore */
     refGetCurrentlySelectedDeployRegionId.current = () =>
@@ -192,17 +192,19 @@ export async function createCore(params: CoreParams) {
             });
         })();
 
-        await core.dispatch(usecases.userConfigs.privateThunks.initialize());
+        await core.dispatch(usecases.userConfigs.protectedThunks.initialize());
 
         await core.dispatch(usecases.projectConfigs.protectedThunks.initialize());
 
         /* prettier-ignore */
         refGetCurrentlySelectedProject.current = () => usecases.projectConfigs.selectors.selectedProject(core.getState());
 
-        core.dispatch(usecases.restorablePackageConfigs.privateThunks.initialize());
+        await core.dispatch(
+            usecases.restorablePackageConfigs.protectedThunks.initialize()
+        );
     }
 
-    core.dispatch(usecases.runningService.privateThunks.initialize());
+    core.dispatch(usecases.runningService.protectedThunks.initialize());
 
     return core;
 }

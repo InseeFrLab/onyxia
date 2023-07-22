@@ -2,7 +2,7 @@ import { assert } from "tsafe/assert";
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { id } from "tsafe/id";
-import { selectors as deploymentRegionSelectors } from "./deploymentRegion";
+import * as deploymentRegion from "./deploymentRegion";
 import * as projectConfigs from "./projectConfigs";
 import type { Thunks, State as RootState } from "../core";
 import { exclude } from "tsafe/exclude";
@@ -177,7 +177,7 @@ export const thunks = {
                 const project = projectConfigs.selectors.selectedProject(getState());
 
                 const selectedDeploymentRegion =
-                    deploymentRegionSelectors.selectedDeploymentRegion(getState());
+                    deploymentRegion.selectors.selectedDeploymentRegion(getState());
 
                 return selectedDeploymentRegion.servicesMonitoringUrlPattern
                     ?.replace("$NAMESPACE", project.namespace)
@@ -280,7 +280,7 @@ export const thunks = {
         }
 } satisfies Thunks;
 
-export const privateThunks = {
+export const protectedThunks = {
     "initialize":
         () =>
         async (...args) => {
@@ -311,7 +311,10 @@ export const privateThunks = {
                     dispatch(thunks.update());
                 }
             );
-        },
+        }
+} satisfies Thunks;
+
+const privateThunks = {
     /** We ask tokens just to tel how long is their lifespan */
     "getDefaultTokenTTL":
         () =>

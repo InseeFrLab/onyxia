@@ -6,7 +6,7 @@ import type { SecretWithMetadata } from "core/ports/SecretsManager";
 import { assert } from "tsafe/assert";
 import { join as pathJoin } from "path";
 import { unwrapWritableDraft } from "core/tools/unwrapWritableDraft";
-import { interUsecasesThunks as secretExplorersThunks } from "./secretExplorer";
+import * as secretExplorer from "./secretExplorer";
 
 type State = {
     directoryPath: string;
@@ -198,7 +198,7 @@ export const thunks = {
             const path = pathJoin(directoryPath, basename);
 
             const { loggedSecretClient } = dispatch(
-                secretExplorersThunks.getLoggedSecretsApis()
+                secretExplorer.protectedThunks.getLoggedSecretsApis()
             );
 
             const secretWithMetadata = await loggedSecretClient.get({ path });
@@ -258,7 +258,7 @@ export const thunks = {
             const [dispatch] = args;
 
             const { loggedSecretClient } = dispatch(
-                secretExplorersThunks.getLoggedSecretsApis()
+                secretExplorer.protectedThunks.getLoggedSecretsApis()
             );
 
             const getSecretCurrentPathAndHiddenKeys = () => {

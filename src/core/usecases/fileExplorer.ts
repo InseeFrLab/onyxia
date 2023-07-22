@@ -18,7 +18,7 @@ import type { Ctx } from "evt";
 import type { State as RootState } from "../core";
 import memoize from "memoizee";
 import type { WritableDraft } from "immer/dist/types/types-external";
-import { selectors as deploymentRegionSelectors } from "./deploymentRegion";
+import * as deploymentRegion from "./deploymentRegion";
 import type { Param0 } from "tsafe";
 import { createExtendedFsApi } from "core/tools/extendedFsApi";
 import type { ExtendedFsApi } from "core/tools/extendedFsApi";
@@ -674,7 +674,9 @@ export const thunks = {
         (...args): boolean => {
             const [, getState] = args;
 
-            const region = deploymentRegionSelectors.selectedDeploymentRegion(getState());
+            const region = deploymentRegion.selectors.selectedDeploymentRegion(
+                getState()
+            );
 
             return region.s3 !== undefined;
         },
