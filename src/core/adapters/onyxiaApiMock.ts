@@ -12,6 +12,7 @@ export const onyxiaApi: OnyxiaApi = {
                     "id": "my-project",
                     "name": "my project",
                     "bucket": "my-project",
+                    "group": undefined,
                     "namespace": "my-namespace",
                     "vaultTopDir": "my-top-dir"
                 }

@@ -12,7 +12,7 @@ import type { ApiLogs } from "core/tools/apiLogger";
 import { logApi } from "core/tools/apiLogger";
 import type { S3Client } from "../ports/S3Client";
 import { assert } from "tsafe/assert";
-import { selectors as projectSelectionSelectors } from "./projectSelection";
+import * as projectConfigs from "./projectConfigs";
 import { Evt } from "evt";
 import type { Ctx } from "evt";
 import type { State as RootState } from "../core";
@@ -281,7 +281,7 @@ const privateThunks = {
             Evt.merge([
                 evtAction
                     .pipe(event =>
-                        event.sliceName === "projectSelection" &&
+                        event.sliceName === "projectConfigs" &&
                         event.actionName === "projectChanged" &&
                         getState().fileExplorer["~internal"].isUserWatching
                             ? [
@@ -446,7 +446,7 @@ export const interUsecasesThunks = {
         (...args) => {
             const [, getState] = args;
 
-            return `/${projectSelectionSelectors.selectedProject(getState()).bucket}`;
+            return `/${projectConfigs.selectors.selectedProject(getState()).bucket}`;
         }
 } satisfies Thunks;
 

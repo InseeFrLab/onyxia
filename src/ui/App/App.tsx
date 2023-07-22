@@ -505,9 +505,9 @@ function useSyncDarkModeWithValueInProfile() {
 }
 
 function useProjectsSlice() {
-    const { projectSelection, userAuthentication } = useCoreFunctions();
+    const { projectConfigs, userAuthentication } = useCoreFunctions();
     const projectsState = useCoreState(state =>
-        !userAuthentication.getIsUserLoggedIn() ? undefined : state.projectSelection
+        !userAuthentication.getIsUserLoggedIn() ? undefined : state.projectConfigs
     );
 
     const route = useRoute();
@@ -553,7 +553,7 @@ function useProjectsSlice() {
                 }
             })();
 
-            await projectSelection.changeProject({
+            await projectConfigs.changeProject({
                 projectId,
                 "doPreventDispatch": reload !== undefined
             });

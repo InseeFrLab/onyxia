@@ -53,7 +53,7 @@ export default function MyServices(props: Props) {
     );
 
     useEffect(() => {
-        projectConfigs.getValue({ "key": "servicePassword" }).then(upToDatePassword => {
+        projectConfigs.getServicesPassword().then(upToDatePassword => {
             setPassword(upToDatePassword);
 
             if (password !== undefined && password !== upToDatePassword) {
@@ -253,7 +253,7 @@ export default function MyServices(props: Props) {
     });
 
     const getServicePassword = useConstCallback(() =>
-        projectConfigs.getValue({ "key": "servicePassword" })
+        projectConfigs.getServicesPassword()
     );
 
     return (

@@ -9,7 +9,7 @@ import type { GetUser, User } from "./ports/GetUser";
 import type { SecretsManager } from "./ports/SecretsManager";
 import type { S3Client } from "./ports/S3Client";
 import type { ReturnType } from "tsafe/ReturnType";
-import type { Language } from "./ports/OnyxiaApi";
+import type { Language, Project } from "./ports/OnyxiaApi";
 import { id } from "tsafe/id";
 
 type CoreParams = {
@@ -67,7 +67,7 @@ export async function createCore(params: CoreParams) {
     /* prettier-ignore */
     const refGetCurrentlySelectedDeployRegionId = { "current": id<undefined | (() => string)>(undefined) };
     /* prettier-ignore */
-    const refGetCurrentlySelectedProjectId = { "current": id<undefined | (() => string)>(undefined) };
+    const refGetCurrentlySelectedProject = { "current": id<undefined | (() => Project)>(undefined) };
 
     const onyxiaApi = await (async () => {
         if (apiUrl === "") {
@@ -87,7 +87,7 @@ export async function createCore(params: CoreParams) {
                 return oidc.getAccessToken().accessToken;
             },
             refGetCurrentlySelectedDeployRegionId,
-            refGetCurrentlySelectedProjectId
+            refGetCurrentlySelectedProject
         });
 
         return sillApi;
@@ -194,12 +194,10 @@ export async function createCore(params: CoreParams) {
 
         await core.dispatch(usecases.userConfigs.privateThunks.initialize());
 
-        await core.dispatch(usecases.projectSelection.privateThunks.initialize());
-
-        console.log("after");
+        await core.dispatch(usecases.projectConfigs.protectedThunks.initialize());
 
         /* prettier-ignore */
-        refGetCurrentlySelectedProjectId.current = () => core.getState().projectSelection.selectedProjectId;
+        refGetCurrentlySelectedProject.current = () => usecases.projectConfigs.selectors.selectedProject(core.getState());
 
         core.dispatch(usecases.restorablePackageConfigs.privateThunks.initialize());
     }
