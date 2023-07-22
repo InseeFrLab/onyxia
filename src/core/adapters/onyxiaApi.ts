@@ -6,6 +6,7 @@ import type {
     JSONSchemaFormFieldDescription
 } from "../ports/OnyxiaApi";
 import axios from "axios";
+import type { AxiosResponse, AxiosRequestConfig } from "axios";
 import memoize from "memoizee";
 import {
     onyxiaFriendlyNameFormFieldPath,
@@ -36,30 +37,25 @@ export function createOnyxiaApi(params: {
         const axiosInstance = axios.create({ "baseURL": url, "timeout": 120_000 });
 
         if (getOidcAccessToken !== undefined) {
-            axiosInstance.interceptors.request.use(
-                config => ({
-                    ...(config as any),
-                    "headers": {
-                        ...config.headers,
-                        ...(() => {
-                            const accessToken = getOidcAccessToken();
+            axiosInstance.interceptors.request.use(config => ({
+                ...(config as any),
+                "headers": {
+                    ...config.headers,
+                    ...(() => {
+                        const accessToken = getOidcAccessToken();
 
-                            if (accessToken === undefined) {
-                                return {};
-                            }
+                        if (accessToken === undefined) {
+                            return {};
+                        }
 
-                            return {
-                                "Authorization": `Bearer ${accessToken}`
-                            };
-                        })()
-                    },
-                    "Content-Type": "application/json;charset=utf-8",
-                    "Accept": "application/json;charset=utf-8"
-                }),
-                error => {
-                    throw error;
-                }
-            );
+                        return {
+                            "Authorization": `Bearer ${accessToken}`
+                        };
+                    })()
+                },
+                "Content-Type": "application/json;charset=utf-8",
+                "Accept": "application/json;charset=utf-8"
+            }));
         }
 
         axiosInstance.interceptors.request.use(config => ({
@@ -74,9 +70,25 @@ export function createOnyxiaApi(params: {
         return { axiosInstance };
     })();
 
-    const onError = (error: Error) => {
-        console.log(error);
-        alert(String(error));
+    const onError = (
+        error: Error & { response?: AxiosResponse; config?: AxiosRequestConfig }
+    ) => {
+        const { response, config } = error;
+
+        const message =
+            config === undefined
+                ? String(error)
+                : [
+                      "Onyxia API Error:",
+                      "",
+                      `${config.method?.toUpperCase()} ${config.baseURL}${config.url}`,
+                      response === undefined
+                          ? ""
+                          : `Response: ${response.status} ${response.statusText}`
+                  ].join("\n");
+
+        alert(message);
+
         throw error;
     };
 
