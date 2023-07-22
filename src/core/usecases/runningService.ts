@@ -3,7 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { id } from "tsafe/id";
 import { selectors as deploymentRegionSelectors } from "./deploymentRegion";
-import { selectors as projectSelectionSelectors } from "./projectSelection";
+import * as projectConfigs from "./projectConfigs";
 import type { Thunks, State as RootState } from "../core";
 import { exclude } from "tsafe/exclude";
 import { createUsecaseContextApi } from "redux-clean-architecture";
@@ -174,7 +174,7 @@ export const thunks = {
             const getMonitoringUrl = (params: { serviceId: string }) => {
                 const { serviceId } = params;
 
-                const project = projectSelectionSelectors.selectedProject(getState());
+                const project = projectConfigs.selectors.selectedProject(getState());
 
                 const selectedDeploymentRegion =
                     deploymentRegionSelectors.selectedDeploymentRegion(getState());
@@ -296,7 +296,7 @@ export const privateThunks = {
 
             evtAction.attach(
                 event =>
-                    event.sliceName === "projectSelection" &&
+                    event.sliceName === "projectConfigs" &&
                     event.actionName === "projectChanged" &&
                     getState().runningService.isUserWatching,
                 async () => {
@@ -328,13 +328,10 @@ export const privateThunks = {
 
             return (sliceContext.prDefaultTokenTTL = Promise.all([
                 (async () => {
-                    const project = projectSelectionSelectors.selectedProject(getState());
-
-                    const isDefaultProject =
-                        getState().projectSelection.projects[0].id === project.id;
+                    const project = projectConfigs.selectors.selectedProject(getState());
 
                     const { expirationTime, acquisitionTime } = await s3Client.getToken({
-                        "restrictToBucketName": isDefaultProject
+                        "restrictToBucketName": project.isDefault
                             ? undefined
                             : project.bucket
                     });

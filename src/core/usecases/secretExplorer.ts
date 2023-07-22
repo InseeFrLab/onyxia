@@ -12,7 +12,7 @@ import {
 import type { ApiLogs } from "core/tools/apiLogger";
 import { logApi } from "core/tools/apiLogger";
 import { assert } from "tsafe/assert";
-import { selectors as projectSelectionSelectors } from "./projectSelection";
+import * as projectConfigs from "./projectConfigs";
 import { Evt } from "evt";
 import type { Ctx } from "evt";
 import type { State as RootState } from "../core";
@@ -24,7 +24,7 @@ import { createExtendedFsApi } from "core/tools/extendedFsApi";
 import type { ExtendedFsApi } from "core/tools/extendedFsApi";
 import { getVaultApiLogger } from "core/adapters/secretsManager/vaultApiLogger";
 
-//All explorer path are expected to be absolute (start with /)
+// All explorer path are expected to be absolute (start with /)
 
 export type State = {
     directoryPath: string | undefined;
@@ -255,7 +255,7 @@ const privateThunks = {
             Evt.merge([
                 evtAction
                     .pipe(event =>
-                        event.sliceName === "projectSelection" &&
+                        event.sliceName === "projectConfigs" &&
                         event.actionName === "projectChanged" &&
                         getState().secretExplorer["~internal"].isUserWatching
                             ? [
@@ -431,9 +431,7 @@ export const interUsecasesThunks = {
         (...args) => {
             const [, getState] = args;
 
-            return `/${
-                projectSelectionSelectors.selectedProject(getState()).vaultTopDir
-            }`;
+            return `/${projectConfigs.selectors.selectedProject(getState()).vaultTopDir}`;
         }
 } satisfies Thunks;
 

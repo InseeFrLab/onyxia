@@ -96,7 +96,7 @@ export const thunks = {
 
             dispatch(actions.changeStarted(params));
 
-            const dirPath = await dispatch(privateThunks.getDirPath());
+            const dirPath = await dispatch(internalThunks.getDirPath());
 
             await secretsManager.put({
                 "path": pathJoin(dirPath, params.key),
@@ -145,7 +145,7 @@ export const privateThunks = {
                 "selectedProjectId": null
             };
 
-            const dirPath = await dispatch(privateThunks.getDirPath());
+            const dirPath = await dispatch(internalThunks.getDirPath());
 
             await Promise.all(
                 objectKeys(userConfigs).map(async key => {
@@ -171,7 +171,10 @@ export const privateThunks = {
             );
 
             dispatch(actions.initializationCompleted({ userConfigs }));
-        },
+        }
+} satisfies Thunks;
+
+export const internalThunks = {
     "getDirPath":
         () =>
         async (...args): Promise<string> => {

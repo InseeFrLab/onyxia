@@ -5,7 +5,7 @@ import { createSlice } from "@reduxjs/toolkit";
 import { id } from "tsafe/id";
 import type { State as RootState } from "../core";
 import { createSelector } from "@reduxjs/toolkit";
-import { selectors as projectSelectionSelectors } from "./projectSelection";
+import * as projectConfigs from "./projectConfigs";
 import { selectors as deploymentRegionSelectors } from "./deploymentRegion";
 import { parseUrl } from "core/tools/parseUrl";
 import { assert } from "tsafe/assert";
@@ -176,7 +176,7 @@ export const selectors = (() => {
     );
 
     const kubernetesNamespace = createSelector(
-        projectSelectionSelectors.selectedProject,
+        projectConfigs.selectors.selectedProject,
         selectedProject => selectedProject.namespace
     );
 

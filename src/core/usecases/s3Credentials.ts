@@ -5,7 +5,7 @@ import { createSlice } from "@reduxjs/toolkit";
 import { id } from "tsafe/id";
 import type { State as RootState } from "../core";
 import { createSelector } from "@reduxjs/toolkit";
-import { selectors as projectSelectionSelectors } from "./projectSelection";
+import * as projectConfigs from "./projectConfigs";
 import { selectors as deploymentRegionSelectors } from "./deploymentRegion";
 import { parseUrl } from "core/tools/parseUrl";
 import { assert } from "tsafe/assert";
@@ -130,7 +130,7 @@ export const thunks = {
 
                 evtAction.attach(
                     action =>
-                        action.sliceName === "projectSelection" &&
+                        action.sliceName === "projectConfigs" &&
                         action.actionName === "projectChanged",
                     () => dispatch(thunks.refresh({ "doForceRenewToken": false }))
                 );
@@ -157,14 +157,13 @@ export const thunks = {
                 return { region, host, port };
             })();
 
-            const project = projectSelectionSelectors.selectedProject(getState());
-
-            const isDefaultProject =
-                getState().projectSelection.projects[0].id === project.id;
+            const project = projectConfigs.selectors.selectedProject(getState());
 
             const { accessKeyId, secretAccessKey, sessionToken, expirationTime } =
                 await s3Client.getToken({
-                    "restrictToBucketName": isDefaultProject ? undefined : project.bucket,
+                    "restrictToBucketName": project.isDefault
+                        ? undefined
+                        : project.bucket,
                     "doForceRenew": doForceRenewToken
                 });
 

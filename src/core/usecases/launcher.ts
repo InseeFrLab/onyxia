@@ -24,8 +24,7 @@ import { thunks as publicIpThunks } from "./publicIp";
 import { thunks as userAuthenticationThunk } from "./userAuthentication";
 import { selectors as deploymentRegionSelectors } from "./deploymentRegion";
 import { exclude } from "tsafe/exclude";
-import { thunks as projectConfigs } from "./projectConfigs";
-import { selectors as projectSelectionSelectors } from "./projectSelection";
+import * as projectConfigs from "./projectConfigs";
 import { parseUrl } from "core/tools/parseUrl";
 import { typeGuard } from "tsafe/typeGuard";
 import { getRandomK8sSubdomain, getServiceId } from "../ports/OnyxiaApi";
@@ -1005,10 +1004,10 @@ export const thunks = {
                 deploymentRegionSelectors.selectedDeploymentRegion(getState());
 
             const servicePassword = await dispatch(
-                projectConfigs.getValue({ "key": "servicePassword" })
+                projectConfigs.thunks.getServicesPassword()
             );
 
-            const project = projectSelectionSelectors.selectedProject(getState());
+            const project = projectConfigs.selectors.selectedProject(getState());
 
             const onyxiaValues: OnyxiaValues = {
                 "user": {
@@ -1054,14 +1053,11 @@ export const thunks = {
                 })(),
                 "kaggleApiToken": userConfigs.kaggleApiToken ?? undefined,
                 "s3": await (async () => {
-                    const project = projectSelectionSelectors.selectedProject(getState());
-
-                    const isDefaultProject =
-                        getState().projectSelection.projects[0].id === project.id;
+                    const project = projectConfigs.selectors.selectedProject(getState());
 
                     const { accessKeyId, secretAccessKey, sessionToken } =
                         await s3Client.getToken({
-                            "restrictToBucketName": isDefaultProject
+                            "restrictToBucketName": project.isDefault
                                 ? undefined
                                 : project.bucket
                         });
