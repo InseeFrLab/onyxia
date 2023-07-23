@@ -71,28 +71,6 @@ export function createOnyxiaApi(params: {
         return { axiosInstance };
     })();
 
-    const onError = (
-        error: Error & { response?: AxiosResponse; config?: AxiosRequestConfig }
-    ) => {
-        const { response, config } = error;
-
-        const message =
-            config === undefined
-                ? String(error)
-                : [
-                      "Onyxia API Error:",
-                      "",
-                      `${config.method?.toUpperCase()} ${config.baseURL}${config.url}`,
-                      response === undefined
-                          ? ""
-                          : `Response: ${response.status} ${response.statusText}`
-                  ].join("\n");
-
-        alert(message);
-
-        throw error;
-    };
-
     const onyxiaApi: OnyxiaApi = {
         "getIp": memoize(() =>
             axiosInstance.get<{ ip: string }>("/public/ip").then(({ data }) => data.ip)
@@ -215,12 +193,6 @@ export function createOnyxiaApi(params: {
                         };
                     }[];
                 }>("/public/configuration")
-                .then(res => {
-                    if (res.headers["content-type"] !== "application/json") {
-                        throw new Error(`The is no Onyxia API running at ${url}`);
-                    }
-                    return res;
-                })
                 .then(({ data }) =>
                     data.regions.map(
                         (region): DeploymentRegion => ({
@@ -965,7 +937,75 @@ export function createOnyxiaApi(params: {
         )
     };
 
-    return onyxiaApi;
+    let wasFirstRequestSuccessful = false;
+
+    function onError(
+        error: Error & { response?: AxiosResponse; config?: AxiosRequestConfig }
+    ): never {
+        const { response, config } = error;
+        const message =
+            config === undefined
+                ? String(error)
+                : [
+                      "Onyxia API Error:",
+                      "",
+                      `${config.method?.toUpperCase()} ${config.baseURL}${config.url}`,
+                      response === undefined
+                          ? error.message === "Network Error"
+                              ? "Network Error"
+                              : "No response"
+                          : `Response: ${response.status} ${response.statusText}`
+                  ].join("\n");
+
+        alert(message);
+
+        if (
+            !wasFirstRequestSuccessful &&
+            !onError.isWarningAboutOnyxiaProbableMisconfigurationShown
+        ) {
+            onError.isWarningAboutOnyxiaProbableMisconfigurationShown = true;
+
+            alert(
+                [
+                    "The first request to the Onyxia API failed.",
+                    "This usually means that the Onyxia API is not configured correctly.",
+                    `Please make sure that onyxia-api is running at:`,
+                    url
+                ].join("\n")
+            );
+        }
+
+        throw error;
+    }
+
+    onError.isWarningAboutOnyxiaProbableMisconfigurationShown = false;
+
+    const { proxy } = (() => {
+        let isFirstRequest = true;
+
+        const proxy = new Proxy<OnyxiaApi>(onyxiaApi, {
+            "get": (target, prop) => {
+                if (isFirstRequest && typeof prop === "string" && prop in onyxiaApi) {
+                    isFirstRequest = false;
+
+                    return async (...args: any[]) => {
+                        // @ts-expect-error
+                        const out = await onyxiaApi[String(prop)](...args);
+
+                        wasFirstRequestSuccessful = true;
+
+                        return out;
+                    };
+                }
+
+                return Reflect.get(target, prop);
+            }
+        });
+
+        return { proxy };
+    })();
+
+    return proxy;
 }
 
 let _s3url: string | undefined = undefined;
