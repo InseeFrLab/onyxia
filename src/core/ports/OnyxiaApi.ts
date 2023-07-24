@@ -121,6 +121,7 @@ export type DeploymentRegion = {
         | {
               cranProxyUrl: string | undefined;
               condaProxyUrl: string | undefined;
+              packageManagerUrl: string | undefined;
               pypiProxyUrl: string | undefined;
           }
         | undefined;
@@ -312,6 +313,7 @@ export type OnyxiaValues = {
         | {
               cranProxyUrl: string | undefined;
               condaProxyUrl: string | undefined;
+              packageManagerUrl: string | undefined;
               pypiProxyUrl: string | undefined;
           }
         | undefined;
