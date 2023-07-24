@@ -272,7 +272,7 @@ export const translations: Translations<"fr"> = {
     "Header": {
         "login": "Connexion",
         "logout": "Déconnexion",
-        "trainings": "Formations",
+        "trainings": "Tutoriels",
         "documentation": "Documentation",
         "project": "Projet"
     },
