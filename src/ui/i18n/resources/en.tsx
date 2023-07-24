@@ -271,7 +271,7 @@ export const translations: Translations<"en"> = {
     "Header": {
         "login": "Login",
         "logout": "Logout",
-        "trainings": "Trainings",
+        "trainings": "Tutorials",
         "documentation": "Documentation",
         "project": "Project"
     },
