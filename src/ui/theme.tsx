@@ -72,6 +72,7 @@ import { ComponentType } from "ui/tools/types/ComponentType";
 import type { Language } from "ui/i18n";
 import { createOnyxiaSplashScreenLogo } from "onyxia-ui/lib/SplashScreen";
 import { THEME_ID } from "keycloak-theme/login/envCarriedOverToKc";
+import { getOverridePalette } from "./env";
 
 const { ThemeProvider, useTheme } = createThemeProvider({
     "getTypographyDesc": params => ({
@@ -89,15 +90,24 @@ const { ThemeProvider, useTheme } = createThemeProvider({
     }),
     "palette": {
         ...(() => {
-            switch (THEME_ID) {
-                case "onyxia":
-                    return defaultPalette;
-                case "france":
-                    return francePalette;
-                case "ultraviolet":
-                    return ultravioletPalette;
-                case "verdant":
-                    return verdantPalette;
+            const palette_override = getOverridePalette();
+            if (palette_override) {
+                const ssbPalette: typeof defaultPalette = {
+                    ...defaultPalette,
+                    ...palette_override
+                };
+                return ssbPalette;
+            } else {
+                switch (THEME_ID) {
+                    case "onyxia":
+                        return defaultPalette;
+                    case "france":
+                        return francePalette;
+                    case "ultraviolet":
+                        return ultravioletPalette;
+                    case "verdant":
+                        return verdantPalette;
+                }
             }
         })(),
         "limeGreen": {
