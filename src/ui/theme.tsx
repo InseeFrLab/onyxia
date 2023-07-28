@@ -92,11 +92,11 @@ const { ThemeProvider, useTheme } = createThemeProvider({
         ...(() => {
             const palette_override = getOverridePalette();
             if (palette_override) {
-                const ssbPalette: typeof defaultPalette = {
+                const patched_palette: typeof defaultPalette = {
                     ...defaultPalette,
                     ...palette_override
                 };
-                return ssbPalette;
+                return patched_palette;
             } else {
                 switch (THEME_ID) {
                     case "onyxia":
