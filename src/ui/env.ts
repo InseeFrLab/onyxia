@@ -69,7 +69,7 @@ export const getIsHomePageDisabled = memoize((): boolean => {
     return DISABLE_HOME_PAGE === "true";
 });
 
-export const getOverridePalette = () => {
+export const getPaletteOverride = () => {
     const { PALETTE_OVERRIDE } = getEnv();
     if (PALETTE_OVERRIDE === "") {
         return undefined;
