@@ -59,7 +59,6 @@
         "jwt-simple": "^0.5.6",
         "keycloak-js": "21.0.2",
         "keycloakify": "^7.14.3",
-        "lodash": "^4.17.21",
         "memoizee": "^0.4.14",
         "minimal-polyfills": "^2.2.3",
         "minio": "^7.1.1",
