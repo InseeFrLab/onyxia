@@ -8,7 +8,7 @@ import {
     getIsPortraitOrientation,
     ViewPortOutOfRangeError
 } from "onyxia-ui";
-import type { ThemeProviderProps } from "onyxia-ui";
+import type { PaletteBase, ThemeProviderProps } from "onyxia-ui";
 import { createIcon } from "onyxia-ui/Icon";
 import { createIconButton } from "onyxia-ui/IconButton";
 import { createButton } from "onyxia-ui/Button";
@@ -73,6 +73,7 @@ import type { Language } from "ui/i18n";
 import { createOnyxiaSplashScreenLogo } from "onyxia-ui/lib/SplashScreen";
 import { THEME_ID } from "keycloak-theme/login/envCarriedOverToKc";
 import { getPaletteOverride } from "./env";
+import _ from "lodash";
 
 const { ThemeProvider, useTheme } = createThemeProvider({
     "getTypographyDesc": params => ({
@@ -89,26 +90,7 @@ const { ThemeProvider, useTheme } = createThemeProvider({
         })()}, sans-serif`
     }),
     "palette": {
-        ...(() => {
-            const paletteOverrides = getPaletteOverride();
-            if (paletteOverrides) {
-                return {
-                    ...defaultPalette,
-                    ...paletteOverrides
-                };
-            } else {
-                switch (THEME_ID) {
-                    case "onyxia":
-                        return defaultPalette;
-                    case "france":
-                        return francePalette;
-                    case "ultraviolet":
-                        return ultravioletPalette;
-                    case "verdant":
-                        return verdantPalette;
-                }
-            }
-        })(),
+        ...getPalette(THEME_ID, getPaletteOverride()),
         "limeGreen": {
             "main": "#BAFF29",
             "light": "#E2FFA6"
@@ -208,6 +190,30 @@ export function createGetViewPortConfig(params: {
     };
 
     return { getViewPortConfig };
+}
+
+function getPalette(themeId: typeof THEME_ID, paletteOverrides?: Object): PaletteBase {
+    var palette: PaletteBase;
+    switch (themeId) {
+        case "onyxia":
+            palette = defaultPalette;
+            break;
+        case "france":
+            palette = francePalette;
+            break;
+        case "ultraviolet":
+            palette = ultravioletPalette;
+            break;
+        case "verdant":
+            palette = verdantPalette;
+            break;
+    }
+
+    if (paletteOverrides) {
+        _.merge(palette, paletteOverrides);
+    }
+
+    return palette;
 }
 
 const { OnyxiaSplashScreenLogo } = createOnyxiaSplashScreenLogo({ useTheme });
