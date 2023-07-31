@@ -73,7 +73,7 @@ import type { Language } from "ui/i18n";
 import { createOnyxiaSplashScreenLogo } from "onyxia-ui/lib/SplashScreen";
 import { THEME_ID } from "keycloak-theme/login/envCarriedOverToKc";
 import { getPaletteOverride } from "./env";
-import _ from "lodash";
+import { mergeDeep } from "./tools/mergeDeep";
 
 const { ThemeProvider, useTheme } = createThemeProvider({
     "getTypographyDesc": params => ({
@@ -90,7 +90,29 @@ const { ThemeProvider, useTheme } = createThemeProvider({
         })()}, sans-serif`
     }),
     "palette": {
-        ...getPalette(THEME_ID, getPaletteOverride()),
+        ...(() => {
+            let palette: PaletteBase;
+            switch (THEME_ID) {
+                case "onyxia":
+                    palette = defaultPalette;
+                    break;
+                case "france":
+                    palette = francePalette;
+                    break;
+                case "ultraviolet":
+                    palette = ultravioletPalette;
+                    break;
+                case "verdant":
+                    palette = verdantPalette;
+                    break;
+            }
+            let paletteOverrides = getPaletteOverride();
+            if (paletteOverrides) {
+                palette = mergeDeep(palette, paletteOverrides) as PaletteBase;
+            }
+
+            return palette;
+        })(),
         "limeGreen": {
             "main": "#BAFF29",
             "light": "#E2FFA6"
@@ -190,30 +212,6 @@ export function createGetViewPortConfig(params: {
     };
 
     return { getViewPortConfig };
-}
-
-function getPalette(themeId: typeof THEME_ID, paletteOverrides?: Object): PaletteBase {
-    var palette: PaletteBase;
-    switch (themeId) {
-        case "onyxia":
-            palette = defaultPalette;
-            break;
-        case "france":
-            palette = francePalette;
-            break;
-        case "ultraviolet":
-            palette = ultravioletPalette;
-            break;
-        case "verdant":
-            palette = verdantPalette;
-            break;
-    }
-
-    if (paletteOverrides) {
-        _.merge(palette, paletteOverrides);
-    }
-
-    return palette;
 }
 
 const { OnyxiaSplashScreenLogo } = createOnyxiaSplashScreenLogo({ useTheme });
