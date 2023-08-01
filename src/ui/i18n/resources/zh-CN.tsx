@@ -218,8 +218,6 @@ export const translations: Translations<"zh-CN"> = {
     "Header": {
         "login": "登录",
         "logout": "登出",
-        "trainings": "培训",
-        "documentation": "文档",
         "project": "项目"
     },
     "App": {

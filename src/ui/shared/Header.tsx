@@ -136,9 +136,7 @@ export const Header = memo((props: Props) => {
     );
 });
 
-export const { i18n } = declareComponentKeys<
-    "logout" | "login" | "project" | "trainings" | "documentation"
->()({
+export const { i18n } = declareComponentKeys<"logout" | "login" | "project">()({
     Header
 });
 
