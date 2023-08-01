@@ -270,8 +270,6 @@ export const translations: Translations<"no"> = {
     "Header": {
         "login": "Logg inn",
         "logout": "Logg ut",
-        "trainings": "Opplæring",
-        "documentation": "Dokumentasjon",
         "project": "Prosjekt"
     },
     "App": {
