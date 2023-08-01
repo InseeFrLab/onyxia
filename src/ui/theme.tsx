@@ -71,8 +71,7 @@ import type { Param0 } from "tsafe/Param0";
 import { ComponentType } from "ui/tools/types/ComponentType";
 import type { Language } from "ui/i18n";
 import { createOnyxiaSplashScreenLogo } from "onyxia-ui/lib/SplashScreen";
-import { THEME_ID } from "keycloak-theme/login/envCarriedOverToKc";
-import { getPaletteOverride } from "./env";
+import { THEME_ID, PALETTE_OVERRIDE } from "keycloak-theme/login/envCarriedOverToKc";
 import { mergeDeep } from "./tools/mergeDeep";
 
 const palette = {
@@ -90,10 +89,8 @@ const palette = {
             }
         })();
 
-        const paletteOverrides = getPaletteOverride();
-
-        return paletteOverrides !== undefined
-            ? mergeDeep(selectedBuiltinPalette, paletteOverrides)
+        return PALETTE_OVERRIDE !== undefined
+            ? mergeDeep(selectedBuiltinPalette, PALETTE_OVERRIDE)
             : selectedBuiltinPalette;
     })(),
     "limeGreen": {
