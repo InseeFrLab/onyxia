@@ -8,7 +8,7 @@ import {
     getIsPortraitOrientation,
     ViewPortOutOfRangeError
 } from "onyxia-ui";
-import type { ThemeProviderProps } from "onyxia-ui";
+import type { PaletteBase, ThemeProviderProps } from "onyxia-ui";
 import { createIcon } from "onyxia-ui/Icon";
 import { createIconButton } from "onyxia-ui/IconButton";
 import { createButton } from "onyxia-ui/Button";
@@ -72,6 +72,8 @@ import { ComponentType } from "ui/tools/types/ComponentType";
 import type { Language } from "ui/i18n";
 import { createOnyxiaSplashScreenLogo } from "onyxia-ui/lib/SplashScreen";
 import { THEME_ID } from "keycloak-theme/login/envCarriedOverToKc";
+import { getPaletteOverride } from "./env";
+import { mergeDeep } from "./tools/mergeDeep";
 
 const { ThemeProvider, useTheme } = createThemeProvider({
     "getTypographyDesc": params => ({
@@ -89,16 +91,27 @@ const { ThemeProvider, useTheme } = createThemeProvider({
     }),
     "palette": {
         ...(() => {
+            let palette: PaletteBase;
             switch (THEME_ID) {
                 case "onyxia":
-                    return defaultPalette;
+                    palette = defaultPalette;
+                    break;
                 case "france":
-                    return francePalette;
+                    palette = francePalette;
+                    break;
                 case "ultraviolet":
-                    return ultravioletPalette;
+                    palette = ultravioletPalette;
+                    break;
                 case "verdant":
-                    return verdantPalette;
+                    palette = verdantPalette;
+                    break;
             }
+            let paletteOverrides = getPaletteOverride();
+            if (paletteOverrides) {
+                palette = mergeDeep(palette, paletteOverrides) as PaletteBase;
+            }
+
+            return palette;
         })(),
         "limeGreen": {
             "main": "#BAFF29",
