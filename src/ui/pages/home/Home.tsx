@@ -12,7 +12,7 @@ import { Card as OnyxiaUiCard } from "onyxia-ui/Card";
 import type { Link } from "type-route";
 import onyxiaNeumorphismDarkModeUrl from "ui/assets/svg/OnyxiaNeumorphismDarkMode.svg";
 import onyxiaNeumorphismLightModeUrl from "ui/assets/svg/OnyxiaNeumorphismLightMode.svg";
-import dragoonSvgUrl from "ui/assets/svg/Dragoon.svg";
+import { ReactComponent as DragoonSvg } from "ui/assets/svg/Dragoon.svg";
 import { getIsHomePageDisabled } from "ui/env";
 import { useConst } from "powerhooks/useConst";
 import { useStateRef } from "powerhooks/useStateRef";
@@ -63,6 +63,7 @@ export default function Home(props: Props) {
                         <Button href="https://docs.sspcloud.fr/">{t("new user")}</Button>
                     )}
                 </div>
+                <DragoonSvg className={classes.dragoon} />
             </div>
             <div className={classes.cardsWrapper}>
                 <Card
@@ -119,14 +120,25 @@ const useStyles = makeStyles({ "name": { Home } })(theme => ({
     },
     "hero": {
         "flex": 1,
-        "backgroundImage": `url(${dragoonSvgUrl}), url(${
+        "position": "relative",
+        "backgroundImage": `url(${
             theme.isDarkModeEnabled
                 ? onyxiaNeumorphismDarkModeUrl
                 : onyxiaNeumorphismLightModeUrl
         })`,
-        "backgroundPosition": "109% 0%, 100% 0%",
-        "backgroundRepeat": "no-repeat, no-repeat",
-        "backgroundSize": "47%, 80%"
+        "backgroundPosition": "100% 0%",
+        "backgroundRepeat": "no-repeat",
+        "backgroundSize": "80%",
+        "overflow": "hidden"
+    },
+    "dragoon": {
+        "position": "absolute",
+        "width": "46%",
+        "right": -82,
+        "top": -206,
+        "& .focus-color": {
+            "fill": theme.colors.useCases.typography.textFocus
+        }
     },
     "heroTextWrapper": {
         "paddingLeft": theme.spacing(3),
