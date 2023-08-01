@@ -5,6 +5,9 @@ import { symToStr } from "tsafe/symToStr";
 import memoize from "memoizee";
 import { z } from "zod";
 import { assert } from "tsafe/assert";
+import { typeGuard } from "tsafe/typeGuard";
+import type { PaletteBase } from "onyxia-ui";
+import type { DeepPartial } from "keycloakify/tools/DeepPartial";
 
 export type AdminProvidedLink = {
     iconId: string;
@@ -69,19 +72,34 @@ export const getIsHomePageDisabled = memoize((): boolean => {
     return DISABLE_HOME_PAGE === "true";
 });
 
-export const getPaletteOverride = () => {
+export const getPaletteOverride = memoize(() => {
     const { PALETTE_OVERRIDE } = getEnv();
     if (PALETTE_OVERRIDE === "") {
         return undefined;
     }
+
+    let paletteOverride: any;
+
     try {
-        return JSON.parse(PALETTE_OVERRIDE);
+        paletteOverride = JSON.parse(PALETTE_OVERRIDE);
     } catch (err) {
-        throw new Error(`Palette override JSON is not valid, ${PALETTE_OVERRIDE}\n`, {
-            cause: err
+        throw new Error(`${symToStr({ PALETTE_OVERRIDE })} is not parsable JSON`, {
+            "cause": err
         });
     }
-};
+
+    assert(
+        typeGuard<DeepPartial<PaletteBase>>(
+            paletteOverride,
+            typeof paletteOverride === "object" &&
+                paletteOverride !== null &&
+                !(paletteOverride instanceof Array)
+        ),
+        `${symToStr({ PALETTE_OVERRIDE })} should be a JSON object`
+    );
+
+    return paletteOverride;
+});
 
 export const getDoHideOnyxia = memoize((): boolean => {
     const { HEADER_HIDE_ONYXIA } = getEnv();
