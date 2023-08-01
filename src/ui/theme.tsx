@@ -8,7 +8,7 @@ import {
     getIsPortraitOrientation,
     ViewPortOutOfRangeError
 } from "onyxia-ui";
-import type { PaletteBase, ThemeProviderProps } from "onyxia-ui";
+import type { ThemeProviderProps } from "onyxia-ui";
 import { createIcon } from "onyxia-ui/Icon";
 import { createIconButton } from "onyxia-ui/IconButton";
 import { createButton } from "onyxia-ui/Button";
@@ -91,27 +91,24 @@ const { ThemeProvider, useTheme } = createThemeProvider({
     }),
     "palette": {
         ...(() => {
-            let palette: PaletteBase;
-            switch (THEME_ID) {
-                case "onyxia":
-                    palette = defaultPalette;
-                    break;
-                case "france":
-                    palette = francePalette;
-                    break;
-                case "ultraviolet":
-                    palette = ultravioletPalette;
-                    break;
-                case "verdant":
-                    palette = verdantPalette;
-                    break;
-            }
-            let paletteOverrides = getPaletteOverride();
-            if (paletteOverrides) {
-                palette = mergeDeep(palette, paletteOverrides) as PaletteBase;
-            }
+            const selectedBuiltinPalette = (() => {
+                switch (THEME_ID) {
+                    case "onyxia":
+                        return defaultPalette;
+                    case "france":
+                        return francePalette;
+                    case "ultraviolet":
+                        return ultravioletPalette;
+                    case "verdant":
+                        return verdantPalette;
+                }
+            })();
 
-            return palette;
+            const paletteOverrides = getPaletteOverride();
+
+            return paletteOverrides !== undefined
+                ? mergeDeep(selectedBuiltinPalette, paletteOverrides)
+                : selectedBuiltinPalette;
         })(),
         "limeGreen": {
             "main": "#BAFF29",

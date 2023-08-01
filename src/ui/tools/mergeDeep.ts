@@ -2,17 +2,24 @@ function isObject(item: any) {
     return item && typeof item === "object" && !Array.isArray(item);
 }
 
-export function mergeDeep(target: Record<string, any>, source: Record<string, any>) {
-    let output = Object.assign({}, target);
-    if (isObject(target) && isObject(source)) {
-        Object.keys(source).forEach(key => {
-            if (isObject(source[key])) {
-                if (!(key in target)) Object.assign(output, { [key]: source[key] });
-                else output[key] = mergeDeep(target[key], source[key]);
+export function mergeDeep<
+    A extends Record<string, unknown>,
+    B extends Record<string, unknown>
+>(a: A, b: B): A & B {
+    let output = Object.assign({}, a);
+    if (isObject(a) && isObject(b)) {
+        Object.keys(b).forEach(key => {
+            if (isObject(b[key])) {
+                if (!(key in a)) Object.assign(output, { [key]: b[key] });
+                else {
+                    // @ts-expect-error
+                    output[key] = mergeDeep(a[key], b[key]);
+                }
             } else {
-                Object.assign(output, { [key]: source[key] });
+                Object.assign(output, { [key]: b[key] });
             }
         });
     }
+    // @ts-expect-error
     return output;
 }
