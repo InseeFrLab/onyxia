@@ -69,6 +69,20 @@ export const getIsHomePageDisabled = memoize((): boolean => {
     return DISABLE_HOME_PAGE === "true";
 });
 
+export const getPaletteOverride = () => {
+    const { PALETTE_OVERRIDE } = getEnv();
+    if (PALETTE_OVERRIDE === "") {
+        return undefined;
+    }
+    try {
+        return JSON.parse(PALETTE_OVERRIDE);
+    } catch (err) {
+        throw new Error(`Palette override JSON is not valid, ${PALETTE_OVERRIDE}\n`, {
+            cause: err
+        });
+    }
+};
+
 export const getDoHideOnyxia = memoize((): boolean => {
     const { HEADER_HIDE_ONYXIA } = getEnv();
 
