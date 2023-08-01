@@ -87,12 +87,10 @@ export function createOnyxiaApi(params: {
                                 ingressClassName: string;
                                 ingress?: boolean;
                                 route?: boolean;
-                                istio?:
-                                    | {
-                                          enabled: boolean;
-                                          gateways: string[];
-                                      }
-                                    | undefined;
+                                istio?: {
+                                    enabled: boolean;
+                                    gateways: string[];
+                                };
                             };
                             defaultConfiguration?: {
                                 ipprotection?: boolean;
