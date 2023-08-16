@@ -351,7 +351,19 @@ export const translations: Translations<"en"> = {
         "cancel": "Annuler",
         "replace": "Replace it",
         "sensitive configuration dialog title": "Launching this service may be dangerous",
-        "proceed to launch": "Proceed to launch"
+        "proceed to launch": "Proceed to launch",
+        "auto launch disabled dialog title":
+            "Auto launch feature disabled on this Onyxia instance",
+        "auto launch disabled dialog body": (
+            <>
+                <b>WARNING</b>: Someone might be trying to trick you into launching a
+                service that might compromise your namespace integrity.
+                <br />
+                Please carefully review the service configuration before launching it.
+                <br />
+                If you have any doubt, please contact your administrator.
+            </>
+        )
     },
     "Footer": {
         "contribute": "Contribute",

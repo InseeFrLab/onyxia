@@ -358,7 +358,19 @@ export const translations: Translations<"fr"> = {
         "replace": "Remplacer",
         "sensitive configuration dialog title":
             "Lancer ce service pourrait être dangereux",
-        "proceed to launch": "Lancer en conscience"
+        "proceed to launch": "Lancer en conscience",
+        "auto launch disabled dialog title": "Lancement automatique désactivé",
+        "auto launch disabled dialog body": (
+            <>
+                <g>ATTENTION</g>: Quelqu'un pourrait essayer de vous tromper en lançant un
+                service qui pourrait compromettre l'intégrité de votre namespace.
+                <br />
+                Veuillez examiner attentivement la configuration du service avant de le
+                lancer.
+                <br />
+                En cas de doute, veuillez contacter votre administrateur.
+            </>
+        )
     },
     "Footer": {
         "contribute": "Contribuer au projet",

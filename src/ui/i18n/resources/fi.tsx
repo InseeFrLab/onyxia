@@ -349,7 +349,18 @@ export const translations: Translations<"fi"> = {
         "replace": "Korvaa se",
         "sensitive configuration dialog title":
             "Palvelun käynnistäminen voi olla vaarallista",
-        "proceed to launch": "Jatka käynnistämistä"
+        "proceed to launch": "Jatka käynnistämistä",
+        "auto launch disabled dialog title": "Käynnistäminen ei ole mahdollista",
+        "auto launch disabled dialog body": (
+            <>
+                <g>VAROITUS</g>: Joku saattaa yrittää huijata sinua käynnistämään
+                palvelun, joka saattaa vaarantaa namespace-integriteettisi.
+                <br />
+                Tarkista palvelun asetukset huolellisesti ennen sen käynnistämistä.
+                <br />
+                Jos olet epävarma, ota yhteyttä ylläpitäjääsi.
+            </>
+        )
     },
     "Footer": {
         "contribute": "Osallistu",
