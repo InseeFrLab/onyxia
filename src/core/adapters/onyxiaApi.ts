@@ -187,6 +187,7 @@ export function createOnyxiaApi(params: {
                         packageRepositoryInjection?: {
                             cranProxyUrl: string;
                             condaProxyUrl: string;
+                            packageManagerUrl: string;
                             pypiProxyUrl: string;
                         };
 
