@@ -69,6 +69,21 @@ export const getIsHomePageDisabled = memoize((): boolean => {
     return DISABLE_HOME_PAGE === "true";
 });
 
+export const getIsAutoLaunchDisabled = memoize((): boolean => {
+    const { DISABLE_AUTO_LAUNCH } = getEnv();
+
+    const possibleValues = ["true", "false"];
+
+    assert(
+        possibleValues.indexOf(DISABLE_AUTO_LAUNCH) >= 0,
+        `${symToStr({ DISABLE_AUTO_LAUNCH })} should either be ${possibleValues.join(
+            " or "
+        )}`
+    );
+
+    return DISABLE_AUTO_LAUNCH === "true";
+});
+
 export const getDoHideOnyxia = memoize((): boolean => {
     const { HEADER_HIDE_ONYXIA } = getEnv();
 

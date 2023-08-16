@@ -23,6 +23,7 @@ import type { UnpackEvt } from "evt";
 import { Markdown } from "onyxia-ui/Markdown";
 import { declareComponentKeys } from "i18nifty";
 import { symToStr } from "tsafe/symToStr";
+import { getIsAutoLaunchDisabled } from "../../../env";
 
 export type Props = {
     className?: string;
@@ -178,7 +179,8 @@ export const CatalogLauncher = memo((props: Props) => {
             case "ready":
                 switch (state.launchState) {
                     case "not launching":
-                        if (route.params.autoLaunch) {
+                        const autoLaunchEnabled = !getIsAutoLaunchDisabled();
+                        if (autoLaunchEnabled && route.params.autoLaunch) {
                             const { sensitiveConfigurations } = state;
 
                             if (sensitiveConfigurations.length !== 0) {
