@@ -353,7 +353,18 @@ export const translations: Translations<"no"> = {
         "replace": "Erstatt den",
         "sensitive configuration dialog title":
             "Å starte denne tjenesten kan være farlig",
-        "proceed to launch": "Fortsett til oppstart"
+        "proceed to launch": "Fortsett til oppstart",
+        "auto launch disabled dialog title": "Tjenesten er ikke startet",
+        "auto launch disabled dialog body": (
+            <>
+                <g>ADVARSEL</g>: Noen kan prøve å lure deg til å starte en tjeneste som
+                kan kompromittere integriteten til ditt namespace.
+                <br />
+                Vennligst gjennomgå tjenestekonfigurasjonen nøye før du starter den.
+                <br />
+                Hvis du er i tvil, vennligst kontakt din administrator.
+            </>
+        )
     },
     "Footer": {
         "contribute": "Bidra",

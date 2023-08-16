@@ -353,7 +353,19 @@ export const translations: Translations<"nl"> = {
         "replace": "Vervangen",
         "sensitive configuration dialog title":
             "Deze dienst uitvoeren kan gevaarlijk zijn",
-        "proceed to launch": "Bewust uitvoeren"
+        "proceed to launch": "Bewust uitvoeren",
+        "auto launch disabled dialog title": "Deze dienst uitvoeren kan gevaarlijk zijn",
+        "auto launch disabled dialog body": (
+            <>
+                <g>WAARSCHUWING</g>: Iemand zou kunnen proberen je te misleiden om een
+                dienst te starten die de integriteit van je namespace in gevaar kan
+                brengen.
+                <br />
+                Controleer de configuratie van de dienst zorgvuldig voordat je deze start.
+                <br />
+                Als je twijfels hebt, neem dan contact op met je beheerder.
+            </>
+        )
     },
     "Footer": {
         "contribute": "Bijdragen aan het project",
