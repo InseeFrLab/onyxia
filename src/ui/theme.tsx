@@ -224,7 +224,7 @@ export const { LanguageSelect } = createLanguageSelect<Language>({
     "languagesPrettyPrint": {
         "en": "English",
         "fr": "Français",
-        "de": "German",
+        "de": "Deutsch",
         "it": "Italiano",
         "nl": "Nederlands",
         "no": "Norsk",
