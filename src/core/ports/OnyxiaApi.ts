@@ -69,7 +69,7 @@ export type User = {
     username: string;
 };
 
-export type Language = "en" | "fr" | "zh-CN" | "no" | "fi" | "nl" | "it";
+export type Language = "en" | "fr" | "zh-CN" | "no" | "fi" | "nl" | "it" | "de";
 export type LocalizedString = GenericLocalizedString<Language>;
 
 export type DeploymentRegion = {
