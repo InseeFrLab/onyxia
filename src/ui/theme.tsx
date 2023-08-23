@@ -224,11 +224,12 @@ export const { LanguageSelect } = createLanguageSelect<Language>({
     "languagesPrettyPrint": {
         "en": "English",
         "fr": "Français",
-        "zh-CN": "简体中文",
+        "de": "German",
+        "it": "Italiano",
+        "nl": "Nederlands",
         "no": "Norsk",
         "fi": "Suomi",
-        "nl": "Nederlands",
-        "it": "Italiano"
+        "zh-CN": "简体中文"
     }
 });
 
