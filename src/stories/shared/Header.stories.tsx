@@ -39,29 +39,39 @@ const propCoreAppCommon = {
 
 export const ViewUserLoggedIn = getStory({
     ...propCoreAppCommon,
-    "isUserLoggedIn": true,
-    ...logCallbacks(["onLogoutClick", "onSelectedProjectChange"]),
-    "projects": [
-        {
-            "id": "project1",
-            "name": "Project 1"
-        },
-        {
-            "id": "project2",
-            "name": "Project 2"
-        },
-        {
-            "id": "project3",
-            "name": "Project 3"
-        }
-    ],
-    "selectedProjectId": "project2"
+    "auth": {
+        "isUserLoggedIn": true,
+        ...logCallbacks(["onLogoutClick"])
+    },
+    "projectSelectProps": {
+        "projects": [
+            {
+                "id": "project1",
+                "name": "Project 1"
+            },
+            {
+                "id": "project2",
+                "name": "Project 2"
+            },
+            {
+                "id": "project3",
+                "name": "Project 3"
+            }
+        ],
+        "selectedProjectId": "project2",
+        ...logCallbacks(["onSelectedProjectChange"])
+    },
+    "regionSelectProps": undefined
 });
 
 export const ViewUserNotLoggedIn = getStory({
     ...propCoreAppCommon,
-    "isUserLoggedIn": false,
-    ...logCallbacks(["onLoginClick"])
+    "auth": {
+        "isUserLoggedIn": false,
+        ...logCallbacks(["onLoginClick"])
+    },
+    "projectSelectProps": undefined,
+    "regionSelectProps": undefined
 });
 
 export const LoginPage = getStory({

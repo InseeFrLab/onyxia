@@ -268,7 +268,8 @@ export const translations: Translations<"nl"> = {
     "Header": {
         "login": "Inloggen",
         "logout": "Uitloggen",
-        "project": "Project"
+        "project": "Project",
+        "region": "Regio"
     },
     "App": {
         "reduce": "Verkleinen",
