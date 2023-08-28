@@ -265,7 +265,8 @@ export const translations: Translations<"fi"> = {
     "Header": {
         "login": "Kirjaudu sisään",
         "logout": "Kirjaudu ulos",
-        "project": "Projekti"
+        "project": "Projekti",
+        "region": "Alue"
     },
     "App": {
         "reduce": "Pienennä",

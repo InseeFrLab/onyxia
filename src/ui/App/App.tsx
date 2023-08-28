@@ -5,7 +5,6 @@ import { LeftBar, makeStyles, type IconId } from "ui/theme";
 import type { LeftBarProps } from "onyxia-ui/LeftBar";
 import { Footer } from "./Footer";
 import { useTranslation, useResolveLocalizedString } from "ui/i18n";
-import { useCoreState, useCoreFunctions } from "core";
 import { useConstCallback } from "powerhooks/useConstCallback";
 import { useRoute, routes } from "ui/routes";
 import { useEffectOnValueChange } from "powerhooks/useEffectOnValueChange";
@@ -17,7 +16,7 @@ import type { Item } from "onyxia-ui/LeftBar";
 import { getExtraLeftBarItemsFromEnv, getIsHomePageDisabled } from "ui/env";
 import { declareComponentKeys } from "i18nifty";
 import { RouteProvider } from "ui/routes";
-import { createCoreProvider } from "core";
+import { createCoreProvider, useCoreState, useCoreFunctions, selectors } from "core";
 import { injectTransferableEnvsInSearchParams } from "keycloak-theme/login/envCarriedOverToKc";
 import { injectGlobalStatesInSearchParams } from "powerhooks/useGlobalState";
 import { evtLang } from "ui/i18n";
@@ -103,7 +102,9 @@ function ContextualizedApp() {
             : userAuthentication.login({ "doesCurrentHrefRequiresAuth": false })
     );
 
-    const projectsSlice = useProjectsSlice();
+    const projectSelectProps = useProjectSelectProps();
+
+    const regionSelectProps = useRegionSelectProps();
 
     const { lang } = useLang();
 
@@ -202,35 +203,25 @@ function ContextualizedApp() {
                     />
                 );
             })()}
-            {(() => {
-                const common = {
-                    "className": classes.header,
-                    "useCase": "core app",
-                    logoContainerWidth,
-                    "onLogoClick": onHeaderLogoClick
-                } as const;
-
-                if (isUserLoggedIn) {
-                    assert(projectsSlice !== null);
-
-                    return (
-                        <Header
-                            {...common}
-                            isUserLoggedIn={true}
-                            onLogoutClick={onHeaderAuthClick}
-                            {...projectsSlice}
-                        />
-                    );
+            <Header
+                className={classes.header}
+                useCase="core app"
+                logoContainerWidth={logoContainerWidth}
+                onLogoClick={onHeaderLogoClick}
+                regionSelectProps={regionSelectProps}
+                projectSelectProps={projectSelectProps}
+                auth={
+                    isUserLoggedIn
+                        ? {
+                              "isUserLoggedIn": true,
+                              "onLogoutClick": onHeaderAuthClick
+                          }
+                        : {
+                              "isUserLoggedIn": false,
+                              "onLoginClick": onHeaderAuthClick
+                          }
                 }
-
-                return (
-                    <Header
-                        {...common}
-                        isUserLoggedIn={false}
-                        onLoginClick={onHeaderAuthClick}
-                    />
-                );
-            })()}
+            />
             <section className={classes.betweenHeaderAndFooter}>
                 <LeftBar
                     className={classes.leftBar}
@@ -497,7 +488,7 @@ function useSyncDarkModeWithValueInProfile() {
     }, [isDarkModeEnabled]);
 }
 
-function useProjectsSlice() {
+function useProjectSelectProps() {
     const { projectConfigs, userAuthentication } = useCoreFunctions();
     const projectsState = useCoreState(state =>
         !userAuthentication.getIsUserLoggedIn() ? undefined : state.projectConfigs
@@ -556,10 +547,63 @@ function useProjectsSlice() {
     );
 
     if (projectsState === undefined) {
-        return null;
+        return undefined;
     }
 
     const { projects, selectedProjectId } = projectsState;
 
+    if (projects.length === 1) {
+        return undefined;
+    }
+
     return { projects, selectedProjectId, onSelectedProjectChange };
+}
+
+function useRegionSelectProps() {
+    const { deploymentRegion } = useCoreFunctions();
+    const { availableDeploymentRegionIds } = useCoreState(
+        selectors.deploymentRegion.availableDeploymentRegionIds
+    );
+    const {
+        selectedDeploymentRegion: { id: selectedDeploymentRegionId }
+    } = useCoreState(selectors.deploymentRegion.selectedDeploymentRegion);
+
+    const route = useRoute();
+
+    const onDeploymentRegionChange = useConstCallback(
+        async (props: { deploymentRegionId: string }) => {
+            const { deploymentRegionId } = props;
+
+            deploymentRegion.changeDeploymentRegion({
+                deploymentRegionId,
+                "reload": () => {
+                    window.location.reload();
+                    assert(false, "never");
+                }
+            });
+        }
+    );
+
+    if (availableDeploymentRegionIds.length === 1) {
+        return undefined;
+    }
+
+    switch (route.name) {
+        case "catalogLauncher":
+            break;
+        case "myFiles":
+            break;
+        case "mySecrets":
+            break;
+        case "myServices":
+            break;
+        default:
+            return undefined;
+    }
+
+    return {
+        availableDeploymentRegionIds,
+        selectedDeploymentRegionId,
+        onDeploymentRegionChange
+    };
 }

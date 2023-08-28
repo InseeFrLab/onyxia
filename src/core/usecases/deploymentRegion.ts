@@ -24,8 +24,7 @@ export const { reducer, actions } = createSlice({
 export const thunks = {
     /** NOTE: We don't try to hot swap, if the region is changed, we reload the app */
     "changeDeploymentRegion":
-        (params: { deploymentRegionId: string; reload: () => never }) =>
-        async (): Promise<never> => {
+        (params: { deploymentRegionId: string; reload: () => never }) => (): never => {
             const { deploymentRegionId, reload } = params;
 
             localStorage.setItem(localStorageKey, deploymentRegionId);
@@ -71,7 +70,7 @@ export const protectedThunks = {
 export const selectors = (() => {
     const selectedDeploymentRegion = (rootState: RootState): DeploymentRegion => {
         const { selectedDeploymentRegionId, availableDeploymentRegions } =
-            rootState.deploymentRegion;
+            rootState[name];
 
         const selectedDeploymentRegion = availableDeploymentRegions.find(
             ({ id }) => id === selectedDeploymentRegionId
@@ -82,7 +81,10 @@ export const selectors = (() => {
         return selectedDeploymentRegion;
     };
 
-    return { selectedDeploymentRegion };
+    const availableDeploymentRegionIds = (rootState: RootState): string[] =>
+        rootState[name].availableDeploymentRegions.map(({ id }) => id);
+
+    return { selectedDeploymentRegion, availableDeploymentRegionIds };
 })();
 
 const localStorageKey = "selectedDeploymentRegionId";

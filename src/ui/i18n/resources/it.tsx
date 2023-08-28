@@ -270,7 +270,8 @@ export const translations: Translations<"it"> = {
     "Header": {
         "login": "Connessione",
         "logout": "Disconnessione",
-        "project": "Proggetto"
+        "project": "Proggetto",
+        "region": "Regione"
     },
     "App": {
         "reduce": "Ridurre",
