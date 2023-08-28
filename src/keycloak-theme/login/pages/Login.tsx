@@ -21,15 +21,8 @@ export default function Login(
 ) {
     const { kcContext, i18n, doUseDefaultCss, Template, classes: classes_props } = props;
 
-    const {
-        social,
-        realm,
-        url,
-        usernameEditDisabled,
-        login,
-        auth,
-        registrationDisabled
-    } = kcContext;
+    const { social, realm, url, usernameHidden, login, auth, registrationDisabled } =
+        kcContext;
 
     const { msg, msgStr } = i18n;
 
@@ -113,7 +106,7 @@ export default function Login(
                         <form onSubmit={onSubmit} action={url.loginAction} method="post">
                             <div>
                                 <TextField
-                                    disabled={usernameEditDisabled}
+                                    disabled={usernameHidden}
                                     defaultValue={login.username ?? ""}
                                     id="username"
                                     name="username"
@@ -144,7 +137,7 @@ export default function Login(
                             </div>
                             <div className={classes.rememberMeForgotPasswordWrapper}>
                                 <div>
-                                    {realm.rememberMe && !usernameEditDisabled && (
+                                    {realm.rememberMe && !usernameHidden && (
                                         <div className="checkbox">
                                             <FormControlLabel
                                                 control={
