@@ -58,7 +58,7 @@
         "jwt-decode": "^3.1.2",
         "jwt-simple": "^0.5.6",
         "keycloak-js": "21.0.2",
-        "keycloakify": "^7.14.3",
+        "keycloakify": "8.0.0-rc.2",
         "memoizee": "^0.4.14",
         "minimal-polyfills": "^2.2.3",
         "minio": "^7.1.1",
