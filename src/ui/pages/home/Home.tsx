@@ -1,7 +1,7 @@
 import { useEffect, useMemo, memo } from "react";
 import { Button } from "ui/theme";
 import { routes } from "ui/routes";
-import { makeStyles, Text, useStyles as useClasslessStyles } from "ui/theme";
+import { tss, Text, useStyles as useClasslessStyles } from "ui/theme";
 import { ReactComponent as OnyxiaLogoSvg } from "ui/assets/svg/OnyxiaLogo.svg";
 import { useCoreFunctions } from "core";
 import { useTranslation } from "ui/i18n";
@@ -110,7 +110,7 @@ export const { i18n } = declareComponentKeys<
     | "cardButton3"
 >()({ Home });
 
-const useStyles = makeStyles({ "name": { Home } })(theme => ({
+const useStyles = tss.withName({ Home }).create(({ theme }) => ({
     "root": {
         "height": "100%",
         "overflow": "auto",

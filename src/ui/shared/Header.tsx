@@ -2,7 +2,7 @@ import { memo } from "react";
 import { /*IconButton, */ Button, ButtonBarButton } from "ui/theme";
 import { useTranslation } from "ui/i18n";
 import { useConstCallback } from "powerhooks/useConstCallback";
-import { makeStyles, Text } from "ui/theme";
+import { tss, Text } from "ui/theme";
 import { ReactComponent as OnyxiaLogoSvg } from "ui/assets/svg/OnyxiaLogo.svg";
 import {
     HEADER_ORGANIZATION,
@@ -160,8 +160,10 @@ export const { i18n } = declareComponentKeys<"logout" | "login" | "project" | "r
     }
 );
 
-const useStyles = makeStyles<{ logoContainerWidth: number }>({ "name": { Header } })(
-    (theme, { logoContainerWidth }) => ({
+const useStyles = tss
+    .withParams<{ logoContainerWidth: number }>()
+    .withName({ Header })
+    .create(({ theme, logoContainerWidth }) => ({
         "root": {
             "backgroundColor": theme.colors.useCases.surfaces.background,
             "overflow": "auto",
@@ -202,8 +204,7 @@ const useStyles = makeStyles<{ logoContainerWidth: number }>({ "name": { Header 
         "regionSelect": {
             "marginLeft": theme.spacing(4)
         }
-    })
-);
+    }));
 
 const labelId = "project-select-id";
 

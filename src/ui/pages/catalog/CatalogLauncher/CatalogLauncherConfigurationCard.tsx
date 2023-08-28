@@ -12,7 +12,7 @@ import { same } from "evt/tools/inDepth/same";
 import { memo, useMemo, useState } from "react";
 import { Tabs } from "onyxia-ui/Tabs";
 import MuiTextField from "@mui/material/TextField";
-import { Icon, IconButton, makeStyles, Text } from "ui/theme";
+import { Icon, IconButton, tss, Text } from "ui/theme";
 import { useConstCallback } from "powerhooks/useConstCallback";
 import type { FormField, IndexedFormFields } from "core/usecases/launcher";
 import type { FormFieldValue } from "core/usecases/sharedDataModel/FormFieldValue";
@@ -159,42 +159,44 @@ const { Header } = (() => {
           }
     );
 
-    const useStyles = makeStyles<{
-        isCollapsed: boolean;
-        isExpandIconVisible: boolean;
-    }>()((theme, { isCollapsed, isExpandIconVisible }) => ({
-        "root": {
-            "display": "flex",
-            ...theme.spacing.rightLeft("padding", 4),
-            "backgroundColor": theme.colors.useCases.surfaces.surface1,
-            "cursor": "pointer",
-            "borderBottom": isCollapsed
-                ? undefined
-                : `1px solid ${theme.colors.useCases.typography.textTertiary}`
-        },
-        "expandIcon": {
-            "& svg": {
-                "transition": theme.muiTheme.transitions.create(["transform"], {
-                    "duration": theme.muiTheme.transitions.duration.short
-                }),
-                "transform": `rotate(${isCollapsed ? 0 : "-180deg"})`,
-                "visibility": isExpandIconVisible ? undefined : "hidden"
+    const useStyles = tss
+        .withParams<{
+            isCollapsed: boolean;
+            isExpandIconVisible: boolean;
+        }>()
+        .create(({ theme, isCollapsed, isExpandIconVisible }) => ({
+            "root": {
+                "display": "flex",
+                ...theme.spacing.rightLeft("padding", 4),
+                "backgroundColor": theme.colors.useCases.surfaces.surface1,
+                "cursor": "pointer",
+                "borderBottom": isCollapsed
+                    ? undefined
+                    : `1px solid ${theme.colors.useCases.typography.textTertiary}`
+            },
+            "expandIcon": {
+                "& svg": {
+                    "transition": theme.muiTheme.transitions.create(["transform"], {
+                        "duration": theme.muiTheme.transitions.duration.short
+                    }),
+                    "transform": `rotate(${isCollapsed ? 0 : "-180deg"})`,
+                    "visibility": isExpandIconVisible ? undefined : "hidden"
+                }
+            },
+            "title": {
+                "display": "flex",
+                "alignItems": "center"
+            },
+            "titleWrapper": {
+                "display": "flex",
+                "flexDirection": "column",
+                "justifyContent": "center",
+                ...theme.spacing.topBottom("margin", 3)
+            },
+            "subtitle": {
+                "marginTop": theme.spacing(2)
             }
-        },
-        "title": {
-            "display": "flex",
-            "alignItems": "center"
-        },
-        "titleWrapper": {
-            "display": "flex",
-            "flexDirection": "column",
-            "justifyContent": "center",
-            ...theme.spacing.topBottom("margin", 3)
-        },
-        "subtitle": {
-            "marginTop": theme.spacing(2)
-        }
-    }));
+        }));
 
     const Header = memo((props: Props) => {
         const { className, isCollapsed, onIsCollapsedValueChange } = props;
@@ -280,23 +282,6 @@ const { TabContent } = (() => {
         onFormValueChange(params: FormFieldValue): void;
         formFieldsIsWellFormed: CatalogLauncherConfigurationCardProps["formFieldsIsWellFormed"];
     };
-
-    const useStyles = makeStyles()(theme => ({
-        "root": {
-            "display": "grid",
-            "gridTemplateColumns": "repeat(3, 1fr)",
-            "gap": theme.spacing(5)
-        },
-        "textField": {
-            //Hacky... to accommodate the helper text
-            //"marginBottom": 32,
-            "width": "100%"
-        },
-        "tabDescription": {
-            "marginTop": theme.spacing(2),
-            "marginBottom": theme.spacing(5)
-        }
-    }));
 
     const TabContent = memo((props: Props) => {
         const {
@@ -656,24 +641,43 @@ const { TabContent } = (() => {
         );
     });
 
+    const useStyles = tss.withName({ TabContent }).create(({ theme }) => ({
+        "root": {
+            "display": "grid",
+            "gridTemplateColumns": "repeat(3, 1fr)",
+            "gap": theme.spacing(5)
+        },
+        "textField": {
+            //Hacky... to accommodate the helper text
+            //"marginBottom": 32,
+            "width": "100%"
+        },
+        "tabDescription": {
+            "marginTop": theme.spacing(2),
+            "marginBottom": theme.spacing(5)
+        }
+    }));
+
     return { TabContent };
 })();
 
-const useStyles = makeStyles({ "name": { CatalogLauncherConfigurationCard } })(theme => ({
-    "root": {
-        "borderRadius": 8,
-        "overflow": "hidden",
-        "boxShadow": theme.shadows[1]
-    },
-    // eslint-disable-next-line tss-unused-classes/unused-classes
-    "collapsedPanel": {
-        "maxHeight": 0,
-        "transform": "scaleY(0)"
-    },
-    // eslint-disable-next-line tss-unused-classes/unused-classes
-    "expandedPanel": {
-        "transition": "transform 150ms cubic-bezier(0.4, 0, 0.2, 1)",
-        "transform": "scaleY(1)",
-        "transformOrigin": "top"
-    }
-}));
+const useStyles = tss
+    .withName({ CatalogLauncherConfigurationCard })
+    .create(({ theme }) => ({
+        "root": {
+            "borderRadius": 8,
+            "overflow": "hidden",
+            "boxShadow": theme.shadows[1]
+        },
+        // eslint-disable-next-line tss-unused-classes/unused-classes
+        "collapsedPanel": {
+            "maxHeight": 0,
+            "transform": "scaleY(0)"
+        },
+        // eslint-disable-next-line tss-unused-classes/unused-classes
+        "expandedPanel": {
+            "transition": "transform 150ms cubic-bezier(0.4, 0, 0.2, 1)",
+            "transform": "scaleY(1)",
+            "transformOrigin": "top"
+        }
+    }));

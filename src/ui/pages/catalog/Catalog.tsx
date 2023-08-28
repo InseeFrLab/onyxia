@@ -1,6 +1,6 @@
 import { useMemo, memo } from "react";
 import { useResolveLocalizedString, useLang, useTranslation } from "ui/i18n";
-import { makeStyles, PageHeader } from "ui/theme";
+import { PageHeader, tss } from "ui/theme";
 import { CatalogExplorer } from "./CatalogExplorer";
 import { CatalogLauncher } from "./CatalogLauncher";
 import Link from "@mui/material/Link";
@@ -118,7 +118,7 @@ export const { i18n } = declareComponentKeys<
     | "here"
 >()({ Catalog });
 
-const useStyles = makeStyles({ "name": { Catalog } })({
+const useStyles = tss.withName({ Catalog }).create({
     "root": {
         "height": "100%",
         "display": "flex",

@@ -4,7 +4,7 @@ import type { PageProps } from "keycloakify/login/pages/PageProps";
 import { useGetClassName } from "keycloakify/login/lib/useGetClassName";
 import type { KcContext } from "../kcContext";
 import type { I18n } from "../i18n";
-import { Button, makeStyles } from "ui/theme";
+import { Button, tss } from "ui/theme";
 import { Tooltip } from "onyxia-ui/Tooltip";
 
 export default function RegisterUserProfile(
@@ -97,7 +97,7 @@ export default function RegisterUserProfile(
     );
 }
 
-const useStyles = makeStyles({ "name": { RegisterUserProfile } })(theme => ({
+const useStyles = tss.withName({ RegisterUserProfile }).create(({ theme }) => ({
     "root": {
         "& .MuiTextField-root": {
             "width": "100%",

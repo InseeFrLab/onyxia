@@ -8,7 +8,7 @@ import { useCallbackFactory } from "powerhooks/useCallbackFactory";
 import { copyToClipboard } from "ui/tools/copyToClipboard";
 import Divider from "@mui/material/Divider";
 import Link from "@mui/material/Link";
-import { makeStyles } from "ui/theme";
+import { tss } from "ui/theme";
 import { Evt } from "evt";
 import type { UnpackEvt } from "evt";
 import memoize from "memoizee";
@@ -165,7 +165,7 @@ export const { i18n } = declareComponentKeys<
     | "accessible as env"
 >()({ AccountIntegrationsTab });
 
-const useStyles = makeStyles({ "name": { AccountIntegrationsTab } })(theme => ({
+const useStyles = tss.withName({ AccountIntegrationsTab }).create(({ theme }) => ({
     "divider": {
         ...theme.spacing.topBottom("margin", 4)
     },

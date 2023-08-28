@@ -1,5 +1,5 @@
 import { useTranslation } from "ui/i18n";
-import { makeStyles, Text } from "ui/theme";
+import { Text, tss } from "ui/theme";
 import { declareComponentKeys } from "i18nifty";
 
 export type Props = {
@@ -20,7 +20,7 @@ export default function Page404(props: Props) {
     );
 }
 
-const useStyles = makeStyles({ "name": { Page404 } })(theme => ({
+const useStyles = tss.withName({ Page404 }).create(({ theme }) => ({
     "root": {
         "height": "100%",
         "display": "flex",

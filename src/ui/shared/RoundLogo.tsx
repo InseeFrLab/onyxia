@@ -1,7 +1,7 @@
 import { memo } from "react";
 import Avatar from "@mui/material/Avatar";
 import { ReactComponent as FallbackSvg } from "ui/assets/svg/singlePackage.svg";
-import { makeStyles } from "ui/theme";
+import { tss } from "ui/theme";
 import type { IconSizeName } from "onyxia-ui";
 
 export type RoundLogoProps = {
@@ -22,20 +22,21 @@ export const RoundLogo = memo((props: RoundLogoProps) => {
     );
 });
 
-const useStyles = makeStyles<{ iconSizeName: IconSizeName }>({
-    "name": { RoundLogo }
-})((theme, { iconSizeName }) => ({
-    "fallback": {
-        "fill": theme.colors.useCases.typography.textPrimary
-    },
-    "root": {
-        ...(() => {
-            const size = theme.iconSizesInPxByName[iconSizeName];
+const useStyles = tss
+    .withName({ RoundLogo })
+    .withParams<{ iconSizeName: IconSizeName }>()
+    .create(({ theme, iconSizeName }) => ({
+        "fallback": {
+            "fill": theme.colors.useCases.typography.textPrimary
+        },
+        "root": {
+            ...(() => {
+                const size = theme.iconSizesInPxByName[iconSizeName];
 
-            return {
-                "width": size,
-                "height": size
-            };
-        })()
-    }
-}));
+                return {
+                    "width": size,
+                    "height": size
+                };
+            })()
+        }
+    }));

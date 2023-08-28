@@ -1,5 +1,5 @@
 import { memo, useReducer } from "react";
-import { makeStyles } from "ui/theme";
+import { tss } from "ui/theme";
 import { RoundLogo } from "ui/shared/RoundLogo";
 import { Button, Text } from "ui/theme";
 import { MyServicesSavedConfigOptions } from "./MyServicesSavedConfigOptions";
@@ -112,45 +112,46 @@ export const { i18n } = declareComponentKeys<"edit" | "launch">()({
     MyServicesSavedConfig
 });
 
-const useStyles = makeStyles<{ hasLogo: boolean; isShortVariant: boolean }>({
-    "name": { MyServicesSavedConfig }
-})((theme, { hasLogo, isShortVariant }) => ({
-    "root": {
-        "borderRadius": 16,
-        "boxShadow": theme.shadows[1],
-        "backgroundColor": theme.colors.useCases.surfaces.surface1,
-        "&:hover": {
-            "boxShadow": theme.shadows[6]
+const useStyles = tss
+    .withParams<{ hasLogo: boolean; isShortVariant: boolean }>()
+    .withName({ MyServicesSavedConfig })
+    .create(({ theme, isShortVariant, hasLogo }) => ({
+        "root": {
+            "borderRadius": 16,
+            "boxShadow": theme.shadows[1],
+            "backgroundColor": theme.colors.useCases.surfaces.surface1,
+            "&:hover": {
+                "boxShadow": theme.shadows[6]
+            },
+            "display": "flex",
+            "alignItems": "center",
+            "padding": theme.spacing(2),
+            "paddingRight": theme.spacing(3)
         },
-        "display": "flex",
-        "alignItems": "center",
-        "padding": theme.spacing(2),
-        "paddingRight": theme.spacing(3)
-    },
-    "logo": {
-        "visibility": hasLogo ? undefined : "hidden",
-        ...theme.spacing.rightLeft("margin", 2)
-    },
-    "friendlyNameWrapper": {
-        "overflow": "hidden",
-        "whiteSpace": "nowrap",
-        "flex": 1
-    },
-    "friendlyName": {
-        "overflow": "hidden",
-        "textOverflow": "ellipsis"
-    },
-    "linkIcon": {
-        "marginRight": theme.spacing(3)
-    },
-    "editIcon": {
-        "marginRight": theme.spacing(3)
-    },
-    "linkAndEditButtonWrapper": !isShortVariant
-        ? {}
-        : {
-              "width": 0,
-              "height": 0,
-              "overflow": "hidden"
-          }
-}));
+        "logo": {
+            "visibility": hasLogo ? undefined : "hidden",
+            ...theme.spacing.rightLeft("margin", 2)
+        },
+        "friendlyNameWrapper": {
+            "overflow": "hidden",
+            "whiteSpace": "nowrap",
+            "flex": 1
+        },
+        "friendlyName": {
+            "overflow": "hidden",
+            "textOverflow": "ellipsis"
+        },
+        "linkIcon": {
+            "marginRight": theme.spacing(3)
+        },
+        "editIcon": {
+            "marginRight": theme.spacing(3)
+        },
+        "linkAndEditButtonWrapper": !isShortVariant
+            ? {}
+            : {
+                  "width": 0,
+                  "height": 0,
+                  "overflow": "hidden"
+              }
+    }));
