@@ -13,7 +13,7 @@ import { useTranslation } from "ui/i18n";
 import { useCallbackFactory } from "powerhooks/useCallbackFactory";
 import { useConstCallback } from "powerhooks/useConstCallback";
 import memoize from "memoizee";
-import { Text, makeStyles } from "ui/theme";
+import { Text, tss } from "ui/theme";
 import { useConst } from "powerhooks/useConst";
 import type { Param0 } from "tsafe";
 import { useStateRef } from "powerhooks/useStateRef";
@@ -421,8 +421,10 @@ export const { i18n } = declareComponentKeys<"empty directory">()({
     SecretsExplorerItems
 });
 
-const useStyles = makeStyles<{ isEmpty: boolean }>({ "name": { SecretsExplorerItems } })(
-    (theme, { isEmpty }) => ({
+const useStyles = tss
+    .withParams<{ isEmpty: boolean }>()
+    .withName({ SecretsExplorerItems })
+    .create(({ theme, isEmpty }) => ({
         "root": {
             ...(isEmpty
                 ? {}
@@ -435,5 +437,4 @@ const useStyles = makeStyles<{ isEmpty: boolean }>({ "name": { SecretsExplorerIt
         "item": {
             "margin": theme.spacing(2)
         }
-    })
-);
+    }));

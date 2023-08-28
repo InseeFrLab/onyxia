@@ -1,4 +1,4 @@
-import { makeStyles } from "ui/theme";
+import { tss } from "ui/theme";
 import { useMemo, useState, memo } from "react";
 import { useCallbackFactory } from "powerhooks/useCallbackFactory";
 import { useConstCallback } from "powerhooks/useConstCallback";
@@ -361,34 +361,37 @@ export const { i18n } = declareComponentKeys<
     | "do not display again"
 >()({ MySecretsEditor });
 
-const useStyles = makeStyles<Props>({ "name": { MySecretsEditor } })(theme => ({
-    "root": {
-        "padding": theme.spacing(3),
-        "& .MuiTableCell-root": {
-            "padding": 0,
-            "border": "unset"
+const useStyles = tss
+    .withParams<Props>()
+    .withName({ MySecretsEditor })
+    .create(({ theme }) => ({
+        "root": {
+            "padding": theme.spacing(3),
+            "& .MuiTableCell-root": {
+                "padding": 0,
+                "border": "unset"
+            },
+            "& .MuiTableHead-root": {
+                "borderBottom": `1px solid ${theme.colors.useCases.typography.textTertiary}`
+            },
+            //So the error on the input of the last row is not cropped.
+            "overflow": "visible"
         },
-        "& .MuiTableHead-root": {
-            "borderBottom": `1px solid ${theme.colors.useCases.typography.textTertiary}`
+        "tableHead": {
+            "& .MuiTypography-root": {
+                "padding": theme.spacing({ "topBottom": 3, "rightLeft": 2 })
+            }
         },
-        //So the error on the input of the last row is not cropped.
-        "overflow": "visible"
-    },
-    "tableHead": {
-        "& .MuiTypography-root": {
-            "padding": theme.spacing({ "topBottom": 3, "rightLeft": 2 })
+        "buttonWrapper": {
+            "& > *": {
+                "marginTop": theme.spacing(4),
+                "marginRight": theme.spacing(2)
+            }
+        },
+        "tableContainerRoot": {
+            "overflow": "visible"
         }
-    },
-    "buttonWrapper": {
-        "& > *": {
-            "marginTop": theme.spacing(4),
-            "marginRight": theme.spacing(2)
-        }
-    },
-    "tableContainerRoot": {
-        "overflow": "visible"
-    }
-}));
+    }));
 
 function stringifyValue(value: Secret.Value) {
     return typeof value === "object" ? JSON.stringify(value) : `${value}`;

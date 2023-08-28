@@ -6,7 +6,7 @@ import { Evt } from "evt";
 import { useEvt } from "evt/hooks";
 import type { UnpackEvt } from "evt";
 import { useTranslation } from "ui/i18n";
-import { IconButton, Text, makeStyles } from "ui/theme";
+import { IconButton, Text, tss } from "ui/theme";
 import { useCallbackFactory } from "powerhooks/useCallbackFactory";
 import { useConstCallback } from "powerhooks/useConstCallback";
 import TableRow from "@mui/material/TableRow";
@@ -345,32 +345,33 @@ export const { i18n } = declareComponentKeys<"key input desc" | "value input des
     MySecretsEditorRow
 });
 
-const useStyles = makeStyles<Props & { isInEditingState: boolean }>({
-    "name": { MySecretsEditorRow }
-})((theme, { isInEditingState, isDarker }) => ({
-    "root": {
-        "backgroundColor": isDarker
-            ? theme.colors.useCases.surfaces.background
-            : "transparent",
-        "& .MuiTextField-root": {
-            "width": "100%"
+const useStyles = tss
+    .withParams<Props & { isInEditingState: boolean }>()
+    .withName({ MySecretsEditorRow })
+    .create(({ theme, isInEditingState, isDarker }) => ({
+        "root": {
+            "backgroundColor": isDarker
+                ? theme.colors.useCases.surfaces.background
+                : "transparent",
+            "& .MuiTextField-root": {
+                "width": "100%"
+            }
+        },
+        "dollarSign": {
+            "color": isInEditingState
+                ? theme.colors.useCases.typography.textDisabled
+                : theme.colors.useCases.typography.textFocus
+        },
+        "valueAndResolvedValue": {
+            "padding": theme.spacing({ "topBottom": 3, "rightLeft": 2 })
+            //"wordBreak": "break-all"
+        },
+        "keyAndValueTableCells": {
+            "padding": isInEditingState
+                ? theme.spacing({ "topBottom": 0, "rightLeft": 3 })
+                : undefined
         }
-    },
-    "dollarSign": {
-        "color": isInEditingState
-            ? theme.colors.useCases.typography.textDisabled
-            : theme.colors.useCases.typography.textFocus
-    },
-    "valueAndResolvedValue": {
-        "padding": theme.spacing({ "topBottom": 3, "rightLeft": 2 })
-        //"wordBreak": "break-all"
-    },
-    "keyAndValueTableCells": {
-        "padding": isInEditingState
-            ? theme.spacing({ "topBottom": 0, "rightLeft": 3 })
-            : undefined
-    }
-}));
+    }));
 
 function toUpperCase(value: string) {
     return value.toUpperCase();

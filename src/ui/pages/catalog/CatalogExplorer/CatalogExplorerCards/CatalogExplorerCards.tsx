@@ -1,6 +1,6 @@
 import { useState, memo, useEffect } from "react";
 import type { RefObject } from "react";
-import { makeStyles } from "ui/theme";
+import { tss } from "ui/theme";
 import { useCallbackFactory } from "powerhooks/useCallbackFactory";
 import { CatalogExplorerCard } from "./CatalogExplorerCard";
 import { useTranslation } from "ui/i18n";
@@ -183,13 +183,13 @@ const { CardShowMore } = (() => {
         leftToShowCount: number;
     };
 
-    const useStyles = makeStyles()(() => ({
+    const useStyles = tss.create({
         "root": {
             "display": "flex",
             "justifyContent": "center",
             "alignItems": "center"
         }
-    }));
+    });
 
     const CardShowMore = memo((props: Props) => {
         const { leftToShowCount, onClick } = props;
@@ -210,82 +210,59 @@ const { CardShowMore } = (() => {
     return { CardShowMore };
 })();
 
-const useStyles = makeStyles<{
-    filteredCardCount: number;
-}>({ "name": { CatalogExplorerCards } })((theme, { filteredCardCount }) => ({
-    "root": {
-        "height": "100%",
-        "display": "flex",
-        "flexDirection": "column"
-    },
-    "catalogSwitcher": {
-        "display": "flex",
-        "marginBottom": theme.spacing(2)
-    },
-    "searchBar": {
-        "marginBottom": theme.spacing(4)
-    },
-    "contextTypo": {
-        "marginBottom": theme.spacing(4)
-    },
-    "cardsWrapper": {
-        "flex": 1,
-        "overflow": "auto"
-    },
-    "cards": {
-        ...(filteredCardCount === 0
-            ? {}
-            : {
-                  "display": "grid",
-                  "gridTemplateColumns": `repeat(${(() => {
-                      if (theme.windowInnerWidth >= breakpointsValues.xl) {
-                          return 4;
-                      }
-                      if (theme.windowInnerWidth >= breakpointsValues.lg) {
-                          return 3;
-                      }
+const useStyles = tss
+    .withName({ CatalogExplorerCards })
+    .withParams<{
+        filteredCardCount: number;
+    }>()
+    .create(({ theme, filteredCardCount }) => ({
+        "root": {
+            "height": "100%",
+            "display": "flex",
+            "flexDirection": "column"
+        },
+        "catalogSwitcher": {
+            "display": "flex",
+            "marginBottom": theme.spacing(2)
+        },
+        "searchBar": {
+            "marginBottom": theme.spacing(4)
+        },
+        "contextTypo": {
+            "marginBottom": theme.spacing(4)
+        },
+        "cardsWrapper": {
+            "flex": 1,
+            "overflow": "auto"
+        },
+        "cards": {
+            ...(filteredCardCount === 0
+                ? {}
+                : {
+                      "display": "grid",
+                      "gridTemplateColumns": `repeat(${(() => {
+                          if (theme.windowInnerWidth >= breakpointsValues.xl) {
+                              return 4;
+                          }
+                          if (theme.windowInnerWidth >= breakpointsValues.lg) {
+                              return 3;
+                          }
 
-                      return 2;
-                  })()},1fr)`,
-                  "gap": theme.spacing(4)
-              })
-    },
-    "bottomScrollSpace": {
-        "height": theme.spacing(3)
-    }
-}));
+                          return 2;
+                      })()},1fr)`,
+                      "gap": theme.spacing(4)
+                  })
+        },
+        "bottomScrollSpace": {
+            "height": theme.spacing(3)
+        }
+    }));
 
 const { NoMatches } = (() => {
     type Props = {
         search: string;
         onGoBackClick(): void;
     };
-
-    const useStyles = makeStyles()(theme => ({
-        "root": {
-            "display": "flex",
-            "justifyContent": "center"
-        },
-        "innerDiv": {
-            "textAlign": "center",
-            "maxWidth": 500
-        },
-        "svg": {
-            "fill": theme.colors.palette.dark.greyVariant2,
-            "width": 100,
-            "margin": 0
-        },
-        "h2": {
-            ...theme.spacing.topBottom("margin", 4)
-        },
-        "typo": {
-            "marginBottom": theme.spacing(1),
-            "color": theme.colors.palette.light.greyVariant3
-        },
-        "link": {
-            "cursor": "pointer"
-        }
-    }));
 
     const NoMatches = memo((props: Props) => {
         const { search, onGoBackClick } = props;
@@ -314,6 +291,32 @@ const { NoMatches } = (() => {
             </div>
         );
     });
+
+    const useStyles = tss.withName({ NoMatches }).create(({ theme }) => ({
+        "root": {
+            "display": "flex",
+            "justifyContent": "center"
+        },
+        "innerDiv": {
+            "textAlign": "center",
+            "maxWidth": 500
+        },
+        "svg": {
+            "fill": theme.colors.palette.dark.greyVariant2,
+            "width": 100,
+            "margin": 0
+        },
+        "h2": {
+            ...theme.spacing.topBottom("margin", 4)
+        },
+        "typo": {
+            "marginBottom": theme.spacing(1),
+            "color": theme.colors.palette.light.greyVariant3
+        },
+        "link": {
+            "cursor": "pointer"
+        }
+    }));
 
     return { NoMatches };
 })();
@@ -357,7 +360,7 @@ const { CustomButton } = (() => {
         );
     });
 
-    const useStyles = makeStyles({ "name": { CustomButton } })(theme => ({
+    const useStyles = tss.withName({ CustomButton }).create(({ theme }) => ({
         "root": {
             "padding": theme.spacing({ "topBottom": 2, "rightLeft": 3 }),
             "display": "flex",

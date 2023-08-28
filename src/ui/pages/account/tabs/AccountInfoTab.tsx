@@ -8,7 +8,7 @@ import { copyToClipboard } from "ui/tools/copyToClipboard";
 import Divider from "@mui/material/Divider";
 import Link from "@mui/material/Link";
 import { useConstCallback } from "powerhooks/useConstCallback";
-import { makeStyles } from "ui/theme";
+import { tss } from "ui/theme";
 import { useAsync } from "react-async-hook";
 import { declareComponentKeys } from "i18nifty";
 
@@ -134,7 +134,7 @@ export const { i18n } = declareComponentKeys<
     | "ip address"
 >()({ AccountInfoTab });
 
-const useStyles = makeStyles({ "name": { AccountInfoTab } })(theme => ({
+const useStyles = tss.withName({ AccountInfoTab }).create(({ theme }) => ({
     "divider": {
         ...theme.spacing.topBottom("margin", 4)
     },

@@ -10,7 +10,7 @@ import { useArrayDiff } from "powerhooks/useArrayDiff";
 import { useTranslation } from "ui/i18n";
 import { useCallbackFactory } from "powerhooks/useCallbackFactory";
 import { useConstCallback } from "powerhooks/useConstCallback";
-import { Text, makeStyles } from "ui/theme";
+import { Text, tss } from "ui/theme";
 import { useConst } from "powerhooks/useConst";
 import type { Param0 } from "tsafe";
 import { useStateRef } from "powerhooks/useStateRef";
@@ -285,8 +285,10 @@ export const ExplorerItems = memo((props: ExplorerItemsProps) => {
 
 export const { i18n } = declareComponentKeys<"empty directory">()({ ExplorerItems });
 
-const useStyles = makeStyles<{ isEmpty: boolean }>({ "name": { ExplorerItems } })(
-    (theme, { isEmpty }) => ({
+const useStyles = tss
+    .withName({ ExplorerItems })
+    .withParams<{ isEmpty: boolean }>()
+    .create(({ theme, isEmpty }) => ({
         "root": {
             ...(isEmpty
                 ? {}
@@ -299,5 +301,4 @@ const useStyles = makeStyles<{ isEmpty: boolean }>({ "name": { ExplorerItems } }
         "item": {
             "margin": theme.spacing(2)
         }
-    })
-);
+    }));

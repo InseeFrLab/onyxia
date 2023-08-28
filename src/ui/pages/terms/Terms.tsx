@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useSplashScreen } from "onyxia-ui";
 import { Markdown } from "onyxia-ui/Markdown";
 import { useLang } from "ui/i18n";
-import { makeStyles } from "ui/theme";
+import { tss } from "ui/theme";
 import { downloadTermMarkdown } from "keycloak-theme/login/pages/Terms";
 import type { PageRoute } from "./route";
 
@@ -54,7 +54,7 @@ export default function Terms(props: Props) {
     );
 }
 
-const useStyles = makeStyles({ "name": { Terms } })(theme => ({
+const useStyles = tss.withName({ Terms }).create(({ theme }) => ({
     "root": {
         "display": "flex",
         "justifyContent": "center",

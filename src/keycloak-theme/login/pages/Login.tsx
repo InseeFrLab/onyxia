@@ -1,7 +1,7 @@
 import { useState, type FormEventHandler } from "react";
 import { useConstCallback } from "keycloakify/tools/useConstCallback";
 import type { PageProps } from "keycloakify/login/pages/PageProps";
-import { makeStyles, Text } from "ui/theme";
+import { tss, Text } from "ui/theme";
 import type { KcContext } from "../kcContext";
 import type { I18n } from "../i18n";
 import Link from "@mui/material/Link";
@@ -204,7 +204,7 @@ export default function Login(
     );
 }
 
-const useStyles = makeStyles({ "name": { Login } })(theme => ({
+const useStyles = tss.withName({ Login }).create(({ theme }) => ({
     "root": {
         "& .MuiTextField-root": {
             "width": "100%",
@@ -292,7 +292,7 @@ const { AgentConnectButton } = (() => {
         );
     }
 
-    const useStyles = makeStyles({ "name": { AgentConnectButton } })({
+    const useStyles = tss.withName({ AgentConnectButton }).create({
         "root": {
             "textAlign": "center"
         },
@@ -334,7 +334,7 @@ const { LoginDivider } = (() => {
         );
     }
 
-    const useStyles = makeStyles({ "name": { LoginDivider } })(theme => ({
+    const useStyles = tss.withName({ LoginDivider }).create(({ theme }) => ({
         "root": {
             "display": "flex",
             "alignItems": "center"

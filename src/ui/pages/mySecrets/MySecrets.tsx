@@ -1,4 +1,4 @@
-import { makeStyles, PageHeader } from "ui/theme";
+import { tss, PageHeader } from "ui/theme";
 import { useEffect, useState, useMemo } from "react";
 import { useConstCallback } from "powerhooks/useConstCallback";
 import { copyToClipboard } from "ui/tools/copyToClipboard";
@@ -325,7 +325,7 @@ export const { i18n } = declareComponentKeys<
       }
 >()({ MySecrets: MySecrets });
 
-const useStyles = makeStyles({ "name": { MySecrets: MySecrets } })({
+const useStyles = tss.withName({ MySecrets }).create({
     "root": {
         "height": "100%",
         "display": "flex",

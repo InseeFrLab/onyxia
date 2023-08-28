@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState, memo } from "react";
 import type { RefObject } from "react";
-import { makeStyles, Button } from "ui/theme";
+import { tss, Button } from "ui/theme";
 import { routes } from "ui/routes";
 import type { Route } from "type-route";
 import { CatalogLauncherMainCard } from "./CatalogLauncherMainCard";
@@ -344,7 +344,7 @@ export const { i18n } = declareComponentKeys<
     | "sensitive configuration dialog title"
 >()({ CatalogLauncher });
 
-const useStyles = makeStyles({ "name": { CatalogLauncher } })(theme => ({
+const useStyles = tss.withName({ CatalogLauncher }).create(({ theme }) => ({
     "wrapperForScroll": {
         "height": "100%",
         "overflow": "auto"

@@ -1,7 +1,7 @@
 import "minimal-polyfills/Object.fromEntries";
 import { useMemo, useEffect, useReducer, Suspense } from "react";
 import { Header } from "ui/shared/Header";
-import { LeftBar, makeStyles, type IconId } from "ui/theme";
+import { tss, LeftBar, type IconId } from "ui/theme";
 import type { LeftBarProps } from "onyxia-ui/LeftBar";
 import { Footer } from "./Footer";
 import { useTranslation, useResolveLocalizedString } from "ui/i18n";
@@ -322,7 +322,7 @@ export const { i18n } = declareComponentKeys<
     | "divider: onyxia instance specific features"
 >()({ App });
 
-const useStyles = makeStyles({ "name": { App } })(theme => {
+const useStyles = tss.withName({ App }).create(({ theme }) => {
     const footerHeight = 32;
 
     const rootRightLeftMargin = theme.spacing(4);

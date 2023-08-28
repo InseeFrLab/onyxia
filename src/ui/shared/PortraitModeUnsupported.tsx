@@ -1,6 +1,6 @@
 import { memo } from "react";
 import { useTranslation } from "ui/i18n";
-import { makeStyles, Text } from "ui/theme";
+import { tss, Text } from "ui/theme";
 import { declareComponentKeys } from "i18nifty";
 
 export type Props = {
@@ -26,7 +26,7 @@ export const PortraitModeUnsupported = memo((props: Props) => {
     );
 });
 
-const useStyles = makeStyles({ "name": { PortraitModeUnsupported } })(theme => ({
+const useStyles = tss.withName({ PortraitModeUnsupported }).create(({ theme }) => ({
     "root": {
         "height": "100vh",
         "display": "flex",
