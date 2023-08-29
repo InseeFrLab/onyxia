@@ -14,7 +14,8 @@ export const { getFormattedDate } = (() => {
         "no": `dddd, Do MMMM${isSameYear ? "" : " YYYY"}, HH:mm`,
         "fi": `dddd, Do MMMM${isSameYear ? "" : " YYYY"}, HH:mm`,
         "nl": `dddd, Do MMMM${isSameYear ? "" : " YYYY"}, HH:mm`,
-        "it": `dddd, Do MMMM${isSameYear ? "" : " YYYY"}, HH:mm`
+        "it": `dddd, Do MMMM${isSameYear ? "" : " YYYY"}, HH:mm`,
+        "de": `dddd, Do MMMM${isSameYear ? "" : " YYYY"}, HH:mm`
         /* spell-checker: enable */
     });
 
