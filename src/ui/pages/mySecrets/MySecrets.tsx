@@ -2,7 +2,7 @@ import { tss, PageHeader } from "ui/theme";
 import { useEffect, useState, useMemo } from "react";
 import { useConstCallback } from "powerhooks/useConstCallback";
 import { copyToClipboard } from "ui/tools/copyToClipboard";
-import { useCoreState, useCoreFunctions, selectors } from "core";
+import { useCoreState, useCoreFunctions, useCoreEvts, selectors } from "core";
 import { SecretsExplorer } from "./SecretsExplorer";
 import { ExplorerProps } from "./SecretsExplorer";
 import { useTranslation } from "ui/i18n";
@@ -18,6 +18,7 @@ import { useStateRef } from "powerhooks/useStateRef";
 import { declareComponentKeys } from "i18nifty";
 import type { Link } from "type-route";
 import type { PageRoute } from "./route";
+import { useEvt } from "evt/hooks";
 
 export type Props = {
     route: PageRoute;
@@ -29,37 +30,45 @@ export default function MySecrets(props: Props) {
 
     const { t } = useTranslation({ MySecrets });
 
-    const currentWorkingDirectoryView = useCoreState(
+    const { currentWorkingDirectoryView } = useCoreState(
         selectors.secretExplorer.currentWorkingDirectoryView
-    ).currentWorkingDirectoryView;
+    );
+    const { apiLogsEntries } = useCoreState(selectors.secretExplorer.apiLogsEntries);
 
     const secretEditorState = useCoreState(state => state.secretsEditor);
 
     const { secretExplorer, secretsEditor, userConfigs } = useCoreFunctions();
 
-    {
-        const onNavigate = useConstCallback<
-            Param0<(typeof secretExplorer)["notifyThatUserIsWatching"]>["onNavigate"]
-        >(({ directoryPath, doRestoreOpenedFile }) =>
-            routes[route.name]({
-                "path": directoryPath,
-                ...(!doRestoreOpenedFile
-                    ? {}
-                    : {
-                          "openFile": route.params.openFile ?? secretEditorState?.basename
-                      })
-            }).replace()
-        );
+    const { evtProjectConfigs } = useCoreEvts();
 
-        useEffect(() => {
-            secretExplorer.notifyThatUserIsWatching({
-                "directNavigationDirectoryPath": route.params.path,
-                onNavigate
-            });
+    useEvt(
+        ctx => {
+            evtProjectConfigs.attach(
+                action => action.name === "projectChanged",
+                ctx,
+                () => {
+                    routes[route.name]({ "path": undefined }).replace();
+                }
+            );
+        },
+        [evtProjectConfigs]
+    );
 
-            return () => secretExplorer.notifyThatUserIsNoLongerWatching();
-        }, [route.name]);
-    }
+    useEffect(() => {
+        secretExplorer.navigate({
+            "directoryPath": route.params.path
+        });
+    }, [route.params.path]);
+
+    //NOTE: This is for wen we have navigated to undefined because we didn't have any path in the url.
+    // the core will navigate to the home and we want to update the url to reflect that.
+    useEffect(() => {
+        const { directoryPath } = currentWorkingDirectoryView ?? {};
+
+        if (route.params.path === undefined && directoryPath !== undefined) {
+            routes[route.name]({ "path": directoryPath }).replace();
+        }
+    }, [route.params.path, currentWorkingDirectoryView?.directoryPath]);
 
     useEffect(() => {
         if (route.params.path === undefined) {
@@ -75,16 +84,6 @@ export default function MySecrets(props: Props) {
             });
         }
     }, [route.params.path, route.params.openFile]);
-
-    useEffect(() => {
-        if (route.params.path === undefined) {
-            return;
-        }
-
-        secretExplorer.navigate({
-            "directoryPath": route.params.path
-        });
-    }, [route.params.path]);
 
     const onNavigate = useConstCallback(
         ({ directoryPath }: Param0<ExplorerProps["onNavigate"]>) =>
@@ -133,8 +132,6 @@ export default function MySecrets(props: Props) {
     const onCopyPath = useConstCallback(({ path }: Param0<ExplorerProps["onCopyPath"]>) =>
         copyToClipboard(path.split("/").slice(2).join("/"))
     );
-
-    const fsApiLogs = useMemo(() => secretExplorer.getFsApiLogs(), []);
 
     const { classes, cx } = useStyles();
 
@@ -239,7 +236,7 @@ export default function MySecrets(props: Props) {
                 doShowHidden={false}
                 directoryPath={currentWorkingDirectoryView.directoryPath}
                 isNavigating={currentWorkingDirectoryView.isNavigationOngoing}
-                apiLogs={fsApiLogs}
+                apiLogsEntries={apiLogsEntries}
                 evtAction={evtExplorerAction}
                 files={currentWorkingDirectoryView.files}
                 directories={currentWorkingDirectoryView.directories}

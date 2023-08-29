@@ -4,7 +4,7 @@ import type { Project } from "../ports/OnyxiaApi";
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { createObjectThatThrowsIfAccessed } from "redux-clean-architecture";
-import type { State as RootState } from "../core";
+import type { State as RootState, CreateEvt } from "../core";
 import * as userConfigs from "./userConfigs";
 import { hiddenDirectoryBasename } from "./userConfigs";
 import { join as pathJoin } from "path";
@@ -274,3 +274,15 @@ export type ChangeConfigValueParams<
     key: K;
     value: ProjectConfigs[K];
 };
+
+export const createEvt = (({ evtAction }) =>
+    evtAction.pipe(action =>
+        action.sliceName === name && action.actionName === "projectChanged"
+            ? [
+                  {
+                      "name": "projectChanged" as const,
+                      "projectId": action.payload.projectId
+                  }
+              ]
+            : null
+    )) satisfies CreateEvt;

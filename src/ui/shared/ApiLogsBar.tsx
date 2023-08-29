@@ -1,36 +1,28 @@
 import { tss } from "ui/theme";
 import { useReducer, useEffect, memo } from "react";
-import { useEvt } from "evt/hooks/useEvt";
 import { useDomRect } from "onyxia-ui";
 import { CircularProgress } from "onyxia-ui/CircularProgress";
 import { IconButton, Icon } from "ui/theme";
 import { assert } from "tsafe/assert";
-import type { ApiLogs } from "core/tools/apiLogger";
 import { useStateRef } from "powerhooks/useStateRef";
 
 export type ApiLogsBarProps = {
     className?: string;
-    apiLogs: ApiLogs;
+    entries: ApiLogsBarProps.Entry[];
     /** In pixel */
     maxHeight: number;
 };
 
+export namespace ApiLogsBarProps {
+    export type Entry = {
+        cmdId: number;
+        cmd: string;
+        resp: string | undefined;
+    };
+}
+
 export const ApiLogsBar = memo((props: ApiLogsBarProps) => {
-    const { className, apiLogs, maxHeight } = props;
-
-    {
-        const [, forceUpdate] = useReducer(counter => counter + 1, 0);
-
-        useEvt(
-            ctx =>
-                apiLogs.evt.attach(ctx, () =>
-                    //translations.history will have changed.
-                    //console.log(JSON.stringify(translations.history[translations.history.length -1], null, 2));
-                    forceUpdate()
-                ),
-            [apiLogs.evt]
-        );
-    }
+    const { className, entries, maxHeight } = props;
 
     const {
         domRect: { height: headerHeight },
@@ -54,7 +46,7 @@ export const ApiLogsBar = memo((props: ApiLogsBarProps) => {
             "top": element.scrollHeight,
             "behavior": "smooth"
         });
-    }, [isExpended, apiLogs.evt.postCount, panelRef.current]);
+    }, [isExpended, entries.length, panelRef.current]);
 
     //TODO: see if classes are recomputed every time because ref object changes
     const { classes } = useStyles({ maxHeight, headerHeight, isExpended });
@@ -67,7 +59,7 @@ export const ApiLogsBar = memo((props: ApiLogsBarProps) => {
                 </div>
 
                 <div className={classes.lastTranslatedCmd}>
-                    {apiLogs.history.slice(-1)[0]?.cmd.replace(/\\\n/g, " ")}
+                    {entries.slice(-1)[0]?.cmd.replace(/\\\n/g, " ")}
                 </div>
 
                 <IconButton
@@ -80,7 +72,7 @@ export const ApiLogsBar = memo((props: ApiLogsBarProps) => {
                 ref={panelRef}
                 className={isExpended ? classes.expandedPanel : classes.collapsedPanel}
             >
-                {apiLogs.history.map(({ cmdId, cmd, resp }) => (
+                {entries.map(({ cmdId, cmd, resp }) => (
                     <div key={cmdId} className={classes.entryRoot}>
                         <div className={classes.dollarContainer}>
                             <Icon
