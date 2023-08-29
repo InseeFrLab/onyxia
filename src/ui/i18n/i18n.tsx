@@ -43,7 +43,8 @@ export const zLanguage = z.union([
     z.literal("no"),
     z.literal("fi"),
     z.literal("nl"),
-    z.literal("it")
+    z.literal("it"),
+    z.literal("de")
 ]);
 
 {
