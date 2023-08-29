@@ -4,6 +4,7 @@ import memoize from "memoizee";
 
 export const onyxiaApi: OnyxiaApi = {
     "getIp": memoize(() => Promise.resolve("0.0.0.0"), { "promise": true }),
+    "onboard": () => Promise.resolve(),
     "getUserProjects": memoize(
         () =>
             Promise.resolve([
@@ -11,6 +12,7 @@ export const onyxiaApi: OnyxiaApi = {
                     "id": "my-project",
                     "name": "my project",
                     "bucket": "my-project",
+                    "group": undefined,
                     "namespace": "my-namespace",
                     "vaultTopDir": "my-top-dir"
                 }
@@ -29,6 +31,7 @@ export const onyxiaApi: OnyxiaApi = {
                     "ingressClassName": undefined,
                     "ingress": true,
                     "route": undefined,
+                    "istio": undefined,
                     "initScriptUrl": "https://InseeFrLab.github.io/onyxia/onyxia-init.sh",
                     "s3": undefined,
                     "allowedURIPatternForUserDefinedInitScript": "^https://",
@@ -46,6 +49,16 @@ export const onyxiaApi: OnyxiaApi = {
                     "resources": undefined
                 }
             ]),
+        { "promise": true }
+    ),
+    "getUser": memoize(
+        () =>
+            Promise.resolve({
+                "username": "doej",
+                "email": "john.doe@insee.fr",
+                "familyName": "Doe",
+                "firstName": "John"
+            }),
         { "promise": true }
     ),
     ...createPropertyThatThrowIfAccessed("getCatalogs", "Not mocked"),

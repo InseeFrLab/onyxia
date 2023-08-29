@@ -1,6 +1,6 @@
 import { useState, memo } from "react";
 import type { DragEvent } from "react";
-import { makeStyles, Text } from "ui/theme";
+import { tss, Text } from "ui/theme";
 import { ExplorerIcon } from "../ExplorerIcon";
 import { useTranslation } from "ui/i18n";
 import Link from "@mui/material/Link";
@@ -102,30 +102,33 @@ export const { i18n } = declareComponentKeys<"drag and drop or" | "browse files"
     ExplorerUploadModalDropArea
 });
 
-const useStyles = makeStyles<{ isDragHover: boolean }>({
-    "name": { ExplorerUploadModalDropArea }
-})((theme, { isDragHover }) => ({
-    "root": {
-        "outline": `${isDragHover ? 3 : 1}px ${
-            theme.colors.useCases.buttons[isDragHover ? "actionActive" : "actionDisabled"]
-        } dashed`,
-        "borderRadius": theme.spacing(3),
-        "display": "flex",
-        "justifyContent": "center",
-        "alignItems": "center",
-        "boxSizing": "border-box",
-        ...theme.spacing.topBottom("padding", 7)
-    },
-    "innerDiv": {
-        "display": "flex",
-        "flexDirection": "column",
-        "justifyContent": "center"
-    },
-    "explorerIcon": {
-        "height": 60,
-        "marginBottom": theme.spacing(5)
-    },
-    "link": {
-        "cursor": "pointer"
-    }
-}));
+const useStyles = tss
+    .withParams<{ isDragHover: boolean }>()
+    .withName({ ExplorerUploadModalDropArea })
+    .create(({ theme, isDragHover }) => ({
+        "root": {
+            "outline": `${isDragHover ? 3 : 1}px ${
+                theme.colors.useCases.buttons[
+                    isDragHover ? "actionActive" : "actionDisabled"
+                ]
+            } dashed`,
+            "borderRadius": theme.spacing(3),
+            "display": "flex",
+            "justifyContent": "center",
+            "alignItems": "center",
+            "boxSizing": "border-box",
+            ...theme.spacing.topBottom("padding", 7)
+        },
+        "innerDiv": {
+            "display": "flex",
+            "flexDirection": "column",
+            "justifyContent": "center"
+        },
+        "explorerIcon": {
+            "height": 60,
+            "marginBottom": theme.spacing(5)
+        },
+        "link": {
+            "cursor": "pointer"
+        }
+    }));

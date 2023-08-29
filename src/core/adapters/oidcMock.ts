@@ -1,16 +1,9 @@
 import "minimal-polyfills/Object.fromEntries";
 import { id } from "tsafe/id";
-import { encodeJwt } from "core/tools/jwt";
 import { addParamToUrl, retrieveParamFromUrl } from "powerhooks/tools/urlSearchParams";
-import { objectKeys } from "tsafe/objectKeys";
 import type { Oidc } from "../ports/Oidc";
-import type { User } from "../ports/GetUser";
 
-export function createOidc(params: {
-    isUserInitiallyLoggedIn: boolean;
-    jwtClaimByUserKey: Record<keyof User, string>;
-    user: User;
-}): Oidc {
+export function createOidc(params: { isUserInitiallyLoggedIn: boolean }): Oidc {
     const isUserLoggedIn = (() => {
         const result = retrieveParamFromUrl({
             "url": window.location.href,
@@ -41,23 +34,10 @@ export function createOidc(params: {
 
     return id<Oidc.LoggedIn>({
         "isUserLoggedIn": true,
-        "getAccessToken": (() => {
-            const { jwtClaimByUserKey, user } = params;
-
-            const accessToken = encodeJwt(
-                Object.fromEntries(
-                    objectKeys(jwtClaimByUserKey).map(key => [
-                        jwtClaimByUserKey[key],
-                        user[key]
-                    ])
-                )
-            );
-
-            return () => ({
-                accessToken,
-                "expirationTime": Infinity
-            });
-        })(),
+        "getAccessToken": () => ({
+            "accessToken": "--OIDC ACCESS TOKEN--",
+            "expirationTime": Infinity
+        }),
         "logout": () => {
             const { newUrl } = addParamToUrl({
                 "url": window.location.href,

@@ -7,7 +7,7 @@ import type { I18n } from "../i18n";
 import { useDownloadTerms } from "keycloakify/login";
 import { createResolveLocalizedStringFactory } from "i18nifty/LocalizedString/LocalizedString";
 import { THERMS_OF_SERVICES } from "../envCarriedOverToKc";
-import { makeStyles, Button } from "ui/theme";
+import { tss, Button } from "ui/theme";
 import { useConst } from "powerhooks/useConst";
 import { id } from "tsafe/id";
 
@@ -84,7 +84,7 @@ export default function Terms(
     );
 }
 
-const useStyles = makeStyles({ "name": { Terms } })(theme => ({
+const useStyles = tss.withName({ Terms }).create(({ theme }) => ({
     "buttonsWrapper": {
         "marginTop": theme.spacing(4),
         "display": "flex",

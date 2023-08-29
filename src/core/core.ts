@@ -1,16 +1,15 @@
 import {
     createCoreFromUsecases,
-    createObjectThatThrowsIfAccessed
+    createObjectThatThrowsIfAccessed,
+    AccessError,
+    type GenericCreateEvt,
+    type GenericThunks
 } from "redux-clean-architecture";
-import type { GenericCreateEvt, GenericThunks } from "redux-clean-architecture";
-import { createGetUser } from "./adapters/getUser";
 import { usecases } from "./usecases";
-import type { GetUser, User } from "./ports/GetUser";
 import type { SecretsManager } from "./ports/SecretsManager";
 import type { S3Client } from "./ports/S3Client";
 import type { ReturnType } from "tsafe/ReturnType";
 import type { Language } from "./ports/OnyxiaApi";
-import { id } from "tsafe/id";
 
 type CoreParams = {
     /** Empty string for using mock */
@@ -26,7 +25,6 @@ type CoreParams = {
               clientId: string;
           }
         | undefined;
-    jwtClaimByUserKey: Record<keyof User, string>;
 };
 
 export async function createCore(params: CoreParams) {
@@ -35,24 +33,14 @@ export async function createCore(params: CoreParams) {
         isUserInitiallyLoggedIn = false,
         transformUrlBeforeRedirectToLogin,
         getCurrentLang,
-        keycloakParams,
-        jwtClaimByUserKey
+        keycloakParams
     } = params;
 
     const oidc = await (async () => {
         if (keycloakParams === undefined) {
             const { createOidc } = await import("core/adapters/oidcMock");
 
-            return createOidc({
-                isUserInitiallyLoggedIn,
-                jwtClaimByUserKey,
-                "user": {
-                    "username": "doej",
-                    "email": "john.doe@insee.fr",
-                    "familyName": "Doe",
-                    "firstName": "John"
-                }
-            });
+            return createOidc({ isUserInitiallyLoggedIn });
         }
 
         const { createOidc } = await import("core/adapters/oidc");
@@ -63,11 +51,6 @@ export async function createCore(params: CoreParams) {
             "getUiLocales": getCurrentLang
         });
     })();
-
-    /* prettier-ignore */
-    const refGetCurrentlySelectedDeployRegionId = { "current": id<undefined | (() => string)>(undefined) };
-    /* prettier-ignore */
-    const refGetCurrentlySelectedProjectId = { "current": id<undefined | (() => string)>(undefined) };
 
     const onyxiaApi = await (async () => {
         if (apiUrl === "") {
@@ -86,31 +69,39 @@ export async function createCore(params: CoreParams) {
                 }
                 return oidc.getAccessToken().accessToken;
             },
-            refGetCurrentlySelectedDeployRegionId,
-            refGetCurrentlySelectedProjectId
+            "getRegionId": () => {
+                try {
+                    return usecases.deploymentRegion.selectors.selectedDeploymentRegion(
+                        core.getState()
+                    ).id;
+                } catch (error) {
+                    if (error instanceof AccessError) {
+                        return undefined;
+                    }
+                    throw error;
+                }
+            },
+            "getProject": () => {
+                try {
+                    return usecases.projectConfigs.selectors.selectedProject(
+                        core.getState()
+                    );
+                } catch (error) {
+                    if (error instanceof AccessError) {
+                        return undefined;
+                    }
+                    throw error;
+                }
+            }
         });
 
         return sillApi;
-    })();
-
-    const getUser = (() => {
-        if (!oidc.isUserLoggedIn) {
-            return createObjectThatThrowsIfAccessed<GetUser>();
-        }
-
-        const { getUser } = createGetUser({
-            jwtClaimByUserKey,
-            "getOidcAccessToken": () => oidc.getAccessToken().accessToken
-        });
-
-        return getUser;
     })();
 
     const thunksExtraArgument = {
         "createStoreParams": params,
         oidc,
         onyxiaApi,
-        getUser,
         /** prettier-ignore */
         "secretsManager": createObjectThatThrowsIfAccessed<SecretsManager>({
             "debugMessage": "secretsManager is not yet initialized"
@@ -126,13 +117,9 @@ export async function createCore(params: CoreParams) {
         usecases
     });
 
-    await core.dispatch(usecases.userAuthentication.privateThunks.initialize());
+    await core.dispatch(usecases.userAuthentication.protectedThunks.initialize());
 
-    await core.dispatch(usecases.deploymentRegion.privateThunks.initialize());
-
-    /** prettier-ignore */
-    refGetCurrentlySelectedDeployRegionId.current = () =>
-        core.getState().deploymentRegion.selectedDeploymentRegionId;
+    await core.dispatch(usecases.deploymentRegion.protectedThunks.initialize());
 
     if (oidc.isUserLoggedIn) {
         /* prettier-ignore */
@@ -144,9 +131,8 @@ export async function createCore(params: CoreParams) {
             "oidc": oidc
         };
 
-        const { createOidcOrFallback } = await import(
-            "core/adapters/oidc/createOidcOrFallback"
-        );
+        /* prettier-ignore */
+        const { createOidcOrFallback } = await import("core/adapters/oidc/createOidcOrFallback");
 
         thunksExtraArgument.s3Client = await (async () => {
             if (s3Params === undefined) {
@@ -155,6 +141,7 @@ export async function createCore(params: CoreParams) {
                 return s3client;
             }
 
+            /** prettier-ignore */
             const { createS3Client, getCreateS3ClientParams } = await import(
                 "core/adapters/s3client"
             );
@@ -171,9 +158,8 @@ export async function createCore(params: CoreParams) {
 
         thunksExtraArgument.secretsManager = await (async () => {
             if (vaultParams === undefined) {
-                const { createSecretManager } = await import(
-                    "core/adapters/secretsManagerMock"
-                );
+                /* prettier-ignore */
+                const { createSecretManager } = await import("core/adapters/secretsManagerMock");
 
                 return createSecretManager();
             }
@@ -184,6 +170,7 @@ export async function createCore(params: CoreParams) {
                 "kvEngine": vaultParams.kvEngine,
                 "role": vaultParams.role,
                 "url": vaultParams.url,
+                "authPath": vaultParams.authPath,
                 "oidc": await createOidcOrFallback({
                     "keycloakParams": vaultParams.keycloakParams,
                     "fallback": fallbackOidc
@@ -191,17 +178,17 @@ export async function createCore(params: CoreParams) {
             });
         })();
 
-        await core.dispatch(usecases.userConfigs.privateThunks.initialize());
+        await core.dispatch(usecases.userConfigs.protectedThunks.initialize());
 
-        await core.dispatch(usecases.projectSelection.privateThunks.initialize());
+        await core.dispatch(usecases.projectConfigs.protectedThunks.initialize());
 
-        /* prettier-ignore */
-        refGetCurrentlySelectedProjectId.current = () => core.getState().projectSelection.selectedProjectId;
-
-        core.dispatch(usecases.restorablePackageConfigs.privateThunks.initialize());
+        /** prettier-ignore */
+        await core.dispatch(
+            usecases.restorablePackageConfigs.protectedThunks.initialize()
+        );
     }
 
-    core.dispatch(usecases.runningService.privateThunks.initialize());
+    core.dispatch(usecases.runningService.protectedThunks.initialize());
 
     return core;
 }

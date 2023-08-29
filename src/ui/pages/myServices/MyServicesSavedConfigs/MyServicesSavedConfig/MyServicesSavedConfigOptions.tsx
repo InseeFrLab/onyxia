@@ -3,7 +3,7 @@ import { useCallbackFactory } from "powerhooks/useCallbackFactory";
 import { useConstCallback } from "powerhooks/useConstCallback";
 import MuiButton from "@mui/material/Button";
 import type { ButtonProps as MuiButtonProps } from "@mui/material/Button";
-import { makeStyles, Icon, Text } from "ui/theme";
+import { tss, Icon, Text } from "ui/theme";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import { useTranslation } from "ui/i18n";
@@ -106,7 +106,7 @@ export const { i18n } = declareComponentKeys<"edit" | "remove bookmark" | "copy 
     MyServicesSavedConfigOptions
 });
 
-const useStyles = makeStyles({ "name": { MyServicesSavedConfigOptions } })(theme => ({
+const useStyles = tss.withName({ MyServicesSavedConfigOptions }).create(({ theme }) => ({
     "icon": {
         "color": theme.colors.useCases.typography.textPrimary
     },

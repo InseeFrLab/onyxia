@@ -13,7 +13,7 @@ import type { ThemeProviderProps, ChromeFontSize } from "onyxia-ui";
 import { ThemeProvider, Text, useStyles } from "ui/theme";
 import { id } from "tsafe/id";
 import "onyxia-ui/assets/fonts/WorkSans/font.css";
-import { GlobalStyles } from "onyxia-ui/tss";
+import { GlobalStyles } from "tss-react";
 import { objectKeys } from "tsafe/objectKeys";
 import { createCoreProvider } from "core";
 import { RouteProvider } from "ui/routes";
@@ -32,14 +32,7 @@ const { CoreProvider } = createCoreProvider({
     "apiUrl": "",
     "keycloakParams": undefined,
     "getCurrentLang": () => "en",
-    "transformUrlBeforeRedirectToLogin": url => url,
-    "jwtClaimByUserKey": {
-        "email": "a",
-        "familyName": "b",
-        "firstName": "c",
-        "groups": "e",
-        "username": "f"
-    }
+    "transformUrlBeforeRedirectToLogin": url => url
 });
 
 export const { createMockRoute } = createMockRouteFactory({

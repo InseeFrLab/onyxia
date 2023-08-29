@@ -17,15 +17,7 @@
     	-->
 	<title>%REACT_APP_HEADER_USECASE_DESCRIPTION%</title>
 
-	<!-- start favicon -->
-	<link rel="apple-touch-icon" sizes="180x180" href="%PUBLIC_URL%/favicon/%REACT_APP_THEME_ID%/apple-touch-icon.png">
-	<link rel="icon" type="image/png" sizes="32x32" href="%PUBLIC_URL%/favicon/%REACT_APP_THEME_ID%/favicon-32x32.png">
-	<link rel="icon" type="image/png" sizes="16x16" href="%PUBLIC_URL%/favicon/%REACT_APP_THEME_ID%/favicon-16x16.png">
-	<link rel="mask-icon" href="%PUBLIC_URL%/favicon/%REACT_APP_THEME_ID%/safari-pinned-tab.svg" color="#5bbad5">
-	<link rel="shortcut icon" href="%PUBLIC_URL%/favicon/%REACT_APP_THEME_ID%/favicon.ico">
-	<meta name="msapplication-TileColor" content="#da532c">
-	<meta name="theme-color" content="#ffffff">
-	<!-- end favicon -->
+	<link rel="icon" type="image/png" sizes="32x32" href="%PUBLIC_URL%/favicon-32x32.png">
 
 	<!-- cspell: disable -->
 	<!-- Primary Meta Tags -->
@@ -175,50 +167,69 @@
 		if it does no big deal.
 		*/
 		(function () {
-
+		
 			var isDarkModeEnabled = /true/.test((function () {
-
+			
 				var key = "powerhooks_useGlobalState_isDarkModeEnabled";
 				var value = null;
-
+			
 				try {
 					value = (new URLSearchParams(location.search)).get(key);
 				} catch (_) { }
-
+			
 				if (value !== null) {
 					return value;
 				}
-
+			
 				try {
 					value = localStorage.getItem(key);
 				} catch (_) { }
-
+			
 				if (value !== null) {
 					return value;
 				}
-
+			
 				try {
 					value = window.matchMedia("(prefers-color-scheme: dark)")
 						.matches ? "true" : "false";
 				} catch (_) { }
-
+			
 				if (value !== null) {
 					return value;
 				}
-
+			
 				return "false";
-
+			
 			})());
-
-			document.documentElement.style.backgroundColor =
-				(function () {
-					switch ("%REACT_APP_THEME_ID%") {
-						case "onyxia": return isDarkModeEnabled ? "#2C323F" : "#F1F0EB";
-						case "france": return isDarkModeEnabled ? "#2A2A2A" : "#F1F0EB";
-						case "ultraviolet": return isDarkModeEnabled ? "#2D1C3A" : "#F7F5F4";
-					}
-				})();
-
+		
+			var backgroundColor = (function () {
+				switch ("%REACT_APP_THEME_ID%") {
+					case "france": return isDarkModeEnabled ? "#2A2A2A" : "#F1F0EB";
+					case "ultraviolet": return isDarkModeEnabled ? "#2D1C3A" : "#F7F5F4";
+					default: return isDarkModeEnabled ? "#2C323F" : "#F1F0EB";
+				}
+			})();
+		
+			document.documentElement.style.backgroundColor = backgroundColor;
+		
+			while (true) {
+			
+				var element = document.querySelector("meta[name=theme-color]");
+			
+				if (element === null) {
+					break;
+				}
+			
+				element.remove();
+			
+			}
+		
+			document.head.insertAdjacentHTML(
+				"beforeend",
+				'<meta name="theme-color" content="' + backgroundColor + '">',
+			);
+		
+		
 		})();
 	</script>
 

@@ -20,17 +20,16 @@ import {
 } from "core/ports/OnyxiaApi";
 import type { RestorablePackageConfig } from "./restorablePackageConfigs";
 import type { WritableDraft } from "immer/dist/types/types-external";
-import { thunks as publicIpThunks } from "./publicIp";
-import { thunks as userAuthenticationThunk } from "./userAuthentication";
-import { selectors as deploymentRegionSelectors } from "./deploymentRegion";
+import * as publicIpUsecase from "./publicIp";
+import * as userAuthentication from "./userAuthentication";
+import * as deploymentRegion from "./deploymentRegion";
 import { exclude } from "tsafe/exclude";
-import { thunks as projectConfigs } from "./projectConfigs";
-import { selectors as projectSelectionSelectors } from "./projectSelection";
+import * as projectConfigs from "./projectConfigs";
 import { parseUrl } from "core/tools/parseUrl";
 import { typeGuard } from "tsafe/typeGuard";
 import { getRandomK8sSubdomain, getServiceId } from "../ports/OnyxiaApi";
 import { getS3UrlAndRegion } from "../adapters/s3client/getS3UrlAndRegion";
-import { interUsecasesThunks as secretExplorerThunks } from "./secretExplorer";
+import * as secretExplorer from "./secretExplorer";
 
 import * as yaml from "yaml";
 import type { Equals } from "tsafe";
@@ -995,20 +994,21 @@ export const thunks = {
         async (...args): Promise<OnyxiaValues> => {
             const [dispatch, getState, { secretsManager, s3Client }] = args;
 
-            const { publicIp } = await dispatch(publicIpThunks.fetch());
+            const { publicIp } = await dispatch(publicIpUsecase.thunks.fetch());
 
-            const user = dispatch(userAuthenticationThunk.getUser());
+            const user = dispatch(userAuthentication.thunks.getUser());
 
             const userConfigs = userConfigsSelectors.userConfigs(getState());
 
-            const selectedDeploymentRegion =
-                deploymentRegionSelectors.selectedDeploymentRegion(getState());
-
-            const servicePassword = await dispatch(
-                projectConfigs.getValue({ "key": "servicePassword" })
+            const region = deploymentRegion.selectors.selectedDeploymentRegion(
+                getState()
             );
 
-            const project = projectSelectionSelectors.selectedProject(getState());
+            const servicePassword = await dispatch(
+                projectConfigs.thunks.getServicesPassword()
+            );
+
+            const project = projectConfigs.selectors.selectedProject(getState());
 
             const onyxiaValues: OnyxiaValues = {
                 "user": {
@@ -1032,7 +1032,7 @@ export const thunks = {
                     "token": userConfigs.githubPersonalAccessToken ?? undefined
                 },
                 "vault": await (async () => {
-                    const { vault } = selectedDeploymentRegion;
+                    const { vault } = region;
 
                     if (vault === undefined) {
                         return {
@@ -1048,20 +1048,17 @@ export const thunks = {
                         "VAULT_TOKEN": (await secretsManager.getToken()).token,
                         "VAULT_MOUNT": vault.kvEngine,
                         "VAULT_TOP_DIR": dispatch(
-                            secretExplorerThunks.getProjectHomePath()
+                            secretExplorer.protectedThunks.getProjectHomePath()
                         )
                     };
                 })(),
                 "kaggleApiToken": userConfigs.kaggleApiToken ?? undefined,
                 "s3": await (async () => {
-                    const project = projectSelectionSelectors.selectedProject(getState());
-
-                    const isDefaultProject =
-                        getState().projectSelection.projects[0].id === project.id;
+                    const project = projectConfigs.selectors.selectedProject(getState());
 
                     const { accessKeyId, secretAccessKey, sessionToken } =
                         await s3Client.getToken({
-                            "restrictToBucketName": isDefaultProject
+                            "restrictToBucketName": project.isDefault
                                 ? undefined
                                 : project.bucket
                         });
@@ -1075,7 +1072,7 @@ export const thunks = {
                         "AWS_SESSION_TOKEN": sessionToken,
                         ...(() => {
                             const { s3: s3Params } =
-                                deploymentRegionSelectors.selectedDeploymentRegion(
+                                deploymentRegion.selectors.selectedDeploymentRegion(
                                     getState()
                                 );
 
@@ -1104,32 +1101,30 @@ export const thunks = {
                     };
                 })(),
                 "region": {
-                    "defaultIpProtection": selectedDeploymentRegion.defaultIpProtection,
-                    "defaultNetworkPolicy": selectedDeploymentRegion.defaultNetworkPolicy,
-                    "allowedURIPattern":
-                        selectedDeploymentRegion.allowedURIPatternForUserDefinedInitScript,
-                    "kafka": selectedDeploymentRegion.kafka,
-                    "from": selectedDeploymentRegion.from,
-                    "tolerations": selectedDeploymentRegion.tolerations,
-                    "nodeSelector": selectedDeploymentRegion.nodeSelector,
-                    "startupProbe": selectedDeploymentRegion.startupProbe,
-                    "sliders": selectedDeploymentRegion.sliders,
-                    "resources": selectedDeploymentRegion.resources
+                    "defaultIpProtection": region.defaultIpProtection,
+                    "defaultNetworkPolicy": region.defaultNetworkPolicy,
+                    "allowedURIPattern": region.allowedURIPatternForUserDefinedInitScript,
+                    "kafka": region.kafka,
+                    "from": region.from,
+                    "tolerations": region.tolerations,
+                    "nodeSelector": region.nodeSelector,
+                    "startupProbe": region.startupProbe,
+                    "sliders": region.sliders,
+                    "resources": region.resources
                 },
                 "k8s": {
-                    "domain": selectedDeploymentRegion.kubernetesClusterDomain,
-                    "ingressClassName": selectedDeploymentRegion.ingressClassName,
-                    "ingress": selectedDeploymentRegion.ingress,
-                    "route": selectedDeploymentRegion.route,
+                    "domain": region.kubernetesClusterDomain,
+                    "ingressClassName": region.ingressClassName,
+                    "ingress": region.ingress,
+                    "route": region.route,
+                    "istio": region.istio,
                     "randomSubdomain":
                         (getRandomK8sSubdomain.clear(), getRandomK8sSubdomain()),
-                    "initScriptUrl": selectedDeploymentRegion.initScriptUrl
+                    "initScriptUrl": region.initScriptUrl
                 },
-                "proxyInjection": selectedDeploymentRegion.proxyInjection,
-                "packageRepositoryInjection":
-                    selectedDeploymentRegion.packageRepositoryInjection,
-                "certificateAuthorityInjection":
-                    selectedDeploymentRegion.certificateAuthorityInjection
+                "proxyInjection": region.proxyInjection,
+                "packageRepositoryInjection": region.packageRepositoryInjection,
+                "certificateAuthorityInjection": region.certificateAuthorityInjection
             };
 
             console.log(onyxiaValues);

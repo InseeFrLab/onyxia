@@ -12,13 +12,13 @@ import type { ApiLogs } from "core/tools/apiLogger";
 import { logApi } from "core/tools/apiLogger";
 import type { S3Client } from "../ports/S3Client";
 import { assert } from "tsafe/assert";
-import { selectors as projectSelectionSelectors } from "./projectSelection";
+import * as projectConfigs from "./projectConfigs";
 import { Evt } from "evt";
 import type { Ctx } from "evt";
 import type { State as RootState } from "../core";
 import memoize from "memoizee";
 import type { WritableDraft } from "immer/dist/types/types-external";
-import { selectors as deploymentRegionSelectors } from "./deploymentRegion";
+import * as deploymentRegion from "./deploymentRegion";
 import type { Param0 } from "tsafe";
 import { createExtendedFsApi } from "core/tools/extendedFsApi";
 import type { ExtendedFsApi } from "core/tools/extendedFsApi";
@@ -281,7 +281,7 @@ const privateThunks = {
             Evt.merge([
                 evtAction
                     .pipe(event =>
-                        event.sliceName === "projectSelection" &&
+                        event.sliceName === "projectConfigs" &&
                         event.actionName === "projectChanged" &&
                         getState().fileExplorer["~internal"].isUserWatching
                             ? [
@@ -446,7 +446,7 @@ export const interUsecasesThunks = {
         (...args) => {
             const [, getState] = args;
 
-            return `/${projectSelectionSelectors.selectedProject(getState()).bucket}`;
+            return `/${projectConfigs.selectors.selectedProject(getState()).bucket}`;
         }
 } satisfies Thunks;
 
@@ -674,7 +674,9 @@ export const thunks = {
         (...args): boolean => {
             const [, getState] = args;
 
-            const region = deploymentRegionSelectors.selectedDeploymentRegion(getState());
+            const region = deploymentRegion.selectors.selectedDeploymentRegion(
+                getState()
+            );
 
             return region.s3 !== undefined;
         },

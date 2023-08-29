@@ -1,5 +1,5 @@
 import { memo } from "react";
-import { makeStyles, Text, LanguageSelect } from "ui/theme";
+import { tss, Text, LanguageSelect } from "ui/theme";
 import { useTranslation } from "ui/i18n";
 import { ReactComponent as GitHubSvg } from "ui/assets/svg/GitHub.svg";
 import { useLang } from "ui/i18n";
@@ -73,33 +73,36 @@ export const { i18n } = declareComponentKeys<
     "contribute" | "terms of service" | "change language" | "dark mode switch"
 >()({ Footer });
 
-const useStyles = makeStyles<Props>({ "name": { Footer } })(theme => ({
-    "root": {
-        "backgroundColor": theme.colors.useCases.surfaces.background,
-        "display": "flex",
-        "alignItems": "center",
-        "& a": {
-            "textDecoration": "none",
-            "&:hover": {
-                "textDecoration": "underline",
-                "textDecorationColor": theme.colors.useCases.typography.textPrimary
+const useStyles = tss
+    .withParams<Props>()
+    .withName({ Footer })
+    .create(({ theme }) => ({
+        "root": {
+            "backgroundColor": theme.colors.useCases.surfaces.background,
+            "display": "flex",
+            "alignItems": "center",
+            "& a": {
+                "textDecoration": "none",
+                "&:hover": {
+                    "textDecoration": "underline",
+                    "textDecorationColor": theme.colors.useCases.typography.textPrimary
+                }
             }
+        },
+        "icon": {
+            "fill": theme.colors.useCases.typography.textPrimary
+        },
+        "contribute": {
+            "display": "flex",
+            "alignItems": "center"
+        },
+        "sep": {
+            "flex": 1
+        },
+        "spacing": {
+            "width": theme.spacing(4)
+        },
+        "darkModeSwitch": {
+            "padding": 0
         }
-    },
-    "icon": {
-        "fill": theme.colors.useCases.typography.textPrimary
-    },
-    "contribute": {
-        "display": "flex",
-        "alignItems": "center"
-    },
-    "sep": {
-        "flex": 1
-    },
-    "spacing": {
-        "width": theme.spacing(4)
-    },
-    "darkModeSwitch": {
-        "padding": 0
-    }
-}));
+    }));

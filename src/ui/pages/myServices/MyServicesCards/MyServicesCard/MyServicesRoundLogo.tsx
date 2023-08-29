@@ -1,5 +1,5 @@
 import { memo } from "react";
-import { makeStyles } from "ui/theme";
+import { tss } from "ui/theme";
 import { RoundLogo } from "ui/shared/RoundLogo";
 
 export type Props = {
@@ -20,25 +20,26 @@ export const MyServicesRoundLogo = memo((props: Props) => {
     );
 });
 
-const useStyles = makeStyles<{
-    severity: Props["severity"];
-}>({ "name": { MyServicesRoundLogo } })((theme, { severity }) => ({
-    "root": {
-        "borderColor": (() => {
-            switch (severity) {
-                case "pending":
-                    return theme.colors.palette[
-                        theme.isDarkModeEnabled ? "dark" : "light"
-                    ].greyVariant2;
-                default:
-                    return theme.colors.useCases.alertSeverity[severity].main;
-            }
-        })(),
-        "borderStyle": "solid",
-        "borderWidth": 3,
-        "padding": 2,
-        "borderRadius": "50%",
-        "boxSizing": "border-box",
-        "display": "inline-block"
-    }
-}));
+const useStyles = tss
+    .withParams<{ severity: Props["severity"] }>()
+    .withName({ MyServicesRoundLogo })
+    .create(({ theme, severity }) => ({
+        "root": {
+            "borderColor": (() => {
+                switch (severity) {
+                    case "pending":
+                        return theme.colors.palette[
+                            theme.isDarkModeEnabled ? "dark" : "light"
+                        ].greyVariant2;
+                    default:
+                        return theme.colors.useCases.alertSeverity[severity].main;
+                }
+            })(),
+            "borderStyle": "solid",
+            "borderWidth": 3,
+            "padding": 2,
+            "borderRadius": "50%",
+            "boxSizing": "border-box",
+            "display": "inline-block"
+        }
+    }));

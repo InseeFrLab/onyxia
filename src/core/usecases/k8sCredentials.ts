@@ -5,11 +5,11 @@ import { createSlice } from "@reduxjs/toolkit";
 import { id } from "tsafe/id";
 import type { State as RootState } from "../core";
 import { createSelector } from "@reduxjs/toolkit";
-import { selectors as projectSelectionSelectors } from "./projectSelection";
-import { selectors as deploymentRegionSelectors } from "./deploymentRegion";
+import * as projectConfigs from "./projectConfigs";
+import * as deploymentRegion from "./deploymentRegion";
 import { parseUrl } from "core/tools/parseUrl";
 import { assert } from "tsafe/assert";
-import { thunks as userAuthenticationThunks } from "./userAuthentication";
+import * as userAuthentication from "./userAuthentication";
 import { createOidcOrFallback } from "core/adapters/oidc/createOidcOrFallback";
 import { createUsecaseContextApi } from "redux-clean-architecture";
 import type { Oidc } from "core/ports/Oidc";
@@ -79,7 +79,9 @@ export const thunks = {
         (...args): boolean => {
             const [, getState] = args;
 
-            const region = deploymentRegionSelectors.selectedDeploymentRegion(getState());
+            const region = deploymentRegion.selectors.selectedDeploymentRegion(
+                getState()
+            );
 
             return region.kubernetes !== undefined;
         },
@@ -99,7 +101,7 @@ export const thunks = {
 
             dispatch(actions.refreshStarted());
 
-            const { kubernetes } = deploymentRegionSelectors.selectedDeploymentRegion(
+            const { kubernetes } = deploymentRegion.selectors.selectedDeploymentRegion(
                 getState()
             );
 
@@ -137,7 +139,7 @@ export const thunks = {
 
             dispatch(
                 actions.refreshed({
-                    "username": dispatch(userAuthenticationThunks.getUser()).username,
+                    "username": dispatch(userAuthentication.thunks.getUser()).username,
                     "oidcAccessToken": accessToken,
                     expirationTime
                 })
@@ -165,7 +167,7 @@ export const selectors = (() => {
     const isReady = createSelector(readyState, readyState => readyState !== undefined);
 
     const kubernetesClusterUrl = createSelector(
-        deploymentRegionSelectors.selectedDeploymentRegion,
+        deploymentRegion.selectors.selectedDeploymentRegion,
         (selectedDeploymentRegion): string => {
             const { kubernetes } = selectedDeploymentRegion;
 
@@ -176,7 +178,7 @@ export const selectors = (() => {
     );
 
     const kubernetesNamespace = createSelector(
-        projectSelectionSelectors.selectedProject,
+        projectConfigs.selectors.selectedProject,
         selectedProject => selectedProject.namespace
     );
 

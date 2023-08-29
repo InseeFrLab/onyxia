@@ -1,6 +1,6 @@
 import { useEffect, memo } from "react";
 import { useTranslation } from "ui/i18n";
-import { makeStyles } from "ui/theme";
+import { tss } from "ui/theme";
 import { ExplorerUploadModalDropArea } from "./ExplorerUploadModalDropArea";
 import type { Props as ExplorerUploadModalDropAreaProps } from "./ExplorerUploadModalDropArea";
 import { ExplorerUploadProgress } from "./ExplorerUploadProgress";
@@ -117,7 +117,7 @@ const { ExplorerUploadModalBody } = (() => {
         );
     });
 
-    const useStyles = makeStyles({ "name": { ExplorerUploadModalBody } })(theme => ({
+    const useStyles = tss.withName({ ExplorerUploadModalBody }).create(({ theme }) => ({
         "root": {
             "minWidth": 500,
             ...theme.spacing.topBottom("padding", 3)

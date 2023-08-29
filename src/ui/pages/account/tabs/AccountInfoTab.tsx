@@ -2,13 +2,13 @@ import { useEffect, useReducer, memo } from "react";
 import { useTranslation } from "ui/i18n";
 import { AccountSectionHeader } from "../AccountSectionHeader";
 import { AccountField } from "../AccountField";
-import { useCoreState, useCoreFunctions } from "core";
+import { useCoreState, useCoreFunctions, selectors } from "core";
 import { useCallbackFactory } from "powerhooks/useCallbackFactory";
 import { copyToClipboard } from "ui/tools/copyToClipboard";
 import Divider from "@mui/material/Divider";
 import Link from "@mui/material/Link";
 import { useConstCallback } from "powerhooks/useConstCallback";
-import { makeStyles } from "ui/theme";
+import { tss } from "ui/theme";
 import { useAsync } from "react-async-hook";
 import { declareComponentKeys } from "i18nifty";
 
@@ -36,7 +36,7 @@ export const AccountInfoTab = memo((props: Props) => {
     const publicIp = useCoreState(state => state.publicIp) ?? "Loading...";
 
     /* prettier-ignore */
-    const selectedProjectId = useCoreState(state => state.projectSelection.selectedProjectId);
+    const { selectedProject: { id: selectedProjectId } } = useCoreState(selectors.projectConfigs.selectedProject);
 
     /* prettier-ignore */
     useEffect(() => { fetchPublicIp(); }, []);
@@ -47,7 +47,7 @@ export const AccountInfoTab = memo((props: Props) => {
     );
 
     const servicePasswordAsync = useAsync(
-        () => projectConfigs.getValue({ "key": "servicePassword" }),
+        () => projectConfigs.getServicesPassword(),
         [refreshServicePasswordTrigger, selectedProjectId]
     );
 
@@ -134,7 +134,7 @@ export const { i18n } = declareComponentKeys<
     | "ip address"
 >()({ AccountInfoTab });
 
-const useStyles = makeStyles({ "name": { AccountInfoTab } })(theme => ({
+const useStyles = tss.withName({ AccountInfoTab }).create(({ theme }) => ({
     "divider": {
         ...theme.spacing.topBottom("margin", 4)
     },

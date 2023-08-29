@@ -1,5 +1,5 @@
 import { memo } from "react";
-import { makeStyles } from "ui/theme";
+import { tss } from "ui/theme";
 import { MyServicesSavedConfig } from "./MyServicesSavedConfig";
 import type { Props as MyServicesSavedConfigProps } from "./MyServicesSavedConfig";
 import { useCallbackFactory } from "powerhooks/useCallbackFactory";
@@ -88,7 +88,7 @@ export const { i18n } = declareComponentKeys<"saved" | "show all">()({
     MyServicesSavedConfigs
 });
 
-const useStyles = makeStyles({ "name": { MyServicesSavedConfigs } })(theme => ({
+const useStyles = tss.withName({ MyServicesSavedConfigs }).create(({ theme }) => ({
     "root": {
         "overflow": "hidden",
         "display": "flex",

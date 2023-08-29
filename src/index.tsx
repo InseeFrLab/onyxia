@@ -2,6 +2,9 @@ import { lazy, Suspense } from "react";
 import { createRoot } from "react-dom/client";
 import { kcContext as kcLoginThemeContext } from "keycloak-theme/login/kcContext";
 import { assert } from "tsafe/assert";
+import { applyFaviconColor } from "ui/theme";
+
+applyFaviconColor();
 
 const App = lazy(() => import("ui/App"));
 const KcLoginThemeApp = lazy(() => import("keycloak-theme/login/KcApp"));

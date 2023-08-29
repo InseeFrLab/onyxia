@@ -2,7 +2,7 @@ import { memo } from "react";
 import type { ReactNode } from "react";
 import { Tooltip } from "onyxia-ui/Tooltip";
 import { Icon, Text } from "ui/theme";
-import { makeStyles } from "ui/theme";
+import { tss } from "ui/theme";
 
 export type Props = {
     className?: string;
@@ -35,7 +35,7 @@ export const AccountSectionHeader = memo((props: Props) => {
     );
 });
 
-const useStyles = makeStyles({ "name": { AccountSectionHeader } })(theme => ({
+const useStyles = tss.withName({ AccountSectionHeader }).create(({ theme }) => ({
     "root": {
         "marginBottom": theme.spacing(4)
     },

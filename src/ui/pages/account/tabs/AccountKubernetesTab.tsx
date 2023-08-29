@@ -5,7 +5,7 @@ import { AccountField } from "../AccountField";
 import { useCallbackFactory } from "powerhooks/useCallbackFactory";
 import { copyToClipboard } from "ui/tools/copyToClipboard";
 import Divider from "@mui/material/Divider";
-import { makeStyles } from "ui/theme";
+import { tss } from "ui/theme";
 import { assert } from "tsafe/assert";
 import { saveAs } from "file-saver";
 import { smartTrim } from "ui/tools/smartTrim";
@@ -135,7 +135,7 @@ export const { i18n } = declareComponentKeys<
     | { K: "expires in"; P: { howMuchTime: string } }
 >()({ AccountKubernetesTab });
 
-const useStyles = makeStyles({ "name": { AccountKubernetesTab } })(theme => ({
+const useStyles = tss.withName({ AccountKubernetesTab }).create(({ theme }) => ({
     "divider": {
         ...theme.spacing.topBottom("margin", 4)
     },

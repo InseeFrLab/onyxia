@@ -1,5 +1,5 @@
 import { memo } from "react";
-import { makeStyles, Icon, Text } from "ui/theme";
+import { tss, Icon, Text } from "ui/theme";
 import { useFromNow } from "ui/useMoment";
 import { useTranslation } from "ui/i18n";
 import { declareComponentKeys } from "i18nifty";
@@ -40,21 +40,20 @@ export const MyServicesRunningTime = memo((props: Props) => {
 
 export const { i18n } = declareComponentKeys<"launching">()({ MyServicesRunningTime });
 
-const useStyles = makeStyles<{ isOvertime: boolean }>({
-    "name": { MyServicesRunningTime }
-})((theme, { isOvertime }) => {
-    const color = isOvertime
-        ? theme.colors.useCases.alertSeverity.warning.main
-        : undefined;
+const useStyles = tss
+    .withName({ MyServicesRunningTime })
+    .withParams<{ isOvertime: boolean }>()
+    .create(({ theme, isOvertime }) => {
+        const color = isOvertime
+            ? theme.colors.useCases.alertSeverity.warning.main
+            : undefined;
 
-    return {
-        "root": {
-            color,
-            "display": "flex",
-            "alignItems": "center"
-        },
-        "icon": {
-            color
-        }
-    };
-});
+        return {
+            "root": {
+                color,
+                "display": "flex",
+                "alignItems": "center"
+            },
+            "icon": { color }
+        };
+    });

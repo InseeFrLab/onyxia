@@ -3,8 +3,7 @@ import * as deploymentRegion from "./deploymentRegion";
 import * as fileExplorer from "./fileExplorer";
 import * as secretExplorer from "./secretExplorer";
 import * as launcher from "./launcher";
-import * as projectConfig from "./projectConfigs";
-import * as projectSelection from "./projectSelection";
+import * as projectConfigs from "./projectConfigs";
 import * as publicIp from "./publicIp";
 import * as restorablePackageConfigs from "./restorablePackageConfigs";
 import * as runningService from "./runningService";
@@ -22,8 +21,7 @@ export const usecases = {
     fileExplorer,
     secretExplorer,
     launcher,
-    projectConfig,
-    projectSelection,
+    projectConfigs,
     publicIp,
     restorablePackageConfigs,
     runningService,

@@ -12,19 +12,19 @@ import {
 import type { ApiLogs } from "core/tools/apiLogger";
 import { logApi } from "core/tools/apiLogger";
 import { assert } from "tsafe/assert";
-import { selectors as projectSelectionSelectors } from "./projectSelection";
+import * as projectConfigs from "./projectConfigs";
 import { Evt } from "evt";
 import type { Ctx } from "evt";
 import type { State as RootState } from "../core";
 import memoize from "memoizee";
 import type { WritableDraft } from "immer/dist/types/types-external";
-import { selectors as deploymentRegionSelectors } from "./deploymentRegion";
+import * as deploymentRegion from "./deploymentRegion";
 import type { Param0 } from "tsafe";
 import { createExtendedFsApi } from "core/tools/extendedFsApi";
 import type { ExtendedFsApi } from "core/tools/extendedFsApi";
 import { getVaultApiLogger } from "core/adapters/secretsManager/vaultApiLogger";
 
-//All explorer path are expected to be absolute (start with /)
+// All explorer path are expected to be absolute (start with /)
 
 export type State = {
     directoryPath: string | undefined;
@@ -255,7 +255,7 @@ const privateThunks = {
             Evt.merge([
                 evtAction
                     .pipe(event =>
-                        event.sliceName === "projectSelection" &&
+                        event.sliceName === "projectConfigs" &&
                         event.actionName === "projectChanged" &&
                         getState().secretExplorer["~internal"].isUserWatching
                             ? [
@@ -292,7 +292,7 @@ const privateThunks = {
                         }
 
                         const defaultDirectoryPath = dispatch(
-                            interUsecasesThunks.getProjectHomePath()
+                            protectedThunks.getProjectHomePath()
                         );
 
                         const currentDirectoryPath =
@@ -349,7 +349,7 @@ const privateThunks = {
             );
 
             await dispatch(
-                interUsecasesThunks.waitForNoOngoingOperation({
+                protectedThunks.waitForNoOngoingOperation({
                     "kind": "directory",
                     "directoryPath": pathJoin(directoryPath, ".."),
                     "basename": pathBasename(directoryPath),
@@ -379,7 +379,7 @@ const privateThunks = {
         }
 } satisfies Thunks;
 
-export const interUsecasesThunks = {
+export const protectedThunks = {
     "getLoggedSecretsApis":
         () =>
         (...args) => {
@@ -431,9 +431,7 @@ export const interUsecasesThunks = {
         (...args) => {
             const [, getState] = args;
 
-            return `/${
-                projectSelectionSelectors.selectedProject(getState()).vaultTopDir
-            }`;
+            return `/${projectConfigs.selectors.selectedProject(getState()).vaultTopDir}`;
         }
 } satisfies Thunks;
 
@@ -541,7 +539,7 @@ export const thunks = {
             assert(directoryPath !== undefined);
 
             await dispatch(
-                interUsecasesThunks.waitForNoOngoingOperation({
+                protectedThunks.waitForNoOngoingOperation({
                     "kind": renamingWhat,
                     directoryPath,
                     basename
@@ -592,7 +590,7 @@ export const thunks = {
             assert(directoryPath !== undefined);
 
             await dispatch(
-                interUsecasesThunks.waitForNoOngoingOperation({
+                protectedThunks.waitForNoOngoingOperation({
                     "kind": params.createWhat,
                     directoryPath,
                     "basename": params.basename
@@ -651,7 +649,7 @@ export const thunks = {
             assert(directoryPath !== undefined);
 
             await dispatch(
-                interUsecasesThunks.waitForNoOngoingOperation({
+                protectedThunks.waitForNoOngoingOperation({
                     "kind": deleteWhat,
                     directoryPath,
                     basename
@@ -698,7 +696,9 @@ export const thunks = {
         (...args) => {
             const [, getState] = args;
 
-            const region = deploymentRegionSelectors.selectedDeploymentRegion(getState());
+            const region = deploymentRegion.selectors.selectedDeploymentRegion(
+                getState()
+            );
 
             return region.vault !== undefined;
         }
@@ -734,7 +734,7 @@ const { getSliceContexts } = (() => {
                 "apiLogger": getVaultApiLogger({
                     "clientType": "CLI",
                     "engine":
-                        deploymentRegionSelectors.selectedDeploymentRegion(getState())
+                        deploymentRegion.selectors.selectedDeploymentRegion(getState())
                             .vault?.kvEngine ?? "onyxia-kv"
                 })
             });
