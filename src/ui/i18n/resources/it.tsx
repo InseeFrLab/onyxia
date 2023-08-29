@@ -356,7 +356,7 @@ export const translations: Translations<"it"> = {
         "auto launch disabled dialog title": "Avvio automatico disabilitato",
         "auto launch disabled dialog body": (
             <>
-                <g>ATTENZIONE</g>: Qualcuno potrebbe cercare di ingannarti per lanciare un
+                <b>ATTENZIONE</b>: Qualcuno potrebbe cercare di ingannarti per lanciare un
                 servizio che potrebbe compromettere l'integrità del tuo namespace.
                 <br />
                 Si prega di rivedere attentamente la configurazione del servizio prima di
