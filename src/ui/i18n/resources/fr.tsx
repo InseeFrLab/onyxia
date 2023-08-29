@@ -362,7 +362,7 @@ export const translations: Translations<"fr"> = {
         "auto launch disabled dialog title": "Lancement automatique désactivé",
         "auto launch disabled dialog body": (
             <>
-                <g>ATTENTION</g>: Quelqu'un pourrait essayer de vous tromper en lançant un
+                <b>ATTENTION</b>: Quelqu'un pourrait essayer de vous tromper en lançant un
                 service qui pourrait compromettre l'intégrité de votre namespace.
                 <br />
                 Veuillez examiner attentivement la configuration du service avant de le

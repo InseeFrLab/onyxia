@@ -353,7 +353,7 @@ export const translations: Translations<"fi"> = {
         "auto launch disabled dialog title": "Käynnistäminen ei ole mahdollista",
         "auto launch disabled dialog body": (
             <>
-                <g>VAROITUS</g>: Joku saattaa yrittää huijata sinua käynnistämään
+                <b>VAROITUS</b>: Joku saattaa yrittää huijata sinua käynnistämään
                 palvelun, joka saattaa vaarantaa namespace-integriteettisi.
                 <br />
                 Tarkista palvelun asetukset huolellisesti ennen sen käynnistämistä.

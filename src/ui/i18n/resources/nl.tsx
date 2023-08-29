@@ -357,7 +357,7 @@ export const translations: Translations<"nl"> = {
         "auto launch disabled dialog title": "Deze dienst uitvoeren kan gevaarlijk zijn",
         "auto launch disabled dialog body": (
             <>
-                <g>WAARSCHUWING</g>: Iemand zou kunnen proberen je te misleiden om een
+                <b>WAARSCHUWING</b>: Iemand zou kunnen proberen je te misleiden om een
                 dienst te starten die de integriteit van je namespace in gevaar kan
                 brengen.
                 <br />

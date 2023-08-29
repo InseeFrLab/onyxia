@@ -357,7 +357,7 @@ export const translations: Translations<"no"> = {
         "auto launch disabled dialog title": "Tjenesten er ikke startet",
         "auto launch disabled dialog body": (
             <>
-                <g>ADVARSEL</g>: Noen kan prøve å lure deg til å starte en tjeneste som
+                <b>ADVARSEL</b>: Noen kan prøve å lure deg til å starte en tjeneste som
                 kan kompromittere integriteten til ditt namespace.
                 <br />
                 Vennligst gjennomgå tjenestekonfigurasjonen nøye før du starter den.

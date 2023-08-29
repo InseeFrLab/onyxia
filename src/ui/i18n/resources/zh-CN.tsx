@@ -297,7 +297,7 @@ export const translations: Translations<"zh-CN"> = {
         "auto launch disabled dialog title": "您想更换它吗?",
         "auto launch disabled dialog body": (
             <>
-                <g>警告</g>：有人可能试图欺骗您，启动一个可能威胁到您 namespace
+                <b>警告</b>：有人可能试图欺骗您，启动一个可能威胁到您 namespace
                 完整性的服务。
                 <br />
                 请在启动之前仔细审查服务配置。
