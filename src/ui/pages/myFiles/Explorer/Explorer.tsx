@@ -342,7 +342,7 @@ export const Explorer = memo((props: ExplorerProps) => {
                 </div>
                 <ApiLogsBar
                     className={classes.apiLogBar}
-                    apiLogs={apiLogs}
+                    entries={[...apiLogs.history]}
                     maxHeight={apiLogBarMaxHeight}
                 />
                 {(() => {

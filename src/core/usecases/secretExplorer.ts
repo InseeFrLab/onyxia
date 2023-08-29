@@ -2,14 +2,13 @@ import "minimal-polyfills/Object.fromEntries";
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { id } from "tsafe/id";
-import type { Thunks, ThunksExtraArgument } from "../core";
+import type { Thunks } from "../core";
 import type { SecretsManager, Secret } from "core/ports/SecretsManager";
 import {
     join as pathJoin,
     relative as pathRelative,
     basename as pathBasename
 } from "path";
-import type { ApiLogs } from "core/tools/apiLogger";
 import { logApi } from "core/tools/apiLogger";
 import { assert } from "tsafe/assert";
 import * as projectConfigs from "./projectConfigs";
@@ -19,10 +18,12 @@ import type { State as RootState } from "../core";
 import memoize from "memoizee";
 import type { WritableDraft } from "immer/dist/types/types-external";
 import * as deploymentRegion from "./deploymentRegion";
-import type { Param0 } from "tsafe";
 import { createExtendedFsApi } from "core/tools/extendedFsApi";
 import type { ExtendedFsApi } from "core/tools/extendedFsApi";
 import { getVaultApiLogger } from "core/adapters/secretsManager/vaultApiLogger";
+import { createUsecaseContextApi } from "redux-clean-architecture";
+// NOTE: Polyfill of a browser feature.
+import structuredClone from "@ungap/structured-clone";
 
 // All explorer path are expected to be absolute (start with /)
 
@@ -47,9 +48,11 @@ export type State = {
               previousBasename: string;
           }
     ))[];
-    "~internal": {
-        isUserWatching: boolean;
-    };
+    apiLogsEntries: {
+        cmdId: number;
+        cmd: string;
+        resp: string | undefined;
+    }[];
 };
 
 export const name = "secretExplorer";
@@ -61,9 +64,7 @@ export const { reducer, actions } = createSlice({
         "directoryItems": [],
         "isNavigationOngoing": false,
         "ongoingOperations": [],
-        "~internal": {
-            "isUserWatching": false
-        }
+        "apiLogsEntries": []
     }),
     "reducers": {
         "navigationStarted": state => {
@@ -205,23 +206,13 @@ export const { reducer, actions } = createSlice({
                     break;
             }
         },
-        "isUserWatchingChanged": (
+        "apiHistoryUpdated": (
             state,
-            {
-                payload
-            }: PayloadAction<
-                | {
-                      isUserWatching: false;
-                  }
-                | {
-                      isUserWatching: true;
-                      directNavigationDirectoryPath: string | undefined;
-                  }
-            >
+            { payload }: PayloadAction<{ apiLogsEntries: State["apiLogsEntries"] }>
         ) => {
-            const { isUserWatching } = payload;
+            const { apiLogsEntries } = payload;
 
-            state["~internal"].isUserWatching = isUserWatching;
+            state.apiLogsEntries = apiLogsEntries;
         }
     }
 });
@@ -250,65 +241,52 @@ const privateThunks = {
         (...args) => {
             const [dispatch, getState, extraArg] = args;
 
-            const { evtAction } = extraArg;
+            try {
+                getContext(extraArg);
 
-            Evt.merge([
-                evtAction
-                    .pipe(event =>
-                        event.sliceName === "projectConfigs" &&
-                        event.actionName === "projectChanged" &&
-                        getState().secretExplorer["~internal"].isUserWatching
-                            ? [
-                                  {
-                                      "directNavigationDirectoryPath": undefined,
-                                      "isProjectChanged": true
-                                  }
-                              ]
-                            : null
-                    )
-                    .attach(
-                        () => getState().secretExplorer.isNavigationOngoing,
-                        () => dispatch(actions.navigationCanceled())
-                    ),
-                evtAction.pipe(event =>
-                    event.sliceName === "secretExplorer" &&
-                    event.actionName === "isUserWatchingChanged" &&
-                    event.payload.isUserWatching
-                        ? [
-                              {
-                                  "directNavigationDirectoryPath":
-                                      event.payload.directNavigationDirectoryPath,
-                                  "isProjectChanged": false
-                              }
-                          ]
-                        : null
-                )
-            ]).attach(({ directNavigationDirectoryPath, isProjectChanged }) =>
-                getSliceContexts(args).onNavigate?.({
-                    "doRestoreOpenedFile": !isProjectChanged,
-                    "directoryPath": (() => {
-                        if (directNavigationDirectoryPath !== undefined) {
-                            return directNavigationDirectoryPath;
-                        }
+                //NOTE: We don't want to initialize twice.
+                return;
+            } catch {}
 
-                        const defaultDirectoryPath = dispatch(
-                            protectedThunks.getProjectHomePath()
-                        );
-
-                        const currentDirectoryPath =
-                            getState().secretExplorer.directoryPath;
-
-                        if (
-                            currentDirectoryPath !== undefined &&
-                            currentDirectoryPath.startsWith(defaultDirectoryPath)
-                        ) {
-                            return currentDirectoryPath;
-                        }
-
-                        return defaultDirectoryPath;
-                    })()
+            const { apiLogs, loggedApi } = logApi({
+                "api": extraArg.secretsManager,
+                "apiLogger": getVaultApiLogger({
+                    "clientType": "CLI",
+                    "engine":
+                        deploymentRegion.selectors.selectedDeploymentRegion(getState())
+                            .vault?.kvEngine ?? "onyxia-kv"
                 })
+            });
+
+            apiLogs.evt.toStateful().attach(() =>
+                dispatch(
+                    actions.apiHistoryUpdated({
+                        // NOTE: We spread only for the type.
+                        "apiLogsEntries": [...structuredClone(apiLogs.history)]
+                    })
+                )
             );
+
+            setContext(extraArg, {
+                "loggedSecretClient": loggedApi,
+                "loggedExtendedFsApi": createExtendedFsApi({
+                    "baseFsApi": {
+                        "list": loggedApi.list,
+                        "deleteFile": loggedApi.delete,
+                        "downloadFile": async ({ path }) =>
+                            (await loggedApi.get({ path })).secret,
+                        "uploadFile": ({ path, file }) =>
+                            loggedApi.put({ path, "secret": file })
+                    },
+                    "keepFile": id<Secret>({
+                        "info": [
+                            "This is a dummy secret so that this directory is kept even if there",
+                            "is no other secrets in it"
+                        ].join(" ")
+                    }),
+                    "keepFileBasename": ".keep"
+                })
+            });
         },
     /**
      * NOTE: It IS possible to navigate to a directory currently being renamed or created.
@@ -322,7 +300,7 @@ const privateThunks = {
 
             //Avoid navigating to the current directory.
             if (!forceReload) {
-                const currentDirectoryPath = getState().secretExplorer.directoryPath;
+                const currentDirectoryPath = getState()[name].directoryPath;
 
                 if (
                     currentDirectoryPath !== undefined &&
@@ -334,7 +312,7 @@ const privateThunks = {
 
             dispatch(actions.navigationStarted());
 
-            const { loggedSecretClient } = getSliceContexts(args);
+            const { loggedSecretClient } = getContext(extraArg);
 
             dispatch(thunks.cancelNavigation());
 
@@ -349,7 +327,7 @@ const privateThunks = {
             );
 
             await dispatch(
-                protectedThunks.waitForNoOngoingOperation({
+                privateThunks.waitForNoOngoingOperation({
                     "kind": "directory",
                     "directoryPath": pathJoin(directoryPath, ".."),
                     "basename": pathBasename(directoryPath),
@@ -376,17 +354,6 @@ const privateThunks = {
                     ]
                 })
             );
-        }
-} satisfies Thunks;
-
-export const protectedThunks = {
-    "getLoggedSecretsApis":
-        () =>
-        (...args) => {
-            const { loggedSecretClient, loggedExtendedFsApi, secretClientLogs } =
-                getSliceContexts(args);
-
-            return { loggedSecretClient, loggedExtendedFsApi, secretClientLogs };
         },
     "waitForNoOngoingOperation":
         (params: {
@@ -400,7 +367,7 @@ export const protectedThunks = {
 
             const { kind, basename, directoryPath, ctx = Evt.newCtx() } = params;
 
-            const { ongoingOperations } = getState().secretExplorer;
+            const { ongoingOperations } = getState()[name];
 
             const ongoingOperation = ongoingOperations.find(
                 o =>
@@ -425,6 +392,18 @@ export const protectedThunks = {
                     pathRelative(event.payload.directoryPath, directoryPath) === "",
                 ctx
             );
+        }
+} satisfies Thunks;
+
+export const protectedThunks = {
+    "getLoggedSecretsApis":
+        () =>
+        (...args) => {
+            const [, , extraArg] = args;
+
+            const { loggedSecretClient, loggedExtendedFsApi } = getContext(extraArg);
+
+            return { loggedSecretClient, loggedExtendedFsApi };
         },
     "getProjectHomePath":
         () =>
@@ -436,59 +415,19 @@ export const protectedThunks = {
 } satisfies Thunks;
 
 export const thunks = {
-    "notifyThatUserIsWatching":
-        (params: {
-            directNavigationDirectoryPath: string | undefined;
-            onNavigate: (params: {
-                directoryPath: string;
-                doRestoreOpenedFile: boolean;
-            }) => void;
-        }) =>
-        (...args) => {
-            const { directNavigationDirectoryPath, onNavigate } = params;
-            const [dispatch] = args;
-
-            const sliceContext = getSliceContexts(args);
-
-            if (!sliceContext.isLazilyInitialized) {
-                sliceContext.isLazilyInitialized = true;
-
-                dispatch(privateThunks.lazyInitialization());
-            }
-
-            sliceContext.onNavigate = onNavigate;
-
-            dispatch(
-                actions.isUserWatchingChanged({
-                    "isUserWatching": true,
-                    directNavigationDirectoryPath
-                })
-            );
-        },
-    "notifyThatUserIsNoLongerWatching":
-        () =>
-        (...args) => {
-            const [dispatch] = args;
-
-            const sliceContext = getSliceContexts(args);
-
-            delete sliceContext.onNavigate;
-
-            dispatch(actions.isUserWatchingChanged({ "isUserWatching": false }));
-        },
-    /**
-     * NOTE: It IS possible to navigate to a directory currently being renamed or created.
-     */
     "navigate":
-        (params: { directoryPath: string }) =>
+        (params: { directoryPath: string | undefined }) =>
         async (...args) => {
             const { directoryPath } = params;
 
             const [dispatch] = args;
 
+            dispatch(privateThunks.lazyInitialization());
+
             return dispatch(
                 privateThunks.navigate({
-                    directoryPath,
+                    "directoryPath":
+                        directoryPath ?? dispatch(protectedThunks.getProjectHomePath()),
                     "forceReload": false
                 })
             );
@@ -498,7 +437,7 @@ export const thunks = {
         () =>
         (...args) => {
             const [dispatch, getState] = args;
-            if (!getState().secretExplorer.isNavigationOngoing) {
+            if (!getState()[name].isNavigationOngoing) {
                 return;
             }
             dispatch(actions.navigationCanceled());
@@ -508,7 +447,7 @@ export const thunks = {
         async (...args) => {
             const [dispatch, getState] = args;
 
-            const { directoryPath } = getState().secretExplorer;
+            const { directoryPath } = getState()[name];
 
             if (directoryPath === undefined) {
                 return;
@@ -530,16 +469,16 @@ export const thunks = {
         async (...args) => {
             const { renamingWhat, basename, newBasename } = params;
 
-            const [dispatch, getState] = args;
+            const [dispatch, getState, extraArg] = args;
 
-            const contextualState = getState().secretExplorer;
+            const contextualState = getState()[name];
 
             const { directoryPath } = contextualState;
 
             assert(directoryPath !== undefined);
 
             await dispatch(
-                protectedThunks.waitForNoOngoingOperation({
+                privateThunks.waitForNoOngoingOperation({
                     "kind": renamingWhat,
                     directoryPath,
                     basename
@@ -555,7 +494,7 @@ export const thunks = {
                 })
             );
 
-            await getSliceContexts(args).loggedExtendedFsApi[
+            await getContext(extraArg).loggedExtendedFsApi[
                 (() => {
                     switch (renamingWhat) {
                         case "file":
@@ -581,16 +520,16 @@ export const thunks = {
     "create":
         (params: ExplorersCreateParams) =>
         async (...args) => {
-            const [dispatch, getState] = args;
+            const [dispatch, getState, extraArg] = args;
 
-            const contextualState = getState().secretExplorer;
+            const contextualState = getState()[name];
 
             const { directoryPath } = contextualState;
 
             assert(directoryPath !== undefined);
 
             await dispatch(
-                protectedThunks.waitForNoOngoingOperation({
+                privateThunks.waitForNoOngoingOperation({
                     "kind": params.createWhat,
                     directoryPath,
                     "basename": params.basename
@@ -605,7 +544,7 @@ export const thunks = {
                 })
             );
 
-            const sliceContexts = getSliceContexts(args);
+            const sliceContexts = getContext(extraArg);
 
             const path = pathJoin(directoryPath, params.basename);
 
@@ -640,16 +579,16 @@ export const thunks = {
         async (...args) => {
             const { deleteWhat, basename } = params;
 
-            const [dispatch, getState] = args;
+            const [dispatch, getState, extraArg] = args;
 
-            const contextualState = getState().secretExplorer;
+            const contextualState = getState()[name];
 
             const { directoryPath } = contextualState;
 
             assert(directoryPath !== undefined);
 
             await dispatch(
-                protectedThunks.waitForNoOngoingOperation({
+                privateThunks.waitForNoOngoingOperation({
                     "kind": deleteWhat,
                     directoryPath,
                     basename
@@ -664,7 +603,7 @@ export const thunks = {
                 })
             );
 
-            const sliceContexts = getSliceContexts(args);
+            const sliceContexts = getContext(extraArg);
 
             const path = pathJoin(directoryPath, basename);
 
@@ -687,10 +626,6 @@ export const thunks = {
                 })
             );
         },
-    "getFsApiLogs":
-        () =>
-        (...args) =>
-            getSliceContexts(args).secretClientLogs,
     "getIsEnabled":
         () =>
         (...args) => {
@@ -704,72 +639,12 @@ export const thunks = {
         }
 } satisfies Thunks;
 
-type SliceContexts = {
+type Context = {
     loggedSecretClient: SecretsManager;
-    secretClientLogs: ApiLogs;
-    onNavigate?: Param0<(typeof thunks)["notifyThatUserIsWatching"]>["onNavigate"];
-    isLazilyInitialized: boolean;
     loggedExtendedFsApi: ExtendedFsApi;
 };
 
-const { getSliceContexts } = (() => {
-    const weakMap = new WeakMap<ThunksExtraArgument, SliceContexts>();
-
-    function getSliceContexts(
-        args: Parameters<ReturnType<Thunks[string]>>
-    ): SliceContexts {
-        const [, getState, extraArg] = args;
-
-        let sliceContext = weakMap.get(extraArg);
-
-        if (sliceContext !== undefined) {
-            return sliceContext;
-        }
-
-        const isLazilyInitialized = false;
-
-        sliceContext = (() => {
-            const { apiLogs: secretClientLogs, loggedApi: loggedSecretClient } = logApi({
-                "api": extraArg.secretsManager,
-                "apiLogger": getVaultApiLogger({
-                    "clientType": "CLI",
-                    "engine":
-                        deploymentRegion.selectors.selectedDeploymentRegion(getState())
-                            .vault?.kvEngine ?? "onyxia-kv"
-                })
-            });
-
-            return {
-                loggedSecretClient,
-                secretClientLogs,
-                isLazilyInitialized,
-                "loggedExtendedFsApi": createExtendedFsApi({
-                    "baseFsApi": {
-                        "list": loggedSecretClient.list,
-                        "deleteFile": loggedSecretClient.delete,
-                        "downloadFile": async ({ path }) =>
-                            (await loggedSecretClient.get({ path })).secret,
-                        "uploadFile": ({ path, file }) =>
-                            loggedSecretClient.put({ path, "secret": file })
-                    },
-                    "keepFile": id<Secret>({
-                        "info": [
-                            "This is a dummy secret so that this directory is kept even if there",
-                            "is no other secrets in it"
-                        ].join(" ")
-                    }),
-                    "keepFileBasename": ".keep"
-                })
-            };
-        })();
-
-        weakMap.set(extraArg, sliceContext);
-
-        return sliceContext;
-    }
-
-    return { getSliceContexts };
-})();
+const { getContext, setContext } = createUsecaseContextApi<Context>();
 
 function removeIfPresent(
     directoryItems: WritableDraft<{
@@ -802,7 +677,7 @@ export const selectors = (() => {
     const currentWorkingDirectoryView = (
         rootState: RootState
     ): CurrentWorkingDirectoryView | undefined => {
-        const state = rootState.secretExplorer;
+        const state = rootState[name];
 
         const { directoryPath, isNavigationOngoing, directoryItems, ongoingOperations } =
             state;
@@ -850,5 +725,7 @@ export const selectors = (() => {
         })();
     };
 
-    return { currentWorkingDirectoryView };
+    const apiLogsEntries = (rootState: RootState) => rootState[name].apiLogsEntries;
+
+    return { currentWorkingDirectoryView, apiLogsEntries };
 })();

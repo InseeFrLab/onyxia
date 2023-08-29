@@ -25,6 +25,7 @@
         "@types/react-dom": "^18.0.6",
         "@types/react-router-dom": "^5.1.5",
         "@types/shell-quote": "^1.7.0",
+        "@types/ungap__structured-clone": "^0.3.0",
         "@typescript-eslint/eslint-plugin": "^5.36.2",
         "@typescript-eslint/parser": "^5.36.2",
         "circular-dependency-plugin": "^5.2.2",
@@ -83,7 +84,8 @@
         "type-route": "^0.6.0",
         "url-join-ts": "^1.0.5",
         "yaml": "^2.0.1",
-        "zod": "^3.19.0"
+        "zod": "^3.19.0",
+        "@ungap/structured-clone": "^1.2.0"
     },
     "scripts": {
         "start": "react-app-rewired start",

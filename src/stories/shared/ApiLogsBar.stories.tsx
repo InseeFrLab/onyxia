@@ -9,8 +9,9 @@ import { Evt } from "evt";
 import type { UnpackEvt } from "evt";
 import { id } from "tsafe/id";
 import { useEvt } from "evt/hooks/useEvt";
+import { type ApiLogs } from "core/tools/apiLogger";
 
-const translationsEvents: UnpackEvt<ApiLogsBarProps["apiLogs"]["evt"][]> = [
+const translationsEvents: UnpackEvt<ApiLogs["evt"][]> = [
     {
         "cmdId": 0,
         "type": "cmd",
@@ -96,15 +97,11 @@ const translationsEvents: UnpackEvt<ApiLogsBarProps["apiLogs"]["evt"][]> = [
     }
 ];
 
-function Component(
-    props: Omit<ApiLogsBarProps, "className" | "apiLogs"> & {
-        width: number;
-        maxHeight: number;
-        /** Toggle to fire a translation event */
-        tick: boolean;
-    }
-) {
-    const { tick, maxHeight, width } = props;
+function useFakeApiLogs(params: {
+    /** Toggle to fire a translation event */
+    tick: boolean;
+}): ApiLogs {
+    const { tick } = params;
 
     const [index, incrementIndex] = useReducer(
         (index: number) => (index === translationsEvents.length - 1 ? index : index + 1),
@@ -116,8 +113,8 @@ function Component(
     }, [tick]);
 
     const [apiLogs] = useState(() => ({
-        "evt": Evt.create<UnpackEvt<ApiLogsBarProps["apiLogs"]["evt"]>>(),
-        "history": id<ApiLogsBarProps["apiLogs"]["history"][number][]>([])
+        "evt": Evt.create<UnpackEvt<ApiLogs["evt"]>>(),
+        "history": id<ApiLogs["history"][number][]>([])
     }));
 
     useEvt(
@@ -148,13 +145,37 @@ function Component(
         apiLogs.evt.postAsyncOnceHandled(translationsEvents[index]);
     }, [index]);
 
+    return apiLogs;
+}
+
+function Component(
+    props: Omit<ApiLogsBarProps, "className" | "entries"> & {
+        width: number;
+        maxHeight: number;
+        /** Toggle to fire a translation event */
+        tick: boolean;
+    }
+) {
+    const { tick, maxHeight, width } = props;
+
+    const apiLogs = useFakeApiLogs({ tick });
+
+    const [entries, setEntries] = useState<ApiLogsBarProps["entries"]>([]);
+
+    useEvt(
+        ctx => {
+            apiLogs.evt.toStateful(ctx).attach(() => setEntries([...apiLogs.history]));
+        },
+        [apiLogs]
+    );
+
     return (
         <ApiLogsBar
             className={css({
                 "border": "1px solid black",
                 width
             })}
-            apiLogs={apiLogs}
+            entries={entries}
             maxHeight={maxHeight}
         />
     );
