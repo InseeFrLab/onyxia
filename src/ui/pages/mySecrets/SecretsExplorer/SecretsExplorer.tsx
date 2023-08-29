@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { makeStyles, Button } from "ui/theme";
+import { tss, Button } from "ui/theme";
 import { useState, useEffect, useMemo, memo } from "react";
 import type { RefObject } from "react";
 import { useConstCallback } from "powerhooks/useConstCallback";
@@ -519,40 +519,44 @@ export const { i18n } = declareComponentKeys<
     | "new directory"
 >()({ SecretsExplorer });
 
-const useStyles = makeStyles<{ apiLogBarTop: number; isOpenFileNodeNull: boolean }>({
-    "name": { SecretsExplorer }
-})((theme, { apiLogBarTop, isOpenFileNodeNull }) => ({
-    "root": {
-        "position": "relative",
-        "display": "flex",
-        "flexDirection": "column"
-    },
-    "apiLogBar": {
-        "position": "absolute",
-        "right": 0,
-        "width": "40%",
-        "top": apiLogBarTop,
-        "zIndex": 1,
-        "opacity": apiLogBarTop === 0 ? 0 : 1,
-        "transition": "opacity 750ms linear"
-    },
-    "openFile": (() => {
-        const opacity = isOpenFileNodeNull ? 0 : 1;
+const useStyles = tss
+    .withParams<{
+        apiLogBarTop: number;
+        isOpenFileNodeNull: boolean;
+    }>()
+    .withName({ SecretsExplorer })
+    .create(({ theme, apiLogBarTop, isOpenFileNodeNull }) => ({
+        "root": {
+            "position": "relative",
+            "display": "flex",
+            "flexDirection": "column"
+        },
+        "apiLogBar": {
+            "position": "absolute",
+            "right": 0,
+            "width": "40%",
+            "top": apiLogBarTop,
+            "zIndex": 1,
+            "opacity": apiLogBarTop === 0 ? 0 : 1,
+            "transition": "opacity 750ms linear"
+        },
+        "openFile": (() => {
+            const opacity = isOpenFileNodeNull ? 0 : 1;
 
-        return {
-            opacity,
-            "transition": opacity === 0 ? undefined : "opacity 500ms linear"
-        };
-    })(),
-    "breadcrump": {
-        "marginTop": theme.spacing(3),
-        "marginBottom": theme.spacing(4)
-    },
-    "fileOrDirectoryIcon": {
-        "height": "unset",
-        "width": "100%"
-    }
-}));
+            return {
+                opacity,
+                "transition": opacity === 0 ? undefined : "opacity 500ms linear"
+            };
+        })(),
+        "breadcrump": {
+            "marginTop": theme.spacing(3),
+            "marginBottom": theme.spacing(4)
+        },
+        "fileOrDirectoryIcon": {
+            "height": "unset",
+            "width": "100%"
+        }
+    }));
 
 function useApiLogsBarPositioning() {
     const {
@@ -757,7 +761,7 @@ const { CreateS3DirectoryDialog } = (() => {
         );
     });
 
-    const useStyles = makeStyles({ "name": { CreateS3DirectoryDialog } })(theme => ({
+    const useStyles = tss.withName({ CreateS3DirectoryDialog }).create(({ theme }) => ({
         "textField": {
             "width": 250,
             "margin": theme.spacing(5)

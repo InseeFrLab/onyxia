@@ -114,7 +114,7 @@ export const { reducer, actions } = createSlice({
     }
 });
 
-export const privateThunks = {
+export const protectedThunks = {
     "initialize":
         () =>
         async (...args) => {
@@ -129,7 +129,10 @@ export const privateThunks = {
                     })()
                 })
             );
-        },
+        }
+} satisfies Thunks;
+
+const privateThunks = {
     "syncWithUserConfig":
         () =>
         async (...args) => {

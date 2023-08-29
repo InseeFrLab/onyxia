@@ -18,10 +18,15 @@ type Params = {
     kvEngine: string;
     role: string;
     oidc: Oidc.LoggedIn;
+    /**
+     * Default: 'jwt'
+     * When it's 'jwt' we will request /v1/auth/jwt/login
+     */
+    authPath: string | undefined;
 };
 
 export async function createSecretManager(params: Params): Promise<SecretsManager> {
-    const { url, kvEngine, role, oidc } = params;
+    const { url, kvEngine, role, oidc, authPath = "jwt" } = params;
 
     const createAxiosInstance = () => axios.create({ "baseURL": url });
 
@@ -34,7 +39,7 @@ export async function createSecretManager(params: Params): Promise<SecretsManage
                     data: { auth }
                 } = await createAxiosInstance().post<{
                     auth: { lease_duration: number; client_token: string };
-                }>(`/${version}/auth/jwt/login`, {
+                }>(`/${version}/auth/${authPath}/login`, {
                     role,
                     "jwt": oidc.getAccessToken().accessToken
                 });

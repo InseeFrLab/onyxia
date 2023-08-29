@@ -218,9 +218,8 @@ export const translations: Translations<"zh-CN"> = {
     "Header": {
         "login": "登录",
         "logout": "登出",
-        "trainings": "培训",
-        "documentation": "文档",
-        "project": "项目"
+        "project": "项目",
+        "region": "区域"
     },
     "App": {
         "reduce": "缩小",
@@ -294,7 +293,18 @@ export const translations: Translations<"zh-CN"> = {
         "cancel": "取消",
         "replace": "取代",
         "sensitive configuration dialog title": "您想更换它吗?", //TODO
-        "proceed to launch": "继续启动" //TODO
+        "proceed to launch": "继续启动", //TODO
+        "auto launch disabled dialog title": "您想更换它吗?",
+        "auto launch disabled dialog body": (
+            <>
+                <g>警告</g>：有人可能试图欺骗您，启动一个可能威胁到您 namespace
+                完整性的服务。
+                <br />
+                请在启动之前仔细审查服务配置。
+                <br />
+                如有任何疑问，请联系您的管理员。
+            </>
+        )
     },
     "Footer": {
         "contribute": "为项目做贡献",

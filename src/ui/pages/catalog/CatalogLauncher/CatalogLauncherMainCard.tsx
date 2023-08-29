@@ -1,5 +1,5 @@
 import { memo } from "react";
-import { makeStyles } from "ui/theme";
+import { tss } from "ui/theme";
 import { RoundLogo } from "ui/shared/RoundLogo";
 import { Button, Text } from "ui/theme";
 import { useTranslation } from "ui/i18n";
@@ -168,7 +168,7 @@ export const { i18n } = declareComponentKeys<
     | "restore all default"
 >()({ CatalogLauncherMainCard });
 
-const useStyles = makeStyles({ "name": { CatalogLauncherMainCard } })(theme => ({
+const useStyles = tss.withName({ CatalogLauncherMainCard }).create(({ theme }) => ({
     "root": {
         "borderRadius": 8,
         "boxShadow": theme.shadows[7],

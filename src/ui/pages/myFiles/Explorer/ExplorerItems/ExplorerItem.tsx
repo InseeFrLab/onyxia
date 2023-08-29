@@ -1,4 +1,4 @@
-import { makeStyles, Text } from "ui/theme";
+import { tss, Text } from "ui/theme";
 import { useState, useEffect, useMemo, memo } from "react";
 import { useConstCallback } from "powerhooks/useConstCallback";
 import { TextField } from "onyxia-ui/TextField";
@@ -160,46 +160,51 @@ export const ExplorerItem = memo((props: ExplorerItemProps) => {
 
 export const { i18n } = declareComponentKeys<"description">()({ ExplorerItem });
 
-const useStyles = makeStyles<Pick<ExplorerItemProps, "isSelected" | "basename">>({
-    "name": { ExplorerItem }
-})((theme, { isSelected, basename }) => ({
-    "root": {
-        "textAlign": "center",
-        "cursor": "pointer",
-        "width": theme.spacing(9)
-    },
-    "frame": {
-        "borderRadius": "5px",
-        "backgroundColor": isSelected ? "rgba(0, 0, 0, 0.2)" : undefined,
-        "display": "inline-block",
-        "padding": theme.muiTheme.spacing(2, 2)
-    },
-    "explorerIcon": {
-        "height": 60
-    },
-    "text": {
-        //"color": theme.palette.text[isSelected ? "primary" : "secondary"]
-        //"color": !isSelected ? "rgba(0, 0, 0, 0.62)" : undefined
-        "color": (() => {
-            const color = new Color(theme.colors.useCases.typography.textPrimary).rgb();
+const useStyles = tss
+    .withName({ ExplorerItem })
+    .withParams<Pick<ExplorerItemProps, "isSelected" | "basename">>()
+    .create(({ theme, isSelected, basename }) => ({
+        "root": {
+            "textAlign": "center",
+            "cursor": "pointer",
+            "width": theme.spacing(9)
+        },
+        "frame": {
+            "borderRadius": "5px",
+            "backgroundColor": isSelected ? "rgba(0, 0, 0, 0.2)" : undefined,
+            "display": "inline-block",
+            "padding": theme.muiTheme.spacing(2, 2)
+        },
+        "explorerIcon": {
+            "height": 60
+        },
+        "text": {
+            //"color": theme.palette.text[isSelected ? "primary" : "secondary"]
+            //"color": !isSelected ? "rgba(0, 0, 0, 0.62)" : undefined
+            "color": (() => {
+                const color = new Color(
+                    theme.colors.useCases.typography.textPrimary
+                ).rgb();
 
-            return color.alpha((color as any).valpha * (isSelected ? 1.2 : 0.8)).string();
-        })(),
-        "wordBreak": /[_\- ]/.test(basename) ? undefined : "break-all"
-    },
-    "hiddenSpan": {
-        "width": 0,
-        "overflow": "hidden",
-        "display": "inline-block"
-    },
-    "input": {
-        //NOTE: So that the text does not move when editing start.
-        //"marginTop": "2px",
-        "marginTop": "-1px",
+                return color
+                    .alpha((color as any).valpha * (isSelected ? 1.2 : 0.8))
+                    .string();
+            })(),
+            "wordBreak": /[_\- ]/.test(basename) ? undefined : "break-all"
+        },
+        "hiddenSpan": {
+            "width": 0,
+            "overflow": "hidden",
+            "display": "inline-block"
+        },
+        "input": {
+            //NOTE: So that the text does not move when editing start.
+            //"marginTop": "2px",
+            "marginTop": "-1px",
 
-        "paddingTop": 0,
-        "& .MuiInput-input": {
-            "textAlign": "center"
+            "paddingTop": 0,
+            "& .MuiInput-input": {
+                "textAlign": "center"
+            }
         }
-    }
-}));
+    }));

@@ -56,9 +56,20 @@ export type OnyxiaApi = {
         sessionToken: string;
         bucketName: string;
     }) => Promise<void>;
+
+    onboard: () => Promise<void>;
+
+    getUser: () => Promise<User>;
 };
 
-export type Language = "en" | "fr" | "zh-CN";
+export type User = {
+    email: string;
+    familyName?: string;
+    firstName?: string;
+    username: string;
+};
+
+export type Language = "en" | "fr" | "zh-CN" | "no" | "fi" | "nl" | "it";
 export type LocalizedString = GenericLocalizedString<Language>;
 
 export type DeploymentRegion = {
@@ -70,6 +81,12 @@ export type DeploymentRegion = {
     ingressClassName: string | undefined;
     ingress: boolean | undefined;
     route: boolean | undefined;
+    istio:
+        | {
+              enabled: boolean;
+              gateways: string[];
+          }
+        | undefined;
     initScriptUrl: string;
     s3: DeploymentRegion.S3 | undefined;
     allowedURIPatternForUserDefinedInitScript: string;
@@ -88,6 +105,7 @@ export type DeploymentRegion = {
               url: string;
               kvEngine: string;
               role: string;
+              authPath: string | undefined;
               keycloakParams:
                   | {
                         url: string | undefined;
@@ -108,6 +126,7 @@ export type DeploymentRegion = {
         | {
               cranProxyUrl: string | undefined;
               condaProxyUrl: string | undefined;
+              packageManagerUrl: string | undefined;
               pypiProxyUrl: string | undefined;
           }
         | undefined;
@@ -183,6 +202,7 @@ export type Project = {
     id: string;
     name: string;
     bucket: string;
+    group: string | undefined;
     namespace: string;
     vaultTopDir: string;
 };
@@ -283,6 +303,12 @@ export type OnyxiaValues = {
         ingressClassName: string | undefined;
         ingress: boolean | undefined;
         route: boolean | undefined;
+        istio:
+            | {
+                  enabled: boolean;
+                  gateways: string[];
+              }
+            | undefined;
         randomSubdomain: string;
         initScriptUrl: string;
     };
@@ -297,6 +323,7 @@ export type OnyxiaValues = {
         | {
               cranProxyUrl: string | undefined;
               condaProxyUrl: string | undefined;
+              packageManagerUrl: string | undefined;
               pypiProxyUrl: string | undefined;
           }
         | undefined;

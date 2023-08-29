@@ -1,4 +1,4 @@
-import { makeStyles, PageHeader } from "ui/theme";
+import { tss, PageHeader } from "ui/theme";
 import { useEffect, useMemo } from "react";
 import { useConstCallback } from "powerhooks/useConstCallback";
 import { copyToClipboard } from "ui/tools/copyToClipboard";
@@ -232,7 +232,7 @@ export const { i18n } = declareComponentKeys<
       }
 >()({ MyFiles });
 
-const useStyles = makeStyles({ "name": { MyFiles } })({
+const useStyles = tss.withName({ MyFiles }).create({
     "root": {
         "height": "100%",
         "display": "flex",

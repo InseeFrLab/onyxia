@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState, useReducer } from "react";
-import { makeStyles, PageHeader } from "ui/theme";
+import { tss, PageHeader } from "ui/theme";
 
 import { useTranslation } from "ui/i18n";
 import { MyServicesButtonBar } from "./MyServicesButtonBar";
@@ -53,7 +53,7 @@ export default function MyServices(props: Props) {
     );
 
     useEffect(() => {
-        projectConfigs.getValue({ "key": "servicePassword" }).then(upToDatePassword => {
+        projectConfigs.getServicesPassword().then(upToDatePassword => {
             setPassword(upToDatePassword);
 
             if (password !== undefined && password !== upToDatePassword) {
@@ -253,7 +253,7 @@ export default function MyServices(props: Props) {
     });
 
     const getServicePassword = useConstCallback(() =>
-        projectConfigs.getValue({ "key": "servicePassword" })
+        projectConfigs.getServicesPassword()
     );
 
     return (
@@ -330,34 +330,37 @@ export const { i18n } = declareComponentKeys<
     | "confirm"
 >()({ MyServices });
 
-const useStyles = makeStyles<{
-    isSavedConfigsExtended: boolean;
-}>({ "name": { MyServices } })((theme, { isSavedConfigsExtended }) => ({
-    "root": {
-        "height": "100%",
-        "display": "flex",
-        "flexDirection": "column"
-    },
-    "payload": {
-        "overflow": "hidden",
-        "flex": 1,
-        "display": "flex",
-        "& > *": {
-            "height": "100%"
-        }
-    },
-    ...(() => {
-        const ratio = 0.65;
-
-        return {
-            "cards": {
-                "flex": ratio,
-                "marginRight": theme.spacing(5)
-            },
-            "savedConfigs": {
-                "flex": isSavedConfigsExtended ? 1 : 1 - ratio,
-                "paddingRight": "2%"
+const useStyles = tss
+    .withName({ MyServices })
+    .withParams<{
+        isSavedConfigsExtended: boolean;
+    }>()
+    .create(({ theme, isSavedConfigsExtended }) => ({
+        "root": {
+            "height": "100%",
+            "display": "flex",
+            "flexDirection": "column"
+        },
+        "payload": {
+            "overflow": "hidden",
+            "flex": 1,
+            "display": "flex",
+            "& > *": {
+                "height": "100%"
             }
-        };
-    })()
-}));
+        },
+        ...(() => {
+            const ratio = 0.65;
+
+            return {
+                "cards": {
+                    "flex": ratio,
+                    "marginRight": theme.spacing(5)
+                },
+                "savedConfigs": {
+                    "flex": isSavedConfigsExtended ? 1 : 1 - ratio,
+                    "paddingRight": "2%"
+                }
+            };
+        })()
+    }));

@@ -25,6 +25,8 @@ import { typeGuard } from "tsafe/typeGuard";
 import { id } from "tsafe/id";
 import { objectKeys } from "tsafe/objectKeys";
 import type { Language } from "ui/i18n";
+import type { PaletteBase } from "onyxia-ui";
+import type { DeepPartial } from "keycloakify/tools/DeepPartial";
 
 const paletteIds = ["onyxia", "france", "ultraviolet", "verdant"] as const;
 
@@ -52,6 +54,40 @@ const { THEME_ID, injectTHEME_IDInSearchParams } = getTransferableEnv({
 });
 
 export { THEME_ID };
+
+const { PALETTE_OVERRIDE, injectPALETTE_OVERRIDEInSearchParams } = getTransferableEnv({
+    "name": "PALETTE_OVERRIDE" as const,
+    "getSerializedValueFromEnv": () => getEnv().PALETTE_OVERRIDE,
+    "validateAndParseOrGetDefault": (valueStr): DeepPartial<PaletteBase> | undefined => {
+        if (valueStr === "") {
+            return undefined;
+        }
+
+        let paletteOverride: any;
+
+        try {
+            paletteOverride = JSON.parse(valueStr);
+        } catch (err) {
+            throw new Error(`palette override is not parsable JSON`, {
+                "cause": err
+            });
+        }
+
+        assert(
+            typeGuard<DeepPartial<PaletteBase>>(
+                paletteOverride,
+                typeof paletteOverride === "object" &&
+                    paletteOverride !== null &&
+                    !(paletteOverride instanceof Array)
+            ),
+            `palette override should be a JSON object`
+        );
+
+        return paletteOverride;
+    }
+});
+
+export { PALETTE_OVERRIDE };
 
 const { HEADER_ORGANIZATION, injectHEADER_ORGANIZATIONInSearchParams } =
     getTransferableEnv({
@@ -136,7 +172,8 @@ export function injectTransferableEnvsInSearchParams(url: string): string {
         injectTHEME_IDInSearchParams,
         injectHEADER_ORGANIZATIONInSearchParams,
         injectHEADER_USECASE_DESCRIPTIONInSearchParams,
-        injectTHERMS_OF_SERVICESInSearchParams
+        injectTHERMS_OF_SERVICESInSearchParams,
+        injectPALETTE_OVERRIDEInSearchParams
     ]) {
         newUrl = inject(newUrl);
     }

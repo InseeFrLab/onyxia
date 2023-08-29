@@ -9,7 +9,7 @@ import { memo } from "react";
 import { useConstCallback } from "powerhooks/useConstCallback";
 import { Header } from "ui/shared/Header";
 import { logoContainerWidthInPercent } from "ui/App/logoContainerWidthInPercent";
-import { ThemeProvider, makeStyles, IconButton, Text } from "ui/theme";
+import { ThemeProvider, IconButton, Text, tss } from "ui/theme";
 import { useDomRect, useWindowInnerSize } from "onyxia-ui";
 import onyxiaNeumorphismDarkModeUrl from "ui/assets/svg/OnyxiaNeumorphismDarkMode.svg";
 import onyxiaNeumorphismLightModeUrl from "ui/assets/svg/OnyxiaNeumorphismLightMode.svg";
@@ -57,13 +57,12 @@ function ContextualizedTemplate(props: TemplateProps) {
 
     const { isReady } = usePrepareTemplate({
         "doFetchDefaultThemeResources": doUseDefaultCss,
-        url,
-        "stylesCommon": [
-            "node_modules/patternfly/dist/css/patternfly.min.css",
-            "node_modules/patternfly/dist/css/patternfly-additions.min.css",
-            "lib/zocial/zocial.css"
+        "styles": [
+            `${url.resourcesCommonPath}/node_modules/patternfly/dist/css/patternfly.min.css`,
+            `${url.resourcesCommonPath}/node_modules/patternfly/dist/css/patternfly-additions.min.css`,
+            `${url.resourcesCommonPath}/lib/zocial/zocial.css`,
+            `${url.resourcesPath}/css/login.css`
         ],
-        "styles": ["css/login.css"],
         "htmlClassName": getClassName("kcHtmlClass"),
         "bodyClassName": undefined
     });
@@ -93,11 +92,7 @@ function ContextualizedTemplate(props: TemplateProps) {
     );
 }
 
-const useStyles = makeStyles<{
-    windowInnerWidth: number;
-    aspectRatio: number;
-    windowInnerHeight: number;
-}>()(theme => ({
+const useStyles = tss.create(({ theme }) => ({
     "root": {
         "height": "100vh",
         "display": "flex",
@@ -212,28 +207,31 @@ const { Page } = (() => {
         );
     });
 
-    const useStyles = makeStyles<{ isPaperBiggerThanContainer: boolean }>({
-        "name": { Page }
-    })((theme, { isPaperBiggerThanContainer }) => ({
-        "root": {
-            "display": "flex",
-            "justifyContent": "center",
-            "alignItems": isPaperBiggerThanContainer ? undefined : "center"
-        },
-        "paper": {
-            "padding": theme.spacing(5),
-            "width": 490,
-            "height": "fit-content",
-            "marginBottom": theme.spacing(4),
-            "borderRadius": 8
-        },
-        "alert": {
-            "alignItems": "center"
-        },
-        "crossButtonWrapper": {
-            "display": "flex"
-        }
-    }));
+    const useStyles = tss
+        .withParams<{
+            isPaperBiggerThanContainer: boolean;
+        }>()
+        .withName({ Page })
+        .create(({ theme, isPaperBiggerThanContainer }) => ({
+            "root": {
+                "display": "flex",
+                "justifyContent": "center",
+                "alignItems": isPaperBiggerThanContainer ? undefined : "center"
+            },
+            "paper": {
+                "padding": theme.spacing(5),
+                "width": 490,
+                "height": "fit-content",
+                "marginBottom": theme.spacing(4),
+                "borderRadius": 8
+            },
+            "alert": {
+                "alignItems": "center"
+            },
+            "crossButtonWrapper": {
+                "display": "flex"
+            }
+        }));
 
     const { Head } = (() => {
         type Props = Pick<
@@ -368,15 +366,15 @@ const { Page } = (() => {
             );
         });
 
-        const useStyles = makeStyles({
-            "name": `${symToStr({ Template })}${symToStr({ Head })}`
-        })(theme => ({
-            "root": {
-                "textAlign": "center",
-                "marginTop": theme.spacing(3),
-                "marginBottom": theme.spacing(3)
-            }
-        }));
+        const useStyles = tss
+            .withName(`${symToStr({ Template })}${symToStr({ Head })}`)
+            .create(({ theme }) => ({
+                "root": {
+                    "textAlign": "center",
+                    "marginTop": theme.spacing(3),
+                    "marginBottom": theme.spacing(3)
+                }
+            }));
 
         return { Head };
     })();
@@ -507,13 +505,13 @@ const { Page } = (() => {
             );
         });
 
-        const useStyles = makeStyles({
-            "name": `${symToStr({ Template })}${symToStr({ Main })}`
-        })(() => ({
-            "alert": {
-                "alignItems": "center"
-            }
-        }));
+        const useStyles = tss
+            .withName(`${symToStr({ Template })}${symToStr({ Main })}`)
+            .create({
+                "alert": {
+                    "alignItems": "center"
+                }
+            });
 
         return { Main };
     })();

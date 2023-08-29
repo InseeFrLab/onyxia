@@ -1,6 +1,6 @@
 import { useState, useMemo, useReducer, useRef, memo } from "react";
 import { MyServicesCard } from "./MyServicesCard";
-import { makeStyles, Text } from "ui/theme";
+import { tss, Text } from "ui/theme";
 import { smartTrim } from "ui/tools/smartTrim";
 import { useTranslation } from "ui/i18n";
 import { useCallbackFactory } from "powerhooks/useCallbackFactory";
@@ -273,42 +273,43 @@ export const { i18n } = declareComponentKeys<
     | "return"
 >()({ MyServicesCards });
 
-const useStyles = makeStyles<{ isThereServicesRunning: boolean }>({
-    "name": { MyServicesCards }
-})((theme, { isThereServicesRunning }) => ({
-    "root": {
-        "overflow": "hidden",
-        "display": "flex",
-        "flexDirection": "column"
-    },
-    "header": {
-        ...theme.spacing.topBottom("margin", 3)
-    },
-    "wrapper": {
-        "overflow": "auto",
-        ...(!isThereServicesRunning
-            ? {
-                  "flex": 1
-              }
-            : {
-                  "paddingRight": theme.spacing(3),
-                  "display": "grid",
-                  "gridTemplateColumns": "repeat(2,1fr)",
-                  "gap": theme.spacing(4)
-              }),
-        "paddingBottom": theme.spacing(4)
-    },
-    "noRunningServices": {
-        "height": "100%"
-    },
-    "dialogBody": {
-        "maxHeight": 450,
-        "overflow": "auto"
-    },
-    "circularProgress": {
-        ...theme.spacing.rightLeft("margin", 3)
-    }
-}));
+const useStyles = tss
+    .withParams<{ isThereServicesRunning: boolean }>()
+    .withName({ MyServicesCards })
+    .create(({ theme, isThereServicesRunning }) => ({
+        "root": {
+            "overflow": "hidden",
+            "display": "flex",
+            "flexDirection": "column"
+        },
+        "header": {
+            ...theme.spacing.topBottom("margin", 3)
+        },
+        "wrapper": {
+            "overflow": "auto",
+            ...(!isThereServicesRunning
+                ? {
+                      "flex": 1
+                  }
+                : {
+                      "paddingRight": theme.spacing(3),
+                      "display": "grid",
+                      "gridTemplateColumns": "repeat(2,1fr)",
+                      "gap": theme.spacing(4)
+                  }),
+            "paddingBottom": theme.spacing(4)
+        },
+        "noRunningServices": {
+            "height": "100%"
+        },
+        "dialogBody": {
+            "maxHeight": 450,
+            "overflow": "auto"
+        },
+        "circularProgress": {
+            ...theme.spacing.rightLeft("margin", 3)
+        }
+    }));
 
 const { NoRunningService } = (() => {
     type Props = {
@@ -342,30 +343,30 @@ const { NoRunningService } = (() => {
         );
     });
 
-    const useStyles = makeStyles({
-        "name": `${symToStr({ MyServicesCards })}${symToStr({ NoRunningService })}`
-    })(theme => ({
-        "root": {
-            "display": "flex",
-            "alignItems": "center",
-            "justifyContent": "center"
-        },
-        "innerDiv": {
-            "textAlign": "center",
-            "maxWidth": 500
-        },
-        "svg": {
-            "fill": theme.colors.palette.dark.greyVariant2,
-            "width": 100,
-            "margin": 0
-        },
-        "h2": {
-            ...theme.spacing.topBottom("margin", 5)
-        },
-        "link": {
-            "cursor": "pointer"
-        }
-    }));
+    const useStyles = tss
+        .withName(`${symToStr({ MyServicesCards })}${symToStr({ NoRunningService })}`)
+        .create(({ theme }) => ({
+            "root": {
+                "display": "flex",
+                "alignItems": "center",
+                "justifyContent": "center"
+            },
+            "innerDiv": {
+                "textAlign": "center",
+                "maxWidth": 500
+            },
+            "svg": {
+                "fill": theme.colors.palette.dark.greyVariant2,
+                "width": 100,
+                "margin": 0
+            },
+            "h2": {
+                ...theme.spacing.topBottom("margin", 5)
+            },
+            "link": {
+                "cursor": "pointer"
+            }
+        }));
 
     return { NoRunningService };
 })();
@@ -455,22 +456,23 @@ const { CopyOpenButton } = (() => {
         );
     });
 
-    const useStyles = makeStyles<{ largerButtonWidth: number }>({
-        "name": { CopyOpenButton }
-    })((...[, { largerButtonWidth }]) => ({
-        "root": {
-            "position": "relative",
-            "opacity": largerButtonWidth === 0 ? 0 : 1,
-            "transition": `opacity ease-in-out 250ms`
-        },
-        "button": {
-            "minWidth": largerButtonWidth
-        },
-        "collapsed": {
-            "position": "fixed",
-            "top": 3000
-        }
-    }));
+    const useStyles = tss
+        .withParams<{ largerButtonWidth: number }>()
+        .withName({ CopyOpenButton })
+        .create(({ largerButtonWidth }) => ({
+            "root": {
+                "position": "relative",
+                "opacity": largerButtonWidth === 0 ? 0 : 1,
+                "transition": `opacity ease-in-out 250ms`
+            },
+            "button": {
+                "minWidth": largerButtonWidth
+            },
+            "collapsed": {
+                "position": "fixed",
+                "top": 3000
+            }
+        }));
 
     return { CopyOpenButton };
 })();

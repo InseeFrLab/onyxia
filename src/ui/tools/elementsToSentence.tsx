@@ -1,6 +1,6 @@
 export function elementsToSentence(params: {
     elements: ArrayLike<JSX.Element>;
-    language: "fr" | "en" | "zh-CN";
+    language: "fr" | "en" | "zh-CN" | "no" | "fi" | "nl" | "it";
 }): JSX.Element {
     const { elements, language } = params;
 
@@ -12,6 +12,12 @@ export function elementsToSentence(params: {
                 return "et";
             case "zh-CN":
                 return "和";
+            case "no":
+                return "og";
+            case "fi":
+                return "ja";
+            case "it":
+                return "e";
         }
     })();
 

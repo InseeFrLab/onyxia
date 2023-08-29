@@ -2,7 +2,7 @@ import { lazy, Suspense } from "react";
 import Fallback, { type PageProps } from "keycloakify/login";
 import type { KcContext } from "./kcContext";
 import { useI18n } from "./i18n";
-import { makeStyles } from "ui/theme";
+import { tss } from "ui/theme";
 import onyxiaNeumorphismDarkModeUrl from "ui/assets/svg/OnyxiaNeumorphismDarkMode.svg";
 import onyxiaNeumorphismLightModeUrl from "ui/assets/svg/OnyxiaNeumorphismLightMode.svg";
 
@@ -66,7 +66,7 @@ export default function KcApp(props: { kcContext: KcContext }) {
     );
 }
 
-const useStyles = makeStyles({ "name": { KcApp } })(theme => ({
+const useStyles = tss.withName({ KcApp }).create(({ theme }) => ({
     "kcLoginClass": {
         "& #kc-locale": {
             "zIndex": 5

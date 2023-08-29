@@ -6,7 +6,7 @@ import type { NonPostableEvt } from "evt";
 import type { TextFieldProps } from "onyxia-ui/TextField";
 import { TextField } from "onyxia-ui/TextField";
 import { Tooltip } from "onyxia-ui/Tooltip";
-import { makeStyles, Text } from "ui/theme";
+import { tss, Text } from "ui/theme";
 import { UnpackEvt } from "evt";
 import { Evt } from "evt";
 import type { Param0 } from "tsafe";
@@ -476,8 +476,10 @@ export const { i18n } = declareComponentKeys<
     | "reset"
 >()({ AccountField });
 
-const useStyles = makeStyles<{ isFlashing: boolean }>({ "name": { AccountField } })(
-    (theme, { isFlashing }) => ({
+const useStyles = tss
+    .withName({ AccountField })
+    .withParams<{ isFlashing: boolean }>()
+    .create(({ theme, isFlashing }) => ({
         "root": {
             "marginBottom": theme.spacing(3)
         },
@@ -512,5 +514,4 @@ const useStyles = makeStyles<{ isFlashing: boolean }>({ "name": { AccountField }
         "noText": {
             "color": theme.colors.useCases.typography.textDisabled
         }
-    })
-);
+    }));

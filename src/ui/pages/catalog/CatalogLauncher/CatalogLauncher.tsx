@@ -1,8 +1,8 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState, memo } from "react";
 import type { RefObject } from "react";
-import { makeStyles, Button } from "ui/theme";
-import { routes } from "ui/routes";
+import { tss, Button, Text } from "ui/theme";
+import { routes, getPreviousRouteName } from "ui/routes";
 import type { Route } from "type-route";
 import { CatalogLauncherMainCard } from "./CatalogLauncherMainCard";
 import { CatalogLauncherConfigurationCard } from "./CatalogLauncherConfigurationCard";
@@ -23,6 +23,7 @@ import type { UnpackEvt } from "evt";
 import { Markdown } from "onyxia-ui/Markdown";
 import { declareComponentKeys } from "i18nifty";
 import { symToStr } from "tsafe/symToStr";
+import { getIsAutoLaunchDisabled } from "ui/env";
 
 export type Props = {
     className?: string;
@@ -178,16 +179,31 @@ export const CatalogLauncher = memo((props: Props) => {
             case "ready":
                 switch (state.launchState) {
                     case "not launching":
-                        if (route.params.autoLaunch) {
+                        auto_launch: {
+                            if (!route.params.autoLaunch) {
+                                break auto_launch;
+                            }
+
+                            if (
+                                getIsAutoLaunchDisabled() &&
+                                //If auto launch from myServices the user is launching one of his service, it's safe
+                                getPreviousRouteName() !== "myServices"
+                            ) {
+                                evtAutoLaunchDisabledDialogOpen.post();
+                                break auto_launch;
+                            }
+
                             const { sensitiveConfigurations } = state;
 
                             if (sensitiveConfigurations.length !== 0) {
-                                evtSensitiveConfigurationDialogDialog.post({
+                                evtSensitiveConfigurationDialogOpen.post({
                                     sensitiveConfigurations
                                 });
-                            } else {
-                                launcher.launch();
+
+                                break auto_launch;
                             }
+
+                            launcher.launch();
                         }
 
                         hideSplashScreen();
@@ -218,9 +234,11 @@ export const CatalogLauncher = memo((props: Props) => {
 
     const { t } = useTranslation({ CatalogLauncher });
 
-    const evtSensitiveConfigurationDialogDialog = useConst(() =>
+    const evtSensitiveConfigurationDialogOpen = useConst(() =>
         Evt.create<UnpackEvt<SensitiveConfigurationDialogProps["evtOpen"]>>()
     );
+
+    const evtAutoLaunchDisabledDialogOpen = useConst(() => Evt.create());
 
     const onSensitiveConfigurationDialogDialogClose = useConstCallback<
         SensitiveConfigurationDialogProps["onClose"]
@@ -322,9 +340,10 @@ export const CatalogLauncher = memo((props: Props) => {
                 onClose={onOverwriteConfigurationDialogClickFactory("cancel")}
             />
             <SensitiveConfigurationDialog
-                evtOpen={evtSensitiveConfigurationDialogDialog}
+                evtOpen={evtSensitiveConfigurationDialogOpen}
                 onClose={onSensitiveConfigurationDialogDialogClose}
             />
+            <AutoLaunchDisabledDialog evtOpen={evtAutoLaunchDisabledDialogOpen} />
         </>
     );
 });
@@ -342,9 +361,14 @@ export const { i18n } = declareComponentKeys<
     | "replace"
     | "proceed to launch"
     | "sensitive configuration dialog title"
+    | "auto launch disabled dialog title"
+    | {
+          K: "auto launch disabled dialog body";
+          R: JSX.Element;
+      }
 >()({ CatalogLauncher });
 
-const useStyles = makeStyles({ "name": { CatalogLauncher } })(theme => ({
+const useStyles = tss.withName({ CatalogLauncher }).create(({ theme }) => ({
     "wrapperForScroll": {
         "height": "100%",
         "overflow": "auto"
@@ -410,6 +434,46 @@ const SensitiveConfigurationDialog = memo((props: SensitiveConfigurationDialogPr
                 </>
             }
             onClose={onCloseFactory(false)}
+        />
+    );
+});
+
+type AutoLaunchDisabledDialogProps = {
+    evtOpen: NonPostableEvt<void>;
+};
+
+const AutoLaunchDisabledDialog = memo((props: AutoLaunchDisabledDialogProps) => {
+    const { evtOpen } = props;
+
+    const { t } = useTranslation({ CatalogLauncher });
+
+    const [isOpen, setIsOpen] = useState(false);
+
+    const { css, theme } = useStyles();
+
+    useEvt(ctx => evtOpen.attach(ctx, () => setIsOpen(true)), [evtOpen]);
+
+    return (
+        <Dialog
+            isOpen={isOpen}
+            title={t("auto launch disabled dialog title")}
+            body={
+                <Text
+                    typo="body 2"
+                    htmlComponent="div"
+                    className={css({
+                        "marginTop": theme.spacing(3)
+                    })}
+                >
+                    {t("auto launch disabled dialog body")}
+                </Text>
+            }
+            buttons={
+                <>
+                    <Button onClick={() => setIsOpen(false)}>{t("ok")}</Button>
+                </>
+            }
+            onClose={() => setIsOpen(false)}
         />
     );
 });

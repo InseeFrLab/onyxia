@@ -12,7 +12,7 @@ import { AccountStorageTab } from "./tabs/AccountStorageTab";
 import { AccountUserInterfaceTab } from "./tabs/AccountUserInterfaceTab";
 import { PageHeader } from "ui/theme";
 import { useConstCallback } from "powerhooks/useConstCallback";
-import { makeStyles } from "ui/theme";
+import { tss } from "ui/theme";
 import { declareComponentKeys } from "i18nifty";
 import { useCoreFunctions } from "core";
 import { assert } from "tsafe/assert";
@@ -100,7 +100,7 @@ export const { i18n } = declareComponentKeys<
     Account
 });
 
-const useStyles = makeStyles({ "name": { Account } })(theme => ({
+const useStyles = tss.withName({ Account }).create(({ theme }) => ({
     "root": {
         "height": "100%",
         "overflow": "auto"

@@ -2,8 +2,8 @@ import { assert } from "tsafe/assert";
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { id } from "tsafe/id";
-import { selectors as deploymentRegionSelectors } from "./deploymentRegion";
-import { selectors as projectSelectionSelectors } from "./projectSelection";
+import * as deploymentRegion from "./deploymentRegion";
+import * as projectConfigs from "./projectConfigs";
 import type { Thunks, State as RootState } from "../core";
 import { exclude } from "tsafe/exclude";
 import { createUsecaseContextApi } from "redux-clean-architecture";
@@ -131,7 +131,7 @@ export const thunks = {
     "update":
         () =>
         async (...args) => {
-            const [dispatch, getState, { onyxiaApi, getUser }] = args;
+            const [dispatch, getState, { onyxiaApi }] = args;
 
             {
                 const state = getState().runningService;
@@ -174,17 +174,17 @@ export const thunks = {
             const getMonitoringUrl = (params: { serviceId: string }) => {
                 const { serviceId } = params;
 
-                const project = projectSelectionSelectors.selectedProject(getState());
+                const project = projectConfigs.selectors.selectedProject(getState());
 
                 const selectedDeploymentRegion =
-                    deploymentRegionSelectors.selectedDeploymentRegion(getState());
+                    deploymentRegion.selectors.selectedDeploymentRegion(getState());
 
                 return selectedDeploymentRegion.servicesMonitoringUrlPattern
                     ?.replace("$NAMESPACE", project.namespace)
                     .replace("$INSTANCE", serviceId.replace(/^\//, ""));
             };
 
-            const { username } = await getUser();
+            const { username } = await onyxiaApi.getUser();
 
             const { s3TokensTTLms, vaultTokenTTLms } = await dispatch(
                 privateThunks.getDefaultTokenTTL()
@@ -280,10 +280,10 @@ export const thunks = {
         }
 } satisfies Thunks;
 
-export const privateThunks = {
+export const protectedThunks = {
     "initialize":
         () =>
-        async (...args) => {
+        (...args) => {
             const [dispatch, getState, { evtAction }] = args;
 
             evtAction.attach(
@@ -296,7 +296,7 @@ export const privateThunks = {
 
             evtAction.attach(
                 event =>
-                    event.sliceName === "projectSelection" &&
+                    event.sliceName === "projectConfigs" &&
                     event.actionName === "projectChanged" &&
                     getState().runningService.isUserWatching,
                 async () => {
@@ -311,7 +311,10 @@ export const privateThunks = {
                     dispatch(thunks.update());
                 }
             );
-        },
+        }
+} satisfies Thunks;
+
+const privateThunks = {
     /** We ask tokens just to tel how long is their lifespan */
     "getDefaultTokenTTL":
         () =>
@@ -328,13 +331,10 @@ export const privateThunks = {
 
             return (sliceContext.prDefaultTokenTTL = Promise.all([
                 (async () => {
-                    const project = projectSelectionSelectors.selectedProject(getState());
-
-                    const isDefaultProject =
-                        getState().projectSelection.projects[0].id === project.id;
+                    const project = projectConfigs.selectors.selectedProject(getState());
 
                     const { expirationTime, acquisitionTime } = await s3Client.getToken({
-                        "restrictToBucketName": isDefaultProject
+                        "restrictToBucketName": project.isDefault
                             ? undefined
                             : project.bucket
                     });

@@ -279,7 +279,11 @@ export async function createS3Client(params: Params): Promise<S3Client> {
                 "restrictToBucketName": bucketName
             });
 
-            const stream = minioClient.listObjects(bucketName, prefix, false);
+            const stream = minioClient.listObjects(
+                bucketName,
+                prefix === "/" ? "" : prefix,
+                false
+            );
 
             const out: ReturnType<S3Client["list"]> = {
                 "directories": [],

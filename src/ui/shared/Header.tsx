@@ -2,7 +2,7 @@ import { memo } from "react";
 import { /*IconButton, */ Button, ButtonBarButton } from "ui/theme";
 import { useTranslation } from "ui/i18n";
 import { useConstCallback } from "powerhooks/useConstCallback";
-import { makeStyles, Text } from "ui/theme";
+import { tss, Text } from "ui/theme";
 import { ReactComponent as OnyxiaLogoSvg } from "ui/assets/svg/OnyxiaLogo.svg";
 import {
     HEADER_ORGANIZATION,
@@ -17,7 +17,7 @@ import { getDoHideOnyxia } from "ui/env";
 import { useResolveLocalizedString } from "ui/i18n";
 import { declareComponentKeys } from "i18nifty";
 
-export type Props = Props.LoginPages | Props.UserNotLoggedIn | Props.UserLoggedIn;
+export type Props = Props.LoginPages | Props.CoreApp;
 export declare namespace Props {
     export type Common = {
         className?: string;
@@ -29,17 +29,20 @@ export declare namespace Props {
         useCase: "login pages";
     };
 
-    export type UserNotLoggedIn = Common & {
+    export type CoreApp = Common & {
         useCase: "core app";
-        isUserLoggedIn: false;
-        onLoginClick: () => void;
+        regionSelectProps: RegionSelectProps | undefined;
+        projectSelectProps: ProjectSelectProps | undefined;
+        auth:
+            | {
+                  isUserLoggedIn: false;
+                  onLoginClick: () => void;
+              }
+            | {
+                  isUserLoggedIn: true;
+                  onLogoutClick: () => void;
+              };
     };
-
-    export type UserLoggedIn = Common & {
-        useCase: "core app";
-        isUserLoggedIn: true;
-        onLogoutClick: () => void;
-    } & Omit<ProjectSelectProps, "className">;
 }
 
 export const Header = memo((props: Props) => {
@@ -86,9 +89,30 @@ export const Header = memo((props: Props) => {
                     </Text>
                 )}
             </div>
-            {props.useCase === "core app" && props.isUserLoggedIn && (
-                <ProjectSelect {...props} className={classes.projectSelect} />
+
+            {props.useCase === "core app" && (
+                <>
+                    {props.regionSelectProps !== undefined && (
+                        <RegionSelect
+                            {...props.regionSelectProps}
+                            className={cx(
+                                classes.regionSelect,
+                                props.regionSelectProps.className
+                            )}
+                        />
+                    )}
+                    {props.projectSelectProps !== undefined && (
+                        <ProjectSelect
+                            {...props.projectSelectProps}
+                            className={cx(
+                                classes.projectSelect,
+                                props.projectSelectProps.className
+                            )}
+                        />
+                    )}
+                </>
             )}
+
             <div className={classes.rightEndActionsContainer}>
                 {props.useCase === "core app" && (
                     <>
@@ -112,22 +136,16 @@ export const Header = memo((props: Props) => {
                             ));
                         })()}
 
-                        {/*TODO: Debug CloudShell
-                        props.isUserLoggedIn && (
-                            <ToggleCloudShell
-                                useIsCloudShellVisible={props.useIsCloudShellVisible}
-                            />
-                        )*/}
                         <Button
                             onClick={
-                                props.isUserLoggedIn
-                                    ? props.onLogoutClick
-                                    : props.onLoginClick
+                                props.auth.isUserLoggedIn
+                                    ? props.auth.onLogoutClick
+                                    : props.auth.onLoginClick
                             }
-                            variant={props.isUserLoggedIn ? "secondary" : "primary"}
+                            variant={props.auth.isUserLoggedIn ? "secondary" : "primary"}
                             className={css({ "marginLeft": theme.spacing(3) })}
                         >
-                            {t(props.isUserLoggedIn ? "logout" : "login")}
+                            {t(props.auth.isUserLoggedIn ? "logout" : "login")}
                         </Button>
                     </>
                 )}
@@ -136,14 +154,16 @@ export const Header = memo((props: Props) => {
     );
 });
 
-export const { i18n } = declareComponentKeys<
-    "logout" | "login" | "project" | "trainings" | "documentation"
->()({
-    Header
-});
+export const { i18n } = declareComponentKeys<"logout" | "login" | "project" | "region">()(
+    {
+        Header
+    }
+);
 
-const useStyles = makeStyles<{ logoContainerWidth: number }>({ "name": { Header } })(
-    (theme, { logoContainerWidth }) => ({
+const useStyles = tss
+    .withParams<{ logoContainerWidth: number }>()
+    .withName({ Header })
+    .create(({ theme, logoContainerWidth }) => ({
         "root": {
             "backgroundColor": theme.colors.useCases.surfaces.background,
             "overflow": "auto",
@@ -180,9 +200,11 @@ const useStyles = makeStyles<{ logoContainerWidth: number }>({ "name": { Header 
         },
         "projectSelect": {
             "marginLeft": theme.spacing(4)
+        },
+        "regionSelect": {
+            "marginLeft": theme.spacing(4)
         }
-    })
-);
+    }));
 
 const labelId = "project-select-id";
 
@@ -207,10 +229,6 @@ const ProjectSelect = memo((props: ProjectSelectProps) => {
         });
     });
 
-    if (projects.length === 1) {
-        return null;
-    }
-
     return (
         <FormControl className={className}>
             <InputLabel id={labelId}>{t("project")}</InputLabel>
@@ -223,6 +241,48 @@ const ProjectSelect = memo((props: ProjectSelectProps) => {
                 {projects.map(({ id, name }) => (
                     <MenuItem key={id} value={id}>
                         {name}
+                    </MenuItem>
+                ))}
+            </Select>
+        </FormControl>
+    );
+});
+
+type RegionSelectProps = {
+    className?: string;
+    availableDeploymentRegionIds: string[];
+    selectedDeploymentRegionId: string;
+    onDeploymentRegionChange: (params: { deploymentRegionId: string }) => void;
+};
+
+const RegionSelect = memo((props: RegionSelectProps) => {
+    const {
+        className,
+        onDeploymentRegionChange,
+        selectedDeploymentRegionId,
+        availableDeploymentRegionIds
+    } = props;
+
+    const { t } = useTranslation({ Header });
+
+    const onChange = useConstCallback(async (event: SelectChangeEvent<string>) => {
+        onDeploymentRegionChange({
+            "deploymentRegionId": event.target.value
+        });
+    });
+
+    return (
+        <FormControl className={className}>
+            <InputLabel id={labelId}>{t("region")}</InputLabel>
+            <Select
+                labelId={labelId}
+                value={selectedDeploymentRegionId}
+                label={t("region")}
+                onChange={onChange}
+            >
+                {availableDeploymentRegionIds.map(deploymentRegionId => (
+                    <MenuItem key={deploymentRegionId} value={deploymentRegionId}>
+                        {deploymentRegionId}
                     </MenuItem>
                 ))}
             </Select>

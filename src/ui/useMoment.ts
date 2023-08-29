@@ -10,7 +10,11 @@ export const { getFormattedDate } = (() => {
         /* spell-checker: disable */
         "fr": `dddd Do MMMM${isSameYear ? "" : " YYYY"} à H[h]mm`,
         "en": `dddd, MMMM Do${isSameYear ? "" : " YYYY"}, h:mm a`,
-        "zh-CN": `dddd, MMMM Do${isSameYear ? "" : " YYYY"}, h:mm a`
+        "zh-CN": `dddd, MMMM Do${isSameYear ? "" : " YYYY"}, h:mm a`,
+        "no": `dddd, Do MMMM${isSameYear ? "" : " YYYY"}, HH:mm`,
+        "fi": `dddd, Do MMMM${isSameYear ? "" : " YYYY"}, HH:mm`,
+        "nl": `dddd, Do MMMM${isSameYear ? "" : " YYYY"}, HH:mm`,
+        "it": `dddd, Do MMMM${isSameYear ? "" : " YYYY"}, HH:mm`
         /* spell-checker: enable */
     });
 
@@ -91,6 +95,18 @@ export const { fromNow } = (() => {
                                 case "zh-CN":
                                     /* cspell: disable-next-line */
                                     return "几分钟前";
+                                case "no":
+                                    /* cspell: disable-next-line */
+                                    return "akkurat nå";
+                                case "fi":
+                                    /* cspell: disable-next-line */
+                                    return "juuri nyt";
+                                case "nl":
+                                    /* cspell: disable-next-line */
+                                    return "zojuist";
+                                case "it":
+                                    /* cspell: disable-next-line */
+                                    return "proprio ora";
                             }
                         })();
 
@@ -122,13 +138,40 @@ export const { fromNow } = (() => {
                                     "future1": "dans une seconde",
                                     "futureN": "dans # secondes"
                                 } as const;
-
                             case "zh-CN":
                                 return {
                                     "past1": "在一秒钟前",
                                     "pastN": "在 # 秒前",
                                     "future1": "在一秒钟后",
                                     "futureN": "在 # 秒后"
+                                } as const;
+                            case "no":
+                                return {
+                                    "past1": "for et sekund siden",
+                                    "pastN": "for # sekunder siden",
+                                    "future1": "om et sekund",
+                                    "futureN": "om # sekunder"
+                                } as const;
+                            case "fi":
+                                return {
+                                    "past1": "sekunti sitten",
+                                    "pastN": "# sekuntia sitten",
+                                    "future1": "sekunnin kuluttua",
+                                    "futureN": "# sekunnin kuluttua"
+                                } as const;
+                            case "nl":
+                                return {
+                                    "past1": "een seconde geleden",
+                                    "pastN": "# seconden geleden",
+                                    "future1": "over een seconde",
+                                    "futureN": "over # seconden"
+                                } as const;
+                            case "it":
+                                return {
+                                    "past1": "un secondo fa",
+                                    "pastN": "# secondi fa",
+                                    "future1": "fra un secondo",
+                                    "futureN": "fra # secondi"
                                 } as const;
                             /* spell-checker: enable */
                         }
@@ -161,6 +204,34 @@ export const { fromNow } = (() => {
                                     "future1": "在几分钟后",
                                     "futureN": "在 # 分钟后"
                                 } as const;
+                            case "no":
+                                return {
+                                    "past1": "for et minutt siden",
+                                    "pastN": "for # minutter siden",
+                                    "future1": "om et minutt",
+                                    "futureN": "om # minutter"
+                                } as const;
+                            case "fi":
+                                return {
+                                    "past1": "minuutti sitten",
+                                    "pastN": "# minuuttia sitten",
+                                    "future1": "minuutin kuluttua",
+                                    "futureN": "# minuutin kuluttua"
+                                } as const;
+                            case "nl":
+                                return {
+                                    "past1": "een minuut geleden",
+                                    "pastN": "# minuten geleden",
+                                    "future1": "over een minuut",
+                                    "futureN": "over # minuten"
+                                } as const;
+                            case "it":
+                                return {
+                                    "past1": "un minuto fa",
+                                    "pastN": "# minuti fa",
+                                    "future1": "fra un minuto",
+                                    "futureN": "fra # minuti"
+                                } as const;
                             /* spell-checker: enable */
                         }
                     })()
@@ -191,6 +262,34 @@ export const { fromNow } = (() => {
                                     "pastN": "在 # 小时前",
                                     "future1": "在一小时后",
                                     "futureN": "在 # 小时后"
+                                } as const;
+                            case "no":
+                                return {
+                                    "past1": "for en time siden",
+                                    "pastN": "for # timer siden",
+                                    "future1": "om en time",
+                                    "futureN": "om # timer"
+                                } as const;
+                            case "fi":
+                                return {
+                                    "past1": "tunti sitten",
+                                    "pastN": "# tuntia sitten",
+                                    "future1": "tunnin kuluttua",
+                                    "futureN": "# tunnin kuluttua"
+                                } as const;
+                            case "nl":
+                                return {
+                                    "past1": "een uur geleden",
+                                    "pastN": "# uur geleden",
+                                    "future1": "over een uur",
+                                    "futureN": "over # uur"
+                                } as const;
+                            case "it":
+                                return {
+                                    "past1": "un'ora fa",
+                                    "pastN": "# ore fa",
+                                    "future1": "fra un'ora",
+                                    "futureN": "fra # ore"
                                 } as const;
                             /* spell-checker: enable */
                         }
@@ -223,6 +322,34 @@ export const { fromNow } = (() => {
                                     "future1": "明天",
                                     "futureN": "在 # 天后"
                                 } as const;
+                            case "no":
+                                return {
+                                    "past1": "i går",
+                                    "pastN": "for # dager siden",
+                                    "future1": "i morgen",
+                                    "futureN": "om # dager"
+                                } as const;
+                            case "fi":
+                                return {
+                                    "past1": "eilen",
+                                    "pastN": "for # päivää sitten",
+                                    "future1": "huomenna",
+                                    "futureN": "# päivän päästä"
+                                } as const;
+                            case "nl":
+                                return {
+                                    "past1": "gisteren",
+                                    "pastN": "# dagen geleden",
+                                    "future1": "morgen",
+                                    "futureN": "over # dagen"
+                                } as const;
+                            case "it":
+                                return {
+                                    "past1": "ieri",
+                                    "pastN": "# giorni fa",
+                                    "future1": "domani",
+                                    "futureN": "fra # giorni"
+                                } as const;
                             /* spell-checker: enable */
                         }
                     })()
@@ -253,6 +380,34 @@ export const { fromNow } = (() => {
                                     "pastN": "在 # 星期前",
                                     "future1": "在一星期后",
                                     "futureN": "在 # 星期后"
+                                } as const;
+                            case "no":
+                                return {
+                                    "past1": "forrige uke",
+                                    "pastN": "for # uker siden",
+                                    "future1": "om en uke",
+                                    "futureN": "om # uker"
+                                } as const;
+                            case "fi":
+                                return {
+                                    "past1": "viime viikolla",
+                                    "pastN": "for # viikkoa sitten",
+                                    "future1": "viikon kuluttua",
+                                    "futureN": "om # viikkoa"
+                                } as const;
+                            case "nl":
+                                return {
+                                    "past1": "vorige week",
+                                    "pastN": "# weken geleden",
+                                    "future1": "over een week",
+                                    "futureN": "over # weken"
+                                } as const;
+                            case "it":
+                                return {
+                                    "past1": "la settimana scorsa",
+                                    "pastN": "fra # settimane",
+                                    "future1": "fra una settimana",
+                                    "futureN": "fra # settimane"
                                 } as const;
                             /* spell-checker: enable */
                         }
@@ -285,6 +440,34 @@ export const { fromNow } = (() => {
                                     "future1": "在一个月后",
                                     "futureN": "在 # 个月后"
                                 } as const;
+                            case "no":
+                                return {
+                                    "past1": "forrige måned",
+                                    "pastN": "for # måneder siden",
+                                    "future1": "om en måned",
+                                    "futureN": "om # måneder"
+                                } as const;
+                            case "fi":
+                                return {
+                                    "past1": "viime kuussa",
+                                    "pastN": "for # kuukautta sitten",
+                                    "future1": "kuukauden kuluttua",
+                                    "futureN": "om # kuukautta"
+                                } as const;
+                            case "nl":
+                                return {
+                                    "past1": "vorige maand",
+                                    "pastN": "# maanden geleden",
+                                    "future1": "over een maand",
+                                    "futureN": "over # maanden"
+                                } as const;
+                            case "it":
+                                return {
+                                    "past1": "il mese scorso",
+                                    "pastN": "fra # mesi",
+                                    "future1": "fra un mese",
+                                    "futureN": "fra # mesi"
+                                } as const;
                             /* spell-checker: enable */
                         }
                     })()
@@ -315,6 +498,34 @@ export const { fromNow } = (() => {
                                     "pastN": "在 # 年前",
                                     "future1": "在明年",
                                     "futureN": "在 # 年后"
+                                } as const;
+                            case "no":
+                                return {
+                                    "past1": "i fjor",
+                                    "pastN": "for # år siden",
+                                    "future1": "om et år",
+                                    "futureN": "om # år"
+                                } as const;
+                            case "fi":
+                                return {
+                                    "past1": "viime vuonna",
+                                    "pastN": "for # vuotta sitten",
+                                    "future1": "vuoden kuluttua",
+                                    "futureN": "om # vuotta"
+                                } as const;
+                            case "nl":
+                                return {
+                                    "past1": "vorig jaar",
+                                    "pastN": "# jaar geleden",
+                                    "future1": "over een jaar",
+                                    "futureN": "over # jaar"
+                                } as const;
+                            case "it":
+                                return {
+                                    "past1": "l'anno scorso",
+                                    "pastN": "fra # anni",
+                                    "future1": "fra un anno",
+                                    "futureN": "fra # anni"
                                 } as const;
                             /* spell-checker: enable */
                         }
@@ -347,6 +558,34 @@ export const { fromNow } = (() => {
                                     "future1": "在下个世纪",
                                     "futureN": "在 # 个世纪后"
                                 } as const;
+                            case "no":
+                                return {
+                                    "past1": "forrige århundre",
+                                    "pastN": "for # århundrer siden",
+                                    "future1": "om et århundre",
+                                    "futureN": "om # århundrer"
+                                } as const;
+                            case "fi":
+                                return {
+                                    "past1": "viime vuosisadalla",
+                                    "pastN": "for # vuosisataa sitten",
+                                    "future1": "vuosisadan kuluttua",
+                                    "futureN": "om # vuosisataa"
+                                } as const;
+                            case "nl":
+                                return {
+                                    "past1": "vorige eeuw",
+                                    "pastN": "# eeuwen geleden",
+                                    "future1": "over een eeuw",
+                                    "futureN": "over # eeuwen"
+                                } as const;
+                            case "it":
+                                return {
+                                    "past1": "il secolo scorso",
+                                    "pastN": "fra # secoli",
+                                    "future1": "fra un secolo",
+                                    "futureN": "fra # secoli"
+                                } as const;
                             /* spell-checker: enable */
                         }
                     })()
@@ -377,6 +616,34 @@ export const { fromNow } = (() => {
                                     "pastN": "在 # 千年前",
                                     "future1": "在一千年后",
                                     "futureN": "在 # 千年后"
+                                } as const;
+                            case "no":
+                                return {
+                                    "past1": "forrige årtusen",
+                                    "pastN": "for # årtusener siden",
+                                    "future1": "om et årtusen",
+                                    "futureN": "om # årtusener"
+                                } as const;
+                            case "fi":
+                                return {
+                                    "past1": "viime vuosituhanneksella",
+                                    "pastN": "for # vuosituhatta sitten",
+                                    "future1": "vuosituhannen kuluttua",
+                                    "futureN": "om # vuosituhatta"
+                                } as const;
+                            case "nl":
+                                return {
+                                    "past1": "vorig millennium",
+                                    "pastN": "# millennia geleden",
+                                    "future1": "over een millennium",
+                                    "futureN": "over # millennia"
+                                } as const;
+                            case "it":
+                                return {
+                                    "past1": "l'ultimo millennio",
+                                    "pastN": "fra # millenni",
+                                    "future1": "fra un millennio",
+                                    "futureN": "fra # millenni"
                                 } as const;
                             /* spell-checker: enable */
                         }

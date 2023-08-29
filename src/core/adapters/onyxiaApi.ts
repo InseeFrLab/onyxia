@@ -3,10 +3,11 @@ import type {
     DeploymentRegion,
     LocalizedString,
     JSONSchemaObject,
-    JSONSchemaFormFieldDescription
+    JSONSchemaFormFieldDescription,
+    User
 } from "../ports/OnyxiaApi";
 import axios from "axios";
-import type { AxiosInstance } from "axios";
+import type { AxiosResponse, AxiosRequestConfig } from "axios";
 import memoize from "memoizee";
 import {
     onyxiaFriendlyNameFormFieldPath,
@@ -16,124 +17,59 @@ import Mustache from "mustache";
 import { assert } from "tsafe/assert";
 import type { Equals } from "tsafe";
 import { id } from "tsafe/id";
-import { Deferred } from "evt/tools/Deferred";
-import { symToStr } from "tsafe/symToStr";
-//This should be used only in ui/coreApi/StoreProvider but we break the rule
-//here because we use it only for debugging purpose.
-import { getEnv } from "env";
-import { Catalog, getRandomK8sSubdomain, getServiceId } from "../ports/OnyxiaApi";
+import {
+    type Catalog,
+    type Project,
+    getRandomK8sSubdomain,
+    getServiceId
+} from "../ports/OnyxiaApi";
 import { getValueAtPathInObject } from "core/tools/getValueAtPathInObject";
-
-/** @deprecated */
-const dAxiosInstance = new Deferred<AxiosInstance>();
-
-export const { pr: prAxiosInstance } = dAxiosInstance;
 
 export function createOnyxiaApi(params: {
     url: string;
     /** undefined if user not logged in */
     getOidcAccessToken: () => string | undefined;
-
-    //NOTE: We can't know at initialization what region and project is selected.
-    //we first have to query the API to know what region and projects are available
-    //for the user.
-    //We can't do that internally in the adapter as it's not it's its responsibility
-    //to decide what region or project should be selected.
-    //As consequence, instead of providing simple function that return the currently
-    //selected project and region we take a reference of a function (in the like of ReactRefs )
-    //that can be updated later on by the caller of the function.
-    refGetCurrentlySelectedDeployRegionId: { current: (() => string) | undefined };
-    refGetCurrentlySelectedProjectId: { current: (() => string) | undefined };
+    getRegionId: () => string | undefined;
+    getProject: () => Pick<Project, "id" | "group"> | undefined;
 }): OnyxiaApi {
-    const {
-        url,
-        getOidcAccessToken,
-        refGetCurrentlySelectedDeployRegionId,
-        refGetCurrentlySelectedProjectId
-    } = params;
+    const { url, getOidcAccessToken, getRegionId, getProject } = params;
 
     const { axiosInstance } = (() => {
         const axiosInstance = axios.create({ "baseURL": url, "timeout": 120_000 });
 
         if (getOidcAccessToken !== undefined) {
-            axiosInstance.interceptors.request.use(
-                config => ({
-                    ...(config as any),
-                    "headers": {
-                        ...config.headers,
-                        ...(() => {
-                            const accessToken = getOidcAccessToken();
+            axiosInstance.interceptors.request.use(config => ({
+                ...(config as any),
+                "headers": {
+                    ...config.headers,
+                    ...(() => {
+                        const accessToken = getOidcAccessToken();
 
-                            if (accessToken === undefined) {
-                                return {};
-                            }
+                        if (accessToken === undefined) {
+                            return {};
+                        }
 
-                            return {
-                                "Authorization": `Bearer ${accessToken}`
-                            };
-                        })()
-                    },
-                    "Content-Type": "application/json;charset=utf-8",
-                    "Accept": "application/json;charset=utf-8"
-                }),
-                error => {
-                    throw error;
-                }
-            );
-        }
-
-        {
-            const errorMessage = [
-                `There isn't an onyxia-api hosted at ${url}`,
-                `Check the ${(() => {
-                    const { ONYXIA_API_URL } = getEnv();
-                    return symToStr({ ONYXIA_API_URL });
-                })()} environnement variable you provided with docker run.`
-            ].join(" ");
-
-            axiosInstance.interceptors.response.use(
-                res => {
-                    if (
-                        `${res.status}`[0] === "2" &&
-                        res.headers["content-type"] !== "application/json"
-                    ) {
-                        alert(errorMessage);
-                        throw new Error(errorMessage);
-                    }
-
-                    return res;
+                        return {
+                            "Authorization": `Bearer ${accessToken}`
+                        };
+                    })()
                 },
-                error => {
-                    alert(errorMessage);
-
-                    throw error;
-                }
-            );
+                "Content-Type": "application/json;charset=utf-8",
+                "Accept": "application/json;charset=utf-8"
+            }));
         }
 
         axiosInstance.interceptors.request.use(config => ({
             ...config,
             "headers": {
                 ...config?.headers,
-                ...(refGetCurrentlySelectedDeployRegionId.current === undefined
-                    ? {}
-                    : {
-                          "ONYXIA-REGION": refGetCurrentlySelectedDeployRegionId.current()
-                      }),
-                ...(refGetCurrentlySelectedProjectId.current === undefined
-                    ? {}
-                    : {
-                          "ONYXIA-PROJECT": refGetCurrentlySelectedProjectId.current()
-                      })
+                "ONYXIA-REGION": getRegionId(),
+                "ONYXIA-PROJECT": getProject()?.id
             }
         }));
 
         return { axiosInstance };
     })();
-
-    if (axiosInstance !== undefined) {
-        dAxiosInstance.resolve(axiosInstance);
-    }
 
     const onyxiaApi: OnyxiaApi = {
         "getIp": memoize(() =>
@@ -151,6 +87,10 @@ export function createOnyxiaApi(params: {
                                 ingressClassName: string;
                                 ingress?: boolean;
                                 route?: boolean;
+                                istio?: {
+                                    enabled: boolean;
+                                    gateways: string[];
+                                };
                             };
                             defaultConfiguration?: {
                                 ipprotection?: boolean;
@@ -232,6 +172,7 @@ export function createOnyxiaApi(params: {
                             URL: string;
                             kvEngine: string;
                             role: string;
+                            authPath?: string;
                             keycloakParams?: {
                                 URL?: string;
                                 realm?: string;
@@ -246,6 +187,7 @@ export function createOnyxiaApi(params: {
                         packageRepositoryInjection?: {
                             cranProxyUrl: string;
                             condaProxyUrl: string;
+                            packageManagerUrl: string;
                             pypiProxyUrl: string;
                         };
 
@@ -269,6 +211,7 @@ export function createOnyxiaApi(params: {
                             "ingressClassName": region.services.expose.ingressClassName,
                             "ingress": region.services.expose.ingress,
                             "route": region.services.expose.route,
+                            "istio": region.services.expose.istio,
                             "initScriptUrl": region.services.initScript,
                             "s3": (() => {
                                 const { S3 } = region.data ?? {};
@@ -340,6 +283,7 @@ export function createOnyxiaApi(params: {
                                           "url": vault.URL,
                                           "kvEngine": vault.kvEngine,
                                           "role": vault.role,
+                                          "authPath": vault.authPath,
                                           "keycloakParams":
                                               vault.keycloakParams === undefined
                                                   ? undefined
@@ -385,6 +329,7 @@ export function createOnyxiaApi(params: {
                         })
                     )
                 )
+                .catch(onError)
         ),
         "getCatalogs": memoize(
             () =>
@@ -427,9 +372,29 @@ export function createOnyxiaApi(params: {
                                 "highlightedCharts": catalog.highlightedCharts
                             })
                         )
-                    ),
+                    )
+                    .catch(onError),
             { "promise": true }
         ),
+        "onboard": () =>
+            axiosInstance
+                .post("/onboarding", {
+                    "group": (() => {
+                        const project = getProject();
+                        assert(project !== undefined);
+                        return project.group;
+                    })()
+                })
+                .catch(error => {
+                    if (error.response?.status === 409) {
+                        //NOTE: The onboarding has already been done.
+                        return;
+                    }
+
+                    throw error;
+                })
+                .catch(onError)
+                .then(() => undefined),
         "getPackageConfig": ({ catalogId, packageName }) =>
             axiosInstance
                 .get<
@@ -441,254 +406,275 @@ export function createOnyxiaApi(params: {
                         }[];
                     }[]
                 >(`/public/catalogs/${catalogId}/charts/${packageName}`)
-                .then(({ data }) => ({
-                    "dependencies": data[0].dependencies?.map(({ name }) => name) ?? [],
-                    "sources": data[0].sources ?? [],
-                    "getValuesSchemaJson": ({ onyxiaValues }) => {
-                        //WARNING: The type is not exactly correct here. JSONSchemaFormFieldDescription["default"] can be undefined.
-                        const configCopy = JSON.parse(
-                            JSON.stringify(data[0].config)
-                        ) as JSONSchemaObject;
+                .then(
+                    ({ data }) => ({
+                        "dependencies":
+                            data[0].dependencies?.map(({ name }) => name) ?? [],
+                        "sources": data[0].sources ?? [],
+                        "getValuesSchemaJson": ({ onyxiaValues }) => {
+                            //WARNING: The type is not exactly correct here. JSONSchemaFormFieldDescription["default"] can be undefined.
+                            const configCopy = JSON.parse(
+                                JSON.stringify(data[0].config)
+                            ) as JSONSchemaObject;
 
-                        function overrideDefaultsRec(
-                            jsonSchemaObjectOrFormFieldDescription:
-                                | JSONSchemaObject
-                                | JSONSchemaFormFieldDescription,
-                            path: string
-                        ) {
-                            if (
-                                jsonSchemaObjectOrFormFieldDescription.type ===
-                                    "object" &&
-                                "properties" in jsonSchemaObjectOrFormFieldDescription
+                            function overrideDefaultsRec(
+                                jsonSchemaObjectOrFormFieldDescription:
+                                    | JSONSchemaObject
+                                    | JSONSchemaFormFieldDescription,
+                                path: string
                             ) {
-                                const jsonSchemaObject =
-                                    jsonSchemaObjectOrFormFieldDescription;
-                                Object.entries(jsonSchemaObject.properties).forEach(
-                                    ([key, value]) =>
-                                        overrideDefaultsRec(value, `${path}.${key}`)
-                                );
-                                return;
-                            }
-
-                            const jsonSchemaFormFieldDescription =
-                                jsonSchemaObjectOrFormFieldDescription;
-
-                            overwrite_default: {
-                                const assertWeHaveADefault = () => {
-                                    //NOTE: Actually, the default can be undefined in the value.schema.json
-                                    //      but it would be too complicated to specify in the type system
-                                    //      thus the any.
-                                    if (
-                                        (jsonSchemaFormFieldDescription.default as any) !==
-                                        undefined
-                                    ) {
-                                        return;
-                                    }
-
-                                    if (
-                                        jsonSchemaFormFieldDescription.type === "string"
-                                    ) {
-                                        jsonSchemaFormFieldDescription.default = "";
-                                        return;
-                                    }
-
-                                    if (
-                                        jsonSchemaFormFieldDescription.type === "object"
-                                    ) {
-                                        jsonSchemaFormFieldDescription.default = {};
-                                        return;
-                                    }
-
-                                    if (jsonSchemaFormFieldDescription.type === "array") {
-                                        jsonSchemaFormFieldDescription.default = [];
-                                        return;
-                                    }
-
-                                    assert(false, `${path} has no default value`);
-                                };
-
-                                const { overwriteDefaultWith } =
-                                    jsonSchemaFormFieldDescription["x-onyxia"] ?? {};
-
-                                if (overwriteDefaultWith === undefined) {
-                                    assertWeHaveADefault();
-                                    break overwrite_default;
-                                }
-
-                                const resolvedValue = overwriteDefaultWith.includes("{{")
-                                    ? Mustache.render(
-                                          overwriteDefaultWith
-                                              .replace(/{{/g, "{{{")
-                                              .replace(/}}/g, "}}}"),
-                                          onyxiaValues
-                                      )
-                                    : getValueAtPathInObject({
-                                          "path": overwriteDefaultWith.split("."),
-                                          "obj": onyxiaValues
-                                      });
-
                                 if (
-                                    resolvedValue === undefined ||
-                                    resolvedValue === null
+                                    jsonSchemaObjectOrFormFieldDescription.type ===
+                                        "object" &&
+                                    "properties" in jsonSchemaObjectOrFormFieldDescription
                                 ) {
-                                    assertWeHaveADefault();
-                                    break overwrite_default;
-                                }
-
-                                switch (jsonSchemaFormFieldDescription.type) {
-                                    case "string":
-                                        jsonSchemaFormFieldDescription.default =
-                                            typeof resolvedValue !== "object"
-                                                ? `${resolvedValue}`
-                                                : JSON.stringify(resolvedValue);
-                                        break;
-                                    case "array":
-                                        assert(
-                                            resolvedValue instanceof Array,
-                                            `${overwriteDefaultWith} is not an array (${path})`
-                                        );
-                                        jsonSchemaFormFieldDescription.default =
-                                            resolvedValue;
-                                        break;
-                                    case "object":
-                                        assert(
-                                            resolvedValue instanceof Object,
-                                            `${overwriteDefaultWith} is not an object (${path})`
-                                        );
-                                        jsonSchemaFormFieldDescription.default =
-                                            resolvedValue;
-                                        break;
-                                    case "boolean":
-                                        assert(
-                                            typeof resolvedValue !== "object",
-                                            `${overwriteDefaultWith} can't be interpreted as a boolean (${path})`
-                                        );
-                                        jsonSchemaFormFieldDescription.default =
-                                            !!resolvedValue;
-                                        break;
-                                    case "number":
-                                    case "integer":
-                                        {
-                                            const x = (() => {
-                                                if (typeof resolvedValue === "number") {
-                                                    return resolvedValue;
-                                                }
-
-                                                const interpretedValue =
-                                                    typeof resolvedValue === "string"
-                                                        ? parseFloat(resolvedValue)
-                                                        : undefined;
-
-                                                assert(
-                                                    interpretedValue !== undefined &&
-                                                        !isNaN(interpretedValue),
-                                                    `${overwriteDefaultWith} can't be interpreted as a number (${path})`
-                                                );
-
-                                                return interpretedValue;
-                                            })();
-
-                                            jsonSchemaFormFieldDescription.default =
-                                                (() => {
-                                                    switch (
-                                                        jsonSchemaFormFieldDescription.type
-                                                    ) {
-                                                        case "number":
-                                                            return x;
-                                                        case "integer":
-                                                            assert(
-                                                                Number.isInteger(x),
-                                                                `${overwriteDefaultWith} (${x}) is not an integer (${path})`
-                                                            );
-                                                            return x;
-                                                    }
-                                                })();
-                                        }
-                                        break;
-                                }
-                            }
-
-                            use_region_slider_config: {
-                                if (
-                                    !(
-                                        jsonSchemaFormFieldDescription.type ===
-                                            "string" &&
-                                        "render" in jsonSchemaFormFieldDescription &&
-                                        jsonSchemaFormFieldDescription.render === "slider"
-                                    )
-                                ) {
-                                    break use_region_slider_config;
-                                }
-
-                                const { useRegionSliderConfig } =
-                                    jsonSchemaFormFieldDescription["x-onyxia"] ?? {};
-
-                                if (useRegionSliderConfig === undefined) {
-                                    break use_region_slider_config;
-                                }
-
-                                const sliderConfig = getValueAtPathInObject<
-                                    (typeof onyxiaValues)["region"]["sliders"][string]
-                                >({
-                                    "path": ["region", "sliders", useRegionSliderConfig],
-                                    "obj": onyxiaValues
-                                });
-
-                                if (sliderConfig === undefined) {
-                                    console.warn(
-                                        `There is no slider configuration ${useRegionSliderConfig} in the current deployment region`
+                                    const jsonSchemaObject =
+                                        jsonSchemaObjectOrFormFieldDescription;
+                                    Object.entries(jsonSchemaObject.properties).forEach(
+                                        ([key, value]) =>
+                                            overrideDefaultsRec(value, `${path}.${key}`)
                                     );
-                                    break use_region_slider_config;
+                                    return;
                                 }
 
-                                const {
-                                    sliderMax,
-                                    sliderMin,
-                                    sliderStep,
-                                    sliderUnit,
-                                    ...rest
-                                } = sliderConfig;
+                                const jsonSchemaFormFieldDescription =
+                                    jsonSchemaObjectOrFormFieldDescription;
 
-                                assert<Equals<typeof rest, {}>>();
+                                overwrite_default: {
+                                    const assertWeHaveADefault = () => {
+                                        //NOTE: Actually, the default can be undefined in the value.schema.json
+                                        //      but it would be too complicated to specify in the type system
+                                        //      thus the any.
+                                        if (
+                                            (jsonSchemaFormFieldDescription.default as any) !==
+                                            undefined
+                                        ) {
+                                            return;
+                                        }
 
-                                if ("sliderExtremity" in jsonSchemaFormFieldDescription) {
-                                    switch (
-                                        jsonSchemaFormFieldDescription.sliderExtremity
+                                        if (
+                                            jsonSchemaFormFieldDescription.type ===
+                                            "string"
+                                        ) {
+                                            jsonSchemaFormFieldDescription.default = "";
+                                            return;
+                                        }
+
+                                        if (
+                                            jsonSchemaFormFieldDescription.type ===
+                                            "object"
+                                        ) {
+                                            jsonSchemaFormFieldDescription.default = {};
+                                            return;
+                                        }
+
+                                        if (
+                                            jsonSchemaFormFieldDescription.type ===
+                                            "array"
+                                        ) {
+                                            jsonSchemaFormFieldDescription.default = [];
+                                            return;
+                                        }
+
+                                        assert(false, `${path} has no default value`);
+                                    };
+
+                                    const { overwriteDefaultWith } =
+                                        jsonSchemaFormFieldDescription["x-onyxia"] ?? {};
+
+                                    if (overwriteDefaultWith === undefined) {
+                                        assertWeHaveADefault();
+                                        break overwrite_default;
+                                    }
+
+                                    const resolvedValue = overwriteDefaultWith.includes(
+                                        "{{"
+                                    )
+                                        ? Mustache.render(
+                                              overwriteDefaultWith
+                                                  .replace(/{{/g, "{{{")
+                                                  .replace(/}}/g, "}}}"),
+                                              onyxiaValues
+                                          )
+                                        : getValueAtPathInObject({
+                                              "path": overwriteDefaultWith.split("."),
+                                              "obj": onyxiaValues
+                                          });
+
+                                    if (
+                                        resolvedValue === undefined ||
+                                        resolvedValue === null
                                     ) {
-                                        case "down":
-                                            jsonSchemaFormFieldDescription.sliderMin =
-                                                sliderConfig.sliderMin;
-                                            jsonSchemaFormFieldDescription.sliderUnit =
-                                                sliderConfig.sliderUnit;
-                                            jsonSchemaFormFieldDescription.sliderStep =
-                                                sliderConfig.sliderStep;
+                                        assertWeHaveADefault();
+                                        break overwrite_default;
+                                    }
+
+                                    switch (jsonSchemaFormFieldDescription.type) {
+                                        case "string":
+                                            jsonSchemaFormFieldDescription.default =
+                                                typeof resolvedValue !== "object"
+                                                    ? `${resolvedValue}`
+                                                    : JSON.stringify(resolvedValue);
                                             break;
-                                        case "up":
-                                            jsonSchemaFormFieldDescription.sliderMax =
-                                                sliderConfig.sliderMax;
+                                        case "array":
+                                            assert(
+                                                resolvedValue instanceof Array,
+                                                `${overwriteDefaultWith} is not an array (${path})`
+                                            );
+                                            jsonSchemaFormFieldDescription.default =
+                                                resolvedValue;
+                                            break;
+                                        case "object":
+                                            assert(
+                                                resolvedValue instanceof Object,
+                                                `${overwriteDefaultWith} is not an object (${path})`
+                                            );
+                                            jsonSchemaFormFieldDescription.default =
+                                                resolvedValue;
+                                            break;
+                                        case "boolean":
+                                            assert(
+                                                typeof resolvedValue !== "object",
+                                                `${overwriteDefaultWith} can't be interpreted as a boolean (${path})`
+                                            );
+                                            jsonSchemaFormFieldDescription.default =
+                                                !!resolvedValue;
+                                            break;
+                                        case "number":
+                                        case "integer":
+                                            {
+                                                const x = (() => {
+                                                    if (
+                                                        typeof resolvedValue === "number"
+                                                    ) {
+                                                        return resolvedValue;
+                                                    }
+
+                                                    const interpretedValue =
+                                                        typeof resolvedValue === "string"
+                                                            ? parseFloat(resolvedValue)
+                                                            : undefined;
+
+                                                    assert(
+                                                        interpretedValue !== undefined &&
+                                                            !isNaN(interpretedValue),
+                                                        `${overwriteDefaultWith} can't be interpreted as a number (${path})`
+                                                    );
+
+                                                    return interpretedValue;
+                                                })();
+
+                                                jsonSchemaFormFieldDescription.default =
+                                                    (() => {
+                                                        switch (
+                                                            jsonSchemaFormFieldDescription.type
+                                                        ) {
+                                                            case "number":
+                                                                return x;
+                                                            case "integer":
+                                                                assert(
+                                                                    Number.isInteger(x),
+                                                                    `${overwriteDefaultWith} (${x}) is not an integer (${path})`
+                                                                );
+                                                                return x;
+                                                        }
+                                                    })();
+                                            }
                                             break;
                                     }
-                                } else {
-                                    jsonSchemaFormFieldDescription.sliderMax =
-                                        sliderConfig.sliderMax;
-                                    jsonSchemaFormFieldDescription.sliderMin =
-                                        sliderConfig.sliderMin;
-                                    jsonSchemaFormFieldDescription.sliderUnit =
-                                        sliderConfig.sliderUnit;
-                                    jsonSchemaFormFieldDescription.sliderStep =
-                                        sliderConfig.sliderStep;
+                                }
+
+                                use_region_slider_config: {
+                                    if (
+                                        !(
+                                            jsonSchemaFormFieldDescription.type ===
+                                                "string" &&
+                                            "render" in jsonSchemaFormFieldDescription &&
+                                            jsonSchemaFormFieldDescription.render ===
+                                                "slider"
+                                        )
+                                    ) {
+                                        break use_region_slider_config;
+                                    }
+
+                                    const { useRegionSliderConfig } =
+                                        jsonSchemaFormFieldDescription["x-onyxia"] ?? {};
+
+                                    if (useRegionSliderConfig === undefined) {
+                                        break use_region_slider_config;
+                                    }
+
+                                    const sliderConfig = getValueAtPathInObject<
+                                        (typeof onyxiaValues)["region"]["sliders"][string]
+                                    >({
+                                        "path": [
+                                            "region",
+                                            "sliders",
+                                            useRegionSliderConfig
+                                        ],
+                                        "obj": onyxiaValues
+                                    });
+
+                                    if (sliderConfig === undefined) {
+                                        console.warn(
+                                            `There is no slider configuration ${useRegionSliderConfig} in the current deployment region`
+                                        );
+                                        break use_region_slider_config;
+                                    }
+
+                                    const {
+                                        sliderMax,
+                                        sliderMin,
+                                        sliderStep,
+                                        sliderUnit,
+                                        ...rest
+                                    } = sliderConfig;
+
+                                    assert<Equals<typeof rest, {}>>();
+
+                                    if (
+                                        "sliderExtremity" in
+                                        jsonSchemaFormFieldDescription
+                                    ) {
+                                        switch (
+                                            jsonSchemaFormFieldDescription.sliderExtremity
+                                        ) {
+                                            case "down":
+                                                jsonSchemaFormFieldDescription.sliderMin =
+                                                    sliderConfig.sliderMin;
+                                                jsonSchemaFormFieldDescription.sliderUnit =
+                                                    sliderConfig.sliderUnit;
+                                                jsonSchemaFormFieldDescription.sliderStep =
+                                                    sliderConfig.sliderStep;
+                                                break;
+                                            case "up":
+                                                jsonSchemaFormFieldDescription.sliderMax =
+                                                    sliderConfig.sliderMax;
+                                                break;
+                                        }
+                                    } else {
+                                        jsonSchemaFormFieldDescription.sliderMax =
+                                            sliderConfig.sliderMax;
+                                        jsonSchemaFormFieldDescription.sliderMin =
+                                            sliderConfig.sliderMin;
+                                        jsonSchemaFormFieldDescription.sliderUnit =
+                                            sliderConfig.sliderUnit;
+                                        jsonSchemaFormFieldDescription.sliderStep =
+                                            sliderConfig.sliderStep;
+                                    }
                                 }
                             }
+
+                            overrideDefaultsRec(configCopy, "");
+
+                            return configCopy;
                         }
-
-                        overrideDefaultsRec(configCopy, "");
-
-                        return configCopy;
-                    }
-                })),
+                    }),
+                    onError
+                ),
         ...(() => {
             const getMyLab_App = (params: { serviceId: string }) =>
-                axiosInstance.get("/my-lab/app", { params });
+                axiosInstance.get("/my-lab/app", { params }).catch(onError);
 
             const launchPackage = id<OnyxiaApi["launchPackage"]>(
                 async ({ catalogId, packageName, options, isDryRun }) => {
@@ -697,15 +683,15 @@ export function createOnyxiaApi(params: {
                         "randomK8sSubdomain": getRandomK8sSubdomain()
                     });
 
-                    const { data: contract } = await axiosInstance.put<
-                        Record<string, unknown>[][]
-                    >(`/my-lab/app`, {
-                        catalogId,
-                        packageName,
-                        "name": serviceId,
-                        options,
-                        "dryRun": isDryRun
-                    });
+                    const { data: contract } = await axiosInstance
+                        .put<Record<string, unknown>[][]>(`/my-lab/app`, {
+                            catalogId,
+                            packageName,
+                            "name": serviceId,
+                            options,
+                            "dryRun": isDryRun
+                        })
+                        .catch(onError);
 
                     while (true) {
                         try {
@@ -743,7 +729,10 @@ export function createOnyxiaApi(params: {
 
             const getMyLab_Services = memoize(
                 () =>
-                    axiosInstance.get<Data>("/my-lab/services").then(({ data }) => data),
+                    axiosInstance
+                        .get<Data>("/my-lab/services")
+                        .then(({ data }) => data)
+                        .catch(onError),
                 { "promise": true, "maxAge": 1000 }
             );
 
@@ -877,7 +866,8 @@ export function createOnyxiaApi(params: {
                     //TODO: Wrong assertion here once, investigate
                     //Deleted one service just running, deleted all the others.
                     assert(data.success);
-                }),
+                })
+                .catch(onError),
         "getUserProjects": memoize(
             () =>
                 axiosInstance
@@ -885,12 +875,25 @@ export function createOnyxiaApi(params: {
                         projects: {
                             id: string;
                             name: string;
+                            group?: string;
                             bucket: string;
                             namespace: string;
                             vaultTopDir: string;
                         }[];
                     }>("/user/info")
-                    .then(({ data }) => data.projects),
+                    .then(({ data }) =>
+                        data.projects.map(
+                            ({ id, name, group, bucket, namespace, vaultTopDir }) => ({
+                                id,
+                                name,
+                                group,
+                                bucket,
+                                namespace,
+                                vaultTopDir
+                            })
+                        )
+                    )
+                    .catch(onError),
             { "promise": true }
         ),
         "createAwsBucket": ({
@@ -914,9 +917,99 @@ export function createOnyxiaApi(params: {
                         .join("&")
                 )
                 .then(() => undefined)
+                .catch(onError),
+        "getUser": memoize(
+            async () => {
+                const { data } = await axiosInstance
+                    .get<{
+                        email: string;
+                        idep: string;
+                        nomComplet: string;
+                    }>("/user/info")
+                    .catch(onError);
+
+                const [firstName, familyName] = data.nomComplet.split(" ");
+
+                return id<User>({
+                    "username": data.idep,
+                    "email": data.email,
+                    firstName,
+                    familyName
+                });
+            },
+            { "promise": true }
+        )
     };
 
-    return onyxiaApi;
+    let wasFirstRequestSuccessful = false;
+
+    function onError(
+        error: Error & { response?: AxiosResponse; config?: AxiosRequestConfig }
+    ): never {
+        const { response, config } = error;
+        const message =
+            config === undefined
+                ? String(error)
+                : [
+                      "Onyxia API Error:",
+                      "",
+                      `${config.method?.toUpperCase()} ${config.baseURL}${config.url}`,
+                      response === undefined
+                          ? error.message === "Network Error"
+                              ? "Network Error"
+                              : "No response"
+                          : `Response: ${response.status} ${response.statusText}`
+                  ].join("\n");
+
+        alert(message);
+
+        if (
+            !wasFirstRequestSuccessful &&
+            !onError.isWarningAboutOnyxiaProbableMisconfigurationShown
+        ) {
+            onError.isWarningAboutOnyxiaProbableMisconfigurationShown = true;
+
+            alert(
+                [
+                    "The first request to the Onyxia API failed.",
+                    "This usually means that the Onyxia API is not configured correctly.",
+                    `Please make sure that onyxia-api is running at:`,
+                    url
+                ].join("\n")
+            );
+        }
+
+        throw error;
+    }
+
+    onError.isWarningAboutOnyxiaProbableMisconfigurationShown = false;
+
+    const { proxy } = (() => {
+        let isFirstRequest = true;
+
+        const proxy = new Proxy<OnyxiaApi>(onyxiaApi, {
+            "get": (target, prop) => {
+                if (isFirstRequest && typeof prop === "string" && prop in onyxiaApi) {
+                    isFirstRequest = false;
+
+                    return async (...args: any[]) => {
+                        // @ts-expect-error
+                        const out = await onyxiaApi[String(prop)](...args);
+
+                        wasFirstRequestSuccessful = true;
+
+                        return out;
+                    };
+                }
+
+                return Reflect.get(target, prop);
+            }
+        });
+
+        return { proxy };
+    })();
+
+    return proxy;
 }
 
 let _s3url: string | undefined = undefined;

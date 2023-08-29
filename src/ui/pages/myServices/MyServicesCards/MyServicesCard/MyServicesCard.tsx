@@ -1,5 +1,5 @@
 import { Fragment, useMemo, memo } from "react";
-import { makeStyles } from "ui/theme";
+import { tss } from "ui/theme";
 import { Button, Text, Icon, IconButton } from "ui/theme";
 import { useTranslation } from "ui/i18n";
 import { capitalize } from "tsafe/capitalize";
@@ -278,62 +278,65 @@ export const { i18n } = declareComponentKeys<
     | "this is a shared service"
 >()({ MyServicesCard });
 
-const useStyles = makeStyles<{
-    severity: "error" | "warning" | undefined;
-}>({ "name": { MyServicesCard } })((theme, { severity }) => ({
-    "root": {
-        "borderRadius": 8,
-        "boxShadow": theme.shadows[1],
-        "backgroundColor": theme.colors.useCases.surfaces.surface1,
-        "&:hover": {
-            "boxShadow": theme.shadows[6]
+const useStyles = tss
+    .withParams<{
+        severity: "error" | "warning" | undefined;
+    }>()
+    .withName({ MyServicesCard })
+    .create(({ theme, severity }) => ({
+        "root": {
+            "borderRadius": 8,
+            "boxShadow": theme.shadows[1],
+            "backgroundColor": theme.colors.useCases.surfaces.surface1,
+            "&:hover": {
+                "boxShadow": theme.shadows[6]
+            },
+            "display": "flex",
+            "flexDirection": "column"
         },
-        "display": "flex",
-        "flexDirection": "column"
-    },
-    "aboveDivider": {
-        "padding": theme.spacing({ "topBottom": 3, "rightLeft": 4 }),
-        "borderBottom": `1px solid ${theme.colors.useCases.typography.textTertiary}`,
-        "boxSizing": "border-box",
-        "display": "flex",
-        "alignItems": "center"
-    },
-    "title": {
-        "marginLeft": theme.spacing(3)
-    },
-    "errorOutlineIcon":
-        severity === undefined
-            ? { "display": "none" }
-            : {
-                  "marginLeft": theme.spacing(3),
-                  "color": theme.colors.useCases.alertSeverity[severity].main
-              },
-    "belowDivider": {
-        "padding": theme.spacing(4),
-        "paddingTop": theme.spacing(3),
-        "flex": 1
-    },
-    "timeContainer": {
-        "marginLeft": theme.spacing(6)
-    },
-    "belowDividerTop": {
-        "display": "flex",
-        "marginBottom": theme.spacing(4)
-    },
-    "captions": {
-        "display": "inline-block",
-        "marginBottom": theme.spacing(2)
-    },
-    "packageNameWrapper": {
-        "& > *": {
-            "display": "inline-block"
+        "aboveDivider": {
+            "padding": theme.spacing({ "topBottom": 3, "rightLeft": 4 }),
+            "borderBottom": `1px solid ${theme.colors.useCases.typography.textTertiary}`,
+            "boxSizing": "border-box",
+            "display": "flex",
+            "alignItems": "center"
+        },
+        "title": {
+            "marginLeft": theme.spacing(3)
+        },
+        "errorOutlineIcon":
+            severity === undefined
+                ? { "display": "none" }
+                : {
+                      "marginLeft": theme.spacing(3),
+                      "color": theme.colors.useCases.alertSeverity[severity].main
+                  },
+        "belowDivider": {
+            "padding": theme.spacing(4),
+            "paddingTop": theme.spacing(3),
+            "flex": 1
+        },
+        "timeContainer": {
+            "marginLeft": theme.spacing(6)
+        },
+        "belowDividerTop": {
+            "display": "flex",
+            "marginBottom": theme.spacing(4)
+        },
+        "captions": {
+            "display": "inline-block",
+            "marginBottom": theme.spacing(2)
+        },
+        "packageNameWrapper": {
+            "& > *": {
+                "display": "inline-block"
+            }
+        },
+        "sharedTag": {
+            "marginLeft": theme.spacing(2)
+        },
+        "belowDividerBottom": {
+            "display": "flex",
+            "alignItems": "center"
         }
-    },
-    "sharedTag": {
-        "marginLeft": theme.spacing(2)
-    },
-    "belowDividerBottom": {
-        "display": "flex",
-        "alignItems": "center"
-    }
-}));
+    }));

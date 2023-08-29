@@ -5,8 +5,8 @@ import { createSlice } from "@reduxjs/toolkit";
 import { id } from "tsafe/id";
 import type { State as RootState } from "../core";
 import { createSelector } from "@reduxjs/toolkit";
-import { selectors as projectSelectionSelectors } from "./projectSelection";
-import { selectors as deploymentRegionSelectors } from "./deploymentRegion";
+import * as projectConfigs from "./projectConfigs";
+import * as deploymentRegion from "./deploymentRegion";
 import { parseUrl } from "core/tools/parseUrl";
 import { assert } from "tsafe/assert";
 import { createUsecaseContextApi } from "redux-clean-architecture";
@@ -107,7 +107,7 @@ export const thunks = {
             const [, getState] = args;
 
             return (
-                deploymentRegionSelectors.selectedDeploymentRegion(getState()).s3 !==
+                deploymentRegion.selectors.selectedDeploymentRegion(getState()).s3 !==
                 undefined
             );
         },
@@ -130,7 +130,7 @@ export const thunks = {
 
                 evtAction.attach(
                     action =>
-                        action.sliceName === "projectSelection" &&
+                        action.sliceName === "projectConfigs" &&
                         action.actionName === "projectChanged",
                     () => dispatch(thunks.refresh({ "doForceRenewToken": false }))
                 );
@@ -146,7 +146,7 @@ export const thunks = {
 
             const { region, host, port } = (() => {
                 const { s3: s3Params } =
-                    deploymentRegionSelectors.selectedDeploymentRegion(getState());
+                    deploymentRegion.selectors.selectedDeploymentRegion(getState());
 
                 assert(s3Params !== undefined);
 
@@ -157,14 +157,13 @@ export const thunks = {
                 return { region, host, port };
             })();
 
-            const project = projectSelectionSelectors.selectedProject(getState());
-
-            const isDefaultProject =
-                getState().projectSelection.projects[0].id === project.id;
+            const project = projectConfigs.selectors.selectedProject(getState());
 
             const { accessKeyId, secretAccessKey, sessionToken, expirationTime } =
                 await s3Client.getToken({
-                    "restrictToBucketName": isDefaultProject ? undefined : project.bucket,
+                    "restrictToBucketName": project.isDefault
+                        ? undefined
+                        : project.bucket,
                     "doForceRenew": doForceRenewToken
                 });
 
@@ -316,7 +315,7 @@ export AWS_S3_ENDPOINT=${credentials.AWS_S3_ENDPOINT}
 						`;
                         case "MC client":
                             return `
-export MC_HOST_minio=https://${credentials.AWS_ACCESS_KEY_ID}:${credentials.AWS_SECRET_ACCESS_KEY}:${credentials.AWS_SESSION_TOKEN}@${credentials.AWS_S3_ENDPOINT}
+export MC_HOST_s3=https://${credentials.AWS_ACCESS_KEY_ID}:${credentials.AWS_SECRET_ACCESS_KEY}:${credentials.AWS_SESSION_TOKEN}@${credentials.AWS_S3_ENDPOINT}
 						`;
                         case "s3cmd":
                             return `
