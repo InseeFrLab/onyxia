@@ -10,7 +10,7 @@ import { Props as ButtonBarProps } from "./ExplorerButtonBar";
 import { Evt } from "evt";
 import { join as pathJoin, basename as pathBasename } from "path";
 import { useTranslation } from "ui/i18n";
-import { ApiLogsBar } from "./ApiLogsBar";
+import { ApiLogsBar } from "ui/shared/ApiLogsBar";
 import {
     generateUniqDefaultName,
     buildNameFactory
