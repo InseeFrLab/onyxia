@@ -308,11 +308,11 @@ const privateThunks = {
                 }
             }
 
-            dispatch(actions.navigationStarted());
-
             const { loggedSecretClient } = getContext(extraArg);
 
             dispatch(thunks.cancelNavigation());
+
+            dispatch(actions.navigationStarted());
 
             const ctx = Evt.newCtx();
 
