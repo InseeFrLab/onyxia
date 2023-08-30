@@ -53,7 +53,7 @@ export default function MyFiles(props: Props) {
     useEffect(() => {
 
         if( route.params.path === undefined ){
-            routes[route.name]({ "path": fileExplorer.getProjectHomePath() }).replace();
+            routes[route.name]({ "path": fileExplorer.getProjectHomeOrPreviousPath() }).replace();
             return;
         }
 
