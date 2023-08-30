@@ -46,29 +46,26 @@ export default function MySecrets(props: Props) {
             evtProjectConfigs.attach(
                 action => action.name === "projectChanged",
                 ctx,
-                () => {
-                    routes[route.name]({ "path": undefined }).replace();
-                }
+                () => 
+                    routes[route.name]({ "path": undefined }).replace()
             );
         },
         [evtProjectConfigs]
     );
 
     useEffect(() => {
+
+        if( route.params.path === undefined ){
+            routes[route.name]({ "path": secretExplorer.getProjectHomePath() }).replace();
+            return;
+        }
+
         secretExplorer.navigate({
             "directoryPath": route.params.path
         });
+
     }, [route.params.path]);
 
-    //NOTE: This is for wen we have navigated to undefined because we didn't have any path in the url.
-    // the core will navigate to the home and we want to update the url to reflect that.
-    useEffect(() => {
-        const { directoryPath } = currentWorkingDirectoryView ?? {};
-
-        if (route.params.path === undefined && directoryPath !== undefined) {
-            routes[route.name]({ "path": directoryPath }).replace();
-        }
-    }, [route.params.path, currentWorkingDirectoryView?.directoryPath]);
 
     useEffect(() => {
         if (route.params.path === undefined) {
