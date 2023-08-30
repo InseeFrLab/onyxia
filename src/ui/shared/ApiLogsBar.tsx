@@ -46,7 +46,7 @@ export const ApiLogsBar = memo((props: ApiLogsBarProps) => {
             "top": element.scrollHeight,
             "behavior": "smooth"
         });
-    }, [isExpended, entries.length, panelRef.current]);
+    }, [isExpended, entries, panelRef.current]);
 
     //TODO: see if classes are recomputed every time because ref object changes
     const { classes } = useStyles({ maxHeight, headerHeight, isExpended });
