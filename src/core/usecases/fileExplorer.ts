@@ -2,13 +2,12 @@ import "minimal-polyfills/Object.fromEntries";
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { id } from "tsafe/id";
-import type { Thunks, ThunksExtraArgument } from "../core";
+import type { Thunks } from "../core";
 import {
     join as pathJoin,
     relative as pathRelative,
     basename as pathBasename
 } from "path";
-import type { ApiLogs } from "core/tools/apiLogger";
 import { logApi } from "core/tools/apiLogger";
 import type { S3Client } from "../ports/S3Client";
 import { assert } from "tsafe/assert";
@@ -19,11 +18,13 @@ import type { State as RootState } from "../core";
 import memoize from "memoizee";
 import type { WritableDraft } from "immer/dist/types/types-external";
 import * as deploymentRegion from "./deploymentRegion";
-import type { Param0 } from "tsafe";
 import { createExtendedFsApi } from "core/tools/extendedFsApi";
 import type { ExtendedFsApi } from "core/tools/extendedFsApi";
 import { createObjectThatThrowsIfAccessed } from "redux-clean-architecture";
 import { mcApiLogger } from "../adapters/s3client/mcApiLogger";
+import { createUsecaseContextApi } from "redux-clean-architecture";
+// NOTE: Polyfill of a browser feature.
+import structuredClone from "@ungap/structured-clone";
 
 //All explorer path are expected to be absolute (start with /)
 
@@ -40,15 +41,17 @@ export type State = {
         kind: "file" | "directory";
         operation: "create" | "delete";
     }[];
-    "~internal": {
-        isUserWatching: boolean;
-        s3FilesBeingUploaded: {
-            directoryPath: string;
-            basename: string;
-            size: number;
-            uploadPercent: number;
-        }[];
-    };
+    s3FilesBeingUploaded: {
+        directoryPath: string;
+        basename: string;
+        size: number;
+        uploadPercent: number;
+    }[];
+    apiLogsEntries: {
+        cmdId: number;
+        cmd: string;
+        resp: string | undefined;
+    }[];
 };
 
 export const name = "fileExplorer";
@@ -60,10 +63,8 @@ export const { reducer, actions } = createSlice({
         "directoryItems": [],
         "isNavigationOngoing": false,
         "ongoingOperations": [],
-        "~internal": {
-            "s3FilesBeingUploaded": [],
-            "isUserWatching": false
-        }
+        "s3FilesBeingUploaded": [],
+        "apiLogsEntries": []
     }),
     "reducers": {
         "fileUploadStarted": (
@@ -78,7 +79,7 @@ export const { reducer, actions } = createSlice({
         ) => {
             const { directoryPath, basename, size } = payload;
 
-            state["~internal"].s3FilesBeingUploaded.push({
+            state.s3FilesBeingUploaded.push({
                 directoryPath,
                 basename,
                 size,
@@ -96,7 +97,7 @@ export const { reducer, actions } = createSlice({
             }>
         ) => {
             const { basename, directoryPath, uploadPercent } = payload;
-            const { s3FilesBeingUploaded } = state["~internal"];
+            const { s3FilesBeingUploaded } = state;
 
             const s3FileBeingUploaded = s3FilesBeingUploaded.find(
                 s3FileBeingUploaded =>
@@ -112,7 +113,7 @@ export const { reducer, actions } = createSlice({
                 return;
             }
 
-            state["~internal"].s3FilesBeingUploaded = [];
+            state.s3FilesBeingUploaded = [];
         },
         "navigationStarted": state => {
             state.isNavigationOngoing = true;
@@ -230,23 +231,13 @@ export const { reducer, actions } = createSlice({
                     break;
             }
         },
-        "isUserWatchingChanged": (
+        "apiHistoryUpdated": (
             state,
-            {
-                payload
-            }: PayloadAction<
-                | {
-                      isUserWatching: false;
-                  }
-                | {
-                      isUserWatching: true;
-                      directNavigationDirectoryPath: string | undefined;
-                  }
-            >
+            { payload }: PayloadAction<{ apiLogsEntries: State["apiLogsEntries"] }>
         ) => {
-            const { isUserWatching } = payload;
+            const { apiLogsEntries } = payload;
 
-            state["~internal"].isUserWatching = isUserWatching;
+            state.apiLogsEntries = apiLogsEntries;
         }
     }
 });
@@ -273,139 +264,121 @@ export declare namespace ExplorersCreateParams {
 const privateThunks = {
     "lazyInitialization":
         () =>
-        (...args) => {
-            const [dispatch, getState, extraArg] = args;
+            (...args) => {
+                const [dispatch, , extraArg] = args;
 
-            const { evtAction } = extraArg;
+                if( getIsContextSet(extraArg) ){
+                    //NOTE: We don't want to initialize twice.
+                    return;
+                }
 
-            Evt.merge([
-                evtAction
-                    .pipe(event =>
-                        event.sliceName === "projectConfigs" &&
-                        event.actionName === "projectChanged" &&
-                        getState().fileExplorer["~internal"].isUserWatching
-                            ? [
-                                  {
-                                      "directNavigationDirectoryPath": undefined,
-                                      "isProjectChanged": true
-                                  }
-                              ]
-                            : null
+                const { apiLogs, loggedApi } = logApi({
+                    "api": extraArg.s3Client,
+                    "apiLogger": mcApiLogger
+                });
+
+                apiLogs.evt.toStateful().attach(() =>
+                    dispatch(
+                        actions.apiHistoryUpdated({
+                            // NOTE: We spread only for the type.
+                            "apiLogsEntries": [...structuredClone(apiLogs.history)]
+                        })
                     )
-                    .attach(
-                        () => getState().fileExplorer.isNavigationOngoing,
-                        () => dispatch(actions.navigationCanceled())
-                    ),
-                evtAction.pipe(event =>
-                    event.sliceName === "fileExplorer" &&
-                    event.actionName === "isUserWatchingChanged" &&
-                    event.payload.isUserWatching
-                        ? [
-                              {
-                                  "directNavigationDirectoryPath":
-                                      event.payload.directNavigationDirectoryPath,
-                                  "isProjectChanged": false
-                              }
-                          ]
-                        : null
-                )
-            ]).attach(({ directNavigationDirectoryPath, isProjectChanged }) =>
-                getSliceContext(extraArg).onNavigate?.({
-                    "doRestoreOpenedFile": !isProjectChanged,
-                    "directoryPath": (() => {
-                        if (directNavigationDirectoryPath !== undefined) {
-                            return directNavigationDirectoryPath;
-                        }
+                );
 
-                        const defaultDirectoryPath = dispatch(
-                            interUsecasesThunks.getProjectHomePath()
-                        );
+                setContext(extraArg, {
+                    "loggedS3Client": loggedApi,
+                    "loggedExtendedFsApi": createExtendedFsApi({
+                        "baseFsApi": {
+                            "list": loggedApi.list,
+                            "deleteFile": loggedApi.deleteFile,
+                            "downloadFile": createObjectThatThrowsIfAccessed({
+                                "debugMessage":
+                                    "We are not supposed to have do download file here. Moving file is too expensive in S3"
+                            }),
+                            "uploadFile": ({ file, path }) =>
+                                loggedApi.uploadFile({
+                                    path,
+                                    "blob": file,
+                                    "onUploadProgress": () => { }
+                                })
+                        },
+                        "keepFile": new Blob(["This file tells that a directory exists"], {
+                            "type": "text/plain"
+                        }),
+                        "keepFileBasename": ".keep"
+                    })
+                });
 
-                        const currentDirectoryPath =
-                            getState().fileExplorer.directoryPath;
 
-                        if (
-                            currentDirectoryPath !== undefined &&
-                            currentDirectoryPath.startsWith(defaultDirectoryPath)
-                        ) {
-                            return currentDirectoryPath;
-                        }
-
-                        return defaultDirectoryPath;
-                    })()
-                })
-            );
-        },
+            },
     /**
      * NOTE: It IS possible to navigate to a directory currently being renamed or created.
      */
     "navigate":
         (params: { directoryPath: string; forceReload: boolean }) =>
-        async (...args) => {
-            const { directoryPath, forceReload } = params;
+            async (...args) => {
+                const { directoryPath, forceReload } = params;
 
-            const [dispatch, getState, extraArg] = args;
+                const [dispatch, getState, extraArg] = args;
 
-            //Avoid navigating to the current directory.
-            if (!forceReload) {
-                const currentDirectoryPath = getState().fileExplorer.directoryPath;
+                //Avoid navigating to the current directory.
+                if (!forceReload) {
+                    const currentDirectoryPath = getState().fileExplorer.directoryPath;
 
-                if (
-                    currentDirectoryPath !== undefined &&
-                    pathRelative(currentDirectoryPath, directoryPath) === ""
-                ) {
-                    return;
+                    if (
+                        currentDirectoryPath !== undefined &&
+                        pathRelative(currentDirectoryPath, directoryPath) === ""
+                    ) {
+                        return;
+                    }
                 }
-            }
 
-            dispatch(actions.navigationStarted());
+                dispatch(actions.navigationStarted());
 
-            const { loggedS3Client } = getSliceContext(extraArg);
+                const { loggedS3Client } = getContext(extraArg);
 
-            dispatch(thunks.cancelNavigation());
+                dispatch(thunks.cancelNavigation());
 
-            const ctx = Evt.newCtx();
+                const ctx = Evt.newCtx();
 
-            extraArg.evtAction.attach(
-                event =>
-                    event.sliceName === "fileExplorer" &&
-                    event.actionName === "navigationCanceled",
-                ctx,
-                () => ctx.done()
-            );
+                extraArg.evtAction.attach(
+                    event =>
+                        event.sliceName === "fileExplorer" &&
+                        event.actionName === "navigationCanceled",
+                    ctx,
+                    () => ctx.done()
+                );
 
-            await dispatch(
-                interUsecasesThunks.waitForNoOngoingOperation({
-                    "kind": "directory",
-                    "directoryPath": pathJoin(directoryPath, ".."),
-                    "basename": pathBasename(directoryPath),
-                    ctx
-                })
-            );
+                await dispatch(
+                    privateThunks.waitForNoOngoingOperation({
+                        "kind": "directory",
+                        "directoryPath": pathJoin(directoryPath, ".."),
+                        "basename": pathBasename(directoryPath),
+                        ctx
+                    })
+                );
 
-            const { directories, files } = await Evt.from(
-                ctx,
-                loggedS3Client.list({ "path": directoryPath })
-            ).waitFor();
+                const { directories, files } = await Evt.from(
+                    ctx,
+                    loggedS3Client.list({ "path": directoryPath })
+                ).waitFor();
 
-            ctx.done();
+                ctx.done();
 
-            dispatch(
-                actions.navigationCompleted({
-                    directoryPath,
-                    "directoryItems": [
-                        ...directories.map(basename => ({
-                            basename,
-                            "kind": "directory" as const
-                        })),
-                        ...files.map(basename => ({ basename, "kind": "file" as const }))
-                    ]
-                })
-            );
-        }
-} satisfies Thunks;
-
-export const interUsecasesThunks = {
+                dispatch(
+                    actions.navigationCompleted({
+                        directoryPath,
+                        "directoryItems": [
+                            ...directories.map(basename => ({
+                                basename,
+                                "kind": "directory" as const
+                            })),
+                            ...files.map(basename => ({ basename, "kind": "file" as const }))
+                        ]
+                    })
+                );
+            },
     "waitForNoOngoingOperation":
         (params: {
             kind: "file" | "directory";
@@ -413,198 +386,160 @@ export const interUsecasesThunks = {
             directoryPath: string;
             ctx?: Ctx;
         }) =>
-        async (...args) => {
-            const [, getState, { evtAction }] = args;
+            async (...args) => {
+                const [, getState, { evtAction }] = args;
 
-            const { kind, basename, directoryPath, ctx = Evt.newCtx() } = params;
+                const { kind, basename, directoryPath, ctx = Evt.newCtx() } = params;
 
-            const { ongoingOperations } = getState().fileExplorer;
+                const { ongoingOperations } = getState().fileExplorer;
 
-            const ongoingOperation = ongoingOperations.find(
-                o =>
-                    o.kind === kind &&
-                    o.basename === basename &&
-                    o.directoryPath === directoryPath
-            );
+                const ongoingOperation = ongoingOperations.find(
+                    o =>
+                        o.kind === kind &&
+                        o.basename === basename &&
+                        o.directoryPath === directoryPath
+                );
 
-            if (ongoingOperation === undefined) {
-                return;
+                if (ongoingOperation === undefined) {
+                    return;
+                }
+
+                await evtAction.waitFor(
+                    event =>
+                        event.sliceName === "fileExplorer" &&
+                        event.actionName === "operationCompleted" &&
+                        event.payload.kind === kind &&
+                        event.payload.basename === basename &&
+                        pathRelative(event.payload.directoryPath, directoryPath) === "",
+                    ctx
+                );
             }
-
-            await evtAction.waitFor(
-                event =>
-                    event.sliceName === "fileExplorer" &&
-                    event.actionName === "operationCompleted" &&
-                    event.payload.kind === kind &&
-                    event.payload.basename === basename &&
-                    pathRelative(event.payload.directoryPath, directoryPath) === "",
-                ctx
-            );
-        },
-    "getProjectHomePath":
-        () =>
-        (...args) => {
-            const [, getState] = args;
-
-            return `/${projectConfigs.selectors.selectedProject(getState()).bucket}`;
-        }
 } satisfies Thunks;
 
 export const thunks = {
-    "notifyThatUserIsWatching":
-        (params: {
-            directNavigationDirectoryPath: string | undefined;
-            onNavigate: (params: {
-                directoryPath: string;
-                doRestoreOpenedFile: boolean;
-            }) => void;
-        }) =>
-        (...args) => {
-            const { directNavigationDirectoryPath, onNavigate } = params;
-            const [dispatch, , extraArg] = args;
-
-            const sliceContext = getSliceContext(extraArg);
-
-            if (!sliceContext.isLazilyInitialized) {
-                sliceContext.isLazilyInitialized = true;
-
-                dispatch(privateThunks.lazyInitialization());
-            }
-
-            sliceContext.onNavigate = onNavigate;
-
-            dispatch(
-                actions.isUserWatchingChanged({
-                    "isUserWatching": true,
-                    directNavigationDirectoryPath
-                })
-            );
-        },
-    "notifyThatUserIsNoLongerWatching":
+    "getProjectHomePath":
         () =>
-        (...args) => {
-            const [dispatch, , extraArg] = args;
+            (...args) => {
+                const [, getState] = args;
 
-            const sliceContext = getSliceContext(extraArg);
-
-            delete sliceContext.onNavigate;
-
-            dispatch(actions.isUserWatchingChanged({ "isUserWatching": false }));
-        },
+                return `/${projectConfigs.selectors.selectedProject(getState()).bucket}`;
+            },
     /**
      * NOTE: It IS possible to navigate to a directory currently being renamed or created.
      */
     "navigate":
         (params: { directoryPath: string }) =>
-        async (...args) => {
-            const { directoryPath } = params;
+            async (...args) => {
+                const { directoryPath } = params;
 
-            const [dispatch] = args;
+                const [dispatch] = args;
 
-            return dispatch(
-                privateThunks.navigate({
-                    directoryPath,
-                    "forceReload": false
-                })
-            );
-        },
+                dispatch(privateThunks.lazyInitialization());
+
+                return dispatch(
+                    privateThunks.navigate({
+                        directoryPath,
+                        "forceReload": false
+                    })
+                );
+            },
     //Not used by the UI so far but we want to later
     "cancelNavigation":
         () =>
-        (...args) => {
-            const [dispatch, getState] = args;
-            if (!getState().fileExplorer.isNavigationOngoing) {
-                return;
-            }
-            dispatch(actions.navigationCanceled());
-        },
+            (...args) => {
+                const [dispatch, getState] = args;
+                if (!getState().fileExplorer.isNavigationOngoing) {
+                    return;
+                }
+                dispatch(actions.navigationCanceled());
+            },
     "refresh":
         () =>
-        async (...args) => {
-            const [dispatch, getState] = args;
+            async (...args) => {
+                const [dispatch, getState] = args;
 
-            const { directoryPath } = getState().fileExplorer;
+                const { directoryPath } = getState().fileExplorer;
 
-            if (directoryPath === undefined) {
-                return;
-            }
+                if (directoryPath === undefined) {
+                    return;
+                }
 
-            await dispatch(
-                privateThunks.navigate({
-                    directoryPath,
-                    "forceReload": true
-                })
-            );
-        },
+                await dispatch(
+                    privateThunks.navigate({
+                        directoryPath,
+                        "forceReload": true
+                    })
+                );
+            },
     "create":
         (params: ExplorersCreateParams) =>
-        async (...args) => {
-            const [dispatch, getState, extraArg] = args;
+            async (...args) => {
+                const [dispatch, getState, extraArg] = args;
 
-            const contextualState = getState().fileExplorer;
+                const contextualState = getState().fileExplorer;
 
-            const { directoryPath } = contextualState;
+                const { directoryPath } = contextualState;
 
-            assert(directoryPath !== undefined);
+                assert(directoryPath !== undefined);
 
-            await dispatch(
-                interUsecasesThunks.waitForNoOngoingOperation({
-                    "kind": params.createWhat,
-                    directoryPath,
-                    "basename": params.basename
-                })
-            );
+                await dispatch(
+                    privateThunks.waitForNoOngoingOperation({
+                        "kind": params.createWhat,
+                        directoryPath,
+                        "basename": params.basename
+                    })
+                );
 
-            dispatch(
-                actions.operationStarted({
-                    "kind": params.createWhat,
-                    "basename": params.basename,
-                    "operation": "create"
-                })
-            );
+                dispatch(
+                    actions.operationStarted({
+                        "kind": params.createWhat,
+                        "basename": params.basename,
+                        "operation": "create"
+                    })
+                );
 
-            const sliceContext = getSliceContext(extraArg);
+                const sliceContext = getContext(extraArg);
 
-            const path = pathJoin(directoryPath, params.basename);
+                const path = pathJoin(directoryPath, params.basename);
 
-            switch (params.createWhat) {
-                case "file":
-                    console.log("todo: here we need to wait that the upload start");
+                switch (params.createWhat) {
+                    case "file":
+                        console.log("todo: here we need to wait that the upload start");
 
-                    dispatch(
-                        actions.fileUploadStarted({
-                            "basename": params.basename,
-                            directoryPath,
-                            "size": params.blob.size
-                        })
-                    );
+                        dispatch(
+                            actions.fileUploadStarted({
+                                "basename": params.basename,
+                                directoryPath,
+                                "size": params.blob.size
+                            })
+                        );
 
-                    sliceContext.loggedS3Client.uploadFile({
-                        path,
-                        "blob": params.blob,
-                        "onUploadProgress": ({ uploadPercent }) =>
-                            dispatch(
-                                actions.uploadProgressUpdated({
-                                    "basename": params.basename,
-                                    directoryPath,
-                                    uploadPercent
-                                })
-                            )
-                    });
-                    break;
-                case "directory":
-                    await sliceContext.loggedExtendedFsApi.createDirectory({ path });
-                    break;
-            }
+                        sliceContext.loggedS3Client.uploadFile({
+                            path,
+                            "blob": params.blob,
+                            "onUploadProgress": ({ uploadPercent }) =>
+                                dispatch(
+                                    actions.uploadProgressUpdated({
+                                        "basename": params.basename,
+                                        directoryPath,
+                                        uploadPercent
+                                    })
+                                )
+                        });
+                        break;
+                    case "directory":
+                        await sliceContext.loggedExtendedFsApi.createDirectory({ path });
+                        break;
+                }
 
-            dispatch(
-                actions.operationCompleted({
-                    "kind": params.createWhat,
-                    "basename": params.basename,
-                    directoryPath
-                })
-            );
-        },
+                dispatch(
+                    actions.operationCompleted({
+                        "kind": params.createWhat,
+                        "basename": params.basename,
+                        directoryPath
+                    })
+                );
+            },
 
     /**
      * Assert:
@@ -613,157 +548,98 @@ export const thunks = {
      */
     "delete":
         (params: { deleteWhat: "file" | "directory"; basename: string }) =>
-        async (...args) => {
-            const { deleteWhat, basename } = params;
+            async (...args) => {
+                const { deleteWhat, basename } = params;
 
-            const [dispatch, getState, extraArg] = args;
+                const [dispatch, getState, extraArg] = args;
 
-            const contextualState = getState().fileExplorer;
+                const contextualState = getState().fileExplorer;
 
-            const { directoryPath } = contextualState;
+                const { directoryPath } = contextualState;
 
-            assert(directoryPath !== undefined);
+                assert(directoryPath !== undefined);
 
-            await dispatch(
-                interUsecasesThunks.waitForNoOngoingOperation({
-                    "kind": deleteWhat,
-                    directoryPath,
-                    basename
-                })
-            );
+                await dispatch(
+                    privateThunks.waitForNoOngoingOperation({
+                        "kind": deleteWhat,
+                        directoryPath,
+                        basename
+                    })
+                );
 
-            dispatch(
-                actions.operationStarted({
-                    "kind": params.deleteWhat,
-                    "basename": params.basename,
-                    "operation": "delete"
-                })
-            );
+                dispatch(
+                    actions.operationStarted({
+                        "kind": params.deleteWhat,
+                        "basename": params.basename,
+                        "operation": "delete"
+                    })
+                );
 
-            const sliceContext = getSliceContext(extraArg);
+                const sliceContext = getContext(extraArg);
 
-            const path = pathJoin(directoryPath, basename);
+                const path = pathJoin(directoryPath, basename);
 
-            switch (deleteWhat) {
-                case "directory":
-                    await sliceContext.loggedExtendedFsApi.deleteDirectory({ path });
-                    break;
-                case "file":
-                    await sliceContext.loggedS3Client.deleteFile({
-                        path
-                    });
-                    break;
-            }
+                switch (deleteWhat) {
+                    case "directory":
+                        await sliceContext.loggedExtendedFsApi.deleteDirectory({ path });
+                        break;
+                    case "file":
+                        await sliceContext.loggedS3Client.deleteFile({
+                            path
+                        });
+                        break;
+                }
 
-            dispatch(
-                actions.operationCompleted({
-                    "kind": deleteWhat,
-                    basename,
-                    directoryPath
-                })
-            );
-        },
-    "getS3ClientLogs":
-        () =>
-        (...args): ApiLogs => {
-            const [, , extraArg] = args;
-            return getSliceContext(extraArg).s3ClientLogs;
-        },
+                dispatch(
+                    actions.operationCompleted({
+                        "kind": deleteWhat,
+                        basename,
+                        directoryPath
+                    })
+                );
+            },
     "getIsEnabled":
         () =>
-        (...args): boolean => {
-            const [, getState] = args;
+            (...args): boolean => {
+                const [, getState] = args;
 
-            const region = deploymentRegion.selectors.selectedDeploymentRegion(
-                getState()
-            );
+                const region = deploymentRegion.selectors.selectedDeploymentRegion(
+                    getState()
+                );
 
-            return region.s3 !== undefined;
-        },
+                return region.s3 !== undefined;
+            },
     "getFileDownloadUrl":
         (params: { basename: string }) =>
-        async (...args): Promise<string> => {
-            const { basename } = params;
+            async (...args): Promise<string> => {
+                const { basename } = params;
 
-            const [, getState, extraArg] = args;
+                const [, getState, extraArg] = args;
 
-            const contextualState = getState().fileExplorer;
+                const contextualState = getState().fileExplorer;
 
-            const { directoryPath } = contextualState;
+                const { directoryPath } = contextualState;
 
-            assert(directoryPath !== undefined);
+                assert(directoryPath !== undefined);
 
-            const sliceContext = getSliceContext(extraArg);
+                const sliceContext = getContext(extraArg);
 
-            const path = pathJoin(directoryPath, basename);
+                const path = pathJoin(directoryPath, basename);
 
-            const downloadUrl = await sliceContext.loggedS3Client.getFileDownloadUrl({
-                path
-            });
+                const downloadUrl = await sliceContext.loggedS3Client.getFileDownloadUrl({
+                    path
+                });
 
-            return downloadUrl;
-        }
+                return downloadUrl;
+            }
 } satisfies Thunks;
 
-type SliceContext = {
+type Context = {
     loggedS3Client: S3Client;
-    s3ClientLogs: ApiLogs;
-    onNavigate?: Param0<(typeof thunks)["notifyThatUserIsWatching"]>["onNavigate"];
-    isLazilyInitialized: boolean;
     loggedExtendedFsApi: ExtendedFsApi;
 };
 
-//TODO: Make it so the framework can accommodate this usecase
-const { getSliceContext } = (() => {
-    const weakMap = new WeakMap<ThunksExtraArgument, SliceContext>();
-
-    function getSliceContext(extraArg: ThunksExtraArgument): SliceContext {
-        let sliceContext = weakMap.get(extraArg);
-
-        if (sliceContext !== undefined) {
-            return sliceContext;
-        }
-
-        sliceContext = (() => {
-            const { apiLogs: s3ClientLogs, loggedApi: loggedS3Client } = logApi({
-                "api": extraArg.s3Client,
-                "apiLogger": mcApiLogger
-            });
-
-            return {
-                loggedS3Client,
-                s3ClientLogs,
-                "isLazilyInitialized": false,
-                "loggedExtendedFsApi": createExtendedFsApi({
-                    "baseFsApi": {
-                        "list": loggedS3Client.list,
-                        "deleteFile": loggedS3Client.deleteFile,
-                        "downloadFile": createObjectThatThrowsIfAccessed({
-                            "debugMessage":
-                                "We are not supposed to have do download file here. Moving file is too expensive in S3"
-                        }),
-                        "uploadFile": ({ file, path }) =>
-                            loggedS3Client.uploadFile({
-                                path,
-                                "blob": file,
-                                "onUploadProgress": () => {}
-                            })
-                    },
-                    "keepFile": new Blob(["This file tells that a directory exists"], {
-                        "type": "text/plain"
-                    }),
-                    "keepFileBasename": ".keep"
-                })
-            };
-        })();
-
-        weakMap.set(extraArg, sliceContext);
-
-        return sliceContext;
-    }
-
-    return { getSliceContext };
-})();
+const { getContext, setContext, getIsContextSet } = createUsecaseContextApi<Context>();
 
 function removeIfPresent(
     directoryItems: WritableDraft<{
@@ -842,7 +718,7 @@ export const selectors = (() => {
     };
 
     type UploadProgress = {
-        s3FilesBeingUploaded: State["~internal"]["s3FilesBeingUploaded"];
+        s3FilesBeingUploaded: State["s3FilesBeingUploaded"];
         overallProgress: {
             completedFileCount: number;
             remainingFileCount: number;
@@ -852,7 +728,7 @@ export const selectors = (() => {
     };
 
     const uploadProgress = (rootState: RootState): UploadProgress => {
-        const { s3FilesBeingUploaded } = rootState.fileExplorer["~internal"];
+        const { s3FilesBeingUploaded } = rootState.fileExplorer;
 
         const completedFileCount = s3FilesBeingUploaded.map(
             ({ uploadPercent }) => uploadPercent === 100
@@ -875,5 +751,7 @@ export const selectors = (() => {
         };
     };
 
-    return { currentWorkingDirectoryView, uploadProgress };
+    const apiLogsEntries = (rootState: RootState) => rootState[name].apiLogsEntries;
+
+    return { currentWorkingDirectoryView, uploadProgress, apiLogsEntries };
 })();
