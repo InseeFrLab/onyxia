@@ -56,7 +56,7 @@ export default function MySecrets(props: Props) {
     useEffect(() => {
 
         if( route.params.path === undefined ){
-            routes[route.name]({ "path": secretExplorer.getProjectHomePath() }).replace();
+            routes[route.name]({ "path": secretExplorer.getProjectHomeOrPreviousPath() }).replace();
             return;
         }
 

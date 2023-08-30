@@ -417,12 +417,33 @@ const privateThunks = {
 } satisfies Thunks;
 
 export const thunks = {
-    "getProjectHomePath":
+    "getProjectHomeOrPreviousPath":
         () =>
             (...args) => {
                 const [, getState] = args;
 
-                return `/${projectConfigs.selectors.selectedProject(getState()).bucket}`;
+                const homeDirectoryPath = `/${projectConfigs.selectors.selectedProject(getState()).bucket}`;
+
+                const currentDirectoryPath = getState().fileExplorer.directoryPath;
+
+                return_current_path: {
+
+                    if( currentDirectoryPath === undefined ){
+                        //NOTE: First navigation
+                        break return_current_path;
+                    }
+
+                    if( !currentDirectoryPath.startsWith(homeDirectoryPath) ){
+                        // The project has changed while we where on another page
+                        break return_current_path;
+                    }
+
+                    return currentDirectoryPath;
+
+                }
+
+                return homeDirectoryPath;
+
             },
     /**
      * NOTE: It IS possible to navigate to a directory currently being renamed or created.
