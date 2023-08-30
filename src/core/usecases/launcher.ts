@@ -1048,7 +1048,7 @@ export const thunks = {
                         "VAULT_TOKEN": (await secretsManager.getToken()).token,
                         "VAULT_MOUNT": vault.kvEngine,
                         "VAULT_TOP_DIR": dispatch(
-                            secretExplorer.protectedThunks.getProjectHomePath()
+                            secretExplorer.thunks.getProjectHomePath()
                         )
                     };
                 })(),

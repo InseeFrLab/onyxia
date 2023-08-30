@@ -404,19 +404,19 @@ export const protectedThunks = {
             const { loggedSecretClient, loggedExtendedFsApi } = getContext(extraArg);
 
             return { loggedSecretClient, loggedExtendedFsApi };
-        },
+        }
+} satisfies Thunks;
+
+export const thunks = {
     "getProjectHomePath":
         () =>
         (...args) => {
             const [, getState] = args;
 
             return `/${projectConfigs.selectors.selectedProject(getState()).vaultTopDir}`;
-        }
-} satisfies Thunks;
-
-export const thunks = {
+        },
     "navigate":
-        (params: { directoryPath: string | undefined }) =>
+        (params: { directoryPath: string }) =>
         async (...args) => {
             const { directoryPath } = params;
 
@@ -426,8 +426,7 @@ export const thunks = {
 
             return dispatch(
                 privateThunks.navigate({
-                    "directoryPath":
-                        directoryPath ?? dispatch(protectedThunks.getProjectHomePath()),
+                        directoryPath,
                     "forceReload": false
                 })
             );
