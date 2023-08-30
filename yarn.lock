@@ -13869,10 +13869,10 @@ redent@^1.0.0:
     indent-string "^2.1.0"
     strip-indent "^1.0.1"
 
-redux-clean-architecture@^3.6.0:
-  version "3.6.0"
-  resolved "https://registry.yarnpkg.com/redux-clean-architecture/-/redux-clean-architecture-3.6.0.tgz#539b39306bff7ae2dadbb090a6dc6960b23ff3f7"
-  integrity sha512-/4Tny1QbZxL7MmJYAOjMCN7YN7e6bhJTcQDsez2wuo2ubL632ohInv1BB6J8QxQ6SW9CttxS8Wn2rqGfVQIJIA==
+redux-clean-architecture@^3.7.0:
+  version "3.7.0"
+  resolved "https://registry.yarnpkg.com/redux-clean-architecture/-/redux-clean-architecture-3.7.0.tgz#6a74e31fb49d10b68bc585744a6acf52463d2941"
+  integrity sha512-K1EwWPKZfEJ00szn8Yi9Eh5xgHNJadgm8MGRL/O3koiFo3yKlZgHSN8/sZYc21Opw57hDPgwvxiGMpGsB5rkug==
   dependencies:
     minimal-polyfills "^2.2.3"
     tsafe "^1.6.4"

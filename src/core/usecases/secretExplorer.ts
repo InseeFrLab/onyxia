@@ -241,12 +241,10 @@ const privateThunks = {
         (...args) => {
             const [dispatch, getState, extraArg] = args;
 
-            try {
-                getContext(extraArg);
-
+            if( getIsContextSet(extraArg) ){
                 //NOTE: We don't want to initialize twice.
                 return;
-            } catch {}
+            }
 
             const { apiLogs, loggedApi } = logApi({
                 "api": extraArg.secretsManager,
@@ -643,7 +641,7 @@ type Context = {
     loggedExtendedFsApi: ExtendedFsApi;
 };
 
-const { getContext, setContext } = createUsecaseContextApi<Context>();
+const { getContext, setContext, getIsContextSet } = createUsecaseContextApi<Context>();
 
 function removeIfPresent(
     directoryItems: WritableDraft<{

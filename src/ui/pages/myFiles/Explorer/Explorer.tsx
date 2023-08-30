@@ -10,7 +10,7 @@ import { Props as ButtonBarProps } from "./ExplorerButtonBar";
 import { Evt } from "evt";
 import { join as pathJoin, basename as pathBasename } from "path";
 import { useTranslation } from "ui/i18n";
-import { ApiLogsBar } from "ui/shared/ApiLogsBar";
+import { ApiLogsBar, type ApiLogsBarProps } from "ui/shared/ApiLogsBar";
 import {
     generateUniqDefaultName,
     buildNameFactory
@@ -29,7 +29,6 @@ import { getFormattedDate } from "ui/useMoment";
 import { Dialog } from "onyxia-ui/Dialog";
 import { useCallbackFactory } from "powerhooks/useCallbackFactory";
 import { Deferred } from "evt/tools/Deferred";
-import type { ApiLogs } from "core/tools/apiLogger";
 import { useConst } from "powerhooks/useConst";
 import type { Param0 } from "tsafe";
 import { useLang } from "ui/i18n";
@@ -51,7 +50,7 @@ export type ExplorerProps = {
 
     directoryPath: string;
     isNavigating: boolean;
-    apiLogs: ApiLogs;
+    apiLogsEntries: ApiLogsBarProps.Entry[];
     evtAction: NonPostableEvt<"TRIGGER COPY PATH">;
     files: string[];
     directories: string[];
@@ -93,7 +92,7 @@ export const Explorer = memo((props: ExplorerProps) => {
         doShowHidden,
         directoryPath,
         isNavigating,
-        apiLogs,
+        apiLogsEntries,
         evtAction,
         onNavigate,
         onRefresh,
@@ -342,7 +341,7 @@ export const Explorer = memo((props: ExplorerProps) => {
                 </div>
                 <ApiLogsBar
                     className={classes.apiLogBar}
-                    entries={[...apiLogs.history]}
+                    entries={apiLogsEntries}
                     maxHeight={apiLogBarMaxHeight}
                 />
                 {(() => {

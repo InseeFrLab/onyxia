@@ -2,7 +2,7 @@ import { tss, PageHeader } from "ui/theme";
 import { useEffect, useMemo } from "react";
 import { useConstCallback } from "powerhooks/useConstCallback";
 import { copyToClipboard } from "ui/tools/copyToClipboard";
-import { useCoreState, useCoreFunctions, selectors } from "core";
+import { useCoreState, useCoreFunctions, useCoreEvts ,selectors } from "core";
 import { Explorer } from "./Explorer";
 import { ExplorerProps } from "./Explorer";
 import { useTranslation } from "ui/i18n";
@@ -16,6 +16,7 @@ import { declareComponentKeys } from "i18nifty";
 import { useConst } from "powerhooks/useConst";
 import type { Link } from "type-route";
 import type { PageRoute } from "./route";
+import { useEvt } from "evt/hooks";
 
 export type Props = {
     route: PageRoute;
@@ -27,64 +28,39 @@ export default function MyFiles(props: Props) {
 
     const { t } = useTranslation({ MyFiles });
 
-    const currentWorkingDirectoryView = useCoreState(
+    const { currentWorkingDirectoryView } = useCoreState(
         selectors.fileExplorer.currentWorkingDirectoryView
-    ).currentWorkingDirectoryView;
+    );
+
+    const { apiLogsEntries } = useCoreState(selectors.fileExplorer.apiLogsEntries);
 
     const { fileExplorer } = useCoreFunctions();
 
-    {
-        const onNavigate = useConstCallback<
-            Param0<(typeof fileExplorer)["notifyThatUserIsWatching"]>["onNavigate"]
-        >(({ directoryPath, doRestoreOpenedFile: _doRestoreOpenedFile }) =>
-            routes[route.name]({
-                "path": directoryPath
-                /* TODO: Restore when we have a fileViewer usecase
-                 ...(!doRestoreOpenedFile
-                     ? {}
-                     : {
-                         "openFile":
-                             route.params.openFile ?? secretEditorState?.basename,
-                     }),
-                */
-            }).replace()
-        );
+    const { evtProjectConfigs } = useCoreEvts();
 
-        useEffect(() => {
-            fileExplorer.notifyThatUserIsWatching({
-                "directNavigationDirectoryPath": route.params.path,
-                onNavigate
-            });
-
-            return () => fileExplorer.notifyThatUserIsNoLongerWatching();
-        }, [route.name]);
-    }
-
-    /* TODO: Restore when we have a fileViewer usecase
-    useEffect(() => {
-        if (route.params.path === undefined) {
-            return;
-        }
-
-        if (route.params.openFile === undefined) {
-            fileViewerThunks.closeSecret();
-        } else {
-            fileViewerThunks.openSecret({
-                "directoryPath": route.params.path,
-                "basename": route.params.openFile,
-            });
-        }
-    }, [route.params.path, route.params.openFile]);
-    */
+    useEvt(
+        ctx => {
+            evtProjectConfigs.attach(
+                action => action.name === "projectChanged",
+                ctx,
+                () => 
+                    routes[route.name]({ "path": undefined }).replace()
+            );
+        },
+        [evtProjectConfigs]
+    );
 
     useEffect(() => {
-        if (route.params.path === undefined) {
+
+        if( route.params.path === undefined ){
+            routes[route.name]({ "path": fileExplorer.getProjectHomePath() }).replace();
             return;
         }
 
         fileExplorer.navigate({
             "directoryPath": route.params.path
         });
+
     }, [route.params.path]);
 
     const onNavigate = useConstCallback(
@@ -113,8 +89,6 @@ export default function MyFiles(props: Props) {
     const onCopyPath = useConstCallback(({ path }: Param0<ExplorerProps["onCopyPath"]>) =>
         copyToClipboard(path.split("/").slice(2).join("/"))
     );
-
-    const s3ApiLogs = fileExplorer.getS3ClientLogs();
 
     const { classes, cx } = useStyles();
 
@@ -193,7 +167,7 @@ export default function MyFiles(props: Props) {
                 doShowHidden={false}
                 directoryPath={currentWorkingDirectoryView.directoryPath}
                 isNavigating={currentWorkingDirectoryView.isNavigationOngoing}
-                apiLogs={s3ApiLogs}
+                apiLogsEntries={apiLogsEntries}
                 evtAction={evtExplorerAction}
                 files={currentWorkingDirectoryView.files}
                 directories={currentWorkingDirectoryView.directories}
