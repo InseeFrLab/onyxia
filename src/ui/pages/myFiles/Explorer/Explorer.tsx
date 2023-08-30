@@ -39,6 +39,7 @@ import { useRerenderOnStateChange } from "evt/hooks/useRerenderOnStateChange";
 import { ExplorerUploadModal } from "./ExplorerUploadModal";
 import type { ExplorerUploadModalProps } from "./ExplorerUploadModal";
 import { declareComponentKeys } from "i18nifty";
+import { CircularProgress } from "onyxia-ui/CircularProgress";
 
 export type ExplorerProps = {
     /**
@@ -366,8 +367,9 @@ export const Explorer = memo((props: ExplorerProps) => {
                         />
                     );
                 })()}
+
+                <div className={classes.breadcrumpWrapper} >
                 <Breadcrump
-                    className={classes.breadcrump}
                     minDepth={pathMinDepth}
                     path={[
                         ...directoryPath.split("/"),
@@ -377,6 +379,15 @@ export const Explorer = memo((props: ExplorerProps) => {
                     onNavigate={onBreadcrumpNavigate}
                     evtAction={evtBreadcrumpAction}
                 />
+                    {
+                        isNavigating &&
+                        <CircularProgress
+                            color="textPrimary"
+                            size={theme.typography.rootFontSizePx}
+                            className={classes.circularProgress}
+                        />
+                    }
+                </div>
                 <div
                     ref={scrollableDivRef}
                     className={cx(
@@ -499,9 +510,14 @@ const useStyles = tss
                 "transition": opacity === 0 ? undefined : "opacity 500ms linear"
             };
         })(),
-        "breadcrump": {
+        "breadcrumpWrapper": {
             "marginTop": theme.spacing(3),
-            "marginBottom": theme.spacing(4)
+            "marginBottom": theme.spacing(4),
+            "display": "flex",
+            "alignItems": "center"
+        },
+        "circularProgress": {
+            "marginLeft": theme.spacing(2)
         },
         "fileOrDirectoryIcon": {
             "height": "unset",

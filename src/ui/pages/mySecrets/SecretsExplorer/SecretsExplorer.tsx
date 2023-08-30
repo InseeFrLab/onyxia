@@ -37,6 +37,7 @@ import { TextField } from "onyxia-ui/TextField";
 import type { TextFieldProps } from "onyxia-ui/TextField";
 import { useRerenderOnStateChange } from "evt/hooks/useRerenderOnStateChange";
 import { declareComponentKeys } from "i18nifty";
+import { CircularProgress } from "onyxia-ui/CircularProgress";
 
 export type ExplorerProps = {
     /**
@@ -406,17 +407,26 @@ export const SecretsExplorer = memo((props: ExplorerProps) => {
                         />
                     );
                 })()}
-                <Breadcrump
-                    className={classes.breadcrump}
-                    minDepth={pathMinDepth}
-                    path={[
-                        ...directoryPath.split("/"),
-                        ...(props.isFileOpen ? [props.openFileBasename] : [])
-                    ]}
-                    isNavigationDisabled={isNavigating}
-                    onNavigate={onBreadcrumpNavigate}
-                    evtAction={evtBreadcrumpAction}
-                />
+                <div className={classes.breadcrumpWrapper} >
+                    <Breadcrump
+                        minDepth={pathMinDepth}
+                        path={[
+                            ...directoryPath.split("/"),
+                            ...(props.isFileOpen ? [props.openFileBasename] : [])
+                        ]}
+                        isNavigationDisabled={isNavigating}
+                        onNavigate={onBreadcrumpNavigate}
+                        evtAction={evtBreadcrumpAction}
+                    />
+                    {
+                        isNavigating &&
+                        <CircularProgress
+                            color="textPrimary"
+                            size={theme.typography.rootFontSizePx}
+                            className={classes.circularProgress}
+                        />
+                    }
+                </div>
                 <div
                     ref={scrollableDivRef}
                     className={cx(
@@ -462,15 +472,15 @@ export const SecretsExplorer = memo((props: ExplorerProps) => {
                         deletionDialogState === undefined
                             ? ""
                             : t(
-                                  (() => {
-                                      switch (deletionDialogState.kind) {
-                                          case "directory":
-                                              return "directory";
-                                          case "file":
-                                              return "secret";
-                                      }
-                                  })()
-                              );
+                                (() => {
+                                    switch (deletionDialogState.kind) {
+                                        case "directory":
+                                            return "directory";
+                                        case "file":
+                                            return "secret";
+                                    }
+                                })()
+                            );
 
                     return {
                         "title": t("deletion dialog title", { deleteWhat }),
@@ -547,9 +557,14 @@ const useStyles = tss
                 "transition": opacity === 0 ? undefined : "opacity 500ms linear"
             };
         })(),
-        "breadcrump": {
+        "breadcrumpWrapper": {
             "marginTop": theme.spacing(3),
-            "marginBottom": theme.spacing(4)
+            "marginBottom": theme.spacing(4),
+            "display": "flex",
+            "alignItems": "center"
+        },
+        "circularProgress": {
+            "marginLeft": theme.spacing(2)
         },
         "fileOrDirectoryIcon": {
             "height": "unset",
@@ -589,11 +604,11 @@ function useApiLogsBarPositioning() {
 
 type CreateS3DirectoryDialogProps = {
     state:
-        | {
-              directories: string[];
-              resolveBasename: (basename: string) => void;
-          }
-        | undefined;
+    | {
+        directories: string[];
+        resolveBasename: (basename: string) => void;
+    }
+    | undefined;
     onClose: () => void;
 };
 
@@ -676,9 +691,9 @@ const { CreateS3DirectoryDialog } = (() => {
             setResolve({
                 "resolve": isValidValue
                     ? () => {
-                          resolveBasename(value);
-                          onClose();
-                      }
+                        resolveBasename(value);
+                        onClose();
+                    }
                     : null
             })
         );
