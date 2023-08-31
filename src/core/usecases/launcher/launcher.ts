@@ -47,19 +47,17 @@ export declare namespace State {
         catalogId: string;
         packageName: string;
         sources: string[];
-        "~internal": {
-            pathOfFormFieldsWhoseValuesAreDifferentFromDefault: {
-                path: string[];
-            }[];
-            formFields: FormField[];
-            infosAboutWhenFieldsShouldBeHidden: {
-                path: string[];
-                isHidden: boolean | FormFieldValue;
-            }[];
-            defaultFormFieldsValue: FormFieldValue[];
-            dependencies?: string[];
-            config: JSONSchemaObject;
-        };
+        pathOfFormFieldsWhoseValuesAreDifferentFromDefault: {
+            path: string[];
+        }[];
+        formFields: FormField[];
+        infosAboutWhenFieldsShouldBeHidden: {
+            path: string[];
+            isHidden: boolean | FormFieldValue;
+        }[];
+        defaultFormFieldsValue: FormFieldValue[];
+        dependencies?: string[];
+        config: JSONSchemaObject;
     };
 }
 
@@ -89,9 +87,9 @@ export const { reducer, actions } = createSlice({
                         packageName: string;
                         icon: string | undefined;
                         sources: string[];
-                        formFields: State.Ready["~internal"]["formFields"];
-                        infosAboutWhenFieldsShouldBeHidden: State.Ready["~internal"]["infosAboutWhenFieldsShouldBeHidden"];
-                        config: State.Ready["~internal"]["config"];
+                        formFields: State.Ready["formFields"];
+                        infosAboutWhenFieldsShouldBeHidden: State.Ready["infosAboutWhenFieldsShouldBeHidden"];
+                        config: State.Ready["config"];
                         dependencies: string[];
                         formFieldsValueDifferentFromDefault: FormFieldValue[];
                         // NOTE: For coreEvt
@@ -108,7 +106,7 @@ export const { reducer, actions } = createSlice({
                     infosAboutWhenFieldsShouldBeHidden,
                     config,
                     dependencies,
-                    formFieldsValueDifferentFromDefault,
+                    formFieldsValueDifferentFromDefault
                 } = payload;
 
                 Object.assign(
@@ -119,19 +117,15 @@ export const { reducer, actions } = createSlice({
                         packageName,
                         icon,
                         sources,
-                        "~internal": {
-                            formFields,
-                            infosAboutWhenFieldsShouldBeHidden,
-                            "defaultFormFieldsValue": formFields.map(
-                                ({ path, value }) => ({
-                                    path,
-                                    value
-                                })
-                            ),
-                            dependencies,
-                            "pathOfFormFieldsWhoseValuesAreDifferentFromDefault": [],
-                            config
-                        }
+                        formFields,
+                        infosAboutWhenFieldsShouldBeHidden,
+                        "defaultFormFieldsValue": formFields.map(({ path, value }) => ({
+                            path,
+                            value
+                        })),
+                        dependencies,
+                        "pathOfFormFieldsWhoseValuesAreDifferentFromDefault": [],
+                        config
                     })
                 );
 
@@ -159,7 +153,7 @@ export const { reducer, actions } = createSlice({
                 const { path, value } = formFieldValue;
 
                 {
-                    const formField = state["~internal"].formFields.find(formField =>
+                    const formField = state.formFields.find(formField =>
                         same(formField.path, path)
                     )!;
 
@@ -171,11 +165,10 @@ export const { reducer, actions } = createSlice({
                 }
 
                 {
-                    const { pathOfFormFieldsWhoseValuesAreDifferentFromDefault } =
-                        state["~internal"];
+                    const { pathOfFormFieldsWhoseValuesAreDifferentFromDefault } = state;
 
                     if (
-                        state["~internal"].defaultFormFieldsValue.find(formField =>
+                        state.defaultFormFieldsValue.find(formField =>
                             same(formField.path, path)
                         )!.value !== value
                     ) {
@@ -203,11 +196,12 @@ export const { reducer, actions } = createSlice({
                     }
                 }
             },
-            "launchStarted": () => { /* NOTE: For coreEvt */ },
-            "launchCompleted": (
-                _state,
-                _: { payload: { serviceId: string } }
-            ) => { /* NOTE: For coreEvt */ }
+            "launchStarted": () => {
+                /* NOTE: For coreEvt */
+            },
+            "launchCompleted": (_state, _: { payload: { serviceId: string } }) => {
+                /* NOTE: For coreEvt */
+            }
         } satisfies Record<string, (state: State, ...rest: any[]) => State | void>;
 
         return reducers;
@@ -233,7 +227,7 @@ const privateThunks = {
             const { contract } = await onyxiaApi.launchPackage({
                 "catalogId": state.catalogId,
                 "packageName": state.packageName,
-                "options": formFieldsValueToObject(state["~internal"].formFields),
+                "options": formFieldsValueToObject(state.formFields),
                 "isDryRun": isForContractPreview
             });
 
@@ -297,8 +291,8 @@ export const thunks = {
                 infosAboutWhenFieldsShouldBeHidden,
                 sensitiveConfigurations
             } = (() => {
-                const formFields: State.Ready["~internal"]["formFields"] = [];
-                const infosAboutWhenFieldsShouldBeHidden: State.Ready["~internal"]["infosAboutWhenFieldsShouldBeHidden"] =
+                const formFields: State.Ready["formFields"] = [];
+                const infosAboutWhenFieldsShouldBeHidden: State.Ready["infosAboutWhenFieldsShouldBeHidden"] =
                     [];
 
                 const sensitiveConfigurations: FormFieldValue[] | undefined = (() => {
@@ -666,7 +660,7 @@ export const thunks = {
 
             assert(state.stateDescription === "ready");
 
-            const { defaultFormFieldsValue } = state["~internal"];
+            const { defaultFormFieldsValue } = state;
 
             defaultFormFieldsValue.forEach(({ path, value }) => {
                 dispatch(
@@ -877,7 +871,7 @@ export const thunks = {
 } satisfies Thunks;
 
 export const selectors = (() => {
-    const readyLauncher = (rootState: RootState): State.Ready | undefined => {
+    const readyState = (rootState: RootState): State.Ready | undefined => {
         const state = rootState[name];
         switch (state.stateDescription) {
             case "ready":
@@ -887,24 +881,20 @@ export const selectors = (() => {
         }
     };
 
-    const packageName = createSelector(readyLauncher, state => state?.packageName);
+    const isReady = createSelector(readyState, state => state !== undefined);
 
-    const sources = createSelector(readyLauncher, state => state?.sources);
+    const packageName = createSelector(readyState, state => state?.packageName);
 
-    const formFields = createSelector(
-        readyLauncher,
-        state => state?.["~internal"].formFields
-    );
+    const sources = createSelector(readyState, state => state?.sources);
+
+    const formFields = createSelector(readyState, state => state?.formFields);
 
     const infosAboutWhenFieldsShouldBeHidden = createSelector(
-        readyLauncher,
-        state => state?.["~internal"].infosAboutWhenFieldsShouldBeHidden
+        readyState,
+        state => state?.infosAboutWhenFieldsShouldBeHidden
     );
 
-    const dependencies = createSelector(
-        readyLauncher,
-        state => state?.["~internal"].dependencies
-    );
+    const dependencies = createSelector(readyState, state => state?.dependencies);
 
     const friendlyName = createSelector(formFields, formFields => {
         if (formFields === undefined) {
@@ -934,11 +924,11 @@ export const selectors = (() => {
         return isShared;
     });
 
-    const config = createSelector(readyLauncher, state => state?.["~internal"].config);
+    const config = createSelector(readyState, state => state?.config);
 
     function createIsFieldHidden(params: {
         formFields: FormField[];
-        infosAboutWhenFieldsShouldBeHidden: State.Ready["~internal"]["infosAboutWhenFieldsShouldBeHidden"];
+        infosAboutWhenFieldsShouldBeHidden: State.Ready["infosAboutWhenFieldsShouldBeHidden"];
     }) {
         const { formFields, infosAboutWhenFieldsShouldBeHidden } = params;
 
@@ -1228,11 +1218,11 @@ export const selectors = (() => {
     );
 
     const pathOfFormFieldsWhoseValuesAreDifferentFromDefault = createSelector(
-        readyLauncher,
-        state => state?.["~internal"].pathOfFormFieldsWhoseValuesAreDifferentFromDefault
+        readyState,
+        state => state?.pathOfFormFieldsWhoseValuesAreDifferentFromDefault
     );
 
-    const catalogId = createSelector(readyLauncher, state => state?.catalogId);
+    const catalogId = createSelector(readyState, state => state?.catalogId);
 
     const restorablePackageConfig = createSelector(
         catalogId,
@@ -1276,7 +1266,15 @@ export const selectors = (() => {
         }
     );
 
+    const icon = createSelector(readyState, state => {
+        if (state === undefined) {
+            return undefined;
+        }
+        return state.icon;
+    });
+
     return {
+        isReady,
         friendlyName,
         isShared,
         indexedFormFields,
@@ -1285,41 +1283,41 @@ export const selectors = (() => {
         restorablePackageConfig,
         areAllFieldsDefault,
         sources,
-        packageName
+        packageName,
+        icon
     };
 })();
 
-
 export const createEvt = (({ evtAction }) => {
-
     const evtOut = Evt.create<
-        {
-            actionName: "initialized"
-            sensitiveConfigurations: FormFieldValue[];
-        } |
-        {
-            actionName: "launchStarted"
-        } | {
-            actionName: "launchCompleted";
-            serviceId: string;
-        }
+        | {
+              actionName: "initialized";
+              sensitiveConfigurations: FormFieldValue[];
+          }
+        | {
+              actionName: "launchStarted";
+          }
+        | {
+              actionName: "launchCompleted";
+              serviceId: string;
+          }
     >();
 
     evtAction
-        .pipe(action => action.sliceName !== name ? null : [action])
+        .pipe(action => (action.sliceName !== name ? null : [action]))
         .$attach(
-            action => action.actionName === "initialized" ? [action.payload] : null,
-            ({ sensitiveConfigurations }) => evtOut.post({ "actionName": "initialized", sensitiveConfigurations })
+            action => (action.actionName === "initialized" ? [action.payload] : null),
+            ({ sensitiveConfigurations }) =>
+                evtOut.post({ "actionName": "initialized", sensitiveConfigurations })
         )
         .attach(
             action => action.actionName === "launchStarted",
             () => evtOut.post({ "actionName": "launchStarted" })
         )
         .$attach(
-            action => action.actionName === "launchCompleted" ? [action.payload] : null,
+            action => (action.actionName === "launchCompleted" ? [action.payload] : null),
             ({ serviceId }) => evtOut.post({ "actionName": "launchCompleted", serviceId })
         );
 
     return evtOut;
-
 }) satisfies CreateEvt;

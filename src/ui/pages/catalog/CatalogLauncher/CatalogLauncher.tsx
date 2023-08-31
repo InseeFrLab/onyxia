@@ -56,63 +56,55 @@ export const CatalogLauncher = memo((props: Props) => {
 
     const { evtLauncher } = useCoreEvts();
 
-    useEvt(
-        ctx => {
-
-            evtLauncher.$attach(
-                action => action.actionName === "initialized" ? [action] : null,
-                ctx,
-                ({ sensitiveConfigurations }) => {
-
-                    auto_launch: {
-                        if (!route.params.autoLaunch) {
-                            break auto_launch;
-                        }
-
-                        if (
-                            getIsAutoLaunchDisabled() &&
-                            //If auto launch from myServices the user is launching one of his service, it's safe
-                            getPreviousRouteName() !== "myServices"
-                        ) {
-                            evtAutoLaunchDisabledDialogOpen.post();
-                            break auto_launch;
-                        }
-
-                        if (sensitiveConfigurations.length !== 0) {
-                            evtSensitiveConfigurationDialogOpen.post({ sensitiveConfigurations });
-
-                            break auto_launch;
-                        }
-
-                        launcher.launch();
+    useEvt(ctx => {
+        evtLauncher.$attach(
+            action => (action.actionName === "initialized" ? [action] : null),
+            ctx,
+            ({ sensitiveConfigurations }) => {
+                auto_launch: {
+                    if (!route.params.autoLaunch) {
+                        break auto_launch;
                     }
 
-                    hideSplashScreen();
+                    if (
+                        getIsAutoLaunchDisabled() &&
+                        //If auto launch from myServices the user is launching one of his service, it's safe
+                        getPreviousRouteName() !== "myServices"
+                    ) {
+                        evtAutoLaunchDisabledDialogOpen.post();
+                        break auto_launch;
+                    }
+
+                    if (sensitiveConfigurations.length !== 0) {
+                        evtSensitiveConfigurationDialogOpen.post({
+                            sensitiveConfigurations
+                        });
+
+                        break auto_launch;
+                    }
+
+                    launcher.launch();
                 }
-            );
 
-            evtLauncher.attach(
-                action => action.actionName === "launchStarted",
-                ctx,
-                () => showSplashScreen({ "enableTransparency": true })
-            );
+                hideSplashScreen();
+            }
+        );
 
-            evtLauncher.$attach(
-                action => action.actionName === "launchCompleted" ? [action] : null,
-                ctx,
-                ({ serviceId }) => {
+        evtLauncher.attach(
+            action => action.actionName === "launchStarted",
+            ctx,
+            () => showSplashScreen({ "enableTransparency": true })
+        );
 
-                    hideSplashScreen();
-                    routes
-                        .myServices({ "autoLaunchServiceId": serviceId })
-                        .push();
-
-                }
-            );
-
-        },
-        []
-    );
+        evtLauncher.$attach(
+            action => (action.actionName === "launchCompleted" ? [action] : null),
+            ctx,
+            ({ serviceId }) => {
+                hideSplashScreen();
+                routes.myServices({ "autoLaunchServiceId": serviceId }).push();
+            }
+        );
+    }, []);
 
     const { restorablePackageConfig } = useCoreState(
         selectors.launcher.restorablePackageConfig
@@ -152,11 +144,11 @@ export const CatalogLauncher = memo((props: Props) => {
     const [overwriteConfigurationDialogState, setOverwriteConfigurationDialogState] =
         useState<
             | {
-                resolveDoOverwriteConfiguration: (
-                    doOverwriteConfiguration: boolean
-                ) => void;
-                friendlyName: string;
-            }
+                  resolveDoOverwriteConfiguration: (
+                      doOverwriteConfiguration: boolean
+                  ) => void;
+                  friendlyName: string;
+              }
             | undefined
         >(undefined);
 
@@ -231,13 +223,14 @@ export const CatalogLauncher = memo((props: Props) => {
     const { isShared } = useCoreState(selectors.launcher.isShared);
     const { areAllFieldsDefault } = useCoreState(selectors.launcher.areAllFieldsDefault);
 
-    const state = useCoreState(state => state.launcher);
-
     const { indexedFormFields } = useCoreState(selectors.launcher.indexedFormFields);
     const { isLaunchable } = useCoreState(selectors.launcher.isLaunchable);
     const { formFieldsIsWellFormed } = useCoreState(
         selectors.launcher.formFieldsIsWellFormed
     );
+    const { isReady } = useCoreState(selectors.launcher.isReady);
+    const { icon } = useCoreState(selectors.launcher.icon);
+    const { packageName } = useCoreState(selectors.launcher.packageName);
 
     const { t } = useTranslation({ CatalogLauncher });
 
@@ -256,7 +249,7 @@ export const CatalogLauncher = memo((props: Props) => {
         launcher.launch();
     });
 
-    if (state.stateDescription !== "ready") {
+    if (!isReady) {
         return null;
     }
 
@@ -266,6 +259,8 @@ export const CatalogLauncher = memo((props: Props) => {
     assert(friendlyName !== undefined);
     assert(isShared !== undefined);
     assert(formFieldsIsWellFormed !== undefined);
+    assert(icon !== undefined);
+    assert(packageName !== undefined);
 
     return (
         <>
@@ -275,8 +270,8 @@ export const CatalogLauncher = memo((props: Props) => {
             >
                 <div className={classes.wrapperForMawWidth}>
                     <CatalogLauncherMainCard
-                        packageName={state.packageName}
-                        packageIconUrl={state.icon}
+                        packageName={packageName}
+                        packageIconUrl={icon}
                         isBookmarked={isBookmarked}
                         onIsBookmarkedValueChange={onIsBookmarkedValueChange}
                         friendlyName={friendlyName}
@@ -370,9 +365,9 @@ export const { i18n } = declareComponentKeys<
     | "sensitive configuration dialog title"
     | "auto launch disabled dialog title"
     | {
-        K: "auto launch disabled dialog body";
-        R: JSX.Element;
-    }
+          K: "auto launch disabled dialog body";
+          R: JSX.Element;
+      }
 >()({ CatalogLauncher });
 
 const useStyles = tss.withName({ CatalogLauncher }).create(({ theme }) => ({
@@ -424,10 +419,10 @@ const SensitiveConfigurationDialog = memo((props: SensitiveConfigurationDialogPr
                     {sensitiveConfigurations === undefined
                         ? null
                         : sensitiveConfigurations.map(({ path, value }) => (
-                            <Markdown key={path.join()}>{`**${path.join(
-                                "."
-                            )}**: \`${value}\``}</Markdown>
-                        ))}
+                              <Markdown key={path.join()}>{`**${path.join(
+                                  "."
+                              )}**: \`${value}\``}</Markdown>
+                          ))}
                 </>
             }
             buttons={

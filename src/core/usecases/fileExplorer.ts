@@ -264,121 +264,119 @@ export declare namespace ExplorersCreateParams {
 const privateThunks = {
     "lazyInitialization":
         () =>
-            (...args) => {
-                const [dispatch, , extraArg] = args;
+        (...args) => {
+            const [dispatch, , extraArg] = args;
 
-                if( getIsContextSet(extraArg) ){
-                    //NOTE: We don't want to initialize twice.
-                    return;
-                }
+            if (getIsContextSet(extraArg)) {
+                //NOTE: We don't want to initialize twice.
+                return;
+            }
 
-                const { apiLogs, loggedApi } = logApi({
-                    "api": extraArg.s3Client,
-                    "apiLogger": mcApiLogger
-                });
+            const { apiLogs, loggedApi } = logApi({
+                "api": extraArg.s3Client,
+                "apiLogger": mcApiLogger
+            });
 
-                apiLogs.evt.toStateful().attach(() =>
-                    dispatch(
-                        actions.apiHistoryUpdated({
-                            // NOTE: We spread only for the type.
-                            "apiLogsEntries": [...structuredClone(apiLogs.history)]
-                        })
-                    )
-                );
-
-                setContext(extraArg, {
-                    "loggedS3Client": loggedApi,
-                    "loggedExtendedFsApi": createExtendedFsApi({
-                        "baseFsApi": {
-                            "list": loggedApi.list,
-                            "deleteFile": loggedApi.deleteFile,
-                            "downloadFile": createObjectThatThrowsIfAccessed({
-                                "debugMessage":
-                                    "We are not supposed to have do download file here. Moving file is too expensive in S3"
-                            }),
-                            "uploadFile": ({ file, path }) =>
-                                loggedApi.uploadFile({
-                                    path,
-                                    "blob": file,
-                                    "onUploadProgress": () => { }
-                                })
-                        },
-                        "keepFile": new Blob(["This file tells that a directory exists"], {
-                            "type": "text/plain"
-                        }),
-                        "keepFileBasename": ".keep"
+            apiLogs.evt.toStateful().attach(() =>
+                dispatch(
+                    actions.apiHistoryUpdated({
+                        // NOTE: We spread only for the type.
+                        "apiLogsEntries": [...structuredClone(apiLogs.history)]
                     })
-                });
+                )
+            );
 
-
-            },
+            setContext(extraArg, {
+                "loggedS3Client": loggedApi,
+                "loggedExtendedFsApi": createExtendedFsApi({
+                    "baseFsApi": {
+                        "list": loggedApi.list,
+                        "deleteFile": loggedApi.deleteFile,
+                        "downloadFile": createObjectThatThrowsIfAccessed({
+                            "debugMessage":
+                                "We are not supposed to have do download file here. Moving file is too expensive in S3"
+                        }),
+                        "uploadFile": ({ file, path }) =>
+                            loggedApi.uploadFile({
+                                path,
+                                "blob": file,
+                                "onUploadProgress": () => {}
+                            })
+                    },
+                    "keepFile": new Blob(["This file tells that a directory exists"], {
+                        "type": "text/plain"
+                    }),
+                    "keepFileBasename": ".keep"
+                })
+            });
+        },
     /**
      * NOTE: It IS possible to navigate to a directory currently being renamed or created.
      */
     "navigate":
         (params: { directoryPath: string; forceReload: boolean }) =>
-            async (...args) => {
-                const { directoryPath, forceReload } = params;
+        async (...args) => {
+            const { directoryPath, forceReload } = params;
 
-                const [dispatch, getState, extraArg] = args;
+            const [dispatch, getState, extraArg] = args;
 
-                //Avoid navigating to the current directory.
-                if (!forceReload) {
-                    const currentDirectoryPath = getState().fileExplorer.directoryPath;
+            //Avoid navigating to the current directory.
+            if (!forceReload) {
+                const currentDirectoryPath = getState().fileExplorer.directoryPath;
 
-                    if (
-                        currentDirectoryPath !== undefined &&
-                        pathRelative(currentDirectoryPath, directoryPath) === ""
-                    ) {
-                        return;
-                    }
+                if (
+                    currentDirectoryPath !== undefined &&
+                    pathRelative(currentDirectoryPath, directoryPath) === ""
+                ) {
+                    return;
                 }
+            }
 
-                const { loggedS3Client } = getContext(extraArg);
+            const { loggedS3Client } = getContext(extraArg);
 
-                dispatch(thunks.cancelNavigation());
+            dispatch(thunks.cancelNavigation());
 
-                dispatch(actions.navigationStarted());
+            dispatch(actions.navigationStarted());
 
-                const ctx = Evt.newCtx();
+            const ctx = Evt.newCtx();
 
-                extraArg.evtAction.attach(
-                    event =>
-                        event.sliceName === "fileExplorer" &&
-                        event.actionName === "navigationCanceled",
-                    ctx,
-                    () => ctx.done()
-                );
+            extraArg.evtAction.attach(
+                event =>
+                    event.sliceName === "fileExplorer" &&
+                    event.actionName === "navigationCanceled",
+                ctx,
+                () => ctx.done()
+            );
 
-                await dispatch(
-                    privateThunks.waitForNoOngoingOperation({
-                        "kind": "directory",
-                        "directoryPath": pathJoin(directoryPath, ".."),
-                        "basename": pathBasename(directoryPath),
-                        ctx
-                    })
-                );
+            await dispatch(
+                privateThunks.waitForNoOngoingOperation({
+                    "kind": "directory",
+                    "directoryPath": pathJoin(directoryPath, ".."),
+                    "basename": pathBasename(directoryPath),
+                    ctx
+                })
+            );
 
-                const { directories, files } = await Evt.from(
-                    ctx,
-                    loggedS3Client.list({ "path": directoryPath })
-                ).waitFor();
+            const { directories, files } = await Evt.from(
+                ctx,
+                loggedS3Client.list({ "path": directoryPath })
+            ).waitFor();
 
-                ctx.done();
+            ctx.done();
 
-                dispatch(
-                    actions.navigationCompleted({
-                        directoryPath,
-                        "directoryItems": [
-                            ...directories.map(basename => ({
-                                basename,
-                                "kind": "directory" as const
-                            })),
-                            ...files.map(basename => ({ basename, "kind": "file" as const }))
-                        ]
-                    })
-                );
-            },
+            dispatch(
+                actions.navigationCompleted({
+                    directoryPath,
+                    "directoryItems": [
+                        ...directories.map(basename => ({
+                            basename,
+                            "kind": "directory" as const
+                        })),
+                        ...files.map(basename => ({ basename, "kind": "file" as const }))
+                    ]
+                })
+            );
+        },
     "waitForNoOngoingOperation":
         (params: {
             kind: "file" | "directory";
@@ -386,181 +384,180 @@ const privateThunks = {
             directoryPath: string;
             ctx?: Ctx;
         }) =>
-            async (...args) => {
-                const [, getState, { evtAction }] = args;
+        async (...args) => {
+            const [, getState, { evtAction }] = args;
 
-                const { kind, basename, directoryPath, ctx = Evt.newCtx() } = params;
+            const { kind, basename, directoryPath, ctx = Evt.newCtx() } = params;
 
-                const { ongoingOperations } = getState().fileExplorer;
+            const { ongoingOperations } = getState().fileExplorer;
 
-                const ongoingOperation = ongoingOperations.find(
-                    o =>
-                        o.kind === kind &&
-                        o.basename === basename &&
-                        o.directoryPath === directoryPath
-                );
+            const ongoingOperation = ongoingOperations.find(
+                o =>
+                    o.kind === kind &&
+                    o.basename === basename &&
+                    o.directoryPath === directoryPath
+            );
 
-                if (ongoingOperation === undefined) {
-                    return;
-                }
-
-                await evtAction.waitFor(
-                    event =>
-                        event.sliceName === "fileExplorer" &&
-                        event.actionName === "operationCompleted" &&
-                        event.payload.kind === kind &&
-                        event.payload.basename === basename &&
-                        pathRelative(event.payload.directoryPath, directoryPath) === "",
-                    ctx
-                );
+            if (ongoingOperation === undefined) {
+                return;
             }
+
+            await evtAction.waitFor(
+                event =>
+                    event.sliceName === "fileExplorer" &&
+                    event.actionName === "operationCompleted" &&
+                    event.payload.kind === kind &&
+                    event.payload.basename === basename &&
+                    pathRelative(event.payload.directoryPath, directoryPath) === "",
+                ctx
+            );
+        }
 } satisfies Thunks;
 
 export const thunks = {
     "getProjectHomeOrPreviousPath":
         () =>
-            (...args) => {
-                const [, getState] = args;
+        (...args) => {
+            const [, getState] = args;
 
-                const homeDirectoryPath = `/${projectConfigs.selectors.selectedProject(getState()).bucket}`;
+            const homeDirectoryPath = `/${
+                projectConfigs.selectors.selectedProject(getState()).bucket
+            }`;
 
-                const currentDirectoryPath = getState().fileExplorer.directoryPath;
+            const currentDirectoryPath = getState().fileExplorer.directoryPath;
 
-                return_current_path: {
-
-                    if( currentDirectoryPath === undefined ){
-                        //NOTE: First navigation
-                        break return_current_path;
-                    }
-
-                    if( !currentDirectoryPath.startsWith(homeDirectoryPath) ){
-                        // The project has changed while we where on another page
-                        break return_current_path;
-                    }
-
-                    return currentDirectoryPath;
-
+            return_current_path: {
+                if (currentDirectoryPath === undefined) {
+                    //NOTE: First navigation
+                    break return_current_path;
                 }
 
-                return homeDirectoryPath;
+                if (!currentDirectoryPath.startsWith(homeDirectoryPath)) {
+                    // The project has changed while we where on another page
+                    break return_current_path;
+                }
 
-            },
+                return currentDirectoryPath;
+            }
+
+            return homeDirectoryPath;
+        },
     /**
      * NOTE: It IS possible to navigate to a directory currently being renamed or created.
      */
     "navigate":
         (params: { directoryPath: string }) =>
-            async (...args) => {
-                const { directoryPath } = params;
+        async (...args) => {
+            const { directoryPath } = params;
 
-                const [dispatch] = args;
+            const [dispatch] = args;
 
-                dispatch(privateThunks.lazyInitialization());
+            dispatch(privateThunks.lazyInitialization());
 
-                return dispatch(
-                    privateThunks.navigate({
-                        directoryPath,
-                        "forceReload": false
-                    })
-                );
-            },
+            return dispatch(
+                privateThunks.navigate({
+                    directoryPath,
+                    "forceReload": false
+                })
+            );
+        },
     //Not used by the UI so far but we want to later
     "cancelNavigation":
         () =>
-            (...args) => {
-                const [dispatch, getState] = args;
-                if (!getState().fileExplorer.isNavigationOngoing) {
-                    return;
-                }
-                dispatch(actions.navigationCanceled());
-            },
+        (...args) => {
+            const [dispatch, getState] = args;
+            if (!getState().fileExplorer.isNavigationOngoing) {
+                return;
+            }
+            dispatch(actions.navigationCanceled());
+        },
     "refresh":
         () =>
-            async (...args) => {
-                const [dispatch, getState] = args;
+        async (...args) => {
+            const [dispatch, getState] = args;
 
-                const { directoryPath } = getState().fileExplorer;
+            const { directoryPath } = getState().fileExplorer;
 
-                if (directoryPath === undefined) {
-                    return;
-                }
+            if (directoryPath === undefined) {
+                return;
+            }
 
-                await dispatch(
-                    privateThunks.navigate({
-                        directoryPath,
-                        "forceReload": true
-                    })
-                );
-            },
+            await dispatch(
+                privateThunks.navigate({
+                    directoryPath,
+                    "forceReload": true
+                })
+            );
+        },
     "create":
         (params: ExplorersCreateParams) =>
-            async (...args) => {
-                const [dispatch, getState, extraArg] = args;
+        async (...args) => {
+            const [dispatch, getState, extraArg] = args;
 
-                const contextualState = getState().fileExplorer;
+            const contextualState = getState().fileExplorer;
 
-                const { directoryPath } = contextualState;
+            const { directoryPath } = contextualState;
 
-                assert(directoryPath !== undefined);
+            assert(directoryPath !== undefined);
 
-                await dispatch(
-                    privateThunks.waitForNoOngoingOperation({
-                        "kind": params.createWhat,
-                        directoryPath,
-                        "basename": params.basename
-                    })
-                );
+            await dispatch(
+                privateThunks.waitForNoOngoingOperation({
+                    "kind": params.createWhat,
+                    directoryPath,
+                    "basename": params.basename
+                })
+            );
 
-                dispatch(
-                    actions.operationStarted({
-                        "kind": params.createWhat,
-                        "basename": params.basename,
-                        "operation": "create"
-                    })
-                );
+            dispatch(
+                actions.operationStarted({
+                    "kind": params.createWhat,
+                    "basename": params.basename,
+                    "operation": "create"
+                })
+            );
 
-                const sliceContext = getContext(extraArg);
+            const sliceContext = getContext(extraArg);
 
-                const path = pathJoin(directoryPath, params.basename);
+            const path = pathJoin(directoryPath, params.basename);
 
-                switch (params.createWhat) {
-                    case "file":
-                        console.log("todo: here we need to wait that the upload start");
+            switch (params.createWhat) {
+                case "file":
+                    console.log("todo: here we need to wait that the upload start");
 
-                        dispatch(
-                            actions.fileUploadStarted({
-                                "basename": params.basename,
-                                directoryPath,
-                                "size": params.blob.size
-                            })
-                        );
+                    dispatch(
+                        actions.fileUploadStarted({
+                            "basename": params.basename,
+                            directoryPath,
+                            "size": params.blob.size
+                        })
+                    );
 
-                        sliceContext.loggedS3Client.uploadFile({
-                            path,
-                            "blob": params.blob,
-                            "onUploadProgress": ({ uploadPercent }) =>
-                                dispatch(
-                                    actions.uploadProgressUpdated({
-                                        "basename": params.basename,
-                                        directoryPath,
-                                        uploadPercent
-                                    })
-                                )
-                        });
-                        break;
-                    case "directory":
-                        await sliceContext.loggedExtendedFsApi.createDirectory({ path });
-                        break;
-                }
+                    sliceContext.loggedS3Client.uploadFile({
+                        path,
+                        "blob": params.blob,
+                        "onUploadProgress": ({ uploadPercent }) =>
+                            dispatch(
+                                actions.uploadProgressUpdated({
+                                    "basename": params.basename,
+                                    directoryPath,
+                                    uploadPercent
+                                })
+                            )
+                    });
+                    break;
+                case "directory":
+                    await sliceContext.loggedExtendedFsApi.createDirectory({ path });
+                    break;
+            }
 
-                dispatch(
-                    actions.operationCompleted({
-                        "kind": params.createWhat,
-                        "basename": params.basename,
-                        directoryPath
-                    })
-                );
-            },
+            dispatch(
+                actions.operationCompleted({
+                    "kind": params.createWhat,
+                    "basename": params.basename,
+                    directoryPath
+                })
+            );
+        },
 
     /**
      * Assert:
@@ -569,90 +566,90 @@ export const thunks = {
      */
     "delete":
         (params: { deleteWhat: "file" | "directory"; basename: string }) =>
-            async (...args) => {
-                const { deleteWhat, basename } = params;
+        async (...args) => {
+            const { deleteWhat, basename } = params;
 
-                const [dispatch, getState, extraArg] = args;
+            const [dispatch, getState, extraArg] = args;
 
-                const contextualState = getState().fileExplorer;
+            const contextualState = getState().fileExplorer;
 
-                const { directoryPath } = contextualState;
+            const { directoryPath } = contextualState;
 
-                assert(directoryPath !== undefined);
+            assert(directoryPath !== undefined);
 
-                await dispatch(
-                    privateThunks.waitForNoOngoingOperation({
-                        "kind": deleteWhat,
-                        directoryPath,
-                        basename
-                    })
-                );
+            await dispatch(
+                privateThunks.waitForNoOngoingOperation({
+                    "kind": deleteWhat,
+                    directoryPath,
+                    basename
+                })
+            );
 
-                dispatch(
-                    actions.operationStarted({
-                        "kind": params.deleteWhat,
-                        "basename": params.basename,
-                        "operation": "delete"
-                    })
-                );
+            dispatch(
+                actions.operationStarted({
+                    "kind": params.deleteWhat,
+                    "basename": params.basename,
+                    "operation": "delete"
+                })
+            );
 
-                const sliceContext = getContext(extraArg);
+            const sliceContext = getContext(extraArg);
 
-                const path = pathJoin(directoryPath, basename);
+            const path = pathJoin(directoryPath, basename);
 
-                switch (deleteWhat) {
-                    case "directory":
-                        await sliceContext.loggedExtendedFsApi.deleteDirectory({ path });
-                        break;
-                    case "file":
-                        await sliceContext.loggedS3Client.deleteFile({
-                            path
-                        });
-                        break;
-                }
+            switch (deleteWhat) {
+                case "directory":
+                    await sliceContext.loggedExtendedFsApi.deleteDirectory({ path });
+                    break;
+                case "file":
+                    await sliceContext.loggedS3Client.deleteFile({
+                        path
+                    });
+                    break;
+            }
 
-                dispatch(
-                    actions.operationCompleted({
-                        "kind": deleteWhat,
-                        basename,
-                        directoryPath
-                    })
-                );
-            },
+            dispatch(
+                actions.operationCompleted({
+                    "kind": deleteWhat,
+                    basename,
+                    directoryPath
+                })
+            );
+        },
     "getIsEnabled":
         () =>
-            (...args): boolean => {
-                const [, getState] = args;
+        (...args): boolean => {
+            const [, getState] = args;
 
-                const region = deploymentRegion.selectors.selectedDeploymentRegion(
-                    getState()
-                );
+            const region = deploymentRegion.selectors.selectedDeploymentRegion(
+                getState()
+            );
 
-                return region.s3 !== undefined;
-            },
+            return region.s3 !== undefined;
+        },
     "getFileDownloadUrl":
         (params: { basename: string }) =>
-            async (...args): Promise<string> => {
-                const { basename } = params;
+        async (...args): Promise<string> => {
+            const { basename } = params;
 
-                const [, getState, extraArg] = args;
+            const [, getState, extraArg] = args;
 
-                const contextualState = getState().fileExplorer;
+            const contextualState = getState().fileExplorer;
 
-                const { directoryPath } = contextualState;
+            const { directoryPath } = contextualState;
 
-                assert(directoryPath !== undefined);
+            assert(directoryPath !== undefined);
 
-                const sliceContext = getContext(extraArg);
+            const sliceContext = getContext(extraArg);
 
-                const path = pathJoin(directoryPath, basename);
+            const path = pathJoin(directoryPath, basename);
 
-                const downloadUrl = await sliceContext.loggedS3Client.getFileDownloadUrl({
-                    path
-                });
+            const downloadUrl = await sliceContext.loggedS3Client.getFileDownloadUrl({
+                path
+            });
 
-                return downloadUrl;
-            }
+            return downloadUrl;
+        }
 } satisfies Thunks;
 
 type Context = {

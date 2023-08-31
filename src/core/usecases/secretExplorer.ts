@@ -241,7 +241,7 @@ const privateThunks = {
         (...args) => {
             const [dispatch, getState, extraArg] = args;
 
-            if( getIsContextSet(extraArg) ){
+            if (getIsContextSet(extraArg)) {
                 //NOTE: We don't want to initialize twice.
                 return;
             }
@@ -405,44 +405,39 @@ export const protectedThunks = {
         },
     "getHomeDirectoryPath":
         () =>
-            (...args) => {
-                const [, getState] = args;
+        (...args) => {
+            const [, getState] = args;
 
-                return `/${projectConfigs.selectors.selectedProject(getState()).vaultTopDir}`;
-
-            },
+            return `/${projectConfigs.selectors.selectedProject(getState()).vaultTopDir}`;
+        }
 } satisfies Thunks;
-
 
 export const thunks = {
     "getProjectHomeOrPreviousPath":
         () =>
-            (...args) => {
-                const [dispatch, getState] = args;
+        (...args) => {
+            const [dispatch, getState] = args;
 
-                const homeDirectoryPath = dispatch(protectedThunks.getHomeDirectoryPath());
+            const homeDirectoryPath = dispatch(protectedThunks.getHomeDirectoryPath());
 
-                const currentDirectoryPath = getState().secretExplorer.directoryPath;
+            const currentDirectoryPath = getState().secretExplorer.directoryPath;
 
-                return_current_path: {
-
-                    if( currentDirectoryPath === undefined ){
-                        //NOTE: First navigation
-                        break return_current_path;
-                    }
-
-                    if( !currentDirectoryPath.startsWith(homeDirectoryPath) ){
-                        // The project has changed while we where on another page
-                        break return_current_path;
-                    }
-
-                    return currentDirectoryPath;
-
+            return_current_path: {
+                if (currentDirectoryPath === undefined) {
+                    //NOTE: First navigation
+                    break return_current_path;
                 }
 
-                return homeDirectoryPath;
+                if (!currentDirectoryPath.startsWith(homeDirectoryPath)) {
+                    // The project has changed while we where on another page
+                    break return_current_path;
+                }
 
-            },
+                return currentDirectoryPath;
+            }
+
+            return homeDirectoryPath;
+        },
     "navigate":
         (params: { directoryPath: string }) =>
         async (...args) => {
@@ -454,7 +449,7 @@ export const thunks = {
 
             return dispatch(
                 privateThunks.navigate({
-                        directoryPath,
+                    directoryPath,
                     "forceReload": false
                 })
             );

@@ -2,7 +2,7 @@ import { tss, PageHeader } from "ui/theme";
 import { useEffect, useMemo } from "react";
 import { useConstCallback } from "powerhooks/useConstCallback";
 import { copyToClipboard } from "ui/tools/copyToClipboard";
-import { useCoreState, useCoreFunctions, useCoreEvts ,selectors } from "core";
+import { useCoreState, useCoreFunctions, useCoreEvts, selectors } from "core";
 import { Explorer } from "./Explorer";
 import { ExplorerProps } from "./Explorer";
 import { useTranslation } from "ui/i18n";
@@ -43,24 +43,23 @@ export default function MyFiles(props: Props) {
             evtProjectConfigs.attach(
                 action => action.actionName === "projectChanged",
                 ctx,
-                () => 
-                    routes[route.name]({ "path": undefined }).replace()
+                () => routes[route.name]({ "path": undefined }).replace()
             );
         },
         [evtProjectConfigs]
     );
 
     useEffect(() => {
-
-        if( route.params.path === undefined ){
-            routes[route.name]({ "path": fileExplorer.getProjectHomeOrPreviousPath() }).replace();
+        if (route.params.path === undefined) {
+            routes[route.name]({
+                "path": fileExplorer.getProjectHomeOrPreviousPath()
+            }).replace();
             return;
         }
 
         fileExplorer.navigate({
             "directoryPath": route.params.path
         });
-
     }, [route.params.path]);
 
     const onNavigate = useConstCallback(
