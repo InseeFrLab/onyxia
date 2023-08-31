@@ -6,7 +6,7 @@ import { routes, getPreviousRouteName } from "ui/routes";
 import type { Route } from "type-route";
 import { CatalogLauncherMainCard } from "./CatalogLauncherMainCard";
 import { CatalogLauncherConfigurationCard } from "./CatalogLauncherConfigurationCard";
-import { useCoreState, selectors, useCoreFunctions } from "core";
+import { useCoreState, selectors, useCoreFunctions, useCoreEvts } from "core";
 import { useConstCallback } from "powerhooks/useConstCallback";
 import { assert } from "tsafe/assert";
 import { useSplashScreen } from "onyxia-ui";
@@ -37,6 +37,8 @@ export const CatalogLauncher = memo((props: Props) => {
     const { launcher, restorablePackageConfig: restorablePackageConfigFunctions } =
         useCoreFunctions();
 
+    const { showSplashScreen, hideSplashScreen } = useSplashScreen();
+
     useEffect(() => {
         const { catalogId, packageName, formFieldsValueDifferentFromDefault } =
             route.params;
@@ -47,8 +49,70 @@ export const CatalogLauncher = memo((props: Props) => {
             formFieldsValueDifferentFromDefault
         });
 
+        showSplashScreen({ "enableTransparency": true });
+
         return () => launcher.reset();
     }, []);
+
+    const { evtLauncher } = useCoreEvts();
+
+    useEvt(
+        ctx => {
+
+            evtLauncher.$attach(
+                action => action.actionName === "initialized" ? [action] : null,
+                ctx,
+                ({ sensitiveConfigurations }) => {
+
+                    auto_launch: {
+                        if (!route.params.autoLaunch) {
+                            break auto_launch;
+                        }
+
+                        if (
+                            getIsAutoLaunchDisabled() &&
+                            //If auto launch from myServices the user is launching one of his service, it's safe
+                            getPreviousRouteName() !== "myServices"
+                        ) {
+                            evtAutoLaunchDisabledDialogOpen.post();
+                            break auto_launch;
+                        }
+
+                        if (sensitiveConfigurations.length !== 0) {
+                            evtSensitiveConfigurationDialogOpen.post({ sensitiveConfigurations });
+
+                            break auto_launch;
+                        }
+
+                        launcher.launch();
+                    }
+
+                    hideSplashScreen();
+                }
+            );
+
+            evtLauncher.attach(
+                action => action.actionName === "launchStarted",
+                ctx,
+                () => showSplashScreen({ "enableTransparency": true })
+            );
+
+            evtLauncher.$attach(
+                action => action.actionName === "launchCompleted" ? [action] : null,
+                ctx,
+                ({ serviceId }) => {
+
+                    hideSplashScreen();
+                    routes
+                        .myServices({ "autoLaunchServiceId": serviceId })
+                        .push();
+
+                }
+            );
+
+        },
+        []
+    );
 
     const { restorablePackageConfig } = useCoreState(
         selectors.launcher.restorablePackageConfig
@@ -74,7 +138,7 @@ export const CatalogLauncher = memo((props: Props) => {
                 "autoLaunch": route.params.autoLaunch
             })
             .replace();
-    }, [restorablePackageConfig ?? Object]);
+    }, [restorablePackageConfig]);
 
     const [isBookmarked, setIsBookmarked] = useState(false);
 
@@ -88,11 +152,11 @@ export const CatalogLauncher = memo((props: Props) => {
     const [overwriteConfigurationDialogState, setOverwriteConfigurationDialogState] =
         useState<
             | {
-                  resolveDoOverwriteConfiguration: (
-                      doOverwriteConfiguration: boolean
-                  ) => void;
-                  friendlyName: string;
-              }
+                resolveDoOverwriteConfiguration: (
+                    doOverwriteConfiguration: boolean
+                ) => void;
+                friendlyName: string;
+            }
             | undefined
         >(undefined);
 
@@ -168,63 +232,6 @@ export const CatalogLauncher = memo((props: Props) => {
     const { areAllFieldsDefault } = useCoreState(selectors.launcher.areAllFieldsDefault);
 
     const state = useCoreState(state => state.launcher);
-
-    const { showSplashScreen, hideSplashScreen } = useSplashScreen();
-
-    useEffect(() => {
-        switch (state.stateDescription) {
-            case "not initialized":
-                showSplashScreen({ "enableTransparency": true });
-                break;
-            case "ready":
-                switch (state.launchState) {
-                    case "not launching":
-                        auto_launch: {
-                            if (!route.params.autoLaunch) {
-                                break auto_launch;
-                            }
-
-                            if (
-                                getIsAutoLaunchDisabled() &&
-                                //If auto launch from myServices the user is launching one of his service, it's safe
-                                getPreviousRouteName() !== "myServices"
-                            ) {
-                                evtAutoLaunchDisabledDialogOpen.post();
-                                break auto_launch;
-                            }
-
-                            const { sensitiveConfigurations } = state;
-
-                            if (sensitiveConfigurations.length !== 0) {
-                                evtSensitiveConfigurationDialogOpen.post({
-                                    sensitiveConfigurations
-                                });
-
-                                break auto_launch;
-                            }
-
-                            launcher.launch();
-                        }
-
-                        hideSplashScreen();
-                        break;
-                    case "launching":
-                        showSplashScreen({ "enableTransparency": true });
-                        break;
-                    case "launched":
-                        hideSplashScreen();
-                        routes
-                            .myServices({ "autoLaunchServiceId": state.serviceId })
-                            .push();
-                        break;
-                }
-                break;
-        }
-    }, [
-        state.stateDescription === "not initialized"
-            ? state.stateDescription
-            : state.launchState
-    ]);
 
     const { indexedFormFields } = useCoreState(selectors.launcher.indexedFormFields);
     const { isLaunchable } = useCoreState(selectors.launcher.isLaunchable);
@@ -363,9 +370,9 @@ export const { i18n } = declareComponentKeys<
     | "sensitive configuration dialog title"
     | "auto launch disabled dialog title"
     | {
-          K: "auto launch disabled dialog body";
-          R: JSX.Element;
-      }
+        K: "auto launch disabled dialog body";
+        R: JSX.Element;
+    }
 >()({ CatalogLauncher });
 
 const useStyles = tss.withName({ CatalogLauncher }).create(({ theme }) => ({
@@ -417,10 +424,10 @@ const SensitiveConfigurationDialog = memo((props: SensitiveConfigurationDialogPr
                     {sensitiveConfigurations === undefined
                         ? null
                         : sensitiveConfigurations.map(({ path, value }) => (
-                              <Markdown key={path.join()}>{`**${path.join(
-                                  "."
-                              )}**: \`${value}\``}</Markdown>
-                          ))}
+                            <Markdown key={path.join()}>{`**${path.join(
+                                "."
+                            )}**: \`${value}\``}</Markdown>
+                        ))}
                 </>
             }
             buttons={

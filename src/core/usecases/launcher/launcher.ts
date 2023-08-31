@@ -30,6 +30,8 @@ import { scaffoldingIndexedFormFieldsToFinal } from "./scaffoldingIndexedFormFie
 import type { FormField, IndexedFormFields } from "./FormField";
 import * as yaml from "yaml";
 import type { Equals } from "tsafe";
+import type { CreateEvt } from "../../core";
+import { Evt } from "evt";
 
 type State = State.NotInitialized | State.Ready;
 
@@ -58,19 +60,7 @@ export declare namespace State {
             dependencies?: string[];
             config: JSONSchemaObject;
         };
-    } & (
-        | {
-              launchState: "not launching";
-              sensitiveConfigurations: FormFieldValue[];
-          }
-        | {
-              launchState: "launching";
-          }
-        | {
-              launchState: "launched";
-              serviceId: string;
-          }
-    );
+    };
 }
 
 export const name = "launcher";
@@ -104,6 +94,7 @@ export const { reducer, actions } = createSlice({
                         config: State.Ready["~internal"]["config"];
                         dependencies: string[];
                         formFieldsValueDifferentFromDefault: FormFieldValue[];
+                        // NOTE: For coreEvt
                         sensitiveConfigurations: FormFieldValue[];
                     };
                 }
@@ -118,7 +109,6 @@ export const { reducer, actions } = createSlice({
                     config,
                     dependencies,
                     formFieldsValueDifferentFromDefault,
-                    sensitiveConfigurations
                 } = payload;
 
                 Object.assign(
@@ -141,9 +131,7 @@ export const { reducer, actions } = createSlice({
                             dependencies,
                             "pathOfFormFieldsWhoseValuesAreDifferentFromDefault": [],
                             config
-                        },
-                        "launchState": "not launching",
-                        sensitiveConfigurations
+                        }
                     })
                 );
 
@@ -215,20 +203,11 @@ export const { reducer, actions } = createSlice({
                     }
                 }
             },
-            "launchStarted": state => {
-                assert(state.stateDescription === "ready");
-                state.launchState = "launching";
-            },
+            "launchStarted": () => { /* NOTE: For coreEvt */ },
             "launchCompleted": (
-                state,
-                { payload }: { payload: { serviceId: string } }
-            ) => {
-                const { serviceId } = payload;
-                assert(state.stateDescription === "ready");
-                state.launchState = "launched";
-                assert(state.launchState === "launched");
-                state.serviceId = serviceId;
-            }
+                _state,
+                _: { payload: { serviceId: string } }
+            ) => { /* NOTE: For coreEvt */ }
         } satisfies Record<string, (state: State, ...rest: any[]) => State | void>;
 
         return reducers;
@@ -1309,3 +1288,38 @@ export const selectors = (() => {
         packageName
     };
 })();
+
+
+export const createEvt = (({ evtAction }) => {
+
+    const evtOut = Evt.create<
+        {
+            actionName: "initialized"
+            sensitiveConfigurations: FormFieldValue[];
+        } |
+        {
+            actionName: "launchStarted"
+        } | {
+            actionName: "launchCompleted";
+            serviceId: string;
+        }
+    >();
+
+    evtAction
+        .pipe(action => action.sliceName !== name ? null : [action])
+        .$attach(
+            action => action.actionName === "initialized" ? [action.payload] : null,
+            ({ sensitiveConfigurations }) => evtOut.post({ "actionName": "initialized", sensitiveConfigurations })
+        )
+        .attach(
+            action => action.actionName === "launchStarted",
+            () => evtOut.post({ "actionName": "launchStarted" })
+        )
+        .$attach(
+            action => action.actionName === "launchCompleted" ? [action.payload] : null,
+            ({ serviceId }) => evtOut.post({ "actionName": "launchCompleted", serviceId })
+        );
+
+    return evtOut;
+
+}) satisfies CreateEvt;

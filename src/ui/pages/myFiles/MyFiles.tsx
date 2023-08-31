@@ -41,7 +41,7 @@ export default function MyFiles(props: Props) {
     useEvt(
         ctx => {
             evtProjectConfigs.attach(
-                action => action.name === "projectChanged",
+                action => action.actionName === "projectChanged",
                 ctx,
                 () => 
                     routes[route.name]({ "path": undefined }).replace()
