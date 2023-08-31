@@ -1,5 +1,4 @@
-import type { FormFieldValue } from "./sharedDataModel/FormFieldValue";
-import { formFieldsValueToObject } from "./sharedDataModel/FormFieldValue";
+import { type FormFieldValue, formFieldsValueToObject } from "./launcher/FormField";
 import { allEquals } from "evt/tools/reducers/allEquals";
 import { same } from "evt/tools/inDepth/same";
 import { assert } from "tsafe/assert";

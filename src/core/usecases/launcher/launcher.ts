@@ -1,13 +1,11 @@
 import "minimal-polyfills/Object.fromEntries";
-import type { State as RootState, Thunks } from "../core";
-import type { PayloadAction } from "@reduxjs/toolkit";
+import type { State as RootState, Thunks } from "../../core";
 import { createSelector, createSlice } from "@reduxjs/toolkit";
 import { id } from "tsafe/id";
 import { assert } from "tsafe/assert";
-import { selectors as userConfigsSelectors } from "./userConfigs";
+import { selectors as userConfigsSelectors } from "../userConfigs";
 import { same } from "evt/tools/inDepth/same";
-import type { FormFieldValue } from "./sharedDataModel/FormFieldValue";
-import { formFieldsValueToObject } from "./sharedDataModel/FormFieldValue";
+import { type FormFieldValue, formFieldsValueToObject } from "./FormField";
 import type {
     Contract,
     JSONSchemaFormFieldDescription,
@@ -18,113 +16,20 @@ import {
     onyxiaFriendlyNameFormFieldPath,
     onyxiaIsSharedFormFieldPath
 } from "core/ports/OnyxiaApi";
-import type { RestorablePackageConfig } from "./restorablePackageConfigs";
-import type { WritableDraft } from "immer/dist/types/types-external";
-import * as publicIpUsecase from "./publicIp";
-import * as userAuthentication from "./userAuthentication";
-import * as deploymentRegion from "./deploymentRegion";
-import { exclude } from "tsafe/exclude";
-import * as projectConfigs from "./projectConfigs";
+import type { RestorablePackageConfig } from "../restorablePackageConfigs";
+import * as publicIpUsecase from "../publicIp";
+import * as userAuthentication from "../userAuthentication";
+import * as deploymentRegion from "../deploymentRegion";
+import * as projectConfigs from "../projectConfigs";
 import { parseUrl } from "core/tools/parseUrl";
 import { typeGuard } from "tsafe/typeGuard";
-import { getRandomK8sSubdomain, getServiceId } from "../ports/OnyxiaApi";
-import { getS3UrlAndRegion } from "../adapters/s3client/getS3UrlAndRegion";
-import * as secretExplorer from "./secretExplorer";
-
+import { getRandomK8sSubdomain, getServiceId } from "../../ports/OnyxiaApi";
+import { getS3UrlAndRegion } from "../../adapters/s3client/getS3UrlAndRegion";
+import * as secretExplorer from "../secretExplorer";
+import { scaffoldingIndexedFormFieldsToFinal } from "./scaffoldingIndexedFormFieldsToFinal";
+import type { FormField, IndexedFormFields } from "./FormField";
 import * as yaml from "yaml";
 import type { Equals } from "tsafe";
-
-export type FormField =
-    | FormField.Boolean
-    | FormField.Object
-    | FormField.Array
-    | FormField.Integer
-    | FormField.Enum
-    | FormField.Text
-    | FormField.Slider;
-export declare namespace FormField {
-    type Common = {
-        path: string[];
-        title: string;
-        description: string | undefined;
-        isReadonly: boolean;
-    };
-
-    export type Boolean = Common & {
-        type: "boolean";
-        value: boolean;
-    };
-
-    export type Object = Common & {
-        type: "object";
-        value: FormFieldValue.Value.Yaml;
-        defaultValue: FormFieldValue.Value.Yaml;
-    };
-
-    export type Array = Common & {
-        type: "array";
-        value: FormFieldValue.Value.Yaml;
-        defaultValue: FormFieldValue.Value.Yaml;
-    };
-
-    export type Integer = Common & {
-        type: "integer";
-        value: number;
-        minimum: number | undefined;
-    };
-
-    export type Enum<T extends string = string> = Common & {
-        type: "enum";
-        enum: T[];
-        value: T;
-    };
-
-    export type Text = Common & {
-        type: "text" | "password";
-        pattern: string | undefined;
-        value: string;
-        defaultValue: string;
-        doRenderAsTextArea: boolean;
-    };
-
-    export type Slider = Slider.Simple | Slider.Range;
-
-    export namespace Slider {
-        type SliderCommon<Unit extends string> = Common & {
-            type: "slider";
-            value: `${number}${Unit}`;
-        };
-
-        export type Simple<Unit extends string = string> = SliderCommon<Unit> & {
-            sliderVariation: "simple";
-            sliderMax: number;
-            sliderMin: number;
-            sliderUnit: Unit;
-            sliderStep: number;
-        };
-
-        export type Range = Range.Down | Range.Up;
-        export namespace Range {
-            type RangeCommon<Unit extends string> = SliderCommon<Unit> & {
-                sliderVariation: "range";
-                sliderExtremitySemantic: string;
-                sliderRangeId: string;
-            };
-
-            export type Down<Unit extends string = string> = RangeCommon<Unit> & {
-                sliderExtremity: "down";
-                sliderMin: number;
-                sliderUnit: Unit;
-                sliderStep: number;
-            };
-
-            export type Up<Unit extends string = string> = RangeCommon<Unit> & {
-                sliderExtremity: "up";
-                sliderMax: number;
-            };
-        }
-    }
-}
 
 type State = State.NotInitialized | State.Ready;
 
@@ -168,213 +73,6 @@ export declare namespace State {
     );
 }
 
-export type IndexedFormFields = IndexedFormFields.Final;
-
-export declare namespace IndexedFormFields {
-    type Generic<T> = {
-        [dependencyNamePackageNameOrGlobal: string]: {
-            meta:
-                | {
-                      type: "dependency";
-                  }
-                | {
-                      type: "package";
-                  }
-                | {
-                      type: "global";
-                      description?: string;
-                  };
-            formFieldsByTabName: {
-                [tabName: string]: { description?: string } & T;
-            };
-        };
-    };
-
-    export type Final = Generic<{
-        formFields: Exclude<FormField, FormField.Slider.Range>[];
-        assembledSliderRangeFormFields: AssembledSliderRangeFormField[];
-    }>;
-
-    export type Scaffolding = Generic<{
-        formFields: FormField[];
-    }>;
-
-    export type AssembledSliderRangeFormField<Unit extends string = string> = {
-        title: string;
-        description?: string;
-        sliderMax: number;
-        sliderMin: number;
-        sliderUnit: Unit;
-        sliderStep: number;
-        extremities: Record<
-            "up" | "down",
-            {
-                path: string[];
-                semantic: string;
-                value: `${number}${Unit}`;
-            }
-        >;
-    };
-}
-
-const { scaffoldingIndexedFormFieldsToFinal } = (() => {
-    const { assembleFormFields } = (() => {
-        const { assembleRangeSliderFormField } = (() => {
-            const { assembleExtremities } = (() => {
-                function toExtremities(
-                    formField: FormField.Slider.Range
-                ): IndexedFormFields.AssembledSliderRangeFormField["extremities"][
-                    | "up"
-                    | "down"] {
-                    return {
-                        "path": formField.path,
-                        "semantic": formField.sliderExtremitySemantic,
-                        "value": formField.value
-                    };
-                }
-
-                function assembleExtremities(
-                    formField1: FormField.Slider.Range,
-                    formField2: FormField.Slider.Range
-                ): IndexedFormFields.AssembledSliderRangeFormField {
-                    const formFieldUp =
-                        formField1.sliderExtremity === "up" ? formField1 : formField2;
-
-                    assert(formFieldUp.sliderExtremity === "up");
-
-                    const formFieldDown = [formField1, formField2].find(
-                        formField => formField !== formFieldUp
-                    );
-
-                    assert(
-                        formFieldDown !== undefined &&
-                            formFieldDown.sliderExtremity === "down"
-                    );
-
-                    return {
-                        "extremities": {
-                            "down": toExtremities(formFieldDown),
-                            "up": toExtremities(formFieldUp)
-                        },
-                        "sliderMax": formFieldUp.sliderMax,
-                        ...formFieldDown
-                    };
-                }
-
-                return { assembleExtremities };
-            })();
-
-            function assembleRangeSliderFormField(
-                acc: (
-                    | IndexedFormFields.AssembledSliderRangeFormField
-                    | FormField.Slider.Range
-                )[],
-                formField: FormField.Slider.Range
-            ): void {
-                const otherExtremity = acc
-                    .map(assembledSliderRangeFormFieldOrFormFieldSliderRange =>
-                        "extremities" in
-                        assembledSliderRangeFormFieldOrFormFieldSliderRange
-                            ? undefined
-                            : assembledSliderRangeFormFieldOrFormFieldSliderRange
-                    )
-                    .filter(exclude(undefined))
-                    .find(
-                        ({ sliderRangeId }) => sliderRangeId === formField.sliderRangeId
-                    );
-
-                if (otherExtremity !== undefined) {
-                    acc[acc.indexOf(otherExtremity)] = assembleExtremities(
-                        otherExtremity,
-                        formField
-                    );
-                } else {
-                    acc.push(formField);
-                }
-            }
-
-            return { assembleRangeSliderFormField };
-        })();
-
-        function assembleFormFields(
-            formFields: FormField.Slider.Range[]
-        ): IndexedFormFields.AssembledSliderRangeFormField[] {
-            let acc: (
-                | IndexedFormFields.AssembledSliderRangeFormField
-                | FormField.Slider.Range
-            )[] = [];
-
-            formFields.forEach(formField => assembleRangeSliderFormField(acc, formField));
-
-            return acc.map(assembledSliderRangeFormField => {
-                if (!("extremities" in assembledSliderRangeFormField)) {
-                    throw new Error(
-                        `${assembledSliderRangeFormField.path.join("/")} only has ${
-                            assembledSliderRangeFormField.sliderExtremity
-                        } extremity`
-                    );
-                }
-                return assembledSliderRangeFormField;
-            });
-        }
-
-        return { assembleFormFields };
-    })();
-
-    function scaffoldingIndexedFormFieldsToFinal(
-        scaffoldingIndexedFormFields: IndexedFormFields.Scaffolding
-    ): IndexedFormFields.Final {
-        const indexedFormFields: IndexedFormFields.Final = {};
-
-        Object.entries(scaffoldingIndexedFormFields).forEach(
-            ([
-                dependencyNamePackageNameOrGlobal,
-                { meta, formFieldsByTabName: scaffoldingFormFieldsByTabName }
-            ]) => {
-                const formFieldsByTabName: IndexedFormFields.Final[string]["formFieldsByTabName"] =
-                    {};
-
-                Object.entries(scaffoldingFormFieldsByTabName).forEach(
-                    ([tabName, { description, formFields: allFormFields }]) => {
-                        const nonSliderRangeFormFields: Exclude<
-                            FormField,
-                            FormField.Slider.Range
-                        >[] = [];
-                        const sliderRangeFormFields: FormField.Slider.Range[] = [];
-
-                        allFormFields.forEach(formField => {
-                            if (
-                                formField.type === "slider" &&
-                                formField.sliderVariation === "range"
-                            ) {
-                                sliderRangeFormFields.push(formField);
-                            } else {
-                                nonSliderRangeFormFields.push(formField);
-                            }
-                        });
-
-                        formFieldsByTabName[tabName] = {
-                            description,
-                            "formFields": nonSliderRangeFormFields,
-                            "assembledSliderRangeFormFields":
-                                assembleFormFields(sliderRangeFormFields)
-                        };
-                    }
-                );
-
-                indexedFormFields[dependencyNamePackageNameOrGlobal] = {
-                    meta,
-                    formFieldsByTabName
-                };
-            }
-        );
-
-        return indexedFormFields;
-    }
-
-    return { scaffoldingIndexedFormFieldsToFinal };
-})();
-
 export const name = "launcher";
 
 export const { reducer, actions } = createSlice({
@@ -385,93 +83,156 @@ export const { reducer, actions } = createSlice({
             "isInitializing": false
         })
     ),
-    "reducers": {
-        "initializationStarted": state => {
-            assert(state.stateDescription === "not initialized");
-            state.isInitializing = true;
-        },
-        "initialized": (
-            state,
-            {
-                payload
-            }: PayloadAction<{
-                catalogId: string;
-                packageName: string;
-                icon: string | undefined;
-                sources: string[];
-                formFields: State.Ready["~internal"]["formFields"];
-                infosAboutWhenFieldsShouldBeHidden: State.Ready["~internal"]["infosAboutWhenFieldsShouldBeHidden"];
-                config: State.Ready["~internal"]["config"];
-                dependencies: string[];
-                formFieldsValueDifferentFromDefault: FormFieldValue[];
-                sensitiveConfigurations: FormFieldValue[];
-            }>
-        ) => {
-            const {
-                catalogId,
-                packageName,
-                icon,
-                sources,
-                formFields,
-                infosAboutWhenFieldsShouldBeHidden,
-                config,
-                dependencies,
-                formFieldsValueDifferentFromDefault,
-                sensitiveConfigurations
-            } = payload;
-
-            Object.assign(
+    "reducers": (() => {
+        const reducers = {
+            "initializationStarted": state => {
+                assert(state.stateDescription === "not initialized");
+                state.isInitializing = true;
+            },
+            "initialized": (
                 state,
-                id<State.Ready>({
-                    "stateDescription": "ready",
+                {
+                    payload
+                }: {
+                    payload: {
+                        catalogId: string;
+                        packageName: string;
+                        icon: string | undefined;
+                        sources: string[];
+                        formFields: State.Ready["~internal"]["formFields"];
+                        infosAboutWhenFieldsShouldBeHidden: State.Ready["~internal"]["infosAboutWhenFieldsShouldBeHidden"];
+                        config: State.Ready["~internal"]["config"];
+                        dependencies: string[];
+                        formFieldsValueDifferentFromDefault: FormFieldValue[];
+                        sensitiveConfigurations: FormFieldValue[];
+                    };
+                }
+            ) => {
+                const {
                     catalogId,
                     packageName,
                     icon,
                     sources,
-                    "~internal": {
-                        formFields,
-                        infosAboutWhenFieldsShouldBeHidden,
-                        "defaultFormFieldsValue": formFields.map(({ path, value }) => ({
-                            path,
-                            value
-                        })),
-                        dependencies,
-                        "pathOfFormFieldsWhoseValuesAreDifferentFromDefault": [],
-                        config
-                    },
-                    "launchState": "not launching",
+                    formFields,
+                    infosAboutWhenFieldsShouldBeHidden,
+                    config,
+                    dependencies,
+                    formFieldsValueDifferentFromDefault,
                     sensitiveConfigurations
-                })
-            );
+                } = payload;
 
-            assert(state.stateDescription === "ready");
+                Object.assign(
+                    state,
+                    id<State.Ready>({
+                        "stateDescription": "ready",
+                        catalogId,
+                        packageName,
+                        icon,
+                        sources,
+                        "~internal": {
+                            formFields,
+                            infosAboutWhenFieldsShouldBeHidden,
+                            "defaultFormFieldsValue": formFields.map(
+                                ({ path, value }) => ({
+                                    path,
+                                    value
+                                })
+                            ),
+                            dependencies,
+                            "pathOfFormFieldsWhoseValuesAreDifferentFromDefault": [],
+                            config
+                        },
+                        "launchState": "not launching",
+                        sensitiveConfigurations
+                    })
+                );
 
-            formFieldsValueDifferentFromDefault.forEach(formFieldValue =>
-                formFieldValueChangedReducer({ state, formFieldValue })
-            );
-        },
-        "reset": () =>
-            id<State.NotInitialized>({
-                "stateDescription": "not initialized",
-                "isInitializing": false
-            }),
-        "formFieldValueChanged": (state, { payload }: PayloadAction<FormFieldValue>) => {
-            assert(state.stateDescription === "ready");
+                assert(state.stateDescription === "ready");
 
-            formFieldValueChangedReducer({ state, "formFieldValue": payload });
-        },
-        "launchStarted": state => {
-            assert(state.stateDescription === "ready");
-            state.launchState = "launching";
-        },
-        "launchCompleted": (state, { payload }: PayloadAction<{ serviceId: string }>) => {
-            const { serviceId } = payload;
-            assert(state.stateDescription === "ready");
-            state.launchState = "launched";
-            assert(state.launchState === "launched");
-            state.serviceId = serviceId;
-        }
-    }
+                formFieldsValueDifferentFromDefault.forEach(formFieldValue =>
+                    reducers.formFieldValueChanged(state, {
+                        "payload": { formFieldValue }
+                    })
+                );
+            },
+            "reset": () =>
+                id<State.NotInitialized>({
+                    "stateDescription": "not initialized",
+                    "isInitializing": false
+                }),
+            "formFieldValueChanged": (
+                state,
+                { payload }: { payload: { formFieldValue: FormFieldValue } }
+            ) => {
+                assert(state.stateDescription === "ready");
+
+                const { formFieldValue } = payload;
+
+                const { path, value } = formFieldValue;
+
+                {
+                    const formField = state["~internal"].formFields.find(formField =>
+                        same(formField.path, path)
+                    )!;
+
+                    if (same(formField.value, value)) {
+                        return;
+                    }
+
+                    formField.value = value;
+                }
+
+                {
+                    const { pathOfFormFieldsWhoseValuesAreDifferentFromDefault } =
+                        state["~internal"];
+
+                    if (
+                        state["~internal"].defaultFormFieldsValue.find(formField =>
+                            same(formField.path, path)
+                        )!.value !== value
+                    ) {
+                        if (
+                            !pathOfFormFieldsWhoseValuesAreDifferentFromDefault.find(
+                                ({ path: path_i }) => same(path_i, path)
+                            )
+                        ) {
+                            pathOfFormFieldsWhoseValuesAreDifferentFromDefault.push({
+                                path
+                            });
+                        }
+                    } else {
+                        const index =
+                            pathOfFormFieldsWhoseValuesAreDifferentFromDefault.findIndex(
+                                ({ path: path_i }) => same(path_i, path)
+                            );
+
+                        if (index >= 0) {
+                            pathOfFormFieldsWhoseValuesAreDifferentFromDefault.splice(
+                                index,
+                                1
+                            );
+                        }
+                    }
+                }
+            },
+            "launchStarted": state => {
+                assert(state.stateDescription === "ready");
+                state.launchState = "launching";
+            },
+            "launchCompleted": (
+                state,
+                { payload }: { payload: { serviceId: string } }
+            ) => {
+                const { serviceId } = payload;
+                assert(state.stateDescription === "ready");
+                state.launchState = "launched";
+                assert(state.launchState === "launched");
+                state.serviceId = serviceId;
+            }
+        } satisfies Record<string, (state: State, ...rest: any[]) => State | void>;
+
+        return reducers;
+    })()
 });
 
 const privateThunks = {
@@ -931,8 +692,10 @@ export const thunks = {
             defaultFormFieldsValue.forEach(({ path, value }) => {
                 dispatch(
                     actions.formFieldValueChanged({
-                        path,
-                        value
+                        "formFieldValue": {
+                            path,
+                            value
+                        }
                     })
                 );
             });
@@ -941,7 +704,8 @@ export const thunks = {
         (params: FormFieldValue) =>
         (...args) => {
             const [dispatch] = args;
-            dispatch(actions.formFieldValueChanged(params));
+            const formFieldValue = params;
+            dispatch(actions.formFieldValueChanged({ formFieldValue }));
         },
     "launch":
         () =>
@@ -1545,53 +1309,3 @@ export const selectors = (() => {
         packageName
     };
 })();
-
-function formFieldValueChangedReducer(params: {
-    state: WritableDraft<State.Ready>;
-    formFieldValue: FormFieldValue;
-}): void {
-    const {
-        state,
-        formFieldValue: { path, value }
-    } = params;
-
-    {
-        const formField = state["~internal"].formFields.find(formField =>
-            same(formField.path, path)
-        )!;
-
-        if (same(formField.value, value)) {
-            return;
-        }
-
-        formField.value = value;
-    }
-
-    {
-        const { pathOfFormFieldsWhoseValuesAreDifferentFromDefault } = state["~internal"];
-
-        if (
-            state["~internal"].defaultFormFieldsValue.find(formField =>
-                same(formField.path, path)
-            )!.value !== value
-        ) {
-            if (
-                !pathOfFormFieldsWhoseValuesAreDifferentFromDefault.find(
-                    ({ path: path_i }) => same(path_i, path)
-                )
-            ) {
-                pathOfFormFieldsWhoseValuesAreDifferentFromDefault.push({
-                    path
-                });
-            }
-        } else {
-            const index = pathOfFormFieldsWhoseValuesAreDifferentFromDefault.findIndex(
-                ({ path: path_i }) => same(path_i, path)
-            );
-
-            if (index >= 0) {
-                pathOfFormFieldsWhoseValuesAreDifferentFromDefault.splice(index, 1);
-            }
-        }
-    }
-}
