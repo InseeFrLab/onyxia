@@ -46,26 +46,24 @@ export default function MySecrets(props: Props) {
             evtProjectConfigs.attach(
                 action => action.actionName === "projectChanged",
                 ctx,
-                () => 
-                    routes[route.name]({ "path": undefined }).replace()
+                () => routes[route.name]({ "path": undefined }).replace()
             );
         },
         [evtProjectConfigs]
     );
 
     useEffect(() => {
-
-        if( route.params.path === undefined ){
-            routes[route.name]({ "path": secretExplorer.getProjectHomeOrPreviousPath() }).replace();
+        if (route.params.path === undefined) {
+            routes[route.name]({
+                "path": secretExplorer.getProjectHomeOrPreviousPath()
+            }).replace();
             return;
         }
 
         secretExplorer.navigate({
             "directoryPath": route.params.path
         });
-
     }, [route.params.path]);
-
 
     useEffect(() => {
         if (route.params.path === undefined) {

@@ -407,7 +407,7 @@ export const SecretsExplorer = memo((props: ExplorerProps) => {
                         />
                     );
                 })()}
-                <div className={classes.breadcrumpWrapper} >
+                <div className={classes.breadcrumpWrapper}>
                     <Breadcrump
                         minDepth={pathMinDepth}
                         path={[
@@ -418,14 +418,13 @@ export const SecretsExplorer = memo((props: ExplorerProps) => {
                         onNavigate={onBreadcrumpNavigate}
                         evtAction={evtBreadcrumpAction}
                     />
-                    {
-                        isNavigating &&
+                    {isNavigating && (
                         <CircularProgress
                             color="textPrimary"
                             size={theme.typography.rootFontSizePx}
                             className={classes.circularProgress}
                         />
-                    }
+                    )}
                 </div>
                 <div
                     ref={scrollableDivRef}
@@ -472,15 +471,15 @@ export const SecretsExplorer = memo((props: ExplorerProps) => {
                         deletionDialogState === undefined
                             ? ""
                             : t(
-                                (() => {
-                                    switch (deletionDialogState.kind) {
-                                        case "directory":
-                                            return "directory";
-                                        case "file":
-                                            return "secret";
-                                    }
-                                })()
-                            );
+                                  (() => {
+                                      switch (deletionDialogState.kind) {
+                                          case "directory":
+                                              return "directory";
+                                          case "file":
+                                              return "secret";
+                                      }
+                                  })()
+                              );
 
                     return {
                         "title": t("deletion dialog title", { deleteWhat }),
@@ -604,11 +603,11 @@ function useApiLogsBarPositioning() {
 
 type CreateS3DirectoryDialogProps = {
     state:
-    | {
-        directories: string[];
-        resolveBasename: (basename: string) => void;
-    }
-    | undefined;
+        | {
+              directories: string[];
+              resolveBasename: (basename: string) => void;
+          }
+        | undefined;
     onClose: () => void;
 };
 
@@ -691,9 +690,9 @@ const { CreateS3DirectoryDialog } = (() => {
             setResolve({
                 "resolve": isValidValue
                     ? () => {
-                        resolveBasename(value);
-                        onClose();
-                    }
+                          resolveBasename(value);
+                          onClose();
+                      }
                     : null
             })
         );

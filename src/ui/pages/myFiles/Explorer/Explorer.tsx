@@ -368,25 +368,24 @@ export const Explorer = memo((props: ExplorerProps) => {
                     );
                 })()}
 
-                <div className={classes.breadcrumpWrapper} >
-                <Breadcrump
-                    minDepth={pathMinDepth}
-                    path={[
-                        ...directoryPath.split("/"),
-                        ...(props.isFileOpen ? [props.openFileBasename] : [])
-                    ]}
-                    isNavigationDisabled={isNavigating}
-                    onNavigate={onBreadcrumpNavigate}
-                    evtAction={evtBreadcrumpAction}
-                />
-                    {
-                        isNavigating &&
+                <div className={classes.breadcrumpWrapper}>
+                    <Breadcrump
+                        minDepth={pathMinDepth}
+                        path={[
+                            ...directoryPath.split("/"),
+                            ...(props.isFileOpen ? [props.openFileBasename] : [])
+                        ]}
+                        isNavigationDisabled={isNavigating}
+                        onNavigate={onBreadcrumpNavigate}
+                        evtAction={evtBreadcrumpAction}
+                    />
+                    {isNavigating && (
                         <CircularProgress
                             color="textPrimary"
                             size={theme.typography.rootFontSizePx}
                             className={classes.circularProgress}
                         />
-                    }
+                    )}
                 </div>
                 <div
                     ref={scrollableDivRef}
