@@ -216,7 +216,8 @@ export const thunks = {
             const { catalogId, packageName, formFieldsValueDifferentFromDefault } =
                 params;
 
-            const [dispatch, getState, { onyxiaApi, oidc }] = args;
+            const [dispatch, getState, { onyxiaApi, oidc, secretsManager, s3Client }] =
+                args;
 
             assert(
                 getState().launcher.stateDescription === "not initialized",
@@ -244,7 +245,150 @@ export const thunks = {
             assert(oidc.isUserLoggedIn);
 
             const valuesSchemaJson = getValuesSchemaJson({
-                "onyxiaValues": await dispatch(thunks.getOnyxiaValues())
+                "onyxiaValues": await (async (): Promise<OnyxiaValues> => {
+                    const { publicIp } = await dispatch(publicIpUsecase.thunks.fetch());
+
+                    const user = dispatch(userAuthentication.thunks.getUser());
+
+                    const userConfigs = userConfigsSelectors.userConfigs(getState());
+
+                    const region = deploymentRegion.selectors.selectedDeploymentRegion(
+                        getState()
+                    );
+
+                    const servicePassword = await dispatch(
+                        projectConfigs.thunks.getServicesPassword()
+                    );
+
+                    const project = projectConfigs.selectors.selectedProject(getState());
+
+                    const onyxiaValues: OnyxiaValues = {
+                        "user": {
+                            "idep": user.username,
+                            "name": `${user.familyName} ${user.firstName}`,
+                            "email": user.email,
+                            "password": servicePassword,
+                            "ip": publicIp
+                        },
+                        "project": {
+                            "id": project.id,
+                            "password": servicePassword,
+                            "basic": btoa(
+                                unescape(
+                                    encodeURIComponent(`${project.id}:${servicePassword}`)
+                                )
+                            )
+                        },
+                        "git": {
+                            "name": userConfigs.gitName,
+                            "email": userConfigs.gitEmail,
+                            "credentials_cache_duration":
+                                userConfigs.gitCredentialCacheDuration,
+                            "token": userConfigs.githubPersonalAccessToken ?? undefined
+                        },
+                        "vault": await (async () => {
+                            const { vault } = region;
+
+                            if (vault === undefined) {
+                                return {
+                                    "VAULT_ADDR": "",
+                                    "VAULT_TOKEN": "",
+                                    "VAULT_MOUNT": "",
+                                    "VAULT_TOP_DIR": ""
+                                };
+                            }
+
+                            return {
+                                "VAULT_ADDR": vault.url,
+                                "VAULT_TOKEN": (await secretsManager.getToken()).token,
+                                "VAULT_MOUNT": vault.kvEngine,
+                                "VAULT_TOP_DIR": dispatch(
+                                    secretExplorer.protectedThunks.getHomeDirectoryPath()
+                                )
+                            };
+                        })(),
+                        "kaggleApiToken": userConfigs.kaggleApiToken ?? undefined,
+                        "s3": await (async () => {
+                            const project = projectConfigs.selectors.selectedProject(
+                                getState()
+                            );
+
+                            const { accessKeyId, secretAccessKey, sessionToken } =
+                                await s3Client.getToken({
+                                    "restrictToBucketName": project.isDefault
+                                        ? undefined
+                                        : project.bucket
+                                });
+
+                            s3Client.createBucketIfNotExist(project.bucket);
+
+                            return {
+                                "AWS_ACCESS_KEY_ID": accessKeyId,
+                                "AWS_BUCKET_NAME": project.bucket,
+                                "AWS_SECRET_ACCESS_KEY": secretAccessKey,
+                                "AWS_SESSION_TOKEN": sessionToken,
+                                ...(() => {
+                                    const { s3: s3Params } =
+                                        deploymentRegion.selectors.selectedDeploymentRegion(
+                                            getState()
+                                        );
+
+                                    if (s3Params === undefined) {
+                                        return {
+                                            "AWS_DEFAULT_REGION": "",
+                                            "AWS_S3_ENDPOINT": "",
+                                            "port": 443
+                                        };
+                                    }
+
+                                    const { region, host, port } = (() => {
+                                        const { region, url } =
+                                            getS3UrlAndRegion(s3Params);
+
+                                        const { host, port = 443 } = parseUrl(url);
+
+                                        return { region, host, port };
+                                    })();
+
+                                    return {
+                                        "AWS_DEFAULT_REGION": region,
+                                        "AWS_S3_ENDPOINT": host,
+                                        port
+                                    };
+                                })()
+                            };
+                        })(),
+                        "region": {
+                            "defaultIpProtection": region.defaultIpProtection,
+                            "defaultNetworkPolicy": region.defaultNetworkPolicy,
+                            "allowedURIPattern":
+                                region.allowedURIPatternForUserDefinedInitScript,
+                            "kafka": region.kafka,
+                            "from": region.from,
+                            "tolerations": region.tolerations,
+                            "nodeSelector": region.nodeSelector,
+                            "startupProbe": region.startupProbe,
+                            "sliders": region.sliders,
+                            "resources": region.resources
+                        },
+                        "k8s": {
+                            "domain": region.kubernetesClusterDomain,
+                            "ingressClassName": region.ingressClassName,
+                            "ingress": region.ingress,
+                            "route": region.route,
+                            "istio": region.istio,
+                            "randomSubdomain":
+                                (getRandomK8sSubdomain.clear(), getRandomK8sSubdomain()),
+                            "initScriptUrl": region.initScriptUrl
+                        },
+                        "proxyInjection": region.proxyInjection,
+                        "packageRepositoryInjection": region.packageRepositoryInjection,
+                        "certificateAuthorityInjection":
+                            region.certificateAuthorityInjection
+                    };
+
+                    return onyxiaValues;
+                })()
             });
 
             const {
@@ -687,151 +831,6 @@ export const thunks = {
                     "value": params.isShared
                 })
             );
-        },
-    /** This thunk can be used outside of the launcher page,
-     *  even if the slice isn't initialized */
-    //@deprecated should be moved to privateThunks
-    "getOnyxiaValues":
-        () =>
-        async (...args): Promise<OnyxiaValues> => {
-            const [dispatch, getState, { secretsManager, s3Client }] = args;
-
-            const { publicIp } = await dispatch(publicIpUsecase.thunks.fetch());
-
-            const user = dispatch(userAuthentication.thunks.getUser());
-
-            const userConfigs = userConfigsSelectors.userConfigs(getState());
-
-            const region = deploymentRegion.selectors.selectedDeploymentRegion(
-                getState()
-            );
-
-            const servicePassword = await dispatch(
-                projectConfigs.thunks.getServicesPassword()
-            );
-
-            const project = projectConfigs.selectors.selectedProject(getState());
-
-            const onyxiaValues: OnyxiaValues = {
-                "user": {
-                    "idep": user.username,
-                    "name": `${user.familyName} ${user.firstName}`,
-                    "email": user.email,
-                    "password": servicePassword,
-                    "ip": publicIp
-                },
-                "project": {
-                    "id": project.id,
-                    "password": servicePassword,
-                    "basic": btoa(
-                        unescape(encodeURIComponent(`${project.id}:${servicePassword}`))
-                    )
-                },
-                "git": {
-                    "name": userConfigs.gitName,
-                    "email": userConfigs.gitEmail,
-                    "credentials_cache_duration": userConfigs.gitCredentialCacheDuration,
-                    "token": userConfigs.githubPersonalAccessToken ?? undefined
-                },
-                "vault": await (async () => {
-                    const { vault } = region;
-
-                    if (vault === undefined) {
-                        return {
-                            "VAULT_ADDR": "",
-                            "VAULT_TOKEN": "",
-                            "VAULT_MOUNT": "",
-                            "VAULT_TOP_DIR": ""
-                        };
-                    }
-
-                    return {
-                        "VAULT_ADDR": vault.url,
-                        "VAULT_TOKEN": (await secretsManager.getToken()).token,
-                        "VAULT_MOUNT": vault.kvEngine,
-                        "VAULT_TOP_DIR": dispatch(
-                            secretExplorer.protectedThunks.getHomeDirectoryPath()
-                        )
-                    };
-                })(),
-                "kaggleApiToken": userConfigs.kaggleApiToken ?? undefined,
-                "s3": await (async () => {
-                    const project = projectConfigs.selectors.selectedProject(getState());
-
-                    const { accessKeyId, secretAccessKey, sessionToken } =
-                        await s3Client.getToken({
-                            "restrictToBucketName": project.isDefault
-                                ? undefined
-                                : project.bucket
-                        });
-
-                    s3Client.createBucketIfNotExist(project.bucket);
-
-                    return {
-                        "AWS_ACCESS_KEY_ID": accessKeyId,
-                        "AWS_BUCKET_NAME": project.bucket,
-                        "AWS_SECRET_ACCESS_KEY": secretAccessKey,
-                        "AWS_SESSION_TOKEN": sessionToken,
-                        ...(() => {
-                            const { s3: s3Params } =
-                                deploymentRegion.selectors.selectedDeploymentRegion(
-                                    getState()
-                                );
-
-                            if (s3Params === undefined) {
-                                return {
-                                    "AWS_DEFAULT_REGION": "",
-                                    "AWS_S3_ENDPOINT": "",
-                                    "port": 443
-                                };
-                            }
-
-                            const { region, host, port } = (() => {
-                                const { region, url } = getS3UrlAndRegion(s3Params);
-
-                                const { host, port = 443 } = parseUrl(url);
-
-                                return { region, host, port };
-                            })();
-
-                            return {
-                                "AWS_DEFAULT_REGION": region,
-                                "AWS_S3_ENDPOINT": host,
-                                port
-                            };
-                        })()
-                    };
-                })(),
-                "region": {
-                    "defaultIpProtection": region.defaultIpProtection,
-                    "defaultNetworkPolicy": region.defaultNetworkPolicy,
-                    "allowedURIPattern": region.allowedURIPatternForUserDefinedInitScript,
-                    "kafka": region.kafka,
-                    "from": region.from,
-                    "tolerations": region.tolerations,
-                    "nodeSelector": region.nodeSelector,
-                    "startupProbe": region.startupProbe,
-                    "sliders": region.sliders,
-                    "resources": region.resources
-                },
-                "k8s": {
-                    "domain": region.kubernetesClusterDomain,
-                    "ingressClassName": region.ingressClassName,
-                    "ingress": region.ingress,
-                    "route": region.route,
-                    "istio": region.istio,
-                    "randomSubdomain":
-                        (getRandomK8sSubdomain.clear(), getRandomK8sSubdomain()),
-                    "initScriptUrl": region.initScriptUrl
-                },
-                "proxyInjection": region.proxyInjection,
-                "packageRepositoryInjection": region.packageRepositoryInjection,
-                "certificateAuthorityInjection": region.certificateAuthorityInjection
-            };
-
-            console.log(onyxiaValues);
-
-            return onyxiaValues;
         }
 } satisfies Thunks;
 
