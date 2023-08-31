@@ -1,6 +1,6 @@
 import "minimal-polyfills/Object.fromEntries";
 import { createRouter, defineRoute, param, createGroup, type Route } from "type-route";
-import type { FormFieldValue } from "core/usecases/sharedDataModel/FormFieldValue";
+import type { FormFieldValue } from "core/usecases/launcher/FormField";
 import type { QueryStringSerializer } from "type-route";
 import { arrPartition } from "evt/tools/reducers/partition";
 import { assert } from "tsafe/assert";
