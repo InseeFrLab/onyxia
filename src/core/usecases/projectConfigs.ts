@@ -280,7 +280,7 @@ export const createEvt = (({ evtAction }) =>
         action.sliceName === name && action.actionName === "projectChanged"
             ? [
                   {
-                      "name": "projectChanged" as const,
+                      "actionName": action.actionName,
                       "projectId": action.payload.projectId
                   }
               ]
