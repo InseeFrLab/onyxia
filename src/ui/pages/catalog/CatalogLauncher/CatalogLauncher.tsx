@@ -15,7 +15,7 @@ import { useTranslation } from "ui/i18n";
 import { useCallbackFactory } from "powerhooks/useCallbackFactory";
 import { Deferred } from "evt/tools/Deferred";
 import type { NonPostableEvt } from "evt";
-import type { FormFieldValue } from "core/usecases/sharedDataModel/FormFieldValue";
+import type { FormFieldValue } from "core/usecases/launcher/FormField";
 import { useEvt } from "evt/hooks/useEvt";
 import { useConst } from "powerhooks/useConst";
 import { Evt } from "evt";

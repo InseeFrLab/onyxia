@@ -14,8 +14,11 @@ import { Tabs } from "onyxia-ui/Tabs";
 import MuiTextField from "@mui/material/TextField";
 import { Icon, IconButton, tss, Text } from "ui/theme";
 import { useConstCallback } from "powerhooks/useConstCallback";
-import type { FormField, IndexedFormFields } from "core/usecases/launcher";
-import type { FormFieldValue } from "core/usecases/sharedDataModel/FormFieldValue";
+import type {
+    FormField,
+    IndexedFormFields,
+    FormFieldValue
+} from "core/usecases/launcher/FormField";
 import { useCallbackFactory } from "powerhooks/useCallbackFactory";
 import { capitalize } from "tsafe/capitalize";
 import { useTranslation } from "ui/i18n";
