@@ -4,8 +4,8 @@ import { useState, useEffect, useMemo, memo } from "react";
 import type { RefObject } from "react";
 import { useConstCallback } from "powerhooks/useConstCallback";
 import type { ExplorerItemsProps as ItemsProps } from "./ExplorerItems/ExplorerItems";
-import { Breadcrump } from "onyxia-ui/Breadcrump";
-import type { BreadcrumpProps } from "onyxia-ui/Breadcrump";
+import { Breadcrumb } from "onyxia-ui/Breadcrumb";
+import type { BreadcrumbProps } from "onyxia-ui/Breadcrumb";
 import { Props as ButtonBarProps } from "./ExplorerButtonBar";
 import { Evt } from "evt";
 import { join as pathJoin, basename as pathBasename } from "path";
@@ -140,8 +140,8 @@ export const Explorer = memo((props: ExplorerProps) => {
             setSelectedItemKind(selectedItemKind)
     );
 
-    const onBreadcrumpNavigate = useConstCallback(
-        ({ upCount }: Param0<BreadcrumpProps["onNavigate"]>) => {
+    const onBreadcrumbNavigate = useConstCallback(
+        ({ upCount }: Param0<BreadcrumbProps["onNavigate"]>) => {
             onNavigate({
                 "directoryPath": pathJoin(
                     directoryPath,
@@ -166,13 +166,13 @@ export const Explorer = memo((props: ExplorerProps) => {
         }
     );
 
-    const evtBreadcrumpAction = useConst(() =>
-        Evt.create<UnpackEvt<BreadcrumpProps["evtAction"]>>()
+    const evtBreadcrumbAction = useConst(() =>
+        Evt.create<UnpackEvt<BreadcrumbProps["evtAction"]>>()
     );
 
     const itemsOnCopyPath = useConstCallback(
         ({ basename }: Parameters<ItemsProps["onCopyPath"]>[0]) => {
-            evtBreadcrumpAction.post({
+            evtBreadcrumbAction.post({
                 "action": "DISPLAY COPY FEEDBACK",
                 basename
             });
@@ -207,7 +207,7 @@ export const Explorer = memo((props: ExplorerProps) => {
                 break;
             case "copy path":
                 if (props.isFileOpen) {
-                    evtBreadcrumpAction.post({ "action": "DISPLAY COPY FEEDBACK" });
+                    evtBreadcrumbAction.post({ "action": "DISPLAY COPY FEEDBACK" });
 
                     onCopyPath({
                         "path": pathJoin(directoryPath, props.openFileBasename)
@@ -369,15 +369,15 @@ export const Explorer = memo((props: ExplorerProps) => {
                 })()}
 
                 <div className={classes.breadcrumpWrapper}>
-                    <Breadcrump
+                    <Breadcrumb
                         minDepth={pathMinDepth}
                         path={[
                             ...directoryPath.split("/"),
                             ...(props.isFileOpen ? [props.openFileBasename] : [])
                         ]}
                         isNavigationDisabled={isNavigating}
-                        onNavigate={onBreadcrumpNavigate}
-                        evtAction={evtBreadcrumpAction}
+                        onNavigate={onBreadcrumbNavigate}
+                        evtAction={evtBreadcrumbAction}
                     />
                     {isNavigating && (
                         <CircularProgress
