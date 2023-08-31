@@ -1,5 +1,5 @@
 import "minimal-polyfills/Object.fromEntries";
-import type { State as RootState, Thunks } from "../../core";
+import type { State as RootState, Thunks, CreateEvt } from "../../core";
 import { createSelector, createSlice } from "@reduxjs/toolkit";
 import { id } from "tsafe/id";
 import { assert } from "tsafe/assert";
@@ -7,7 +7,6 @@ import { selectors as userConfigsSelectors } from "../userConfigs";
 import { same } from "evt/tools/inDepth/same";
 import { type FormFieldValue, formFieldsValueToObject } from "./FormField";
 import type {
-    Contract,
     JSONSchemaFormFieldDescription,
     JSONSchemaObject,
     OnyxiaValues
@@ -30,7 +29,6 @@ import { scaffoldingIndexedFormFieldsToFinal } from "./scaffoldingIndexedFormFie
 import type { FormField, IndexedFormFields } from "./FormField";
 import * as yaml from "yaml";
 import type { Equals } from "tsafe";
-import type { CreateEvt } from "../../core";
 import { Evt } from "evt";
 
 type State = State.NotInitialized | State.Ready;
@@ -92,7 +90,6 @@ export const { reducer, actions } = createSlice({
                         config: State.Ready["config"];
                         dependencies: string[];
                         formFieldsValueDifferentFromDefault: FormFieldValue[];
-                        // NOTE: For coreEvt
                         sensitiveConfigurations: FormFieldValue[];
                     };
                 }
@@ -207,42 +204,6 @@ export const { reducer, actions } = createSlice({
         return reducers;
     })()
 });
-
-const privateThunks = {
-    "launchOrPreviewContract":
-        (params: { isForContractPreview: boolean }) =>
-        async (...args): Promise<{ contract: Contract }> => {
-            const { isForContractPreview } = params;
-
-            const [dispatch, getState, { onyxiaApi }] = args;
-
-            if (!isForContractPreview) {
-                dispatch(actions.launchStarted());
-            }
-
-            const state = getState().launcher;
-
-            assert(state.stateDescription === "ready");
-
-            const { contract } = await onyxiaApi.launchPackage({
-                "catalogId": state.catalogId,
-                "packageName": state.packageName,
-                "options": formFieldsValueToObject(state.formFields),
-                "isDryRun": isForContractPreview
-            });
-
-            if (!isForContractPreview) {
-                const { serviceId } = getServiceId({
-                    "packageName": state.packageName,
-                    "randomK8sSubdomain": getRandomK8sSubdomain()
-                });
-
-                dispatch(actions.launchCompleted({ serviceId }));
-            }
-
-            return { contract };
-        }
-} satisfies Thunks;
 
 export const thunks = {
     "initialize":
@@ -683,22 +644,26 @@ export const thunks = {
     "launch":
         () =>
         async (...args) => {
-            const [dispatch] = args;
-            dispatch(
-                privateThunks.launchOrPreviewContract({
-                    "isForContractPreview": false
-                })
-            );
-        },
-    "getContract":
-        () =>
-        async (...args): Promise<{ contract: Contract }> => {
-            const [dispatch] = args;
-            return dispatch(
-                privateThunks.launchOrPreviewContract({
-                    "isForContractPreview": true
-                })
-            );
+            const [dispatch, getState, { onyxiaApi }] = args;
+
+            dispatch(actions.launchStarted());
+
+            const state = getState().launcher;
+
+            assert(state.stateDescription === "ready");
+
+            await onyxiaApi.launchPackage({
+                "catalogId": state.catalogId,
+                "packageName": state.packageName,
+                "options": formFieldsValueToObject(state.formFields)
+            });
+
+            const { serviceId } = getServiceId({
+                "packageName": state.packageName,
+                "randomK8sSubdomain": getRandomK8sSubdomain()
+            });
+
+            dispatch(actions.launchCompleted({ serviceId }));
         },
     "changeFriendlyName":
         (friendlyName: string) =>

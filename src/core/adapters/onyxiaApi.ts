@@ -677,19 +677,19 @@ export function createOnyxiaApi(params: {
                 axiosInstance.get("/my-lab/app", { params }).catch(onError);
 
             const launchPackage = id<OnyxiaApi["launchPackage"]>(
-                async ({ catalogId, packageName, options, isDryRun }) => {
+                async ({ catalogId, packageName, options }) => {
                     const { serviceId } = getServiceId({
                         packageName,
                         "randomK8sSubdomain": getRandomK8sSubdomain()
                     });
 
-                    const { data: contract } = await axiosInstance
-                        .put<Record<string, unknown>[][]>(`/my-lab/app`, {
+                    await axiosInstance
+                        .put(`/my-lab/app`, {
                             catalogId,
                             packageName,
                             "name": serviceId,
                             options,
-                            "dryRun": isDryRun
+                            "dryRun": false
                         })
                         .catch(onError);
 
@@ -701,8 +701,6 @@ export function createOnyxiaApi(params: {
                             await new Promise(resolve => setTimeout(resolve, 1000));
                         }
                     }
-
-                    return { contract };
                 }
             );
 

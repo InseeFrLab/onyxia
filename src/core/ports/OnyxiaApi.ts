@@ -42,8 +42,7 @@ export type OnyxiaApi = {
         catalogId: string;
         packageName: string;
         options: Record<string, unknown>;
-        isDryRun: boolean;
-    }) => Promise<{ contract: Contract }>;
+    }) => Promise<void>;
 
     getRunningServices: () => Promise<RunningService[]>;
 
