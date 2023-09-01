@@ -235,8 +235,6 @@ export const CatalogLauncher = memo((props: Props) => {
     const { apiLogsEntries } = useCoreState(selectors.launcher.apiLogsEntries);
     const { launchScript } = useCoreState(selectors.launcher.launchScript);
 
-    const { userConfigs } = useCoreState(selectors.userConfigs.userConfigs);
-
     const {
         domRect: { height: rootHeight }
     } = useDomRect({
@@ -244,7 +242,6 @@ export const CatalogLauncher = memo((props: Props) => {
     });
 
     const { classes, cx } = useStyles({
-        "isApiBarVisible": userConfigs.isDevModeEnabled,
         rootHeight
     });
 
@@ -283,34 +280,32 @@ export const CatalogLauncher = memo((props: Props) => {
     return (
         <>
             <div className={cx(classes.root, className)} ref={scrollableDivRef}>
-                {userConfigs.isDevModeEnabled && (
-                    <ApiLogsBar
-                        classes={{
-                            "root": classes.apiLogBar,
-                            "rootWhenExpended": classes.apiLogBarWhenExpended,
-                            "helpDialog": classes.helpDialog
-                        }}
-                        maxHeight={rootHeight - 30}
-                        entries={apiLogsEntries}
-                        downloadButton={{
-                            "tooltipTitle": t("download as script"),
-                            "onClick": () =>
-                                saveAs(
-                                    new Blob([launchScript.content], {
-                                        "type": "text/plain;charset=utf-8"
-                                    }),
-                                    launchScript.fileBasename
-                                )
-                        }}
-                        helpDialog={{
-                            "body": (
-                                <div className={classes.helpDialogBody}>
-                                    <Markdown>{t("api logs help body")}</Markdown>
-                                </div>
+                <ApiLogsBar
+                    classes={{
+                        "root": classes.apiLogBar,
+                        "rootWhenExpended": classes.apiLogBarWhenExpended,
+                        "helpDialog": classes.helpDialog
+                    }}
+                    maxHeight={rootHeight - 30}
+                    entries={apiLogsEntries}
+                    downloadButton={{
+                        "tooltipTitle": t("download as script"),
+                        "onClick": () =>
+                            saveAs(
+                                new Blob([launchScript.content], {
+                                    "type": "text/plain;charset=utf-8"
+                                }),
+                                launchScript.fileBasename
                             )
-                        }}
-                    />
-                )}
+                    }}
+                    helpDialog={{
+                        "body": (
+                            <div className={classes.helpDialogBody}>
+                                <Markdown>{t("api logs help body")}</Markdown>
+                            </div>
+                        )
+                    }}
+                />
                 <div className={classes.wrapperForMawWidth}>
                     <CatalogLauncherMainCard
                         packageName={packageName}
@@ -417,16 +412,15 @@ export const { i18n } = declareComponentKeys<
 
 const useStyles = tss
     .withName({ CatalogLauncher })
-    .withParams<{ isApiBarVisible: boolean; rootHeight: number }>()
-    .create(({ theme, isApiBarVisible, rootHeight }) => ({
+    .withParams<{ rootHeight: number }>()
+    .create(({ theme, rootHeight }) => ({
         "root": {
             "height": "100%",
             "overflow": "auto",
-            "paddingTop": !isApiBarVisible
-                ? 0
-                : theme.typography.rootFontSizePx * 1.7 +
-                  2 * theme.spacing(2) +
-                  theme.spacing(2),
+            "paddingTop":
+                theme.typography.rootFontSizePx * 1.7 +
+                2 * theme.spacing(2) +
+                theme.spacing(2),
             "position": "relative"
         },
         "wrapperForMawWidth": {
