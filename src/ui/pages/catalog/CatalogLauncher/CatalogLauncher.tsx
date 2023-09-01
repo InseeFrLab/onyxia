@@ -25,6 +25,7 @@ import { declareComponentKeys } from "i18nifty";
 import { symToStr } from "tsafe/symToStr";
 import { getIsAutoLaunchDisabled } from "ui/env";
 import { ApiLogsBar } from "ui/shared/ApiLogsBar";
+import { useDomRect } from "powerhooks/useDomRect";
 
 export type Props = {
     className?: string;
@@ -234,6 +235,12 @@ export const CatalogLauncher = memo((props: Props) => {
 
     const { userConfigs } = useCoreState(selectors.userConfigs.userConfigs);
 
+    const {
+        domRect: { height: rootHeight }
+    } = useDomRect({
+        "ref": scrollableDivRef
+    });
+
     const { classes, cx } = useStyles({
         "isApiBarVisible": userConfigs.isDevModeEnabled
     });
@@ -278,7 +285,7 @@ export const CatalogLauncher = memo((props: Props) => {
                             "root": classes.apiLogBar,
                             "rootWhenExpended": classes.apiLogBarWhenExpended
                         }}
-                        maxHeight={800}
+                        maxHeight={rootHeight - 30}
                         entries={apiLogsEntries}
                     />
                 )}
