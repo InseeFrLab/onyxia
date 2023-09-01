@@ -274,8 +274,11 @@ export const CatalogLauncher = memo((props: Props) => {
             <div className={cx(classes.root, className)} ref={scrollableDivRef}>
                 {userConfigs.isDevModeEnabled && (
                     <ApiLogsBar
-                        className={classes.apiLogBar}
-                        maxHeight={800}
+                        classes={{
+                            "root": classes.apiLogBar,
+                            "rootWhenExpended": classes.apiLogBarWhenExpended
+                        }}
+                        maxHeight={600}
                         entries={apiLogsEntries}
                     />
                 )}
@@ -408,6 +411,10 @@ const useStyles = tss
             "top": 0,
             "zIndex": 1,
             "transition": "opacity 750ms linear"
+        },
+        "apiLogBarWhenExpended": {
+            "width": "80%",
+            "transition": "width 150ms linear"
         }
     }));
 

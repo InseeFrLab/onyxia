@@ -8,6 +8,7 @@ import { useStateRef } from "powerhooks/useStateRef";
 
 export type ApiLogsBarProps = {
     className?: string;
+    classes?: Partial<ReturnType<typeof useStyles>["classes"]>;
     entries: ApiLogsBarProps.Entry[];
     /** In pixel */
     maxHeight: number;
@@ -53,10 +54,21 @@ export const ApiLogsBar = memo((props: ApiLogsBarProps) => {
     ]);
 
     //TODO: see if classes are recomputed every time because ref object changes
-    const { classes } = useStyles({ maxHeight, headerHeight, isExpended });
+    const { cx, classes } = useStyles({
+        maxHeight,
+        headerHeight,
+        isExpended,
+        "classesOverrides": props.classes
+    });
 
     return (
-        <div className={className}>
+        <div
+            className={cx(
+                classes.root,
+                isExpended ? classes.rootWhenExpended : classes.rootWhenCollapsed,
+                className
+            )}
+        >
             <div ref={headerRef} className={classes.header}>
                 <div className={classes.dollarContainer}>
                     <Icon className="dollarSign" iconId="attachMoney" size="small" />
@@ -120,6 +132,9 @@ const useStyles = tss
             : theme.colors.palette.limeGreen.main;
 
         return {
+            "root": {},
+            "rootWhenExpended": {},
+            "rootWhenCollapsed": {},
             "iconButton": {
                 "& svg": {
                     "color": textColor,
