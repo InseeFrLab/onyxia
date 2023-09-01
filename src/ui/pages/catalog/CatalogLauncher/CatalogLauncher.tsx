@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState, memo } from "react";
 import type { RefObject } from "react";
-import { tss, Button, Text } from "ui/theme";
+import { tss, useStyles as useDefaultStyles, Button, Text } from "ui/theme";
 import { routes, getPreviousRouteName } from "ui/routes";
 import type { Route } from "type-route";
 import { CatalogLauncherMainCard } from "./CatalogLauncherMainCard";
@@ -190,8 +190,6 @@ export const CatalogLauncher = memo((props: Props) => {
         setIsBookmarked(isBookmarkedNew);
     }, [restorablePackageConfigs, restorablePackageConfig]);
 
-    const { classes, cx } = useStyles();
-
     const onRequestCancel = useConstCallback(() =>
         routes.catalogExplorer({ "catalogId": route.params.catalogId }).push()
     );
@@ -234,6 +232,12 @@ export const CatalogLauncher = memo((props: Props) => {
     const { packageName } = useCoreState(selectors.launcher.packageName);
     const { apiLogsEntries } = useCoreState(selectors.launcher.apiLogsEntries);
 
+    const { userConfigs } = useCoreState(selectors.userConfigs.userConfigs);
+
+    const { classes, cx } = useStyles({
+        "isApiBarVisible": userConfigs.isDevModeEnabled
+    });
+
     const { t } = useTranslation({ CatalogLauncher });
 
     const evtSensitiveConfigurationDialogOpen = useConst(() =>
@@ -268,11 +272,13 @@ export const CatalogLauncher = memo((props: Props) => {
     return (
         <>
             <div className={cx(classes.root, className)} ref={scrollableDivRef}>
-                <ApiLogsBar
-                    className={classes.apiLogBar}
-                    maxHeight={800}
-                    entries={apiLogsEntries}
-                />
+                {userConfigs.isDevModeEnabled && (
+                    <ApiLogsBar
+                        className={classes.apiLogBar}
+                        maxHeight={800}
+                        entries={apiLogsEntries}
+                    />
+                )}
                 <div className={classes.wrapperForMawWidth}>
                     <CatalogLauncherMainCard
                         packageName={packageName}
@@ -375,29 +381,35 @@ export const { i18n } = declareComponentKeys<
       }
 >()({ CatalogLauncher });
 
-const useStyles = tss.withName({ CatalogLauncher }).create(({ theme }) => ({
-    "root": {
-        "height": "100%",
-        "overflow": "auto",
-        "paddingTop": theme.spacing(6) + theme.spacing(2),
-        "paddingLeft": theme.spacing(2),
-        "position": "relative"
-    },
-    "wrapperForMawWidth": {
-        "maxWidth": 1200,
-        "& > *": {
-            "marginBottom": theme.spacing(3)
+const useStyles = tss
+    .withName({ CatalogLauncher })
+    .withParams<{ isApiBarVisible: boolean }>()
+    .create(({ theme, isApiBarVisible }) => ({
+        "root": {
+            "height": "100%",
+            "overflow": "auto",
+            "paddingTop": !isApiBarVisible
+                ? 0
+                : theme.typography.rootFontSizePx * 1.7 +
+                  2 * theme.spacing(2) +
+                  theme.spacing(2),
+            "position": "relative"
+        },
+        "wrapperForMawWidth": {
+            "maxWidth": 1200,
+            "& > *": {
+                "marginBottom": theme.spacing(3)
+            }
+        },
+        "apiLogBar": {
+            "position": "absolute",
+            "right": 0,
+            "width": "60%",
+            "top": 0,
+            "zIndex": 1,
+            "transition": "opacity 750ms linear"
         }
-    },
-    "apiLogBar": {
-        "position": "absolute",
-        "right": 0,
-        "width": "60%",
-        "top": 0,
-        "zIndex": 1,
-        "transition": "opacity 750ms linear"
-    }
-}));
+    }));
 
 type SensitiveConfigurationDialogProps = {
     evtOpen: NonPostableEvt<{ sensitiveConfigurations: FormFieldValue[] }>;
@@ -467,7 +479,7 @@ const AutoLaunchDisabledDialog = memo((props: AutoLaunchDisabledDialogProps) => 
 
     const [isOpen, setIsOpen] = useState(false);
 
-    const { css, theme } = useStyles();
+    const { css, theme } = useDefaultStyles();
 
     useEvt(ctx => evtOpen.attach(ctx, () => setIsOpen(true)), [evtOpen]);
 
