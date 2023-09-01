@@ -32,28 +32,35 @@ export const ApiLogsBar = memo((props: ApiLogsBarProps) => {
 
     const panelRef = useStateRef<HTMLDivElement>(null);
 
-    const [isExpended, toggleIsExpended] = useReducer(isExpended => !isExpended, false);
+    const [{ isExpended, expendCount }, toggleIsExpended] = useReducer(
+        ({ isExpended, expendCount }) => ({
+            "isExpended": !isExpended,
+            "expendCount": expendCount + 1
+        }),
+        {
+            "isExpended": false,
+            "expendCount": 0
+        }
+    );
 
     useEffect(() => {
         if (!isExpended) {
             return;
         }
 
-        const { current: element } = panelRef!;
+        const panelElement = panelRef.current;
 
-        assert(element !== null);
+        assert(panelElement !== null);
 
-        element.scroll({
-            "top": element.scrollHeight,
+        panelElement.scroll({
+            "top": panelElement.scrollHeight,
             "behavior": "smooth"
         });
     }, [
-        isExpended,
-        JSON.stringify(entries.map(({ resp }) => (resp === undefined ? "x" : "o"))),
-        panelRef.current
+        expendCount >= 1,
+        JSON.stringify(entries.map(({ resp }) => (resp === undefined ? "x" : "o")))
     ]);
 
-    //TODO: see if classes are recomputed every time because ref object changes
     const { cx, classes } = useStyles({
         maxHeight,
         headerHeight,
@@ -160,14 +167,13 @@ const useStyles = tss
             "collapsedPanel": {
                 "maxHeight": 0,
                 "overflow": "hidden",
-                "transform": "scaleY(0)",
-                "transition": "all 150ms cubic-bezier(0.4, 0, 0.2, 1)"
+                "transform": "scaleY(0)"
             },
             "expandedPanel": {
                 "maxHeight": maxHeight - headerHeight,
                 "backgroundColor": theme.colors.palette.dark.light,
                 "overflow": "auto",
-                "transition": "transform 150ms cubic-bezier(0.4, 0, 0.2, 1)",
+                "transition": "transform 150ms cubic-bezier(0.4, 0, 0.2, 1) 70ms",
                 "& pre": {
                     "whiteSpace": "pre-wrap",
                     "wordBreak": "break-all"
@@ -183,6 +189,7 @@ const useStyles = tss
                     : theme.colors.palette.dark.main,
                 ...(!isExpended ? {} : { borderRadius }),
                 "borderRadius": `0 0 0 ${isExpended ? 0 : 30}px`,
+                "transition": "border-radius 70ms ease",
                 "display": "flex",
                 "alignItems": "center",
                 "& .dollarSign": {

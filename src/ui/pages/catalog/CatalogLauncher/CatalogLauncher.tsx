@@ -278,7 +278,7 @@ export const CatalogLauncher = memo((props: Props) => {
                             "root": classes.apiLogBar,
                             "rootWhenExpended": classes.apiLogBarWhenExpended
                         }}
-                        maxHeight={600}
+                        maxHeight={800}
                         entries={apiLogsEntries}
                     />
                 )}
@@ -414,7 +414,7 @@ const useStyles = tss
         },
         "apiLogBarWhenExpended": {
             "width": "80%",
-            "transition": "width 150ms linear"
+            "transition": "width 70ms linear"
         }
     }));
 
