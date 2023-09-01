@@ -361,7 +361,41 @@ export const translations: Translations<"fi"> = {
                 Jos olet epävarma, ota yhteyttä ylläpitäjääsi.
             </>
         ),
-        "download as script": "Lataa skriptinä"
+        "download as script": "Lataa skriptinä",
+        "api logs help body": `Tervetuloa Helm-komentojen selitysdialogiimme!  
+Olemme suunnitelleet tämän käyttöliittymän antaaksemme sinulle kontrollin Kubernetes-levityksistäsi.  
+Tässä on mitä sinun tarvitsee tietää:  
+
+#### Mikä tämä Helm-komento on?  
+
+Näytöllä näkyvä komento on tarkka Helm-komento, jonka sovelluksemme suorittaa puolestasi Kubernetes-nimiavaruudessasi.  
+Tämä antaa sinun tietää, mitä kulissien takana tapahtuu, kun klikkaat 'Käynnistä'-painiketta.  
+
+#### Reaaliaikaiset päivitykset  
+
+Kun muutat vaihtoehtoja käyttöliittymässä, Helm-komento päivittyy automaattisesti heijastamaan näitä muutoksia.  
+Näin voit nähdä, miten valintasi vaikuttavat alla olevaan järjestelmään.  
+
+#### Miksi minun pitäisi välittää?  
+
+- **Läpinäkyvyys:** Uskomme, että sinulla on oikeus tietää, mitä toimia ympäristössäsi suoritetaan.  
+- **Oppiminen:** Näiden komentojen ymmärtäminen voi tarjota oivalluksia Kubernetesiin ja Helmiin, syventäen tietämystäsi.  
+- **Manuaalinen suoritus:** Voit kopioida ja liittää tämän komennon terminaaliin, jolla on kirjoitusoikeus Kubernetesiin, mikä mahdollistaa palvelun manuaalisen käynnistyksen.  
+
+#### Kuinka voin suorittaa tämän komennon manuaalisesti?  
+
+On kaksi tapaa suorittaa nämä komennot:  
+
+- **Paikallinen terminaali:** Siirry kohtaan \`Oma tili -> Kubernetes-välilehti\`.  
+  Täällä löydät tunnistetiedot, jotka antavat sinun suorittaa komentoja Kubernetes-nimiavaruudessasi paikallisesta terminaalistasi.  
+
+- **VSCode-Python-terminaali:** Voit myös käynnistää VSCode-Python-instanssin, jossa on asetettu Kubernetes-rooli \`write\`.  
+  Avaa terminaali VSCode:ssa, ja voit suorittaa komennon.  
+
+Suorittamalla komennon manuaalisesti näet palvelun silti \`Omat palvelut\`-sivulla, ikään kuin se olisi käynnistetty käyttöliittymän kautta.  
+
+Tunne olosi vapaaksi tutkimaan ja ottamaan haltuusi Kubernetes-levityksesi!
+        `
     },
     "Footer": {
         "contribute": "Osallistu",
@@ -451,5 +485,8 @@ export const translations: Translations<"fi"> = {
         "first copy the password": "Kopioi ensin palvelun...",
         "open the service": "Avaa palvelu 🚀",
         "return": "Palaa"
+    },
+    "ApiLogsBar": {
+        "ok": "ok"
     }
 };

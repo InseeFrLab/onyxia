@@ -1,11 +1,15 @@
 import { tss } from "ui/theme";
-import { useReducer, useEffect, memo, type ReactNode } from "react";
+import { useReducer, useEffect, memo, useState, type ReactNode } from "react";
 import { useDomRect } from "onyxia-ui";
 import { CircularProgress } from "onyxia-ui/CircularProgress";
-import { IconButton, Icon } from "ui/theme";
+import { IconButton, Icon, Button } from "ui/theme";
 import { assert } from "tsafe/assert";
 import { useStateRef } from "powerhooks/useStateRef";
 import { Tooltip } from "onyxia-ui/Tooltip";
+import { Dialog } from "onyxia-ui/Dialog";
+import { useConstCallback } from "powerhooks/useConstCallback";
+import { declareComponentKeys } from "i18nifty";
+import { useTranslation } from "ui/i18n";
 
 export type ApiLogsBarProps = {
     className?: string;
@@ -16,6 +20,10 @@ export type ApiLogsBarProps = {
     downloadButton?: {
         tooltipTitle: NonNullable<ReactNode>;
         onClick: () => void;
+    };
+    helpDialog?: {
+        title?: NonNullable<ReactNode>;
+        body: NonNullable<ReactNode>;
     };
 };
 
@@ -28,7 +36,7 @@ export namespace ApiLogsBarProps {
 }
 
 export const ApiLogsBar = memo((props: ApiLogsBarProps) => {
-    const { className, entries, maxHeight, downloadButton } = props;
+    const { className, entries, maxHeight, downloadButton, helpDialog } = props;
 
     const {
         domRect: { height: headerHeight },
@@ -73,71 +81,107 @@ export const ApiLogsBar = memo((props: ApiLogsBarProps) => {
         "classesOverrides": props.classes
     });
 
+    const [isHelpDialogOpen, setIsHelpDialogOpen] = useState(false);
+
+    const onHelpDialogClose = useConstCallback(() => setIsHelpDialogOpen(false));
+
+    const { t } = useTranslation({ ApiLogsBar });
+
     return (
-        <div
-            className={cx(
-                classes.root,
-                isExpended ? classes.rootWhenExpended : classes.rootWhenCollapsed,
-                className
-            )}
-        >
-            <div ref={headerRef} className={classes.header}>
-                <div className={classes.dollarContainer}>
-                    <Icon className="dollarSign" iconId="attachMoney" size="small" />
-                </div>
-
-                <div className={classes.lastTranslatedCmd}>
-                    {entries.slice(-1)[0]?.cmd.replace(/\\\n/g, " ")}
-                </div>
-
-                {downloadButton !== undefined && (
-                    <Tooltip title={downloadButton.tooltipTitle}>
-                        <IconButton
-                            iconId="getApp"
-                            className={classes.iconButton}
-                            onClick={downloadButton.onClick}
-                        />
-                    </Tooltip>
-                )}
-
-                <IconButton
-                    iconId="expandMore"
-                    className={cx(classes.iconButton, classes.expandIconButton)}
-                    onClick={toggleIsExpended}
-                />
-            </div>
+        <>
             <div
-                ref={panelRef}
-                className={isExpended ? classes.expandedPanel : classes.collapsedPanel}
+                className={cx(
+                    classes.root,
+                    isExpended ? classes.rootWhenExpended : classes.rootWhenCollapsed,
+                    className
+                )}
             >
-                {entries.map(({ cmdId, cmd, resp }) => (
-                    <div key={cmdId} className={classes.entryRoot}>
-                        <div className={classes.dollarContainer}>
-                            <Icon
-                                iconId="attachMoney"
-                                size="small"
-                                className={classes.dollarIcon}
-                            />
-                        </div>
-                        <div className={classes.preWrapper}>
-                            <pre>{cmd}</pre>
-                            <pre>
-                                {resp === undefined ? (
-                                    <CircularProgress
-                                        className={classes.circularLoading}
-                                        size={10}
-                                    />
-                                ) : (
-                                    resp
-                                )}
-                            </pre>
-                        </div>
+                <div ref={headerRef} className={classes.header}>
+                    <div className={classes.dollarContainer}>
+                        <Icon className="dollarSign" iconId="attachMoney" size="small" />
                     </div>
-                ))}
+
+                    <div className={classes.lastTranslatedCmd}>
+                        {entries.slice(-1)[0]?.cmd.replace(/\\\n/g, " ")}
+                    </div>
+
+                    {helpDialog !== undefined && (
+                        <IconButton
+                            iconId="help"
+                            className={classes.iconButton}
+                            onClick={() => setIsHelpDialogOpen(true)}
+                        />
+                    )}
+
+                    {downloadButton !== undefined && (
+                        <Tooltip title={downloadButton.tooltipTitle}>
+                            <IconButton
+                                iconId="getApp"
+                                className={classes.iconButton}
+                                onClick={downloadButton.onClick}
+                            />
+                        </Tooltip>
+                    )}
+
+                    <IconButton
+                        iconId="expandMore"
+                        className={cx(classes.iconButton, classes.expandIconButton)}
+                        onClick={toggleIsExpended}
+                    />
+                </div>
+                <div
+                    ref={panelRef}
+                    className={
+                        isExpended ? classes.expandedPanel : classes.collapsedPanel
+                    }
+                >
+                    {entries.map(({ cmdId, cmd, resp }) => (
+                        <div key={cmdId} className={classes.entryRoot}>
+                            <div className={classes.dollarContainer}>
+                                <Icon
+                                    iconId="attachMoney"
+                                    size="small"
+                                    className={classes.dollarIcon}
+                                />
+                            </div>
+                            <div className={classes.preWrapper}>
+                                <pre>{cmd}</pre>
+                                <pre>
+                                    {resp === undefined ? (
+                                        <CircularProgress
+                                            className={classes.circularLoading}
+                                            size={10}
+                                        />
+                                    ) : (
+                                        resp
+                                    )}
+                                </pre>
+                            </div>
+                        </div>
+                    ))}
+                </div>
             </div>
-        </div>
+            {helpDialog !== undefined && (
+                <Dialog
+                    classes={{
+                        "root": classes.helpDialog
+                    }}
+                    title={helpDialog.title}
+                    body={helpDialog.body}
+                    buttons={
+                        <Button onClick={onHelpDialogClose} autoFocus>
+                            {t("ok")}
+                        </Button>
+                    }
+                    isOpen={isHelpDialogOpen}
+                    onClose={onHelpDialogClose}
+                />
+            )}
+        </>
     );
 });
+
+export const { i18n } = declareComponentKeys<"ok">()({ ApiLogsBar });
 
 const useStyles = tss
     .withParams<{
@@ -254,6 +298,7 @@ const useStyles = tss
             "dollarIcon": {
                 "marginTop": 3,
                 "color": theme.colors.palette.limeGreen.main
-            }
+            },
+            "helpDialog": {}
         };
     });

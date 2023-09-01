@@ -52,7 +52,8 @@ export type ComponentKey =
     | typeof import("ui/pages/myServices/MyServicesSavedConfigs/MyServicesSavedConfig/MyServicesSavedConfigOptions").i18n
     | typeof import("ui/pages/myServices/MyServicesSavedConfigs/MyServicesSavedConfig").i18n
     | typeof import("ui/pages/myServices/MyServicesSavedConfigs").i18n
-    | typeof import("ui/pages/myServices/MyServicesCards").i18n;
+    | typeof import("ui/pages/myServices/MyServicesCards").i18n
+    | typeof import("ui/shared/ApiLogsBar").i18n;
 
 export type Translations<L extends Language> = GenericTranslations<
     ComponentKey,

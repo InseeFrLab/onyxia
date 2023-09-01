@@ -365,7 +365,42 @@ export const translations: Translations<"it"> = {
                 In caso di dubbi, contattare l'amministratore.
             </>
         ),
-        "download as script": "Scaricare lo script"
+        "download as script": "Scaricare lo script",
+        "api logs help body": `Benvenuto nel nostro Dialogo di Spiegazione dei Comandi Helm!  
+Abbiamo progettato questa interfaccia per darti il controllo completo sui tuoi deployment di Kubernetes.  
+Ecco cosa devi sapere:  
+
+#### Cos'è questo Comando Helm?  
+
+Il comando visualizzato sullo schermo è esattamente il comando Helm che la nostra applicazione eseguirà per tuo conto nel tuo namespace Kubernetes.  
+Questo ti permette di sapere cosa sta succedendo dietro le quinte quando fai clic sul pulsante 'Avvia'.  
+
+#### Aggiornamenti in Tempo Reale  
+
+Modificando le opzioni nell'UI, il comando Helm si aggiornerà automaticamente per riflettere tali cambiamenti.  
+In questo modo, puoi vedere come le tue scelte influenzano il sistema sottostante.  
+
+#### Perché Dovrei Preoccuparmene?  
+
+- **Trasparenza:** Crediamo che tu abbia il diritto di sapere quali azioni vengono eseguite nel tuo ambiente.  
+- **Apprendimento:** Comprendere questi comandi può fornire intuizioni su Kubernetes e Helm, approfondendo la tua conoscenza.  
+- **Esecuzione Manuale:** Puoi copiare e incollare questo comando in un terminale con accesso in scrittura a Kubernetes, permettendoti di avviare il servizio manualmente.  
+
+#### Come Posso Eseguire questo Comando Manualmente?  
+
+Ci sono due modi per eseguire questi comandi:  
+
+- **Terminale Locale:** Vai su \`Il Mio Account -> Scheda Kubernetes\`.  
+  Qui troverai le credenziali che ti permettono di eseguire comandi nel tuo namespace Kubernetes dal tuo terminale locale.  
+
+- **Terminale VSCode-Python:** Puoi anche avviare un'istanza di VSCode-Python con il ruolo Kubernetes impostato su \`write\`.  
+  Apri un terminale all'interno di VSCode, e sarai in grado di eseguire il comando.  
+
+Eseguendo il comando manualmente, sarai comunque in grado di vedere il servizio nella pagina \`I Miei Servizi\` come se fosse stato avviato tramite l'UI.  
+
+Sentiti libero di esplorare e prendere il controllo dei tuoi deployment di Kubernetes!
+
+        `
     },
     "Footer": {
         "contribute": "Contribuire al proggetto",
@@ -458,6 +493,9 @@ export const translations: Translations<"it"> = {
         "first copy the password": "Inizia copiando la password...",
         "open the service": "Aprire il servizio 🚀",
         "return": "Ritorno"
+    },
+    "ApiLogsBar": {
+        "ok": "ok"
     }
     /* spell-checker: enable */
 };

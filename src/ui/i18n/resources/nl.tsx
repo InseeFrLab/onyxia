@@ -366,7 +366,42 @@ export const translations: Translations<"nl"> = {
                 Als je twijfels hebt, neem dan contact op met je beheerder.
             </>
         ),
-        "download as script": "Downloaden als script"
+        "download as script": "Downloaden als script",
+        "api logs help body": `Welkom bij onze Helm Commando Uitleg Dialoog!  
+We hebben deze interface ontworpen om jou de controle te geven over je Kubernetes-implementaties.  
+Dit is wat je moet weten:  
+
+#### Wat is dit Helm Commando?  
+
+Het commando dat op het scherm wordt weergegeven is precies het Helm-commando dat onze applicatie namens jou zal uitvoeren in je Kubernetes namespace.  
+Hierdoor weet je wat er achter de schermen gebeurt als je op de 'start'-knop drukt.  
+
+#### Realtime Updates  
+
+Als je opties in de UI wijzigt, zal het Helm-commando automatisch bijwerken om die wijzigingen weer te geven.  
+Op deze manier kun je zien hoe jouw keuzes het onderliggende systeem beïnvloeden.  
+
+#### Waarom zou ik dit belangrijk vinden?  
+
+- **Transparantie:** We geloven dat je het recht hebt om te weten welke acties er in jouw omgeving worden uitgevoerd.  
+- **Leren:** Inzicht in deze commando's kan inzicht bieden in Kubernetes en Helm, waardoor je kennis wordt verdiept.  
+- **Handmatige Uitvoering:** Je kunt dit commando kopiëren en plakken in een terminal met schrijftoegang tot Kubernetes, waardoor je de service handmatig kunt starten.  
+
+#### Hoe kan ik dit commando handmatig uitvoeren?  
+
+Er zijn twee manieren om deze commando's uit te voeren:  
+
+- **Lokale Terminal:** Ga naar \`Mijn Account -> Kubernetes-tabblad\`.  
+  Hier vind je de inloggegevens waarmee je commando's in je Kubernetes-namespace vanuit je lokale terminal kunt uitvoeren.  
+
+- **VSCode-Python Terminal:** Je kunt ook een VSCode-Python instantie starten met de Kubernetes-rol ingesteld op \`write\`.  
+  Open een terminal binnen VSCode, en je kunt het commando uitvoeren.  
+
+Door het commando handmatig uit te voeren, kun je de service nog steeds zien op de \`Mijn Diensten\`-pagina alsof het via de UI was gestart.  
+
+Voel je vrij om te verkennen en de controle te nemen over je Kubernetes-implementaties!
+
+        `
     },
     "Footer": {
         "contribute": "Bijdragen aan het project",
@@ -458,6 +493,9 @@ export const translations: Translations<"nl"> = {
         "first copy the password": "Begin met het kopiëren van het wachtwoord...",
         "open the service": "De dienst openen 🚀",
         "return": "Terug"
+    },
+    "ApiLogsBar": {
+        "ok": "ok"
     }
     /* spell-checker: enable */
 };

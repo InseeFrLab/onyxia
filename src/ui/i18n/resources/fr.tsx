@@ -371,7 +371,41 @@ export const translations: Translations<"fr"> = {
                 En cas de doute, veuillez contacter votre administrateur.
             </>
         ),
-        "download as script": "Télécharger le script"
+        "download as script": "Télécharger le script",
+        "api logs help body": `Bienvenue dans notre Dialogue d'Explication de Commande Helm !  
+Nous avons conçu cette interface pour vous donner le contrôle sur vos déploiements Kubernetes.  
+Voici ce que vous devez savoir :  
+
+#### Qu'est-ce que cette Commande Helm ?  
+
+La commande affichée à l'écran est la commande Helm exacte que notre application exécutera en votre nom dans votre espace de noms Kubernetes.  
+Cela vous permet de savoir ce qui se passe en arrière-plan lorsque vous cliquez sur le bouton 'lancer'.  
+
+#### Mises à Jour en Temps Réel  
+
+Lorsque vous modifiez les options dans l'UI, la commande Helm se mettra automatiquement à jour pour refléter ces changements.  
+De cette façon, vous pouvez voir comment vos choix affectent le système sous-jacent.  
+
+#### Pourquoi Devrais-je m'en Soucier ?  
+
+- **Transparence :** Nous croyons que vous avez le droit de savoir quelles actions sont effectuées dans votre environnement.  
+- **Apprentissage :** Comprendre ces commandes peut vous donner un aperçu de Kubernetes et de Helm, approfondissant ainsi vos connaissances.  
+- **Exécution Manuelle :** Vous pouvez copier et coller cette commande dans un terminal ayant un accès en écriture à Kubernetes, vous permettant ainsi de lancer le service manuellement.  
+
+#### Comment puis-je Exécuter cette Commande Manuellement ?  
+
+Il y a deux façons d'exécuter ces commandes :  
+
+- **Terminal Local :** Allez dans \`Mon Compte -> Onglet Kubernetes\`.  
+  Ici, vous trouverez les identifiants qui vous permettent d'exécuter des commandes dans votre espace de noms Kubernetes depuis votre terminal local.  
+
+- **Terminal VSCode-Python :** Vous pouvez également lancer une instance VSCode-Python avec le rôle Kubernetes défini sur \`write\`.  
+  Ouvrez un terminal dans VSCode, et vous pourrez exécuter la commande.  
+
+En exécutant la commande manuellement, vous pourrez toujours voir le service dans la page \`Mes Services\` comme s'il avait été lancé via l'UI.  
+
+N'hésitez pas à explorer et à prendre en main vos déploiements Kubernetes !
+        `
     },
     "Footer": {
         "contribute": "Contribuer au projet",
@@ -466,6 +500,9 @@ export const translations: Translations<"fr"> = {
         "first copy the password": "Commencez par copier le mot de passe...",
         "open the service": "Ouvrir le service 🚀",
         "return": "Retour"
+    },
+    "ApiLogsBar": {
+        "ok": "ok"
     }
     /* spell-checker: enable */
 };

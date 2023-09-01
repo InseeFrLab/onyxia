@@ -365,7 +365,42 @@ export const translations: Translations<"no"> = {
                 Hvis du er i tvil, vennligst kontakt din administrator.
             </>
         ),
-        "download as script": "Last ned som skript"
+        "download as script": "Last ned som skript",
+        "api logs help body": `Velkommen til vår Helm Kommando Forklaring Dialog!  
+Vi har designet dette grensesnittet for å gi deg full kontroll over dine Kubernetes-implementeringer.  
+Her er det du trenger å vite:  
+
+#### Hva er denne Helm Kommandoen?  
+
+Kommandoen som vises på skjermen er den eksakte Helm-kommandoen som vår applikasjon vil kjøre på dine vegne i din Kubernetes-navnerom.  
+Dette gir deg innsikt i hva som skjer i bakgrunnen når du klikker på 'start'-knappen.  
+
+#### Sanntidsoppdateringer  
+
+Når du endrer alternativer i brukergrensesnittet, vil Helm-kommandoen automatisk oppdatere for å gjenspeile disse endringene.  
+På denne måten kan du se hvordan dine valg påvirker det underliggende systemet.  
+
+#### Hvorfor bør jeg bry meg?  
+
+- **Gjennomsiktighet:** Vi mener at du har rett til å vite hvilke handlinger som utføres i ditt miljø.  
+- **Læring:** Å forstå disse kommandoene kan gi innsikt i Kubernetes og Helm, og utdype din kunnskap.  
+- **Manuell Kjøring:** Du kan kopiere og lime inn dette kommandoen i en terminal med skrivetilgang til Kubernetes, noe som lar deg manuelt starte tjenesten.  
+
+#### Hvordan kan jeg kjøre denne kommandoen manuelt?  
+
+Det er to måter å kjøre disse kommandoene på:  
+
+- **Lokal Terminal:** Gå til \`Min Konto -> Kubernetes-fanen\`.  
+  Her vil du finne legitimasjonen som tillater deg å kjøre kommandoer i din Kubernetes-navnerom fra din lokale terminal.  
+
+- **VSCode-Python Terminal:** Du kan også starte en VSCode-Python instans med Kubernetes-rollen satt til \`write\`.  
+  Åpne en terminal i VSCode, og du vil være i stand til å utføre kommandoen.  
+
+Ved å kjøre kommandoen manuelt, vil du fortsatt kunne se tjenesten på \`Mine Tjenester\`-siden som om den var lansert via brukergrensesnittet.  
+
+Føl deg fri til å utforske og ta kontroll over dine Kubernetes-implementeringer!
+
+        `
     },
     "Footer": {
         "contribute": "Bidra",
@@ -456,5 +491,8 @@ export const translations: Translations<"no"> = {
         "first copy the password": "Først, kopier tjeneste...",
         "open the service": "Åpne tjenesten 🚀",
         "return": "Gå tilbake"
+    },
+    "ApiLogsBar": {
+        "ok": "ok"
     }
 };
