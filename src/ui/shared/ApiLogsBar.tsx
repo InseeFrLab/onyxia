@@ -1,11 +1,11 @@
 import { tss } from "ui/theme";
-import { useReducer, useEffect, memo } from "react";
+import { useReducer, useEffect, memo, type ReactNode } from "react";
 import { useDomRect } from "onyxia-ui";
 import { CircularProgress } from "onyxia-ui/CircularProgress";
 import { IconButton, Icon } from "ui/theme";
 import { assert } from "tsafe/assert";
 import { useStateRef } from "powerhooks/useStateRef";
-import {} from "onyxia-ui";
+import { Tooltip } from "onyxia-ui/Tooltip";
 
 export type ApiLogsBarProps = {
     className?: string;
@@ -13,6 +13,10 @@ export type ApiLogsBarProps = {
     entries: ApiLogsBarProps.Entry[];
     /** In pixel */
     maxHeight: number;
+    downloadButton?: {
+        tooltipTitle: NonNullable<ReactNode>;
+        onClick: () => void;
+    };
 };
 
 export namespace ApiLogsBarProps {
@@ -24,7 +28,7 @@ export namespace ApiLogsBarProps {
 }
 
 export const ApiLogsBar = memo((props: ApiLogsBarProps) => {
-    const { className, entries, maxHeight } = props;
+    const { className, entries, maxHeight, downloadButton } = props;
 
     const {
         domRect: { height: headerHeight },
@@ -86,9 +90,19 @@ export const ApiLogsBar = memo((props: ApiLogsBarProps) => {
                     {entries.slice(-1)[0]?.cmd.replace(/\\\n/g, " ")}
                 </div>
 
+                {downloadButton !== undefined && (
+                    <Tooltip title={downloadButton.tooltipTitle}>
+                        <IconButton
+                            iconId="getApp"
+                            className={classes.iconButton}
+                            onClick={downloadButton.onClick}
+                        />
+                    </Tooltip>
+                )}
+
                 <IconButton
                     iconId="expandMore"
-                    className={classes.iconButton}
+                    className={cx(classes.iconButton, classes.expandIconButton)}
                     onClick={toggleIsExpended}
                 />
             </div>
@@ -150,8 +164,7 @@ const useStyles = tss
                     "color": textColor,
                     "transition": theme.muiTheme.transitions.create(["transform"], {
                         "duration": theme.muiTheme.transitions.duration.short
-                    }),
-                    "transform": isExpended ? "rotate(-180deg)" : "rotate(0)"
+                    })
                 },
                 "&:hover": {
                     "& svg": {
@@ -162,6 +175,11 @@ const useStyles = tss
                 },
                 "& .MuiTouchRipple-root": {
                     "color": textColor
+                }
+            },
+            "expandIconButton": {
+                "& svg": {
+                    "transform": isExpended ? "rotate(-180deg)" : "rotate(0)"
                 }
             },
             "circularLoading": {

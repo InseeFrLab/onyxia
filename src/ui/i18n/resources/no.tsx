@@ -364,7 +364,8 @@ export const translations: Translations<"no"> = {
                 <br />
                 Hvis du er i tvil, vennligst kontakt din administrator.
             </>
-        )
+        ),
+        "download as script": "Last ned som skript"
     },
     "Footer": {
         "contribute": "Bidra",

@@ -364,7 +364,8 @@ export const translations: Translations<"it"> = {
                 <br />
                 In caso di dubbi, contattare l'amministratore.
             </>
-        )
+        ),
+        "download as script": "Scaricare lo script"
     },
     "Footer": {
         "contribute": "Contribuire al proggetto",

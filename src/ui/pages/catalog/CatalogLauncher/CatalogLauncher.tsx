@@ -26,6 +26,7 @@ import { symToStr } from "tsafe/symToStr";
 import { getIsAutoLaunchDisabled } from "ui/env";
 import { ApiLogsBar } from "ui/shared/ApiLogsBar";
 import { useDomRect } from "powerhooks/useDomRect";
+import { saveAs } from "file-saver";
 
 export type Props = {
     className?: string;
@@ -232,6 +233,7 @@ export const CatalogLauncher = memo((props: Props) => {
     const { icon } = useCoreState(selectors.launcher.icon);
     const { packageName } = useCoreState(selectors.launcher.packageName);
     const { apiLogsEntries } = useCoreState(selectors.launcher.apiLogsEntries);
+    const { launchScript } = useCoreState(selectors.launcher.launchScript);
 
     const { userConfigs } = useCoreState(selectors.userConfigs.userConfigs);
 
@@ -275,6 +277,7 @@ export const CatalogLauncher = memo((props: Props) => {
     assert(icon !== undefined);
     assert(packageName !== undefined);
     assert(apiLogsEntries !== undefined);
+    assert(launchScript !== undefined);
 
     return (
         <>
@@ -287,6 +290,16 @@ export const CatalogLauncher = memo((props: Props) => {
                         }}
                         maxHeight={rootHeight - 30}
                         entries={apiLogsEntries}
+                        downloadButton={{
+                            "tooltipTitle": t("download as script"),
+                            "onClick": () =>
+                                saveAs(
+                                    new Blob([launchScript.content], {
+                                        "type": "text/plain;charset=utf-8"
+                                    }),
+                                    launchScript.fileBasename
+                                )
+                        }}
                     />
                 )}
                 <div className={classes.wrapperForMawWidth}>
@@ -389,6 +402,7 @@ export const { i18n } = declareComponentKeys<
           K: "auto launch disabled dialog body";
           R: JSX.Element;
       }
+    | "download as script"
 >()({ CatalogLauncher });
 
 const useStyles = tss
