@@ -5,6 +5,7 @@ import { CircularProgress } from "onyxia-ui/CircularProgress";
 import { IconButton, Icon } from "ui/theme";
 import { assert } from "tsafe/assert";
 import { useStateRef } from "powerhooks/useStateRef";
+import {} from "onyxia-ui";
 
 export type ApiLogsBarProps = {
     className?: string;
@@ -139,7 +140,9 @@ const useStyles = tss
             : theme.colors.palette.limeGreen.main;
 
         return {
-            "root": {},
+            "root": {
+                "colorScheme": "dark"
+            },
             "rootWhenExpended": {},
             "rootWhenCollapsed": {},
             "iconButton": {
@@ -173,7 +176,9 @@ const useStyles = tss
                 "maxHeight": maxHeight - headerHeight,
                 "backgroundColor": theme.colors.palette.dark.light,
                 "overflow": "auto",
-                "transition": "transform 150ms cubic-bezier(0.4, 0, 0.2, 1) 70ms",
+                "transition": window.navigator.userAgent.includes("Firefox")
+                    ? undefined
+                    : "transform 150ms cubic-bezier(0.4, 0, 0.2, 1) 70ms",
                 "& pre": {
                     "whiteSpace": "pre-wrap",
                     "wordBreak": "break-all"
@@ -181,7 +186,10 @@ const useStyles = tss
                 "transform": "scaleY(1)",
                 "transformOrigin": "top",
                 borderRadius,
-                "paddingTop": theme.spacing(2)
+                "paddingTop": theme.spacing(2),
+                // Only work on Firefox when writing this
+                // Note this spec isn't great, we can't specify the hover color...
+                "scrollbarColor": `${theme.colors.palette.dark.greyVariant3} ${theme.colors.palette.dark.light}`
             },
             "header": {
                 "backgroundColor": theme.isDarkModeEnabled
