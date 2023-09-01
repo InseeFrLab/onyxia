@@ -24,6 +24,7 @@ import { Markdown } from "onyxia-ui/Markdown";
 import { declareComponentKeys } from "i18nifty";
 import { symToStr } from "tsafe/symToStr";
 import { getIsAutoLaunchDisabled } from "ui/env";
+import { ApiLogsBar } from "ui/shared/ApiLogsBar";
 
 export type Props = {
     className?: string;
@@ -231,6 +232,7 @@ export const CatalogLauncher = memo((props: Props) => {
     const { isReady } = useCoreState(selectors.launcher.isReady);
     const { icon } = useCoreState(selectors.launcher.icon);
     const { packageName } = useCoreState(selectors.launcher.packageName);
+    const { apiLogsEntries } = useCoreState(selectors.launcher.apiLogsEntries);
 
     const { t } = useTranslation({ CatalogLauncher });
 
@@ -261,13 +263,16 @@ export const CatalogLauncher = memo((props: Props) => {
     assert(formFieldsIsWellFormed !== undefined);
     assert(icon !== undefined);
     assert(packageName !== undefined);
+    assert(apiLogsEntries !== undefined);
 
     return (
         <>
-            <div
-                className={cx(classes.wrapperForScroll, className)}
-                ref={scrollableDivRef}
-            >
+            <div className={cx(classes.root, className)} ref={scrollableDivRef}>
+                <ApiLogsBar
+                    className={classes.apiLogBar}
+                    maxHeight={800}
+                    entries={apiLogsEntries}
+                />
                 <div className={classes.wrapperForMawWidth}>
                     <CatalogLauncherMainCard
                         packageName={packageName}
@@ -371,15 +376,26 @@ export const { i18n } = declareComponentKeys<
 >()({ CatalogLauncher });
 
 const useStyles = tss.withName({ CatalogLauncher }).create(({ theme }) => ({
-    "wrapperForScroll": {
+    "root": {
         "height": "100%",
-        "overflow": "auto"
+        "overflow": "auto",
+        "paddingTop": theme.spacing(6) + theme.spacing(2),
+        "paddingLeft": theme.spacing(2),
+        "position": "relative"
     },
     "wrapperForMawWidth": {
         "maxWidth": 1200,
         "& > *": {
             "marginBottom": theme.spacing(3)
         }
+    },
+    "apiLogBar": {
+        "position": "absolute",
+        "right": 0,
+        "width": "60%",
+        "top": 0,
+        "zIndex": 1,
+        "transition": "opacity 750ms linear"
     }
 }));
 
