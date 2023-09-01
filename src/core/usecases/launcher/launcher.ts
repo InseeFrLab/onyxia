@@ -43,6 +43,7 @@ export declare namespace State {
         stateDescription: "ready";
         icon: string | undefined;
         catalogId: string;
+        catalogLocation: string;
         packageName: string;
         sources: string[];
         pathOfFormFieldsWhoseValuesAreDifferentFromDefault: {
@@ -81,6 +82,7 @@ export const { reducer, actions } = createSlice({
                     payload
                 }: {
                     payload: {
+                        catalogLocation: string;
                         catalogId: string;
                         packageName: string;
                         icon: string | undefined;
@@ -95,6 +97,7 @@ export const { reducer, actions } = createSlice({
                 }
             ) => {
                 const {
+                    catalogLocation,
                     catalogId,
                     packageName,
                     icon,
@@ -111,6 +114,7 @@ export const { reducer, actions } = createSlice({
                     id<State.Ready>({
                         "stateDescription": "ready",
                         catalogId,
+                        catalogLocation,
                         packageName,
                         icon,
                         sources,
@@ -727,19 +731,29 @@ export const thunks = {
                 };
             })();
 
+            const { catalogLocation, icon } = await (async () => {
+                const catalog = await onyxiaApi.getCatalogs().then(apiRequestResult =>
+                    //TODO: Sort in the adapter of even better, assumes version sorted
+                    //and validate this assertion with zod
+                    apiRequestResult.find(({ id }) => id === catalogId)
+                );
+
+                assert(catalog !== undefined);
+
+                return {
+                    "catalogLocation": catalog.location,
+
+                    "icon": catalog.charts.find(({ name }) => name === packageName)!
+                        .versions[0].icon
+                };
+            })();
+
             dispatch(
                 actions.initialized({
                     catalogId,
+                    catalogLocation,
+                    icon,
                     packageName,
-                    "icon": await onyxiaApi.getCatalogs().then(
-                        apiRequestResult =>
-                            //TODO: Sort in the adapter of even better, assumes version sorted
-                            //and validate this assertion with zod
-                            apiRequestResult
-                                .find(({ id }) => id === catalogId)!
-                                .charts.find(({ name }) => name === packageName)!
-                                .versions[0].icon
-                    ),
                     sources,
                     formFields,
                     infosAboutWhenFieldsShouldBeHidden,
@@ -1237,6 +1251,56 @@ export const selectors = (() => {
         return state.icon;
     });
 
+    const launchCommands = createSelector(
+        readyState,
+        friendlyName,
+        projectConfigs.selectors.selectedProject,
+        (state, friendlyName, project) => {
+            if (state === undefined) {
+                return undefined;
+            }
+
+            assert(friendlyName !== undefined);
+
+            return [
+                `helm repo add ${state.catalogId} ${state.catalogLocation}`,
+                [
+                    "cat << EOF > ./values.yaml",
+                    yaml.stringify(formFieldsValueToObject(state.formFields)),
+                    "EOF"
+                ].join("\n"),
+                `helm install ${friendlyName} ${state.catalogId}/${state.packageName} --namespace ${project.namespace} -f values.yaml`
+            ];
+        }
+    );
+
+    const launchScript = createSelector(
+        launchCommands,
+        friendlyName,
+        (launchCommands, friendlyName) => {
+            if (launchCommands === undefined) {
+                return undefined;
+            }
+            assert(friendlyName !== undefined);
+            return {
+                "fileBasename": `launch-${friendlyName}.sh`,
+                "content": launchCommands.join("\n\n")
+            };
+        }
+    );
+
+    const apiLogsEntries = createSelector(launchCommands, launchCommands => {
+        if (launchCommands === undefined) {
+            return undefined;
+        }
+
+        return launchCommands.map((cmd, i) => ({
+            "cmdId": i,
+            cmd,
+            "resp": ""
+        }));
+    });
+
     return {
         isReady,
         friendlyName,
@@ -1248,7 +1312,9 @@ export const selectors = (() => {
         areAllFieldsDefault,
         sources,
         packageName,
-        icon
+        icon,
+        launchScript,
+        apiLogsEntries
     };
 })();
 
