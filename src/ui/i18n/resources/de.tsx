@@ -369,7 +369,41 @@ export const translations: Translations<"de"> = {
                 Im Zweifelsfall wenden Sie sich bitte an Ihren Administrator.
             </>
         ),
-        "download as script": "Als Skript herunterladen"
+        "download as script": "Als Skript herunterladen",
+        "api logs help body": `Willkommen zu unserem Helm-Befehlserklärungsdialog!  
+Wir haben diese Schnittstelle entwickelt, um Ihnen die Kontrolle über Ihre Kubernetes-Implementierungen zu geben.  
+Hier ist, was Sie wissen müssen:  
+
+#### Was ist dieser Helm-Befehl?  
+
+Der auf dem Bildschirm angezeigte Befehl ist der genaue Helm-Befehl, den unsere Anwendung in Ihrem Namen in Ihrem Kubernetes-Namensraum ausführen wird.  
+Das ermöglicht Ihnen, zu wissen, was im Hintergrund passiert, wenn Sie auf die 'Starten'-Schaltfläche klicken.  
+
+#### Echtzeit-Aktualisierungen  
+
+Wenn Sie Optionen in der Benutzeroberfläche ändern, wird der Helm-Befehl automatisch aktualisiert, um diese Änderungen widerzuspiegeln.  
+Auf diese Weise können Sie sehen, wie Ihre Auswahl das zugrundeliegende System beeinflusst.  
+
+#### Warum sollte ich das beachten?  
+
+- **Transparenz:** Wir glauben, dass Sie das Recht haben zu wissen, welche Aktionen in Ihrer Umgebung durchgeführt werden.  
+- **Lernen:** Das Verstehen dieser Befehle kann Einblicke in Kubernetes und Helm bieten und Ihr Wissen vertiefen.  
+- **Manuelle Ausführung:** Sie können diesen Befehl in ein Terminal mit Schreibzugriff auf Kubernetes kopieren und einfügen, um den Dienst manuell zu starten.  
+
+#### Wie kann ich diesen Befehl manuell ausführen?  
+
+Es gibt zwei Möglichkeiten, diese Befehle auszuführen:  
+
+- **Lokales Terminal:** Gehen Sie zu \`Mein Konto -> Kubernetes-Registerkarte\`.  
+  Dort finden Sie die Anmeldeinformationen, die es Ihnen ermöglichen, Befehle in Ihrem Kubernetes-Namensraum von Ihrem lokalen Terminal aus auszuführen.  
+
+- **VSCode-Python-Terminal:** Sie können auch eine VSCode-Python-Instanz mit der auf 'write' gesetzten Kubernetes-Rolle starten.  
+  Öffnen Sie ein Terminal innerhalb von VSCode, und Sie können den Befehl ausführen.  
+
+Durch die manuelle Ausführung des Befehls können Sie den Dienst immer noch auf der Seite \`Meine Dienste\` sehen, als wäre er über die Benutzeroberfläche gestartet worden.  
+
+Fühlen Sie sich frei zu erkunden und die Kontrolle über Ihre Kubernetes-Implementierungen zu übernehmen!
+        `
     },
     "Footer": {
         "contribute": "Zum Projekt beitragen",
@@ -462,6 +496,9 @@ export const translations: Translations<"de"> = {
         "first copy the password": "Kopieren Sie zuerst das Passwort...",
         "open the service": "Dienst öffnen 🚀",
         "return": "Zurück"
+    },
+    "ApiLogsBar": {
+        "ok": "ok"
     }
     /* spell-checker: enable */
 };

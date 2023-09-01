@@ -244,7 +244,8 @@ export const CatalogLauncher = memo((props: Props) => {
     });
 
     const { classes, cx } = useStyles({
-        "isApiBarVisible": userConfigs.isDevModeEnabled
+        "isApiBarVisible": userConfigs.isDevModeEnabled,
+        rootHeight
     });
 
     const { t } = useTranslation({ CatalogLauncher });
@@ -286,7 +287,8 @@ export const CatalogLauncher = memo((props: Props) => {
                     <ApiLogsBar
                         classes={{
                             "root": classes.apiLogBar,
-                            "rootWhenExpended": classes.apiLogBarWhenExpended
+                            "rootWhenExpended": classes.apiLogBarWhenExpended,
+                            "helpDialog": classes.helpDialog
                         }}
                         maxHeight={rootHeight - 30}
                         entries={apiLogsEntries}
@@ -299,6 +301,13 @@ export const CatalogLauncher = memo((props: Props) => {
                                     }),
                                     launchScript.fileBasename
                                 )
+                        }}
+                        helpDialog={{
+                            "body": (
+                                <div className={classes.helpDialogBody}>
+                                    <Markdown>{t("api logs help body")}</Markdown>
+                                </div>
+                            )
                         }}
                     />
                 )}
@@ -403,12 +412,13 @@ export const { i18n } = declareComponentKeys<
           R: JSX.Element;
       }
     | "download as script"
+    | "api logs help body"
 >()({ CatalogLauncher });
 
 const useStyles = tss
     .withName({ CatalogLauncher })
-    .withParams<{ isApiBarVisible: boolean }>()
-    .create(({ theme, isApiBarVisible }) => ({
+    .withParams<{ isApiBarVisible: boolean; rootHeight: number }>()
+    .create(({ theme, isApiBarVisible, rootHeight }) => ({
         "root": {
             "height": "100%",
             "overflow": "auto",
@@ -428,14 +438,21 @@ const useStyles = tss
         "apiLogBar": {
             "position": "absolute",
             "right": 0,
-            "width": "60%",
+            "width": "min(100%, 1100px)",
             "top": 0,
             "zIndex": 1,
             "transition": "opacity 750ms linear"
         },
         "apiLogBarWhenExpended": {
-            "width": "80%",
+            "width": "min(100%, 1400px)",
             "transition": "width 70ms linear"
+        },
+        "helpDialog": {
+            "maxWidth": 800
+        },
+        "helpDialogBody": {
+            "maxHeight": rootHeight,
+            "overflow": "auto"
         }
     }));
 
