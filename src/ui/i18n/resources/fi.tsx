@@ -360,7 +360,8 @@ export const translations: Translations<"fi"> = {
                 <br />
                 Jos olet epävarma, ota yhteyttä ylläpitäjääsi.
             </>
-        )
+        ),
+        "download as script": "Lataa skriptinä"
     },
     "Footer": {
         "contribute": "Osallistu",

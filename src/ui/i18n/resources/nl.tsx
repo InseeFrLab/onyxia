@@ -365,7 +365,8 @@ export const translations: Translations<"nl"> = {
                 <br />
                 Als je twijfels hebt, neem dan contact op met je beheerder.
             </>
-        )
+        ),
+        "download as script": "Downloaden als script"
     },
     "Footer": {
         "contribute": "Bijdragen aan het project",

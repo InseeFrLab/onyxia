@@ -363,7 +363,8 @@ export const translations: Translations<"en"> = {
                 <br />
                 If you have any doubt, please contact your administrator.
             </>
-        )
+        ),
+        "download as script": "Download as script"
     },
     "Footer": {
         "contribute": "Contribute",

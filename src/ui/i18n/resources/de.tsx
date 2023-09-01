@@ -368,7 +368,8 @@ export const translations: Translations<"de"> = {
                 starten. <br />
                 Im Zweifelsfall wenden Sie sich bitte an Ihren Administrator.
             </>
-        )
+        ),
+        "download as script": "Als Skript herunterladen"
     },
     "Footer": {
         "contribute": "Zum Projekt beitragen",

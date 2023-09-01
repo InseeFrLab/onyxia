@@ -49,7 +49,7 @@ export const AccountKubernetesTab = memo((props: Props) => {
             new Blob([uiState.bashScript], {
                 "type": "text/plain;charset=utf-8"
             }),
-            "config"
+            "config.sh"
         );
     });
 

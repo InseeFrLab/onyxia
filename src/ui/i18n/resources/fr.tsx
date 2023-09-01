@@ -370,7 +370,8 @@ export const translations: Translations<"fr"> = {
                 <br />
                 En cas de doute, veuillez contacter votre administrateur.
             </>
-        )
+        ),
+        "download as script": "Télécharger le script"
     },
     "Footer": {
         "contribute": "Contribuer au projet",

@@ -304,7 +304,8 @@ export const translations: Translations<"zh-CN"> = {
                 <br />
                 如有任何疑问，请联系您的管理员。
             </>
-        )
+        ),
+        "download as script": "下载脚本"
     },
     "Footer": {
         "contribute": "为项目做贡献",
