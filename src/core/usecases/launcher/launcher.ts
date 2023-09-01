@@ -1251,16 +1251,47 @@ export const selectors = (() => {
         return state.icon;
     });
 
+    const helmReleaseName = createSelector(friendlyName, friendlyName => {
+        if (friendlyName === undefined) {
+            return undefined;
+        }
+
+        // Replace spaces with hyphens
+        let releaseName = friendlyName.replace(/ /g, "-");
+
+        // Convert all characters to lowercase
+        releaseName = releaseName.toLowerCase();
+
+        // Remove any invalid characters
+        releaseName = releaseName.replace(/[^a-zA-Z0-9-]/g, "");
+
+        // Ensure the release name starts with an alphanumeric character
+        if (!/^[a-z0-9]/.test(releaseName)) {
+            releaseName = "release-" + releaseName;
+        }
+
+        // Ensure the release name ends with an alphanumeric character
+        if (!/[a-z0-9]$/.test(releaseName)) {
+            if (releaseName.endsWith("-")) {
+                releaseName = releaseName.slice(0, -1);
+            } else {
+                releaseName = releaseName + "-end";
+            }
+        }
+
+        return releaseName;
+    });
+
     const launchCommands = createSelector(
         readyState,
-        friendlyName,
+        helmReleaseName,
         projectConfigs.selectors.selectedProject,
-        (state, friendlyName, project) => {
+        (state, helmReleaseName, project) => {
             if (state === undefined) {
                 return undefined;
             }
 
-            assert(friendlyName !== undefined);
+            assert(helmReleaseName !== undefined);
 
             return [
                 `helm repo add ${state.catalogId} ${state.catalogLocation}`,
@@ -1269,21 +1300,21 @@ export const selectors = (() => {
                     yaml.stringify(formFieldsValueToObject(state.formFields)),
                     "EOF"
                 ].join("\n"),
-                `helm install ${friendlyName} ${state.catalogId}/${state.packageName} --namespace ${project.namespace} -f values.yaml`
+                `helm install ${helmReleaseName} ${state.catalogId}/${state.packageName} --namespace ${project.namespace} -f values.yaml`
             ];
         }
     );
 
     const launchScript = createSelector(
         launchCommands,
-        friendlyName,
-        (launchCommands, friendlyName) => {
+        helmReleaseName,
+        (launchCommands, helmReleaseName) => {
             if (launchCommands === undefined) {
                 return undefined;
             }
-            assert(friendlyName !== undefined);
+            assert(helmReleaseName !== undefined);
             return {
-                "fileBasename": `launch-${friendlyName}.sh`,
+                "fileBasename": `launch-${helmReleaseName}.sh`,
                 "content": launchCommands.join("\n\n")
             };
         }
