@@ -189,7 +189,9 @@ const useStyles = tss
                 "paddingTop": theme.spacing(2),
                 // Only work on Firefox when writing this
                 // Note this spec isn't great, we can't specify the hover color...
-                "scrollbarColor": `${theme.colors.palette.dark.greyVariant3} ${theme.colors.palette.dark.light}`
+                "scrollbarColor": `${theme.colors.palette.dark.greyVariant3} ${theme.colors.palette.dark.light}`,
+                // shadow
+                "boxShadow": theme.shadows[2]
             },
             "header": {
                 "backgroundColor": theme.isDarkModeEnabled
