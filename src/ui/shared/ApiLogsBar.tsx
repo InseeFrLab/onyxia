@@ -202,7 +202,8 @@ const useStyles = tss
                 "overflow": "hidden",
                 "textOverflow": "ellipsis",
                 "fontFamily": "monospace",
-                "color": textColor
+                "color": textColor,
+                "marginBottom": 1
             },
             "dollarContainer": {
                 "width": 70,
@@ -223,6 +224,7 @@ const useStyles = tss
                 }
             },
             "dollarIcon": {
+                "marginTop": 3,
                 "color": theme.colors.palette.limeGreen.main
             }
         };
