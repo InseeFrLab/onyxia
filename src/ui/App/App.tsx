@@ -33,7 +33,7 @@ import { Alert } from "onyxia-ui/Alert";
 import { simpleHash } from "ui/tools/simpleHash";
 import { Markdown } from "onyxia-ui/Markdown";
 import { type LocalizedString } from "ui/i18n";
-import { getGlobalAlert } from "ui/env";
+import { getGlobalAlert, getDisablePersonalInfosInjectionInGroup } from "ui/env";
 
 const { CoreProvider } = createCoreProvider({
     "apiUrl": getEnv().ONYXIA_API_URL,
@@ -50,7 +50,8 @@ const { CoreProvider } = createCoreProvider({
     "transformUrlBeforeRedirectToLogin": url =>
         [url]
             .map(injectTransferableEnvsInSearchParams)
-            .map(injectGlobalStatesInSearchParams)[0]
+            .map(injectGlobalStatesInSearchParams)[0],
+    "disablePersonalInfosInjectionInGroup": getDisablePersonalInfosInjectionInGroup()
 });
 
 const { getViewPortConfig } = createGetViewPortConfig({ PortraitModeUnsupported });

@@ -132,3 +132,18 @@ export const getGlobalAlert = memoize(() => {
         "message": envValue
     };
 });
+
+export const getDisablePersonalInfosInjectionInGroup = memoize((): boolean => {
+    const { DISABLE_PERSONAL_INFOS_INJECTION_IN_GROUP } = getEnv();
+
+    const possibleValues = ["true", "false"];
+
+    assert(
+        possibleValues.indexOf(DISABLE_PERSONAL_INFOS_INJECTION_IN_GROUP) >= 0,
+        `${symToStr({
+            DISABLE_PERSONAL_INFOS_INJECTION_IN_GROUP
+        })} should either be ${possibleValues.join(" or ")}`
+    );
+
+    return DISABLE_PERSONAL_INFOS_INJECTION_IN_GROUP === "true";
+});

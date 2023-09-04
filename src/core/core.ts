@@ -25,6 +25,7 @@ type CoreParams = {
               clientId: string;
           }
         | undefined;
+    disablePersonalInfosInjectionInGroup: boolean;
 };
 
 export async function createCore(params: CoreParams) {
