@@ -93,7 +93,7 @@ export const thunks = {
 
             const [dispatch, getState, extraArg] = args;
 
-            const { oidc, createStoreParams } = extraArg;
+            const { oidc, coreParams } = extraArg;
 
             if (getState().s3Credentials.isRefreshing) {
                 return;
@@ -118,7 +118,7 @@ export const thunks = {
                     "fallback": {
                         oidc,
                         "keycloakParams": (() => {
-                            const { keycloakParams } = createStoreParams;
+                            const { keycloakParams } = coreParams;
 
                             assert(keycloakParams !== undefined);
 

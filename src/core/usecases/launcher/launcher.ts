@@ -223,7 +223,7 @@ export const thunks = {
             const [
                 dispatch,
                 getState,
-                { onyxiaApi, oidc, secretsManager, s3Client, createStoreParams }
+                { onyxiaApi, oidc, secretsManager, s3Client, coreParams }
             ] = args;
 
             assert(
@@ -271,7 +271,7 @@ export const thunks = {
 
                     const doInjectPersonalInfos =
                         project.isDefault ||
-                        !createStoreParams.disablePersonalInfosInjectionInGroup;
+                        !coreParams.disablePersonalInfosInjectionInGroup;
 
                     const onyxiaValues: OnyxiaValues = {
                         "user": !doInjectPersonalInfos

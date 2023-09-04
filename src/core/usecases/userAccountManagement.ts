@@ -13,7 +13,7 @@ export const thunks = {
                 ,
                 ,
                 {
-                    createStoreParams: { getCurrentLang, keycloakParams }
+                    coreParams: { getCurrentLang, keycloakParams }
                 }
             ] = args;
 
