@@ -32,7 +32,8 @@ const { CoreProvider } = createCoreProvider({
     "apiUrl": "",
     "keycloakParams": undefined,
     "getCurrentLang": () => "en",
-    "transformUrlBeforeRedirectToLogin": url => url
+    "transformUrlBeforeRedirectToLogin": url => url,
+    "disablePersonalInfosInjectionInGroup": false
 });
 
 export const { createMockRoute } = createMockRouteFactory({
