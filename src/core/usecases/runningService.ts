@@ -334,9 +334,8 @@ const privateThunks = {
                     const project = projectConfigs.selectors.selectedProject(getState());
 
                     const { expirationTime, acquisitionTime } = await s3Client.getToken({
-                        "restrictToBucketName": project.isDefault
-                            ? undefined
-                            : project.bucket
+                        "restrictToBucketName":
+                            project.group === undefined ? undefined : project.bucket
                     });
 
                     return { "s3TokensTTLms": expirationTime - acquisitionTime };
