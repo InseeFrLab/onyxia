@@ -100,7 +100,7 @@ export async function createCore(params: CoreParams) {
     })();
 
     const thunksExtraArgument = {
-        "createStoreParams": params,
+        "coreParams": params,
         oidc,
         onyxiaApi,
         /** prettier-ignore */
