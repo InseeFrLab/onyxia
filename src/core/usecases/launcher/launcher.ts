@@ -270,7 +270,7 @@ export const thunks = {
                     const project = projectConfigs.selectors.selectedProject(getState());
 
                     const doInjectPersonalInfos =
-                        project.isDefault ||
+                        project.group === undefined ||
                         !coreParams.disablePersonalInfosInjectionInGroup;
 
                     const onyxiaValues: OnyxiaValues = {

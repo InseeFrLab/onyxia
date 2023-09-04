@@ -228,7 +228,7 @@ const privateThunks = {
 } satisfies Thunks;
 
 export const selectors = (() => {
-    const selectedProject = (rootState: RootState): Project & { isDefault: boolean } => {
+    const selectedProject = (rootState: RootState): Project => {
         const state = rootState[name];
         const { projects, selectedProjectId } = state;
 
@@ -236,10 +236,7 @@ export const selectors = (() => {
 
         assert(selectedProject !== undefined);
 
-        return {
-            ...selectedProject,
-            "isDefault": projects[0].id === selectedProject.id
-        };
+        return selectedProject;
     };
 
     return { selectedProject };

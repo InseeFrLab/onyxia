@@ -161,9 +161,8 @@ export const thunks = {
 
             const { accessKeyId, secretAccessKey, sessionToken, expirationTime } =
                 await s3Client.getToken({
-                    "restrictToBucketName": project.isDefault
-                        ? undefined
-                        : project.bucket,
+                    "restrictToBucketName":
+                        project.group === undefined ? undefined : project.bucket,
                     "doForceRenew": doForceRenewToken
                 });
 
