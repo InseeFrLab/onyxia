@@ -391,6 +391,12 @@ export function createOnyxiaApi(params: {
                         return;
                     }
 
+                    if (error.response?.status === 400) {
+                        //This happens in mono namespace.
+                        //DODO: Decide if we want to keep this error code.
+                        return;
+                    }
+
                     throw error;
                 })
                 .catch(onError)
