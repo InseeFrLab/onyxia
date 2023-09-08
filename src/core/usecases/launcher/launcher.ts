@@ -274,21 +274,13 @@ export const thunks = {
                         !coreParams.disablePersonalInfosInjectionInGroup;
 
                     const onyxiaValues: OnyxiaValues = {
-                        "user": !doInjectPersonalInfos
-                            ? {
-                                  "idep": "",
-                                  "name": "",
-                                  "email": "",
-                                  "password": "",
-                                  "ip": "0.0.0.0"
-                              }
-                            : {
-                                  "idep": user.username,
-                                  "name": `${user.familyName} ${user.firstName}`,
-                                  "email": user.email,
-                                  "password": servicePassword,
-                                  "ip": publicIp
-                              },
+                        "user": {
+                            "idep": user.username,
+                            "name": `${user.familyName} ${user.firstName}`,
+                            "email": user.email,
+                            "password": servicePassword,
+                            "ip": !doInjectPersonalInfos ? "0.0.0.0" : publicIp
+                        },
                         "project": {
                             "id": project.id,
                             "password": servicePassword,
@@ -316,7 +308,7 @@ export const thunks = {
                         "vault": await (async () => {
                             const { vault } = region;
 
-                            if (vault === undefined || !doInjectPersonalInfos) {
+                            if (vault === undefined) {
                                 return {
                                     "VAULT_ADDR": "",
                                     "VAULT_TOKEN": "",
@@ -327,7 +319,9 @@ export const thunks = {
 
                             return {
                                 "VAULT_ADDR": vault.url,
-                                "VAULT_TOKEN": (await secretsManager.getToken()).token,
+                                "VAULT_TOKEN": !doInjectPersonalInfos
+                                    ? ""
+                                    : (await secretsManager.getToken()).token,
                                 "VAULT_MOUNT": vault.kvEngine,
                                 "VAULT_TOP_DIR": dispatch(
                                     secretExplorer.protectedThunks.getHomeDirectoryPath()
@@ -338,18 +332,6 @@ export const thunks = {
                             ? undefined
                             : userConfigs.kaggleApiToken ?? undefined,
                         "s3": await (async () => {
-                            if (!doInjectPersonalInfos) {
-                                return {
-                                    "AWS_ACCESS_KEY_ID": "",
-                                    "AWS_BUCKET_NAME": "",
-                                    "AWS_SECRET_ACCESS_KEY": "",
-                                    "AWS_SESSION_TOKEN": "",
-                                    "AWS_DEFAULT_REGION": "",
-                                    "AWS_S3_ENDPOINT": "",
-                                    "port": -1
-                                };
-                            }
-
                             const project = projectConfigs.selectors.selectedProject(
                                 getState()
                             );
@@ -365,10 +347,16 @@ export const thunks = {
                             s3Client.createBucketIfNotExist(project.bucket);
 
                             return {
-                                "AWS_ACCESS_KEY_ID": accessKeyId,
+                                "AWS_ACCESS_KEY_ID": !doInjectPersonalInfos
+                                    ? ""
+                                    : accessKeyId,
                                 "AWS_BUCKET_NAME": project.bucket,
-                                "AWS_SECRET_ACCESS_KEY": secretAccessKey,
-                                "AWS_SESSION_TOKEN": sessionToken,
+                                "AWS_SECRET_ACCESS_KEY": !doInjectPersonalInfos
+                                    ? ""
+                                    : secretAccessKey,
+                                "AWS_SESSION_TOKEN": !doInjectPersonalInfos
+                                    ? ""
+                                    : sessionToken,
                                 ...(() => {
                                     const { s3: s3Params } =
                                         deploymentRegion.selectors.selectedDeploymentRegion(
