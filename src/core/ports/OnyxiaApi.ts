@@ -235,6 +235,7 @@ export type OnyxiaValues = {
         email: string;
         password: string;
         ip: string;
+        darkMode: boolean;
     };
     project: {
         id: string;

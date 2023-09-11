@@ -279,7 +279,8 @@ export const thunks = {
                             "name": `${user.familyName} ${user.firstName}`,
                             "email": user.email,
                             "password": servicePassword,
-                            "ip": !doInjectPersonalInfos ? "0.0.0.0" : publicIp
+                            "ip": !doInjectPersonalInfos ? "0.0.0.0" : publicIp,
+                            "darkMode": userConfigs.isDarkModeEnabled
                         },
                         "project": {
                             "id": project.id,
