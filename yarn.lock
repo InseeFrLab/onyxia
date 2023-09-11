@@ -8003,6 +8003,15 @@ evt@^2.4.22:
     run-exclusive "^2.2.19"
     tsafe "^1.6.4"
 
+evt@^2.5.2:
+  version "2.5.2"
+  resolved "https://registry.yarnpkg.com/evt/-/evt-2.5.2.tgz#fe2c86657de488fd873195daae35323b96daefb2"
+  integrity sha512-N8+A+VJRMPDIOz7KDctin7JSMPIvS1edLSDSgH51OGN6MGlAdthZ6pSztRBe1dxvNb0CvlzLKu9kRK2zYiWukw==
+  dependencies:
+    minimal-polyfills "^2.2.3"
+    run-exclusive "^2.2.19"
+    tsafe "^1.6.4"
+
 exec-sh@^0.3.2:
   version "0.3.6"
   resolved "https://registry.yarnpkg.com/exec-sh/-/exec-sh-0.3.6.tgz#ff264f9e325519a60cb5e273692943483cca63bc"
@@ -13167,16 +13176,6 @@ postcss@^8.0.9, postcss@^8.2.15, postcss@^8.3.5, postcss@^8.4.19, postcss@^8.4.4
     picocolors "^1.0.0"
     source-map-js "^1.0.2"
 
-powerhooks@^0.26.14:
-  version "0.26.14"
-  resolved "https://registry.yarnpkg.com/powerhooks/-/powerhooks-0.26.14.tgz#178f2ef4c98102ec4c1b14c8a6e01a41918aeb19"
-  integrity sha512-ytk5JmgcYjhpSg/EPuBfSjH/wH+nlr5YEJcPZNG73yd0Uor0QhDJy6EWdvLoq9gf24V8xYQmTMBPaebUylrlRw==
-  dependencies:
-    evt "^2.4.22"
-    memoizee "^0.4.15"
-    resize-observer-polyfill "^1.5.1"
-    tsafe "^1.6.4"
-
 powerhooks@^0.27.0:
   version "0.27.0"
   resolved "https://registry.yarnpkg.com/powerhooks/-/powerhooks-0.27.0.tgz#600e750fae6c42682639634e80e1b12f59cfea4d"
@@ -13185,6 +13184,15 @@ powerhooks@^0.27.0:
     evt "^2.4.22"
     memoizee "^0.4.15"
     resize-observer-polyfill "^1.5.1"
+    tsafe "^1.6.4"
+
+powerhooks@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/powerhooks/-/powerhooks-1.0.0.tgz#d569ce581b36b206ce5201f5f20b6519417bc118"
+  integrity sha512-lQmCDyQHSlUqDbCVUOJDPTSUUKROozDtioIGYfYTO2br9SMYSliLCVMN2GgD5HeCLo93fpYAUtD9a/bVnfpLDg==
+  dependencies:
+    evt "^2.5.2"
+    memoizee "^0.4.15"
     tsafe "^1.6.4"
 
 prelude-ls@^1.2.1:
