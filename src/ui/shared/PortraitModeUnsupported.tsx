@@ -30,7 +30,8 @@ const useStyles = tss.withName({ PortraitModeUnsupported }).create(({ theme }) =
     "root": {
         "height": "100vh",
         "display": "flex",
-        "alignItems": "center"
+        "alignItems": "center",
+        "justifyContent": "center"
     },
     "wrapper": {
         "textAlign": "center"

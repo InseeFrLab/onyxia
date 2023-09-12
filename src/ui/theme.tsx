@@ -101,9 +101,15 @@ const palette = {
     }
 };
 
+export const targetWindowInnerWidth = 1980;
+
 const { ThemeProvider, useTheme } = createThemeProvider({
     "getTypographyDesc": params => ({
-        ...defaultGetTypographyDesc(params),
+        ...defaultGetTypographyDesc({
+            // We don't want the font to be responsive
+            "windowInnerWidth": targetWindowInnerWidth,
+            "rootFontSizePx": params.rootFontSizePx
+        }),
         "fontFamily": `${(() => {
             switch (THEME_ID) {
                 case "france":
