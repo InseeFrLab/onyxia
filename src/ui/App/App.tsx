@@ -23,7 +23,7 @@ import { injectGlobalStatesInSearchParams } from "powerhooks/useGlobalState";
 import { evtLang } from "ui/i18n";
 import { getEnv } from "env";
 import { logoContainerWidthInPercent } from "./logoContainerWidthInPercent";
-import { ThemeProvider, splashScreen } from "ui/theme";
+import { ThemeProvider, splashScreen, targetWindowInnerWidth } from "ui/theme";
 import { PortraitModeUnsupported } from "ui/shared/PortraitModeUnsupported";
 import { objectKeys } from "tsafe/objectKeys";
 import { pages } from "ui/pages";
@@ -59,7 +59,7 @@ const { CoreProvider } = createCoreProvider({
 const { ScreenScalerOutOfRangeFallbackProvider } = enableScreenScaler({
     "rootDivId": "root",
     "targetWindowInnerWidth": ({ zoomFactor, isPortraitOrientation }) =>
-        isPortraitOrientation ? undefined : 1920 * zoomFactor
+        isPortraitOrientation ? undefined : targetWindowInnerWidth * zoomFactor
 });
 
 export default function App() {
