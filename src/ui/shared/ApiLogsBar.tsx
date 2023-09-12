@@ -1,6 +1,6 @@
 import { tss } from "ui/theme";
 import { useReducer, useEffect, memo, useState, type ReactNode } from "react";
-import { useDomRect } from "onyxia-ui";
+import { useDomRect } from "powerhooks/useDomRect";
 import { CircularProgress } from "onyxia-ui/CircularProgress";
 import { IconButton, Icon, Button } from "ui/theme";
 import { assert } from "tsafe/assert";

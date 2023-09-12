@@ -8,7 +8,8 @@ import { useTranslation, useResolveLocalizedString } from "ui/i18n";
 import { useConstCallback } from "powerhooks/useConstCallback";
 import { useRoute, routes } from "ui/routes";
 import { useEffectOnValueChange } from "powerhooks/useEffectOnValueChange";
-import { useDomRect, useSplashScreen } from "onyxia-ui";
+import { useSplashScreen } from "onyxia-ui";
+import { useDomRect } from "powerhooks/useDomRect";
 import { id } from "tsafe/id";
 import { useIsDarkModeEnabled } from "onyxia-ui";
 import { keyframes } from "tss-react";
@@ -22,7 +23,7 @@ import { injectGlobalStatesInSearchParams } from "powerhooks/useGlobalState";
 import { evtLang } from "ui/i18n";
 import { getEnv } from "env";
 import { logoContainerWidthInPercent } from "./logoContainerWidthInPercent";
-import { ThemeProvider, splashScreen, createGetViewPortConfig } from "ui/theme";
+import { ThemeProvider, splashScreen } from "ui/theme";
 import { PortraitModeUnsupported } from "ui/shared/PortraitModeUnsupported";
 import { objectKeys } from "tsafe/objectKeys";
 import { pages } from "ui/pages";
@@ -34,6 +35,7 @@ import { simpleHash } from "ui/tools/simpleHash";
 import { Markdown } from "onyxia-ui/Markdown";
 import { type LocalizedString } from "ui/i18n";
 import { getGlobalAlert, getDisablePersonalInfosInjectionInGroup } from "ui/env";
+import { enableScreenScaler } from "screen-scaler/react";
 
 const { CoreProvider } = createCoreProvider({
     "apiUrl": getEnv().ONYXIA_API_URL,
@@ -54,7 +56,11 @@ const { CoreProvider } = createCoreProvider({
     "disablePersonalInfosInjectionInGroup": getDisablePersonalInfosInjectionInGroup()
 });
 
-const { getViewPortConfig } = createGetViewPortConfig({ PortraitModeUnsupported });
+const { ScreenScalerOutOfRangeFallbackProvider } = enableScreenScaler({
+    "rootDivId": "root",
+    "targetWindowInnerWidth": ({ zoomFactor, isPortraitOrientation }) =>
+        isPortraitOrientation ? undefined : 1920 * zoomFactor
+});
 
 export default function App() {
     const isI18nFetching = useIsI18nFetching();
@@ -62,12 +68,16 @@ export default function App() {
     console.log({ isI18nFetching });
 
     return (
-        <ThemeProvider getViewPortConfig={getViewPortConfig} splashScreen={splashScreen}>
-            <RouteProvider>
-                <CoreProvider>
-                    <ContextualizedApp />
-                </CoreProvider>
-            </RouteProvider>
+        <ThemeProvider splashScreen={splashScreen}>
+            <ScreenScalerOutOfRangeFallbackProvider
+                fallback={<PortraitModeUnsupported />}
+            >
+                <RouteProvider>
+                    <CoreProvider>
+                        <ContextualizedApp />
+                    </CoreProvider>
+                </RouteProvider>
+            </ScreenScalerOutOfRangeFallbackProvider>
         </ThemeProvider>
     );
 }
@@ -331,6 +341,7 @@ const useStyles = tss.withName({ App }).create(({ theme }) => {
     return {
         "root": {
             "height": "100%",
+            "overflow": "hidden",
             "display": "flex",
             "flexDirection": "column",
             "backgroundColor": theme.colors.useCases.surfaces.background,
