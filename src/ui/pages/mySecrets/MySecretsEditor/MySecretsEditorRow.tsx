@@ -12,7 +12,7 @@ import { useConstCallback } from "powerhooks/useConstCallback";
 import TableRow from "@mui/material/TableRow";
 import TableCell from "@mui/material/TableCell";
 import type { Parameters } from "tsafe";
-import { useDomRect } from "onyxia-ui";
+import { useDomRect } from "powerhooks/useDomRect";
 import type { Param0 } from "tsafe";
 import { declareComponentKeys } from "i18nifty";
 

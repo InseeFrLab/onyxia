@@ -4,9 +4,7 @@ import {
     francePalette,
     ultravioletPalette,
     verdantPalette,
-    defaultGetTypographyDesc,
-    getIsPortraitOrientation,
-    ViewPortOutOfRangeError
+    defaultGetTypographyDesc
 } from "onyxia-ui";
 import type { ThemeProviderProps } from "onyxia-ui";
 import { createIcon } from "onyxia-ui/Icon";
@@ -68,7 +66,6 @@ import SubdirectoryArrowRightIcon from "@mui/icons-material/SubdirectoryArrowRig
 import PeopleIcon from "@mui/icons-material/People";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import type { Param0 } from "tsafe/Param0";
-import { ComponentType } from "ui/tools/types/ComponentType";
 import type { Language } from "ui/i18n";
 import { createOnyxiaSplashScreenLogo } from "onyxia-ui/lib/SplashScreen";
 import { THEME_ID, PALETTE_OVERRIDE } from "keycloak-theme/login/envCarriedOverToKc";
@@ -189,33 +186,6 @@ export type IconId = Param0<typeof Icon>["iconId"];
 export const { IconButton } = createIconButton({ Icon });
 export const { Button } = createButton({ Icon });
 export const { Text } = createText({ useTheme });
-
-export function createGetViewPortConfig(params: {
-    PortraitModeUnsupported: ComponentType;
-}) {
-    const { PortraitModeUnsupported } = params;
-
-    const getViewPortConfig: ThemeProviderProps["getViewPortConfig"] = ({
-        windowInnerWidth,
-        windowInnerHeight
-    }) => {
-        if (
-            getIsPortraitOrientation({
-                windowInnerWidth,
-                windowInnerHeight
-            })
-        ) {
-            throw new ViewPortOutOfRangeError(<PortraitModeUnsupported />);
-        }
-
-        return {
-            "targetWindowInnerWidth": 1920,
-            "targetBrowserFontSizeFactor": 1
-        };
-    };
-
-    return { getViewPortConfig };
-}
 
 const { OnyxiaSplashScreenLogo } = createOnyxiaSplashScreenLogo({ useTheme });
 

@@ -23,7 +23,7 @@ import { SecretsExplorerItems } from "./SecretsExplorerItems";
 import { SecretsExplorerButtonBar } from "./SecretsExplorerButtonBar";
 //TODO: The margin was set to itself be mindful when replacing by the onyxia-ui version.
 import { DirectoryHeader } from "onyxia-ui/DirectoryHeader";
-import { useDomRect } from "onyxia-ui";
+import { useDomRect } from "powerhooks/useDomRect";
 import { ExplorerIcon } from "./ExplorerIcon";
 import { getFormattedDate } from "ui/useMoment";
 import { Dialog } from "onyxia-ui/Dialog";
