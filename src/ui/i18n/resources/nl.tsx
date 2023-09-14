@@ -289,7 +289,6 @@ export const translations: Translations<"nl"> = {
         "not found": "Pagina niet gevonden"
     },
     "PortraitModeUnsupported": {
-        "portrait mode not supported": "Portretmodus nog niet ondersteund",
         "instructions":
             "Om deze applicatie op uw mobiele telefoon te gebruiken, activeert u de rotatiesensor en draait u uw telefoon."
     },

@@ -290,7 +290,6 @@ export const translations: Translations<"no"> = {
         "not found": "Side ikke funnet"
     },
     "PortraitModeUnsupported": {
-        "portrait mode not supported": "Portrettmodus støttes ikke ennå",
         "instructions":
             "For å bruke denne appen på telefonen din, må du aktivere rotasjonssensoren og snu telefonen."
     },

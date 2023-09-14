@@ -290,7 +290,6 @@ export const translations: Translations<"en"> = {
         "not found": "Page not found"
     },
     "PortraitModeUnsupported": {
-        "portrait mode not supported": "Portrait mode isn't supported yet",
         "instructions":
             "To use this app on your phone please enable the rotation sensor and turn your phone."
     },

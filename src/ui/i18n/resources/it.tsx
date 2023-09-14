@@ -290,7 +290,6 @@ export const translations: Translations<"it"> = {
         "not found": "Pagina non trovata"
     },
     "PortraitModeUnsupported": {
-        "portrait mode not supported": "La modalità ritratto non è ancora supportata",
         "instructions":
             "Per utilizzare questa applicazione dal tuo cellulare, attiva il sensore di rotazione e ruota il tuo telefono."
     },
