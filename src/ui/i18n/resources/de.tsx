@@ -291,7 +291,6 @@ export const translations: Translations<"de"> = {
         "not found": "Seite nicht gefunden"
     },
     "PortraitModeUnsupported": {
-        "portrait mode not supported": "Hochformat wird noch nicht unterstützt",
         "instructions":
             "Um diese App auf Ihrem Handy zu nutzen, aktivieren Sie bitte den Rotationssensor und drehen Sie Ihr Telefon."
     },

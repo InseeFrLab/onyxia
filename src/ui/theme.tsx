@@ -65,6 +65,7 @@ import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import SubdirectoryArrowRightIcon from "@mui/icons-material/SubdirectoryArrowRight";
 import PeopleIcon from "@mui/icons-material/People";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
+import ScreenRotationIcon from "@mui/icons-material/ScreenRotation";
 import type { Param0 } from "tsafe/Param0";
 import type { Language } from "ui/i18n";
 import { createOnyxiaSplashScreenLogo } from "onyxia-ui/lib/SplashScreen";
@@ -184,7 +185,8 @@ export const { Icon } = createIcon({
     "errorOutline": ErrorOutlineIcon,
     "assuredWorkload": AssuredWorkloadIcon,
     "grading": GradingIcon,
-    "refresh": RefreshLogoSvg
+    "refresh": RefreshLogoSvg,
+    "screenRotation": ScreenRotationIcon
 });
 
 export type IconId = Param0<typeof Icon>["iconId"];

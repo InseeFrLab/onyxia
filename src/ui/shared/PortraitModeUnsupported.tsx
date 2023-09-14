@@ -1,6 +1,6 @@
 import { memo } from "react";
 import { useTranslation } from "ui/i18n";
-import { tss, Text } from "ui/theme";
+import { tss, Text, Icon } from "ui/theme";
 import { declareComponentKeys } from "i18nifty";
 
 export type Props = {
@@ -17,7 +17,7 @@ export const PortraitModeUnsupported = memo((props: Props) => {
     return (
         <div className={cx(classes.root, className)}>
             <div className={classes.wrapper}>
-                <Text typo="section heading">{t("portrait mode not supported")} 🙇</Text>
+                <Icon iconId="screenRotation" className={classes.icon} />
                 <Text typo="body 1" className={classes.instructions}>
                     {t("instructions")}
                 </Text>
@@ -33,6 +33,9 @@ const useStyles = tss.withName({ PortraitModeUnsupported }).create(({ theme }) =
         "alignItems": "center",
         "justifyContent": "center"
     },
+    "icon": {
+        "fontSize": 5 * theme.typography.rootFontSizePx
+    },
     "wrapper": {
         "textAlign": "center"
     },
@@ -41,8 +44,6 @@ const useStyles = tss.withName({ PortraitModeUnsupported }).create(({ theme }) =
     }
 }));
 
-export const { i18n } = declareComponentKeys<
-    "portrait mode not supported" | "instructions"
->()({
+export const { i18n } = declareComponentKeys<"instructions">()({
     PortraitModeUnsupported
 });

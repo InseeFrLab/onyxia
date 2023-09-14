@@ -285,7 +285,6 @@ export const translations: Translations<"fi"> = {
         "not found": "Sivua ei löydy"
     },
     "PortraitModeUnsupported": {
-        "portrait mode not supported": "Pystysuuntainen tila ei ole vielä tuettu",
         "instructions":
             "Voit käyttää tätä sovellusta puhelimellasi ottamalla käyttöön kääntöanturin ja kääntämällä puhelimesi."
     },

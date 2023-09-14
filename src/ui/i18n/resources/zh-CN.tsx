@@ -237,7 +237,6 @@ export const translations: Translations<"zh-CN"> = {
         "not found": "网页未找到"
     },
     "PortraitModeUnsupported": {
-        "portrait mode not supported": "尚不支持纵向模式",
         "instructions": "要在您的手机中使用此应用程序，请激活旋转传感器并转动您的手机"
     },
     "Home": {
