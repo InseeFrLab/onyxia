@@ -14,9 +14,7 @@ export const {
     useLang,
     $lang,
     useResolveLocalizedString,
-    useIsI18nFetching,
-    /** For use outside of React */
-    getTranslation
+    useIsI18nFetching
 } = createI18nApi<ComponentKey>()(
     { languages, fallbackLanguage },
     {
