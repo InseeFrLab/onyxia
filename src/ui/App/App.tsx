@@ -28,12 +28,11 @@ import { PortraitModeUnsupported } from "ui/shared/PortraitModeUnsupported";
 import { objectKeys } from "tsafe/objectKeys";
 import { pages } from "ui/pages";
 import { assert, type Equals } from "tsafe/assert";
-import { useIsI18nFetching } from "ui/i18n";
 import { useLang } from "ui/i18n";
 import { Alert } from "onyxia-ui/Alert";
 import { simpleHash } from "ui/tools/simpleHash";
 import { Markdown } from "onyxia-ui/Markdown";
-import { type LocalizedString } from "ui/i18n";
+import { type LocalizedString, useIsI18nFetching } from "ui/i18n";
 import { getGlobalAlert, getDisablePersonalInfosInjectionInGroup } from "ui/env";
 import { enableScreenScaler } from "screen-scaler/react";
 
@@ -63,9 +62,9 @@ const { ScreenScalerOutOfRangeFallbackProvider } = enableScreenScaler({
 });
 
 export default function App() {
-    const isI18nFetching = useIsI18nFetching();
-
-    console.log({ isI18nFetching });
+    if (useIsI18nFetching()) {
+        return null;
+    }
 
     return (
         <ThemeProvider splashScreen={splashScreen}>
