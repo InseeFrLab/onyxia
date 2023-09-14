@@ -70,7 +70,7 @@ export default function App() {
     return (
         <ThemeProvider splashScreen={splashScreen}>
             <ScreenScalerOutOfRangeFallbackProvider
-                fallback={<PortraitModeUnsupported />}
+                fallback={<ScreenScalerOutOfRangeFallback />}
             >
                 <RouteProvider>
                     <CoreProvider>
@@ -80,6 +80,16 @@ export default function App() {
             </ScreenScalerOutOfRangeFallbackProvider>
         </ThemeProvider>
     );
+}
+
+function ScreenScalerOutOfRangeFallback() {
+    const { hideRootSplashScreen } = useSplashScreen();
+
+    useEffect(() => {
+        hideRootSplashScreen();
+    }, []);
+
+    return <PortraitModeUnsupported />;
 }
 
 function ContextualizedApp() {
