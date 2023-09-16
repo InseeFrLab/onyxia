@@ -23,7 +23,8 @@
                 "powerhooks",
                 "redux-clean-architecture",
                 "run-exclusive",
-                "tsafe"
+                "tsafe",
+                "tss-react"
             ],
             "enabled": false
         },
@@ -38,7 +39,8 @@
                 "powerhooks",
                 "redux-clean-architecture",
                 "run-exclusive",
-                "tsafe"
+                "tsafe",
+                "tss-react"
             ],
             "matchUpdateTypes": ["minor", "patch"],
             "automerge": true,
