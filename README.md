@@ -2,8 +2,8 @@
     <img src="https://user-images.githubusercontent.com/6702424/231329083-180fe7a2-22a8-470f-910a-ef66300b6f35.png">
 </p>
 <p align="center">
-    <a href="https://github.com/InseeFrLab/onyxia-web/actions">
-      <img src="https://github.com/InseeFrLab/onyxia-web/workflows/ci/badge.svg?branch=main">
+    <a href="https://github.com/inseefrlab/onyxia/actions">
+      <img src="https://github.com/inseefrlab/onyxia/workflows/ci/badge.svg?branch=main">
     </a>
     <a href="https://join.slack.com/t/3innovation/shared_invite/zt-1hnzukjcn-6biCSmVy4qvyDGwbNI~sWg">
       <img src="https://camo.githubusercontent.com/552ad37eb845d5e54e1bef55f3ea7adb185f36c845a6b676eec85e97122b2fcd/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f736c61636b2d6a6f696e2d6f72616e67652e737667">
@@ -48,7 +48,7 @@ Onyxia is developed by the French National institute of statistics and economic 
 <p align="center">
     <i>OW2Con'23</i><br>
     <a href="https://youtu.be/wBYWEwF7pK8">
-        <img src="https://github.com/InseeFrLab/onyxia-web/assets/6702424/48206b71-020c-449e-88f4-5e18323fd3a1" width="640">
+        <img src="https://github.com/inseefrlab/onyxia/assets/6702424/48206b71-020c-449e-88f4-5e18323fd3a1" width="640">
     </a>
 </p>
 
@@ -107,9 +107,9 @@ If your are a new contributor, please refer to the [technical documentation](htt
 
 ### CD Pipeline
 
-To release a new version, **do not create a tag manually**, simply bump the [`package.json`'s version](https://github.com/InseeFrLab/onyxia-web/blob/4842ba8fd3c2ae9c03c52b7467d3c77f6e29e9d9/package.json#L4) then push on the default branch,
-the CI will takes charge of publishing on [DockerHub](https://hub.docker.com/r/inseefrlab/onyxia-web)
-and creating a [GitHub release](https://github.com/InseeFrLab/onyxia-web/releases).
+To release a new version, **do not create a tag manually**, simply bump the [`package.json`'s version](https://github.com/inseefrlab/onyxia/blob/4842ba8fd3c2ae9c03c52b7467d3c77f6e29e9d9/package.json#L4) then push on the default branch,
+the CI will takes charge of publishing on [DockerHub](https://hub.docker.com/r/inseefrlab/onyxia)
+and creating a [GitHub release](https://github.com/inseefrlab/onyxia/releases).
 
 -   A docker image with the tag `:main` is published on DockerHub for every new commit on the `main` branch.
 -   When the commit correspond to a new release (the version has changed) the image will also be tagged `:vX.Y.Z`
@@ -117,6 +117,6 @@ and creating a [GitHub release](https://github.com/InseeFrLab/onyxia-web/release
 -   Every commit on branches that have an open pull-request on `main` will trigger the creation of a docker image
     tagged `:<name-of-the-feature-branch>`.
 
-A CD pipeline is also in place; The CI of this repo [triggers the CI of the GitOPS repo InseeFrLab/paris-sspcloud](https://github.com/InseeFrLab/onyxia-web/blob/ffe0ec4bc027f0993a5af6039a9f83bbe4384b39/.github/workflows/ci.yml#L169-L177). The [CI of paris-sspcloud](https://github.com/InseeFrLab/paris-sspcloud/blob/master/.github/workflows/update.yaml) checks if there is a newer version of Onyxia-web than the one already
+A CD pipeline is also in place; The CI of this repo [triggers the CI of the GitOPS repo InseeFrLab/paris-sspcloud](https://github.com/inseefrlab/onyxia/blob/ffe0ec4bc027f0993a5af6039a9f83bbe4384b39/.github/workflows/ci.yml#L169-L177). The [CI of paris-sspcloud](https://github.com/InseeFrLab/paris-sspcloud/blob/master/.github/workflows/update.yaml) checks if there is a newer version of Onyxia-web than the one already
 in production. If yes, it performs the [automatic commit](https://github.com/InseeFrLab/paris-sspcloud/commit/9b21fa792a113ea16a117cdf74c7c816d36bf84e)
 that cause ArgoCD to restart the relevant pods.

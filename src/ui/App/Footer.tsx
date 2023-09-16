@@ -53,7 +53,7 @@ export const Footer = memo((props: Props) => {
             </a>
             {spacing}
             <a
-                href={`https://github.com/InseeFrLab/onyxia-web/tree/v${packageJsonVersion}`}
+                href={`https://github.com/inseefrlab/onyxia/tree/v${packageJsonVersion}`}
                 target="_blank"
                 rel="noreferrer"
             >

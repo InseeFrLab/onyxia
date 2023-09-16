@@ -31,7 +31,7 @@ RUN sed -i.orig -e '/user[[:space:]]\+nginx/d' -e 's@pid[[:space:]]\+.*@pid /tmp
     diff -u /etc/nginx/nginx.conf.orig /etc/nginx/nginx.conf ||: && \
     chown nginx /usr/share/nginx/html/index.html && \
     chown -Rc nginx /var/cache/nginx
-# Equivalent to 'USER nginx', see: https://github.com/InseeFrLab/onyxia-web/pull/279
+# Equivalent to 'USER nginx', see: https://github.com/inseefrlab/onyxia/pull/279
 USER 101
 
 ENTRYPOINT sh -c "npx embed-environnement-variables && nginx -g 'daemon off;'"
