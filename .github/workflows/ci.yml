@@ -85,6 +85,7 @@ jobs:
           IS_UPGRADED_VERSION: ${{ needs.check_if_version_upgraded.outputs.is_upgraded_version }}
           TO_VERSION: ${{ needs.check_if_version_upgraded.outputs.to_version }}
         run: |
+          DOCKERHUB_REPOSITORY=inseefrlab/onyxia-web
           OUT=$GITHUB_REPOSITORY:$TO_VERSION,$GITHUB_REPOSITORY:latest
           OUT=$(echo "$OUT" | awk '{print tolower($0)}') 
           echo "docker_tags=$OUT" >> "$GITHUB_OUTPUT"

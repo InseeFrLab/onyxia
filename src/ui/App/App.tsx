@@ -310,7 +310,7 @@ function ContextualizedApp() {
                 className={classes.footer}
                 //NOTE: Defined in ./config-overrides.js
                 packageJsonVersion={process.env.VERSION!}
-                contributeUrl={"https://github.com/InseeFrLab/onyxia-web"}
+                contributeUrl={"https://github.com/inseefrlab/onyxia"}
                 termsLink={routes.terms().link}
             />
         </div>
