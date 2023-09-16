@@ -1,0 +1,71 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "onyxia.web.fullname" . }}
+  labels:
+    {{- include "onyxia.web.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.web.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "onyxia.web.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "onyxia.web.selectorLabels" . | nindent 8 }}
+{{- with .Values.web.podLabels }}
+{{ toYaml . | indent 8 }}
+{{- end }}
+    spec:
+    {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      serviceAccountName: {{ include "onyxia.web.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.web.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.web.securityContext | nindent 12 }}
+          image: "{{ .Values.web.image.repository }}:{{ .Values.web.image.tag }}"
+          imagePullPolicy: {{ .Values.web.image.pullPolicy }}
+          env:
+           {{- if .Values.web.env }}
+            {{- range $key, $value := .Values.web.env }}
+            - name: {{ $key }}
+              value: {{ $value | quote }}
+            {{- end -}}
+            {{- end }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.web.containerPort }}
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+          resources:
+            {{- toYaml .Values.web.resources | nindent 12 }}
+          {{- if .Values.web.extraVolumeMounts }}
+          volumeMounts: {{- toYaml .Values.web.extraVolumeMounts | nindent 12 }}
+          {{- end }}
+      {{- with .Values.web.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    {{- with .Values.web.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+    {{- with .Values.web.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+    {{- if .Values.web.extraVolumes }}
+      volumes: {{- toYaml .Values.web.extraVolumes | nindent 6 }}
+    {{- end }}

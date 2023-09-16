@@ -1,0 +1,154 @@
+# Default values for onyxia-bis.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+imagePullSecrets: []
+hostAliases: []
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  clusterAdmin: false # If true, give cluster admin permissions. Otherwise, be admin scoped to the namespace
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name:
+
+ingress:
+  enabled: false
+  # The name of the Ingress Class associated with this ingress
+  ingressClassName: ""
+  annotations:
+    {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  hosts:
+    - host: chart-example.local
+  tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
+
+route:
+  enabled: false
+  annotations:
+    {}
+    # route.openshift.io/termination: "reencrypt"
+  host: chart-example.local
+  tls:
+    termination: edge
+    # key:
+    # certificate:
+    # caCertificate:
+    # destinationCACertificate:
+  wildcardPolicy: None
+
+web:
+  name: web
+  replicaCount: 1
+  image:
+    repository: inseefrlab/onyxia-web
+    tag: 2.28.0
+    pullPolicy: IfNotPresent
+  podLabels: {}
+  podSecurityContext:
+    {}
+    # fsGroup: 2000
+  securityContext:
+    {}
+    # capabilities:
+    #   drop:
+    #   - ALL
+    # readOnlyRootFilesystem: true
+    # runAsNonRoot: true
+    # runAsUser: 1000
+  containerPort: 8080
+  service:
+    type: ClusterIP
+    port: 80
+  resources:
+    {}
+    # We usually recommend not to specify default resources and to leave this as a conscious
+    # choice for the user. This also increases chances charts run on environments with little
+    # resources, such as Minikube. If you do want to specify resources, uncomment the following
+    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
+  extraVolumes: []
+  extraVolumeMounts: []
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+  env:
+
+api:
+  name: api
+  replicaCount: 1
+  image:
+    repository: inseefrlab/onyxia-api
+    tag: v0.30
+    pullPolicy: IfNotPresent
+  contextPath: /api
+  podLabels: {}
+  podSecurityContext:
+    {}
+    # fsGroup: 2000
+  securityContext:
+    {}
+    # capabilities:
+    #   drop:
+    #   - ALL
+    # readOnlyRootFilesystem: true
+    # runAsNonRoot: true
+    # runAsUser: 1000
+  containerPort: 8080
+  service:
+    type: ClusterIP
+    port: 80
+  resources:
+    {}
+    # We usually recommend not to specify default resources and to leave this as a conscious
+    # choice for the user. This also increases chances charts run on environments with little
+    # resources, such as Minikube. If you do want to specify resources, uncomment the following
+    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
+  extraVolumes: []
+  extraVolumeMounts: []
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+  env:
+    #authentication.mode: "openidconnect"
+  regions: #[
+  #   {
+  #     "regionId": "kub",
+  #     "type": "KUBERNETES",
+  #     "namespace-prefix": "user-",
+  #     "publish-domain": "fakedomain.kub.example.com",
+  #     "cloudshell": {
+  #       "catalogId": "inseefrlab-helm-charts-datascience",
+  #       "packageName": "cloudshell"
+  #     }
+  #   }
+  # ]
+  catalogs: # [
+    #   {
+    #     "id": "inseefrlab-helm-charts-datascience",
+    #     "name": "Inseefrlab datascience",
+    #     "description": "Services for datascientists. https://github.com/InseeFrLab/helm-charts-datascience",
+    #     "maintainer": "innovation@insee.fr",
+    #     "location": "https://inseefrlab.github.io/helm-charts-datascience",
+    #     "status": "PROD",
+    #     "type": "helm",
+    #   }
+    # ]
