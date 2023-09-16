@@ -1,0 +1,35 @@
+{{- if .Values.route.enabled -}}
+{{- $fullNameWeb := include "onyxia.web.fullname" . -}}
+{{- $fullName := include "onyxia.fullname" . -}}
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: {{ $fullName }}-web
+  labels:
+    {{- include "onyxia.labels" . | nindent 4 }}
+  annotations:
+  {{- with .Values.route.annotations }}
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  host: {{ .Values.route.host | quote }}
+  path: /
+  to:
+    kind: Service
+    name: {{ $fullNameWeb }}
+  tls:
+    termination: {{ .Values.route.tls.termination }}
+    {{- if .Values.route.tls.key }}
+    key: {{- .Values.route.tls.key }}
+    {{- end }}
+    {{- if .Values.route.tls.certificate }}
+    certificate: {{- .Values.route.tls.certificate }}
+    {{- end }}
+    {{- if .Values.route.tls.caCertificate }}
+    caCertificate: {{- .Values.route.tls.caCertificate }}
+    {{- end }}
+    {{- if .Values.route.tls.destinationCACertificate }}
+    destinationCACertificate: {{- .Values.route.tls.destinationCACertificate }}
+    {{- end }}
+  wildcardPolicy: {{ .Values.route.wildcardPolicy }}
+{{- end }}
