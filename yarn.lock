@@ -9322,13 +9322,13 @@ husky@^4.3.8:
     slash "^3.0.0"
     which-pm-runs "^1.0.0"
 
-i18nifty@^2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/i18nifty/-/i18nifty-2.0.0.tgz#d30db54cf214e44a60115a7053e3af1c12d13660"
-  integrity sha512-r4dw2NB7+FAG9+/RwhwaJO9O6yDnEMIkuhC5Xfi0URIh8tVDyJsxNmT1CiasGEZ0O2HSSwY09O4EkNNBrXQFYg==
+i18nifty@^2.1.1:
+  version "2.1.1"
+  resolved "https://registry.yarnpkg.com/i18nifty/-/i18nifty-2.1.1.tgz#34b96410ddebe852ac78ce56ffc65e5e818b50bd"
+  integrity sha512-ZEQfwYD+BvBxvvnkS5wxqYHlBCNmpYDsHyqjsuFGKDDVmBSFv7smxAaZ8qhpgZqJioV0ypn6umhd4onVYUkLxg==
   dependencies:
     powerhooks "^1.0.1"
-    tsafe "^1.6.4"
+    tsafe "^1.6.5"
 
 iconv-lite@0.4.24:
   version "0.4.24"
@@ -15753,6 +15753,11 @@ tsafe@^1.6.4:
   version "1.6.4"
   resolved "https://registry.yarnpkg.com/tsafe/-/tsafe-1.6.4.tgz#048a114761714538c72f16abd25bb247d4e3780e"
   integrity sha512-l4Z54QFGHO8GF0gBpb3yPGHjkIkIirl8rwW+lMBmtEMzOJeRs8BdjkDEx6nU8Ak9PQVp/KNDtECxTja8MMIDoA==
+
+tsafe@^1.6.5:
+  version "1.6.5"
+  resolved "https://registry.yarnpkg.com/tsafe/-/tsafe-1.6.5.tgz#74943b69190069168a53d2accd6d07891cf1cce8"
+  integrity sha512-895zss8xqqHKTc28sHGIfZKnt3C5jrstB1DyPr/h3/flK0zojsZUMQL1/W4ytdDW6KI4Oth62nb9rrxmA3s3Iw==
 
 tsconfig-paths@^3.14.1:
   version "3.14.2"
