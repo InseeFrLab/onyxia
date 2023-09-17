@@ -1,0 +1,44 @@
+{
+  "name": "gh-actions-onyxia",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Github Actions for the CI workflow of Onyxia",
+  "main": "lib/main.js",
+  "scripts": {
+    "generate-action-yml": "node lib/bin/generateActionYml.js",
+    "pack": "ncc build",
+    "build": "tsc && npm run generate-action-yml && npm run pack",
+    "clean": "rm -rf dist lib node_modules package-lock.json"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/InseeFrLab/paris-sspcloud.git"
+  },
+  "author": "u/garronej",
+  "license": "MIT",
+  "dependencies": {
+    "@actions/core": "^1.10.0",
+    "@octokit/rest": "^19.0.5",
+    "comment-json": "^3.0.2",
+    "evt": "^2.5.2",
+    "glob": "^7.1.6",
+    "node-fetch": "^2.6.1",
+    "scripting-tools": "^0.19.14",
+    "url-join": "^4.0.1",
+    "validate-npm-package-name": "^3.0.0",
+    "tsafe": "^1.6.5",
+    "yawn-yaml": "^1.5.0"
+  },
+  "devDependencies": {
+    "@types/glob": "^7.1.1",
+    "@types/jest": "^24.0.23",
+    "@types/node": "^12.7.12",
+    "@types/node-fetch": "^2.5.7",
+    "@types/validate-npm-package-name": "^3.0.0",
+    "@zeit/ncc": "^0.20.5",
+    "js-yaml": "^3.13.1",
+    "prettier": "^1.19.1",
+    "typescript": "^5.2.2",
+    "@types/yawn-yaml": "^1.4.0"
+  }
+}

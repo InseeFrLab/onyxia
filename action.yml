@@ -1,0 +1,25 @@
+name: 'github_actions'
+description: 'Github Actions for the ci of the master branch of this repo'
+author: 'u/garronej'
+inputs:
+  action_name:
+    required: true
+    description: 'Action to run, one of: "update_sill"'
+  github_token:
+    required: false
+    description: 'GitHub Personal access token'
+    default: '${{ github.token }}'
+  owner:
+    required: false
+    description: 'Repository owner, example: ''garronej'',github.repository_owner'
+    default: '${{github.repository_owner}}'
+  repo:
+    required: false
+    description: 'Repository name, example: ''evt'', github.event.repository.name'
+    default: '${{github.event.repository.name}}'
+  subchart:
+    required: false
+    description: 'Either ''web'' | ''api'''
+runs:
+  using: 'node12'
+  main: 'dist/index.js'
