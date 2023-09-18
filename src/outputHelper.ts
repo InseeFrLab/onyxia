@@ -19,7 +19,7 @@ export function getOutputDescription(inputName: typeof outputNames[number]): str
             "is the sha of the commit that should be released."
         ].join(" ");
         case "chart_version": return "Output of assess_release_criteria, string, Example 1.2.3";
-        case "web_version": return "Output of assess_release_criteria, string, Example 1.2.3";
+        case "web_version": return "Output of assess_release_criteria, string, Example 1.2.3, 'null' if no need for release";
         case "release_message": return "Output of assess_release_criteria, string";
     }
 }
