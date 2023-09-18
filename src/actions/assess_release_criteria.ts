@@ -5,9 +5,9 @@ import { setOutputFactory } from "../outputHelper";
 import { getActionParamsFactory } from "../inputHelper";
 const urlJoin: typeof import("path").join = require("url-join");
 import { SemVer } from "../tools/SemVer";
-//import { createOctokit } from "./tools/createOctokit";
-//import { getLatestSemVersionedTagFactory } from "./tools/octokit-addons/getLatestSemVersionedTag";
-//import type { Param0 } from "tsafe";
+import { createOctokit } from "./tools/createOctokit";
+import { getLatestSemVersionedTagFactory } from "../tools/octokit-addons/getLatestSemVersionedTag";
+import type { Param0 } from "tsafe";
 
 
 const { getActionParams } = getActionParamsFactory({
@@ -27,9 +27,9 @@ type CoreLike = {
 };
 
 const { setOutput } = setOutputFactory<
-    | "do_need_release"
-    | "chart_version"
-    | "web_version"
+    | "new_chart_version"
+    | "new_web_version"
+    | "release_target_git_commit_sha"
     | "release_message"
 >();
 
@@ -40,7 +40,37 @@ export async function run(
     }
 ): Promise<Parameters<typeof setOutput>[0]> {
 
-    const { actionParams, core } = params;
+    const { actionParams: { github_token, owner, repo }, core } = params;
+
+    const octokit = createOctokit({ github_token });
+
+    const { getLatestSemVersionedTag } = getLatestSemVersionedTagFactory({ octokit });
+
+    const from_version = await (async () => {
+
+        const getLatestSemVersionedTagParam: Param0<typeof getLatestSemVersionedTag> = {
+            owner,
+            repo,
+            "major": to_version.major
+        };
+
+        let wrap = await getLatestSemVersionedTag(getLatestSemVersionedTagParam);
+
+        if (wrap !== undefined) {
+            return wrap.version;
+        }
+        wrap = await getLatestSemVersionedTag({ ...getLatestSemVersionedTagParam, "major": undefined });
+
+        if (wrap !== undefined) {
+            return wrap.version;
+        }
+
+        return NpmModuleVersion.parse("0.0.0");
+
+
+    })();
+
+    core.debug(`Last version was ${NpmModuleVersion.stringify(from_version)}`);
 
     /*
     core.debug(JSON.stringify(actionParams));

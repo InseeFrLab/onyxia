@@ -1,11 +1,11 @@
 
-import type { ReturnType } from "tsafe";
+import type { AsyncReturnType } from "evt/dist/tools/typeSafety/AsyncReturnType";
 import type { Octokit } from "@octokit/rest";
 
 
 
 /** Alias for the non exported PullsListResponseData type alias */
-export type PullRequest = ReturnType<Octokit["pulls"]["list"]>["data"][number];
+export type PullRequest = AsyncReturnType<Octokit["pulls"]["list"]>["data"][number];
 
 const per_page = 99;
 

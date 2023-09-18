@@ -1,5 +1,5 @@
 
-import type { ReturnType } from "tsafe";
+import type { AsyncReturnType } from "evt/dist/tools/typeSafety/AsyncReturnType";
 import type { Octokit } from "@octokit/rest";
 
 
@@ -11,7 +11,7 @@ import type { Octokit } from "@octokit/rest";
 */
 
 /** Alias for the non exported ReposListCommitsResponseData type alias */
-export type Commit = ReturnType<Octokit["repos"]["listCommits"]>["data"][number];
+export type Commit = AsyncReturnType<Octokit["repos"]["listCommits"]>["data"][number];
 
 const per_page = 30;
 
