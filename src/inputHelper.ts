@@ -9,7 +9,8 @@ export const inputNames = [
     "owner",
     "repo",
     "sha",
-    "commit_author_email"
+    "commit_author_email",
+    "github_pages_branch_name"
 ] as const;
 
 export function getInputDescription(inputName: typeof inputNames[number]): string {
@@ -20,7 +21,8 @@ export function getInputDescription(inputName: typeof inputNames[number]): strin
 
                 //NOTE: We don't import directly to avoid circular dependency
                 const actionNames = [
-                    "assess_release_criteria"
+                    "assess_release_criteria",
+                    "release_helm_chart"
                 ] as const;
 
                 assert<Equals<typeof actionNames[number], ActionName>>(true);
@@ -42,12 +44,17 @@ export function getInputDescription(inputName: typeof inputNames[number]): strin
             "One with no write access is provided by default"
         ].join("");
         case "sha": return [
-            "Should not be provided, the good default will be used",
+            "If not provided, the good default will be used",
             "github.sha"
         ].join(" ")
         case "commit_author_email": return [
             "In actions that perform a git commit, the email of the author of the commit.",
             "Default to actions@github.com"
+        ].join(" ");
+        case "github_pages_branch_name": return [
+            "Github page branch name for the repository, example: 'gh-pages'",
+            "no default provided, required for 'release_helm_chart' action",
+            "If the branch does not exist it will be created"
         ].join(" ");
     }
 }

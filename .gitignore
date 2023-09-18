@@ -100,3 +100,5 @@ lib/**/*
 /bin
 
 /.vscode
+
+/dist

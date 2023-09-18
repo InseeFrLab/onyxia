@@ -1,13 +1,13 @@
-name: 'github_actions'
-description: 'Github Actions for the ci of the master branch of this repo'
+name: 'gh-actions-onyxia'
+description: 'Github Actions for the CI workflow of Onyxia'
 author: 'u/garronej'
 inputs:
   action_name:
     required: true
-    description: 'Action to run, one of: "update_sill"'
+    description: 'Action to run, one of: "assess_release_criteria"'
   github_token:
     required: false
-    description: 'GitHub Personal access token'
+    description: 'GitHub Personal access tokenOne with no write access is provided by default'
     default: '${{ github.token }}'
   owner:
     required: false
@@ -17,9 +17,25 @@ inputs:
     required: false
     description: 'Repository name, example: ''evt'', github.event.repository.name'
     default: '${{github.event.repository.name}}'
-  subchart:
+  sha:
     required: false
-    description: 'Either ''web'' | ''api'''
+    description: 'Should not be provided, the good default will be used github.sha'
+    default: '${{ github.sha }}'
+  commit_author_email:
+    required: false
+    description: 'In actions that perform a git commit, the email of the author of the commit. Default to actions@github.com'
+    default: 'actions@github.com'
+outputs:
+  do_need_release:
+    description: 'Output of assess_release_criteria, true|false'
+  release_target_git_commit_sha:
+    description: 'Output of assess_release_criteria, string, Example: 1a2b3... If a release is needed this action might push new commits, this output is the sha of the commit that should be released.'
+  chart_version:
+    description: 'Output of assess_release_criteria, string, Example 1.2.3'
+  web_version:
+    description: 'Output of assess_release_criteria, string, Example 1.2.3, ''null'' if no need for release'
+  release_message:
+    description: 'Output of assess_release_criteria, string'
 runs:
   using: 'node12'
   main: 'dist/index.js'

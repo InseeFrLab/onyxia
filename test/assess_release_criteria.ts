@@ -1,7 +1,7 @@
 
-import { action } from "../actions/assess_release_criteria";
+import { run } from "../src/actions/assess_release_criteria";
 
-action({
+run({
     "actionParams": {
         "github_token": "ghp_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
         "owner": "InseeFrLab",

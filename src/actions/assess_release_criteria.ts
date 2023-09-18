@@ -4,10 +4,10 @@ import * as realCore from "@actions/core";
 import { setOutputFactory } from "../outputHelper";
 import { getActionParamsFactory } from "../inputHelper";
 const urlJoin: typeof import("path").join = require("url-join");
-//import { NpmModuleVersion } from "./tools/NpmModuleVersion";
+import { SemVer } from "../tools/SemVer";
 //import { createOctokit } from "./tools/createOctokit";
 //import { getLatestSemVersionedTagFactory } from "./tools/octokit-addons/getLatestSemVersionedTag";
-import type { Param0 } from "tsafe";
+//import type { Param0 } from "tsafe";
 
 
 const { getActionParams } = getActionParamsFactory({
@@ -33,7 +33,7 @@ const { setOutput } = setOutputFactory<
     | "release_message"
 >();
 
-export async function action(
+export async function run(
     params: {
         actionParams: Params,
         core: CoreLike
@@ -112,13 +112,15 @@ export async function action(
     };
     */
 
+    return null as any;
+
 }
 
-export async function run() {
+export async function runProduction() {
 
     const actionParams = getActionParams();
 
-    const outputs = await action({ actionParams, "core": realCore });
+    const outputs = await run({ actionParams, "core": realCore });
 
     setOutput(outputs);
 
@@ -129,7 +131,7 @@ async function getPackageJsonVersion(params: {
     owner: string;
     repo: string;
     branch: string;
-}): Promise<NpmModuleVersion | undefined> {
+}): Promise<SemVer | undefined> {
 
     const { owner, repo, branch } = params;
 
@@ -152,6 +154,6 @@ async function getPackageJsonVersion(params: {
         return undefined;
     }
 
-    return NpmModuleVersion.parse(version);
+    return SemVer.parse(version);
 
 }

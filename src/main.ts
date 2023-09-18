@@ -6,12 +6,12 @@ import { getActionName } from "./inputHelper";
 
     try {
 
-        await actions[getActionName()].run();
+        await actions[getActionName()].runProduction();
 
     } catch (error) {
 
-
         core.setFailed(String(error));
+
     }
 
 })();
