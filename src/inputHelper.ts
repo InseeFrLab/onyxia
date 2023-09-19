@@ -10,7 +10,8 @@ export const inputNames = [
     "repo",
     "sha",
     "commit_author_email",
-    "github_pages_branch_name"
+    "github_pages_branch_name",
+    "dockerhub_repository"
 ] as const;
 
 export function getInputDescription(inputName: typeof inputNames[number]): string {
@@ -55,6 +56,10 @@ export function getInputDescription(inputName: typeof inputNames[number]): strin
             "Github page branch name for the repository, example: 'gh-pages'",
             "no default provided, required for 'release_helm_chart' action",
             "If the branch does not exist it will be created"
+        ].join(" ");
+        case "dockerhub_repository": return [
+            "Dockerhub repository name, example: 'inseefrlab/onyxia-web'",
+            "for actions that need to create tags."
         ].join(" ");
     }
 }

@@ -6,7 +6,7 @@ import { getActionName } from "./inputHelper";
 
     try {
 
-        await actions[getActionName()].runProduction();
+        await actions[getActionName()].run();
 
     } catch (error) {
 

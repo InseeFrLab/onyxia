@@ -34,10 +34,9 @@ test:
 assess_release_criteria:
   needs: test
   runs-on: ubuntu-latest
-  if: github.event_name == 'push'
   outputs:
     new_chart_version: ${{steps._1.outputs.new_chart_version}}
-    new_web_version: ${{steps._1.outputs.new_web_version}}
+    new_web_docker_image_tags: ${{steps._1.outputs.new_web_docker_image_tags}}
     release_target_git_commit_sha: ${{steps._1.outputs.release_target_git_commit_sha}}
     release_message: ${{steps._1.outputs.release_message}}
   steps:
@@ -46,10 +45,12 @@ assess_release_criteria:
       with: 
         action_name: assess_release_criteria
         commit_author_email: actions@github.com
+        dockerhub_repository: inseefrlab/onyxia-web
 
 docker_build_push_onyxia_web:
   runs-on: ubuntu-latest
   needs: assess_release_criteria
+  if: needs.assess_release_criteria.outputs.new_web_docker_image_tags != ''
   steps:
     - uses: actions/checkout@v3
       with:
@@ -61,19 +62,11 @@ docker_build_push_onyxia_web:
       with:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_TOKEN }}
-    - id: compute_docker_tags
-      env: 
-        VERSION: ${{ needs.assess_release_criteria.outputs.new_web_version }}
-      run: |
-        DOCKERHUB_REPOSITORY=inseefrlab/onyxia-web
-        OUT=$GITHUB_REPOSITORY:$VERSION,$GITHUB_REPOSITORY:latest
-        OUT=$(echo "$OUT" | awk '{print tolower($0)}') 
-        echo "tags=$OUT" >> "$GITHUB_OUTPUT"
     - uses: docker/build-push-action@v2
       with:
         push: true
         context: .
-        tags: ${{ steps.compute_docker_tags.outputs.tags }}
+        tags: ${{needs.assess_release_criteria.outputs.new_web_docker_image_tags}}
 
 release:
   runs-on: ubuntu-latest
@@ -110,7 +103,7 @@ release:
       generate_release_notes: true
       files: |
         keycloak-theme.jar
-        helm.tgz
+        onyxia-${{needs.assess_release_criteria.outputs.new_chart_version}}.tgz
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 ```

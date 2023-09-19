@@ -1,14 +1,21 @@
 
 import fetch from "node-fetch";
-import * as realCore from "@actions/core";
+import * as core from "@actions/core";
 import { setOutputFactory } from "../outputHelper";
 import { getActionParamsFactory } from "../inputHelper";
-const urlJoin: typeof import("path").join = require("url-join");
 import { SemVer } from "../tools/SemVer";
-import { createOctokit } from "./tools/createOctokit";
+import { createOctokit } from "../tools/createOctokit";
 import { getLatestSemVersionedTagFactory } from "../tools/octokit-addons/getLatestSemVersionedTag";
 import type { Param0 } from "tsafe";
-
+import * as fs from "fs";
+import { join as pathJoin } from "path";
+import { assert } from "tsafe/assert";
+import YAML from "yaml";
+import { computeDirectoryDigest } from "../tools/computeDirectoryDigest";
+import * as child_process from "child_process";
+import { githubCommit } from "../tools/githubCommit";
+import { Deferred } from "evt/tools/Deferred";
+import { id } from "tsafe/id";
 
 const { getActionParams } = getActionParamsFactory({
     "inputNameSubset": [
@@ -16,7 +23,8 @@ const { getActionParams } = getActionParamsFactory({
         "repo",
         "sha",
         "github_token",
-        "commit_author_email"
+        "commit_author_email",
+        "dockerhub_repository"
     ] as const
 });
 
@@ -28,162 +36,195 @@ type CoreLike = {
 
 const { setOutput } = setOutputFactory<
     | "new_chart_version"
-    | "new_web_version"
+    | "new_web_docker_image_tags"
     | "release_target_git_commit_sha"
     | "release_message"
 >();
 
-export async function run(
-    params: {
-        actionParams: Params,
-        core: CoreLike
-    }
+export async function _run(
+    params: Params & { log?: (message: string) => void; }
 ): Promise<Parameters<typeof setOutput>[0]> {
 
-    const { actionParams: { github_token, owner, repo }, core } = params;
+    const { github_token, owner, repo, sha, dockerhub_repository, commit_author_email, log = console.log.bind(console) } = params;
 
-    const octokit = createOctokit({ github_token });
+    const previousReleaseTag = await (async () => {
 
-    const { getLatestSemVersionedTag } = getLatestSemVersionedTagFactory({ octokit });
+        const octokit = createOctokit({ github_token });
 
-    const from_version = await (async () => {
+        const { getLatestSemVersionedTag } = getLatestSemVersionedTagFactory({ octokit });
 
-        const getLatestSemVersionedTagParam: Param0<typeof getLatestSemVersionedTag> = {
+        const resp = await getLatestSemVersionedTag({
             owner,
-            repo,
-            "major": to_version.major
-        };
+            repo
+        });
 
-        let wrap = await getLatestSemVersionedTag(getLatestSemVersionedTagParam);
+        assert(resp !== undefined);
 
-        if (wrap !== undefined) {
-            return wrap.version;
-        }
-        wrap = await getLatestSemVersionedTag({ ...getLatestSemVersionedTagParam, "major": undefined });
-
-        if (wrap !== undefined) {
-            return wrap.version;
+        if (SemVer.compare(resp.version, SemVer.parse("2.29.4")) <= 0) {
+            // It's the first time we release, the previous release where from Onyxia web only
+            return undefined;
         }
 
-        return NpmModuleVersion.parse("0.0.0");
-
+        return resp.tag;
 
     })();
 
-    core.debug(`Last version was ${NpmModuleVersion.stringify(from_version)}`);
+    const [
+        previousReleaseVersions,
+        currentVersions
+    ] = await Promise.all(
+        [
+            previousReleaseTag ?? sha,
+            sha
+        ].map(gitRef =>
+            readVersions({
+                gitRef,
+                "githubToken": github_token,
+                "repository": `${owner}/${repo}`
+            }))
+    );
 
-    /*
-    core.debug(JSON.stringify(actionParams));
-
-    const { owner, repo, github_token } = actionParams;
-
-    //params.branch <- github.head_ref || github.ref
-    //When it's a normal branch: github.head_ref==="" and github.ref==="refs/heads/main"
-    //When it's a pr from: github.head_ref==="<name of the branch branch>"
-    const branch = actionParams.branch.replace(/^refs\/heads\//, "");
-
-    const to_version = await getPackageJsonVersion({ owner, repo, branch });
-
-    if (to_version === undefined) {
-        throw new Error(`No version in package.json on ${owner}/${repo}#${branch} (or repo is private)`);
-    }
-
-
-    core.debug(`Version on ${owner}/${repo}#${branch} is ${NpmModuleVersion.stringify(to_version)}`);
-
-    const octokit = createOctokit({ github_token });
-
-    const { getLatestSemVersionedTag } = getLatestSemVersionedTagFactory({ octokit });
-
-    const from_version = await (async () => {
-
-        const getLatestSemVersionedTagParam: Param0<typeof getLatestSemVersionedTag> = {
-            owner,
-            repo,
-            "rcPolicy": to_version.rc !== undefined ?
-                "ONLY LOOK FOR RC" : "IGNORE RC",
-            "major": to_version.major
-        };
-
-        let wrap = await getLatestSemVersionedTag(getLatestSemVersionedTagParam);
-
-        if (wrap !== undefined) {
-            return wrap.version;
-        }
-        wrap = await getLatestSemVersionedTag({ ...getLatestSemVersionedTagParam, "major": undefined });
-
-        if (wrap !== undefined) {
-            return wrap.version;
-        }
-
-        return NpmModuleVersion.parse("0.0.0");
-
-
-    })();
-
-    core.debug(`Last version was ${NpmModuleVersion.stringify(from_version)}`);
-
-    const is_upgraded_version = NpmModuleVersion.compare(
-        to_version,
-        from_version
-    ) === 1 ? "true" : "false";
-
-    core.debug(`Is version upgraded: ${is_upgraded_version}`);
-
-    const is_pre_release = is_upgraded_version === "false" ? "false" : to_version.rc !== undefined ? "true" : "false";
-
-    core.debug(`Is pre release: ${is_pre_release}`);
-
-    return {
-        "to_version": NpmModuleVersion.stringify(to_version),
-        "from_version": NpmModuleVersion.stringify(from_version),
-        is_upgraded_version,
-        is_pre_release
-    };
-    */
 
     return null as any;
 
 }
 
-export async function runProduction() {
+export async function run() {
 
-    const actionParams = getActionParams();
+    const params = getActionParams();
 
-    const outputs = await run({ actionParams, "core": realCore });
+    const outputs = await _run({
+        ...params,
+        "log": core.debug.bind(core)
+    });
 
     setOutput(outputs);
 
 }
 
-//TODO: Find a way to make it work with private repo
-async function getPackageJsonVersion(params: {
-    owner: string;
-    repo: string;
-    branch: string;
-}): Promise<SemVer | undefined> {
+type Versions = {
+    chartVersion: SemVer;
+    apiVersion: SemVer;
+    webVersion: SemVer;
+    chartDigest: string;
+};
 
-    const { owner, repo, branch } = params;
 
-    const version = await fetch(
-        urlJoin(
-            `https://raw.github.com`,
-            owner,
-            repo,
-            branch,
-            "package.json"
-        )
-    )
-        .then(res => res.text())
-        .then(text => JSON.parse(text))
-        .then(({ version }) => version as string)
-        .catch(() => undefined)
-        ;
-
-    if (version === undefined) {
-        return undefined;
+function readVersions(
+    params: {
+        repository: `${string}/${string}`
+        gitRef: string;
+        githubToken: string;
     }
+): Promise<Versions> {
 
-    return SemVer.parse(version);
+    const { repository, gitRef, githubToken } = params;
+
+    const dVersions = new Deferred<Versions>();
+
+    githubCommit({
+        "ref": gitRef,
+        repository,
+        "token": githubToken,
+        "action": async ({ repoPath }) => {
+
+            const helmChartDirBasename = "helm-chart";
+
+            dVersions.resolve({
+                "webVersion": (() => {
+
+                    const value = JSON.parse(
+                        fs.readFileSync(pathJoin(repoPath, "package.json"))
+                            .toString("utf8")
+                    )["version"];
+
+                    assert(typeof value === "string");
+
+                    return SemVer.parse(value);
+
+                })(),
+                "chartVersion": (() => {
+
+                    const value = YAML.parse(
+                        fs.readFileSync(pathJoin(repoPath, helmChartDirBasename, "Chart.yaml"))
+                            .toString("utf8")
+                    )["version"];
+
+                    assert(typeof value === "string");
+
+                    return SemVer.parse(value);
+
+                })(),
+                "chartDigest": computeDirectoryDigest({ "dirPath": pathJoin(repoPath, helmChartDirBasename) }),
+                "apiVersion": (() => {
+
+                    const apiSubmoduleDirPath = pathJoin(repoPath, "api");
+
+                    child_process.execSync("git submodule update --init --recursive", { "cwd": repoPath });
+
+                    child_process.execFileSync("git fetch --tags", { "cwd": apiSubmoduleDirPath });
+                    child_process.execFileSync("git rev-parse HEAD", { "cwd": apiSubmoduleDirPath });
+
+                    const output = child_process.execFileSync("git tag --contains HEAD", { "cwd": apiSubmoduleDirPath });
+
+                    return SemVer.parse(output.toString("utf8").trim());
+
+                })()
+            });
+
+            return { "doCommit": false };
+
+        }
+    }).catch(error => dVersions.reject(error));
+
+    return dVersions.pr;
 
 }
+
+function deduceTargetChartVersion(
+    params: {
+        previousReleaseVersions: Versions,
+        currentVersions: Versions
+    }
+): SemVer {
+
+    const {
+        previousReleaseVersions,
+        currentVersions
+    }= params;
+
+
+    const getWeight = (bumpType: ReturnType<typeof SemVer.bumpType>) => {
+        assert(bumpType !== "rc");
+        switch(bumpType){
+            case "same": return 0;
+            case "patch": return 1;
+            case "minor": return 2;
+            case "major": return 3;
+        }
+    };
+
+    const requiredWeight = Math.max(
+        getWeight(
+        SemVer.bumpType({
+            "versionBehindStr": previousReleaseVersions.apiVersion,
+            "versionAheadStr": currentVersions.apiVersion
+        })
+        ),
+
+    );
+
+    return {
+        "webVersion": currentVersions.webVersion,
+        "apiVersion": currentVersions.apiVersion,
+        "chartVersion": 
+
+
+
+    };
+
+}
+
+
+
+

@@ -20,7 +20,7 @@ type CoreLike = {
 };
 
 
-export async function run(
+export async function _run(
     params: {
         actionParams: Params,
         core: CoreLike
@@ -34,11 +34,11 @@ export async function run(
 
 }
 
-export async function runProduction() {
+export async function run() {
 
     const actionParams = getActionParams();
 
-    await run({ actionParams, "core": realCore });
+    await _run({ actionParams, "core": realCore });
 
 
 }

@@ -1,17 +1,17 @@
 
 
-export type NpmModuleVersion = {
+export type SemVer = {
     major: number;
     minor: number;
     patch: number;
     rc?: number;
 };
 
-export namespace NpmModuleVersion {
+export namespace SemVer {
 
-    export function parse(versionStr: string): NpmModuleVersion {
+    export function parse(versionStr: string): SemVer {
 
-        const match = versionStr.match(/^([0-9]+)\.([0-9]+)\.([0-9]+)(?:-rc.([0-9]+))?$/);
+        const match = versionStr.match(/^([0-9]+)\.([0-9]+)(?:\.([0-9]+))?(?:-rc.([0-9]+))?$/);
 
         if (!match) {
             throw new Error(`${versionStr} is not a valid NPM version`);
@@ -20,7 +20,13 @@ export namespace NpmModuleVersion {
         return {
             "major": parseInt(match[1]),
             "minor": parseInt(match[2]),
-            "patch": parseInt(match[3]),
+            "patch": (()=>{
+
+                const str = match[3];
+
+                return str === undefined ? 0 : parseInt(str);
+
+            })(),
             ...(() => {
 
                 const str = match[4];
@@ -33,7 +39,7 @@ export namespace NpmModuleVersion {
 
     };
 
-    export function stringify(v: NpmModuleVersion) {
+    export function stringify(v: SemVer) {
         return `${v.major}.${v.minor}.${v.patch}${v.rc === undefined ? "" : `-rc.${v.rc}`}`;
     }
 
@@ -44,7 +50,7 @@ export namespace NpmModuleVersion {
      * v1  >  v2  => 1
      * 
      */
-    export function compare(v1: NpmModuleVersion, v2: NpmModuleVersion): -1 | 0 | 1 {
+    export function compare(v1: SemVer, v2: SemVer): -1 | 0 | 1 {
 
         const sign = (diff: number): -1 | 0 | 1 => diff === 0 ? 0 : (diff < 0 ? -1 : 1);
         const noUndefined= (n: number | undefined)=> n ?? Infinity;

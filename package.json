@@ -22,7 +22,8 @@
     "node-fetch": "^2.6.1",
     "scripting-tools": "^0.19.14",
     "tsafe": "^1.6.5",
-    "url-join": "^4.0.1"
+    "url-join": "^4.0.1",
+    "yaml": "^2.3.2"
   },
   "devDependencies": {
     "@types/node": "^20.6.2",
