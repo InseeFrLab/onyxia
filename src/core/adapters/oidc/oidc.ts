@@ -60,8 +60,15 @@ export async function createOidc(params: {
         if (doesCurrentHrefRequiresAuth) {
             redirectMethod = "location.replace";
         }
-
-        await keycloakInstance.login({ "redirectUri": window.location.href });
+        // A Google `refresh_token` is only provided during the initial user authorization process, unless prompt is set to consent.
+        // See: https://stackoverflow.com/questions/10827920/not-receiving-google-oauth-refresh-token/10857806#10857806
+        // Without a Google refresh Keycloak is unable to refresh the Google access token during token exchange.
+        // The prompt value "consent" is not yet supported by 'keycloak js'. In the meantime, we have to use @ts-ignore.
+        // @ts-ignore
+        await keycloakInstance.login({
+            "redirectUri": window.location.href,
+            "prompt": "consent"
+        });
 
         return new Promise<never>(() => {});
     };
