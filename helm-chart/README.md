@@ -1,7 +1,7 @@
 # Helm Chart of [Onyxia](https://onyxia.sh/)
 
 -   Complete installation guide: https://onyxia.sh/
--   `api` parameters: [../api/README.md](../api/README.md#configuration)
+-   `api` parameters: [../api/README.md](https://github.com/InseeFrLab/onyxia-api/blob/v0.30/README.md#configuration)
 -   `web` parameters: [../.env](../.env)
 
 This is a little sample of a typical `onyxia-values.yaml` to show where
