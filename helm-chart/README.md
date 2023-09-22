@@ -1,9 +1,34 @@
-# Helm chart for [Onyxia](https://onyxia.sh/)
+# Helm Chart of [Onyxia](https://onyxia.sh/)
 
-## Breaking changes
+-   Complete installation guide: https://onyxia.sh/
+-   `api` parameters: [../api/README.md](../api/README.md#configuration)
+-   `web` parameters: [../.env](../.env)
 
-### v3 to v4
+This is a little sample of a typical `onyxia-values.yaml` to show where
+the parameters of onyxia-web and onyxia-api should be filled in:
 
--   `ui` block has been renamed to `web` in the values. Change your `values.yaml` file accordingly.
--   Any resource created by helm that was suffixed by `ui` is now suffixed by `web`. This should be seamless for you unless you specifically rely on resource name for other purposes.
--   `image.name` has been renamed to `image.repository` and `image.version` has been renamed to `image.tag` to be more standard. If you are overriding versions in either web or API you should use those new values keys.
+`onyxia-values.yaml`
+
+```yaml
+web:
+    env:
+        THEME_ID=ultraviolet
+        TERMS_OF_SERVICES: |
+            {
+              "en": "https://www.sspcloud.fr/tos_en.md",
+              "fr": "https://www.sspcloud.fr/tos_fr.md"
+            }
+        # ...
+api:
+    env:
+        security.cors.allowed_origins: http://localhost:3000
+        authentication.mode: openidconnect
+        keycloak.realm: datalab
+        keycloak.auth-server-url: https://auth.lab.my-domain.net/auth
+    regions:
+        [
+            {
+                "id":"demo",
+                "name":"Demo",
+                # ...
+```
