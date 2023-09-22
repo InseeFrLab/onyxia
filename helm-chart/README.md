@@ -17,15 +17,16 @@ helm install onyxia onyxia/onyxia --version "4.0.1" -f onyxia-values.yaml
 
 Complete installation guide: https://onyxia.sh/
 
-## Parameters documentation
+## Parameter Documentation
 
--   `api` parameters: [../api/README.md](https://github.com/InseeFrLab/onyxia-api/blob/v0.30/README.md#configuration)
--   `web` parameters: [../.env](../.env)
+-   [`api` Parameters](https://github.com/InseeFrLab/onyxia-api/blob/v0.30/README.md#configuration)
+-   [`web` Parameters](https://github.com/InseeFrLab/onyxia/blob/v2.29.4/.env)
 
-This is a little sample of a typical `onyxia-values.yaml` to show where
-the parameters of onyxia-web and onyxia-api should be filled in:
+> **Note:** The links above are automatically updated to always point to the relevant documentation for the current version of the Onyxia Helm Chart.
 
-`onyxia-values.yaml`
+Below is a sample `onyxia-values.yaml` file that illustrates where to specify the `api` and `web`.
+
+### Sample `onyxia-values.yaml`
 
 ```diff
  ingress:
