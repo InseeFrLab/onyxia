@@ -208,16 +208,14 @@ function run() {
 }
 exports.run = run;
 function readVersions(params) {
-    const { repository, gitRef, githubToken, log } = params;
+    const { repository, gitRef, githubToken, log = () => { } } = params;
     const dVersions = new Deferred_1.Deferred();
-    log(`==============> start githubCommit, ${JSON.stringify(params, null, 2)}`);
     (0, githubCommit_1.githubCommit)({
         log,
         "ref": gitRef,
         repository,
         "token": githubToken,
         "action": ({ repoPath }) => __awaiter(this, void 0, void 0, function* () {
-            log(`==============> in action, ${repoPath}`);
             dVersions.resolve({
                 "webVersion": (() => {
                     const value = JSON.parse(fs.readFileSync((0, path_1.join)(repoPath, "package.json"))
@@ -235,15 +233,8 @@ function readVersions(params) {
                 "apiVersion": yield (() => __awaiter(this, void 0, void 0, function* () {
                     const { exec } = (0, exec_1.createLoggedExec)({ log });
                     const apiSubmoduleDirPath = (0, path_1.join)(repoPath, "api");
-                    log(`==============> apiSubmoduleDirPath: ${apiSubmoduleDirPath}`);
                     yield exec("git submodule update --init --recursive", { "cwd": repoPath });
-                    log(`==============> 1`);
-                    const out2 = yield exec("ls -la", { "cwd": repoPath });
-                    log(`==============> 2 ${out2}`);
-                    const out = yield exec("ls -la", { "cwd": apiSubmoduleDirPath });
-                    log(`==============> 2 ${out}`);
                     yield exec("git fetch --tags", { "cwd": apiSubmoduleDirPath });
-                    log(`==============> 2`);
                     yield exec("git rev-parse HEAD", { "cwd": apiSubmoduleDirPath });
                     const output = yield exec("git tag --contains HEAD", { "cwd": apiSubmoduleDirPath });
                     return SemVer_1.SemVer.parse(output.trim());
@@ -773,7 +764,7 @@ var SemVer;
 (function (SemVer) {
     const bumpTypes = ["major", "minor", "patch", "rc", "no bump"];
     function parse(versionStr) {
-        const match = versionStr.match(/^([0-9]+)\.([0-9]+)(?:\.([0-9]+))?(?:-rc.([0-9]+))?$/);
+        const match = versionStr.match(/^v?([0-9]+)\.([0-9]+)(?:\.([0-9]+))?(?:-rc.([0-9]+))?$/);
         if (!match) {
             throw new Error(`${versionStr} is not a valid NPM version`);
         }

@@ -9,7 +9,6 @@ import { join as pathJoin } from "path";
 import { assert } from "tsafe/assert";
 import YAML from "yaml";
 import { computeDirectoryDigest } from "../tools/computeDirectoryDigest";
-import * as child_process from "child_process";
 import { githubCommit } from "../tools/githubCommit";
 import { Deferred } from "evt/tools/Deferred";
 import { createLoggedExec } from "../tools/exec";
@@ -234,7 +233,6 @@ export async function _run(
                     Buffer.from(readmeText, "utf8")
                 );
 
-
             }
 
             return {
@@ -291,15 +289,13 @@ function readVersions(
         repository: `${string}/${string}`
         gitRef: string;
         githubToken: string;
-        log: (message: string) => void;
+        log?: (message: string) => void;
     }
 ): Promise<Versions> {
 
-    const { repository, gitRef, githubToken, log } = params;
+    const { repository, gitRef, githubToken, log =()=> {} } = params;
 
     const dVersions = new Deferred<Versions>();
-
-    log(`==============> start githubCommit, ${JSON.stringify(params, null, 2)}`);
 
     githubCommit({
         log,
@@ -307,8 +303,6 @@ function readVersions(
         repository,
         "token": githubToken,
         "action": async ({ repoPath }) => {
-
-            log(`==============> in action, ${repoPath}`);
 
             dVersions.resolve({
                 "webVersion": (() => {
@@ -342,24 +336,9 @@ function readVersions(
 
                     const apiSubmoduleDirPath = pathJoin(repoPath, "api");
 
-                    log(`==============> apiSubmoduleDirPath: ${apiSubmoduleDirPath}`);
-
                     await exec("git submodule update --init --recursive", { "cwd": repoPath });
 
-                    log(`==============> 1`);
-
-                    const out2= await exec("ls -la", { "cwd": repoPath });
-
-                    log(`==============> 2 ${out2}`);
-
-                    const out= await exec("ls -la", { "cwd": apiSubmoduleDirPath });
-
-                    log(`==============> 2 ${out}`);
-
-
                     await exec("git fetch --tags", { "cwd": apiSubmoduleDirPath });
-
-                    log(`==============> 2`);
 
                     await exec("git rev-parse HEAD", { "cwd": apiSubmoduleDirPath });
 
