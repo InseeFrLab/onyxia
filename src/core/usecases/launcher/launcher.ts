@@ -6,10 +6,10 @@ import { assert } from "tsafe/assert";
 import { selectors as userConfigsSelectors } from "../userConfigs";
 import { same } from "evt/tools/inDepth/same";
 import { type FormFieldValue, formFieldsValueToObject } from "./FormField";
-import type {
-    JSONSchemaFormFieldDescription,
-    JSONSchemaObject,
-    OnyxiaValues
+import {
+    type JSONSchemaFormFieldDescription,
+    type JSONSchemaObject,
+    type XOnyxiaContext
 } from "core/ports/OnyxiaApi";
 import {
     onyxiaFriendlyNameFormFieldPath,
@@ -252,7 +252,7 @@ export const thunks = {
             assert(oidc.isUserLoggedIn);
 
             const valuesSchemaJson = getValuesSchemaJson({
-                "onyxiaValues": await (async (): Promise<OnyxiaValues> => {
+                "xOnyxiaContext": await (async (): Promise<XOnyxiaContext> => {
                     const { publicIp } = await dispatch(publicIpUsecase.thunks.fetch());
 
                     const user = dispatch(userAuthentication.thunks.getUser());
@@ -273,7 +273,7 @@ export const thunks = {
                         project.group === undefined ||
                         !coreParams.disablePersonalInfosInjectionInGroup;
 
-                    const onyxiaValues: OnyxiaValues = {
+                    const xOnyxiaContext: XOnyxiaContext = {
                         "user": {
                             "idep": user.username,
                             "name": `${user.familyName} ${user.firstName}`,
@@ -418,7 +418,7 @@ export const thunks = {
                             region.certificateAuthorityInjection
                     };
 
-                    return onyxiaValues;
+                    return xOnyxiaContext;
                 })()
             });
 

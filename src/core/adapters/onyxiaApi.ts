@@ -1,28 +1,24 @@
-import type {
-    OnyxiaApi,
-    DeploymentRegion,
-    LocalizedString,
-    JSONSchemaObject,
-    JSONSchemaFormFieldDescription,
-    User
+import {
+    type OnyxiaApi,
+    type Project,
+    type DeploymentRegion,
+    type LocalizedString,
+    type Catalog,
+    type JSONSchemaObject,
+    type JSONSchemaFormFieldDescription,
+    type User,
+    getRandomK8sSubdomain,
+    getServiceId,
+    onyxiaFriendlyNameFormFieldPath,
+    onyxiaIsSharedFormFieldPath
 } from "../ports/OnyxiaApi";
 import axios from "axios";
 import type { AxiosResponse, AxiosRequestConfig } from "axios";
 import memoize from "memoizee";
-import {
-    onyxiaFriendlyNameFormFieldPath,
-    onyxiaIsSharedFormFieldPath
-} from "core/ports/OnyxiaApi";
 import Mustache from "mustache";
 import { assert } from "tsafe/assert";
 import type { Equals } from "tsafe";
 import { id } from "tsafe/id";
-import {
-    type Catalog,
-    type Project,
-    getRandomK8sSubdomain,
-    getServiceId
-} from "../ports/OnyxiaApi";
 import { getValueAtPathInObject } from "core/tools/getValueAtPathInObject";
 
 export function createOnyxiaApi(params: {
@@ -417,7 +413,7 @@ export function createOnyxiaApi(params: {
                         "dependencies":
                             data[0].dependencies?.map(({ name }) => name) ?? [],
                         "sources": data[0].sources ?? [],
-                        "getValuesSchemaJson": ({ onyxiaValues }) => {
+                        "getValuesSchemaJson": ({ xOnyxiaContext }) => {
                             //WARNING: The type is not exactly correct here. JSONSchemaFormFieldDescription["default"] can be undefined.
                             const configCopy = JSON.parse(
                                 JSON.stringify(data[0].config)
@@ -500,11 +496,11 @@ export function createOnyxiaApi(params: {
                                               overwriteDefaultWith
                                                   .replace(/{{/g, "{{{")
                                                   .replace(/}}/g, "}}}"),
-                                              onyxiaValues
+                                              xOnyxiaContext
                                           )
                                         : getValueAtPathInObject({
                                               "path": overwriteDefaultWith.split("."),
-                                              "obj": onyxiaValues
+                                              "obj": xOnyxiaContext
                                           });
 
                                     if (
@@ -611,14 +607,14 @@ export function createOnyxiaApi(params: {
                                     }
 
                                     const sliderConfig = getValueAtPathInObject<
-                                        (typeof onyxiaValues)["region"]["sliders"][string]
+                                        (typeof xOnyxiaContext)["region"]["sliders"][string]
                                     >({
                                         "path": [
                                             "region",
                                             "sliders",
                                             useRegionSliderConfig
                                         ],
-                                        "obj": onyxiaValues
+                                        "obj": xOnyxiaContext
                                     });
 
                                     if (sliderConfig === undefined) {
@@ -718,8 +714,8 @@ export function createOnyxiaApi(params: {
                     id: string;
                     urls: string[];
                     env: {
-                        "onyxia.share": "true" | "false";
-                        "onyxia.friendlyName": string;
+                        [onyxiaIsSharedFormFieldPath]: "true" | "false";
+                        [onyxiaFriendlyNameFormFieldPath]: string;
                         "onyxia.owner": string;
                         [key: string]: string;
                     };
@@ -808,8 +804,7 @@ export function createOnyxiaApi(params: {
                                 return {
                                     packageName,
                                     "friendlyName":
-                                        env[onyxiaFriendlyNameFormFieldPath] ??
-                                        packageName
+                                        env["onyxia.friendlyName"] ?? packageName
                                 };
                             })(),
                             postInstallInstructions,
@@ -817,7 +812,7 @@ export function createOnyxiaApi(params: {
                             startedAt,
                             env,
                             "ownerUsername": env["onyxia.owner"],
-                            "isShared": env[onyxiaIsSharedFormFieldPath] === "true",
+                            "isShared": env["onyxia.share"] === "true",
                             ...(areAllPodsRunning
                                 ? ({ "isStarting": false } as const)
                                 : ({
