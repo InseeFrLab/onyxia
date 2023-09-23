@@ -407,7 +407,7 @@ function getWebDockerhubRepository(params) {
         "token": github_token,
         "ref": sha,
         "action": ({ repoPath }) => __awaiter(this, void 0, void 0, function* () {
-            dOut.resolve(yaml_1.default.parse(fs.readFileSync((0, path_1.join)(repoPath, helmChartDirBasename, "values.json")).toString("utf8"))["web"]["image"]["repository"]);
+            dOut.resolve(yaml_1.default.parse(fs.readFileSync((0, path_1.join)(repoPath, helmChartDirBasename, "values.yaml")).toString("utf8"))["web"]["image"]["repository"]);
             return { "doCommit": false };
         })
     });

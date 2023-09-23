@@ -612,7 +612,7 @@ function getWebDockerhubRepository(
             dOut.resolve(
                 YAML.parse(
                     fs.readFileSync(
-                        pathJoin(repoPath, helmChartDirBasename, "values.json")
+                        pathJoin(repoPath, helmChartDirBasename, "values.yaml")
                     ).toString("utf8")
                 )["web"]["image"]["repository"]
             );
