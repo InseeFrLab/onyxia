@@ -262,6 +262,12 @@ export async function _run(
 
                 readmeText =
                     readmeText.replace(
+                        /(https:\/\/github\.com\/[\/]+\/[\/]+\/blob\/)([^\/]+)(\/src\/core\/ports\/OnyxiaApi\/XOnyxia\.ts)/g,
+                        (...[, p1, , p3]) => `${p1}v${SemVer.stringify(targetChartVersion)}${p3}`
+                    );
+
+                readmeText =
+                    readmeText.replace(
                         /--version "?[^ "]+"?/g,
                         `--version "${SemVer.stringify(targetChartVersion)}"`
                     );
