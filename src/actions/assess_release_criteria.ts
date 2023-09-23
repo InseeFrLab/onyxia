@@ -231,8 +231,9 @@ export async function _run(
                         .toString("utf8")
                 );
 
-                valuesParsed.set("web.image.tag", SemVer.stringify(currentVersions.webVersion));
-                valuesParsed.set("api.image.tag", `v${SemVer.stringify(currentVersions.apiVersion)}`);
+
+                valuesParsed.setIn(["web", "image", "tag"], SemVer.stringify(currentVersions.webVersion));
+                valuesParsed.set(["api", "image", "tag"], `v${SemVer.stringify(currentVersions.apiVersion)}`);
 
                 fs.writeFileSync(
                     valuesFilePath,
@@ -250,13 +251,13 @@ export async function _run(
                 readmeText =
                     readmeText.replace(
                         /(https:\/\/github\.com\/[^\/]+\/[^\/]+\/blob\/)([^\/]+)(\/README\.md#configuration)/g,
-                        (...[, p1, , p3]) => `${p1}v${SemVer.stringify(currentVersions.apiVersion)}${p3}`
+                        (...[, p1, , p3]) => `${p1}${currentVersions.apiVersion.parsedFrom}${p3}`
                     );
 
                 readmeText =
                     readmeText.replace(
                         /(https:\/\/github\.com\/[\/]+\/[\/]+\/blob\/)([^\/]+)(\/\.env)/g,
-                        (...[, p1, , p3]) => `${p1}v${SemVer.stringify(currentVersions.apiVersion)}${p3}`
+                        (...[, p1, , p3]) => `${p1}v${SemVer.stringify(targetChartVersion)}${p3}`
                     );
 
                 readmeText =

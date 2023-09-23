@@ -182,17 +182,17 @@ function _run(params) {
                     const valuesFilePath = (0, path_1.join)(repoPath, helmChartDirBasename, "values.yaml");
                     const valuesParsed = yaml_1.default.parseDocument(fs.readFileSync(valuesFilePath)
                         .toString("utf8"));
-                    valuesParsed.set("web.image.tag", SemVer_1.SemVer.stringify(currentVersions.webVersion));
-                    valuesParsed.set("api.image.tag", `v${SemVer_1.SemVer.stringify(currentVersions.apiVersion)}`);
+                    valuesParsed.setIn(["web", "image", "tag"], SemVer_1.SemVer.stringify(currentVersions.webVersion));
+                    valuesParsed.set(["api", "image", "tag"], `v${SemVer_1.SemVer.stringify(currentVersions.apiVersion)}`);
                     fs.writeFileSync(valuesFilePath, Buffer.from(yaml_1.default.stringify(valuesParsed), "utf8"));
                 }
                 {
                     const readmeFilePath = (0, path_1.join)(repoPath, helmChartDirBasename, "README.md");
                     let readmeText = fs.readFileSync(readmeFilePath).toString("utf8");
                     readmeText =
-                        readmeText.replace(/(https:\/\/github\.com\/[^\/]+\/[^\/]+\/blob\/)([^\/]+)(\/README\.md#configuration)/g, (...[, p1, , p3]) => `${p1}v${SemVer_1.SemVer.stringify(currentVersions.apiVersion)}${p3}`);
+                        readmeText.replace(/(https:\/\/github\.com\/[^\/]+\/[^\/]+\/blob\/)([^\/]+)(\/README\.md#configuration)/g, (...[, p1, , p3]) => `${p1}${currentVersions.apiVersion.parsedFrom}${p3}`);
                     readmeText =
-                        readmeText.replace(/(https:\/\/github\.com\/[\/]+\/[\/]+\/blob\/)([^\/]+)(\/\.env)/g, (...[, p1, , p3]) => `${p1}v${SemVer_1.SemVer.stringify(currentVersions.apiVersion)}${p3}`);
+                        readmeText.replace(/(https:\/\/github\.com\/[\/]+\/[\/]+\/blob\/)([^\/]+)(\/\.env)/g, (...[, p1, , p3]) => `${p1}v${SemVer_1.SemVer.stringify(targetChartVersion)}${p3}`);
                     readmeText =
                         readmeText.replace(/--version "?[^ "]+"?/g, `--version "${SemVer_1.SemVer.stringify(targetChartVersion)}"`);
                     fs.writeFileSync(readmeFilePath, Buffer.from(readmeText, "utf8"));
@@ -801,7 +801,7 @@ var SemVer;
         if (!match) {
             throw new Error(`${versionStr} is not a valid NPM version`);
         }
-        return Object.assign({ "major": parseInt(match[1]), "minor": parseInt(match[2]), "patch": (() => {
+        return Object.assign(Object.assign({ "major": parseInt(match[1]), "minor": parseInt(match[2]), "patch": (() => {
                 const str = match[3];
                 return str === undefined ? 0 : parseInt(str);
             })() }, (() => {
@@ -809,7 +809,7 @@ var SemVer;
             return str === undefined ?
                 {} :
                 { "rc": parseInt(str) };
-        })());
+        })()), { "parsedFrom": versionStr });
     }
     SemVer.parse = parse;
     ;

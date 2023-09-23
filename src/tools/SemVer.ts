@@ -5,6 +5,7 @@ export type SemVer = {
     minor: number;
     patch: number;
     rc?: number;
+    parsedFrom: string;
 };
 
 export namespace SemVer {
@@ -38,7 +39,8 @@ export namespace SemVer {
                     {} :
                     { "rc": parseInt(str) };
 
-            })()
+            })(),
+            "parsedFrom": versionStr
         };
 
     };
