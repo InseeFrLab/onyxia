@@ -12,7 +12,7 @@ ingress:
     - host: datalab.yourdomain.com
 EOF
 
-helm install onyxia onyxia/onyxia --version "4.0.1" -f onyxia-values.yaml
+helm install onyxia onyxia/onyxia --version "4.0.2" -f onyxia-values.yaml
 ```
 
 Complete installation guide: https://onyxia.sh

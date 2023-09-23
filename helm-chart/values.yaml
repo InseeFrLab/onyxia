@@ -1,7 +1,3 @@
-# Default values for onyxia-bis.
-# This is a YAML-formatted file.
-# Declare variables to be passed into your templates.
-
 imagePullSecrets: []
 hostAliases: []
 
@@ -14,6 +10,7 @@ serviceAccount:
   # The name of the service account to use.
   # If not set and create is true, a name is generated using the fullname template
   name:
+
 
 ingress:
   enabled: false
@@ -32,9 +29,7 @@ ingress:
 
 route:
   enabled: false
-  annotations:
-    {}
-    # route.openshift.io/termination: "reencrypt"
+  annotations: {} # route.openshift.io/termination: "reencrypt"
   host: chart-example.local
   tls:
     termination: edge
@@ -49,12 +44,10 @@ web:
   replicaCount: 1
   image:
     repository: inseefrlab/onyxia-web
-    tag: 2.28.0
+    tag: 2.29.4
     pullPolicy: IfNotPresent
   podLabels: {}
-  podSecurityContext:
-    {}
-    # fsGroup: 2000
+  podSecurityContext: {} # fsGroup: 2000
   securityContext:
     {}
     # capabilities:
@@ -86,6 +79,7 @@ web:
   affinity: {}
   env:
 
+
 api:
   name: api
   replicaCount: 1
@@ -95,9 +89,7 @@ api:
     pullPolicy: IfNotPresent
   contextPath: /api
   podLabels: {}
-  podSecurityContext:
-    {}
-    # fsGroup: 2000
+  podSecurityContext: {} # fsGroup: 2000
   securityContext:
     {}
     # capabilities:
@@ -127,10 +119,11 @@ api:
   nodeSelector: {}
   tolerations: []
   affinity: {}
-  env:
-    #authentication.mode: "openidconnect"
-  regions: #[
-  #   {
+  env: #authentication.mode: "openidconnect"
+  regions:
+    #[
+    #   {
+
   #     "regionId": "kub",
   #     "type": "KUBERNETES",
   #     "namespace-prefix": "user-",
@@ -141,7 +134,8 @@ api:
   #     }
   #   }
   # ]
-  catalogs: # [
+  catalogs:
+    # [
     #   {
     #     "id": "inseefrlab-helm-charts-datascience",
     #     "name": "Inseefrlab datascience",
