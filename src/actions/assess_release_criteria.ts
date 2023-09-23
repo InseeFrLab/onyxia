@@ -301,6 +301,7 @@ function readVersions(
     log(`==============> start githubCommit, ${JSON.stringify(params, null, 2)}`);
 
     githubCommit({
+        log,
         "ref": gitRef,
         repository,
         "token": githubToken,

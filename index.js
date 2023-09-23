@@ -212,6 +212,7 @@ function readVersions(params) {
     const dVersions = new Deferred_1.Deferred();
     log(`==============> start githubCommit, ${JSON.stringify(params, null, 2)}`);
     (0, githubCommit_1.githubCommit)({
+        log,
         "ref": gitRef,
         repository,
         "token": githubToken,
