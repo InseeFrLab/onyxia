@@ -57,6 +57,7 @@ const computeDirectoryDigest_1 = __nccwpck_require__(1021);
 const githubCommit_1 = __nccwpck_require__(6397);
 const Deferred_1 = __nccwpck_require__(689);
 const exec_1 = __nccwpck_require__(4269);
+const id_1 = __nccwpck_require__(3047);
 const helmChartDirBasename = "helm-chart";
 const { getActionParams } = (0, inputHelper_1.getActionParamsFactory)({
     "inputNameSubset": [
@@ -106,14 +107,25 @@ function _run(params) {
         }))();
         log(`Previous release tag: ${previousReleaseTag !== null && previousReleaseTag !== void 0 ? previousReleaseTag : "none"}`);
         const [previousReleaseVersions, currentVersions] = yield Promise.all([
-            previousReleaseTag !== null && previousReleaseTag !== void 0 ? previousReleaseTag : sha,
+            previousReleaseTag,
             sha
-        ].map(gitRef => readVersions({
-            gitRef,
-            "githubToken": github_token,
-            repository,
-            log
-        })));
+        ].map(gitRef => {
+            //NOTE: Only for initialization.
+            if (gitRef === undefined) {
+                return (0, id_1.id)({
+                    "apiVersion": SemVer_1.SemVer.parse("v0.30"),
+                    "webVersion": SemVer_1.SemVer.parse("2.29.4"),
+                    "chartVersion": SemVer_1.SemVer.parse("4.0.1"),
+                    "chartDigest": ""
+                });
+            }
+            return readVersions({
+                gitRef,
+                "githubToken": github_token,
+                repository,
+                log
+            });
+        }));
         log(JSON.stringify({ previousReleaseVersions, currentVersions }, null, 2));
         if (previousReleaseVersions.chartVersion.major > currentVersions.chartVersion.major) {
             // We are providing a patch for a earlier major.

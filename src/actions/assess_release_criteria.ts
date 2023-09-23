@@ -12,6 +12,7 @@ import { computeDirectoryDigest } from "../tools/computeDirectoryDigest";
 import { githubCommit } from "../tools/githubCommit";
 import { Deferred } from "evt/tools/Deferred";
 import { createLoggedExec } from "../tools/exec";
+import { id } from "tsafe/id";
 
 const helmChartDirBasename = "helm-chart";
 
@@ -111,15 +112,28 @@ export async function _run(
         currentVersions
     ] = await Promise.all(
         [
-            previousReleaseTag ?? sha,
+            previousReleaseTag,
             sha
-        ].map(gitRef =>
-            readVersions({
+        ].map(gitRef =>{
+
+            //NOTE: Only for initialization.
+            if( gitRef === undefined ){
+                return id<Versions>({
+                    "apiVersion": SemVer.parse("v0.30"),
+                    "webVersion": SemVer.parse("2.29.4"),
+                    "chartVersion": SemVer.parse("4.0.1"),
+                    "chartDigest": ""
+                });
+            }
+
+            return readVersions({
                 gitRef,
                 "githubToken": github_token,
                 repository,
                 log
-            }))
+            });
+            
+        })
     );
 
     log(JSON.stringify({ previousReleaseVersions, currentVersions }, null, 2));
