@@ -56,4 +56,4 @@ outputs:
     description: 'Output of assess_release_criteria, string'
 runs:
   using: 'node12'
-  main: 'dist/index.js'
+  main: './index.js'

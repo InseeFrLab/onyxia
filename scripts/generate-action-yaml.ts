@@ -33,6 +33,6 @@ fs.writeFileSync(
         ].join("\n")),
         `runs:`,
         `  using: 'node12'`,
-        `  main: 'dist/index.js'`
+        `  main: '${packageJsonParsed.main}'`,
     ].join("\n"), "utf8")
 );
