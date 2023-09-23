@@ -511,56 +511,56 @@ function generateReleaseMessageBody(params: {
         "versionAhead": SemVer.parse(onyxiaApiVersion)
     });
 
-    let message = `# Release Notes \\n\\n`;
+    let message = `# Release Notes \n\n`;
 
-    message += `## Helm Chart Version :package: \\n`;
-    message += `- Previous: \`${helmChartVersion_previous}\` \\n`;
-    message += `- New: \`${helmChartVersion}\` \\n\\n`;
+    message += `## Helm Chart Version :package: \n`;
+    message += `- Previous: \`${helmChartVersion_previous}\` \n`;
+    message += `- New: \`${helmChartVersion}\` \n\n`;
 
     switch (helmChartVersionBumpType) {
         case 'patch':
-            message += `:patch: No API changes. You can upgrade without fear of breaking your install. \\n\\n`;
+            message += `:patch: No API changes. You can upgrade without fear of breaking your install. \n\n`;
             break;
         case 'minor':
-            message += `:new: New parameters are available in the configuration. No breaking changes with the previous release. [Documentation](https://github.com/InseeFrLab/onyxia/tree/main/helm-chart) \\n\\n`;
+            message += `:new: New parameters are available in the configuration. No breaking changes with the previous release. [Documentation](https://github.com/InseeFrLab/onyxia/tree/main/helm-chart) \n\n`;
             break;
         case 'major':
-            message += `:warning: Upgrading might break your Onyxia install. Please refer to the [new documentation](https://github.com/InseeFrLab/onyxia/tree/main/helm-chart). \\n\\n`;
+            message += `:warning: Upgrading might break your Onyxia install. Please refer to the [new documentation](https://github.com/InseeFrLab/onyxia/tree/main/helm-chart). \n\n`;
             break;
     }
 
     if (webVersionBumpType !== 'no bump') {
-        message += `## Onyxia Web :globe_with_meridians: \\n`;
-        message += `- Previous: \`${webVersion_previous}\` \\n`;
-        message += `- New: \`${webVersion}\` \\n\\n`;
+        message += `## Onyxia Web :globe_with_meridians: \n`;
+        message += `- Previous: \`${webVersion_previous}\` \n`;
+        message += `- New: \`${webVersion}\` \n\n`;
 
         switch (webVersionBumpType) {
             case 'patch':
-                message += `:patch: No API changes. You can upgrade without fear of breaking your install. \\n\\n`;
+                message += `:patch: No API changes. You can upgrade without fear of breaking your install. \n\n`;
                 break;
             case 'minor':
-                message += `:new: New parameters are available in the configuration. No breaking changes with the previous release. [Documentation](https://github.com/InseeFrLab/onyxia/tree/main/helm-chart) \\n\\n`;
+                message += `:new: New parameters are available in the configuration. No breaking changes with the previous release. [Documentation](https://github.com/InseeFrLab/onyxia/tree/main/helm-chart) \n\n`;
                 break;
             case 'major':
-                message += `:warning: Upgrading might break your Onyxia install. Please refer to the [new documentation](https://github.com/InseeFrLab/onyxia/tree/main/helm-chart). \\n\\n`;
+                message += `:warning: Upgrading might break your Onyxia install. Please refer to the [new documentation](https://github.com/InseeFrLab/onyxia/tree/main/helm-chart). \n\n`;
                 break;
         }
     }
 
     if (onyxiaApi_VersionBumpType !== 'no bump') {
-        message += `## Onyxia API :gear: \\n`;
-        message += `- Previous: \`${onyxiaApiVersion_previous}\` \\n`;
-        message += `- New: \`${onyxiaApiVersion}\` \\n\\n`;
+        message += `## Onyxia API :gear: \n`;
+        message += `- Previous: \`${onyxiaApiVersion_previous}\` \n`;
+        message += `- New: \`${onyxiaApiVersion}\` \n\n`;
 
         switch (onyxiaApi_VersionBumpType) {
             case 'patch':
-                message += `:patch: No API changes. You can upgrade without fear of breaking your install. \\n\\n`;
+                message += `:patch: No API changes. You can upgrade without fear of breaking your install. \n\n`;
                 break;
             case 'minor':
-                message += `:new: New parameters are available in the configuration. No breaking changes with the previous release. [Documentation](https://github.com/InseeFrLab/onyxia/tree/main/helm-chart) \\n\\n`;
+                message += `:new: New parameters are available in the configuration. No breaking changes with the previous release. [Documentation](https://github.com/InseeFrLab/onyxia/tree/main/helm-chart) \n\n`;
                 break;
             case 'major':
-                message += `:warning: Upgrading might break your Onyxia install. Please refer to the [new documentation](https://github.com/InseeFrLab/onyxia/tree/main/helm-chart). \\n\\n`;
+                message += `:warning: Upgrading might break your Onyxia install. Please refer to the [new documentation](https://github.com/InseeFrLab/onyxia/tree/main/helm-chart). \n\n`;
                 break;
         }
     }
