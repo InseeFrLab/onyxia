@@ -24,7 +24,7 @@ Documentation reference for the available configuration parameter of the Onyxia 
 -   [`api`](https://github.com/InseeFrLab/onyxia-api/blob/v0.30/README.md#configuration)
 -   [`web`](https://github.com/InseeFrLab/onyxia/blob/v2.29.4/.env)
 
-> **Note:** The links above are automatically updated they always point to the relevant documentation for this specific version of the Onyxia Helm Chart.
+> **Note:** The links above are automatically updated, they always points to the relevant documentation for this specific version of Onyxia.
 
 Below is a sample `onyxia-values.yaml` file that illustrates where to specify the `api` and `web` configuration parameters.
 
@@ -62,3 +62,5 @@ If you are building your own service catalog for Onyxia ([learn how](https://doc
 Here are defined the onyxia reserved parameter and the structure of the dynamic context:
 
 [`values.schema.json` `"x-onyxia"` specifications](https://github.com/InseeFrLab/onyxia/blob/v2.29.4/src/core/ports/OnyxiaApi/XOnyxia.ts)
+
+> **Note:** The link above are automatically updated, it always points to the relevant definitions for this specific version of the Onyxia.
