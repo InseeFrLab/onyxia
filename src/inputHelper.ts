@@ -11,7 +11,7 @@ export const inputNames = [
     "sha",
     "commit_author_email",
     "github_pages_branch_name",
-    "dockerhub_repository",
+    "web_dockerhub_repository",
     "is_external_pr",
     "is_default_branch",
     "commit_author_email",
@@ -61,7 +61,7 @@ export function getInputDescription(inputName: typeof inputNames[number]): strin
             "no default provided, required for 'release_helm_chart' action",
             "If the branch does not exist it will be created"
         ].join(" ");
-        case "dockerhub_repository": return [
+        case "web_dockerhub_repository": return [
             "Dockerhub repository name, example: 'inseefrlab/onyxia-web'",
             "for actions that need to create tags."
         ].join(" ");

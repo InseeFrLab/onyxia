@@ -22,7 +22,7 @@ const { getActionParams } = getActionParamsFactory({
         "sha",
         "github_token",
         "commit_author_email",
-        "dockerhub_repository",
+        "web_dockerhub_repository",
         "is_external_pr",
         "is_default_branch",
         "is_bot"
@@ -48,11 +48,28 @@ export async function _run(
     }
 ): Promise<Parameters<typeof setOutput>[0]> {
 
-    const { github_token, owner, repo, sha, dockerhub_repository, commit_author_email, is_external_pr, is_default_branch, recursiveCallParams, is_bot, log = ()=> {} } = params;
+    const {
+        github_token,
+        owner,
+        repo,
+        sha,
+        web_dockerhub_repository,
+        commit_author_email,
+        is_external_pr,
+        is_default_branch,
+        recursiveCallParams,
+        is_bot,
+        log = () => { }
+    } = params;
+
+    log(JSON.stringify(params, null, 2));
 
     const repository = `${owner}/${repo}` as const;
 
     if (is_external_pr === "true") {
+
+        log("External PR, skipping");
+
         return {
             "new_chart_version": "",
             "new_web_docker_image_tags": "",
@@ -85,6 +102,8 @@ export async function _run(
 
     })();
 
+    log(`Previous release tag: ${previousReleaseTag ?? "none"}`);
+
     const [
         previousReleaseVersions,
         currentVersions
@@ -100,8 +119,13 @@ export async function _run(
             }))
     );
 
+    log(JSON.stringify({ previousReleaseVersions, currentVersions }, null, 2));
+
     if (previousReleaseVersions.chartVersion.major > currentVersions.chartVersion.major) {
         // We are providing a patch for a earlier major.
+
+        log(`We are providing a patch for a earlier major, re-running fetching only previous releases of v${previousReleaseVersions.chartVersion.major}`);
+
         return _run({
             ...params,
             "recursiveCallParams": {
@@ -111,11 +135,22 @@ export async function _run(
     }
 
     if (is_default_branch === "false") {
+
+
+
+        const new_web_docker_image_tags = is_bot === "true" ? "" : `${web_dockerhub_repository.toLowerCase()}:${currentVersions.webVersion}`;
+
+        log([
+            "We are not on the default branch, not releasing.",
+            new_web_docker_image_tags === "" ? "A bot is pushing this, not pushing docker image." : `Pushing docker image: ${new_web_docker_image_tags}`
+        ].join(" "));
+
+
         return {
             "new_chart_version": "",
             "release_message": "",
             "release_target_git_commit_sha": sha,
-            "new_web_docker_image_tags": is_bot === "true" ? "" : `${dockerhub_repository.toLowerCase()}:${currentVersions.webVersion}`
+            new_web_docker_image_tags
         };
     }
 
@@ -124,90 +159,96 @@ export async function _run(
         currentVersions
     });
 
-    let release_target_git_commit_sha = "";
+    if (SemVer.compare(targetChartVersion, previousReleaseVersions.chartVersion) === 0) {
 
-    if (SemVer.compare(targetChartVersion, previousReleaseVersions.chartVersion) !== 0) {
+        log("No need to release");
 
-        log(`Upgrading chart version to: ${SemVer.stringify(targetChartVersion)}`);
+        return {
+            "new_chart_version": "",
+            "release_message": "",
+            "release_target_git_commit_sha": "",
+            "new_web_docker_image_tags": ""
 
-        const { sha: new_sha } = await githubCommit({
-            "commitAuthorEmail": commit_author_email,
-            "ref": sha,
-            repository,
-            "token": github_token,
-            "action": async ({ repoPath }) => {
-
-                {
-
-                    const chartFilePath = pathJoin(repoPath, helmChartDirBasename, "Chart.yaml");
-
-                    const chartParsed = YAML.parse(
-                        fs.readFileSync(chartFilePath)
-                            .toString("utf8")
-                    );
-
-                    chartParsed["version"] = SemVer.stringify(targetChartVersion);
-
-                    fs.writeFileSync(
-                        chartFilePath,
-                        Buffer.from(YAML.stringify(chartParsed), "utf8")
-                    );
-
-                }
-
-                {
-
-                    const readmeFilePath = pathJoin(repoPath, helmChartDirBasename, "README.md");
-
-                    let readmeText = fs.readFileSync(readmeFilePath).toString("utf8");
-
-                    readmeText =
-                        readmeText.replace(
-                            /(https:\/\/github\.com\/[\\/]+\/[\\/]+\/blob\/)([^\/]+)(\/README\.md#configuration)/g,
-                            (...[, p1, , p3]) => `${p1}v${SemVer.stringify(currentVersions.apiVersion)}${p3}`
-                        );
-
-                    readmeText =
-                        readmeText.replace(
-                            /(https:\/\/github\.com\/[\\/]+\/[\\/]+\/blob\/)([^\/]+)(\/\.env)/g,
-                            (...[, p1, , p3]) => `${p1}v${SemVer.stringify(currentVersions.apiVersion)}${p3}`
-                        );
-
-                    readmeText =
-                        readmeText.replace(
-                            /--version "?[^ "]+"?/g,
-                            `--version "${SemVer.stringify(targetChartVersion)}"`
-                        );
-
-                    fs.writeFileSync(
-                        readmeFilePath,
-                        Buffer.from(readmeText, "utf8")
-                    );
-
-
-                }
-
-                return {
-                    "message": `Automatic ${SemVer.bumpType({
-                        "versionBehind": previousReleaseVersions.chartVersion,
-                        "versionAhead": targetChartVersion
-                    })} bump of chart version to ${SemVer.stringify(targetChartVersion)}`,
-                    "doAddAll": false,
-                    "doCommit": true
-                };
-            }
-        });
-
-        assert(new_sha !== undefined);
-
-        release_target_git_commit_sha = new_sha;
+        };
 
     }
 
+
+    log(`Upgrading chart version to: ${SemVer.stringify(targetChartVersion)}`);
+
+    const { sha: release_target_git_commit_sha } = await githubCommit({
+        "commitAuthorEmail": commit_author_email,
+        "ref": sha,
+        repository,
+        "token": github_token,
+        "action": async ({ repoPath }) => {
+
+            {
+
+                const chartFilePath = pathJoin(repoPath, helmChartDirBasename, "Chart.yaml");
+
+                const chartParsed = YAML.parse(
+                    fs.readFileSync(chartFilePath)
+                        .toString("utf8")
+                );
+
+                chartParsed["version"] = SemVer.stringify(targetChartVersion);
+
+                fs.writeFileSync(
+                    chartFilePath,
+                    Buffer.from(YAML.stringify(chartParsed), "utf8")
+                );
+
+            }
+
+            {
+
+                const readmeFilePath = pathJoin(repoPath, helmChartDirBasename, "README.md");
+
+                let readmeText = fs.readFileSync(readmeFilePath).toString("utf8");
+
+                readmeText =
+                    readmeText.replace(
+                        /(https:\/\/github\.com\/[\\/]+\/[\\/]+\/blob\/)([^\/]+)(\/README\.md#configuration)/g,
+                        (...[, p1, , p3]) => `${p1}v${SemVer.stringify(currentVersions.apiVersion)}${p3}`
+                    );
+
+                readmeText =
+                    readmeText.replace(
+                        /(https:\/\/github\.com\/[\\/]+\/[\\/]+\/blob\/)([^\/]+)(\/\.env)/g,
+                        (...[, p1, , p3]) => `${p1}v${SemVer.stringify(currentVersions.apiVersion)}${p3}`
+                    );
+
+                readmeText =
+                    readmeText.replace(
+                        /--version "?[^ "]+"?/g,
+                        `--version "${SemVer.stringify(targetChartVersion)}"`
+                    );
+
+                fs.writeFileSync(
+                    readmeFilePath,
+                    Buffer.from(readmeText, "utf8")
+                );
+
+
+            }
+
+            return {
+                "message": `Automatic ${SemVer.bumpType({
+                    "versionBehind": previousReleaseVersions.chartVersion,
+                    "versionAhead": targetChartVersion
+                })} bump of chart version to ${SemVer.stringify(targetChartVersion)}`,
+                "doAddAll": false,
+                "doCommit": true
+            };
+        }
+    });
+
+
     return {
         "new_chart_version": SemVer.stringify(targetChartVersion),
-        "new_web_docker_image_tags": [SemVer.stringify(currentVersions.webVersion), "latest"].map(tag => `${dockerhub_repository.toLowerCase()}:${tag}`).join(","),
-        release_target_git_commit_sha,
+        "new_web_docker_image_tags": [SemVer.stringify(currentVersions.webVersion), "latest"].map(tag => `${web_dockerhub_repository.toLowerCase()}:${tag}`).join(","),
+        "release_target_git_commit_sha": release_target_git_commit_sha ?? sha,
         "release_message": generateReleaseMessageBody({
             "helmChartVersion": SemVer.stringify(targetChartVersion),
             "helmChartVersion_previous": SemVer.stringify(previousReleaseVersions.chartVersion),

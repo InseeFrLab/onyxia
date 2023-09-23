@@ -65,7 +65,7 @@ const { getActionParams } = (0, inputHelper_1.getActionParamsFactory)({
         "sha",
         "github_token",
         "commit_author_email",
-        "dockerhub_repository",
+        "web_dockerhub_repository",
         "is_external_pr",
         "is_default_branch",
         "is_bot"
@@ -74,9 +74,11 @@ const { getActionParams } = (0, inputHelper_1.getActionParamsFactory)({
 const { setOutput } = (0, outputHelper_1.setOutputFactory)();
 function _run(params) {
     return __awaiter(this, void 0, void 0, function* () {
-        const { github_token, owner, repo, sha, dockerhub_repository, commit_author_email, is_external_pr, is_default_branch, recursiveCallParams, is_bot, log = () => { } } = params;
+        const { github_token, owner, repo, sha, web_dockerhub_repository, commit_author_email, is_external_pr, is_default_branch, recursiveCallParams, is_bot, log = () => { } } = params;
+        log(JSON.stringify(params, null, 2));
         const repository = `${owner}/${repo}`;
         if (is_external_pr === "true") {
+            log("External PR, skipping");
             return {
                 "new_chart_version": "",
                 "new_web_docker_image_tags": "",
@@ -100,6 +102,7 @@ function _run(params) {
             }
             return resp.tag;
         }))();
+        log(`Previous release tag: ${previousReleaseTag !== null && previousReleaseTag !== void 0 ? previousReleaseTag : "none"}`);
         const [previousReleaseVersions, currentVersions] = yield Promise.all([
             previousReleaseTag !== null && previousReleaseTag !== void 0 ? previousReleaseTag : sha,
             sha
@@ -108,68 +111,79 @@ function _run(params) {
             "githubToken": github_token,
             repository
         })));
+        log(JSON.stringify({ previousReleaseVersions, currentVersions }, null, 2));
         if (previousReleaseVersions.chartVersion.major > currentVersions.chartVersion.major) {
             // We are providing a patch for a earlier major.
+            log(`We are providing a patch for a earlier major, re-running fetching only previous releases of v${previousReleaseVersions.chartVersion.major}`);
             return _run(Object.assign(Object.assign({}, params), { "recursiveCallParams": {
                     "major": previousReleaseVersions.chartVersion.major
                 } }));
         }
         if (is_default_branch === "false") {
+            const new_web_docker_image_tags = is_bot === "true" ? "" : `${web_dockerhub_repository.toLowerCase()}:${currentVersions.webVersion}`;
+            log([
+                "We are not on the default branch, not releasing.",
+                new_web_docker_image_tags === "" ? "A bot is pushing this, not pushing docker image." : `Pushing docker image: ${new_web_docker_image_tags}`
+            ].join(" "));
             return {
                 "new_chart_version": "",
                 "release_message": "",
                 "release_target_git_commit_sha": sha,
-                "new_web_docker_image_tags": is_bot === "true" ? "" : `${dockerhub_repository.toLowerCase()}:${currentVersions.webVersion}`
+                new_web_docker_image_tags
             };
         }
         const targetChartVersion = determineTargetChartVersion({
             previousReleaseVersions,
             currentVersions
         });
-        let release_target_git_commit_sha = "";
-        if (SemVer_1.SemVer.compare(targetChartVersion, previousReleaseVersions.chartVersion) !== 0) {
-            log(`Upgrading chart version to: ${SemVer_1.SemVer.stringify(targetChartVersion)}`);
-            const { sha: new_sha } = yield (0, githubCommit_1.githubCommit)({
-                "commitAuthorEmail": commit_author_email,
-                "ref": sha,
-                repository,
-                "token": github_token,
-                "action": ({ repoPath }) => __awaiter(this, void 0, void 0, function* () {
-                    {
-                        const chartFilePath = (0, path_1.join)(repoPath, helmChartDirBasename, "Chart.yaml");
-                        const chartParsed = yaml_1.default.parse(fs.readFileSync(chartFilePath)
-                            .toString("utf8"));
-                        chartParsed["version"] = SemVer_1.SemVer.stringify(targetChartVersion);
-                        fs.writeFileSync(chartFilePath, Buffer.from(yaml_1.default.stringify(chartParsed), "utf8"));
-                    }
-                    {
-                        const readmeFilePath = (0, path_1.join)(repoPath, helmChartDirBasename, "README.md");
-                        let readmeText = fs.readFileSync(readmeFilePath).toString("utf8");
-                        readmeText =
-                            readmeText.replace(/(https:\/\/github\.com\/[\\/]+\/[\\/]+\/blob\/)([^\/]+)(\/README\.md#configuration)/g, (...[, p1, , p3]) => `${p1}v${SemVer_1.SemVer.stringify(currentVersions.apiVersion)}${p3}`);
-                        readmeText =
-                            readmeText.replace(/(https:\/\/github\.com\/[\\/]+\/[\\/]+\/blob\/)([^\/]+)(\/\.env)/g, (...[, p1, , p3]) => `${p1}v${SemVer_1.SemVer.stringify(currentVersions.apiVersion)}${p3}`);
-                        readmeText =
-                            readmeText.replace(/--version "?[^ "]+"?/g, `--version "${SemVer_1.SemVer.stringify(targetChartVersion)}"`);
-                        fs.writeFileSync(readmeFilePath, Buffer.from(readmeText, "utf8"));
-                    }
-                    return {
-                        "message": `Automatic ${SemVer_1.SemVer.bumpType({
-                            "versionBehind": previousReleaseVersions.chartVersion,
-                            "versionAhead": targetChartVersion
-                        })} bump of chart version to ${SemVer_1.SemVer.stringify(targetChartVersion)}`,
-                        "doAddAll": false,
-                        "doCommit": true
-                    };
-                })
-            });
-            (0, assert_1.assert)(new_sha !== undefined);
-            release_target_git_commit_sha = new_sha;
+        if (SemVer_1.SemVer.compare(targetChartVersion, previousReleaseVersions.chartVersion) === 0) {
+            log("No need to release");
+            return {
+                "new_chart_version": "",
+                "release_message": "",
+                "release_target_git_commit_sha": "",
+                "new_web_docker_image_tags": ""
+            };
         }
+        log(`Upgrading chart version to: ${SemVer_1.SemVer.stringify(targetChartVersion)}`);
+        const { sha: release_target_git_commit_sha } = yield (0, githubCommit_1.githubCommit)({
+            "commitAuthorEmail": commit_author_email,
+            "ref": sha,
+            repository,
+            "token": github_token,
+            "action": ({ repoPath }) => __awaiter(this, void 0, void 0, function* () {
+                {
+                    const chartFilePath = (0, path_1.join)(repoPath, helmChartDirBasename, "Chart.yaml");
+                    const chartParsed = yaml_1.default.parse(fs.readFileSync(chartFilePath)
+                        .toString("utf8"));
+                    chartParsed["version"] = SemVer_1.SemVer.stringify(targetChartVersion);
+                    fs.writeFileSync(chartFilePath, Buffer.from(yaml_1.default.stringify(chartParsed), "utf8"));
+                }
+                {
+                    const readmeFilePath = (0, path_1.join)(repoPath, helmChartDirBasename, "README.md");
+                    let readmeText = fs.readFileSync(readmeFilePath).toString("utf8");
+                    readmeText =
+                        readmeText.replace(/(https:\/\/github\.com\/[\\/]+\/[\\/]+\/blob\/)([^\/]+)(\/README\.md#configuration)/g, (...[, p1, , p3]) => `${p1}v${SemVer_1.SemVer.stringify(currentVersions.apiVersion)}${p3}`);
+                    readmeText =
+                        readmeText.replace(/(https:\/\/github\.com\/[\\/]+\/[\\/]+\/blob\/)([^\/]+)(\/\.env)/g, (...[, p1, , p3]) => `${p1}v${SemVer_1.SemVer.stringify(currentVersions.apiVersion)}${p3}`);
+                    readmeText =
+                        readmeText.replace(/--version "?[^ "]+"?/g, `--version "${SemVer_1.SemVer.stringify(targetChartVersion)}"`);
+                    fs.writeFileSync(readmeFilePath, Buffer.from(readmeText, "utf8"));
+                }
+                return {
+                    "message": `Automatic ${SemVer_1.SemVer.bumpType({
+                        "versionBehind": previousReleaseVersions.chartVersion,
+                        "versionAhead": targetChartVersion
+                    })} bump of chart version to ${SemVer_1.SemVer.stringify(targetChartVersion)}`,
+                    "doAddAll": false,
+                    "doCommit": true
+                };
+            })
+        });
         return {
             "new_chart_version": SemVer_1.SemVer.stringify(targetChartVersion),
-            "new_web_docker_image_tags": [SemVer_1.SemVer.stringify(currentVersions.webVersion), "latest"].map(tag => `${dockerhub_repository.toLowerCase()}:${tag}`).join(","),
-            release_target_git_commit_sha,
+            "new_web_docker_image_tags": [SemVer_1.SemVer.stringify(currentVersions.webVersion), "latest"].map(tag => `${web_dockerhub_repository.toLowerCase()}:${tag}`).join(","),
+            "release_target_git_commit_sha": release_target_git_commit_sha !== null && release_target_git_commit_sha !== void 0 ? release_target_git_commit_sha : sha,
             "release_message": generateReleaseMessageBody({
                 "helmChartVersion": SemVer_1.SemVer.stringify(targetChartVersion),
                 "helmChartVersion_previous": SemVer_1.SemVer.stringify(previousReleaseVersions.chartVersion),
@@ -564,7 +578,7 @@ exports.inputNames = [
     "sha",
     "commit_author_email",
     "github_pages_branch_name",
-    "dockerhub_repository",
+    "web_dockerhub_repository",
     "is_external_pr",
     "is_default_branch",
     "commit_author_email",
@@ -609,7 +623,7 @@ function getInputDescription(inputName) {
             "no default provided, required for 'release_helm_chart' action",
             "If the branch does not exist it will be created"
         ].join(" ");
-        case "dockerhub_repository": return [
+        case "web_dockerhub_repository": return [
             "Dockerhub repository name, example: 'inseefrlab/onyxia-web'",
             "for actions that need to create tags."
         ].join(" ");

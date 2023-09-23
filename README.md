@@ -53,7 +53,7 @@ assess_release_criteria:
       with: 
         action_name: assess_release_criteria
         commit_author_email: actions@github.com
-        dockerhub_repository: inseefrlab/onyxia-web
+        web_dockerhub_repository: inseefrlab/onyxia-web
 
 docker_build_push_onyxia_web:
   runs-on: ubuntu-latest
