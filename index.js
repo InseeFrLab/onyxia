@@ -356,7 +356,7 @@ function generateReleaseMessageBody(params) {
     message += `- New: \`${helmChartVersion}\` \n\n`;
     switch (helmChartVersionBumpType) {
         case 'patch':
-            message += `:patch: No API changes. You can upgrade without fear of breaking your install. \n\n`;
+            message += `:adhesive_bandage: No API changes. You can upgrade without fear of breaking your install. \n\n`;
             break;
         case 'minor':
             message += `:new: New parameters are available in the configuration. No breaking changes with the previous release. [Documentation](https://github.com/InseeFrLab/onyxia/tree/main/helm-chart) \n\n`;
@@ -371,7 +371,7 @@ function generateReleaseMessageBody(params) {
         message += `- New: \`${webVersion}\` \n\n`;
         switch (webVersionBumpType) {
             case 'patch':
-                message += `:patch: No API changes. You can upgrade without fear of breaking your install. \n\n`;
+                message += `:adhesive_bandage: No API changes. You can upgrade without fear of breaking your install. \n\n`;
                 break;
             case 'minor':
                 message += `:new: New parameters are available in the configuration. No breaking changes with the previous release. [Documentation](https://github.com/InseeFrLab/onyxia/tree/main/helm-chart) \n\n`;
@@ -387,7 +387,7 @@ function generateReleaseMessageBody(params) {
         message += `- New: \`${onyxiaApiVersion}\` \n\n`;
         switch (onyxiaApi_VersionBumpType) {
             case 'patch':
-                message += `:patch: No API changes. You can upgrade without fear of breaking your install. \n\n`;
+                message += `:adhesive_bandage: No API changes. You can upgrade without fear of breaking your install. \n\n`;
                 break;
             case 'minor':
                 message += `:new: New parameters are available in the configuration. No breaking changes with the previous release. [Documentation](https://github.com/InseeFrLab/onyxia/tree/main/helm-chart) \n\n`;
