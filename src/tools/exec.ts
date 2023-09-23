@@ -3,7 +3,7 @@ import * as child_process from "child_process";
 
 /** Same as execSync but async */
 export function exec(cmd: string, options?: child_process.ExecOptions & { log?: (message: string)=> void;}): Promise<string> {
-    options?.log?.(`$ ${cmd}`);
+    options?.log?.(`$ ${cmd} on ${options?.cwd ?? process.cwd()}}`);
     return new Promise((resolve, reject) =>
         child_process.exec(cmd, { ...(options ?? {}), "encoding": "utf8" }, (error, stdout, stderr) => {
             if (!!error) {
