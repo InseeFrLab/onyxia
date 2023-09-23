@@ -52,48 +52,27 @@ export async function githubCommit(params: {
 
     const mutex = (mutexes[mutexKey] ??= new Mutex());
 
-    const sha = await mutex.runExclusive(async function callee(): Promise<string | undefined> {
+    const sha = await mutex.runExclusive(async (): Promise<string | undefined> => {
 
         const repoHash = crypto
             .createHash("sha1")
             .update(mutexKey)
             .digest("hex");
-        const repoPath = pathJoin(cacheDir, repoHash);
 
-        const repoExists = await fs.promises
-            .stat(repoPath)
-            .then(() => true)
-            .catch(() => false);
+        const repoPath = pathJoin(cacheDir, repoHash);
 
         const url = `https://${repository.split("/")[0]}:${token}@github.com/${repository}.git`;
 
-        if (!repoExists) {
-            // Perform git clone
+        await fs.promises.rm(repoPath, { "recursive": true, "force": true });
 
-
-            if (ref === undefined) {
-                await exec(`git clone --depth 1 ${url} ${repoPath}`);
-            } else {
-                if (isSha(ref)) {
-                    await exec(`git clone ${url} ${repoPath}`);
-                    await exec(`git checkout ${ref}`, { "cwd": repoPath });
-                } else {
-                    await exec(`git clone --branch ${ref} --depth 1 ${url} ${repoPath}`);
-                }
-            }
+        if (ref === undefined) {
+            await exec(`git clone --depth 1 ${url} ${repoPath}`);
         } else {
-            // Perform git pull
-
-            try {
-                await exec(`git pull`, { "cwd": repoPath });
-            } catch {
-                console.log("There's been a force push, so we're going to re-clone the repo");
-
-                await fs.promises.rm(repoPath, { "recursive": true, "force": true });
-
-                await callee();
-
-                return;
+            if (isSha(ref)) {
+                await exec(`git clone ${url} ${repoPath}`);
+                await exec(`git checkout ${ref}`, { "cwd": repoPath });
+            } else {
+                await exec(`git clone --branch ${ref} --depth 1 ${url} ${repoPath}`);
             }
         }
 
@@ -102,6 +81,27 @@ export async function githubCommit(params: {
         if (!changesResult.doCommit) {
             return undefined;
         }
+
+        if( ref !== undefined && isSha(ref) ){
+
+            const defaultBranch = await (async () => {
+                const fullRef = (await exec("git symbolic-ref refs/remotes/origin/HEAD", { "cwd": repoPath })).toString().trim();
+                const branchName = fullRef.replace('refs/remotes/origin/', '');
+                return branchName;
+            })();
+
+            await exec(`git checkout ${defaultBranch}`, { "cwd": repoPath });
+
+            await exec(`git pull`, { "cwd": repoPath });
+
+            const currentSha = (await exec(`git rev-parse HEAD`, { "cwd": repoPath })).trim();
+
+            if( currentSha !== ref ){
+                throw new Error(`The commit ${ref} is not the head of ${defaultBranch}, can't automatically commit`);
+            }
+
+        }
+
 
         await exec(`git config --local user.email "${commitAuthorEmail}"`, {
             "cwd": repoPath

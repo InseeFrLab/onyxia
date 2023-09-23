@@ -1092,68 +1092,61 @@ function githubCommit(params) {
         }));
         const mutexKey = `${repository}${ref !== null && ref !== void 0 ? ref : ""}`;
         const mutex = ((_a = mutexes[mutexKey]) !== null && _a !== void 0 ? _a : (mutexes[mutexKey] = new async_mutex_1.Mutex()));
-        const sha = yield mutex.runExclusive(function callee() {
-            return __awaiter(this, void 0, void 0, function* () {
-                const repoHash = crypto_1.default
-                    .createHash("sha1")
-                    .update(mutexKey)
-                    .digest("hex");
-                const repoPath = (0, path_1.join)(cacheDir, repoHash);
-                const repoExists = yield fs.promises
-                    .stat(repoPath)
-                    .then(() => true)
-                    .catch(() => false);
-                const url = `https://${repository.split("/")[0]}:${token}@github.com/${repository}.git`;
-                if (!repoExists) {
-                    // Perform git clone
-                    if (ref === undefined) {
-                        yield exec(`git clone --depth 1 ${url} ${repoPath}`);
-                    }
-                    else {
-                        if (isSha(ref)) {
-                            yield exec(`git clone ${url} ${repoPath}`);
-                            yield exec(`git checkout ${ref}`, { "cwd": repoPath });
-                        }
-                        else {
-                            yield exec(`git clone --branch ${ref} --depth 1 ${url} ${repoPath}`);
-                        }
-                    }
+        const sha = yield mutex.runExclusive(() => __awaiter(this, void 0, void 0, function* () {
+            const repoHash = crypto_1.default
+                .createHash("sha1")
+                .update(mutexKey)
+                .digest("hex");
+            const repoPath = (0, path_1.join)(cacheDir, repoHash);
+            const url = `https://${repository.split("/")[0]}:${token}@github.com/${repository}.git`;
+            yield fs.promises.rm(repoPath, { "recursive": true, "force": true });
+            if (ref === undefined) {
+                yield exec(`git clone --depth 1 ${url} ${repoPath}`);
+            }
+            else {
+                if (isSha(ref)) {
+                    yield exec(`git clone ${url} ${repoPath}`);
+                    yield exec(`git checkout ${ref}`, { "cwd": repoPath });
                 }
                 else {
-                    // Perform git pull
-                    try {
-                        yield exec(`git pull`, { "cwd": repoPath });
-                    }
-                    catch (_a) {
-                        console.log("There's been a force push, so we're going to re-clone the repo");
-                        yield fs.promises.rm(repoPath, { "recursive": true, "force": true });
-                        yield callee();
-                        return;
-                    }
+                    yield exec(`git clone --branch ${ref} --depth 1 ${url} ${repoPath}`);
                 }
-                const changesResult = yield action({ repoPath });
-                if (!changesResult.doCommit) {
-                    return undefined;
+            }
+            const changesResult = yield action({ repoPath });
+            if (!changesResult.doCommit) {
+                return undefined;
+            }
+            if (ref !== undefined && isSha(ref)) {
+                const defaultBranch = yield (() => __awaiter(this, void 0, void 0, function* () {
+                    const fullRef = (yield exec("git symbolic-ref refs/remotes/origin/HEAD", { "cwd": repoPath })).toString().trim();
+                    const branchName = fullRef.replace('refs/remotes/origin/', '');
+                    return branchName;
+                }))();
+                yield exec(`git checkout ${defaultBranch}`, { "cwd": repoPath });
+                yield exec(`git pull`, { "cwd": repoPath });
+                const currentSha = (yield exec(`git rev-parse HEAD`, { "cwd": repoPath })).trim();
+                if (currentSha !== ref) {
+                    throw new Error(`The commit ${ref} is not the head of ${defaultBranch}, can't automatically commit`);
                 }
-                yield exec(`git config --local user.email "${commitAuthorEmail}"`, {
-                    "cwd": repoPath
-                });
-                yield exec(`git config --local user.name "${commitAuthorEmail.split("@")[0]}"`, { "cwd": repoPath });
-                if (changesResult.doAddAll) {
-                    yield exec(`git add -A`, { "cwd": repoPath });
-                }
-                //NOTE: This can fail if there are no changes to commit
-                try {
-                    yield exec(`git commit -am "${changesResult.message}"`, { "cwd": repoPath });
-                    yield exec(`git push ${url}`, { "cwd": repoPath });
-                }
-                catch (_b) {
-                    return undefined;
-                }
-                const sha = (yield exec(`git rev-parse HEAD`, { "cwd": repoPath })).trim();
-                return sha;
+            }
+            yield exec(`git config --local user.email "${commitAuthorEmail}"`, {
+                "cwd": repoPath
             });
-        });
+            yield exec(`git config --local user.name "${commitAuthorEmail.split("@")[0]}"`, { "cwd": repoPath });
+            if (changesResult.doAddAll) {
+                yield exec(`git add -A`, { "cwd": repoPath });
+            }
+            //NOTE: This can fail if there are no changes to commit
+            try {
+                yield exec(`git commit -am "${changesResult.message}"`, { "cwd": repoPath });
+                yield exec(`git push ${url}`, { "cwd": repoPath });
+            }
+            catch (_b) {
+                return undefined;
+            }
+            const sha = (yield exec(`git rev-parse HEAD`, { "cwd": repoPath })).trim();
+            return sha;
+        }));
         return { sha };
     });
 }
