@@ -32,7 +32,7 @@ fs.writeFileSync(
             `    description: '${getOutputDescription(outputName).replace(/'/g,"''")}'`
         ].join("\n")),
         `runs:`,
-        `  using: 'node12'`,
+        `  using: 'node20'`,
         `  main: '${packageJsonParsed.main}'`,
     ].join("\n"), "utf8")
 );
