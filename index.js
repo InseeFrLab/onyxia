@@ -95,7 +95,9 @@ function _run(params) {
                 "major": recursiveCallParams === null || recursiveCallParams === void 0 ? void 0 : recursiveCallParams.major,
                 "rcPolicy": "IGNORE RC"
             });
-            (0, assert_1.assert)(resp !== undefined);
+            if (resp === undefined) {
+                return undefined;
+            }
             if (SemVer_1.SemVer.compare(resp.version, SemVer_1.SemVer.parse("2.29.4")) <= 0) {
                 // It's the first time we release, the previous release where from Onyxia web only
                 return undefined;

@@ -91,7 +91,9 @@ export async function _run(
             "rcPolicy": "IGNORE RC"
         });
 
-        assert(resp !== undefined);
+        if( resp === undefined ){
+            return undefined;
+        }
 
         if (SemVer.compare(resp.version, SemVer.parse("2.29.4")) <= 0) {
             // It's the first time we release, the previous release where from Onyxia web only
