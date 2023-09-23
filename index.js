@@ -54,9 +54,9 @@ const path_1 = __nccwpck_require__(1017);
 const assert_1 = __nccwpck_require__(8078);
 const yaml_1 = __importDefault(__nccwpck_require__(4083));
 const computeDirectoryDigest_1 = __nccwpck_require__(1021);
-const child_process = __importStar(__nccwpck_require__(2081));
 const githubCommit_1 = __nccwpck_require__(6397);
 const Deferred_1 = __nccwpck_require__(689);
+const exec_1 = __nccwpck_require__(4269);
 const helmChartDirBasename = "helm-chart";
 const { getActionParams } = (0, inputHelper_1.getActionParamsFactory)({
     "inputNameSubset": [
@@ -232,21 +232,22 @@ function readVersions(params) {
                     return SemVer_1.SemVer.parse(value);
                 })(),
                 "chartDigest": (0, computeDirectoryDigest_1.computeDirectoryDigest)({ "dirPath": (0, path_1.join)(repoPath, helmChartDirBasename) }),
-                "apiVersion": (() => {
+                "apiVersion": yield (() => __awaiter(this, void 0, void 0, function* () {
+                    const { exec } = (0, exec_1.createLoggedExec)({ log });
                     const apiSubmoduleDirPath = (0, path_1.join)(repoPath, "api");
                     log(`==============> apiSubmoduleDirPath: ${apiSubmoduleDirPath}`);
-                    child_process.execSync("git submodule update --init --recursive", { "cwd": repoPath });
+                    yield exec("git submodule update --init --recursive", { "cwd": repoPath });
                     log(`==============> 1`);
-                    const out = child_process.execFileSync("ls -la", { "cwd": apiSubmoduleDirPath });
-                    log(`==============> 2 ${out}`);
-                    const out2 = child_process.execFileSync("ls -la", { "cwd": repoPath });
+                    const out2 = yield exec("ls -la", { "cwd": repoPath });
                     log(`==============> 2 ${out2}`);
-                    child_process.execFileSync("git fetch --tags", { "cwd": apiSubmoduleDirPath });
+                    const out = yield exec("ls -la", { "cwd": apiSubmoduleDirPath });
+                    log(`==============> 2 ${out}`);
+                    yield exec("git fetch --tags", { "cwd": apiSubmoduleDirPath });
                     log(`==============> 2`);
-                    child_process.execFileSync("git rev-parse HEAD", { "cwd": apiSubmoduleDirPath });
-                    const output = child_process.execFileSync("git tag --contains HEAD", { "cwd": apiSubmoduleDirPath });
-                    return SemVer_1.SemVer.parse(output.toString("utf8").trim());
-                })()
+                    yield exec("git rev-parse HEAD", { "cwd": apiSubmoduleDirPath });
+                    const output = yield exec("git tag --contains HEAD", { "cwd": apiSubmoduleDirPath });
+                    return SemVer_1.SemVer.parse(output.trim());
+                }))()
             });
             return { "doCommit": false };
         })

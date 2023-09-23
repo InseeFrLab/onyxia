@@ -12,6 +12,7 @@ import { computeDirectoryDigest } from "../tools/computeDirectoryDigest";
 import * as child_process from "child_process";
 import { githubCommit } from "../tools/githubCommit";
 import { Deferred } from "evt/tools/Deferred";
+import { createLoggedExec } from "../tools/exec";
 
 const helmChartDirBasename = "helm-chart";
 
@@ -335,33 +336,36 @@ function readVersions(
 
                 })(),
                 "chartDigest": computeDirectoryDigest({ "dirPath": pathJoin(repoPath, helmChartDirBasename) }),
-                "apiVersion": (() => {
+                "apiVersion": await (async () => {
+
+                    const { exec } = createLoggedExec({ log });
 
                     const apiSubmoduleDirPath = pathJoin(repoPath, "api");
 
                     log(`==============> apiSubmoduleDirPath: ${apiSubmoduleDirPath}`);
 
-                    child_process.execSync("git submodule update --init --recursive", { "cwd": repoPath });
+                    await exec("git submodule update --init --recursive", { "cwd": repoPath });
 
                     log(`==============> 1`);
 
-                    const out= child_process.execFileSync("ls -la", { "cwd": apiSubmoduleDirPath });
-
-                    log(`==============> 2 ${out}`);
-
-                    const out2= child_process.execFileSync("ls -la", { "cwd": repoPath });
+                    const out2= await exec("ls -la", { "cwd": repoPath });
 
                     log(`==============> 2 ${out2}`);
 
-                    child_process.execFileSync("git fetch --tags", { "cwd": apiSubmoduleDirPath });
+                    const out= await exec("ls -la", { "cwd": apiSubmoduleDirPath });
+
+                    log(`==============> 2 ${out}`);
+
+
+                    await exec("git fetch --tags", { "cwd": apiSubmoduleDirPath });
 
                     log(`==============> 2`);
 
-                    child_process.execFileSync("git rev-parse HEAD", { "cwd": apiSubmoduleDirPath });
+                    await exec("git rev-parse HEAD", { "cwd": apiSubmoduleDirPath });
 
-                    const output = child_process.execFileSync("git tag --contains HEAD", { "cwd": apiSubmoduleDirPath });
+                    const output = await exec("git tag --contains HEAD", { "cwd": apiSubmoduleDirPath });
 
-                    return SemVer.parse(output.toString("utf8").trim());
+                    return SemVer.parse(output.trim());
 
                 })()
             });
