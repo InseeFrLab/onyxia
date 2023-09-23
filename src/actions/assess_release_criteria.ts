@@ -21,7 +21,7 @@ const { getActionParams } = getActionParamsFactory({
         "repo",
         "sha",
         "github_token",
-        "commit_author_email",
+        "automatic_commit_author_email",
         "web_dockerhub_repository",
         "is_external_pr",
         "is_default_branch",
@@ -54,7 +54,7 @@ export async function _run(
         repo,
         sha,
         web_dockerhub_repository,
-        commit_author_email,
+        automatic_commit_author_email,
         is_external_pr,
         is_default_branch,
         recursiveCallParams,
@@ -177,7 +177,7 @@ export async function _run(
     log(`Upgrading chart version to: ${SemVer.stringify(targetChartVersion)}`);
 
     const { sha: release_target_git_commit_sha } = await githubCommit({
-        "commitAuthorEmail": commit_author_email,
+        "commitAuthorEmail": automatic_commit_author_email,
         "ref": sha,
         repository,
         "token": github_token,

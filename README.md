@@ -52,7 +52,7 @@ assess_release_criteria:
       id: _
       with: 
         action_name: assess_release_criteria
-        commit_author_email: actions@github.com
+        automatic_commit_author_email: actions@github.com
         web_dockerhub_repository: inseefrlab/onyxia-web
 
 docker_build_push_onyxia_web:

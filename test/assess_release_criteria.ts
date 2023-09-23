@@ -7,7 +7,7 @@ run({
         "owner": "InseeFrLab",
         "repo": "onyxia",
         "sha": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
-        "commit_author_email": "actions@github.com",
+        "automatic_commit_author_email": "actions@github.com",
     },
     "core": {
         "debug": console.log,

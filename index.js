@@ -64,7 +64,7 @@ const { getActionParams } = (0, inputHelper_1.getActionParamsFactory)({
         "repo",
         "sha",
         "github_token",
-        "commit_author_email",
+        "automatic_commit_author_email",
         "web_dockerhub_repository",
         "is_external_pr",
         "is_default_branch",
@@ -74,7 +74,7 @@ const { getActionParams } = (0, inputHelper_1.getActionParamsFactory)({
 const { setOutput } = (0, outputHelper_1.setOutputFactory)();
 function _run(params) {
     return __awaiter(this, void 0, void 0, function* () {
-        const { github_token, owner, repo, sha, web_dockerhub_repository, commit_author_email, is_external_pr, is_default_branch, recursiveCallParams, is_bot, log = () => { } } = params;
+        const { github_token, owner, repo, sha, web_dockerhub_repository, automatic_commit_author_email, is_external_pr, is_default_branch, recursiveCallParams, is_bot, log = () => { } } = params;
         log(JSON.stringify(params, null, 2));
         const repository = `${owner}/${repo}`;
         if (is_external_pr === "true") {
@@ -147,7 +147,7 @@ function _run(params) {
         }
         log(`Upgrading chart version to: ${SemVer_1.SemVer.stringify(targetChartVersion)}`);
         const { sha: release_target_git_commit_sha } = yield (0, githubCommit_1.githubCommit)({
-            "commitAuthorEmail": commit_author_email,
+            "commitAuthorEmail": automatic_commit_author_email,
             "ref": sha,
             repository,
             "token": github_token,
@@ -463,7 +463,7 @@ const { getActionParams } = (0, inputHelper_1.getActionParamsFactory)({
         "repo",
         "sha",
         "github_token",
-        "commit_author_email"
+        "automatic_commit_author_email"
     ]
 });
 function _run(params) {
@@ -576,12 +576,11 @@ exports.inputNames = [
     "owner",
     "repo",
     "sha",
-    "commit_author_email",
+    "automatic_commit_author_email",
     "github_pages_branch_name",
     "web_dockerhub_repository",
     "is_external_pr",
     "is_default_branch",
-    "commit_author_email",
     "is_bot"
 ];
 function getInputDescription(inputName) {
@@ -614,7 +613,7 @@ function getInputDescription(inputName) {
             "If not provided, the good default will be used",
             "github.sha"
         ].join(" ");
-        case "commit_author_email": return [
+        case "automatic_commit_author_email": return [
             "In actions that perform a git commit, the email of the author of the commit.",
             "Default to actions@github.com"
         ].join(" ");
@@ -648,7 +647,7 @@ function getInputDefault(inputName) {
         case "repo": return "${{github.event.repository.name}}";
         case "github_token": return "${{ github.token }}";
         case "sha": return "${{ github.sha }}";
-        case "commit_author_email": return "actions@github.com";
+        case "automatic_commit_author_email": return "actions@github.com";
         case "is_external_pr":
             return "${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository }}";
         case "is_default_branch": return "${{ github.event_name == 'push' && github.event.ref == 'refs/heads/' + github.event.repository.default_branch }}";

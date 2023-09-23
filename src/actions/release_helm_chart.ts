@@ -9,7 +9,7 @@ const { getActionParams } = getActionParamsFactory({
         "repo",
         "sha",
         "github_token",
-        "commit_author_email"
+        "automatic_commit_author_email"
     ] as const
 });
 

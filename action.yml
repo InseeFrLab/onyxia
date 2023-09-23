@@ -23,7 +23,7 @@ inputs:
     required: false
     description: 'If not provided, the good default will be used github.sha'
     default: '${{ github.sha }}'
-  commit_author_email:
+  automatic_commit_author_email:
     required: false
     description: 'In actions that perform a git commit, the email of the author of the commit. Default to actions@github.com'
     default: 'actions@github.com'
@@ -36,19 +36,15 @@ inputs:
   is_external_pr:
     required: false
     description: 'Tell if the sha correspond to a commit from a forked repository Do not provide this parameter explicitly, it will be set automatically'
-    default: '${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository }}'
+    default: '${{ github.event_name == ''pull_request'' && github.event.pull_request.head.repo.full_name != github.repository }}'
   is_default_branch:
     required: false
     description: 'Tell if the sha correspond to a commit from the default branch Do not provide this parameter explicitly, it will be set automatically'
-    default: '${{ github.event_name == 'push' && github.event.ref == 'refs/heads/' + github.event.repository.default_branch }}'
-  commit_author_email:
-    required: false
-    description: 'In actions that perform a git commit, the email of the author of the commit. Default to actions@github.com'
-    default: 'actions@github.com'
+    default: '${{ github.event_name == ''push'' && github.event.ref == ''refs/heads/'' + github.event.repository.default_branch }}'
   is_bot:
     required: false
     description: 'Tell if the sha correspond to a commit from a bot Do not provide this parameter explicitly, it will be set automatically'
-    default: '${{ github.actor.endsWith('[bot]') }}'
+    default: '${{ github.actor.endsWith(''[bot]'') }}'
 outputs:
   new_chart_version:
     description: 'Output of assess_release_criteria, string, Example ''1.2.3'' or the empty string if no need for release'

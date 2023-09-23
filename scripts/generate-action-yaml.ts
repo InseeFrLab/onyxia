@@ -4,6 +4,8 @@ import * as path from "path";
 import { inputNames, getInputDescription, getInputDefault } from "../src/inputHelper";
 import { outputNames, getOutputDescription } from "../src/outputHelper";
 import { id } from "tsafe/id";
+import { exclude } from "tsafe/exclude";
+
 
 const projectRoot = path.join(__dirname, "..");
 
@@ -22,7 +24,7 @@ fs.writeFileSync(
             `  ${inputName}:`,
             `    required: ${i === 0 ? "true" : "false"}`,
             `    description: '${getInputDescription(inputName).replace(/'/g,"''")}'`,
-            ...[getInputDefault(inputName)].filter(x=>x!==undefined).map(s=>`    default: '${s}'`)
+            ...[getInputDefault(inputName)].filter(exclude(undefined)).map(s=>`    default: '${s.replace(/'/g,"''")}'`)
         ].join("\n")),
         ...(id<readonly string[]>(outputNames).length === 0 ? [] : [`outputs:`]),
         ...outputNames.map((outputName, i) => [

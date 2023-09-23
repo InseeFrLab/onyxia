@@ -9,12 +9,11 @@ export const inputNames = [
     "owner",
     "repo",
     "sha",
-    "commit_author_email",
+    "automatic_commit_author_email",
     "github_pages_branch_name",
     "web_dockerhub_repository",
     "is_external_pr",
     "is_default_branch",
-    "commit_author_email",
     "is_bot"
 ] as const;
 
@@ -52,7 +51,7 @@ export function getInputDescription(inputName: typeof inputNames[number]): strin
             "If not provided, the good default will be used",
             "github.sha"
         ].join(" ")
-        case "commit_author_email": return [
+        case "automatic_commit_author_email": return [
             "In actions that perform a git commit, the email of the author of the commit.",
             "Default to actions@github.com"
         ].join(" ");
@@ -87,7 +86,7 @@ export function getInputDefault(inputName: typeof inputNames[number]): string | 
         case "repo": return "${{github.event.repository.name}}";
         case "github_token": return "${{ github.token }}";
         case "sha": return "${{ github.sha }}";
-        case "commit_author_email": return "actions@github.com";
+        case "automatic_commit_author_email": return "actions@github.com";
         case "is_external_pr": 
             return "${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository }}";
         case "is_default_branch": return "${{ github.event_name == 'push' && github.event.ref == 'refs/heads/' + github.event.repository.default_branch }}";
