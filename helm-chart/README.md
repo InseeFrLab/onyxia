@@ -15,18 +15,18 @@ EOF
 helm install onyxia onyxia/onyxia --version "4.0.1" -f onyxia-values.yaml
 ```
 
-Complete installation guide: https://onyxia.sh/
+Complete installation guide: https://onyxia.sh
 
-## Parameter Documentation
+## Configuration
 
--   [`api` Parameters](https://github.com/InseeFrLab/onyxia-api/blob/v0.30/README.md#configuration)
--   [`web` Parameters](https://github.com/InseeFrLab/onyxia/blob/v2.29.4/.env)
+Documentation reference for the available configuration parameter of the Onyxia Helm Chart.
+
+-   [`api`](https://github.com/InseeFrLab/onyxia-api/blob/v0.30/README.md#configuration)
+-   [`web`](https://github.com/InseeFrLab/onyxia/blob/v2.29.4/.env)
 
 > **Note:** The links above are automatically updated they always point to the relevant documentation for this specific version of the Onyxia Helm Chart.
 
-Below is a sample `onyxia-values.yaml` file that illustrates where to specify the `api` and `web`.
-
-### Sample `onyxia-values.yaml`
+Below is a sample `onyxia-values.yaml` file that illustrates where to specify the `api` and `web` configuration parameters.
 
 ```diff
  ingress:
@@ -55,3 +55,10 @@ Below is a sample `onyxia-values.yaml` file that illustrates where to specify th
 +                "name":"Demo",
 +                # ...
 ```
+
+## Custom Catalogs Configuration
+
+If you are building your own service catalog for Onyxia ([learn how](https://docs.onyxia.sh/contributing/catalog-of-services)).  
+Here are defined the onyxia reserved parameter and the structure of the dynamic context:
+
+[`values.schema.json` `"x-onyxia"` specifications](https://github.com/InseeFrLab/onyxia/blob/v2.29.4/src/core/ports/OnyxiaApi/XOnyxia.ts)

@@ -9,7 +9,7 @@ import { usecases } from "./usecases";
 import type { SecretsManager } from "./ports/SecretsManager";
 import type { S3Client } from "./ports/S3Client";
 import type { ReturnType } from "tsafe/ReturnType";
-import type { Language } from "./ports/OnyxiaApi";
+import type { Language } from "./ports/OnyxiaApi/Language";
 
 type CoreParams = {
     /** Empty string for using mock */
