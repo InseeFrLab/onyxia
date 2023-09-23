@@ -233,7 +233,7 @@ export async function _run(
 
 
                 valuesParsed.setIn(["web", "image", "tag"], SemVer.stringify(currentVersions.webVersion));
-                valuesParsed.setIn(["api", "image", "tag"], `v${currentVersions.apiVersion.parsedFrom}`);
+                valuesParsed.setIn(["api", "image", "tag"], currentVersions.apiVersion.parsedFrom);
 
                 fs.writeFileSync(
                     valuesFilePath,
