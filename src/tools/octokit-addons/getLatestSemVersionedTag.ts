@@ -1,7 +1,7 @@
 
 import { listTagsFactory } from "./listTags";
 import type { Octokit } from "@octokit/rest";
-import { NpmModuleVersion } from "../NpmModuleVersion";
+import { SemVer } from "../SemVer";
 
 export function getLatestSemVersionedTagFactory(params: { octokit: Octokit; }) {
 
@@ -16,22 +16,22 @@ export function getLatestSemVersionedTagFactory(params: { octokit: Octokit; }) {
         }
     ): Promise<{
         tag: string;
-        version: NpmModuleVersion;
+        version: SemVer;
     } | undefined> {
 
         const { owner, repo, rcPolicy, major } = params;
 
-        const semVersionedTags: { tag: string; version: NpmModuleVersion; }[] = [];
+        const semVersionedTags: { tag: string; version: SemVer; }[] = [];
 
         const { listTags } = listTagsFactory({ octokit });
 
         for await (const tag of listTags({ owner, repo })) {
 
-            let version: NpmModuleVersion;
+            let version: SemVer;
 
             try {
 
-                version = NpmModuleVersion.parse(tag.replace(/^[vV]?/, ""));
+                version = SemVer.parse(tag.replace(/^[vV]?/, ""));
 
                 if (major !== undefined && version.major !== major) {
                     continue;
@@ -60,7 +60,7 @@ export function getLatestSemVersionedTagFactory(params: { octokit: Octokit; }) {
         }
 
         return semVersionedTags
-            .sort(({ version: vX }, { version: vY }) => NpmModuleVersion.compare(vY, vX))[0];
+            .sort(({ version: vX }, { version: vY }) => SemVer.compare(vY, vX))[0];
 
     };
 

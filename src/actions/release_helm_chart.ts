@@ -1,5 +1,5 @@
 
-import * as realCore from "@actions/core";
+import * as core from "@actions/core";
 import { getActionParamsFactory } from "../inputHelper";
 
 
@@ -15,20 +15,17 @@ const { getActionParams } = getActionParamsFactory({
 
 type Params = ReturnType<typeof getActionParams>;
 
-type CoreLike = {
-    debug: (message: string) => void;
-};
 
 
 export async function _run(
-    params: {
-        actionParams: Params,
-        core: CoreLike
+    params: Params & {
+        log?: (message: string) => void;
     }
 ): Promise<void> {
 
-    const { actionParams, core } = params;
+    const {  log = ()=>{}  } = params;
 
+    log("TODO!");
 
     return null as any;
 
@@ -36,9 +33,11 @@ export async function _run(
 
 export async function run() {
 
-    const actionParams = getActionParams();
+    const params = getActionParams();
 
-    await _run({ actionParams, "core": realCore });
-
+    await _run({
+        ...params,
+        "log": core.debug.bind(core)
+    });
 
 }

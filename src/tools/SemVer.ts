@@ -9,6 +9,10 @@ export type SemVer = {
 
 export namespace SemVer {
 
+    const bumpTypes= ["major", "minor", "patch",  "rc", "no bump"] as const;
+
+    export type BumpType= typeof bumpTypes[number];
+
     export function parse(versionStr: string): SemVer {
 
         const match = versionStr.match(/^([0-9]+)\.([0-9]+)(?:\.([0-9]+))?(?:-rc.([0-9]+))?$/);
@@ -73,14 +77,14 @@ export namespace SemVer {
 
     export function bumpType(
         params: {
-            versionBehindStr: string;
-            versionAheadStr: string;
+            versionBehind: string | SemVer;
+            versionAhead: string | SemVer;
         }
-    ): "major" | "minor" | "patch" | "rc" | "same" {
+    ): BumpType | "no bump" {
 
 
-        const versionAhead = parse(params.versionAheadStr);
-        const versionBehind = parse(params.versionBehindStr);
+        const versionAhead = typeof params.versionAhead === "string" ?  parse(params.versionAhead): params.versionAhead ;
+        const versionBehind = typeof params.versionBehind === "string" ?  parse(params.versionBehind): params.versionBehind ;
 
         if (compare(versionBehind, versionAhead) === 1) {
             throw new Error(`Version regression ${versionBehind} -> ${versionAhead}`);
@@ -92,7 +96,7 @@ export namespace SemVer {
             }
         }
 
-        return "same";
+        return "no bump";
 
     }
 

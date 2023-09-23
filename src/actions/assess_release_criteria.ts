@@ -1,12 +1,9 @@
-
-import fetch from "node-fetch";
 import * as core from "@actions/core";
 import { setOutputFactory } from "../outputHelper";
 import { getActionParamsFactory } from "../inputHelper";
 import { SemVer } from "../tools/SemVer";
 import { createOctokit } from "../tools/createOctokit";
 import { getLatestSemVersionedTagFactory } from "../tools/octokit-addons/getLatestSemVersionedTag";
-import type { Param0 } from "tsafe";
 import * as fs from "fs";
 import { join as pathJoin } from "path";
 import { assert } from "tsafe/assert";
@@ -15,7 +12,8 @@ import { computeDirectoryDigest } from "../tools/computeDirectoryDigest";
 import * as child_process from "child_process";
 import { githubCommit } from "../tools/githubCommit";
 import { Deferred } from "evt/tools/Deferred";
-import { id } from "tsafe/id";
+
+const helmChartDirBasename = "helm-chart";
 
 const { getActionParams } = getActionParamsFactory({
     "inputNameSubset": [
@@ -24,15 +22,14 @@ const { getActionParams } = getActionParamsFactory({
         "sha",
         "github_token",
         "commit_author_email",
-        "dockerhub_repository"
+        "dockerhub_repository",
+        "is_external_pr",
+        "is_default_branch",
+        "is_bot"
     ] as const
 });
 
 type Params = ReturnType<typeof getActionParams>;
-
-type CoreLike = {
-    debug: (message: string) => void;
-};
 
 const { setOutput } = setOutputFactory<
     | "new_chart_version"
@@ -42,10 +39,27 @@ const { setOutput } = setOutputFactory<
 >();
 
 export async function _run(
-    params: Params & { log?: (message: string) => void; }
+    params: Params & {
+        log?: (message: string) => void;
+        /** Never provided, set automatically */
+        recursiveCallParams?: {
+            major: number;
+        }
+    }
 ): Promise<Parameters<typeof setOutput>[0]> {
 
-    const { github_token, owner, repo, sha, dockerhub_repository, commit_author_email, log = console.log.bind(console) } = params;
+    const { github_token, owner, repo, sha, dockerhub_repository, commit_author_email, is_external_pr, is_default_branch, recursiveCallParams, is_bot, log = ()=> {} } = params;
+
+    const repository = `${owner}/${repo}` as const;
+
+    if (is_external_pr === "true") {
+        return {
+            "new_chart_version": "",
+            "new_web_docker_image_tags": "",
+            "release_message": "",
+            "release_target_git_commit_sha": ""
+        };
+    }
 
     const previousReleaseTag = await (async () => {
 
@@ -55,7 +69,9 @@ export async function _run(
 
         const resp = await getLatestSemVersionedTag({
             owner,
-            repo
+            repo,
+            "major": recursiveCallParams?.major,
+            "rcPolicy": "IGNORE RC"
         });
 
         assert(resp !== undefined);
@@ -80,12 +96,127 @@ export async function _run(
             readVersions({
                 gitRef,
                 "githubToken": github_token,
-                "repository": `${owner}/${repo}`
+                repository
             }))
     );
 
+    if (previousReleaseVersions.chartVersion.major > currentVersions.chartVersion.major) {
+        // We are providing a patch for a earlier major.
+        return _run({
+            ...params,
+            "recursiveCallParams": {
+                "major": previousReleaseVersions.chartVersion.major
+            }
+        });
+    }
 
-    return null as any;
+    if (is_default_branch === "false") {
+        return {
+            "new_chart_version": "",
+            "release_message": "",
+            "release_target_git_commit_sha": sha,
+            "new_web_docker_image_tags": is_bot === "true" ? "" : `${dockerhub_repository.toLowerCase()}:${currentVersions.webVersion}`
+        };
+    }
+
+    const targetChartVersion = determineTargetChartVersion({
+        previousReleaseVersions,
+        currentVersions
+    });
+
+    let release_target_git_commit_sha = "";
+
+    if (SemVer.compare(targetChartVersion, previousReleaseVersions.chartVersion) !== 0) {
+
+        log(`Upgrading chart version to: ${SemVer.stringify(targetChartVersion)}`);
+
+        const { sha: new_sha } = await githubCommit({
+            "commitAuthorEmail": commit_author_email,
+            "ref": sha,
+            repository,
+            "token": github_token,
+            "action": async ({ repoPath }) => {
+
+                {
+
+                    const chartFilePath = pathJoin(repoPath, helmChartDirBasename, "Chart.yaml");
+
+                    const chartParsed = YAML.parse(
+                        fs.readFileSync(chartFilePath)
+                            .toString("utf8")
+                    );
+
+                    chartParsed["version"] = SemVer.stringify(targetChartVersion);
+
+                    fs.writeFileSync(
+                        chartFilePath,
+                        Buffer.from(YAML.stringify(chartParsed), "utf8")
+                    );
+
+                }
+
+                {
+
+                    const readmeFilePath = pathJoin(repoPath, helmChartDirBasename, "README.md");
+
+                    let readmeText = fs.readFileSync(readmeFilePath).toString("utf8");
+
+                    readmeText =
+                        readmeText.replace(
+                            /(https:\/\/github\.com\/[\\/]+\/[\\/]+\/blob\/)([^\/]+)(\/README\.md#configuration)/g,
+                            (...[, p1, , p3]) => `${p1}v${SemVer.stringify(currentVersions.apiVersion)}${p3}`
+                        );
+
+                    readmeText =
+                        readmeText.replace(
+                            /(https:\/\/github\.com\/[\\/]+\/[\\/]+\/blob\/)([^\/]+)(\/\.env)/g,
+                            (...[, p1, , p3]) => `${p1}v${SemVer.stringify(currentVersions.apiVersion)}${p3}`
+                        );
+
+                    readmeText =
+                        readmeText.replace(
+                            /--version "?[^ "]+"?/g,
+                            `--version "${SemVer.stringify(targetChartVersion)}"`
+                        );
+
+                    fs.writeFileSync(
+                        readmeFilePath,
+                        Buffer.from(readmeText, "utf8")
+                    );
+
+
+                }
+
+                return {
+                    "message": `Automatic ${SemVer.bumpType({
+                        "versionBehind": previousReleaseVersions.chartVersion,
+                        "versionAhead": targetChartVersion
+                    })} bump of chart version to ${SemVer.stringify(targetChartVersion)}`,
+                    "doAddAll": false,
+                    "doCommit": true
+                };
+            }
+        });
+
+        assert(new_sha !== undefined);
+
+        release_target_git_commit_sha = new_sha;
+
+    }
+
+    return {
+        "new_chart_version": SemVer.stringify(targetChartVersion),
+        "new_web_docker_image_tags": [SemVer.stringify(currentVersions.webVersion), "latest"].map(tag => `${dockerhub_repository.toLowerCase()}:${tag}`).join(","),
+        release_target_git_commit_sha,
+        "release_message": generateReleaseMessageBody({
+            "helmChartVersion": SemVer.stringify(targetChartVersion),
+            "helmChartVersion_previous": SemVer.stringify(previousReleaseVersions.chartVersion),
+            "onyxiaApiVersion": SemVer.stringify(currentVersions.apiVersion),
+            "onyxiaApiVersion_previous": SemVer.stringify(previousReleaseVersions.apiVersion),
+            "webVersion": SemVer.stringify(currentVersions.webVersion),
+            "webVersion_previous": SemVer.stringify(previousReleaseVersions.webVersion),
+        })
+    };
 
 }
 
@@ -127,8 +258,6 @@ function readVersions(
         repository,
         "token": githubToken,
         "action": async ({ repoPath }) => {
-
-            const helmChartDirBasename = "helm-chart";
 
             dVersions.resolve({
                 "webVersion": (() => {
@@ -181,7 +310,7 @@ function readVersions(
 
 }
 
-function deduceTargetChartVersion(
+function determineTargetChartVersion(
     params: {
         previousReleaseVersions: Versions,
         currentVersions: Versions
@@ -191,40 +320,191 @@ function deduceTargetChartVersion(
     const {
         previousReleaseVersions,
         currentVersions
-    }= params;
+    } = params;
 
-
-    const getWeight = (bumpType: ReturnType<typeof SemVer.bumpType>) => {
+    const getWeightFromBumpType = (bumpType: SemVer.BumpType): number => {
         assert(bumpType !== "rc");
-        switch(bumpType){
-            case "same": return 0;
+        switch (bumpType) {
+            case "no bump": return 0;
             case "patch": return 1;
             case "minor": return 2;
             case "major": return 3;
         }
     };
 
-    const requiredWeight = Math.max(
-        getWeight(
-        SemVer.bumpType({
-            "versionBehindStr": previousReleaseVersions.apiVersion,
-            "versionAheadStr": currentVersions.apiVersion
-        })
-        ),
+    const getBumpTypeFromWeight = (weight: number): Exclude<SemVer.BumpType, "rc"> => {
+        switch (weight) {
+            case 0: return "no bump";
+            case 1: return "patch";
+            case 2: return "minor";
+            case 3: return "major";
+        }
+        assert(false);
+    }
 
+    const minimumBumpType = getBumpTypeFromWeight(
+        Math.max(
+            getWeightFromBumpType(
+                SemVer.bumpType({
+                    "versionBehind": previousReleaseVersions.apiVersion,
+                    "versionAhead": currentVersions.apiVersion
+                })
+            ),
+            getWeightFromBumpType(
+                SemVer.bumpType({
+                    "versionBehind": previousReleaseVersions.webVersion,
+                    "versionAhead": currentVersions.webVersion
+                })
+            )
+        )
     );
 
-    return {
-        "webVersion": currentVersions.webVersion,
-        "apiVersion": currentVersions.apiVersion,
-        "chartVersion": 
+    const chartBumpType =
+        SemVer.bumpType({
+            "versionBehind": previousReleaseVersions.chartVersion,
+            "versionAhead": currentVersions.chartVersion
+        });
+
+    let targetChartVersion = { ...currentVersions.chartVersion };
+
+    switch (minimumBumpType) {
+        case "no bump": {
+
+            if (chartBumpType === "no bump" && previousReleaseVersions.chartDigest !== currentVersions.chartDigest) {
+                targetChartVersion.patch++;
+            }
+
+            return targetChartVersion;
+
+        };
+        case "patch": {
+
+            if (chartBumpType === "no bump") {
+                targetChartVersion.patch++;
+            }
+
+            return targetChartVersion;
 
 
+        }
+        case "minor": {
 
-    };
+            if (chartBumpType === "no bump" || chartBumpType === "patch") {
+                targetChartVersion = { ...previousReleaseVersions.chartVersion };
+                targetChartVersion.minor++;
+                targetChartVersion.patch = 0;
+            }
+
+            return targetChartVersion;
+
+        }
+        case "major": {
+
+            if (chartBumpType === "no bump" || chartBumpType === "patch" || chartBumpType === "minor") {
+                targetChartVersion = { ...previousReleaseVersions.chartVersion };
+                targetChartVersion.major++;
+                targetChartVersion.minor = 0;
+                targetChartVersion.patch = 0;
+            }
+
+            return targetChartVersion;
+
+        }
+
+    }
 
 }
 
+
+
+/** ChatGPT generated */
+function generateReleaseMessageBody(params: {
+    helmChartVersion_previous: string;
+    helmChartVersion: string;
+    webVersion_previous: string;
+    webVersion: string;
+    onyxiaApiVersion_previous: string;
+    onyxiaApiVersion: string;
+}): string {
+
+    const {
+        helmChartVersion,
+        helmChartVersion_previous,
+        onyxiaApiVersion_previous,
+        onyxiaApiVersion,
+        webVersion,
+        webVersion_previous
+    } = params;
+
+    const helmChartVersionBumpType = SemVer.bumpType({
+        "versionBehind": SemVer.parse(helmChartVersion_previous),
+        "versionAhead": SemVer.parse(helmChartVersion)
+    });
+    const webVersionBumpType = SemVer.bumpType({
+        "versionBehind": SemVer.parse(webVersion_previous),
+        "versionAhead": SemVer.parse(webVersion)
+    });
+    const onyxiaApi_VersionBumpType = SemVer.bumpType({
+        "versionBehind": SemVer.parse(onyxiaApiVersion_previous),
+        "versionAhead": SemVer.parse(onyxiaApiVersion)
+    });
+
+    let message = `# Release Notes \\n\\n`;
+
+    message += `## Helm Chart Version :package: \\n`;
+    message += `- Previous: \`${helmChartVersion_previous}\` \\n`;
+    message += `- New: \`${helmChartVersion}\` \\n\\n`;
+
+    switch (helmChartVersionBumpType) {
+        case 'patch':
+            message += `:patch: No API changes. You can upgrade without fear of breaking your install. \\n\\n`;
+            break;
+        case 'minor':
+            message += `:new: New parameters are available in the configuration. No breaking changes with the previous release. [Documentation](https://github.com/InseeFrLab/onyxia/tree/main/helm-chart) \\n\\n`;
+            break;
+        case 'major':
+            message += `:warning: Upgrading might break your Onyxia install. Please refer to the [new documentation](https://github.com/InseeFrLab/onyxia/tree/main/helm-chart). \\n\\n`;
+            break;
+    }
+
+    if (webVersionBumpType !== 'no bump') {
+        message += `## Onyxia Web :globe_with_meridians: \\n`;
+        message += `- Previous: \`${webVersion_previous}\` \\n`;
+        message += `- New: \`${webVersion}\` \\n\\n`;
+
+        switch (webVersionBumpType) {
+            case 'patch':
+                message += `:patch: No API changes. You can upgrade without fear of breaking your install. \\n\\n`;
+                break;
+            case 'minor':
+                message += `:new: New parameters are available in the configuration. No breaking changes with the previous release. [Documentation](https://github.com/InseeFrLab/onyxia/tree/main/helm-chart) \\n\\n`;
+                break;
+            case 'major':
+                message += `:warning: Upgrading might break your Onyxia install. Please refer to the [new documentation](https://github.com/InseeFrLab/onyxia/tree/main/helm-chart). \\n\\n`;
+                break;
+        }
+    }
+
+    if (onyxiaApi_VersionBumpType !== 'no bump') {
+        message += `## Onyxia API :gear: \\n`;
+        message += `- Previous: \`${onyxiaApiVersion_previous}\` \\n`;
+        message += `- New: \`${onyxiaApiVersion}\` \\n\\n`;
+
+        switch (onyxiaApi_VersionBumpType) {
+            case 'patch':
+                message += `:patch: No API changes. You can upgrade without fear of breaking your install. \\n\\n`;
+                break;
+            case 'minor':
+                message += `:new: New parameters are available in the configuration. No breaking changes with the previous release. [Documentation](https://github.com/InseeFrLab/onyxia/tree/main/helm-chart) \\n\\n`;
+                break;
+            case 'major':
+                message += `:warning: Upgrading might break your Onyxia install. Please refer to the [new documentation](https://github.com/InseeFrLab/onyxia/tree/main/helm-chart). \\n\\n`;
+                break;
+        }
+    }
+
+    return message;
+}
 
 
 

@@ -11,7 +11,11 @@ export const inputNames = [
     "sha",
     "commit_author_email",
     "github_pages_branch_name",
-    "dockerhub_repository"
+    "dockerhub_repository",
+    "is_external_pr",
+    "is_default_branch",
+    "commit_author_email",
+    "is_bot"
 ] as const;
 
 export function getInputDescription(inputName: typeof inputNames[number]): string {
@@ -61,6 +65,18 @@ export function getInputDescription(inputName: typeof inputNames[number]): strin
             "Dockerhub repository name, example: 'inseefrlab/onyxia-web'",
             "for actions that need to create tags."
         ].join(" ");
+        case "is_external_pr": return [
+            "Tell if the sha correspond to a commit from a forked repository",
+            "Do not provide this parameter explicitly, it will be set automatically"
+        ].join(" ");
+        case "is_default_branch": return [
+            "Tell if the sha correspond to a commit from the default branch",
+            "Do not provide this parameter explicitly, it will be set automatically"
+        ].join(" ");
+        case "is_bot": return [
+            "Tell if the sha correspond to a commit from a bot",
+            "Do not provide this parameter explicitly, it will be set automatically"
+        ].join(" ");
     }
 }
 
@@ -72,6 +88,10 @@ export function getInputDefault(inputName: typeof inputNames[number]): string | 
         case "github_token": return "${{ github.token }}";
         case "sha": return "${{ github.sha }}";
         case "commit_author_email": return "actions@github.com";
+        case "is_external_pr": 
+            return "${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository }}";
+        case "is_default_branch": return "${{ github.event_name == 'push' && github.event.ref == 'refs/heads/' + github.event.repository.default_branch }}";
+        case "is_bot": return "${{ github.actor.endsWith('[bot]') }}";
     }
 }
 

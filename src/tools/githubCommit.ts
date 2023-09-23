@@ -18,7 +18,10 @@ export async function githubCommit(params: {
     action: (params: {
         repoPath: string;
     }) => Promise<{ doCommit: false } | { doCommit: true; doAddAll: boolean; message: string }>;
-}): Promise<void> {
+}): Promise<{ 
+    /** The new commit sha, if a commit was made */
+    sha: string | undefined; 
+}> {
     const {
         repository,
         ref,
@@ -45,7 +48,7 @@ export async function githubCommit(params: {
 
     const mutex = (mutexes[mutexKey] ??= new Mutex());
 
-    return mutex.runExclusive(async function callee() {
+    const sha = await mutex.runExclusive(async function callee(): Promise<string | undefined> {
 
         const repoHash = crypto
             .createHash("sha1")
@@ -92,24 +95,35 @@ export async function githubCommit(params: {
 
         const changesResult = await action({ repoPath });
 
-        if (changesResult.doCommit) {
-            await exec(`git config --local user.email "${commitAuthorEmail}"`, {
-                "cwd": repoPath
-            });
-            await exec(`git config --local user.name "${commitAuthorEmail.split("@")[0]}"`, { "cwd": repoPath });
-
-            if (changesResult.doAddAll) {
-                await exec(`git add -A`, { "cwd": repoPath });
-            }
-
-            //NOTE: This can fail if there are no changes to commit
-            try {
-                await exec(`git commit -am "${changesResult.message}"`, { "cwd": repoPath });
-
-                await exec(`git push ${url}`, { "cwd": repoPath });
-            } catch { }
+        if (!changesResult.doCommit) {
+            return undefined;
         }
+
+        await exec(`git config --local user.email "${commitAuthorEmail}"`, {
+            "cwd": repoPath
+        });
+        await exec(`git config --local user.name "${commitAuthorEmail.split("@")[0]}"`, { "cwd": repoPath });
+
+        if (changesResult.doAddAll) {
+            await exec(`git add -A`, { "cwd": repoPath });
+        }
+
+        //NOTE: This can fail if there are no changes to commit
+        try {
+            await exec(`git commit -am "${changesResult.message}"`, { "cwd": repoPath });
+
+            await exec(`git push ${url}`, { "cwd": repoPath });
+        } catch {
+            return undefined;
+        }
+
+        const sha = (await exec(`git rev-parse HEAD`, { "cwd": repoPath })).trim();
+
+        return sha;
+
     });
+
+    return { sha };
 };
 
 export class ErrorNoBranch extends Error {

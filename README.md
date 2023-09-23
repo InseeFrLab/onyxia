@@ -22,6 +22,14 @@ This might not be up to date. It's just to give you the idea.
 For the actual usage see [the real workflow](https://github.com/InseeFrLab/onyxia/blob/main/.github/workflows/ci.yml).  
 
 ```yaml
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
 permissions:
   actions: read
   contents: write
@@ -35,13 +43,13 @@ assess_release_criteria:
   needs: test
   runs-on: ubuntu-latest
   outputs:
-    new_chart_version: ${{steps._1.outputs.new_chart_version}}
-    new_web_docker_image_tags: ${{steps._1.outputs.new_web_docker_image_tags}}
-    release_target_git_commit_sha: ${{steps._1.outputs.release_target_git_commit_sha}}
-    release_message: ${{steps._1.outputs.release_message}}
+    new_chart_version: ${{steps._.outputs.new_chart_version}}
+    new_web_docker_image_tags: ${{steps._.outputs.new_web_docker_image_tags}}
+    release_target_git_commit_sha: ${{steps._.outputs.release_target_git_commit_sha}}
+    release_message: ${{steps._.outputs.release_message}}
   steps:
     - uses: inseefrlab/onyxia@gh-actions
-      id: _1
+      id: _
       with: 
         action_name: assess_release_criteria
         commit_author_email: actions@github.com
