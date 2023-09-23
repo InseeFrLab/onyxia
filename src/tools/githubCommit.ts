@@ -1,4 +1,4 @@
-import { exec } from "./exec";
+import { createLoggedExec } from "./exec";
 import { join as pathJoin } from "path";
 import * as fs from "fs";
 import crypto from "crypto";
@@ -18,6 +18,7 @@ export async function githubCommit(params: {
     action: (params: {
         repoPath: string;
     }) => Promise<{ doCommit: false } | { doCommit: true; doAddAll: boolean; message: string }>;
+    log?: (message: string) => void;
 }): Promise<{ 
     /** The new commit sha, if a commit was made */
     sha: string | undefined; 
@@ -28,7 +29,10 @@ export async function githubCommit(params: {
         token,
         commitAuthorEmail = "actions@github.com",
         action,
+        log = ()=> {}
     } = params;
+
+    const { exec } = createLoggedExec({ log });
 
     const cacheDir = pathJoin(process.cwd(), "node_modules", ".cache", "githubCommit");
 

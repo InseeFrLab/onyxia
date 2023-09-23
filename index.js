@@ -994,10 +994,12 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.exec = void 0;
+exports.createLoggedExec = exports.exec = void 0;
 const child_process = __importStar(__nccwpck_require__(2081));
 /** Same as execSync but async */
 function exec(cmd, options) {
+    var _a;
+    (_a = options === null || options === void 0 ? void 0 : options.log) === null || _a === void 0 ? void 0 : _a.call(options, `$ ${cmd}`);
     return new Promise((resolve, reject) => child_process.exec(cmd, Object.assign(Object.assign({}, (options !== null && options !== void 0 ? options : {})), { "encoding": "utf8" }), (error, stdout, stderr) => {
         if (!!error) {
             error["stderr"] = stderr;
@@ -1009,6 +1011,12 @@ function exec(cmd, options) {
     }));
 }
 exports.exec = exec;
+function createLoggedExec(params) {
+    return {
+        "exec": (cmd, options) => exec(cmd, Object.assign(Object.assign({}, options), { "log": params.log }))
+    };
+}
+exports.createLoggedExec = createLoggedExec;
 
 
 /***/ }),
@@ -1066,7 +1074,8 @@ let isFirstCall = true;
 function githubCommit(params) {
     var _a;
     return __awaiter(this, void 0, void 0, function* () {
-        const { repository, ref, token, commitAuthorEmail = "actions@github.com", action, } = params;
+        const { repository, ref, token, commitAuthorEmail = "actions@github.com", action, log = () => { } } = params;
+        const { exec } = (0, exec_1.createLoggedExec)({ log });
         const cacheDir = (0, path_1.join)(process.cwd(), "node_modules", ".cache", "githubCommit");
         yield globalMutex.runExclusive(() => __awaiter(this, void 0, void 0, function* () {
             if (!isFirstCall) {
@@ -1093,22 +1102,22 @@ function githubCommit(params) {
                 if (!repoExists) {
                     // Perform git clone
                     if (ref === undefined) {
-                        yield (0, exec_1.exec)(`git clone --depth 1 ${url} ${repoPath}`);
+                        yield exec(`git clone --depth 1 ${url} ${repoPath}`);
                     }
                     else {
                         if (isSha(ref)) {
-                            yield (0, exec_1.exec)(`git clone ${url} ${repoPath}`);
-                            yield (0, exec_1.exec)(`git checkout ${ref}`, { "cwd": repoPath });
+                            yield exec(`git clone ${url} ${repoPath}`);
+                            yield exec(`git checkout ${ref}`, { "cwd": repoPath });
                         }
                         else {
-                            yield (0, exec_1.exec)(`git clone --branch ${ref} --depth 1 ${url} ${repoPath}`);
+                            yield exec(`git clone --branch ${ref} --depth 1 ${url} ${repoPath}`);
                         }
                     }
                 }
                 else {
                     // Perform git pull
                     try {
-                        yield (0, exec_1.exec)(`git pull`, { "cwd": repoPath });
+                        yield exec(`git pull`, { "cwd": repoPath });
                     }
                     catch (_a) {
                         console.log("There's been a force push, so we're going to re-clone the repo");
@@ -1121,22 +1130,22 @@ function githubCommit(params) {
                 if (!changesResult.doCommit) {
                     return undefined;
                 }
-                yield (0, exec_1.exec)(`git config --local user.email "${commitAuthorEmail}"`, {
+                yield exec(`git config --local user.email "${commitAuthorEmail}"`, {
                     "cwd": repoPath
                 });
-                yield (0, exec_1.exec)(`git config --local user.name "${commitAuthorEmail.split("@")[0]}"`, { "cwd": repoPath });
+                yield exec(`git config --local user.name "${commitAuthorEmail.split("@")[0]}"`, { "cwd": repoPath });
                 if (changesResult.doAddAll) {
-                    yield (0, exec_1.exec)(`git add -A`, { "cwd": repoPath });
+                    yield exec(`git add -A`, { "cwd": repoPath });
                 }
                 //NOTE: This can fail if there are no changes to commit
                 try {
-                    yield (0, exec_1.exec)(`git commit -am "${changesResult.message}"`, { "cwd": repoPath });
-                    yield (0, exec_1.exec)(`git push ${url}`, { "cwd": repoPath });
+                    yield exec(`git commit -am "${changesResult.message}"`, { "cwd": repoPath });
+                    yield exec(`git push ${url}`, { "cwd": repoPath });
                 }
                 catch (_b) {
                     return undefined;
                 }
-                const sha = (yield (0, exec_1.exec)(`git rev-parse HEAD`, { "cwd": repoPath })).trim();
+                const sha = (yield exec(`git rev-parse HEAD`, { "cwd": repoPath })).trim();
                 return sha;
             });
         });

@@ -1,7 +1,9 @@
 import * as child_process from "child_process";
 
+
 /** Same as execSync but async */
-export function exec(cmd: string, options?: child_process.ExecOptions): Promise<string> {
+export function exec(cmd: string, options?: child_process.ExecOptions & { log?: (message: string)=> void;}): Promise<string> {
+    options?.log?.(`$ ${cmd}`);
     return new Promise((resolve, reject) =>
         child_process.exec(cmd, { ...(options ?? {}), "encoding": "utf8" }, (error, stdout, stderr) => {
             if (!!error) {
@@ -13,4 +15,19 @@ export function exec(cmd: string, options?: child_process.ExecOptions): Promise<
             }
         })
     );
+}
+
+export function createLoggedExec(
+    params: {
+        log: (message: string) => void;
+    }
+){
+
+    return {
+        "exec": (cmd: string, options?: child_process.ExecOptions) => exec(cmd, { ...options, "log": params.log })
+    };
+
+
+
+
 }
