@@ -23,7 +23,6 @@ const { getActionParams } = getActionParamsFactory({
         "sha",
         "github_token",
         "automatic_commit_author_email",
-        "web_dockerhub_repository",
         "is_external_pr",
         "is_default_branch",
         "is_bot"
@@ -54,7 +53,6 @@ export async function _run(
         owner,
         repo,
         sha,
-        web_dockerhub_repository,
         automatic_commit_author_email,
         is_external_pr,
         is_default_branch,
@@ -151,11 +149,17 @@ export async function _run(
         });
     }
 
+    const webDockerhubRepository = await getWebDockerhubRepository({
+        repository,
+        github_token,
+        sha
+    });
+
     if (is_default_branch === "false") {
 
 
 
-        const new_web_docker_image_tags = is_bot === "true" ? "" : `${web_dockerhub_repository.toLowerCase()}:${currentVersions.webVersion}`;
+        const new_web_docker_image_tags = is_bot === "true" ? "" : `${webDockerhubRepository.toLowerCase()}:${currentVersions.webVersion}`;
 
         log([
             "We are not on the default branch, not releasing.",
@@ -204,16 +208,35 @@ export async function _run(
 
                 const chartFilePath = pathJoin(repoPath, helmChartDirBasename, "Chart.yaml");
 
-                const chartParsed = YAML.parse(
+                const chartParsed = YAML.parseDocument(
                     fs.readFileSync(chartFilePath)
                         .toString("utf8")
                 );
 
-                chartParsed["version"] = SemVer.stringify(targetChartVersion);
+                chartParsed.set("version", SemVer.stringify(targetChartVersion));
 
                 fs.writeFileSync(
                     chartFilePath,
                     Buffer.from(YAML.stringify(chartParsed), "utf8")
+                );
+
+            }
+
+            {
+
+                const valuesFilePath = pathJoin(repoPath, helmChartDirBasename, "values.yaml");
+
+                const valuesParsed = YAML.parseDocument(
+                    fs.readFileSync(valuesFilePath)
+                        .toString("utf8")
+                );
+
+                valuesParsed.set("web.image.tag", SemVer.stringify(currentVersions.webVersion));
+                valuesParsed.set("api.image.tag", `v${SemVer.stringify(currentVersions.apiVersion)}`);
+
+                fs.writeFileSync(
+                    valuesFilePath,
+                    Buffer.from(YAML.stringify(valuesParsed), "utf8")
                 );
 
             }
@@ -226,13 +249,13 @@ export async function _run(
 
                 readmeText =
                     readmeText.replace(
-                        /(https:\/\/github\.com\/[\\/]+\/[\\/]+\/blob\/)([^\/]+)(\/README\.md#configuration)/g,
+                        /(https:\/\/github\.com\/[^\/]+\/[^\/]+\/blob\/)([^\/]+)(\/README\.md#configuration)/g,
                         (...[, p1, , p3]) => `${p1}v${SemVer.stringify(currentVersions.apiVersion)}${p3}`
                     );
 
                 readmeText =
                     readmeText.replace(
-                        /(https:\/\/github\.com\/[\\/]+\/[\\/]+\/blob\/)([^\/]+)(\/\.env)/g,
+                        /(https:\/\/github\.com\/[\/]+\/[\/]+\/blob\/)([^\/]+)(\/\.env)/g,
                         (...[, p1, , p3]) => `${p1}v${SemVer.stringify(currentVersions.apiVersion)}${p3}`
                     );
 
@@ -263,7 +286,7 @@ export async function _run(
 
     return {
         "new_chart_version": SemVer.stringify(targetChartVersion),
-        "new_web_docker_image_tags": [SemVer.stringify(currentVersions.webVersion), "latest"].map(tag => `${web_dockerhub_repository.toLowerCase()}:${tag}`).join(","),
+        "new_web_docker_image_tags": [SemVer.stringify(currentVersions.webVersion), "latest"].map(tag => `${webDockerhubRepository.toLowerCase()}:${tag}`).join(","),
         "release_target_git_commit_sha": release_target_git_commit_sha ?? sha,
         "release_message": generateReleaseMessageBody({
             "helmChartVersion": SemVer.stringify(targetChartVersion),
@@ -568,5 +591,37 @@ function generateReleaseMessageBody(params: {
     return message;
 }
 
+function getWebDockerhubRepository(
+    params: {
+        repository: `${string}/${string}`;
+        github_token: string;
+        sha: string;
+    }
+) {
 
+    const { repository, github_token, sha } = params;
 
+    const dOut = new Deferred<string>();
+
+    githubCommit({
+        repository,
+        "token": github_token,
+        "ref": sha,
+        "action": async ({ repoPath }) => {
+
+            dOut.resolve(
+                YAML.parse(
+                    fs.readFileSync(
+                        pathJoin(repoPath, helmChartDirBasename, "values.json")
+                    ).toString("utf8")
+                )["web"]["image"]["repository"]
+            );
+
+            return { "doCommit": false };
+        }
+
+    });
+
+    return dOut.pr;
+
+}

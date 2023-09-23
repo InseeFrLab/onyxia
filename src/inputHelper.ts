@@ -11,7 +11,6 @@ export const inputNames = [
     "sha",
     "automatic_commit_author_email",
     "github_pages_branch_name",
-    "web_dockerhub_repository",
     "is_external_pr",
     "is_default_branch",
     "is_bot"
@@ -59,10 +58,6 @@ export function getInputDescription(inputName: typeof inputNames[number]): strin
             "Github page branch name for the repository, example: 'gh-pages'",
             "no default provided, required for 'release_helm_chart' action",
             "If the branch does not exist it will be created"
-        ].join(" ");
-        case "web_dockerhub_repository": return [
-            "Dockerhub repository name, example: 'inseefrlab/onyxia-web'",
-            "for actions that need to create tags."
         ].join(" ");
         case "is_external_pr": return [
             "Tell if the sha correspond to a commit from a forked repository",

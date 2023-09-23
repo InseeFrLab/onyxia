@@ -30,9 +30,6 @@ inputs:
   github_pages_branch_name:
     required: false
     description: 'Github page branch name for the repository, example: ''gh-pages'' no default provided, required for ''release_helm_chart'' action If the branch does not exist it will be created'
-  web_dockerhub_repository:
-    required: false
-    description: 'Dockerhub repository name, example: ''inseefrlab/onyxia-web'' for actions that need to create tags.'
   is_external_pr:
     required: false
     description: 'Tell if the sha correspond to a commit from a forked repository Do not provide this parameter explicitly, it will be set automatically'

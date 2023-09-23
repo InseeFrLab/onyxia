@@ -66,7 +66,6 @@ const { getActionParams } = (0, inputHelper_1.getActionParamsFactory)({
         "sha",
         "github_token",
         "automatic_commit_author_email",
-        "web_dockerhub_repository",
         "is_external_pr",
         "is_default_branch",
         "is_bot"
@@ -75,7 +74,7 @@ const { getActionParams } = (0, inputHelper_1.getActionParamsFactory)({
 const { setOutput } = (0, outputHelper_1.setOutputFactory)();
 function _run(params) {
     return __awaiter(this, void 0, void 0, function* () {
-        const { github_token, owner, repo, sha, web_dockerhub_repository, automatic_commit_author_email, is_external_pr, is_default_branch, recursiveCallParams, is_bot, log = () => { } } = params;
+        const { github_token, owner, repo, sha, automatic_commit_author_email, is_external_pr, is_default_branch, recursiveCallParams, is_bot, log = () => { } } = params;
         log(JSON.stringify(params, null, 2));
         const repository = `${owner}/${repo}`;
         if (is_external_pr === "true") {
@@ -134,8 +133,13 @@ function _run(params) {
                     "major": previousReleaseVersions.chartVersion.major
                 } }));
         }
+        const webDockerhubRepository = yield getWebDockerhubRepository({
+            repository,
+            github_token,
+            sha
+        });
         if (is_default_branch === "false") {
-            const new_web_docker_image_tags = is_bot === "true" ? "" : `${web_dockerhub_repository.toLowerCase()}:${currentVersions.webVersion}`;
+            const new_web_docker_image_tags = is_bot === "true" ? "" : `${webDockerhubRepository.toLowerCase()}:${currentVersions.webVersion}`;
             log([
                 "We are not on the default branch, not releasing.",
                 new_web_docker_image_tags === "" ? "A bot is pushing this, not pushing docker image." : `Pushing docker image: ${new_web_docker_image_tags}`
@@ -169,18 +173,26 @@ function _run(params) {
             "action": ({ repoPath }) => __awaiter(this, void 0, void 0, function* () {
                 {
                     const chartFilePath = (0, path_1.join)(repoPath, helmChartDirBasename, "Chart.yaml");
-                    const chartParsed = yaml_1.default.parse(fs.readFileSync(chartFilePath)
+                    const chartParsed = yaml_1.default.parseDocument(fs.readFileSync(chartFilePath)
                         .toString("utf8"));
-                    chartParsed["version"] = SemVer_1.SemVer.stringify(targetChartVersion);
+                    chartParsed.set("version", SemVer_1.SemVer.stringify(targetChartVersion));
                     fs.writeFileSync(chartFilePath, Buffer.from(yaml_1.default.stringify(chartParsed), "utf8"));
+                }
+                {
+                    const valuesFilePath = (0, path_1.join)(repoPath, helmChartDirBasename, "values.yaml");
+                    const valuesParsed = yaml_1.default.parseDocument(fs.readFileSync(valuesFilePath)
+                        .toString("utf8"));
+                    valuesParsed.set("web.image.tag", SemVer_1.SemVer.stringify(currentVersions.webVersion));
+                    valuesParsed.set("api.image.tag", `v${SemVer_1.SemVer.stringify(currentVersions.apiVersion)}`);
+                    fs.writeFileSync(valuesFilePath, Buffer.from(yaml_1.default.stringify(valuesParsed), "utf8"));
                 }
                 {
                     const readmeFilePath = (0, path_1.join)(repoPath, helmChartDirBasename, "README.md");
                     let readmeText = fs.readFileSync(readmeFilePath).toString("utf8");
                     readmeText =
-                        readmeText.replace(/(https:\/\/github\.com\/[\\/]+\/[\\/]+\/blob\/)([^\/]+)(\/README\.md#configuration)/g, (...[, p1, , p3]) => `${p1}v${SemVer_1.SemVer.stringify(currentVersions.apiVersion)}${p3}`);
+                        readmeText.replace(/(https:\/\/github\.com\/[^\/]+\/[^\/]+\/blob\/)([^\/]+)(\/README\.md#configuration)/g, (...[, p1, , p3]) => `${p1}v${SemVer_1.SemVer.stringify(currentVersions.apiVersion)}${p3}`);
                     readmeText =
-                        readmeText.replace(/(https:\/\/github\.com\/[\\/]+\/[\\/]+\/blob\/)([^\/]+)(\/\.env)/g, (...[, p1, , p3]) => `${p1}v${SemVer_1.SemVer.stringify(currentVersions.apiVersion)}${p3}`);
+                        readmeText.replace(/(https:\/\/github\.com\/[\/]+\/[\/]+\/blob\/)([^\/]+)(\/\.env)/g, (...[, p1, , p3]) => `${p1}v${SemVer_1.SemVer.stringify(currentVersions.apiVersion)}${p3}`);
                     readmeText =
                         readmeText.replace(/--version "?[^ "]+"?/g, `--version "${SemVer_1.SemVer.stringify(targetChartVersion)}"`);
                     fs.writeFileSync(readmeFilePath, Buffer.from(readmeText, "utf8"));
@@ -197,7 +209,7 @@ function _run(params) {
         });
         return {
             "new_chart_version": SemVer_1.SemVer.stringify(targetChartVersion),
-            "new_web_docker_image_tags": [SemVer_1.SemVer.stringify(currentVersions.webVersion), "latest"].map(tag => `${web_dockerhub_repository.toLowerCase()}:${tag}`).join(","),
+            "new_web_docker_image_tags": [SemVer_1.SemVer.stringify(currentVersions.webVersion), "latest"].map(tag => `${webDockerhubRepository.toLowerCase()}:${tag}`).join(","),
             "release_target_git_commit_sha": release_target_git_commit_sha !== null && release_target_git_commit_sha !== void 0 ? release_target_git_commit_sha : sha,
             "release_message": generateReleaseMessageBody({
                 "helmChartVersion": SemVer_1.SemVer.stringify(targetChartVersion),
@@ -386,6 +398,20 @@ function generateReleaseMessageBody(params) {
         }
     }
     return message;
+}
+function getWebDockerhubRepository(params) {
+    const { repository, github_token, sha } = params;
+    const dOut = new Deferred_1.Deferred();
+    (0, githubCommit_1.githubCommit)({
+        repository,
+        "token": github_token,
+        "ref": sha,
+        "action": ({ repoPath }) => __awaiter(this, void 0, void 0, function* () {
+            dOut.resolve(yaml_1.default.parse(fs.readFileSync((0, path_1.join)(repoPath, helmChartDirBasename, "values.json")).toString("utf8"))["web"]["image"]["repository"]);
+            return { "doCommit": false };
+        })
+    });
+    return dOut.pr;
 }
 
 
@@ -595,7 +621,6 @@ exports.inputNames = [
     "sha",
     "automatic_commit_author_email",
     "github_pages_branch_name",
-    "web_dockerhub_repository",
     "is_external_pr",
     "is_default_branch",
     "is_bot"
@@ -638,10 +663,6 @@ function getInputDescription(inputName) {
             "Github page branch name for the repository, example: 'gh-pages'",
             "no default provided, required for 'release_helm_chart' action",
             "If the branch does not exist it will be created"
-        ].join(" ");
-        case "web_dockerhub_repository": return [
-            "Dockerhub repository name, example: 'inseefrlab/onyxia-web'",
-            "for actions that need to create tags."
         ].join(" ");
         case "is_external_pr": return [
             "Tell if the sha correspond to a commit from a forked repository",
