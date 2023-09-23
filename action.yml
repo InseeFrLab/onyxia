@@ -44,7 +44,7 @@ inputs:
   is_bot:
     required: false
     description: 'Tell if the sha correspond to a commit from a bot Do not provide this parameter explicitly, it will be set automatically'
-    default: '${{ github.actor.endsWith(''[bot]'') }}'
+    default: '${{ endsWith(github.actor, ''[bot]'') }}'
 outputs:
   new_chart_version:
     description: 'Output of assess_release_criteria, string, Example ''1.2.3'' or the empty string if no need for release'
