@@ -89,7 +89,7 @@ export function getInputDefault(inputName: typeof inputNames[number]): string | 
         case "automatic_commit_author_email": return "actions@github.com";
         case "is_external_pr": 
             return "${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository }}";
-        case "is_default_branch": return "${{ github.event_name == 'push' && github.event.ref == 'refs/heads/' + github.event.repository.default_branch }}";
+        case "is_default_branch": return "${{ github.event_name == 'push' && github.event.ref == format('refs/heads/{0}', github.event.repository.default_branch) }}";
         case "is_bot": return "${{ github.actor.endsWith('[bot]') }}";
     }
 }
