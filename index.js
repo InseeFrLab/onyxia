@@ -183,7 +183,7 @@ function _run(params) {
                     const valuesParsed = yaml_1.default.parseDocument(fs.readFileSync(valuesFilePath)
                         .toString("utf8"));
                     valuesParsed.setIn(["web", "image", "tag"], SemVer_1.SemVer.stringify(currentVersions.webVersion));
-                    valuesParsed.set(["api", "image", "tag"], `v${currentVersions.apiVersion.parsedFrom}`);
+                    valuesParsed.setIn(["api", "image", "tag"], `v${currentVersions.apiVersion.parsedFrom}`);
                     fs.writeFileSync(valuesFilePath, Buffer.from(yaml_1.default.stringify(valuesParsed), "utf8"));
                 }
                 {
