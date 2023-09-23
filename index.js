@@ -1000,7 +1000,7 @@ const child_process = __importStar(__nccwpck_require__(2081));
 /** Same as execSync but async */
 function exec(cmd, options) {
     var _a, _b;
-    (_a = options === null || options === void 0 ? void 0 : options.log) === null || _a === void 0 ? void 0 : _a.call(options, `$ ${cmd} on ${(_b = options === null || options === void 0 ? void 0 : options.cwd) !== null && _b !== void 0 ? _b : process.cwd()}}`);
+    (_a = options === null || options === void 0 ? void 0 : options.log) === null || _a === void 0 ? void 0 : _a.call(options, `$ ${cmd} \n cwd: ${(_b = options === null || options === void 0 ? void 0 : options.cwd) !== null && _b !== void 0 ? _b : process.cwd()}}`);
     return new Promise((resolve, reject) => child_process.exec(cmd, Object.assign(Object.assign({}, (options !== null && options !== void 0 ? options : {})), { "encoding": "utf8" }), (error, stdout, stderr) => {
         if (!!error) {
             error["stderr"] = stderr;
