@@ -111,7 +111,8 @@ function _run(params) {
         ].map(gitRef => readVersions({
             gitRef,
             "githubToken": github_token,
-            repository
+            repository,
+            log
         })));
         log(JSON.stringify({ previousReleaseVersions, currentVersions }, null, 2));
         if (previousReleaseVersions.chartVersion.major > currentVersions.chartVersion.major) {
@@ -207,13 +208,15 @@ function run() {
 }
 exports.run = run;
 function readVersions(params) {
-    const { repository, gitRef, githubToken } = params;
+    const { repository, gitRef, githubToken, log } = params;
     const dVersions = new Deferred_1.Deferred();
+    log(`==============> start githubCommit, ${JSON.stringify(params, null, 2)}`);
     (0, githubCommit_1.githubCommit)({
         "ref": gitRef,
         repository,
         "token": githubToken,
         "action": ({ repoPath }) => __awaiter(this, void 0, void 0, function* () {
+            log(`==============> in action, ${repoPath}`);
             dVersions.resolve({
                 "webVersion": (() => {
                     const value = JSON.parse(fs.readFileSync((0, path_1.join)(repoPath, "package.json"))
@@ -230,8 +233,15 @@ function readVersions(params) {
                 "chartDigest": (0, computeDirectoryDigest_1.computeDirectoryDigest)({ "dirPath": (0, path_1.join)(repoPath, helmChartDirBasename) }),
                 "apiVersion": (() => {
                     const apiSubmoduleDirPath = (0, path_1.join)(repoPath, "api");
+                    log(`==============> apiSubmoduleDirPath: ${apiSubmoduleDirPath}`);
                     child_process.execSync("git submodule update --init --recursive", { "cwd": repoPath });
+                    log(`==============> 1`);
+                    const out = child_process.execFileSync("ls -la", { "cwd": apiSubmoduleDirPath });
+                    log(`==============> 2 ${out}`);
+                    const out2 = child_process.execFileSync("ls -la", { "cwd": repoPath });
+                    log(`==============> 2 ${out2}`);
                     child_process.execFileSync("git fetch --tags", { "cwd": apiSubmoduleDirPath });
+                    log(`==============> 2`);
                     child_process.execFileSync("git rev-parse HEAD", { "cwd": apiSubmoduleDirPath });
                     const output = child_process.execFileSync("git tag --contains HEAD", { "cwd": apiSubmoduleDirPath });
                     return SemVer_1.SemVer.parse(output.toString("utf8").trim());

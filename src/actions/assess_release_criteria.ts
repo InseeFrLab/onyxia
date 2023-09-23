@@ -117,7 +117,8 @@ export async function _run(
             readVersions({
                 gitRef,
                 "githubToken": github_token,
-                repository
+                repository,
+                log
             }))
     );
 
@@ -289,18 +290,23 @@ function readVersions(
         repository: `${string}/${string}`
         gitRef: string;
         githubToken: string;
+        log: (message: string) => void;
     }
 ): Promise<Versions> {
 
-    const { repository, gitRef, githubToken } = params;
+    const { repository, gitRef, githubToken, log } = params;
 
     const dVersions = new Deferred<Versions>();
+
+    log(`==============> start githubCommit, ${JSON.stringify(params, null, 2)}`);
 
     githubCommit({
         "ref": gitRef,
         repository,
         "token": githubToken,
         "action": async ({ repoPath }) => {
+
+            log(`==============> in action, ${repoPath}`);
 
             dVersions.resolve({
                 "webVersion": (() => {
@@ -332,9 +338,24 @@ function readVersions(
 
                     const apiSubmoduleDirPath = pathJoin(repoPath, "api");
 
+                    log(`==============> apiSubmoduleDirPath: ${apiSubmoduleDirPath}`);
+
                     child_process.execSync("git submodule update --init --recursive", { "cwd": repoPath });
 
+                    log(`==============> 1`);
+
+                    const out= child_process.execFileSync("ls -la", { "cwd": apiSubmoduleDirPath });
+
+                    log(`==============> 2 ${out}`);
+
+                    const out2= child_process.execFileSync("ls -la", { "cwd": repoPath });
+
+                    log(`==============> 2 ${out2}`);
+
                     child_process.execFileSync("git fetch --tags", { "cwd": apiSubmoduleDirPath });
+
+                    log(`==============> 2`);
+
                     child_process.execFileSync("git rev-parse HEAD", { "cwd": apiSubmoduleDirPath });
 
                     const output = child_process.execFileSync("git tag --contains HEAD", { "cwd": apiSubmoduleDirPath });
