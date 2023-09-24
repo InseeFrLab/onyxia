@@ -259,7 +259,12 @@ function _run(params) {
         });
         return {
             "new_chart_version": SemVer_1.SemVer.stringify(targetChartVersion),
-            "new_web_docker_image_tags": [SemVer_1.SemVer.stringify(currentVersions.webVersion), "latest"].map(tag => `${webDockerhubRepository.toLowerCase()}:${tag}`).join(","),
+            "new_web_docker_image_tags": SemVer_1.SemVer.compare(previousReleaseVersions.webVersion, currentVersions.webVersion) === 0 ?
+                "" :
+                [
+                    SemVer_1.SemVer.stringify(currentVersions.webVersion),
+                    "latest"
+                ].map(tag => `${webDockerhubRepository.toLowerCase()}:${tag}`).join(","),
             "release_target_git_commit_sha": release_target_git_commit_sha !== null && release_target_git_commit_sha !== void 0 ? release_target_git_commit_sha : sha,
             "release_message": generateReleaseMessageBody({
                 "helmChartVersion": SemVer_1.SemVer.stringify(targetChartVersion),

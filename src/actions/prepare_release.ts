@@ -198,7 +198,6 @@ export async function _run(
 
     }
 
-
     log(`Upgrading chart version to: ${SemVer.stringify(targetChartVersion)}`);
 
     const { sha: release_target_git_commit_sha } = await githubCommit({
@@ -294,10 +293,15 @@ export async function _run(
         }
     });
 
-
     return {
         "new_chart_version": SemVer.stringify(targetChartVersion),
-        "new_web_docker_image_tags": [SemVer.stringify(currentVersions.webVersion), "latest"].map(tag => `${webDockerhubRepository.toLowerCase()}:${tag}`).join(","),
+        "new_web_docker_image_tags": 
+            SemVer.compare(previousReleaseVersions.webVersion, currentVersions.webVersion) === 0 ? 
+                "" :
+                [
+                    SemVer.stringify(currentVersions.webVersion), 
+                    "latest"
+                ].map(tag => `${webDockerhubRepository.toLowerCase()}:${tag}`).join(","),
         "release_target_git_commit_sha": release_target_git_commit_sha ?? sha,
         "release_message": generateReleaseMessageBody({
             "helmChartVersion": SemVer.stringify(targetChartVersion),
@@ -512,8 +516,6 @@ function determineTargetChartVersion(
     }
 
 }
-
-
 
 /** ChatGPT generated */
 function generateReleaseMessageBody(params: {
