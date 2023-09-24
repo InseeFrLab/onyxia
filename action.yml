@@ -22,7 +22,7 @@ inputs:
   sha:
     required: false
     description: 'If not provided, the good default will be used github.sha'
-    default: '${{ github.sha }}'
+    default: '${{ github.event_name == ''pull_request'' && github.event.pull_request.head.sha || github.sha }}'
   automatic_commit_author_email:
     required: false
     description: 'In actions that perform a git commit, the email of the author of the commit. Default to actions@github.com'

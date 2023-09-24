@@ -686,7 +686,7 @@ function getInputDefault(inputName) {
         case "owner": return "${{github.repository_owner}}";
         case "repo": return "${{github.event.repository.name}}";
         case "github_token": return "${{ github.token }}";
-        case "sha": return "${{ github.sha }}";
+        case "sha": return "${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}";
         case "automatic_commit_author_email": return "actions@github.com";
         case "is_external_pr":
             return "${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository }}";
