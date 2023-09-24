@@ -467,6 +467,7 @@ function getShaBranchName(params) {
     const { repository, github_token, sha, log } = params;
     const dOut = new Deferred_1.Deferred();
     (0, githubCommit_1.githubCommit)({
+        log,
         repository,
         "token": github_token,
         "ref": sha,
