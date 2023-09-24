@@ -20,7 +20,7 @@ jobs:
     steps: 
       - run: echo "test"
   
-  assess_release_criteria:
+  prepare_release:
     needs: test
     runs-on: ubuntu-latest
     outputs:
@@ -32,17 +32,17 @@ jobs:
       - uses: InseeFrLab/onyxia@gh-actions
         id: _
         with: 
-          action_name: assess_release_criteria
+          action_name: prepare_release
           automatic_commit_author_email: actions@github.com
   
   docker_build_push_onyxia_web:
     runs-on: ubuntu-latest
-    needs: assess_release_criteria
-    if: needs.assess_release_criteria.outputs.new_web_docker_image_tags != ''
+    needs: prepare_release
+    if: needs.prepare_release.outputs.new_web_docker_image_tags != ''
     steps:
       - uses: actions/checkout@v3
         with:
-          ref: ${{needs.assess_release_criteria.outputs.release_target_git_commit_sha}}
+          ref: ${{needs.prepare_release.outputs.release_target_git_commit_sha}}
           lfs: true
 #      - uses: docker/setup-qemu-action@v1
 #      - uses: docker/setup-buildx-action@v1
@@ -54,16 +54,16 @@ jobs:
 #        with:
 #          push: true
 #          context: .
-#          tags: ${{needs.assess_release_criteria.outputs.new_web_docker_image_tags}}
+#          tags: ${{needs.prepare_release.outputs.new_web_docker_image_tags}}
   
   release:
     runs-on: ubuntu-latest
-    needs: assess_release_criteria
-    if: needs.assess_release_criteria.outputs.new_chart_version != ''
+    needs: prepare_release
+    if: needs.prepare_release.outputs.new_chart_version != ''
     steps:
     - uses: actions/checkout@v3
       with:
-        ref: ${{needs.assess_release_criteria.outputs.release_target_git_commit_sha}}
+        ref: ${{needs.prepare_release.outputs.release_target_git_commit_sha}}
         lfs: true
     - uses: actions/setup-node@v3
     - uses: bahmutov/npm-install@v1
@@ -81,16 +81,16 @@ jobs:
     - uses: InseeFrLab/onyxia@gh-actions
       with: 
         action_name: release_helm_chart
-        sha: ${{needs.assess_release_criteria.outputs.release_target_git_commit_sha}}
+        sha: ${{needs.prepare_release.outputs.release_target_git_commit_sha}}
     - uses: softprops/action-gh-release@v1
       with:
-        name: Release v${{needs.assess_release_criteria.outputs.new_chart_version}}
-        body: ${{needs.assess_release_criteria.outputs.release_message}}
-        tag_name: v${{needs.assess_release_criteria.outputs.new_chart_version}}
-        target_commitish: ${{needs.assess_release_criteria.outputs.release_target_git_commit_sha}}
+        name: Release v${{needs.prepare_release.outputs.new_chart_version}}
+        body: ${{needs.prepare_release.outputs.release_message}}
+        tag_name: v${{needs.prepare_release.outputs.new_chart_version}}
+        target_commitish: ${{needs.prepare_release.outputs.release_target_git_commit_sha}}
         generate_release_notes: true
         files: |
           keycloak-theme.jar
-          onyxia-${{needs.assess_release_criteria.outputs.new_chart_version}}.tgz
+          onyxia-${{needs.prepare_release.outputs.new_chart_version}}.tgz
       env:
         GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
