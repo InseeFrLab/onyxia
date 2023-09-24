@@ -184,7 +184,8 @@ function _run(params) {
             const branchName = yield getShaBranchName({
                 repository,
                 github_token,
-                sha
+                sha,
+                log
             });
             const new_web_docker_image_tags = `${webDockerhubRepository}:${branchName}`.toLowerCase();
             log([
@@ -463,7 +464,7 @@ function getWebDockerhubRepository(params) {
     return dOut.pr;
 }
 function getShaBranchName(params) {
-    const { repository, github_token, sha } = params;
+    const { repository, github_token, sha, log } = params;
     const dOut = new Deferred_1.Deferred();
     (0, githubCommit_1.githubCommit)({
         repository,
@@ -472,8 +473,10 @@ function getShaBranchName(params) {
         "action": ({ repoPath }) => __awaiter(this, void 0, void 0, function* () {
             yield (0, exec_2.exec)("git fetch origin", { "cwd": repoPath });
             const output = (yield (0, exec_2.exec)(`git for-each-ref --contains ${sha} refs/heads/`, { "cwd": repoPath })).trim();
+            log(`===========>${output}`);
             const split = output.split("refs/remotes/origin/");
-            (0, assert_1.assert)(split.length === 2);
+            log(`===========>${JSON.stringify(split)}`);
+            (0, assert_1.assert)(split.length === 2, "Something went wrong trying to get the branch name");
             dOut.resolve(split[1]);
             return { "doCommit": false };
         })
