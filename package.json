@@ -1,7 +1,7 @@
 {
     "homepage": "https://onyxia.sh",
     "name": "onyxia-web",
-    "version": "2.29.5",
+    "version": "2.29.6",
     "license": "MIT",
     "scripts": {
         "_comment": "Yes... We're still using CRA. We'll migrate to Vite as soon as Keycloakify gets support for it",
@@ -19,15 +19,15 @@
     },
     "dependencies": {
         "onyxia-ui": "^1.0.0",
-        "keycloakify": "^8.0.0",
-        "tss-react": "^4.9.0",
+        "keycloakify": "^8.1.0",
+        "tss-react": "^4.9.2",
         "i18nifty": "^2.1.1",
         "tsafe": "^1.6.5",
-        "redux-clean-architecture": "^3.7.2",
+        "redux-clean-architecture": "^3.7.3",
         "screen-scaler": "^1.2.2",
         "evt": "^2.5.2",
         "cra-envs": "^1.2.8",
-        "powerhooks": "^1.0.1",
+        "powerhooks": "^1.0.2",
         "run-exclusive": "^2.2.19",
         "react": "^18.2.0",
         "react-dom": "^18.2.0",
