@@ -320,6 +320,8 @@ export async function run() {
         "log": console.log.bind(console)
     });
 
+    console.log(JSON.stringify(outputs, null, 2));
+
     setOutput(outputs);
 
 }

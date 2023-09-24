@@ -277,6 +277,7 @@ function run() {
     return __awaiter(this, void 0, void 0, function* () {
         const params = getActionParams();
         const outputs = yield _run(Object.assign(Object.assign({}, params), { "log": console.log.bind(console) }));
+        console.log(JSON.stringify(outputs, null, 2));
         setOutput(outputs);
     });
 }
