@@ -1,4 +1,3 @@
-import * as core from "@actions/core";
 import { setOutputFactory } from "../outputHelper";
 import { getActionParamsFactory } from "../inputHelper";
 import { SemVer } from "../tools/SemVer";
