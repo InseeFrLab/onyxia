@@ -164,7 +164,7 @@ export async function _run(
             log
         });
 
-        const new_web_docker_image_tags = `${webDockerhubRepository}:${branchName}`.toLowerCase();
+        const new_web_docker_image_tags = `${webDockerhubRepository}:${branchName.replace(/\/g/,"_")}`.toLowerCase();
 
         log([
             "We are not on the default branch, not releasing.",
@@ -659,14 +659,9 @@ function getShaBranchName(
 
             await exec("git fetch origin", { "cwd": repoPath });
 
-            const output = (await exec(`git for-each-ref --contains ${sha} refs/heads/`, { "cwd": repoPath })).trim();
+            const output = (await exec(`git for-each-ref --contains ${sha} refs/`, { "cwd": repoPath })).trim();
 
-            log(`===========>${output}`);
-
-
-            const split = output.split("refs/remotes/origin/");
-
-            log(`===========>${JSON.stringify(split)}`);
+            const split = output.split("/origin/");
 
             assert(split.length === 2, "Something went wrong trying to get the branch name");
 
