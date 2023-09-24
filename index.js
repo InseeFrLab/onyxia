@@ -404,20 +404,20 @@ function generateReleaseMessageBody(params) {
     return [
         `📖 [Documentation](https://github.com/InseeFrLab/onyxia/tree/v${SemVer_1.SemVer.stringify(chartVersions.new)}/helm-chart/README.md) *(For this specific Onyxia release)*`,
         `  `,
-        `- 📦 Helm Chart: **${SemVer_1.SemVer.bumpType({
+        `📦 Helm Chart: **${SemVer_1.SemVer.bumpType({
             "versionBehind": chartVersions.previous,
             "versionAhead": chartVersions.new
-        }).toLocaleUpperCase()}**, \`${SemVer_1.SemVer.stringify(chartVersions.previous)}\` → \`${SemVer_1.SemVer.stringify(chartVersions.new)}\`  `,
+        }).toLocaleUpperCase()}** \`${SemVer_1.SemVer.stringify(chartVersions.previous)}\` → \`${SemVer_1.SemVer.stringify(chartVersions.new)}\`  `,
         SemVer_1.SemVer.compare(webVersions.previous, webVersions.new) === 0 ? undefined :
-            `  - 🖥️ The Web Application (\`web\`): **${SemVer_1.SemVer.bumpType({
+            `- 🖥️ The Web Application (\`web\`): **${SemVer_1.SemVer.bumpType({
                 "versionBehind": webVersions.previous,
                 "versionAhead": webVersions.new
-            }).toLocaleUpperCase()}**, \`${SemVer_1.SemVer.stringify(webVersions.previous)}\` → \`${SemVer_1.SemVer.stringify(webVersions.new)}\`  `,
+            }).toLocaleUpperCase()}** \`${SemVer_1.SemVer.stringify(webVersions.previous)}\` → \`${SemVer_1.SemVer.stringify(webVersions.new)}\`  `,
         SemVer_1.SemVer.compare(apiVersions.previous, apiVersions.new) === 0 ? undefined :
-            `  - 🔌 The REST API (\`api\`): **${SemVer_1.SemVer.bumpType({
+            `- 🔌 The REST API (\`api\`): **${SemVer_1.SemVer.bumpType({
                 "versionBehind": apiVersions.previous,
                 "versionAhead": apiVersions.new
-            }).toLocaleUpperCase()}**, \`${SemVer_1.SemVer.stringify(apiVersions.previous)}\` → \`${SemVer_1.SemVer.stringify(apiVersions.new)}\`  `,
+            }).toLocaleUpperCase()}** \`${SemVer_1.SemVer.stringify(apiVersions.previous)}\` → \`${SemVer_1.SemVer.stringify(apiVersions.new)}\`  `,
         `  `,
     ].filter((0, exclude_1.exclude)(undefined)).join("\n");
 }
