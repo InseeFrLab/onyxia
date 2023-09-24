@@ -14,6 +14,7 @@ import { createLoggedExec } from "../tools/exec";
 import { id } from "tsafe/id";
 import { exec } from "../tools/exec";
 import { exclude } from "tsafe/exclude";
+import { version } from "os";
 
 const helmChartDirBasename = "helm-chart";
 
@@ -524,7 +525,6 @@ function determineTargetChartVersion(
 
 }
 
-/** ChatGPT generated */
 function generateReleaseMessageBody(params: {
     chartVersions: {
         previous: SemVer;
@@ -546,27 +546,38 @@ function generateReleaseMessageBody(params: {
         apiVersions
     } = params;
 
+
+    const getChartUrl = (version: SemVer) => `https://github.com/InseeFrLab/onyxia/tree/v${SemVer.stringify(version)}/helm-chart`;
+    const getWebUrl = (version: SemVer) => `https://github.com/InseeFrLab/onyxia/tree/v${SemVer.stringify(version)}`;
+    const getApiUrl = (version: SemVer) => `https://github.com/InseeFrLab/onyxia-api/tree/${version.parsedFrom}`;
+
     return [
-        `📖 [Documentation](https://github.com/InseeFrLab/onyxia/tree/v${
-            SemVer.stringify(chartVersions.new)
-        }/helm-chart/README.md) *(For this specific Onyxia release)*`,
+        `📖 [Documentation reference](${getChartUrl(chartVersions.new)}/README.md#configuration) *(For this specific Onyxia release)*`,
         `  `,
-        `📦 Helm Chart: **${SemVer.bumpType({
+        `📦 [Helm Chart](${getChartUrl(chartVersions.new)}): **${SemVer.bumpType({
             "versionBehind": chartVersions.previous,
             "versionAhead": chartVersions.new
-        }).toLocaleUpperCase()}** \`${SemVer.stringify(chartVersions.previous)}\` → \`${SemVer.stringify(chartVersions.new)}\`  `,
-        SemVer.compare(webVersions.previous, webVersions.new) === 0 ? undefined : 
-        `- 🖥️ The Web Application (\`web\`): **${SemVer.bumpType({
-            "versionBehind": webVersions.previous,
-            "versionAhead": webVersions.new
-        }).toLocaleUpperCase()}** \`${SemVer.stringify(webVersions.previous)}\` → \`${SemVer.stringify(webVersions.new)}\`  `,
-        SemVer.compare(apiVersions.previous, apiVersions.new) === 0 ? undefined : 
-        `- 🔌 The REST API (\`api\`): **${SemVer.bumpType({
-            "versionBehind": apiVersions.previous,
-            "versionAhead": apiVersions.new
-        }).toLocaleUpperCase()}** \`${SemVer.stringify(apiVersions.previous)}\` → \`${SemVer.stringify(apiVersions.new)}\`  `,
-        `  `,
-    ].filter(exclude(undefined)).join("\n");
+        }).toLocaleUpperCase()}** [\`${SemVer.stringify(chartVersions.previous)
+        }\`](${getChartUrl(chartVersions.previous)}) → [\`${SemVer.stringify(chartVersions.new)}\`](${getChartUrl(chartVersions.new)})  `,
+        [
+            `- 🖥️ Pinned [\`inseefrlab/onyxia-web\`](https://hub.docker.com/r/inseefrlab/onyxia-web) version:`,
+            SemVer.compare(webVersions.previous, webVersions.new) === 0 ?
+                `**NO BUMP** [\`${SemVer.stringify(webVersions.new)}\`](${getWebUrl(webVersions.new)})` :
+                `**${SemVer.bumpType({ "versionBehind": webVersions.previous, "versionAhead": webVersions.new }).toLocaleUpperCase()}** `,
+            `[\`${SemVer.stringify(webVersions.previous)}\`](${getWebUrl(webVersions.previous)})`,
+            `→`,
+            `[\`${SemVer.stringify(webVersions.new)}\`](${getWebUrl(webVersions.new)})  `,
+        ].join(" "),
+        [
+            `- 🔌 Pinned [\`inseefrlab/onyxia-api\`](https://hub.docker.com/r/inseefrlab/onyxia-api) version:`,
+            SemVer.compare(apiVersions.previous, apiVersions.new) === 0 ?
+                `**NO BUMP** [\`${SemVer.stringify(apiVersions.new)}\`](${getApiUrl(apiVersions.new)})` :
+                `**${SemVer.bumpType({ "versionBehind": apiVersions.previous, "versionAhead": apiVersions.new }).toLocaleUpperCase()}** `,
+            `[\`${apiVersions.previous.parsedFrom}\`](${getApiUrl(apiVersions.previous)})`,
+            `→`,
+            `[\`${apiVersions.new.parsedFrom}\`](${getApiUrl(apiVersions.new)})  `,
+        ].join(" "),
+    ].join("\n");
 
 }
 

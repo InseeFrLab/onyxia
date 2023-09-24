@@ -100,7 +100,6 @@ const Deferred_1 = __nccwpck_require__(689);
 const exec_1 = __nccwpck_require__(4269);
 const id_1 = __nccwpck_require__(3047);
 const exec_2 = __nccwpck_require__(4269);
-const exclude_1 = __nccwpck_require__(1370);
 const helmChartDirBasename = "helm-chart";
 const { getActionParams } = (0, inputHelper_1.getActionParamsFactory)({
     "inputNameSubset": [
@@ -398,28 +397,37 @@ function determineTargetChartVersion(params) {
         }
     }
 }
-/** ChatGPT generated */
 function generateReleaseMessageBody(params) {
     const { chartVersions, webVersions, apiVersions } = params;
+    const getChartUrl = (version) => `https://github.com/InseeFrLab/onyxia/tree/v${SemVer_1.SemVer.stringify(version)}/helm-chart`;
+    const getWebUrl = (version) => `https://github.com/InseeFrLab/onyxia/tree/v${SemVer_1.SemVer.stringify(version)}`;
+    const getApiUrl = (version) => `https://github.com/InseeFrLab/onyxia-api/tree/${version.parsedFrom}`;
     return [
-        `📖 [Documentation](https://github.com/InseeFrLab/onyxia/tree/v${SemVer_1.SemVer.stringify(chartVersions.new)}/helm-chart/README.md) *(For this specific Onyxia release)*`,
+        `📖 [Documentation reference](${getChartUrl(chartVersions.new)}/README.md#configuration) *(For this specific Onyxia release)*`,
         `  `,
-        `📦 Helm Chart: **${SemVer_1.SemVer.bumpType({
+        `📦 [Helm Chart](${getChartUrl(chartVersions.new)}): **${SemVer_1.SemVer.bumpType({
             "versionBehind": chartVersions.previous,
             "versionAhead": chartVersions.new
-        }).toLocaleUpperCase()}** \`${SemVer_1.SemVer.stringify(chartVersions.previous)}\` → \`${SemVer_1.SemVer.stringify(chartVersions.new)}\`  `,
-        SemVer_1.SemVer.compare(webVersions.previous, webVersions.new) === 0 ? undefined :
-            `- 🖥️ The Web Application (\`web\`): **${SemVer_1.SemVer.bumpType({
-                "versionBehind": webVersions.previous,
-                "versionAhead": webVersions.new
-            }).toLocaleUpperCase()}** \`${SemVer_1.SemVer.stringify(webVersions.previous)}\` → \`${SemVer_1.SemVer.stringify(webVersions.new)}\`  `,
-        SemVer_1.SemVer.compare(apiVersions.previous, apiVersions.new) === 0 ? undefined :
-            `- 🔌 The REST API (\`api\`): **${SemVer_1.SemVer.bumpType({
-                "versionBehind": apiVersions.previous,
-                "versionAhead": apiVersions.new
-            }).toLocaleUpperCase()}** \`${SemVer_1.SemVer.stringify(apiVersions.previous)}\` → \`${SemVer_1.SemVer.stringify(apiVersions.new)}\`  `,
-        `  `,
-    ].filter((0, exclude_1.exclude)(undefined)).join("\n");
+        }).toLocaleUpperCase()}** [\`${SemVer_1.SemVer.stringify(chartVersions.previous)}\`](${getChartUrl(chartVersions.previous)}) → [\`${SemVer_1.SemVer.stringify(chartVersions.new)}\`](${getChartUrl(chartVersions.new)})  `,
+        [
+            `- 🖥️ Pinned [\`inseefrlab/onyxia-web\`](https://hub.docker.com/r/inseefrlab/onyxia-web) version:`,
+            SemVer_1.SemVer.compare(webVersions.previous, webVersions.new) === 0 ?
+                `**NO BUMP** [\`${SemVer_1.SemVer.stringify(webVersions.new)}\`](${getWebUrl(webVersions.new)})` :
+                `**${SemVer_1.SemVer.bumpType({ "versionBehind": webVersions.previous, "versionAhead": webVersions.new }).toLocaleUpperCase()}** `,
+            `[\`${SemVer_1.SemVer.stringify(webVersions.previous)}\`](${getWebUrl(webVersions.previous)})`,
+            `→`,
+            `[\`${SemVer_1.SemVer.stringify(webVersions.new)}\`](${getWebUrl(webVersions.new)})  `,
+        ].join(" "),
+        [
+            `- 🔌 Pinned [\`inseefrlab/onyxia-api\`](https://hub.docker.com/r/inseefrlab/onyxia-api) version:`,
+            SemVer_1.SemVer.compare(apiVersions.previous, apiVersions.new) === 0 ?
+                `**NO BUMP** [\`${SemVer_1.SemVer.stringify(apiVersions.new)}\`](${getApiUrl(apiVersions.new)})` :
+                `**${SemVer_1.SemVer.bumpType({ "versionBehind": apiVersions.previous, "versionAhead": apiVersions.new }).toLocaleUpperCase()}** `,
+            `[\`${apiVersions.previous.parsedFrom}\`](${getApiUrl(apiVersions.previous)})`,
+            `→`,
+            `[\`${apiVersions.new.parsedFrom}\`](${getApiUrl(apiVersions.new)})  `,
+        ].join(" "),
+    ].join("\n");
 }
 function getWebDockerhubRepository(params) {
     const { repository, github_token, sha } = params;
@@ -9457,32 +9465,6 @@ function assert(condition, msg) {
 }
 exports.assert = assert;
 //# sourceMappingURL=assert.js.map
-
-/***/ }),
-
-/***/ 1370:
-/***/ ((__unused_webpack_module, exports) => {
-
-"use strict";
-
-/* eslint-disable @typescript-eslint/no-explicit-any */
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.exclude = void 0;
-/** Return a function to use as Array.prototype.filter argument
- * to exclude one or many primitive value element from the array.
- * Ex: ([ "a", "b", "c" ] as const).filter(exclude("a")) return ("b" | "c")[]
- * Ex: ([ "a", "b", "c", "d"] as const).filter(exclude(["a", "b"]) gives ("c" | "d")[]
- */
-function exclude(target) {
-    var test = target instanceof Object
-        ? function (element) { return target.indexOf(element) < 0; }
-        : function (element) { return element !== target; };
-    return function (str) {
-        return test(str);
-    };
-}
-exports.exclude = exclude;
-//# sourceMappingURL=exclude.js.map
 
 /***/ }),
 
