@@ -13,6 +13,7 @@ import { githubCommit } from "../tools/githubCommit";
 import { Deferred } from "evt/tools/Deferred";
 import { createLoggedExec } from "../tools/exec";
 import { id } from "tsafe/id";
+import { exec } from "../tools/exec";
 
 const helmChartDirBasename = "helm-chart";
 
@@ -157,8 +158,14 @@ export async function _run(
 
     if (is_default_branch === "false") {
 
+        const branchName = await getShaBranchName({
+            repository,
+            github_token,
+            sha
+        });
+
         //TODO: Get the name of the branch.
-        const new_web_docker_image_tags = `${webDockerhubRepository.toLowerCase()}:${"/*todo name of the branch */"}`;
+        const new_web_docker_image_tags = `${webDockerhubRepository.toLowerCase()}:${branchName}`;
 
         log([
             "We are not on the default branch, not releasing.",
@@ -621,6 +628,43 @@ function getWebDockerhubRepository(
                     ).toString("utf8")
                 )["web"]["image"]["repository"]
             );
+
+            return { "doCommit": false };
+        }
+
+    });
+
+    return dOut.pr;
+
+}
+
+function getShaBranchName(
+    params: {
+        repository: `${string}/${string}`;
+        github_token: string;
+        sha: string;
+    }
+) {
+
+    const { repository, github_token, sha } = params;
+
+    const dOut = new Deferred<string>();
+
+    githubCommit({
+        repository,
+        "token": github_token,
+        "ref": sha,
+        "action": async ({ repoPath }) => {
+
+            await exec("git fetch origin", { "cwd": repoPath });
+
+            const output= (await exec(`git for-each-ref --contains ${sha} refs/heads/`)).trim();
+
+            const split = output.split("refs/remotes/origin/");
+
+            assert(split.length === 2);
+
+            dOut.resolve(split[1]);
 
             return { "doCommit": false };
         }
