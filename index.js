@@ -100,6 +100,7 @@ const Deferred_1 = __nccwpck_require__(689);
 const exec_1 = __nccwpck_require__(4269);
 const id_1 = __nccwpck_require__(3047);
 const exec_2 = __nccwpck_require__(4269);
+const exclude_1 = __nccwpck_require__(1370);
 const helmChartDirBasename = "helm-chart";
 const { getActionParams } = (0, inputHelper_1.getActionParamsFactory)({
     "inputNameSubset": [
@@ -267,12 +268,18 @@ function _run(params) {
                 ].map(tag => `${webDockerhubRepository.toLowerCase()}:${tag}`).join(","),
             "release_target_git_commit_sha": release_target_git_commit_sha !== null && release_target_git_commit_sha !== void 0 ? release_target_git_commit_sha : sha,
             "release_message": generateReleaseMessageBody({
-                "helmChartVersion": SemVer_1.SemVer.stringify(targetChartVersion),
-                "helmChartVersion_previous": SemVer_1.SemVer.stringify(previousReleaseVersions.chartVersion),
-                "onyxiaApiVersion": SemVer_1.SemVer.stringify(currentVersions.apiVersion),
-                "onyxiaApiVersion_previous": SemVer_1.SemVer.stringify(previousReleaseVersions.apiVersion),
-                "webVersion": SemVer_1.SemVer.stringify(currentVersions.webVersion),
-                "webVersion_previous": SemVer_1.SemVer.stringify(previousReleaseVersions.webVersion),
+                "chartVersions": {
+                    "previous": previousReleaseVersions.chartVersion,
+                    "new": targetChartVersion
+                },
+                "apiVersions": {
+                    "previous": previousReleaseVersions.apiVersion,
+                    "new": currentVersions.apiVersion
+                },
+                "webVersions": {
+                    "previous": previousReleaseVersions.webVersion,
+                    "new": currentVersions.webVersion
+                },
             })
         };
     });
@@ -393,67 +400,25 @@ function determineTargetChartVersion(params) {
 }
 /** ChatGPT generated */
 function generateReleaseMessageBody(params) {
-    const { helmChartVersion, helmChartVersion_previous, onyxiaApiVersion_previous, onyxiaApiVersion, webVersion, webVersion_previous } = params;
-    const helmChartVersionBumpType = SemVer_1.SemVer.bumpType({
-        "versionBehind": SemVer_1.SemVer.parse(helmChartVersion_previous),
-        "versionAhead": SemVer_1.SemVer.parse(helmChartVersion)
-    });
-    const webVersionBumpType = SemVer_1.SemVer.bumpType({
-        "versionBehind": SemVer_1.SemVer.parse(webVersion_previous),
-        "versionAhead": SemVer_1.SemVer.parse(webVersion)
-    });
-    const onyxiaApi_VersionBumpType = SemVer_1.SemVer.bumpType({
-        "versionBehind": SemVer_1.SemVer.parse(onyxiaApiVersion_previous),
-        "versionAhead": SemVer_1.SemVer.parse(onyxiaApiVersion)
-    });
-    let message = `# Release Notes \n\n`;
-    message += `## Helm Chart Version :package: \n`;
-    message += `- Previous: \`${helmChartVersion_previous}\` \n`;
-    message += `- New: \`${helmChartVersion}\` \n\n`;
-    switch (helmChartVersionBumpType) {
-        case 'patch':
-            message += `:adhesive_bandage: No API changes. You can upgrade without fear of breaking your install. \n\n`;
-            break;
-        case 'minor':
-            message += `:new: New parameters are available in the configuration. No breaking changes with the previous release. [Documentation](https://github.com/InseeFrLab/onyxia/tree/main/helm-chart) \n\n`;
-            break;
-        case 'major':
-            message += `:warning: Upgrading might break your Onyxia install. Please refer to the [new documentation](https://github.com/InseeFrLab/onyxia/tree/main/helm-chart). \n\n`;
-            break;
-    }
-    if (webVersionBumpType !== 'no bump') {
-        message += `## Onyxia Web :globe_with_meridians: \n`;
-        message += `- Previous: \`${webVersion_previous}\` \n`;
-        message += `- New: \`${webVersion}\` \n\n`;
-        switch (webVersionBumpType) {
-            case 'patch':
-                message += `:adhesive_bandage: No API changes. You can upgrade without fear of breaking your install. \n\n`;
-                break;
-            case 'minor':
-                message += `:new: New parameters are available in the configuration. No breaking changes with the previous release. [Documentation](https://github.com/InseeFrLab/onyxia/tree/main/helm-chart) \n\n`;
-                break;
-            case 'major':
-                message += `:warning: Upgrading might break your Onyxia install. Please refer to the [new documentation](https://github.com/InseeFrLab/onyxia/tree/main/helm-chart). \n\n`;
-                break;
-        }
-    }
-    if (onyxiaApi_VersionBumpType !== 'no bump') {
-        message += `## Onyxia API :gear: \n`;
-        message += `- Previous: \`${onyxiaApiVersion_previous}\` \n`;
-        message += `- New: \`${onyxiaApiVersion}\` \n\n`;
-        switch (onyxiaApi_VersionBumpType) {
-            case 'patch':
-                message += `:adhesive_bandage: No API changes. You can upgrade without fear of breaking your install. \n\n`;
-                break;
-            case 'minor':
-                message += `:new: New parameters are available in the configuration. No breaking changes with the previous release. [Documentation](https://github.com/InseeFrLab/onyxia/tree/main/helm-chart) \n\n`;
-                break;
-            case 'major':
-                message += `:warning: Upgrading might break your Onyxia install. Please refer to the [new documentation](https://github.com/InseeFrLab/onyxia/tree/main/helm-chart). \n\n`;
-                break;
-        }
-    }
-    return message;
+    const { chartVersions, webVersions, apiVersions } = params;
+    return [
+        `- 📦 Helm Chart: **${SemVer_1.SemVer.bumpType({
+            "versionBehind": chartVersions.previous,
+            "versionAhead": chartVersions.new
+        }).toLocaleUpperCase()}** bump. \`${SemVer_1.SemVer.stringify(chartVersions.previous)}\` → \`${SemVer_1.SemVer.stringify(chartVersions.new)}\`  `,
+        SemVer_1.SemVer.compare(webVersions.previous, webVersions.new) === 0 ? undefined :
+            `  - 🖥️ The Web Application (\`web\`): **${SemVer_1.SemVer.bumpType({
+                "versionBehind": webVersions.previous,
+                "versionAhead": webVersions.new
+            }).toLocaleUpperCase()}** bump. \`${SemVer_1.SemVer.stringify(webVersions.previous)}\` → \`${SemVer_1.SemVer.stringify(webVersions.new)}\`  `,
+        SemVer_1.SemVer.compare(apiVersions.previous, apiVersions.new) === 0 ? undefined :
+            `  - 🔌 The REST API (\`api\`): **${SemVer_1.SemVer.bumpType({
+                "versionBehind": apiVersions.previous,
+                "versionAhead": apiVersions.new
+            }).toLocaleUpperCase()}** bump. \`${SemVer_1.SemVer.stringify(apiVersions.previous)}\` → \`${SemVer_1.SemVer.stringify(apiVersions.new)}\`  `,
+        `  `,
+        `📖 [Documentation](https://github.com/InseeFrLab/onyxia/tree/v${SemVer_1.SemVer.stringify(chartVersions.new)}/helm-chart/README.md) *(For this specific Onyxia release)*`
+    ].filter((0, exclude_1.exclude)(undefined)).join("\n");
 }
 function getWebDockerhubRepository(params) {
     const { repository, github_token, sha } = params;
@@ -9491,6 +9456,32 @@ function assert(condition, msg) {
 }
 exports.assert = assert;
 //# sourceMappingURL=assert.js.map
+
+/***/ }),
+
+/***/ 1370:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.exclude = void 0;
+/** Return a function to use as Array.prototype.filter argument
+ * to exclude one or many primitive value element from the array.
+ * Ex: ([ "a", "b", "c" ] as const).filter(exclude("a")) return ("b" | "c")[]
+ * Ex: ([ "a", "b", "c", "d"] as const).filter(exclude(["a", "b"]) gives ("c" | "d")[]
+ */
+function exclude(target) {
+    var test = target instanceof Object
+        ? function (element) { return target.indexOf(element) < 0; }
+        : function (element) { return element !== target; };
+    return function (str) {
+        return test(str);
+    };
+}
+exports.exclude = exclude;
+//# sourceMappingURL=exclude.js.map
 
 /***/ }),
 

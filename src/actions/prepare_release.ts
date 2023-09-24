@@ -13,6 +13,7 @@ import { Deferred } from "evt/tools/Deferred";
 import { createLoggedExec } from "../tools/exec";
 import { id } from "tsafe/id";
 import { exec } from "../tools/exec";
+import { exclude } from "tsafe/exclude";
 
 const helmChartDirBasename = "helm-chart";
 
@@ -304,12 +305,18 @@ export async function _run(
                 ].map(tag => `${webDockerhubRepository.toLowerCase()}:${tag}`).join(","),
         "release_target_git_commit_sha": release_target_git_commit_sha ?? sha,
         "release_message": generateReleaseMessageBody({
-            "helmChartVersion": SemVer.stringify(targetChartVersion),
-            "helmChartVersion_previous": SemVer.stringify(previousReleaseVersions.chartVersion),
-            "onyxiaApiVersion": SemVer.stringify(currentVersions.apiVersion),
-            "onyxiaApiVersion_previous": SemVer.stringify(previousReleaseVersions.apiVersion),
-            "webVersion": SemVer.stringify(currentVersions.webVersion),
-            "webVersion_previous": SemVer.stringify(previousReleaseVersions.webVersion),
+            "chartVersions": {
+                "previous": previousReleaseVersions.chartVersion,
+                "new": targetChartVersion
+            },
+            "apiVersions": {
+                "previous": previousReleaseVersions.apiVersion,
+                "new": currentVersions.apiVersion
+            },
+            "webVersions": {
+                "previous": previousReleaseVersions.webVersion,
+                "new": currentVersions.webVersion
+            },
         })
     };
 
@@ -519,91 +526,47 @@ function determineTargetChartVersion(
 
 /** ChatGPT generated */
 function generateReleaseMessageBody(params: {
-    helmChartVersion_previous: string;
-    helmChartVersion: string;
-    webVersion_previous: string;
-    webVersion: string;
-    onyxiaApiVersion_previous: string;
-    onyxiaApiVersion: string;
+    chartVersions: {
+        previous: SemVer;
+        new: SemVer;
+    };
+    webVersions: {
+        previous: SemVer;
+        new: SemVer;
+    };
+    apiVersions: {
+        previous: SemVer;
+        new: SemVer;
+    };
 }): string {
 
     const {
-        helmChartVersion,
-        helmChartVersion_previous,
-        onyxiaApiVersion_previous,
-        onyxiaApiVersion,
-        webVersion,
-        webVersion_previous
+        chartVersions,
+        webVersions,
+        apiVersions
     } = params;
 
-    const helmChartVersionBumpType = SemVer.bumpType({
-        "versionBehind": SemVer.parse(helmChartVersion_previous),
-        "versionAhead": SemVer.parse(helmChartVersion)
-    });
-    const webVersionBumpType = SemVer.bumpType({
-        "versionBehind": SemVer.parse(webVersion_previous),
-        "versionAhead": SemVer.parse(webVersion)
-    });
-    const onyxiaApi_VersionBumpType = SemVer.bumpType({
-        "versionBehind": SemVer.parse(onyxiaApiVersion_previous),
-        "versionAhead": SemVer.parse(onyxiaApiVersion)
-    });
+    return [
+        `- 📦 Helm Chart: **${SemVer.bumpType({
+            "versionBehind": chartVersions.previous,
+            "versionAhead": chartVersions.new
+        }).toLocaleUpperCase()}** bump. \`${SemVer.stringify(chartVersions.previous)}\` → \`${SemVer.stringify(chartVersions.new)}\`  `,
+        SemVer.compare(webVersions.previous, webVersions.new) === 0 ? undefined : 
+        `  - 🖥️ The Web Application (\`web\`): **${SemVer.bumpType({
+            "versionBehind": webVersions.previous,
+            "versionAhead": webVersions.new
+        }).toLocaleUpperCase()}** bump. \`${SemVer.stringify(webVersions.previous)}\` → \`${SemVer.stringify(webVersions.new)}\`  `,
+        SemVer.compare(apiVersions.previous, apiVersions.new) === 0 ? undefined : 
+        `  - 🔌 The REST API (\`api\`): **${SemVer.bumpType({
+            "versionBehind": apiVersions.previous,
+            "versionAhead": apiVersions.new
+        }).toLocaleUpperCase()}** bump. \`${SemVer.stringify(apiVersions.previous)}\` → \`${SemVer.stringify(apiVersions.new)}\`  `,
+        `  `,
+        `📖 [Documentation](https://github.com/InseeFrLab/onyxia/tree/v${
+            SemVer.stringify(chartVersions.new)
+        }/helm-chart/README.md) *(For this specific Onyxia release)*`
+    ].filter(exclude(undefined)).join("\n");
 
-    let message = `# Release Notes \n\n`;
-
-    message += `## Helm Chart Version :package: \n`;
-    message += `- Previous: \`${helmChartVersion_previous}\` \n`;
-    message += `- New: \`${helmChartVersion}\` \n\n`;
-
-    switch (helmChartVersionBumpType) {
-        case 'patch':
-            message += `:adhesive_bandage: No API changes. You can upgrade without fear of breaking your install. \n\n`;
-            break;
-        case 'minor':
-            message += `:new: New parameters are available in the configuration. No breaking changes with the previous release. [Documentation](https://github.com/InseeFrLab/onyxia/tree/main/helm-chart) \n\n`;
-            break;
-        case 'major':
-            message += `:warning: Upgrading might break your Onyxia install. Please refer to the [new documentation](https://github.com/InseeFrLab/onyxia/tree/main/helm-chart). \n\n`;
-            break;
-    }
-
-    if (webVersionBumpType !== 'no bump') {
-        message += `## Onyxia Web :globe_with_meridians: \n`;
-        message += `- Previous: \`${webVersion_previous}\` \n`;
-        message += `- New: \`${webVersion}\` \n\n`;
-
-        switch (webVersionBumpType) {
-            case 'patch':
-                message += `:adhesive_bandage: No API changes. You can upgrade without fear of breaking your install. \n\n`;
-                break;
-            case 'minor':
-                message += `:new: New parameters are available in the configuration. No breaking changes with the previous release. [Documentation](https://github.com/InseeFrLab/onyxia/tree/main/helm-chart) \n\n`;
-                break;
-            case 'major':
-                message += `:warning: Upgrading might break your Onyxia install. Please refer to the [new documentation](https://github.com/InseeFrLab/onyxia/tree/main/helm-chart). \n\n`;
-                break;
-        }
-    }
-
-    if (onyxiaApi_VersionBumpType !== 'no bump') {
-        message += `## Onyxia API :gear: \n`;
-        message += `- Previous: \`${onyxiaApiVersion_previous}\` \n`;
-        message += `- New: \`${onyxiaApiVersion}\` \n\n`;
-
-        switch (onyxiaApi_VersionBumpType) {
-            case 'patch':
-                message += `:adhesive_bandage: No API changes. You can upgrade without fear of breaking your install. \n\n`;
-                break;
-            case 'minor':
-                message += `:new: New parameters are available in the configuration. No breaking changes with the previous release. [Documentation](https://github.com/InseeFrLab/onyxia/tree/main/helm-chart) \n\n`;
-                break;
-            case 'major':
-                message += `:warning: Upgrading might break your Onyxia install. Please refer to the [new documentation](https://github.com/InseeFrLab/onyxia/tree/main/helm-chart). \n\n`;
-                break;
-        }
-    }
-
-    return message;
 }
 
 function getWebDockerhubRepository(
