@@ -11,18 +11,18 @@ export const outputNames = [
 
 export function getOutputDescription(inputName: typeof outputNames[number]): string {
     switch (inputName) {
-        case "new_chart_version": return "Output of assess_release_criteria, string, Example '1.2.3' or the empty string if no need for release";
+        case "new_chart_version": return "Output of prepare_release, string, Example '1.2.3' or the empty string if no need for release";
         case "new_web_docker_image_tags": return [
-            "Output of assess_release_criteria, string,",
+            "Output of prepare_release, string,",
             "Example 'inseefrlab/onyxia-web:2.30.0,inseefrlab/onyxia-web:latest' or the empty string",
             "if no need to push a Docker image to dockerhub"
         ].join(" ");
         case "release_target_git_commit_sha": return [
-            "Output of assess_release_criteria, string, Example: 1a2b3...",
+            "Output of prepare_release, string, Example: 1a2b3...",
             "If a release is needed this action might push new commits, this output",
             "is the sha of the commit that should be released."
         ].join(" ");
-        case "release_message": return "Output of assess_release_criteria, string";
+        case "release_message": return "Output of prepare_release, string";
     }
 }
 

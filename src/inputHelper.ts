@@ -24,7 +24,7 @@ export function getInputDescription(inputName: typeof inputNames[number]): strin
 
                 //NOTE: We don't import directly to avoid circular dependency
                 const actionNames = [
-                    "assess_release_criteria",
+                    "prepare_release",
                     "release_helm_chart"
                 ] as const;
 

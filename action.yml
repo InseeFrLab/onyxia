@@ -6,7 +6,7 @@ author: 'u/garronej'
 inputs:
   action_name:
     required: true
-    description: 'Action to run, one of: "assess_release_criteria", "release_helm_chart"'
+    description: 'Action to run, one of: "prepare_release", "release_helm_chart"'
   github_token:
     required: false
     description: 'GitHub Personal access tokenOne with no write access is provided by default'
@@ -44,13 +44,13 @@ inputs:
     default: '${{ endsWith(github.actor, ''[bot]'') }}'
 outputs:
   new_chart_version:
-    description: 'Output of assess_release_criteria, string, Example ''1.2.3'' or the empty string if no need for release'
+    description: 'Output of prepare_release, string, Example ''1.2.3'' or the empty string if no need for release'
   new_web_docker_image_tags:
-    description: 'Output of assess_release_criteria, string, Example ''inseefrlab/onyxia-web:2.30.0,inseefrlab/onyxia-web:latest'' or the empty string if no need to push a Docker image to dockerhub'
+    description: 'Output of prepare_release, string, Example ''inseefrlab/onyxia-web:2.30.0,inseefrlab/onyxia-web:latest'' or the empty string if no need to push a Docker image to dockerhub'
   release_target_git_commit_sha:
-    description: 'Output of assess_release_criteria, string, Example: 1a2b3... If a release is needed this action might push new commits, this output is the sha of the commit that should be released.'
+    description: 'Output of prepare_release, string, Example: 1a2b3... If a release is needed this action might push new commits, this output is the sha of the commit that should be released.'
   release_message:
-    description: 'Output of assess_release_criteria, string'
+    description: 'Output of prepare_release, string'
 runs:
   using: 'node20'
   main: './index.js'

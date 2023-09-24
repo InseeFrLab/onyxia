@@ -1,7 +1,49 @@
 /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
-/***/ 176:
+/***/ 5167:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.actions = void 0;
+const objectKeys_1 = __nccwpck_require__(6762);
+const prepare_release = __importStar(__nccwpck_require__(9539));
+const release_helm_chart = __importStar(__nccwpck_require__(9747));
+exports.actions = {
+    prepare_release,
+    release_helm_chart
+};
+const actionNames = (0, objectKeys_1.objectKeys)(exports.actions);
+
+
+/***/ }),
+
+/***/ 9539:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
@@ -443,48 +485,6 @@ function getShaBranchName(params) {
 
 /***/ }),
 
-/***/ 5167:
-/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
-
-"use strict";
-
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.actions = void 0;
-const objectKeys_1 = __nccwpck_require__(6762);
-const assess_release_criteria = __importStar(__nccwpck_require__(176));
-const release_helm_chart = __importStar(__nccwpck_require__(9747));
-exports.actions = {
-    assess_release_criteria,
-    release_helm_chart
-};
-const actionNames = (0, objectKeys_1.objectKeys)(exports.actions);
-
-
-/***/ }),
-
 /***/ 9747:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
@@ -658,7 +658,7 @@ function getInputDescription(inputName) {
             (() => {
                 //NOTE: We don't import directly to avoid circular dependency
                 const actionNames = [
-                    "assess_release_criteria",
+                    "prepare_release",
                     "release_helm_chart"
                 ];
                 (0, assert_1.assert)(true);
@@ -784,18 +784,18 @@ exports.outputNames = [
 ];
 function getOutputDescription(inputName) {
     switch (inputName) {
-        case "new_chart_version": return "Output of assess_release_criteria, string, Example '1.2.3' or the empty string if no need for release";
+        case "new_chart_version": return "Output of prepare_release, string, Example '1.2.3' or the empty string if no need for release";
         case "new_web_docker_image_tags": return [
-            "Output of assess_release_criteria, string,",
+            "Output of prepare_release, string,",
             "Example 'inseefrlab/onyxia-web:2.30.0,inseefrlab/onyxia-web:latest' or the empty string",
             "if no need to push a Docker image to dockerhub"
         ].join(" ");
         case "release_target_git_commit_sha": return [
-            "Output of assess_release_criteria, string, Example: 1a2b3...",
+            "Output of prepare_release, string, Example: 1a2b3...",
             "If a release is needed this action might push new commits, this output",
             "is the sha of the commit that should be released."
         ].join(" ");
-        case "release_message": return "Output of assess_release_criteria, string";
+        case "release_message": return "Output of prepare_release, string";
     }
 }
 exports.getOutputDescription = getOutputDescription;

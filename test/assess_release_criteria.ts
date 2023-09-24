@@ -1,5 +1,5 @@
 
-import { run } from "../src/actions/assess_release_criteria";
+import { run } from "../src/actions/prepare_release";
 
 run({
     "actionParams": {
