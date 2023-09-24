@@ -547,24 +547,25 @@ function generateReleaseMessageBody(params: {
     } = params;
 
     return [
+        `📖 [Documentation](https://github.com/InseeFrLab/onyxia/tree/v${
+            SemVer.stringify(chartVersions.new)
+        }/helm-chart/README.md) *(For this specific Onyxia release)*`,
+        `  `,
         `- 📦 Helm Chart: **${SemVer.bumpType({
             "versionBehind": chartVersions.previous,
             "versionAhead": chartVersions.new
-        }).toLocaleUpperCase()}** bump. \`${SemVer.stringify(chartVersions.previous)}\` → \`${SemVer.stringify(chartVersions.new)}\`  `,
+        }).toLocaleUpperCase()}**, \`${SemVer.stringify(chartVersions.previous)}\` → \`${SemVer.stringify(chartVersions.new)}\`  `,
         SemVer.compare(webVersions.previous, webVersions.new) === 0 ? undefined : 
         `  - 🖥️ The Web Application (\`web\`): **${SemVer.bumpType({
             "versionBehind": webVersions.previous,
             "versionAhead": webVersions.new
-        }).toLocaleUpperCase()}** bump. \`${SemVer.stringify(webVersions.previous)}\` → \`${SemVer.stringify(webVersions.new)}\`  `,
+        }).toLocaleUpperCase()}**, \`${SemVer.stringify(webVersions.previous)}\` → \`${SemVer.stringify(webVersions.new)}\`  `,
         SemVer.compare(apiVersions.previous, apiVersions.new) === 0 ? undefined : 
         `  - 🔌 The REST API (\`api\`): **${SemVer.bumpType({
             "versionBehind": apiVersions.previous,
             "versionAhead": apiVersions.new
-        }).toLocaleUpperCase()}** bump. \`${SemVer.stringify(apiVersions.previous)}\` → \`${SemVer.stringify(apiVersions.new)}\`  `,
+        }).toLocaleUpperCase()}**, \`${SemVer.stringify(apiVersions.previous)}\` → \`${SemVer.stringify(apiVersions.new)}\`  `,
         `  `,
-        `📖 [Documentation](https://github.com/InseeFrLab/onyxia/tree/v${
-            SemVer.stringify(chartVersions.new)
-        }/helm-chart/README.md) *(For this specific Onyxia release)*`
     ].filter(exclude(undefined)).join("\n");
 
 }
