@@ -65,9 +65,9 @@ export async function _run(
 
     const repository = `${owner}/${repo}` as const;
 
-    if (is_external_pr === "true") {
+    if (is_external_pr === "true" || is_bot === "true") {
 
-        log("External PR, skipping");
+        log("External PR or PR from a bot, skipping");
 
         return {
             "new_chart_version": "",
@@ -157,13 +157,12 @@ export async function _run(
 
     if (is_default_branch === "false") {
 
-
-
-        const new_web_docker_image_tags = is_bot === "true" ? "" : `${webDockerhubRepository.toLowerCase()}:${currentVersions.webVersion}`;
+        //TODO: Get the name of the branch.
+        const new_web_docker_image_tags = `${webDockerhubRepository.toLowerCase()}:${"/*todo name of the branch */"}`;
 
         log([
             "We are not on the default branch, not releasing.",
-            new_web_docker_image_tags === "" ? "A bot is pushing this, not pushing docker image." : `Pushing docker image: ${new_web_docker_image_tags}`
+            `Pushing docker image: ${new_web_docker_image_tags}`
         ].join(" "));
 
 
@@ -189,7 +188,6 @@ export async function _run(
             "release_message": "",
             "release_target_git_commit_sha": "",
             "new_web_docker_image_tags": ""
-
         };
 
     }

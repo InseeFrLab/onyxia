@@ -77,8 +77,8 @@ function _run(params) {
         const { github_token, owner, repo, sha, automatic_commit_author_email, is_external_pr, is_default_branch, recursiveCallParams, is_bot, log = () => { } } = params;
         log(JSON.stringify(params, null, 2));
         const repository = `${owner}/${repo}`;
-        if (is_external_pr === "true") {
-            log("External PR, skipping");
+        if (is_external_pr === "true" || is_bot === "true") {
+            log("External PR or PR from a bot, skipping");
             return {
                 "new_chart_version": "",
                 "new_web_docker_image_tags": "",
@@ -139,10 +139,11 @@ function _run(params) {
             sha
         });
         if (is_default_branch === "false") {
-            const new_web_docker_image_tags = is_bot === "true" ? "" : `${webDockerhubRepository.toLowerCase()}:${currentVersions.webVersion}`;
+            //TODO: Get the name of the branch.
+            const new_web_docker_image_tags = `${webDockerhubRepository.toLowerCase()}:${"/*todo name of the branch */"}`;
             log([
                 "We are not on the default branch, not releasing.",
-                new_web_docker_image_tags === "" ? "A bot is pushing this, not pushing docker image." : `Pushing docker image: ${new_web_docker_image_tags}`
+                `Pushing docker image: ${new_web_docker_image_tags}`
             ].join(" "));
             return {
                 "new_chart_version": "",
