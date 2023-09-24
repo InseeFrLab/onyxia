@@ -65,7 +65,7 @@ export async function _run(
 
     const repository = `${owner}/${repo}` as const;
 
-    if (is_external_pr === "true" || is_bot === "true") {
+    if (is_external_pr === "true" || (is_default_branch === "false" && is_bot === "true")) {
 
         log("External PR or PR from a bot, skipping");
 

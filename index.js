@@ -119,7 +119,7 @@ function _run(params) {
         const { github_token, owner, repo, sha, automatic_commit_author_email, is_external_pr, is_default_branch, recursiveCallParams, is_bot, log = () => { } } = params;
         log(JSON.stringify(params, null, 2));
         const repository = `${owner}/${repo}`;
-        if (is_external_pr === "true" || is_bot === "true") {
+        if (is_external_pr === "true" || (is_default_branch === "false" && is_bot === "true")) {
             log("External PR or PR from a bot, skipping");
             return {
                 "new_chart_version": "",
