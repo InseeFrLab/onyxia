@@ -40,7 +40,6 @@ jobs:
 
   test:
     runs-on: ubuntu-latest
-    if: github.actor != 'actions@github.com'
     steps: 
       - run: echo "test"
   
@@ -53,11 +52,10 @@ jobs:
       release_target_git_commit_sha: ${{steps._.outputs.release_target_git_commit_sha}}
       release_message: ${{steps._.outputs.release_message}}
     steps:
-      - uses: InseeFrLab/onyxia@gh-actions
-        id: _
+      - id: _
+        uses: InseeFrLab/onyxia@gh-actions
         with: 
           action_name: prepare_release
-          automatic_commit_author_email: actions@github.com
   
   docker_build_push_onyxia_web:
     runs-on: ubuntu-latest
