@@ -317,7 +317,7 @@ export async function run() {
 
     const outputs = await _run({
         ...params,
-        "log": core.debug.bind(core)
+        "log": console.log.bind(console)
     });
 
     setOutput(outputs);

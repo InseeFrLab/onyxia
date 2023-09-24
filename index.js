@@ -85,7 +85,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.run = exports._run = void 0;
-const core = __importStar(__nccwpck_require__(2186));
 const outputHelper_1 = __nccwpck_require__(2378);
 const inputHelper_1 = __nccwpck_require__(6078);
 const SemVer_1 = __nccwpck_require__(5078);
@@ -276,7 +275,7 @@ exports._run = _run;
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         const params = getActionParams();
-        const outputs = yield _run(Object.assign(Object.assign({}, params), { "log": core.debug.bind(core) }));
+        const outputs = yield _run(Object.assign(Object.assign({}, params), { "log": console.log.bind(console) }));
         setOutput(outputs);
     });
 }
