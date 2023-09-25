@@ -100,7 +100,8 @@ const Deferred_1 = __nccwpck_require__(689);
 const exec_1 = __nccwpck_require__(4269);
 const id_1 = __nccwpck_require__(3047);
 const exec_2 = __nccwpck_require__(4269);
-const helmChartDirBasename = "helm-chart";
+const release_helm_chart_1 = __nccwpck_require__(9747);
+const capitalize_1 = __nccwpck_require__(1502);
 const { getActionParams } = (0, inputHelper_1.getActionParamsFactory)({
     "inputNameSubset": [
         "owner",
@@ -219,14 +220,14 @@ function _run(params) {
             "token": github_token,
             "action": ({ repoPath }) => __awaiter(this, void 0, void 0, function* () {
                 {
-                    const chartFilePath = (0, path_1.join)(repoPath, helmChartDirBasename, "Chart.yaml");
+                    const chartFilePath = (0, path_1.join)(repoPath, release_helm_chart_1.helmChartDirBasename, "Chart.yaml");
                     const chartParsed = yaml_1.default.parseDocument(fs.readFileSync(chartFilePath)
                         .toString("utf8"));
                     chartParsed.set("version", SemVer_1.SemVer.stringify(targetChartVersion));
                     fs.writeFileSync(chartFilePath, Buffer.from(yaml_1.default.stringify(chartParsed), "utf8"));
                 }
                 {
-                    const valuesFilePath = (0, path_1.join)(repoPath, helmChartDirBasename, "values.yaml");
+                    const valuesFilePath = (0, path_1.join)(repoPath, release_helm_chart_1.helmChartDirBasename, "values.yaml");
                     const valuesParsed = yaml_1.default.parseDocument(fs.readFileSync(valuesFilePath)
                         .toString("utf8"));
                     valuesParsed.setIn(["web", "image", "tag"], SemVer_1.SemVer.stringify(currentVersions.webVersion));
@@ -234,7 +235,7 @@ function _run(params) {
                     fs.writeFileSync(valuesFilePath, Buffer.from(yaml_1.default.stringify(valuesParsed), "utf8"));
                 }
                 {
-                    const readmeFilePath = (0, path_1.join)(repoPath, helmChartDirBasename, "README.md");
+                    const readmeFilePath = (0, path_1.join)(repoPath, release_helm_chart_1.helmChartDirBasename, "README.md");
                     let readmeText = fs.readFileSync(readmeFilePath).toString("utf8");
                     readmeText =
                         readmeText.replace(/(https:\/\/github\.com\/[^\/]+\/[^\/]+\/blob\/)([^\/]+)(\/README\.md#configuration)/g, (...[, p1, , p3]) => `${p1}${currentVersions.apiVersion.parsedFrom}${p3}`);
@@ -306,18 +307,18 @@ function readVersions(params) {
         "action": ({ repoPath }) => __awaiter(this, void 0, void 0, function* () {
             dVersions.resolve({
                 "webVersion": (() => {
-                    const value = JSON.parse(fs.readFileSync((0, path_1.join)(repoPath, "package.json"))
+                    const value = JSON.parse(fs.readFileSync((0, path_1.join)(repoPath, "web", "package.json"))
                         .toString("utf8"))["version"];
                     (0, assert_1.assert)(typeof value === "string");
                     return SemVer_1.SemVer.parse(value);
                 })(),
                 "chartVersion": (() => {
-                    const value = yaml_1.default.parse(fs.readFileSync((0, path_1.join)(repoPath, helmChartDirBasename, "Chart.yaml"))
+                    const value = yaml_1.default.parse(fs.readFileSync((0, path_1.join)(repoPath, release_helm_chart_1.helmChartDirBasename, "Chart.yaml"))
                         .toString("utf8"))["version"];
                     (0, assert_1.assert)(typeof value === "string");
                     return SemVer_1.SemVer.parse(value);
                 })(),
-                "chartDigest": (0, computeDirectoryDigest_1.computeDirectoryDigest)({ "dirPath": (0, path_1.join)(repoPath, helmChartDirBasename) }),
+                "chartDigest": (0, computeDirectoryDigest_1.computeDirectoryDigest)({ "dirPath": (0, path_1.join)(repoPath, release_helm_chart_1.helmChartDirBasename) }),
                 "apiVersion": yield (() => __awaiter(this, void 0, void 0, function* () {
                     const { exec } = (0, exec_1.createLoggedExec)({ log });
                     const apiSubmoduleDirPath = (0, path_1.join)(repoPath, "api");
@@ -402,36 +403,39 @@ function determineTargetChartVersion(params) {
 function generateReleaseMessageBody(params) {
     const { chartVersions, webVersions, apiVersions } = params;
     const getChartUrl = (version) => `https://github.com/InseeFrLab/onyxia/tree/v${SemVer_1.SemVer.stringify(version)}/helm-chart`;
-    const getWebUrl = (version) => `https://github.com/InseeFrLab/onyxia/tree/v${SemVer_1.SemVer.stringify(version)}`;
+    const getWebUrl = (version) => `https://github.com/InseeFrLab/onyxia/tree/v${SemVer_1.SemVer.stringify(version)}/web`;
     const getApiUrl = (version) => `https://github.com/InseeFrLab/onyxia-api/tree/${version.parsedFrom}`;
+    const getPrettyBump = (versionBehind, versionAhead) => {
+        const bump = SemVer_1.SemVer.bumpType({ versionBehind, versionAhead });
+        (0, assert_1.assert)(bump !== "rc");
+        (0, assert_1.assert)(bump !== "no bump");
+        let out = (0, capitalize_1.capitalize)(bump);
+        if (bump === "major") {
+            out += `**${out}**`;
+        }
+        return out;
+    };
     return [
-        `📖 [Documentation reference](${getChartUrl(chartVersions.new)}/README.md#configuration) *(For this specific Onyxia release)*`,
+        `📖 [Documentation reference](${getChartUrl(chartVersions.new)}/README.md#configuration)  `,
         `  `,
-        `📦 [Helm Chart](${getChartUrl(chartVersions.new)}): **${SemVer_1.SemVer.bumpType({
-            "versionBehind": chartVersions.previous,
-            "versionAhead": chartVersions.new
-        }).toLocaleUpperCase()}** [\`${SemVer_1.SemVer.stringify(chartVersions.previous)}\`](${getChartUrl(chartVersions.previous)}) → [\`${SemVer_1.SemVer.stringify(chartVersions.new)}\`](${getChartUrl(chartVersions.new)})  `,
         [
-            `- 🖥️ Pinned [\`inseefrlab/onyxia-web\`](https://hub.docker.com/r/inseefrlab/onyxia-web) version:`,
-            SemVer_1.SemVer.compare(webVersions.previous, webVersions.new) === 0 ?
-                `**NO BUMP** [\`${SemVer_1.SemVer.stringify(webVersions.new)}\`](${getWebUrl(webVersions.new)})` :
-                [
-                    `**${SemVer_1.SemVer.bumpType({ "versionBehind": webVersions.previous, "versionAhead": webVersions.new }).toLocaleUpperCase()}** `,
-                    `[\`${SemVer_1.SemVer.stringify(webVersions.previous)}\`](${getWebUrl(webVersions.previous)})`,
-                    `→`,
-                    `[\`${SemVer_1.SemVer.stringify(webVersions.new)}\`](${getWebUrl(webVersions.new)})  `,
-                ].join(" ")
+            `📦 [Helm Chart](${getChartUrl(chartVersions.new)}) version:`,
+            `**[\`${SemVer_1.SemVer.stringify(chartVersions.new)}\`](${getChartUrl(chartVersions.new)})**`,
+            `*(${getPrettyBump(chartVersions.previous, chartVersions.new)} bump from [\`${SemVer_1.SemVer.stringify(chartVersions.previous)}\`](${getChartUrl(chartVersions.previous)}))*`
         ].join(" "),
         [
-            `- 🔌 Pinned [\`inseefrlab/onyxia-api\`](https://hub.docker.com/r/inseefrlab/onyxia-api) version:`,
+            `- 🖥️ Version of [\`inseefrlab/onyxia-web\`](https://hub.docker.com/r/inseefrlab/onyxia-web) pinned in the chart:`,
+            `**[\`${SemVer_1.SemVer.stringify(webVersions.new)}\`](${getWebUrl(webVersions.new)})**`,
+            SemVer_1.SemVer.compare(webVersions.previous, webVersions.new) === 0 ?
+                "(No bump since the previous release)" :
+                `*(${getPrettyBump(webVersions.previous, webVersions.new)} bump from [\`${SemVer_1.SemVer.stringify(webVersions.previous)}\`](${getWebUrl(webVersions.previous)}))*`
+        ].join(" "),
+        [
+            `- 🔌 Version of [\`inseefrlab/onyxia-api\`](https://hub.docker.com/r/inseefrlab/onyxia-api) pinned in the chart:`,
+            `**[\`${SemVer_1.SemVer.stringify(apiVersions.new)}\`](${getApiUrl(apiVersions.new)})**`,
             SemVer_1.SemVer.compare(apiVersions.previous, apiVersions.new) === 0 ?
-                `**NO BUMP** [\`${SemVer_1.SemVer.stringify(apiVersions.new)}\`](${getApiUrl(apiVersions.new)})` :
-                [
-                    `**${SemVer_1.SemVer.bumpType({ "versionBehind": apiVersions.previous, "versionAhead": apiVersions.new }).toLocaleUpperCase()}** `,
-                    `[\`${apiVersions.previous.parsedFrom}\`](${getApiUrl(apiVersions.previous)})`,
-                    `→`,
-                    `[\`${apiVersions.new.parsedFrom}\`](${getApiUrl(apiVersions.new)})  `
-                ].join(" ")
+                "(No bump since the previous release)" :
+                `*(${getPrettyBump(apiVersions.previous, apiVersions.new)} bump from [\`${SemVer_1.SemVer.stringify(apiVersions.previous)}\`](${getApiUrl(apiVersions.previous)}))*`
         ].join(" "),
     ].join("\n");
 }
@@ -443,7 +447,7 @@ function getWebDockerhubRepository(params) {
         "token": github_token,
         "ref": sha,
         "action": ({ repoPath }) => __awaiter(this, void 0, void 0, function* () {
-            dOut.resolve(yaml_1.default.parse(fs.readFileSync((0, path_1.join)(repoPath, helmChartDirBasename, "values.yaml")).toString("utf8"))["web"]["image"]["repository"]);
+            dOut.resolve(yaml_1.default.parse(fs.readFileSync((0, path_1.join)(repoPath, release_helm_chart_1.helmChartDirBasename, "values.yaml")).toString("utf8"))["web"]["image"]["repository"]);
             return { "doCommit": false };
         })
     });
@@ -465,7 +469,7 @@ function getShaBranchName(params) {
             dOut.resolve(split[1]);
             return { "doCommit": false };
         })
-    });
+    }).catch(error => dOut.reject(error));
     return dOut.pr;
 }
 
@@ -513,7 +517,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.run = exports._run = void 0;
+exports.run = exports._run = exports.helmChartDirBasename = void 0;
 const inputHelper_1 = __nccwpck_require__(6078);
 const fs = __importStar(__nccwpck_require__(7147));
 const path_1 = __nccwpck_require__(1017);
@@ -523,7 +527,7 @@ const githubCommit_1 = __nccwpck_require__(6397);
 const exec_1 = __nccwpck_require__(4269);
 const node_fetch_1 = __importDefault(__nccwpck_require__(467));
 const installHelm_1 = __nccwpck_require__(41);
-const helmChartDirBasename = "helm-chart";
+exports.helmChartDirBasename = "helm-chart";
 const { getActionParams } = (0, inputHelper_1.getActionParamsFactory)({
     "inputNameSubset": [
         "owner",
@@ -545,7 +549,7 @@ function _run(params) {
             "ref": sha,
             "token": github_token,
             "action": ({ repoPath }) => __awaiter(this, void 0, void 0, function* () {
-                const helmChartDir = (0, path_1.join)(repoPath, helmChartDirBasename);
+                const helmChartDir = (0, path_1.join)(repoPath, exports.helmChartDirBasename);
                 yield (0, exec_1.exec)(`helm lint ${helmChartDir}`);
                 const outDirPath = (0, path_1.join)(helmChartDir, "_tmp_helm_output_dir");
                 yield fs.promises.mkdir(outDirPath);
@@ -558,7 +562,7 @@ function _run(params) {
                     fs.writeFileSync(currentIndexYamlFilePath, Buffer.from(currentIndexYamlContent, "utf8"));
                 }
                 const chartVersion = (() => {
-                    const value = yaml_1.default.parse(fs.readFileSync((0, path_1.join)(repoPath, helmChartDirBasename, "Chart.yaml"))
+                    const value = yaml_1.default.parse(fs.readFileSync((0, path_1.join)(repoPath, exports.helmChartDirBasename, "Chart.yaml"))
                         .toString("utf8"))["version"];
                     (0, assert_1.assert)(typeof value === "string");
                     return value;
@@ -880,9 +884,9 @@ var SemVer;
     function parse(versionStr) {
         const match = versionStr.match(/^v?([0-9]+)\.([0-9]+)(?:\.([0-9]+))?(?:-rc.([0-9]+))?$/);
         if (!match) {
-            throw new Error(`${versionStr} is not a valid NPM version`);
+            throw new Error(`${versionStr} is not a valid semantic version`);
         }
-        return Object.assign(Object.assign({ "major": parseInt(match[1]), "minor": parseInt(match[2]), "patch": (() => {
+        const semVer = Object.assign({ "major": parseInt(match[1]), "minor": parseInt(match[2]), "patch": (() => {
                 const str = match[3];
                 return str === undefined ? 0 : parseInt(str);
             })() }, (() => {
@@ -890,7 +894,19 @@ var SemVer;
             return str === undefined ?
                 {} :
                 { "rc": parseInt(str) };
-        })()), { "parsedFrom": versionStr });
+        })());
+        const initialStr = stringify(semVer);
+        Object.defineProperty(semVer, "parsedFrom", {
+            "enumerable": true,
+            "get": function () {
+                const currentStr = stringify(this);
+                if (currentStr !== initialStr) {
+                    throw new Error(`SemVer.parsedFrom can't be read anymore, the version have been modified from ${initialStr} to ${currentStr}`);
+                }
+                return versionStr;
+            }
+        });
+        return semVer;
     }
     SemVer.parse = parse;
     ;
@@ -9595,6 +9611,23 @@ function assert(condition, msg) {
 }
 exports.assert = assert;
 //# sourceMappingURL=assert.js.map
+
+/***/ }),
+
+/***/ 1502:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.capitalize = void 0;
+/** @see <https://docs.tsafe.dev/capitalize> */
+function capitalize(str) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return (str.charAt(0).toUpperCase() + str.slice(1));
+}
+exports.capitalize = capitalize;
+//# sourceMappingURL=capitalize.js.map
 
 /***/ }),
 

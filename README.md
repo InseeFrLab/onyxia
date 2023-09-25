@@ -40,8 +40,17 @@ jobs:
 
   test:
     runs-on: ubuntu-latest
-    steps: 
-      - run: echo "test"
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        lfs: true
+    - uses: actions/setup-node@v3
+    - uses: bahmutov/npm-install@v1
+    - run: yarn build
+    - run: npx keycloakify
+      env:
+        XDG_CACHE_HOME: "/home/runner/.cache/yarn"
+    - run: npx build-storybook
   
   prepare_release:
     needs: test
@@ -52,8 +61,9 @@ jobs:
       release_target_git_commit_sha: ${{steps._.outputs.release_target_git_commit_sha}}
       release_message: ${{steps._.outputs.release_message}}
     steps:
-      - id: _
-        uses: InseeFrLab/onyxia@gh-actions
+      # NOTE: The code for this action is in the gh-actions branch of this repo
+      - uses: InseeFrLab/onyxia@gh-actions
+        id: _
         with: 
           action_name: prepare_release
   
@@ -66,17 +76,17 @@ jobs:
         with:
           ref: ${{needs.prepare_release.outputs.release_target_git_commit_sha}}
           lfs: true
-#      - uses: docker/setup-qemu-action@v1
-#      - uses: docker/setup-buildx-action@v1
-#      - uses: docker/login-action@v1
-#        with:
-#          username: ${{ secrets.DOCKERHUB_USERNAME }}
-#          password: ${{ secrets.DOCKERHUB_TOKEN }}
-#      - uses: docker/build-push-action@v2
-#        with:
-#          push: true
-#          context: .
-#          tags: ${{needs.prepare_release.outputs.new_web_docker_image_tags}}
+      - uses: docker/setup-qemu-action@v1
+      - uses: docker/setup-buildx-action@v1
+      - uses: docker/login-action@v1
+        with:
+          username: ${{secrets.DOCKERHUB_USERNAME}}
+          password: ${{secrets.DOCKERHUB_TOKEN}}
+      - uses: docker/build-push-action@v2
+        with:
+          push: true
+          context: .
+          tags: ${{needs.prepare_release.outputs.new_web_docker_image_tags}}
   
   release:
     runs-on: ubuntu-latest
@@ -97,7 +107,7 @@ jobs:
     - run: mv build_keycloak/target/*.jar keycloak-theme.jar
     - uses: yogeshlonkar/wait-for-jobs@v0
       with:
-        gh-token: ${{secrets.GITHUB_TOKEN}}
+        gh-token: ${{github.token}}
         ignore-skipped: 'true'
         jobs: docker_build_push_onyxia_web
         ttl: '10'
@@ -116,7 +126,7 @@ jobs:
           keycloak-theme.jar
           onyxia-${{needs.prepare_release.outputs.new_chart_version}}.tgz
       env:
-        GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+        GITHUB_TOKEN: ${{github.token}}
 ```
 
 

@@ -19,10 +19,10 @@ export namespace SemVer {
         const match = versionStr.match(/^v?([0-9]+)\.([0-9]+)(?:\.([0-9]+))?(?:-rc.([0-9]+))?$/);
 
         if (!match) {
-            throw new Error(`${versionStr} is not a valid NPM version`);
+            throw new Error(`${versionStr} is not a valid semantic version`);
         }
 
-        return {
+        const semVer: Omit<SemVer, "parsedFrom"> = {
             "major": parseInt(match[1]),
             "minor": parseInt(match[2]),
             "patch": (()=>{
@@ -39,13 +39,31 @@ export namespace SemVer {
                     {} :
                     { "rc": parseInt(str) };
 
-            })(),
-            "parsedFrom": versionStr
+            })()
         };
+
+        const initialStr = stringify(semVer);
+
+        Object.defineProperty(semVer, "parsedFrom", {
+            "enumerable": true,
+            "get": function(){
+
+                const currentStr = stringify(this);
+
+                if (currentStr !== initialStr) {
+                    throw new Error(`SemVer.parsedFrom can't be read anymore, the version have been modified from ${initialStr} to ${currentStr}`);
+                }
+
+                return versionStr;
+
+            }
+        });
+
+        return semVer as any;
 
     };
 
-    export function stringify(v: SemVer) {
+    export function stringify(v: Omit<SemVer, "parsedFrom">): string {
         return `${v.major}.${v.minor}.${v.patch}${v.rc === undefined ? "" : `-rc.${v.rc}`}`;
     }
 

@@ -8,7 +8,7 @@ import { exec } from "../tools/exec";
 import fetch from "node-fetch";
 import { installHelm } from "../tools/installHelm";
 
-const helmChartDirBasename = "helm-chart";
+export const helmChartDirBasename = "helm-chart";
 
 const { getActionParams } = getActionParamsFactory({
     "inputNameSubset": [
