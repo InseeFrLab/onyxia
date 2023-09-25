@@ -273,6 +273,12 @@ export async function _run(
 
                 readmeText =
                     readmeText.replace(
+                        /(https:\/\/github\.com\/[\/]+\/[\/]+\/release\/download\/)([^\/]+)(\/keycloak-theme\.jar)/g,
+                        (...[, p1, , p3]) => `${p1}v${SemVer.stringify(targetChartVersion)}${p3}`
+                    );
+
+                readmeText =
+                    readmeText.replace(
                         /--version "?[^ "]+"?/g,
                         `--version "${SemVer.stringify(targetChartVersion)}"`
                     );
@@ -563,19 +569,23 @@ function generateReleaseMessageBody(params: {
             `- 🖥️ Pinned [\`inseefrlab/onyxia-web\`](https://hub.docker.com/r/inseefrlab/onyxia-web) version:`,
             SemVer.compare(webVersions.previous, webVersions.new) === 0 ?
                 `**NO BUMP** [\`${SemVer.stringify(webVersions.new)}\`](${getWebUrl(webVersions.new)})` :
-                `**${SemVer.bumpType({ "versionBehind": webVersions.previous, "versionAhead": webVersions.new }).toLocaleUpperCase()}** `,
-            `[\`${SemVer.stringify(webVersions.previous)}\`](${getWebUrl(webVersions.previous)})`,
-            `→`,
-            `[\`${SemVer.stringify(webVersions.new)}\`](${getWebUrl(webVersions.new)})  `,
+                [
+                    `**${SemVer.bumpType({ "versionBehind": webVersions.previous, "versionAhead": webVersions.new }).toLocaleUpperCase()}** `,
+                    `[\`${SemVer.stringify(webVersions.previous)}\`](${getWebUrl(webVersions.previous)})`,
+                    `→`,
+                    `[\`${SemVer.stringify(webVersions.new)}\`](${getWebUrl(webVersions.new)})  `,
+                ].join(" ")
         ].join(" "),
         [
             `- 🔌 Pinned [\`inseefrlab/onyxia-api\`](https://hub.docker.com/r/inseefrlab/onyxia-api) version:`,
             SemVer.compare(apiVersions.previous, apiVersions.new) === 0 ?
                 `**NO BUMP** [\`${SemVer.stringify(apiVersions.new)}\`](${getApiUrl(apiVersions.new)})` :
-                `**${SemVer.bumpType({ "versionBehind": apiVersions.previous, "versionAhead": apiVersions.new }).toLocaleUpperCase()}** `,
-            `[\`${apiVersions.previous.parsedFrom}\`](${getApiUrl(apiVersions.previous)})`,
-            `→`,
-            `[\`${apiVersions.new.parsedFrom}\`](${getApiUrl(apiVersions.new)})  `,
+                [
+                    `**${SemVer.bumpType({ "versionBehind": apiVersions.previous, "versionAhead": apiVersions.new }).toLocaleUpperCase()}** `,
+                    `[\`${apiVersions.previous.parsedFrom}\`](${getApiUrl(apiVersions.previous)})`,
+                    `→`,
+                    `[\`${apiVersions.new.parsedFrom}\`](${getApiUrl(apiVersions.new)})  `
+                ].join(" ")
         ].join(" "),
     ].join("\n");
 

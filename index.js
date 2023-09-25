@@ -244,6 +244,8 @@ function _run(params) {
                     readmeText =
                         readmeText.replace(/(https:\/\/github\.com\/[\/]+\/[\/]+\/blob\/)([^\/]+)(\/src\/core\/ports\/OnyxiaApi\/XOnyxia\.ts)/g, (...[, p1, , p3]) => `${p1}v${SemVer_1.SemVer.stringify(targetChartVersion)}${p3}`);
                     readmeText =
+                        readmeText.replace(/(https:\/\/github\.com\/[\/]+\/[\/]+\/release\/download\/)([^\/]+)(\/keycloak-theme\.jar)/g, (...[, p1, , p3]) => `${p1}v${SemVer_1.SemVer.stringify(targetChartVersion)}${p3}`);
+                    readmeText =
                         readmeText.replace(/--version "?[^ "]+"?/g, `--version "${SemVer_1.SemVer.stringify(targetChartVersion)}"`);
                     fs.writeFileSync(readmeFilePath, Buffer.from(readmeText, "utf8"));
                 }
@@ -413,19 +415,23 @@ function generateReleaseMessageBody(params) {
             `- 🖥️ Pinned [\`inseefrlab/onyxia-web\`](https://hub.docker.com/r/inseefrlab/onyxia-web) version:`,
             SemVer_1.SemVer.compare(webVersions.previous, webVersions.new) === 0 ?
                 `**NO BUMP** [\`${SemVer_1.SemVer.stringify(webVersions.new)}\`](${getWebUrl(webVersions.new)})` :
-                `**${SemVer_1.SemVer.bumpType({ "versionBehind": webVersions.previous, "versionAhead": webVersions.new }).toLocaleUpperCase()}** `,
-            `[\`${SemVer_1.SemVer.stringify(webVersions.previous)}\`](${getWebUrl(webVersions.previous)})`,
-            `→`,
-            `[\`${SemVer_1.SemVer.stringify(webVersions.new)}\`](${getWebUrl(webVersions.new)})  `,
+                [
+                    `**${SemVer_1.SemVer.bumpType({ "versionBehind": webVersions.previous, "versionAhead": webVersions.new }).toLocaleUpperCase()}** `,
+                    `[\`${SemVer_1.SemVer.stringify(webVersions.previous)}\`](${getWebUrl(webVersions.previous)})`,
+                    `→`,
+                    `[\`${SemVer_1.SemVer.stringify(webVersions.new)}\`](${getWebUrl(webVersions.new)})  `,
+                ].join(" ")
         ].join(" "),
         [
             `- 🔌 Pinned [\`inseefrlab/onyxia-api\`](https://hub.docker.com/r/inseefrlab/onyxia-api) version:`,
             SemVer_1.SemVer.compare(apiVersions.previous, apiVersions.new) === 0 ?
                 `**NO BUMP** [\`${SemVer_1.SemVer.stringify(apiVersions.new)}\`](${getApiUrl(apiVersions.new)})` :
-                `**${SemVer_1.SemVer.bumpType({ "versionBehind": apiVersions.previous, "versionAhead": apiVersions.new }).toLocaleUpperCase()}** `,
-            `[\`${apiVersions.previous.parsedFrom}\`](${getApiUrl(apiVersions.previous)})`,
-            `→`,
-            `[\`${apiVersions.new.parsedFrom}\`](${getApiUrl(apiVersions.new)})  `,
+                [
+                    `**${SemVer_1.SemVer.bumpType({ "versionBehind": apiVersions.previous, "versionAhead": apiVersions.new }).toLocaleUpperCase()}** `,
+                    `[\`${apiVersions.previous.parsedFrom}\`](${getApiUrl(apiVersions.previous)})`,
+                    `→`,
+                    `[\`${apiVersions.new.parsedFrom}\`](${getApiUrl(apiVersions.new)})  `
+                ].join(" ")
         ].join(" "),
     ].join("\n");
 }

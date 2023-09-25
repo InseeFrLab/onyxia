@@ -93,6 +93,7 @@ jobs:
     - run: npx keycloakify
       env:
         XDG_CACHE_HOME: "/home/runner/.cache/yarn"
+        KEYCLOAKIFY_THEME_VERSION: ${{needs.prepare_release.outputs.new_chart_version}}
     - run: mv build_keycloak/target/*.jar keycloak-theme.jar
     - uses: yogeshlonkar/wait-for-jobs@v0
       with:
