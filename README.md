@@ -22,7 +22,7 @@
 
 Onyxia is a web app that aims at being the glue between multiple open source backend technologies to
 provide a state of art working environnement for data scientists.  
-Onyxia is developed by the French National institute of statistics and economic studies ([INSEE](https://insee.fr)) and the Interministerial Digital Directorate (DINUM, [CodeGouvFr](https://twitter.com/codegouvfr)).
+Onyxia is developed by the French National institute of statistics and economic studies ([INSEE](https://insee.fr)) and supported by the Interministerial Digital Directorate (DINUM, [CodeGouvFr](https://twitter.com/codegouvfr)).
 
 <a href="https://youtu.be/FvpNfVrxBFM">
   <img width="1712" alt="image" src="https://user-images.githubusercontent.com/6702424/231314534-2eeb1ab5-5460-4caa-b78d-55afd400c9fc.png">
@@ -104,19 +104,3 @@ Onyxia is developed by the French National institute of statistics and economic 
 ## Contributing
 
 If your are a new contributor, please refer to the [technical documentation](https://docs.onyxia.sh/contributing).
-
-### CD Pipeline
-
-To release a new version, **do not create a tag manually**, simply bump the [`package.json`'s version](https://github.com/inseefrlab/onyxia/blob/4842ba8fd3c2ae9c03c52b7467d3c77f6e29e9d9/package.json#L4) then push on the default branch,
-the CI will takes charge of publishing on [DockerHub](https://hub.docker.com/r/inseefrlab/onyxia)
-and creating a [GitHub release](https://github.com/inseefrlab/onyxia/releases).
-
--   A docker image with the tag `:main` is published on DockerHub for every new commit on the `main` branch.
--   When the commit correspond to a new release (the version has changed) the image will also be tagged `:vX.Y.Z`
-    and `:latest`.
--   Every commit on branches that have an open pull-request on `main` will trigger the creation of a docker image
-    tagged `:<name-of-the-feature-branch>`.
-
-A CD pipeline is also in place; The CI of this repo [triggers the CI of the GitOPS repo InseeFrLab/paris-sspcloud](https://github.com/inseefrlab/onyxia/blob/ffe0ec4bc027f0993a5af6039a9f83bbe4384b39/.github/workflows/ci.yml#L169-L177). The [CI of paris-sspcloud](https://github.com/InseeFrLab/paris-sspcloud/blob/master/.github/workflows/update.yaml) checks if there is a newer version of Onyxia-web than the one already
-in production. If yes, it performs the [automatic commit](https://github.com/InseeFrLab/paris-sspcloud/commit/9b21fa792a113ea16a117cdf74c7c816d36bf84e)
-that cause ArgoCD to restart the relevant pods.
