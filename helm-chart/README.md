@@ -21,8 +21,8 @@ Complete installation guide: https://onyxia.sh
 
 Documentation reference for the available configuration parameter of the Onyxia Helm Chart.
 
--   [`api`](https://github.com/InseeFrLab/onyxia-api/blob/v0.30/README.md#configuration)
--   [`web`](https://github.com/InseeFrLab/onyxia/blob/v2.29.4/.env)
+-   [The REST API (`api`)](https://github.com/InseeFrLab/onyxia-api/blob/v0.30/README.md#configuration)
+-   [The Web Application (`web`)](https://github.com/InseeFrLab/onyxia/blob/v2.29.4/.env)
 
 > **Note:** The links above are automatically updated, they always points to the relevant documentation for this specific version of Onyxia.
 
