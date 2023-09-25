@@ -74,7 +74,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          ref: ${{needs.prepare_release.outputs.release_target_git_commit_sha}}
+          ref: ${{needs.prepare_release.outputs.target_commitish}}
           lfs: true
       - uses: docker/setup-qemu-action@v1
       - uses: docker/setup-buildx-action@v1
@@ -95,7 +95,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3
       with:
-        ref: ${{needs.prepare_release.outputs.release_target_git_commit_sha}}
+        ref: ${{needs.prepare_release.outputs.target_commitish}}
         lfs: true
     - uses: actions/setup-node@v3
     - uses: bahmutov/npm-install@v1
@@ -108,19 +108,19 @@ jobs:
     - uses: yogeshlonkar/wait-for-jobs@v0
       with:
         gh-token: ${{github.token}}
-        ignore-skipped: 'true'
+        ignore-skipped: true
         jobs: docker_build_push_onyxia_web
-        ttl: '10'
+        ttl: 10
     - uses: InseeFrLab/onyxia@gh-actions
       with: 
         action_name: release_helm_chart
-        sha: ${{needs.prepare_release.outputs.release_target_git_commit_sha}}
+        sha: ${{needs.prepare_release.outputs.target_commitish}}
     - uses: softprops/action-gh-release@v1
       with:
-        name: v${{needs.prepare_release.outputs.new_chart_version}}
-        body: ${{needs.prepare_release.outputs.release_message}}
-        tag_name: v${{needs.prepare_release.outputs.new_chart_version}}
-        target_commitish: ${{needs.prepare_release.outputs.release_target_git_commit_sha}}
+        name: v${{needs.prepare_release.outputs.release_name}}
+        body: ${{needs.prepare_release.outputs.release_body}}
+        tag_name: ${{needs.prepare_release.outputs.release_tag_name}}
+        target_commitish: ${{needs.prepare_release.outputs.target_commitish}}
         generate_release_notes: true
         files: |
           keycloak-theme.jar

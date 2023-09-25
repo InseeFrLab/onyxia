@@ -123,10 +123,12 @@ function _run(params) {
         if (is_external_pr === "true" || (is_default_branch === "false" && is_bot === "true")) {
             log("External PR or PR from a bot, skipping");
             return {
-                "new_chart_version": "",
                 "new_web_docker_image_tags": "",
-                "release_message": "",
-                "release_target_git_commit_sha": ""
+                "new_chart_version": "",
+                "release_name": "",
+                "release_body": "",
+                "release_tag_name": "",
+                "target_commitish": ""
             };
         }
         const previousReleaseTag = yield (() => __awaiter(this, void 0, void 0, function* () {
@@ -194,10 +196,12 @@ function _run(params) {
                 `Pushing docker image: ${new_web_docker_image_tags}`
             ].join(" "));
             return {
+                new_web_docker_image_tags,
                 "new_chart_version": "",
-                "release_message": "",
-                "release_target_git_commit_sha": sha,
-                new_web_docker_image_tags
+                "release_name": "",
+                "release_body": "",
+                "release_tag_name": "",
+                "target_commitish": sha
             };
         }
         const targetChartVersion = determineTargetChartVersion({
@@ -207,14 +211,16 @@ function _run(params) {
         if (SemVer_1.SemVer.compare(targetChartVersion, previousReleaseVersions.chartVersion) === 0) {
             log("No need to release");
             return {
+                "new_web_docker_image_tags": "",
                 "new_chart_version": "",
-                "release_message": "",
-                "release_target_git_commit_sha": "",
-                "new_web_docker_image_tags": ""
+                "release_name": "",
+                "release_body": "",
+                "release_tag_name": "",
+                "target_commitish": ""
             };
         }
         log(`Upgrading chart version to: ${SemVer_1.SemVer.stringify(targetChartVersion)}`);
-        const { sha: release_target_git_commit_sha } = yield (0, githubCommit_1.githubCommit)({
+        const { sha: target_commitish } = yield (0, githubCommit_1.githubCommit)({
             "ref": sha,
             repository,
             "token": github_token,
@@ -268,8 +274,9 @@ function _run(params) {
                     SemVer_1.SemVer.stringify(currentVersions.webVersion),
                     "latest"
                 ].map(tag => `${webDockerhubRepository.toLowerCase()}:${tag}`).join(","),
-            "release_target_git_commit_sha": release_target_git_commit_sha !== null && release_target_git_commit_sha !== void 0 ? release_target_git_commit_sha : sha,
-            "release_message": generateReleaseMessageBody({
+            "release_name": `v${SemVer_1.SemVer.stringify(targetChartVersion)}`,
+            "release_tag_name": `v${SemVer_1.SemVer.stringify(targetChartVersion)}`,
+            "release_body": generateReleaseMessageBody({
                 "chartVersions": {
                     "previous": previousReleaseVersions.chartVersion,
                     "new": targetChartVersion
@@ -282,7 +289,8 @@ function _run(params) {
                     "previous": previousReleaseVersions.webVersion,
                     "new": currentVersions.webVersion
                 },
-            })
+            }),
+            "target_commitish": target_commitish !== null && target_commitish !== void 0 ? target_commitish : sha
         };
     });
 }
@@ -537,6 +545,10 @@ const { getActionParams } = (0, inputHelper_1.getActionParamsFactory)({
         "automatic_commit_author_email",
     ]
 });
+/**
+ * Will generate a onyxia-<version>.tgz file in the current working directory
+ * and update or create the index.yaml file in the gh-pages branch of the repository.
+ * */
 function _run(params) {
     return __awaiter(this, void 0, void 0, function* () {
         const { github_token, owner, repo, sha, automatic_commit_author_email, log = () => { } } = params;
@@ -836,10 +848,12 @@ exports.setOutputFactory = exports.getOutputDescription = exports.outputNames = 
 const core = __importStar(__nccwpck_require__(2186));
 const objectKeys_1 = __nccwpck_require__(6762);
 exports.outputNames = [
-    "new_chart_version",
     "new_web_docker_image_tags",
-    "release_target_git_commit_sha",
-    "release_message"
+    "new_chart_version",
+    "release_name",
+    "release_body",
+    "release_tag_name",
+    "target_commitish"
 ];
 function getOutputDescription(inputName) {
     switch (inputName) {
@@ -849,12 +863,24 @@ function getOutputDescription(inputName) {
             "Example 'inseefrlab/onyxia-web:2.30.0,inseefrlab/onyxia-web:latest' or the empty string",
             "if no need to push a Docker image to dockerhub"
         ].join(" ");
-        case "release_target_git_commit_sha": return [
-            "Output of prepare_release, string, Example: 1a2b3...",
-            "If a release is needed this action might push new commits, this output",
-            "is the sha of the commit that should be released."
+        case "release_name": return [
+            "Output of prepare_release, string,",
+            "To be used as parameter of the action of the softprops/action-gh-release action"
         ].join(" ");
-        case "release_message": return "Output of prepare_release, string";
+        case "release_body": return [
+            "Output of prepare_release, string,",
+            "To be used as parameter of the action of the softprops/action-gh-release action"
+        ].join(" ");
+        case "release_tag_name": return [
+            "Output of prepare_release, string,",
+            "To be used as parameter of the action of the softprops/action-gh-release action"
+        ].join(" ");
+        case "target_commitish": return [
+            "Output of prepare_release, string,",
+            "To be used as parameter of the action of the softprops/action-gh-release action",
+            "and for checking out the right commit in the next actions because prepare_release",
+            "creates a automatic commit"
+        ].join(" ");
     }
 }
 exports.getOutputDescription = getOutputDescription;

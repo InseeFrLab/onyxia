@@ -32,10 +32,12 @@ const { getActionParams } = getActionParamsFactory({
 type Params = ReturnType<typeof getActionParams>;
 
 const { setOutput } = setOutputFactory<
-    | "new_chart_version"
     | "new_web_docker_image_tags"
-    | "release_target_git_commit_sha"
-    | "release_message"
+    | "new_chart_version"
+    | "release_name"
+    | "release_body"
+    | "release_tag_name"
+    | "target_commitish"
 >();
 
 export async function _run(
@@ -70,10 +72,12 @@ export async function _run(
         log("External PR or PR from a bot, skipping");
 
         return {
-            "new_chart_version": "",
             "new_web_docker_image_tags": "",
-            "release_message": "",
-            "release_target_git_commit_sha": ""
+            "new_chart_version": "",
+            "release_name": "",
+            "release_body": "",
+            "release_tag_name": "",
+            "target_commitish": ""
         };
     }
 
@@ -90,7 +94,7 @@ export async function _run(
             "rcPolicy": "IGNORE RC"
         });
 
-        if( resp === undefined ){
+        if (resp === undefined) {
             return undefined;
         }
 
@@ -112,10 +116,10 @@ export async function _run(
         [
             previousReleaseTag,
             sha
-        ].map(gitRef =>{
+        ].map(gitRef => {
 
             //NOTE: Only for initialization.
-            if( gitRef === undefined ){
+            if (gitRef === undefined) {
                 return id<Versions>({
                     "apiVersion": SemVer.parse("v0.30"),
                     "webVersion": SemVer.parse("2.29.4"),
@@ -130,7 +134,7 @@ export async function _run(
                 repository,
                 log
             });
-            
+
         })
     );
 
@@ -164,7 +168,7 @@ export async function _run(
             log
         });
 
-        const new_web_docker_image_tags = `${webDockerhubRepository}:${branchName.replace(/\/g/,"_")}`.toLowerCase();
+        const new_web_docker_image_tags = `${webDockerhubRepository}:${branchName.replace(/\/g/, "_")}`.toLowerCase();
 
         log([
             "We are not on the default branch, not releasing.",
@@ -173,10 +177,12 @@ export async function _run(
 
 
         return {
+            new_web_docker_image_tags,
             "new_chart_version": "",
-            "release_message": "",
-            "release_target_git_commit_sha": sha,
-            new_web_docker_image_tags
+            "release_name": "",
+            "release_body": "",
+            "release_tag_name": "",
+            "target_commitish": sha
         };
     }
 
@@ -190,17 +196,19 @@ export async function _run(
         log("No need to release");
 
         return {
+            "new_web_docker_image_tags": "",
             "new_chart_version": "",
-            "release_message": "",
-            "release_target_git_commit_sha": "",
-            "new_web_docker_image_tags": ""
+            "release_name": "",
+            "release_body": "",
+            "release_tag_name": "",
+            "target_commitish": ""
         };
 
     }
 
     log(`Upgrading chart version to: ${SemVer.stringify(targetChartVersion)}`);
 
-    const { sha: release_target_git_commit_sha } = await githubCommit({
+    const { sha: target_commitish } = await githubCommit({
         "ref": sha,
         repository,
         "token": github_token,
@@ -301,15 +309,16 @@ export async function _run(
 
     return {
         "new_chart_version": SemVer.stringify(targetChartVersion),
-        "new_web_docker_image_tags": 
-            SemVer.compare(previousReleaseVersions.webVersion, currentVersions.webVersion) === 0 ? 
+        "new_web_docker_image_tags":
+            SemVer.compare(previousReleaseVersions.webVersion, currentVersions.webVersion) === 0 ?
                 "" :
                 [
-                    SemVer.stringify(currentVersions.webVersion), 
+                    SemVer.stringify(currentVersions.webVersion),
                     "latest"
                 ].map(tag => `${webDockerhubRepository.toLowerCase()}:${tag}`).join(","),
-        "release_target_git_commit_sha": release_target_git_commit_sha ?? sha,
-        "release_message": generateReleaseMessageBody({
+        "release_name": `v${SemVer.stringify(targetChartVersion)}`,
+        "release_tag_name": `v${SemVer.stringify(targetChartVersion)}`,
+        "release_body": generateReleaseMessageBody({
             "chartVersions": {
                 "previous": previousReleaseVersions.chartVersion,
                 "new": targetChartVersion
@@ -322,7 +331,8 @@ export async function _run(
                 "previous": previousReleaseVersions.webVersion,
                 "new": currentVersions.webVersion
             },
-        })
+        }),
+        "target_commitish": target_commitish ?? sha
     };
 
 }
@@ -359,7 +369,7 @@ function readVersions(
     }
 ): Promise<Versions> {
 
-    const { repository, gitRef, githubToken, log =()=> {} } = params;
+    const { repository, gitRef, githubToken, log = () => { } } = params;
 
     const dVersions = new Deferred<Versions>();
 
@@ -563,7 +573,7 @@ function generateReleaseMessageBody(params: {
 
         let out = capitalize(bump);
 
-        if( bump === "major" ){
+        if (bump === "major") {
             out += `**${out}**`;
         }
 

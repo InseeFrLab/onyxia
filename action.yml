@@ -43,14 +43,18 @@ inputs:
     description: 'Tell if the sha correspond to a commit from a bot Do not provide this parameter explicitly, it will be set automatically'
     default: '${{ endsWith(github.actor, ''[bot]'') }}'
 outputs:
-  new_chart_version:
-    description: 'Output of prepare_release, string, Example ''1.2.3'' or the empty string if no need for release'
   new_web_docker_image_tags:
     description: 'Output of prepare_release, string, Example ''inseefrlab/onyxia-web:2.30.0,inseefrlab/onyxia-web:latest'' or the empty string if no need to push a Docker image to dockerhub'
-  release_target_git_commit_sha:
-    description: 'Output of prepare_release, string, Example: 1a2b3... If a release is needed this action might push new commits, this output is the sha of the commit that should be released.'
-  release_message:
-    description: 'Output of prepare_release, string'
+  new_chart_version:
+    description: 'Output of prepare_release, string, Example ''1.2.3'' or the empty string if no need for release'
+  release_name:
+    description: 'Output of prepare_release, string, To be used as parameter of the action of the softprops/action-gh-release action'
+  release_body:
+    description: 'Output of prepare_release, string, To be used as parameter of the action of the softprops/action-gh-release action'
+  release_tag_name:
+    description: 'Output of prepare_release, string, To be used as parameter of the action of the softprops/action-gh-release action'
+  target_commitish:
+    description: 'Output of prepare_release, string, To be used as parameter of the action of the softprops/action-gh-release action and for checking out the right commit in the next actions because prepare_release creates a automatic commit'
 runs:
   using: 'node20'
   main: './index.js'

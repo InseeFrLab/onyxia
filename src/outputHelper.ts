@@ -3,10 +3,12 @@ import * as core from '@actions/core'
 import { objectKeys } from "tsafe/objectKeys";
 
 export const outputNames = [
-    "new_chart_version",
     "new_web_docker_image_tags",
-    "release_target_git_commit_sha",
-    "release_message"
+    "new_chart_version",
+    "release_name",
+    "release_body",
+    "release_tag_name",
+    "target_commitish"
 ] as const;
 
 export function getOutputDescription(inputName: typeof outputNames[number]): string {
@@ -17,12 +19,24 @@ export function getOutputDescription(inputName: typeof outputNames[number]): str
             "Example 'inseefrlab/onyxia-web:2.30.0,inseefrlab/onyxia-web:latest' or the empty string",
             "if no need to push a Docker image to dockerhub"
         ].join(" ");
-        case "release_target_git_commit_sha": return [
-            "Output of prepare_release, string, Example: 1a2b3...",
-            "If a release is needed this action might push new commits, this output",
-            "is the sha of the commit that should be released."
+        case "release_name": return [
+            "Output of prepare_release, string,",
+            "To be used as parameter of the action of the softprops/action-gh-release action"
         ].join(" ");
-        case "release_message": return "Output of prepare_release, string";
+        case "release_body": return [
+            "Output of prepare_release, string,",
+            "To be used as parameter of the action of the softprops/action-gh-release action"
+        ].join(" ");
+        case "release_tag_name": return [
+            "Output of prepare_release, string,",
+            "To be used as parameter of the action of the softprops/action-gh-release action"
+        ].join(" ");
+        case "target_commitish": return [
+            "Output of prepare_release, string,",
+            "To be used as parameter of the action of the softprops/action-gh-release action",
+            "and for checking out the right commit in the next actions because prepare_release",
+            "creates a automatic commit"
+        ].join(" ");
     }
 }
 
