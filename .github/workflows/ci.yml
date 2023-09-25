@@ -37,8 +37,9 @@ jobs:
       release_target_git_commit_sha: ${{steps._.outputs.release_target_git_commit_sha}}
       release_message: ${{steps._.outputs.release_message}}
     steps:
-      - id: _
-        uses: InseeFrLab/onyxia@gh-actions
+      # NOTE: The code for this action is in the gh-actions branch of this repo
+      - uses: InseeFrLab/onyxia@gh-actions
+        id: _
         with: 
           action_name: prepare_release
   
