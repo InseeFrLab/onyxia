@@ -17,6 +17,9 @@
         "emails-domain-accept-list-helper": "ts-node --skip-project src/bin/emails-domain-accept-list-helper.ts",
         "update-api": "bash src/bin/update-api.sh"
     },
+    "keycloakify": {
+        "themeName": "onyxia"
+    },
     "dependencies": {
         "onyxia-ui": "^1.0.0",
         "keycloakify": "^8.0.0",
