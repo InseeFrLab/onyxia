@@ -107,7 +107,7 @@ jobs:
         sha: ${{needs.prepare_release.outputs.release_target_git_commit_sha}}
     - uses: softprops/action-gh-release@v1
       with:
-        name: Release v${{needs.prepare_release.outputs.new_chart_version}}
+        name: v${{needs.prepare_release.outputs.new_chart_version}}
         body: ${{needs.prepare_release.outputs.release_message}}
         tag_name: v${{needs.prepare_release.outputs.new_chart_version}}
         target_commitish: ${{needs.prepare_release.outputs.release_target_git_commit_sha}}
