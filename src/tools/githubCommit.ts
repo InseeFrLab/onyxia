@@ -14,10 +14,9 @@ export async function githubCommit(params: {
     repository: `${string}/${string}`;
     token: string;
     ref?: string;
-    commitAuthorEmail?: string;
     action: (params: {
         repoPath: string;
-    }) => Promise<{ doCommit: false } | { doCommit: true; doAddAll: boolean; message: string }>;
+    }) => Promise<{ doCommit: false } | { doCommit: true; doAddAll: boolean; message: string; commitAuthorEmail?: string; }>;
     log?: (message: string) => void;
 }): Promise<{ 
     /** The new commit sha, if a commit was made */
@@ -27,7 +26,6 @@ export async function githubCommit(params: {
         repository,
         ref,
         token,
-        commitAuthorEmail = "actions@github.com",
         action,
         log = ()=> {}
     } = params;
@@ -102,6 +100,7 @@ export async function githubCommit(params: {
 
         }
 
+        const { commitAuthorEmail = "actions@github.com" } = changesResult;
 
         await exec(`git config --local user.email "${commitAuthorEmail}"`, {
             "cwd": repoPath

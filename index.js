@@ -214,7 +214,6 @@ function _run(params) {
         }
         log(`Upgrading chart version to: ${SemVer_1.SemVer.stringify(targetChartVersion)}`);
         const { sha: release_target_git_commit_sha } = yield (0, githubCommit_1.githubCommit)({
-            "commitAuthorEmail": automatic_commit_author_email,
             "ref": sha,
             repository,
             "token": github_token,
@@ -255,7 +254,8 @@ function _run(params) {
                         "versionAhead": targetChartVersion
                     })} bump of chart version to ${SemVer_1.SemVer.stringify(targetChartVersion)}`,
                     "doAddAll": false,
-                    "doCommit": true
+                    "doCommit": true,
+                    "commitAuthorEmail": automatic_commit_author_email
                 };
             })
         });
@@ -509,31 +509,99 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.run = exports._run = void 0;
-const core = __importStar(__nccwpck_require__(2186));
 const inputHelper_1 = __nccwpck_require__(6078);
+const fs = __importStar(__nccwpck_require__(7147));
+const path_1 = __nccwpck_require__(1017);
+const assert_1 = __nccwpck_require__(8078);
+const yaml_1 = __importDefault(__nccwpck_require__(4083));
+const githubCommit_1 = __nccwpck_require__(6397);
+const exec_1 = __nccwpck_require__(4269);
+const node_fetch_1 = __importDefault(__nccwpck_require__(467));
+const installHelm_1 = __nccwpck_require__(41);
+const helmChartDirBasename = "helm-chart";
 const { getActionParams } = (0, inputHelper_1.getActionParamsFactory)({
     "inputNameSubset": [
         "owner",
         "repo",
         "sha",
         "github_token",
-        "automatic_commit_author_email"
+        "automatic_commit_author_email",
     ]
 });
 function _run(params) {
     return __awaiter(this, void 0, void 0, function* () {
-        const { log = () => { } } = params;
-        log("TODO!");
-        return null;
+        const { github_token, owner, repo, sha, automatic_commit_author_email, log = () => { } } = params;
+        log(JSON.stringify(params, null, 2));
+        yield (0, installHelm_1.installHelm)();
+        const repository = `${owner}/${repo}`;
+        yield (0, githubCommit_1.githubCommit)({
+            log,
+            repository,
+            "ref": sha,
+            "token": github_token,
+            "action": ({ repoPath }) => __awaiter(this, void 0, void 0, function* () {
+                const helmChartDir = (0, path_1.join)(repoPath, helmChartDirBasename);
+                yield (0, exec_1.exec)(`helm lint ${helmChartDir}`);
+                const outDirPath = (0, path_1.join)(helmChartDir, "_tmp_helm_output_dir");
+                yield fs.promises.mkdir(outDirPath);
+                yield (0, exec_1.exec)(`helm package ${helmChartDir} -d ${outDirPath}`);
+                const currentIndexYamlContent = yield (0, node_fetch_1.default)(`https://${owner}.github.io/${repo}/index.yaml`).then(response => response.ok ?
+                    response.text() :
+                    undefined);
+                const currentIndexYamlFilePath = (0, path_1.join)(outDirPath, "index.yaml");
+                if (currentIndexYamlContent !== undefined) {
+                    fs.writeFileSync(currentIndexYamlFilePath, Buffer.from(currentIndexYamlContent, "utf8"));
+                }
+                const chartVersion = (() => {
+                    const value = yaml_1.default.parse(fs.readFileSync((0, path_1.join)(repoPath, helmChartDirBasename, "Chart.yaml"))
+                        .toString("utf8"))["version"];
+                    (0, assert_1.assert)(typeof value === "string");
+                    return value;
+                })();
+                yield (0, exec_1.exec)([
+                    `helm repo index`,
+                    outDirPath,
+                    currentIndexYamlContent == undefined ?
+                        "" :
+                        `--merge ${currentIndexYamlFilePath}`,
+                    `--url https://${owner}.github.io/${repo}/releases/download/v${chartVersion}`,
+                ].join(" "));
+                {
+                    const basename = `onyxia-${chartVersion}.tgz`;
+                    fs.copyFileSync((0, path_1.join)(outDirPath, basename), (0, path_1.join)(process.cwd(), basename));
+                }
+                yield (0, githubCommit_1.githubCommit)({
+                    log,
+                    repository,
+                    "ref": "gh-pages",
+                    "token": github_token,
+                    "action": ({ repoPath }) => __awaiter(this, void 0, void 0, function* () {
+                        const basename = "index.yaml";
+                        fs.cpSync((0, path_1.join)(outDirPath, basename), (0, path_1.join)(repoPath, basename));
+                        return {
+                            "doCommit": true,
+                            "doAddAll": true,
+                            "commitAuthorEmail": automatic_commit_author_email,
+                            "message": `Update Helm Chart to v${chartVersion}`
+                        };
+                    })
+                });
+                yield fs.promises.rm(outDirPath, { "recursive": true, "force": true });
+                return { "doCommit": false };
+            })
+        });
     });
 }
 exports._run = _run;
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         const params = getActionParams();
-        yield _run(Object.assign(Object.assign({}, params), { "log": core.debug.bind(core) }));
+        yield _run(Object.assign(Object.assign({}, params), { "log": console.log.bind(console) }));
     });
 }
 exports.run = run;
@@ -1113,7 +1181,7 @@ let isFirstCall = true;
 function githubCommit(params) {
     var _a;
     return __awaiter(this, void 0, void 0, function* () {
-        const { repository, ref, token, commitAuthorEmail = "actions@github.com", action, log = () => { } } = params;
+        const { repository, ref, token, action, log = () => { } } = params;
         const { exec } = (0, exec_1.createLoggedExec)({ log });
         const cacheDir = (0, path_1.join)(process.cwd(), "node_modules", ".cache", "githubCommit");
         yield globalMutex.runExclusive(() => __awaiter(this, void 0, void 0, function* () {
@@ -1163,6 +1231,7 @@ function githubCommit(params) {
                     throw new Error(`The commit ${ref} is not the head of ${defaultBranch}, can't automatically commit`);
                 }
             }
+            const { commitAuthorEmail = "actions@github.com" } = changesResult;
             yield exec(`git config --local user.email "${commitAuthorEmail}"`, {
                 "cwd": repoPath
             });
@@ -1196,6 +1265,61 @@ exports.ErrorNoBranch = ErrorNoBranch;
 function isSha(shaish) {
     return /^[0-9a-f]{7,40}$/i.test(shaish);
 }
+
+
+/***/ }),
+
+/***/ 41:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+/* NOTE: ChatGPTd */
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.installHelm = void 0;
+const util_1 = __nccwpck_require__(3837);
+const stream_1 = __nccwpck_require__(2781);
+const fs_1 = __nccwpck_require__(7147);
+const node_fetch_1 = __importDefault(__nccwpck_require__(467));
+const child_process_1 = __nccwpck_require__(2081);
+const execAsync = (0, util_1.promisify)(child_process_1.exec);
+const pipelineAsync = (0, util_1.promisify)(stream_1.pipeline);
+function installHelm() {
+    return __awaiter(this, void 0, void 0, function* () {
+        // Determine the version you want to install
+        const helmVersion = 'v3.7.0';
+        // Download Helm binary
+        const downloadUrl = `https://get.helm.sh/helm-${helmVersion}-linux-amd64.tar.gz`;
+        const response = yield (0, node_fetch_1.default)(downloadUrl);
+        if (!response.ok) {
+            throw new Error(`Failed to download Helm: ${response.statusText}`);
+        }
+        const tarPath = '/tmp/helm.tar.gz';
+        yield pipelineAsync(response.body, (0, fs_1.createWriteStream)(tarPath));
+        // Extract the binary
+        yield execAsync(`tar -zxvf ${tarPath} -C /tmp`);
+        // Move helm to a directory in PATH
+        yield execAsync('sudo mv /tmp/linux-amd64/helm /usr/local/bin/helm');
+        // Make it executable
+        yield execAsync('sudo chmod +x /usr/local/bin/helm');
+        // Verify the installation
+        const { stdout } = yield execAsync('helm version --short');
+        console.log(`Helm installed: ${stdout}`);
+    });
+}
+exports.installHelm = installHelm;
 
 
 /***/ }),

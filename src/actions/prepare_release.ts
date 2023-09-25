@@ -13,8 +13,6 @@ import { Deferred } from "evt/tools/Deferred";
 import { createLoggedExec } from "../tools/exec";
 import { id } from "tsafe/id";
 import { exec } from "../tools/exec";
-import { exclude } from "tsafe/exclude";
-import { version } from "os";
 
 const helmChartDirBasename = "helm-chart";
 
@@ -203,7 +201,6 @@ export async function _run(
     log(`Upgrading chart version to: ${SemVer.stringify(targetChartVersion)}`);
 
     const { sha: release_target_git_commit_sha } = await githubCommit({
-        "commitAuthorEmail": automatic_commit_author_email,
         "ref": sha,
         repository,
         "token": github_token,
@@ -296,7 +293,8 @@ export async function _run(
                     "versionAhead": targetChartVersion
                 })} bump of chart version to ${SemVer.stringify(targetChartVersion)}`,
                 "doAddAll": false,
-                "doCommit": true
+                "doCommit": true,
+                "commitAuthorEmail": automatic_commit_author_email
             };
         }
     });
