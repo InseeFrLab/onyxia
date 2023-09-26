@@ -2,6 +2,8 @@
 
 Onyxia is distributed as a [Helm](https://helm.sh/) Package.  
 
+> ⬆️ Migrating from the old chart? Checkout [the migration guide](https://docs.onyxia.sh/migration-guides/migrating-to-the-new-helm-repo)
+
 > The links in this README are automatically updated.  
 > You can trust that they'll point to the correct references for this specific version.  
 
