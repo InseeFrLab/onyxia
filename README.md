@@ -124,7 +124,7 @@ jobs:
         sha: ${{needs.prepare_release.outputs.target_commitish}}
     - uses: softprops/action-gh-release@v1
       with:
-        name: v${{needs.prepare_release.outputs.release_name}}
+        name: ${{needs.prepare_release.outputs.release_name}}
         body: ${{needs.prepare_release.outputs.release_body}}
         tag_name: ${{needs.prepare_release.outputs.release_tag_name}}
         target_commitish: ${{needs.prepare_release.outputs.target_commitish}}
