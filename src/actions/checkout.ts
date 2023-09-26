@@ -1,6 +1,6 @@
 import { getActionParamsFactory } from "../inputHelper";
 import { join as pathJoin } from "path";
-import { githubCommit } from "../tools/githubCommit";
+import { gitClone } from "../tools/gitClone";
 import { transformCodebase } from "../tools/transformCodebase";
 
 
@@ -38,7 +38,7 @@ export async function _run(
 
     log(JSON.stringify(params, null, 2));
 
-    await githubCommit({
+    await gitClone({
         log,
         "repository": `${owner}/${repo}`,
         "ref": sha,

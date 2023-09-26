@@ -8,7 +8,7 @@ import { join as pathJoin } from "path";
 import { assert } from "tsafe/assert";
 import YAML from "yaml";
 import { computeDirectoryDigest } from "../tools/computeDirectoryDigest";
-import { githubCommit } from "../tools/githubCommit";
+import { gitClone } from "../tools/gitClone";
 import { Deferred } from "evt/tools/Deferred";
 import { createLoggedExec } from "../tools/exec";
 import { id } from "tsafe/id";
@@ -208,7 +208,7 @@ export async function _run(
 
     log(`Upgrading chart version to: ${SemVer.stringify(targetChartVersion)}`);
 
-    const { sha: target_commit } = await githubCommit({
+    const { sha: target_commit } = await gitClone({
         "ref": sha,
         repository,
         "token": github_token,
@@ -373,7 +373,7 @@ function readVersions(
 
     const dVersions = new Deferred<Versions>();
 
-    githubCommit({
+    gitClone({
         log,
         "ref": gitRef,
         repository,
@@ -619,7 +619,7 @@ function getWebDockerhubRepository(
 
     const dOut = new Deferred<string>();
 
-    githubCommit({
+    gitClone({
         repository,
         "token": github_token,
         "ref": sha,
@@ -655,7 +655,7 @@ function getShaBranchName(
 
     const dOut = new Deferred<string>();
 
-    githubCommit({
+    gitClone({
         log,
         repository,
         "token": github_token,

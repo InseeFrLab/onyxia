@@ -3,7 +3,7 @@ import * as fs from "fs";
 import { join as pathJoin } from "path";
 import { assert } from "tsafe/assert";
 import YAML from "yaml";
-import { githubCommit } from "../tools/githubCommit";
+import { gitClone } from "../tools/gitClone";
 import { exec } from "../tools/exec";
 import fetch from "node-fetch";
 import { installHelm } from "../tools/installHelm";
@@ -48,7 +48,7 @@ export async function _run(
 
     const repository = `${owner}/${repo}` as const;
 
-    await githubCommit({
+    await gitClone({
         log,
         repository,
         "ref": sha,
@@ -115,7 +115,7 @@ export async function _run(
 
             }
 
-            await githubCommit({
+            await gitClone({
                 log,
                 repository,
                 "ref": "gh-pages",

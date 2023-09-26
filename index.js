@@ -19,7 +19,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.run = exports._run = void 0;
 const inputHelper_1 = __nccwpck_require__(6078);
 const path_1 = __nccwpck_require__(1017);
-const githubCommit_1 = __nccwpck_require__(6397);
+const gitClone_1 = __nccwpck_require__(5450);
 const transformCodebase_1 = __nccwpck_require__(6591);
 const { getActionParams } = (0, inputHelper_1.getActionParamsFactory)({
     "inputNameSubset": [
@@ -38,7 +38,7 @@ function _run(params) {
     return __awaiter(this, void 0, void 0, function* () {
         const { github_token, owner, repo, sha, sub_directory, log = () => { } } = params;
         log(JSON.stringify(params, null, 2));
-        yield (0, githubCommit_1.githubCommit)({
+        yield (0, gitClone_1.gitClone)({
             log,
             "repository": `${owner}/${repo}`,
             "ref": sha,
@@ -161,7 +161,7 @@ const path_1 = __nccwpck_require__(1017);
 const assert_1 = __nccwpck_require__(8078);
 const yaml_1 = __importDefault(__nccwpck_require__(4083));
 const computeDirectoryDigest_1 = __nccwpck_require__(1021);
-const githubCommit_1 = __nccwpck_require__(6397);
+const gitClone_1 = __nccwpck_require__(5450);
 const Deferred_1 = __nccwpck_require__(689);
 const exec_1 = __nccwpck_require__(4269);
 const id_1 = __nccwpck_require__(3047);
@@ -286,7 +286,7 @@ function _run(params) {
             };
         }
         log(`Upgrading chart version to: ${SemVer_1.SemVer.stringify(targetChartVersion)}`);
-        const { sha: target_commit } = yield (0, githubCommit_1.githubCommit)({
+        const { sha: target_commit } = yield (0, gitClone_1.gitClone)({
             "ref": sha,
             repository,
             "token": github_token,
@@ -373,7 +373,7 @@ exports.run = run;
 function readVersions(params) {
     const { repository, gitRef, githubToken, log = () => { } } = params;
     const dVersions = new Deferred_1.Deferred();
-    (0, githubCommit_1.githubCommit)({
+    (0, gitClone_1.gitClone)({
         log,
         "ref": gitRef,
         repository,
@@ -516,7 +516,7 @@ function generateReleaseMessageBody(params) {
 function getWebDockerhubRepository(params) {
     const { repository, github_token, sha } = params;
     const dOut = new Deferred_1.Deferred();
-    (0, githubCommit_1.githubCommit)({
+    (0, gitClone_1.gitClone)({
         repository,
         "token": github_token,
         "ref": sha,
@@ -530,7 +530,7 @@ function getWebDockerhubRepository(params) {
 function getShaBranchName(params) {
     const { repository, github_token, sha, log } = params;
     const dOut = new Deferred_1.Deferred();
-    (0, githubCommit_1.githubCommit)({
+    (0, gitClone_1.gitClone)({
         log,
         repository,
         "token": github_token,
@@ -597,7 +597,7 @@ const fs = __importStar(__nccwpck_require__(7147));
 const path_1 = __nccwpck_require__(1017);
 const assert_1 = __nccwpck_require__(8078);
 const yaml_1 = __importDefault(__nccwpck_require__(4083));
-const githubCommit_1 = __nccwpck_require__(6397);
+const gitClone_1 = __nccwpck_require__(5450);
 const exec_1 = __nccwpck_require__(4269);
 const node_fetch_1 = __importDefault(__nccwpck_require__(467));
 const installHelm_1 = __nccwpck_require__(41);
@@ -621,7 +621,7 @@ function _run(params) {
         log(JSON.stringify(params, null, 2));
         yield (0, installHelm_1.installHelm)();
         const repository = `${owner}/${repo}`;
-        yield (0, githubCommit_1.githubCommit)({
+        yield (0, gitClone_1.gitClone)({
             log,
             repository,
             "ref": sha,
@@ -657,7 +657,7 @@ function _run(params) {
                     const basename = `onyxia-${chartVersion}.tgz`;
                     fs.copyFileSync((0, path_1.join)(outDirPath, basename), (0, path_1.join)(process.cwd(), basename));
                 }
-                yield (0, githubCommit_1.githubCommit)({
+                yield (0, gitClone_1.gitClone)({
                     log,
                     repository,
                     "ref": "gh-pages",
@@ -1242,7 +1242,7 @@ exports.createLoggedExec = createLoggedExec;
 
 /***/ }),
 
-/***/ 6397:
+/***/ 5450:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
@@ -1283,7 +1283,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.ErrorNoBranch = exports.githubCommit = void 0;
+exports.ErrorNoBranch = exports.gitClone = void 0;
 const exec_1 = __nccwpck_require__(4269);
 const path_1 = __nccwpck_require__(1017);
 const fs = __importStar(__nccwpck_require__(7147));
@@ -1292,12 +1292,12 @@ const async_mutex_1 = __nccwpck_require__(4038);
 const mutexes = {};
 const globalMutex = new async_mutex_1.Mutex();
 let isFirstCall = true;
-function githubCommit(params) {
+function gitClone(params) {
     var _a;
     return __awaiter(this, void 0, void 0, function* () {
         const { repository, ref, token, action, log = () => { } } = params;
         const { exec } = (0, exec_1.createLoggedExec)({ log });
-        const cacheDir = (0, path_1.join)(process.cwd(), "node_modules", ".cache", "githubCommit");
+        const cacheDir = (0, path_1.join)(process.cwd(), "node_modules", ".cache", "gitClone");
         yield globalMutex.runExclusive(() => __awaiter(this, void 0, void 0, function* () {
             if (!isFirstCall) {
                 return;
@@ -1367,7 +1367,7 @@ function githubCommit(params) {
         return { sha };
     });
 }
-exports.githubCommit = githubCommit;
+exports.gitClone = gitClone;
 ;
 class ErrorNoBranch extends Error {
     constructor(message) {
