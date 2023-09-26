@@ -783,7 +783,6 @@ exports.inputNames = [
     "repo",
     "sha",
     "automatic_commit_author_email",
-    "github_pages_branch_name",
     "is_external_pr",
     "is_default_branch",
     "is_bot",
@@ -823,11 +822,6 @@ function getInputDescription(inputName) {
         case "automatic_commit_author_email": return [
             "In actions that perform a git commit, the email of the author of the commit.",
             "Default to actions@github.com"
-        ].join(" ");
-        case "github_pages_branch_name": return [
-            "Github page branch name for the repository, example: 'gh-pages'",
-            "no default provided, required for 'release_helm_chart' action",
-            "If the branch does not exist it will be created"
         ].join(" ");
         case "is_external_pr": return [
             "Tell if the sha correspond to a commit from a forked repository",

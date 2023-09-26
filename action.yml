@@ -27,9 +27,6 @@ inputs:
     required: false
     description: 'In actions that perform a git commit, the email of the author of the commit. Default to actions@github.com'
     default: 'actions@github.com'
-  github_pages_branch_name:
-    required: false
-    description: 'Github page branch name for the repository, example: ''gh-pages'' no default provided, required for ''release_helm_chart'' action If the branch does not exist it will be created'
   is_external_pr:
     required: false
     description: 'Tell if the sha correspond to a commit from a forked repository Do not provide this parameter explicitly, it will be set automatically'
