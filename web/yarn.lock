@@ -10766,10 +10766,10 @@ keycloak-js@21.0.2:
     base64-js "^1.5.1"
     js-sha256 "^0.9.0"
 
-keycloakify@^8.0.0:
-  version "8.0.0"
-  resolved "https://registry.yarnpkg.com/keycloakify/-/keycloakify-8.0.0.tgz#b0f6a0fda34e8601f735df25b24909433a6b5fd3"
-  integrity sha512-/A6Uh9SuVdTP7cix8yS15Vfr03BwVFP11s3YPmQ9dSJN1GrIqzRs6mjTEnogM/ZfhySJwyXSeqTtpCGlXmtxJQ==
+keycloakify@^8.1.0:
+  version "8.1.0"
+  resolved "https://registry.yarnpkg.com/keycloakify/-/keycloakify-8.1.0.tgz#f2d1fb7144cda7bf5d8a539183e3e3a69405728c"
+  integrity sha512-BU6Y/2X+6iKUK12TvWMds9zgALxMtLOpFphZWrc6LLwqdieF6XE0QTPTN9UeTEXdgOLOcgNLuGx4csBjZ9WDPw==
   dependencies:
     "@babel/generator" "^7.22.9"
     "@babel/parser" "^7.22.7"
@@ -13167,6 +13167,15 @@ powerhooks@^1.0.1:
     memoizee "^0.4.15"
     tsafe "^1.6.4"
 
+powerhooks@^1.0.2:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/powerhooks/-/powerhooks-1.0.2.tgz#cd4061c6f7b2288894f9d6c63a07f041f94eab97"
+  integrity sha512-fQZT8WaP8DSFFbSB8Z2xdMXpFBFNDgQo+qeF4yt23Qr154wYyF7u2j8MO8Jm6pmoQnQgeS2B4r8l1dIER9TMmQ==
+  dependencies:
+    evt "^2.5.2"
+    memoizee "^0.4.15"
+    tsafe "^1.6.5"
+
 prelude-ls@^1.2.1:
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/prelude-ls/-/prelude-ls-1.2.1.tgz#debc6489d7a6e6b0e7611888cec880337d316396"
@@ -13849,13 +13858,13 @@ redent@^1.0.0:
     indent-string "^2.1.0"
     strip-indent "^1.0.1"
 
-redux-clean-architecture@^3.7.2:
-  version "3.7.2"
-  resolved "https://registry.yarnpkg.com/redux-clean-architecture/-/redux-clean-architecture-3.7.2.tgz#b153e940bc4d239483e9f1bb6c75cc78923365ff"
-  integrity sha512-QLbZwex8+m8dmqXeAekE9Uzern3YVV1KBLYoPSt+R6z9hoNRACHEMjQaemXiAzlezRfqxLFeot9byK5SGfGxjw==
+redux-clean-architecture@^3.7.3:
+  version "3.7.3"
+  resolved "https://registry.yarnpkg.com/redux-clean-architecture/-/redux-clean-architecture-3.7.3.tgz#7da79025ac0e7660e631eddf123e82032e98b7cc"
+  integrity sha512-tuvoOOmfHtaq2Uf0qdbldHLOmj/D+xsyQSXYk934omK8j+poavWtx/VNpp+VkJvvsdhx9eToCwXHZ5jKxJilbQ==
   dependencies:
     minimal-polyfills "^2.2.3"
-    tsafe "^1.6.4"
+    tsafe "^1.6.5"
 
 redux-thunk@^2.4.2:
   version "2.4.2"
@@ -15783,6 +15792,15 @@ tss-react@^4.9.0:
   version "4.9.0"
   resolved "https://registry.yarnpkg.com/tss-react/-/tss-react-4.9.0.tgz#1457e14e89f1c4a033b697f866439f5921c923d8"
   integrity sha512-dgqNSR9J0+NxvdwzXoKo2HxGGu2sg0UikLnPumGNLa9CSPVcL6ZNu23CJwxPaMvRnQC8NRyNbUN3pBCS9AWwRA==
+  dependencies:
+    "@emotion/cache" "*"
+    "@emotion/serialize" "*"
+    "@emotion/utils" "*"
+
+tss-react@^4.9.2:
+  version "4.9.2"
+  resolved "https://registry.yarnpkg.com/tss-react/-/tss-react-4.9.2.tgz#6a03db1df7bbaa4b6e5236e0d5cf633ee5e22e4e"
+  integrity sha512-0qOuDpar3q3N59Jsl50oDd+Zu3wfXv2rdf4VlPzvuekH6mkAgUVobZV3j69NPH0nm3Vv5xDRACjVUqVWmaNW0g==
   dependencies:
     "@emotion/cache" "*"
     "@emotion/serialize" "*"
