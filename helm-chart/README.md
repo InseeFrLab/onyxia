@@ -103,7 +103,7 @@ Below is a sample `onyxia-values.yaml` file that illustrates where to specify th
 
 ## Catalogs `x-onyxia` specifications
 
-If you are building your own service catalog for Onyxia ([learn how](https://docs.onyxia.sh/contributing/catalog-of-services)).  
+If you are building your own service catalog for Onyxia ([learn how](https://docs.onyxia.sh/catalog-of-services)).  
 Here are defined the onyxia reserved parameter and the structure of the dynamic context:
 
 [`values.schema.json` `"x-onyxia"` specifications](https://github.com/InseeFrLab/onyxia/blob/v2.29.4/src/core/ports/OnyxiaApi/XOnyxia.ts)
