@@ -9,7 +9,7 @@ metadata:
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: cluster-admin
+  name: {{ default "cluster-admin" .Values.serviceAccount.existingClusterRole }}
 subjects:
 - kind: ServiceAccount
   name: {{ include "onyxia.api.serviceAccountName" . }}

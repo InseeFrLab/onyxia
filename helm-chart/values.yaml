@@ -8,7 +8,11 @@ hostAliases: []
 serviceAccount:
   # Specifies whether a service account should be created
   create: true
-  clusterAdmin: false # If true, give cluster admin permissions. Otherwise, be admin scoped to the namespace
+  # If true, the created service account is bound to a ClusterRole (default : cluster-admin) ;
+  # if false, it is instead bound to the admin Role, and thus scoped to the namespace
+  clusterAdmin: false 
+  # Existing ClusterRole to use for the CRB if clusterAdmin is set to true
+  # existingClusterRole: "" 
   # Annotations to add to the service account
   annotations: {}
   # The name of the service account to use.
