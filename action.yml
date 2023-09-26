@@ -53,7 +53,7 @@ outputs:
     description: 'Output of prepare_release, string, To be used as parameter of the action of the softprops/action-gh-release action'
   release_tag_name:
     description: 'Output of prepare_release, string, To be used as parameter of the action of the softprops/action-gh-release action'
-  target_commitish:
+  target_commit:
     description: 'Output of prepare_release, string, To be used as parameter of the action of the softprops/action-gh-release action and for checking out the right commit in the next actions because prepare_release creates a automatic commit'
 runs:
   using: 'node20'

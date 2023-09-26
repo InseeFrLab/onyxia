@@ -128,7 +128,7 @@ function _run(params) {
                 "release_name": "",
                 "release_body": "",
                 "release_tag_name": "",
-                "target_commitish": ""
+                "target_commit": ""
             };
         }
         const previousReleaseTag = yield (() => __awaiter(this, void 0, void 0, function* () {
@@ -201,7 +201,7 @@ function _run(params) {
                 "release_name": "",
                 "release_body": "",
                 "release_tag_name": "",
-                "target_commitish": sha
+                "target_commit": sha
             };
         }
         const targetChartVersion = determineTargetChartVersion({
@@ -216,11 +216,11 @@ function _run(params) {
                 "release_name": "",
                 "release_body": "",
                 "release_tag_name": "",
-                "target_commitish": ""
+                "target_commit": ""
             };
         }
         log(`Upgrading chart version to: ${SemVer_1.SemVer.stringify(targetChartVersion)}`);
-        const { sha: target_commitish } = yield (0, githubCommit_1.githubCommit)({
+        const { sha: target_commit } = yield (0, githubCommit_1.githubCommit)({
             "ref": sha,
             repository,
             "token": github_token,
@@ -290,7 +290,7 @@ function _run(params) {
                     "new": currentVersions.webVersion
                 },
             }),
-            "target_commitish": target_commitish !== null && target_commitish !== void 0 ? target_commitish : sha
+            "target_commit": target_commit !== null && target_commit !== void 0 ? target_commit : sha
         };
     });
 }
@@ -853,7 +853,7 @@ exports.outputNames = [
     "release_name",
     "release_body",
     "release_tag_name",
-    "target_commitish"
+    "target_commit"
 ];
 function getOutputDescription(inputName) {
     switch (inputName) {
@@ -875,7 +875,7 @@ function getOutputDescription(inputName) {
             "Output of prepare_release, string,",
             "To be used as parameter of the action of the softprops/action-gh-release action"
         ].join(" ");
-        case "target_commitish": return [
+        case "target_commit": return [
             "Output of prepare_release, string,",
             "To be used as parameter of the action of the softprops/action-gh-release action",
             "and for checking out the right commit in the next actions because prepare_release",

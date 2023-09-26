@@ -37,7 +37,7 @@ const { setOutput } = setOutputFactory<
     | "release_name"
     | "release_body"
     | "release_tag_name"
-    | "target_commitish"
+    | "target_commit"
 >();
 
 export async function _run(
@@ -77,7 +77,7 @@ export async function _run(
             "release_name": "",
             "release_body": "",
             "release_tag_name": "",
-            "target_commitish": ""
+            "target_commit": ""
         };
     }
 
@@ -182,7 +182,7 @@ export async function _run(
             "release_name": "",
             "release_body": "",
             "release_tag_name": "",
-            "target_commitish": sha
+            "target_commit": sha
         };
     }
 
@@ -201,14 +201,14 @@ export async function _run(
             "release_name": "",
             "release_body": "",
             "release_tag_name": "",
-            "target_commitish": ""
+            "target_commit": ""
         };
 
     }
 
     log(`Upgrading chart version to: ${SemVer.stringify(targetChartVersion)}`);
 
-    const { sha: target_commitish } = await githubCommit({
+    const { sha: target_commit } = await githubCommit({
         "ref": sha,
         repository,
         "token": github_token,
@@ -332,7 +332,7 @@ export async function _run(
                 "new": currentVersions.webVersion
             },
         }),
-        "target_commitish": target_commitish ?? sha
+        "target_commit": target_commit ?? sha
     };
 
 }

@@ -13,7 +13,8 @@ export const inputNames = [
     "github_pages_branch_name",
     "is_external_pr",
     "is_default_branch",
-    "is_bot"
+    "is_bot",
+    "sub_directory"
 ] as const;
 
 export function getInputDescription(inputName: typeof inputNames[number]): string {
@@ -25,7 +26,8 @@ export function getInputDescription(inputName: typeof inputNames[number]): strin
                 //NOTE: We don't import directly to avoid circular dependency
                 const actionNames = [
                     "prepare_release",
-                    "release_helm_chart"
+                    "release_helm_chart",
+                    "checkout"
                 ] as const;
 
                 assert<Equals<typeof actionNames[number], ActionName>>(true);
@@ -70,6 +72,10 @@ export function getInputDescription(inputName: typeof inputNames[number]): strin
         case "is_bot": return [
             "Tell if the sha correspond to a commit from a bot",
             "Do not provide this parameter explicitly, it will be set automatically"
+        ].join(" ");
+        case "sub_directory": return [
+            "For the 'checkout' action, tell what sub directory to checkout from the repo.",
+            "Mandatory (else use the 'actions/checkout@v3' action directly). Example: 'web'"
         ].join(" ");
     }
 }

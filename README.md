@@ -40,18 +40,17 @@ jobs:
 
   test:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: web
     steps:
-    - uses: actions/checkout@v3
-    - uses: actions/setup-node@v3
-    - uses: bahmutov/npm-install@v1
-    - run: yarn build
-    - run: npx keycloakify
-      env:
-        XDG_CACHE_HOME: "/home/runner/.cache/yarn"
-    - run: npx build-storybook
+      - uses: InseeFrLab/onyxia@gh-actions
+        with: 
+          sub_directory: web
+      - uses: actions/setup-node@v3
+      - uses: bahmutov/npm-install@v1
+      - run: yarn build
+      - run: npx keycloakify
+        env:
+          XDG_CACHE_HOME: "/home/runner/.cache/yarn"
+      - run: npx build-storybook
   
   prepare_release:
     needs: test
@@ -62,7 +61,7 @@ jobs:
       release_name: ${{steps._.outputs.release_name}}
       release_body: ${{steps._.outputs.release_body}}
       release_tag_name: ${{steps._.outputs.release_tag_name}}
-      target_commitish: ${{steps._.outputs.target_commitish}}
+      target_commit: ${{steps._.outputs.target_commit}}
     steps:
       # NOTE: The code for this action is in the gh-actions branch of this repo
       - uses: InseeFrLab/onyxia@gh-actions
@@ -74,13 +73,11 @@ jobs:
     runs-on: ubuntu-latest
     needs: prepare_release
     if: needs.prepare_release.outputs.new_web_docker_image_tags != ''
-    defaults:
-      run:
-        working-directory: web
     steps:
-      - uses: actions/checkout@v3
-        with:
-          ref: ${{needs.prepare_release.outputs.target_commitish}}
+      - uses: InseeFrLab/onyxia@gh-actions
+        with: 
+          sub_directory: web
+          sha: ${{needs.prepare_release.outputs.target_commit}}
       - uses: docker/setup-qemu-action@v1
       - uses: docker/setup-buildx-action@v1
       - uses: docker/login-action@v1
@@ -97,43 +94,41 @@ jobs:
     runs-on: ubuntu-latest
     needs: prepare_release
     if: needs.prepare_release.outputs.new_chart_version != ''
-    defaults:
-      run:
-        working-directory: web
     steps:
-    - uses: actions/checkout@v3
-      with:
-        ref: ${{needs.prepare_release.outputs.target_commitish}}
-    - uses: actions/setup-node@v3
-    - uses: bahmutov/npm-install@v1
-    - run: yarn build
-    - run: npx keycloakify
-      env:
-        XDG_CACHE_HOME: "/home/runner/.cache/yarn"
-        KEYCLOAKIFY_THEME_VERSION: ${{needs.prepare_release.outputs.new_chart_version}}
-    - run: mv build_keycloak/target/*.jar keycloak-theme.jar
-    - uses: yogeshlonkar/wait-for-jobs@v0
-      with:
-        gh-token: ${{github.token}}
-        ignore-skipped: true
-        jobs: publish_web_docker_image
-        ttl: 10
-    - uses: InseeFrLab/onyxia@gh-actions
-      with: 
-        action_name: release_helm_chart
-        sha: ${{needs.prepare_release.outputs.target_commitish}}
-    - uses: softprops/action-gh-release@v1
-      with:
-        name: ${{needs.prepare_release.outputs.release_name}}
-        body: ${{needs.prepare_release.outputs.release_body}}
-        tag_name: ${{needs.prepare_release.outputs.release_tag_name}}
-        target_commitish: ${{needs.prepare_release.outputs.target_commitish}}
-        generate_release_notes: true
-        files: |
-          keycloak-theme.jar
-          onyxia-${{needs.prepare_release.outputs.new_chart_version}}.tgz
-      env:
-        GITHUB_TOKEN: ${{github.token}}
+      - uses: InseeFrLab/onyxia@gh-actions
+        with: 
+          sub_directory: web
+          sha: ${{needs.prepare_release.outputs.target_commit}}
+      - uses: actions/setup-node@v3
+      - uses: bahmutov/npm-install@v1
+      - run: yarn build
+      - run: npx keycloakify
+        env:
+          XDG_CACHE_HOME: "/home/runner/.cache/yarn"
+          KEYCLOAKIFY_THEME_VERSION: ${{needs.prepare_release.outputs.new_chart_version}}
+      - run: mv build_keycloak/target/*.jar keycloak-theme.jar
+      - uses: yogeshlonkar/wait-for-jobs@v0
+        with:
+          gh-token: ${{github.token}}
+          ignore-skipped: true
+          jobs: publish_web_docker_image
+          ttl: 10
+      - uses: InseeFrLab/onyxia@gh-actions
+        with: 
+          action_name: release_helm_chart
+          sha: ${{needs.prepare_release.outputs.target_commit}}
+      - uses: softprops/action-gh-release@v1
+        with:
+          name: ${{needs.prepare_release.outputs.release_name}}
+          body: ${{needs.prepare_release.outputs.release_body}}
+          tag_name: ${{needs.prepare_release.outputs.release_tag_name}}
+          target_commitish: ${{needs.prepare_release.outputs.target_commit}}
+          generate_release_notes: true
+          files: |
+            keycloak-theme.jar
+            onyxia-${{needs.prepare_release.outputs.new_chart_version}}.tgz
+        env:
+          GITHUB_TOKEN: ${{github.token}}
 ```
 
 

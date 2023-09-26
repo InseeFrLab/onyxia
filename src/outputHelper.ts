@@ -8,7 +8,7 @@ export const outputNames = [
     "release_name",
     "release_body",
     "release_tag_name",
-    "target_commitish"
+    "target_commit"
 ] as const;
 
 export function getOutputDescription(inputName: typeof outputNames[number]): string {
@@ -31,7 +31,7 @@ export function getOutputDescription(inputName: typeof outputNames[number]): str
             "Output of prepare_release, string,",
             "To be used as parameter of the action of the softprops/action-gh-release action"
         ].join(" ");
-        case "target_commitish": return [
+        case "target_commit": return [
             "Output of prepare_release, string,",
             "To be used as parameter of the action of the softprops/action-gh-release action",
             "and for checking out the right commit in the next actions because prepare_release",
