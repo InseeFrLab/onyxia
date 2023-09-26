@@ -1,6 +1,70 @@
 /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
+/***/ 4602:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.run = exports._run = void 0;
+const inputHelper_1 = __nccwpck_require__(6078);
+const path_1 = __nccwpck_require__(1017);
+const githubCommit_1 = __nccwpck_require__(6397);
+const transformCodebase_1 = __nccwpck_require__(6591);
+const { getActionParams } = (0, inputHelper_1.getActionParamsFactory)({
+    "inputNameSubset": [
+        "owner",
+        "repo",
+        "sha",
+        "github_token",
+        "sub_directory"
+    ]
+});
+/**
+ * Will generate a onyxia-<version>.tgz file in the current working directory
+ * and update or create the index.yaml file in the gh-pages branch of the repository.
+ * */
+function _run(params) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const { github_token, owner, repo, sha, sub_directory, log = () => { } } = params;
+        log(JSON.stringify(params, null, 2));
+        yield (0, githubCommit_1.githubCommit)({
+            log,
+            "repository": `${owner}/${repo}`,
+            "ref": sha,
+            "token": github_token,
+            "action": ({ repoPath }) => __awaiter(this, void 0, void 0, function* () {
+                (0, transformCodebase_1.transformCodebase)({
+                    "srcDirPath": (0, path_1.join)(repoPath, sub_directory),
+                    "destDirPath": process.cwd(),
+                });
+                return { "doCommit": false };
+            })
+        });
+    });
+}
+exports._run = _run;
+function run() {
+    return __awaiter(this, void 0, void 0, function* () {
+        const params = getActionParams();
+        yield _run(Object.assign(Object.assign({}, params), { "log": console.log.bind(console) }));
+    });
+}
+exports.run = run;
+
+
+/***/ }),
+
 /***/ 5167:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
@@ -34,9 +98,11 @@ exports.actions = void 0;
 const objectKeys_1 = __nccwpck_require__(6762);
 const prepare_release = __importStar(__nccwpck_require__(9539));
 const release_helm_chart = __importStar(__nccwpck_require__(9747));
+const checkout = __importStar(__nccwpck_require__(4602));
 exports.actions = {
     prepare_release,
-    release_helm_chart
+    release_helm_chart,
+    checkout
 };
 const actionNames = (0, objectKeys_1.objectKeys)(exports.actions);
 
@@ -720,7 +786,8 @@ exports.inputNames = [
     "github_pages_branch_name",
     "is_external_pr",
     "is_default_branch",
-    "is_bot"
+    "is_bot",
+    "sub_directory"
 ];
 function getInputDescription(inputName) {
     switch (inputName) {
@@ -730,7 +797,8 @@ function getInputDescription(inputName) {
                 //NOTE: We don't import directly to avoid circular dependency
                 const actionNames = [
                     "prepare_release",
-                    "release_helm_chart"
+                    "release_helm_chart",
+                    "checkout"
                 ];
                 (0, assert_1.assert)(true);
                 return actionNames;
@@ -772,6 +840,10 @@ function getInputDescription(inputName) {
         case "is_bot": return [
             "Tell if the sha correspond to a commit from a bot",
             "Do not provide this parameter explicitly, it will be set automatically"
+        ].join(" ");
+        case "sub_directory": return [
+            "For the 'checkout' action, tell what sub directory to checkout from the repo.",
+            "Mandatory (else use the 'actions/checkout@v3' action directly). Example: 'web'"
         ].join(" ");
     }
 }
@@ -1517,6 +1589,67 @@ function listTagsFactory(params) {
     return { listTags, getLatestTag };
 }
 exports.listTagsFactory = listTagsFactory;
+
+
+/***/ }),
+
+/***/ 6591:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.transformCodebase = void 0;
+const fs = __importStar(__nccwpck_require__(7147));
+const path = __importStar(__nccwpck_require__(1017));
+const crawl_1 = __nccwpck_require__(4834);
+const id_1 = __nccwpck_require__(3047);
+/** Apply a transformation function to every file of directory */
+function transformCodebase(params) {
+    const { srcDirPath, destDirPath, transformSourceCode = (0, id_1.id)(({ sourceCode }) => ({
+        "modifiedSourceCode": sourceCode
+    })) } = params;
+    for (const fileRelativePath of (0, crawl_1.crawl)({ "dirPath": srcDirPath, "returnedPathsType": "relative to dirPath" })) {
+        const filePath = path.join(srcDirPath, fileRelativePath);
+        const transformSourceCodeResult = transformSourceCode({
+            "sourceCode": fs.readFileSync(filePath),
+            filePath,
+            fileRelativePath
+        });
+        if (transformSourceCodeResult === undefined) {
+            continue;
+        }
+        fs.mkdirSync(path.dirname(path.join(destDirPath, fileRelativePath)), {
+            "recursive": true
+        });
+        const { newFileName, modifiedSourceCode } = transformSourceCodeResult;
+        fs.writeFileSync(path.join(path.dirname(path.join(destDirPath, fileRelativePath)), newFileName !== null && newFileName !== void 0 ? newFileName : path.basename(fileRelativePath)), modifiedSourceCode);
+    }
+}
+exports.transformCodebase = transformCodebase;
 
 
 /***/ }),
