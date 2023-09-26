@@ -123,7 +123,7 @@ export async function _run(
                 return id<Versions>({
                     "apiVersion": SemVer.parse("v0.30"),
                     "webVersion": SemVer.parse("2.29.4"),
-                    "chartVersion": SemVer.parse("4.0.1"),
+                    "chartVersion": SemVer.parse("4.1.0"),
                     "chartDigest": ""
                 });
             }

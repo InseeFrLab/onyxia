@@ -225,7 +225,7 @@ function _run(params) {
                 return (0, id_1.id)({
                     "apiVersion": SemVer_1.SemVer.parse("v0.30"),
                     "webVersion": SemVer_1.SemVer.parse("2.29.4"),
-                    "chartVersion": SemVer_1.SemVer.parse("4.0.1"),
+                    "chartVersion": SemVer_1.SemVer.parse("4.1.0"),
                     "chartDigest": ""
                 });
             }
