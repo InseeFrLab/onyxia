@@ -43,6 +43,7 @@ jobs:
     steps:
       - uses: InseeFrLab/onyxia@gh-actions
         with: 
+          action_name: checkout
           sub_directory: web
       - uses: actions/setup-node@v3
       - uses: bahmutov/npm-install@v1
@@ -76,6 +77,7 @@ jobs:
     steps:
       - uses: InseeFrLab/onyxia@gh-actions
         with: 
+          action_name: checkout
           sub_directory: web
           sha: ${{needs.prepare_release.outputs.target_commit}}
       - uses: docker/setup-qemu-action@v1
@@ -97,6 +99,7 @@ jobs:
     steps:
       - uses: InseeFrLab/onyxia@gh-actions
         with: 
+          action_name: checkout
           sub_directory: web
           sha: ${{needs.prepare_release.outputs.target_commit}}
       - uses: actions/setup-node@v3
