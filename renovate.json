@@ -2,7 +2,7 @@
     "$schema": "https://docs.renovatebot.com/renovate-schema.json",
     "baseBranches": ["main"],
     "extends": ["config:base"],
-    "paths": ["web/package.json"],
+    "includePaths": ["web/package.json"],
     "dependencyDashboard": false,
     "rangeStrategy": "bump",
     "ignorePaths": [".github/**", "Dockerfile"],
