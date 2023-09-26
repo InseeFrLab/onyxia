@@ -9,6 +9,6 @@ entries:
     name: onyxia
     type: application
     urls:
-    - https://InseeFrLab.github.io/onyxia/releases/download/v4.0.2/onyxia-4.0.2.tgz
+    - https://github.com/InseeFrLab/onyxia/releases/download/v4.0.2/onyxia-4.0.2.tgz
     version: 4.0.2
 generated: "2023-09-26T05:32:35.620246298Z"
