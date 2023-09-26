@@ -440,10 +440,10 @@ function generateReleaseMessageBody(params) {
         ].join(" "),
         [
             `- 🔌 Version of [\`inseefrlab/onyxia-api\`](https://hub.docker.com/r/inseefrlab/onyxia-api) pinned in the chart:`,
-            `**[\`${SemVer_1.SemVer.stringify(apiVersions.new)}\`](${getApiUrl(apiVersions.new)})**`,
+            `**[\`${apiVersions.new.parsedFrom}\`](${getApiUrl(apiVersions.new)})**`,
             SemVer_1.SemVer.compare(apiVersions.previous, apiVersions.new) === 0 ?
                 "(No bump since the previous release)" :
-                `*(${getPrettyBump(apiVersions.previous, apiVersions.new)} bump from [\`${SemVer_1.SemVer.stringify(apiVersions.previous)}\`](${getApiUrl(apiVersions.previous)}))*`
+                `*(${getPrettyBump(apiVersions.previous, apiVersions.new)} bump from [\`${apiVersions.previous.parsedFrom}\`](${getApiUrl(apiVersions.previous)}))*`
         ].join(" "),
     ].join("\n");
 }
