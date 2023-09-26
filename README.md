@@ -45,8 +45,6 @@ jobs:
         working-directory: web
     steps:
     - uses: actions/checkout@v3
-      with:
-        lfs: true
     - uses: actions/setup-node@v3
     - uses: bahmutov/npm-install@v1
     - run: yarn build
@@ -83,7 +81,6 @@ jobs:
       - uses: actions/checkout@v3
         with:
           ref: ${{needs.prepare_release.outputs.target_commitish}}
-          lfs: true
       - uses: docker/setup-qemu-action@v1
       - uses: docker/setup-buildx-action@v1
       - uses: docker/login-action@v1
@@ -107,7 +104,6 @@ jobs:
     - uses: actions/checkout@v3
       with:
         ref: ${{needs.prepare_release.outputs.target_commitish}}
-        lfs: true
     - uses: actions/setup-node@v3
     - uses: bahmutov/npm-install@v1
     - run: yarn build
