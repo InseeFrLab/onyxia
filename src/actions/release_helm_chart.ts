@@ -101,7 +101,7 @@ export async function _run(
                 currentIndexYamlContent == undefined ?
                     "":
                     `--merge ${currentIndexYamlFilePath}`,
-                `--url https://${owner}.github.io/${repo}/releases/download/v${chartVersion}`,
+                `--url https://github.com/${owner}/${repo}/releases/download/v${chartVersion}`
             ].join(" "));
 
             {
