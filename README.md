@@ -40,6 +40,9 @@ jobs:
 
   test:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: web
     steps:
     - uses: actions/checkout@v3
       with:
@@ -56,10 +59,12 @@ jobs:
     needs: test
     runs-on: ubuntu-latest
     outputs:
-      new_chart_version: ${{steps._.outputs.new_chart_version}}
       new_web_docker_image_tags: ${{steps._.outputs.new_web_docker_image_tags}}
-      release_target_git_commit_sha: ${{steps._.outputs.release_target_git_commit_sha}}
-      release_message: ${{steps._.outputs.release_message}}
+      new_chart_version: ${{steps._.outputs.new_chart_version}}
+      release_name: ${{steps._.outputs.release_name}}
+      release_body: ${{steps._.outputs.release_body}}
+      release_tag_name: ${{steps._.outputs.release_tag_name}}
+      target_commitish: ${{steps._.outputs.target_commitish}}
     steps:
       # NOTE: The code for this action is in the gh-actions branch of this repo
       - uses: InseeFrLab/onyxia@gh-actions
@@ -67,10 +72,13 @@ jobs:
         with: 
           action_name: prepare_release
   
-  docker_build_push_onyxia_web:
+  publish_web_docker_image:
     runs-on: ubuntu-latest
     needs: prepare_release
     if: needs.prepare_release.outputs.new_web_docker_image_tags != ''
+    defaults:
+      run:
+        working-directory: web
     steps:
       - uses: actions/checkout@v3
         with:
@@ -92,6 +100,9 @@ jobs:
     runs-on: ubuntu-latest
     needs: prepare_release
     if: needs.prepare_release.outputs.new_chart_version != ''
+    defaults:
+      run:
+        working-directory: web
     steps:
     - uses: actions/checkout@v3
       with:
@@ -109,7 +120,7 @@ jobs:
       with:
         gh-token: ${{github.token}}
         ignore-skipped: true
-        jobs: docker_build_push_onyxia_web
+        jobs: publish_web_docker_image
         ttl: 10
     - uses: InseeFrLab/onyxia@gh-actions
       with: 
