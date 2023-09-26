@@ -591,10 +591,10 @@ function generateReleaseMessageBody(params: {
         ].join(" "),
         [
             `- 🖥️ Version of [\`inseefrlab/onyxia-web\`](https://hub.docker.com/r/inseefrlab/onyxia-web) pinned in the chart:`,
-            `**[\`${SemVer.stringify(webVersions.new)}\`](${getWebUrl(webVersions.new)})**`,
+            `**[\`${SemVer.stringify(webVersions.new)}\`](${getWebUrl(chartVersions.new)})**`,
             SemVer.compare(webVersions.previous, webVersions.new) === 0 ?
                 "(No bump since the previous release)" :
-                `*(${getPrettyBump(webVersions.previous, webVersions.new)} bump from [\`${SemVer.stringify(webVersions.previous)}\`](${getWebUrl(webVersions.previous)}))*`
+                `*(${getPrettyBump(webVersions.previous, webVersions.new)} bump from [\`${SemVer.stringify(webVersions.previous)}\`](${getWebUrl(chartVersions.previous)}))*`
         ].join(" "),
         [
             `- 🔌 Version of [\`inseefrlab/onyxia-api\`](https://hub.docker.com/r/inseefrlab/onyxia-api) pinned in the chart:`,
