@@ -296,12 +296,12 @@ export async function _run(
             }
 
             return {
+                "doAddAll": false,
+                "doCommit": true,
                 "message": `Automatic ${SemVer.bumpType({
                     "versionBehind": previousReleaseVersions.chartVersion,
                     "versionAhead": targetChartVersion
                 })} bump of chart version to ${SemVer.stringify(targetChartVersion)}`,
-                "doAddAll": false,
-                "doCommit": true,
                 "commitAuthorEmail": automatic_commit_author_email
             };
         }

@@ -322,12 +322,12 @@ function _run(params) {
                     fs.writeFileSync(readmeFilePath, Buffer.from(readmeText, "utf8"));
                 }
                 return {
+                    "doAddAll": false,
+                    "doCommit": true,
                     "message": `Automatic ${SemVer_1.SemVer.bumpType({
                         "versionBehind": previousReleaseVersions.chartVersion,
                         "versionAhead": targetChartVersion
                     })} bump of chart version to ${SemVer_1.SemVer.stringify(targetChartVersion)}`,
-                    "doAddAll": false,
-                    "doCommit": true,
                     "commitAuthorEmail": automatic_commit_author_email
                 };
             })
