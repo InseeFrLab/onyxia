@@ -22,7 +22,7 @@
     },
     "dependencies": {
         "onyxia-ui": "^1.0.0",
-        "keycloakify": "^8.1.0",
+        "keycloakify": "^8.1.1",
         "tss-react": "^4.9.2",
         "i18nifty": "^2.1.1",
         "tsafe": "^1.6.5",
