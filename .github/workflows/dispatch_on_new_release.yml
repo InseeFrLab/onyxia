@@ -1,8 +1,8 @@
 on:
-   release:
-     types:
-       - created  
-  
+  release:
+    types:
+      - created  
+
 jobs:
   
   notify_paris_sspcloud:
