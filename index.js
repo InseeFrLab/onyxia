@@ -96,7 +96,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.actions = void 0;
 const objectKeys_1 = __nccwpck_require__(6762);
-const prepare_release = __importStar(__nccwpck_require__(9539));
+const prepare_release = __importStar(__nccwpck_require__(6081));
 const release_helm_chart = __importStar(__nccwpck_require__(9747));
 const checkout = __importStar(__nccwpck_require__(4602));
 exports.actions = {
@@ -109,7 +109,226 @@ const actionNames = (0, objectKeys_1.objectKeys)(exports.actions);
 
 /***/ }),
 
-/***/ 9539:
+/***/ 7262:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.determineTargetChartVersion = void 0;
+const SemVer_1 = __nccwpck_require__(5078);
+const assert_1 = __nccwpck_require__(8078);
+function determineTargetChartVersion(params) {
+    const { previousReleaseVersions, currentVersions } = params;
+    const getWeightFromBumpType = (bumpType) => {
+        (0, assert_1.assert)(bumpType !== "rc");
+        switch (bumpType) {
+            case "no bump": return 0;
+            case "patch": return 1;
+            case "minor": return 2;
+            case "major": return 3;
+        }
+    };
+    const getBumpTypeFromWeight = (weight) => {
+        switch (weight) {
+            case 0: return "no bump";
+            case 1: return "patch";
+            case 2: return "minor";
+            case 3: return "major";
+        }
+        (0, assert_1.assert)(false);
+    };
+    const minimumBumpType = getBumpTypeFromWeight(Math.max(getWeightFromBumpType(SemVer_1.SemVer.bumpType({
+        "versionBehind": previousReleaseVersions.apiVersion,
+        "versionAhead": currentVersions.apiVersion
+    })), getWeightFromBumpType(SemVer_1.SemVer.bumpType({
+        "versionBehind": previousReleaseVersions.webVersion,
+        "versionAhead": currentVersions.webVersion
+    }))));
+    const chartBumpType = SemVer_1.SemVer.bumpType({
+        "versionBehind": previousReleaseVersions.chartVersion,
+        "versionAhead": currentVersions.chartVersion
+    });
+    let targetChartVersion = Object.assign({}, currentVersions.chartVersion);
+    switch (minimumBumpType) {
+        case "no bump": return targetChartVersion;
+        case "patch": {
+            if (chartBumpType === "no bump") {
+                targetChartVersion.patch++;
+            }
+            return targetChartVersion;
+        }
+        case "minor": {
+            if (chartBumpType === "no bump" || chartBumpType === "patch") {
+                targetChartVersion = Object.assign({}, previousReleaseVersions.chartVersion);
+                targetChartVersion.minor++;
+                targetChartVersion.patch = 0;
+            }
+            return targetChartVersion;
+        }
+        case "major": {
+            if (chartBumpType === "no bump" || chartBumpType === "patch" || chartBumpType === "minor") {
+                targetChartVersion = Object.assign({}, previousReleaseVersions.chartVersion);
+                targetChartVersion.major++;
+                targetChartVersion.minor = 0;
+                targetChartVersion.patch = 0;
+            }
+            return targetChartVersion;
+        }
+    }
+}
+exports.determineTargetChartVersion = determineTargetChartVersion;
+
+
+/***/ }),
+
+/***/ 5323:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.generateReleaseMessageBody = void 0;
+const SemVer_1 = __nccwpck_require__(5078);
+const assert_1 = __nccwpck_require__(8078);
+const capitalize_1 = __nccwpck_require__(1502);
+function generateReleaseMessageBody(params) {
+    const { chartVersions, webVersions, apiVersions } = params;
+    const getChartUrl = (version) => `https://github.com/InseeFrLab/onyxia/tree/v${SemVer_1.SemVer.stringify(version)}/helm-chart`;
+    const getWebUrl = (version) => `https://github.com/InseeFrLab/onyxia/tree/v${SemVer_1.SemVer.stringify(version)}/web`;
+    const getApiUrl = (version) => `https://github.com/InseeFrLab/onyxia-api/tree/${version.parsedFrom}`;
+    const getPrettyBump = (versionBehind, versionAhead) => {
+        const bump = SemVer_1.SemVer.bumpType({ versionBehind, versionAhead });
+        (0, assert_1.assert)(bump !== "rc");
+        (0, assert_1.assert)(bump !== "no bump");
+        let out = (0, capitalize_1.capitalize)(bump);
+        if (bump === "major") {
+            out += `**${out}**`;
+        }
+        return out;
+    };
+    return [
+        `📖 [Documentation reference](${getChartUrl(chartVersions.new)}/README.md#configuration)  `,
+        `  `,
+        [
+            `📦 [Helm Chart](${getChartUrl(chartVersions.new)}) version:`,
+            `**[\`${SemVer_1.SemVer.stringify(chartVersions.new)}\`](${getChartUrl(chartVersions.new)})**`,
+            `*(${getPrettyBump(chartVersions.previous, chartVersions.new)} bump from [\`${SemVer_1.SemVer.stringify(chartVersions.previous)}\`](${getChartUrl(chartVersions.previous)}))*`
+        ].join(" "),
+        [
+            `- 🖥️ Version of [\`inseefrlab/onyxia-web\`](https://hub.docker.com/r/inseefrlab/onyxia-web) pinned in the chart:`,
+            `**[\`${SemVer_1.SemVer.stringify(webVersions.new)}\`](${getWebUrl(chartVersions.new)})**`,
+            SemVer_1.SemVer.compare(webVersions.previous, webVersions.new) === 0 ?
+                "(No bump since the previous release)" :
+                `*(${getPrettyBump(webVersions.previous, webVersions.new)} bump from [\`${SemVer_1.SemVer.stringify(webVersions.previous)}\`](${getWebUrl(chartVersions.previous)}))*`
+        ].join(" "),
+        [
+            `- 🔌 Version of [\`inseefrlab/onyxia-api\`](https://hub.docker.com/r/inseefrlab/onyxia-api) pinned in the chart:`,
+            `**[\`${apiVersions.new.parsedFrom}\`](${getApiUrl(apiVersions.new)})**`,
+            SemVer_1.SemVer.compare(apiVersions.previous, apiVersions.new) === 0 ?
+                "(No bump since the previous release)" :
+                `*(${getPrettyBump(apiVersions.previous, apiVersions.new)} bump from [\`${apiVersions.previous.parsedFrom}\`](${getApiUrl(apiVersions.previous)}))*`
+        ].join(" "),
+    ].join("\n");
+}
+exports.generateReleaseMessageBody = generateReleaseMessageBody;
+
+
+/***/ }),
+
+/***/ 4533:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.getWebDockerhubRepository = void 0;
+const fs = __importStar(__nccwpck_require__(7147));
+const path_1 = __nccwpck_require__(1017);
+const yaml_1 = __importDefault(__nccwpck_require__(4083));
+const gitClone_1 = __nccwpck_require__(5450);
+const Deferred_1 = __nccwpck_require__(689);
+const release_helm_chart_1 = __nccwpck_require__(9747);
+function getWebDockerhubRepository(params) {
+    const { repository, github_token, sha } = params;
+    const dOut = new Deferred_1.Deferred();
+    (0, gitClone_1.gitClone)({
+        repository,
+        "token": github_token,
+        "ref": sha,
+        "action": ({ repoPath }) => __awaiter(this, void 0, void 0, function* () {
+            dOut.resolve(yaml_1.default.parse(fs.readFileSync((0, path_1.join)(repoPath, release_helm_chart_1.helmChartDirBasename, "values.yaml")).toString("utf8"))["web"]["image"]["repository"]);
+            return { "doCommit": false };
+        })
+    });
+    return dOut.pr;
+}
+exports.getWebDockerhubRepository = getWebDockerhubRepository;
+
+
+/***/ }),
+
+/***/ 6081:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __exportStar = (this && this.__exportStar) || function(m, exports) {
+    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+__exportStar(__nccwpck_require__(9924), exports);
+
+
+/***/ }),
+
+/***/ 9924:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
 "use strict";
@@ -158,16 +377,16 @@ const createOctokit_1 = __nccwpck_require__(6605);
 const getLatestSemVersionedTag_1 = __nccwpck_require__(5187);
 const fs = __importStar(__nccwpck_require__(7147));
 const path_1 = __nccwpck_require__(1017);
-const assert_1 = __nccwpck_require__(8078);
 const yaml_1 = __importDefault(__nccwpck_require__(4083));
-const computeDirectoryDigest_1 = __nccwpck_require__(1021);
 const gitClone_1 = __nccwpck_require__(5450);
-const Deferred_1 = __nccwpck_require__(689);
-const exec_1 = __nccwpck_require__(4269);
 const id_1 = __nccwpck_require__(3047);
-const exec_2 = __nccwpck_require__(4269);
 const release_helm_chart_1 = __nccwpck_require__(9747);
-const capitalize_1 = __nccwpck_require__(1502);
+const determineTargetChartVersion_1 = __nccwpck_require__(7262);
+const generateReleaseMessageBody_1 = __nccwpck_require__(5323);
+const getShaBranchName_1 = __nccwpck_require__(1474);
+const getWebDockerhubRepository_1 = __nccwpck_require__(4533);
+const updateChartReadme_1 = __nccwpck_require__(3742);
+const readVersions_1 = __nccwpck_require__(9086);
 const { getActionParams } = (0, inputHelper_1.getActionParamsFactory)({
     "inputNameSubset": [
         "owner",
@@ -226,10 +445,9 @@ function _run(params) {
                     "apiVersion": SemVer_1.SemVer.parse("v0.30"),
                     "webVersion": SemVer_1.SemVer.parse("2.29.4"),
                     "chartVersion": SemVer_1.SemVer.parse("4.1.0"),
-                    "chartDigest": ""
                 });
             }
-            return readVersions({
+            return (0, readVersions_1.readVersions)({
                 gitRef,
                 "githubToken": github_token,
                 repository,
@@ -244,13 +462,13 @@ function _run(params) {
                     "major": previousReleaseVersions.chartVersion.major
                 } }));
         }
-        const webDockerhubRepository = yield getWebDockerhubRepository({
+        const webDockerhubRepository = yield (0, getWebDockerhubRepository_1.getWebDockerhubRepository)({
             repository,
             github_token,
             sha
         });
         if (is_default_branch === "false") {
-            const branchName = yield getShaBranchName({
+            const branchName = yield (0, getShaBranchName_1.getShaBranchName)({
                 repository,
                 github_token,
                 sha,
@@ -270,7 +488,7 @@ function _run(params) {
                 "target_commit": sha
             };
         }
-        const targetChartVersion = determineTargetChartVersion({
+        const targetChartVersion = (0, determineTargetChartVersion_1.determineTargetChartVersion)({
             previousReleaseVersions,
             currentVersions
         });
@@ -309,16 +527,11 @@ function _run(params) {
                 {
                     const readmeFilePath = (0, path_1.join)(repoPath, release_helm_chart_1.helmChartDirBasename, "README.md");
                     let readmeText = fs.readFileSync(readmeFilePath).toString("utf8");
-                    readmeText =
-                        readmeText.replace(/(https:\/\/github\.com\/[^\/]+\/[^\/]+\/blob\/)([^\/]+)(\/README\.md#configuration)/g, (...[, p1, , p3]) => `${p1}${currentVersions.apiVersion.parsedFrom}${p3}`);
-                    readmeText =
-                        readmeText.replace(/(https:\/\/github\.com\/[\/]+\/[\/]+\/blob\/)([^\/]+)(\/\.env)/g, (...[, p1, , p3]) => `${p1}v${SemVer_1.SemVer.stringify(targetChartVersion)}${p3}`);
-                    readmeText =
-                        readmeText.replace(/(https:\/\/github\.com\/[\/]+\/[\/]+\/blob\/)([^\/]+)(\/src\/core\/ports\/OnyxiaApi\/XOnyxia\.ts)/g, (...[, p1, , p3]) => `${p1}v${SemVer_1.SemVer.stringify(targetChartVersion)}${p3}`);
-                    readmeText =
-                        readmeText.replace(/(https:\/\/github\.com\/[\/]+\/[\/]+\/release\/download\/)([^\/]+)(\/keycloak-theme\.jar)/g, (...[, p1, , p3]) => `${p1}v${SemVer_1.SemVer.stringify(targetChartVersion)}${p3}`);
-                    readmeText =
-                        readmeText.replace(/--version "?[^ "]+"?/g, `--version "${SemVer_1.SemVer.stringify(targetChartVersion)}"`);
+                    readmeText = (0, updateChartReadme_1.updateChartReadme)({
+                        "apiVersionTag": currentVersions.apiVersion.parsedFrom,
+                        targetChartVersion,
+                        readmeText
+                    });
                     fs.writeFileSync(readmeFilePath, Buffer.from(readmeText, "utf8"));
                 }
                 return {
@@ -342,7 +555,7 @@ function _run(params) {
                 ].map(tag => `${webDockerhubRepository.toLowerCase()}:${tag}`).join(","),
             "release_name": `v${SemVer_1.SemVer.stringify(targetChartVersion)}`,
             "release_tag_name": `v${SemVer_1.SemVer.stringify(targetChartVersion)}`,
-            "release_body": generateReleaseMessageBody({
+            "release_body": (0, generateReleaseMessageBody_1.generateReleaseMessageBody)({
                 "chartVersions": {
                     "previous": previousReleaseVersions.chartVersion,
                     "new": targetChartVersion
@@ -370,6 +583,61 @@ function run() {
     });
 }
 exports.run = run;
+
+
+/***/ }),
+
+/***/ 9086:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.readVersions = void 0;
+const SemVer_1 = __nccwpck_require__(5078);
+const fs = __importStar(__nccwpck_require__(7147));
+const path_1 = __nccwpck_require__(1017);
+const assert_1 = __nccwpck_require__(8078);
+const yaml_1 = __importDefault(__nccwpck_require__(4083));
+const gitClone_1 = __nccwpck_require__(5450);
+const Deferred_1 = __nccwpck_require__(689);
+const exec_1 = __nccwpck_require__(4269);
+const release_helm_chart_1 = __nccwpck_require__(9747);
 function readVersions(params) {
     const { repository, gitRef, githubToken, log = () => { } } = params;
     const dVersions = new Deferred_1.Deferred();
@@ -392,7 +660,6 @@ function readVersions(params) {
                     (0, assert_1.assert)(typeof value === "string");
                     return SemVer_1.SemVer.parse(value);
                 })(),
-                "chartDigest": (0, computeDirectoryDigest_1.computeDirectoryDigest)({ "dirPath": (0, path_1.join)(repoPath, release_helm_chart_1.helmChartDirBasename) }),
                 "apiVersion": yield (() => __awaiter(this, void 0, void 0, function* () {
                     const { exec } = (0, exec_1.createLoggedExec)({ log });
                     const apiSubmoduleDirPath = (0, path_1.join)(repoPath, "api");
@@ -408,144 +675,34 @@ function readVersions(params) {
     }).catch(error => dVersions.reject(error));
     return dVersions.pr;
 }
-function determineTargetChartVersion(params) {
-    const { previousReleaseVersions, currentVersions } = params;
-    const getWeightFromBumpType = (bumpType) => {
-        (0, assert_1.assert)(bumpType !== "rc");
-        switch (bumpType) {
-            case "no bump": return 0;
-            case "patch": return 1;
-            case "minor": return 2;
-            case "major": return 3;
-        }
-    };
-    const getBumpTypeFromWeight = (weight) => {
-        switch (weight) {
-            case 0: return "no bump";
-            case 1: return "patch";
-            case 2: return "minor";
-            case 3: return "major";
-        }
-        (0, assert_1.assert)(false);
-    };
-    const minimumBumpType = getBumpTypeFromWeight(Math.max(getWeightFromBumpType(SemVer_1.SemVer.bumpType({
-        "versionBehind": previousReleaseVersions.apiVersion,
-        "versionAhead": currentVersions.apiVersion
-    })), getWeightFromBumpType(SemVer_1.SemVer.bumpType({
-        "versionBehind": previousReleaseVersions.webVersion,
-        "versionAhead": currentVersions.webVersion
-    }))));
-    const chartBumpType = SemVer_1.SemVer.bumpType({
-        "versionBehind": previousReleaseVersions.chartVersion,
-        "versionAhead": currentVersions.chartVersion
-    });
-    let targetChartVersion = Object.assign({}, currentVersions.chartVersion);
-    switch (minimumBumpType) {
-        case "no bump":
-            {
-                if (chartBumpType === "no bump" && previousReleaseVersions.chartDigest !== currentVersions.chartDigest) {
-                    targetChartVersion.patch++;
-                }
-                return targetChartVersion;
-            }
-            ;
-        case "patch": {
-            if (chartBumpType === "no bump") {
-                targetChartVersion.patch++;
-            }
-            return targetChartVersion;
-        }
-        case "minor": {
-            if (chartBumpType === "no bump" || chartBumpType === "patch") {
-                targetChartVersion = Object.assign({}, previousReleaseVersions.chartVersion);
-                targetChartVersion.minor++;
-                targetChartVersion.patch = 0;
-            }
-            return targetChartVersion;
-        }
-        case "major": {
-            if (chartBumpType === "no bump" || chartBumpType === "patch" || chartBumpType === "minor") {
-                targetChartVersion = Object.assign({}, previousReleaseVersions.chartVersion);
-                targetChartVersion.major++;
-                targetChartVersion.minor = 0;
-                targetChartVersion.patch = 0;
-            }
-            return targetChartVersion;
-        }
-    }
+exports.readVersions = readVersions;
+
+
+/***/ }),
+
+/***/ 3742:
+/***/ ((__unused_webpack_module, exports, __nccwpck_require__) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.updateChartReadme = void 0;
+const SemVer_1 = __nccwpck_require__(5078);
+function updateChartReadme(params) {
+    let { readmeText, apiVersionTag, targetChartVersion } = params;
+    readmeText =
+        readmeText.replace(/(https:\/\/github\.com\/[^\/]+\/[^\/]+\/blob\/)([^\/]+)(\/README\.md#configuration)/g, (...[, p1, , p3]) => `${p1}${apiVersionTag}${p3}`);
+    readmeText =
+        readmeText.replace(/(https:\/\/github\.com\/[\/]+\/[\/]+\/blob\/)([^\/]+)(\/\.env)/g, (...[, p1, , p3]) => `${p1}v${SemVer_1.SemVer.stringify(targetChartVersion)}${p3}`);
+    readmeText =
+        readmeText.replace(/(https:\/\/github\.com\/[\/]+\/[\/]+\/blob\/)([^\/]+)(\/src\/core\/ports\/OnyxiaApi\/XOnyxia\.ts)/g, (...[, p1, , p3]) => `${p1}v${SemVer_1.SemVer.stringify(targetChartVersion)}${p3}`);
+    readmeText =
+        readmeText.replace(/(https:\/\/github\.com\/[\/]+\/[\/]+\/release\/download\/)([^\/]+)(\/keycloak-theme\.jar)/g, (...[, p1, , p3]) => `${p1}v${SemVer_1.SemVer.stringify(targetChartVersion)}${p3}`);
+    readmeText =
+        readmeText.replace(/--version "?[^ "]+"?/g, `--version "${SemVer_1.SemVer.stringify(targetChartVersion)}"`);
+    return readmeText;
 }
-function generateReleaseMessageBody(params) {
-    const { chartVersions, webVersions, apiVersions } = params;
-    const getChartUrl = (version) => `https://github.com/InseeFrLab/onyxia/tree/v${SemVer_1.SemVer.stringify(version)}/helm-chart`;
-    const getWebUrl = (version) => `https://github.com/InseeFrLab/onyxia/tree/v${SemVer_1.SemVer.stringify(version)}/web`;
-    const getApiUrl = (version) => `https://github.com/InseeFrLab/onyxia-api/tree/${version.parsedFrom}`;
-    const getPrettyBump = (versionBehind, versionAhead) => {
-        const bump = SemVer_1.SemVer.bumpType({ versionBehind, versionAhead });
-        (0, assert_1.assert)(bump !== "rc");
-        (0, assert_1.assert)(bump !== "no bump");
-        let out = (0, capitalize_1.capitalize)(bump);
-        if (bump === "major") {
-            out += `**${out}**`;
-        }
-        return out;
-    };
-    return [
-        `📖 [Documentation reference](${getChartUrl(chartVersions.new)}/README.md#configuration)  `,
-        `  `,
-        [
-            `📦 [Helm Chart](${getChartUrl(chartVersions.new)}) version:`,
-            `**[\`${SemVer_1.SemVer.stringify(chartVersions.new)}\`](${getChartUrl(chartVersions.new)})**`,
-            `*(${getPrettyBump(chartVersions.previous, chartVersions.new)} bump from [\`${SemVer_1.SemVer.stringify(chartVersions.previous)}\`](${getChartUrl(chartVersions.previous)}))*`
-        ].join(" "),
-        [
-            `- 🖥️ Version of [\`inseefrlab/onyxia-web\`](https://hub.docker.com/r/inseefrlab/onyxia-web) pinned in the chart:`,
-            `**[\`${SemVer_1.SemVer.stringify(webVersions.new)}\`](${getWebUrl(chartVersions.new)})**`,
-            SemVer_1.SemVer.compare(webVersions.previous, webVersions.new) === 0 ?
-                "(No bump since the previous release)" :
-                `*(${getPrettyBump(webVersions.previous, webVersions.new)} bump from [\`${SemVer_1.SemVer.stringify(webVersions.previous)}\`](${getWebUrl(chartVersions.previous)}))*`
-        ].join(" "),
-        [
-            `- 🔌 Version of [\`inseefrlab/onyxia-api\`](https://hub.docker.com/r/inseefrlab/onyxia-api) pinned in the chart:`,
-            `**[\`${apiVersions.new.parsedFrom}\`](${getApiUrl(apiVersions.new)})**`,
-            SemVer_1.SemVer.compare(apiVersions.previous, apiVersions.new) === 0 ?
-                "(No bump since the previous release)" :
-                `*(${getPrettyBump(apiVersions.previous, apiVersions.new)} bump from [\`${apiVersions.previous.parsedFrom}\`](${getApiUrl(apiVersions.previous)}))*`
-        ].join(" "),
-    ].join("\n");
-}
-function getWebDockerhubRepository(params) {
-    const { repository, github_token, sha } = params;
-    const dOut = new Deferred_1.Deferred();
-    (0, gitClone_1.gitClone)({
-        repository,
-        "token": github_token,
-        "ref": sha,
-        "action": ({ repoPath }) => __awaiter(this, void 0, void 0, function* () {
-            dOut.resolve(yaml_1.default.parse(fs.readFileSync((0, path_1.join)(repoPath, release_helm_chart_1.helmChartDirBasename, "values.yaml")).toString("utf8"))["web"]["image"]["repository"]);
-            return { "doCommit": false };
-        })
-    });
-    return dOut.pr;
-}
-function getShaBranchName(params) {
-    const { repository, github_token, sha, log } = params;
-    const dOut = new Deferred_1.Deferred();
-    (0, gitClone_1.gitClone)({
-        log,
-        repository,
-        "token": github_token,
-        "ref": sha,
-        "action": ({ repoPath }) => __awaiter(this, void 0, void 0, function* () {
-            yield (0, exec_2.exec)("git fetch origin", { "cwd": repoPath });
-            const output = (yield (0, exec_2.exec)(`git for-each-ref --contains ${sha} refs/`, { "cwd": repoPath })).trim();
-            const split = output.split("/origin/");
-            (0, assert_1.assert)(split.length === 2, "Something went wrong trying to get the branch name");
-            dOut.resolve(split[1]);
-            return { "doCommit": false };
-        })
-    }).catch(error => dOut.reject(error));
-    return dOut.pr;
-}
+exports.updateChartReadme = updateChartReadme;
 
 
 /***/ }),
@@ -1048,62 +1205,6 @@ var SemVer;
 
 /***/ }),
 
-/***/ 1021:
-/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
-
-"use strict";
-
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
-Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.computeDirectoryDigest = void 0;
-const crawl_1 = __nccwpck_require__(4834);
-const crypto = __importStar(__nccwpck_require__(6113));
-const path_1 = __nccwpck_require__(1017);
-const fs = __importStar(__nccwpck_require__(7147));
-function computeDirectoryDigest(params) {
-    const { dirPath } = params;
-    return (0, crawl_1.crawl)({
-        dirPath,
-        "returnedPathsType": "relative to dirPath"
-    })
-        .sort()
-        .map(relativeFilePath => ({
-        relativeFilePath,
-        "contentBuffer": fs.readFileSync((0, path_1.join)(dirPath, relativeFilePath))
-    }))
-        .map(({ relativeFilePath, contentBuffer }) => crypto
-        .createHash("sha1")
-        .update(`${relativeFilePath}:${contentBuffer.toString("utf8")}}`)
-        .digest("hex"))
-        .join("|");
-}
-exports.computeDirectoryDigest = computeDirectoryDigest;
-
-
-/***/ }),
-
 /***/ 4834:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
@@ -1232,6 +1333,50 @@ function createLoggedExec(params) {
     };
 }
 exports.createLoggedExec = createLoggedExec;
+
+
+/***/ }),
+
+/***/ 1474:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.getShaBranchName = void 0;
+const assert_1 = __nccwpck_require__(8078);
+const gitClone_1 = __nccwpck_require__(5450);
+const Deferred_1 = __nccwpck_require__(689);
+const exec_1 = __nccwpck_require__(4269);
+function getShaBranchName(params) {
+    const { repository, github_token, sha, log } = params;
+    const dOut = new Deferred_1.Deferred();
+    (0, gitClone_1.gitClone)({
+        log,
+        repository,
+        "token": github_token,
+        "ref": sha,
+        "action": ({ repoPath }) => __awaiter(this, void 0, void 0, function* () {
+            yield (0, exec_1.exec)("git fetch origin", { "cwd": repoPath });
+            const output = (yield (0, exec_1.exec)(`git for-each-ref --contains ${sha} refs/`, { "cwd": repoPath })).trim();
+            const split = output.split("/origin/");
+            (0, assert_1.assert)(split.length === 2, "Something went wrong trying to get the branch name");
+            dOut.resolve(split[1]);
+            return { "doCommit": false };
+        })
+    }).catch(error => dOut.reject(error));
+    return dOut.pr;
+}
+exports.getShaBranchName = getShaBranchName;
 
 
 /***/ }),
