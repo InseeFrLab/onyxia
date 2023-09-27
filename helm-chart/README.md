@@ -22,7 +22,7 @@ ingress:
     - host: datalab.my-domain.net
 EOF
 
-helm install onyxia onyxia/onyxia --version "4.1.1" -f onyxia-values.yaml
+helm install onyxia onyxia/onyxia --version "4.1.2" -f onyxia-values.yaml
 ```
 
 ### Using the Keycloak Theme (Optional)
