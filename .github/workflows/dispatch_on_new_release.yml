@@ -1,10 +1,10 @@
 on:
-  release:
-    types:
-      - created  
-
+   release:
+     types:
+       - created  
+  
 jobs:
-
+  
   notify_paris_sspcloud:
     runs-on: ubuntu-latest
     steps:
@@ -12,5 +12,5 @@ jobs:
       with:
         repository: InseeFrLab/paris-sspcloud
         event-type: onyxia_release
-        client-payload: '{"tag_name": "${{github.event.release.tag_name}}"}'
+        client-payload: '{"release_tag_name": "${{github.event.release.tag_name}}"}'
         token: ${{secrets.PAT_FOR_REPOSITORY_DISPATCH}}
