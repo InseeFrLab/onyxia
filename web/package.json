@@ -6,7 +6,7 @@
     "scripts": {
         "_comment": "Yes... We're still using CRA. We'll migrate to Vite as soon as Keycloakify gets support for it",
         "start": "react-app-rewired start",
-        "build": "react-app-rewired build yarn",
+        "build": "react-app-rewired build",
         "build-keycloak-theme": "yarn build && keycloakify",
         "storybook": "start-storybook -p 6006",
         "postinstall": "cp -rf .compatibility/fs node_modules/ && generate-env-getter && copy-keycloak-resources-to-public",

@@ -7,6 +7,7 @@ This file is picked up by react-app-rewired that we use in place or react-script
 // This is an webpack extension to detect circular import (example:  A imports B that imports A)
 const CircularDependencyPlugin = require("circular-dependency-plugin");
 const { DefinePlugin, ProvidePlugin } = require("webpack");
+const YAML = require("yaml");
 
 module.exports = function override(config) {
     if (!config.resolve.fallback) {
@@ -42,7 +43,16 @@ module.exports = function override(config) {
             }),
             new DefinePlugin({
                 // This let us display the version number in the footer of the app.
-                "process.env.VERSION": JSON.stringify(process.env.npm_package_version),
+                "process.env.CHART_VERSION": (()=>{
+                    const { CHART_VERSION } = process.env;
+
+                    if( CHART_VERSION === undefined ){
+                        return '""';
+                    }
+
+                    return JSON.stringify(process.env.CHART_VERSION);
+
+                })()
             }),
         ],
     );

@@ -309,7 +309,7 @@ function ContextualizedApp() {
             <Footer
                 className={classes.footer}
                 //NOTE: Defined in ./config-overrides.js
-                packageJsonVersion={process.env.VERSION!}
+                chartVersion={process.env.CHART_VERSION || undefined}
                 contributeUrl={"https://github.com/inseefrlab/onyxia"}
                 termsLink={routes.terms().link}
             />

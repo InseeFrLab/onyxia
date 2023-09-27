@@ -10,12 +10,12 @@ import type { Link } from "type-route";
 export type Props = {
     className?: string;
     contributeUrl: string;
-    packageJsonVersion: string;
+    chartVersion: string | undefined;
     termsLink: Link;
 };
 
 export const Footer = memo((props: Props) => {
-    const { className, contributeUrl, packageJsonVersion, termsLink } = props;
+    const { className, contributeUrl, chartVersion, termsLink } = props;
 
     const { classes, cx } = useStyles(props);
 
@@ -52,13 +52,15 @@ export const Footer = memo((props: Props) => {
                 <Text typo="body 2">{t("terms of service")}</Text>{" "}
             </a>
             {spacing}
-            <a
-                href={`https://github.com/inseefrlab/onyxia/tree/v${packageJsonVersion}`}
-                target="_blank"
-                rel="noreferrer"
-            >
-                <Text typo="body 2">v{packageJsonVersion} </Text>
-            </a>
+            {chartVersion !== undefined && (
+                <a
+                    href={`https://github.com/InseeFrLab/onyxia/tree/${chartVersion}/helm-chart`}
+                    target="_blank"
+                    rel="noreferrer"
+                >
+                    <Text typo="body 2">v{chartVersion} </Text>
+                </a>
+            )}
             {spacing}
             <DarkModeSwitch
                 size="extra small"

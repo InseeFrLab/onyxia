@@ -11,7 +11,7 @@ const { meta, getStory } = getStoryFactory({
 export default meta;
 
 export const View1 = getStory({
-    "packageJsonVersion": "0.9.3",
+    "chartVersion": "4.1.1",
     "contributeUrl": "#",
     "termsLink": {
         "href": "https://example.com",
