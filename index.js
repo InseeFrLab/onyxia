@@ -688,25 +688,26 @@ exports.readVersions = readVersions;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.updateChartReadme = void 0;
 const SemVer_1 = __nccwpck_require__(5078);
+const updateUrl_1 = __nccwpck_require__(9745);
 function updateChartReadme(params) {
     let { readmeText, apiVersionTag, targetChartVersion } = params;
-    readmeText = updateUrl({
+    readmeText = (0, updateUrl_1.updateUrl)({
         "text": readmeText,
         "getUrl": tagName => `https://github.com/InseeFrLab/onyxia-api/blob/${tagName}/README.md#configuration`,
         "tagName": apiVersionTag
     });
     const onyxiaTag = `v${SemVer_1.SemVer.stringify(targetChartVersion)}`;
-    readmeText = updateUrl({
+    readmeText = (0, updateUrl_1.updateUrl)({
         "text": readmeText,
         "getUrl": tagName => `https://github.com/InseeFrLab/onyxia/blob/${tagName}/web/.env`,
         "tagName": onyxiaTag
     });
-    readmeText = updateUrl({
+    readmeText = (0, updateUrl_1.updateUrl)({
         "text": readmeText,
         "getUrl": tagName => `https://github.com/InseeFrLab/onyxia/releases/download/${tagName}/keycloak-theme.jar`,
         "tagName": onyxiaTag
     });
-    readmeText = updateUrl({
+    readmeText = (0, updateUrl_1.updateUrl)({
         "text": readmeText,
         "getUrl": tagName => `https://github.com/InseeFrLab/onyxia/blob/v${tagName}/src/core/ports/OnyxiaApi/XOnyxia.ts`,
         "tagName": onyxiaTag
@@ -716,12 +717,6 @@ function updateChartReadme(params) {
     return readmeText;
 }
 exports.updateChartReadme = updateChartReadme;
-function updateUrl(params) {
-    const { text, getUrl, tagName } = params;
-    const uniqueId = "xKMdKx9dMxK*{#++";
-    const [p1, p2] = getUrl(uniqueId).split(uniqueId);
-    return text.replace(new RegExp(`(${p1.replace("/", "\\/")})[^\\/]+(${p2.replace("/", "\\/")})`, "g"), (...[, p1, p2]) => `${p1}${tagName}${p2}`);
-}
 
 
 /***/ }),
@@ -1808,6 +1803,24 @@ function transformCodebase(params) {
     }
 }
 exports.transformCodebase = transformCodebase;
+
+
+/***/ }),
+
+/***/ 9745:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.updateUrl = void 0;
+function updateUrl(params) {
+    const { text, getUrl, tagName } = params;
+    const uniqueId = "xKMdKx9dMxK*{#++";
+    const [p1, p2] = getUrl(uniqueId).split(uniqueId);
+    return text.replace(new RegExp(`(${p1.replace("/", "\\/")})[^\\/]+(${p2.replace("/", "\\/")})`, "g"), (...[, p1, p2]) => `${p1}${tagName}${p2}`);
+}
+exports.updateUrl = updateUrl;
 
 
 /***/ }),
