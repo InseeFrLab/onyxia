@@ -1,4 +1,5 @@
 import { SemVer } from "../../tools/SemVer";
+import * as fs from "fs";
 
 export function updateChartReadme(
     params: {
@@ -10,29 +11,31 @@ export function updateChartReadme(
 
     let { readmeText, apiVersionTag, targetChartVersion } = params;
 
-    readmeText =
-        readmeText.replace(
-            /(https:\/\/github\.com\/[^\/]+\/[^\/]+\/blob\/)([^\/]+)(\/README\.md#configuration)/g,
-            (...[, p1, , p3]) => `${p1}${apiVersionTag}${p3}`
-        );
+    readmeText = updateUrl({
+        "text": readmeText,
+        "getUrl": tagName => `https://github.com/InseeFrLab/onyxia-api/blob/${tagName}/README.md#configuration`,
+        "tagName": apiVersionTag
+    });
 
-    readmeText =
-        readmeText.replace(
-            /(https:\/\/github\.com\/[\/]+\/[\/]+\/blob\/)([^\/]+)(\/\.env)/g,
-            (...[, p1, , p3]) => `${p1}v${SemVer.stringify(targetChartVersion)}${p3}`
-        );
+    const onyxiaTag = `v${SemVer.stringify(targetChartVersion)}`;
 
-    readmeText =
-        readmeText.replace(
-            /(https:\/\/github\.com\/[\/]+\/[\/]+\/blob\/)([^\/]+)(\/src\/core\/ports\/OnyxiaApi\/XOnyxia\.ts)/g,
-            (...[, p1, , p3]) => `${p1}v${SemVer.stringify(targetChartVersion)}${p3}`
-        );
+    readmeText = updateUrl({
+        "text": readmeText,
+        "getUrl": tagName => `https://github.com/InseeFrLab/onyxia/blob/${tagName}/web/.env`,
+        "tagName": onyxiaTag
+    });
 
-    readmeText =
-        readmeText.replace(
-            /(https:\/\/github\.com\/[\/]+\/[\/]+\/release\/download\/)([^\/]+)(\/keycloak-theme\.jar)/g,
-            (...[, p1, , p3]) => `${p1}v${SemVer.stringify(targetChartVersion)}${p3}`
-        );
+    readmeText = updateUrl({
+        "text": readmeText,
+        "getUrl": tagName => `https://github.com/InseeFrLab/onyxia/releases/download/${tagName}/keycloak-theme.jar`,
+        "tagName": onyxiaTag
+    });
+
+    readmeText = updateUrl({
+        "text": readmeText,
+        "getUrl": tagName => `https://github.com/InseeFrLab/onyxia/blob/v${tagName}/src/core/ports/OnyxiaApi/XOnyxia.ts`,
+        "tagName": onyxiaTag
+    });
 
     readmeText =
         readmeText.replace(
@@ -41,5 +44,27 @@ export function updateChartReadme(
         );
 
     return readmeText;
+
+}
+
+function updateUrl(
+    params: {
+        text: string;
+        getUrl: (tagName: string) => string;
+        tagName: string;
+    }
+): string {
+
+    const { text, getUrl, tagName } = params;
+
+    const uniqueId = "xKMdKx9dMxK*{#++";
+
+    const [p1, p2] = getUrl(uniqueId).split(uniqueId);
+
+    return text.replace(
+        new RegExp(
+            `(${p1.replace("/", "\\/")})[^\\/]+(${p2.replace("/", "\\/")})`, "g"),
+        (...[, p1, p2]) => `${p1}${tagName}${p2}`
+    );
 
 }

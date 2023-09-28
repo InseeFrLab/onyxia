@@ -16,7 +16,6 @@ const { getActionParams } = getActionParamsFactory({
 
 type Params = ReturnType<typeof getActionParams>;
 
-
 /** 
  * Will generate a onyxia-<version>.tgz file in the current working directory 
  * and update or create the index.yaml file in the gh-pages branch of the repository.
