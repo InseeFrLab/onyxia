@@ -849,7 +849,10 @@ function _run(params) {
                 return { "doCommit": false };
             })
         });
-        (0, assert_1.assert)(ghPagesSha !== undefined);
+        if (ghPagesSha === undefined) {
+            log("The gh-pages branch is already up to date...");
+            return;
+        }
         log("Waiting for deployment GitHub Pages deployment...");
         yield (0, waitForDeployment_1.waitForDeployment)({
             "environment": "github-pages",
