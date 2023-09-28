@@ -709,7 +709,7 @@ function updateChartReadme(params) {
     });
     readmeText = (0, updateUrl_1.updateUrl)({
         "text": readmeText,
-        "getUrl": tagName => `https://github.com/InseeFrLab/onyxia/blob/v${tagName}/src/core/ports/OnyxiaApi/XOnyxia.ts`,
+        "getUrl": tagName => `https://github.com/InseeFrLab/onyxia/blob/${tagName}/src/core/ports/OnyxiaApi/XOnyxia.ts`,
         "tagName": onyxiaTag
     });
     readmeText =
