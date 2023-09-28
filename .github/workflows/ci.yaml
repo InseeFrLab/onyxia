@@ -98,6 +98,10 @@ jobs:
         with: 
           action_name: release_helm_chart
           sha: ${{needs.prepare_release.outputs.target_commit}}
+      - uses: SFDigitalServices/wait-for-deployment-action@v1
+        with:
+          github-token: ${{github.token}}
+          environment: github-pages
       - uses: softprops/action-gh-release@v1
         with:
           name: ${{needs.prepare_release.outputs.release_name}}
