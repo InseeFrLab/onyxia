@@ -23,7 +23,8 @@
     "scripting-tools": "^0.19.14",
     "tsafe": "^1.6.5",
     "url-join": "^4.0.1",
-    "yaml": "^2.3.2"
+    "yaml": "^2.3.2",
+    "@actions/github": "^5.1.1"
   },
   "devDependencies": {
     "@types/node": "^20.6.2",

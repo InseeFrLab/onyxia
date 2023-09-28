@@ -7,6 +7,7 @@ import { gitClone } from "../tools/gitClone";
 import { exec } from "../tools/exec";
 import fetch from "node-fetch";
 import { installHelm } from "../tools/installHelm";
+import { waitForDeployment } from "../tools/waitForDeployment";
 
 export const helmChartDirBasename = "helm-chart";
 
@@ -48,7 +49,7 @@ export async function _run(
 
     const repository = `${owner}/${repo}` as const;
 
-    await gitClone({
+    const { sha: ghPagesSha } = await gitClone({
         log,
         repository,
         "ref": sha,
@@ -141,6 +142,20 @@ export async function _run(
             return { "doCommit": false };
 
         }
+    });
+
+    assert(ghPagesSha !== undefined);
+
+    log("Waiting for deployment GitHub Pages deployment...");
+
+    await waitForDeployment({
+        "environment": "github-pages",
+        log,
+        owner,
+        repo,
+        "sha": ghPagesSha,
+        "timeoutSeconds": 5* 60,
+        "token": github_token
     });
 
 }
