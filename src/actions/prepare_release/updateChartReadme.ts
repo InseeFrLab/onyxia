@@ -33,7 +33,7 @@ export function updateChartReadme(
 
     readmeText = updateUrl({
         "text": readmeText,
-        "getUrl": tagName => `https://github.com/InseeFrLab/onyxia/blob/v${tagName}/src/core/ports/OnyxiaApi/XOnyxia.ts`,
+        "getUrl": tagName => `https://github.com/InseeFrLab/onyxia/blob/${tagName}/src/core/ports/OnyxiaApi/XOnyxia.ts`,
         "tagName": onyxiaTag
     });
 
