@@ -67,7 +67,7 @@ jobs:
           push: true
           context: .
           tags: ${{needs.prepare_release.outputs.new_web_docker_image_tags}}
-          build-args: CHART_VERSION="${{needs.prepare_release.outputs.new_chart_version}}"
+          build-args: CHART_VERSION=${{needs.prepare_release.outputs.new_chart_version}}
 
   
   release:
