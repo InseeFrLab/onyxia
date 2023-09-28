@@ -144,7 +144,10 @@ export async function _run(
         }
     });
 
-    assert(ghPagesSha !== undefined);
+    if( ghPagesSha === undefined ){
+        log("The gh-pages branch is already up to date...");
+        return;
+    }
 
     log("Waiting for deployment GitHub Pages deployment...");
 
