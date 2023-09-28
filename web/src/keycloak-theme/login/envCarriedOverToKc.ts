@@ -107,9 +107,9 @@ const { HEADER_USECASE_DESCRIPTION, injectHEADER_USECASE_DESCRIPTIONInSearchPara
 
 export { HEADER_USECASE_DESCRIPTION };
 
-const { THERMS_OF_SERVICES, injectTHERMS_OF_SERVICESInSearchParams } = getTransferableEnv(
+const { TERMS_OF_SERVICES, injectTERMS_OF_SERVICESInSearchParams } = getTransferableEnv(
     {
-        "name": "THERMS_OF_SERVICES" as const,
+        "name": "TERMS_OF_SERVICES" as const,
         "getSerializedValueFromEnv": () => getEnv().TERMS_OF_SERVICES,
         "validateAndParseOrGetDefault": (
             valueStr
@@ -149,7 +149,7 @@ const { THERMS_OF_SERVICES, injectTHERMS_OF_SERVICESInSearchParams } = getTransf
                 languages.forEach(lang =>
                     assert(
                         typeof tosUrlByLng[lang] === "string",
-                        `therms of service malformed (${lang})`
+                        `terms of service malformed (${lang})`
                     )
                 );
             }
@@ -163,7 +163,7 @@ const { THERMS_OF_SERVICES, injectTHERMS_OF_SERVICESInSearchParams } = getTransf
     }
 );
 
-export { THERMS_OF_SERVICES };
+export { TERMS_OF_SERVICES };
 
 export function injectTransferableEnvsInSearchParams(url: string): string {
     let newUrl = url;
@@ -172,7 +172,7 @@ export function injectTransferableEnvsInSearchParams(url: string): string {
         injectTHEME_IDInSearchParams,
         injectHEADER_ORGANIZATIONInSearchParams,
         injectHEADER_USECASE_DESCRIPTIONInSearchParams,
-        injectTHERMS_OF_SERVICESInSearchParams,
+        injectTERMS_OF_SERVICESInSearchParams,
         injectPALETTE_OVERRIDEInSearchParams
     ]) {
         newUrl = inject(newUrl);
