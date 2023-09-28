@@ -1,7 +1,7 @@
 import "minimal-polyfills/Object.fromEntries";
 import { useMemo, useEffect, useReducer, Suspense } from "react";
 import { Header } from "ui/shared/Header";
-import { tss, LeftBar, type IconId } from "ui/theme";
+import { tss, useStyles as useCss, LeftBar, type IconId } from "ui/theme";
 import type { LeftBarProps } from "onyxia-ui/LeftBar";
 import { Footer } from "./Footer";
 import { useTranslation, useResolveLocalizedString } from "ui/i18n";
@@ -350,7 +350,6 @@ const useStyles = tss.withName({ App }).create(({ theme }) => {
     return {
         "root": {
             "height": "100%",
-            "overflow": "hidden",
             "display": "flex",
             "flexDirection": "column",
             "backgroundColor": theme.colors.useCases.surfaces.background,
@@ -360,7 +359,8 @@ const useStyles = tss.withName({ App }).create(({ theme }) => {
         "globalAlert": {
             "position": "relative",
             "width": `calc(100% + 2 * ${rootRightLeftMargin}px)`,
-            "left": -rootRightLeftMargin
+            "left": -rootRightLeftMargin,
+            "marginBottom": theme.spacing(1)
         },
         "header": {
             "paddingBottom": 0 //For the LeftBar shadow
@@ -441,6 +441,8 @@ const { GlobalAlert } = (() => {
             return value === "true";
         }, [localStorageKey, trigger]);
 
+        const { css, theme } = useCss();
+
         return (
             <Alert
                 className={className}
@@ -456,7 +458,15 @@ const { GlobalAlert } = (() => {
                     const { str, langAttrValue } =
                         resolveLocalizedStringDetailed(message);
 
-                    const markdownNode = <Markdown>{str}</Markdown>;
+                    const markdownNode = (
+                        <Markdown
+                            className={css({
+                                "&>p": { ...theme.spacing.topBottom("margin", 2) }
+                            })}
+                        >
+                            {str}
+                        </Markdown>
+                    );
 
                     return langAttrValue === undefined ? (
                         markdownNode
