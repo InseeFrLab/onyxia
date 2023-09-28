@@ -112,7 +112,7 @@ export const translations: Translations<"en"> = {
         "page title - my secrets": "My Secrets",
         "what this page is used for - my files": "Here you can browse your S3 Buckets.",
         "what this page is used for - my secrets":
-            "Here can be defined variables that will be accessible in you services under the form of environnement variable.",
+            "Here can be defined variables that will be accessible in your services under the form of environnement variables.",
         "help content": ({ accountTabLink, docHref }) => (
             <>
                 Read{" "}
@@ -129,7 +129,7 @@ export const translations: Translations<"en"> = {
         "page title - my secrets": "My Secrets",
         "what this page is used for - my files": "Here you can browse your S3 Buckets.",
         "what this page is used for - my secrets":
-            "Here can be defined variables that will be accessible in you services under the form of environnement variable.",
+            "Here can be defined variables that will be accessible in your services under the form of environnement variables.",
         "learn more - my files": "To learn more about file management,",
         "help content": ({ accountTabLink, docHref }) => (
             <>
