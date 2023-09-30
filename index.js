@@ -793,7 +793,8 @@ function _run(params) {
         log(JSON.stringify(params, null, 2));
         yield (0, installHelm_1.installHelm)();
         const repository = `${owner}/${repo}`;
-        const { sha: ghPagesSha } = yield (0, gitClone_1.gitClone)({
+        let ghPagesCommitSha = undefined;
+        (0, gitClone_1.gitClone)({
             log,
             repository,
             "ref": sha,
@@ -829,7 +830,7 @@ function _run(params) {
                     const basename = `onyxia-${chartVersion}.tgz`;
                     fs.copyFileSync((0, path_1.join)(outDirPath, basename), (0, path_1.join)(process.cwd(), basename));
                 }
-                yield (0, gitClone_1.gitClone)({
+                const { sha } = yield (0, gitClone_1.gitClone)({
                     log,
                     repository,
                     "ref": "gh-pages",
@@ -845,11 +846,12 @@ function _run(params) {
                         };
                     })
                 });
+                ghPagesCommitSha = sha;
                 yield fs.promises.rm(outDirPath, { "recursive": true, "force": true });
                 return { "doCommit": false };
             })
         });
-        if (ghPagesSha === undefined) {
+        if (ghPagesCommitSha === undefined) {
             log("The gh-pages branch is already up to date...");
             return;
         }
@@ -859,7 +861,7 @@ function _run(params) {
             log,
             owner,
             repo,
-            "sha": ghPagesSha,
+            "sha": ghPagesCommitSha,
             "timeoutSeconds": 5 * 60,
             "token": github_token
         });
