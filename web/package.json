@@ -14,8 +14,7 @@
         "_format": "prettier '**/*.{ts,tsx,json,md}'",
         "format": "yarn _format --write",
         "format:check": "yarn _format --list-different",
-        "emails-domain-accept-list-helper": "ts-node --skip-project src/bin/emails-domain-accept-list-helper.ts",
-        "update-api": "bash src/bin/update-api.sh"
+        "emails-domain-accept-list-helper": "ts-node --skip-project src/bin/emails-domain-accept-list-helper.ts"
     },
     "keycloakify": {
         "themeName": "onyxia"
