@@ -49,7 +49,9 @@ export async function _run(
 
     const repository = `${owner}/${repo}` as const;
 
-    const { sha: ghPagesSha } = await gitClone({
+    let ghPagesCommitSha: string | undefined= undefined;
+
+    gitClone({
         log,
         repository,
         "ref": sha,
@@ -116,7 +118,7 @@ export async function _run(
 
             }
 
-            await gitClone({
+            const { sha } = await gitClone({
                 log,
                 repository,
                 "ref": "gh-pages",
@@ -137,6 +139,8 @@ export async function _run(
                 }
             });
 
+            ghPagesCommitSha = sha;
+
             await fs.promises.rm(outDirPath, { "recursive": true, "force": true });
 
             return { "doCommit": false };
@@ -144,7 +148,7 @@ export async function _run(
         }
     });
 
-    if( ghPagesSha === undefined ){
+    if( ghPagesCommitSha === undefined ){
         log("The gh-pages branch is already up to date...");
         return;
     }
@@ -156,7 +160,7 @@ export async function _run(
         log,
         owner,
         repo,
-        "sha": ghPagesSha,
+        "sha": ghPagesCommitSha,
         "timeoutSeconds": 5* 60,
         "token": github_token
     });
