@@ -161,6 +161,8 @@ export async function _run(
         "token": github_token
     });
 
+    log("The gh-pages files are now live!");
+
 }
 
 export async function run() {
