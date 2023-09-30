@@ -7986,6 +7986,15 @@ evt@^2.5.2:
     run-exclusive "^2.2.19"
     tsafe "^1.6.4"
 
+evt@^2.5.3:
+  version "2.5.3"
+  resolved "https://registry.yarnpkg.com/evt/-/evt-2.5.3.tgz#eda564afdda6dfe1da687bb54933706af3f844d6"
+  integrity sha512-wZKx0JgXaTOVOXI2saNVxINU6VToOHDowMwb3NRcU6l+C59eW3w9dZgNxjokiM8rvMgc7/11yFG0cSDxn4qxgA==
+  dependencies:
+    minimal-polyfills "^2.2.3"
+    run-exclusive "^2.2.19"
+    tsafe "^1.6.5"
+
 exec-sh@^0.3.2:
   version "0.3.6"
   resolved "https://registry.yarnpkg.com/exec-sh/-/exec-sh-0.3.6.tgz#ff264f9e325519a60cb5e273692943483cca63bc"
@@ -13167,12 +13176,12 @@ powerhooks@^1.0.1:
     memoizee "^0.4.15"
     tsafe "^1.6.4"
 
-powerhooks@^1.0.2:
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/powerhooks/-/powerhooks-1.0.2.tgz#cd4061c6f7b2288894f9d6c63a07f041f94eab97"
-  integrity sha512-fQZT8WaP8DSFFbSB8Z2xdMXpFBFNDgQo+qeF4yt23Qr154wYyF7u2j8MO8Jm6pmoQnQgeS2B4r8l1dIER9TMmQ==
+powerhooks@^1.0.3:
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/powerhooks/-/powerhooks-1.0.3.tgz#b5ab065d663f4ac03c9fa1638f9c0aa70ab09454"
+  integrity sha512-zvakanvHYkkbsnfOJmMKHV0jtCfgRF1ji37BPjX6/JA8jAiqkVm1OWlis2l+pK0mvEpOz7boZounD0/AxD5sSA==
   dependencies:
-    evt "^2.5.2"
+    evt "^2.5.3"
     memoizee "^0.4.15"
     tsafe "^1.6.5"
 
@@ -13858,10 +13867,10 @@ redent@^1.0.0:
     indent-string "^2.1.0"
     strip-indent "^1.0.1"
 
-redux-clean-architecture@^3.7.3:
-  version "3.7.3"
-  resolved "https://registry.yarnpkg.com/redux-clean-architecture/-/redux-clean-architecture-3.7.3.tgz#7da79025ac0e7660e631eddf123e82032e98b7cc"
-  integrity sha512-tuvoOOmfHtaq2Uf0qdbldHLOmj/D+xsyQSXYk934omK8j+poavWtx/VNpp+VkJvvsdhx9eToCwXHZ5jKxJilbQ==
+redux-clean-architecture@^3.7.4:
+  version "3.7.4"
+  resolved "https://registry.yarnpkg.com/redux-clean-architecture/-/redux-clean-architecture-3.7.4.tgz#312574c6cbbc0e6b79a4b14532223579db94aea8"
+  integrity sha512-SQmzU/UZRdWw+EuXpU97QfTmRWBs7ygCoEHG5iy9G/QPJG1iaRxxhh03B4/IScdHE7L1CJa+WxG3ddUNy761bg==
   dependencies:
     minimal-polyfills "^2.2.3"
     tsafe "^1.6.5"
