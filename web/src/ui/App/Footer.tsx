@@ -54,7 +54,7 @@ export const Footer = memo((props: Props) => {
             {spacing}
             {chartVersion !== undefined && (
                 <a
-                    href={`https://github.com/InseeFrLab/onyxia/tree/${chartVersion}/helm-chart`}
+                    href={`https://github.com/InseeFrLab/onyxia/tree/v${chartVersion}/helm-chart`}
                     target="_blank"
                     rel="noreferrer"
                 >
