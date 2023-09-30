@@ -863,6 +863,7 @@ function _run(params) {
             "timeoutSeconds": 5 * 60,
             "token": github_token
         });
+        log("The gh-pages files are now live!");
     });
 }
 exports._run = _run;
