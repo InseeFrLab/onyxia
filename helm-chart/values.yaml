@@ -48,7 +48,7 @@ web:
   replicaCount: 1
   image:
     repository: inseefrlab/onyxia-web
-    tag: 2.29.6
+    tag: 2.29.7
     pullPolicy: IfNotPresent
   podLabels: {}
   podSecurityContext: {} # fsGroup: 2000
