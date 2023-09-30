@@ -27,7 +27,6 @@ jobs:
       - run: npx keycloakify
         env:
           XDG_CACHE_HOME: "/home/runner/.cache/yarn"
-      - run: npx build-storybook
   
   prepare_release:
     needs: test
