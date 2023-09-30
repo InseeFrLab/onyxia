@@ -109,4 +109,4 @@ jobs:
             keycloak-theme.jar
             onyxia-${{needs.prepare_release.outputs.new_chart_version}}.tgz
         env:
-          GITHUB_TOKEN: ${{github.token}}
+          GITHUB_TOKEN: ${{secrets.MY_TOKEN}}
