@@ -75,7 +75,7 @@ export function readVersions(
 
                     log("before git tag --contains HEAD");
 
-                    const output = (await exec("git tag --contains HEAD", { "cwd": apiSubmoduleDirPath })).split("\n").reverse()[0];
+                    const output = (await exec("git tag --contains HEAD", { "cwd": apiSubmoduleDirPath })).split("\n").map(x=>x.trim()).filter(x=>x !== "").reverse()[0];
 
                     log(`========>${output}<========`);
                     log(`trimed========>${output.trim()}<========`);
