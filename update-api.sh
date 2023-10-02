@@ -41,17 +41,6 @@ cd ..
 # Add the submodule change
 git add $API_SUBMODULE
 
-# Ask for user confirmation
-read -p "Do you want to pin onyxia-api to $latestTag (Currently pinned is $currentTag)? " \
-"This will trigger a new release of the Onyxia Helm Chart once pushed. " \
-"Press 'y' then Enter to confirm: " -n 1 -r
-echo  # Move to a new line
-
-if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-  echo "Abort. Changes not committed."
-  exit 1
-fi
-
 # Commit the update
 git commit -m "Bump onyxia-api pin to $latestTag (previously pinned to $currentTag)"
 
