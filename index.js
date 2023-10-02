@@ -665,9 +665,14 @@ function readVersions(params) {
                     const apiSubmoduleDirPath = (0, path_1.join)(repoPath, "api");
                     yield exec("git submodule update --init --recursive", { "cwd": repoPath });
                     yield exec("git fetch --tags", { "cwd": apiSubmoduleDirPath });
-                    yield exec("git rev-parse HEAD", { "cwd": apiSubmoduleDirPath });
+                    //await exec("git rev-parse HEAD", { "cwd": apiSubmoduleDirPath });
+                    log("before git tag --contains HEAD");
                     const output = yield exec("git tag --contains HEAD", { "cwd": apiSubmoduleDirPath });
-                    return SemVer_1.SemVer.parse(output.trim());
+                    log(`========>${output}<========`);
+                    log(`trimed========>${output.trim()}<========`);
+                    const out = SemVer_1.SemVer.parse(output.trim());
+                    log("sucessfully parsed");
+                    return out;
                 }))()
             });
             return { "doCommit": false };
