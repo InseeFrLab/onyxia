@@ -71,11 +71,10 @@ export function readVersions(
 
                     await exec("git fetch --tags", { "cwd": apiSubmoduleDirPath });
 
-                    //await exec("git rev-parse HEAD", { "cwd": apiSubmoduleDirPath });
+                    const x = await exec("git rev-parse HEAD", { "cwd": apiSubmoduleDirPath });
 
-                    log("before git tag --contains HEAD");
 
-                    const output = (await exec("git tag --contains HEAD", { "cwd": apiSubmoduleDirPath })).split("\n").map(x=>x.trim()).filter(x=>x !== "").reverse()[0];
+                    const output = (await exec(`git tag --contains ${x}`, { "cwd": apiSubmoduleDirPath })).split("\n").map(x=>x.trim()).filter(x=>x !== "").reverse()[0];
 
                     log(`========>${output}<========`);
                     log(`trimed========>${output.trim()}<========`);
