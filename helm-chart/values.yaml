@@ -89,7 +89,7 @@ api:
   replicaCount: 1
   image:
     repository: inseefrlab/onyxia-api
-    tag: v0.30
+    tag: v0.31
     pullPolicy: IfNotPresent
   contextPath: /api
   podLabels: {}
