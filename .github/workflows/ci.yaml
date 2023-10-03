@@ -36,6 +36,8 @@ jobs:
           action_name: checkout
           sub_directory: helm-chart
       - uses: azure/setup-helm@v3.5
+        with:
+          token: ${{github.token}}
       - run: helm lint .
   
   prepare_release:
@@ -50,6 +52,7 @@ jobs:
       release_body: ${{steps._.outputs.release_body}}
       release_tag_name: ${{steps._.outputs.release_tag_name}}
       target_commit: ${{steps._.outputs.target_commit}}
+      web_tag_name: ${{steps._.outputs.web_tag_name}}
     steps:
       # NOTE: The code for this action is in the gh-actions branch of this repo
       - uses: InseeFrLab/onyxia@gh-actions
@@ -108,6 +111,12 @@ jobs:
         with: 
           action_name: release_helm_chart
           sha: ${{needs.prepare_release.outputs.target_commit}}
+      - uses: rickstaa/action-create-tag@v1
+        if: needs.prepare_release.outputs.web_tag_name != ''
+        with:
+          tag: ${{needs.prepare_release.outputs.web_tag_name}}
+          commit_sha: ${{needs.prepare_release.outputs.target_commit}}
+          github_token: ${{github.token}}
       - uses: softprops/action-gh-release@v1
         with:
           name: ${{needs.prepare_release.outputs.release_name}}
@@ -119,5 +128,5 @@ jobs:
             keycloak-theme.jar
             onyxia-${{needs.prepare_release.outputs.new_chart_version}}.tgz
         env:
-          # NOTE: We can't use github.token because it would not tirgger the dispatch workflow.
+          # NOTE: We can't use github.token because it would not trigger the dispatch workflow.
           GITHUB_TOKEN: ${{secrets.MY_GITHUB_TOKEN}}
