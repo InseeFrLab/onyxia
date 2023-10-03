@@ -38,23 +38,36 @@ permissions:
 
 jobs:
 
-  test:
+  test_web:
     runs-on: ubuntu-latest
     steps:
       - uses: InseeFrLab/onyxia@gh-actions
         with: 
           action_name: checkout
           sub_directory: web
-      - uses: actions/setup-node@v3
-      - uses: bahmutov/npm-install@v1
+      - uses: actions/setup-node@v3.8.1
+      - uses: bahmutov/npm-install@v1.8.35
       - run: yarn build
       - run: npx keycloakify
         env:
           XDG_CACHE_HOME: "/home/runner/.cache/yarn"
-      - run: npx build-storybook
+
+  test_helm-chart:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: InseeFrLab/onyxia@gh-actions
+        with: 
+          action_name: checkout
+          sub_directory: helm-chart
+      - uses: azure/setup-helm@v3.5
+        with:
+          token: ${{github.token}}
+      - run: helm lint .
   
   prepare_release:
-    needs: test
+    needs: 
+      - test_web
+      - test_helm-chart
     runs-on: ubuntu-latest
     outputs:
       new_web_docker_image_tags: ${{steps._.outputs.new_web_docker_image_tags}}
@@ -63,6 +76,7 @@ jobs:
       release_body: ${{steps._.outputs.release_body}}
       release_tag_name: ${{steps._.outputs.release_tag_name}}
       target_commit: ${{steps._.outputs.target_commit}}
+      web_tag_name: ${{steps._.outputs.web_tag_name}}
     steps:
       # NOTE: The code for this action is in the gh-actions branch of this repo
       - uses: InseeFrLab/onyxia@gh-actions
@@ -80,17 +94,19 @@ jobs:
           action_name: checkout
           sub_directory: web
           sha: ${{needs.prepare_release.outputs.target_commit}}
-      - uses: docker/setup-qemu-action@v1
-      - uses: docker/setup-buildx-action@v1
-      - uses: docker/login-action@v1
+      - uses: docker/setup-qemu-action@v3.0.0
+      - uses: docker/setup-buildx-action@v3.0.0
+      - uses: docker/login-action@v3.0.0
         with:
           username: ${{secrets.DOCKERHUB_USERNAME}}
           password: ${{secrets.DOCKERHUB_TOKEN}}
-      - uses: docker/build-push-action@v2
+      - uses: docker/build-push-action@v5.0.0
         with:
           push: true
           context: .
           tags: ${{needs.prepare_release.outputs.new_web_docker_image_tags}}
+          build-args: CHART_VERSION=${{needs.prepare_release.outputs.new_chart_version}}
+
   
   release:
     runs-on: ubuntu-latest
@@ -102,17 +118,16 @@ jobs:
           action_name: checkout
           sub_directory: web
           sha: ${{needs.prepare_release.outputs.target_commit}}
-      - uses: actions/setup-node@v3
-      - uses: bahmutov/npm-install@v1
+      - uses: actions/setup-node@v3.8.1
+      - uses: bahmutov/npm-install@v1.8.35
       - run: yarn build
       - run: npx keycloakify
         env:
           XDG_CACHE_HOME: "/home/runner/.cache/yarn"
           KEYCLOAKIFY_THEME_VERSION: ${{needs.prepare_release.outputs.new_chart_version}}
       - run: mv build_keycloak/target/*.jar keycloak-theme.jar
-      - uses: yogeshlonkar/wait-for-jobs@v0
+      - uses: yogeshlonkar/wait-for-jobs@v0.1.8
         with:
-          gh-token: ${{github.token}}
           ignore-skipped: true
           jobs: publish_web_docker_image
           ttl: 10
@@ -120,6 +135,12 @@ jobs:
         with: 
           action_name: release_helm_chart
           sha: ${{needs.prepare_release.outputs.target_commit}}
+      - uses: rickstaa/action-create-tag@v1
+        if: needs.prepare_release.outputs.web_tag_name != ''
+        with:
+          tag: ${{needs.prepare_release.outputs.web_tag_name}}
+          commit_sha: ${{needs.prepare_release.outputs.target_commit}}
+          github_token: ${{github.token}}
       - uses: softprops/action-gh-release@v1
         with:
           name: ${{needs.prepare_release.outputs.release_name}}
@@ -131,7 +152,8 @@ jobs:
             keycloak-theme.jar
             onyxia-${{needs.prepare_release.outputs.new_chart_version}}.tgz
         env:
-          GITHUB_TOKEN: ${{github.token}}
+          # NOTE: We can't use github.token because it would not trigger the dispatch workflow.
+          GITHUB_TOKEN: ${{secrets.MY_GITHUB_TOKEN}}
 ```
 
 

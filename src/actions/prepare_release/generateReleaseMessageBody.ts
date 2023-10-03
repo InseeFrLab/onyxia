@@ -25,7 +25,7 @@ export function generateReleaseMessageBody(params: {
 
 
     const getChartUrl = (version: SemVer) => `https://github.com/InseeFrLab/onyxia/tree/v${SemVer.stringify(version)}/helm-chart`;
-    const getWebUrl = (version: SemVer) => `https://github.com/InseeFrLab/onyxia/tree/v${SemVer.stringify(version)}/web`;
+    const getWebUrl = (version: SemVer) => `https://github.com/InseeFrLab/onyxia/tree/${getWebTagName(version)}/web`;
     const getApiUrl = (version: SemVer) => `https://github.com/InseeFrLab/onyxia-api/tree/${version.parsedFrom}`;
 
     const getPrettyBump = (versionBehind: SemVer, versionAhead: SemVer) => {
@@ -54,10 +54,10 @@ export function generateReleaseMessageBody(params: {
         ].join(" "),
         [
             `- 🖥️ Version of [\`inseefrlab/onyxia-web\`](https://hub.docker.com/r/inseefrlab/onyxia-web) pinned in the chart:`,
-            `**[\`${SemVer.stringify(webVersions.new)}\`](${getWebUrl(chartVersions.new)})**`,
+            `**[\`${SemVer.stringify(webVersions.new)}\`](${getWebUrl(webVersions.new)})**`,
             SemVer.compare(webVersions.previous, webVersions.new) === 0 ?
                 "(No bump since the previous release)" :
-                `*(${getPrettyBump(webVersions.previous, webVersions.new)} bump from [\`${SemVer.stringify(webVersions.previous)}\`](${getWebUrl(chartVersions.previous)}))*`
+                `*(${getPrettyBump(webVersions.previous, webVersions.new)} bump from [\`${SemVer.stringify(webVersions.previous)}\`](${getWebUrl(webVersions.previous)}))*`
         ].join(" "),
         [
             `- 🔌 Version of [\`inseefrlab/onyxia-api\`](https://hub.docker.com/r/inseefrlab/onyxia-api) pinned in the chart:`,
@@ -69,3 +69,7 @@ export function generateReleaseMessageBody(params: {
     ].join("\n");
 
 }
+
+export function getWebTagName(version: SemVer){
+    return `web-v${SemVer.stringify(version)}`;
+};

@@ -10,7 +10,7 @@ import { gitClone } from "../../tools/gitClone";
 import { id } from "tsafe/id";
 import { helmChartDirBasename } from "../release_helm_chart";
 import { determineTargetChartVersion } from "./determineTargetChartVersion";
-import { generateReleaseMessageBody } from "./generateReleaseMessageBody";
+import { generateReleaseMessageBody, getWebTagName } from "./generateReleaseMessageBody";
 import { getShaBranchName } from "../../tools/getShaBranchName";
 import { getWebDockerhubRepository } from "./getWebDockerhubRepository";
 import { updateChartReadme } from "./updateChartReadme";
@@ -38,6 +38,7 @@ const { setOutput } = setOutputFactory<
     | "release_body"
     | "release_tag_name"
     | "target_commit"
+    | "web_tag_name"
 >();
 
 export async function _run(
@@ -77,7 +78,8 @@ export async function _run(
             "release_name": "",
             "release_body": "",
             "release_tag_name": "",
-            "target_commit": ""
+            "target_commit": "",
+            "web_tag_name": ""
         };
     }
 
@@ -181,7 +183,8 @@ export async function _run(
             "release_name": "",
             "release_body": "",
             "release_tag_name": "",
-            "target_commit": sha
+            "target_commit": sha,
+            "web_tag_name": ""
         };
     }
 
@@ -200,7 +203,8 @@ export async function _run(
             "release_name": "",
             "release_body": "",
             "release_tag_name": "",
-            "target_commit": ""
+            "target_commit": "",
+            "web_tag_name": ""
         };
 
     }
@@ -308,7 +312,10 @@ export async function _run(
                 "new": currentVersions.webVersion
             },
         }),
-        "target_commit": target_commit ?? sha
+        "target_commit": target_commit ?? sha,
+        "web_tag_name": SemVer.compare(previousReleaseVersions.webVersion, currentVersions.webVersion) === 0 ?
+            "":
+            getWebTagName(currentVersions.webVersion)
     };
 
 }

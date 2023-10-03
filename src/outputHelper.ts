@@ -8,7 +8,8 @@ export const outputNames = [
     "release_name",
     "release_body",
     "release_tag_name",
-    "target_commit"
+    "target_commit",
+    "web_tag_name"
 ] as const;
 
 export function getOutputDescription(inputName: typeof outputNames[number]): string {
@@ -36,6 +37,11 @@ export function getOutputDescription(inputName: typeof outputNames[number]): str
             "To be used as parameter of the action of the softprops/action-gh-release action",
             "and for checking out the right commit in the next actions because prepare_release",
             "creates a automatic commit"
+        ].join(" ");
+        case "web_tag_name": return [
+            "Output of prepare_release, string,",
+            "If the web tag has been bumped, the new tag name,",
+            "else the empty string. This tag must be created additionally to the release tag"
         ].join(" ");
     }
 }
