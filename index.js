@@ -65,6 +65,67 @@ exports.run = run;
 
 /***/ }),
 
+/***/ 4376:
+/***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
+
+"use strict";
+
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.run = exports._run = void 0;
+const inputHelper_1 = __nccwpck_require__(6078);
+const gitClone_1 = __nccwpck_require__(5450);
+const exec_1 = __nccwpck_require__(4269);
+const { getActionParams } = (0, inputHelper_1.getActionParamsFactory)({
+    "inputNameSubset": [
+        "owner",
+        "repo",
+        "sha",
+        "github_token",
+        "tag_name"
+    ]
+});
+/**
+ * Will generate a onyxia-<version>.tgz file in the current working directory
+ * and update or create the index.yaml file in the gh-pages branch of the repository.
+ * */
+function _run(params) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const { github_token, owner, repo, sha, tag_name, log = () => { } } = params;
+        log(JSON.stringify(params, null, 2));
+        yield (0, gitClone_1.gitClone)({
+            log,
+            "repository": `${owner}/${repo}`,
+            "ref": sha,
+            "token": github_token,
+            "action": ({ repoPath }) => __awaiter(this, void 0, void 0, function* () {
+                yield (0, exec_1.exec)(`git tag ${tag_name}`, { "cwd": repoPath });
+                yield (0, exec_1.exec)(`git push origin ${tag_name}`, { "cwd": repoPath });
+                return { "doCommit": false };
+            })
+        });
+    });
+}
+exports._run = _run;
+function run() {
+    return __awaiter(this, void 0, void 0, function* () {
+        const params = getActionParams();
+        yield _run(Object.assign(Object.assign({}, params), { "log": console.log.bind(console) }));
+    });
+}
+exports.run = run;
+
+
+/***/ }),
+
 /***/ 5167:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
@@ -99,10 +160,12 @@ const objectKeys_1 = __nccwpck_require__(6762);
 const prepare_release = __importStar(__nccwpck_require__(6081));
 const release_helm_chart = __importStar(__nccwpck_require__(9747));
 const checkout = __importStar(__nccwpck_require__(4602));
+const create_tag = __importStar(__nccwpck_require__(4376));
 exports.actions = {
     prepare_release,
     release_helm_chart,
-    checkout
+    checkout,
+    create_tag
 };
 const actionNames = (0, objectKeys_1.objectKeys)(exports.actions);
 
@@ -987,7 +1050,8 @@ exports.inputNames = [
     "is_external_pr",
     "is_default_branch",
     "is_bot",
-    "sub_directory"
+    "sub_directory",
+    "tag_name"
 ];
 function getInputDescription(inputName) {
     switch (inputName) {
@@ -998,7 +1062,8 @@ function getInputDescription(inputName) {
                 const actionNames = [
                     "prepare_release",
                     "release_helm_chart",
-                    "checkout"
+                    "checkout",
+                    "create_tag"
                 ];
                 (0, assert_1.assert)(true);
                 return actionNames;
@@ -1039,6 +1104,9 @@ function getInputDescription(inputName) {
         case "sub_directory": return [
             "For the 'checkout' action, tell what sub directory to checkout from the repo.",
             "Mandatory (else use the 'actions/checkout@v3' action directly). Example: 'web'"
+        ].join(" ");
+        case "tag_name": return [
+            "For the 'create_tag' action, the name of the tag to create."
         ].join(" ");
     }
 }
