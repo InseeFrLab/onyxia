@@ -13,7 +13,8 @@ export const inputNames = [
     "is_external_pr",
     "is_default_branch",
     "is_bot",
-    "sub_directory"
+    "sub_directory",
+    "tag_name"
 ] as const;
 
 export function getInputDescription(inputName: typeof inputNames[number]): string {
@@ -26,7 +27,8 @@ export function getInputDescription(inputName: typeof inputNames[number]): strin
                 const actionNames = [
                     "prepare_release",
                     "release_helm_chart",
-                    "checkout"
+                    "checkout",
+                    "create_tag"
                 ] as const;
 
                 assert<Equals<typeof actionNames[number], ActionName>>(true);
@@ -70,6 +72,9 @@ export function getInputDescription(inputName: typeof inputNames[number]): strin
         case "sub_directory": return [
             "For the 'checkout' action, tell what sub directory to checkout from the repo.",
             "Mandatory (else use the 'actions/checkout@v3' action directly). Example: 'web'"
+        ].join(" ");
+        case "tag_name": return [
+            "For the 'create_tag' action, the name of the tag to create."
         ].join(" ");
     }
 }

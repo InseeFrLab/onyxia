@@ -135,12 +135,12 @@ jobs:
         with: 
           action_name: release_helm_chart
           sha: ${{needs.prepare_release.outputs.target_commit}}
-      - uses: rickstaa/action-create-tag@v1
+      - uses: InseeFrLab/onyxia@gh-actions
         if: needs.prepare_release.outputs.web_tag_name != ''
         with:
-          tag: ${{needs.prepare_release.outputs.web_tag_name}}
-          commit_sha: ${{needs.prepare_release.outputs.target_commit}}
-          github_token: ${{github.token}}
+          action_name: create_tag
+          tag_name: ${{needs.prepare_release.outputs.web_tag_name}}
+          sha: ${{needs.prepare_release.outputs.target_commit}}
       - uses: softprops/action-gh-release@v1
         with:
           name: ${{needs.prepare_release.outputs.release_name}}
