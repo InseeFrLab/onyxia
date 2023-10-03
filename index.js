@@ -1034,8 +1034,8 @@ function getInputDescription(inputName) {
 exports.getInputDescription = getInputDescription;
 function getInputDefault(inputName) {
     switch (inputName) {
-        case "owner": return "${{ github.event_name == 'pull_request' ? github.event.pull_request.head.repo.owner.login : github.repository_owner }}";
-        case "repo": return "${{ github.event_name == 'pull_request' ? github.event.pull_request.head.repo.name : github.event.repository.name }}";
+        case "owner": return "${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.owner.login || github.repository_owner }}";
+        case "repo": return "${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.name || github.event.repository.name }}";
         case "github_token": return "${{ github.token }}";
         case "sha": return "${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}";
         case "automatic_commit_author_email": return "actions@github.com";
