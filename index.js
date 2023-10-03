@@ -537,7 +537,8 @@ function _run(params) {
                     let readmeText = fs.readFileSync(readmeFilePath).toString("utf8");
                     readmeText = (0, updateChartReadme_1.updateChartReadme)({
                         "apiVersionTag": currentVersions.apiVersion.parsedFrom,
-                        targetChartVersion,
+                        "webVersionTag": (0, generateReleaseMessageBody_1.getWebTagName)(currentVersions.webVersion),
+                        "releaseVersion": targetChartVersion,
                         readmeText
                     });
                     fs.writeFileSync(readmeFilePath, Buffer.from(readmeText, "utf8"));
@@ -702,30 +703,29 @@ exports.updateChartReadme = void 0;
 const SemVer_1 = __nccwpck_require__(5078);
 const updateUrl_1 = __nccwpck_require__(9745);
 function updateChartReadme(params) {
-    let { readmeText, apiVersionTag, targetChartVersion } = params;
+    let { readmeText, apiVersionTag, webVersionTag, releaseVersion } = params;
     readmeText = (0, updateUrl_1.updateUrl)({
         "text": readmeText,
         "getUrl": tagName => `https://github.com/InseeFrLab/onyxia-api/blob/${tagName}/README.md#configuration`,
         "tagName": apiVersionTag
     });
-    const onyxiaTag = `v${SemVer_1.SemVer.stringify(targetChartVersion)}`;
     readmeText = (0, updateUrl_1.updateUrl)({
         "text": readmeText,
         "getUrl": tagName => `https://github.com/InseeFrLab/onyxia/blob/${tagName}/web/.env`,
-        "tagName": onyxiaTag
+        "tagName": webVersionTag
     });
     readmeText = (0, updateUrl_1.updateUrl)({
         "text": readmeText,
         "getUrl": tagName => `https://github.com/InseeFrLab/onyxia/releases/download/${tagName}/keycloak-theme.jar`,
-        "tagName": onyxiaTag
+        "tagName": `v${SemVer_1.SemVer.stringify(releaseVersion)}}`
     });
     readmeText = (0, updateUrl_1.updateUrl)({
         "text": readmeText,
         "getUrl": tagName => `https://github.com/InseeFrLab/onyxia/blob/${tagName}/web/src/core/ports/OnyxiaApi/XOnyxia.ts`,
-        "tagName": onyxiaTag
+        "tagName": webVersionTag
     });
     readmeText =
-        readmeText.replace(/--version "?[^ "]+"?/g, `--version "${SemVer_1.SemVer.stringify(targetChartVersion)}"`);
+        readmeText.replace(/--version "?[^ "]+"?/g, `--version "${SemVer_1.SemVer.stringify(releaseVersion)}"`);
     return readmeText;
 }
 exports.updateChartReadme = updateChartReadme;
