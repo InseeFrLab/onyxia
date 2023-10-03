@@ -188,14 +188,14 @@ exports.determineTargetChartVersion = determineTargetChartVersion;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.generateReleaseMessageBody = void 0;
+exports.getWebTagName = exports.generateReleaseMessageBody = void 0;
 const SemVer_1 = __nccwpck_require__(5078);
 const assert_1 = __nccwpck_require__(8078);
 const capitalize_1 = __nccwpck_require__(1502);
 function generateReleaseMessageBody(params) {
     const { chartVersions, webVersions, apiVersions } = params;
     const getChartUrl = (version) => `https://github.com/InseeFrLab/onyxia/tree/v${SemVer_1.SemVer.stringify(version)}/helm-chart`;
-    const getWebUrl = (version) => `https://github.com/InseeFrLab/onyxia/tree/v${SemVer_1.SemVer.stringify(version)}/web`;
+    const getWebUrl = (version) => `https://github.com/InseeFrLab/onyxia/tree/${getWebTagName(version)}/web`;
     const getApiUrl = (version) => `https://github.com/InseeFrLab/onyxia-api/tree/${version.parsedFrom}`;
     const getPrettyBump = (versionBehind, versionAhead) => {
         const bump = SemVer_1.SemVer.bumpType({ versionBehind, versionAhead });
@@ -217,10 +217,10 @@ function generateReleaseMessageBody(params) {
         ].join(" "),
         [
             `- 🖥️ Version of [\`inseefrlab/onyxia-web\`](https://hub.docker.com/r/inseefrlab/onyxia-web) pinned in the chart:`,
-            `**[\`${SemVer_1.SemVer.stringify(webVersions.new)}\`](${getWebUrl(chartVersions.new)})**`,
+            `**[\`${SemVer_1.SemVer.stringify(webVersions.new)}\`](${getWebUrl(webVersions.new)})**`,
             SemVer_1.SemVer.compare(webVersions.previous, webVersions.new) === 0 ?
                 "(No bump since the previous release)" :
-                `*(${getPrettyBump(webVersions.previous, webVersions.new)} bump from [\`${SemVer_1.SemVer.stringify(webVersions.previous)}\`](${getWebUrl(chartVersions.previous)}))*`
+                `*(${getPrettyBump(webVersions.previous, webVersions.new)} bump from [\`${SemVer_1.SemVer.stringify(webVersions.previous)}\`](${getWebUrl(webVersions.previous)}))*`
         ].join(" "),
         [
             `- 🔌 Version of [\`inseefrlab/onyxia-api\`](https://hub.docker.com/r/inseefrlab/onyxia-api) pinned in the chart:`,
@@ -232,6 +232,11 @@ function generateReleaseMessageBody(params) {
     ].join("\n");
 }
 exports.generateReleaseMessageBody = generateReleaseMessageBody;
+function getWebTagName(version) {
+    return `web-v${SemVer_1.SemVer.stringify(version)}`;
+}
+exports.getWebTagName = getWebTagName;
+;
 
 
 /***/ }),
@@ -413,7 +418,8 @@ function _run(params) {
                 "release_name": "",
                 "release_body": "",
                 "release_tag_name": "",
-                "target_commit": ""
+                "target_commit": "",
+                "web_tag_name": ""
             };
         }
         const previousReleaseTag = yield (() => __awaiter(this, void 0, void 0, function* () {
@@ -485,7 +491,8 @@ function _run(params) {
                 "release_name": "",
                 "release_body": "",
                 "release_tag_name": "",
-                "target_commit": sha
+                "target_commit": sha,
+                "web_tag_name": ""
             };
         }
         const targetChartVersion = (0, determineTargetChartVersion_1.determineTargetChartVersion)({
@@ -500,7 +507,8 @@ function _run(params) {
                 "release_name": "",
                 "release_body": "",
                 "release_tag_name": "",
-                "target_commit": ""
+                "target_commit": "",
+                "web_tag_name": ""
             };
         }
         log(`Upgrading chart version to: ${SemVer_1.SemVer.stringify(targetChartVersion)}`);
@@ -569,7 +577,10 @@ function _run(params) {
                     "new": currentVersions.webVersion
                 },
             }),
-            "target_commit": target_commit !== null && target_commit !== void 0 ? target_commit : sha
+            "target_commit": target_commit !== null && target_commit !== void 0 ? target_commit : sha,
+            "web_tag_name": SemVer_1.SemVer.compare(previousReleaseVersions.webVersion, currentVersions.webVersion) === 0 ?
+                "" :
+                (0, generateReleaseMessageBody_1.getWebTagName)(currentVersions.webVersion)
         };
     });
 }
@@ -1109,7 +1120,8 @@ exports.outputNames = [
     "release_name",
     "release_body",
     "release_tag_name",
-    "target_commit"
+    "target_commit",
+    "web_tag_name"
 ];
 function getOutputDescription(inputName) {
     switch (inputName) {
@@ -1136,6 +1148,11 @@ function getOutputDescription(inputName) {
             "To be used as parameter of the action of the softprops/action-gh-release action",
             "and for checking out the right commit in the next actions because prepare_release",
             "creates a automatic commit"
+        ].join(" ");
+        case "web_tag_name": return [
+            "Output of prepare_release, string,",
+            "If the web tag has been bumped, the new tag name,",
+            "else the empty string. This tag must be created additionally to the release tag"
         ].join(" ");
     }
 }

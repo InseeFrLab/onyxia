@@ -55,6 +55,8 @@ outputs:
     description: 'Output of prepare_release, string, To be used as parameter of the action of the softprops/action-gh-release action'
   target_commit:
     description: 'Output of prepare_release, string, To be used as parameter of the action of the softprops/action-gh-release action and for checking out the right commit in the next actions because prepare_release creates a automatic commit'
+  web_tag_name:
+    description: 'Output of prepare_release, string, If the web tag has been bumped, the new tag name, else the empty string. This tag must be created additionally to the release tag'
 runs:
   using: 'node20'
   main: './index.js'
