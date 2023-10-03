@@ -14,7 +14,7 @@ permissions:
 
 jobs:
 
-  test:
+  test_web:
     runs-on: ubuntu-latest
     steps:
       - uses: InseeFrLab/onyxia@gh-actions
@@ -27,9 +27,21 @@ jobs:
       - run: npx keycloakify
         env:
           XDG_CACHE_HOME: "/home/runner/.cache/yarn"
+
+  test_helm-chart:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: InseeFrLab/onyxia@gh-actions
+        with: 
+          action_name: checkout
+          sub_directory: helm-chart
+      - uses: azure/setup-helm@v3.5
+      - run: helm lint .
   
   prepare_release:
-    needs: test
+    needs: 
+      - test_web
+      - test_helm-chart
     runs-on: ubuntu-latest
     outputs:
       new_web_docker_image_tags: ${{steps._.outputs.new_web_docker_image_tags}}
