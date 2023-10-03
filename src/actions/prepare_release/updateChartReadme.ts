@@ -5,11 +5,12 @@ export function updateChartReadme(
     params: {
         readmeText: string;
         apiVersionTag: string;
-        targetChartVersion: SemVer;
+        webVersionTag: string;
+        releaseVersion: SemVer;
     }
 ): string {
 
-    let { readmeText, apiVersionTag, targetChartVersion } = params;
+    let { readmeText, apiVersionTag, webVersionTag, releaseVersion } = params;
 
     readmeText = updateUrl({
         "text": readmeText,
@@ -17,30 +18,28 @@ export function updateChartReadme(
         "tagName": apiVersionTag
     });
 
-    const onyxiaTag = `v${SemVer.stringify(targetChartVersion)}`;
-
     readmeText = updateUrl({
         "text": readmeText,
         "getUrl": tagName => `https://github.com/InseeFrLab/onyxia/blob/${tagName}/web/.env`,
-        "tagName": onyxiaTag
+        "tagName": webVersionTag
     });
 
     readmeText = updateUrl({
         "text": readmeText,
         "getUrl": tagName => `https://github.com/InseeFrLab/onyxia/releases/download/${tagName}/keycloak-theme.jar`,
-        "tagName": onyxiaTag
+        "tagName": `v${SemVer.stringify(releaseVersion)}}`
     });
 
     readmeText = updateUrl({
         "text": readmeText,
         "getUrl": tagName => `https://github.com/InseeFrLab/onyxia/blob/${tagName}/web/src/core/ports/OnyxiaApi/XOnyxia.ts`,
-        "tagName": onyxiaTag
+        "tagName": webVersionTag
     });
 
     readmeText =
         readmeText.replace(
             /--version "?[^ "]+"?/g,
-            `--version "${SemVer.stringify(targetChartVersion)}"`
+            `--version "${SemVer.stringify(releaseVersion)}"`
         );
 
     return readmeText;

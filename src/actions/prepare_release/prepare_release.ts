@@ -264,7 +264,8 @@ export async function _run(
 
                 readmeText = updateChartReadme({ 
                     "apiVersionTag": currentVersions.apiVersion.parsedFrom,
-                    targetChartVersion,
+                    "webVersionTag": getWebTagName(currentVersions.webVersion),
+                    "releaseVersion": targetChartVersion,
                     readmeText 
                 });
 
