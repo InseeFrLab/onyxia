@@ -1,11 +1,9 @@
-import type { Oidc } from "../../ports/Oidc";
-import keycloak_js from "keycloak-js";
+import { UserManager, WebStorageStateStore } from "oidc-client-ts";
 import { id } from "tsafe/id";
-import { createKeycloakAdapter } from "keycloakify";
+import type { Oidc } from "../../ports/Oidc";
 import { decodeJwt } from "core/tools/jwt";
-import type { Param0, ReturnType } from "tsafe";
-import { addParamToUrl } from "powerhooks/tools/urlSearchParams";
 import { assert } from "tsafe/assert";
+import { addParamToUrl, retrieveParamFromUrl } from "powerhooks/tools/urlSearchParams";
 import { Evt } from "evt";
 
 export async function createOidc(params: {
@@ -19,63 +17,87 @@ export async function createOidc(params: {
     const { url, realm, clientId, transformUrlBeforeRedirect, getUiLocales, log } =
         params;
 
-    const keycloakInstance = keycloak_js({ url, realm, clientId });
+    const userManager = new UserManager({
+        "authority": `${url}/realms/${realm}`,
+        "client_id": clientId,
+        "redirect_uri": "" /* provided when calling login */,
+        "response_type": "code",
+        "scope": "openid profile",
+        "userStore": new WebStorageStateStore({ "store": window.localStorage }),
+        "automaticSilentRenew": false,
+        "silent_redirect_uri": `${window.location.origin}/silent-sso.html`
+    });
 
-    let redirectMethod: ReturnType<
-        Param0<typeof createKeycloakAdapter>["getRedirectMethod"]
-    > = "overwrite location.href";
+    const login: Oidc.NotLoggedIn["login"] = async () => {
+        //NOTE: We know there is a extraQueryParameter option but it doesn't allow
+        // to control the encoding so we have to hack the global URL Class that is
+        // used internally by oidc-client-ts
 
-    const isAuthenticated = await keycloakInstance
-        .init({
-            "onLoad": "check-sso",
-            "silentCheckSsoRedirectUri": `${window.location.origin}/silent-sso.html`,
-            "responseMode": "query",
-            "checkLoginIframe": false,
-            "adapter": createKeycloakAdapter({
-                "transformUrlBeforeRedirect": url =>
-                    // prettier-ignore
-                    [url]
-                        .map(transformUrlBeforeRedirect)
-                        .map(
+        const URL_real = window.URL;
+
+        function URL(...args: ConstructorParameters<typeof URL_real>) {
+            const urlInstance = new URL_real(...args);
+
+            return new Proxy(urlInstance, {
+                "get": (target, prop) => {
+                    if (prop === "href") {
+                        return [urlInstance.href].map(transformUrlBeforeRedirect).map(
                             url =>
                                 addParamToUrl({
                                     url,
                                     "name": "ui_locales",
                                     "value": getUiLocales()
                                 }).newUrl
-                        )
-                    [0],
-                keycloakInstance,
-                "getRedirectMethod": () => redirectMethod
-            })
-        })
-        .catch((error: Error) => error);
+                        )[0];
+                    }
 
-    //TODO: Make sure that result is always an object.
-    if (isAuthenticated instanceof Error) {
-        throw isAuthenticated;
-    }
-
-    const login: Oidc.NotLoggedIn["login"] = async ({ doesCurrentHrefRequiresAuth }) => {
-        if (doesCurrentHrefRequiresAuth) {
-            redirectMethod = "location.replace";
+                    //@ts-expect-error
+                    return target[prop];
+                }
+            });
         }
 
-        await keycloakInstance.login({ "redirectUri": window.location.href });
+        Object.defineProperty(window, "URL", { "value": URL });
 
+        await userManager.signinRedirect({
+            "redirect_uri": window.location.href,
+            "redirectMethod": "replace"
+        });
         return new Promise<never>(() => {});
     };
 
-    if (!isAuthenticated) {
+    read_successful_login_query_params: {
+        let url = window.location.href;
+
+        const names = ["code", "state", "session_state"];
+
+        for (const name of names) {
+            const result = retrieveParamFromUrl({ name, url });
+
+            if (!result.wasPresent) {
+                if (names.indexOf(name) === 0) {
+                    break read_successful_login_query_params;
+                } else {
+                    assert(false);
+                }
+            }
+
+            url = result.newUrl;
+        }
+
+        await userManager.signinRedirectCallback();
+
+        window.location.replace(url);
+    }
+
+    let currentAccessToken = (await userManager.getUser())?.access_token ?? "";
+
+    if (currentAccessToken === "") {
         return id<Oidc.NotLoggedIn>({
             "isUserLoggedIn": false,
             login
         });
     }
-
-    assert(keycloakInstance.token !== undefined);
-
-    let currentAccessToken = keycloakInstance.token;
 
     const oidc = id<Oidc.LoggedIn>({
         "isUserLoggedIn": true,
@@ -84,8 +106,8 @@ export async function createOidc(params: {
             "expirationTime": getAccessTokenExpirationTime(currentAccessToken)
         }),
         "logout": async ({ redirectTo }) => {
-            await keycloakInstance.logout({
-                "redirectUri": (() => {
+            await userManager.signoutRedirect({
+                "post_logout_redirect_uri": (() => {
                     switch (redirectTo) {
                         case "current page":
                             return window.location.href;
@@ -94,15 +116,16 @@ export async function createOidc(params: {
                     }
                 })()
             });
-
             return new Promise<never>(() => {});
         },
         "renewToken": async () => {
-            await keycloakInstance.updateToken(-1);
+            const user = await userManager.signinSilent({
+                "redirect_uri": window.location.href
+            });
 
-            assert(keycloakInstance.token !== undefined);
+            assert(user !== null);
 
-            currentAccessToken = keycloakInstance.token;
+            currentAccessToken = user.access_token;
         }
     });
 
@@ -122,20 +145,13 @@ export async function createOidc(params: {
 
             log?.("User activity detected. Refreshing access token now");
 
-            const error = await keycloakInstance.updateToken(-1).then(
-                () => undefined,
-                (error: Error) => error
-            );
-
-            if (error) {
+            try {
+                await oidc.renewToken();
+            } catch {
                 log?.("Can't refresh OIDC access token, getting a new one");
                 //NOTE: Never resolves
                 await login({ "doesCurrentHrefRequiresAuth": true });
             }
-
-            assert(keycloakInstance.token !== undefined);
-
-            currentAccessToken = keycloakInstance.token;
 
             callee();
         }, msBeforeExpiration - minValiditySecond * 1000);
@@ -147,5 +163,5 @@ export async function createOidc(params: {
 const minValiditySecond = 25;
 
 function getAccessTokenExpirationTime(accessToken: string): number {
-    return decodeJwt<{ exp: number }>(accessToken)["exp"] * 1000;
+    return decodeJwt<{ exp: number }>(accessToken).exp * 1000;
 }
