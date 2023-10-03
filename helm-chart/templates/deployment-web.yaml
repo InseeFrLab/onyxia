@@ -69,3 +69,6 @@ spec:
     {{- if .Values.web.extraVolumes }}
       volumes: {{- toYaml .Values.web.extraVolumes | nindent 6 }}
     {{- end }}
+    {{- if .Values.web.priorityClassName }}
+      priorityClassName: "{{ .Values.web.priorityClassName }}"
+    {{- end }}
