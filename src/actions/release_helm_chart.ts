@@ -51,7 +51,7 @@ export async function _run(
 
     let ghPagesCommitSha: string | undefined= undefined;
 
-    gitClone({
+    await gitClone({
         log,
         repository,
         "ref": sha,
