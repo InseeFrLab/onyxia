@@ -806,7 +806,7 @@ function _run(params) {
         yield (0, installHelm_1.installHelm)();
         const repository = `${owner}/${repo}`;
         let ghPagesCommitSha = undefined;
-        (0, gitClone_1.gitClone)({
+        yield (0, gitClone_1.gitClone)({
             log,
             repository,
             "ref": sha,
