@@ -14,11 +14,11 @@ inputs:
   owner:
     required: false
     description: 'Repository owner, example: ''garronej'',github.repository_owner'
-    default: '${{github.repository_owner}}'
+    default: '${{ github.event_name == ''pull_request'' ? github.event.pull_request.head.repo.owner.login : github.repository_owner }}'
   repo:
     required: false
     description: 'Repository name, example: ''evt'', github.event.repository.name'
-    default: '${{github.event.repository.name}}'
+    default: '${{ github.event_name == ''pull_request'' ? github.event.pull_request.head.repo.name : github.event.repository.name }}'
   sha:
     required: false
     description: 'If not provided, the good default will be used github.sha'
