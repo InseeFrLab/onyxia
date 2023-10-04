@@ -71,7 +71,7 @@ export function createOnyxiaApi(params: {
         "getIp": memoize(() =>
             axiosInstance.get<{ ip: string }>("/public/ip").then(({ data }) => data.ip)
         ),
-        "getAvailableRegions": memoize(() =>
+        "getAvailableRegionsAndOidcParams": memoize(() =>
             axiosInstance
                 .get<{
                     regions: {
@@ -192,9 +192,20 @@ export function createOnyxiaApi(params: {
                             pathToCaBundle: string;
                         };
                     }[];
+                    authenticationInfo?:
+                        | {
+                              mode: "none";
+                          }
+                        | {
+                              mode: "openidconnect";
+                              oidcConfiguration: {
+                                  issuerURI: string;
+                                  clientID: string;
+                              };
+                          };
                 }>("/public/configuration")
-                .then(({ data }) =>
-                    data.regions.map(
+                .then(({ data }) => ({
+                    "regions": data.regions.map(
                         (region): DeploymentRegion => ({
                             "id": region.id,
                             "servicesMonitoringUrlPattern":
@@ -323,8 +334,26 @@ export function createOnyxiaApi(params: {
                                 region.services.defaultConfiguration?.sliders ?? {},
                             "resources": region.services.defaultConfiguration?.resources
                         })
-                    )
-                )
+                    ),
+                    "oidcParams": (() => {
+                        const { authenticationInfo } = data;
+
+                        if (authenticationInfo === undefined) {
+                            return undefined;
+                        }
+
+                        if (authenticationInfo.mode !== "openidconnect") {
+                            return undefined;
+                        }
+
+                        const { oidcConfiguration } = authenticationInfo;
+
+                        return {
+                            "authority": oidcConfiguration.issuerURI,
+                            "clientId": oidcConfiguration.clientID
+                        };
+                    })()
+                }))
                 .catch(onError)
         ),
         "getCatalogs": memoize(

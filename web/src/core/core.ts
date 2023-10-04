@@ -8,6 +8,7 @@ import {
 import { usecases } from "./usecases";
 import type { SecretsManager } from "./ports/SecretsManager";
 import type { S3Client } from "./ports/S3Client";
+import type { Oidc } from "./ports/Oidc";
 import type { ReturnType } from "tsafe/ReturnType";
 import type { Language } from "./ports/OnyxiaApi/Language";
 
@@ -18,13 +19,6 @@ type CoreParams = {
     isUserInitiallyLoggedIn?: boolean;
     transformUrlBeforeRedirectToLogin: (url: string) => string;
     getCurrentLang: () => Language;
-    keycloakParams:
-        | {
-              url: string;
-              realm: string;
-              clientId: string;
-          }
-        | undefined;
     disablePersonalInfosInjectionInGroup: boolean;
 };
 
@@ -33,25 +27,10 @@ export async function createCore(params: CoreParams) {
         apiUrl,
         isUserInitiallyLoggedIn = false,
         transformUrlBeforeRedirectToLogin,
-        getCurrentLang,
-        keycloakParams
+        getCurrentLang
     } = params;
 
-    const oidc = await (async () => {
-        if (keycloakParams === undefined) {
-            const { createOidc } = await import("core/adapters/oidcMock");
-
-            return createOidc({ isUserInitiallyLoggedIn });
-        }
-
-        const { createOidc } = await import("core/adapters/oidc");
-
-        return createOidc({
-            ...keycloakParams,
-            "transformUrlBeforeRedirect": transformUrlBeforeRedirectToLogin,
-            "getUiLocales": getCurrentLang
-        });
-    })();
+    let oidc: Oidc | undefined = undefined;
 
     const onyxiaApi = await (async () => {
         if (apiUrl === "") {
@@ -62,9 +41,13 @@ export async function createCore(params: CoreParams) {
 
         const { createOnyxiaApi } = await import("core/adapters/onyxiaApi");
 
-        const sillApi = createOnyxiaApi({
+        const onyxiaApi = createOnyxiaApi({
             "url": apiUrl,
             "getOidcAccessToken": () => {
+                if (oidc === undefined) {
+                    return undefined;
+                }
+
                 if (!oidc.isUserLoggedIn) {
                     return undefined;
                 }
@@ -96,7 +79,26 @@ export async function createCore(params: CoreParams) {
             }
         });
 
-        return sillApi;
+        return onyxiaApi;
+    })();
+
+    oidc = await (async () => {
+        const { oidcParams } = await onyxiaApi.getAvailableRegionsAndOidcParams();
+
+        if (oidcParams === undefined) {
+            const { createOidc } = await import("core/adapters/oidcMock");
+
+            return createOidc({ isUserInitiallyLoggedIn });
+        }
+
+        const { createOidc } = await import("core/adapters/oidc");
+
+        return createOidc({
+            "authority": oidcParams.authority,
+            "clientId": oidcParams.clientId,
+            "transformUrlBeforeRedirect": transformUrlBeforeRedirectToLogin,
+            "getUiLocales": getCurrentLang
+        });
     })();
 
     const thunksExtraArgument = {
@@ -129,7 +131,7 @@ export async function createCore(params: CoreParams) {
         /* prettier-ignore */
         const fallbackOidc = keycloakParams === undefined ? undefined : {
             "keycloakParams": keycloakParams,
-            "oidc": oidc
+            oidc
         };
 
         /* prettier-ignore */

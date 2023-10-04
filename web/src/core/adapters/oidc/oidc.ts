@@ -7,18 +7,16 @@ import { addParamToUrl, retrieveParamFromUrl } from "powerhooks/tools/urlSearchP
 import { Evt } from "evt";
 
 export async function createOidc(params: {
-    url: string;
-    realm: string;
+    authority: string;
     clientId: string;
     transformUrlBeforeRedirect: (url: string) => string;
     getUiLocales: () => string;
     log?: typeof console.log;
 }): Promise<Oidc> {
-    const { url, realm, clientId, transformUrlBeforeRedirect, getUiLocales, log } =
-        params;
+    const { authority, clientId, transformUrlBeforeRedirect, getUiLocales, log } = params;
 
     const userManager = new UserManager({
-        "authority": `${url}/realms/${realm}`,
+        authority,
         "client_id": clientId,
         "redirect_uri": "" /* provided when calling login */,
         "response_type": "code",
