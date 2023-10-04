@@ -7,7 +7,6 @@ import Link from "@mui/material/Link";
 import { useCoreState, selectors } from "core";
 import { elementsToSentence } from "ui/tools/elementsToSentence";
 import type { CollapseParams } from "onyxia-ui/tools/CollapsibleWrapper_legacy";
-import { assert } from "tsafe/assert";
 import { useStateRef } from "powerhooks/useStateRef";
 import { declareComponentKeys } from "i18nifty";
 import type { PageRoute } from "./route";
@@ -134,8 +133,9 @@ const PageHeaderHelpContent = memo((params: { routeName: PageRoute["name"] }) =>
     const { routeName } = params;
 
     const { selectedCatalog } = useCoreState(selectors.catalogExplorer.selectedCatalog);
-    const { sources } = useCoreState(selectors.launcher.sources);
-    const { packageName } = useCoreState(selectors.launcher.packageName);
+    const { isLauncherReady, packageName, sources } = useCoreState(
+        selectors.launcher.headerWrap
+    ).headerWrap;
 
     const { t } = useTranslation({ Catalog });
 
@@ -167,11 +167,9 @@ const PageHeaderHelpContent = memo((params: { routeName: PageRoute["name"] }) =>
                 </>
             );
         case "catalogLauncher":
-            if (packageName === undefined) {
+            if (!isLauncherReady) {
                 return null;
             }
-
-            assert(sources !== undefined);
 
             if (sources.length === 0) {
                 return null;
@@ -180,7 +178,7 @@ const PageHeaderHelpContent = memo((params: { routeName: PageRoute["name"] }) =>
             return (
                 <>
                     {t("contribute to the package", {
-                        "packageName": packageName
+                        packageName
                     })}
                     {elementsToSentence({
                         "elements": sources.map(source => (

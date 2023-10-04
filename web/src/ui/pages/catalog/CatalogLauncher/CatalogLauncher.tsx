@@ -109,12 +109,23 @@ export const CatalogLauncher = memo((props: Props) => {
         );
     }, []);
 
-    const { restorablePackageConfig } = useCoreState(
-        selectors.launcher.restorablePackageConfig
-    );
+    const {
+        isReady,
+        friendlyName,
+        isShared,
+        indexedFormFields,
+        isLaunchable,
+        formFieldsIsWellFormed,
+        restorablePackageConfig,
+        areAllFieldsDefault,
+        packageName,
+        icon,
+        launchScript,
+        apiLogsEntries
+    } = useCoreState(selectors.launcher.launcherWrap).launcherWrap;
 
-    const restorablePackageConfigs = useCoreState(
-        state => state.restorablePackageConfig.restorablePackageConfigs
+    const { restorablePackageConfigs } = useCoreState(
+        selectors.restorablePackageConfig.restorablePackageConfigs
     );
 
     useEffect(() => {
@@ -220,21 +231,6 @@ export const CatalogLauncher = memo((props: Props) => {
         });
     });
 
-    const { friendlyName } = useCoreState(selectors.launcher.friendlyName);
-    const { isShared } = useCoreState(selectors.launcher.isShared);
-    const { areAllFieldsDefault } = useCoreState(selectors.launcher.areAllFieldsDefault);
-
-    const { indexedFormFields } = useCoreState(selectors.launcher.indexedFormFields);
-    const { isLaunchable } = useCoreState(selectors.launcher.isLaunchable);
-    const { formFieldsIsWellFormed } = useCoreState(
-        selectors.launcher.formFieldsIsWellFormed
-    );
-    const { isReady } = useCoreState(selectors.launcher.isReady);
-    const { icon } = useCoreState(selectors.launcher.icon);
-    const { packageName } = useCoreState(selectors.launcher.packageName);
-    const { apiLogsEntries } = useCoreState(selectors.launcher.apiLogsEntries);
-    const { launchScript } = useCoreState(selectors.launcher.launchScript);
-
     const {
         domRect: { height: rootHeight }
     } = useDomRect({
@@ -265,17 +261,6 @@ export const CatalogLauncher = memo((props: Props) => {
     if (!isReady) {
         return null;
     }
-
-    assert(restorablePackageConfig !== undefined);
-    assert(indexedFormFields !== undefined);
-    assert(isLaunchable !== undefined);
-    assert(friendlyName !== undefined);
-    assert(isShared !== undefined);
-    assert(formFieldsIsWellFormed !== undefined);
-    assert(icon !== undefined);
-    assert(packageName !== undefined);
-    assert(apiLogsEntries !== undefined);
-    assert(launchScript !== undefined);
 
     return (
         <>

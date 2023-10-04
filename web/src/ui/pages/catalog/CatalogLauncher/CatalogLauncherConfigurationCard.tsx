@@ -25,14 +25,14 @@ import { useTranslation } from "ui/i18n";
 import { Slider } from "onyxia-ui/Slider";
 import type { RangeSliderProps } from "onyxia-ui/RangeSlider";
 import { RangeSlider } from "onyxia-ui/RangeSlider";
-import type { Param0, ReturnType } from "tsafe";
+import type { Param0 } from "tsafe";
 import type { Equals } from "tsafe";
 import type { TextFieldProps } from "onyxia-ui/TextField";
 import { TextField } from "onyxia-ui/TextField";
 import { assert } from "tsafe/assert";
-import type { selectors } from "core";
 import { declareComponentKeys } from "i18nifty";
 import { symToStr } from "tsafe/symToStr";
+import type { FormFieldValidity } from "core/usecases/launcher/selectors";
 
 export type CatalogLauncherConfigurationCardProps = {
     className?: string;
@@ -40,11 +40,7 @@ export type CatalogLauncherConfigurationCardProps = {
     meta: IndexedFormFields[string]["meta"];
     formFieldsByTabName: IndexedFormFields[string]["formFieldsByTabName"];
     onFormValueChange(params: FormFieldValue): void;
-    formFieldsIsWellFormed: NonNullable<
-        NonNullable<
-            ReturnType<(typeof selectors)["launcher"]["formFieldsIsWellFormed"]>
-        >["formFieldsIsWellFormed"]
-    >;
+    formFieldsIsWellFormed: FormFieldValidity[];
 };
 
 export const CatalogLauncherConfigurationCard = memo(
