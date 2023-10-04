@@ -1,6 +1,6 @@
 import { assert } from "tsafe/assert";
 import { exclude } from "tsafe/exclude";
-import type { FormField, IndexedFormFields } from "./FormField";
+import type { FormField, IndexedFormFields } from "../FormField";
 
 const { assembleFormFields } = (() => {
     const { assembleRangeSliderFormField } = (() => {

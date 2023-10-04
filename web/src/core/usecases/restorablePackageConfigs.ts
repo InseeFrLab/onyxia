@@ -2,7 +2,7 @@ import { type FormFieldValue, formFieldsValueToObject } from "./launcher/FormFie
 import { allEquals } from "evt/tools/reducers/allEquals";
 import { same } from "evt/tools/inDepth/same";
 import { assert } from "tsafe/assert";
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, createSelector } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import type { Thunks } from "../core";
 import { thunks as userConfigsThunks } from "./userConfigs";
@@ -313,34 +313,52 @@ function areSameRestorablePackageConfig(
 }
 
 export const selectors = (() => {
-    function displayableConfigs(rootState: RootState) {
-        const { restorablePackageConfigs, packageIcons } =
-            rootState.restorablePackageConfig;
-
-        return restorablePackageConfigs
-            .map(restorablePackageConfig => {
-                const { packageName, catalogId } = restorablePackageConfig;
-
-                return {
-                    "logoUrl": !packageIcons.areFetched
-                        ? undefined
-                        : packageIcons.iconsUrl[catalogId]?.[packageName],
-                    "friendlyName": (() => {
-                        const friendlyName =
-                            restorablePackageConfig.formFieldsValueDifferentFromDefault.find(
-                                ({ path }) =>
-                                    same(path, onyxiaFriendlyNameFormFieldPath.split("."))
-                            )?.value ?? packageName;
-
-                        assert(typeof friendlyName === "string");
-
-                        return friendlyName;
-                    })(),
-                    restorablePackageConfig
-                };
-            })
-            .reverse();
+    function state(rootState: RootState) {
+        return rootState[name];
     }
 
-    return { displayableConfigs };
+    const restorablePackageConfigs = createSelector(
+        state,
+        state => state.restorablePackageConfigs
+    );
+
+    const displayableConfigs = createSelector(
+        state,
+        restorablePackageConfigs,
+        (state, restorablePackageConfigs) => {
+            const { packageIcons } = state;
+
+            return restorablePackageConfigs
+                .map(restorablePackageConfig => {
+                    const { packageName, catalogId } = restorablePackageConfig;
+
+                    return {
+                        "logoUrl": !packageIcons.areFetched
+                            ? undefined
+                            : packageIcons.iconsUrl[catalogId]?.[packageName],
+                        "friendlyName": (() => {
+                            const friendlyName =
+                                restorablePackageConfig.formFieldsValueDifferentFromDefault.find(
+                                    ({ path }) =>
+                                        same(
+                                            path,
+                                            onyxiaFriendlyNameFormFieldPath.split(".")
+                                        )
+                                )?.value ?? packageName;
+
+                            assert(typeof friendlyName === "string");
+
+                            return friendlyName;
+                        })(),
+                        restorablePackageConfig
+                    };
+                })
+                .reverse();
+        }
+    );
+
+    return {
+        restorablePackageConfigs,
+        displayableConfigs
+    };
 })();
