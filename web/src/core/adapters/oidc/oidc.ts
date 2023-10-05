@@ -87,7 +87,7 @@ export async function createOidc(params: {
 
         await userManager.signinRedirectCallback();
 
-        window.location.replace(url);
+        window.history.pushState(null, "", url);
     }
 
     let currentAccessToken = (await userManager.getUser())?.access_token ?? "";
