@@ -189,8 +189,6 @@ export async function createCore(params: CoreParams) {
         );
     }
 
-    core.dispatch(usecases.runningService.protectedThunks.initialize());
-
     return core;
 }
 

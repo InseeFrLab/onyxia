@@ -32,18 +32,18 @@ export default function MyServices(props: Props) {
     const { t } = useTranslation({ MyServices });
 
     /* prettier-ignore */
-    const { runningService, restorablePackageConfig, projectConfigs } = useCoreFunctions();
+    const { serviceManager, restorablePackageConfig, projectConfigs } = useCoreFunctions();
     /* prettier-ignore */
     const { displayableConfigs } = useCoreState(selectors.restorablePackageConfig.displayableConfigs);
     /* prettier-ignore */
-    const { isUpdating } = useCoreState(selectors.runningService.isUpdating);
-    const { runningServices } = useCoreState(selectors.runningService.runningServices);
+    const { isUpdating } = useCoreState(selectors.serviceManager.isUpdating);
+    const { runningServices } = useCoreState(selectors.serviceManager.runningServices);
     /* prettier-ignore */
-    const { deletableRunningServices } = useCoreState(selectors.runningService.deletableRunningServices);
+    const { deletableRunningServices } = useCoreState(selectors.serviceManager.deletableRunningServices);
     /* prettier-ignore */
-    const { isThereOwnedSharedServices } = useCoreState(selectors.runningService.isThereOwnedSharedServices);
+    const { isThereOwnedSharedServices } = useCoreState(selectors.serviceManager.isThereOwnedSharedServices);
     /* prettier-ignore */
-    const { isThereNonOwnedServices } = useCoreState(selectors.runningService.isThereNonOwnedServices);
+    const { isThereNonOwnedServices } = useCoreState(selectors.serviceManager.isThereNonOwnedServices);
 
     const [password, setPassword] = useState<string | undefined>(undefined);
 
@@ -68,7 +68,7 @@ export default function MyServices(props: Props) {
                 routes.catalogExplorer().push();
                 return;
             case "refresh":
-                runningService.update();
+                serviceManager.update();
                 return;
             case "password":
                 assert(password !== undefined);
@@ -89,8 +89,8 @@ export default function MyServices(props: Props) {
     }, []);
 
     useEffect(() => {
-        runningService.setIsUserWatching(true);
-        return () => runningService.setIsUserWatching(false);
+        const { setInactive } = serviceManager.setActive();
+        return () => setInactive();
     }, []);
 
     const { isSavedConfigsExtended } = route.params;
@@ -239,12 +239,12 @@ export default function MyServices(props: Props) {
     const onDialogCloseFactory = useCallbackFactory(([doDelete]: [boolean]) => {
         if (doDelete) {
             if (serviceIdRequestedToBeDeleted) {
-                runningService.stopService({
+                serviceManager.stopService({
                     "serviceId": serviceIdRequestedToBeDeleted
                 });
             } else {
                 deletableRunningServices.map(({ id }) =>
-                    runningService.stopService({ "serviceId": id })
+                    serviceManager.stopService({ "serviceId": id })
                 );
             }
         }
