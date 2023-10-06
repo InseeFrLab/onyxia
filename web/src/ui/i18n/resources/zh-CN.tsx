@@ -1,4 +1,5 @@
 import type { Translations } from "../types";
+import MuiLink from "@mui/material/Link";
 
 export const translations: Translations<"zh-CN"> = {
     /* spell-checker: disable */
@@ -67,7 +68,16 @@ export const translations: Translations<"zh-CN"> = {
         "enable beta": "启用 Beta 测试模式",
         "beta mode helper": "用于平台高级配置和功能.",
         "enable dev mode": "启用开发者模式",
-        "dev mode helper": "启用正在开发的功能"
+        "dev mode helper": "启用正在开发的功能",
+        "Enable command bar": "启用命令栏",
+        "Enable command bar helper": ({ imgUrl }) => (
+            <>
+                <MuiLink href={imgUrl} target="_blank">
+                    命令栏
+                </MuiLink>
+                可让您了解在与用户界面互动时代您运行的命令。
+            </>
+        )
     },
     "AccountField": {
         "copy tooltip": "复制到剪贴板",

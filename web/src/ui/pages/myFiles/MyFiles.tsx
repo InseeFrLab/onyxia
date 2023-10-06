@@ -33,6 +33,9 @@ export default function MyFiles(props: Props) {
     );
 
     const { apiLogsEntries } = useCoreState(selectors.fileExplorer.apiLogsEntries);
+    const {
+        userConfigs: { isCommandBarEnabled }
+    } = useCoreState(selectors.userConfigs.userConfigs);
 
     const { fileExplorer } = useCoreFunctions();
 
@@ -185,6 +188,7 @@ export default function MyFiles(props: Props) {
                     "isFileOpen": false as const,
                     onOpenFile
                 }}
+                isCommandBarEnabled={isCommandBarEnabled}
             />
         </div>
     );

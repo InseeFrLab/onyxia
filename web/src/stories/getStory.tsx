@@ -27,7 +27,8 @@ const { CoreProvider } = createCoreProvider({
     "keycloakParams": undefined,
     "getCurrentLang": () => "en",
     "transformUrlBeforeRedirectToLogin": url => url,
-    "disablePersonalInfosInjectionInGroup": false
+    "disablePersonalInfosInjectionInGroup": false,
+    "isCommandBarEnabledByDefault": true
 });
 
 export const { createMockRoute } = createMockRouteFactory({

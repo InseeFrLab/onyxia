@@ -91,7 +91,17 @@ export const translations: Translations<"fi"> = {
         "beta mode helper":
             "Edistyneitä alustan konfigurointeja ja ominaisuuksia varten.",
         "enable dev mode": "Ota käyttöön kehittäjätila",
-        "dev mode helper": "Ota käyttöön kehitteillä olevat ominaisuudet"
+        "dev mode helper": "Ota käyttöön kehitteillä olevat ominaisuudet",
+        "Enable command bar": "Ota komentopalkki käyttöön",
+        "Enable command bar helper": ({ imgUrl }) => (
+            <>
+                <MuiLink href={imgUrl} target="_blank">
+                    Komentopalkki
+                </MuiLink>{" "}
+                antaa sinulle käsityksen komennoista, jotka suoritetaan puolestasi, kun
+                käytät käyttöliittymää.
+            </>
+        )
     },
     "AccountField": {
         "copy tooltip": "Kopioi leikepöydälle",

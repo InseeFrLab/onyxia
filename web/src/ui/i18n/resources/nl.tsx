@@ -93,7 +93,18 @@ export const translations: Translations<"nl"> = {
         "beta mode helper":
             "Voor geavanceerde configuratie en functionaliteiten van het platform.",
         "enable dev mode": "Modus ontwikkelaar activeren",
-        "dev mode helper": "Functionaliteiten in ontwikkeling activeren"
+        "dev mode helper": "Functionaliteiten in ontwikkeling activeren",
+        "Enable command bar": "Schakel opdrachtbalk in",
+        "Enable command bar helper": ({ imgUrl }) => (
+            <>
+                De{" "}
+                <MuiLink href={imgUrl} target="_blank">
+                    opdrachtbalk
+                </MuiLink>{" "}
+                geeft je inzicht in de commando's die namens jou worden uitgevoerd wanneer
+                je met de UI interageert.
+            </>
+        )
     },
     "AccountField": {
         "copy tooltip": "Kopiëren naar klembord",

@@ -74,6 +74,7 @@ export type ExplorerProps = {
     pathMinDepth: number;
     //TODO: Find a better way
     scrollableDivRef: RefObject<any>;
+    isCommandBarEnabled: boolean;
 } & (
     | {
           isFileOpen: true;
@@ -108,7 +109,8 @@ export const SecretsExplorer = memo((props: ExplorerProps) => {
         onNewItem,
         onCopyPath,
         scrollableDivRef,
-        pathMinDepth
+        pathMinDepth,
+        isCommandBarEnabled
     } = props;
 
     const [
@@ -380,11 +382,13 @@ export const SecretsExplorer = memo((props: ExplorerProps) => {
                         callback={buttonBarCallback}
                     />
                 </div>
-                <ApiLogsBar
-                    className={classes.apiLogBar}
-                    entries={apiLogsEntries}
-                    maxHeight={apiLogBarMaxHeight}
-                />
+                {isCommandBarEnabled && (
+                    <ApiLogsBar
+                        className={classes.apiLogBar}
+                        entries={apiLogsEntries}
+                        maxHeight={apiLogBarMaxHeight}
+                    />
+                )}
                 {(() => {
                     const title = props.isFileOpen
                         ? props.openFileBasename

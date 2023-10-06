@@ -26,6 +26,7 @@ type CoreParams = {
           }
         | undefined;
     disablePersonalInfosInjectionInGroup: boolean;
+    isCommandBarEnabledByDefault: boolean;
 };
 
 export async function createCore(params: CoreParams) {

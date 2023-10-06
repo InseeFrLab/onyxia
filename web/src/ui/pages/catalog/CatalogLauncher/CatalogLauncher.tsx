@@ -124,6 +124,10 @@ export const CatalogLauncher = memo((props: Props) => {
         apiLogsEntries
     } = useCoreState(selectors.launcher.launcherWrap).launcherWrap;
 
+    const {
+        userConfigs: { isCommandBarEnabled }
+    } = useCoreState(selectors.userConfigs.userConfigs);
+
     const { restorablePackageConfigs } = useCoreState(
         selectors.restorablePackageConfig.restorablePackageConfigs
     );
@@ -265,32 +269,34 @@ export const CatalogLauncher = memo((props: Props) => {
     return (
         <>
             <div className={cx(classes.root, className)} ref={scrollableDivRef}>
-                <ApiLogsBar
-                    classes={{
-                        "root": classes.apiLogBar,
-                        "rootWhenExpended": classes.apiLogBarWhenExpended,
-                        "helpDialog": classes.helpDialog
-                    }}
-                    maxHeight={rootHeight - 30}
-                    entries={apiLogsEntries}
-                    downloadButton={{
-                        "tooltipTitle": t("download as script"),
-                        "onClick": () =>
-                            saveAs(
-                                new Blob([launchScript.content], {
-                                    "type": "text/plain;charset=utf-8"
-                                }),
-                                launchScript.fileBasename
+                {isCommandBarEnabled && (
+                    <ApiLogsBar
+                        classes={{
+                            "root": classes.apiLogBar,
+                            "rootWhenExpended": classes.apiLogBarWhenExpended,
+                            "helpDialog": classes.helpDialog
+                        }}
+                        maxHeight={rootHeight - 30}
+                        entries={apiLogsEntries}
+                        downloadButton={{
+                            "tooltipTitle": t("download as script"),
+                            "onClick": () =>
+                                saveAs(
+                                    new Blob([launchScript.content], {
+                                        "type": "text/plain;charset=utf-8"
+                                    }),
+                                    launchScript.fileBasename
+                                )
+                        }}
+                        helpDialog={{
+                            "body": (
+                                <div className={classes.helpDialogBody}>
+                                    <Markdown>{t("api logs help body")}</Markdown>
+                                </div>
                             )
-                    }}
-                    helpDialog={{
-                        "body": (
-                            <div className={classes.helpDialogBody}>
-                                <Markdown>{t("api logs help body")}</Markdown>
-                            </div>
-                        )
-                    }}
-                />
+                        }}
+                    />
+                )}
                 <div className={classes.wrapperForMawWidth}>
                     <CatalogLauncherMainCard
                         packageName={packageName}

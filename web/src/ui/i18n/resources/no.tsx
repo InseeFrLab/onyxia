@@ -92,7 +92,17 @@ export const translations: Translations<"no"> = {
         "enable beta": "Aktiver beta-testmodus",
         "beta mode helper": "For avanserte plattformkonfigurasjoner og funksjoner.",
         "enable dev mode": "Aktiver utviklermodus",
-        "dev mode helper": "Aktiver funksjoner som for øyeblikket er under utvikling"
+        "dev mode helper": "Aktiver funksjoner som for øyeblikket er under utvikling",
+        "Enable command bar": "Aktiver kommandolinjen",
+        "Enable command bar helper": ({ imgUrl }) => (
+            <>
+                <MuiLink href={imgUrl} target="_blank">
+                    Kommandolinjen
+                </MuiLink>{" "}
+                gir deg innsikt i kommandoene som kjøres på dine vegne når du samhandler
+                med brukergrensesnittet.
+            </>
+        )
     },
     "AccountField": {
         "copy tooltip": "Kopier til utklippstavlen",

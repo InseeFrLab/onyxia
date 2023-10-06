@@ -35,6 +35,10 @@ export default function MySecrets(props: Props) {
     );
     const { apiLogsEntries } = useCoreState(selectors.secretExplorer.apiLogsEntries);
 
+    const {
+        userConfigs: { isCommandBarEnabled }
+    } = useCoreState(selectors.userConfigs.userConfigs);
+
     const secretEditorState = useCoreState(state => state.secretsEditor);
 
     const { secretExplorer, secretsEditor, userConfigs } = useCoreFunctions();
@@ -251,6 +255,7 @@ export default function MySecrets(props: Props) {
                 onCopyPath={onCopyPath}
                 pathMinDepth={1}
                 scrollableDivRef={scrollableDivRef}
+                isCommandBarEnabled={isCommandBarEnabled}
                 {...(() => {
                     if (secretEditorState === null) {
                         return {

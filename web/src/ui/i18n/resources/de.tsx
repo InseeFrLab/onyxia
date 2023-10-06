@@ -93,7 +93,18 @@ export const translations: Translations<"de"> = {
             "Für erweiterte Konfigurationen und Funktionen der Plattform.",
         "enable dev mode": "Entwickleroptionen aktivieren",
         "dev mode helper":
-            "Aktivieren Sie die Funktionen, die sich noch in der Entwicklung befinden"
+            "Aktivieren Sie die Funktionen, die sich noch in der Entwicklung befinden",
+        "Enable command bar": "Befehlsleiste aktivieren",
+        "Enable command bar helper": ({ imgUrl }) => (
+            <>
+                Die{" "}
+                <MuiLink href={imgUrl} target="_blank">
+                    Befehlsleiste
+                </MuiLink>{" "}
+                gibt Ihnen einen Einblick in die Befehle, die in Ihrem Namen ausgeführt
+                werden, wenn Sie mit der Benutzeroberfläche interagieren.
+            </>
+        )
     },
     "AccountField": {
         "copy tooltip": "In die Zwischenablage kopieren",

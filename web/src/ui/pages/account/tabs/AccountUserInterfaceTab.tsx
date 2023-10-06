@@ -25,7 +25,7 @@ export const AccountUserInterfaceTab = memo((props: Props) => {
     const { userConfigs } = useCoreFunctions();
 
     const {
-        userConfigs: { isBetaModeEnabled, isDevModeEnabled }
+        userConfigs: { isBetaModeEnabled, isDevModeEnabled, isCommandBarEnabled }
     } = useCoreState(selectors.userConfigs.userConfigs);
 
     const onRequestToggleIsBetaModeEnabled = useConstCallback(() => {
@@ -48,6 +48,13 @@ export const AccountUserInterfaceTab = memo((props: Props) => {
         userConfigs.changeValue({
             "key": "isDevModeEnabled",
             "value": !isDevModeEnabled
+        })
+    );
+
+    const onRequestToggleIsCommandBarEnabled = useConstCallback(() =>
+        userConfigs.changeValue({
+            "key": "isCommandBarEnabled",
+            "value": !isCommandBarEnabled
         })
     );
 
@@ -81,6 +88,17 @@ export const AccountUserInterfaceTab = memo((props: Props) => {
                 />
             )}
             <AccountField
+                type="toggle"
+                title={t("Enable command bar")}
+                helperText={t("Enable command bar helper", {
+                    "imgUrl":
+                        "https://github.com/InseeFrLab/onyxia/assets/6702424/474da82c-a0e1-4107-acf7-84870aab9f78"
+                })}
+                isLocked={false}
+                isOn={isCommandBarEnabled}
+                onRequestToggle={onRequestToggleIsCommandBarEnabled}
+            />
+            <AccountField
                 type="reset helper dialogs"
                 onResetHelperDialogsClick={userConfigs.resetHelperDialogs}
             />
@@ -97,4 +115,12 @@ export const { i18n } = declareComponentKeys<
     | "beta mode helper"
     | "enable dev mode"
     | "dev mode helper"
+    | "Enable command bar"
+    | {
+          K: "Enable command bar helper";
+          P: {
+              imgUrl: string;
+          };
+          R: JSX.Element;
+      }
 >()({ AccountUserInterfaceTab });

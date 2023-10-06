@@ -94,7 +94,18 @@ export const translations: Translations<"it"> = {
         "beta mode helper":
             "Per configurazioni e funzionalità avanzate della piattaforma.",
         "enable dev mode": "Attivare la modalità sviluppatore",
-        "dev mode helper": "Attivare le funzionalità in fase di sviluppo"
+        "dev mode helper": "Attivare le funzionalità in fase di sviluppo",
+        "Enable command bar": "Abilita la barra dei comandi",
+        "Enable command bar helper": ({ imgUrl }) => (
+            <>
+                La{" "}
+                <MuiLink href={imgUrl} target="_blank">
+                    barra dei comandi
+                </MuiLink>{" "}
+                ti offre una panoramica dei comandi eseguiti per tuo conto quando
+                interagisci con l'interfaccia utente.
+            </>
+        )
     },
     "AccountField": {
         "copy tooltip": "Copiare negli appunti.",
