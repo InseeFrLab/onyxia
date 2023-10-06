@@ -14422,10 +14422,10 @@ schema-utils@^4.0.0:
     ajv-formats "^2.1.1"
     ajv-keywords "^5.1.0"
 
-screen-scaler@^1.2.2:
-  version "1.2.2"
-  resolved "https://registry.yarnpkg.com/screen-scaler/-/screen-scaler-1.2.2.tgz#169d0d7536a6adeff5564dc907349951b693682a"
-  integrity sha512-H//WMH6XhNbjklheqpRLWAKxWXUUTzuemnFUKzceHCl8gdfSllHkpLZnw7ls/mCrLjkd57sGRgEgHpUxZs6V4g==
+screen-scaler@^1.2.3:
+  version "1.2.3"
+  resolved "https://registry.yarnpkg.com/screen-scaler/-/screen-scaler-1.2.3.tgz#d8c89f5f49e3ed1699b523cdf816c78619eaeb82"
+  integrity sha512-POkV9lTiPQmJiAbyrJHi2Yb1PoYjfD5uJl0HoWiCUVHzeAo/QIwP+YG1IpgQHIZDoQW1GdUFZIcIhYaU7XCsqw==
   dependencies:
     evt "^2.5.2"
     tsafe "^1.6.4"
