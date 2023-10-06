@@ -52,7 +52,10 @@ const isThereOwnedSharedServices = createSelector(
         undefined
 );
 
-const apiLogsEntries = createSelector(readyState, state => state?.apiLogsEntries ?? []);
+const commandLogsEntries = createSelector(
+    readyState,
+    state => state?.commandLogsEntries ?? []
+);
 
 export const selectors = {
     runningServices,
@@ -60,5 +63,5 @@ export const selectors = {
     isUpdating,
     isThereNonOwnedServices,
     isThereOwnedSharedServices,
-    apiLogsEntries
+    commandLogsEntries
 };

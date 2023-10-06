@@ -504,7 +504,7 @@ Føl deg fri til å utforske og ta kontroll over dine Kubernetes-implementeringe
         "launch one": "Klikk her for å starte en",
         "no services running": "Du har ingen kjørende tjenester"
     },
-    "ApiLogsBar": {
+    "CommandBar": {
         "ok": "ok"
     }
 };

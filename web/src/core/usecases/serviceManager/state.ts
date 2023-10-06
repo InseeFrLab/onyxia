@@ -23,7 +23,7 @@ export namespace State {
         envByServiceId: Record<string, Record<string, string>>;
         postInstallInstructionsByServiceId: Record<string, string>;
         kubernetesNamespace: string;
-        apiLogsEntries: {
+        commandLogsEntries: {
             cmdId: number;
             cmd: string;
             resp: string | undefined;
@@ -100,10 +100,10 @@ export const { reducer, actions } = createSlice({
                 envByServiceId,
                 postInstallInstructionsByServiceId,
                 kubernetesNamespace,
-                "apiLogsEntries": (() => {
+                "commandLogsEntries": (() => {
                     switch (state.stateDescription) {
                         case "ready":
-                            return state.apiLogsEntries;
+                            return state.commandLogsEntries;
                         case "not initialized":
                             return [];
                     }
@@ -166,7 +166,7 @@ export const { reducer, actions } = createSlice({
 
             assert(postInstallInstructions !== undefined);
 
-            state.apiLogsEntries.push({
+            state.commandLogsEntries.push({
                 "cmdId": Date.now(),
                 "cmd": `helm get notes ${serviceId} --namespace ${state.kubernetesNamespace}`,
                 "resp": postInstallInstructions
@@ -179,7 +179,7 @@ export const { reducer, actions } = createSlice({
 
             const env = state.envByServiceId[serviceId];
 
-            state.apiLogsEntries.push({
+            state.commandLogsEntries.push({
                 "cmdId": Date.now(),
                 "cmd": `helm get values ${serviceId} --namespace ${state.kubernetesNamespace}`,
                 "resp": ["USER-SUPPLIED VALUES:", yaml.stringify(nestObject(env))].join(

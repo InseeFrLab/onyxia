@@ -510,7 +510,7 @@ Fühlen Sie sich frei zu erkunden und die Kontrolle über Ihre Kubernetes-Implem
         "launch one": "Klicken Sie hier, um einen zu starten",
         "no services running": "Sie haben derzeit keine laufenden Dienste"
     },
-    "ApiLogsBar": {
+    "CommandBar": {
         "ok": "Ok"
     }
     /* spell-checker: enable */

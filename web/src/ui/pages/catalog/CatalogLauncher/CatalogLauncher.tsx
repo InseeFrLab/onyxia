@@ -24,7 +24,7 @@ import { Markdown } from "onyxia-ui/Markdown";
 import { declareComponentKeys } from "i18nifty";
 import { symToStr } from "tsafe/symToStr";
 import { getIsAutoLaunchDisabled } from "ui/env";
-import { ApiLogsBar } from "ui/shared/ApiLogsBar";
+import { CommandBar } from "ui/shared/CommandBar";
 import { useDomRect } from "powerhooks/useDomRect";
 import { saveAs } from "file-saver";
 
@@ -121,7 +121,7 @@ export const CatalogLauncher = memo((props: Props) => {
         packageName,
         icon,
         launchScript,
-        apiLogsEntries
+        commandLogsEntries
     } = useCoreState(selectors.launcher.launcherWrap).launcherWrap;
 
     const {
@@ -270,14 +270,14 @@ export const CatalogLauncher = memo((props: Props) => {
         <>
             <div className={cx(classes.root, className)} ref={scrollableDivRef}>
                 {isCommandBarEnabled && (
-                    <ApiLogsBar
+                    <CommandBar
                         classes={{
-                            "root": classes.apiLogBar,
-                            "rootWhenExpended": classes.apiLogBarWhenExpended,
+                            "root": classes.commandBar,
+                            "rootWhenExpended": classes.commandBarWhenExpended,
                             "helpDialog": classes.helpDialog
                         }}
                         maxHeight={rootHeight - 30}
-                        entries={apiLogsEntries}
+                        entries={commandLogsEntries}
                         downloadButton={{
                             "tooltipTitle": t("download as script"),
                             "onClick": () =>
@@ -420,7 +420,7 @@ const useStyles = tss
                 "marginBottom": theme.spacing(3)
             }
         },
-        "apiLogBar": {
+        "commandBar": {
             "position": "absolute",
             "right": 0,
             "width": "min(100%, 1100px)",
@@ -428,7 +428,7 @@ const useStyles = tss
             "zIndex": 1,
             "transition": "opacity 750ms linear"
         },
-        "apiLogBarWhenExpended": {
+        "commandBarWhenExpended": {
             "width": "min(100%, 1400px)",
             "transition": "width 70ms linear"
         },

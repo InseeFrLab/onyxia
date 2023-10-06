@@ -508,7 +508,7 @@ Voel je vrij om te verkennen en de controle te nemen over je Kubernetes-implemen
         "launch one": "Klik hier om er een te starten",
         "no services running": "You don't have any service running"
     },
-    "ApiLogsBar": {
+    "CommandBar": {
         "ok": "ok"
     }
     /* spell-checker: enable */

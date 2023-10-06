@@ -32,7 +32,9 @@ export default function MyFiles(props: Props) {
         selectors.fileExplorer.currentWorkingDirectoryView
     );
 
-    const { apiLogsEntries } = useCoreState(selectors.fileExplorer.apiLogsEntries);
+    const { commandLogsEntries } = useCoreState(
+        selectors.fileExplorer.commandLogsEntries
+    );
     const {
         userConfigs: { isCommandBarEnabled }
     } = useCoreState(selectors.userConfigs.userConfigs);
@@ -169,7 +171,7 @@ export default function MyFiles(props: Props) {
                 doShowHidden={false}
                 directoryPath={currentWorkingDirectoryView.directoryPath}
                 isNavigating={currentWorkingDirectoryView.isNavigationOngoing}
-                apiLogsEntries={apiLogsEntries}
+                commandLogsEntries={commandLogsEntries}
                 evtAction={evtExplorerAction}
                 files={currentWorkingDirectoryView.files}
                 directories={currentWorkingDirectoryView.directories}

@@ -507,7 +507,7 @@ Sentiti libero di esplorare e prendere il controllo dei tuoi deployment di Kuber
         "launch one": "Clicca qui per avviarne uno",
         "no services running": "You don't have any service running"
     },
-    "ApiLogsBar": {
+    "CommandBar": {
         "ok": "ok"
     }
     /* spell-checker: enable */

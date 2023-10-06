@@ -11,10 +11,10 @@ import { useConstCallback } from "powerhooks/useConstCallback";
 import { declareComponentKeys } from "i18nifty";
 import { useTranslation } from "ui/i18n";
 
-export type ApiLogsBarProps = {
+export type CommandBarProps = {
     className?: string;
     classes?: Partial<ReturnType<typeof useStyles>["classes"]>;
-    entries: ApiLogsBarProps.Entry[];
+    entries: CommandBarProps.Entry[];
     /** In pixel */
     maxHeight: number;
     downloadButton?: {
@@ -27,7 +27,7 @@ export type ApiLogsBarProps = {
     };
 };
 
-export namespace ApiLogsBarProps {
+export namespace CommandBarProps {
     export type Entry = {
         cmdId: number;
         cmd: string;
@@ -35,7 +35,7 @@ export namespace ApiLogsBarProps {
     };
 }
 
-export const ApiLogsBar = memo((props: ApiLogsBarProps) => {
+export const CommandBar = memo((props: CommandBarProps) => {
     const { className, entries, maxHeight, downloadButton, helpDialog } = props;
 
     const {
@@ -85,7 +85,7 @@ export const ApiLogsBar = memo((props: ApiLogsBarProps) => {
 
     const onHelpDialogClose = useConstCallback(() => setIsHelpDialogOpen(false));
 
-    const { t } = useTranslation({ ApiLogsBar });
+    const { t } = useTranslation({ CommandBar });
 
     return (
         <>
@@ -181,7 +181,7 @@ export const ApiLogsBar = memo((props: ApiLogsBarProps) => {
     );
 });
 
-export const { i18n } = declareComponentKeys<"ok">()({ ApiLogsBar });
+export const { i18n } = declareComponentKeys<"ok">()({ CommandBar });
 
 const useStyles = tss
     .withParams<{
@@ -189,7 +189,7 @@ const useStyles = tss
         headerHeight: number;
         isExpended: boolean;
     }>()
-    .withName({ ApiLogsBar })
+    .withName({ CommandBar })
     .create(({ theme, isExpended, maxHeight, headerHeight }) => {
         const borderRadius = `0 0 0 30px`;
 

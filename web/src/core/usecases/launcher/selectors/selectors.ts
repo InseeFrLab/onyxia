@@ -465,7 +465,7 @@ const launchScript = createSelector(
     }
 );
 
-const apiLogsEntries = createSelector(launchCommands, launchCommands => {
+const commandLogsEntries = createSelector(launchCommands, launchCommands => {
     if (launchCommands === undefined) {
         return undefined;
     }
@@ -489,7 +489,7 @@ const launcherWrap = createSelector(
     packageName,
     icon,
     launchScript,
-    apiLogsEntries,
+    commandLogsEntries,
     (
         isReady,
         friendlyName,
@@ -502,7 +502,7 @@ const launcherWrap = createSelector(
         packageName,
         icon,
         launchScript,
-        apiLogsEntries
+        commandLogsEntries
     ) => {
         if (!isReady) {
             return {
@@ -518,7 +518,7 @@ const launcherWrap = createSelector(
                 [symToStr({ packageName })]: undefined,
                 [symToStr({ icon })]: undefined,
                 [symToStr({ launchScript })]: undefined,
-                [symToStr({ apiLogsEntries })]: undefined
+                [symToStr({ commandLogsEntries })]: undefined
             };
         }
 
@@ -530,7 +530,7 @@ const launcherWrap = createSelector(
         assert(formFieldsIsWellFormed !== undefined);
         assert(icon !== undefined);
         assert(packageName !== undefined);
-        assert(apiLogsEntries !== undefined);
+        assert(commandLogsEntries !== undefined);
         assert(launchScript !== undefined);
 
         return {
@@ -545,7 +545,7 @@ const launcherWrap = createSelector(
             packageName,
             icon,
             launchScript,
-            apiLogsEntries
+            commandLogsEntries
         };
     }
 );

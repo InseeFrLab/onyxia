@@ -502,7 +502,7 @@ Feel free to explore and take charge of your Kubernetes deployments!
         "launch one": "Click here to launch one",
         "no services running": "You don't have any service running"
     },
-    "ApiLogsBar": {
+    "CommandBar": {
         "ok": "Ok"
     }
 };

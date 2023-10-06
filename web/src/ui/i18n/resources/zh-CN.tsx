@@ -440,7 +440,7 @@ export const translations: Translations<"zh-CN"> = {
         "launch one": "点击来启动此服务",
         "no services running": "You don't have any service running"
     },
-    "ApiLogsBar": {
+    "CommandBar": {
         "ok": "是"
     }
     /* spell-checker: enable */

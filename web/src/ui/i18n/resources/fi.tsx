@@ -499,7 +499,7 @@ Tunne olosi vapaaksi tutkimaan ja ottamaan haltuusi Kubernetes-levityksesi!
         "launch one": "Käynnistä palvelu",
         "no services running": "Sinulla ei ole käynnissä olevia palveluita"
     },
-    "ApiLogsBar": {
+    "CommandBar": {
         "ok": "ok"
     }
 };

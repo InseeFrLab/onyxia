@@ -515,7 +515,7 @@ N'hésitez pas à explorer et à prendre en main vos déploiements Kubernetes !
         "no services running":
             "Vous n'avez actuellement aucun service en cours d'exécution"
     },
-    "ApiLogsBar": {
+    "CommandBar": {
         "ok": "ok"
     }
     /* spell-checker: enable */
