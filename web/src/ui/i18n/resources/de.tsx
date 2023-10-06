@@ -484,20 +484,23 @@ Fühlen Sie sich frei zu erkunden und die Kontrolle über Ihre Kubernetes-Implem
         "saved": "Gespeichert",
         "show all": "Alle anzeigen"
     },
-    "MyServicesCards": {
-        "running services": "Laufende Dienste",
-        "no services running": "Sie haben derzeit keine laufenden Dienste",
-        "launch one": "Klicken Sie hier, um einen zu starten",
-        "ok": "ok",
-        "need to copy": "Müssen Sie nicht abgeschnittene Werte kopieren?",
-        "everything have been printed to the console":
-            "Alles wurde in der Konsole protokolliert",
-        "first copy the password": "Kopieren Sie zuerst das Passwort...",
-        "open the service": "Dienst öffnen 🚀",
+    "ReadmeAndEnvDialog": {
+        "ok": "Ok",
         "return": "Zurück"
     },
+    "CopyOpenButton": {
+        "first copy the password": "Kopieren Sie zuerst das Passwort...",
+        "open the service": "Dienst öffnen 🚀"
+    },
+    "MyServicesCards": {
+        "running services": "Laufende Dienste"
+    },
+    "NoRunningService": {
+        "launch one": "Klicken Sie hier, um einen zu starten",
+        "no services running": "Sie haben derzeit keine laufenden Dienste"
+    },
     "ApiLogsBar": {
-        "ok": "ok"
+        "ok": "Ok"
     }
     /* spell-checker: enable */
 };

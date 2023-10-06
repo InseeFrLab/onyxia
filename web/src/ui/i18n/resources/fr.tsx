@@ -488,17 +488,21 @@ N'hésitez pas à explorer et à prendre en main vos déploiements Kubernetes !
         "saved": "Enregistrés",
         "show all": "Afficher tous"
     },
-    "MyServicesCards": {
-        "running services": "Services en cours",
-        "no services running":
-            "Vous n'avez actuellement aucun service en cours d'exécution",
-        "launch one": "Cliquez ici pour en lancer un",
+    "ReadmeAndEnvDialog": {
         "ok": "ok",
-        "need to copy": "Besoin de copier les valeurs non tronquées ?",
-        "everything have been printed to the console": "Tout a été loggé dans la console",
-        "first copy the password": "Commencez par copier le mot de passe...",
-        "open the service": "Ouvrir le service 🚀",
         "return": "Retour"
+    },
+    "CopyOpenButton": {
+        "first copy the password": "Commencez par copier le mot de passe...",
+        "open the service": "Ouvrir le service 🚀"
+    },
+    "MyServicesCards": {
+        "running services": "Services en cours"
+    },
+    "NoRunningService": {
+        "launch one": "Clickez ici pour en lancer un",
+        "no services running":
+            "Vous n'avez actuellement aucun service en cours d'exécution"
     },
     "ApiLogsBar": {
         "ok": "ok"

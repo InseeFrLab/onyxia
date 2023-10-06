@@ -415,16 +415,20 @@ export const translations: Translations<"zh-CN"> = {
         "saved": "已经保存",
         "show all": "显示所有"
     },
-    "MyServicesCards": {
-        "running services": "正在运行的服务",
-        "no services running": "您没有正在运行的服务",
-        "launch one": "点击来启动此服务",
+    "ReadmeAndEnvDialog": {
         "ok": "是",
-        "need to copy": "需要复制未截断的值？",
-        "everything have been printed to the console": "所有的信息都会记录在日志里",
-        "first copy the password": "请复制您的密码",
-        "open the service": "打开服务 🚀",
         "return": "返回"
+    },
+    "CopyOpenButton": {
+        "first copy the password": "请复制您的密码",
+        "open the service": "打开服务 🚀"
+    },
+    "MyServicesCards": {
+        "running services": "正在运行的服务"
+    },
+    "NoRunningService": {
+        "launch one": "点击来启动此服务",
+        "no services running": "You don't have any service running"
     },
     "ApiLogsBar": {
         "ok": "是"

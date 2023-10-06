@@ -3,10 +3,33 @@ import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { id } from "tsafe/id";
 
-type State = {
-    isUpdating: boolean;
-    runningServices: undefined | RunningService[];
-};
+import { nestObject } from "core/tools/nestObject";
+import * as yaml from "yaml";
+
+export type State = State.NotInitialized | State.Ready;
+
+export namespace State {
+    export type Common = {
+        isUpdating: boolean;
+    };
+
+    export type NotInitialized = Common & {
+        stateDescription: "not initialized";
+    };
+
+    export type Ready = Common & {
+        stateDescription: "ready";
+        runningServices: RunningService[];
+        envByServiceId: Record<string, Record<string, string>>;
+        postInstallInstructionsByServiceId: Record<string, string>;
+        kubernetesNamespace: string;
+        apiLogsEntries: {
+            cmdId: number;
+            cmd: string;
+            resp: string | undefined;
+        }[];
+    };
+}
 
 export type RunningService = RunningService.Owned | RunningService.NotOwned;
 
@@ -23,8 +46,7 @@ export declare namespace RunningService {
         vaultTokenExpirationTime: number | undefined;
         s3TokenExpirationTime: number | undefined;
         urls: string[];
-        postInstallInstructions: string | undefined;
-        env: Record<string, string>;
+        hasPostInstallInstructions: boolean;
     };
 
     export type Owned = Common & {
@@ -43,23 +65,49 @@ export const name = "serviceManager";
 
 export const { reducer, actions } = createSlice({
     name,
-    "initialState": id<State>({
-        "isUpdating": false,
-        "runningServices": undefined
-    }),
+    "initialState": id<State>(
+        id<State.NotInitialized>({
+            "stateDescription": "not initialized",
+            "isUpdating": false
+        })
+    ),
     "reducers": {
         "updateStarted": state => {
             state.isUpdating = true;
         },
         "updateCompleted": (
-            _state,
-            { payload }: PayloadAction<{ runningServices: RunningService[] }>
+            state,
+            {
+                payload
+            }: PayloadAction<{
+                runningServices: RunningService[];
+                envByServiceId: Record<string, Record<string, string>>;
+                postInstallInstructionsByServiceId: Record<string, string>;
+                kubernetesNamespace: string;
+            }>
         ) => {
-            const { runningServices } = payload;
+            const {
+                runningServices,
+                envByServiceId,
+                postInstallInstructionsByServiceId,
+                kubernetesNamespace
+            } = payload;
 
-            return id<State>({
+            return id<State.Ready>({
+                "stateDescription": "ready",
                 "isUpdating": false,
-                runningServices
+                runningServices,
+                envByServiceId,
+                postInstallInstructionsByServiceId,
+                kubernetesNamespace,
+                "apiLogsEntries": (() => {
+                    switch (state.stateDescription) {
+                        case "ready":
+                            return state.apiLogsEntries;
+                        case "not initialized":
+                            return [];
+                    }
+                })()
             });
         },
         "serviceStarted": (
@@ -72,6 +120,9 @@ export const { reducer, actions } = createSlice({
             }>
         ) => {
             const { serviceId, doOverwriteStaredAtToNow } = payload;
+
+            assert(state.stateDescription === "ready");
+
             const { runningServices } = state;
 
             assert(runningServices !== undefined);
@@ -92,6 +143,8 @@ export const { reducer, actions } = createSlice({
         "serviceStopped": (state, { payload }: PayloadAction<{ serviceId: string }>) => {
             const { serviceId } = payload;
 
+            assert(state.stateDescription === "ready");
+
             const { runningServices } = state;
             assert(runningServices !== undefined);
 
@@ -99,6 +152,40 @@ export const { reducer, actions } = createSlice({
                 runningServices.findIndex(({ id }) => id === serviceId),
                 1
             );
+        },
+        "postInstallInstructionsRequested": (
+            state,
+            { payload }: { payload: { serviceId: string } }
+        ) => {
+            const { serviceId } = payload;
+
+            assert(state.stateDescription === "ready");
+
+            const postInstallInstructions =
+                state.postInstallInstructionsByServiceId[serviceId];
+
+            assert(postInstallInstructions !== undefined);
+
+            state.apiLogsEntries.push({
+                "cmdId": Date.now(),
+                "cmd": `helm get notes ${serviceId} --namespace ${state.kubernetesNamespace}`,
+                "resp": postInstallInstructions
+            });
+        },
+        "envRequested": (state, { payload }: { payload: { serviceId: string } }) => {
+            const { serviceId } = payload;
+
+            assert(state.stateDescription === "ready");
+
+            const env = state.envByServiceId[serviceId];
+
+            state.apiLogsEntries.push({
+                "cmdId": Date.now(),
+                "cmd": `helm get values ${serviceId} --namespace ${state.kubernetesNamespace}`,
+                "resp": ["USER-SUPPLIED VALUES:", yaml.stringify(nestObject(env))].join(
+                    "\n"
+                )
+            });
         }
     }
 });

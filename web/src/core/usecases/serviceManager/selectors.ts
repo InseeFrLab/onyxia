@@ -3,15 +3,32 @@ import { createSelector } from "@reduxjs/toolkit";
 
 import { name, type RunningService } from "./state";
 
-const runningServices = (rootState: RootState): RunningService[] | undefined => {
-    const { runningServices } = rootState[name];
+const readyState = (rootState: RootState) => {
+    const state = rootState[name];
 
-    if (runningServices === undefined) {
+    if (state.stateDescription !== "ready") {
         return undefined;
     }
 
-    return [...runningServices].sort((a, b) => b.startedAt - a.startedAt);
+    return state;
 };
+
+const runningServices = createSelector(
+    readyState,
+    (state): RunningService[] | undefined => {
+        if (state === undefined) {
+            return undefined;
+        }
+
+        const { runningServices } = state;
+
+        if (runningServices === undefined) {
+            return undefined;
+        }
+
+        return [...runningServices].sort((a, b) => b.startedAt - a.startedAt);
+    }
+);
 
 const isUpdating = (rootState: RootState): boolean => {
     const { isUpdating } = rootState[name];
@@ -35,10 +52,13 @@ const isThereOwnedSharedServices = createSelector(
         undefined
 );
 
+const apiLogsEntries = createSelector(readyState, state => state?.apiLogsEntries ?? []);
+
 export const selectors = {
     runningServices,
     deletableRunningServices,
     isUpdating,
     isThereNonOwnedServices,
-    isThereOwnedSharedServices
+    isThereOwnedSharedServices,
+    apiLogsEntries
 };

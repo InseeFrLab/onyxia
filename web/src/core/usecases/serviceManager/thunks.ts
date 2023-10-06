@@ -4,6 +4,7 @@ import * as projectConfigs from "../projectConfigs";
 import type { Thunks } from "core/core";
 import { exclude } from "tsafe/exclude";
 import { createUsecaseContextApi } from "redux-clean-architecture";
+import { assert } from "tsafe/assert";
 import { Evt } from "evt";
 import { name, actions } from "./state";
 import type { RunningService } from "./state";
@@ -75,16 +76,18 @@ export const thunks = {
                 return { getLogoUrl };
             })();
 
+            const { namespace: kubernetesNamespace } =
+                projectConfigs.selectors.selectedProject(getState());
+
             const getMonitoringUrl = (params: { serviceId: string }) => {
                 const { serviceId } = params;
 
-                const project = projectConfigs.selectors.selectedProject(getState());
+                const region = deploymentRegion.selectors.selectedDeploymentRegion(
+                    getState()
+                );
 
-                const selectedDeploymentRegion =
-                    deploymentRegion.selectors.selectedDeploymentRegion(getState());
-
-                return selectedDeploymentRegion.servicesMonitoringUrlPattern
-                    ?.replace("$NAMESPACE", project.namespace)
+                return region.servicesMonitoringUrlPattern
+                    ?.replace("$NAMESPACE", kubernetesNamespace)
                     .replace("$INSTANCE", serviceId.replace(/^\//, ""));
             };
 
@@ -96,6 +99,19 @@ export const thunks = {
 
             dispatch(
                 actions.updateCompleted({
+                    kubernetesNamespace,
+                    "envByServiceId": Object.fromEntries(
+                        runningServicesRaw.map(({ id, env }) => [id, env])
+                    ),
+                    "postInstallInstructionsByServiceId": Object.fromEntries(
+                        runningServicesRaw
+                            .map(({ id, postInstallInstructions }) =>
+                                postInstallInstructions === undefined
+                                    ? undefined
+                                    : [id, postInstallInstructions]
+                            )
+                            .filter(exclude(undefined))
+                    ),
                     "runningServices": runningServicesRaw
                         .map(
                             ({
@@ -104,10 +120,10 @@ export const thunks = {
                                 packageName,
                                 urls,
                                 startedAt,
-                                postInstallInstructions,
                                 isShared,
-                                env,
                                 ownerUsername,
+                                env,
+                                postInstallInstructions,
                                 ...rest
                             }) => {
                                 const common: RunningService.Common = {
@@ -141,8 +157,8 @@ export const thunks = {
                                                   )
                                           ),
                                           true),
-                                    postInstallInstructions,
-                                    env
+                                    "hasPostInstallInstructions":
+                                        postInstallInstructions !== undefined
                                 };
 
                                 const isOwned = ownerUsername === username;
@@ -181,6 +197,41 @@ export const thunks = {
             dispatch(actions.serviceStopped({ serviceId }));
 
             await onyxiaApi.stopService({ serviceId });
+        },
+    "getPostInstallInstructions":
+        (params: { serviceId: string }) =>
+        (...args): string => {
+            const { serviceId } = params;
+
+            const [dispatch, getState] = args;
+
+            const state = getState()[name];
+
+            assert(state.stateDescription === "ready");
+
+            const postInstallInstructions =
+                state.postInstallInstructionsByServiceId[serviceId];
+
+            assert(postInstallInstructions !== undefined);
+
+            dispatch(actions.postInstallInstructionsRequested({ serviceId }));
+
+            return postInstallInstructions;
+        },
+    "getEnv":
+        (params: { serviceId: string }) =>
+        (...args): Record<string, string> => {
+            const { serviceId } = params;
+
+            const [dispatch, getState] = args;
+
+            dispatch(actions.envRequested({ serviceId }));
+
+            const state = getState()[name];
+
+            assert(state.stateDescription === "ready");
+
+            return state.envByServiceId[serviceId];
         }
 } satisfies Thunks;
 

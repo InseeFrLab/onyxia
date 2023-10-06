@@ -13,6 +13,10 @@ import { objectKeys } from "tsafe/objectKeys";
 import { fromNow } from "ui/useMoment";
 import { evtLang } from "ui/i18n";
 import { declareComponentKeys } from "i18nifty";
+import { ReadmeAndEnvDialog } from "./ReadmeAndEnvDialog";
+import { Evt, NonPostableEvt } from "evt";
+import { useConst } from "powerhooks/useConst";
+import { useEvt } from "evt/hooks";
 
 const runningTimeThreshold = 7 * 24 * 3600 * 1000;
 
@@ -24,12 +28,14 @@ function getDoesHaveBeenRunningForTooLong(params: { startTime: number }): boolea
 
 export type Props = {
     className?: string;
+    evtAction: NonPostableEvt<"SHOW POST INSTALL INSTRUCTIONS">;
     packageIconUrl?: string;
     friendlyName: string;
     packageName: string;
     onRequestDelete: (() => void) | undefined;
-    onRequestShowPostInstallInstructions: (() => void) | undefined;
-    onRequestShowEnv: () => void;
+    getPoseInstallInstructions: (() => string) | undefined;
+    getEnv: () => Record<string, string>;
+    getServicePassword: () => Promise<string>;
     openUrl: string | undefined;
     monitoringUrl: string | undefined;
     /** undefined when the service is not yey launched */
@@ -45,12 +51,14 @@ export type Props = {
 export const MyServicesCard = memo((props: Props) => {
     const {
         className,
+        evtAction,
         packageIconUrl,
         friendlyName,
         packageName,
         onRequestDelete,
-        onRequestShowPostInstallInstructions,
-        onRequestShowEnv,
+        getEnv,
+        getPoseInstallInstructions,
+        getServicePassword,
         monitoringUrl,
         openUrl,
         startTime,
@@ -184,85 +192,127 @@ export const MyServicesCard = memo((props: Props) => {
         [tokensStatus, t]
     );
 
+    const evtReadmeAndEnvDialogAction = useConst(() =>
+        Evt.create<"SHOW ENV" | "SHOW POST INSTALL INSTRUCTIONS">()
+    );
+
+    useEvt(
+        ctx => {
+            evtAction.attach(
+                action => action === "SHOW POST INSTALL INSTRUCTIONS",
+                ctx,
+                async () => {
+                    if (getPoseInstallInstructions === undefined) {
+                        return;
+                    }
+                    evtReadmeAndEnvDialogAction.post("SHOW POST INSTALL INSTRUCTIONS");
+                }
+            );
+        },
+        [evtAction]
+    );
+
     return (
-        <div className={cx(classes.root, className)}>
-            <div className={classes.aboveDivider}>
-                <MyServicesRoundLogo url={packageIconUrl} severity={severity} />
-                <Text className={classes.title} typo="object heading">
-                    {capitalize(friendlyName)}
-                </Text>
-                <div style={{ "flex": 1 }} />
-                {isShared && (
-                    <Tooltip title={t("this is a shared service")}>
-                        <Icon iconId="people" />
+        <>
+            <div className={cx(classes.root, className)}>
+                <div className={classes.aboveDivider}>
+                    <MyServicesRoundLogo url={packageIconUrl} severity={severity} />
+                    <Text className={classes.title} typo="object heading">
+                        {capitalize(friendlyName)}
+                    </Text>
+                    <div style={{ "flex": 1 }} />
+                    {isShared && (
+                        <Tooltip title={t("this is a shared service")}>
+                            <Icon iconId="people" />
+                        </Tooltip>
+                    )}
+                    <Tooltip title={tooltipTitle}>
+                        <Icon
+                            iconId="errorOutline"
+                            className={classes.errorOutlineIcon}
+                        />
                     </Tooltip>
-                )}
-                <Tooltip title={tooltipTitle}>
-                    <Icon iconId="errorOutline" className={classes.errorOutlineIcon} />
-                </Tooltip>
-            </div>
-            <div className={classes.belowDivider}>
-                <div className={classes.belowDividerTop}>
-                    <div>
-                        <Text typo="caption" className={classes.captions}>
-                            {t("service")}
-                        </Text>
-                        <div className={classes.packageNameWrapper}>
-                            <Text typo="label 1">{capitalize(packageName)}</Text>
-                            {isShared && (
-                                <Tag
-                                    className={classes.sharedTag}
-                                    text={isOwned ? t("shared by you") : ownerUsername!}
+                </div>
+                <div className={classes.belowDivider}>
+                    <div className={classes.belowDividerTop}>
+                        <div>
+                            <Text typo="caption" className={classes.captions}>
+                                {t("service")}
+                            </Text>
+                            <div className={classes.packageNameWrapper}>
+                                <Text typo="label 1">{capitalize(packageName)}</Text>
+                                {isShared && (
+                                    <Tag
+                                        className={classes.sharedTag}
+                                        text={
+                                            isOwned ? t("shared by you") : ownerUsername!
+                                        }
+                                    />
+                                )}
+                            </div>
+                        </div>
+                        <div className={classes.timeContainer}>
+                            <Text typo="caption" className={classes.captions}>
+                                {t("running since")}
+                            </Text>
+                            {startTime === undefined ? (
+                                <MyServicesRunningTime isRunning={false} />
+                            ) : (
+                                <MyServicesRunningTime
+                                    isRunning={true}
+                                    doesHaveBeenRunningForTooLong={getDoesHaveBeenRunningForTooLong(
+                                        { startTime }
+                                    )}
+                                    startTime={startTime}
                                 />
                             )}
                         </div>
                     </div>
-                    <div className={classes.timeContainer}>
-                        <Text typo="caption" className={classes.captions}>
-                            {t("running since")}
-                        </Text>
+                    <div className={classes.belowDividerBottom}>
+                        <IconButton
+                            iconId="infoOutlined"
+                            onClick={() => evtReadmeAndEnvDialogAction.post("SHOW ENV")}
+                        />
+                        {onRequestDelete !== undefined && (
+                            <IconButton iconId="delete" onClick={onRequestDelete} />
+                        )}
+                        {monitoringUrl !== undefined && (
+                            <IconButton iconId="equalizer" href={monitoringUrl} />
+                        )}
+                        {getPoseInstallInstructions !== undefined && (
+                            <Button
+                                onClick={() =>
+                                    evtReadmeAndEnvDialogAction.post(
+                                        "SHOW POST INSTALL INSTRUCTIONS"
+                                    )
+                                }
+                                variant="ternary"
+                            >
+                                <span>{t("readme").toUpperCase()}</span>
+                            </Button>
+                        )}
+                        <div style={{ "flex": 1 }} />
                         {startTime === undefined ? (
-                            <MyServicesRunningTime isRunning={false} />
+                            <CircularProgress color="textPrimary" size={20} />
                         ) : (
-                            <MyServicesRunningTime
-                                isRunning={true}
-                                doesHaveBeenRunningForTooLong={getDoesHaveBeenRunningForTooLong(
-                                    { startTime }
-                                )}
-                                startTime={startTime}
-                            />
+                            openUrl && (
+                                <Button variant="secondary" href={openUrl}>
+                                    {t("open")}
+                                </Button>
+                            )
                         )}
                     </div>
                 </div>
-                <div className={classes.belowDividerBottom}>
-                    <IconButton iconId="infoOutlined" onClick={onRequestShowEnv} />
-                    {onRequestDelete !== undefined && (
-                        <IconButton iconId="delete" onClick={onRequestDelete} />
-                    )}
-                    {monitoringUrl !== undefined && (
-                        <IconButton iconId="equalizer" href={monitoringUrl} />
-                    )}
-                    {onRequestShowPostInstallInstructions !== undefined && (
-                        <Button
-                            onClick={onRequestShowPostInstallInstructions}
-                            variant="ternary"
-                        >
-                            <span>{t("readme").toUpperCase()}</span>
-                        </Button>
-                    )}
-                    <div style={{ "flex": 1 }} />
-                    {startTime === undefined ? (
-                        <CircularProgress color="textPrimary" size={20} />
-                    ) : (
-                        openUrl && (
-                            <Button variant="secondary" href={openUrl}>
-                                {t("open")}
-                            </Button>
-                        )
-                    )}
-                </div>
             </div>
-        </div>
+            <ReadmeAndEnvDialog
+                evtAction={evtReadmeAndEnvDialogAction}
+                getEnv={getEnv}
+                getPostInstallInstructions={getPoseInstallInstructions}
+                getServicePassword={getServicePassword}
+                openUrl={openUrl}
+                startTime={startTime}
+            />
+        </>
     );
 });
 

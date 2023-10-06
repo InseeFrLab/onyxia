@@ -479,17 +479,20 @@ Føl deg fri til å utforske og ta kontroll over dine Kubernetes-implementeringe
         "saved": "Lagret",
         "show all": "Vis alle"
     },
-    "MyServicesCards": {
-        "running services": "Kjørende tjenester",
-        "no services running": "Du har ingen kjørende tjenester",
-        "launch one": "Klikk her for å starte en",
+    "ReadmeAndEnvDialog": {
         "ok": "ok",
-        "need to copy": "Trenger du å kopiere ukuttet verdi?",
-        "everything have been printed to the console":
-            "Alt er blitt skrevet ut i konsollen",
-        "first copy the password": "Først, kopier tjeneste...",
-        "open the service": "Åpne tjenesten 🚀",
         "return": "Gå tilbake"
+    },
+    "CopyOpenButton": {
+        "first copy the password": "Først, kopier tjeneste...",
+        "open the service": "Åpne tjenesten 🚀"
+    },
+    "MyServicesCards": {
+        "running services": "Kjørende tjenester"
+    },
+    "NoRunningService": {
+        "launch one": "Klikk her for å starte en",
+        "no services running": "Du har ingen kjørende tjenester"
     },
     "ApiLogsBar": {
         "ok": "ok"

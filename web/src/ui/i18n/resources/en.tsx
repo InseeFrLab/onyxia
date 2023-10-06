@@ -476,17 +476,20 @@ Feel free to explore and take charge of your Kubernetes deployments!
         "saved": "Saved",
         "show all": "Show all"
     },
-    "MyServicesCards": {
-        "running services": "Running services",
-        "no services running": "You don't have any service running",
-        "launch one": "Click here to launch one",
+    "ReadmeAndEnvDialog": {
         "ok": "ok",
-        "need to copy": "Need to copy untruncated values?",
-        "everything have been printed to the console":
-            "Everything have been printed to the console",
-        "first copy the password": "First, copy the service...",
-        "open the service": "Open the service 🚀",
         "return": "Return"
+    },
+    "CopyOpenButton": {
+        "first copy the password": "First, copy the service...",
+        "open the service": "Open the service 🚀"
+    },
+    "MyServicesCards": {
+        "running services": "Running services"
+    },
+    "NoRunningService": {
+        "launch one": "Click here to launch one",
+        "no services running": "You don't have any service running"
     },
     "ApiLogsBar": {
         "ok": "Ok"

@@ -481,17 +481,20 @@ Sentiti libero di esplorare e prendere il controllo dei tuoi deployment di Kuber
         "saved": "Salvati",
         "show all": "Mostrare tutti"
     },
-    "MyServicesCards": {
-        "running services": "Servizi in corso",
-        "no services running": "Attualmente non hai alcun servizio in esecuzione",
-        "launch one": "Clicca qui per avviarne uno",
+    "ReadmeAndEnvDialog": {
         "ok": "ok",
-        "need to copy": "Hai bisogno di copiare i valori non troncati?",
-        "everything have been printed to the console":
-            "Tutto è stato registrato nella console.",
-        "first copy the password": "Inizia copiando la password...",
-        "open the service": "Aprire il servizio 🚀",
         "return": "Ritorno"
+    },
+    "CopyOpenButton": {
+        "first copy the password": "Inizia copiando la password...",
+        "open the service": "Aprire il servizio 🚀"
+    },
+    "MyServicesCards": {
+        "running services": "Servizi in corso"
+    },
+    "NoRunningService": {
+        "launch one": "Clicca qui per avviarne uno",
+        "no services running": "You don't have any service running"
     },
     "ApiLogsBar": {
         "ok": "ok"

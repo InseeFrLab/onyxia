@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState, useReducer } from "react";
 import { tss, PageHeader } from "ui/theme";
-
 import { useTranslation } from "ui/i18n";
 import { MyServicesButtonBar } from "./MyServicesButtonBar";
 import { MyServicesCards } from "./MyServicesCards";
@@ -161,10 +160,9 @@ export default function MyServices(props: Props) {
                     startedAt,
                     monitoringUrl,
                     isStarting,
-                    postInstallInstructions,
                     vaultTokenExpirationTime,
                     s3TokenExpirationTime,
-                    env,
+                    hasPostInstallInstructions,
                     ...rest
                 }) => ({
                     "serviceId": id,
@@ -174,8 +172,7 @@ export default function MyServices(props: Props) {
                     "openUrl": urls[0],
                     monitoringUrl,
                     "startTime": isStarting ? undefined : startedAt,
-                    postInstallInstructions,
-                    env,
+                    hasPostInstallInstructions,
                     "isShared": rest.isShared,
                     "isOwned": rest.isOwned,
                     "ownerUsername": rest.isOwned ? undefined : rest.ownerUsername,
@@ -281,6 +278,10 @@ export default function MyServices(props: Props) {
                             catalogExplorerLink={catalogExplorerLink}
                             evtAction={evtMyServiceCardsAction}
                             getServicePassword={getServicePassword}
+                            getEnv={serviceManager.getEnv}
+                            getPostInstallInstructions={
+                                serviceManager.getPostInstallInstructions
+                            }
                         />
                     )}
                     <MyServicesSavedConfigs

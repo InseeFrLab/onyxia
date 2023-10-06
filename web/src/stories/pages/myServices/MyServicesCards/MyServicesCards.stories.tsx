@@ -26,13 +26,6 @@ const props: Props = {
         "openUrl": url + "/" + i,
         "monitoringUrl": url,
         "startTime": Date.now(),
-        "postInstallInstructions":
-            i % 3 === 0 ? `Post install instruction ${i}` : undefined,
-        "env": {
-            "foo": "foo value",
-            "bar": "bar value",
-            "baz": "baz value"
-        },
         ...(i % 2 === 0
             ? {
                   "isOwned": false,
@@ -45,11 +38,18 @@ const props: Props = {
                   "ownerUsername": undefined
               }),
         "vaultTokenExpirationTime": Infinity,
-        "s3TokenExpirationTime": Infinity
+        "s3TokenExpirationTime": Infinity,
+        "hasPostInstallInstructions": i % 3 === 0
     })),
     "catalogExplorerLink": { "href": url, "onClick": () => {} },
     "evtAction": new Evt(),
     "getServicePassword": () => Promise.resolve("xyz"),
+    "getEnv": () => ({
+        "foo": "foo value",
+        "bar": "bar value",
+        "baz": "baz value"
+    }),
+    "getPostInstallInstructions": () => "Post **install** instructions",
     ...logCallbacks(["onRequestDelete"])
 };
 

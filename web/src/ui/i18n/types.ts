@@ -51,12 +51,15 @@ export type ComponentKey =
     | typeof import("ui/pages/catalog/CatalogLauncher/CatalogLauncherConfigurationCard").i18n
     | typeof import("ui/pages/myServices/MyServices").i18n
     | typeof import("ui/pages/myServices/MyServicesButtonBar").i18n
-    | typeof import("ui/pages/myServices/MyServicesCards/MyServicesCard").i18n
+    | typeof import("ui/pages/myServices/MyServicesCards/MyServicesCard/MyServicesCard").i18n
     | typeof import("ui/pages/myServices/MyServicesCards/MyServicesCard/MyServicesRunningTime").i18n
+    | typeof import("ui/pages/myServices/MyServicesCards/MyServicesCard/ReadmeAndEnvDialog/ReadmeAndEnvDialog").i18n
+    | typeof import("ui/pages/myServices/MyServicesCards/MyServicesCard/ReadmeAndEnvDialog/CopyOpenButton").i18n
     | typeof import("ui/pages/myServices/MyServicesSavedConfigs/MyServicesSavedConfig/MyServicesSavedConfigOptions").i18n
     | typeof import("ui/pages/myServices/MyServicesSavedConfigs/MyServicesSavedConfig").i18n
     | typeof import("ui/pages/myServices/MyServicesSavedConfigs").i18n
     | typeof import("ui/pages/myServices/MyServicesCards").i18n
+    | typeof import("ui/pages/myServices/MyServicesCards/NoRunningService").i18n
     | typeof import("ui/shared/ApiLogsBar").i18n;
 
 export type Translations<L extends Language> = GenericTranslations<

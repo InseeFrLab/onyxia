@@ -474,16 +474,20 @@ Tunne olosi vapaaksi tutkimaan ja ottamaan haltuusi Kubernetes-levityksesi!
         "saved": "Tallennettu",
         "show all": "Näytä kaikki"
     },
-    "MyServicesCards": {
-        "running services": "Käynnissä olevat palvelut",
-        "no services running": "Sinulla ei ole käynnissä olevia palveluita",
-        "launch one": "Klikkaa tästä käynnistääksesi palvelun",
+    "ReadmeAndEnvDialog": {
         "ok": "ok",
-        "need to copy": "Tarvitsetko kopioda rajaamattomat arvot?",
-        "everything have been printed to the console": "Kaikki on tulostettu konsoliin",
-        "first copy the password": "Kopioi ensin palvelun...",
-        "open the service": "Avaa palvelu 🚀",
         "return": "Palaa"
+    },
+    "CopyOpenButton": {
+        "first copy the password": "Kopioi ensin palvelun...",
+        "open the service": "Avaa palvelu 🚀"
+    },
+    "MyServicesCards": {
+        "running services": "Käynnissä olevat palvelut"
+    },
+    "NoRunningService": {
+        "launch one": "Käynnistä palvelu",
+        "no services running": "Sinulla ei ole käynnissä olevia palveluita"
     },
     "ApiLogsBar": {
         "ok": "ok"
