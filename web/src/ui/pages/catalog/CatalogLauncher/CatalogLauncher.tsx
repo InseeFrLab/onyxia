@@ -24,7 +24,7 @@ import { Markdown } from "onyxia-ui/Markdown";
 import { declareComponentKeys } from "i18nifty";
 import { symToStr } from "tsafe/symToStr";
 import { getIsAutoLaunchDisabled } from "ui/env";
-import { ApiLogsBar } from "ui/shared/ApiLogsBar";
+import { CommandBar } from "ui/shared/CommandBar";
 import { useDomRect } from "powerhooks/useDomRect";
 import { saveAs } from "file-saver";
 
@@ -121,8 +121,12 @@ export const CatalogLauncher = memo((props: Props) => {
         packageName,
         icon,
         launchScript,
-        apiLogsEntries
+        commandLogsEntries
     } = useCoreState(selectors.launcher.launcherWrap).launcherWrap;
+
+    const {
+        userConfigs: { isCommandBarEnabled }
+    } = useCoreState(selectors.userConfigs.userConfigs);
 
     const { restorablePackageConfigs } = useCoreState(
         selectors.restorablePackageConfig.restorablePackageConfigs
@@ -238,7 +242,8 @@ export const CatalogLauncher = memo((props: Props) => {
     });
 
     const { classes, cx } = useStyles({
-        rootHeight
+        rootHeight,
+        isCommandBarEnabled
     });
 
     const { t } = useTranslation({ CatalogLauncher });
@@ -265,32 +270,34 @@ export const CatalogLauncher = memo((props: Props) => {
     return (
         <>
             <div className={cx(classes.root, className)} ref={scrollableDivRef}>
-                <ApiLogsBar
-                    classes={{
-                        "root": classes.apiLogBar,
-                        "rootWhenExpended": classes.apiLogBarWhenExpended,
-                        "helpDialog": classes.helpDialog
-                    }}
-                    maxHeight={rootHeight - 30}
-                    entries={apiLogsEntries}
-                    downloadButton={{
-                        "tooltipTitle": t("download as script"),
-                        "onClick": () =>
-                            saveAs(
-                                new Blob([launchScript.content], {
-                                    "type": "text/plain;charset=utf-8"
-                                }),
-                                launchScript.fileBasename
+                {isCommandBarEnabled && (
+                    <CommandBar
+                        classes={{
+                            "root": classes.commandBar,
+                            "rootWhenExpended": classes.commandBarWhenExpended,
+                            "helpDialog": classes.helpDialog
+                        }}
+                        maxHeight={rootHeight - 30}
+                        entries={commandLogsEntries}
+                        downloadButton={{
+                            "tooltipTitle": t("download as script"),
+                            "onClick": () =>
+                                saveAs(
+                                    new Blob([launchScript.content], {
+                                        "type": "text/plain;charset=utf-8"
+                                    }),
+                                    launchScript.fileBasename
+                                )
+                        }}
+                        helpDialog={{
+                            "body": (
+                                <div className={classes.helpDialogBody}>
+                                    <Markdown>{t("api logs help body")}</Markdown>
+                                </div>
                             )
-                    }}
-                    helpDialog={{
-                        "body": (
-                            <div className={classes.helpDialogBody}>
-                                <Markdown>{t("api logs help body")}</Markdown>
-                            </div>
-                        )
-                    }}
-                />
+                        }}
+                    />
+                )}
                 <div className={classes.wrapperForMawWidth}>
                     <CatalogLauncherMainCard
                         packageName={packageName}
@@ -397,15 +404,16 @@ export const { i18n } = declareComponentKeys<
 
 const useStyles = tss
     .withName({ CatalogLauncher })
-    .withParams<{ rootHeight: number }>()
-    .create(({ theme, rootHeight }) => ({
+    .withParams<{ rootHeight: number; isCommandBarEnabled: boolean }>()
+    .create(({ theme, rootHeight, isCommandBarEnabled }) => ({
         "root": {
             "height": "100%",
             "overflow": "auto",
-            "paddingTop":
-                theme.typography.rootFontSizePx * 1.7 +
-                2 * theme.spacing(2) +
-                theme.spacing(2),
+            "paddingTop": !isCommandBarEnabled
+                ? 0
+                : theme.typography.rootFontSizePx * 1.7 +
+                  2 * theme.spacing(2) +
+                  theme.spacing(2),
             "position": "relative"
         },
         "wrapperForMawWidth": {
@@ -414,7 +422,7 @@ const useStyles = tss
                 "marginBottom": theme.spacing(3)
             }
         },
-        "apiLogBar": {
+        "commandBar": {
             "position": "absolute",
             "right": 0,
             "width": "min(100%, 1100px)",
@@ -422,7 +430,7 @@ const useStyles = tss
             "zIndex": 1,
             "transition": "opacity 750ms linear"
         },
-        "apiLogBarWhenExpended": {
+        "commandBarWhenExpended": {
             "width": "min(100%, 1400px)",
             "transition": "width 70ms linear"
         },

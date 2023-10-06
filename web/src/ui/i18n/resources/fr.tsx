@@ -97,7 +97,18 @@ export const translations: Translations<"fr"> = {
         "beta mode helper":
             "Pour des configurations et fonctionnalités avancées de la plateforme.",
         "enable dev mode": "Activer le mode développeur",
-        "dev mode helper": "Activer les fonctionnalités en cours de développement"
+        "dev mode helper": "Activer les fonctionnalités en cours de développement",
+        "Enable command bar": "Activer la barre de commande",
+        "Enable command bar helper": ({ imgUrl }) => (
+            <>
+                La{" "}
+                <MuiLink href={imgUrl} target="_blank">
+                    barre de commande
+                </MuiLink>{" "}
+                vous donne un aperçu des commandes exécutées en votre nom lorsque vous
+                interagissez avec l'interface utilisateur.
+            </>
+        )
     },
     "AccountField": {
         "copy tooltip": "Copier dans le presse-papier",
@@ -488,19 +499,23 @@ N'hésitez pas à explorer et à prendre en main vos déploiements Kubernetes !
         "saved": "Enregistrés",
         "show all": "Afficher tous"
     },
-    "MyServicesCards": {
-        "running services": "Services en cours",
-        "no services running":
-            "Vous n'avez actuellement aucun service en cours d'exécution",
-        "launch one": "Cliquez ici pour en lancer un",
+    "ReadmeAndEnvDialog": {
         "ok": "ok",
-        "need to copy": "Besoin de copier les valeurs non tronquées ?",
-        "everything have been printed to the console": "Tout a été loggé dans la console",
-        "first copy the password": "Commencez par copier le mot de passe...",
-        "open the service": "Ouvrir le service 🚀",
         "return": "Retour"
     },
-    "ApiLogsBar": {
+    "CopyOpenButton": {
+        "first copy the password": "Commencez par copier le mot de passe...",
+        "open the service": "Ouvrir le service 🚀"
+    },
+    "MyServicesCards": {
+        "running services": "Services en cours"
+    },
+    "NoRunningService": {
+        "launch one": "Clickez ici pour en lancer un",
+        "no services running":
+            "Vous n'avez actuellement aucun service en cours d'exécution"
+    },
+    "CommandBar": {
         "ok": "ok"
     }
     /* spell-checker: enable */

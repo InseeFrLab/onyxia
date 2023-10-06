@@ -1,0 +1,173 @@
+import { useMemo, useState } from "react";
+import { tss } from "ui/theme";
+import { Button } from "ui/theme";
+import { useTranslation } from "ui/i18n";
+import { CircularProgress } from "onyxia-ui/CircularProgress";
+import { declareComponentKeys } from "i18nifty";
+import { smartTrim } from "ui/tools/smartTrim";
+import { Dialog } from "onyxia-ui/Dialog";
+import { Markdown } from "onyxia-ui/Markdown";
+import { useConstCallback } from "powerhooks/useConstCallback";
+import type { NonPostableEvt } from "evt";
+import { useEvt } from "evt/hooks";
+import { CopyOpenButton } from "./CopyOpenButton";
+import { assert } from "tsafe/assert";
+
+type Props = {
+    evtAction: NonPostableEvt<"SHOW ENV" | "SHOW POST INSTALL INSTRUCTIONS">;
+    startTime: number | undefined;
+    openUrl: string | undefined;
+    getServicePassword: () => Promise<string>;
+    getPostInstallInstructions: (() => string) | undefined;
+    getEnv: () => Record<string, string>;
+};
+
+export function ReadmeAndEnvDialog(props: Props) {
+    const {
+        evtAction,
+        startTime,
+        openUrl,
+        getServicePassword,
+        getPostInstallInstructions,
+        getEnv
+    } = props;
+
+    const [dialogDesc, setDialogDesc] = useState<
+        | { dialogShowingWhat: "env"; env: Record<string, string> }
+        | {
+              dialogShowingWhat: "postInstallInstructions";
+              servicePassword: string;
+              postInstallInstructions: string;
+          }
+        | undefined
+    >(undefined);
+
+    useEvt(
+        ctx => {
+            evtAction.attach(
+                action => action === "SHOW ENV",
+                ctx,
+                () =>
+                    setDialogDesc({
+                        "dialogShowingWhat": "env",
+                        "env": getEnv()
+                    })
+            );
+
+            evtAction.attach(
+                action => action === "SHOW POST INSTALL INSTRUCTIONS",
+                ctx,
+                async () => {
+                    assert(getPostInstallInstructions !== undefined);
+                    setDialogDesc({
+                        "dialogShowingWhat": "postInstallInstructions",
+                        "servicePassword": await getServicePassword(),
+                        "postInstallInstructions": getPostInstallInstructions()
+                    });
+                }
+            );
+        },
+        [evtAction]
+    );
+
+    const onDialogClose = useConstCallback(() => setDialogDesc(undefined));
+
+    const { classes } = useStyles();
+
+    const { t } = useTranslation({ ReadmeAndEnvDialog });
+
+    const { dialogBody, dialogButtons } = useMemo(() => {
+        if (dialogDesc === undefined) {
+            return {};
+        }
+        const dialogBody = (() => {
+            switch (dialogDesc.dialogShowingWhat) {
+                case "postInstallInstructions":
+                    return dialogDesc.postInstallInstructions;
+                case "env":
+                    return Object.entries(dialogDesc.env)
+                        .filter(([, value]) => value !== "")
+                        .sort(([a], [b]) => a.localeCompare(b))
+                        .map(
+                            ([key, value]) =>
+                                `**${key}**: \`${smartTrim({
+                                    "text": value,
+                                    "minCharAtTheEnd": 4,
+                                    "maxLength": 40
+                                })}\`  `
+                        )
+                        .join("\n");
+            }
+        })();
+
+        const dialogButtons = (() => {
+            switch (dialogDesc.dialogShowingWhat) {
+                case "postInstallInstructions":
+                    return (
+                        <>
+                            <Button variant="secondary" onClick={onDialogClose}>
+                                {t("return")}
+                            </Button>
+
+                            {startTime === undefined ? (
+                                <CircularProgress
+                                    className={classes.circularProgress}
+                                    color="textPrimary"
+                                    size={20}
+                                />
+                            ) : (
+                                openUrl !== undefined && (
+                                    <CopyOpenButton
+                                        openUrl={openUrl}
+                                        servicePassword={
+                                            dialogDesc.postInstallInstructions.indexOf(
+                                                dialogDesc.servicePassword
+                                            ) >= 0
+                                                ? dialogDesc.servicePassword
+                                                : undefined
+                                        }
+                                        onDialogClose={onDialogClose}
+                                    />
+                                )
+                            )}
+                        </>
+                    );
+                case "env":
+                    return (
+                        <Button variant="secondary" onClick={onDialogClose}>
+                            {t("ok")}
+                        </Button>
+                    );
+            }
+        })();
+
+        return { dialogBody, dialogButtons };
+    }, [dialogDesc, startTime, openUrl, t]);
+
+    return (
+        <Dialog
+            body={
+                dialogBody && (
+                    <div className={classes.dialogBody}>
+                        <Markdown>{dialogBody}</Markdown>
+                    </div>
+                )
+            }
+            isOpen={dialogDesc !== undefined}
+            onClose={onDialogClose}
+            buttons={dialogButtons ?? null}
+        />
+    );
+}
+
+const useStyles = tss.withName({ ReadmeAndEnvDialog }).create(({ theme }) => ({
+    "dialogBody": {
+        "maxHeight": 450,
+        "overflow": "auto"
+    },
+    "circularProgress": {
+        ...theme.spacing.rightLeft("margin", 3)
+    }
+}));
+
+export const { i18n } = declareComponentKeys<"ok" | "return">()({ ReadmeAndEnvDialog });

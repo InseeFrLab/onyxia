@@ -14,7 +14,11 @@ import { id } from "tsafe/id";
 import { useIsDarkModeEnabled } from "onyxia-ui";
 import { keyframes } from "tss-react";
 import type { Item } from "onyxia-ui/LeftBar";
-import { getExtraLeftBarItemsFromEnv, getIsHomePageDisabled } from "ui/env";
+import {
+    getExtraLeftBarItemsFromEnv,
+    getIsHomePageDisabled,
+    getDisableCommandBar
+} from "ui/env";
 import { declareComponentKeys } from "i18nifty";
 import { RouteProvider } from "ui/routes";
 import { createCoreProvider, useCoreState, useCoreFunctions, selectors } from "core";
@@ -52,7 +56,8 @@ const { CoreProvider } = createCoreProvider({
         [url]
             .map(injectTransferableEnvsInSearchParams)
             .map(injectGlobalStatesInSearchParams)[0],
-    "disablePersonalInfosInjectionInGroup": getDisablePersonalInfosInjectionInGroup()
+    "disablePersonalInfosInjectionInGroup": getDisablePersonalInfosInjectionInGroup(),
+    "isCommandBarEnabledByDefault": !getDisableCommandBar()
 });
 
 const { ScreenScalerOutOfRangeFallbackProvider } = enableScreenScaler({

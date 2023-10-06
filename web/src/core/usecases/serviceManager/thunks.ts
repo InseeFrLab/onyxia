@@ -1,132 +1,37 @@
-import { assert } from "tsafe/assert";
-import { createSlice } from "@reduxjs/toolkit";
-import type { PayloadAction } from "@reduxjs/toolkit";
 import { id } from "tsafe/id";
-import * as deploymentRegion from "./deploymentRegion";
-import * as projectConfigs from "./projectConfigs";
-import type { Thunks, State as RootState } from "../core";
+import * as deploymentRegion from "../deploymentRegion";
+import * as projectConfigs from "../projectConfigs";
+import type { Thunks } from "core/core";
 import { exclude } from "tsafe/exclude";
 import { createUsecaseContextApi } from "redux-clean-architecture";
-import { createSelector } from "@reduxjs/toolkit";
-
-type State = {
-    isUserWatching: boolean;
-    isUpdating: boolean;
-    runningServices: undefined | RunningService[];
-};
-
-export type RunningService = RunningService.Owned | RunningService.NotOwned;
-
-export declare namespace RunningService {
-    export type Common = {
-        id: string;
-        packageName: string;
-        friendlyName: string;
-        logoUrl: string | undefined;
-        monitoringUrl: string | undefined;
-        isStarting: boolean;
-        startedAt: number;
-        /** Undefined if the service don't use the token */
-        vaultTokenExpirationTime: number | undefined;
-        s3TokenExpirationTime: number | undefined;
-        urls: string[];
-        postInstallInstructions: string | undefined;
-        env: Record<string, string>;
-    };
-
-    export type Owned = Common & {
-        isShared: boolean;
-        isOwned: true;
-    };
-
-    export type NotOwned = Common & {
-        isShared: true;
-        isOwned: false;
-        ownerUsername: string;
-    };
-}
-
-export const name = "runningService";
-
-export const { reducer, actions } = createSlice({
-    name,
-    "initialState": id<State>({
-        "isUserWatching": false,
-        "isUpdating": false,
-        "runningServices": undefined
-    }),
-    "reducers": {
-        "isUserWatchingChanged": (
-            state,
-            { payload }: PayloadAction<{ isUserWatching: boolean }>
-        ) => {
-            const { isUserWatching } = payload;
-
-            state.isUserWatching = isUserWatching;
-        },
-        "updateStarted": state => {
-            state.isUpdating = true;
-        },
-        "updateCompleted": (
-            state,
-            { payload }: PayloadAction<{ runningServices: RunningService[] }>
-        ) => {
-            const { runningServices } = payload;
-
-            return id<State>({
-                "isUpdating": false,
-                "isUserWatching": state.isUserWatching,
-                runningServices
-            });
-        },
-        "serviceStarted": (
-            state,
-            {
-                payload
-            }: PayloadAction<{
-                serviceId: string;
-                doOverwriteStaredAtToNow: boolean;
-            }>
-        ) => {
-            const { serviceId, doOverwriteStaredAtToNow } = payload;
-            const { runningServices } = state;
-
-            assert(runningServices !== undefined);
-
-            const runningService = runningServices.find(({ id }) => id === serviceId);
-
-            if (runningService === undefined) {
-                return;
-            }
-
-            runningService.isStarting = false;
-
-            if (doOverwriteStaredAtToNow) {
-                //NOTE: Harmless hack to improve UI readability.
-                runningService.startedAt = Date.now();
-            }
-        },
-        "serviceStopped": (state, { payload }: PayloadAction<{ serviceId: string }>) => {
-            const { serviceId } = payload;
-
-            const { runningServices } = state;
-            assert(runningServices !== undefined);
-
-            runningServices.splice(
-                runningServices.findIndex(({ id }) => id === serviceId),
-                1
-            );
-        }
-    }
-});
+import { assert } from "tsafe/assert";
+import { Evt } from "evt";
+import { name, actions } from "./state";
+import type { RunningService } from "./state";
 
 export const thunks = {
-    "setIsUserWatching":
-        (isUserWatching: boolean) =>
+    "setActive":
+        () =>
         (...args) => {
-            const [dispatch] = args;
+            const [dispatch, , { evtAction }] = args;
 
-            dispatch(actions.isUserWatchingChanged({ isUserWatching }));
+            const ctx = Evt.newCtx();
+
+            evtAction
+                .pipe(
+                    ctx,
+                    action =>
+                        action.sliceName === "projectConfigs" &&
+                        action.actionName === "projectChanged"
+                )
+                .toStateful()
+                .attach(() => dispatch(thunks.update()));
+
+            function setInactive() {
+                ctx.done();
+            }
+
+            return { setInactive };
         },
     "update":
         () =>
@@ -134,7 +39,7 @@ export const thunks = {
             const [dispatch, getState, { onyxiaApi }] = args;
 
             {
-                const state = getState().runningService;
+                const state = getState()[name];
 
                 if (state.isUpdating) {
                     return;
@@ -171,16 +76,18 @@ export const thunks = {
                 return { getLogoUrl };
             })();
 
+            const { namespace: kubernetesNamespace } =
+                projectConfigs.selectors.selectedProject(getState());
+
             const getMonitoringUrl = (params: { serviceId: string }) => {
                 const { serviceId } = params;
 
-                const project = projectConfigs.selectors.selectedProject(getState());
+                const region = deploymentRegion.selectors.selectedDeploymentRegion(
+                    getState()
+                );
 
-                const selectedDeploymentRegion =
-                    deploymentRegion.selectors.selectedDeploymentRegion(getState());
-
-                return selectedDeploymentRegion.servicesMonitoringUrlPattern
-                    ?.replace("$NAMESPACE", project.namespace)
+                return region.servicesMonitoringUrlPattern
+                    ?.replace("$NAMESPACE", kubernetesNamespace)
                     .replace("$INSTANCE", serviceId.replace(/^\//, ""));
             };
 
@@ -192,6 +99,19 @@ export const thunks = {
 
             dispatch(
                 actions.updateCompleted({
+                    kubernetesNamespace,
+                    "envByServiceId": Object.fromEntries(
+                        runningServicesRaw.map(({ id, env }) => [id, env])
+                    ),
+                    "postInstallInstructionsByServiceId": Object.fromEntries(
+                        runningServicesRaw
+                            .map(({ id, postInstallInstructions }) =>
+                                postInstallInstructions === undefined
+                                    ? undefined
+                                    : [id, postInstallInstructions]
+                            )
+                            .filter(exclude(undefined))
+                    ),
                     "runningServices": runningServicesRaw
                         .map(
                             ({
@@ -200,10 +120,10 @@ export const thunks = {
                                 packageName,
                                 urls,
                                 startedAt,
-                                postInstallInstructions,
                                 isShared,
-                                env,
                                 ownerUsername,
+                                env,
+                                postInstallInstructions,
                                 ...rest
                             }) => {
                                 const common: RunningService.Common = {
@@ -237,8 +157,8 @@ export const thunks = {
                                                   )
                                           ),
                                           true),
-                                    postInstallInstructions,
-                                    env
+                                    "hasPostInstallInstructions":
+                                        postInstallInstructions !== undefined
                                 };
 
                                 const isOwned = ownerUsername === username;
@@ -277,40 +197,41 @@ export const thunks = {
             dispatch(actions.serviceStopped({ serviceId }));
 
             await onyxiaApi.stopService({ serviceId });
-        }
-} satisfies Thunks;
+        },
+    "getPostInstallInstructions":
+        (params: { serviceId: string }) =>
+        (...args): string => {
+            const { serviceId } = params;
 
-export const protectedThunks = {
-    "initialize":
-        () =>
-        (...args) => {
-            const [dispatch, getState, { evtAction }] = args;
+            const [dispatch, getState] = args;
 
-            evtAction.attach(
-                event =>
-                    event.sliceName === "runningService" &&
-                    event.actionName === "isUserWatchingChanged" &&
-                    event.payload.isUserWatching,
-                () => dispatch(thunks.update())
-            );
+            const state = getState()[name];
 
-            evtAction.attach(
-                event =>
-                    event.sliceName === "projectConfigs" &&
-                    event.actionName === "projectChanged" &&
-                    getState().runningService.isUserWatching,
-                async () => {
-                    if (getState().runningService.isUpdating) {
-                        await evtAction.waitFor(
-                            event =>
-                                event.sliceName === "runningService" &&
-                                event.actionName === "updateCompleted"
-                        );
-                    }
+            assert(state.stateDescription === "ready");
 
-                    dispatch(thunks.update());
-                }
-            );
+            const postInstallInstructions =
+                state.postInstallInstructionsByServiceId[serviceId];
+
+            assert(postInstallInstructions !== undefined);
+
+            dispatch(actions.postInstallInstructionsRequested({ serviceId }));
+
+            return postInstallInstructions;
+        },
+    "getEnv":
+        (params: { serviceId: string }) =>
+        (...args): Record<string, string> => {
+            const { serviceId } = params;
+
+            const [dispatch, getState] = args;
+
+            dispatch(actions.envRequested({ serviceId }));
+
+            const state = getState()[name];
+
+            assert(state.stateDescription === "ready");
+
+            return state.envByServiceId[serviceId];
         }
 } satisfies Thunks;
 
@@ -358,46 +279,3 @@ const { getContext } = createUsecaseContextApi(() => ({
         Promise<{ s3TokensTTLms: number; vaultTokenTTLms: number }> | undefined
     >(undefined)
 }));
-
-export const selectors = (() => {
-    const runningServices = (rootState: RootState): RunningService[] | undefined => {
-        const { runningServices } = rootState[name];
-
-        if (runningServices === undefined) {
-            return undefined;
-        }
-
-        return [...runningServices].sort((a, b) => b.startedAt - a.startedAt);
-    };
-
-    const isUpdating = (rootState: RootState): boolean => {
-        const { isUpdating } = rootState[name];
-        return isUpdating;
-    };
-
-    const deletableRunningServices = createSelector(runningServices, runningServices =>
-        (runningServices ?? []).filter(({ isOwned }) => isOwned)
-    );
-
-    const isThereNonOwnedServices = createSelector(
-        runningServices,
-        runningServices =>
-            (runningServices ?? []).find(({ isOwned }) => !isOwned) !== undefined
-    );
-
-    const isThereOwnedSharedServices = createSelector(
-        runningServices,
-        runningServices =>
-            (runningServices ?? []).find(
-                ({ isOwned, isShared }) => isOwned && isShared
-            ) !== undefined
-    );
-
-    return {
-        runningServices,
-        deletableRunningServices,
-        isUpdating,
-        isThereNonOwnedServices,
-        isThereOwnedSharedServices
-    };
-})();

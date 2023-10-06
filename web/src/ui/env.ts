@@ -147,3 +147,18 @@ export const getDisablePersonalInfosInjectionInGroup = memoize((): boolean => {
 
     return DISABLE_PERSONAL_INFOS_INJECTION_IN_GROUP === "true";
 });
+
+export const getDisableCommandBar = memoize((): boolean => {
+    const { DISABLE_COMMAND_BAR } = getEnv();
+
+    const possibleValues = ["true", "false"];
+
+    assert(
+        possibleValues.indexOf(DISABLE_COMMAND_BAR) >= 0,
+        `${symToStr({
+            DISABLE_COMMAND_BAR
+        })} should either be ${possibleValues.join(" or ")}`
+    );
+
+    return DISABLE_COMMAND_BAR === "true";
+});

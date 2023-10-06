@@ -9,7 +9,7 @@ import { is } from "tsafe/is";
 import { assert } from "tsafe/assert";
 import memoize from "memoizee";
 
-export type ApiLogs = {
+export type CommandLogs = {
     evt: NonPostableEvt<{
         type: "cmd" | "result";
         cmdId: number;
@@ -25,7 +25,7 @@ export type ApiLogs = {
 type Parameters<T> = T extends (...args: any) => any ? TsafeParameters<T> : never;
 type ReturnType<T> = T extends (...args: any) => any ? TsafeReturnType<T> : never;
 
-export type ApiLogger<Api extends Record<string, unknown>> = {
+export type CommandLogger<Api extends Record<string, unknown>> = {
     initialHistory: readonly {
         cmd: string;
         resp: string;
@@ -43,12 +43,12 @@ export type ApiLogger<Api extends Record<string, unknown>> = {
 
 export function logApi<Api extends Record<string, unknown>>(params2: {
     api: Api;
-    apiLogger: ApiLogger<Api>;
+    commandLogger: CommandLogger<Api>;
 }): {
     loggedApi: Api;
-    apiLogs: ApiLogs;
+    commandLogs: CommandLogs;
 } {
-    const { api, apiLogger } = params2;
+    const { api, commandLogger } = params2;
 
     const getCounter = (() => {
         let counter = 0;
@@ -56,7 +56,7 @@ export function logApi<Api extends Record<string, unknown>>(params2: {
         return () => counter++;
     })();
 
-    const evt = Evt.create<UnpackEvt<ApiLogs["evt"]>>();
+    const evt = Evt.create<UnpackEvt<CommandLogs["evt"]>>();
 
     return {
         "loggedApi": (() => {
@@ -71,7 +71,7 @@ export function logApi<Api extends Record<string, unknown>>(params2: {
 
                         const cmdId = getCounter();
 
-                        const { buildCmd, fmtResult } = apiLogger.methods[methodName];
+                        const { buildCmd, fmtResult } = commandLogger.methods[methodName];
 
                         evt.post({
                             cmdId,
@@ -98,7 +98,7 @@ export function logApi<Api extends Record<string, unknown>>(params2: {
                 "get": (...args) => {
                     const [, propertyKey] = args;
 
-                    if (!(propertyKey in apiLogger.methods)) {
+                    if (!(propertyKey in commandLogger.methods)) {
                         return Reflect.get(...args);
                     }
 
@@ -108,9 +108,9 @@ export function logApi<Api extends Record<string, unknown>>(params2: {
                 }
             });
         })(),
-        "apiLogs": (() => {
-            const history: ApiLogs["history"][number][] = [
-                ...apiLogger.initialHistory.map(rest => ({
+        "commandLogs": (() => {
+            const history: CommandLogs["history"][number][] = [
+                ...commandLogger.initialHistory.map(rest => ({
                     "cmdId": getCounter(),
                     ...rest
                 }))

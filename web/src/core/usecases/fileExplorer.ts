@@ -8,7 +8,7 @@ import {
     relative as pathRelative,
     basename as pathBasename
 } from "path";
-import { logApi } from "core/tools/apiLogger";
+import { logApi } from "core/tools/commandLogger";
 import type { S3Client } from "../ports/S3Client";
 import { assert } from "tsafe/assert";
 import * as projectConfigs from "./projectConfigs";
@@ -21,7 +21,7 @@ import * as deploymentRegion from "./deploymentRegion";
 import { createExtendedFsApi } from "core/tools/extendedFsApi";
 import type { ExtendedFsApi } from "core/tools/extendedFsApi";
 import { createObjectThatThrowsIfAccessed } from "redux-clean-architecture";
-import { mcApiLogger } from "../adapters/s3client/mcApiLogger";
+import { mcCommandLogger } from "../adapters/s3client/mcCommandLogger";
 import { createUsecaseContextApi } from "redux-clean-architecture";
 // NOTE: Polyfill of a browser feature.
 import structuredClone from "@ungap/structured-clone";
@@ -47,7 +47,7 @@ export type State = {
         size: number;
         uploadPercent: number;
     }[];
-    apiLogsEntries: {
+    commandLogsEntries: {
         cmdId: number;
         cmd: string;
         resp: string | undefined;
@@ -64,7 +64,7 @@ export const { reducer, actions } = createSlice({
         "isNavigationOngoing": false,
         "ongoingOperations": [],
         "s3FilesBeingUploaded": [],
-        "apiLogsEntries": []
+        "commandLogsEntries": []
     }),
     "reducers": {
         "fileUploadStarted": (
@@ -233,11 +233,13 @@ export const { reducer, actions } = createSlice({
         },
         "apiHistoryUpdated": (
             state,
-            { payload }: PayloadAction<{ apiLogsEntries: State["apiLogsEntries"] }>
+            {
+                payload
+            }: PayloadAction<{ commandLogsEntries: State["commandLogsEntries"] }>
         ) => {
-            const { apiLogsEntries } = payload;
+            const { commandLogsEntries } = payload;
 
-            state.apiLogsEntries = apiLogsEntries;
+            state.commandLogsEntries = commandLogsEntries;
         }
     }
 });
@@ -272,16 +274,16 @@ const privateThunks = {
                 return;
             }
 
-            const { apiLogs, loggedApi } = logApi({
+            const { commandLogs, loggedApi } = logApi({
                 "api": extraArg.s3Client,
-                "apiLogger": mcApiLogger
+                "commandLogger": mcCommandLogger
             });
 
-            apiLogs.evt.toStateful().attach(() =>
+            commandLogs.evt.toStateful().attach(() =>
                 dispatch(
                     actions.apiHistoryUpdated({
                         // NOTE: We spread only for the type.
-                        "apiLogsEntries": [...structuredClone(apiLogs.history)]
+                        "commandLogsEntries": [...structuredClone(commandLogs.history)]
                     })
                 )
             );
@@ -769,7 +771,8 @@ export const selectors = (() => {
         };
     };
 
-    const apiLogsEntries = (rootState: RootState) => rootState[name].apiLogsEntries;
+    const commandLogsEntries = (rootState: RootState) =>
+        rootState[name].commandLogsEntries;
 
-    return { currentWorkingDirectoryView, uploadProgress, apiLogsEntries };
+    return { currentWorkingDirectoryView, uploadProgress, commandLogsEntries };
 })();

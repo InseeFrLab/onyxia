@@ -1,11 +1,11 @@
-import type { ApiLogger } from "core/tools/apiLogger";
+import type { CommandLogger } from "core/tools/commandLogger";
 import type { SecretsManager } from "../../ports/SecretsManager";
 import { join as pathJoin } from "path";
 
-export function getVaultApiLogger(params: {
+export function getVaultCommandLogger(params: {
     clientType: "CLI";
     engine: string;
-}): ApiLogger<SecretsManager> {
+}): CommandLogger<SecretsManager> {
     const { clientType, engine } = params;
 
     switch (clientType) {

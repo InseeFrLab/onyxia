@@ -33,7 +33,13 @@ export default function MySecrets(props: Props) {
     const { currentWorkingDirectoryView } = useCoreState(
         selectors.secretExplorer.currentWorkingDirectoryView
     );
-    const { apiLogsEntries } = useCoreState(selectors.secretExplorer.apiLogsEntries);
+    const { commandLogsEntries } = useCoreState(
+        selectors.secretExplorer.commandLogsEntries
+    );
+
+    const {
+        userConfigs: { isCommandBarEnabled }
+    } = useCoreState(selectors.userConfigs.userConfigs);
 
     const secretEditorState = useCoreState(state => state.secretsEditor);
 
@@ -231,7 +237,7 @@ export default function MySecrets(props: Props) {
                 doShowHidden={false}
                 directoryPath={currentWorkingDirectoryView.directoryPath}
                 isNavigating={currentWorkingDirectoryView.isNavigationOngoing}
-                apiLogsEntries={apiLogsEntries}
+                commandLogsEntries={commandLogsEntries}
                 evtAction={evtExplorerAction}
                 files={currentWorkingDirectoryView.files}
                 directories={currentWorkingDirectoryView.directories}
@@ -251,6 +257,7 @@ export default function MySecrets(props: Props) {
                 onCopyPath={onCopyPath}
                 pathMinDepth={1}
                 scrollableDivRef={scrollableDivRef}
+                isCommandBarEnabled={isCommandBarEnabled}
                 {...(() => {
                     if (secretEditorState === null) {
                         return {

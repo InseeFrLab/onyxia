@@ -10,7 +10,7 @@ import { Props as ButtonBarProps } from "./ExplorerButtonBar";
 import { Evt } from "evt";
 import { join as pathJoin, basename as pathBasename } from "path";
 import { useTranslation } from "ui/i18n";
-import { ApiLogsBar, type ApiLogsBarProps } from "ui/shared/ApiLogsBar";
+import { CommandBar, type CommandBarProps } from "ui/shared/CommandBar";
 import {
     generateUniqDefaultName,
     buildNameFactory
@@ -51,7 +51,7 @@ export type ExplorerProps = {
 
     directoryPath: string;
     isNavigating: boolean;
-    apiLogsEntries: ApiLogsBarProps.Entry[];
+    commandLogsEntries: CommandBarProps.Entry[];
     evtAction: NonPostableEvt<"TRIGGER COPY PATH">;
     files: string[];
     directories: string[];
@@ -66,6 +66,7 @@ export type ExplorerProps = {
     pathMinDepth: number;
     //TODO: Find a better way
     scrollableDivRef: RefObject<any>;
+    isCommandBarEnabled: boolean;
 } & (
     | {
           isFileOpen: true;
@@ -93,7 +94,7 @@ export const Explorer = memo((props: ExplorerProps) => {
         doShowHidden,
         directoryPath,
         isNavigating,
-        apiLogsEntries,
+        commandLogsEntries,
         evtAction,
         onNavigate,
         onRefresh,
@@ -103,7 +104,8 @@ export const Explorer = memo((props: ExplorerProps) => {
         scrollableDivRef,
         pathMinDepth,
         onFileSelected,
-        filesBeingUploaded
+        filesBeingUploaded,
+        isCommandBarEnabled
     } = props;
 
     const [files, directories, directoriesBeingCreated, filesBeingCreated] = useMemo(
@@ -240,12 +242,12 @@ export const Explorer = memo((props: ExplorerProps) => {
         [evtAction]
     );
 
-    const { rootRef, buttonBarRef, apiLogBarTop, apiLogBarMaxHeight } =
-        useApiLogsBarPositioning();
+    const { rootRef, buttonBarRef, commandBarTop, commandBarMaxHeight } =
+        useCommandBarPositioning();
 
     const { classes, cx, css, theme } = useStyles({
         ...props,
-        apiLogBarTop,
+        commandBarTop,
         "isOpenFileNodeNull": !props.isFileOpen ? true : props.openFileNode === null
     });
 
@@ -340,11 +342,13 @@ export const Explorer = memo((props: ExplorerProps) => {
                         callback={buttonBarCallback}
                     />
                 </div>
-                <ApiLogsBar
-                    className={classes.apiLogBar}
-                    entries={apiLogsEntries}
-                    maxHeight={apiLogBarMaxHeight}
-                />
+                {isCommandBarEnabled && (
+                    <CommandBar
+                        className={classes.commandBar}
+                        entries={commandLogsEntries}
+                        maxHeight={commandBarMaxHeight}
+                    />
+                )}
                 {(() => {
                     const title = props.isFileOpen
                         ? props.openFileBasename
@@ -482,23 +486,23 @@ export const { i18n } = declareComponentKeys<
 
 const useStyles = tss
     .withParams<{
-        apiLogBarTop: number;
+        commandBarTop: number;
         isOpenFileNodeNull: boolean;
     }>()
     .withName({ Explorer })
-    .create(({ theme, apiLogBarTop, isOpenFileNodeNull }) => ({
+    .create(({ theme, commandBarTop, isOpenFileNodeNull }) => ({
         "root": {
             "position": "relative",
             "display": "flex",
             "flexDirection": "column"
         },
-        "apiLogBar": {
+        "commandBar": {
             "position": "absolute",
             "right": 0,
             "width": "40%",
-            "top": apiLogBarTop,
+            "top": commandBarTop,
             "zIndex": 1,
-            "opacity": apiLogBarTop === 0 ? 0 : 1,
+            "opacity": commandBarTop === 0 ? 0 : 1,
             "transition": "opacity 750ms linear"
         },
         "openFile": (() => {
@@ -524,7 +528,7 @@ const useStyles = tss
         }
     }));
 
-function useApiLogsBarPositioning() {
+function useCommandBarPositioning() {
     const {
         domRect: { bottom: rootBottom },
         ref: rootRef
@@ -536,21 +540,21 @@ function useApiLogsBarPositioning() {
         ref: buttonBarRef
     } = useDomRect();
 
-    const [apiLogBarTop, setApiLogBarTop] = useState<number>(0);
+    const [commandBarTop, setCommandBarTop] = useState<number>(0);
 
-    const [apiLogBarMaxHeight, setApiLogBarMaxHeight] = useState<number>(0);
+    const [commandBarMaxHeight, setCommandBarMaxHeight] = useState<number>(0);
 
     useEffect(() => {
-        setApiLogBarTop(buttonBarHeight);
+        setCommandBarTop(buttonBarHeight);
 
-        setApiLogBarMaxHeight(rootBottom - buttonBarBottom - 30);
+        setCommandBarMaxHeight(rootBottom - buttonBarBottom - 30);
     }, [buttonBarHeight, buttonBarBottom, rootBottom]);
 
     return {
         rootRef,
         buttonBarRef,
-        apiLogBarTop,
-        apiLogBarMaxHeight
+        commandBarTop,
+        commandBarMaxHeight
     };
 }
 

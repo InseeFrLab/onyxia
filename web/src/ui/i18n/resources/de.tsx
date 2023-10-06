@@ -93,7 +93,18 @@ export const translations: Translations<"de"> = {
             "Für erweiterte Konfigurationen und Funktionen der Plattform.",
         "enable dev mode": "Entwickleroptionen aktivieren",
         "dev mode helper":
-            "Aktivieren Sie die Funktionen, die sich noch in der Entwicklung befinden"
+            "Aktivieren Sie die Funktionen, die sich noch in der Entwicklung befinden",
+        "Enable command bar": "Befehlsleiste aktivieren",
+        "Enable command bar helper": ({ imgUrl }) => (
+            <>
+                Die{" "}
+                <MuiLink href={imgUrl} target="_blank">
+                    Befehlsleiste
+                </MuiLink>{" "}
+                gibt Ihnen einen Einblick in die Befehle, die in Ihrem Namen ausgeführt
+                werden, wenn Sie mit der Benutzeroberfläche interagieren.
+            </>
+        )
     },
     "AccountField": {
         "copy tooltip": "In die Zwischenablage kopieren",
@@ -484,20 +495,23 @@ Fühlen Sie sich frei zu erkunden und die Kontrolle über Ihre Kubernetes-Implem
         "saved": "Gespeichert",
         "show all": "Alle anzeigen"
     },
-    "MyServicesCards": {
-        "running services": "Laufende Dienste",
-        "no services running": "Sie haben derzeit keine laufenden Dienste",
-        "launch one": "Klicken Sie hier, um einen zu starten",
-        "ok": "ok",
-        "need to copy": "Müssen Sie nicht abgeschnittene Werte kopieren?",
-        "everything have been printed to the console":
-            "Alles wurde in der Konsole protokolliert",
-        "first copy the password": "Kopieren Sie zuerst das Passwort...",
-        "open the service": "Dienst öffnen 🚀",
+    "ReadmeAndEnvDialog": {
+        "ok": "Ok",
         "return": "Zurück"
     },
-    "ApiLogsBar": {
-        "ok": "ok"
+    "CopyOpenButton": {
+        "first copy the password": "Kopieren Sie zuerst das Passwort...",
+        "open the service": "Dienst öffnen 🚀"
+    },
+    "MyServicesCards": {
+        "running services": "Laufende Dienste"
+    },
+    "NoRunningService": {
+        "launch one": "Klicken Sie hier, um einen zu starten",
+        "no services running": "Sie haben derzeit keine laufenden Dienste"
+    },
+    "CommandBar": {
+        "ok": "Ok"
     }
     /* spell-checker: enable */
 };

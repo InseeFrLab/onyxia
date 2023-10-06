@@ -93,7 +93,18 @@ export const translations: Translations<"en"> = {
         "enable beta": "Enable beta-test mode",
         "beta mode helper": "For advanced platform configurations and features.",
         "enable dev mode": "Enable developer mode",
-        "dev mode helper": "Enable features that are currently being developed"
+        "dev mode helper": "Enable features that are currently being developed",
+        "Enable command bar": "Command bar",
+        "Enable command bar helper": ({ imgUrl }) => (
+            <>
+                The{" "}
+                <MuiLink href={imgUrl} target="_blank">
+                    the command bar
+                </MuiLink>{" "}
+                gives you insight on the commands ran on your behalf when you interact
+                with the UI.
+            </>
+        )
     },
     "AccountField": {
         "copy tooltip": "Copy in clipboard",
@@ -476,19 +487,22 @@ Feel free to explore and take charge of your Kubernetes deployments!
         "saved": "Saved",
         "show all": "Show all"
     },
-    "MyServicesCards": {
-        "running services": "Running services",
-        "no services running": "You don't have any service running",
-        "launch one": "Click here to launch one",
+    "ReadmeAndEnvDialog": {
         "ok": "ok",
-        "need to copy": "Need to copy untruncated values?",
-        "everything have been printed to the console":
-            "Everything have been printed to the console",
-        "first copy the password": "First, copy the service...",
-        "open the service": "Open the service 🚀",
         "return": "Return"
     },
-    "ApiLogsBar": {
+    "CopyOpenButton": {
+        "first copy the password": "First, copy the service...",
+        "open the service": "Open the service 🚀"
+    },
+    "MyServicesCards": {
+        "running services": "Running services"
+    },
+    "NoRunningService": {
+        "launch one": "Click here to launch one",
+        "no services running": "You don't have any service running"
+    },
+    "CommandBar": {
         "ok": "Ok"
     }
 };

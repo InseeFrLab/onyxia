@@ -93,7 +93,18 @@ export const translations: Translations<"nl"> = {
         "beta mode helper":
             "Voor geavanceerde configuratie en functionaliteiten van het platform.",
         "enable dev mode": "Modus ontwikkelaar activeren",
-        "dev mode helper": "Functionaliteiten in ontwikkeling activeren"
+        "dev mode helper": "Functionaliteiten in ontwikkeling activeren",
+        "Enable command bar": "Schakel opdrachtbalk in",
+        "Enable command bar helper": ({ imgUrl }) => (
+            <>
+                De{" "}
+                <MuiLink href={imgUrl} target="_blank">
+                    opdrachtbalk
+                </MuiLink>{" "}
+                geeft je inzicht in de commando's die namens jou worden uitgevoerd wanneer
+                je met de UI interageert.
+            </>
+        )
     },
     "AccountField": {
         "copy tooltip": "Kopiëren naar klembord",
@@ -482,18 +493,22 @@ Voel je vrij om te verkennen en de controle te nemen over je Kubernetes-implemen
         "saved": "Opgeslagen",
         "show all": "Alles weergeven"
     },
-    "MyServicesCards": {
-        "running services": "Diensten in uitvoering",
-        "no services running": "U heeft momenteel geen dienst in uitvoering",
-        "launch one": "Klik hier om er een te starten",
+    "ReadmeAndEnvDialog": {
         "ok": "ok",
-        "need to copy": "Wilt u de niet-afgeknotte waarden kopiëren ?",
-        "everything have been printed to the console": "Alles is gelogd in de terminal",
-        "first copy the password": "Begin met het kopiëren van het wachtwoord...",
-        "open the service": "De dienst openen 🚀",
         "return": "Terug"
     },
-    "ApiLogsBar": {
+    "CopyOpenButton": {
+        "first copy the password": "Begin met het kopiëren van het wachtwoord...",
+        "open the service": "De dienst openen 🚀"
+    },
+    "MyServicesCards": {
+        "running services": "Diensten in uitvoering"
+    },
+    "NoRunningService": {
+        "launch one": "Klik hier om er een te starten",
+        "no services running": "You don't have any service running"
+    },
+    "CommandBar": {
         "ok": "ok"
     }
     /* spell-checker: enable */

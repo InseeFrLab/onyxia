@@ -31,6 +31,7 @@ export type UserConfigs = Id<
         doDisplayMySecretsUseInServiceDialog: boolean;
         bookmarkedServiceConfigurationStr: string | null;
         selectedProjectId: string | null;
+        isCommandBarEnabled: boolean;
     }
 >;
 
@@ -124,7 +125,7 @@ export const protectedThunks = {
         () =>
         async (...args) => {
             /* prettier-ignore */
-            const [dispatch, , { secretsManager, oidc }] = args;
+            const [dispatch, , { secretsManager, oidc, coreParams }] = args;
 
             assert(oidc.isUserLoggedIn);
 
@@ -142,7 +143,8 @@ export const protectedThunks = {
                 "githubPersonalAccessToken": null,
                 "doDisplayMySecretsUseInServiceDialog": true,
                 "bookmarkedServiceConfigurationStr": null,
-                "selectedProjectId": null
+                "selectedProjectId": null,
+                "isCommandBarEnabled": coreParams.isCommandBarEnabledByDefault
             };
 
             const dirPath = await dispatch(privateThunks.getDirPath());

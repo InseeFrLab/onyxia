@@ -1,4 +1,5 @@
 import type { Translations } from "../types";
+import MuiLink from "@mui/material/Link";
 
 export const translations: Translations<"zh-CN"> = {
     /* spell-checker: disable */
@@ -67,7 +68,16 @@ export const translations: Translations<"zh-CN"> = {
         "enable beta": "启用 Beta 测试模式",
         "beta mode helper": "用于平台高级配置和功能.",
         "enable dev mode": "启用开发者模式",
-        "dev mode helper": "启用正在开发的功能"
+        "dev mode helper": "启用正在开发的功能",
+        "Enable command bar": "启用命令栏",
+        "Enable command bar helper": ({ imgUrl }) => (
+            <>
+                <MuiLink href={imgUrl} target="_blank">
+                    命令栏
+                </MuiLink>
+                可让您了解在与用户界面互动时代您运行的命令。
+            </>
+        )
     },
     "AccountField": {
         "copy tooltip": "复制到剪贴板",
@@ -415,18 +425,22 @@ export const translations: Translations<"zh-CN"> = {
         "saved": "已经保存",
         "show all": "显示所有"
     },
-    "MyServicesCards": {
-        "running services": "正在运行的服务",
-        "no services running": "您没有正在运行的服务",
-        "launch one": "点击来启动此服务",
+    "ReadmeAndEnvDialog": {
         "ok": "是",
-        "need to copy": "需要复制未截断的值？",
-        "everything have been printed to the console": "所有的信息都会记录在日志里",
-        "first copy the password": "请复制您的密码",
-        "open the service": "打开服务 🚀",
         "return": "返回"
     },
-    "ApiLogsBar": {
+    "CopyOpenButton": {
+        "first copy the password": "请复制您的密码",
+        "open the service": "打开服务 🚀"
+    },
+    "MyServicesCards": {
+        "running services": "正在运行的服务"
+    },
+    "NoRunningService": {
+        "launch one": "点击来启动此服务",
+        "no services running": "You don't have any service running"
+    },
+    "CommandBar": {
         "ok": "是"
     }
     /* spell-checker: enable */

@@ -1,8 +1,8 @@
-import type { ApiLogger } from "core/tools/apiLogger";
+import type { CommandLogger } from "core/tools/commandLogger";
 import { join as pathJoin, basename as pathBasename } from "path";
 import type { S3Client } from "../../ports/S3Client";
 
-export const mcApiLogger: ApiLogger<S3Client> = {
+export const mcCommandLogger: CommandLogger<S3Client> = {
     "initialHistory": [],
     "methods": {
         //TODO, this is dummy

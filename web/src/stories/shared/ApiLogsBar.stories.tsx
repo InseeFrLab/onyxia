@@ -2,16 +2,16 @@ import { css } from "@emotion/css";
 import { useState, useEffect, useReducer } from "react";
 import { getStoryFactory } from "stories/getStory";
 import { sectionName } from "./sectionName";
-import { ApiLogsBar } from "ui/shared/ApiLogsBar";
-import type { ApiLogsBarProps } from "ui/shared/ApiLogsBar";
+import { CommandBar } from "ui/shared/CommandBar";
+import type { CommandBarProps } from "ui/shared/CommandBar";
 import { symToStr } from "tsafe/symToStr";
 import { Evt } from "evt";
 import type { UnpackEvt } from "evt";
 import { id } from "tsafe/id";
 import { useEvt } from "evt/hooks/useEvt";
-import { type ApiLogs } from "core/tools/apiLogger";
+import type { CommandLogs } from "core/tools/commandLogger";
 
-const translationsEvents: UnpackEvt<ApiLogs["evt"][]> = [
+const translationsEvents: UnpackEvt<CommandLogs["evt"][]> = [
     {
         "cmdId": 0,
         "type": "cmd",
@@ -97,10 +97,10 @@ const translationsEvents: UnpackEvt<ApiLogs["evt"][]> = [
     }
 ];
 
-function useFakeApiLogs(params: {
+function useFakeCommandLogs(params: {
     /** Toggle to fire a translation event */
     tick: boolean;
-}): ApiLogs {
+}): CommandLogs {
     const { tick } = params;
 
     const [index, incrementIndex] = useReducer(
@@ -112,29 +112,30 @@ function useFakeApiLogs(params: {
         incrementIndex();
     }, [tick]);
 
-    const [apiLogs] = useState(() => ({
-        "evt": Evt.create<UnpackEvt<ApiLogs["evt"]>>(),
-        "history": id<ApiLogs["history"][number][]>([])
+    const [commandLogs] = useState(() => ({
+        "evt": Evt.create<UnpackEvt<CommandLogs["evt"]>>(),
+        "history": id<CommandLogs["history"][number][]>([])
     }));
 
     useEvt(
         ctx =>
-            apiLogs.evt.attach(
+            commandLogs.evt.attach(
                 ({ type }) => type === "cmd",
                 ctx,
                 ({ cmdId, cmdOrResp }) => {
-                    apiLogs.history.push({
+                    commandLogs.history.push({
                         cmdId,
                         "cmd": cmdOrResp,
                         "resp": undefined
                     });
 
-                    apiLogs.evt.attachOnce(
+                    commandLogs.evt.attachOnce(
                         translation => translation.cmdId === cmdId,
                         ctx,
                         ({ cmdOrResp }) =>
-                            (apiLogs.history.find(entry => entry.cmdId === cmdId)!.resp =
-                                cmdOrResp)
+                            (commandLogs.history.find(
+                                entry => entry.cmdId === cmdId
+                            )!.resp = cmdOrResp)
                     );
                 }
             ),
@@ -142,14 +143,14 @@ function useFakeApiLogs(params: {
     );
 
     useEffect(() => {
-        apiLogs.evt.postAsyncOnceHandled(translationsEvents[index]);
+        commandLogs.evt.postAsyncOnceHandled(translationsEvents[index]);
     }, [index]);
 
-    return apiLogs;
+    return commandLogs;
 }
 
 function Component(
-    props: Omit<ApiLogsBarProps, "className" | "entries"> & {
+    props: Omit<CommandBarProps, "className" | "entries"> & {
         width: number;
         maxHeight: number;
         /** Toggle to fire a translation event */
@@ -158,19 +159,21 @@ function Component(
 ) {
     const { tick, maxHeight, width } = props;
 
-    const apiLogs = useFakeApiLogs({ tick });
+    const commandLogs = useFakeCommandLogs({ tick });
 
-    const [entries, setEntries] = useState<ApiLogsBarProps["entries"]>([]);
+    const [entries, setEntries] = useState<CommandBarProps["entries"]>([]);
 
     useEvt(
         ctx => {
-            apiLogs.evt.toStateful(ctx).attach(() => setEntries([...apiLogs.history]));
+            commandLogs.evt
+                .toStateful(ctx)
+                .attach(() => setEntries([...commandLogs.history]));
         },
-        [apiLogs]
+        [commandLogs]
     );
 
     return (
-        <ApiLogsBar
+        <CommandBar
             className={css({
                 "border": "1px solid black",
                 width
@@ -183,7 +186,7 @@ function Component(
 
 const { meta, getStory } = getStoryFactory({
     sectionName,
-    "wrappedComponent": { [symToStr({ ApiLogsBar })]: Component }
+    "wrappedComponent": { [symToStr({ CommandBar })]: Component }
 });
 
 export default {

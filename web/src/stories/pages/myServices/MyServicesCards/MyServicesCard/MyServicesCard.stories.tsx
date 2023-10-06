@@ -2,6 +2,7 @@ import { MyServicesCard } from "ui/pages/myServices/MyServicesCards/MyServicesCa
 import { sectionName } from "./sectionName";
 import { getStoryFactory, logCallbacks } from "stories/getStory";
 import rstudioImgUrl from "stories/assets/img/rstudio.png";
+import { Evt } from "evt";
 
 const { meta, getStory } = getStoryFactory({
     sectionName,
@@ -23,11 +24,15 @@ export const ViewRegular = getStory({
     "ownerUsername": "jdoe",
     "s3TokenExpirationTime": Date.now() + 3600 * 1000,
     "vaultTokenExpirationTime": Infinity,
-    ...logCallbacks([
-        "onRequestDelete",
-        "onRequestShowPostInstallInstructions",
-        "onRequestShowEnv"
-    ])
+    "evtAction": new Evt(),
+    "getEnv": () => ({
+        "foo": "foo value",
+        "bar": "bar value",
+        "baz": "baz value"
+    }),
+    "getPoseInstallInstructions": () => "Post **install** instructions",
+    "getServicePassword": () => Promise.resolve("password"),
+    ...logCallbacks(["onRequestDelete"])
 });
 
 export const ViewStarting = getStory({
@@ -42,9 +47,13 @@ export const ViewStarting = getStory({
     "ownerUsername": undefined,
     "s3TokenExpirationTime": Infinity,
     "vaultTokenExpirationTime": Infinity,
-    ...logCallbacks([
-        "onRequestDelete",
-        "onRequestShowPostInstallInstructions",
-        "onRequestShowEnv"
-    ])
+    "evtAction": new Evt(),
+    "getEnv": () => ({
+        "foo": "foo value",
+        "bar": "bar value",
+        "baz": "baz value"
+    }),
+    "getPoseInstallInstructions": () => "Post **install** instructions",
+    "getServicePassword": () => Promise.resolve("password"),
+    ...logCallbacks(["onRequestDelete"])
 });

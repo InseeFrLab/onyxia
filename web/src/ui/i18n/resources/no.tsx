@@ -92,7 +92,17 @@ export const translations: Translations<"no"> = {
         "enable beta": "Aktiver beta-testmodus",
         "beta mode helper": "For avanserte plattformkonfigurasjoner og funksjoner.",
         "enable dev mode": "Aktiver utviklermodus",
-        "dev mode helper": "Aktiver funksjoner som for øyeblikket er under utvikling"
+        "dev mode helper": "Aktiver funksjoner som for øyeblikket er under utvikling",
+        "Enable command bar": "Aktiver kommandolinjen",
+        "Enable command bar helper": ({ imgUrl }) => (
+            <>
+                <MuiLink href={imgUrl} target="_blank">
+                    Kommandolinjen
+                </MuiLink>{" "}
+                gir deg innsikt i kommandoene som kjøres på dine vegne når du samhandler
+                med brukergrensesnittet.
+            </>
+        )
     },
     "AccountField": {
         "copy tooltip": "Kopier til utklippstavlen",
@@ -479,19 +489,22 @@ Føl deg fri til å utforske og ta kontroll over dine Kubernetes-implementeringe
         "saved": "Lagret",
         "show all": "Vis alle"
     },
-    "MyServicesCards": {
-        "running services": "Kjørende tjenester",
-        "no services running": "Du har ingen kjørende tjenester",
-        "launch one": "Klikk her for å starte en",
+    "ReadmeAndEnvDialog": {
         "ok": "ok",
-        "need to copy": "Trenger du å kopiere ukuttet verdi?",
-        "everything have been printed to the console":
-            "Alt er blitt skrevet ut i konsollen",
-        "first copy the password": "Først, kopier tjeneste...",
-        "open the service": "Åpne tjenesten 🚀",
         "return": "Gå tilbake"
     },
-    "ApiLogsBar": {
+    "CopyOpenButton": {
+        "first copy the password": "Først, kopier tjeneste...",
+        "open the service": "Åpne tjenesten 🚀"
+    },
+    "MyServicesCards": {
+        "running services": "Kjørende tjenester"
+    },
+    "NoRunningService": {
+        "launch one": "Klikk her for å starte en",
+        "no services running": "Du har ingen kjørende tjenester"
+    },
+    "CommandBar": {
         "ok": "ok"
     }
 };

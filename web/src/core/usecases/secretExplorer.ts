@@ -9,7 +9,7 @@ import {
     relative as pathRelative,
     basename as pathBasename
 } from "path";
-import { logApi } from "core/tools/apiLogger";
+import { logApi } from "core/tools/commandLogger";
 import { assert } from "tsafe/assert";
 import * as projectConfigs from "./projectConfigs";
 import { Evt } from "evt";
@@ -20,7 +20,7 @@ import type { WritableDraft } from "immer/dist/types/types-external";
 import * as deploymentRegion from "./deploymentRegion";
 import { createExtendedFsApi } from "core/tools/extendedFsApi";
 import type { ExtendedFsApi } from "core/tools/extendedFsApi";
-import { getVaultApiLogger } from "core/adapters/secretsManager/vaultApiLogger";
+import { getVaultCommandLogger } from "core/adapters/secretsManager/vaultCommandLogger";
 import { createUsecaseContextApi } from "redux-clean-architecture";
 // NOTE: Polyfill of a browser feature.
 import structuredClone from "@ungap/structured-clone";
@@ -48,7 +48,7 @@ export type State = {
               previousBasename: string;
           }
     ))[];
-    apiLogsEntries: {
+    commandLogsEntries: {
         cmdId: number;
         cmd: string;
         resp: string | undefined;
@@ -64,7 +64,7 @@ export const { reducer, actions } = createSlice({
         "directoryItems": [],
         "isNavigationOngoing": false,
         "ongoingOperations": [],
-        "apiLogsEntries": []
+        "commandLogsEntries": []
     }),
     "reducers": {
         "navigationStarted": state => {
@@ -208,11 +208,13 @@ export const { reducer, actions } = createSlice({
         },
         "apiHistoryUpdated": (
             state,
-            { payload }: PayloadAction<{ apiLogsEntries: State["apiLogsEntries"] }>
+            {
+                payload
+            }: PayloadAction<{ commandLogsEntries: State["commandLogsEntries"] }>
         ) => {
-            const { apiLogsEntries } = payload;
+            const { commandLogsEntries } = payload;
 
-            state.apiLogsEntries = apiLogsEntries;
+            state.commandLogsEntries = commandLogsEntries;
         }
     }
 });
@@ -246,9 +248,9 @@ const privateThunks = {
                 return;
             }
 
-            const { apiLogs, loggedApi } = logApi({
+            const { commandLogs, loggedApi } = logApi({
                 "api": extraArg.secretsManager,
-                "apiLogger": getVaultApiLogger({
+                "commandLogger": getVaultCommandLogger({
                     "clientType": "CLI",
                     "engine":
                         deploymentRegion.selectors.selectedDeploymentRegion(getState())
@@ -256,11 +258,11 @@ const privateThunks = {
                 })
             });
 
-            apiLogs.evt.toStateful().attach(() =>
+            commandLogs.evt.toStateful().attach(() =>
                 dispatch(
                     actions.apiHistoryUpdated({
                         // NOTE: We spread only for the type.
-                        "apiLogsEntries": [...structuredClone(apiLogs.history)]
+                        "commandLogsEntries": [...structuredClone(commandLogs.history)]
                     })
                 )
             );
@@ -747,7 +749,8 @@ export const selectors = (() => {
         })();
     };
 
-    const apiLogsEntries = (rootState: RootState) => rootState[name].apiLogsEntries;
+    const commandLogsEntries = (rootState: RootState) =>
+        rootState[name].commandLogsEntries;
 
-    return { currentWorkingDirectoryView, apiLogsEntries };
+    return { currentWorkingDirectoryView, commandLogsEntries };
 })();

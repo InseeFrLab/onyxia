@@ -94,7 +94,18 @@ export const translations: Translations<"it"> = {
         "beta mode helper":
             "Per configurazioni e funzionalità avanzate della piattaforma.",
         "enable dev mode": "Attivare la modalità sviluppatore",
-        "dev mode helper": "Attivare le funzionalità in fase di sviluppo"
+        "dev mode helper": "Attivare le funzionalità in fase di sviluppo",
+        "Enable command bar": "Abilita la barra dei comandi",
+        "Enable command bar helper": ({ imgUrl }) => (
+            <>
+                La{" "}
+                <MuiLink href={imgUrl} target="_blank">
+                    barra dei comandi
+                </MuiLink>{" "}
+                ti offre una panoramica dei comandi eseguiti per tuo conto quando
+                interagisci con l'interfaccia utente.
+            </>
+        )
     },
     "AccountField": {
         "copy tooltip": "Copiare negli appunti.",
@@ -481,19 +492,22 @@ Sentiti libero di esplorare e prendere il controllo dei tuoi deployment di Kuber
         "saved": "Salvati",
         "show all": "Mostrare tutti"
     },
-    "MyServicesCards": {
-        "running services": "Servizi in corso",
-        "no services running": "Attualmente non hai alcun servizio in esecuzione",
-        "launch one": "Clicca qui per avviarne uno",
+    "ReadmeAndEnvDialog": {
         "ok": "ok",
-        "need to copy": "Hai bisogno di copiare i valori non troncati?",
-        "everything have been printed to the console":
-            "Tutto è stato registrato nella console.",
-        "first copy the password": "Inizia copiando la password...",
-        "open the service": "Aprire il servizio 🚀",
         "return": "Ritorno"
     },
-    "ApiLogsBar": {
+    "CopyOpenButton": {
+        "first copy the password": "Inizia copiando la password...",
+        "open the service": "Aprire il servizio 🚀"
+    },
+    "MyServicesCards": {
+        "running services": "Servizi in corso"
+    },
+    "NoRunningService": {
+        "launch one": "Clicca qui per avviarne uno",
+        "no services running": "You don't have any service running"
+    },
+    "CommandBar": {
         "ok": "ok"
     }
     /* spell-checker: enable */

@@ -91,7 +91,17 @@ export const translations: Translations<"fi"> = {
         "beta mode helper":
             "Edistyneitä alustan konfigurointeja ja ominaisuuksia varten.",
         "enable dev mode": "Ota käyttöön kehittäjätila",
-        "dev mode helper": "Ota käyttöön kehitteillä olevat ominaisuudet"
+        "dev mode helper": "Ota käyttöön kehitteillä olevat ominaisuudet",
+        "Enable command bar": "Ota komentopalkki käyttöön",
+        "Enable command bar helper": ({ imgUrl }) => (
+            <>
+                <MuiLink href={imgUrl} target="_blank">
+                    Komentopalkki
+                </MuiLink>{" "}
+                antaa sinulle käsityksen komennoista, jotka suoritetaan puolestasi, kun
+                käytät käyttöliittymää.
+            </>
+        )
     },
     "AccountField": {
         "copy tooltip": "Kopioi leikepöydälle",
@@ -474,18 +484,22 @@ Tunne olosi vapaaksi tutkimaan ja ottamaan haltuusi Kubernetes-levityksesi!
         "saved": "Tallennettu",
         "show all": "Näytä kaikki"
     },
-    "MyServicesCards": {
-        "running services": "Käynnissä olevat palvelut",
-        "no services running": "Sinulla ei ole käynnissä olevia palveluita",
-        "launch one": "Klikkaa tästä käynnistääksesi palvelun",
+    "ReadmeAndEnvDialog": {
         "ok": "ok",
-        "need to copy": "Tarvitsetko kopioda rajaamattomat arvot?",
-        "everything have been printed to the console": "Kaikki on tulostettu konsoliin",
-        "first copy the password": "Kopioi ensin palvelun...",
-        "open the service": "Avaa palvelu 🚀",
         "return": "Palaa"
     },
-    "ApiLogsBar": {
+    "CopyOpenButton": {
+        "first copy the password": "Kopioi ensin palvelun...",
+        "open the service": "Avaa palvelu 🚀"
+    },
+    "MyServicesCards": {
+        "running services": "Käynnissä olevat palvelut"
+    },
+    "NoRunningService": {
+        "launch one": "Käynnistä palvelu",
+        "no services running": "Sinulla ei ole käynnissä olevia palveluita"
+    },
+    "CommandBar": {
         "ok": "ok"
     }
 };

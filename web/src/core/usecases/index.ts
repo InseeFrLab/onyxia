@@ -6,7 +6,7 @@ import * as launcher from "./launcher";
 import * as projectConfigs from "./projectConfigs";
 import * as publicIp from "./publicIp";
 import * as restorablePackageConfigs from "./restorablePackageConfigs";
-import * as runningService from "./runningService";
+import * as serviceManager from "./serviceManager";
 import * as userAuthentication from "./userAuthentication";
 import * as userConfigs from "./userConfigs";
 import * as secretsEditor from "./secretsEditor";
@@ -24,7 +24,7 @@ export const usecases = {
     projectConfigs,
     publicIp,
     restorablePackageConfigs,
-    runningService,
+    serviceManager,
     userAuthentication,
     userConfigs,
     secretsEditor,

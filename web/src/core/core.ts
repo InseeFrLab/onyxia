@@ -20,6 +20,7 @@ type CoreParams = {
     transformUrlBeforeRedirectToLogin: (url: string) => string;
     getCurrentLang: () => Language;
     disablePersonalInfosInjectionInGroup: boolean;
+    isCommandBarEnabledByDefault: boolean;
 };
 
 export async function createCore(params: CoreParams) {
@@ -190,8 +191,6 @@ export async function createCore(params: CoreParams) {
             usecases.restorablePackageConfigs.protectedThunks.initialize()
         );
     }
-
-    core.dispatch(usecases.runningService.protectedThunks.initialize());
 
     return core;
 }
