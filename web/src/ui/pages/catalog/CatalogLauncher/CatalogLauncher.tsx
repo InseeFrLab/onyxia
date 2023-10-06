@@ -242,7 +242,8 @@ export const CatalogLauncher = memo((props: Props) => {
     });
 
     const { classes, cx } = useStyles({
-        rootHeight
+        rootHeight,
+        isCommandBarEnabled
     });
 
     const { t } = useTranslation({ CatalogLauncher });
@@ -403,15 +404,16 @@ export const { i18n } = declareComponentKeys<
 
 const useStyles = tss
     .withName({ CatalogLauncher })
-    .withParams<{ rootHeight: number }>()
-    .create(({ theme, rootHeight }) => ({
+    .withParams<{ rootHeight: number; isCommandBarEnabled: boolean }>()
+    .create(({ theme, rootHeight, isCommandBarEnabled }) => ({
         "root": {
             "height": "100%",
             "overflow": "auto",
-            "paddingTop":
-                theme.typography.rootFontSizePx * 1.7 +
-                2 * theme.spacing(2) +
-                theme.spacing(2),
+            "paddingTop": !isCommandBarEnabled
+                ? 0
+                : theme.typography.rootFontSizePx * 1.7 +
+                  2 * theme.spacing(2) +
+                  theme.spacing(2),
             "position": "relative"
         },
         "wrapperForMawWidth": {
