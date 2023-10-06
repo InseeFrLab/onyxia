@@ -19,6 +19,8 @@ import type { UnpackEvt } from "evt";
 import { assert } from "tsafe/assert";
 import { declareComponentKeys } from "i18nifty";
 import type { PageRoute } from "./route";
+import { CommandBar } from "ui/shared/CommandBar";
+import { useDomRect } from "powerhooks/useDomRect";
 
 export type Props = {
     route: PageRoute;
@@ -43,6 +45,14 @@ export default function MyServices(props: Props) {
     const { isThereOwnedSharedServices } = useCoreState(selectors.serviceManager.isThereOwnedSharedServices);
     /* prettier-ignore */
     const { isThereNonOwnedServices } = useCoreState(selectors.serviceManager.isThereNonOwnedServices);
+
+    const { commandLogsEntries } = useCoreState(
+        selectors.serviceManager.commandLogsEntries
+    );
+
+    const {
+        userConfigs: { isCommandBarEnabled }
+    } = useCoreState(selectors.userConfigs.userConfigs);
 
     const [password, setPassword] = useState<string | undefined>(undefined);
 
@@ -94,7 +104,10 @@ export default function MyServices(props: Props) {
 
     const { isSavedConfigsExtended } = route.params;
 
-    const { classes, cx } = useStyles({ isSavedConfigsExtended });
+    const { rootRef, buttonBarRef, commandBarTop, commandBarMaxHeight } =
+        useCommandBarPositioning();
+
+    const { classes, cx } = useStyles({ isSavedConfigsExtended, commandBarTop });
 
     const onRequestToggleIsShortVariant = useConstCallback(() =>
         routes
@@ -254,7 +267,7 @@ export default function MyServices(props: Props) {
     );
 
     return (
-        <div className={cx(classes.root, className)}>
+        <div ref={rootRef} className={cx(classes.root, className)}>
             <PageHeader
                 mainIcon="services"
                 title={t("text1")}
@@ -262,11 +275,20 @@ export default function MyServices(props: Props) {
                 helpContent={t("text3")}
                 helpIcon="sentimentSatisfied"
             />
-            <MyServicesButtonBar
-                onClick={onButtonBarClick}
-                isThereNonOwnedServicesShown={isThereNonOwnedServices}
-                isThereDeletableServices={deletableRunningServices.length !== 0}
-            />
+            <div ref={buttonBarRef}>
+                <MyServicesButtonBar
+                    onClick={onButtonBarClick}
+                    isThereNonOwnedServicesShown={isThereNonOwnedServices}
+                    isThereDeletableServices={deletableRunningServices.length !== 0}
+                />
+            </div>
+            {isCommandBarEnabled && (
+                <CommandBar
+                    className={classes.commandBar}
+                    entries={commandLogsEntries}
+                    maxHeight={commandBarMaxHeight}
+                />
+            )}
             <div className={classes.payload}>
                 <>
                     {!isSavedConfigsExtended && (
@@ -318,6 +340,36 @@ export default function MyServices(props: Props) {
     );
 }
 
+function useCommandBarPositioning() {
+    const {
+        domRect: { top: rootTop, bottom: rootBottom },
+        ref: rootRef
+    } = useDomRect();
+
+    // NOTE: To avoid https://reactjs.org/docs/hooks-reference.html#useimperativehandle
+    const {
+        domRect: { bottom: buttonBarBottom },
+        ref: buttonBarRef
+    } = useDomRect();
+
+    const [commandBarTop, setCommandBarTop] = useState<number>(0);
+
+    const [commandBarMaxHeight, setCommandBarMaxHeight] = useState<number>(0);
+
+    useEffect(() => {
+        setCommandBarTop(buttonBarBottom - rootTop);
+
+        setCommandBarMaxHeight(rootBottom - buttonBarBottom - 30);
+    }, [rootTop, rootBottom, buttonBarBottom]);
+
+    return {
+        rootRef,
+        buttonBarRef,
+        commandBarTop,
+        commandBarMaxHeight
+    };
+}
+
 export const { i18n } = declareComponentKeys<
     | "text1"
     | "text2"
@@ -334,13 +386,15 @@ export const { i18n } = declareComponentKeys<
 const useStyles = tss
     .withName({ MyServices })
     .withParams<{
+        commandBarTop: number;
         isSavedConfigsExtended: boolean;
     }>()
-    .create(({ theme, isSavedConfigsExtended }) => ({
+    .create(({ theme, isSavedConfigsExtended, commandBarTop }) => ({
         "root": {
             "height": "100%",
             "display": "flex",
-            "flexDirection": "column"
+            "flexDirection": "column",
+            "position": "relative"
         },
         "payload": {
             "overflow": "hidden",
@@ -363,5 +417,14 @@ const useStyles = tss
                     "paddingRight": "2%"
                 }
             };
-        })()
+        })(),
+        "commandBar": {
+            "position": "absolute",
+            "right": 0,
+            "width": "42%",
+            "top": commandBarTop,
+            "zIndex": 1,
+            "opacity": commandBarTop === 0 ? 0 : 1,
+            "transition": "opacity 750ms linear"
+        }
     }));
