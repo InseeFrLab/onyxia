@@ -3,7 +3,7 @@ export function formatHelmLsResp(params: {
         namespace: string;
         name: string;
         revision: string;
-        updatedTime: number;
+        updated: string;
         status: string;
         chart: string;
         appVersion: string;
@@ -11,10 +11,7 @@ export function formatHelmLsResp(params: {
 }): string {
     const { lines } = params;
 
-    const formatTime = (unixTimestampMs: number) => {
-        const date = new Date(unixTimestampMs);
-        return date.toISOString() + " " + date.getTimezoneOffset() / 60 + " UTC";
-    };
+    const minPadding = 7;
 
     const header = {
         ...(() => {
@@ -23,7 +20,9 @@ export function formatHelmLsResp(params: {
             const nameMaxLength = Math.max(...lines.map(({ name }) => name.length));
 
             return {
-                [key]: `${key}${" ".repeat(Math.max(nameMaxLength - key.length, 7))} `
+                [key]: `${key}${" ".repeat(
+                    Math.max(nameMaxLength + 3 - key.length, minPadding)
+                )} `
             };
         })(),
         ...(() => {
@@ -35,7 +34,7 @@ export function formatHelmLsResp(params: {
 
             return {
                 [key]: `${key}${" ".repeat(
-                    Math.max(maxNamespaceLength - key.length, 7)
+                    Math.max(maxNamespaceLength - key.length, minPadding)
                 )} `
             };
         })(),
@@ -43,18 +42,22 @@ export function formatHelmLsResp(params: {
             const key = "REVISION";
 
             return {
-                [key]: `${key}${" ".repeat(7)} `
+                [key]: `${key}${" ".repeat(minPadding)} `
             };
         })(),
         ...(() => {
             const key = "UPDATED";
 
-            return { [key]: `${key}${" ".repeat(formatTime(Date.now()).length)} ` };
+            return {
+                [key]: `${key}${" ".repeat(
+                    "2023-10-06 14:34:54.652220476 +0000 UTC".length - key.length
+                )} `
+            };
         })(),
         ...(() => {
             const key = "STATUS";
 
-            return { [key]: `${key}${" ".repeat(7)} ` };
+            return { [key]: `${key}${" ".repeat(minPadding)} ` };
         })(),
         ...(() => {
             const key = "CHART";
@@ -62,25 +65,27 @@ export function formatHelmLsResp(params: {
             const chartMaxLength = Math.max(...lines.map(({ chart }) => chart.length));
 
             return {
-                [key]: `${key}${" ".repeat(Math.max(chartMaxLength - key.length, 7))} `
+                [key]: `${key}${" ".repeat(
+                    Math.max(chartMaxLength - key.length, minPadding)
+                )} `
             };
         })(),
         ...(() => {
             const key = "APP VERSION";
 
-            return { [key]: `${key}${" ".repeat(7)} ` };
+            return { [key]: `${key}${" ".repeat(minPadding)} ` };
         })()
     };
 
     return [
         Object.values(header).join(""),
         ...lines.map(
-            ({ name, namespace, revision, updatedTime, chart, status, appVersion }) =>
+            ({ name, namespace, revision, updated, chart, status, appVersion }) =>
                 [
                     name.padEnd(header.NAME.length),
                     namespace.padEnd(header.NAMESPACE.length),
                     revision.padEnd(header.REVISION.length),
-                    formatTime(updatedTime).padEnd(header.UPDATED.length),
+                    updated.padEnd(header.UPDATED.length),
                     status.padEnd(header.STATUS.length),
                     chart.padEnd(header.CHART.length),
                     appVersion.padEnd(header["APP VERSION"].length)

@@ -318,15 +318,17 @@ const privateThunks = {
                         actions.commandLogsRespUpdated({
                             cmdId,
                             "resp": formatHelmLsResp({
-                                "lines": runningServices.map(runningService => ({
-                                    "name": runningService.packageName,
-                                    "namespace": kubernetesNamespace,
-                                    "revision": "TODO",
-                                    "updatedTime": runningService.startedAt,
-                                    "status": "TODO",
-                                    "chart": "TODO",
-                                    "appVersion": "TODO"
-                                }))
+                                "lines": runningServices.map(
+                                    ({ extraForHelmLs, id }) => ({
+                                        "name": id,
+                                        "namespace": kubernetesNamespace,
+                                        "revision": extraForHelmLs.revision,
+                                        "updated": extraForHelmLs.updated,
+                                        "status": "deployed",
+                                        "chart": extraForHelmLs.chart,
+                                        "appVersion": extraForHelmLs.appVersion
+                                    })
+                                )
                             })
                         })
                     );
