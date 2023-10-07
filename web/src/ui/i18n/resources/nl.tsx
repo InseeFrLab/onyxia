@@ -1,5 +1,6 @@
 import type { Translations } from "../types";
 import MuiLink from "@mui/material/Link";
+import { Markdown } from "onyxia-ui/Markdown";
 
 export const translations: Translations<"nl"> = {
     /* spell-checker: disable */
@@ -377,41 +378,61 @@ export const translations: Translations<"nl"> = {
             </>
         ),
         "download as script": "Downloaden als script",
-        "api logs help body": `Welkom bij onze Helm Commando Uitleg Dialoog!  
-We hebben deze interface ontworpen om jou de controle te geven over je Kubernetes-implementaties.  
-Dit is wat je moet weten:  
+        "api logs help body": ({
+            k8CredentialsHref,
+            myServicesHref,
+            interfacePreferenceHref
+        }) => (
+            <Markdown
+                getDoesLinkShouldOpenNewTab={href => {
+                    switch (href) {
+                        case k8CredentialsHref:
+                            return true;
+                        case myServicesHref:
+                            return true;
+                        case interfacePreferenceHref:
+                            return false;
+                        default:
+                            return false;
+                    }
+                }}
+            >{`Welkom bij ons Helm Commando Uitleg Dialoog!  
+We hebben deze interface ontworpen om je volledige controle te geven over je Kubernetes-implementaties.  
+Dit is wat je moet weten:
 
-#### Wat is dit Helm Commando?  
+#### Wat is dit Helm-commando?  
 
-Het commando dat op het scherm wordt weergegeven is precies het Helm-commando dat onze applicatie namens jou zal uitvoeren in je Kubernetes namespace.  
-Hierdoor weet je wat er achter de schermen gebeurt als je op de 'start'-knop drukt.  
+Het commando dat op het scherm wordt weergegeven, is het exacte Helm-commando dat onze applicatie namens jou zal uitvoeren in je Kubernetes-namespace.  
+Hiermee kun je zien wat er achter de schermen gebeurt als je op de 'start' knop klikt.
 
-#### Realtime Updates  
+#### Realtime updates  
 
-Als je opties in de UI wijzigt, zal het Helm-commando automatisch bijwerken om die wijzigingen weer te geven.  
+Als je opties in de UI wijzigt, wordt het Helm-commando automatisch bijgewerkt om die wijzigingen te weerspiegelen.  
 Op deze manier kun je zien hoe jouw keuzes het onderliggende systeem beïnvloeden.  
 
-#### Waarom zou ik dit belangrijk vinden?  
+#### Waarom zou ik me hier druk om moeten maken?  
 
-- **Transparantie:** We geloven dat je het recht hebt om te weten welke acties er in jouw omgeving worden uitgevoerd.  
-- **Leren:** Inzicht in deze commando's kan inzicht bieden in Kubernetes en Helm, waardoor je kennis wordt verdiept.  
-- **Handmatige Uitvoering:** Je kunt dit commando kopiëren en plakken in een terminal met schrijftoegang tot Kubernetes, waardoor je de service handmatig kunt starten.  
+- **Transparantie:** Wij vinden dat je het recht hebt om te weten welke acties in jouw omgeving worden uitgevoerd.  
+- **Leren:** Het begrijpen van deze commando's kan je inzicht bieden in Kubernetes en Helm, en je kennis verdiepen.  
+- **Handmatige uitvoering:** Je kunt dit commando kopiëren en plakken in een terminal met schrijftoegang tot Kubernetes, waardoor je de service handmatig kunt starten.  
 
 #### Hoe kan ik dit commando handmatig uitvoeren?  
 
 Er zijn twee manieren om deze commando's uit te voeren:  
 
-- **Lokale Terminal:** Ga naar \`Mijn Account -> Kubernetes-tabblad\`.  
-  Hier vind je de inloggegevens waarmee je commando's in je Kubernetes-namespace vanuit je lokale terminal kunt uitvoeren.  
+- **Lokale terminal:** Ga naar [\`Mijn account -> Kubernetes-tab\`](${k8CredentialsHref}).  
+  Hier vind je de inloggegevens waarmee je commando's in je Kubernetes-namespace kunt uitvoeren vanaf je lokale terminal.  
 
-- **VSCode-Python Terminal:** Je kunt ook een VSCode-Python instantie starten met de Kubernetes-rol ingesteld op \`write\`.  
-  Open een terminal binnen VSCode, en je kunt het commando uitvoeren.  
+- **VSCode-Python terminal:** Je kunt ook een VSCode-Python-instance starten met de Kubernetes-rol ingesteld op \`schrijven\`.  
+  Open een terminal binnen VSCode en je kunt het commando uitvoeren.  
 
-Door het commando handmatig uit te voeren, kun je de service nog steeds zien op de \`Mijn Diensten\`-pagina alsof het via de UI was gestart.  
+Door het commando handmatig uit te voeren, kun je de service nog steeds zien op de [\`MijnDiensten\`](${myServicesHref}) pagina alsof het via de UI was gelanceerd.  
 
-Voel je vrij om te verkennen en de controle te nemen over je Kubernetes-implementaties!
+Je kunt de commandobalk uitschakelen in de [\`Mijn account -> Interface voorkeuren-tab\`](${interfacePreferenceHref}).
 
-        `
+Voel je vrij om te verkennen en controle te nemen over je Kubernetes-implementaties!  
+        `}</Markdown>
+        )
     },
     "Footer": {
         "contribute": "Bijdragen aan het project",

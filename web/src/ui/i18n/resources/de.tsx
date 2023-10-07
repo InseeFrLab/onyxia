@@ -1,5 +1,6 @@
 import type { Translations } from "../types";
 import MuiLink from "@mui/material/Link";
+import { Markdown } from "onyxia-ui/Markdown";
 
 export const translations: Translations<"de"> = {
     /* spell-checker: disable */
@@ -380,40 +381,61 @@ export const translations: Translations<"de"> = {
             </>
         ),
         "download as script": "Als Skript herunterladen",
-        "api logs help body": `Willkommen zu unserem Helm-Befehlserklärungsdialog!  
-Wir haben diese Schnittstelle entwickelt, um Ihnen die Kontrolle über Ihre Kubernetes-Implementierungen zu geben.  
-Hier ist, was Sie wissen müssen:  
+        "api logs help body": ({
+            k8CredentialsHref,
+            myServicesHref,
+            interfacePreferenceHref
+        }) => (
+            <Markdown
+                getDoesLinkShouldOpenNewTab={href => {
+                    switch (href) {
+                        case k8CredentialsHref:
+                            return true;
+                        case myServicesHref:
+                            return true;
+                        case interfacePreferenceHref:
+                            return false;
+                        default:
+                            return false;
+                    }
+                }}
+            >{`Willkommen zu unserem Helm Befehlserklärungs-Dialog!  
+Wir haben diese Schnittstelle entwickelt, um Ihnen die Kontrolle über Ihre Kubernetes-Bereitstellungen zu ermöglichen.  
+Hier ist, was Sie wissen müssen:
 
-#### Was ist dieser Helm-Befehl?  
+#### Was ist dieser Helm Befehl?
 
-Der auf dem Bildschirm angezeigte Befehl ist der genaue Helm-Befehl, den unsere Anwendung in Ihrem Namen in Ihrem Kubernetes-Namensraum ausführen wird.  
-Das ermöglicht Ihnen, zu wissen, was im Hintergrund passiert, wenn Sie auf die 'Starten'-Schaltfläche klicken.  
+Der Befehl, der auf dem Bildschirm angezeigt wird, ist der genaue Helm-Befehl, den unsere Anwendung in Ihrem Namen in Ihrem Kubernetes-Namensraum ausführen wird.  
+Das ermöglicht Ihnen, zu wissen, was hinter den Kulissen passiert, wenn Sie auf die Schaltfläche 'Start' klicken.  
 
 #### Echtzeit-Aktualisierungen  
 
 Wenn Sie Optionen in der Benutzeroberfläche ändern, wird der Helm-Befehl automatisch aktualisiert, um diese Änderungen widerzuspiegeln.  
 Auf diese Weise können Sie sehen, wie Ihre Auswahl das zugrundeliegende System beeinflusst.  
 
-#### Warum sollte ich das beachten?  
+#### Warum sollte das für mich wichtig sein?
 
 - **Transparenz:** Wir glauben, dass Sie das Recht haben zu wissen, welche Aktionen in Ihrer Umgebung durchgeführt werden.  
-- **Lernen:** Das Verstehen dieser Befehle kann Einblicke in Kubernetes und Helm bieten und Ihr Wissen vertiefen.  
+- **Lernen:** Das Verständnis dieser Befehle kann Einblicke in Kubernetes und Helm geben und Ihr Wissen vertiefen.  
 - **Manuelle Ausführung:** Sie können diesen Befehl in ein Terminal mit Schreibzugriff auf Kubernetes kopieren und einfügen, um den Dienst manuell zu starten.  
 
-#### Wie kann ich diesen Befehl manuell ausführen?  
+#### Wie kann ich diesen Befehl manuell ausführen?
 
 Es gibt zwei Möglichkeiten, diese Befehle auszuführen:  
 
-- **Lokales Terminal:** Gehen Sie zu \`Mein Konto -> Kubernetes-Registerkarte\`.  
+- **Lokales Terminal:** Gehen Sie zu [\`Mein Konto -> Kubernetes-Tab\`](${k8CredentialsHref}).  
   Dort finden Sie die Anmeldeinformationen, die es Ihnen ermöglichen, Befehle in Ihrem Kubernetes-Namensraum von Ihrem lokalen Terminal aus auszuführen.  
 
-- **VSCode-Python-Terminal:** Sie können auch eine VSCode-Python-Instanz mit der auf 'write' gesetzten Kubernetes-Rolle starten.  
+- **VSCode-Python Terminal:** Sie können auch eine VSCode-Python-Instanz mit der Kubernetes-Rolle auf \`Schreiben\` starten.  
   Öffnen Sie ein Terminal innerhalb von VSCode, und Sie können den Befehl ausführen.  
 
-Durch die manuelle Ausführung des Befehls können Sie den Dienst immer noch auf der Seite \`Meine Dienste\` sehen, als wäre er über die Benutzeroberfläche gestartet worden.  
+Durch die manuelle Ausführung des Befehls können Sie den Dienst weiterhin auf der [\`MyServices\`](${myServicesHref})-Seite sehen, als wäre er über die Benutzeroberfläche gestartet worden.  
 
-Fühlen Sie sich frei zu erkunden und die Kontrolle über Ihre Kubernetes-Implementierungen zu übernehmen!
-        `
+Sie können die Befehlszeile in der [\`Mein Konto -> Interface-Einstellungen-Tab\`](${interfacePreferenceHref}) deaktivieren.
+
+Fühlen Sie sich frei, Ihre Kubernetes-Bereitstellungen zu erkunden und die Kontrolle zu übernehmen!  
+        `}</Markdown>
+        )
     },
     "Footer": {
         "contribute": "Zum Projekt beitragen",

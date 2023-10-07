@@ -1,5 +1,6 @@
 import type { Translations } from "../types";
 import MuiLink from "@mui/material/Link";
+import { Markdown } from "onyxia-ui/Markdown";
 
 export const translations: Translations<"zh-CN"> = {
     /* spell-checker: disable */
@@ -315,41 +316,61 @@ export const translations: Translations<"zh-CN"> = {
             </>
         ),
         "download as script": "下载脚本",
-        "api logs help body": `欢迎来到我们的 Helm 命令解释对话框！  
-我们设计了这个界面，以便您能完全掌控您的 Kubernetes 部署。  
-以下是您需要了解的内容：  
+        "api logs help body": ({
+            k8CredentialsHref,
+            myServicesHref,
+            interfacePreferenceHref
+        }) => (
+            <Markdown
+                getDoesLinkShouldOpenNewTab={href => {
+                    switch (href) {
+                        case k8CredentialsHref:
+                            return true;
+                        case myServicesHref:
+                            return true;
+                        case interfacePreferenceHref:
+                            return false;
+                        default:
+                            return false;
+                    }
+                }}
+            >{`欢迎来到我们的 Helm 命令解释对话框！  
+我们设计了这个界面，以便您可以完全控制您的 Kubernetes 部署。  
+以下是您需要了解的信息：
 
 #### 这个 Helm 命令是什么？  
 
 显示在屏幕上的命令是我们的应用程序将代表您在您的 Kubernetes 命名空间中执行的确切 Helm 命令。  
-这样，当您点击'启动'按钮时，您就能知道后台发生了什么。  
+这使您能够了解当您点击“启动”按钮时幕后发生了什么。
 
 #### 实时更新  
 
-当您在用户界面中修改选项时，Helm 命令会自动更新以反映这些更改。  
+当您在用户界面中修改选项时，Helm 命令将自动更新以反映这些更改。  
 这样，您就可以看到您的选择是如何影响底层系统的。  
 
-#### 我为什么要关心？  
+#### 我为什么应该关心？  
 
-- **透明度：** 我们相信您有权知道在您的环境中执行了哪些操作。  
-- **学习：** 理解这些命令可以提供关于 Kubernetes 和 Helm 的见解，深化您的知识。  
+- **透明度：** 我们相信您有权知道在您的环境中正在执行哪些操作。  
+- **学习：** 了解这些命令可以帮助您更深入地了解 Kubernetes 和 Helm。  
 - **手动执行：** 您可以将此命令复制并粘贴到具有对 Kubernetes 的写访问权限的终端中，从而手动启动该服务。  
 
-#### 我如何手动运行这个命令？  
+#### 我如何手动运行此命令？  
 
-有两种方式可以运行这些命令：  
+有两种方法可以运行这些命令：  
 
-- **本地终端：** 转到 \`我的帐户 -> Kubernetes 标签页\`。  
-  在这里，您会找到允许您从本地终端在您的 Kubernetes 命名空间中运行命令的凭据。  
+- **本地终端：** 转到 [\`我的帐户 -> Kubernetes 标签页\`](${k8CredentialsHref})。  
+  在这里，您将找到允许您从本地终端在您的 Kubernetes 命名空间中运行命令的凭据。  
 
-- **VSCode-Python 终端：** 您还可以使用设置为 \`write\` 的 Kubernetes 角色启动一个 VSCode-Python 实例。  
-  在 VSCode 内打开一个终端，然后您就能执行该命令。  
+- **VSCode-Python 终端：** 您还可以使用设置为 \`写\` 的 Kubernetes 角色启动一个 VSCode-Python 实例。  
+  在 VSCode 中打开一个终端，您就可以执行命令。  
 
-通过手动执行命令，您仍然能够在 \`我的服务\` 页面上看到该服务，就像它是通过用户界面启动的一样。  
+通过手动执行命令，您仍然可以在 [\`我的服务\`](${myServicesHref}) 页面上看到该服务，就像它是通过用户界面启动的一样。  
 
-随意探索并掌握您的 Kubernetes 部署！
+您可以在 [\`我的帐户 -> 界面偏好设置标签页\`](${interfacePreferenceHref}) 中禁用命令栏。
 
-        `
+随时探索并掌握您的 Kubernetes 部署！  
+        `}</Markdown>
+        )
     },
     "Footer": {
         "contribute": "为项目做贡献",

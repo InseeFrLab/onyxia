@@ -1,5 +1,6 @@
 import MuiLink from "@mui/material/Link";
 import type { Translations } from "../types";
+import { Markdown } from "onyxia-ui/Markdown";
 
 export const translations: Translations<"no"> = {
     "Account": {
@@ -375,41 +376,61 @@ export const translations: Translations<"no"> = {
             </>
         ),
         "download as script": "Last ned som skript",
-        "api logs help body": `Velkommen til vår Helm Kommando Forklaring Dialog!  
-Vi har designet dette grensesnittet for å gi deg full kontroll over dine Kubernetes-implementeringer.  
-Her er det du trenger å vite:  
+        "api logs help body": ({
+            k8CredentialsHref,
+            myServicesHref,
+            interfacePreferenceHref
+        }) => (
+            <Markdown
+                getDoesLinkShouldOpenNewTab={href => {
+                    switch (href) {
+                        case k8CredentialsHref:
+                            return true;
+                        case myServicesHref:
+                            return true;
+                        case interfacePreferenceHref:
+                            return false;
+                        default:
+                            return false;
+                    }
+                }}
+            >{`Velkommen til vår forklaringsdialog for Helm-kommandoer!  
+Vi har designet denne grensesnittet for å gi deg full kontroll over dine Kubernetes-implementeringer.  
+Her er hva du trenger å vite:
 
-#### Hva er denne Helm Kommandoen?  
+#### Hva er denne Helm-kommandoen?  
 
 Kommandoen som vises på skjermen er den eksakte Helm-kommandoen som vår applikasjon vil kjøre på dine vegne i din Kubernetes-navnerom.  
-Dette gir deg innsikt i hva som skjer i bakgrunnen når du klikker på 'start'-knappen.  
+Dette lar deg vite hva som skjer i kulissene når du klikker på 'start'-knappen.  
 
 #### Sanntidsoppdateringer  
 
-Når du endrer alternativer i brukergrensesnittet, vil Helm-kommandoen automatisk oppdatere for å gjenspeile disse endringene.  
+Når du endrer alternativene i brukergrensesnittet, vil Helm-kommandoen automatisk oppdatere for å reflektere disse endringene.  
 På denne måten kan du se hvordan dine valg påvirker det underliggende systemet.  
 
 #### Hvorfor bør jeg bry meg?  
 
-- **Gjennomsiktighet:** Vi mener at du har rett til å vite hvilke handlinger som utføres i ditt miljø.  
-- **Læring:** Å forstå disse kommandoene kan gi innsikt i Kubernetes og Helm, og utdype din kunnskap.  
-- **Manuell Kjøring:** Du kan kopiere og lime inn dette kommandoen i en terminal med skrivetilgang til Kubernetes, noe som lar deg manuelt starte tjenesten.  
+- **Gjennomsiktighet:** Vi mener du har rett til å vite hvilke handlinger som utføres i ditt miljø.  
+- **Læring:** Å forstå disse kommandoene kan gi innsikt i Kubernetes og Helm, og forbedre din kunnskap.  
+- **Manuell utførelse:** Du kan kopiere og lime inn denne kommandoen i en terminal med skrivetilgang til Kubernetes, noe som lar deg starte tjenesten manuelt.  
 
 #### Hvordan kan jeg kjøre denne kommandoen manuelt?  
 
 Det er to måter å kjøre disse kommandoene på:  
 
-- **Lokal Terminal:** Gå til \`Min Konto -> Kubernetes-fanen\`.  
-  Her vil du finne legitimasjonen som tillater deg å kjøre kommandoer i din Kubernetes-navnerom fra din lokale terminal.  
+- **Lokal terminal:** Gå til [\`Min konto -> Kubernetes-fanen\`](${k8CredentialsHref}).  
+  Her vil du finne legitimasjonene som lar deg kjøre kommandoer i din Kubernetes-navnerom fra din lokale terminal.  
 
-- **VSCode-Python Terminal:** Du kan også starte en VSCode-Python instans med Kubernetes-rollen satt til \`write\`.  
-  Åpne en terminal i VSCode, og du vil være i stand til å utføre kommandoen.  
+- **VSCode-Python Terminal:** Du kan også starte en VSCode-Python-instans med Kubernetes-rollen satt til \`skrive\`.  
+  Åpne en terminal innenfor VSCode, og du vil være i stand til å utføre kommandoen.  
 
-Ved å kjøre kommandoen manuelt, vil du fortsatt kunne se tjenesten på \`Mine Tjenester\`-siden som om den var lansert via brukergrensesnittet.  
+Ved å utføre kommandoen manuelt, vil du fortsatt kunne se tjenesten i [\`MineTjenester\`](${myServicesHref})-siden som om den ble startet via brukergrensesnittet.  
 
-Føl deg fri til å utforske og ta kontroll over dine Kubernetes-implementeringer!
+Du kan deaktivere kommandolinjen i [\`Min konto -> Grensesnitt preferanser-fanen\`](${interfacePreferenceHref}).
 
-        `
+Føl deg fri til å utforske og ta kontroll over dine Kubernetes-implementeringer!  
+        `}</Markdown>
+        )
     },
     "Footer": {
         "contribute": "Bidra",

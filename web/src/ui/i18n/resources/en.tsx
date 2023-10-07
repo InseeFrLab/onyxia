@@ -1,4 +1,5 @@
 import MuiLink from "@mui/material/Link";
+import { Markdown } from "onyxia-ui/Markdown";
 import type { Translations } from "../types";
 
 export const translations: Translations<"en"> = {
@@ -375,7 +376,25 @@ export const translations: Translations<"en"> = {
             </>
         ),
         "download as script": "Download as script",
-        "api logs help body": `Welcome to our Helm Command Explanation Dialog!  
+        "api logs help body": ({
+            k8CredentialsHref,
+            myServicesHref,
+            interfacePreferenceHref
+        }) => (
+            <Markdown
+                getDoesLinkShouldOpenNewTab={href => {
+                    switch (href) {
+                        case k8CredentialsHref:
+                            return true;
+                        case myServicesHref:
+                            return true;
+                        case interfacePreferenceHref:
+                            return false;
+                        default:
+                            return false;
+                    }
+                }}
+            >{`Welcome to our Helm Command Explanation Dialog!  
 We've designed this interface to empower you to take control over your Kubernetes deployments. 
 Here's what you need to know:
 
@@ -399,16 +418,19 @@ This way, you can see how your choices impact the underlying system.
 
 There are two ways to run theses commands:  
 
-- **Local Terminal:** Go to \`My Account -> Kubernetes tab\`.  
+- **Local Terminal:** Go to [\`My Account -> Kubernetes tab\`](${k8CredentialsHref}).  
   Here, you will find the credentials that allow you to run commands in your Kubernetes namespace from your local terminal.  
 
 - **VSCode-Python Terminal:** You can also launch a VSCode-Python instance with the Kubernetes role set to \`write\`.  
   Open a terminal within VSCode, and you'll be able to execute the command.  
 
-By executing the command manually, you will still be able to see the service in the \`My Services\` page as if it was launched via the UI.  
+By executing the command manually, you will still be able to see the service in the [\`MyServices\`](${myServicesHref}) page as if it was launched via the UI.  
+
+You can disable the command bar in the [\`My Account -> Interface preference tab\`](${interfacePreferenceHref}).
 
 Feel free to explore and take charge of your Kubernetes deployments!  
-        `
+        `}</Markdown>
+        )
     },
     "Footer": {
         "contribute": "Contribute",
