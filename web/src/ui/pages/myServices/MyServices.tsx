@@ -284,7 +284,10 @@ export default function MyServices(props: Props) {
             </div>
             {isCommandBarEnabled && (
                 <CommandBar
-                    className={classes.commandBar}
+                    classes={{
+                        "root": classes.commandBar,
+                        "rootWhenExpended": classes.commandBarWhenExpended
+                    }}
                     entries={commandLogsEntries}
                     maxHeight={commandBarMaxHeight}
                 />
@@ -421,10 +424,14 @@ const useStyles = tss
         "commandBar": {
             "position": "absolute",
             "right": 0,
-            "width": "42%",
             "top": commandBarTop,
             "zIndex": 1,
             "opacity": commandBarTop === 0 ? 0 : 1,
-            "transition": "opacity 750ms linear"
+            "transition": "opacity 750ms linear",
+            "width": "min(100%, 1100px)"
+        },
+        "commandBarWhenExpended": {
+            "width": "min(100%, 1350px)",
+            "transition": "width 70ms linear"
         }
     }));
