@@ -107,61 +107,59 @@ const { HEADER_USECASE_DESCRIPTION, injectHEADER_USECASE_DESCRIPTIONInSearchPara
 
 export { HEADER_USECASE_DESCRIPTION };
 
-const { TERMS_OF_SERVICES, injectTERMS_OF_SERVICESInSearchParams } = getTransferableEnv(
-    {
-        "name": "TERMS_OF_SERVICES" as const,
-        "getSerializedValueFromEnv": () => getEnv().TERMS_OF_SERVICES,
-        "validateAndParseOrGetDefault": (
-            valueStr
-        ): Partial<Record<Language, string>> | string | undefined => {
-            if (valueStr === "") {
-                return undefined;
-            }
-
-            {
-                const match = valueStr.match(/^ *{/);
-
-                if (match === null) {
-                    return valueStr;
-                }
-            }
-
-            let tosUrlByLng: Partial<Record<Language, string>>;
-
-            try {
-                tosUrlByLng = JSON.parse(valueStr);
-            } catch {
-                throw new Error("Terms of services malformed");
-            }
-
-            {
-                const languages = objectKeys(tosUrlByLng);
-
-                languages.forEach(lang =>
-                    assert(
-                        id<readonly string[]>(languages).includes(lang),
-                        `${lang} is not a supported languages, supported languages are: ${languages.join(
-                            ", "
-                        )}`
-                    )
-                );
-
-                languages.forEach(lang =>
-                    assert(
-                        typeof tosUrlByLng[lang] === "string",
-                        `terms of service malformed (${lang})`
-                    )
-                );
-            }
-
-            if (Object.keys(tosUrlByLng).length === 0) {
-                return undefined;
-            }
-
-            return tosUrlByLng;
+const { TERMS_OF_SERVICES, injectTERMS_OF_SERVICESInSearchParams } = getTransferableEnv({
+    "name": "TERMS_OF_SERVICES" as const,
+    "getSerializedValueFromEnv": () => getEnv().TERMS_OF_SERVICES,
+    "validateAndParseOrGetDefault": (
+        valueStr
+    ): Partial<Record<Language, string>> | string | undefined => {
+        if (valueStr === "") {
+            return undefined;
         }
+
+        {
+            const match = valueStr.match(/^ *{/);
+
+            if (match === null) {
+                return valueStr;
+            }
+        }
+
+        let tosUrlByLng: Partial<Record<Language, string>>;
+
+        try {
+            tosUrlByLng = JSON.parse(valueStr);
+        } catch {
+            throw new Error("Terms of services malformed");
+        }
+
+        {
+            const languages = objectKeys(tosUrlByLng);
+
+            languages.forEach(lang =>
+                assert(
+                    id<readonly string[]>(languages).includes(lang),
+                    `${lang} is not a supported languages, supported languages are: ${languages.join(
+                        ", "
+                    )}`
+                )
+            );
+
+            languages.forEach(lang =>
+                assert(
+                    typeof tosUrlByLng[lang] === "string",
+                    `terms of service malformed (${lang})`
+                )
+            );
+        }
+
+        if (Object.keys(tosUrlByLng).length === 0) {
+            return undefined;
+        }
+
+        return tosUrlByLng;
     }
-);
+});
 
 export { TERMS_OF_SERVICES };
 

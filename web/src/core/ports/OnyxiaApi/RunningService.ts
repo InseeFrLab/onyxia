@@ -12,7 +12,6 @@ export declare namespace RunningService {
         env: Record<string, string>;
         ownerUsername: string;
         extraForHelmLs: {
-            updated: string;
             appVersion: string;
             revision: string;
             chart: string;

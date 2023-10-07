@@ -725,7 +725,6 @@ export function createOnyxiaApi(params: {
                     }[];
                     postInstallInstructions: string | undefined;
                     chart: string;
-                    updated: string;
                     appVersion: string;
                     revision: string;
                 }[];
@@ -800,7 +799,6 @@ export function createOnyxiaApi(params: {
                             postInstallInstructions,
                             areAllPodsRunning,
                             chart,
-                            updated,
                             appVersion,
                             revision
                         }) => ({
@@ -821,7 +819,6 @@ export function createOnyxiaApi(params: {
                             env,
                             "extraForHelmLs": {
                                 chart,
-                                updated,
                                 appVersion,
                                 revision
                             },

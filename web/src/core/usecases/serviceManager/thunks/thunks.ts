@@ -196,7 +196,9 @@ export const thunks = {
         async (...args) => {
             const { serviceId } = params;
 
-            const [dispatch, , { onyxiaApi }] = args;
+            const [dispatch] = args;
+
+            const onyxiaApi = dispatch(privateThunks.getLoggedOnyxiaApi());
 
             dispatch(actions.serviceStopped({ serviceId }));
 
@@ -295,20 +297,19 @@ const privateThunks = {
             sliceContext.loggedOnyxiaApi = {
                 ...onyxiaApi,
                 "getRunningServices": async () => {
-                    const { namespace: kubernetesNamespace } =
-                        projectConfigs.selectors.selectedProject(getState());
+                    const { namespace } = projectConfigs.selectors.selectedProject(
+                        getState()
+                    );
 
                     const cmdId = Date.now();
 
-                    const commandLogsEntry = {
-                        cmdId,
-                        "cmd": `helm list --namespace ${kubernetesNamespace}`,
-                        "resp": undefined
-                    };
-
                     dispatch(
                         actions.commandLogsEntryAdded({
-                            commandLogsEntry
+                            "commandLogsEntry": {
+                                cmdId,
+                                "cmd": `helm list --namespace ${namespace}`,
+                                "resp": undefined
+                            }
                         })
                     );
 
@@ -319,11 +320,11 @@ const privateThunks = {
                             cmdId,
                             "resp": formatHelmLsResp({
                                 "lines": runningServices.map(
-                                    ({ extraForHelmLs, id }) => ({
+                                    ({ extraForHelmLs, id, startedAt }) => ({
                                         "name": id,
-                                        "namespace": kubernetesNamespace,
+                                        namespace,
                                         "revision": extraForHelmLs.revision,
-                                        "updated": extraForHelmLs.updated,
+                                        "updatedTime": startedAt,
                                         "status": "deployed",
                                         "chart": extraForHelmLs.chart,
                                         "appVersion": extraForHelmLs.appVersion
@@ -334,6 +335,31 @@ const privateThunks = {
                     );
 
                     return runningServices;
+                },
+                "stopService": async ({ serviceId }) => {
+                    const cmdId = Date.now();
+
+                    dispatch(
+                        actions.commandLogsEntryAdded({
+                            "commandLogsEntry": {
+                                cmdId,
+                                "cmd": `helm uninstall ${serviceId} --namespace ${
+                                    projectConfigs.selectors.selectedProject(getState())
+                                        .namespace
+                                }`,
+                                "resp": undefined
+                            }
+                        })
+                    );
+
+                    await onyxiaApi.stopService({ serviceId });
+
+                    dispatch(
+                        actions.commandLogsRespUpdated({
+                            cmdId,
+                            "resp": `release "${serviceId}" uninstalled`
+                        })
+                    );
                 }
             };
 

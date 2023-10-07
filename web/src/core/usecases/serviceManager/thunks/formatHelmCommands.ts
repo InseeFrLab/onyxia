@@ -3,7 +3,7 @@ export function formatHelmLsResp(params: {
         namespace: string;
         name: string;
         revision: string;
-        updated: string;
+        updatedTime: number;
         status: string;
         chart: string;
         appVersion: string;
@@ -12,6 +12,15 @@ export function formatHelmLsResp(params: {
     const { lines } = params;
 
     const minPadding = 7;
+
+    const formatTime = (time: number) =>
+        new Date(time).toLocaleDateString("en-US", {
+            "year": "numeric",
+            "month": "short",
+            "day": "numeric",
+            "hour": "2-digit",
+            "minute": "2-digit"
+        });
 
     const header = {
         ...(() => {
@@ -49,9 +58,7 @@ export function formatHelmLsResp(params: {
             const key = "UPDATED";
 
             return {
-                [key]: `${key}${" ".repeat(
-                    "2023-10-06 14:34:54.652220476 +0000 UTC".length - key.length
-                )} `
+                [key]: `${key}${" ".repeat(formatTime(Date.now()).length - key.length)}  `
             };
         })(),
         ...(() => {
@@ -67,7 +74,7 @@ export function formatHelmLsResp(params: {
             return {
                 [key]: `${key}${" ".repeat(
                     Math.max(chartMaxLength - key.length, minPadding)
-                )} `
+                )}  `
             };
         })(),
         ...(() => {
@@ -80,12 +87,12 @@ export function formatHelmLsResp(params: {
     return [
         Object.values(header).join(""),
         ...lines.map(
-            ({ name, namespace, revision, updated, chart, status, appVersion }) =>
+            ({ name, namespace, revision, updatedTime, chart, status, appVersion }) =>
                 [
                     name.padEnd(header.NAME.length),
                     namespace.padEnd(header.NAMESPACE.length),
                     revision.padEnd(header.REVISION.length),
-                    updated.padEnd(header.UPDATED.length),
+                    formatTime(updatedTime).padEnd(header.UPDATED.length),
                     status.padEnd(header.STATUS.length),
                     chart.padEnd(header.CHART.length),
                     appVersion.padEnd(header["APP VERSION"].length)
