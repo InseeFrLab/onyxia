@@ -107,7 +107,11 @@ export default function MyServices(props: Props) {
     const { rootRef, buttonBarRef, commandBarTop, commandBarMaxHeight } =
         useCommandBarPositioning();
 
-    const { classes, cx } = useStyles({ isSavedConfigsExtended, commandBarTop });
+    const { classes, cx } = useStyles({
+        isSavedConfigsExtended,
+        commandBarTop,
+        isCommandBarEnabled
+    });
 
     const onRequestToggleIsShortVariant = useConstCallback(() =>
         routes
@@ -389,10 +393,11 @@ export const { i18n } = declareComponentKeys<
 const useStyles = tss
     .withName({ MyServices })
     .withParams<{
+        isCommandBarEnabled: boolean;
         commandBarTop: number;
         isSavedConfigsExtended: boolean;
     }>()
-    .create(({ theme, isSavedConfigsExtended, commandBarTop }) => ({
+    .create(({ theme, isCommandBarEnabled, isSavedConfigsExtended, commandBarTop }) => ({
         "root": {
             "height": "100%",
             "display": "flex",
@@ -417,7 +422,9 @@ const useStyles = tss
                 },
                 "savedConfigs": {
                     "flex": isSavedConfigsExtended ? 1 : 1 - ratio,
-                    "paddingRight": "2%"
+                    "paddingRight": "2%",
+                    //NOTE: It's not great to have a fixed width here but measuring would needlessly complexity the code too much.
+                    "marginTop": isCommandBarEnabled ? 40 : undefined
                 }
             };
         })(),
