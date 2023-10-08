@@ -469,7 +469,8 @@ Tutustu vapaasti ja ota hallintaan Kubernetes-julkaisusi!
         "confirm delete body":
             "Muista tallentaa koodisi GitHubiin tai GitLabiin ennen palveluiden lopettamista",
         "cancel": "Peruuta",
-        "confirm": "Kyllä, poista"
+        "confirm": "Kyllä, poista",
+        "api logs help body": undefined
     },
     "MyServicesButtonBar": {
         "refresh": "Päivitä",

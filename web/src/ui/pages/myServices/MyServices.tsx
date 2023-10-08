@@ -111,10 +111,15 @@ export default function MyServices(props: Props) {
         commandBarMaxHeight
     } = useCommandBarPositioning();
 
+    const {
+        domRect: { height: bellowHeaderHeight }
+    } = useDomRect({ "ref": belowHeaderRef });
+
     const { classes, cx } = useStyles({
         isSavedConfigsExtended,
         commandBarTop,
-        isCommandBarEnabled
+        isCommandBarEnabled,
+        bellowHeaderHeight
     });
 
     const onRequestToggleIsShortVariant = useConstCallback(() =>
@@ -295,10 +300,26 @@ export default function MyServices(props: Props) {
                     <CommandBar
                         classes={{
                             "root": classes.commandBar,
-                            "rootWhenExpended": classes.commandBarWhenExpended
+                            "rootWhenExpended": classes.commandBarWhenExpended,
+                            "helpDialog": classes.helpDialog
                         }}
                         entries={commandLogsEntries}
                         maxHeight={commandBarMaxHeight}
+                        helpDialog={{
+                            "body": (
+                                <div className={classes.helpDialogBody}>
+                                    {t("api logs help body", {
+                                        "k8CredentialsHref": routes.account({
+                                            "tabId": "k8sCredentials"
+                                        }).href,
+                                        "myServicesHref": routes.myServices().href,
+                                        "interfacePreferenceHref": routes.account({
+                                            "tabId": "user-interface"
+                                        }).href
+                                    })}
+                                </div>
+                            )
+                        }}
                     />
                 )}
                 <div className={classes.cardsAndSavedConfigs}>
@@ -397,6 +418,15 @@ export const { i18n } = declareComponentKeys<
     | "confirm delete body shared services"
     | "cancel"
     | "confirm"
+    | {
+          K: "api logs help body";
+          P: {
+              k8CredentialsHref: string;
+              myServicesHref: string;
+              interfacePreferenceHref: string;
+          };
+          R: JSX.Element;
+      }
 >()({ MyServices });
 
 const useStyles = tss
@@ -405,51 +435,71 @@ const useStyles = tss
         isCommandBarEnabled: boolean;
         commandBarTop: number;
         isSavedConfigsExtended: boolean;
+        bellowHeaderHeight: number;
     }>()
-    .create(({ theme, isCommandBarEnabled, isSavedConfigsExtended, commandBarTop }) => ({
-        "root": {
-            "height": "100%",
-            "display": "flex",
-            "flexDirection": "column"
-        },
-        "belowHeader": {
-            "position": "relative"
-        },
-        "cardsAndSavedConfigs": {
-            "overflow": "hidden",
-            "flex": 1,
-            "display": "flex",
-            "& > *": {
-                "height": "100%"
-            }
-        },
-        ...(() => {
-            const ratio = 0.65;
-
-            return {
-                "cards": {
-                    "flex": ratio,
-                    "marginRight": theme.spacing(5)
-                },
-                "savedConfigs": {
-                    "flex": isSavedConfigsExtended ? 1 : 1 - ratio,
-                    "paddingRight": "2%",
-                    //NOTE: It's not great to have a fixed width here but measuring would needlessly complexity the code too much.
-                    "marginTop": isCommandBarEnabled ? 40 : undefined
+    .create(
+        ({
+            theme,
+            isCommandBarEnabled,
+            isSavedConfigsExtended,
+            commandBarTop,
+            bellowHeaderHeight
+        }) => ({
+            "root": {
+                "height": "100%",
+                "display": "flex",
+                "flexDirection": "column"
+            },
+            "belowHeader": {
+                "position": "relative",
+                "flex": 1,
+                "display": "flex",
+                "flexDirection": "column",
+                "overflow": "hidden"
+            },
+            "cardsAndSavedConfigs": {
+                "overflow": "hidden",
+                "flex": 1,
+                "display": "flex",
+                "& > *": {
+                    "height": "100%"
                 }
-            };
-        })(),
-        "commandBar": {
-            "position": "absolute",
-            "right": 0,
-            "top": commandBarTop,
-            "zIndex": 1,
-            "opacity": commandBarTop === 0 ? 0 : 1,
-            "transition": "opacity 750ms linear",
-            "width": "min(100%, 1100px)"
-        },
-        "commandBarWhenExpended": {
-            "width": "min(100%, 1350px)",
-            "transition": "width 70ms linear"
-        }
-    }));
+            },
+            ...(() => {
+                const ratio = 0.65;
+
+                return {
+                    "cards": {
+                        "flex": ratio,
+                        "marginRight": theme.spacing(5)
+                    },
+                    "savedConfigs": {
+                        "flex": isSavedConfigsExtended ? 1 : 1 - ratio,
+                        "paddingRight": "2%",
+                        //NOTE: It's not great to have a fixed width here but measuring would needlessly complexity the code too much.
+                        "marginTop": isCommandBarEnabled ? 40 : undefined
+                    }
+                };
+            })(),
+            "commandBar": {
+                "position": "absolute",
+                "right": 0,
+                "top": commandBarTop,
+                "zIndex": 1,
+                "opacity": commandBarTop === 0 ? 0 : 1,
+                "transition": "opacity 750ms linear",
+                "width": "min(100%, 1100px)"
+            },
+            "commandBarWhenExpended": {
+                "width": "min(100%, 1350px)",
+                "transition": "width 70ms linear"
+            },
+            "helpDialog": {
+                "maxWidth": 800
+            },
+            "helpDialogBody": {
+                "maxHeight": (console.log({ bellowHeaderHeight }), bellowHeaderHeight),
+                "overflow": "auto"
+            }
+        })
+    );

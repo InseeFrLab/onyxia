@@ -409,7 +409,8 @@ export const translations: Translations<"zh-CN"> = {
         "confirm delete body shared services":
             "请注意，您的某些服务正在与项目的其他成员共享.",
         "cancel": "取消",
-        "confirm": "是的, 删除"
+        "confirm": "是的, 删除",
+        "api logs help body": undefined
     },
     "MyServicesButtonBar": {
         "refresh": "刷新",

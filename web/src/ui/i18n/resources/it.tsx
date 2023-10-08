@@ -475,7 +475,8 @@ Sentiti libero di esplorare e prendere il controllo dei tuoi deployment Kubernet
         "confirm delete body shared services":
             "Attenzione, alcuni dei tuoi servizi sono condivisi con gli altri membri del progetto.",
         "cancel": "Annullare",
-        "confirm": "Sì, eliminare"
+        "confirm": "Sì, eliminare",
+        "api logs help body": undefined
     },
     "MyServicesButtonBar": {
         "refresh": "Aggiornare",

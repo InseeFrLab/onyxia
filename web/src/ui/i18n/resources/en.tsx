@@ -472,7 +472,62 @@ Feel free to explore and take charge of your Kubernetes deployments!
         "confirm delete body":
             "Don't forget to push your code on GitHub or GitLab before terminating your services",
         "cancel": "cancel",
-        "confirm": "Yes, delete"
+        "confirm": "Yes, delete",
+        "api logs help body": ({
+            k8CredentialsHref,
+            myServicesHref,
+            interfacePreferenceHref
+        }) => (
+            <Markdown
+                getDoesLinkShouldOpenNewTab={href => {
+                    switch (href) {
+                        case k8CredentialsHref:
+                            return true;
+                        case myServicesHref:
+                            return true;
+                        case interfacePreferenceHref:
+                            return false;
+                        default:
+                            return false;
+                    }
+                }}
+            >{`Welcome to our Helm Command Explanation Dialog!  
+We've designed this interface to empower you to take control over your Kubernetes deployments. 
+Here's what you need to know:
+
+#### What is this Helm Command?  
+
+The command displayed on the screen is the exact Helm command that our application will execute on your behalf in your Kubernetes namespace.  
+This enables you to know what's happening behind the scenes when you click the 'launch' button.  
+
+#### Real-time Updates  
+
+As you modify options in the UI, the Helm command will automatically update to reflect those changes.  
+This way, you can see how your choices impact the underlying system.  
+
+#### Why Should I Care?  
+
+- **Transparency:** We believe you have the right to know what actions are being performed in your environment.  
+- **Learning:** Understanding these commands can provide insight into Kubernetes and Helm, deepening your knowledge.  
+- **Manual Execution:** You can copy and paste this command into a terminal with write-access to Kubernetes, allowing you to launch the service manually.  
+
+#### How Can I Run this Command Manually?  
+
+There are two ways to run theses commands:  
+
+- **Local Terminal:** Go to [\`My Account -> Kubernetes tab\`](${k8CredentialsHref}).  
+  Here, you will find the credentials that allow you to run commands in your Kubernetes namespace from your local terminal.  
+
+- **VSCode-Python Terminal:** You can also launch a VSCode-Python instance with the Kubernetes role set to \`write\`.  
+  Open a terminal within VSCode, and you'll be able to execute the command.  
+
+By executing the command manually, you will still be able to see the service in the [\`MyServices\`](${myServicesHref}) page as if it was launched via the UI.  
+
+You can disable the command bar in the [\`My Account -> Interface preference tab\`](${interfacePreferenceHref}).
+
+Feel free to explore and take charge of your Kubernetes deployments!  
+        `}</Markdown>
+        )
     },
     "MyServicesButtonBar": {
         "refresh": "Refresh",

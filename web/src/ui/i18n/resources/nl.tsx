@@ -476,7 +476,8 @@ Voel je vrij om te verkennen en controle te nemen over je Kubernetes-implementat
         "confirm delete body shared services":
             "Opgelet, sommige van uw diensten worden gedeeld met andere projectleden.",
         "cancel": "Annuleren",
-        "confirm": "Ja, verwijderen"
+        "confirm": "Ja, verwijderen",
+        "api logs help body": undefined
     },
     "MyServicesButtonBar": {
         "refresh": "Vernieuwen",
