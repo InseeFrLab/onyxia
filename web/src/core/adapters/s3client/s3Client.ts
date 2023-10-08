@@ -297,7 +297,12 @@ export async function createS3Client(params: Params): Promise<S3Client> {
                         bucketItem.prefix.replace(/\/+$/, "").replace(prefix, "")
                     );
                 } else {
-                    out.files.push(bucketItem.name.replace(prefix, ""));
+                    const { name } = bucketItem;
+                    if (name === undefined) {
+                        console.warn(`Bucket item name is undefined`, bucketItem);
+                        return;
+                    }
+                    out.files.push(name.replace(prefix, ""));
                 }
             });
 
