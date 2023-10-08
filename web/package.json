@@ -20,7 +20,7 @@
         "themeName": "onyxia"
     },
     "dependencies": {
-        "onyxia-ui": "^1.1.0",
+        "onyxia-ui": "^1.2.0",
         "keycloakify": "^8.1.2",
         "tss-react": "^4.9.2",
         "i18nifty": "^2.1.1",
