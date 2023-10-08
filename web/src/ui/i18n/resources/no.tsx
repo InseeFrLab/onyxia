@@ -473,8 +473,7 @@ Føl deg fri til å utforske og ta kontroll over dine Kubernetes-implementeringe
         "confirm delete body":
             "Ikke glem å laste opp koden din på GitHub eller GitLab før du avslutter tjenestene dine",
         "cancel": "Avbryt",
-        "confirm": "Ja, slett",
-        "api logs help body": undefined
+        "confirm": "Ja, slett"
     },
     "MyServicesButtonBar": {
         "refresh": "Oppdater",

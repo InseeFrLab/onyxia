@@ -479,8 +479,7 @@ Fühlen Sie sich frei, Ihre Kubernetes-Bereitstellungen zu erkunden und die Kont
         "confirm delete body shared services":
             "Achtung, einige Ihrer Dienste sind für andere Projektmitglieder freigegeben.",
         "cancel": "Abbrechen",
-        "confirm": "Ja, löschen",
-        "api logs help body": undefined
+        "confirm": "Ja, löschen"
     },
     "MyServicesButtonBar": {
         "refresh": "Aktualisieren",

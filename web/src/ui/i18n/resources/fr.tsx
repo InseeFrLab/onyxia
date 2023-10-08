@@ -483,8 +483,7 @@ N'hésitez pas à explorer et à prendre en main vos déploiements Kubernetes !
         "confirm delete body shared services":
             "Attention, certains de vos services sont partagés aux autres membres du projet.",
         "cancel": "Annuler",
-        "confirm": "Oui, supprimer",
-        "api logs help body": undefined
+        "confirm": "Oui, supprimer"
     },
     "MyServicesButtonBar": {
         "refresh": "Rafraîchir",

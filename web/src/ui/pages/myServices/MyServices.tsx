@@ -31,6 +31,7 @@ export default function MyServices(props: Props) {
     const { className, route } = props;
 
     const { t } = useTranslation({ MyServices });
+    const { t: tCatalogLauncher } = useTranslation("CatalogLauncher");
 
     /* prettier-ignore */
     const { serviceManager, restorablePackageConfig, projectConfigs } = useCoreFunctions();
@@ -308,7 +309,7 @@ export default function MyServices(props: Props) {
                         helpDialog={{
                             "body": (
                                 <div className={classes.helpDialogBody}>
-                                    {t("api logs help body", {
+                                    {tCatalogLauncher("api logs help body", {
                                         "k8CredentialsHref": routes.account({
                                             "tabId": "k8sCredentials"
                                         }).href,
@@ -418,15 +419,6 @@ export const { i18n } = declareComponentKeys<
     | "confirm delete body shared services"
     | "cancel"
     | "confirm"
-    | {
-          K: "api logs help body";
-          P: {
-              k8CredentialsHref: string;
-              myServicesHref: string;
-              interfacePreferenceHref: string;
-          };
-          R: JSX.Element;
-      }
 >()({ MyServices });
 
 const useStyles = tss
