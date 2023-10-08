@@ -30,7 +30,7 @@ export function formatHelmLsResp(params: {
 
             return {
                 [key]: `${key}${" ".repeat(
-                    Math.max(nameMaxLength + 3 - key.length, minPadding)
+                    Math.max(nameMaxLength + 2 - key.length, minPadding)
                 )} `
             };
         })(),
@@ -51,7 +51,7 @@ export function formatHelmLsResp(params: {
             const key = "REVISION";
 
             return {
-                [key]: `${key}${" ".repeat(minPadding)} `
+                [key]: `${key}${" ".repeat(2)} `
             };
         })(),
         ...(() => {
@@ -64,7 +64,7 @@ export function formatHelmLsResp(params: {
         ...(() => {
             const key = "STATUS";
 
-            return { [key]: `${key}${" ".repeat(minPadding)} ` };
+            return { [key]: `${key}${" ".repeat(3)} ` };
         })(),
         ...(() => {
             const key = "CHART";
