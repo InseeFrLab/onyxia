@@ -104,8 +104,12 @@ export default function MyServices(props: Props) {
 
     const { isSavedConfigsExtended } = route.params;
 
-    const { rootRef, buttonBarRef, commandBarTop, commandBarMaxHeight } =
-        useCommandBarPositioning();
+    const {
+        rootRef: belowHeaderRef,
+        buttonBarRef,
+        commandBarTop,
+        commandBarMaxHeight
+    } = useCommandBarPositioning();
 
     const { classes, cx } = useStyles({
         isSavedConfigsExtended,
@@ -271,7 +275,7 @@ export default function MyServices(props: Props) {
     );
 
     return (
-        <div ref={rootRef} className={cx(classes.root, className)}>
+        <div className={cx(classes.root, className)}>
             <PageHeader
                 mainIcon="services"
                 title={t("text1")}
@@ -279,83 +283,88 @@ export default function MyServices(props: Props) {
                 helpContent={t("text3")}
                 helpIcon="sentimentSatisfied"
             />
-            <div ref={buttonBarRef}>
-                <MyServicesButtonBar
-                    onClick={onButtonBarClick}
-                    isThereNonOwnedServicesShown={isThereNonOwnedServices}
-                    isThereDeletableServices={deletableRunningServices.length !== 0}
-                />
-            </div>
-            {isCommandBarEnabled && (
-                <CommandBar
-                    classes={{
-                        "root": classes.commandBar,
-                        "rootWhenExpended": classes.commandBarWhenExpended
-                    }}
-                    entries={commandLogsEntries}
-                    maxHeight={commandBarMaxHeight}
-                />
-            )}
-            <div className={classes.payload}>
-                <>
-                    {!isSavedConfigsExtended && (
-                        <MyServicesCards
-                            isUpdating={isUpdating}
-                            className={classes.cards}
-                            cards={cards}
-                            onRequestDelete={onRequestDelete}
-                            catalogExplorerLink={catalogExplorerLink}
-                            evtAction={evtMyServiceCardsAction}
-                            getServicePassword={getServicePassword}
-                            getEnv={serviceManager.getEnv}
-                            getPostInstallInstructions={
-                                serviceManager.getPostInstallInstructions
-                            }
-                        />
-                    )}
-                    <MyServicesSavedConfigs
-                        isShortVariant={!isSavedConfigsExtended}
-                        savedConfigs={savedConfigs}
-                        className={classes.savedConfigs}
-                        callback={onSavedConfigsCallback}
-                        onRequestToggleIsShortVariant={onRequestToggleIsShortVariant}
+            <div className={classes.belowHeader} ref={belowHeaderRef}>
+                <div ref={buttonBarRef}>
+                    <MyServicesButtonBar
+                        onClick={onButtonBarClick}
+                        isThereNonOwnedServicesShown={isThereNonOwnedServices}
+                        isThereDeletableServices={deletableRunningServices.length !== 0}
                     />
-                </>
-            </div>
-            <Dialog
-                title={t("confirm delete title")}
-                subtitle={t("confirm delete subtitle")}
-                body={`${
-                    isThereOwnedSharedServices
-                        ? t("confirm delete body shared services")
-                        : ""
-                } ${t("confirm delete body")}`}
-                isOpen={isDialogOpen}
-                onClose={onDialogCloseFactory(false)}
-                buttons={
+                </div>
+                {isCommandBarEnabled && (
+                    <CommandBar
+                        classes={{
+                            "root": classes.commandBar,
+                            "rootWhenExpended": classes.commandBarWhenExpended
+                        }}
+                        entries={commandLogsEntries}
+                        maxHeight={commandBarMaxHeight}
+                    />
+                )}
+                <div className={classes.cardsAndSavedConfigs}>
                     <>
-                        <Button onClick={onDialogCloseFactory(false)} variant="secondary">
-                            {t("cancel")}
-                        </Button>
-                        <Button onClick={onDialogCloseFactory(true)}>
-                            {t("confirm")}
-                        </Button>
+                        {!isSavedConfigsExtended && (
+                            <MyServicesCards
+                                isUpdating={isUpdating}
+                                className={classes.cards}
+                                cards={cards}
+                                onRequestDelete={onRequestDelete}
+                                catalogExplorerLink={catalogExplorerLink}
+                                evtAction={evtMyServiceCardsAction}
+                                getServicePassword={getServicePassword}
+                                getEnv={serviceManager.getEnv}
+                                getPostInstallInstructions={
+                                    serviceManager.getPostInstallInstructions
+                                }
+                            />
+                        )}
+                        <MyServicesSavedConfigs
+                            isShortVariant={!isSavedConfigsExtended}
+                            savedConfigs={savedConfigs}
+                            className={classes.savedConfigs}
+                            callback={onSavedConfigsCallback}
+                            onRequestToggleIsShortVariant={onRequestToggleIsShortVariant}
+                        />
                     </>
-                }
-            />
+                </div>
+                <Dialog
+                    title={t("confirm delete title")}
+                    subtitle={t("confirm delete subtitle")}
+                    body={`${
+                        isThereOwnedSharedServices
+                            ? t("confirm delete body shared services")
+                            : ""
+                    } ${t("confirm delete body")}`}
+                    isOpen={isDialogOpen}
+                    onClose={onDialogCloseFactory(false)}
+                    buttons={
+                        <>
+                            <Button
+                                onClick={onDialogCloseFactory(false)}
+                                variant="secondary"
+                            >
+                                {t("cancel")}
+                            </Button>
+                            <Button onClick={onDialogCloseFactory(true)}>
+                                {t("confirm")}
+                            </Button>
+                        </>
+                    }
+                />
+            </div>
         </div>
     );
 }
 
 function useCommandBarPositioning() {
     const {
-        domRect: { top: rootTop, bottom: rootBottom },
+        domRect: { bottom: rootBottom },
         ref: rootRef
     } = useDomRect();
 
     // NOTE: To avoid https://reactjs.org/docs/hooks-reference.html#useimperativehandle
     const {
-        domRect: { bottom: buttonBarBottom },
+        domRect: { height: buttonBarHeight, bottom: buttonBarBottom },
         ref: buttonBarRef
     } = useDomRect();
 
@@ -364,10 +373,10 @@ function useCommandBarPositioning() {
     const [commandBarMaxHeight, setCommandBarMaxHeight] = useState<number>(0);
 
     useEffect(() => {
-        setCommandBarTop(buttonBarBottom - rootTop);
+        setCommandBarTop(buttonBarHeight);
 
         setCommandBarMaxHeight(rootBottom - buttonBarBottom - 30);
-    }, [rootTop, rootBottom, buttonBarBottom]);
+    }, [buttonBarHeight, buttonBarBottom, rootBottom]);
 
     return {
         rootRef,
@@ -401,10 +410,12 @@ const useStyles = tss
         "root": {
             "height": "100%",
             "display": "flex",
-            "flexDirection": "column",
+            "flexDirection": "column"
+        },
+        "belowHeader": {
             "position": "relative"
         },
-        "payload": {
+        "cardsAndSavedConfigs": {
             "overflow": "hidden",
             "flex": 1,
             "display": "flex",
