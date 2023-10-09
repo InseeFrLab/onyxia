@@ -26,6 +26,8 @@ export async function createCore(params: CoreParams) {
 
     let oidc: Oidc | undefined = undefined;
 
+    let isCoreCreated = false;
+
     const onyxiaApi = await (async () => {
         if (apiUrl === "") {
             const { onyxiaApi } = await import("core/adapters/onyxiaApiMock");
@@ -48,6 +50,10 @@ export async function createCore(params: CoreParams) {
                 return oidc.getAccessToken().accessToken;
             },
             "getRegionId": () => {
+                if (!isCoreCreated) {
+                    return undefined;
+                }
+
                 try {
                     return usecases.deploymentRegion.selectors.selectedDeploymentRegion(
                         core.getState()
@@ -60,6 +66,10 @@ export async function createCore(params: CoreParams) {
                 }
             },
             "getProject": () => {
+                if (!isCoreCreated) {
+                    return undefined;
+                }
+
                 try {
                     return usecases.projectConfigs.selectors.selectedProject(
                         core.getState()
@@ -115,6 +125,8 @@ export async function createCore(params: CoreParams) {
         thunksExtraArgument,
         usecases
     });
+
+    isCoreCreated = true;
 
     await core.dispatch(usecases.userAuthentication.protectedThunks.initialize());
 
