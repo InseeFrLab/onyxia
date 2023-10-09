@@ -1,7 +1,7 @@
 import { useState } from "react";
 import type { PageProps } from "keycloakify/login/pages/PageProps";
 import { useGetClassName } from "keycloakify/login/lib/useGetClassName";
-import { useStyles } from "ui/theme";
+import { useStyles } from "keycloak-theme/login/theme";
 import type { KcContext } from "../kcContext";
 import type { I18n } from "../i18n";
 

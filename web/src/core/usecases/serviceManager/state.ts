@@ -2,7 +2,6 @@ import { assert } from "tsafe/assert";
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { id } from "tsafe/id";
-
 import { nestObject } from "core/tools/nestObject";
 import * as yaml from "yaml";
 
@@ -11,6 +10,11 @@ export type State = State.NotInitialized | State.Ready;
 export namespace State {
     export type Common = {
         isUpdating: boolean;
+        commandLogsEntries: {
+            cmdId: number;
+            cmd: string;
+            resp: string | undefined;
+        }[];
     };
 
     export type NotInitialized = Common & {
@@ -23,11 +27,6 @@ export namespace State {
         envByServiceId: Record<string, Record<string, string>>;
         postInstallInstructionsByServiceId: Record<string, string>;
         kubernetesNamespace: string;
-        commandLogsEntries: {
-            cmdId: number;
-            cmd: string;
-            resp: string | undefined;
-        }[];
     };
 }
 
@@ -68,7 +67,8 @@ export const { reducer, actions } = createSlice({
     "initialState": id<State>(
         id<State.NotInitialized>({
             "stateDescription": "not initialized",
-            "isUpdating": false
+            "isUpdating": false,
+            "commandLogsEntries": []
         })
     ),
     "reducers": {
@@ -100,14 +100,7 @@ export const { reducer, actions } = createSlice({
                 envByServiceId,
                 postInstallInstructionsByServiceId,
                 kubernetesNamespace,
-                "commandLogsEntries": (() => {
-                    switch (state.stateDescription) {
-                        case "ready":
-                            return state.commandLogsEntries;
-                        case "not initialized":
-                            return [];
-                    }
-                })()
+                "commandLogsEntries": state.commandLogsEntries
             });
         },
         "serviceStarted": (
@@ -186,6 +179,45 @@ export const { reducer, actions } = createSlice({
                     "\n"
                 )
             });
+        },
+        "commandLogsEntryAdded": (
+            state,
+            {
+                payload
+            }: {
+                payload: {
+                    commandLogsEntry: {
+                        cmdId: number;
+                        cmd: string;
+                        resp: string | undefined;
+                    };
+                };
+            }
+        ) => {
+            const { commandLogsEntry } = payload;
+
+            state.commandLogsEntries.push(commandLogsEntry);
+        },
+        "commandLogsRespUpdated": (
+            state,
+            {
+                payload
+            }: {
+                payload: {
+                    cmdId: number;
+                    resp: string;
+                };
+            }
+        ) => {
+            const { cmdId, resp } = payload;
+
+            const commandLogsEntry = state.commandLogsEntries.find(
+                commandLogsEntry => commandLogsEntry.cmdId === cmdId
+            );
+
+            assert(commandLogsEntry !== undefined);
+
+            commandLogsEntry.resp = resp;
         }
     }
 });

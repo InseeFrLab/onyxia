@@ -753,6 +753,9 @@ export function createOnyxiaApi(params: {
                         containers: { ready: boolean }[];
                     }[];
                     postInstallInstructions: string | undefined;
+                    chart: string;
+                    appVersion: string;
+                    revision: string;
                 }[];
             };
 
@@ -823,7 +826,10 @@ export function createOnyxiaApi(params: {
                             urls,
                             startedAt,
                             postInstallInstructions,
-                            areAllPodsRunning
+                            areAllPodsRunning,
+                            chart,
+                            appVersion,
+                            revision
                         }) => ({
                             id,
                             ...(() => {
@@ -840,6 +846,11 @@ export function createOnyxiaApi(params: {
                             urls,
                             startedAt,
                             env,
+                            "extraForHelmLs": {
+                                chart,
+                                appVersion,
+                                revision
+                            },
                             "ownerUsername": env["onyxia.owner"],
                             "isShared": env["onyxia.share"] === "true",
                             ...(areAllPodsRunning

@@ -19,6 +19,8 @@ import type { UnpackEvt } from "evt";
 import { assert } from "tsafe/assert";
 import { declareComponentKeys } from "i18nifty";
 import type { PageRoute } from "./route";
+import { CommandBar } from "ui/shared/CommandBar";
+import { useDomRect } from "powerhooks/useDomRect";
 
 export type Props = {
     route: PageRoute;
@@ -29,6 +31,7 @@ export default function MyServices(props: Props) {
     const { className, route } = props;
 
     const { t } = useTranslation({ MyServices });
+    const { t: tCatalogLauncher } = useTranslation("CatalogLauncher");
 
     /* prettier-ignore */
     const { serviceManager, restorablePackageConfig, projectConfigs } = useCoreFunctions();
@@ -43,6 +46,14 @@ export default function MyServices(props: Props) {
     const { isThereOwnedSharedServices } = useCoreState(selectors.serviceManager.isThereOwnedSharedServices);
     /* prettier-ignore */
     const { isThereNonOwnedServices } = useCoreState(selectors.serviceManager.isThereNonOwnedServices);
+
+    const { commandLogsEntries } = useCoreState(
+        selectors.serviceManager.commandLogsEntries
+    );
+
+    const {
+        userConfigs: { isCommandBarEnabled }
+    } = useCoreState(selectors.userConfigs.userConfigs);
 
     const [password, setPassword] = useState<string | undefined>(undefined);
 
@@ -94,7 +105,23 @@ export default function MyServices(props: Props) {
 
     const { isSavedConfigsExtended } = route.params;
 
-    const { classes, cx } = useStyles({ isSavedConfigsExtended });
+    const {
+        rootRef: belowHeaderRef,
+        buttonBarRef,
+        commandBarTop,
+        commandBarMaxHeight
+    } = useCommandBarPositioning();
+
+    const {
+        domRect: { height: bellowHeaderHeight }
+    } = useDomRect({ "ref": belowHeaderRef });
+
+    const { classes, cx } = useStyles({
+        isSavedConfigsExtended,
+        commandBarTop,
+        isCommandBarEnabled,
+        bellowHeaderHeight
+    });
 
     const onRequestToggleIsShortVariant = useConstCallback(() =>
         routes
@@ -262,60 +289,123 @@ export default function MyServices(props: Props) {
                 helpContent={t("text3")}
                 helpIcon="sentimentSatisfied"
             />
-            <MyServicesButtonBar
-                onClick={onButtonBarClick}
-                isThereNonOwnedServicesShown={isThereNonOwnedServices}
-                isThereDeletableServices={deletableRunningServices.length !== 0}
-            />
-            <div className={classes.payload}>
-                <>
-                    {!isSavedConfigsExtended && (
-                        <MyServicesCards
-                            isUpdating={isUpdating}
-                            className={classes.cards}
-                            cards={cards}
-                            onRequestDelete={onRequestDelete}
-                            catalogExplorerLink={catalogExplorerLink}
-                            evtAction={evtMyServiceCardsAction}
-                            getServicePassword={getServicePassword}
-                            getEnv={serviceManager.getEnv}
-                            getPostInstallInstructions={
-                                serviceManager.getPostInstallInstructions
-                            }
-                        />
-                    )}
-                    <MyServicesSavedConfigs
-                        isShortVariant={!isSavedConfigsExtended}
-                        savedConfigs={savedConfigs}
-                        className={classes.savedConfigs}
-                        callback={onSavedConfigsCallback}
-                        onRequestToggleIsShortVariant={onRequestToggleIsShortVariant}
+            <div className={classes.belowHeader} ref={belowHeaderRef}>
+                <div ref={buttonBarRef}>
+                    <MyServicesButtonBar
+                        onClick={onButtonBarClick}
+                        isThereNonOwnedServicesShown={isThereNonOwnedServices}
+                        isThereDeletableServices={deletableRunningServices.length !== 0}
                     />
-                </>
-            </div>
-            <Dialog
-                title={t("confirm delete title")}
-                subtitle={t("confirm delete subtitle")}
-                body={`${
-                    isThereOwnedSharedServices
-                        ? t("confirm delete body shared services")
-                        : ""
-                } ${t("confirm delete body")}`}
-                isOpen={isDialogOpen}
-                onClose={onDialogCloseFactory(false)}
-                buttons={
+                </div>
+                {isCommandBarEnabled && (
+                    <CommandBar
+                        classes={{
+                            "root": classes.commandBar,
+                            "rootWhenExpended": classes.commandBarWhenExpended,
+                            "helpDialog": classes.helpDialog
+                        }}
+                        entries={commandLogsEntries}
+                        maxHeight={commandBarMaxHeight}
+                        helpDialog={{
+                            "body": (
+                                <div className={classes.helpDialogBody}>
+                                    {tCatalogLauncher("api logs help body", {
+                                        "k8CredentialsHref": routes.account({
+                                            "tabId": "k8sCredentials"
+                                        }).href,
+                                        "myServicesHref": routes.myServices().href,
+                                        "interfacePreferenceHref": routes.account({
+                                            "tabId": "user-interface"
+                                        }).href
+                                    })}
+                                </div>
+                            )
+                        }}
+                    />
+                )}
+                <div className={classes.cardsAndSavedConfigs}>
                     <>
-                        <Button onClick={onDialogCloseFactory(false)} variant="secondary">
-                            {t("cancel")}
-                        </Button>
-                        <Button onClick={onDialogCloseFactory(true)}>
-                            {t("confirm")}
-                        </Button>
+                        {!isSavedConfigsExtended && (
+                            <MyServicesCards
+                                isUpdating={isUpdating}
+                                className={classes.cards}
+                                cards={cards}
+                                onRequestDelete={onRequestDelete}
+                                catalogExplorerLink={catalogExplorerLink}
+                                evtAction={evtMyServiceCardsAction}
+                                getServicePassword={getServicePassword}
+                                getEnv={serviceManager.getEnv}
+                                getPostInstallInstructions={
+                                    serviceManager.getPostInstallInstructions
+                                }
+                            />
+                        )}
+                        <MyServicesSavedConfigs
+                            isShortVariant={!isSavedConfigsExtended}
+                            savedConfigs={savedConfigs}
+                            className={classes.savedConfigs}
+                            callback={onSavedConfigsCallback}
+                            onRequestToggleIsShortVariant={onRequestToggleIsShortVariant}
+                        />
                     </>
-                }
-            />
+                </div>
+                <Dialog
+                    title={t("confirm delete title")}
+                    subtitle={t("confirm delete subtitle")}
+                    body={`${
+                        isThereOwnedSharedServices
+                            ? t("confirm delete body shared services")
+                            : ""
+                    } ${t("confirm delete body")}`}
+                    isOpen={isDialogOpen}
+                    onClose={onDialogCloseFactory(false)}
+                    buttons={
+                        <>
+                            <Button
+                                onClick={onDialogCloseFactory(false)}
+                                variant="secondary"
+                            >
+                                {t("cancel")}
+                            </Button>
+                            <Button onClick={onDialogCloseFactory(true)}>
+                                {t("confirm")}
+                            </Button>
+                        </>
+                    }
+                />
+            </div>
         </div>
     );
+}
+
+function useCommandBarPositioning() {
+    const {
+        domRect: { bottom: rootBottom },
+        ref: rootRef
+    } = useDomRect();
+
+    // NOTE: To avoid https://reactjs.org/docs/hooks-reference.html#useimperativehandle
+    const {
+        domRect: { height: buttonBarHeight, bottom: buttonBarBottom },
+        ref: buttonBarRef
+    } = useDomRect();
+
+    const [commandBarTop, setCommandBarTop] = useState<number>(0);
+
+    const [commandBarMaxHeight, setCommandBarMaxHeight] = useState<number>(0);
+
+    useEffect(() => {
+        setCommandBarTop(buttonBarHeight);
+
+        setCommandBarMaxHeight(rootBottom - buttonBarBottom - 30);
+    }, [buttonBarHeight, buttonBarBottom, rootBottom]);
+
+    return {
+        rootRef,
+        buttonBarRef,
+        commandBarTop,
+        commandBarMaxHeight
+    };
 }
 
 export const { i18n } = declareComponentKeys<
@@ -334,34 +424,74 @@ export const { i18n } = declareComponentKeys<
 const useStyles = tss
     .withName({ MyServices })
     .withParams<{
+        isCommandBarEnabled: boolean;
+        commandBarTop: number;
         isSavedConfigsExtended: boolean;
+        bellowHeaderHeight: number;
     }>()
-    .create(({ theme, isSavedConfigsExtended }) => ({
-        "root": {
-            "height": "100%",
-            "display": "flex",
-            "flexDirection": "column"
-        },
-        "payload": {
-            "overflow": "hidden",
-            "flex": 1,
-            "display": "flex",
-            "& > *": {
-                "height": "100%"
-            }
-        },
-        ...(() => {
-            const ratio = 0.65;
-
-            return {
-                "cards": {
-                    "flex": ratio,
-                    "marginRight": theme.spacing(5)
-                },
-                "savedConfigs": {
-                    "flex": isSavedConfigsExtended ? 1 : 1 - ratio,
-                    "paddingRight": "2%"
+    .create(
+        ({
+            theme,
+            isCommandBarEnabled,
+            isSavedConfigsExtended,
+            commandBarTop,
+            bellowHeaderHeight
+        }) => ({
+            "root": {
+                "height": "100%",
+                "display": "flex",
+                "flexDirection": "column"
+            },
+            "belowHeader": {
+                "position": "relative",
+                "flex": 1,
+                "display": "flex",
+                "flexDirection": "column",
+                "overflow": "hidden"
+            },
+            "cardsAndSavedConfigs": {
+                "overflow": "hidden",
+                "flex": 1,
+                "display": "flex",
+                "& > *": {
+                    "height": "100%"
                 }
-            };
-        })()
-    }));
+            },
+            ...(() => {
+                const ratio = 0.65;
+
+                return {
+                    "cards": {
+                        "flex": ratio,
+                        "marginRight": theme.spacing(5)
+                    },
+                    "savedConfigs": {
+                        "flex": isSavedConfigsExtended ? 1 : 1 - ratio,
+                        "paddingRight": "2%",
+                        //NOTE: It's not great to have a fixed width here but measuring would needlessly complexity the code too much.
+                        "marginTop": isCommandBarEnabled ? 40 : undefined
+                    }
+                };
+            })(),
+            "commandBar": {
+                "position": "absolute",
+                "right": 0,
+                "top": commandBarTop,
+                "zIndex": 1,
+                "opacity": commandBarTop === 0 ? 0 : 1,
+                "transition": "opacity 750ms linear",
+                "width": "min(100%, 1100px)"
+            },
+            "commandBarWhenExpended": {
+                "width": "min(100%, 1350px)",
+                "transition": "width 70ms linear"
+            },
+            "helpDialog": {
+                "maxWidth": 800
+            },
+            "helpDialogBody": {
+                "maxHeight": (console.log({ bellowHeaderHeight }), bellowHeaderHeight),
+                "overflow": "auto"
+            }
+        })
+    );

@@ -10767,10 +10767,10 @@ jwt-simple@^0.5.6:
   resolved "https://registry.yarnpkg.com/jwt-simple/-/jwt-simple-0.5.6.tgz#3357adec55b26547114157be66748995b75b333a"
   integrity sha512-40aUybvhH9t2h71ncA1/1SbtTNCVZHgsTsTgqPUxGWDmUDrXyDf2wMNQKEbdBjbf4AI+fQhbECNTV6lWxQKUzg==
 
-keycloakify@^8.1.2:
-  version "8.1.2"
-  resolved "https://registry.yarnpkg.com/keycloakify/-/keycloakify-8.1.2.tgz#ecd8e07980bed17d2a585455c704fbc198657fe6"
-  integrity sha512-JKhwPJndmC5tADW4+XcxoYb3dyQClvO6HGS1szt3iFfmppYEHi/PFyQ4I4cpFzLL/IvQMR4beufDJkni3xYRyA==
+keycloakify@^8.1.3:
+  version "8.1.3"
+  resolved "https://registry.yarnpkg.com/keycloakify/-/keycloakify-8.1.3.tgz#813836b013dc93d5cf43a5b476c9f19537e5435c"
+  integrity sha512-KdAvtqslWNggqtLAgWmPkWxiOK/tfkbxTJUmQw5DGXig1NNpdm39WRRtg9MjLnAlwsRfWw/uOdvlBR95x/5g3g==
   dependencies:
     "@babel/generator" "^7.22.9"
     "@babel/parser" "^7.22.7"
@@ -12038,10 +12038,10 @@ onetime@^5.1.0, onetime@^5.1.2:
   dependencies:
     mimic-fn "^2.1.0"
 
-onyxia-ui@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/onyxia-ui/-/onyxia-ui-1.0.0.tgz#6433d7f6c9dd1f038896f3510cb151f3fc199bc1"
-  integrity sha512-CueW5p4d0YJ47gNZs6nOsiNzmeZC55rnKQ2U2tJuj35skwccsK6Fw73RVz9//aJF6gNbFFkSAVRF815UsWv5Aw==
+onyxia-ui@^1.3.0:
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/onyxia-ui/-/onyxia-ui-1.3.0.tgz#0b0798eee998f72ef60cb7684b47555b05752698"
+  integrity sha512-xoYBn79oed2oOqOjLYK6qyxgyWXR3/GikQEFf8bfgo0FGIPKH7TVP3FWIVNie2zUsytjrT/a8m5Zj9KmisD5OQ==
   dependencies:
     "@mui/icons-material" "^5.11.16"
     color "3.1.3"
@@ -14422,10 +14422,10 @@ schema-utils@^4.0.0:
     ajv-formats "^2.1.1"
     ajv-keywords "^5.1.0"
 
-screen-scaler@^1.2.2:
-  version "1.2.2"
-  resolved "https://registry.yarnpkg.com/screen-scaler/-/screen-scaler-1.2.2.tgz#169d0d7536a6adeff5564dc907349951b693682a"
-  integrity sha512-H//WMH6XhNbjklheqpRLWAKxWXUUTzuemnFUKzceHCl8gdfSllHkpLZnw7ls/mCrLjkd57sGRgEgHpUxZs6V4g==
+screen-scaler@^1.2.3:
+  version "1.2.3"
+  resolved "https://registry.yarnpkg.com/screen-scaler/-/screen-scaler-1.2.3.tgz#d8c89f5f49e3ed1699b523cdf816c78619eaeb82"
+  integrity sha512-POkV9lTiPQmJiAbyrJHi2Yb1PoYjfD5uJl0HoWiCUVHzeAo/QIwP+YG1IpgQHIZDoQW1GdUFZIcIhYaU7XCsqw==
   dependencies:
     evt "^2.5.2"
     tsafe "^1.6.4"

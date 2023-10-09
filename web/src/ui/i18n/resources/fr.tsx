@@ -1,5 +1,6 @@
 import type { Translations } from "../types";
 import MuiLink from "@mui/material/Link";
+import { Markdown } from "onyxia-ui/Markdown";
 
 export const translations: Translations<"fr"> = {
     /* spell-checker: disable */
@@ -382,40 +383,61 @@ export const translations: Translations<"fr"> = {
             </>
         ),
         "download as script": "Télécharger le script",
-        "api logs help body": `Bienvenue dans notre Dialogue d'Explication de Commande Helm !  
-Nous avons conçu cette interface pour vous donner le contrôle sur vos déploiements Kubernetes.  
-Voici ce que vous devez savoir :  
+        "api logs help body": ({
+            k8CredentialsHref,
+            myServicesHref,
+            interfacePreferenceHref
+        }) => (
+            <Markdown
+                getDoesLinkShouldOpenNewTab={href => {
+                    switch (href) {
+                        case k8CredentialsHref:
+                            return true;
+                        case myServicesHref:
+                            return true;
+                        case interfacePreferenceHref:
+                            return false;
+                        default:
+                            return false;
+                    }
+                }}
+            >{`Bienvenue dans notre dialogue d'explication des commandes Helm !  
+Nous avons conçu cette interface pour vous permettre de prendre le contrôle de vos déploiements Kubernetes.  
+Voici ce que vous devez savoir :
 
-#### Qu'est-ce que cette Commande Helm ?  
+#### Qu'est-ce que cette commande Helm ?
 
 La commande affichée à l'écran est la commande Helm exacte que notre application exécutera en votre nom dans votre espace de noms Kubernetes.  
-Cela vous permet de savoir ce qui se passe en arrière-plan lorsque vous cliquez sur le bouton 'lancer'.  
+Cela vous permet de savoir ce qui se passe en coulisses lorsque vous cliquez sur le bouton 'lancer'.
 
-#### Mises à Jour en Temps Réel  
+#### Mises à jour en temps réel  
 
 Lorsque vous modifiez les options dans l'UI, la commande Helm se mettra automatiquement à jour pour refléter ces changements.  
-De cette façon, vous pouvez voir comment vos choix affectent le système sous-jacent.  
+De cette façon, vous pouvez voir comment vos choix impactent le système sous-jacent.  
 
-#### Pourquoi Devrais-je m'en Soucier ?  
+#### Pourquoi devrais-je m'en préoccuper ?
 
 - **Transparence :** Nous croyons que vous avez le droit de savoir quelles actions sont effectuées dans votre environnement.  
-- **Apprentissage :** Comprendre ces commandes peut vous donner un aperçu de Kubernetes et de Helm, approfondissant ainsi vos connaissances.  
-- **Exécution Manuelle :** Vous pouvez copier et coller cette commande dans un terminal ayant un accès en écriture à Kubernetes, vous permettant ainsi de lancer le service manuellement.  
+- **Apprentissage :** Comprendre ces commandes peut vous fournir des informations sur Kubernetes et Helm, approfondissant vos connaissances.  
+- **Exécution manuelle :** Vous pouvez copier et coller cette commande dans un terminal avec un accès en écriture à Kubernetes, vous permettant de lancer le service manuellement.  
 
-#### Comment puis-je Exécuter cette Commande Manuellement ?  
+#### Comment puis-je exécuter cette commande manuellement ?
 
 Il y a deux façons d'exécuter ces commandes :  
 
-- **Terminal Local :** Allez dans \`Mon Compte -> Onglet Kubernetes\`.  
-  Ici, vous trouverez les identifiants qui vous permettent d'exécuter des commandes dans votre espace de noms Kubernetes depuis votre terminal local.  
+- **Terminal local :** Allez à [\`Mon compte -> Onglet Kubernetes\`](${k8CredentialsHref}).  
+  Ici, vous trouverez les identifiants qui vous permettront d'exécuter des commandes dans votre espace de noms Kubernetes depuis votre terminal local.  
 
-- **Terminal VSCode-Python :** Vous pouvez également lancer une instance VSCode-Python avec le rôle Kubernetes défini sur \`write\`.  
-  Ouvrez un terminal dans VSCode, et vous pourrez exécuter la commande.  
+- **Terminal VSCode-Python :** Vous pouvez également lancer une instance de VSCode-Python avec le rôle Kubernetes défini sur \`écrire\`.  
+  Ouvrez un terminal au sein de VSCode, et vous pourrez exécuter la commande.  
 
-En exécutant la commande manuellement, vous pourrez toujours voir le service dans la page \`Mes Services\` comme s'il avait été lancé via l'UI.  
+En exécutant la commande manuellement, vous pourrez toujours voir le service dans la page [\`MesServices\`](${myServicesHref}) comme s'il avait été lancé via l'UI.  
 
-N'hésitez pas à explorer et à prendre en main vos déploiements Kubernetes !
-        `
+Vous pouvez désactiver la barre de commande dans l'onglet [\`Mon compte -> Préférences d'interface\`](${interfacePreferenceHref}).
+
+N'hésitez pas à explorer et à prendre en main vos déploiements Kubernetes !  
+        `}</Markdown>
+        )
     },
     "Footer": {
         "contribute": "Contribuer au projet",

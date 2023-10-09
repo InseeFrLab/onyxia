@@ -3,15 +3,15 @@ import { createSelector } from "@reduxjs/toolkit";
 
 import { name, type RunningService } from "./state";
 
-const readyState = (rootState: RootState) => {
-    const state = rootState[name];
+const state = (rootState: RootState) => rootState[name];
 
+const readyState = createSelector(state, state => {
     if (state.stateDescription !== "ready") {
         return undefined;
     }
 
     return state;
-};
+});
 
 const runningServices = createSelector(
     readyState,
@@ -52,10 +52,7 @@ const isThereOwnedSharedServices = createSelector(
         undefined
 );
 
-const commandLogsEntries = createSelector(
-    readyState,
-    state => state?.commandLogsEntries ?? []
-);
+const commandLogsEntries = createSelector(state, state => state.commandLogsEntries);
 
 export const selectors = {
     runningServices,

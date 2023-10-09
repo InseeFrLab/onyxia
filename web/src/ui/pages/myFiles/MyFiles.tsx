@@ -9,7 +9,7 @@ import { useTranslation } from "ui/i18n";
 import { routes } from "ui/routes";
 import { useSplashScreen } from "onyxia-ui";
 import { Evt } from "evt";
-import type { CollapseParams } from "onyxia-ui/tools/CollapsibleWrapper_legacy";
+import type { CollapseParams } from "onyxia-ui/CollapsibleWrapper";
 import type { Param0 } from "tsafe";
 import { useStateRef } from "powerhooks/useStateRef";
 import { declareComponentKeys } from "i18nifty";

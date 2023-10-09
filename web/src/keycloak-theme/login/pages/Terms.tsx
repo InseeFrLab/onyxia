@@ -7,7 +7,7 @@ import type { I18n } from "../i18n";
 import { useDownloadTerms } from "keycloakify/login";
 import { createResolveLocalizedStringFactory } from "i18nifty/LocalizedString/LocalizedString";
 import { TERMS_OF_SERVICES } from "../envCarriedOverToKc";
-import { tss, Button } from "ui/theme";
+import { tss, Button } from "keycloak-theme/login/theme";
 import { useConst } from "powerhooks/useConst";
 import { id } from "tsafe/id";
 

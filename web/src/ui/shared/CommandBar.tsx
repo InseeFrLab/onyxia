@@ -1,5 +1,5 @@
 import { tss } from "ui/theme";
-import { useReducer, useEffect, memo, useState, type ReactNode } from "react";
+import { useReducer, memo, useState, type ReactNode } from "react";
 import { useDomRect } from "powerhooks/useDomRect";
 import { CircularProgress } from "onyxia-ui/CircularProgress";
 import { IconButton, Icon, Button } from "ui/theme";
@@ -10,6 +10,9 @@ import { Dialog } from "onyxia-ui/Dialog";
 import { useConstCallback } from "powerhooks/useConstCallback";
 import { declareComponentKeys } from "i18nifty";
 import { useTranslation } from "ui/i18n";
+import { useConst } from "powerhooks/useConst";
+import { Evt } from "evt";
+import { useEvt } from "evt/hooks";
 
 export type CommandBarProps = {
     className?: string;
@@ -45,34 +48,32 @@ export const CommandBar = memo((props: CommandBarProps) => {
 
     const panelRef = useStateRef<HTMLDivElement>(null);
 
-    const [{ isExpended, expendCount }, toggleIsExpended] = useReducer(
-        ({ isExpended, expendCount }) => ({
-            "isExpended": !isExpended,
-            "expendCount": expendCount + 1
-        }),
-        {
-            "isExpended": false,
-            "expendCount": 0
-        }
-    );
+    const [isExpended, toggleIsExpended] = useReducer(isExpended => !isExpended, false);
 
-    useEffect(() => {
-        if (!isExpended) {
-            return;
-        }
+    {
+        const evtIsExpended = useConst(() => Evt.create<boolean>(isExpended));
 
-        const panelElement = panelRef.current;
+        evtIsExpended.state = isExpended;
 
-        assert(panelElement !== null);
+        useEvt(
+            ctx =>
+                evtIsExpended.attachOnce(
+                    isExpended => isExpended,
+                    ctx,
+                    () => {
+                        const panelElement = panelRef.current;
 
-        panelElement.scroll({
-            "top": panelElement.scrollHeight,
-            "behavior": "smooth"
-        });
-    }, [
-        expendCount >= 1,
-        JSON.stringify(entries.map(({ resp }) => (resp === undefined ? "x" : "o")))
-    ]);
+                        assert(panelElement !== null);
+
+                        panelElement.scroll({
+                            "top": panelElement.scrollHeight,
+                            "behavior": "smooth"
+                        });
+                    }
+                ),
+            [JSON.stringify(entries.map(({ resp }) => (resp === undefined ? "x" : "o")))]
+        );
+    }
 
     const { cx, classes } = useStyles({
         maxHeight,

@@ -1,13 +1,15 @@
 import { id } from "tsafe/id";
-import * as deploymentRegion from "../deploymentRegion";
-import * as projectConfigs from "../projectConfigs";
+import * as deploymentRegion from "core/usecases/deploymentRegion";
+import * as projectConfigs from "core/usecases/projectConfigs";
 import type { Thunks } from "core/core";
 import { exclude } from "tsafe/exclude";
 import { createUsecaseContextApi } from "redux-clean-architecture";
 import { assert } from "tsafe/assert";
 import { Evt } from "evt";
-import { name, actions } from "./state";
-import type { RunningService } from "./state";
+import { name, actions } from "../state";
+import type { RunningService } from "../state";
+import type { OnyxiaApi } from "core/ports/OnyxiaApi";
+import { formatHelmLsResp } from "./formatHelmCommands";
 
 export const thunks = {
     "setActive":
@@ -36,7 +38,7 @@ export const thunks = {
     "update":
         () =>
         async (...args) => {
-            const [dispatch, getState, { onyxiaApi }] = args;
+            const [dispatch, getState] = args;
 
             {
                 const state = getState()[name];
@@ -47,6 +49,8 @@ export const thunks = {
             }
 
             dispatch(actions.updateStarted());
+
+            const onyxiaApi = dispatch(privateThunks.getLoggedOnyxiaApi());
 
             const runningServicesRaw = await onyxiaApi.getRunningServices();
 
@@ -192,7 +196,9 @@ export const thunks = {
         async (...args) => {
             const { serviceId } = params;
 
-            const [dispatch, , { onyxiaApi }] = args;
+            const [dispatch] = args;
+
+            const onyxiaApi = dispatch(privateThunks.getLoggedOnyxiaApi());
 
             dispatch(actions.serviceStopped({ serviceId }));
 
@@ -271,11 +277,99 @@ const privateThunks = {
                 s3TokensTTLms,
                 vaultTokenTTLms
             })));
+        },
+    "getLoggedOnyxiaApi":
+        () =>
+        (...args): OnyxiaApi => {
+            const [dispatch, getState, extraArg] = args;
+
+            const sliceContext = getContext(extraArg);
+
+            {
+                const { loggedOnyxiaApi } = sliceContext;
+                if (loggedOnyxiaApi !== undefined) {
+                    return loggedOnyxiaApi;
+                }
+            }
+
+            const { onyxiaApi } = extraArg;
+
+            sliceContext.loggedOnyxiaApi = {
+                ...onyxiaApi,
+                "getRunningServices": async () => {
+                    const { namespace } = projectConfigs.selectors.selectedProject(
+                        getState()
+                    );
+
+                    const cmdId = Date.now();
+
+                    dispatch(
+                        actions.commandLogsEntryAdded({
+                            "commandLogsEntry": {
+                                cmdId,
+                                "cmd": `helm list --namespace ${namespace}`,
+                                "resp": undefined
+                            }
+                        })
+                    );
+
+                    const runningServices = await onyxiaApi.getRunningServices();
+
+                    dispatch(
+                        actions.commandLogsRespUpdated({
+                            cmdId,
+                            "resp": formatHelmLsResp({
+                                "lines": runningServices.map(
+                                    ({ extraForHelmLs, id, startedAt }) => ({
+                                        "name": id,
+                                        namespace,
+                                        "revision": extraForHelmLs.revision,
+                                        "updatedTime": startedAt,
+                                        "status": "deployed",
+                                        "chart": extraForHelmLs.chart,
+                                        "appVersion": extraForHelmLs.appVersion
+                                    })
+                                )
+                            })
+                        })
+                    );
+
+                    return runningServices;
+                },
+                "stopService": async ({ serviceId }) => {
+                    const cmdId = Date.now();
+
+                    dispatch(
+                        actions.commandLogsEntryAdded({
+                            "commandLogsEntry": {
+                                cmdId,
+                                "cmd": `helm uninstall ${serviceId} --namespace ${
+                                    projectConfigs.selectors.selectedProject(getState())
+                                        .namespace
+                                }`,
+                                "resp": undefined
+                            }
+                        })
+                    );
+
+                    await onyxiaApi.stopService({ serviceId });
+
+                    dispatch(
+                        actions.commandLogsRespUpdated({
+                            cmdId,
+                            "resp": `release "${serviceId}" uninstalled`
+                        })
+                    );
+                }
+            };
+
+            return dispatch(privateThunks.getLoggedOnyxiaApi());
         }
 } satisfies Thunks;
 
 const { getContext } = createUsecaseContextApi(() => ({
     "prDefaultTokenTTL": id<
         Promise<{ s3TokensTTLms: number; vaultTokenTTLms: number }> | undefined
-    >(undefined)
+    >(undefined),
+    "loggedOnyxiaApi": id<OnyxiaApi | undefined>(undefined)
 }));

@@ -10,7 +10,7 @@ import { routes } from "ui/routes";
 import { useSplashScreen } from "onyxia-ui";
 import { Evt } from "evt";
 import type { UnpackEvt } from "evt";
-import type { CollapseParams } from "onyxia-ui/tools/CollapsibleWrapper_legacy";
+import type { CollapseParams } from "onyxia-ui/CollapsibleWrapper";
 import type { Param0 } from "tsafe";
 import { assert } from "tsafe/assert";
 import { MySecretsEditor } from "./MySecretsEditor";

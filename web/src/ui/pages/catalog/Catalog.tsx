@@ -6,7 +6,7 @@ import { CatalogLauncher } from "./CatalogLauncher";
 import Link from "@mui/material/Link";
 import { useCoreState, selectors } from "core";
 import { elementsToSentence } from "ui/tools/elementsToSentence";
-import type { CollapseParams } from "onyxia-ui/tools/CollapsibleWrapper_legacy";
+import type { CollapseParams } from "onyxia-ui/CollapsibleWrapper";
 import { useStateRef } from "powerhooks/useStateRef";
 import { declareComponentKeys } from "i18nifty";
 import type { PageRoute } from "./route";

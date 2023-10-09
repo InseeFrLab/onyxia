@@ -292,7 +292,15 @@ export const CatalogLauncher = memo((props: Props) => {
                         helpDialog={{
                             "body": (
                                 <div className={classes.helpDialogBody}>
-                                    <Markdown>{t("api logs help body")}</Markdown>
+                                    {t("api logs help body", {
+                                        "k8CredentialsHref": routes.account({
+                                            "tabId": "k8sCredentials"
+                                        }).href,
+                                        "myServicesHref": routes.myServices().href,
+                                        "interfacePreferenceHref": routes.account({
+                                            "tabId": "user-interface"
+                                        }).href
+                                    })}
                                 </div>
                             )
                         }}
@@ -399,7 +407,15 @@ export const { i18n } = declareComponentKeys<
           R: JSX.Element;
       }
     | "download as script"
-    | "api logs help body"
+    | {
+          K: "api logs help body";
+          P: {
+              k8CredentialsHref: string;
+              myServicesHref: string;
+              interfacePreferenceHref: string;
+          };
+          R: JSX.Element;
+      }
 >()({ CatalogLauncher });
 
 const useStyles = tss

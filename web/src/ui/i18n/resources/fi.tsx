@@ -1,5 +1,6 @@
 import MuiLink from "@mui/material/Link";
 import type { Translations } from "../types";
+import { Markdown } from "onyxia-ui/Markdown";
 
 export const translations: Translations<"fi"> = {
     "Account": {
@@ -371,40 +372,61 @@ export const translations: Translations<"fi"> = {
             </>
         ),
         "download as script": "Lataa skriptinä",
-        "api logs help body": `Tervetuloa Helm-komentojen selitysdialogiimme!  
-Olemme suunnitelleet tämän käyttöliittymän antaaksemme sinulle kontrollin Kubernetes-levityksistäsi.  
-Tässä on mitä sinun tarvitsee tietää:  
+        "api logs help body": ({
+            k8CredentialsHref,
+            myServicesHref,
+            interfacePreferenceHref
+        }) => (
+            <Markdown
+                getDoesLinkShouldOpenNewTab={href => {
+                    switch (href) {
+                        case k8CredentialsHref:
+                            return true;
+                        case myServicesHref:
+                            return true;
+                        case interfacePreferenceHref:
+                            return false;
+                        default:
+                            return false;
+                    }
+                }}
+            >{`Tervetuloa Helm-komentoselitysdialogiimme!  
+Olemme suunnitelleet tämän käyttöliittymän antaaksemme sinulle hallinnan Kubernetes-julkaisuistasi.  
+Tässä on mitä sinun tarvitsee tietää:
 
-#### Mikä tämä Helm-komento on?  
+#### Mikä tämä Helm-komento on?
 
 Näytöllä näkyvä komento on tarkka Helm-komento, jonka sovelluksemme suorittaa puolestasi Kubernetes-nimiavaruudessasi.  
-Tämä antaa sinun tietää, mitä kulissien takana tapahtuu, kun klikkaat 'Käynnistä'-painiketta.  
+Tämä mahdollistaa sen, että tiedät mitä kulissien takana tapahtuu, kun napsautat 'käynnistä' -painiketta.
 
 #### Reaaliaikaiset päivitykset  
 
 Kun muutat vaihtoehtoja käyttöliittymässä, Helm-komento päivittyy automaattisesti heijastamaan näitä muutoksia.  
-Näin voit nähdä, miten valintasi vaikuttavat alla olevaan järjestelmään.  
+Näin voit nähdä, kuinka valintasi vaikuttavat taustajärjestelmään.  
 
-#### Miksi minun pitäisi välittää?  
+#### Miksi minun pitäisi välittää?
 
-- **Läpinäkyvyys:** Uskomme, että sinulla on oikeus tietää, mitä toimia ympäristössäsi suoritetaan.  
-- **Oppiminen:** Näiden komentojen ymmärtäminen voi tarjota oivalluksia Kubernetesiin ja Helmiin, syventäen tietämystäsi.  
-- **Manuaalinen suoritus:** Voit kopioida ja liittää tämän komennon terminaaliin, jolla on kirjoitusoikeus Kubernetesiin, mikä mahdollistaa palvelun manuaalisen käynnistyksen.  
+- **Läpinäkyvyys:** Uskomme, että sinulla on oikeus tietää, mitä toimintoja ympäristössäsi suoritetaan.  
+- **Oppiminen:** Näiden komentojen ymmärtäminen voi antaa oivalluksia Kubernetesista ja Helmistä, syventäen tietämystäsi.  
+- **Manuaalinen suoritus:** Voit kopioida ja liittää tämän komennon terminaaliin, jolla on kirjoitusoikeus Kubernetesiin, jolloin voit käynnistää palvelun manuaalisesti.  
 
-#### Kuinka voin suorittaa tämän komennon manuaalisesti?  
+#### Kuinka voin suorittaa tämän komennon manuaalisesti?
 
 On kaksi tapaa suorittaa nämä komennot:  
 
-- **Paikallinen terminaali:** Siirry kohtaan \`Oma tili -> Kubernetes-välilehti\`.  
-  Täällä löydät tunnistetiedot, jotka antavat sinun suorittaa komentoja Kubernetes-nimiavaruudessasi paikallisesta terminaalistasi.  
+- **Paikallinen terminaali:** Siirry kohtaan [\`Oma tili -> Kubernetes-välilehti\`](${k8CredentialsHref}).  
+  Täältä löydät tunnistetiedot, joiden avulla voit suorittaa komentoja Kubernetes-nimiavaruudessasi paikallisesta terminaalistasi.  
 
-- **VSCode-Python-terminaali:** Voit myös käynnistää VSCode-Python-instanssin, jossa on asetettu Kubernetes-rooli \`write\`.  
-  Avaa terminaali VSCode:ssa, ja voit suorittaa komennon.  
+- **VSCode-Python-terminaali:** Voit myös käynnistää VSCode-Python-instanssin, jolla on Kubernetes-rooli asetettu \`kirjoittamaan\`.  
+  Avaa terminaali VSCode:ssa, ja pystyt suorittamaan komennon.  
 
-Suorittamalla komennon manuaalisesti näet palvelun silti \`Omat palvelut\`-sivulla, ikään kuin se olisi käynnistetty käyttöliittymän kautta.  
+Suorittamalla komennon manuaalisesti, näet edelleen palvelun [\`Omat palvelut\`](${myServicesHref}) -sivulla ikään kuin se olisi käynnistetty käyttöliittymän kautta.
 
-Tunne olosi vapaaksi tutkimaan ja ottamaan haltuusi Kubernetes-levityksesi!
-        `
+Voit poistaa komentorivin käytöstä kohdassa [\`Oma tili -> Käyttöliittymäasetukset-välilehti\`](${interfacePreferenceHref}).
+
+Tutustu vapaasti ja ota hallintaan Kubernetes-julkaisusi!  
+        `}</Markdown>
+        )
     },
     "Footer": {
         "contribute": "Osallistu",

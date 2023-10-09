@@ -1,5 +1,6 @@
 import type { Translations } from "../types";
 import MuiLink from "@mui/material/Link";
+import { Markdown } from "onyxia-ui/Markdown";
 
 export const translations: Translations<"it"> = {
     /* spell-checker: disable */
@@ -376,41 +377,61 @@ export const translations: Translations<"it"> = {
             </>
         ),
         "download as script": "Scaricare lo script",
-        "api logs help body": `Benvenuto nel nostro Dialogo di Spiegazione dei Comandi Helm!  
-Abbiamo progettato questa interfaccia per darti il controllo completo sui tuoi deployment di Kubernetes.  
-Ecco cosa devi sapere:  
+        "api logs help body": ({
+            k8CredentialsHref,
+            myServicesHref,
+            interfacePreferenceHref
+        }) => (
+            <Markdown
+                getDoesLinkShouldOpenNewTab={href => {
+                    switch (href) {
+                        case k8CredentialsHref:
+                            return true;
+                        case myServicesHref:
+                            return true;
+                        case interfacePreferenceHref:
+                            return false;
+                        default:
+                            return false;
+                    }
+                }}
+            >{`Benvenuto nella nostra finestra di dialogo per la spiegazione dei comandi Helm!  
+Abbiamo progettato questa interfaccia per permetterti di avere il controllo completo sui tuoi deployment Kubernetes.  
+Ecco quello che devi sapere:
 
-#### Cos'è questo Comando Helm?  
+#### Cos'è questo comando Helm?
 
-Il comando visualizzato sullo schermo è esattamente il comando Helm che la nostra applicazione eseguirà per tuo conto nel tuo namespace Kubernetes.  
-Questo ti permette di sapere cosa sta succedendo dietro le quinte quando fai clic sul pulsante 'Avvia'.  
+Il comando visualizzato sullo schermo è il comando Helm esatto che la nostra applicazione eseguirà per tuo conto nel tuo namespace Kubernetes.  
+Questo ti permette di sapere cosa sta succedendo dietro le quinte quando fai clic sul pulsante 'lancia'.  
 
-#### Aggiornamenti in Tempo Reale  
+#### Aggiornamenti in tempo reale  
 
-Modificando le opzioni nell'UI, il comando Helm si aggiornerà automaticamente per riflettere tali cambiamenti.  
+Se modifichi le opzioni nell'UI, il comando Helm si aggiornerà automaticamente per riflettere tali cambiamenti.  
 In questo modo, puoi vedere come le tue scelte influenzano il sistema sottostante.  
 
-#### Perché Dovrei Preoccuparmene?  
+#### Perché dovrei preoccuparmene?
 
 - **Trasparenza:** Crediamo che tu abbia il diritto di sapere quali azioni vengono eseguite nel tuo ambiente.  
-- **Apprendimento:** Comprendere questi comandi può fornire intuizioni su Kubernetes e Helm, approfondendo la tua conoscenza.  
-- **Esecuzione Manuale:** Puoi copiare e incollare questo comando in un terminale con accesso in scrittura a Kubernetes, permettendoti di avviare il servizio manualmente.  
+- **Apprendimento:** Comprendere questi comandi può fornirti una conoscenza più approfondita di Kubernetes e Helm.  
+- **Esecuzione manuale:** Puoi copiare e incollare questo comando in un terminale con accesso in scrittura a Kubernetes, permettendoti di lanciare il servizio manualmente.  
 
-#### Come Posso Eseguire questo Comando Manualmente?  
+#### Come posso eseguire questo comando manualmente?
 
 Ci sono due modi per eseguire questi comandi:  
 
-- **Terminale Locale:** Vai su \`Il Mio Account -> Scheda Kubernetes\`.  
+- **Terminale locale:** Vai a [\`Il mio account -> Scheda Kubernetes\`](${k8CredentialsHref}).  
   Qui troverai le credenziali che ti permettono di eseguire comandi nel tuo namespace Kubernetes dal tuo terminale locale.  
 
-- **Terminale VSCode-Python:** Puoi anche avviare un'istanza di VSCode-Python con il ruolo Kubernetes impostato su \`write\`.  
-  Apri un terminale all'interno di VSCode, e sarai in grado di eseguire il comando.  
+- **Terminale VSCode-Python:** Puoi anche avviare un'istanza di VSCode-Python con il ruolo Kubernetes impostato su \`scrivere\`.  
+  Apri un terminale all'interno di VSCode e sarai in grado di eseguire il comando.  
 
-Eseguendo il comando manualmente, sarai comunque in grado di vedere il servizio nella pagina \`I Miei Servizi\` come se fosse stato avviato tramite l'UI.  
+Eseguendo il comando manualmente, sarai comunque in grado di vedere il servizio nella pagina [\`I miei servizi\`](${myServicesHref}) come se fosse stato lanciato attraverso l'UI.  
 
-Sentiti libero di esplorare e prendere il controllo dei tuoi deployment di Kubernetes!
+Puoi disabilitare la barra dei comandi nella scheda [\`Il mio account -> Preferenze interfaccia\`](${interfacePreferenceHref}).
 
-        `
+Sentiti libero di esplorare e prendere il controllo dei tuoi deployment Kubernetes!  
+        `}</Markdown>
+        )
     },
     "Footer": {
         "contribute": "Contribuire al proggetto",
