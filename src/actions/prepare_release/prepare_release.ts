@@ -23,8 +23,8 @@ const { getActionParams } = getActionParamsFactory({
         "sha",
         "github_token",
         "automatic_commit_author_email",
+        "is_pr",
         "is_external_pr",
-        "is_default_branch",
         "is_bot"
     ] as const
 });
@@ -57,8 +57,8 @@ export async function _run(
         repo,
         sha,
         automatic_commit_author_email,
+        is_pr,
         is_external_pr,
-        is_default_branch,
         recursiveCallParams,
         is_bot,
         log = () => { }
@@ -68,7 +68,7 @@ export async function _run(
 
     const repository = `${owner}/${repo}` as const;
 
-    if (is_external_pr === "true" || (is_default_branch === "false" && is_bot === "true")) {
+    if (is_external_pr === "true" || (is_pr === "true" && is_bot === "true")) {
 
         log("External PR or PR from a bot, skipping");
 
@@ -160,7 +160,7 @@ export async function _run(
         sha
     });
 
-    if (is_default_branch === "false") {
+    if (is_pr === "true") {
 
         const branchName = await getShaBranchName({
             repository,

@@ -10,8 +10,8 @@ export const inputNames = [
     "repo",
     "sha",
     "automatic_commit_author_email",
+    "is_pr",
     "is_external_pr",
-    "is_default_branch",
     "is_bot",
     "sub_directory",
     "tag_name"
@@ -61,8 +61,8 @@ export function getInputDescription(inputName: typeof inputNames[number]): strin
             "Tell if the sha correspond to a commit from a forked repository",
             "Do not provide this parameter explicitly, it will be set automatically"
         ].join(" ");
-        case "is_default_branch": return [
-            "Tell if the sha correspond to a commit from the default branch",
+        case "is_pr": return [
+            "Tell if the event that triggered the workflow was pull request (not push)",
             "Do not provide this parameter explicitly, it will be set automatically"
         ].join(" ");
         case "is_bot": return [
@@ -87,9 +87,9 @@ export function getInputDefault(inputName: typeof inputNames[number]): string | 
         case "github_token": return "${{ github.token }}";
         case "sha": return "${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}";
         case "automatic_commit_author_email": return "actions@github.com";
+        case "is_pr": return "${{ github.event_name == 'pull_request' }}";
         case "is_external_pr": 
             return "${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository }}";
-        case "is_default_branch": return "${{ github.event_name == 'push' && github.event.ref == format('refs/heads/{0}', github.event.repository.default_branch) }}";
         case "is_bot": return "${{ endsWith(github.actor, '[bot]') }}";
     }
 }
