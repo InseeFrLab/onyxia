@@ -5,6 +5,7 @@ import { decodeJwt } from "core/tools/jwt";
 import { assert } from "tsafe/assert";
 import { addParamToUrl, retrieveParamFromUrl } from "powerhooks/tools/urlSearchParams";
 import { Evt } from "evt";
+import { fnv1aHashToHex } from "core/tools/fnv1aHashToHex";
 
 export async function createOidc(params: {
     authority: string;
@@ -25,6 +26,9 @@ export async function createOidc(params: {
         "automaticSilentRenew": false,
         "silent_redirect_uri": `${window.location.origin}/silent-sso.html`
     });
+
+    const configHash = fnv1aHashToHex(`${url} ${realm} ${clientId}`);
+    const configHashKey = "configHash";
 
     const login: Oidc.NotLoggedIn["login"] = async () => {
         //NOTE: We know there is a extraQueryParameter option but it doesn't allow
@@ -57,8 +61,14 @@ export async function createOidc(params: {
 
         Object.defineProperty(window, "URL", { "value": URL });
 
+        const { newUrl: redirect_uri } = addParamToUrl({
+            "url": window.location.href,
+            "name": configHashKey,
+            "value": configHash
+        });
+
         await userManager.signinRedirect({
-            "redirect_uri": window.location.href,
+            redirect_uri,
             "redirectMethod": "replace"
         });
         return new Promise<never>(() => {});
@@ -67,7 +77,19 @@ export async function createOidc(params: {
     read_successful_login_query_params: {
         let url = window.location.href;
 
+        {
+            const result = retrieveParamFromUrl({ "name": configHashKey, url });
+
+            if (!result.wasPresent || result.value !== configHash) {
+                break read_successful_login_query_params;
+            }
+
+            url = result.newUrl;
+        }
+
         const names = ["code", "state", "session_state"];
+
+        let dummyUrl = "https://dummy.com";
 
         for (const name of names) {
             const result = retrieveParamFromUrl({ name, url });
@@ -80,10 +102,16 @@ export async function createOidc(params: {
                 }
             }
 
+            dummyUrl = addParamToUrl({
+                "url": dummyUrl,
+                "name": name,
+                "value": result.value
+            }).newUrl;
+
             url = result.newUrl;
         }
 
-        await userManager.signinRedirectCallback();
+        await userManager.signinRedirectCallback(dummyUrl);
 
         window.history.pushState(null, "", url);
     }
