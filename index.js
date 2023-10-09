@@ -462,18 +462,18 @@ const { getActionParams } = (0, inputHelper_1.getActionParamsFactory)({
         "sha",
         "github_token",
         "automatic_commit_author_email",
+        "is_pr",
         "is_external_pr",
-        "is_default_branch",
         "is_bot"
     ]
 });
 const { setOutput } = (0, outputHelper_1.setOutputFactory)();
 function _run(params) {
     return __awaiter(this, void 0, void 0, function* () {
-        const { github_token, owner, repo, sha, automatic_commit_author_email, is_external_pr, is_default_branch, recursiveCallParams, is_bot, log = () => { } } = params;
+        const { github_token, owner, repo, sha, automatic_commit_author_email, is_pr, is_external_pr, recursiveCallParams, is_bot, log = () => { } } = params;
         log(JSON.stringify(params, null, 2));
         const repository = `${owner}/${repo}`;
-        if (is_external_pr === "true" || (is_default_branch === "false" && is_bot === "true")) {
+        if (is_external_pr === "true" || (is_pr === "true" && is_bot === "true")) {
             log("External PR or PR from a bot, skipping");
             return {
                 "new_web_docker_image_tags": "",
@@ -536,7 +536,7 @@ function _run(params) {
             github_token,
             sha
         });
-        if (is_default_branch === "false") {
+        if (is_pr === "true") {
             const branchName = yield (0, getShaBranchName_1.getShaBranchName)({
                 repository,
                 github_token,
@@ -1047,8 +1047,8 @@ exports.inputNames = [
     "repo",
     "sha",
     "automatic_commit_author_email",
+    "is_pr",
     "is_external_pr",
-    "is_default_branch",
     "is_bot",
     "sub_directory",
     "tag_name"
@@ -1093,8 +1093,8 @@ function getInputDescription(inputName) {
             "Tell if the sha correspond to a commit from a forked repository",
             "Do not provide this parameter explicitly, it will be set automatically"
         ].join(" ");
-        case "is_default_branch": return [
-            "Tell if the sha correspond to a commit from the default branch",
+        case "is_pr": return [
+            "Tell if the event that triggered the workflow was pull request (not push)",
             "Do not provide this parameter explicitly, it will be set automatically"
         ].join(" ");
         case "is_bot": return [
@@ -1118,9 +1118,9 @@ function getInputDefault(inputName) {
         case "github_token": return "${{ github.token }}";
         case "sha": return "${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}";
         case "automatic_commit_author_email": return "actions@github.com";
+        case "is_pr": return "${{ github.event_name == 'pull_request' }}";
         case "is_external_pr":
             return "${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository }}";
-        case "is_default_branch": return "${{ github.event_name == 'push' && github.event.ref == format('refs/heads/{0}', github.event.repository.default_branch) }}";
         case "is_bot": return "${{ endsWith(github.actor, '[bot]') }}";
     }
 }
