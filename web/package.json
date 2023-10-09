@@ -9,7 +9,7 @@
         "build": "react-app-rewired build",
         "build-keycloak-theme": "yarn build && keycloakify",
         "storybook": "start-storybook -p 6006",
-        "postinstall": "cp -rf .compatibility/fs node_modules/ && generate-env-getter && copy-keycloak-resources-to-public",
+        "postinstall": "cp -rf .compatibility/fs node_modules/ && patch-package && generate-env-getter && copy-keycloak-resources-to-public",
         "prestart": "generate-env-getter",
         "_format": "prettier '**/*.{ts,tsx,json,md}'",
         "format": "yarn _format --write",
@@ -102,6 +102,7 @@
         "lint-staged": "^11.0.0",
         "prettier": "^2.3.0",
         "react-app-rewired": "^2.2.1",
+        "patch-package": "^8.0.0",
         "ts-node": "^10.2.1",
         "typescript": "^4.8.3"
     },
