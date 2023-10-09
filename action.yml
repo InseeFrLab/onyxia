@@ -42,7 +42,7 @@ inputs:
   branch_name:
     required: false
     description: 'When event name is push gives the name of the branch that triggered the workflow Do not provide this parameter explicitly, it will be set automatically'
-    default: "${{ github.event_name == 'push' && github.ref.replace('refs/heads/', '') }}"
+    default: "${{ github.event_name == 'push' && github.ref.replace('refs/heads/', '') || '' }}"
   sub_directory:
     required: false
     description: 'For the ''checkout'' action, tell what sub directory to checkout from the repo. Mandatory (else use the ''actions/checkout@v3'' action directly). Example: ''web'''
