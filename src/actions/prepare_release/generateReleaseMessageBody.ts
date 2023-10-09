@@ -34,10 +34,10 @@ export function generateReleaseMessageBody(params: {
         assert(bump !== "rc");
         assert(bump !== "no bump");
 
-        let out = capitalize(bump);
+        let out: string = capitalize(bump);
 
         if (bump === "major") {
-            out += `**${out}**`;
+            out = `**${out}**`;
         }
 
         return out;
