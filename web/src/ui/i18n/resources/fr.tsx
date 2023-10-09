@@ -401,41 +401,49 @@ export const translations: Translations<"fr"> = {
                             return false;
                     }
                 }}
-            >{`Bienvenue dans notre dialogue d'explication des commandes Helm !  
-Nous avons conçu cette interface pour vous permettre de prendre le contrôle de vos déploiements Kubernetes.  
+            >{`Nous avons conçu la barre de commande pour vous permettre de prendre le contrôle de vos déploiements Kubernetes.
 Voici ce que vous devez savoir :
 
-#### Qu'est-ce que cette commande Helm ?
+#### Quelles sont ces commandes Helm ?
 
-La commande affichée à l'écran est la commande Helm exacte que notre application exécutera en votre nom dans votre espace de noms Kubernetes.  
-Cela vous permet de savoir ce qui se passe en coulisses lorsque vous cliquez sur le bouton 'lancer'.
+Ces commandes sont les commandes Helm exactes que l'API Onyxia exécutera en votre nom dans votre espace de noms Kubernetes.
+Cela vous permet de savoir ce qui se passe en coulisse lorsque vous interagissez avec l'interface utilisateur.
 
-#### Mises à jour en temps réel  
+#### Mises à jour en temps réel
 
-Lorsque vous modifiez les options dans l'UI, la commande Helm se mettra automatiquement à jour pour refléter ces changements.  
-De cette façon, vous pouvez voir comment vos choix impactent le système sous-jacent.  
+Lorsque vous interagissez avec l'interface utilisateur, les commandes Helm se mettront à jour automatiquement pour refléter ce que vous faites.
 
-#### Pourquoi devrais-je m'en préoccuper ?
+#### Pourquoi devrais-je m'en soucier ?
 
-- **Transparence :** Nous croyons que vous avez le droit de savoir quelles actions sont effectuées dans votre environnement.  
-- **Apprentissage :** Comprendre ces commandes peut vous fournir des informations sur Kubernetes et Helm, approfondissant vos connaissances.  
-- **Exécution manuelle :** Vous pouvez copier et coller cette commande dans un terminal avec un accès en écriture à Kubernetes, vous permettant de lancer le service manuellement.  
+- **Transparence :** Nous croyons que vous avez le droit de savoir quelles actions sont effectuées dans votre environnement.
+- **Apprentissage :** Comprendre ces commandes peut fournir des informations sur Kubernetes et Helm, approfondissant ainsi vos connaissances.
+- **Exécution manuelle :** Vous pouvez copier et coller ces commandes dans un terminal ayant un accès en écriture à Kubernetes, ce qui vous permet de lancer le service manuellement.
 
-#### Comment puis-je exécuter cette commande manuellement ?
+#### Comment puis-je exécuter ces commandes manuellement ?
 
-Il y a deux façons d'exécuter ces commandes :  
+${
+    k8CredentialsHref === undefined
+        ? ""
+        : "Il y a deux façons d'exécuter ces commandes :  "
+}
 
-- **Terminal local :** Allez à [\`Mon compte -> Onglet Kubernetes\`](${k8CredentialsHref}).  
-  Ici, vous trouverez les identifiants qui vous permettront d'exécuter des commandes dans votre espace de noms Kubernetes depuis votre terminal local.  
+${
+    k8CredentialsHref === undefined
+        ? ""
+        : `
+- **Terminal local :** Allez dans [\`Mon compte -> Onglet Kubernetes\`](${k8CredentialsHref}).
+  Ici, vous trouverez les informations d'identification qui vous permettent d'exécuter des commandes dans votre espace de noms Kubernetes depuis votre terminal local.
+`
+}
 
-- **Terminal VSCode-Python :** Vous pouvez également lancer une instance de VSCode-Python avec le rôle Kubernetes défini sur \`écrire\`.  
-  Ouvrez un terminal au sein de VSCode, et vous pourrez exécuter la commande.  
+- Si cette instance d'Onyxia propose des services comme VSCode ou Jupyter, vous pouvez ouvrir un terminal au sein de ces services et y exécuter des commandes.
+  Pour des commandes constructives ou destructives, vous devrez lancer votre service avec le rôle Kubernetes \`admin\` ou \`edit\`.
 
-En exécutant la commande manuellement, vous pourrez toujours voir le service dans la page [\`MesServices\`](${myServicesHref}) comme s'il avait été lancé via l'UI.  
+En exécutant la commande manuellement, vous pourrez toujours voir le service dans l'onglet [\`Mes Services\`](${myServicesHref}) comme si celui-ci avait été lancé via l'interface utilisateur.
 
 Vous pouvez désactiver la barre de commande dans l'onglet [\`Mon compte -> Préférences d'interface\`](${interfacePreferenceHref}).
 
-N'hésitez pas à explorer et à prendre en main vos déploiements Kubernetes !  
+N'hésitez pas à explorer et à prendre en main vos déploiements Kubernetes !
         `}</Markdown>
         )
     },

@@ -396,41 +396,49 @@ export const translations: Translations<"nl"> = {
                             return false;
                     }
                 }}
-            >{`Welkom bij ons Helm Commando Uitleg Dialoog!  
-We hebben deze interface ontworpen om je volledige controle te geven over je Kubernetes-implementaties.  
-Dit is wat je moet weten:
+            >{`We hebben de commandobalk ontworpen om jou volledige controle te geven over je Kubernetes-implementaties.
+Hier is wat je moet weten:
 
-#### Wat is dit Helm-commando?  
+#### Wat zijn die Helm-opdrachten?
 
-Het commando dat op het scherm wordt weergegeven, is het exacte Helm-commando dat onze applicatie namens jou zal uitvoeren in je Kubernetes-namespace.  
-Hiermee kun je zien wat er achter de schermen gebeurt als je op de 'start' knop klikt.
+Deze opdrachten zijn de exacte Helm-opdrachten die de Onyxia API namens jou zal uitvoeren in je Kubernetes-namespace.
+Dit stelt je in staat om te begrijpen wat er achter de schermen gebeurt wanneer je met de UI omgaat.
 
-#### Realtime updates  
+#### Real-time updates
 
-Als je opties in de UI wijzigt, wordt het Helm-commando automatisch bijgewerkt om die wijzigingen te weerspiegelen.  
-Op deze manier kun je zien hoe jouw keuzes het onderliggende systeem beïnvloeden.  
+Als je met de UI omgaat, zullen de Helm-opdrachten automatisch bijwerken om te weerspiegelen wat je doet.
 
-#### Waarom zou ik me hier druk om moeten maken?  
+#### Waarom zou ik hierom geven?
 
-- **Transparantie:** Wij vinden dat je het recht hebt om te weten welke acties in jouw omgeving worden uitgevoerd.  
-- **Leren:** Het begrijpen van deze commando's kan je inzicht bieden in Kubernetes en Helm, en je kennis verdiepen.  
-- **Handmatige uitvoering:** Je kunt dit commando kopiëren en plakken in een terminal met schrijftoegang tot Kubernetes, waardoor je de service handmatig kunt starten.  
+- **Transparantie:** We geloven dat je het recht hebt om te weten welke acties worden uitgevoerd in jouw omgeving.
+- **Leren:** Inzicht in deze opdrachten kan je meer kennis geven over Kubernetes en Helm.
+- **Handmatige uitvoering:** Je kunt deze opdrachten kopiëren en plakken in een terminal met schrijftoegang tot Kubernetes, zodat je de service handmatig kunt starten.
 
-#### Hoe kan ik dit commando handmatig uitvoeren?  
+#### Hoe kan ik deze opdrachten handmatig uitvoeren?
 
-Er zijn twee manieren om deze commando's uit te voeren:  
+${
+    k8CredentialsHref === undefined
+        ? ""
+        : "Er zijn twee manieren om deze opdrachten uit te voeren:  "
+}
 
-- **Lokale terminal:** Ga naar [\`Mijn account -> Kubernetes-tab\`](${k8CredentialsHref}).  
-  Hier vind je de inloggegevens waarmee je commando's in je Kubernetes-namespace kunt uitvoeren vanaf je lokale terminal.  
+${
+    k8CredentialsHref === undefined
+        ? ""
+        : `
+- **Lokale terminal:** Ga naar [\`Mijn account -> Kubernetes-tabblad\`](${k8CredentialsHref}).
+  Hier vind je de inloggegevens waarmee je opdrachten in je Kubernetes-namespace kunt uitvoeren vanaf je lokale terminal.
+`
+}
 
-- **VSCode-Python terminal:** Je kunt ook een VSCode-Python-instance starten met de Kubernetes-rol ingesteld op \`schrijven\`.  
-  Open een terminal binnen VSCode en je kunt het commando uitvoeren.  
+- Als deze Onyxia-instantie diensten zoals VSCode of Jupyter aanbiedt, kun je een terminal openen binnen deze diensten en daar de opdrachten uitvoeren.
+  Voor constructieve of destructieve opdrachten moet je jouw service starten met de Kubernetes-rol \`admin\` of \`edit\`.
 
-Door het commando handmatig uit te voeren, kun je de service nog steeds zien op de [\`MijnDiensten\`](${myServicesHref}) pagina alsof het via de UI was gelanceerd.  
+Door de opdracht handmatig uit te voeren, kun je de service nog steeds zien op de [\`Mijn Diensten\`](${myServicesHref}) pagina alsof het via de UI was gestart.
 
-Je kunt de commandobalk uitschakelen in de [\`Mijn account -> Interface voorkeuren-tab\`](${interfacePreferenceHref}).
+Je kunt de commandobalk uitschakelen in het tabblad [\`Mijn Account -> Interface voorkeur\`](${interfacePreferenceHref}).
 
-Voel je vrij om te verkennen en controle te nemen over je Kubernetes-implementaties!  
+Voel je vrij om te verkennen en de controle over je Kubernetes-implementaties te nemen!
         `}</Markdown>
         )
     },

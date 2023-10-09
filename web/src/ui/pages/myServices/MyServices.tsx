@@ -34,7 +34,7 @@ export default function MyServices(props: Props) {
     const { t: tCatalogLauncher } = useTranslation("CatalogLauncher");
 
     /* prettier-ignore */
-    const { serviceManager, restorablePackageConfig, projectConfigs } = useCoreFunctions();
+    const { serviceManager, restorablePackageConfig, projectConfigs, k8sCredentials } = useCoreFunctions();
     /* prettier-ignore */
     const { displayableConfigs } = useCoreState(selectors.restorablePackageConfig.displayableConfigs);
     /* prettier-ignore */
@@ -310,9 +310,12 @@ export default function MyServices(props: Props) {
                             "body": (
                                 <div className={classes.helpDialogBody}>
                                     {tCatalogLauncher("api logs help body", {
-                                        "k8CredentialsHref": routes.account({
-                                            "tabId": "k8sCredentials"
-                                        }).href,
+                                        "k8CredentialsHref":
+                                            !k8sCredentials.getIsAvailable()
+                                                ? undefined
+                                                : routes.account({
+                                                      "tabId": "k8sCredentials"
+                                                  }).href,
                                         "myServicesHref": routes.myServices().href,
                                         "interfacePreferenceHref": routes.account({
                                             "tabId": "user-interface"

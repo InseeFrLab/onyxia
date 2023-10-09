@@ -37,8 +37,11 @@ export type Props = {
 export const CatalogLauncher = memo((props: Props) => {
     const { className, route, scrollableDivRef } = props;
 
-    const { launcher, restorablePackageConfig: restorablePackageConfigFunctions } =
-        useCoreFunctions();
+    const {
+        launcher,
+        restorablePackageConfig: restorablePackageConfigFunctions,
+        k8sCredentials
+    } = useCoreFunctions();
 
     const { showSplashScreen, hideSplashScreen } = useSplashScreen();
 
@@ -293,9 +296,12 @@ export const CatalogLauncher = memo((props: Props) => {
                             "body": (
                                 <div className={classes.helpDialogBody}>
                                     {t("api logs help body", {
-                                        "k8CredentialsHref": routes.account({
-                                            "tabId": "k8sCredentials"
-                                        }).href,
+                                        "k8CredentialsHref":
+                                            !k8sCredentials.getIsAvailable()
+                                                ? undefined
+                                                : routes.account({
+                                                      "tabId": "k8sCredentials"
+                                                  }).href,
                                         "myServicesHref": routes.myServices().href,
                                         "interfacePreferenceHref": routes.account({
                                             "tabId": "user-interface"
@@ -410,7 +416,7 @@ export const { i18n } = declareComponentKeys<
     | {
           K: "api logs help body";
           P: {
-              k8CredentialsHref: string;
+              k8CredentialsHref: string | undefined;
               myServicesHref: string;
               interfacePreferenceHref: string;
           };

@@ -394,41 +394,49 @@ export const translations: Translations<"no"> = {
                             return false;
                     }
                 }}
-            >{`Velkommen til vår forklaringsdialog for Helm-kommandoer!  
-Vi har designet denne grensesnittet for å gi deg full kontroll over dine Kubernetes-implementeringer.  
-Her er hva du trenger å vite:
+            >{`Vi har designet kommandolinjen for å gi deg full kontroll over dine Kubernetes-implementeringer.
+Her er det du trenger å vite:
 
-#### Hva er denne Helm-kommandoen?  
+#### Hva er disse Helm-kommandoene?
 
-Kommandoen som vises på skjermen er den eksakte Helm-kommandoen som vår applikasjon vil kjøre på dine vegne i din Kubernetes-navnerom.  
-Dette lar deg vite hva som skjer i kulissene når du klikker på 'start'-knappen.  
+Disse kommandoene er de eksakte Helm-kommandoene som Onyxia API vil utføre på dine vegne i ditt Kubernetes-navnerom.
+Dette lar deg vite hva som skjer i kulissene når du interagerer med brukergrensesnittet.
 
-#### Sanntidsoppdateringer  
+#### Sanntidsoppdateringer
 
-Når du endrer alternativene i brukergrensesnittet, vil Helm-kommandoen automatisk oppdatere for å reflektere disse endringene.  
-På denne måten kan du se hvordan dine valg påvirker det underliggende systemet.  
+Når du interagerer med brukergrensesnittet, vil Helm-kommandoene automatisk oppdatere seg for å reflektere hva du gjør.
 
-#### Hvorfor bør jeg bry meg?  
+#### Hvorfor bør jeg bry meg?
 
-- **Gjennomsiktighet:** Vi mener du har rett til å vite hvilke handlinger som utføres i ditt miljø.  
-- **Læring:** Å forstå disse kommandoene kan gi innsikt i Kubernetes og Helm, og forbedre din kunnskap.  
-- **Manuell utførelse:** Du kan kopiere og lime inn denne kommandoen i en terminal med skrivetilgang til Kubernetes, noe som lar deg starte tjenesten manuelt.  
+- **Gjennomsiktighet:** Vi mener du har rett til å vite hvilke handlinger som utføres i ditt miljø.
+- **Læring:** Å forstå disse kommandoene kan gi innsikt i Kubernetes og Helm, og dypere din kunnskap.
+- **Manuell utførelse:** Du kan kopiere og lime inn disse kommandoene i en terminal med skrivetilgang til Kubernetes, som lar deg starte tjenesten manuelt.
 
-#### Hvordan kan jeg kjøre denne kommandoen manuelt?  
+#### Hvordan kan jeg kjøre disse kommandoene manuelt?
 
-Det er to måter å kjøre disse kommandoene på:  
+${
+    k8CredentialsHref === undefined
+        ? ""
+        : "Det er to måter å kjøre disse kommandoene på:  "
+}
 
-- **Lokal terminal:** Gå til [\`Min konto -> Kubernetes-fanen\`](${k8CredentialsHref}).  
-  Her vil du finne legitimasjonene som lar deg kjøre kommandoer i din Kubernetes-navnerom fra din lokale terminal.  
+${
+    k8CredentialsHref === undefined
+        ? ""
+        : `
+- **Lokal terminal:** Gå til [\`Min konto -> Kubernetes-fanen\`](${k8CredentialsHref}).
+  Her vil du finne legitimasjonen som lar deg kjøre kommandoer i ditt Kubernetes-navnerom fra din lokale terminal.
+`
+}
 
-- **VSCode-Python Terminal:** Du kan også starte en VSCode-Python-instans med Kubernetes-rollen satt til \`skrive\`.  
-  Åpne en terminal innenfor VSCode, og du vil være i stand til å utføre kommandoen.  
+- Hvis denne Onyxia-instansen har tjenester som VSCode eller Jupyter, kan du åpne en terminal innenfor disse tjenestene og kjøre kommandoer der.
+  For konstruktive eller destruktive kommandoer må du starte tjenesten din med Kubernetes-rolle \`admin\` eller \`edit\`.
 
-Ved å utføre kommandoen manuelt, vil du fortsatt kunne se tjenesten i [\`MineTjenester\`](${myServicesHref})-siden som om den ble startet via brukergrensesnittet.  
+Ved å kjøre kommandoen manuelt, vil du fortsatt kunne se tjenesten i [\`Mine tjenester\`](${myServicesHref}) siden som om den var startet via brukergrensesnittet.
 
-Du kan deaktivere kommandolinjen i [\`Min konto -> Grensesnitt preferanser-fanen\`](${interfacePreferenceHref}).
+Du kan deaktivere kommandolinjen i [\`Min konto -> Grensesnitt preferanse-fanen\`](${interfacePreferenceHref}).
 
-Føl deg fri til å utforske og ta kontroll over dine Kubernetes-implementeringer!  
+Føl deg fri til å utforske og ta kontroll over dine Kubernetes-implementeringer!
         `}</Markdown>
         )
     },

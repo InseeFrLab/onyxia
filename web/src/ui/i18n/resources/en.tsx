@@ -414,13 +414,19 @@ As you interact with the UI, the Helm commands will automatically update to refl
 
 #### How Can I Run Those Commands Manually?  
 
-There are two ways to run theses commands:  
+${k8CredentialsHref === undefined ? "" : "There are two ways to run theses commands:  "}  
 
+${
+    k8CredentialsHref === undefined
+        ? ""
+        : `
 - **Local Terminal:** Go to [\`My Account -> Kubernetes tab\`](${k8CredentialsHref}).  
   Here, you will find the credentials that allow you to run commands in your Kubernetes namespace from your local terminal.  
+`
+}
 
-- **VSCode-Python Terminal:** You can also launch a VSCode-Python instance with the Kubernetes role set to \`write\`.  
-  Open a terminal within VSCode, and you'll be able to execute the command.  
+- If this instance of onyxia features services VSCode or Jupyter you can open a terminal within theses services and run command there.  
+  For constructive or destructive commands you will need to launch your service with Kubernetes role \`admin\` or \`edit\`.  
 
 By executing the command manually, you will still be able to see the service in the [\`MyServices\`](${myServicesHref}) page as if it was launched via the UI.  
 

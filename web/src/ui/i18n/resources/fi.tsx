@@ -390,41 +390,45 @@ export const translations: Translations<"fi"> = {
                             return false;
                     }
                 }}
-            >{`Tervetuloa Helm-komentoselitysdialogiimme!  
-Olemme suunnitelleet tämän käyttöliittymän antaaksemme sinulle hallinnan Kubernetes-julkaisuistasi.  
+            >{`Olemme suunnitelleet komentopalkin siten, että voit ottaa hallinnan Kubernetes-julkaisuistasi.
 Tässä on mitä sinun tarvitsee tietää:
 
-#### Mikä tämä Helm-komento on?
+#### Mitä nuo Helm-komennot ovat?
 
-Näytöllä näkyvä komento on tarkka Helm-komento, jonka sovelluksemme suorittaa puolestasi Kubernetes-nimiavaruudessasi.  
-Tämä mahdollistaa sen, että tiedät mitä kulissien takana tapahtuu, kun napsautat 'käynnistä' -painiketta.
+Nämä komennot ovat tarkat Helm-komennot, jotka Onyxia API suorittaa puolestasi Kubernetes-nimiavaruudessasi.
+Tämä antaa sinulle mahdollisuuden ymmärtää, mitä kulissien takana tapahtuu, kun toimit käyttöliittymän kanssa.
 
-#### Reaaliaikaiset päivitykset  
+#### Reaaliaikaiset päivitykset
 
-Kun muutat vaihtoehtoja käyttöliittymässä, Helm-komento päivittyy automaattisesti heijastamaan näitä muutoksia.  
-Näin voit nähdä, kuinka valintasi vaikuttavat taustajärjestelmään.  
+Kun toimit käyttöliittymän kanssa, Helm-komennot päivittyvät automaattisesti heijastamaan tekemiäsi toimintoja.
 
 #### Miksi minun pitäisi välittää?
 
-- **Läpinäkyvyys:** Uskomme, että sinulla on oikeus tietää, mitä toimintoja ympäristössäsi suoritetaan.  
-- **Oppiminen:** Näiden komentojen ymmärtäminen voi antaa oivalluksia Kubernetesista ja Helmistä, syventäen tietämystäsi.  
-- **Manuaalinen suoritus:** Voit kopioida ja liittää tämän komennon terminaaliin, jolla on kirjoitusoikeus Kubernetesiin, jolloin voit käynnistää palvelun manuaalisesti.  
+- **Läpinäkyvyys:** Uskomme, että sinulla on oikeus tietää, mitä toimintoja ympäristössäsi suoritetaan.
+- **Oppiminen:** Näiden komentojen ymmärtäminen voi tarjota näkemyksiä Kubernetesiin ja Helmiin, syventäen tietämystäsi.
+- **Manuaalinen suoritus:** Voit kopioida ja liittää nämä komennot terminaaliin, jolla on kirjoitusoikeus Kubernetesiin, jolloin voit käynnistää palvelun manuaalisesti.
 
-#### Kuinka voin suorittaa tämän komennon manuaalisesti?
+#### Kuinka voin suorittaa nämä komennot manuaalisesti?
 
-On kaksi tapaa suorittaa nämä komennot:  
+${k8CredentialsHref === undefined ? "" : "On kaksi tapaa suorittaa nämä komennot:  "}
 
-- **Paikallinen terminaali:** Siirry kohtaan [\`Oma tili -> Kubernetes-välilehti\`](${k8CredentialsHref}).  
-  Täältä löydät tunnistetiedot, joiden avulla voit suorittaa komentoja Kubernetes-nimiavaruudessasi paikallisesta terminaalistasi.  
+${
+    k8CredentialsHref === undefined
+        ? ""
+        : `
+- **Paikallinen päätelaite:** Mene [\`Oma tili -> Kubernetes-välilehti\`](${k8CredentialsHref}).
+  Täällä löydät tunnistetiedot, jotka mahdollistavat komentojen suorittamisen Kubernetes-nimiavaruudessasi paikallisesta päätelaitteestasi.
+`
+}
 
-- **VSCode-Python-terminaali:** Voit myös käynnistää VSCode-Python-instanssin, jolla on Kubernetes-rooli asetettu \`kirjoittamaan\`.  
-  Avaa terminaali VSCode:ssa, ja pystyt suorittamaan komennon.  
+- Jos tämä Onyxia-instanssi tarjoaa palveluita kuten VSCode tai Jupyter, voit avata terminaalin näissä palveluissa ja suorittaa komentoja siellä.
+  Konstruktiivisia tai destruktiivisia komentoja varten sinun on käynnistettävä palvelusi Kubernetes-roolilla \`admin\` tai \`edit\`.
 
-Suorittamalla komennon manuaalisesti, näet edelleen palvelun [\`Omat palvelut\`](${myServicesHref}) -sivulla ikään kuin se olisi käynnistetty käyttöliittymän kautta.
+Suorittamalla komennon manuaalisesti, palvelu näkyy edelleen [\`Omat Palvelut\`](${myServicesHref}) -sivulla ikään kuin se olisi käynnistetty käyttöliittymän kautta.
 
-Voit poistaa komentorivin käytöstä kohdassa [\`Oma tili -> Käyttöliittymäasetukset-välilehti\`](${interfacePreferenceHref}).
+Voit poistaa komentopalkin käytöstä [\`Oma tili -> Käyttöliittymäasetukset-välilehti\`](${interfacePreferenceHref}).
 
-Tutustu vapaasti ja ota hallintaan Kubernetes-julkaisusi!  
+Tutustu vapaasti ja ota hallintaan Kubernetes-julkaisusi!
         `}</Markdown>
         )
     },

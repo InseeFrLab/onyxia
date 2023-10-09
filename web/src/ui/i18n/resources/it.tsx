@@ -395,41 +395,49 @@ export const translations: Translations<"it"> = {
                             return false;
                     }
                 }}
-            >{`Benvenuto nella nostra finestra di dialogo per la spiegazione dei comandi Helm!  
-Abbiamo progettato questa interfaccia per permetterti di avere il controllo completo sui tuoi deployment Kubernetes.  
-Ecco quello che devi sapere:
+            >{`Abbiamo progettato la barra dei comandi per darti il controllo completo sui tuoi deployment Kubernetes.
+Ecco cosa devi sapere:
 
-#### Cos'è questo comando Helm?
+#### Quali sono questi comandi Helm?
 
-Il comando visualizzato sullo schermo è il comando Helm esatto che la nostra applicazione eseguirà per tuo conto nel tuo namespace Kubernetes.  
-Questo ti permette di sapere cosa sta succedendo dietro le quinte quando fai clic sul pulsante 'lancia'.  
+Questi comandi sono gli esatti comandi Helm che l'API Onyxia eseguirà per tuo conto nel tuo namespace Kubernetes.
+Ciò ti permette di capire cosa sta accadendo dietro le quinte quando interagisci con l'UI.
 
-#### Aggiornamenti in tempo reale  
+#### Aggiornamenti in tempo reale
 
-Se modifichi le opzioni nell'UI, il comando Helm si aggiornerà automaticamente per riflettere tali cambiamenti.  
-In questo modo, puoi vedere come le tue scelte influenzano il sistema sottostante.  
+Mentre interagisci con l'UI, i comandi Helm si aggiorneranno automaticamente per riflettere le tue azioni.
 
 #### Perché dovrei preoccuparmene?
 
-- **Trasparenza:** Crediamo che tu abbia il diritto di sapere quali azioni vengono eseguite nel tuo ambiente.  
-- **Apprendimento:** Comprendere questi comandi può fornirti una conoscenza più approfondita di Kubernetes e Helm.  
-- **Esecuzione manuale:** Puoi copiare e incollare questo comando in un terminale con accesso in scrittura a Kubernetes, permettendoti di lanciare il servizio manualmente.  
+- **Trasparenza:** Crediamo che tu abbia il diritto di sapere quali azioni vengono eseguite nel tuo ambiente.
+- **Apprendimento:** Capire questi comandi può fornire intuizioni su Kubernetes e Helm, approfondendo la tua conoscenza.
+- **Esecuzione Manuale:** Puoi copiare e incollare questi comandi in un terminale con accesso in scrittura a Kubernetes, permettendoti di avviare il servizio manualmente.
 
-#### Come posso eseguire questo comando manualmente?
+#### Come posso eseguire questi comandi manualmente?
 
-Ci sono due modi per eseguire questi comandi:  
+${
+    k8CredentialsHref === undefined
+        ? ""
+        : "Ci sono due modi per eseguire questi comandi:  "
+}
 
-- **Terminale locale:** Vai a [\`Il mio account -> Scheda Kubernetes\`](${k8CredentialsHref}).  
-  Qui troverai le credenziali che ti permettono di eseguire comandi nel tuo namespace Kubernetes dal tuo terminale locale.  
+${
+    k8CredentialsHref === undefined
+        ? ""
+        : `
+- **Terminale Locale:** Vai a [\`Il Mio Account -> Tab Kubernetes\`](${k8CredentialsHref}).
+  Qui troverai le credenziali che ti permettono di eseguire comandi nel tuo namespace Kubernetes dal tuo terminale locale.
+`
+}
 
-- **Terminale VSCode-Python:** Puoi anche avviare un'istanza di VSCode-Python con il ruolo Kubernetes impostato su \`scrivere\`.  
-  Apri un terminale all'interno di VSCode e sarai in grado di eseguire il comando.  
+- Se questa istanza di Onyxia offre servizi come VSCode o Jupyter, puoi aprire un terminale all'interno di questi servizi ed eseguire i comandi da lì.
+  Per comandi costruttivi o distruttivi, avrai bisogno di lanciare il tuo servizio con ruolo Kubernetes \`admin\` o \`edit\`.
 
-Eseguendo il comando manualmente, sarai comunque in grado di vedere il servizio nella pagina [\`I miei servizi\`](${myServicesHref}) come se fosse stato lanciato attraverso l'UI.  
+Eseguendo il comando manualmente, sarai ancora in grado di vedere il servizio nella pagina [\`I Miei Servizi\`](${myServicesHref}) come se fosse stato lanciato attraverso l'UI.
 
-Puoi disabilitare la barra dei comandi nella scheda [\`Il mio account -> Preferenze interfaccia\`](${interfacePreferenceHref}).
+Puoi disabilitare la barra dei comandi nel tab [\`Il Mio Account -> Preferenze Interfaccia\`](${interfacePreferenceHref}).
 
-Sentiti libero di esplorare e prendere il controllo dei tuoi deployment Kubernetes!  
+Sentiti libero di esplorare e prendere il controllo dei tuoi deployment Kubernetes!
         `}</Markdown>
         )
     },
