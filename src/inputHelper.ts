@@ -13,6 +13,7 @@ export const inputNames = [
     "is_pr",
     "is_external_pr",
     "is_bot",
+    "branch_name",
     "sub_directory",
     "tag_name"
 ] as const;
@@ -69,6 +70,10 @@ export function getInputDescription(inputName: typeof inputNames[number]): strin
             "Tell if the sha correspond to a commit from a bot",
             "Do not provide this parameter explicitly, it will be set automatically"
         ].join(" ");
+        case "branch_name": return [
+            "When event name is push gives the name of the branch that triggered the workflow",
+            "Do not provide this parameter explicitly, it will be set automatically"
+        ].join(" ");
         case "sub_directory": return [
             "For the 'checkout' action, tell what sub directory to checkout from the repo.",
             "Mandatory (else use the 'actions/checkout@v3' action directly). Example: 'web'"
@@ -91,6 +96,7 @@ export function getInputDefault(inputName: typeof inputNames[number]): string | 
         case "is_external_pr": 
             return "${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository }}";
         case "is_bot": return "${{ endsWith(github.actor, '[bot]') }}";
+        case "branch_name": return "${{ github.event_name == 'push' && github.ref.replace('refs/heads/', '') }}";
     }
 }
 

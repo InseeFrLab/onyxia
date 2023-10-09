@@ -464,13 +464,14 @@ const { getActionParams } = (0, inputHelper_1.getActionParamsFactory)({
         "automatic_commit_author_email",
         "is_pr",
         "is_external_pr",
-        "is_bot"
+        "is_bot",
+        "branch_name"
     ]
 });
 const { setOutput } = (0, outputHelper_1.setOutputFactory)();
 function _run(params) {
     return __awaiter(this, void 0, void 0, function* () {
-        const { github_token, owner, repo, sha, automatic_commit_author_email, is_pr, is_external_pr, recursiveCallParams, is_bot, log = () => { } } = params;
+        const { github_token, owner, repo, sha, automatic_commit_author_email, is_pr, is_external_pr, recursiveCallParams, is_bot, branch_name, log = () => { } } = params;
         log(JSON.stringify(params, null, 2));
         const repository = `${owner}/${repo}`;
         if (is_external_pr === "true" || (is_pr === "true" && is_bot === "true")) {
@@ -613,7 +614,8 @@ function _run(params) {
                         "versionBehind": previousReleaseVersions.chartVersion,
                         "versionAhead": targetChartVersion
                     })} bump of chart version to ${SemVer_1.SemVer.stringify(targetChartVersion)}`,
-                    "commitAuthorEmail": automatic_commit_author_email
+                    "commitAuthorEmail": automatic_commit_author_email,
+                    "assertRefHeadOfBranchName": branch_name
                 };
             })
         });
@@ -1050,6 +1052,7 @@ exports.inputNames = [
     "is_pr",
     "is_external_pr",
     "is_bot",
+    "branch_name",
     "sub_directory",
     "tag_name"
 ];
@@ -1101,6 +1104,10 @@ function getInputDescription(inputName) {
             "Tell if the sha correspond to a commit from a bot",
             "Do not provide this parameter explicitly, it will be set automatically"
         ].join(" ");
+        case "branch_name": return [
+            "When event name is push gives the name of the branch that triggered the workflow",
+            "Do not provide this parameter explicitly, it will be set automatically"
+        ].join(" ");
         case "sub_directory": return [
             "For the 'checkout' action, tell what sub directory to checkout from the repo.",
             "Mandatory (else use the 'actions/checkout@v3' action directly). Example: 'web'"
@@ -1122,6 +1129,7 @@ function getInputDefault(inputName) {
         case "is_external_pr":
             return "${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository }}";
         case "is_bot": return "${{ endsWith(github.actor, '[bot]') }}";
+        case "branch_name": return "${{ github.event_name == 'push' && github.ref.replace('refs/heads/', '') }}";
     }
 }
 exports.getInputDefault = getInputDefault;
@@ -1566,6 +1574,7 @@ function gitClone(params) {
         const mutexKey = `${repository}${ref !== null && ref !== void 0 ? ref : ""}`;
         const mutex = ((_a = mutexes[mutexKey]) !== null && _a !== void 0 ? _a : (mutexes[mutexKey] = new async_mutex_1.Mutex()));
         const sha = yield mutex.runExclusive(() => __awaiter(this, void 0, void 0, function* () {
+            var _b;
             const repoHash = crypto_1.default
                 .createHash("sha1")
                 .update(mutexKey)
@@ -1590,16 +1599,16 @@ function gitClone(params) {
                 return undefined;
             }
             if (ref !== undefined && isSha(ref)) {
-                const defaultBranch = yield (() => __awaiter(this, void 0, void 0, function* () {
+                const branch = (_b = changesResult.assertRefHeadOfBranchName) !== null && _b !== void 0 ? _b : yield (() => __awaiter(this, void 0, void 0, function* () {
                     const fullRef = (yield exec("git symbolic-ref refs/remotes/origin/HEAD", { "cwd": repoPath })).toString().trim();
                     const branchName = fullRef.replace('refs/remotes/origin/', '');
                     return branchName;
                 }))();
-                yield exec(`git checkout ${defaultBranch}`, { "cwd": repoPath });
+                yield exec(`git checkout ${branch}`, { "cwd": repoPath });
                 yield exec(`git pull`, { "cwd": repoPath });
                 const currentSha = (yield exec(`git rev-parse HEAD`, { "cwd": repoPath })).trim();
                 if (currentSha !== ref) {
-                    throw new Error(`The commit ${ref} is not the head of ${defaultBranch}, can't automatically commit`);
+                    throw new Error(`The commit ${ref} is not the head of ${branch}, can't automatically commit`);
                 }
             }
             const { commitAuthorEmail = "actions@github.com" } = changesResult;
@@ -1615,7 +1624,7 @@ function gitClone(params) {
                 yield exec(`git commit -am "${changesResult.message}"`, { "cwd": repoPath });
                 yield exec(`git push ${url}`, { "cwd": repoPath });
             }
-            catch (_b) {
+            catch (_c) {
                 return undefined;
             }
             const sha = (yield exec(`git rev-parse HEAD`, { "cwd": repoPath })).trim();

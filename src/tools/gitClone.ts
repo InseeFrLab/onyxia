@@ -16,7 +16,10 @@ export async function gitClone(params: {
     ref?: string;
     action: (params: {
         repoPath: string;
-    }) => Promise<{ doCommit: false } | { doCommit: true; doAddAll: boolean; message: string; commitAuthorEmail?: string; }>;
+    }) => Promise<{ doCommit: false } | { doCommit: true; doAddAll: boolean; message: string; commitAuthorEmail?: string; 
+        /** Default to default branch, usually "main", no need to provide is ref is not a commit sha  */
+        assertRefHeadOfBranchName?: string;
+    }>;
     log?: (message: string) => void;
 }): Promise<{ 
     /** The new commit sha, if a commit was made */
@@ -82,20 +85,20 @@ export async function gitClone(params: {
 
         if( ref !== undefined && isSha(ref) ){
 
-            const defaultBranch = await (async () => {
+            const branch = changesResult.assertRefHeadOfBranchName ?? await (async () => {
                 const fullRef = (await exec("git symbolic-ref refs/remotes/origin/HEAD", { "cwd": repoPath })).toString().trim();
                 const branchName = fullRef.replace('refs/remotes/origin/', '');
                 return branchName;
             })();
 
-            await exec(`git checkout ${defaultBranch}`, { "cwd": repoPath });
+            await exec(`git checkout ${branch}`, { "cwd": repoPath });
 
             await exec(`git pull`, { "cwd": repoPath });
 
             const currentSha = (await exec(`git rev-parse HEAD`, { "cwd": repoPath })).trim();
 
             if( currentSha !== ref ){
-                throw new Error(`The commit ${ref} is not the head of ${defaultBranch}, can't automatically commit`);
+                throw new Error(`The commit ${ref} is not the head of ${branch}, can't automatically commit`);
             }
 
         }

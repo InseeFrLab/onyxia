@@ -25,7 +25,8 @@ const { getActionParams } = getActionParamsFactory({
         "automatic_commit_author_email",
         "is_pr",
         "is_external_pr",
-        "is_bot"
+        "is_bot",
+        "branch_name"
     ] as const
 });
 
@@ -61,6 +62,7 @@ export async function _run(
         is_external_pr,
         recursiveCallParams,
         is_bot,
+        branch_name,
         log = () => { }
     } = params;
 
@@ -283,7 +285,8 @@ export async function _run(
                     "versionBehind": previousReleaseVersions.chartVersion,
                     "versionAhead": targetChartVersion
                 })} bump of chart version to ${SemVer.stringify(targetChartVersion)}`,
-                "commitAuthorEmail": automatic_commit_author_email
+                "commitAuthorEmail": automatic_commit_author_email,
+                "assertRefHeadOfBranchName": branch_name
             };
         }
     });
