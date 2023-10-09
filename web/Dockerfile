@@ -3,7 +3,6 @@ FROM node:18-alpine as build
 WORKDIR /app
 COPY package.json yarn.lock .env ./
 COPY public ./public
-COPY .compatibility ./.compatibility
 COPY patches ./patches
 RUN yarn install --frozen-lockfile
 COPY config-overrides.js tsconfig.json ./

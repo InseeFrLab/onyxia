@@ -9,7 +9,7 @@
         "build": "react-app-rewired build",
         "build-keycloak-theme": "yarn build && keycloakify",
         "storybook": "start-storybook -p 6006",
-        "postinstall": "cp -rf .compatibility/fs node_modules/ && patch-package && generate-env-getter && copy-keycloak-resources-to-public",
+        "postinstall": "cp -rf patches/fs node_modules/ && patch-package && generate-env-getter && copy-keycloak-resources-to-public",
         "prestart": "generate-env-getter",
         "_format": "prettier '**/*.{ts,tsx,json,md}'",
         "format": "yarn _format --write",
