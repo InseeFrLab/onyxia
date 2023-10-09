@@ -24,7 +24,8 @@
                 "redux-clean-architecture",
                 "run-exclusive",
                 "tsafe",
-                "tss-react"
+                "tss-react",
+                "screen-scaler"
             ],
             "enabled": false
         },
@@ -40,7 +41,8 @@
                 "redux-clean-architecture",
                 "run-exclusive",
                 "tsafe",
-                "tss-react"
+                "tss-react",
+                "screen-scaler"
             ],
             "matchUpdateTypes": ["minor", "patch"],
             "automerge": true,
