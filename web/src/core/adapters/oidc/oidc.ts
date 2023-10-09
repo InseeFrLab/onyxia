@@ -71,6 +71,8 @@ export async function createOidc(params: {
 
         const names = ["code", "state", "session_state"];
 
+        let dummyUrl = "https://dummy.com";
+
         for (const name of names) {
             const result = retrieveParamFromUrl({ name, url });
 
@@ -82,10 +84,16 @@ export async function createOidc(params: {
                 }
             }
 
+            dummyUrl = addParamToUrl({
+                "url": dummyUrl,
+                "name": name,
+                "value": result.value
+            }).newUrl;
+
             url = result.newUrl;
         }
 
-        await userManager.signinRedirectCallback();
+        await userManager.signinRedirectCallback(dummyUrl);
 
         window.history.pushState(null, "", url);
     }
