@@ -1316,7 +1316,7 @@ var SemVer;
         const versionAhead = typeof params.versionAhead === "string" ? parse(params.versionAhead) : params.versionAhead;
         const versionBehind = typeof params.versionBehind === "string" ? parse(params.versionBehind) : params.versionBehind;
         if (compare(versionBehind, versionAhead) === 1) {
-            throw new Error(`Version regression ${versionBehind} -> ${versionAhead}`);
+            throw new Error(`Version regression ${stringify(versionBehind)} -> ${stringify(versionAhead)}`);
         }
         for (const level of ["major", "minor", "patch", "rc"]) {
             if (versionBehind[level] !== versionAhead[level]) {
