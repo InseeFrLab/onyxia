@@ -10,39 +10,39 @@ inputs:
   github_token:
     required: false
     description: 'GitHub Personal access tokenOne with no write access is provided by default'
-    default: "${{ github.token }}"
+    default: '${{ github.token }}'
   owner:
     required: false
     description: 'Repository owner, example: ''garronej'',github.repository_owner'
-    default: "${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.owner.login || github.repository_owner }}"
+    default: '${{ github.event_name == ''pull_request'' && github.event.pull_request.head.repo.owner.login || github.repository_owner }}'
   repo:
     required: false
     description: 'Repository name, example: ''evt'', github.event.repository.name'
-    default: "${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.name || github.event.repository.name }}"
+    default: '${{ github.event_name == ''pull_request'' && github.event.pull_request.head.repo.name || github.event.repository.name }}'
   sha:
     required: false
     description: 'If not provided, the good default will be used github.sha'
-    default: "${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}"
+    default: '${{ github.event_name == ''pull_request'' && github.event.pull_request.head.sha || github.sha }}'
   automatic_commit_author_email:
     required: false
     description: 'In actions that perform a git commit, the email of the author of the commit. Default to actions@github.com'
-    default: "actions@github.com"
+    default: 'actions@github.com'
   is_pr:
     required: false
     description: 'Tell if the event that triggered the workflow was pull request (not push) Do not provide this parameter explicitly, it will be set automatically'
-    default: "${{ github.event_name == 'pull_request' }}"
+    default: '${{ github.event_name == ''pull_request'' }}'
   is_external_pr:
     required: false
     description: 'Tell if the sha correspond to a commit from a forked repository Do not provide this parameter explicitly, it will be set automatically'
-    default: "${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository }}"
+    default: '${{ github.event_name == ''pull_request'' && github.event.pull_request.head.repo.full_name != github.repository }}'
   is_bot:
     required: false
     description: 'Tell if the sha correspond to a commit from a bot Do not provide this parameter explicitly, it will be set automatically'
-    default: "${{ endsWith(github.actor, '[bot]') }}"
+    default: '${{ endsWith(github.actor, ''[bot]'') }}'
   branch_name:
     required: false
     description: 'When event name is push gives the name of the branch that triggered the workflow Do not provide this parameter explicitly, it will be set automatically'
-    default: "${{ github.event_name == 'push' && github.ref.replace('refs/heads/', '') || '' }}"
+    default: '${{ github.event_name == ''push'' && github.ref_name || '''' }}'
   sub_directory:
     required: false
     description: 'For the ''checkout'' action, tell what sub directory to checkout from the repo. Mandatory (else use the ''actions/checkout@v3'' action directly). Example: ''web'''
