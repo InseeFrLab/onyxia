@@ -42,15 +42,6 @@ import { enableScreenScaler } from "screen-scaler/react";
 
 const { CoreProvider } = createCoreProvider({
     "apiUrl": getEnv().ONYXIA_API_URL,
-    "isUserInitiallyLoggedIn": getEnv().KEYCLOAK_URL === undefined ? false : undefined,
-    "keycloakParams":
-        getEnv().KEYCLOAK_URL === ""
-            ? undefined
-            : {
-                  "url": getEnv().KEYCLOAK_URL,
-                  "realm": getEnv().KEYCLOAK_REALM,
-                  "clientId": getEnv().KEYCLOAK_CLIENT_ID
-              },
     "getCurrentLang": () => evtLang.state,
     "transformUrlBeforeRedirectToLogin": url =>
         [url]

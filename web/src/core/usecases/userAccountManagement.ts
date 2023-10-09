@@ -1,5 +1,6 @@
 import type { Thunks } from "../core";
 import { addParamToUrl } from "powerhooks/tools/urlSearchParams";
+import { createUsecaseContextApi } from "redux-clean-architecture";
 
 export const name = "userAccountManagement";
 
@@ -9,31 +10,21 @@ export const thunks = {
     "getPasswordResetUrl":
         () =>
         (...args): string | undefined => {
-            const [
-                ,
-                ,
-                {
-                    coreParams: { getCurrentLang, keycloakParams }
-                }
-            ] = args;
+            const [, , extraArg] = args;
 
-            if (keycloakParams === undefined) {
+            const { keycloakPasswordResetUrl, clientId } = getContext(extraArg);
+
+            if (keycloakPasswordResetUrl === undefined) {
                 return undefined;
             }
 
-            let url = [
-                keycloakParams.url.replace(/\/$/, ""),
-                "realms",
-                keycloakParams.realm,
-                "account",
-                "password"
-            ].join("/");
+            let url = keycloakPasswordResetUrl;
 
             {
                 const { newUrl } = addParamToUrl({
                     url,
                     "name": "referrer",
-                    "value": keycloakParams.clientId
+                    "value": clientId
                 });
 
                 url = newUrl;
@@ -53,12 +44,64 @@ export const thunks = {
                 const { newUrl } = addParamToUrl({
                     url,
                     "name": "kc_locale",
-                    "value": getCurrentLang()
+                    "value": extraArg.coreParams.getCurrentLang()
                 });
 
                 url = newUrl;
             }
 
             return url;
+        }
+} satisfies Thunks;
+
+const { getContext, setContext } = createUsecaseContextApi<
+    | {
+          keycloakPasswordResetUrl: string;
+          clientId: string;
+      }
+    | {
+          keycloakPasswordResetUrl: undefined;
+          clientId?: undefined;
+      }
+>();
+
+export const protectedThunks = {
+    "initialize":
+        () =>
+        async (...args) => {
+            const [, , extraArg] = args;
+
+            const { onyxiaApi } = extraArg;
+
+            const { oidcParams } = await onyxiaApi.getAvailableRegionsAndOidcParams();
+
+            setContext(
+                extraArg,
+                (() => {
+                    if (oidcParams === undefined) {
+                        return {
+                            "keycloakPasswordResetUrl": undefined
+                        };
+                    }
+
+                    const { authority, clientId } = oidcParams;
+
+                    if (!new URL(authority).pathname.match(/^\/(?:auth\/)?realms\/.*$/)) {
+                        // Not a keycloak server
+                        return {
+                            "keycloakPasswordResetUrl": undefined
+                        };
+                    }
+
+                    return {
+                        "keycloakPasswordResetUrl": [
+                            authority,
+                            "account",
+                            "password"
+                        ].join("/"),
+                        clientId
+                    };
+                })()
+            );
         }
 } satisfies Thunks;

@@ -15,8 +15,6 @@ import type { Language } from "./ports/OnyxiaApi/Language";
 type CoreParams = {
     /** Empty string for using mock */
     apiUrl: string;
-    /** Default: false, only considered if using mocks */
-    isUserInitiallyLoggedIn?: boolean;
     transformUrlBeforeRedirectToLogin: (url: string) => string;
     getCurrentLang: () => Language;
     disablePersonalInfosInjectionInGroup: boolean;
@@ -24,12 +22,7 @@ type CoreParams = {
 };
 
 export async function createCore(params: CoreParams) {
-    const {
-        apiUrl,
-        isUserInitiallyLoggedIn = false,
-        transformUrlBeforeRedirectToLogin,
-        getCurrentLang
-    } = params;
+    const { apiUrl, transformUrlBeforeRedirectToLogin, getCurrentLang } = params;
 
     let oidc: Oidc | undefined = undefined;
 
@@ -83,13 +76,15 @@ export async function createCore(params: CoreParams) {
         return onyxiaApi;
     })();
 
+    let oidcParams: { authority: string; clientId: string } | undefined = undefined;
+
     oidc = await (async () => {
-        const { oidcParams } = await onyxiaApi.getAvailableRegionsAndOidcParams();
+        oidcParams = (await onyxiaApi.getAvailableRegionsAndOidcParams()).oidcParams;
 
         if (oidcParams === undefined) {
             const { createOidc } = await import("core/adapters/oidcMock");
 
-            return createOidc({ isUserInitiallyLoggedIn });
+            return createOidc({ "isUserInitiallyLoggedIn": false });
         }
 
         const { createOidc } = await import("core/adapters/oidc");
@@ -130,8 +125,8 @@ export async function createCore(params: CoreParams) {
         const { s3: s3Params, vault: vaultParams } = usecases.deploymentRegion.selectors.selectedDeploymentRegion(core.getState());
 
         /* prettier-ignore */
-        const fallbackOidc = keycloakParams === undefined ? undefined : {
-            "keycloakParams": keycloakParams,
+        const fallback = oidcParams === undefined ? undefined : {
+            oidcParams,
             oidc
         };
 
@@ -151,12 +146,12 @@ export async function createCore(params: CoreParams) {
             );
 
             return createS3Client({
-                "oidc": await createOidcOrFallback({
-                    "keycloakParams": s3Params.keycloakParams,
-                    "fallback": fallbackOidc
-                }),
                 ...getCreateS3ClientParams({ s3Params }),
-                "createAwsBucket": onyxiaApi.createAwsBucket
+                "createAwsBucket": onyxiaApi.createAwsBucket,
+                "oidc": await createOidcOrFallback({
+                    "oidcParams": s3Params.oidcParams,
+                    fallback
+                })
             });
         })();
 
@@ -176,8 +171,8 @@ export async function createCore(params: CoreParams) {
                 "url": vaultParams.url,
                 "authPath": vaultParams.authPath,
                 "oidc": await createOidcOrFallback({
-                    "keycloakParams": vaultParams.keycloakParams,
-                    "fallback": fallbackOidc
+                    "oidcParams": vaultParams.oidcParams,
+                    fallback
                 })
             });
         })();
@@ -190,6 +185,8 @@ export async function createCore(params: CoreParams) {
         await core.dispatch(
             usecases.restorablePackageConfigs.protectedThunks.initialize()
         );
+
+        await core.dispatch(usecases.userAccountManagement.protectedThunks.initialize());
     }
 
     return core;

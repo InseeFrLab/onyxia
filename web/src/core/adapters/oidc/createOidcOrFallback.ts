@@ -2,42 +2,39 @@ import type { Oidc } from "../../ports/Oidc";
 import { assert } from "tsafe/assert";
 
 export async function createOidcOrFallback(params: {
-    keycloakParams:
+    oidcParams:
         | {
-              url?: string;
-              realm?: string;
+              authority?: string;
               clientId: string;
           }
         | undefined;
     fallback:
         | {
-              keycloakParams: {
-                  url: string;
+              oidcParams: {
+                  authority: string;
                   clientId: string;
-                  realm: string;
               };
               oidc: Oidc.LoggedIn;
           }
         | undefined;
 }): Promise<Oidc.LoggedIn> {
-    const { keycloakParams, fallback } = params;
+    const { oidcParams, fallback } = params;
 
     const wrap = (() => {
-        const { url, realm, clientId } = {
-            ...fallback?.keycloakParams,
-            ...keycloakParams
+        const { authority, clientId } = {
+            ...fallback?.oidcParams,
+            ...oidcParams
         };
 
         assert(
-            url !== undefined && clientId !== undefined && realm !== undefined,
-            "There is no specific keycloak config in the region for s3 and no keycloak config to fallback to"
+            authority !== undefined && clientId !== undefined,
+            "There is no specific oidc config in the region for satellite service and no oidc config to fallback to"
         );
 
         if (
             fallback !== undefined &&
-            url === fallback.keycloakParams.url &&
-            realm === fallback.keycloakParams.realm &&
-            clientId === fallback.keycloakParams.clientId
+            authority === fallback.oidcParams.authority &&
+            clientId === fallback.oidcParams.clientId
         ) {
             return {
                 "type": "oidc client",
@@ -47,7 +44,7 @@ export async function createOidcOrFallback(params: {
 
         return {
             "type": "keycloak params",
-            "keycloakParams": { url, realm, clientId }
+            "oidcParams": { authority, clientId }
         } as const;
     })();
 
@@ -58,7 +55,8 @@ export async function createOidcOrFallback(params: {
             const { createOidc } = await import("./oidc");
 
             const oidc = await createOidc({
-                ...wrap.keycloakParams,
+                "authority": wrap.oidcParams.authority,
+                "clientId": wrap.oidcParams.clientId,
                 "transformUrlBeforeRedirect": url => url,
                 "getUiLocales": () => "en"
             });

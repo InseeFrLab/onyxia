@@ -93,7 +93,7 @@ export const thunks = {
 
             const [dispatch, getState, extraArg] = args;
 
-            const { oidc, coreParams } = extraArg;
+            const { oidc, onyxiaApi } = extraArg;
 
             if (getState().s3Credentials.isRefreshing) {
                 return;
@@ -117,15 +117,16 @@ export const thunks = {
                 kubernetesOidcClient = await createOidcOrFallback({
                     "fallback": {
                         oidc,
-                        "keycloakParams": (() => {
-                            const { keycloakParams } = coreParams;
+                        "oidcParams": await (async () => {
+                            const { oidcParams } =
+                                await onyxiaApi.getAvailableRegionsAndOidcParams();
 
-                            assert(keycloakParams !== undefined);
+                            assert(oidcParams !== undefined);
 
-                            return keycloakParams;
+                            return oidcParams;
                         })()
                     },
-                    "keycloakParams": kubernetes.keycloakParams
+                    "oidcParams": kubernetes.oidcParams
                 });
 
                 context.kubernetesOidcClient = kubernetesOidcClient;

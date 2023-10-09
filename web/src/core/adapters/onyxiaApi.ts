@@ -131,10 +131,9 @@ export function createOnyxiaApi(params: {
                             };
                             initScript: string;
                             k8sPublicEndpoint: {
-                                keycloakParams?: {
-                                    clientId: string;
-                                    realm: string;
-                                    URL: string;
+                                oidcConfiguration?: {
+                                    issuerURI?: string;
+                                    clientID: string;
                                 };
                                 URL?: string;
                             };
@@ -144,10 +143,9 @@ export function createOnyxiaApi(params: {
                                 monitoring?: {
                                     URLPattern: string;
                                 };
-                                keycloakParams?: {
-                                    URL?: string;
-                                    realm?: string;
-                                    clientId: string;
+                                oidcConfiguration?: {
+                                    issuerURI?: string;
+                                    clientID: string;
                                 };
                                 defaultDurationSeconds?: number;
                             } & (
@@ -169,10 +167,9 @@ export function createOnyxiaApi(params: {
                             kvEngine: string;
                             role: string;
                             authPath?: string;
-                            keycloakParams?: {
-                                URL?: string;
-                                realm?: string;
-                                clientId: string;
+                            oidcConfiguration?: {
+                                issuerURI?: string;
+                                clientID: string;
                             };
                         };
                         proxyInjection?: {
@@ -192,17 +189,10 @@ export function createOnyxiaApi(params: {
                             pathToCaBundle: string;
                         };
                     }[];
-                    authenticationInfo?:
-                        | {
-                              mode: "none";
-                          }
-                        | {
-                              mode: "openidconnect";
-                              oidcConfiguration: {
-                                  issuerURI: string;
-                                  clientID: string;
-                              };
-                          };
+                    oidcConfiguration?: {
+                        issuerURI: string;
+                        clientID: string;
+                    };
                 }>("/public/configuration")
                 .then(({ data }) => ({
                     "regions": data.regions.map(
@@ -230,13 +220,14 @@ export function createOnyxiaApi(params: {
                                 const common: DeploymentRegion.S3.Common = {
                                     "monitoringUrlPattern": S3.monitoring?.URLPattern,
                                     "defaultDurationSeconds": S3.defaultDurationSeconds,
-                                    "keycloakParams":
-                                        S3.keycloakParams === undefined
+                                    "oidcParams":
+                                        S3.oidcConfiguration === undefined
                                             ? undefined
                                             : {
-                                                  "url": S3.keycloakParams.URL,
-                                                  "realm": S3.keycloakParams.realm,
-                                                  "clientId": S3.keycloakParams.clientId
+                                                  "authority":
+                                                      S3.oidcConfiguration.issuerURI,
+                                                  "clientId":
+                                                      S3.oidcConfiguration.clientID
                                               }
                                 };
 
@@ -291,15 +282,16 @@ export function createOnyxiaApi(params: {
                                           "kvEngine": vault.kvEngine,
                                           "role": vault.role,
                                           "authPath": vault.authPath,
-                                          "keycloakParams":
-                                              vault.keycloakParams === undefined
+                                          "oidcParams":
+                                              vault.oidcConfiguration === undefined
                                                   ? undefined
                                                   : {
-                                                        "url": vault.keycloakParams.URL,
-                                                        "realm":
-                                                            vault.keycloakParams.realm,
+                                                        "authority":
+                                                            vault.oidcConfiguration
+                                                                .issuerURI,
                                                         "clientId":
-                                                            vault.keycloakParams.clientId
+                                                            vault.oidcConfiguration
+                                                                .clientID
                                                     }
                                       };
                             })(),
@@ -314,19 +306,19 @@ export function createOnyxiaApi(params: {
                                     ? undefined
                                     : {
                                           "url": k8sPublicEndpoint.URL,
-                                          "keycloakParams":
-                                              k8sPublicEndpoint.keycloakParams ===
+                                          "oidcParams":
+                                              k8sPublicEndpoint.oidcConfiguration ===
                                               undefined
                                                   ? undefined
                                                   : {
-                                                        "url": k8sPublicEndpoint
-                                                            .keycloakParams.URL,
-                                                        "realm":
+                                                        "authority":
                                                             k8sPublicEndpoint
-                                                                .keycloakParams.realm,
+                                                                .oidcConfiguration
+                                                                .issuerURI,
                                                         "clientId":
                                                             k8sPublicEndpoint
-                                                                .keycloakParams.clientId
+                                                                .oidcConfiguration
+                                                                .clientID
                                                     }
                                       };
                             })(),
@@ -335,24 +327,13 @@ export function createOnyxiaApi(params: {
                             "resources": region.services.defaultConfiguration?.resources
                         })
                     ),
-                    "oidcParams": (() => {
-                        const { authenticationInfo } = data;
-
-                        if (authenticationInfo === undefined) {
-                            return undefined;
-                        }
-
-                        if (authenticationInfo.mode !== "openidconnect") {
-                            return undefined;
-                        }
-
-                        const { oidcConfiguration } = authenticationInfo;
-
-                        return {
-                            "authority": oidcConfiguration.issuerURI,
-                            "clientId": oidcConfiguration.clientID
-                        };
-                    })()
+                    "oidcParams":
+                        data.oidcConfiguration === undefined
+                            ? undefined
+                            : {
+                                  "authority": data.oidcConfiguration.issuerURI,
+                                  "clientId": data.oidcConfiguration.clientID
+                              }
                 }))
                 .catch(onError)
         ),

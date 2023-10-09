@@ -24,7 +24,6 @@ const propsByTitle = new Map<string, any>();
 
 const { CoreProvider } = createCoreProvider({
     "apiUrl": "",
-    "keycloakParams": undefined,
     "getCurrentLang": () => "en",
     "transformUrlBeforeRedirectToLogin": url => url,
     "disablePersonalInfosInjectionInGroup": false,

@@ -32,10 +32,9 @@ export type DeploymentRegion = {
               kvEngine: string;
               role: string;
               authPath: string | undefined;
-              keycloakParams:
+              oidcParams:
                   | {
-                        url: string | undefined;
-                        realm: string | undefined;
+                        authority?: string;
                         clientId: string;
                     }
                   | undefined;
@@ -65,10 +64,9 @@ export type DeploymentRegion = {
     kubernetes:
         | {
               url: string;
-              keycloakParams:
+              oidcParams:
                   | {
-                        url: string;
-                        realm: string;
+                        authority?: string;
                         clientId: string;
                     }
                   | undefined;
@@ -100,10 +98,9 @@ export namespace DeploymentRegion {
         export type Common = {
             defaultDurationSeconds: number | undefined;
             monitoringUrlPattern: string | undefined;
-            keycloakParams:
+            oidcParams:
                 | {
-                      url: string | undefined;
-                      realm: string | undefined;
+                      authority?: string;
                       clientId: string;
                   }
                 | undefined;

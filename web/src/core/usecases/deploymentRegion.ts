@@ -41,7 +41,8 @@ export const protectedThunks = {
         async (...args) => {
             const [dispatch, , { onyxiaApi }] = args;
 
-            const availableDeploymentRegions = await onyxiaApi.getAvailableRegions();
+            const { regions: availableDeploymentRegions } =
+                await onyxiaApi.getAvailableRegionsAndOidcParams();
 
             let previouslySelectedRegionIdFromLocalStorage =
                 localStorage.getItem(localStorageKey);

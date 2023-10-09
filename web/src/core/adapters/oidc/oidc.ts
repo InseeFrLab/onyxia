@@ -27,7 +27,7 @@ export async function createOidc(params: {
         "silent_redirect_uri": `${window.location.origin}/silent-sso.html`
     });
 
-    const configHash = fnv1aHashToHex(`${url} ${realm} ${clientId}`);
+    const configHash = fnv1aHashToHex(`${authority} ${clientId}`);
     const configHashKey = "configHash";
 
     const login: Oidc.NotLoggedIn["login"] = async () => {
