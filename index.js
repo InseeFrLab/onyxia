@@ -266,7 +266,7 @@ function generateReleaseMessageBody(params) {
         (0, assert_1.assert)(bump !== "no bump");
         let out = (0, capitalize_1.capitalize)(bump);
         if (bump === "major") {
-            out += `**${out}**`;
+            out = `**${out}**`;
         }
         return out;
     };
