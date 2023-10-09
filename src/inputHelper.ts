@@ -96,7 +96,7 @@ export function getInputDefault(inputName: typeof inputNames[number]): string | 
         case "is_external_pr": 
             return "${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository }}";
         case "is_bot": return "${{ endsWith(github.actor, '[bot]') }}";
-        case "branch_name": return "${{ github.event_name == 'push' && github.ref.replace('refs/heads/', '') || '' }}";
+        case "branch_name": return "${{ github.event_name == 'push' && github.ref_name || '' }}";
     }
 }
 

@@ -24,7 +24,7 @@ fs.writeFileSync(
             `  ${inputName}:`,
             `    required: ${i === 0 ? "true" : "false"}`,
             `    description: '${getInputDescription(inputName).replace(/'/g,"''")}'`,
-            ...[getInputDefault(inputName)].filter(exclude(undefined)).map(s=>`    default: "${s.replace(/"/g,'\\"')}"`)
+            ...[getInputDefault(inputName)].filter(exclude(undefined)).map(s=>`    default: '${s.replace(/'/g,"''")}'`)
         ].join("\n")),
         ...(id<readonly string[]>(outputNames).length === 0 ? [] : [`outputs:`]),
         ...outputNames.map((outputName, i) => [
