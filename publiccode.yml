@@ -1,0 +1,105 @@
+publiccodeYmlVersion: "0.2"
+ 
+name: Onyxia
+applicationSuite: Onyxia
+url: "https://github.com/InseeFrLab/onyxia"
+landingURL: "https://onyxia.sh"
+releaseDate: "2017-01-01"
+logo: https://inseefrlab.github.io/onyxia/icon.svg
+
+platforms:
+  - web
+
+categories:
+  - it-development
+  - workflow-management
+
+usedBy:
+  - Insee
+  - Statistics Norway
+  - Mercator Ocean
+
+roadmap: "https://docs.onyxia.sh/roadmap"
+
+developmentStatus: development
+
+softwareType: "standalone/web"
+
+intendedAudience:
+  scope:
+    - science-and-technology
+
+description:
+  en:
+    genericName: Onyxia
+    shortDescription: >
+          Web app to simplify data science environment setup on Kubernetes
+
+    longDescription: >
+          Onyxia is an open-source web application designed to facilitate the setup of a 
+          state-of-the-art work environment for data science.
+          What sets Onyxia apart is its focus on accessibility for data scientists who may not be well-versed in cloud technologies. 
+          Through a simple and engaging interface, users can specify their preferred tools (e.g., Jupyter, RStudio) and allocate 
+          computational resources (e.g., GPU, CPU, RAM), among other options. Onyxia then automates the setup process, from launching a container to 
+          configuring access to S3 data storage and managing security credentials. This allows data scientists to focus solely on their 
+          data-related tasks.  Onyxia is not the application where data scientists actually perform their work—that role is filled by 
+          tools like Jupyter, RStudio, or others. Instead, Onyxia serves as a step in their workflow for configuring their technical stack. 
+          Additionally, Onyxia features a file explorer to simplify the management of large datasets.  While Onyxia enables the effortless 
+          setup of a ready-to-use environment, it also maintains a high level of transparency regarding the actions it takes on behalf of 
+          its users. Onyxia displays the commands it runs, allowing users to gain a better understanding of the underlying processes and even 
+          attempt to run the commands themselves. This level of openness allows Onyxia to function not only as a facilitative platform but also 
+          as a learning resource. It helps demystify complex systems such as Kubernetes, Helm, Docker, S3, Vault, and OIDC for data scientists.
+          To utilize Onyxia, system administrators install it on a Kubernetes cluster, either on-premises or via a cloud service provider, 
+          and grant access to the web UI to their data science team.
+
+    documentation: "https://docs.onyxia.sh"
+
+    features:
+       - UI for launching docker images (Helm charts)
+       - Users can define the amount of RAM, CPU and GPU they would like to allocate to their containers
+       - Specify a custom init script to be executed at launch.
+       - Define environnement variables to be made available in the containers.
+       - Save and restore your service service configurations  
+    screenshots:
+       - https://github.com/InseeFrLab/onyxia/assets/6702424/f07e91e7-d597-4eca-b9df-2ddf457afb19
+       - https://github.com/InseeFrLab/onyxia/assets/6702424/77eb58e1-6f5d-43c4-8447-90f5c5aad5d2
+       - https://github.com/InseeFrLab/onyxia/assets/6702424/ae32ccab-e295-4079-b06e-c4035e67d7a4
+       - https://github.com/InseeFrLab/onyxia/assets/6702424/e8ec58ad-7dc8-410d-9cd3-5f0996e8f8f8
+       - https://github.com/InseeFrLab/onyxia/assets/6702424/b5256014-2af3-4e39-9ecb-f3f120aa920a
+    videos:
+       - https://youtu.be/FvpNfVrxBFM?si=goZHdAkOegWjrXBw
+
+legal:
+  license: MIT
+  mainCopyrightOwner: INSEE
+  repoOwner: INSEE
+
+maintenance:
+  type: "internal"
+
+  contacts:
+    - name: Frederic Compte
+      email: "frederic.compte@insee.fr"
+      affiliation: INSEE
+      phone: "+33627137276"
+    - name: Joseph Garrone
+      email: "joseph.garrone@protonmail.com"
+      affiliation: INSEE
+      phone: "+33636786385"
+
+localisation:
+  localisationReady: true
+  availableLanguages:
+    - de
+    - en
+    - fi
+    - fr
+    - it
+    - nl
+    - no
+    - zh-CN
+
+dependsOn:
+  open:
+   - name: Kubernetes
+   - name: Helm
