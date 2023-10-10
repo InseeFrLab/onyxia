@@ -27,7 +27,7 @@ export function updateChartReadme(
     readmeText = updateUrl({
         "text": readmeText,
         "getUrl": tagName => `https://github.com/InseeFrLab/onyxia/releases/download/${tagName}/keycloak-theme.jar`,
-        "tagName": `v${SemVer.stringify(releaseVersion)}}`
+        "tagName": `v${SemVer.stringify(releaseVersion)}`
     });
 
     readmeText = updateUrl({
