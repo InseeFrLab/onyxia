@@ -89,8 +89,12 @@ export async function createOidc(params: {
 
         let dummyUrl = "https://dummy.com";
 
-        for (const name of ["code", "state", "session_state"]) {
+        for (const name of ["code", "state", "session_state", "error"] as const) {
             const result = retrieveParamFromUrl({ name, url });
+
+            if (name === "error" && !result.wasPresent) {
+                continue;
+            }
 
             assert(result.wasPresent);
 
