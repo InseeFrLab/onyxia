@@ -54,12 +54,12 @@ export const Footer = memo((props: Props) => {
             {spacing}
             <a {...termsLink} target="_blank" rel="noreferrer">
                 {" "}
-                <Text typo="body 2">v{t("terms of service")}</Text>{" "}
+                <Text typo="body 2">{t("terms of service")}</Text>{" "}
             </a>
             {spacing}
             {onyxiaVersion !== undefined && (
                 <a href={onyxiaVersion.url} target="_blank" rel="noreferrer">
-                    <Text typo="body 2">{onyxiaVersion.number}</Text>
+                    <Text typo="body 2">v{onyxiaVersion.number}</Text>
                 </a>
             )}
             {spacing}
