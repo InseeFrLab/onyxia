@@ -2,7 +2,7 @@
 
 Onyxia is distributed as a [Helm](https://helm.sh/) Package.  
 
-> ⬆️ Migrating from the old chart? Checkout [the migration guide](https://docs.onyxia.sh/migration-guides/migrating-to-the-new-helm-repo)
+> ⬆️ Migrating from an older version? Checkout [the migration guides](https://docs.onyxia.sh/migration-guides)
 
 > The links in this README are automatically updated.  
 > You can trust that they'll point to the correct references for this specific version.  
@@ -44,7 +44,7 @@ extraInitContainers: |
     args:
       - -c
       - |
-        curl -L -f -S -o /extensions/onyxia.jar https://github.com/InseeFrLab/onyxia/releases/download/v5.0.1}/keycloak-theme.jar
+        curl -L -f -S -o /extensions/onyxia.jar https://github.com/InseeFrLab/onyxia/releases/download/v5.0.1/keycloak-theme.jar
     volumeMounts:
       - name: extensions
         mountPath: /extensions
@@ -91,16 +91,15 @@ Below is a sample `onyxia-values.yaml` file that illustrates where to specify th
 +        # ...
 +api:
 +    env:
-+        security.cors.allowed_origins: http://localhost:3000
-+        authentication.mode: openidconnect
-+        keycloak.realm: datalab
-+        keycloak.auth-server-url: https://auth.lab.my-domain.net/auth
++      authentication.mode: openidconnect
++      oidc.issuer-uri: "https://auth.lab.my-domain.net/auth/realms/datalab"
++      oidc.clientID: "onyxia"
 +    regions:
-+        [
-+            {
-+                "id":"demo",
-+                "name":"Demo",
-+                # ...
++      [
++          {
++              "id":"demo",
++              "name":"Demo",
++              # ...
 ```
 
 ## Catalogs `x-onyxia` specifications
