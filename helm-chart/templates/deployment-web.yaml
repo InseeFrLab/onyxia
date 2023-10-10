@@ -31,6 +31,10 @@ spec:
           image: "{{ .Values.web.image.repository }}:{{ .Values.web.image.tag }}"
           imagePullPolicy: {{ .Values.web.image.pullPolicy }}
           env:
+            - name: ONYXIA_VERSION
+              value: "{{ .Chart.Version }}"
+            - name: ONYXIA_VERSION_URL
+              value: "https://github.com/InseeFrLab/onyxia/releases/tag/v{{ .Chart.Version }}"
            {{- if .Values.web.env }}
             {{- range $key, $value := .Values.web.env }}
             - name: {{ $key }}
