@@ -5,7 +5,7 @@ import { assert } from "tsafe/assert";
 import { applyFaviconColor } from "ui/theme";
 
 {
-    const version = process.env.REACT_APP_VERSION;
+    const version = process.env.WEB_VERSION;
 
     console.log(
         [
