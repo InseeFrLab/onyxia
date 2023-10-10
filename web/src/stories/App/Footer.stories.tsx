@@ -11,7 +11,10 @@ const { meta, getStory } = getStoryFactory({
 export default meta;
 
 export const View1 = getStory({
-    "chartVersion": "4.1.1",
+    "onyxiaVersion": {
+        "number": "v3.0.1",
+        "url": "https://github.com/InseeFrLab/onyxia/tree/v3.0.1/helm-chart"
+    },
     "contributeUrl": "#",
     "termsLink": {
         "href": "https://example.com",

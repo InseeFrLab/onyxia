@@ -10,12 +10,17 @@ import type { Link } from "type-route";
 export type Props = {
     className?: string;
     contributeUrl: string;
-    chartVersion: string | undefined;
+    onyxiaVersion:
+        | {
+              number: string;
+              url: string;
+          }
+        | undefined;
     termsLink: Link;
 };
 
 export const Footer = memo((props: Props) => {
-    const { className, contributeUrl, chartVersion, termsLink } = props;
+    const { className, contributeUrl, onyxiaVersion, termsLink } = props;
 
     const { classes, cx } = useStyles(props);
 
@@ -49,16 +54,12 @@ export const Footer = memo((props: Props) => {
             {spacing}
             <a {...termsLink} target="_blank" rel="noreferrer">
                 {" "}
-                <Text typo="body 2">{t("terms of service")}</Text>{" "}
+                <Text typo="body 2">v{t("terms of service")}</Text>{" "}
             </a>
             {spacing}
-            {chartVersion !== undefined && (
-                <a
-                    href={`https://github.com/InseeFrLab/onyxia/tree/v${chartVersion}/helm-chart`}
-                    target="_blank"
-                    rel="noreferrer"
-                >
-                    <Text typo="body 2">v{chartVersion} </Text>
+            {onyxiaVersion !== undefined && (
+                <a href={onyxiaVersion.url} target="_blank" rel="noreferrer">
+                    <Text typo="body 2">{onyxiaVersion.number}</Text>
                 </a>
             )}
             {spacing}

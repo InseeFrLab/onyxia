@@ -7,7 +7,6 @@ COPY patches ./patches
 RUN yarn install --frozen-lockfile
 COPY config-overrides.js tsconfig.json ./
 COPY src ./src
-ARG CHART_VERSION=""
 RUN yarn build
 COPY nginx.conf ./
 

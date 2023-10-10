@@ -41,21 +41,7 @@ module.exports = function override(config) {
                 "process": "process",
             }),
             new DefinePlugin({
-                // This let us display the version number in the footer of the app.
-                "process.env.CHART_VERSION": JSON.stringify((()=>{
-
-                    const { CHART_VERSION } = process.env;
-
-                    console.log(CHART_VERSION);
-
-                    if( CHART_VERSION === undefined ){
-                        return "";
-                    }
-
-                    return CHART_VERSION;
-
-
-                })())
+                "process.env.WEB_VERSION": JSON.stringify(process.env.npm_package_version)
             }),
         ],
     );

@@ -4,6 +4,17 @@ import { kcContext as kcLoginThemeContext } from "keycloak-theme/login/kcContext
 import { assert } from "tsafe/assert";
 import { applyFaviconColor } from "ui/theme";
 
+{
+    const version = process.env.REACT_APP_VERSION;
+
+    console.log(
+        [
+            `inseefrlab/onyxia-web version: ${version}`,
+            `https://github.com/InseeFrLab/onyxia/tree/web-v${version}/web`
+        ].join("\n")
+    );
+}
+
 applyFaviconColor();
 
 const App = lazy(() => import("ui/App"));

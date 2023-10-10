@@ -74,6 +74,9 @@ export function createOnyxiaApi(params: {
         "getAvailableRegionsAndOidcParams": memoize(() =>
             axiosInstance
                 .get<{
+                    build: {
+                        version: string;
+                    };
                     regions: {
                         id: string;
                         services: {
@@ -194,7 +197,17 @@ export function createOnyxiaApi(params: {
                         clientID: string;
                     };
                 }>("/public/configuration")
-                .then(({ data }) => ({
+                .then(({ data }) => {
+                    const { version } = data.build;
+                    console.log(
+                        [
+                            `inseefrlab/onyxia-api version ${version}`,
+                            `https://github.com/InseeFrLab/onyxia-api/tree/${version}`
+                        ].join("\n")
+                    );
+                    return data;
+                })
+                .then(data => ({
                     "regions": data.regions.map(
                         (region): DeploymentRegion => ({
                             "id": region.id,

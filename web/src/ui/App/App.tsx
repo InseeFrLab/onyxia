@@ -304,8 +304,19 @@ function ContextualizedApp() {
             </section>
             <Footer
                 className={classes.footer}
-                //NOTE: Defined in ./config-overrides.js
-                chartVersion={process.env.CHART_VERSION || undefined}
+                onyxiaVersion={(() => {
+                    const version = getEnv().ONYXIA_VERSION;
+
+                    if (version === "") {
+                        return undefined;
+                    }
+
+                    const url = getEnv().ONYXIA_VERSION_URL;
+
+                    assert(url !== "");
+
+                    return { "number": version, url };
+                })()}
                 contributeUrl={"https://github.com/inseefrlab/onyxia"}
                 termsLink={routes.terms().link}
             />
