@@ -87,20 +87,12 @@ export async function createOidc(params: {
             url = result.newUrl;
         }
 
-        const names = ["code", "state", "session_state"];
-
         let dummyUrl = "https://dummy.com";
 
-        for (const name of names) {
+        for (const name of ["code", "state", "session_state"]) {
             const result = retrieveParamFromUrl({ name, url });
 
-            if (!result.wasPresent) {
-                if (names.indexOf(name) === 0) {
-                    break read_successful_login_query_params;
-                } else {
-                    assert(false);
-                }
-            }
+            assert(result.wasPresent);
 
             dummyUrl = addParamToUrl({
                 "url": dummyUrl,
@@ -111,9 +103,10 @@ export async function createOidc(params: {
             url = result.newUrl;
         }
 
-        await userManager.signinRedirectCallback(dummyUrl);
-
+        // NOTE: Remove the query params from the url
         window.history.pushState(null, "", url);
+
+        await userManager.signinRedirectCallback(dummyUrl);
     }
 
     let currentAccessToken = (await userManager.getUser())?.access_token ?? "";
