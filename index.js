@@ -782,7 +782,7 @@ function updateChartReadme(params) {
     readmeText = (0, updateUrl_1.updateUrl)({
         "text": readmeText,
         "getUrl": tagName => `https://github.com/InseeFrLab/onyxia/releases/download/${tagName}/keycloak-theme.jar`,
-        "tagName": `v${SemVer_1.SemVer.stringify(releaseVersion)}}`
+        "tagName": `v${SemVer_1.SemVer.stringify(releaseVersion)}`
     });
     readmeText = (0, updateUrl_1.updateUrl)({
         "text": readmeText,
