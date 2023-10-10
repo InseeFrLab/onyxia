@@ -1994,6 +1994,7 @@ function waitForDeployment(options) {
                 }
                 yield new Promise(resolve => setTimeout(resolve, 4000));
             }
+            yield new Promise(resolve => setTimeout(resolve, 4000));
             const elapsed = (Date.now() - start) / 1000;
             if (elapsed >= timeoutSeconds) {
                 throw new Error(`Timing out after ${timeoutSeconds} seconds (${elapsed} elapsed)`);
