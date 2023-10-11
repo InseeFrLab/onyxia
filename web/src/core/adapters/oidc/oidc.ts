@@ -1,4 +1,4 @@
-import { UserManager, WebStorageStateStore } from "oidc-client-ts";
+import { UserManager } from "oidc-client-ts";
 import { id } from "tsafe/id";
 import type { Oidc } from "../../ports/Oidc";
 import { decodeJwt } from "core/tools/jwt";
@@ -6,6 +6,7 @@ import { assert } from "tsafe/assert";
 import { addParamToUrl, retrieveParamFromUrl } from "powerhooks/tools/urlSearchParams";
 import { Evt } from "evt";
 import { fnv1aHashToHex } from "core/tools/fnv1aHashToHex";
+import { Deferred } from "evt/tools/Deferred";
 
 export async function createOidc(params: {
     authority: string;
@@ -22,7 +23,6 @@ export async function createOidc(params: {
         "redirect_uri": "" /* provided when calling login */,
         "response_type": "code",
         "scope": "openid profile",
-        "userStore": new WebStorageStateStore({ "store": window.localStorage }),
         "automaticSilentRenew": false,
         "silent_redirect_uri": `${window.location.origin}/silent-sso.html`
     });
@@ -87,19 +87,23 @@ export async function createOidc(params: {
             url = result.newUrl;
         }
 
-        let dummyUrl = "https://dummy.com";
+        {
+            const result = retrieveParamFromUrl({ "name": "error", url });
 
-        for (const name of ["code", "state", "session_state", "error"] as const) {
-            const result = retrieveParamFromUrl({ name, url });
-
-            if (name === "error" && !result.wasPresent) {
-                continue;
+            if (result.wasPresent) {
+                throw new Error(`OIDC error: ${result.value}`);
             }
+        }
+
+        let loginSuccessUrl = "https://dummy.com";
+
+        for (const name of ["code", "state", "session_state"] as const) {
+            const result = retrieveParamFromUrl({ name, url });
 
             assert(result.wasPresent);
 
-            dummyUrl = addParamToUrl({
-                "url": dummyUrl,
+            loginSuccessUrl = addParamToUrl({
+                "url": loginSuccessUrl,
                 "name": name,
                 "value": result.value
             }).newUrl;
@@ -108,7 +112,7 @@ export async function createOidc(params: {
         }
 
         try {
-            await userManager.signinRedirectCallback(dummyUrl);
+            await userManager.signinRedirectCallback(loginSuccessUrl);
         } catch {
             //NOTE: The user has likely pressed the back button just after logging in.
         }
@@ -116,7 +120,75 @@ export async function createOidc(params: {
         window.history.pushState(null, "", url);
     }
 
+    async function silentSignInGetAccessToken(): Promise<string | undefined> {
+        const dLoginSuccessUrl = new Deferred<string | undefined>();
+
+        const listener = (event: MessageEvent) => {
+            if (
+                event.origin !== window.location.origin ||
+                typeof event.data !== "string"
+            ) {
+                return;
+            }
+
+            window.removeEventListener("message", listener);
+
+            const url = event.data;
+
+            {
+                const result = retrieveParamFromUrl({ "name": "error", url });
+
+                if (result.wasPresent) {
+                    dLoginSuccessUrl.resolve(undefined);
+                    return;
+                }
+            }
+
+            let loginSuccessUrl = "https://dummy.com";
+
+            for (const name of ["code", "state", "session_state"] as const) {
+                const result = retrieveParamFromUrl({ name, url });
+
+                assert(result.wasPresent);
+
+                loginSuccessUrl = addParamToUrl({
+                    "url": loginSuccessUrl,
+                    "name": name,
+                    "value": result.value
+                }).newUrl;
+            }
+
+            dLoginSuccessUrl.resolve(loginSuccessUrl);
+        };
+
+        window.addEventListener("message", listener, false);
+
+        userManager.signinSilent({ "silentRequestTimeoutInSeconds": 1 }).catch(() => {
+            /* error expected */
+        });
+
+        const loginSuccessUrl = await dLoginSuccessUrl.pr;
+
+        if (loginSuccessUrl === undefined) {
+            return undefined;
+        }
+
+        const user = await userManager.signinRedirectCallback(loginSuccessUrl);
+
+        assert(user !== undefined);
+
+        return user.access_token;
+    }
+
     let currentAccessToken = (await userManager.getUser())?.access_token ?? "";
+
+    if (currentAccessToken === "") {
+        const accessToken = await silentSignInGetAccessToken();
+
+        if (accessToken !== undefined) {
+            currentAccessToken = accessToken;
+        }
+    }
 
     if (currentAccessToken === "") {
         return id<Oidc.NotLoggedIn>({
@@ -145,13 +217,11 @@ export async function createOidc(params: {
             return new Promise<never>(() => {});
         },
         "renewToken": async () => {
-            const user = await userManager.signinSilent({
-                "redirect_uri": window.location.href
-            });
+            const accessToken = await silentSignInGetAccessToken();
 
-            assert(user !== null);
+            assert(accessToken !== undefined);
 
-            currentAccessToken = user.access_token;
+            currentAccessToken = accessToken;
         }
     });
 
