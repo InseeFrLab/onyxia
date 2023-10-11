@@ -107,10 +107,13 @@ export async function createOidc(params: {
             url = result.newUrl;
         }
 
-        // NOTE: Remove the query params from the url
-        window.history.pushState(null, "", url);
+        try {
+            await userManager.signinRedirectCallback(dummyUrl);
+        } catch {
+            //NOTE: The user has likely pressed the back button just after logging in.
+        }
 
-        await userManager.signinRedirectCallback(dummyUrl);
+        window.history.pushState(null, "", url);
     }
 
     let currentAccessToken = (await userManager.getUser())?.access_token ?? "";
