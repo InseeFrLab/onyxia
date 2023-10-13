@@ -23,9 +23,11 @@ export type XOnyxiaContext = {
         name: string;
         email: string;
         password: string;
-        oneTimePassword: string;
         ip: string;
         darkMode: boolean;
+    };
+    service: {
+        oneTimePassword: string;
     };
     project: {
         id: string;

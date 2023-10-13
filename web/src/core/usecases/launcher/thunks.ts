@@ -98,9 +98,11 @@ export const thunks = {
                             "name": `${user.familyName} ${user.firstName}`,
                             "email": user.email,
                             "password": servicePassword,
-                            "oneTimePassword": generateRandomPassword(),
                             "ip": !doInjectPersonalInfos ? "0.0.0.0" : publicIp,
                             "darkMode": userConfigs.isDarkModeEnabled
+                        },
+                        "service": {
+                            "oneTimePassword": generateRandomPassword()
                         },
                         "project": {
                             "id": project.id,
