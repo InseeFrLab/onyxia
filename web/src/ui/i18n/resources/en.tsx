@@ -517,7 +517,7 @@ Feel free to explore and take charge of your Kubernetes deployments!
         "return": "Return"
     },
     "CopyOpenButton": {
-        "first copy the password": "First, copy the service...",
+        "first copy the password": "First, copy the service password...",
         "open the service": "Open the service 🚀"
     },
     "MyServicesCards": {
