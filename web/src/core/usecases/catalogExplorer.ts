@@ -264,7 +264,10 @@ export const selectors = (() => {
                 ?.highlightedCharts || [];
         const { getPackageWeight } = getPackageWeightFactory({ highlightedCharts });
         const catalog = catalogs
-            .filter(({ id }) => id === selectedCatalogId || state.search !== "")
+            .filter(
+                ({ id, status }) =>
+                    id === selectedCatalogId || (state.search !== "" && status === "PROD")
+            )
             .map(catalog =>
                 catalog.charts.map(chart => ({
                     "packageDescription": chart.versions[0].description,
