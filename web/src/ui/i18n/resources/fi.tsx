@@ -478,7 +478,6 @@ Tutustu vapaasti ja ota hallintaan Kubernetes-julkaisusi!
     "MyServicesButtonBar": {
         "refresh": "Päivitä",
         "launch": "Uusi palvelu",
-        "password": "Kopioi palveluiden salasana",
         "trash": "Tyhjennä kaikki",
         "trash my own": "Poista kaikki omat palvelut"
     },

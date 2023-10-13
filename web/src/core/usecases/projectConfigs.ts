@@ -9,6 +9,7 @@ import * as userConfigs from "./userConfigs";
 import { hiddenDirectoryBasename } from "./userConfigs";
 import { join as pathJoin } from "path";
 import type { Id } from "tsafe/id";
+import { generateRandomPassword } from "core/tools/generateRandomPassword";
 
 type State = {
     projects: Project[];
@@ -246,11 +247,7 @@ function getDefaultConfig<K extends keyof ProjectConfigs>(key_: K): ProjectConfi
     const key = key_ as keyof ProjectConfigs;
     switch (key) {
         case "servicePassword": {
-            const out: ProjectConfigs[typeof key] = Array(2)
-                .fill("")
-                .map(() => Math.random().toString(36).slice(-10))
-                .join("")
-                .replace(/\./g, "");
+            const out: ProjectConfigs[typeof key] = generateRandomPassword();
 
             // @ts-expect-error
             return out;

@@ -496,7 +496,6 @@ N'hésitez pas à explorer et à prendre en main vos déploiements Kubernetes !
     "MyServicesButtonBar": {
         "refresh": "Rafraîchir",
         "launch": "Nouveau service",
-        "password": "Copier le mot de passe",
         "trash": "Supprimer tous",
         "trash my own": "Supprimer tous mes services"
     },

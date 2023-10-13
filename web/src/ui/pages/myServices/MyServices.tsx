@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, useReducer } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { tss, PageHeader } from "ui/theme";
 import { useTranslation } from "ui/i18n";
 import { MyServicesButtonBar } from "./MyServicesButtonBar";
@@ -16,7 +16,6 @@ import { Button } from "ui/theme";
 import { useConst } from "powerhooks/useConst";
 import { Evt } from "evt";
 import type { UnpackEvt } from "evt";
-import { assert } from "tsafe/assert";
 import { declareComponentKeys } from "i18nifty";
 import type { PageRoute } from "./route";
 import { CommandBar } from "ui/shared/CommandBar";
@@ -34,7 +33,7 @@ export default function MyServices(props: Props) {
     const { t: tCatalogLauncher } = useTranslation("CatalogLauncher");
 
     /* prettier-ignore */
-    const { serviceManager, restorablePackageConfig, projectConfigs, k8sCredentials } = useCoreFunctions();
+    const { serviceManager, restorablePackageConfig, k8sCredentials, projectConfigs } = useCoreFunctions();
     /* prettier-ignore */
     const { displayableConfigs } = useCoreState(selectors.restorablePackageConfig.displayableConfigs);
     /* prettier-ignore */
@@ -55,23 +54,6 @@ export default function MyServices(props: Props) {
         userConfigs: { isCommandBarEnabled }
     } = useCoreState(selectors.userConfigs.userConfigs);
 
-    const [password, setPassword] = useState<string | undefined>(undefined);
-
-    const [refreshPasswordTrigger, pullRefreshPasswordTrigger] = useReducer(
-        count => count + 1,
-        0
-    );
-
-    useEffect(() => {
-        projectConfigs.getServicesPassword().then(upToDatePassword => {
-            setPassword(upToDatePassword);
-
-            if (password !== undefined && password !== upToDatePassword) {
-                alert("Outdated password copied. Please click the button again");
-            }
-        });
-    }, [password, refreshPasswordTrigger]);
-
     const onButtonBarClick = useConstCallback((buttonId: ButtonId) => {
         switch (buttonId) {
             case "launch":
@@ -79,14 +61,6 @@ export default function MyServices(props: Props) {
                 return;
             case "refresh":
                 serviceManager.update();
-                return;
-            case "password":
-                assert(password !== undefined);
-
-                navigator.clipboard.writeText(password);
-
-                pullRefreshPasswordTrigger();
-
                 return;
             case "trash":
                 setIsDialogOpen(true);
@@ -276,10 +250,6 @@ export default function MyServices(props: Props) {
         setIsDialogOpen(false);
     });
 
-    const getServicePassword = useConstCallback(() =>
-        projectConfigs.getServicesPassword()
-    );
-
     return (
         <div className={cx(classes.root, className)}>
             <PageHeader
@@ -336,7 +306,9 @@ export default function MyServices(props: Props) {
                                 onRequestDelete={onRequestDelete}
                                 catalogExplorerLink={catalogExplorerLink}
                                 evtAction={evtMyServiceCardsAction}
-                                getServicePassword={getServicePassword}
+                                getProjectServicePassword={
+                                    projectConfigs.getServicesPassword
+                                }
                                 getEnv={serviceManager.getEnv}
                                 getPostInstallInstructions={
                                     serviceManager.getPostInstallInstructions

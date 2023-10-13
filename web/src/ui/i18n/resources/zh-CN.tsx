@@ -418,7 +418,6 @@ ${
     "MyServicesButtonBar": {
         "refresh": "刷新",
         "launch": "新的服务",
-        "password": "复制密码",
         "trash": "删除所有",
         "trash my own": "删除您的所有服务"
     },

@@ -41,7 +41,7 @@ export type Props = {
         action: "TRIGGER SHOW POST INSTALL INSTRUCTIONS";
         serviceId: string;
     }>;
-    getServicePassword: () => Promise<string>;
+    getProjectServicePassword: () => Promise<string>;
 };
 
 export const MyServicesCards = memo((props: Props) => {
@@ -52,7 +52,7 @@ export const MyServicesCards = memo((props: Props) => {
         isUpdating,
         onRequestDelete,
         getEnv,
-        getServicePassword,
+        getProjectServicePassword,
         getPostInstallInstructions,
         evtAction
     } = props;
@@ -127,7 +127,7 @@ export const MyServicesCards = memo((props: Props) => {
                                         ? undefined
                                         : getPoseInstallInstructions
                                 }
-                                getServicePassword={getServicePassword}
+                                getProjectServicePassword={getProjectServicePassword}
                                 onRequestDelete={onRequestDelete}
                                 getEnv={getEnv}
                                 {...card}

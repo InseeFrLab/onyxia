@@ -5,7 +5,7 @@ import type { IconId } from "ui/theme";
 import type { ButtonBarProps } from "onyxia-ui/ButtonBar";
 import { declareComponentKeys } from "i18nifty";
 
-const buttonIds = ["refresh", "launch", "password", "trash"] as const;
+const buttonIds = ["refresh", "launch", "trash"] as const;
 
 export type ButtonId = (typeof buttonIds)[number];
 
@@ -32,8 +32,6 @@ export const MyServicesButtonBar = memo((props: Props) => {
                             return "cached" as const;
                         case "launch":
                             return "add" as const;
-                        case "password":
-                            return "key" as const;
                         case "trash":
                             return "delete" as const;
                     }
@@ -59,7 +57,7 @@ export const MyServicesButtonBar = memo((props: Props) => {
 });
 
 export const { i18n } = declareComponentKeys<
-    "refresh" | "launch" | "password" | "trash" | "trash my own"
+    "refresh" | "launch" | "trash" | "trash my own"
 >()({
     MyServicesButtonBar
 });

@@ -481,14 +481,13 @@ Feel free to explore and take charge of your Kubernetes deployments!
     "MyServicesButtonBar": {
         "refresh": "Refresh",
         "launch": "New service",
-        "password": "Copy the services password",
         "trash": "Delete all",
         "trash my own": "Delete all my services"
     },
     "MyServicesCard": {
         "service": "Service",
         "running since": "Running since: ",
-        "open": "open",
+        "open": "Open",
         "readme": "readme",
         "shared by you": "Shared by you",
         "which token expire when": ({ which, howMuchTime }) =>

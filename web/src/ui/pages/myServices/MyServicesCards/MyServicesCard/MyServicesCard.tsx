@@ -5,7 +5,6 @@ import { useTranslation } from "ui/i18n";
 import { capitalize } from "tsafe/capitalize";
 import { MyServicesRoundLogo } from "./MyServicesRoundLogo";
 import { MyServicesRunningTime } from "./MyServicesRunningTime";
-import { CircularProgress } from "onyxia-ui/CircularProgress";
 import { Tag } from "onyxia-ui/Tag";
 import { Tooltip } from "onyxia-ui/Tooltip";
 import { exclude } from "tsafe/exclude";
@@ -35,7 +34,7 @@ export type Props = {
     onRequestDelete: (() => void) | undefined;
     getPoseInstallInstructions: (() => string) | undefined;
     getEnv: () => Record<string, string>;
-    getServicePassword: () => Promise<string>;
+    getProjectServicePassword: () => Promise<string>;
     openUrl: string | undefined;
     monitoringUrl: string | undefined;
     /** undefined when the service is not yey launched */
@@ -58,7 +57,7 @@ export const MyServicesCard = memo((props: Props) => {
         onRequestDelete,
         getEnv,
         getPoseInstallInstructions,
-        getServicePassword,
+        getProjectServicePassword,
         monitoringUrl,
         openUrl,
         startTime,
@@ -273,27 +272,23 @@ export const MyServicesCard = memo((props: Props) => {
                     {monitoringUrl !== undefined && (
                         <IconButton iconId="equalizer" href={monitoringUrl} />
                     )}
-                    {getPoseInstallInstructions !== undefined && (
+                    <div style={{ "flex": 1 }} />
+                    {(openUrl !== undefined ||
+                        getPoseInstallInstructions !== undefined) && (
                         <Button
                             onClick={() =>
                                 evtReadmeAndEnvDialogAction.post(
                                     "SHOW POST INSTALL INSTRUCTIONS"
                                 )
                             }
-                            variant="ternary"
+                            variant={openUrl === undefined ? "ternary" : "secondary"}
                         >
-                            <span>{t("readme").toUpperCase()}</span>
+                            <span>
+                                {openUrl !== undefined
+                                    ? capitalize(t("open"))
+                                    : t("readme").toUpperCase()}
+                            </span>
                         </Button>
-                    )}
-                    <div style={{ "flex": 1 }} />
-                    {startTime === undefined ? (
-                        <CircularProgress color="textPrimary" size={20} />
-                    ) : (
-                        openUrl && (
-                            <Button variant="secondary" href={openUrl}>
-                                {t("open")}
-                            </Button>
-                        )
                     )}
                 </div>
             </div>
@@ -301,7 +296,7 @@ export const MyServicesCard = memo((props: Props) => {
                 evtAction={evtReadmeAndEnvDialogAction}
                 getEnv={getEnv}
                 getPostInstallInstructions={getPoseInstallInstructions}
-                getServicePassword={getServicePassword}
+                getProjectServicePassword={getProjectServicePassword}
                 openUrl={openUrl}
                 startTime={startTime}
             />

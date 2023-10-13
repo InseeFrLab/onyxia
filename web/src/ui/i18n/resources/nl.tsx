@@ -489,7 +489,6 @@ Voel je vrij om te verkennen en de controle over je Kubernetes-implementaties te
     "MyServicesButtonBar": {
         "refresh": "Vernieuwen",
         "launch": "Nieuwe dienst",
-        "password": "Wachtwoord kopiëren",
         "trash": "Alles verwijderen",
         "trash my own": "Al mijn diensten verwijderen"
     },

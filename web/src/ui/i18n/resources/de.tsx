@@ -492,7 +492,6 @@ Fühlen Sie sich frei, Ihre Kubernetes-Bereitstellungen zu erkunden und die Kont
     "MyServicesButtonBar": {
         "refresh": "Aktualisieren",
         "launch": "Neuer Dienst",
-        "password": "Passwort kopieren",
         "trash": "Alle löschen",
         "trash my own": "Alle meine Dienste löschen"
     },

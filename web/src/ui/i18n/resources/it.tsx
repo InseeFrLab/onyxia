@@ -488,7 +488,6 @@ Sentiti libero di esplorare e prendere il controllo dei tuoi deployment Kubernet
     "MyServicesButtonBar": {
         "refresh": "Aggiornare",
         "launch": "Nuovo servizio",
-        "password": "Copiare la password",
         "trash": "Eliminare tutti",
         "trash my own": "Eliminare tutti i miei servizi."
     },

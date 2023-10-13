@@ -26,6 +26,7 @@ import type { FormField } from "./FormField";
 import * as yaml from "yaml";
 import type { Equals } from "tsafe";
 import { actions, name, type State } from "./state";
+import { generateRandomPassword } from "core/tools/generateRandomPassword";
 
 export const thunks = {
     "initialize":
@@ -97,6 +98,7 @@ export const thunks = {
                             "name": `${user.familyName} ${user.firstName}`,
                             "email": user.email,
                             "password": servicePassword,
+                            "oneTimePassword": generateRandomPassword(),
                             "ip": !doInjectPersonalInfos ? "0.0.0.0" : publicIp,
                             "darkMode": userConfigs.isDarkModeEnabled
                         },

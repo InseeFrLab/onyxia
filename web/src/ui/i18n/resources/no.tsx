@@ -486,7 +486,6 @@ Føl deg fri til å utforske og ta kontroll over dine Kubernetes-implementeringe
     "MyServicesButtonBar": {
         "refresh": "Oppdater",
         "launch": "Ny tjeneste",
-        "password": "Kopier passordet til tjenestene",
         "trash": "Slett alt",
         "trash my own": "Slett alle mine tjenester"
     },

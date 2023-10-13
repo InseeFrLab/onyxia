@@ -31,7 +31,7 @@ export const ViewRegular = getStory({
         "baz": "baz value"
     }),
     "getPoseInstallInstructions": () => "Post **install** instructions",
-    "getServicePassword": () => Promise.resolve("password"),
+    "getProjectServicePassword": () => Promise.resolve("password"),
     ...logCallbacks(["onRequestDelete"])
 });
 
@@ -54,6 +54,6 @@ export const ViewStarting = getStory({
         "baz": "baz value"
     }),
     "getPoseInstallInstructions": () => "Post **install** instructions",
-    "getServicePassword": () => Promise.resolve("password"),
+    "getProjectServicePassword": () => Promise.resolve("password"),
     ...logCallbacks(["onRequestDelete"])
 });
