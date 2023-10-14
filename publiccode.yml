@@ -78,8 +78,8 @@ maintenance:
   type: "internal"
 
   contacts:
-    - name: Frederic Compte
-      email: "frederic.compte@insee.fr"
+    - name: Frederic Comte
+      email: "frederic.comte@insee.fr"
       affiliation: INSEE
       phone: "+33627137276"
     - name: Joseph Garrone
