@@ -4,6 +4,7 @@ import {
     type DeploymentRegion,
     type LocalizedString,
     type Catalog,
+    type Chart,
     type JSONSchemaObject,
     type JSONSchemaFormFieldDescription,
     type User,
@@ -20,6 +21,7 @@ import { assert } from "tsafe/assert";
 import type { Equals } from "tsafe";
 import { id } from "tsafe/id";
 import { getValueAtPathInObject } from "core/tools/getValueAtPathInObject";
+import { compareVersions } from "compare-versions";
 
 export function createOnyxiaApi(params: {
     url: string;
@@ -350,9 +352,9 @@ export function createOnyxiaApi(params: {
                 }))
                 .catch(onError)
         ),
-        "getCatalogs": memoize(
-            () =>
-                axiosInstance
+        "getCatalogsAndCharts": memoize(
+            async () => {
+                const { catalogs: apiCatalogs } = await axiosInstance
                     .get<{
                         catalogs: {
                             id: string;
@@ -366,33 +368,62 @@ export function createOnyxiaApi(params: {
                                     {
                                         description: string;
                                         version: string;
-                                        icon: string | undefined;
-                                        home: string | undefined;
+                                        icon?: string | undefined;
+                                        home?: string | undefined;
                                     }[]
                                 >;
                             };
-                            highlightedCharts: string[];
+                            highlightedCharts?: string[];
                         }[];
                     }>("/public/catalogs")
-                    .then(({ data }) =>
-                        data.catalogs.map(catalog =>
-                            id<Catalog>({
-                                "id": catalog.id,
-                                "name": catalog.name,
-                                "location": catalog.location,
-                                "description": catalog.description,
-                                "status": catalog.status,
-                                "charts": Object.entries(catalog.catalog.entries)
-                                    .filter(([key]) => key !== "library-chart")
-                                    .map(([name, versions]) => ({
-                                        name,
-                                        versions
-                                    })),
-                                "highlightedCharts": catalog.highlightedCharts
-                            })
+                    .catch(onError)
+                    .then(({ data }) => data);
+
+                return {
+                    "catalogs": apiCatalogs.map(
+                        ({ id, name, location, description, status }): Catalog => ({
+                            id,
+                            name,
+                            "repositoryUrl": location,
+                            description,
+                            "isHidden": status !== "PROD"
+                        })
+                    ),
+                    "chartsByCatalogId": Object.fromEntries(
+                        apiCatalogs.map(
+                            ({ id: catalogId, catalog, highlightedCharts }) => [
+                                catalogId,
+                                {
+                                    "charts": Object.entries(catalog.entries).map(
+                                        ([name, versions]): Chart => ({
+                                            name,
+                                            "versions": versions
+                                                .map(
+                                                    ({
+                                                        description,
+                                                        version,
+                                                        icon,
+                                                        home
+                                                    }) => ({
+                                                        description,
+                                                        version,
+                                                        icon,
+                                                        home
+                                                    })
+                                                )
+                                                // Most recent version first
+                                                .sort((a, b) =>
+                                                    compareVersions(b.version, a.version)
+                                                )
+                                        })
+                                    ),
+                                    "highlightedChartNames": highlightedCharts
+                                }
+                            ]
                         )
                     )
-                    .catch(onError),
+                };
+            },
             { "promise": true }
         ),
         "onboard": () =>

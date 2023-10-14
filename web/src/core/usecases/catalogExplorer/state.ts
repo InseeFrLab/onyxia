@@ -1,6 +1,6 @@
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { createSlice } from "@reduxjs/toolkit";
-import type { Catalog } from "core/ports/OnyxiaApi";
+import type { Catalog, Chart } from "core/ports/OnyxiaApi";
 import { id } from "tsafe/id";
 import { assert } from "tsafe/assert";
 
@@ -15,9 +15,23 @@ export namespace State {
     export type Ready = {
         stateDescription: "ready";
         catalogs: Catalog[];
+        chartsByCatalogId: Record<
+            string,
+            { charts: Chart[]; highlightedChartNames: string[] | undefined }
+        >;
         selectedCatalogId: string;
         doShowOnlyHighlighted: boolean;
         search: string;
+        searchResults: SearchResult[] | undefined;
+    };
+
+    export type SearchResult = {
+        catalogId: string;
+        chartName: string;
+        matchedCharacterIndexes: {
+            name: number[];
+            description: number[];
+        };
     };
 }
 
@@ -43,27 +57,30 @@ export const { reducer, actions } = createSlice({
             }: PayloadAction<{
                 selectedCatalogId: string;
                 catalogs: Catalog[];
+                chartsByCatalogId: Record<
+                    string,
+                    { charts: Chart[]; highlightedChartNames: string[] | undefined }
+                >;
             }>
         ) => {
-            const { selectedCatalogId, catalogs } = payload;
-            const highlightedCharts =
-                catalogs.find(catalog => catalog.id === selectedCatalogId)
-                    ?.highlightedCharts || [];
+            const { selectedCatalogId, catalogs, chartsByCatalogId } = payload;
 
-            return id<State.Ready>({
+            const state: State.Ready = {
                 "stateDescription": "ready",
                 catalogs,
                 selectedCatalogId,
-                "doShowOnlyHighlighted":
-                    getAreConditionMetForOnlyShowingHighlightedPackaged({
-                        "highlightedChartsLength": highlightedCharts.length,
-                        catalogs,
-                        selectedCatalogId
-                    }),
-                "search": ""
-            });
+                chartsByCatalogId,
+                "doShowOnlyHighlighted": false,
+                "search": "",
+                "searchResults": undefined
+            };
+
+            state.doShowOnlyHighlighted =
+                getAreConditionMetForOnlyShowingHighlightedChart(state);
+
+            return state;
         },
-        "changeSelectedCatalogue": (
+        "selectedCatalogChanged": (
             state,
             { payload }: PayloadAction<{ selectedCatalogId: string }>
         ) => {
@@ -76,38 +93,32 @@ export const { reducer, actions } = createSlice({
             }
 
             state.selectedCatalogId = selectedCatalogId;
-            const catalogs = state.catalogs;
-            const highlightedCharts =
-                catalogs.find(catalog => catalog.id === selectedCatalogId)
-                    ?.highlightedCharts || [];
+
             state.doShowOnlyHighlighted =
-                state.search === "" &&
-                getAreConditionMetForOnlyShowingHighlightedPackaged({
-                    "highlightedChartsLength": highlightedCharts.length,
-                    "catalogs": catalogs,
-                    selectedCatalogId
-                });
+                getAreConditionMetForOnlyShowingHighlightedChart(state);
         },
-        "setSearch": (state, { payload }: PayloadAction<{ search: string }>) => {
+        "notifyDefaultCatalogIdSelected": () => {
+            /* Only for evt */
+        },
+        "searchChanged": (state, { payload }: PayloadAction<{ search: string }>) => {
             const { search } = payload;
 
             assert(state.stateDescription === "ready");
 
             state.search = search;
+        },
+        "searchResultChanged": (
+            state,
+            { payload }: { payload: { searchResults: State.Ready["searchResults"] } }
+        ) => {
+            const { searchResults } = payload;
 
-            const selectedCatalogId = state.selectedCatalogId;
-            const catalogs = state.catalogs;
-            const highlightedCharts =
-                catalogs?.find(catalog => catalog.id === selectedCatalogId)
-                    ?.highlightedCharts || [];
+            assert(state.stateDescription === "ready");
+
+            state.searchResults = searchResults;
 
             state.doShowOnlyHighlighted =
-                search === "" &&
-                getAreConditionMetForOnlyShowingHighlightedPackaged({
-                    "highlightedChartsLength": highlightedCharts.length,
-                    "catalogs": catalogs,
-                    "selectedCatalogId": selectedCatalogId
-                });
+                getAreConditionMetForOnlyShowingHighlightedChart(state);
         },
         "setDoShowOnlyHighlightedToFalse": state => {
             assert(state.stateDescription === "ready");
@@ -117,15 +128,14 @@ export const { reducer, actions } = createSlice({
     }
 });
 
-export function getAreConditionMetForOnlyShowingHighlightedPackaged(params: {
-    highlightedChartsLength: number;
-    catalogs: Catalog[];
-    selectedCatalogId: string;
-}) {
-    const { highlightedChartsLength, catalogs, selectedCatalogId } = params;
+function getAreConditionMetForOnlyShowingHighlightedChart(state: State.Ready) {
+    const { searchResults, chartsByCatalogId } = state;
 
-    const totalPackageCount = catalogs.find(({ id }) => id === selectedCatalogId)!.charts
-        .length;
+    const { charts, highlightedChartNames } = chartsByCatalogId[state.selectedCatalogId]!;
 
-    return highlightedChartsLength !== 0 && totalPackageCount > 5;
+    return (
+        searchResults === undefined &&
+        (highlightedChartNames?.length ?? 0) !== 0 &&
+        charts.length > 5
+    );
 }

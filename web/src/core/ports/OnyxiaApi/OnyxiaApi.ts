@@ -2,6 +2,7 @@ import type { XOnyxiaContext } from "./XOnyxia";
 import type { DeploymentRegion } from "./DeploymentRegion";
 import type { Project } from "./Project";
 import type { Catalog } from "./Catalog";
+import type { Chart } from "./Chart";
 import type { RunningService } from "./RunningService";
 import type { User } from "./User";
 import { JSONSchemaObject } from "./JSONSchema";
@@ -30,8 +31,17 @@ export type OnyxiaApi = {
         clear: () => void;
     };
 
-    getCatalogs: {
-        (): Promise<Catalog[]>;
+    getCatalogsAndCharts: {
+        (): Promise<{
+            catalogs: Catalog[];
+            chartsByCatalogId: Record<
+                string,
+                {
+                    charts: Chart[];
+                    highlightedChartNames: string[] | undefined;
+                }
+            >;
+        }>;
         clear: () => void;
     };
 

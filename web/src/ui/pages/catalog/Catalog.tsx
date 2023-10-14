@@ -3,7 +3,7 @@ import { useResolveLocalizedString, useLang, useTranslation } from "ui/i18n";
 import { PageHeader, tss } from "ui/theme";
 import { CatalogExplorer } from "./CatalogExplorer";
 import { CatalogLauncher } from "./CatalogLauncher";
-import Link from "@mui/material/Link";
+import MuiLink from "@mui/material/Link";
 import { useCoreState, selectors } from "core";
 import { elementsToSentence } from "ui/tools/elementsToSentence";
 import type { CollapseParams } from "onyxia-ui/CollapsibleWrapper";
@@ -132,7 +132,7 @@ const useStyles = tss.withName({ Catalog }).create({
 const PageHeaderHelpContent = memo((params: { routeName: PageRoute["name"] }) => {
     const { routeName } = params;
 
-    const { selectedCatalog } = useCoreState(selectors.catalogExplorer.selectedCatalog);
+    const { selectedCatalog } = useCoreState(selectors.catalogExplorer.wrap).wrap;
     const { isLauncherReady, packageName, sources } = useCoreState(
         selectors.launcher.headerWrap
     ).headerWrap;
@@ -155,15 +155,15 @@ const PageHeaderHelpContent = memo((params: { routeName: PageRoute["name"] }) =>
                 <>
                     {resolveLocalizedString(selectedCatalog.description)}
                     &nbsp;
-                    <Link
-                        href={selectedCatalog.location}
+                    <MuiLink
+                        href={selectedCatalog.repositoryUrl}
                         target="_blank"
                         underline="hover"
                     >
                         {t("contribute to the catalog", {
                             "catalogName": resolveLocalizedString(selectedCatalog.name)
                         })}
-                    </Link>
+                    </MuiLink>
                 </>
             );
         case "catalogLauncher":
@@ -182,9 +182,9 @@ const PageHeaderHelpContent = memo((params: { routeName: PageRoute["name"] }) =>
                     })}
                     {elementsToSentence({
                         "elements": sources.map(source => (
-                            <Link href={source} target="_blank" underline="hover">
+                            <MuiLink href={source} target="_blank" underline="hover">
                                 {t("here")}
-                            </Link>
+                            </MuiLink>
                         )),
                         "language": lang
                     })}
