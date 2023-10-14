@@ -51,11 +51,13 @@ export const thunks = {
             );
 
             dispatch(actions.initializationStarted());
+            const { isDevModeEnabled } = userConfigsSelectors.userConfigs(getState());
 
-            const { dependencies, sources, getValuesSchemaJson } =
+            const { dependencies, sources, packageVersion, getValuesSchemaJson } =
                 await onyxiaApi.getPackageConfig({
                     catalogId,
-                    packageName
+                    packageName,
+                    isDevModeEnabled
                 });
 
             {
@@ -603,6 +605,7 @@ export const thunks = {
                     catalogLocation,
                     icon,
                     packageName,
+                    packageVersion,
                     sources,
                     formFields,
                     infosAboutWhenFieldsShouldBeHidden,
@@ -662,6 +665,7 @@ export const thunks = {
             await onyxiaApi.launchPackage({
                 "catalogId": state.catalogId,
                 "packageName": state.packageName,
+                "packageVersion": state.packageVersion,
                 "options": formFieldsValueToObject(state.formFields)
             });
 

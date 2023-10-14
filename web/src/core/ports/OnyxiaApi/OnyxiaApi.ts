@@ -35,17 +35,23 @@ export type OnyxiaApi = {
         clear: () => void;
     };
 
-    getPackageConfig: (params: { catalogId: string; packageName: string }) => Promise<{
+    getPackageConfig: (params: {
+        catalogId: string;
+        packageName: string;
+        isDevModeEnabled: boolean;
+    }) => Promise<{
         getValuesSchemaJson: (params: {
             xOnyxiaContext: XOnyxiaContext;
         }) => JSONSchemaObject;
         dependencies: string[];
         sources: string[];
+        packageVersion: string;
     }>;
 
     launchPackage: (params: {
         catalogId: string;
         packageName: string;
+        packageVersion: string;
         options: Record<string, unknown>;
     }) => Promise<void>;
 

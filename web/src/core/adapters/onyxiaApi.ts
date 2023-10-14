@@ -420,26 +420,34 @@ export function createOnyxiaApi(params: {
                 })
                 .catch(onError)
                 .then(() => undefined),
-        "getPackageConfig": ({ catalogId, packageName }) =>
+        "getPackageConfig": ({ catalogId, packageName, isDevModeEnabled }) =>
             axiosInstance
                 .get<
                     {
                         config: JSONSchemaObject;
+                        version: string;
                         sources?: string[];
                         dependencies?: {
                             name: string;
                         }[];
                     }[]
                 >(`/public/catalogs/${catalogId}/charts/${packageName}`)
+                .then(({ data }) => {
+                    // Use latest version if devMode, else use latest stable (assume prerelease versions are split by -, e.g. 1.0.0-alpha1) or fallback to first in list
+                    return isDevModeEnabled
+                        ? data[0]
+                        : data.filter(el => !el.version.includes("-"))[0] || data[0];
+                })
                 .then(
-                    ({ data }) => ({
+                    chartPackage => ({
                         "dependencies":
-                            data[0].dependencies?.map(({ name }) => name) ?? [],
-                        "sources": data[0].sources ?? [],
+                            chartPackage.dependencies?.map(({ name }) => name) ?? [],
+                        "sources": chartPackage.sources ?? [],
+                        "packageVersion": chartPackage.version,
                         "getValuesSchemaJson": ({ xOnyxiaContext }) => {
                             //WARNING: The type is not exactly correct here. JSONSchemaFormFieldDescription["default"] can be undefined.
                             const configCopy = JSON.parse(
-                                JSON.stringify(data[0].config)
+                                JSON.stringify(chartPackage.config)
                             ) as JSONSchemaObject;
 
                             function overrideDefaultsRec(
@@ -702,7 +710,7 @@ export function createOnyxiaApi(params: {
                 axiosInstance.get("/my-lab/app", { params }).catch(onError);
 
             const launchPackage = id<OnyxiaApi["launchPackage"]>(
-                async ({ catalogId, packageName, options }) => {
+                async ({ catalogId, packageName, packageVersion, options }) => {
                     const { serviceId } = getServiceId({
                         packageName,
                         "randomK8sSubdomain": getRandomK8sSubdomain()
@@ -712,6 +720,7 @@ export function createOnyxiaApi(params: {
                         .put(`/my-lab/app`, {
                             catalogId,
                             packageName,
+                            packageVersion,
                             "name": serviceId,
                             options,
                             "dryRun": false
