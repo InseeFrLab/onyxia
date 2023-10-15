@@ -1,9 +1,7 @@
 import { useEffect, useState } from "react";
-import { useLang, useTranslation } from "ui/i18n";
+import { useTranslation } from "ui/i18n";
 import { PageHeader, tss } from "ui/theme";
-import MuiLink from "@mui/material/Link";
 import { useCoreState, selectors, useCoreFunctions, useCoreEvts } from "core";
-import { elementsToSentence } from "ui/tools/elementsToSentence";
 import { useStateRef } from "powerhooks/useStateRef";
 import { useConstCallback } from "powerhooks/useConstCallback";
 import { useDomRect } from "powerhooks/useDomRect";
@@ -75,8 +73,6 @@ export default function Launcher(props: Props) {
         sources
     } = useCoreState(selectors.launcher.wrap).wrap;
 
-    const { lang } = useLang();
-
     const scrollableDivRef = useStateRef<HTMLDivElement>(null);
 
     const {
@@ -104,62 +100,65 @@ export default function Launcher(props: Props) {
 
     const { evtLauncher } = useCoreEvts();
 
-    useEvt(ctx => {
-        evtLauncher.$attach(
-            action => (action.actionName === "initialized" ? [action] : null),
-            ctx,
-            ({ sensitiveConfigurations }) => {
-                auto_launch: {
-                    if (!route.params.autoLaunch) {
-                        break auto_launch;
-                    }
+    useEvt(
+        ctx => {
+            evtLauncher.$attach(
+                action => (action.actionName === "initialized" ? [action] : null),
+                ctx,
+                ({ sensitiveConfigurations }) => {
+                    auto_launch: {
+                        if (!route.params.autoLaunch) {
+                            break auto_launch;
+                        }
 
-                    if (
-                        getIsAutoLaunchDisabled() &&
-                        //If auto launch from myServices the user is launching one of his service, it's safe
-                        getPreviousRouteName() !== "myServices"
-                    ) {
-                        evtAutoLaunchDisabledDialogOpen.post();
-                        break auto_launch;
-                    }
+                        if (
+                            getIsAutoLaunchDisabled() &&
+                            //If auto launch from myServices the user is launching one of his service, it's safe
+                            getPreviousRouteName() !== "myServices"
+                        ) {
+                            evtAutoLaunchDisabledDialogOpen.post();
+                            break auto_launch;
+                        }
 
-                    if (sensitiveConfigurations.length !== 0) {
-                        evtSensitiveConfigurationDialogOpen.post({
-                            sensitiveConfigurations,
-                            "resolveDoProceedToLaunch": doProceedToLaunch => {
-                                if (!doProceedToLaunch) {
-                                    return;
+                        if (sensitiveConfigurations.length !== 0) {
+                            evtSensitiveConfigurationDialogOpen.post({
+                                sensitiveConfigurations,
+                                "resolveDoProceedToLaunch": doProceedToLaunch => {
+                                    if (!doProceedToLaunch) {
+                                        return;
+                                    }
+
+                                    launcher.launch();
                                 }
+                            });
 
-                                launcher.launch();
-                            }
-                        });
+                            break auto_launch;
+                        }
 
-                        break auto_launch;
+                        launcher.launch();
                     }
 
-                    launcher.launch();
+                    hideSplashScreen();
                 }
+            );
 
-                hideSplashScreen();
-            }
-        );
+            evtLauncher.attach(
+                action => action.actionName === "launchStarted",
+                ctx,
+                () => showSplashScreen({ "enableTransparency": true })
+            );
 
-        evtLauncher.attach(
-            action => action.actionName === "launchStarted",
-            ctx,
-            () => showSplashScreen({ "enableTransparency": true })
-        );
-
-        evtLauncher.$attach(
-            action => (action.actionName === "launchCompleted" ? [action] : null),
-            ctx,
-            ({ serviceId }) => {
-                hideSplashScreen();
-                routes.myServices({ "autoLaunchServiceId": serviceId }).push();
-            }
-        );
-    }, []);
+            evtLauncher.$attach(
+                action => (action.actionName === "launchCompleted" ? [action] : null),
+                ctx,
+                ({ serviceId }) => {
+                    hideSplashScreen();
+                    routes.myServices({ "autoLaunchServiceId": serviceId }).push();
+                }
+            );
+        },
+        [evtLauncher]
+    );
 
     const {
         userConfigs: { isCommandBarEnabled }
@@ -260,29 +259,10 @@ export default function Launcher(props: Props) {
                     mainIcon="catalog"
                     title={t("header text1")}
                     helpTitle={t("header text2")}
-                    helpContent={
-                        sources.length === 0 ? (
-                            <></>
-                        ) : (
-                            <>
-                                {t("contribute to the package", {
-                                    packageName
-                                })}
-                                {elementsToSentence({
-                                    "elements": sources.map(source => (
-                                        <MuiLink
-                                            href={source}
-                                            target="_blank"
-                                            underline="hover"
-                                        >
-                                            {t("here")}
-                                        </MuiLink>
-                                    )),
-                                    "language": lang
-                                })}
-                            </>
-                        )
-                    }
+                    helpContent={t("chart sources", {
+                        "chartName": packageName,
+                        "urls": sources
+                    })}
                     helpIcon="sentimentSatisfied"
                     titleCollapseParams={{
                         "behavior": "collapses on scroll",
@@ -397,8 +377,14 @@ export default function Launcher(props: Props) {
 export const { i18n } = declareComponentKeys<
     | "header text1"
     | "header text2"
-    | { K: "contribute to the package"; P: { packageName: string } }
-    | "here"
+    | {
+          K: "chart sources";
+          P: {
+              chartName: string;
+              urls: string[];
+          };
+          R: JSX.Element;
+      }
     | "download as script"
     | {
           K: "api logs help body";

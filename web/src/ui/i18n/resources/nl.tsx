@@ -1,6 +1,7 @@
 import type { Translations } from "../types";
 import MuiLink from "@mui/material/Link";
 import { Markdown } from "onyxia-ui/Markdown";
+import { elementsToSentence } from "ui/tools/elementsToSentence";
 
 export const translations: Translations<"nl"> = {
     /* spell-checker: disable */
@@ -350,33 +351,27 @@ export const translations: Translations<"nl"> = {
             `Toegang krijgen tot de packagebronnen ${packageName} `,
         "here": "hier"
     },
-    "CatalogLauncher": {
-        "no longer bookmarked dialog title": "Niet opgeslagen wijzigingen",
-        "no longer bookmarked dialog body":
-            "Klik opnieuw op het symbool van de bladwijzer om de opgeslagen configuratie bij te werken.",
-        "ok": "Ok",
-        "should overwrite configuration dialog title": "Wilt u het vervangen ?",
-        "should overwrite configuration dialog subtitle": ({ friendlyName }) =>
-            `«${friendlyName}» bestaat al in uw opgeslagen diensten.`,
-        "should overwrite configuration dialog body":
-            "Er bestaat al een geregistreerde dienst met dezelfde naam. Als u deze vervangt, gaat de oorspronkelijke inhoud verloren.",
-        "cancel": "Annuleren",
-        "replace": "Vervangen",
-        "sensitive configuration dialog title":
-            "Deze dienst uitvoeren kan gevaarlijk zijn",
-        "proceed to launch": "Bewust uitvoeren",
-        "auto launch disabled dialog title": "Deze dienst uitvoeren kan gevaarlijk zijn",
-        "auto launch disabled dialog body": (
-            <>
-                <b>WAARSCHUWING</b>: Iemand zou kunnen proberen je te misleiden om een
-                dienst te starten die de integriteit van je namespace in gevaar kan
-                brengen.
-                <br />
-                Controleer de configuratie van de dienst zorgvuldig voordat je deze start.
-                <br />
-                Als je twijfels hebt, neem dan contact op met je beheerder.
-            </>
-        ),
+    "Launcher": {
+        "header text1": "Catalogus van de diensten",
+        "header text2":
+            "Ontdek, start en configureer diensten in slechts een paar klikken.",
+        "chart sources": ({ chartName, urls }) =>
+            urls.length === 0 ? (
+                <></>
+            ) : (
+                <>
+                    Toegang tot de bron{urls.length === 1 ? "" : "nen"} van de grafiek{" "}
+                    {chartName}:&nbsp;
+                    {elementsToSentence({
+                        "elements": urls.map(source => (
+                            <MuiLink href={source} target="_blank" underline="hover">
+                                hier
+                            </MuiLink>
+                        )),
+                        "language": "nl"
+                    })}
+                </>
+            ),
         "download as script": "Downloaden als script",
         "api logs help body": ({
             k8CredentialsHref,
@@ -442,13 +437,42 @@ Voel je vrij om te verkennen en de controle over je Kubernetes-implementaties te
         `}</Markdown>
         )
     },
-    "Footer": {
-        "contribute": "Bijdragen aan het project",
-        "terms of service": "Gebruiksvoorwaarden",
-        "change language": "Taal wijzigen",
-        "dark mode switch": "Schakelaar voor donkere modus"
+    "AutoLaunchDisabledDialog": {
+        "ok": "Ok",
+        "auto launch disabled dialog title": "Deze dienst uitvoeren kan gevaarlijk zijn",
+        "auto launch disabled dialog body": (
+            <>
+                <b>WAARSCHUWING</b>: Iemand zou kunnen proberen je te misleiden om een
+                dienst te starten die de integriteit van je namespace in gevaar kan
+                brengen.
+                <br />
+                Controleer de configuratie van de dienst zorgvuldig voordat je deze start.
+                <br />
+                Als je twijfels hebt, neem dan contact op met je beheerder.
+            </>
+        )
     },
-    "CatalogLauncherMainCard": {
+    "NoLongerBookmarkedDialog": {
+        "no longer bookmarked dialog title": "Niet opgeslagen wijzigingen",
+        "no longer bookmarked dialog body":
+            "Klik opnieuw op het symbool van de bladwijzer om de opgeslagen configuratie bij te werken."
+    },
+    "OverwriteConfigurationConfirmDialog": {
+        "should overwrite configuration dialog title": "Wilt u het vervangen ?",
+        "should overwrite configuration dialog subtitle": ({ friendlyName }) =>
+            `«${friendlyName}» bestaat al in uw opgeslagen diensten.`,
+        "should overwrite configuration dialog body":
+            "Er bestaat al een geregistreerde dienst met dezelfde naam. Als u deze vervangt, gaat de oorspronkelijke inhoud verloren.",
+        "cancel": "Annuleren",
+        "replace": "Vervangen"
+    },
+    "SensitiveConfigurationDialog": {
+        "cancel": "Annuleren",
+        "sensitive configuration dialog title":
+            "Deze dienst uitvoeren kan gevaarlijk zijn",
+        "proceed to launch": "Bewust uitvoeren"
+    },
+    "LauncherMainCard": {
         "card title": "Uw eigen dienst aanmaken",
         "friendly name": "Gepersonaliseerde naam",
         "launch": "Opstarten",
@@ -460,7 +484,7 @@ Voel je vrij om te verkennen en de controle over je Kubernetes-implementaties te
             "De dienst beschikbaar maken voor de medewerkers van de groep",
         "restore all default": "Configuraties opnieuw initialiseren"
     },
-    "CatalogLauncherConfigurationCard": {
+    "LauncherConfigurationCard": {
         "global config": "Globale configuraties",
         "configuration": ({ packageName }) => `Configuratie ${packageName}`,
         "dependency": ({ dependencyName }) => `Afhankelijkheid ${dependencyName}`,
@@ -469,6 +493,12 @@ Voel je vrij om te verkennen en de controle over je Kubernetes-implementaties te
         "mismatching pattern": ({ pattern }) => `Moet ${pattern} naleven`,
         "Invalid YAML Object": "Ongeldig YAML-object",
         "Invalid YAML Array": "Ongeldige YAML-tabel"
+    },
+    "Footer": {
+        "contribute": "Bijdragen aan het project",
+        "terms of service": "Gebruiksvoorwaarden",
+        "change language": "Taal wijzigen",
+        "dark mode switch": "Schakelaar voor donkere modus"
     },
     "MyServices": {
         "text1": "Mijn diensten",

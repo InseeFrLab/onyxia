@@ -1,6 +1,7 @@
 import type { Translations } from "../types";
 import MuiLink from "@mui/material/Link";
 import { Markdown } from "onyxia-ui/Markdown";
+import { elementsToSentence } from "ui/tools/elementsToSentence";
 
 export const translations: Translations<"zh-CN"> = {
     /* spell-checker: disable */
@@ -291,30 +292,25 @@ export const translations: Translations<"zh-CN"> = {
         "contribute to the package": ({ packageName }) => `访问源包 ${packageName} `,
         "here": "此处"
     },
-    "CatalogLauncher": {
-        "no longer bookmarked dialog title": "更改未保存",
-        "no longer bookmarked dialog body": "再次单击书签符号以更新您保存的配置.",
-        "ok": "是",
-        "should overwrite configuration dialog title": "您想更换它吗?",
-        "should overwrite configuration dialog subtitle": ({ friendlyName }) =>
-            `«${friendlyName}» 已经存在于您的记录中`,
-        "should overwrite configuration dialog body":
-            "已存在同名的注册服务. 如果替换它, 原始内容将丢失.",
-        "cancel": "取消",
-        "replace": "取代",
-        "sensitive configuration dialog title": "您想更换它吗?", //TODO
-        "proceed to launch": "继续启动", //TODO
-        "auto launch disabled dialog title": "您想更换它吗?",
-        "auto launch disabled dialog body": (
-            <>
-                <b>警告</b>：有人可能试图欺骗您，启动一个可能威胁到您 namespace
-                完整性的服务。
-                <br />
-                请在启动之前仔细审查服务配置。
-                <br />
-                如有任何疑问，请联系您的管理员。
-            </>
-        ),
+    "Launcher": {
+        "header text1": "服务目录",
+        "header text2": "只需单击几下即可探索、启动和配置服务.",
+        "chart sources": ({ chartName, urls }) =>
+            urls.length === 0 ? (
+                <></>
+            ) : (
+                <>
+                    访问图表 {chartName} 的源{urls.length === 1 ? "" : "们"}：&nbsp;
+                    {elementsToSentence({
+                        "elements": urls.map(source => (
+                            <MuiLink href={source} target="_blank" underline="hover">
+                                这里
+                            </MuiLink>
+                        )),
+                        "language": "zh-CN"
+                    })}
+                </>
+            ),
         "download as script": "下载脚本",
         "api logs help body": ({
             k8CredentialsHref,
@@ -376,13 +372,39 @@ ${
         `}</Markdown>
         )
     },
-    "Footer": {
-        "contribute": "为项目做贡献",
-        "terms of service": "使用条款",
-        "change language": "切换语言",
-        "dark mode switch": "黑暗模式切换" // or maybe 黑暗模式开关
+    "AutoLaunchDisabledDialog": {
+        "ok": "是",
+        "auto launch disabled dialog title": "您想更换它吗?",
+        "auto launch disabled dialog body": (
+            <>
+                <b>警告</b>：有人可能试图欺骗您，启动一个可能威胁到您 namespace
+                完整性的服务。
+                <br />
+                请在启动之前仔细审查服务配置。
+                <br />
+                如有任何疑问，请联系您的管理员。
+            </>
+        )
     },
-    "CatalogLauncherMainCard": {
+    "NoLongerBookmarkedDialog": {
+        "no longer bookmarked dialog title": "更改未保存",
+        "no longer bookmarked dialog body": "再次单击书签符号以更新您保存的配置."
+    },
+    "OverwriteConfigurationConfirmDialog": {
+        "should overwrite configuration dialog title": "您想更换它吗?",
+        "should overwrite configuration dialog subtitle": ({ friendlyName }) =>
+            `«${friendlyName}» 已经存在于您的记录中`,
+        "should overwrite configuration dialog body":
+            "已存在同名的注册服务. 如果替换它, 原始内容将丢失.",
+        "cancel": "取消",
+        "replace": "取代"
+    },
+    "SensitiveConfigurationDialog": {
+        "cancel": "取消",
+        "sensitive configuration dialog title": "您想更换它吗?", //TODO
+        "proceed to launch": "继续启动" //TODO
+    },
+    "LauncherMainCard": {
         "card title": "创建自定义服务",
         "friendly name": "自定义名称",
         "launch": "启动",
@@ -393,7 +415,7 @@ ${
         "share the service - explain": "让其他组员可以访问该服务",
         "restore all default": undefined
     },
-    "CatalogLauncherConfigurationCard": {
+    "LauncherConfigurationCard": {
         "global config": "全局设置",
         "configuration": ({ packageName }) => `配置 ${packageName}`,
         "dependency": ({ dependencyName }) => `依赖服务 ${dependencyName}`,
@@ -401,6 +423,12 @@ ${
         "mismatching pattern": undefined,
         "Invalid YAML Object": undefined,
         "Invalid YAML Array": undefined
+    },
+    "Footer": {
+        "contribute": "为项目做贡献",
+        "terms of service": "使用条款",
+        "change language": "切换语言",
+        "dark mode switch": "黑暗模式切换" // or maybe 黑暗模式开关
     },
     "MyServices": {
         "text1": "我的服务",

@@ -1,6 +1,7 @@
 import MuiLink from "@mui/material/Link";
 import type { Translations } from "../types";
 import { Markdown } from "onyxia-ui/Markdown";
+import { elementsToSentence } from "ui/tools/elementsToSentence";
 
 export const translations: Translations<"fi"> = {
     "Account": {
@@ -345,32 +346,27 @@ export const translations: Translations<"fi"> = {
             `Löydä ${packageName} -paketin lähdekoodit `,
         "here": "täältä"
     },
-    "CatalogLauncher": {
-        "no longer bookmarked dialog title": "Muutokset eivät tallennu",
-        "no longer bookmarked dialog body":
-            "Päivitä tallennettu konfiguraatio napsauttamalla kirjanmerkkikuvaketta uudelleen.",
-        "ok": "Ok",
-        "should overwrite configuration dialog title": "Haluatko korvata sen?",
-        "should overwrite configuration dialog subtitle": ({ friendlyName }) =>
-            `«${friendlyName}» on jo tallennettu tietoihisi.`,
-        "should overwrite configuration dialog body":
-            "Sinulla on jo tallennettu palvelu tällä nimellä. Jos korvaat sen, aiempi konfiguraatio menetetään.",
-        "cancel": "Peruuta",
-        "replace": "Korvaa se",
-        "sensitive configuration dialog title":
-            "Palvelun käynnistäminen voi olla vaarallista",
-        "proceed to launch": "Jatka käynnistämistä",
-        "auto launch disabled dialog title": "Käynnistäminen ei ole mahdollista",
-        "auto launch disabled dialog body": (
-            <>
-                <b>VAROITUS</b>: Joku saattaa yrittää huijata sinua käynnistämään
-                palvelun, joka saattaa vaarantaa namespace-integriteettisi.
-                <br />
-                Tarkista palvelun asetukset huolellisesti ennen sen käynnistämistä.
-                <br />
-                Jos olet epävarma, ota yhteyttä ylläpitäjääsi.
-            </>
-        ),
+    "Launcher": {
+        "header text1": "Palvelukatalogi",
+        "header text2":
+            "Selaa, käynnistä ja määritä palveluita muutamalla napsautuksella.",
+        "chart sources": ({ chartName, urls }) =>
+            urls.length === 0 ? (
+                <></>
+            ) : (
+                <>
+                    Pääsy kaavion {chartName} lähteese{urls.length === 1 ? "en" : "isiin"}
+                    :&nbsp;
+                    {elementsToSentence({
+                        "elements": urls.map(source => (
+                            <MuiLink href={source} target="_blank" underline="hover">
+                                täällä
+                            </MuiLink>
+                        )),
+                        "language": "fi"
+                    })}
+                </>
+            ),
         "download as script": "Lataa skriptinä",
         "api logs help body": ({
             k8CredentialsHref,
@@ -432,13 +428,41 @@ Tutustu vapaasti ja ota hallintaan Kubernetes-julkaisusi!
         `}</Markdown>
         )
     },
-    "Footer": {
-        "contribute": "Osallistu",
-        "terms of service": "Käyttöehdot",
-        "change language": "Vaihda kieli",
-        "dark mode switch": "Tumma tila"
+    "AutoLaunchDisabledDialog": {
+        "auto launch disabled dialog title": "Käynnistäminen ei ole mahdollista",
+        "auto launch disabled dialog body": (
+            <>
+                <b>VAROITUS</b>: Joku saattaa yrittää huijata sinua käynnistämään
+                palvelun, joka saattaa vaarantaa namespace-integriteettisi.
+                <br />
+                Tarkista palvelun asetukset huolellisesti ennen sen käynnistämistä.
+                <br />
+                Jos olet epävarma, ota yhteyttä ylläpitäjääsi.
+            </>
+        ),
+        "ok": "Ok"
     },
-    "CatalogLauncherMainCard": {
+    "NoLongerBookmarkedDialog": {
+        "no longer bookmarked dialog title": "Muutokset eivät tallennu",
+        "no longer bookmarked dialog body":
+            "Päivitä tallennettu konfiguraatio napsauttamalla kirjanmerkkikuvaketta uudelleen."
+    },
+    "OverwriteConfigurationConfirmDialog": {
+        "should overwrite configuration dialog title": "Haluatko korvata sen?",
+        "should overwrite configuration dialog subtitle": ({ friendlyName }) =>
+            `«${friendlyName}» on jo tallennettu tietoihisi.`,
+        "should overwrite configuration dialog body":
+            "Sinulla on jo tallennettu palvelu tällä nimellä. Jos korvaat sen, aiempi konfiguraatio menetetään.",
+        "cancel": "Peruuta",
+        "replace": "Korvaa se"
+    },
+    "SensitiveConfigurationDialog": {
+        "sensitive configuration dialog title":
+            "Palvelun käynnistäminen voi olla vaarallista",
+        "cancel": "Peruuta",
+        "proceed to launch": "Jatka käynnistämistä"
+    },
+    "LauncherMainCard": {
         "card title": "Luo omat palvelusi",
         "friendly name": "Käyttäjäystävällinen nimi",
         "launch": "Käynnistä",
@@ -449,7 +473,7 @@ Tutustu vapaasti ja ota hallintaan Kubernetes-julkaisusi!
         "share the service - explain": "Tee palvelu saataville ryhmän jäsenille",
         "restore all default": "Palauta oletuskonfiguraatiot"
     },
-    "CatalogLauncherConfigurationCard": {
+    "LauncherConfigurationCard": {
         "global config": "Yleinen konfiguraatio",
         "configuration": ({ packageName }) => `${packageName} -konfiguraatiot`,
         "dependency": ({ dependencyName }) => `${dependencyName} -riippuvuus`,
@@ -458,6 +482,12 @@ Tutustu vapaasti ja ota hallintaan Kubernetes-julkaisusi!
         "mismatching pattern": ({ pattern }) => `Täsmätä ${pattern}`,
         "Invalid YAML Object": "Virheellinen YAML-objekti",
         "Invalid YAML Array": "Virheellinen YAML-taulukko"
+    },
+    "Footer": {
+        "contribute": "Osallistu",
+        "terms of service": "Käyttöehdot",
+        "change language": "Vaihda kieli",
+        "dark mode switch": "Tumma tila"
     },
     "MyServices": {
         "text1": "Omat palvelut",

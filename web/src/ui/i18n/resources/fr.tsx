@@ -1,6 +1,7 @@
 import type { Translations } from "../types";
 import MuiLink from "@mui/material/Link";
 import { Markdown } from "onyxia-ui/Markdown";
+import { elementsToSentence } from "ui/tools/elementsToSentence";
 
 export const translations: Translations<"fr"> = {
     /* spell-checker: disable */
@@ -355,33 +356,27 @@ export const translations: Translations<"fr"> = {
             `Accéder aux sources du package ${packageName} `,
         "here": "ici"
     },
-    "CatalogLauncher": {
-        "no longer bookmarked dialog title": "Changements non enregistrés",
-        "no longer bookmarked dialog body":
-            "Cliquer une nouvelle fois sur le symbole marque-page pour mettre à jour votre configuration enregistrée.",
-        "ok": "Ok",
-        "should overwrite configuration dialog title": "Souhaitez-vous le remplacer ?",
-        "should overwrite configuration dialog subtitle": ({ friendlyName }) =>
-            `«${friendlyName}» existe déjà dans vos enregistrements.`,
-        "should overwrite configuration dialog body":
-            "Un service enregistré du même nom existe déjà. Si vous le remplacez, le contenu d'origine sera perdu.",
-        "cancel": "Annuler",
-        "replace": "Remplacer",
-        "sensitive configuration dialog title":
-            "Lancer ce service pourrait être dangereux",
-        "proceed to launch": "Lancer en conscience",
-        "auto launch disabled dialog title": "Lancement automatique désactivé",
-        "auto launch disabled dialog body": (
-            <>
-                <b>ATTENTION</b>: Quelqu'un pourrait essayer de vous tromper en lançant un
-                service qui pourrait compromettre l'intégrité de votre namespace.
-                <br />
-                Veuillez examiner attentivement la configuration du service avant de le
-                lancer.
-                <br />
-                En cas de doute, veuillez contacter votre administrateur.
-            </>
-        ),
+    "Launcher": {
+        "header text1": "Catalogue de services",
+        "header text2":
+            "Explorez, lancez et configurez des services en quelques clics seulement.",
+        "chart sources": ({ chartName, urls }) =>
+            urls.length === 0 ? (
+                <></>
+            ) : (
+                <>
+                    Accéder aux source{urls.length === 1 ? "" : "s"} du chart {chartName}
+                    :&nbsp;
+                    {elementsToSentence({
+                        "elements": urls.map(source => (
+                            <MuiLink href={source} target="_blank" underline="hover">
+                                ici
+                            </MuiLink>
+                        )),
+                        "language": "fr"
+                    })}
+                </>
+            ),
         "download as script": "Télécharger le script",
         "api logs help body": ({
             k8CredentialsHref,
@@ -447,13 +442,42 @@ N'hésitez pas à explorer et à prendre en main vos déploiements Kubernetes !
         `}</Markdown>
         )
     },
-    "Footer": {
-        "contribute": "Contribuer au projet",
-        "terms of service": "Conditions d'utilisation",
-        "change language": "Changer la langue",
-        "dark mode switch": "Interrupteur pour le mode sombre"
+    "AutoLaunchDisabledDialog": {
+        "auto launch disabled dialog title": "Lancement automatique désactivé",
+        "auto launch disabled dialog body": (
+            <>
+                <b>ATTENTION</b>: Quelqu'un pourrait essayer de vous tromper en lançant un
+                service qui pourrait compromettre l'intégrité de votre namespace.
+                <br />
+                Veuillez examiner attentivement la configuration du service avant de le
+                lancer.
+                <br />
+                En cas de doute, veuillez contacter votre administrateur.
+            </>
+        ),
+        "ok": "Ok"
     },
-    "CatalogLauncherMainCard": {
+    "NoLongerBookmarkedDialog": {
+        "no longer bookmarked dialog title": "Changements non enregistrés",
+        "no longer bookmarked dialog body":
+            "Cliquer une nouvelle fois sur le symbole marque-page pour mettre à jour votre configuration enregistrée."
+    },
+    "OverwriteConfigurationConfirmDialog": {
+        "should overwrite configuration dialog title": "Souhaitez-vous le remplacer ?",
+        "should overwrite configuration dialog subtitle": ({ friendlyName }) =>
+            `«${friendlyName}» existe déjà dans vos enregistrements.`,
+        "should overwrite configuration dialog body":
+            "Un service enregistré du même nom existe déjà. Si vous le remplacez, le contenu d'origine sera perdu.",
+        "cancel": "Annuler",
+        "replace": "Remplacer"
+    },
+    "SensitiveConfigurationDialog": {
+        "sensitive configuration dialog title":
+            "Lancer ce service pourrait être dangereux",
+        "proceed to launch": "Lancer en conscience",
+        "cancel": "Annuler"
+    },
+    "LauncherMainCard": {
         "card title": "Créer votre propre service",
         "friendly name": "Nom personnalisé",
         "launch": "Lancer",
@@ -466,7 +490,7 @@ N'hésitez pas à explorer et à prendre en main vos déploiements Kubernetes !
             "Rendre accessible le service aux collaborateurs du groupe",
         "restore all default": "Réinitialiser les configurations"
     },
-    "CatalogLauncherConfigurationCard": {
+    "LauncherConfigurationCard": {
         "global config": "Configurations globales",
         "configuration": ({ packageName }) => `Configuration ${packageName}`,
         "dependency": ({ dependencyName }) => `Dépendance ${dependencyName}`,
@@ -475,6 +499,12 @@ N'hésitez pas à explorer et à prendre en main vos déploiements Kubernetes !
         "mismatching pattern": ({ pattern }) => `Doit respecter ${pattern}`,
         "Invalid YAML Object": "Objet YAML non valide",
         "Invalid YAML Array": "Tableau YAML non valide"
+    },
+    "Footer": {
+        "contribute": "Contribuer au projet",
+        "terms of service": "Conditions d'utilisation",
+        "change language": "Changer la langue",
+        "dark mode switch": "Interrupteur pour le mode sombre"
     },
     "MyServices": {
         "text1": "Mes services",

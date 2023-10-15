@@ -1,6 +1,7 @@
 import type { Translations } from "../types";
 import MuiLink from "@mui/material/Link";
 import { Markdown } from "onyxia-ui/Markdown";
+import { elementsToSentence } from "ui/tools/elementsToSentence";
 
 export const translations: Translations<"de"> = {
     /* spell-checker: disable */
@@ -354,32 +355,27 @@ export const translations: Translations<"de"> = {
             `Zugriff auf den Quellcode des Pakets ${packageName} `,
         "here": "hier"
     },
-    "CatalogLauncher": {
-        "no longer bookmarked dialog title": "Nicht gespeicherte Änderungen",
-        "no longer bookmarked dialog body":
-            "Klicken Sie erneut auf das Lesezeichensymbol, um Ihre gespeicherte Konfiguration zu aktualisieren.",
-        "ok": "Ok",
-        "should overwrite configuration dialog title": "Möchten Sie es ersetzen?",
-        "should overwrite configuration dialog subtitle": ({ friendlyName }) =>
-            `„${friendlyName}“ ist bereits in Ihren Aufzeichnungen vorhanden.`,
-        "should overwrite configuration dialog body":
-            "Ein registrierter Dienst mit dem gleichen Namen existiert bereits. Wenn Sie ihn ersetzen, wird der ursprüngliche Inhalt verloren.",
-        "cancel": "Abbrechen",
-        "replace": "Ersetzen",
-        "sensitive configuration dialog title":
-            "Das Starten dieses Dienstes könnte gefährlich sein",
-        "proceed to launch": "Bewusst starten",
-        "auto launch disabled dialog title": "Automatisches Starten deaktiviert",
-        "auto launch disabled dialog body": (
-            <>
-                <b>WARNUNG</b>: Möglicherweise versucht jemand, Sie dazu zu verleiten, ein
-                zu starten Dienst, der die Integrität Ihres Namespace gefährden könnte.{" "}
-                <br />
-                Bitte überprüfen Sie die Dienstkonfiguration sorgfältig, bevor Sie sie
-                starten. <br />
-                Im Zweifelsfall wenden Sie sich bitte an Ihren Administrator.
-            </>
-        ),
+    "Launcher": {
+        "header text1": "Dienstkatalog",
+        "header text2":
+            "Erkunden, starten und konfigurieren Sie Dienste mit nur wenigen Klicks.",
+        "chart sources": ({ chartName, urls }) =>
+            urls.length === 0 ? (
+                <></>
+            ) : (
+                <>
+                    Auf die Quelle{urls.length === 1 ? "" : "n"} des Charts {chartName}{" "}
+                    zugreifen:&nbsp;
+                    {elementsToSentence({
+                        "elements": urls.map(source => (
+                            <MuiLink href={source} target="_blank" underline="hover">
+                                hier
+                            </MuiLink>
+                        )),
+                        "language": "de"
+                    })}
+                </>
+            ),
         "download as script": "Als Skript herunterladen",
         "api logs help body": ({
             k8CredentialsHref,
@@ -445,13 +441,41 @@ Fühlen Sie sich frei, Ihre Kubernetes-Bereitstellungen zu erkunden und die Kont
         `}</Markdown>
         )
     },
-    "Footer": {
-        "contribute": "Zum Projekt beitragen",
-        "terms of service": "Nutzungsbedingungen",
-        "change language": "Sprache ändern",
-        "dark mode switch": "Umschalter für den Dark Mode"
+    "AutoLaunchDisabledDialog": {
+        "ok": "Ok",
+        "auto launch disabled dialog title": "Automatisches Starten deaktiviert",
+        "auto launch disabled dialog body": (
+            <>
+                <b>WARNUNG</b>: Möglicherweise versucht jemand, Sie dazu zu verleiten, ein
+                zu starten Dienst, der die Integrität Ihres Namespace gefährden könnte.{" "}
+                <br />
+                Bitte überprüfen Sie die Dienstkonfiguration sorgfältig, bevor Sie sie
+                starten. <br />
+                Im Zweifelsfall wenden Sie sich bitte an Ihren Administrator.
+            </>
+        )
     },
-    "CatalogLauncherMainCard": {
+    "NoLongerBookmarkedDialog": {
+        "no longer bookmarked dialog title": "Nicht gespeicherte Änderungen",
+        "no longer bookmarked dialog body":
+            "Klicken Sie erneut auf das Lesezeichensymbol, um Ihre gespeicherte Konfiguration zu aktualisieren."
+    },
+    "OverwriteConfigurationConfirmDialog": {
+        "should overwrite configuration dialog title": "Möchten Sie es ersetzen?",
+        "should overwrite configuration dialog subtitle": ({ friendlyName }) =>
+            `„${friendlyName}“ ist bereits in Ihren Aufzeichnungen vorhanden.`,
+        "should overwrite configuration dialog body":
+            "Ein registrierter Dienst mit dem gleichen Namen existiert bereits. Wenn Sie ihn ersetzen, wird der ursprüngliche Inhalt verloren.",
+        "cancel": "Abbrechen",
+        "replace": "Ersetzen"
+    },
+    "SensitiveConfigurationDialog": {
+        "sensitive configuration dialog title":
+            "Das Starten dieses Dienstes könnte gefährlich sein",
+        "cancel": "Abbrechen",
+        "proceed to launch": "Bewusst starten"
+    },
+    "LauncherMainCard": {
         "card title": "Erstellen Sie Ihren eigenen Dienst",
         "friendly name": "Personalisierter Name",
         "launch": "Starten",
@@ -464,7 +488,7 @@ Fühlen Sie sich frei, Ihre Kubernetes-Bereitstellungen zu erkunden und die Kont
             "Machen Sie den Dienst für Projektmitglieder zugänglich",
         "restore all default": "Konfigurationen zurücksetzen"
     },
-    "CatalogLauncherConfigurationCard": {
+    "LauncherConfigurationCard": {
         "global config": "Globale Konfigurationen",
         "configuration": ({ packageName }) => `Konfiguration ${packageName}`,
         "dependency": ({ dependencyName }) => `Abhängigkeit ${dependencyName}`,
@@ -473,6 +497,12 @@ Fühlen Sie sich frei, Ihre Kubernetes-Bereitstellungen zu erkunden und die Kont
         "mismatching pattern": ({ pattern }) => `Muss ${pattern} entsprechen`,
         "Invalid YAML Object": "Ungültiges YAML-Objekt",
         "Invalid YAML Array": "Ungültiges YAML-Array"
+    },
+    "Footer": {
+        "contribute": "Zum Projekt beitragen",
+        "terms of service": "Nutzungsbedingungen",
+        "change language": "Sprache ändern",
+        "dark mode switch": "Umschalter für den Dark Mode"
     },
     "MyServices": {
         "text1": "Meine Dienste",

@@ -1,6 +1,7 @@
 import MuiLink from "@mui/material/Link";
 import type { Translations } from "../types";
 import { Markdown } from "onyxia-ui/Markdown";
+import { elementsToSentence } from "ui/tools/elementsToSentence";
 
 export const translations: Translations<"no"> = {
     "Account": {
@@ -349,32 +350,26 @@ export const translations: Translations<"no"> = {
             `Finn kildekoden for ${packageName} pakken `,
         "here": "her"
     },
-    "CatalogLauncher": {
-        "no longer bookmarked dialog title": "Endringene dine vil ikke bli lagret",
-        "no longer bookmarked dialog body":
-            "Klikk på bokmerkeikonet igjen for å oppdatere den lagrede konfigurasjonen din",
-        "ok": "Ok",
-        "should overwrite configuration dialog title": "Ønsker du å erstatte den?",
-        "should overwrite configuration dialog subtitle": ({ friendlyName }) =>
-            `«${friendlyName}» finnes allerede i lagringen din.`,
-        "should overwrite configuration dialog body":
-            "Du har allerede en lagret tjeneste med dette navnet. Hvis du erstatter den, vil den forrige konfigurasjonen gå tapt",
-        "cancel": "Avbryt",
-        "replace": "Erstatt den",
-        "sensitive configuration dialog title":
-            "Å starte denne tjenesten kan være farlig",
-        "proceed to launch": "Fortsett til oppstart",
-        "auto launch disabled dialog title": "Tjenesten er ikke startet",
-        "auto launch disabled dialog body": (
-            <>
-                <b>ADVARSEL</b>: Noen kan prøve å lure deg til å starte en tjeneste som
-                kan kompromittere integriteten til ditt namespace.
-                <br />
-                Vennligst gjennomgå tjenestekonfigurasjonen nøye før du starter den.
-                <br />
-                Hvis du er i tvil, vennligst kontakt din administrator.
-            </>
-        ),
+    "Launcher": {
+        "header text1": "Tjenestekatalog",
+        "header text2": "Utforsk, start og konfigurer tjenester med noen få klikk.",
+        "chart sources": ({ chartName, urls }) =>
+            urls.length === 0 ? (
+                <></>
+            ) : (
+                <>
+                    Tilgang til kild{urls.length === 1 ? "en" : "ene"} for diagrammet{" "}
+                    {chartName}:&nbsp;
+                    {elementsToSentence({
+                        "elements": urls.map(source => (
+                            <MuiLink href={source} target="_blank" underline="hover">
+                                her
+                            </MuiLink>
+                        )),
+                        "language": "no"
+                    })}
+                </>
+            ),
         "download as script": "Last ned som skript",
         "api logs help body": ({
             k8CredentialsHref,
@@ -440,13 +435,41 @@ Føl deg fri til å utforske og ta kontroll over dine Kubernetes-implementeringe
         `}</Markdown>
         )
     },
-    "Footer": {
-        "contribute": "Bidra",
-        "terms of service": "Vilkår for bruk",
-        "change language": "Bytt språk",
-        "dark mode switch": "Mørk modus"
+    "AutoLaunchDisabledDialog": {
+        "ok": "Ok",
+        "auto launch disabled dialog title": "Tjenesten er ikke startet",
+        "auto launch disabled dialog body": (
+            <>
+                <b>ADVARSEL</b>: Noen kan prøve å lure deg til å starte en tjeneste som
+                kan kompromittere integriteten til ditt namespace.
+                <br />
+                Vennligst gjennomgå tjenestekonfigurasjonen nøye før du starter den.
+                <br />
+                Hvis du er i tvil, vennligst kontakt din administrator.
+            </>
+        )
     },
-    "CatalogLauncherMainCard": {
+    "NoLongerBookmarkedDialog": {
+        "no longer bookmarked dialog title": "Endringene dine vil ikke bli lagret",
+        "no longer bookmarked dialog body":
+            "Klikk på bokmerkeikonet igjen for å oppdatere den lagrede konfigurasjonen din"
+    },
+    "OverwriteConfigurationConfirmDialog": {
+        "should overwrite configuration dialog title": "Ønsker du å erstatte den?",
+        "should overwrite configuration dialog subtitle": ({ friendlyName }) =>
+            `«${friendlyName}» finnes allerede i lagringen din.`,
+        "should overwrite configuration dialog body":
+            "Du har allerede en lagret tjeneste med dette navnet. Hvis du erstatter den, vil den forrige konfigurasjonen gå tapt",
+        "cancel": "Avbryt",
+        "replace": "Erstatt den"
+    },
+    "SensitiveConfigurationDialog": {
+        "cancel": "Avbryt",
+        "sensitive configuration dialog title":
+            "Å starte denne tjenesten kan være farlig",
+        "proceed to launch": "Fortsett til oppstart"
+    },
+    "LauncherMainCard": {
         "card title": "Opprett dine personlige tjenester",
         "friendly name": "Vennlig navn",
         "launch": "Start",
@@ -458,7 +481,7 @@ Føl deg fri til å utforske og ta kontroll over dine Kubernetes-implementeringe
             "Gjør tjenesten tilgjengelig for prosjektmedlemmene",
         "restore all default": "Gjenopprett standardkonfigurasjoner"
     },
-    "CatalogLauncherConfigurationCard": {
+    "LauncherConfigurationCard": {
         "global config": "Global konfigurasjon",
         "configuration": ({ packageName }) => `${packageName} konfigurasjoner`,
         "dependency": ({ dependencyName }) => `${dependencyName} avhengighet`,
@@ -467,6 +490,12 @@ Føl deg fri til å utforske og ta kontroll over dine Kubernetes-implementeringe
         "mismatching pattern": ({ pattern }) => `Bør samsvare med ${pattern}`,
         "Invalid YAML Object": "Ugyldig YAML-objekt",
         "Invalid YAML Array": "Ugyldig YAML-array"
+    },
+    "Footer": {
+        "contribute": "Bidra",
+        "terms of service": "Vilkår for bruk",
+        "change language": "Bytt språk",
+        "dark mode switch": "Mørk modus"
     },
     "MyServices": {
         "text1": "Mine tjenester",

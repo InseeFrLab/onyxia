@@ -1,6 +1,7 @@
 import MuiLink from "@mui/material/Link";
 import { Markdown } from "onyxia-ui/Markdown";
 import type { Translations } from "../types";
+import { elementsToSentence } from "ui/tools/elementsToSentence";
 
 export const translations: Translations<"en"> = {
     "Account": {
@@ -349,32 +350,26 @@ export const translations: Translations<"en"> = {
             `Find the sources of the ${packageName} package `,
         "here": "here"
     },
-    "CatalogLauncher": {
-        "no longer bookmarked dialog title": "Your changes wont be saved",
-        "no longer bookmarked dialog body":
-            "Click on the bookmark icon again to update your saved configuration",
-        "ok": "Ok",
-        "should overwrite configuration dialog title": "Would you like to replace it?",
-        "should overwrite configuration dialog subtitle": ({ friendlyName }) =>
-            `«${friendlyName}» already exists in your store.`,
-        "should overwrite configuration dialog body":
-            "You already have a saved service with this name. If you replace it the previous configuration will be lost",
-        "cancel": "Annuler",
-        "replace": "Replace it",
-        "sensitive configuration dialog title": "Launching this service may be dangerous",
-        "proceed to launch": "Proceed to launch",
-        "auto launch disabled dialog title":
-            "Auto launch feature disabled on this Onyxia instance",
-        "auto launch disabled dialog body": (
-            <>
-                <b>WARNING</b>: Someone might be trying to trick you into launching a
-                service that might compromise your namespace integrity.
-                <br />
-                Please carefully review the service configuration before launching it.
-                <br />
-                If you have any doubt, please contact your administrator.
-            </>
-        ),
+    "Launcher": {
+        "header text1": "Services catalog",
+        "header text2": "Explore, launch and configure services with just a few clicks.",
+        "chart sources": ({ chartName, urls }) =>
+            urls.length === 0 ? (
+                <></>
+            ) : (
+                <>
+                    Access the source{urls.length === 1 ? "" : "s"} of the chart{" "}
+                    {chartName}:&nbsp;
+                    {elementsToSentence({
+                        "elements": urls.map(source => (
+                            <MuiLink href={source} target="_blank" underline="hover">
+                                here
+                            </MuiLink>
+                        )),
+                        "language": "en"
+                    })}
+                </>
+            ),
         "download as script": "Download as script",
         "api logs help body": ({
             k8CredentialsHref,
@@ -436,13 +431,41 @@ Feel free to explore and take charge of your Kubernetes deployments!
         `}</Markdown>
         )
     },
-    "Footer": {
-        "contribute": "Contribute",
-        "terms of service": "Terms of service",
-        "change language": "Change language",
-        "dark mode switch": "Dark mode switch"
+    "AutoLaunchDisabledDialog": {
+        "auto launch disabled dialog title":
+            "Auto launch feature disabled on this Onyxia instance",
+        "auto launch disabled dialog body": (
+            <>
+                <b>WARNING</b>: Someone might be trying to trick you into launching a
+                service that might compromise your namespace integrity.
+                <br />
+                Please carefully review the service configuration before launching it.
+                <br />
+                If you have any doubt, please contact your administrator.
+            </>
+        ),
+        "ok": "Ok"
     },
-    "CatalogLauncherMainCard": {
+    "NoLongerBookmarkedDialog": {
+        "no longer bookmarked dialog title": "Your changes wont be saved",
+        "no longer bookmarked dialog body":
+            "Click on the bookmark icon again to update your saved configuration"
+    },
+    "OverwriteConfigurationConfirmDialog": {
+        "should overwrite configuration dialog title": "Would you like to replace it?",
+        "should overwrite configuration dialog subtitle": ({ friendlyName }) =>
+            `«${friendlyName}» already exists in your store.`,
+        "should overwrite configuration dialog body":
+            "You already have a saved service with this name. If you replace it the previous configuration will be lost",
+        "cancel": "Annuler",
+        "replace": "Replace it"
+    },
+    "SensitiveConfigurationDialog": {
+        "sensitive configuration dialog title": "Launching this service may be dangerous",
+        "cancel": "Annuler",
+        "proceed to launch": "Proceed to launch"
+    },
+    "LauncherMainCard": {
         "card title": "Create your personal services",
         "friendly name": "Friendly name",
         "launch": "Launch",
@@ -453,7 +476,7 @@ Feel free to explore and take charge of your Kubernetes deployments!
         "share the service - explain": "Make the service accessible to the group members",
         "restore all default": "Restore default configurations"
     },
-    "CatalogLauncherConfigurationCard": {
+    "LauncherConfigurationCard": {
         "global config": "Global configuration",
         "configuration": ({ packageName }) => `${packageName} configurations`,
         "dependency": ({ dependencyName }) => `${dependencyName} dependency`,
@@ -462,6 +485,12 @@ Feel free to explore and take charge of your Kubernetes deployments!
         "mismatching pattern": ({ pattern }) => `Should match ${pattern}`,
         "Invalid YAML Object": "Invalid YAML Object",
         "Invalid YAML Array": "Invalid YAML Array"
+    },
+    "Footer": {
+        "contribute": "Contribute",
+        "terms of service": "Terms of service",
+        "change language": "Change language",
+        "dark mode switch": "Dark mode switch"
     },
     "MyServices": {
         "text1": "My Services",
