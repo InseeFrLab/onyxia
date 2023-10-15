@@ -24,12 +24,12 @@ export namespace State {
     export type SearchResult = {
         catalogId: string;
         chartName: string;
-        nameHighlightedIndexes: number[];
-        descriptionHighlightedIndexes: number[];
+        chartNameHighlightedIndexes: number[];
+        chartDescriptionHighlightedIndexes: number[];
     };
 }
 
-export const name = "catalogExplorer";
+export const name = "catalog";
 
 export const { reducer, actions } = createSlice({
     name,

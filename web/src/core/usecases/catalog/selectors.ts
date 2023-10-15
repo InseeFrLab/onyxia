@@ -50,13 +50,16 @@ const catalogs = createSelector(readyState, state => {
     return state.catalogs;
 });
 
+export type StringWithHighlights = {
+    charArray: string[];
+    highlightedIndexes: number[];
+};
+
 export type ChartCardData = {
     catalogId: string;
-    catalogName: LocalizedString;
-    name: string;
-    nameHighlightedIndexes: number[];
-    description: string;
-    descriptionHighlightedIndexes: number[];
+    chartName: string;
+    chartNameWithHighlights: StringWithHighlights;
+    chartDescriptionWithHighlights: StringWithHighlights;
     moreInfosUrl: string | undefined;
     iconUrl: string | undefined;
 };
@@ -84,31 +87,33 @@ const filteredCharts = createSelector(
 
         function chartToCardData(params: {
             chart: Chart;
-            nameHighlightedIndexes: number[];
-            descriptionHighlightedIndexes: number[];
+            chartNameHighlightedIndexes: number[];
+            chartDescriptionHighlightedIndexes: number[];
             catalogId: string;
-            catalogName: LocalizedString;
         }): ChartCardData {
             const {
                 chart,
-                nameHighlightedIndexes,
-                descriptionHighlightedIndexes,
-                catalogId,
-                catalogName
+                chartNameHighlightedIndexes,
+                chartDescriptionHighlightedIndexes,
+                catalogId
             } = params;
 
             const {
-                name,
-                versions: [{ description, home, icon }]
+                name: chartName,
+                versions: [{ description: chartDescription, home, icon }]
             } = chart;
 
             return {
                 catalogId,
-                catalogName,
-                name,
-                nameHighlightedIndexes,
-                description,
-                descriptionHighlightedIndexes,
+                chartName,
+                "chartNameWithHighlights": {
+                    "charArray": chartName.normalize().split(""),
+                    "highlightedIndexes": chartNameHighlightedIndexes
+                },
+                "chartDescriptionWithHighlights": {
+                    "charArray": chartDescription.normalize().split(""),
+                    "highlightedIndexes": chartDescriptionHighlightedIndexes
+                },
                 "moreInfosUrl": home,
                 "iconUrl": icon
             };
@@ -118,28 +123,25 @@ const filteredCharts = createSelector(
             ? chartsByCatalogId[selectedCatalogId]!.map(chart =>
                   chartToCardData({
                       chart,
-                      "nameHighlightedIndexes": [],
-                      "descriptionHighlightedIndexes": [],
-                      "catalogId": selectedCatalogId,
-                      "catalogName": catalogs.find(({ id }) => id === selectedCatalogId)!
-                          .name
+                      "chartNameHighlightedIndexes": [],
+                      "chartDescriptionHighlightedIndexes": [],
+                      "catalogId": selectedCatalogId
                   })
               )
             : searchResults.map(
                   ({
                       catalogId,
                       chartName,
-                      nameHighlightedIndexes,
-                      descriptionHighlightedIndexes
+                      chartNameHighlightedIndexes,
+                      chartDescriptionHighlightedIndexes
                   }) =>
                       chartToCardData({
                           "chart": chartsByCatalogId[catalogId]!.find(
                               chart => chart.name === chartName
                           )!,
-                          nameHighlightedIndexes,
-                          descriptionHighlightedIndexes,
-                          catalogId,
-                          "catalogName": catalogs.find(({ id }) => id === catalogId)!.name
+                          chartNameHighlightedIndexes,
+                          chartDescriptionHighlightedIndexes,
+                          catalogId
                       })
               );
     }

@@ -5,7 +5,7 @@ import { actions, name, type State } from "./state";
 import { assert } from "tsafe/assert";
 import { is } from "tsafe/is";
 import memoize from "memoizee";
-import { Chart } from "core/ports/OnyxiaApi";
+import type { Chart, Catalog } from "core/ports/OnyxiaApi";
 import FlexSearch from "flexsearch";
 import { getMatchPositions } from "core/tools/highlightMatches";
 
@@ -88,7 +88,7 @@ export const thunks = {
 
             assert(state.stateDescription === "ready");
 
-            const { flexSearch } = getFlexSearch(state.chartsByCatalogId);
+            const { flexSearch } = getFlexSearch(state.catalogs, state.chartsByCatalogId);
 
             dispatch(
                 actions.searchResultChanged({
@@ -102,7 +102,7 @@ const { getContext } = createUsecaseContextApi(() => {
     const { waitForDebounce } = waitForDebounceFactory({ "delay": 500 });
 
     const getFlexSearch = memoize(
-        (chartsByCatalogId: Record<string, Chart[]>) => {
+        (catalogs: Catalog[], chartsByCatalogId: Record<string, Chart[]>) => {
             const index = new FlexSearch.Document<{
                 catalogIdChartName: `${string}/${string}`;
                 chartNameAndDescription: `${string} ${string}`;
@@ -120,14 +120,19 @@ const { getContext } = createUsecaseContextApi(() => {
                 }
             });
 
-            Object.entries(chartsByCatalogId).forEach(([catalogId, charts]) =>
-                charts.forEach(chart => {
-                    index.add({
-                        "catalogIdChartName": `${catalogId}/${chart.name}`,
-                        "chartNameAndDescription": `${chart.name} ${chart.versions[0].description}`
-                    });
-                })
-            );
+            Object.entries(chartsByCatalogId)
+                .filter(
+                    ([catalogId]) =>
+                        !catalogs.find(({ id }) => id === catalogId)!.isHidden
+                )
+                .forEach(([catalogId, charts]) =>
+                    charts.forEach(chart => {
+                        index.add({
+                            "catalogIdChartName": `${catalogId}/${chart.name}`,
+                            "chartNameAndDescription": `${chart.name} ${chart.versions[0].description}`
+                        });
+                    })
+                );
 
             async function flexSearch(params: {
                 search: string;
@@ -155,11 +160,11 @@ const { getContext } = createUsecaseContextApi(() => {
                         return {
                             catalogId,
                             chartName,
-                            "nameHighlightedIndexes": getMatchPositions({
+                            "chartNameHighlightedIndexes": getMatchPositions({
                                 search,
                                 "text": chartName
                             }),
-                            "descriptionHighlightedIndexes": getMatchPositions({
+                            "chartDescriptionHighlightedIndexes": getMatchPositions({
                                 search,
                                 "text": chartsByCatalogId[catalogId]!.find(
                                     chart => chart.name === chartName

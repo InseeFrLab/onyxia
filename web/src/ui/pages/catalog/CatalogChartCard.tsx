@@ -2,58 +2,64 @@ import { memo } from "react";
 import { tss, Text } from "ui/theme";
 import { RoundLogo } from "ui/shared/RoundLogo";
 import { Button } from "ui/theme";
-import { useTranslation, type LocalizedString, useResolveLocalizedString } from "ui/i18n";
-import { capitalize } from "tsafe/capitalize";
+import { useTranslation } from "ui/i18n";
 import { declareComponentKeys } from "i18nifty";
+import { symToStr } from "tsafe/symToStr";
+import {
+    renderStringWithHighlights,
+    type StringWithHighlights
+} from "ui/tools/renderStringWithHighlights";
 
 export type Props = {
     className?: string;
-    packageIconUrl?: string;
-    packageName: string;
-    packageDescription: LocalizedString;
-    onRequestLaunch(): void;
-    packageHomeUrl: string | undefined;
+    chartNameWithHighlights: StringWithHighlights;
+    chartDescriptionWithHighlights: StringWithHighlights;
+    moreInfosUrl: string | undefined;
+    iconUrl: string | undefined;
+    onRequestLaunch: () => void;
 };
 
-export const CatalogExplorerCard = memo((props: Props) => {
+export const CatalogChartCard = memo((props: Props) => {
     const {
         className,
-        packageIconUrl,
-        packageName,
-        packageDescription,
-        packageHomeUrl,
+        chartNameWithHighlights,
+        chartDescriptionWithHighlights,
+        moreInfosUrl,
+        iconUrl,
         onRequestLaunch
     } = props;
 
     const { classes, cx } = useStyles();
 
-    const { t } = useTranslation({ CatalogExplorerCard });
-
-    const { resolveLocalizedString } = useResolveLocalizedString({
-        "labelWhenMismatchingLanguage": true
-    });
+    const { t } = useTranslation({ CatalogChartCard });
 
     return (
         <div className={cx(classes.root, className)}>
             <div className={classes.aboveDivider}>
-                {packageIconUrl !== undefined && (
-                    <RoundLogo url={packageIconUrl} size="large" />
-                )}
+                {iconUrl !== undefined && <RoundLogo url={iconUrl} size="large" />}
                 <Text className={classes.title} typo="object heading">
-                    {capitalize(packageName)}
+                    {renderStringWithHighlights({
+                        "stringWithHighlights": chartNameWithHighlights,
+                        "doCapitalize": true,
+                        "highlightedCharClassName": classes.highlightedChar
+                    })}
                 </Text>
             </div>
             <div className={classes.belowDivider}>
                 <div className={classes.body}>
                     <Text typo="body 1" className={classes.bodyTypo}>
-                        {resolveLocalizedString(packageDescription)}
+                        {renderStringWithHighlights({
+                            "stringWithHighlights": chartDescriptionWithHighlights,
+                            "doCapitalize": true,
+                            "highlightedCharClassName": classes.highlightedChar
+                        })}
                     </Text>
                 </div>
                 <div className={classes.buttonsWrapper}>
-                    {packageHomeUrl !== undefined && (
+                    {moreInfosUrl !== undefined && (
                         <Button
                             className={classes.learnMoreButton}
-                            href={packageHomeUrl}
+                            href={moreInfosUrl}
                             variant="ternary"
                         >
                             {t("learn more")}
@@ -68,12 +74,14 @@ export const CatalogExplorerCard = memo((props: Props) => {
     );
 });
 
+CatalogChartCard.displayName = symToStr({ CatalogChartCard });
+
 export const { i18n } = declareComponentKeys<"learn more" | "launch">()({
-    CatalogExplorerCard
+    CatalogChartCard
 });
 
 const useStyles = tss
-    .withName({ CatalogExplorerCard })
+    .withName({ CatalogChartCard })
     .withNestedSelectors<"learnMoreButton">()
     .create(({ theme, classes }) => ({
         "root": {
@@ -124,5 +132,9 @@ const useStyles = tss
         "learnMoreButton": {
             "marginRight": theme.spacing(2),
             "visibility": "hidden"
+        },
+        "highlightedChar": {
+            "color": theme.colors.useCases.typography.textFocus,
+            "fontWeight": "bold"
         }
     }));

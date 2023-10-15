@@ -1,7 +1,7 @@
 import { createRouter, defineRoute, param, createGroup, type Route } from "type-route";
 
 export const routeDefs = {
-    "catalogExplorer": defineRoute(
+    "catalog": defineRoute(
         {
             "catalogId": param.path.optional.string,
             "search": param.query.optional.string.default("")

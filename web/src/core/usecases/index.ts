@@ -1,4 +1,4 @@
-import * as catalogExplorer from "./catalogExplorer";
+import * as catalog from "./catalog";
 import * as deploymentRegion from "./deploymentRegion";
 import * as fileExplorer from "./fileExplorer";
 import * as secretExplorer from "./secretExplorer";
@@ -16,7 +16,7 @@ import * as vaultCredentials from "./vaultCredentials";
 import * as userAccountManagement from "./userAccountManagement";
 
 export const usecases = {
-    catalogExplorer,
+    catalog,
     deploymentRegion,
     fileExplorer,
     secretExplorer,
