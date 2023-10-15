@@ -42,8 +42,6 @@ export type ComponentKey =
     | typeof import("ui/pages/account/tabs/AccountKubernetesTab").i18n
     | typeof import("ui/pages/account/tabs/AccountUserInterfaceTab").i18n
     | typeof import("ui/pages/account/tabs/AccountVaultTab").i18n
-    | typeof import("ui/pages/catalog/CatalogExplorer/CatalogExplorerCards").i18n
-    | typeof import("ui/pages/catalog/CatalogExplorer/CatalogExplorerCards/CatalogExplorerCard").i18n
     | typeof import("ui/pages/catalog/Catalog").i18n
     | typeof import("ui/App/Footer").i18n
     | typeof import("ui/pages/launcher/Launcher").i18n

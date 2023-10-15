@@ -1,5 +1,6 @@
 import * as account from "./account";
 import * as catalog from "./catalog";
+import * as launcher from "./launcher";
 import * as home from "./home";
 import * as myFiles from "./myFiles";
 import * as mySecrets from "./mySecrets";
@@ -14,6 +15,7 @@ import type { RouterOpts } from "type-route";
 export const pages = {
     account,
     catalog,
+    launcher,
     home,
     myFiles,
     mySecrets,
@@ -31,5 +33,5 @@ objectKeys(pages).forEach(pageName =>
 );
 
 export const routerOpts = {
-    "queryStringSerializer": catalog.queryStringSerializer
+    "queryStringSerializer": launcher.queryStringSerializer
 } satisfies RouterOpts;

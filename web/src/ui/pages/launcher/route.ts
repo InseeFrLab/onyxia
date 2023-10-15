@@ -146,9 +146,4 @@ export const routeGroup = createGroup(Object.values(createRouter(routeDefs).rout
 
 export type PageRoute = Route<typeof routeGroup>;
 
-export const getDoRequireUserLoggedIn: (route: PageRoute) => boolean = route => {
-    switch (route.name) {
-        case "launcher":
-            return true;
-    }
-};
+export const getDoRequireUserLoggedIn: (route: PageRoute) => boolean = () => true;

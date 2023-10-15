@@ -1,12 +1,14 @@
-import { createI18nApi, declareComponentKeys } from "i18nifty";
+import {
+    createI18nApi,
+    declareComponentKeys,
+    LocalizedString as GenericLocalizedString
+} from "i18nifty";
 import { languages, fallbackLanguage, Language } from "./types";
 import { ComponentKey } from "./types";
 import { assert, type Equals } from "tsafe/assert";
 import { statefulObservableToStatefulEvt } from "powerhooks/tools/StatefulObservable/statefulObservableToStatefulEvt";
 import { z } from "zod";
 export { declareComponentKeys };
-
-export type LocalizedString = Parameters<typeof resolveLocalizedString>[0];
 
 export const {
     useTranslation,
@@ -29,6 +31,8 @@ export const {
         "de": () => import("./resources/de").then(({ translations }) => translations)
     }
 );
+
+export type LocalizedString = GenericLocalizedString<Language>;
 
 export const evtLang = statefulObservableToStatefulEvt({
     "statefulObservable": $lang

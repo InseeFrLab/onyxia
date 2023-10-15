@@ -177,9 +177,9 @@ export default function Launcher(props: Props) {
             restorablePackageConfig;
 
         routes
-            .catalogLauncher({
+            .launcher({
                 catalogId,
-                packageName,
+                "chartName": packageName,
                 formFieldsValueDifferentFromDefault,
                 "autoLaunch": route.params.autoLaunch
             })
