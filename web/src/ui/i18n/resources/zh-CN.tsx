@@ -268,29 +268,36 @@ export const translations: Translations<"zh-CN"> = {
         "cardButton2": "加入社区",
         "cardButton3": "查看数据"
     },
-    "CatalogExplorerCard": {
-        "launch": "启动",
-        "learn more": "了解更多"
-    },
-    "CatalogExplorerCards": {
+    "Catalog": {
+        "header text1": "服务目录",
+        "header text2": "只需单击几下即可探索、启动和配置服务.",
+        "header help": ({ catalogName, catalogDescription, repositoryUrl }) => (
+            <>
+                您正在浏览 Helm Chart 仓库{" "}
+                <MuiLink href={repositoryUrl} target="_blank">
+                    {catalogName}
+                </MuiLink>
+                ：{catalogDescription}
+            </>
+        ),
+        "here": "此处",
         "show more": "显示所有",
         "no service found": "没有找到服务",
         "no result found": ({ forWhat }) => `没有找到关于 ${forWhat} 的结果`,
         "check spelling": "检查服务名称是否拼写正确或尝试扩大您的搜索范围",
         "go back": "返回主要服务",
-        "main services": "主要服务",
-        "all services": "所有服务",
         "search results": "搜索结果",
         "search": "收索服务"
     },
-    "Catalog": {
-        "header text1": "服务目录",
-        "header text2": "只需单击几下即可探索、启动和配置服务.",
-        "contribute to the catalog": ({ catalogName }) => (
-            <>为目录 {catalogName} 做贡献</>
-        ),
-        "contribute to the package": ({ packageName }) => `访问源包 ${packageName} `,
-        "here": "此处"
+    "CatalogChartCard": {
+        "launch": "启动",
+        "learn more": "了解更多"
+    },
+    "CatalogNoSearchMatches": {
+        "no service found": "没有找到服务",
+        "no result found": ({ forWhat }) => `没有找到关于 ${forWhat} 的结果`,
+        "check spelling": "检查服务名称是否拼写正确或尝试扩大您的搜索范围",
+        "go back": "返回主要服务"
     },
     "Launcher": {
         "header text1": "服务目录",

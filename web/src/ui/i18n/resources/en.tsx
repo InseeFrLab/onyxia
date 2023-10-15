@@ -325,30 +325,36 @@ export const translations: Translations<"en"> = {
         "cardButton2": "Join the community",
         "cardButton3": "Consult the data"
     },
-    "CatalogExplorerCard": {
-        "launch": "Launch",
-        "learn more": "Learn more"
-    },
-    "CatalogExplorerCards": {
+    "Catalog": {
+        "header text1": "Services catalog",
+        "header text2": "Explore, launch and configure services with just a few clicks.",
+        "header help": ({ catalogName, catalogDescription, repositoryUrl }) => (
+            <>
+                You are exploring Helm Chart Repository{" "}
+                <MuiLink href={repositoryUrl} target="_blank">
+                    {catalogName}
+                </MuiLink>
+                : {catalogDescription}
+            </>
+        ),
+        "here": "here",
         "show more": "Show more",
         "no service found": "No service found",
         "no result found": ({ forWhat }) => `No result found for ${forWhat}`,
         "check spelling": "Please check your spelling or try widening your search.",
         "go back": "Back to main services",
-        "main services": "Main services",
-        "all services": "All services",
         "search results": "Search result",
         "search": "Search"
     },
-    "Catalog": {
-        "header text1": "Services catalog",
-        "header text2": "Explore, launch and configure services with just a few clicks.",
-        "contribute to the catalog": ({ catalogName }) => (
-            <>Contribute to the {catalogName} catalog</>
-        ),
-        "contribute to the package": ({ packageName }) =>
-            `Find the sources of the ${packageName} package `,
-        "here": "here"
+    "CatalogChartCard": {
+        "launch": "Launch",
+        "learn more": "Learn more"
+    },
+    "CatalogNoSearchMatches": {
+        "no service found": "No service found",
+        "no result found": ({ forWhat }) => `No result found for ${forWhat}`,
+        "check spelling": "Please check your spelling or try widening your search.",
+        "go back": "Back to main services"
     },
     "Launcher": {
         "header text1": "Services catalog",

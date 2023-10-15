@@ -320,31 +320,37 @@ export const translations: Translations<"fi"> = {
         "cardButton2": "Liity yhteisöön",
         "cardButton3": "Selaa tietoja"
     },
-    "CatalogExplorerCard": {
-        "launch": "Käynnistä",
-        "learn more": "Lisätietoja"
-    },
-    "CatalogExplorerCards": {
+    "Catalog": {
+        "header text1": "Palvelukatalogi",
+        "header text2":
+            "Selaa, käynnistä ja määritä palveluita muutamalla napsautuksella.",
+        "header help": ({ catalogName, catalogDescription, repositoryUrl }) => (
+            <>
+                Olet tutkimassa Helm Chart Repositorya{" "}
+                <MuiLink href={repositoryUrl} target="_blank">
+                    {catalogName}
+                </MuiLink>
+                : {catalogDescription}
+            </>
+        ),
+        "here": "täältä",
         "show more": "Näytä enemmän",
         "no service found": "Palvelua ei löytynyt",
         "no result found": ({ forWhat }) => `Tuloksia ei löytynyt haulle ${forWhat}`,
         "check spelling": "Tarkista kirjoitus tai laajenna hakua.",
         "go back": "Palaa pääpalveluihin",
-        "main services": "Pääpalvelut",
-        "all services": "Kaikki palvelut",
         "search results": "Hakutulokset",
         "search": "Haku"
     },
-    "Catalog": {
-        "header text1": "Palvelukatalogi",
-        "header text2":
-            "Selaa, käynnistä ja määritä palveluita muutamalla napsautuksella.",
-        "contribute to the catalog": ({ catalogName }) => (
-            <>Osallistu {catalogName} -katalogiin</>
-        ),
-        "contribute to the package": ({ packageName }) =>
-            `Löydä ${packageName} -paketin lähdekoodit `,
-        "here": "täältä"
+    "CatalogChartCard": {
+        "launch": "Käynnistä",
+        "learn more": "Lisätietoja"
+    },
+    "CatalogNoSearchMatches": {
+        "no service found": "Palvelua ei löytynyt",
+        "no result found": ({ forWhat }) => `Tuloksia ei löytynyt haulle ${forWhat}`,
+        "check spelling": "Tarkista kirjoitus tai laajenna hakua.",
+        "go back": "Palaa pääpalveluihin"
     },
     "Launcher": {
         "header text1": "Palvelukatalogi",

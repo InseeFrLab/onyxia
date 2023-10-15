@@ -325,30 +325,36 @@ export const translations: Translations<"no"> = {
         "cardButton2": "Bli med i fellesskapet",
         "cardButton3": "Se på dataene"
     },
-    "CatalogExplorerCard": {
-        "launch": "Start",
-        "learn more": "Lær mer"
-    },
-    "CatalogExplorerCards": {
+    "Catalog": {
+        "header text1": "Tjenestekatalog",
+        "header text2": "Utforsk, start og konfigurer tjenester med noen få klikk.",
+        "header help": ({ catalogName, catalogDescription, repositoryUrl }) => (
+            <>
+                Du utforsker Helm Chart Repository{" "}
+                <MuiLink href={repositoryUrl} target="_blank">
+                    {catalogName}
+                </MuiLink>
+                : {catalogDescription}
+            </>
+        ),
+        "here": "her",
         "show more": "Vis mer",
         "no service found": "Ingen tjeneste funnet",
         "no result found": ({ forWhat }) => `Ingen resultater funnet for ${forWhat}`,
         "check spelling": "Vennligst kontroller stavemåten eller prøv å utvide søket.",
         "go back": "Tilbake til hovedtjenester",
-        "main services": "Hovedtjenester",
-        "all services": "Alle tjenester",
         "search results": "Søkeresultat",
         "search": "Søk"
     },
-    "Catalog": {
-        "header text1": "Tjenestekatalog",
-        "header text2": "Utforsk, start og konfigurer tjenester med noen få klikk.",
-        "contribute to the catalog": ({ catalogName }) => (
-            <>Bidra til {catalogName} katalogen</>
-        ),
-        "contribute to the package": ({ packageName }) =>
-            `Finn kildekoden for ${packageName} pakken `,
-        "here": "her"
+    "CatalogChartCard": {
+        "launch": "Start",
+        "learn more": "Lær mer"
+    },
+    "CatalogNoSearchMatches": {
+        "no service found": "Ingen tjeneste funnet",
+        "no result found": ({ forWhat }) => `Ingen resultater funnet for ${forWhat}`,
+        "check spelling": "Vennligst kontroller stavemåten eller prøv å utvide søket.",
+        "go back": "Tilbake til hovedtjenester"
     },
     "Launcher": {
         "header text1": "Tjenestekatalog",

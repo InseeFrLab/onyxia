@@ -329,31 +329,37 @@ export const translations: Translations<"de"> = {
         "cardButton2": "Der Community beitreten",
         "cardButton3": "Daten anzeigen"
     },
-    "CatalogExplorerCard": {
-        "launch": "Starten",
-        "learn more": "Mehr erfahren"
-    },
-    "CatalogExplorerCards": {
+    "Catalog": {
+        "header text1": "Dienstkatalog",
+        "header text2":
+            "Erkunden, starten und konfigurieren Sie Dienste mit nur wenigen Klicks.",
+        "header help": ({ catalogName, catalogDescription, repositoryUrl }) => (
+            <>
+                Sie erforschen das Helm Chart Repository{" "}
+                <MuiLink href={repositoryUrl} target="_blank">
+                    {catalogName}
+                </MuiLink>
+                : {catalogDescription}
+            </>
+        ),
+        "here": "hier",
         "show more": "Alle anzeigen",
         "no service found": "Dienst nicht gefunden",
         "no result found": ({ forWhat }) => `Keine Ergebnisse gefunden für ${forWhat}`,
         "check spelling": `Überprüfen Sie die Schreibweise des Dienstnamens oder versuchen Sie, Ihre Suche zu erweitern.`,
         "go back": "Zurück zu den Hauptdiensten",
-        "main services": "Hauptdienste",
-        "all services": "Alle Dienste",
         "search results": "Suchergebnisse",
         "search": "Suchen"
     },
-    "Catalog": {
-        "header text1": "Dienstkatalog",
-        "header text2":
-            "Erkunden, starten und konfigurieren Sie Dienste mit nur wenigen Klicks.",
-        "contribute to the catalog": ({ catalogName }) => (
-            <>Beitragen zum Katalog {catalogName}</>
-        ),
-        "contribute to the package": ({ packageName }) =>
-            `Zugriff auf den Quellcode des Pakets ${packageName} `,
-        "here": "hier"
+    "CatalogChartCard": {
+        "launch": "Starten",
+        "learn more": "Mehr erfahren"
+    },
+    "CatalogNoSearchMatches": {
+        "no service found": "Dienst nicht gefunden",
+        "no result found": ({ forWhat }) => `Keine Ergebnisse gefunden für ${forWhat}`,
+        "check spelling": `Überprüfen Sie die Schreibweise des Dienstnamens oder versuchen Sie, Ihre Suche zu erweitern.`,
+        "go back": "Zurück zu den Hauptdiensten"
     },
     "Launcher": {
         "header text1": "Dienstkatalog",

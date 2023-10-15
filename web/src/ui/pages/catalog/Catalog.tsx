@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useTranslation, useResolveLocalizedString, type LocalizedString } from "ui/i18n";
+import { useTranslation, useResolveLocalizedString } from "ui/i18n";
 import { PageHeader, tss } from "ui/theme";
 import { useCoreState, selectors, useCoreEvts, useCoreFunctions } from "core";
 import { useStateRef } from "powerhooks/useStateRef";
@@ -104,8 +104,11 @@ export default function Catalog(props: Props) {
                 title={t("header text1")}
                 helpTitle={t("header text2")}
                 helpContent={t("header help", {
-                    "catalogDescription": selectedCatalog.description,
-                    "catalogName": selectedCatalog.name
+                    "catalogDescription": resolveLocalizedString(
+                        selectedCatalog.description
+                    ),
+                    "catalogName": resolveLocalizedString(selectedCatalog.name),
+                    "repositoryUrl": selectedCatalog.repositoryUrl
                 })}
                 helpIcon="sentimentSatisfied"
                 titleCollapseParams={{
@@ -211,8 +214,9 @@ export const { i18n } = declareComponentKeys<
     | {
           K: "header help";
           P: {
-              catalogName: LocalizedString;
-              catalogDescription: LocalizedString;
+              catalogName: JSX.Element;
+              catalogDescription: JSX.Element;
+              repositoryUrl: string;
           };
           R: JSX.Element;
       }

@@ -324,32 +324,39 @@ export const translations: Translations<"nl"> = {
         "cardButton2": "Lid worden van de gemeenschap",
         "cardButton3": "Gegevens raadplegen"
     },
-    "CatalogExplorerCard": {
-        "launch": "Opstarten",
-        "learn more": "Meer weten ?"
-    },
-    "CatalogExplorerCards": {
+    "Catalog": {
+        "header text1": "Catalogus van de diensten",
+        "header text2":
+            "Ontdek, start en configureer diensten in slechts een paar klikken.",
+        "header help": ({ catalogName, catalogDescription, repositoryUrl }) => (
+            <>
+                Je bent het Helm Chart Repository aan het verkennen{" "}
+                <MuiLink href={repositoryUrl} target="_blank">
+                    {catalogName}
+                </MuiLink>
+                : {catalogDescription}
+            </>
+        ),
+        "here": "hier",
         "show more": "Alles weergeven",
         "no service found": "Dienst niet gevonden",
         "no result found": ({ forWhat }) => `Geen resultaat gevonden voor ${forWhat}`,
         "check spelling": `Controleer of de naam van de dienst correct is gespeld
             of probeer uw zoekopdracht uit te breiden.`,
         "go back": "Terug naar de voornaamste diensten",
-        "main services": "Voornaamste diensten",
-        "all services": "Alle diensten",
         "search results": "Resultaten van de zoekopdracht",
         "search": "Zoeken"
     },
-    "Catalog": {
-        "header text1": "Catalogus van de diensten",
-        "header text2":
-            "Ontdek, start en configureer diensten in slechts een paar klikken.",
-        "contribute to the catalog": ({ catalogName }) => (
-            <>Bijdragen tot de catalogus {catalogName}</>
-        ),
-        "contribute to the package": ({ packageName }) =>
-            `Toegang krijgen tot de packagebronnen ${packageName} `,
-        "here": "hier"
+    "CatalogChartCard": {
+        "launch": "Opstarten",
+        "learn more": "Meer weten ?"
+    },
+    "CatalogNoSearchMatches": {
+        "no service found": "Dienst niet gevonden",
+        "no result found": ({ forWhat }) => `Geen resultaat gevonden voor ${forWhat}`,
+        "check spelling": `Controleer of de naam van de dienst correct is gespeld
+            of probeer uw zoekopdracht uit te breiden.`,
+        "go back": "Terug naar de voornaamste diensten"
     },
     "Launcher": {
         "header text1": "Catalogus van de diensten",
