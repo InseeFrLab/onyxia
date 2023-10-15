@@ -459,7 +459,8 @@ Sentiti libero di esplorare e prendere il controllo dei tuoi deployment Kubernet
     "NoLongerBookmarkedDialog": {
         "no longer bookmarked dialog title": "Modifiche non salvate",
         "no longer bookmarked dialog body":
-            "Clicca nuovamente sull'icona del segnalibro per aggiornare la configurazione salvata."
+            "Clicca nuovamente sull'icona del segnalibro per aggiornare la configurazione salvata.",
+        "ok": "Ok"
     },
     "OverwriteConfigurationConfirmDialog": {
         "should overwrite configuration dialog title": "Vuoi sostituirlo?",

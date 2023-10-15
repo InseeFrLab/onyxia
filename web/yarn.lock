@@ -4152,6 +4152,11 @@
   dependencies:
     source-map "^0.6.1"
 
+"@types/ungap__structured-clone@0.3.0":
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/@types/ungap__structured-clone/-/ungap__structured-clone-0.3.0.tgz#39ef89de1f04bb1920ed99e549b885331295c47d"
+  integrity sha512-eBWREUhVUGPze+bUW22AgUr05k8u+vETzuYdLYSvWqGTUe0KOf+zVnOB1qER5wMcw8V6D9Ar4DfJmVvD1yu0kQ==
+
 "@types/unist@*", "@types/unist@^2.0.0", "@types/unist@^2.0.2", "@types/unist@^2.0.3":
   version "2.0.6"
   resolved "https://registry.yarnpkg.com/@types/unist/-/unist-2.0.6.tgz#250a7b16c3b91f672a24552ec64678eeb1d3a08d"
@@ -4306,6 +4311,11 @@
   dependencies:
     "@typescript-eslint/types" "5.59.0"
     eslint-visitor-keys "^3.3.0"
+
+"@ungap/structured-clone@^1.2.0":
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/@ungap/structured-clone/-/structured-clone-1.2.0.tgz#756641adb587851b5ccb3e095daf27ae581c8406"
+  integrity sha512-zuVdFrMJiuCDQUMCzQaD6KL28MjnqqN8XnAqiEq9PNm/hCPTSGfrXCOfwj1ow4LFb/tNymJPwsNbVePc1xFqrQ==
 
 "@webassemblyjs/ast@1.11.5", "@webassemblyjs/ast@^1.11.5":
   version "1.11.5"

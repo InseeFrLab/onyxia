@@ -581,19 +581,24 @@ export const thunks = {
             })();
 
             const { catalogLocation, icon } = await (async () => {
-                const catalog = await onyxiaApi.getCatalogs().then(apiRequestResult =>
-                    //TODO: Sort in the adapter of even better, assumes version sorted
-                    //and validate this assertion with zod
-                    apiRequestResult.find(({ id }) => id === catalogId)
-                );
+                const catalog = await onyxiaApi
+                    .getCatalogsAndCharts()
+                    .then(({ catalogs }) =>
+                        //TODO: Sort in the adapter of even better, assumes version sorted
+                        //and validate this assertion with zod
+                        catalogs.find(({ id }) => id === catalogId)
+                    );
 
                 assert(catalog !== undefined);
 
-                return {
-                    "catalogLocation": catalog.location,
+                const charts = await onyxiaApi
+                    .getCatalogsAndCharts()
+                    .then(({ chartsByCatalogId }) => chartsByCatalogId[catalog.id]);
 
-                    "icon": catalog.charts.find(({ name }) => name === packageName)!
-                        .versions[0].icon
+                return {
+                    "catalogLocation": catalog.repositoryUrl,
+                    "icon": charts.find(({ name }) => name === packageName)!.versions[0]
+                        .icon
                 };
             })();
 

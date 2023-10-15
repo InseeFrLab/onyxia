@@ -149,7 +149,7 @@ function ContextualizedApp() {
                 "catalog": {
                     "iconId": "catalog",
                     "label": t("catalog"),
-                    "link": routes.catalogExplorer().link
+                    "link": routes.catalog().link
                 },
                 "myServices": {
                     "iconId": "services",
@@ -250,9 +250,9 @@ function ContextualizedApp() {
                                 return "home" as const;
                             case "account":
                                 return "account";
-                            case "catalogExplorer":
+                            case "catalog":
                                 return "catalog";
-                            case "catalogLauncher":
+                            case "launcher":
                                 return "catalog";
                             case "myServices":
                                 return "myServices";
@@ -627,7 +627,7 @@ function useRegionSelectProps() {
     }
 
     switch (route.name) {
-        case "catalogLauncher":
+        case "launcher":
             break;
         case "myFiles":
             break;

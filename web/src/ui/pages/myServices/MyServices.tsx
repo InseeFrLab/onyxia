@@ -30,7 +30,7 @@ export default function MyServices(props: Props) {
     const { className, route } = props;
 
     const { t } = useTranslation({ MyServices });
-    const { t: tCatalogLauncher } = useTranslation("CatalogLauncher");
+    const { t: tCatalogLauncher } = useTranslation("Launcher");
 
     /* prettier-ignore */
     const { serviceManager, restorablePackageConfig, k8sCredentials, projectConfigs } = useCoreFunctions();
@@ -57,7 +57,7 @@ export default function MyServices(props: Props) {
     const onButtonBarClick = useConstCallback((buttonId: ButtonId) => {
         switch (buttonId) {
             case "launch":
-                routes.catalogExplorer().push();
+                routes.catalog().push();
                 return;
             case "refresh":
                 serviceManager.update();
@@ -118,8 +118,9 @@ export default function MyServices(props: Props) {
                 restorablePackageConfig.deleteRestorablePackageConfig({
                     "restorablePackageConfig": displayableConfigs.find(
                         ({ restorablePackageConfig }) =>
-                            routes.catalogLauncher({
-                                ...restorablePackageConfig,
+                            routes.launcher({
+                                "catalogId": restorablePackageConfig.catalogId,
+                                "chartName": restorablePackageConfig.packageName,
                                 "autoLaunch": true
                             }).href === launchLinkHref
                     )!.restorablePackageConfig
@@ -133,8 +134,9 @@ export default function MyServices(props: Props) {
             displayableConfigs.map(
                 ({ logoUrl, friendlyName, restorablePackageConfig }) => {
                     const buildLink = (autoLaunch: boolean) =>
-                        routes.catalogLauncher({
-                            ...restorablePackageConfig,
+                        routes.launcher({
+                            "catalogId": restorablePackageConfig.catalogId,
+                            "chartName": restorablePackageConfig.packageName,
                             autoLaunch
                         }).link;
 
@@ -219,7 +221,7 @@ export default function MyServices(props: Props) {
         });
     }, [route.params.autoLaunchServiceId, runningServices]);
 
-    const catalogExplorerLink = useMemo(() => routes.catalogExplorer().link, []);
+    const catalogExplorerLink = useMemo(() => routes.catalog().link, []);
 
     const [serviceIdRequestedToBeDeleted, setServiceIdRequestedToBeDeleted] = useState<
         string | undefined

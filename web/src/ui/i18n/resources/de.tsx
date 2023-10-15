@@ -464,7 +464,8 @@ Fühlen Sie sich frei, Ihre Kubernetes-Bereitstellungen zu erkunden und die Kont
     "NoLongerBookmarkedDialog": {
         "no longer bookmarked dialog title": "Nicht gespeicherte Änderungen",
         "no longer bookmarked dialog body":
-            "Klicken Sie erneut auf das Lesezeichensymbol, um Ihre gespeicherte Konfiguration zu aktualisieren."
+            "Klicken Sie erneut auf das Lesezeichensymbol, um Ihre gespeicherte Konfiguration zu aktualisieren.",
+        "ok": "Ok"
     },
     "OverwriteConfigurationConfirmDialog": {
         "should overwrite configuration dialog title": "Möchten Sie es ersetzen?",

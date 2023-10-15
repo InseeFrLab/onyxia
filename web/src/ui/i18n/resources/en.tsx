@@ -455,7 +455,8 @@ Feel free to explore and take charge of your Kubernetes deployments!
     "NoLongerBookmarkedDialog": {
         "no longer bookmarked dialog title": "Your changes wont be saved",
         "no longer bookmarked dialog body":
-            "Click on the bookmark icon again to update your saved configuration"
+            "Click on the bookmark icon again to update your saved configuration",
+        "ok": "Ok"
     },
     "OverwriteConfigurationConfirmDialog": {
         "should overwrite configuration dialog title": "Would you like to replace it?",

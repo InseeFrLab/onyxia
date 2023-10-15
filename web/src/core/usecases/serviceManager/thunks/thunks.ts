@@ -56,13 +56,14 @@ export const thunks = {
 
             //NOTE: We do not have the catalog id so we search in every catalog.
             const { getLogoUrl } = await (async () => {
-                const apiRequestResult = await onyxiaApi.getCatalogs();
+                const apiRequestResult = await onyxiaApi.getCatalogsAndCharts();
 
                 function getLogoUrl(params: { packageName: string }): string | undefined {
                     const { packageName } = params;
 
-                    for (const { charts } of apiRequestResult) {
-                        for (const { name, versions } of charts) {
+                    for (const { id: catalogId } of apiRequestResult.catalogs) {
+                        for (const { name, versions } of apiRequestResult
+                            .chartsByCatalogId[catalogId]) {
                             if (name !== packageName) {
                                 continue;
                             }

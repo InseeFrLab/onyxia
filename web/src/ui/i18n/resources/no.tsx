@@ -458,7 +458,8 @@ Føl deg fri til å utforske og ta kontroll over dine Kubernetes-implementeringe
     "NoLongerBookmarkedDialog": {
         "no longer bookmarked dialog title": "Endringene dine vil ikke bli lagret",
         "no longer bookmarked dialog body":
-            "Klikk på bokmerkeikonet igjen for å oppdatere den lagrede konfigurasjonen din"
+            "Klikk på bokmerkeikonet igjen for å oppdatere den lagrede konfigurasjonen din",
+        "ok": "Ok"
     },
     "OverwriteConfigurationConfirmDialog": {
         "should overwrite configuration dialog title": "Ønsker du å erstatte den?",

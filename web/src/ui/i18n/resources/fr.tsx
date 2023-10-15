@@ -467,7 +467,8 @@ N'hésitez pas à explorer et à prendre en main vos déploiements Kubernetes !
     "NoLongerBookmarkedDialog": {
         "no longer bookmarked dialog title": "Changements non enregistrés",
         "no longer bookmarked dialog body":
-            "Cliquer une nouvelle fois sur le symbole marque-page pour mettre à jour votre configuration enregistrée."
+            "Cliquer une nouvelle fois sur le symbole marque-page pour mettre à jour votre configuration enregistrée.",
+        "ok": "Ok"
     },
     "OverwriteConfigurationConfirmDialog": {
         "should overwrite configuration dialog title": "Souhaitez-vous le remplacer ?",

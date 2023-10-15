@@ -462,7 +462,8 @@ Voel je vrij om te verkennen en de controle over je Kubernetes-implementaties te
     "NoLongerBookmarkedDialog": {
         "no longer bookmarked dialog title": "Niet opgeslagen wijzigingen",
         "no longer bookmarked dialog body":
-            "Klik opnieuw op het symbool van de bladwijzer om de opgeslagen configuratie bij te werken."
+            "Klik opnieuw op het symbool van de bladwijzer om de opgeslagen configuratie bij te werken.",
+        "ok": "Ok"
     },
     "OverwriteConfigurationConfirmDialog": {
         "should overwrite configuration dialog title": "Wilt u het vervangen ?",

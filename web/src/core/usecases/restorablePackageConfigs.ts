@@ -163,14 +163,14 @@ export const thunks = {
 
             dispatch(actions.fetchIconStarted());
 
-            const apiRequestForIconsResult = await onyxiaApi.getCatalogs();
+            const apiRequestForIconsResult = await onyxiaApi.getCatalogsAndCharts();
 
             const iconsUrl: IconsUrl = {};
 
-            apiRequestForIconsResult.forEach(({ id: catalogId, charts }) => {
+            apiRequestForIconsResult.catalogs.forEach(({ id: catalogId }) => {
                 const urlByPackageName: IconsUrl[string] = {};
 
-                charts.forEach(chart => {
+                apiRequestForIconsResult.chartsByCatalogId[catalogId].forEach(chart => {
                     for (const { icon } of chart.versions) {
                         if (icon === undefined) {
                             continue;

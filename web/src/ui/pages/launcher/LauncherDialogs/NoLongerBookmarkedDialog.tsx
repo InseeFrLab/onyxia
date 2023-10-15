@@ -38,5 +38,5 @@ export const NoLongerBookmarkedDialog = memo((props: Props) => {
 NoLongerBookmarkedDialog.displayName = symToStr({ NoLongerBookmarkedDialog });
 
 export const { i18n } = declareComponentKeys<
-    "no longer bookmarked dialog title" | "no longer bookmarked dialog body"
+    "no longer bookmarked dialog title" | "no longer bookmarked dialog body" | "ok"
 >()({ NoLongerBookmarkedDialog });

@@ -207,7 +207,7 @@ export default function Launcher(props: Props) {
     }, [restorablePackageConfigs, restorablePackageConfig]);
 
     const onRequestCancel = useConstCallback(() =>
-        routes.catalogExplorer({ "catalogId": route.params.catalogId }).push()
+        routes.catalog({ "catalogId": route.params.catalogId }).push()
     );
 
     const onRequestCopyLaunchUrl = useConstCallback(() =>

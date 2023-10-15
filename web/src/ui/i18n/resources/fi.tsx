@@ -451,7 +451,8 @@ Tutustu vapaasti ja ota hallintaan Kubernetes-julkaisusi!
     "NoLongerBookmarkedDialog": {
         "no longer bookmarked dialog title": "Muutokset eivät tallennu",
         "no longer bookmarked dialog body":
-            "Päivitä tallennettu konfiguraatio napsauttamalla kirjanmerkkikuvaketta uudelleen."
+            "Päivitä tallennettu konfiguraatio napsauttamalla kirjanmerkkikuvaketta uudelleen.",
+        "ok": "Ok"
     },
     "OverwriteConfigurationConfirmDialog": {
         "should overwrite configuration dialog title": "Haluatko korvata sen?",
