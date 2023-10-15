@@ -1,8 +1,8 @@
 import { useState, useMemo } from "react";
 import {
-    CatalogLauncherConfigurationCard,
-    CatalogLauncherConfigurationCardProps
-} from "ui/pages/catalog/CatalogLauncher/CatalogLauncherConfigurationCard";
+    LauncherConfigurationCard,
+    LauncherConfigurationCardProps
+} from "ui/pages/launcher/LauncherConfigurationCard";
 import { sectionName } from "./sectionName";
 import { getStoryFactory } from "stories/getStory";
 import { same } from "evt/tools/inDepth/same";
@@ -10,12 +10,12 @@ import { useConstCallback } from "powerhooks/useConstCallback";
 
 function Container(
     props: Omit<
-        CatalogLauncherConfigurationCardProps,
+        LauncherConfigurationCardProps,
         "formFieldsByTabName" | "onFormValueChange"
     >
 ) {
     const [formFields, setFormFields] = useState<
-        CatalogLauncherConfigurationCardProps["formFieldsByTabName"][string]["formFields"]
+        LauncherConfigurationCardProps["formFieldsByTabName"][string]["formFields"]
     >([
         {
             "type": "text",
@@ -106,7 +106,7 @@ function Container(
     ]);
 
     const formFieldsByTabName = useMemo(() => {
-        const out: CatalogLauncherConfigurationCardProps["formFieldsByTabName"] = {};
+        const out: LauncherConfigurationCardProps["formFieldsByTabName"] = {};
 
         formFields.forEach(formField =>
             //(out[formField.path[0]] ??= []).push(formField)
@@ -124,7 +124,7 @@ function Container(
     }, [formFields]);
 
     const onFormValueChange = useConstCallback<
-        CatalogLauncherConfigurationCardProps["onFormValueChange"]
+        LauncherConfigurationCardProps["onFormValueChange"]
     >(({ path, value }) =>
         setFormFields(
             formFields.map(formField => {
@@ -137,7 +137,7 @@ function Container(
     );
 
     return (
-        <CatalogLauncherConfigurationCard
+        <LauncherConfigurationCard
             formFieldsByTabName={formFieldsByTabName}
             onFormValueChange={onFormValueChange}
             {...props}

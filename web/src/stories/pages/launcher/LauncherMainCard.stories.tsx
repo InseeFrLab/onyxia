@@ -1,11 +1,11 @@
-import { CatalogLauncherMainCard } from "ui/pages/catalog/CatalogLauncher/CatalogLauncherMainCard";
+import { LauncherMainCard } from "ui/pages/launcher/LauncherMainCard";
 import { sectionName } from "./sectionName";
 import { getStoryFactory, logCallbacks } from "stories/getStory";
 import rstudioImg from "stories/assets/img/rstudio.png";
 
 const { meta, getStory } = getStoryFactory({
     sectionName,
-    "wrappedComponent": { CatalogLauncherMainCard },
+    "wrappedComponent": { LauncherMainCard },
     "defaultContainerWidth": 900
 });
 
