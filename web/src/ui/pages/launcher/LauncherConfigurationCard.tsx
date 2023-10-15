@@ -34,7 +34,7 @@ import { declareComponentKeys } from "i18nifty";
 import { symToStr } from "tsafe/symToStr";
 import type { FormFieldValidity } from "core/usecases/launcher/selectors";
 
-export type CatalogLauncherConfigurationCardProps = {
+export type LauncherConfigurationCardProps = {
     className?: string;
     dependencyNamePackageNameOrGlobal: string;
     meta: IndexedFormFields[string]["meta"];
@@ -43,89 +43,83 @@ export type CatalogLauncherConfigurationCardProps = {
     formFieldsIsWellFormed: FormFieldValidity[];
 };
 
-export const CatalogLauncherConfigurationCard = memo(
-    (props: CatalogLauncherConfigurationCardProps) => {
-        const {
-            className,
-            dependencyNamePackageNameOrGlobal,
-            meta,
-            formFieldsByTabName,
-            onFormValueChange,
-            formFieldsIsWellFormed
-        } = props;
+export const LauncherConfigurationCard = memo((props: LauncherConfigurationCardProps) => {
+    const {
+        className,
+        dependencyNamePackageNameOrGlobal,
+        meta,
+        formFieldsByTabName,
+        onFormValueChange,
+        formFieldsIsWellFormed
+    } = props;
 
-        const { classes, cx } = useStyles();
+    const { classes, cx } = useStyles();
 
-        const [isCollapsed, setIsCollapsed] = useState(true);
+    const [isCollapsed, setIsCollapsed] = useState(true);
 
-        const tabs = useMemo(
-            () =>
-                Object.keys(formFieldsByTabName).map(title => ({
-                    "id": title,
-                    "title": capitalize(title)
-                })),
-            [formFieldsByTabName]
-        );
+    const tabs = useMemo(
+        () =>
+            Object.keys(formFieldsByTabName).map(title => ({
+                "id": title,
+                "title": capitalize(title)
+            })),
+        [formFieldsByTabName]
+    );
 
-        const onIsCollapsedValueChange = useConstCallback(() =>
-            setIsCollapsed(!isCollapsed)
-        );
+    const onIsCollapsedValueChange = useConstCallback(() => setIsCollapsed(!isCollapsed));
 
-        const [activeTabId, setActiveTabId] = useState<string | undefined>(tabs[0]?.id);
+    const [activeTabId, setActiveTabId] = useState<string | undefined>(tabs[0]?.id);
 
-        return (
-            <div className={cx(classes.root, className)}>
-                <Header
-                    packageName={dependencyNamePackageNameOrGlobal}
-                    isCollapsed={isCollapsed}
-                    onIsCollapsedValueChange={
-                        tabs.length === 0 ? undefined : onIsCollapsedValueChange
+    return (
+        <div className={cx(classes.root, className)}>
+            <Header
+                packageName={dependencyNamePackageNameOrGlobal}
+                isCollapsed={isCollapsed}
+                onIsCollapsedValueChange={
+                    tabs.length === 0 ? undefined : onIsCollapsedValueChange
+                }
+                {...(() => {
+                    switch (meta.type) {
+                        case "dependency":
+                            return {
+                                "type": "dependency",
+                                "dependencyName": dependencyNamePackageNameOrGlobal
+                            } as const;
+                        case "global":
+                            return {
+                                "type": "global",
+                                "description": meta.description
+                            } as const;
+                        case "package":
+                            return {
+                                "type": "package",
+                                "packageName": dependencyNamePackageNameOrGlobal
+                            } as const;
                     }
-                    {...(() => {
-                        switch (meta.type) {
-                            case "dependency":
-                                return {
-                                    "type": "dependency",
-                                    "dependencyName": dependencyNamePackageNameOrGlobal
-                                } as const;
-                            case "global":
-                                return {
-                                    "type": "global",
-                                    "description": meta.description
-                                } as const;
-                            case "package":
-                                return {
-                                    "type": "package",
-                                    "packageName": dependencyNamePackageNameOrGlobal
-                                } as const;
-                        }
-                    })()}
-                />
-                {activeTabId !== undefined && (
-                    <Tabs
-                        className={
-                            classes[isCollapsed ? "collapsedPanel" : "expandedPanel"]
-                        }
-                        tabs={tabs}
-                        activeTabId={activeTabId}
-                        onRequestChangeActiveTab={setActiveTabId}
-                        size="small"
-                        maxTabCount={4}
-                    >
-                        <TabContent
-                            {...formFieldsByTabName[activeTabId]}
-                            onFormValueChange={onFormValueChange}
-                            formFieldsIsWellFormed={formFieldsIsWellFormed}
-                        />
-                    </Tabs>
-                )}
-            </div>
-        );
-    }
-);
+                })()}
+            />
+            {activeTabId !== undefined && (
+                <Tabs
+                    className={classes[isCollapsed ? "collapsedPanel" : "expandedPanel"]}
+                    tabs={tabs}
+                    activeTabId={activeTabId}
+                    onRequestChangeActiveTab={setActiveTabId}
+                    size="small"
+                    maxTabCount={4}
+                >
+                    <TabContent
+                        {...formFieldsByTabName[activeTabId]}
+                        onFormValueChange={onFormValueChange}
+                        formFieldsIsWellFormed={formFieldsIsWellFormed}
+                    />
+                </Tabs>
+            )}
+        </div>
+    );
+});
 
-CatalogLauncherConfigurationCard.displayName = symToStr({
-    CatalogLauncherConfigurationCard
+LauncherConfigurationCard.displayName = symToStr({
+    LauncherConfigurationCard
 });
 
 export const { i18n } = declareComponentKeys<
@@ -136,7 +130,7 @@ export const { i18n } = declareComponentKeys<
     | { K: "mismatching pattern"; P: { pattern: string } }
     | "Invalid YAML Object"
     | "Invalid YAML Array"
->()({ CatalogLauncherConfigurationCard });
+>()({ LauncherConfigurationCard });
 
 const { Header } = (() => {
     type Props = {
@@ -207,7 +201,7 @@ const { Header } = (() => {
 
         const onClick = useConstCallback(() => onIsCollapsedValueChange?.());
 
-        const { t } = useTranslation({ CatalogLauncherConfigurationCard });
+        const { t } = useTranslation({ LauncherConfigurationCard });
 
         return (
             <div className={cx(classes.root, className)} onClick={onClick}>
@@ -279,7 +273,7 @@ const { TabContent } = (() => {
         formFields: Exclude<FormField, FormField.Slider.Range>[];
         assembledSliderRangeFormFields: IndexedFormFields.AssembledSliderRangeFormField[];
         onFormValueChange(params: FormFieldValue): void;
-        formFieldsIsWellFormed: CatalogLauncherConfigurationCardProps["formFieldsIsWellFormed"];
+        formFieldsIsWellFormed: LauncherConfigurationCardProps["formFieldsIsWellFormed"];
     };
 
     const TabContent = memo((props: Props) => {
@@ -315,7 +309,7 @@ const { TabContent } = (() => {
                 })
         );
 
-        const { t } = useTranslation({ CatalogLauncherConfigurationCard });
+        const { t } = useTranslation({ LauncherConfigurationCard });
 
         const onEscapeKeyDownFactory = useCallbackFactory(
             ([pathStr, defaultValue]: [string, string | FormFieldValue.Value.Yaml]) =>
@@ -660,23 +654,21 @@ const { TabContent } = (() => {
     return { TabContent };
 })();
 
-const useStyles = tss
-    .withName({ CatalogLauncherConfigurationCard })
-    .create(({ theme }) => ({
-        "root": {
-            "borderRadius": 8,
-            "overflow": "hidden",
-            "boxShadow": theme.shadows[1]
-        },
-        // eslint-disable-next-line tss-unused-classes/unused-classes
-        "collapsedPanel": {
-            "maxHeight": 0,
-            "transform": "scaleY(0)"
-        },
-        // eslint-disable-next-line tss-unused-classes/unused-classes
-        "expandedPanel": {
-            "transition": "transform 150ms cubic-bezier(0.4, 0, 0.2, 1)",
-            "transform": "scaleY(1)",
-            "transformOrigin": "top"
-        }
-    }));
+const useStyles = tss.withName({ LauncherConfigurationCard }).create(({ theme }) => ({
+    "root": {
+        "borderRadius": 8,
+        "overflow": "hidden",
+        "boxShadow": theme.shadows[1]
+    },
+    // eslint-disable-next-line tss-unused-classes/unused-classes
+    "collapsedPanel": {
+        "maxHeight": 0,
+        "transform": "scaleY(0)"
+    },
+    // eslint-disable-next-line tss-unused-classes/unused-classes
+    "expandedPanel": {
+        "transition": "transform 150ms cubic-bezier(0.4, 0, 0.2, 1)",
+        "transform": "scaleY(1)",
+        "transformOrigin": "top"
+    }
+}));

@@ -41,7 +41,7 @@ export type Props = {
     onRequestCopyLaunchUrl: (() => void) | undefined;
 };
 
-export const CatalogLauncherMainCard = memo((props: Props) => {
+export const LauncherMainCard = memo((props: Props) => {
     const {
         className,
         packageIconUrl,
@@ -61,7 +61,7 @@ export const CatalogLauncherMainCard = memo((props: Props) => {
 
     const { classes, cx } = useStyles();
 
-    const { t } = useTranslation({ CatalogLauncherMainCard });
+    const { t } = useTranslation({ LauncherMainCard });
 
     const onBookmarkIconButtonClick = useConstCallback(() =>
         onIsBookmarkedValueChange(!isBookmarked)
@@ -154,7 +154,7 @@ export const CatalogLauncherMainCard = memo((props: Props) => {
     );
 });
 
-CatalogLauncherMainCard.displayName = symToStr({ CatalogLauncherMainCard });
+LauncherMainCard.displayName = symToStr({ LauncherMainCard });
 
 export const { i18n } = declareComponentKeys<
     | "card title"
@@ -166,9 +166,9 @@ export const { i18n } = declareComponentKeys<
     | "share the service"
     | "share the service - explain"
     | "restore all default"
->()({ CatalogLauncherMainCard });
+>()({ LauncherMainCard });
 
-const useStyles = tss.withName({ CatalogLauncherMainCard }).create(({ theme }) => ({
+const useStyles = tss.withName({ LauncherMainCard }).create(({ theme }) => ({
     "root": {
         "borderRadius": 8,
         "boxShadow": theme.shadows[7],

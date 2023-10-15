@@ -42,13 +42,17 @@ export type ComponentKey =
     | typeof import("ui/pages/account/tabs/AccountKubernetesTab").i18n
     | typeof import("ui/pages/account/tabs/AccountUserInterfaceTab").i18n
     | typeof import("ui/pages/account/tabs/AccountVaultTab").i18n
-    | typeof import("ui/pages/catalog/CatalogLauncher/CatalogLauncher").i18n
     | typeof import("ui/pages/catalog/CatalogExplorer/CatalogExplorerCards").i18n
     | typeof import("ui/pages/catalog/CatalogExplorer/CatalogExplorerCards/CatalogExplorerCard").i18n
     | typeof import("ui/pages/catalog/Catalog").i18n
     | typeof import("ui/App/Footer").i18n
-    | typeof import("ui/pages/catalog/CatalogLauncher/CatalogLauncherMainCard").i18n
-    | typeof import("ui/pages/catalog/CatalogLauncher/CatalogLauncherConfigurationCard").i18n
+    | typeof import("ui/pages/launcher/Launcher").i18n
+    | typeof import("ui/pages/launcher/LauncherMainCard").i18n
+    | typeof import("ui/pages/launcher/LauncherConfigurationCard").i18n
+    | typeof import("ui/pages/launcher/LauncherDialogs/AutoLaunchDisabledDialog").i18n
+    | typeof import("ui/pages/launcher/LauncherDialogs/NoLongerBookmarkedDialog").i18n
+    | typeof import("ui/pages/launcher/LauncherDialogs/OverwriteConfigurationConfirmDialog").i18n
+    | typeof import("ui/pages/launcher/LauncherDialogs/SensitiveConfigurationDialog").i18n
     | typeof import("ui/pages/myServices/MyServices").i18n
     | typeof import("ui/pages/myServices/MyServicesButtonBar").i18n
     | typeof import("ui/pages/myServices/MyServicesCards/MyServicesCard/MyServicesCard").i18n

@@ -477,7 +477,9 @@ const commandLogsEntries = createSelector(launchCommands, launchCommands => {
     }));
 });
 
-const launcherWrap = createSelector(
+const sources = createSelector(readyState, state => state?.sources);
+
+const wrap = createSelector(
     isReady,
     friendlyName,
     isShared,
@@ -490,6 +492,7 @@ const launcherWrap = createSelector(
     icon,
     launchScript,
     commandLogsEntries,
+    sources,
     (
         isReady,
         friendlyName,
@@ -502,7 +505,8 @@ const launcherWrap = createSelector(
         packageName,
         icon,
         launchScript,
-        commandLogsEntries
+        commandLogsEntries,
+        sources
     ) => {
         if (!isReady) {
             return {
@@ -518,7 +522,8 @@ const launcherWrap = createSelector(
                 [symToStr({ packageName })]: undefined,
                 [symToStr({ icon })]: undefined,
                 [symToStr({ launchScript })]: undefined,
-                [symToStr({ commandLogsEntries })]: undefined
+                [symToStr({ commandLogsEntries })]: undefined,
+                [symToStr({ sources })]: undefined
             };
         }
 
@@ -532,6 +537,7 @@ const launcherWrap = createSelector(
         assert(packageName !== undefined);
         assert(commandLogsEntries !== undefined);
         assert(launchScript !== undefined);
+        assert(sources !== undefined);
 
         return {
             "isReady": true as const,
@@ -545,35 +551,10 @@ const launcherWrap = createSelector(
             packageName,
             icon,
             launchScript,
-            commandLogsEntries
-        };
-    }
-);
-
-const sources = createSelector(readyState, state => state?.sources);
-
-const headerWrap = createSelector(
-    isReady,
-    packageName,
-    sources,
-    (isReady, packageName, sources) => {
-        if (!isReady) {
-            return {
-                "isLauncherReady": false as const,
-                [symToStr({ packageName })]: undefined,
-                [symToStr({ sources })]: undefined
-            };
-        }
-
-        assert(packageName !== undefined);
-        assert(sources !== undefined);
-
-        return {
-            "isLauncherReady": true as const,
-            packageName,
+            commandLogsEntries,
             sources
         };
     }
 );
 
-export const selectors = { launcherWrap, headerWrap };
+export const selectors = { wrap };
