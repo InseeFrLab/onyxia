@@ -3,6 +3,7 @@ import { waitForDebounceFactory } from "core/tools/waitForDebounce";
 import { createUsecaseContextApi } from "redux-clean-architecture";
 import { actions, name, type State } from "./state";
 import { assert } from "tsafe/assert";
+import { is } from "tsafe/is";
 import memoize from "memoizee";
 import { Chart } from "core/ports/OnyxiaApi";
 import FlexSearch from "flexsearch";
@@ -64,7 +65,7 @@ export const thunks = {
 
             const { evtAction } = extra;
 
-            const { waitForSearchDebounce } = getContext(extra);
+            const { waitForSearchDebounce, getFlexSearch } = getContext(extra);
 
             await waitForSearchDebounce();
 
@@ -79,166 +80,103 @@ export const thunks = {
             dispatch(actions.searchChanged({ search }));
 
             if (search === "") {
-                dispatch(
-                    actions.searchResultChanged({
-                        "searchResults": undefined
-                    })
-                );
+                dispatch(actions.searchResultChanged({ "searchResults": undefined }));
                 return;
             }
 
+            const state = getState()[name];
+
+            assert(state.stateDescription === "ready");
+
+            const { flexSearch } = getFlexSearch(state.chartsByCatalogId);
+
             dispatch(
                 actions.searchResultChanged({
-                    "searchResults": await (async () => {
-                        if (search === "") {
-                            return undefined;
-                        }
-
-                        function getPackageWeightFactory(params: {
-                            highlightedCharts: string[] | undefined;
-                        }) {
-                            const { highlightedCharts = [] } = params;
-
-                            function getPackageWeight(packageName: string) {
-                                const indexHighlightedCharts =
-                                    highlightedCharts.findIndex(
-                                        v => v.toLowerCase() === packageName.toLowerCase()
-                                    );
-                                return indexHighlightedCharts !== -1
-                                    ? highlightedCharts.length - indexHighlightedCharts
-                                    : 0;
-                            }
-
-                            return { getPackageWeight };
-                        }
-
-                        /*
-                            const catalog = catalogs
-                                .filter(
-                                    ({ id, status }) =>
-                                        id === selectedCatalogId || (state.search !== "" && status === "PROD")
-                                )
-                                .map(catalog =>
-                                    catalog.charts.map(chart => ({
-                                        "packageDescription": chart.versions[0].description,
-                                        "packageHomeUrl": chart.versions[0].home,
-                                        "packageName": chart.name,
-                                        "packageIconUrl": chart.versions[0].icon,
-                                        "catalogId": catalog.id
-                                    }))
-                                )
-                                .reduce((accumulator, packages) => accumulator.concat(packages), [])
-                                .sort(
-                                    (a, b) => getPackageWeight(b.packageName) - getPackageWeight(a.packageName)
-                                );
-                                */
-
-                        /*
-                        const filteredCharts = catalog
-                            .slice(
-                                0,
-                                doShowOnlyHighlighted && search === "" ? highlightedCharts.length : undefined
-                            )
-                            .filter(({ packageName, packageDescription }) =>
-                                [packageName, packageDescription]
-                                    .map(str => str.toLowerCase().includes(search.toLowerCase()))
-                                    .includes(true)
-                            );
-                            */
-
-                        // Actually perform the search
-
-                        return [];
-                    })()
+                    "searchResults": await flexSearch({ search })
                 })
             );
-        },
-    "revealAllPackages":
-        () =>
-        (...args) => {
-            const [dispatch] = args;
-            dispatch(actions.setDoShowOnlyHighlightedToFalse());
         }
 } satisfies Thunks;
 
 const { getContext } = createUsecaseContextApi(() => {
     const { waitForDebounce } = waitForDebounceFactory({ "delay": 500 });
-    return {
-        "waitForSearchDebounce": waitForDebounce,
-        "getFlexSearch": memoize(
-            (chartsByCatalogId: Record<string, { charts: Chart[] }>) => {
-                const index = new FlexSearch.Document<{
-                    catalogIdChartName: `${string}/${string}`;
-                    chartNameAndDescription: `${string} ${string}`;
-                }>({
-                    "document": {
-                        "id": "catalogIdChartName",
-                        "field": ["chartNameAndDescription"]
-                    },
-                    "cache": 100,
-                    "tokenize": "full",
-                    "context": {
-                        "resolution": 9,
-                        "depth": 2,
-                        "bidirectional": true
-                    }
+
+    const getFlexSearch = memoize(
+        (chartsByCatalogId: Record<string, Chart[]>) => {
+            const index = new FlexSearch.Document<{
+                catalogIdChartName: `${string}/${string}`;
+                chartNameAndDescription: `${string} ${string}`;
+            }>({
+                "document": {
+                    "id": "catalogIdChartName",
+                    "field": ["chartNameAndDescription"]
+                },
+                "cache": 100,
+                "tokenize": "full",
+                "context": {
+                    "resolution": 9,
+                    "depth": 2,
+                    "bidirectional": true
+                }
+            });
+
+            Object.entries(chartsByCatalogId).forEach(([catalogId, charts]) =>
+                charts.forEach(chart => {
+                    index.add({
+                        "catalogIdChartName": `${catalogId}/${chart.name}`,
+                        "chartNameAndDescription": `${chart.name} ${chart.versions[0].description}`
+                    });
+                })
+            );
+
+            async function flexSearch(params: {
+                search: string;
+            }): Promise<State.SearchResult[]> {
+                const { search } = params;
+
+                const flexSearchResults = await index.searchAsync(search, {
+                    "bool": "or",
+                    "suggest": true,
+                    "enrich": true
                 });
 
-                Object.entries(chartsByCatalogId).forEach(([catalogId, { charts }]) =>
-                    charts.forEach(chart => {
-                        index.add({
-                            "catalogIdChartName": `${catalogId}/${chart.name}`,
-                            "chartNameAndDescription": `${chart.name} ${chart.versions[0].description}`
-                        });
-                    })
-                );
-
-                async function flexSearch(params: {
-                    search: string;
-                }): State.SearchResult[] {
-                    const { search } = params;
-
-                    const searchResult = await index.searchAsync(search, {
-                        "bool": "or",
-                        "suggest": true,
-                        "enrich": true
-                    });
-
-                    if (searchResult.length === 0) {
-                        return [];
-                    }
-
-                    const [{ result: catalogIdChartNames }] = searchResult;
-
-                    return null as any as any[];
-
-                    /*
-                    return catalogIdChartNames.map(
-                        softwareName => (
-                            assert(typeof softwareName === "string"),
-                            {
-                                softwareName,
-                                "positions": highlightMatches({
-                                    "text": (() => {
-                                        const software = softwares.find(
-                                            software => software.softwareName === softwareName
-                                        );
-
-                                        assert(software !== undefined);
-
-                                        return software.search;
-                                    })(),
-                                    search
-                                })
-                            }
-                        )
-                    );
-                    */
+                if (flexSearchResults.length === 0) {
+                    return [];
                 }
 
-                return { flexSearch };
-            },
-            { "max": 1 }
-        )
+                const [{ result: catalogIdChartNames }] = flexSearchResults;
+
+                assert(is<`${string}/${string}`[]>(catalogIdChartNames));
+
+                return catalogIdChartNames.map(
+                    (catalogIdChartName): State.SearchResult => {
+                        const [catalogId, chartName] = catalogIdChartName.split("/");
+
+                        return {
+                            catalogId,
+                            chartName,
+                            "nameHighlightedIndexes": getMatchPositions({
+                                search,
+                                "text": chartName
+                            }),
+                            "descriptionHighlightedIndexes": getMatchPositions({
+                                search,
+                                "text": chartsByCatalogId[catalogId]!.find(
+                                    chart => chart.name === chartName
+                                )!.versions[0].description
+                            })
+                        };
+                    }
+                );
+            }
+
+            return { flexSearch };
+        },
+        { "max": 1 }
+    );
+
+    return {
+        "waitForSearchDebounce": waitForDebounce,
+        getFlexSearch
     };
 });

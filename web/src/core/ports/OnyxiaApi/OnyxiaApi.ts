@@ -34,13 +34,7 @@ export type OnyxiaApi = {
     getCatalogsAndCharts: {
         (): Promise<{
             catalogs: Catalog[];
-            chartsByCatalogId: Record<
-                string,
-                {
-                    charts: Chart[];
-                    highlightedChartNames: string[] | undefined;
-                }
-            >;
+            chartsByCatalogId: Record<string, Chart[]>;
         }>;
         clear: () => void;
     };

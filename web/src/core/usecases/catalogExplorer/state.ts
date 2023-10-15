@@ -15,12 +15,8 @@ export namespace State {
     export type Ready = {
         stateDescription: "ready";
         catalogs: Catalog[];
-        chartsByCatalogId: Record<
-            string,
-            { charts: Chart[]; highlightedChartNames: string[] | undefined }
-        >;
+        chartsByCatalogId: Record<string, Chart[]>;
         selectedCatalogId: string;
-        doShowOnlyHighlighted: boolean;
         search: string;
         searchResults: SearchResult[] | undefined;
     };
@@ -28,10 +24,8 @@ export namespace State {
     export type SearchResult = {
         catalogId: string;
         chartName: string;
-        matchedCharacterIndexes: {
-            name: number[];
-            description: number[];
-        };
+        nameHighlightedIndexes: number[];
+        descriptionHighlightedIndexes: number[];
     };
 }
 
@@ -57,28 +51,19 @@ export const { reducer, actions } = createSlice({
             }: PayloadAction<{
                 selectedCatalogId: string;
                 catalogs: Catalog[];
-                chartsByCatalogId: Record<
-                    string,
-                    { charts: Chart[]; highlightedChartNames: string[] | undefined }
-                >;
+                chartsByCatalogId: Record<string, Chart[]>;
             }>
         ) => {
             const { selectedCatalogId, catalogs, chartsByCatalogId } = payload;
 
-            const state: State.Ready = {
+            return id<State.Ready>({
                 "stateDescription": "ready",
                 catalogs,
                 selectedCatalogId,
                 chartsByCatalogId,
-                "doShowOnlyHighlighted": false,
                 "search": "",
                 "searchResults": undefined
-            };
-
-            state.doShowOnlyHighlighted =
-                getAreConditionMetForOnlyShowingHighlightedChart(state);
-
-            return state;
+            });
         },
         "selectedCatalogChanged": (
             state,
@@ -93,9 +78,6 @@ export const { reducer, actions } = createSlice({
             }
 
             state.selectedCatalogId = selectedCatalogId;
-
-            state.doShowOnlyHighlighted =
-                getAreConditionMetForOnlyShowingHighlightedChart(state);
         },
         "notifyDefaultCatalogIdSelected": () => {
             /* Only for evt */
@@ -116,26 +98,6 @@ export const { reducer, actions } = createSlice({
             assert(state.stateDescription === "ready");
 
             state.searchResults = searchResults;
-
-            state.doShowOnlyHighlighted =
-                getAreConditionMetForOnlyShowingHighlightedChart(state);
-        },
-        "setDoShowOnlyHighlightedToFalse": state => {
-            assert(state.stateDescription === "ready");
-
-            state.doShowOnlyHighlighted = false;
         }
     }
 });
-
-function getAreConditionMetForOnlyShowingHighlightedChart(state: State.Ready) {
-    const { searchResults, chartsByCatalogId } = state;
-
-    const { charts, highlightedChartNames } = chartsByCatalogId[state.selectedCatalogId]!;
-
-    return (
-        searchResults === undefined &&
-        (highlightedChartNames?.length ?? 0) !== 0 &&
-        charts.length > 5
-    );
-}

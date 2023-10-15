@@ -391,10 +391,22 @@ export function createOnyxiaApi(params: {
                     ),
                     "chartsByCatalogId": Object.fromEntries(
                         apiCatalogs.map(
-                            ({ id: catalogId, catalog, highlightedCharts }) => [
-                                catalogId,
-                                {
-                                    "charts": Object.entries(catalog.entries).map(
+                            ({ id: catalogId, catalog, highlightedCharts = [] }) => {
+                                function getChartWeight(chartName: string) {
+                                    const indexHighlightedCharts =
+                                        highlightedCharts.findIndex(
+                                            v =>
+                                                v.toLowerCase() ===
+                                                chartName.toLowerCase()
+                                        );
+                                    return indexHighlightedCharts !== -1
+                                        ? highlightedCharts.length -
+                                              indexHighlightedCharts
+                                        : 0;
+                                }
+
+                                const charts = Object.entries(catalog.entries)
+                                    .map(
                                         ([name, versions]): Chart => ({
                                             name,
                                             "versions": versions
@@ -416,10 +428,15 @@ export function createOnyxiaApi(params: {
                                                     compareVersions(b.version, a.version)
                                                 )
                                         })
-                                    ),
-                                    "highlightedChartNames": highlightedCharts
-                                }
-                            ]
+                                    )
+                                    .sort(
+                                        (chartA, chartB) =>
+                                            getChartWeight(chartB.name) -
+                                            getChartWeight(chartA.name)
+                                    );
+
+                                return [catalogId, charts];
+                            }
                         )
                     )
                 };
