@@ -29,7 +29,7 @@ export type UserConfigs = Id<
         isDarkModeEnabled: boolean;
         githubPersonalAccessToken: string | null;
         doDisplayMySecretsUseInServiceDialog: boolean;
-        bookmarkedServiceConfigurationStr: string | null;
+        restorableConfigsStr: string | null;
         selectedProjectId: string | null;
         isCommandBarEnabled: boolean;
     }
@@ -142,7 +142,7 @@ export const protectedThunks = {
                 "isDarkModeEnabled": getIsDarkModeEnabledOsDefault(),
                 "githubPersonalAccessToken": null,
                 "doDisplayMySecretsUseInServiceDialog": true,
-                "bookmarkedServiceConfigurationStr": null,
+                "restorableConfigsStr": null,
                 "selectedProjectId": null,
                 "isCommandBarEnabled": coreParams.isCommandBarEnabledByDefault
             };
@@ -171,6 +171,52 @@ export const protectedThunks = {
                     Object.assign(userConfigs, { [key]: value });
                 })
             );
+
+            migration_bookmarkedServiceConfigurationStr_to_restorableConfigsStr: {
+                if (userConfigs.restorableConfigsStr !== null) {
+                    break migration_bookmarkedServiceConfigurationStr_to_restorableConfigsStr;
+                }
+
+                const oldPath = pathJoin(dirPath, "bookmarkedServiceConfigurationStr");
+
+                const value = await secretsManager
+                    .get({ "path": oldPath })
+                    .then(({ secret }) => secret["value"])
+                    .catch(() => undefined);
+
+                if (typeof value !== "string") {
+                    break migration_bookmarkedServiceConfigurationStr_to_restorableConfigsStr;
+                }
+
+                const bookmarkedServiceConfiguration: {
+                    catalogId: string;
+                    packageName: string;
+                    formFieldsValueDifferentFromDefault: any[];
+                }[] = JSON.parse(value);
+
+                const restorableConfigs: {
+                    catalogId: string;
+                    chartName: string;
+                    formFieldsValueDifferentFromDefault: any[];
+                }[] = bookmarkedServiceConfiguration.map(
+                    ({
+                        catalogId,
+                        packageName,
+                        formFieldsValueDifferentFromDefault
+                    }) => ({
+                        catalogId,
+                        "chartName": packageName,
+                        formFieldsValueDifferentFromDefault
+                    })
+                );
+
+                await secretsManager.put({
+                    "path": pathJoin(dirPath, "restorableConfigsStr"),
+                    "secret": { "value": JSON.stringify(restorableConfigs) }
+                });
+
+                await secretsManager.delete({ "path": oldPath });
+            }
 
             dispatch(actions.initializationCompleted({ userConfigs }));
         }

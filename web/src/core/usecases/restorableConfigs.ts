@@ -131,8 +131,7 @@ export const protectedThunks = {
             dispatch(
                 actions.initializationCompleted({
                     "restorableConfigs": (() => {
-                        const { value } =
-                            getState().userConfigs.bookmarkedServiceConfigurationStr;
+                        const { value } = getState().userConfigs.restorableConfigsStr;
 
                         return value === null ? [] : JSON.parse(value);
                     })()
@@ -148,7 +147,7 @@ const privateThunks = {
             const [dispatch, getState] = args;
             dispatch(
                 userConfigsThunks.changeValue({
-                    "key": "bookmarkedServiceConfigurationStr",
+                    "key": "restorableConfigsStr",
                     "value": JSON.stringify(getState().restorableConfig.restorableConfigs)
                 })
             );
