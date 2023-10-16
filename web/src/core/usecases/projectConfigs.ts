@@ -156,15 +156,6 @@ export const protectedThunks = {
                     "isOnboarding": false
                 })
             );
-        },
-    "getIs":
-        (params: { projectId: string }) =>
-        (...args): boolean => {
-            const { projectId } = params;
-
-            const [, getState] = args;
-
-            return getState()[name].projects[0].id === projectId;
         }
 } satisfies Thunks;
 
