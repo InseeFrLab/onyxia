@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-expressions */
 import {
     createCoreFromUsecases,
     createObjectThatThrowsIfAccessed,
@@ -8,7 +9,6 @@ import {
 import { usecases } from "./usecases";
 import type { SecretsManager } from "./ports/SecretsManager";
 import type { S3Client } from "./ports/S3Client";
-import type { Oidc } from "./ports/Oidc";
 import type { ReturnType } from "tsafe/ReturnType";
 import type { Language } from "./ports/OnyxiaApi/Language";
 
@@ -24,10 +24,6 @@ type CoreParams = {
 export async function createCore(params: CoreParams) {
     const { apiUrl, transformUrlBeforeRedirectToLogin, getCurrentLang } = params;
 
-    let oidc: Oidc | undefined = undefined;
-
-    let isCoreCreated = false;
-
     const onyxiaApi = await (async () => {
         if (apiUrl === "") {
             const { onyxiaApi } = await import("core/adapters/onyxiaApiMock");
@@ -40,7 +36,10 @@ export async function createCore(params: CoreParams) {
         const onyxiaApi = createOnyxiaApi({
             "url": apiUrl,
             "getOidcAccessToken": () => {
-                if (oidc === undefined) {
+                try {
+                    oidc;
+                } catch {
+                    // We haven't initialized oidc yet
                     return undefined;
                 }
 
@@ -50,32 +49,42 @@ export async function createCore(params: CoreParams) {
                 return oidc.getAccessToken().accessToken;
             },
             "getRegionId": () => {
-                if (!isCoreCreated) {
+                try {
+                    core;
+                } catch {
+                    // We haven't initialized the core yet
                     return undefined;
                 }
 
+                const state = core.getState();
+
                 try {
                     return usecases.deploymentRegion.selectors.selectedDeploymentRegion(
-                        core.getState()
+                        state
                     ).id;
                 } catch (error) {
                     if (error instanceof AccessError) {
+                        // We haven't initialized the deployment region yet
                         return undefined;
                     }
                     throw error;
                 }
             },
             "getProject": () => {
-                if (!isCoreCreated) {
+                try {
+                    core;
+                } catch {
+                    // We haven't initialized the core yet
                     return undefined;
                 }
 
+                const state = core.getState();
+
                 try {
-                    return usecases.projectConfigs.selectors.selectedProject(
-                        core.getState()
-                    );
+                    return usecases.projectConfigs.selectors.selectedProject(state);
                 } catch (error) {
                     if (error instanceof AccessError) {
+                        // We haven't initialized the projectConfigs yet
                         return undefined;
                     }
                     throw error;
@@ -88,7 +97,7 @@ export async function createCore(params: CoreParams) {
 
     let oidcParams: { authority: string; clientId: string } | undefined = undefined;
 
-    oidc = await (async () => {
+    const oidc = await (async () => {
         oidcParams = (await onyxiaApi.getAvailableRegionsAndOidcParams()).oidcParams;
 
         if (oidcParams === undefined) {
@@ -125,8 +134,6 @@ export async function createCore(params: CoreParams) {
         thunksExtraArgument,
         usecases
     });
-
-    isCoreCreated = true;
 
     await core.dispatch(usecases.userAuthentication.protectedThunks.initialize());
 
