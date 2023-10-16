@@ -18,7 +18,10 @@ export const thunks = {
             const state = getState()[name];
 
             if (state.stateDescription === "ready") {
-                assert(params.catalogId !== undefined);
+                if (params.catalogId === undefined) {
+                    dispatch(actions.notifyCatalogIdSelected());
+                    return;
+                }
 
                 if (state.selectedCatalogId === params.catalogId) {
                     return;
@@ -54,7 +57,7 @@ export const thunks = {
             );
 
             if (params.catalogId === undefined) {
-                dispatch(actions.notifyDefaultCatalogIdSelected());
+                dispatch(actions.notifyCatalogIdSelected());
             }
         },
     "setSearch":

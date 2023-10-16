@@ -13,7 +13,7 @@ export const createEvt = (({ evtAction, getState }) => {
     evtAction
         .pipe(action => (action.sliceName !== name ? null : [action]))
         .attach(
-            ({ actionName }) => actionName === "notifyDefaultCatalogIdSelected",
+            ({ actionName }) => actionName === "notifyCatalogIdSelected",
             () => {
                 const state = getState()[name];
                 assert(state.stateDescription === "ready");

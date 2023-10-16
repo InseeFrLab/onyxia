@@ -79,7 +79,7 @@ export const { reducer, actions } = createSlice({
 
             state.selectedCatalogId = selectedCatalogId;
         },
-        "notifyDefaultCatalogIdSelected": () => {
+        "notifyCatalogIdSelected": () => {
             /* Only for evt */
         },
         "searchChanged": (state, { payload }: PayloadAction<{ search: string }>) => {
