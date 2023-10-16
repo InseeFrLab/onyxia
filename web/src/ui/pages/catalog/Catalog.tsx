@@ -253,7 +253,7 @@ const useStyles = tss
             "marginBottom": theme.spacing(2)
         },
         "searchBar": {
-            "marginBottom": theme.spacing(4)
+            "marginBottom": theme.spacing(2)
         },
         "searchResults": {
             "marginBottom": theme.spacing(4)
