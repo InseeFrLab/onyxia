@@ -250,13 +250,13 @@ const useStyles = tss
         },
         "catalogSwitcher": {
             "display": "flex",
-            "marginBottom": theme.spacing(2)
+            "marginBottom": theme.spacing(3)
         },
         "searchBar": {
-            "marginBottom": theme.spacing(2)
+            "marginBottom": theme.spacing(3)
         },
         "searchResults": {
-            "marginBottom": theme.spacing(4)
+            "marginBottom": theme.spacing(3)
         },
         "cardsWrapper": {
             "flex": 1,
