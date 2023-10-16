@@ -194,9 +194,7 @@ export async function createCore(params: CoreParams) {
         await core.dispatch(usecases.projectConfigs.protectedThunks.initialize());
 
         /** prettier-ignore */
-        await core.dispatch(
-            usecases.restorablePackageConfigs.protectedThunks.initialize()
-        );
+        await core.dispatch(usecases.restorableConfigs.protectedThunks.initialize());
 
         await core.dispatch(usecases.userAccountManagement.protectedThunks.initialize());
     }

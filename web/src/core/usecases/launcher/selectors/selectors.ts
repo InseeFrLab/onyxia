@@ -8,7 +8,7 @@ import {
     onyxiaFriendlyNameFormFieldPath,
     onyxiaIsSharedFormFieldPath
 } from "core/ports/OnyxiaApi";
-import type { RestorablePackageConfig } from "../../restorablePackageConfigs";
+import type { RestorableConfig } from "../../restorableConfigs";
 import * as projectConfigs from "../../projectConfigs";
 import { scaffoldingIndexedFormFieldsToFinal } from "./scaffoldingIndexedFormFieldsToFinal";
 import type { IndexedFormFields } from "../FormField";
@@ -343,7 +343,7 @@ const pathOfFormFieldsWhoseValuesAreDifferentFromDefault = createSelector(
 
 const catalogId = createSelector(readyState, state => state?.catalogId);
 
-const restorablePackageConfig = createSelector(
+const restorableConfig = createSelector(
     isReady,
     catalogId,
     packageName,
@@ -355,7 +355,7 @@ const restorablePackageConfig = createSelector(
         packageName,
         formFields,
         pathOfFormFieldsWhoseValuesAreDifferentFromDefault
-    ): RestorablePackageConfig | undefined => {
+    ): RestorableConfig | undefined => {
         if (!isReady) {
             return undefined;
         }
@@ -486,7 +486,7 @@ const wrap = createSelector(
     indexedFormFields,
     isLaunchable,
     formFieldsIsWellFormed,
-    restorablePackageConfig,
+    restorableConfig,
     areAllFieldsDefault,
     packageName,
     icon,
@@ -500,7 +500,7 @@ const wrap = createSelector(
         indexedFormFields,
         isLaunchable,
         formFieldsIsWellFormed,
-        restorablePackageConfig,
+        restorableConfig,
         areAllFieldsDefault,
         packageName,
         icon,
@@ -516,8 +516,8 @@ const wrap = createSelector(
                 [symToStr({ indexedFormFields })]: undefined,
                 [symToStr({ isLaunchable })]: undefined,
                 [symToStr({ formFieldsIsWellFormed })]: undefined,
-                [symToStr({ restorablePackageConfig })]: undefined,
-                [symToStr({ restorablePackageConfig })]: undefined,
+                [symToStr({ restorableConfig })]: undefined,
+                [symToStr({ restorableConfig })]: undefined,
                 [symToStr({ areAllFieldsDefault })]: undefined,
                 [symToStr({ packageName })]: undefined,
                 [symToStr({ icon })]: undefined,
@@ -528,7 +528,7 @@ const wrap = createSelector(
         }
 
         assert(friendlyName !== undefined);
-        assert(restorablePackageConfig !== undefined);
+        assert(restorableConfig !== undefined);
         assert(indexedFormFields !== undefined);
         assert(isLaunchable !== undefined);
         assert(isShared !== undefined);
@@ -546,7 +546,7 @@ const wrap = createSelector(
             indexedFormFields,
             isLaunchable,
             formFieldsIsWellFormed,
-            restorablePackageConfig,
+            restorableConfig,
             areAllFieldsDefault,
             packageName,
             icon,

@@ -64,7 +64,7 @@ export default function Launcher(props: Props) {
         indexedFormFields,
         isLaunchable,
         formFieldsIsWellFormed,
-        restorablePackageConfig,
+        restorableConfig,
         areAllFieldsDefault,
         packageName,
         icon,
@@ -77,7 +77,7 @@ export default function Launcher(props: Props) {
 
     const {
         launcher,
-        restorablePackageConfig: restorablePackageConfigFunctions,
+        restorableConfig: restorableConfigFunctions,
         k8sCredentials
     } = useCoreFunctions();
 
@@ -164,17 +164,17 @@ export default function Launcher(props: Props) {
         userConfigs: { isCommandBarEnabled }
     } = useCoreState(selectors.userConfigs.userConfigs);
 
-    const { restorablePackageConfigs } = useCoreState(
-        selectors.restorablePackageConfig.restorablePackageConfigs
+    const { restorableConfigs } = useCoreState(
+        selectors.restorableConfig.restorableConfigs
     );
 
     useEffect(() => {
-        if (restorablePackageConfig === undefined) {
+        if (restorableConfig === undefined) {
             return;
         }
 
         const { catalogId, packageName, formFieldsValueDifferentFromDefault } =
-            restorablePackageConfig;
+            restorableConfig;
 
         routes
             .launcher({
@@ -184,27 +184,26 @@ export default function Launcher(props: Props) {
                 "autoLaunch": route.params.autoLaunch
             })
             .replace();
-    }, [restorablePackageConfig]);
+    }, [restorableConfig]);
 
     const [isBookmarked, setIsBookmarked] = useState(false);
 
     useEffect(() => {
-        if (restorablePackageConfig === undefined) {
+        if (restorableConfig === undefined) {
             return;
         }
 
-        const isBookmarkedNew =
-            restorablePackageConfigFunctions.getIsRestorablePackageConfigInStore({
-                restorablePackageConfigs,
-                restorablePackageConfig
-            });
+        const isBookmarkedNew = restorableConfigFunctions.getIsRestorableConfigInStore({
+            restorableConfigs,
+            restorableConfig
+        });
 
         if (isBookmarked && !isBookmarkedNew) {
             evtNoLongerBookmarkedDialogOpen.post();
         }
 
         setIsBookmarked(isBookmarkedNew);
-    }, [restorablePackageConfigs, restorablePackageConfig]);
+    }, [restorableConfigs, restorableConfig]);
 
     const onRequestCancel = useConstCallback(() =>
         routes.catalog({ "catalogId": route.params.catalogId }).push()
@@ -215,12 +214,12 @@ export default function Launcher(props: Props) {
     );
 
     const onIsBookmarkedValueChange = useConstCallback((isBookmarked: boolean) => {
-        assert(restorablePackageConfig !== undefined);
+        assert(restorableConfig !== undefined);
 
-        restorablePackageConfigFunctions[
-            isBookmarked ? "saveRestorablePackageConfig" : "deleteRestorablePackageConfig"
+        restorableConfigFunctions[
+            isBookmarked ? "saveRestorableConfig" : "deleteRestorableConfig"
         ]({
-            restorablePackageConfig,
+            restorableConfig,
             "getDoOverwriteConfiguration": async ({ friendlyName }) => {
                 const dDoOverwriteConfiguration = new Deferred<boolean>();
 

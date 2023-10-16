@@ -33,9 +33,9 @@ export default function MyServices(props: Props) {
     const { t: tCatalogLauncher } = useTranslation("Launcher");
 
     /* prettier-ignore */
-    const { serviceManager, restorablePackageConfig, k8sCredentials, projectConfigs } = useCoreFunctions();
+    const { serviceManager, restorableConfig, k8sCredentials, projectConfigs } = useCoreFunctions();
     /* prettier-ignore */
-    const { displayableConfigs } = useCoreState(selectors.restorablePackageConfig.displayableConfigs);
+    const { displayableConfigs } = useCoreState(selectors.restorableConfig.displayableConfigs);
     /* prettier-ignore */
     const { isUpdating } = useCoreState(selectors.serviceManager.isUpdating);
     const { runningServices } = useCoreState(selectors.serviceManager.runningServices);
@@ -69,7 +69,7 @@ export default function MyServices(props: Props) {
     });
 
     useEffect(() => {
-        restorablePackageConfig.fetchIconsIfNotAlreadyDone();
+        restorableConfig.fetchIconsIfNotAlreadyDone();
     }, []);
 
     useEffect(() => {
@@ -115,15 +115,15 @@ export default function MyServices(props: Props) {
                 );
                 return;
             case "delete":
-                restorablePackageConfig.deleteRestorablePackageConfig({
-                    "restorablePackageConfig": displayableConfigs.find(
-                        ({ restorablePackageConfig }) =>
+                restorableConfig.deleteRestorableConfig({
+                    "restorableConfig": displayableConfigs.find(
+                        ({ restorableConfig }) =>
                             routes.launcher({
-                                "catalogId": restorablePackageConfig.catalogId,
-                                "chartName": restorablePackageConfig.packageName,
+                                "catalogId": restorableConfig.catalogId,
+                                "chartName": restorableConfig.packageName,
                                 "autoLaunch": true
                             }).href === launchLinkHref
-                    )!.restorablePackageConfig
+                    )!.restorableConfig
                 });
                 return;
         }
@@ -131,23 +131,21 @@ export default function MyServices(props: Props) {
 
     const savedConfigs = useMemo(
         (): MyServicesSavedConfigsProps["savedConfigs"] =>
-            displayableConfigs.map(
-                ({ logoUrl, friendlyName, restorablePackageConfig }) => {
-                    const buildLink = (autoLaunch: boolean) =>
-                        routes.launcher({
-                            "catalogId": restorablePackageConfig.catalogId,
-                            "chartName": restorablePackageConfig.packageName,
-                            autoLaunch
-                        }).link;
+            displayableConfigs.map(({ logoUrl, friendlyName, restorableConfig }) => {
+                const buildLink = (autoLaunch: boolean) =>
+                    routes.launcher({
+                        "catalogId": restorableConfig.catalogId,
+                        "chartName": restorableConfig.packageName,
+                        autoLaunch
+                    }).link;
 
-                    return {
-                        logoUrl,
-                        friendlyName,
-                        "launchLink": buildLink(true),
-                        "editLink": buildLink(false)
-                    };
-                }
-            ),
+                return {
+                    logoUrl,
+                    friendlyName,
+                    "launchLink": buildLink(true),
+                    "editLink": buildLink(false)
+                };
+            }),
         [displayableConfigs]
     );
 

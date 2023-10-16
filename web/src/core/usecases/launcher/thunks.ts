@@ -255,9 +255,9 @@ export const thunks = {
 
                 const sensitiveConfigurations: FormFieldValue[] | undefined = (() => {
                     if (
-                        getState().restorablePackageConfig.restorablePackageConfigs.find(
-                            restorablePackageConfig =>
-                                same(restorablePackageConfig, {
+                        getState().restorableConfig.restorableConfigs.find(
+                            restorableConfig =>
+                                same(restorableConfig, {
                                     packageName,
                                     catalogId,
                                     formFieldsValueDifferentFromDefault
