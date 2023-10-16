@@ -20,7 +20,7 @@ export declare namespace State {
         catalogId: string;
         catalogLocation: string;
         packageName: string;
-        sources: string[];
+        sourceUrls: string[];
         pathOfFormFieldsWhoseValuesAreDifferentFromDefault: {
             path: string[];
         }[];
@@ -61,7 +61,7 @@ export const { reducer, actions } = createSlice({
                         catalogId: string;
                         packageName: string;
                         icon: string | undefined;
-                        sources: string[];
+                        sourceUrls: string[];
                         formFields: State.Ready["formFields"];
                         infosAboutWhenFieldsShouldBeHidden: State.Ready["infosAboutWhenFieldsShouldBeHidden"];
                         config: State.Ready["config"];
@@ -76,7 +76,7 @@ export const { reducer, actions } = createSlice({
                     catalogId,
                     packageName,
                     icon,
-                    sources,
+                    sourceUrls,
                     formFields,
                     infosAboutWhenFieldsShouldBeHidden,
                     config,
@@ -92,7 +92,7 @@ export const { reducer, actions } = createSlice({
                         catalogLocation,
                         packageName,
                         icon,
-                        sources,
+                        sourceUrls,
                         formFields,
                         infosAboutWhenFieldsShouldBeHidden,
                         "defaultFormFieldsValue": formFields.map(({ path, value }) => ({

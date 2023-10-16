@@ -70,7 +70,7 @@ export default function Launcher(props: Props) {
         icon,
         launchScript,
         commandLogsEntries,
-        sources
+        sourceUrls
     } = useCoreState(selectors.launcher.wrap).wrap;
 
     const scrollableDivRef = useStateRef<HTMLDivElement>(null);
@@ -260,7 +260,7 @@ export default function Launcher(props: Props) {
                     helpTitle={t("header text2")}
                     helpContent={t("chart sources", {
                         "chartName": packageName,
-                        "urls": sources
+                        "urls": sourceUrls
                     })}
                     helpIcon="sentimentSatisfied"
                     titleCollapseParams={{

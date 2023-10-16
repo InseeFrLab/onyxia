@@ -477,7 +477,7 @@ const commandLogsEntries = createSelector(launchCommands, launchCommands => {
     }));
 });
 
-const sources = createSelector(readyState, state => state?.sources);
+const sourceUrls = createSelector(readyState, state => state?.sourceUrls);
 
 const wrap = createSelector(
     isReady,
@@ -492,7 +492,7 @@ const wrap = createSelector(
     icon,
     launchScript,
     commandLogsEntries,
-    sources,
+    sourceUrls,
     (
         isReady,
         friendlyName,
@@ -506,7 +506,7 @@ const wrap = createSelector(
         icon,
         launchScript,
         commandLogsEntries,
-        sources
+        sourceUrls
     ) => {
         if (!isReady) {
             return {
@@ -523,7 +523,7 @@ const wrap = createSelector(
                 [symToStr({ icon })]: undefined,
                 [symToStr({ launchScript })]: undefined,
                 [symToStr({ commandLogsEntries })]: undefined,
-                [symToStr({ sources })]: undefined
+                [symToStr({ sourceUrls })]: undefined
             };
         }
 
@@ -537,7 +537,7 @@ const wrap = createSelector(
         assert(packageName !== undefined);
         assert(commandLogsEntries !== undefined);
         assert(launchScript !== undefined);
-        assert(sources !== undefined);
+        assert(sourceUrls !== undefined);
 
         return {
             "isReady": true as const,
@@ -552,7 +552,7 @@ const wrap = createSelector(
             icon,
             launchScript,
             commandLogsEntries,
-            sources
+            sourceUrls
         };
     }
 );

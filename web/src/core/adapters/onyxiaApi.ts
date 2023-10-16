@@ -468,7 +468,7 @@ export function createOnyxiaApi(params: {
                 })
                 .catch(onError)
                 .then(() => undefined),
-        "getPackageConfig": ({ catalogId, packageName }) =>
+        "getChartDetails": ({ catalogId, chartName }) =>
             axiosInstance
                 .get<
                     {
@@ -478,13 +478,13 @@ export function createOnyxiaApi(params: {
                             name: string;
                         }[];
                     }[]
-                >(`/public/catalogs/${catalogId}/charts/${packageName}`)
+                >(`/public/catalogs/${catalogId}/charts/${chartName}`)
                 .then(
                     ({ data }) => ({
                         "dependencies":
                             data[0].dependencies?.map(({ name }) => name) ?? [],
-                        "sources": data[0].sources ?? [],
-                        "getValuesSchemaJson": ({ xOnyxiaContext }) => {
+                        "sourceUrls": data[0].sources ?? [],
+                        "getChartValuesSchemaJson": ({ xOnyxiaContext }) => {
                             //WARNING: The type is not exactly correct here. JSONSchemaFormFieldDescription["default"] can be undefined.
                             const configCopy = JSON.parse(
                                 JSON.stringify(data[0].config)

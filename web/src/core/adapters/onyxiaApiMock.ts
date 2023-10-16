@@ -66,7 +66,7 @@ export const onyxiaApi: OnyxiaApi = {
         { "promise": true }
     ),
     ...createPropertyThatThrowIfAccessed("getCatalogsAndCharts", "Not mocked"),
-    ...createPropertyThatThrowIfAccessed("getPackageConfig", "Not mocked"),
+    ...createPropertyThatThrowIfAccessed("getChartDetails", "Not mocked"),
     ...createPropertyThatThrowIfAccessed("launchPackage", "Not mocked"),
     ...createPropertyThatThrowIfAccessed("getRunningServices", "Not mocked"),
     ...createPropertyThatThrowIfAccessed("stopService", "Not mocked"),

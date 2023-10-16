@@ -39,12 +39,12 @@ export type OnyxiaApi = {
         clear: () => void;
     };
 
-    getPackageConfig: (params: { catalogId: string; packageName: string }) => Promise<{
-        getValuesSchemaJson: (params: {
+    getChartDetails: (params: { catalogId: string; chartName: string }) => Promise<{
+        getChartValuesSchemaJson: (params: {
             xOnyxiaContext: XOnyxiaContext;
         }) => JSONSchemaObject;
         dependencies: string[];
-        sources: string[];
+        sourceUrls: string[];
     }>;
 
     launchPackage: (params: {

@@ -52,10 +52,10 @@ export const thunks = {
 
             dispatch(actions.initializationStarted());
 
-            const { dependencies, sources, getValuesSchemaJson } =
-                await onyxiaApi.getPackageConfig({
+            const { dependencies, sourceUrls, getChartValuesSchemaJson } =
+                await onyxiaApi.getChartDetails({
                     catalogId,
-                    packageName
+                    "chartName": packageName
                 });
 
             {
@@ -70,7 +70,7 @@ export const thunks = {
 
             assert(oidc.isUserLoggedIn);
 
-            const valuesSchemaJson = getValuesSchemaJson({
+            const valuesSchemaJson = getChartValuesSchemaJson({
                 "xOnyxiaContext": await (async (): Promise<XOnyxiaContext> => {
                     const { publicIp } = await dispatch(publicIpUsecase.thunks.fetch());
 
@@ -608,7 +608,7 @@ export const thunks = {
                     catalogLocation,
                     icon,
                     packageName,
-                    sources,
+                    sourceUrls,
                     formFields,
                     infosAboutWhenFieldsShouldBeHidden,
                     "config": valuesSchemaJson,
