@@ -134,7 +134,6 @@ const useStyles = tss
             "visibility": "hidden"
         },
         "highlightedChar": {
-            "color": theme.colors.useCases.typography.textFocus,
-            "fontWeight": "bold"
+            "color": theme.colors.useCases.typography.textFocus
         }
     }));

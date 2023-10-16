@@ -53,7 +53,7 @@ export const thunks = {
                 })
             );
 
-            if (params.catalogId !== undefined) {
+            if (params.catalogId === undefined) {
                 dispatch(actions.notifyDefaultCatalogIdSelected());
             }
         },
