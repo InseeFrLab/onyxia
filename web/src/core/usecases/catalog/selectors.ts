@@ -100,7 +100,7 @@ const filteredCharts = createSelector(
 
             const {
                 name: chartName,
-                versions: [{ description: chartDescription, home, icon }]
+                versions: [{ description: chartDescription = "", home, icon }]
             } = chart;
 
             return {

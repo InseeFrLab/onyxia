@@ -366,7 +366,7 @@ export function createOnyxiaApi(params: {
                                 entries: Record<
                                     string,
                                     {
-                                        description: string;
+                                        description?: string;
                                         version: string;
                                         icon?: string | undefined;
                                         home?: string | undefined;
