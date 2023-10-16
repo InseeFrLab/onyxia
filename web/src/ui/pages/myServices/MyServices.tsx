@@ -465,7 +465,7 @@ const useStyles = tss
                 "maxWidth": 800
             },
             "helpDialogBody": {
-                "maxHeight": (console.log({ bellowHeaderHeight }), bellowHeaderHeight),
+                "maxHeight": bellowHeaderHeight,
                 "overflow": "auto"
             }
         })
