@@ -113,7 +113,7 @@ export default function Catalog(props: Props) {
                 helpIcon="sentimentSatisfied"
                 titleCollapseParams={{
                     "behavior": "collapses on scroll",
-                    "scrollTopThreshold": 600,
+                    "scrollTopThreshold": 650,
                     "scrollableElementRef": scrollableDivRef
                 }}
                 helpCollapseParams={{
