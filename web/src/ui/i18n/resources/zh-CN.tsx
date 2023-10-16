@@ -275,9 +275,8 @@ export const translations: Translations<"zh-CN"> = {
             <>
                 您正在浏览 Helm Chart 仓库{" "}
                 <MuiLink href={repositoryUrl} target="_blank">
-                    {catalogName}
+                    {catalogName}：{catalogDescription}
                 </MuiLink>
-                ：{catalogDescription}
             </>
         ),
         "here": "此处",

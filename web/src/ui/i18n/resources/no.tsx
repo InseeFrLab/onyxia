@@ -332,9 +332,8 @@ export const translations: Translations<"no"> = {
             <>
                 Du utforsker Helm Chart Repository{" "}
                 <MuiLink href={repositoryUrl} target="_blank">
-                    {catalogName}
+                    {catalogName}: {catalogDescription}
                 </MuiLink>
-                : {catalogDescription}
             </>
         ),
         "here": "her",
