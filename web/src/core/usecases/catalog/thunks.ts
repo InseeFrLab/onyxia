@@ -99,7 +99,7 @@ export const thunks = {
 } satisfies Thunks;
 
 const { getContext } = createUsecaseContextApi(() => {
-    const { waitForDebounce } = waitForDebounceFactory({ "delay": 500 });
+    const { waitForDebounce } = waitForDebounceFactory({ "delay": 200 });
 
     const getFlexSearch = memoize(
         (catalogs: Catalog[], chartsByCatalogId: Record<string, Chart[]>) => {
@@ -166,9 +166,10 @@ const { getContext } = createUsecaseContextApi(() => {
                             }),
                             "chartDescriptionHighlightedIndexes": getMatchPositions({
                                 search,
-                                "text": chartsByCatalogId[catalogId]!.find(
-                                    chart => chart.name === chartName
-                                )!.versions[0].description
+                                "text":
+                                    chartsByCatalogId[catalogId]!.find(
+                                        chart => chart.name === chartName
+                                    )!.versions[0].description ?? ""
                             })
                         };
                     }
