@@ -60,7 +60,7 @@ export type ChartCardData = {
     chartName: string;
     chartNameWithHighlights: StringWithHighlights;
     chartDescriptionWithHighlights: StringWithHighlights;
-    moreInfosUrl: string | undefined;
+    projectHomepageUrl: string | undefined;
     iconUrl: string | undefined;
 };
 
@@ -100,7 +100,9 @@ const filteredCharts = createSelector(
 
             const {
                 name: chartName,
-                versions: [{ description: chartDescription = "", home, icon }]
+                versions: [
+                    { description: chartDescription = "", projectHomepageUrl, iconUrl }
+                ]
             } = chart;
 
             return {
@@ -114,8 +116,8 @@ const filteredCharts = createSelector(
                     "charArray": chartDescription.normalize().split(""),
                     "highlightedIndexes": chartDescriptionHighlightedIndexes
                 },
-                "moreInfosUrl": home,
-                "iconUrl": icon
+                projectHomepageUrl,
+                iconUrl
             };
         }
 

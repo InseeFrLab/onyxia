@@ -66,11 +66,11 @@ export default function Launcher(props: Props) {
         formFieldsIsWellFormed,
         restorableConfig,
         areAllFieldsDefault,
-        packageName,
-        icon,
+        chartName,
+        chartIconUrl,
         launchScript,
         commandLogsEntries,
-        sourceUrls
+        chartSourceUrls
     } = useCoreState(selectors.launcher.wrap).wrap;
 
     const scrollableDivRef = useStateRef<HTMLDivElement>(null);
@@ -89,7 +89,7 @@ export default function Launcher(props: Props) {
 
         launcher.initialize({
             catalogId,
-            "packageName": chartName,
+            chartName,
             formFieldsValueDifferentFromDefault
         });
 
@@ -173,13 +173,13 @@ export default function Launcher(props: Props) {
             return;
         }
 
-        const { catalogId, packageName, formFieldsValueDifferentFromDefault } =
+        const { catalogId, chartName, formFieldsValueDifferentFromDefault } =
             restorableConfig;
 
         routes
             .launcher({
                 catalogId,
-                "chartName": packageName,
+                chartName,
                 formFieldsValueDifferentFromDefault,
                 "autoLaunch": route.params.autoLaunch
             })
@@ -259,8 +259,8 @@ export default function Launcher(props: Props) {
                     title={t("header text1")}
                     helpTitle={t("header text2")}
                     helpContent={t("chart sources", {
-                        "chartName": packageName,
-                        "urls": sourceUrls
+                        chartName,
+                        "urls": chartSourceUrls
                     })}
                     helpIcon="sentimentSatisfied"
                     titleCollapseParams={{
@@ -320,8 +320,8 @@ export default function Launcher(props: Props) {
                         )}
                         <div className={classes.wrapperForMawWidth}>
                             <LauncherMainCard
-                                packageName={packageName}
-                                packageIconUrl={icon}
+                                chartName={chartName}
+                                chartIconUrl={chartIconUrl}
                                 isBookmarked={isBookmarked}
                                 onIsBookmarkedValueChange={onIsBookmarkedValueChange}
                                 friendlyName={friendlyName}

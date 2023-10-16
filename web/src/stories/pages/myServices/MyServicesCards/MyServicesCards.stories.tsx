@@ -19,9 +19,9 @@ const props: Props = {
     "isUpdating": false,
     "cards": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map(i => ({
         "serviceId": `rstudio-${i}`,
-        "packageIconUrl": rstudioImgUrl,
+        "chartIconUrl": rstudioImgUrl,
         "friendlyName": "My RStudio",
-        "packageName": "rstudio",
+        "chartName": "rstudio",
         "infoUrl": url,
         "openUrl": url + "/" + i,
         "monitoringUrl": url,

@@ -3,8 +3,7 @@ export type RunningService = RunningService.Started | RunningService.Starting;
 export declare namespace RunningService {
     export type Common = {
         id: string;
-        packageName: string;
-        friendlyName: string;
+        friendlyName: string | undefined;
         urls: string[];
         startedAt: number;
         postInstallInstructions: string | undefined;

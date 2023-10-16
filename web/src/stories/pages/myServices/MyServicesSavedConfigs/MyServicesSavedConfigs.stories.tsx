@@ -23,7 +23,7 @@ const props: Props = {
         const out = {
             "launchLink": link,
             "editLink": link,
-            "logoUrl": rstudioImgUrl,
+            "chartIconUrl": rstudioImgUrl,
             "friendlyName": `RStudio ${i}`
         };
 

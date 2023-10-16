@@ -120,7 +120,7 @@ export default function MyServices(props: Props) {
                         ({ restorableConfig }) =>
                             routes.launcher({
                                 "catalogId": restorableConfig.catalogId,
-                                "chartName": restorableConfig.packageName,
+                                "chartName": restorableConfig.chartName,
                                 "autoLaunch": true
                             }).href === launchLinkHref
                     )!.restorableConfig
@@ -131,16 +131,16 @@ export default function MyServices(props: Props) {
 
     const savedConfigs = useMemo(
         (): MyServicesSavedConfigsProps["savedConfigs"] =>
-            displayableConfigs.map(({ logoUrl, friendlyName, restorableConfig }) => {
+            displayableConfigs.map(({ chartIconUrl, friendlyName, restorableConfig }) => {
                 const buildLink = (autoLaunch: boolean) =>
                     routes.launcher({
                         "catalogId": restorableConfig.catalogId,
-                        "chartName": restorableConfig.packageName,
+                        "chartName": restorableConfig.chartName,
                         autoLaunch
                     }).link;
 
                 return {
-                    logoUrl,
+                    chartIconUrl,
                     friendlyName,
                     "launchLink": buildLink(true),
                     "editLink": buildLink(false)
@@ -154,9 +154,9 @@ export default function MyServices(props: Props) {
             runningServices?.map(
                 ({
                     id,
-                    logoUrl,
+                    chartIconUrl,
                     friendlyName,
-                    packageName,
+                    chartName,
                     urls,
                     startedAt,
                     monitoringUrl,
@@ -167,9 +167,9 @@ export default function MyServices(props: Props) {
                     ...rest
                 }) => ({
                     "serviceId": id,
-                    "packageIconUrl": logoUrl,
+                    chartIconUrl,
                     friendlyName,
-                    packageName,
+                    chartName,
                     "openUrl": urls[0],
                     monitoringUrl,
                     "startTime": isStarting ? undefined : startedAt,

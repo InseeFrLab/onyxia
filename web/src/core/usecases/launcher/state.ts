@@ -16,11 +16,11 @@ export declare namespace State {
 
     export type Ready = {
         stateDescription: "ready";
-        icon: string | undefined;
+        chartIconUrl: string | undefined;
         catalogId: string;
-        catalogLocation: string;
-        packageName: string;
-        sourceUrls: string[];
+        chartName: string;
+        repositoryUrl: string;
+        chartSourceUrls: string[];
         pathOfFormFieldsWhoseValuesAreDifferentFromDefault: {
             path: string[];
         }[];
@@ -30,7 +30,7 @@ export declare namespace State {
             isHidden: boolean | FormFieldValue;
         }[];
         defaultFormFieldsValue: FormFieldValue[];
-        dependencies?: string[];
+        chartDependencies: string[];
         config: JSONSchemaObject;
     };
 }
@@ -57,30 +57,30 @@ export const { reducer, actions } = createSlice({
                     payload
                 }: {
                     payload: {
-                        catalogLocation: string;
+                        repositoryUrl: string;
                         catalogId: string;
-                        packageName: string;
-                        icon: string | undefined;
-                        sourceUrls: string[];
+                        chartName: string;
+                        chartIconUrl: string | undefined;
+                        chartSourceUrls: string[];
                         formFields: State.Ready["formFields"];
                         infosAboutWhenFieldsShouldBeHidden: State.Ready["infosAboutWhenFieldsShouldBeHidden"];
                         config: State.Ready["config"];
-                        dependencies: string[];
+                        chartDependencies: string[];
                         formFieldsValueDifferentFromDefault: FormFieldValue[];
                         sensitiveConfigurations: FormFieldValue[];
                     };
                 }
             ) => {
                 const {
-                    catalogLocation,
+                    repositoryUrl,
                     catalogId,
-                    packageName,
-                    icon,
-                    sourceUrls,
+                    chartName,
+                    chartIconUrl,
+                    chartSourceUrls,
                     formFields,
                     infosAboutWhenFieldsShouldBeHidden,
                     config,
-                    dependencies,
+                    chartDependencies,
                     formFieldsValueDifferentFromDefault
                 } = payload;
 
@@ -89,17 +89,17 @@ export const { reducer, actions } = createSlice({
                     id<State.Ready>({
                         "stateDescription": "ready",
                         catalogId,
-                        catalogLocation,
-                        packageName,
-                        icon,
-                        sourceUrls,
+                        repositoryUrl,
+                        chartName,
+                        chartIconUrl,
+                        chartSourceUrls,
                         formFields,
                         infosAboutWhenFieldsShouldBeHidden,
                         "defaultFormFieldsValue": formFields.map(({ path, value }) => ({
                             path,
                             value
                         })),
-                        dependencies,
+                        chartDependencies,
                         "pathOfFormFieldsWhoseValuesAreDifferentFromDefault": [],
                         config
                     })

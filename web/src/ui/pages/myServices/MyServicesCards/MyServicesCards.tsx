@@ -18,9 +18,9 @@ export type Props = {
     cards:
         | {
               serviceId: string;
-              packageIconUrl?: string;
+              chartIconUrl: string | undefined;
+              chartName: string;
               friendlyName: string;
-              packageName: string;
               openUrl: string | undefined;
               monitoringUrl: string | undefined;
               startTime: number | undefined;

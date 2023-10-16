@@ -47,9 +47,9 @@ export type OnyxiaApi = {
         sourceUrls: string[];
     }>;
 
-    launchPackage: (params: {
+    installChart: (params: {
         catalogId: string;
-        packageName: string;
+        chartName: string;
         options: Record<string, unknown>;
     }) => Promise<void>;
 

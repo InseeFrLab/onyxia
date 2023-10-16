@@ -54,24 +54,21 @@ export const thunks = {
 
             const runningServicesRaw = await onyxiaApi.getRunningServices();
 
-            //NOTE: We do not have the catalog id so we search in every catalog.
+            //NOTE: We do not have the catalog id nor the chart id so we search in every catalog.
             const { getLogoUrl } = await (async () => {
-                const apiRequestResult = await onyxiaApi.getCatalogsAndCharts();
+                const { catalogs, chartsByCatalogId } =
+                    await onyxiaApi.getCatalogsAndCharts();
 
-                function getLogoUrl(params: { packageName: string }): string | undefined {
-                    const { packageName } = params;
+                function getLogoUrl(params: { chartName: string }): string | undefined {
+                    const { chartName } = params;
 
-                    for (const { id: catalogId } of apiRequestResult.catalogs) {
-                        for (const { name, versions } of apiRequestResult
-                            .chartsByCatalogId[catalogId]) {
-                            if (name !== packageName) {
-                                continue;
-                            }
-                            for (const { icon } of versions) {
-                                if (icon === undefined) {
-                                    continue;
-                                }
-                                return icon;
+                    for (const { id: catalogId } of catalogs) {
+                        for (const {
+                            name,
+                            versions: [{ iconUrl }]
+                        } of chartsByCatalogId[catalogId]) {
+                            if (name === chartName) {
+                                return iconUrl;
                             }
                         }
                     }
@@ -122,7 +119,6 @@ export const thunks = {
                             ({
                                 id: serviceId,
                                 friendlyName,
-                                packageName,
                                 urls,
                                 startedAt,
                                 isShared,
@@ -131,11 +127,14 @@ export const thunks = {
                                 postInstallInstructions,
                                 ...rest
                             }) => {
+                                //TODO: This is a hacky way of getting the chart
+                                const chartName = serviceId.replace(/-[^-]+$/, "");
+
                                 const common: RunningService.Common = {
                                     "id": serviceId,
-                                    packageName,
-                                    friendlyName,
-                                    "logoUrl": getLogoUrl({ packageName }),
+                                    chartName,
+                                    "friendlyName": friendlyName ?? serviceId,
+                                    "chartIconUrl": getLogoUrl({ chartName }),
                                     "monitoringUrl": getMonitoringUrl({
                                         serviceId
                                     }),

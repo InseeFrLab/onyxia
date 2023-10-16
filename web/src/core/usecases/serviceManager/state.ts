@@ -35,9 +35,9 @@ export type RunningService = RunningService.Owned | RunningService.NotOwned;
 export declare namespace RunningService {
     export type Common = {
         id: string;
-        packageName: string;
+        chartName: string;
         friendlyName: string;
-        logoUrl: string | undefined;
+        chartIconUrl: string | undefined;
         monitoringUrl: string | undefined;
         isStarting: boolean;
         startedAt: number;

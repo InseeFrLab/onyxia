@@ -12,8 +12,8 @@ const { meta, getStory } = getStoryFactory({
 export default meta;
 
 export const ViewDefault = getStory({
-    "packageName": "rstudio",
-    "packageIconUrl": rstudioImg,
+    "chartName": "rstudio",
+    "chartIconUrl": rstudioImg,
     "isBookmarked": true,
     "friendlyName": "rstudio-1615211422",
     "isLaunchable": true,

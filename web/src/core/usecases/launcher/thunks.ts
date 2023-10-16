@@ -32,12 +32,11 @@ export const thunks = {
     "initialize":
         (params: {
             catalogId: string;
-            packageName: string;
+            chartName: string;
             formFieldsValueDifferentFromDefault: FormFieldValue[];
         }) =>
         async (...args) => {
-            const { catalogId, packageName, formFieldsValueDifferentFromDefault } =
-                params;
+            const { catalogId, chartName, formFieldsValueDifferentFromDefault } = params;
 
             const [
                 dispatch,
@@ -52,11 +51,11 @@ export const thunks = {
 
             dispatch(actions.initializationStarted());
 
-            const { dependencies, sourceUrls, getChartValuesSchemaJson } =
-                await onyxiaApi.getChartDetails({
-                    catalogId,
-                    "chartName": packageName
-                });
+            const {
+                dependencies: chartDependencies,
+                sourceUrls: chartSourceUrls,
+                getChartValuesSchemaJson
+            } = await onyxiaApi.getChartDetails({ catalogId, chartName });
 
             {
                 const state = getState()[name];
@@ -258,8 +257,8 @@ export const thunks = {
                         getState().restorableConfig.restorableConfigs.find(
                             restorableConfig =>
                                 same(restorableConfig, {
-                                    packageName,
                                     catalogId,
+                                    chartName,
                                     formFieldsValueDifferentFromDefault
                                 })
                         ) !== undefined
@@ -580,7 +579,7 @@ export const thunks = {
                 };
             })();
 
-            const { catalogLocation, icon } = await (async () => {
+            const { repositoryUrl, chartIconUrl } = await (async () => {
                 const catalog = await onyxiaApi
                     .getCatalogsAndCharts()
                     .then(({ catalogs }) =>
@@ -596,23 +595,23 @@ export const thunks = {
                     .then(({ chartsByCatalogId }) => chartsByCatalogId[catalog.id]);
 
                 return {
-                    "catalogLocation": catalog.repositoryUrl,
-                    "icon": charts.find(({ name }) => name === packageName)!.versions[0]
-                        .icon
+                    "repositoryUrl": catalog.repositoryUrl,
+                    "chartIconUrl": charts.find(({ name }) => name === chartName)!
+                        .versions[0].iconUrl
                 };
             })();
 
             dispatch(
                 actions.initialized({
                     catalogId,
-                    catalogLocation,
-                    icon,
-                    packageName,
-                    sourceUrls,
+                    repositoryUrl,
+                    chartIconUrl,
+                    chartName,
+                    chartSourceUrls,
                     formFields,
                     infosAboutWhenFieldsShouldBeHidden,
                     "config": valuesSchemaJson,
-                    dependencies,
+                    chartDependencies,
                     formFieldsValueDifferentFromDefault,
                     "sensitiveConfigurations": sensitiveConfigurations ?? []
                 })
@@ -664,14 +663,14 @@ export const thunks = {
 
             assert(state.stateDescription === "ready");
 
-            await onyxiaApi.launchPackage({
+            await onyxiaApi.installChart({
                 "catalogId": state.catalogId,
-                "packageName": state.packageName,
+                "chartName": state.chartName,
                 "options": formFieldsValueToObject(state.formFields)
             });
 
             const { serviceId } = getServiceId({
-                "packageName": state.packageName,
+                "chartName": state.chartName,
                 "randomK8sSubdomain": getRandomK8sSubdomain()
             });
 

@@ -3,7 +3,6 @@ import { allEquals } from "evt/tools/reducers/allEquals";
 import { same } from "evt/tools/inDepth/same";
 import { assert } from "tsafe/assert";
 import { createSlice, createSelector } from "@reduxjs/toolkit";
-import type { PayloadAction } from "@reduxjs/toolkit";
 import type { Thunks } from "../core";
 import { thunks as userConfigsThunks } from "./userConfigs";
 import { createObjectThatThrowsIfAccessed } from "redux-clean-architecture";
@@ -12,24 +11,24 @@ import { onyxiaFriendlyNameFormFieldPath } from "core/ports/OnyxiaApi";
 
 type State = {
     restorableConfigs: RestorableConfig[];
-    packageIcons:
+    iconUrlOfCharts:
         | {
               areFetched: false;
-              isFetching: boolean;
+              areBeingFetched: boolean;
           }
         | {
               areFetched: true;
-              iconsUrl: IconsUrl;
+              chartIconUrlByChartNameAndCatalogId: ChartIconUrlByChartNameAndCatalogId;
           };
 };
 
-type IconsUrl = {
-    [catalogId: string]: { [packageName: string]: string | undefined };
+type ChartIconUrlByChartNameAndCatalogId = {
+    [catalogId: string]: { [chartName: string]: string | undefined };
 };
 
 export type RestorableConfig = {
     catalogId: string;
-    packageName: string;
+    chartName: string;
     formFieldsValueDifferentFromDefault: FormFieldValue[];
 };
 
@@ -48,39 +47,52 @@ export const { reducer, actions } = createSlice({
             _,
             {
                 payload
-            }: PayloadAction<{
-                restorableConfigs: RestorableConfig[];
-            }>
+            }: {
+                payload: {
+                    restorableConfigs: RestorableConfig[];
+                };
+            }
         ) => {
             const { restorableConfigs } = payload;
             return {
                 restorableConfigs,
-                "packageIcons": {
+                "iconUrlOfCharts": {
                     "areFetched": false,
-                    "isFetching": false
+                    "areBeingFetched": false
                 }
             };
         },
-        "fetchIconStarted": state => {
-            assert(!state.packageIcons.areFetched);
+        "chartIconsFetchingStarted": state => {
+            assert(!state.iconUrlOfCharts.areFetched);
 
-            state.packageIcons.isFetching = true;
+            state.iconUrlOfCharts.areBeingFetched = true;
         },
-        "iconsFetched": (state, { payload }: PayloadAction<{ iconsUrl: IconsUrl }>) => {
-            const { iconsUrl } = payload;
+        "chartIconsFetched": (
+            state,
+            {
+                payload
+            }: {
+                payload: {
+                    chartIconUrlByChartNameAndCatalogId: ChartIconUrlByChartNameAndCatalogId;
+                };
+            }
+        ) => {
+            const { chartIconUrlByChartNameAndCatalogId } = payload;
 
-            state.packageIcons = {
+            state.iconUrlOfCharts = {
                 "areFetched": true,
-                iconsUrl
+                chartIconUrlByChartNameAndCatalogId
             };
         },
         "restorableConfigSaved": (
             state,
             {
                 payload
-            }: PayloadAction<{
-                restorableConfig: RestorableConfig;
-            }>
+            }: {
+                payload: {
+                    restorableConfig: RestorableConfig;
+                };
+            }
         ) => {
             const { restorableConfig } = payload;
 
@@ -90,9 +102,11 @@ export const { reducer, actions } = createSlice({
             state,
             {
                 payload
-            }: PayloadAction<{
-                restorableConfig: RestorableConfig;
-            }>
+            }: {
+                payload: {
+                    restorableConfig: RestorableConfig;
+                };
+            }
         ) => {
             const { restorableConfig } = payload;
 
@@ -150,35 +164,35 @@ export const thunks = {
             {
                 const state = getState().restorableConfig;
 
-                if (state.packageIcons.areFetched || state.packageIcons.isFetching) {
+                if (
+                    state.iconUrlOfCharts.areFetched ||
+                    state.iconUrlOfCharts.areBeingFetched
+                ) {
                     return;
                 }
             }
 
-            dispatch(actions.fetchIconStarted());
+            dispatch(actions.chartIconsFetchingStarted());
 
-            const apiRequestForIconsResult = await onyxiaApi.getCatalogsAndCharts();
+            const { catalogs, chartsByCatalogId } =
+                await onyxiaApi.getCatalogsAndCharts();
 
-            const iconsUrl: IconsUrl = {};
+            const chartIconUrlByChartNameAndCatalogId: ChartIconUrlByChartNameAndCatalogId =
+                {};
 
-            apiRequestForIconsResult.catalogs.forEach(({ id: catalogId }) => {
-                const urlByPackageName: IconsUrl[string] = {};
+            catalogs.forEach(({ id: catalogId }) => {
+                const chartIconUrlByChartName: ChartIconUrlByChartNameAndCatalogId[string] =
+                    {};
 
-                apiRequestForIconsResult.chartsByCatalogId[catalogId].forEach(chart => {
-                    for (const { icon } of chart.versions) {
-                        if (icon === undefined) {
-                            continue;
-                        }
-                        urlByPackageName[chart.name] = icon;
-                        return;
-                    }
-                    urlByPackageName[chart.name] = undefined;
-                });
+                chartsByCatalogId[catalogId].forEach(
+                    chart =>
+                        (chartIconUrlByChartName[chart.name] = chart.versions[0].iconUrl)
+                );
 
-                iconsUrl[catalogId] = urlByPackageName;
+                chartIconUrlByChartNameAndCatalogId[catalogId] = chartIconUrlByChartName;
             });
 
-            dispatch(actions.iconsFetched({ iconsUrl }));
+            dispatch(actions.chartIconsFetched({ chartIconUrlByChartNameAndCatalogId }));
         },
     "saveRestorableConfig":
         (params: {
@@ -211,9 +225,9 @@ export const thunks = {
 
             const restorableConfigWithSameFriendlyName = getState()
                 .restorableConfig.restorableConfigs.filter(
-                    ({ catalogId, packageName }) =>
+                    ({ catalogId, chartName }) =>
                         restorableConfig.catalogId === catalogId &&
-                        restorableConfig.packageName === packageName
+                        restorableConfig.chartName === chartName
                 )
                 .find(
                     ({ formFieldsValueDifferentFromDefault }) =>
@@ -229,7 +243,7 @@ export const thunks = {
                         "friendlyName":
                             getFriendlyName(
                                 restorableConfig.formFieldsValueDifferentFromDefault
-                            ) ?? restorableConfig.packageName
+                            ) ?? restorableConfig.chartName
                     }))
                 ) {
                     return;
@@ -293,9 +307,9 @@ function areSameRestorableConfig(
     restorableConfiguration2: RestorableConfig
 ): boolean {
     return [restorableConfiguration1, restorableConfiguration2]
-        .map(({ catalogId, packageName, formFieldsValueDifferentFromDefault }) => [
+        .map(({ catalogId, chartName, formFieldsValueDifferentFromDefault }) => [
             catalogId,
-            packageName,
+            chartName,
             formFieldsValueToObject(formFieldsValueDifferentFromDefault)
         ])
         .reduce(...allEquals(same));
@@ -312,16 +326,18 @@ export const selectors = (() => {
         state,
         restorableConfigs,
         (state, restorableConfigs) => {
-            const { packageIcons } = state;
+            const { iconUrlOfCharts } = state;
 
             return restorableConfigs
                 .map(restorableConfig => {
-                    const { packageName, catalogId } = restorableConfig;
+                    const { chartName, catalogId } = restorableConfig;
 
                     return {
-                        "logoUrl": !packageIcons.areFetched
+                        "chartIconUrl": !iconUrlOfCharts.areFetched
                             ? undefined
-                            : packageIcons.iconsUrl[catalogId]?.[packageName],
+                            : iconUrlOfCharts.chartIconUrlByChartNameAndCatalogId[
+                                  catalogId
+                              ]?.[chartName],
                         "friendlyName": (() => {
                             const friendlyName =
                                 restorableConfig.formFieldsValueDifferentFromDefault.find(
@@ -330,7 +346,7 @@ export const selectors = (() => {
                                             path,
                                             onyxiaFriendlyNameFormFieldPath.split(".")
                                         )
-                                )?.value ?? packageName;
+                                )?.value ?? chartName;
 
                             assert(typeof friendlyName === "string");
 

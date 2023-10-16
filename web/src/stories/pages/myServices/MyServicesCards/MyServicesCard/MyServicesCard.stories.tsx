@@ -13,9 +13,9 @@ const { meta, getStory } = getStoryFactory({
 export default meta;
 
 export const ViewRegular = getStory({
-    "packageIconUrl": rstudioImgUrl,
+    "chartIconUrl": rstudioImgUrl,
     "friendlyName": "My Rstudio",
-    "packageName": "rstudio",
+    "chartName": "rstudio",
     "openUrl": "https://example.com",
     "monitoringUrl": "https://example.com",
     "startTime": Date.now(),
@@ -36,9 +36,9 @@ export const ViewRegular = getStory({
 });
 
 export const ViewStarting = getStory({
-    "packageIconUrl": rstudioImgUrl,
+    "chartIconUrl": rstudioImgUrl,
     "friendlyName": "My Rstudio",
-    "packageName": "rstudio",
+    "chartName": "rstudio",
     "openUrl": "https://example.com",
     "monitoringUrl": "https://example.com",
     "startTime": undefined,

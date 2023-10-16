@@ -29,7 +29,7 @@ justo varius`
         "highlightedIndexes": [0, 1, 2, 3, 4, 5, 6]
     },
     /* spell-checker: enable */
-    "moreInfosUrl": "https://example.com",
+    "projectHomepageUrl": "https://example.com",
     ...logCallbacks(["onRequestLaunch"])
 });
 
@@ -43,7 +43,7 @@ export const ViewNoDesc = getStory({
         "charArray": ``.normalize().split(""),
         "highlightedIndexes": []
     },
-    "moreInfosUrl": "https://example.com",
+    "projectHomepageUrl": "https://example.com",
     ...logCallbacks(["onRequestLearnMore", "onRequestLaunch"])
 });
 
@@ -65,7 +65,7 @@ justo varius`
     },
     /* spell-checker: enable */
     ...logCallbacks(["onRequestLaunch"]),
-    "moreInfosUrl": undefined
+    "projectHomepageUrl": undefined
 });
 
 export const ViewScroll = getStory({
@@ -91,6 +91,6 @@ justo varius
         "highlightedIndexes": []
     },
     /* spell-checker: enable */
-    "moreInfosUrl": undefined,
+    "projectHomepageUrl": undefined,
     ...logCallbacks(["onRequestLearnMore", "onRequestLaunch"])
 });

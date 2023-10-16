@@ -178,7 +178,7 @@ export default function Catalog(props: Props) {
                                         chartName,
                                         chartNameWithHighlights,
                                         chartDescriptionWithHighlights,
-                                        moreInfosUrl,
+                                        projectHomepageUrl,
                                         iconUrl
                                     }) => (
                                         <CatalogChartCard
@@ -189,7 +189,7 @@ export default function Catalog(props: Props) {
                                             chartDescriptionWithHighlights={
                                                 chartDescriptionWithHighlights
                                             }
-                                            moreInfosUrl={moreInfosUrl}
+                                            projectHomepageUrl={projectHomepageUrl}
                                             iconUrl={iconUrl}
                                             onRequestLaunch={onRequestLaunchFactory(
                                                 catalogId,

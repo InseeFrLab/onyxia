@@ -29,7 +29,7 @@ const readyState = (rootState: RootState): State.Ready | undefined => {
 
 const isReady = createSelector(readyState, state => state !== undefined);
 
-const packageName = createSelector(readyState, state => state?.packageName);
+const chartName = createSelector(readyState, state => state?.chartName);
 
 const formFields = createSelector(readyState, state => state?.formFields);
 
@@ -38,7 +38,7 @@ const infosAboutWhenFieldsShouldBeHidden = createSelector(
     state => state?.infosAboutWhenFieldsShouldBeHidden
 );
 
-const dependencies = createSelector(readyState, state => state?.dependencies);
+const chartDependencies = createSelector(readyState, state => state?.chartDependencies);
 
 const friendlyName = createSelector(formFields, formFields => {
     if (formFields === undefined) {
@@ -75,8 +75,8 @@ const indexedFormFields = createSelector(
     config,
     formFields,
     infosAboutWhenFieldsShouldBeHidden,
-    packageName,
-    dependencies,
+    chartName,
+    chartDependencies,
     (
         isReady,
         config,
@@ -346,13 +346,13 @@ const catalogId = createSelector(readyState, state => state?.catalogId);
 const restorableConfig = createSelector(
     isReady,
     catalogId,
-    packageName,
+    chartName,
     formFields,
     pathOfFormFieldsWhoseValuesAreDifferentFromDefault,
     (
         isReady,
         catalogId,
-        packageName,
+        chartName,
         formFields,
         pathOfFormFieldsWhoseValuesAreDifferentFromDefault
     ): RestorableConfig | undefined => {
@@ -361,13 +361,13 @@ const restorableConfig = createSelector(
         }
 
         assert(catalogId !== undefined);
-        assert(packageName !== undefined);
+        assert(chartName !== undefined);
         assert(formFields !== undefined);
         assert(pathOfFormFieldsWhoseValuesAreDifferentFromDefault !== undefined);
 
         return {
             catalogId,
-            packageName,
+            chartName,
             "formFieldsValueDifferentFromDefault":
                 pathOfFormFieldsWhoseValuesAreDifferentFromDefault.map(({ path }) => ({
                     path,
@@ -389,11 +389,11 @@ const areAllFieldsDefault = createSelector(
     }
 );
 
-const icon = createSelector(readyState, state => {
+const chartIconUrl = createSelector(readyState, state => {
     if (state === undefined) {
         return undefined;
     }
-    return state.icon;
+    return state.chartIconUrl;
 });
 
 const helmReleaseName = createSelector(friendlyName, friendlyName => {
@@ -439,13 +439,13 @@ const launchCommands = createSelector(
         assert(helmReleaseName !== undefined);
 
         return [
-            `helm repo add ${state.catalogId} ${state.catalogLocation}`,
+            `helm repo add ${state.catalogId} ${state.repositoryUrl}`,
             [
                 "cat << EOF > ./values.yaml",
                 yaml.stringify(formFieldsValueToObject(state.formFields)),
                 "EOF"
             ].join("\n"),
-            `helm install ${helmReleaseName} ${state.catalogId}/${state.packageName} --namespace ${project.namespace} -f values.yaml`
+            `helm install ${helmReleaseName} ${state.catalogId}/${state.chartName} --namespace ${project.namespace} -f values.yaml`
         ];
     }
 );
@@ -477,7 +477,7 @@ const commandLogsEntries = createSelector(launchCommands, launchCommands => {
     }));
 });
 
-const sourceUrls = createSelector(readyState, state => state?.sourceUrls);
+const chartSourceUrls = createSelector(readyState, state => state?.chartSourceUrls);
 
 const wrap = createSelector(
     isReady,
@@ -488,11 +488,11 @@ const wrap = createSelector(
     formFieldsIsWellFormed,
     restorableConfig,
     areAllFieldsDefault,
-    packageName,
-    icon,
+    chartName,
+    chartIconUrl,
     launchScript,
     commandLogsEntries,
-    sourceUrls,
+    chartSourceUrls,
     (
         isReady,
         friendlyName,
@@ -502,11 +502,11 @@ const wrap = createSelector(
         formFieldsIsWellFormed,
         restorableConfig,
         areAllFieldsDefault,
-        packageName,
-        icon,
+        chartName,
+        chartIconUrl,
         launchScript,
         commandLogsEntries,
-        sourceUrls
+        chartSourceUrls
     ) => {
         if (!isReady) {
             return {
@@ -519,11 +519,11 @@ const wrap = createSelector(
                 [symToStr({ restorableConfig })]: undefined,
                 [symToStr({ restorableConfig })]: undefined,
                 [symToStr({ areAllFieldsDefault })]: undefined,
-                [symToStr({ packageName })]: undefined,
-                [symToStr({ icon })]: undefined,
+                [symToStr({ chartName })]: undefined,
+                [symToStr({ chartIconUrl })]: undefined,
                 [symToStr({ launchScript })]: undefined,
                 [symToStr({ commandLogsEntries })]: undefined,
-                [symToStr({ sourceUrls })]: undefined
+                [symToStr({ chartSourceUrls })]: undefined
             };
         }
 
@@ -533,11 +533,11 @@ const wrap = createSelector(
         assert(isLaunchable !== undefined);
         assert(isShared !== undefined);
         assert(formFieldsIsWellFormed !== undefined);
-        assert(icon !== undefined);
-        assert(packageName !== undefined);
+        assert(chartIconUrl !== undefined);
+        assert(chartName !== undefined);
         assert(commandLogsEntries !== undefined);
         assert(launchScript !== undefined);
-        assert(sourceUrls !== undefined);
+        assert(chartSourceUrls !== undefined);
 
         return {
             "isReady": true as const,
@@ -548,11 +548,11 @@ const wrap = createSelector(
             formFieldsIsWellFormed,
             restorableConfig,
             areAllFieldsDefault,
-            packageName,
-            icon,
+            chartName,
+            chartIconUrl,
             launchScript,
             commandLogsEntries,
-            sourceUrls
+            chartSourceUrls
         };
     }
 );

@@ -16,7 +16,7 @@ const link = { "href": "https://example.com", "onClick": () => {} };
 export const ViewShortVariant = getStory({
     "className": css({ "width": 400 }),
     "isShortVariant": true,
-    "logoUrl": rstudioImgUrl,
+    "chartIconUrl": rstudioImgUrl,
     "friendlyName": "My RStudio a bit long",
     "launchLink": link,
     "editLink": link,
@@ -26,7 +26,7 @@ export const ViewShortVariant = getStory({
 export const ViewLongVariant = getStory({
     "className": css({ "width": 1000 }),
     "isShortVariant": false,
-    "logoUrl": rstudioImgUrl,
+    "chartIconUrl": rstudioImgUrl,
     "friendlyName": "My RStudio a bit long",
     "launchLink": link,
     "editLink": link,
@@ -35,7 +35,7 @@ export const ViewLongVariant = getStory({
 
 export const ViewNoLogo = getStory({
     "className": css({ "width": 1000 }),
-    "logoUrl": undefined,
+    "chartIconUrl": undefined,
     "isShortVariant": false,
     "friendlyName": "My RStudio a bit long",
     "launchLink": link,

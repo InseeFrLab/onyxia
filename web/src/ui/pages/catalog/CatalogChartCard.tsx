@@ -14,7 +14,7 @@ export type Props = {
     className?: string;
     chartNameWithHighlights: StringWithHighlights;
     chartDescriptionWithHighlights: StringWithHighlights;
-    moreInfosUrl: string | undefined;
+    projectHomepageUrl: string | undefined;
     iconUrl: string | undefined;
     onRequestLaunch: () => void;
 };
@@ -24,7 +24,7 @@ export const CatalogChartCard = memo((props: Props) => {
         className,
         chartNameWithHighlights,
         chartDescriptionWithHighlights,
-        moreInfosUrl,
+        projectHomepageUrl,
         iconUrl,
         onRequestLaunch
     } = props;
@@ -56,10 +56,10 @@ export const CatalogChartCard = memo((props: Props) => {
                     </Text>
                 </div>
                 <div className={classes.buttonsWrapper}>
-                    {moreInfosUrl !== undefined && (
+                    {projectHomepageUrl !== undefined && (
                         <Button
                             className={classes.learnMoreButton}
-                            href={moreInfosUrl}
+                            href={projectHomepageUrl}
                             variant="ternary"
                         >
                             {t("learn more")}

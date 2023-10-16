@@ -18,8 +18,8 @@ import { symToStr } from "tsafe/symToStr";
 
 export type Props = {
     className?: string;
-    packageName: string;
-    packageIconUrl?: string;
+    chartName: string;
+    chartIconUrl: string | undefined;
     isBookmarked: boolean;
     onIsBookmarkedValueChange: (isBookmarked: boolean) => void;
 
@@ -44,8 +44,8 @@ export type Props = {
 export const LauncherMainCard = memo((props: Props) => {
     const {
         className,
-        packageIconUrl,
-        packageName,
+        chartName,
+        chartIconUrl,
         isBookmarked,
         friendlyName,
         isShared,
@@ -103,11 +103,11 @@ export const LauncherMainCard = memo((props: Props) => {
             </div>
             <div className={classes.belowDivider}>
                 <div className={classes.logoAndTitleWrapper}>
-                    {packageIconUrl !== undefined && (
-                        <RoundLogo url={packageIconUrl} size="large" />
+                    {chartIconUrl !== undefined && (
+                        <RoundLogo url={chartIconUrl} size="large" />
                     )}
                     <Text typo="object heading" className={classes.title}>
-                        {capitalize(packageName)}
+                        {capitalize(chartName)}
                     </Text>
                 </div>
                 <div className={classes.textFieldAndButtonWrapper}>

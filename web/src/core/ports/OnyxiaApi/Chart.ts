@@ -3,7 +3,7 @@ export type Chart = {
     versions: {
         description: string | undefined;
         version: string;
-        icon: string | undefined;
-        home: string | undefined;
+        iconUrl: string | undefined;
+        projectHomepageUrl: string | undefined;
     }[];
 };

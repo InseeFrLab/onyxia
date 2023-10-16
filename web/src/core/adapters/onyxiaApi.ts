@@ -419,8 +419,8 @@ export function createOnyxiaApi(params: {
                                                     }) => ({
                                                         description,
                                                         version,
-                                                        icon,
-                                                        home
+                                                        "iconUrl": icon,
+                                                        "projectHomepageUrl": home
                                                     })
                                                 )
                                                 // Most recent version first
@@ -745,41 +745,37 @@ export function createOnyxiaApi(params: {
                     }),
                     onError
                 ),
-        ...(() => {
+        "installChart": (() => {
             const getMyLab_App = (params: { serviceId: string }) =>
                 axiosInstance.get("/my-lab/app", { params }).catch(onError);
 
-            const launchPackage = id<OnyxiaApi["launchPackage"]>(
-                async ({ catalogId, packageName, options }) => {
-                    const { serviceId } = getServiceId({
-                        packageName,
-                        "randomK8sSubdomain": getRandomK8sSubdomain()
-                    });
+            return async ({ catalogId, chartName, options }) => {
+                const { serviceId } = getServiceId({
+                    chartName,
+                    "randomK8sSubdomain": getRandomK8sSubdomain()
+                });
 
-                    await axiosInstance
-                        .put(`/my-lab/app`, {
-                            catalogId,
-                            packageName,
-                            "name": serviceId,
-                            options,
-                            "dryRun": false
-                        })
-                        .catch(onError);
+                await axiosInstance
+                    .put(`/my-lab/app`, {
+                        catalogId,
+                        "packageName": chartName,
+                        "name": serviceId,
+                        options,
+                        "dryRun": false
+                    })
+                    .catch(onError);
 
-                    while (true) {
-                        try {
-                            await getMyLab_App({ serviceId });
-                            break;
-                        } catch {
-                            await new Promise(resolve => setTimeout(resolve, 1000));
-                        }
+                while (true) {
+                    try {
+                        await getMyLab_App({ serviceId });
+                        break;
+                    } catch {
+                        await new Promise(resolve => setTimeout(resolve, 1000));
                     }
                 }
-            );
-
-            return { launchPackage };
+            };
         })(),
-        ...(() => {
+        "getRunningServices": (() => {
             type Data = {
                 apps: {
                     id: string;
@@ -848,7 +844,7 @@ export function createOnyxiaApi(params: {
                 );
             }
 
-            const getRunningServices = async () =>
+            return async () =>
                 (await getMyLab_Services()).apps
                     .map(({ tasks, id, ...rest }) => ({
                         ...rest,
@@ -874,16 +870,7 @@ export function createOnyxiaApi(params: {
                             revision
                         }) => ({
                             id,
-                            ...(() => {
-                                //TODO: We shouldn't compute things here.
-                                const packageName = id.replace(/-[^-]+$/, "");
-
-                                return {
-                                    packageName,
-                                    "friendlyName":
-                                        env["onyxia.friendlyName"] ?? packageName
-                                };
-                            })(),
+                            "friendlyName": env["onyxia.friendlyName"],
                             postInstallInstructions,
                             urls,
                             startedAt,
@@ -935,8 +922,6 @@ export function createOnyxiaApi(params: {
                                   } as const))
                         })
                     );
-
-            return { getRunningServices };
         })(),
         "stopService": ({ serviceId }) =>
             axiosInstance

@@ -15,7 +15,7 @@ export type Props = {
     className?: string;
     isShortVariant: boolean;
     savedConfigs: {
-        logoUrl: string | undefined;
+        chartIconUrl: string | undefined;
         friendlyName: string;
         /** link.href used as id for callback */
         launchLink: Link;
@@ -67,12 +67,12 @@ export const MyServicesSavedConfigs = memo((props: Props) => {
                             ? (...[, i]) => i < maxConfigCountInShortVariant
                             : () => true
                     )
-                    .map(({ logoUrl, friendlyName, launchLink, editLink }) => (
+                    .map(({ chartIconUrl, friendlyName, launchLink, editLink }) => (
                         <MyServicesSavedConfig
                             key={launchLink.href}
                             className={classes.entry}
                             isShortVariant={isShortVariant}
-                            logoUrl={logoUrl}
+                            chartIconUrl={chartIconUrl}
                             friendlyName={friendlyName}
                             launchLink={launchLink}
                             editLink={editLink}

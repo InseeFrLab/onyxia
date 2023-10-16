@@ -28,9 +28,9 @@ function getDoesHaveBeenRunningForTooLong(params: { startTime: number }): boolea
 export type Props = {
     className?: string;
     evtAction: NonPostableEvt<"SHOW POST INSTALL INSTRUCTIONS">;
-    packageIconUrl?: string;
+    chartIconUrl: string | undefined;
     friendlyName: string;
-    packageName: string;
+    chartName: string;
     onRequestDelete: (() => void) | undefined;
     getPoseInstallInstructions: (() => string) | undefined;
     getEnv: () => Record<string, string>;
@@ -51,9 +51,9 @@ export const MyServicesCard = memo((props: Props) => {
     const {
         className,
         evtAction,
-        packageIconUrl,
+        chartIconUrl,
         friendlyName,
-        packageName,
+        chartName,
         onRequestDelete,
         getEnv,
         getPoseInstallInstructions,
@@ -214,7 +214,7 @@ export const MyServicesCard = memo((props: Props) => {
     return (
         <div className={cx(classes.root, className)}>
             <div className={classes.aboveDivider}>
-                <MyServicesRoundLogo url={packageIconUrl} severity={severity} />
+                <MyServicesRoundLogo url={chartIconUrl} severity={severity} />
                 <Text className={classes.title} typo="object heading">
                     {capitalize(friendlyName)}
                 </Text>
@@ -235,7 +235,7 @@ export const MyServicesCard = memo((props: Props) => {
                             {t("service")}
                         </Text>
                         <div className={classes.packageNameWrapper}>
-                            <Text typo="label 1">{capitalize(packageName)}</Text>
+                            <Text typo="label 1">{capitalize(chartName)}</Text>
                             {isShared && (
                                 <Tag
                                     className={classes.sharedTag}

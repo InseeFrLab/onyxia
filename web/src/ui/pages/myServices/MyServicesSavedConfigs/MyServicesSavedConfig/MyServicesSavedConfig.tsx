@@ -16,7 +16,7 @@ import { declareComponentKeys } from "i18nifty";
 export type Props = {
     className?: string;
     isShortVariant: boolean;
-    logoUrl: string | undefined;
+    chartIconUrl: string | undefined;
     friendlyName: string;
     launchLink: Link;
     editLink: Link;
@@ -27,7 +27,7 @@ export const MyServicesSavedConfig = memo((props: Props) => {
     const {
         isShortVariant,
         friendlyName,
-        logoUrl,
+        chartIconUrl,
         className,
         launchLink,
         editLink,
@@ -35,7 +35,7 @@ export const MyServicesSavedConfig = memo((props: Props) => {
     } = props;
 
     const { classes, cx } = useStyles({
-        "hasLogo": logoUrl !== undefined,
+        "hasIcon": chartIconUrl !== undefined,
         isShortVariant
     });
 
@@ -76,7 +76,7 @@ export const MyServicesSavedConfig = memo((props: Props) => {
                     onClick={scheduleDeletion}
                 />
             )}
-            <RoundLogo url={logoUrl} className={classes.logo} size="medium" />
+            <RoundLogo url={chartIconUrl} className={classes.logo} size="medium" />
             <div className={classes.friendlyNameWrapper}>
                 <Text typo="label 1" className={classes.friendlyName}>
                     {friendlyName}
@@ -113,9 +113,9 @@ export const { i18n } = declareComponentKeys<"edit" | "launch">()({
 });
 
 const useStyles = tss
-    .withParams<{ hasLogo: boolean; isShortVariant: boolean }>()
+    .withParams<{ hasIcon: boolean; isShortVariant: boolean }>()
     .withName({ MyServicesSavedConfig })
-    .create(({ theme, isShortVariant, hasLogo }) => ({
+    .create(({ theme, isShortVariant, hasIcon }) => ({
         "root": {
             "borderRadius": 16,
             "boxShadow": theme.shadows[1],
@@ -129,7 +129,7 @@ const useStyles = tss
             "paddingRight": theme.spacing(3)
         },
         "logo": {
-            "visibility": hasLogo ? undefined : "hidden",
+            "visibility": hasIcon ? undefined : "hidden",
             ...theme.spacing.rightLeft("margin", 2)
         },
         "friendlyNameWrapper": {
