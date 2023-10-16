@@ -170,7 +170,7 @@ const { getContext } = createUsecaseContextApi(() => {
                             "chartDescriptionHighlightedIndexes": getMatchPositions({
                                 search,
                                 "text":
-                                    chartsByCatalogId[catalogId]!.find(
+                                    chartsByCatalogId[catalogId].find(
                                         chart => chart.name === chartName
                                     )!.versions[0].description ?? ""
                             })

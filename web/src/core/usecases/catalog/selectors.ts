@@ -120,7 +120,7 @@ const filteredCharts = createSelector(
         }
 
         return searchResults === undefined
-            ? chartsByCatalogId[selectedCatalogId]!.map(chart =>
+            ? chartsByCatalogId[selectedCatalogId].map(chart =>
                   chartToCardData({
                       chart,
                       "chartNameHighlightedIndexes": [],
@@ -136,7 +136,7 @@ const filteredCharts = createSelector(
                       chartDescriptionHighlightedIndexes
                   }) =>
                       chartToCardData({
-                          "chart": chartsByCatalogId[catalogId]!.find(
+                          "chart": chartsByCatalogId[catalogId].find(
                               chart => chart.name === chartName
                           )!,
                           chartNameHighlightedIndexes,
