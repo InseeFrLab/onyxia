@@ -121,6 +121,8 @@ export default function MyServices(props: Props) {
                             routes.launcher({
                                 "catalogId": restorableConfig.catalogId,
                                 "chartName": restorableConfig.chartName,
+                                "formFieldsValueDifferentFromDefault":
+                                    restorableConfig.formFieldsValueDifferentFromDefault,
                                 "autoLaunch": true
                             }).href === launchLinkHref
                     )!.restorableConfig
