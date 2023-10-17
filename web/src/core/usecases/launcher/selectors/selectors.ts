@@ -8,7 +8,6 @@ import {
     onyxiaFriendlyNameFormFieldPath,
     onyxiaIsSharedFormFieldPath
 } from "core/ports/OnyxiaApi";
-import type { RestorableConfig } from "../../restorableConfigs";
 import * as projectConfigs from "../../projectConfigs";
 import { scaffoldingIndexedFormFieldsToFinal } from "./scaffoldingIndexedFormFieldsToFinal";
 import type { IndexedFormFields } from "../FormField";
@@ -16,6 +15,7 @@ import { createGetIsFieldHidden } from "./getIsFieldHidden";
 import * as yaml from "yaml";
 import { name, type State } from "../state";
 import { symToStr } from "tsafe/symToStr";
+import * as restorableConfigManager from "core/usecases/restorableConfigManager";
 
 const readyState = (rootState: RootState): State.Ready | undefined => {
     const state = rootState[name];
@@ -355,7 +355,7 @@ const restorableConfig = createSelector(
         chartName,
         formFields,
         pathOfFormFieldsWhoseValuesAreDifferentFromDefault
-    ): RestorableConfig | undefined => {
+    ): restorableConfigManager.RestorableConfig | undefined => {
         if (!isReady) {
             return undefined;
         }
@@ -375,6 +375,28 @@ const restorableConfig = createSelector(
                         .value
                 }))
         };
+    }
+);
+
+const isRestorableConfigSaved = createSelector(
+    isReady,
+    restorableConfig,
+    restorableConfigManager.protectedSelectors.restorableConfigs,
+    (isReady, restorableConfig, restorableConfigs) => {
+        if (!isReady) {
+            return undefined;
+        }
+
+        assert(restorableConfig !== undefined);
+
+        return (
+            restorableConfigs.find(restorableConfig_i =>
+                restorableConfigManager.areSameRestorableConfig(
+                    restorableConfig_i,
+                    restorableConfig
+                )
+            ) !== undefined
+        );
     }
 );
 
@@ -487,6 +509,7 @@ const wrap = createSelector(
     isLaunchable,
     formFieldsIsWellFormed,
     restorableConfig,
+    isRestorableConfigSaved,
     areAllFieldsDefault,
     chartName,
     chartIconUrl,
@@ -501,6 +524,7 @@ const wrap = createSelector(
         isLaunchable,
         formFieldsIsWellFormed,
         restorableConfig,
+        isRestorableConfigSaved,
         areAllFieldsDefault,
         chartName,
         chartIconUrl,
@@ -517,6 +541,7 @@ const wrap = createSelector(
                 [symToStr({ isLaunchable })]: undefined,
                 [symToStr({ formFieldsIsWellFormed })]: undefined,
                 [symToStr({ restorableConfig })]: undefined,
+                [symToStr({ isRestorableConfigSaved })]: undefined,
                 [symToStr({ restorableConfig })]: undefined,
                 [symToStr({ areAllFieldsDefault })]: undefined,
                 [symToStr({ chartName })]: undefined,
@@ -529,6 +554,7 @@ const wrap = createSelector(
 
         assert(friendlyName !== undefined);
         assert(restorableConfig !== undefined);
+        assert(isRestorableConfigSaved !== undefined);
         assert(indexedFormFields !== undefined);
         assert(isLaunchable !== undefined);
         assert(isShared !== undefined);
@@ -547,6 +573,7 @@ const wrap = createSelector(
             isLaunchable,
             formFieldsIsWellFormed,
             restorableConfig,
+            isRestorableConfigSaved,
             areAllFieldsDefault,
             chartName,
             chartIconUrl,

@@ -33,9 +33,9 @@ export default function MyServices(props: Props) {
     const { t: tCatalogLauncher } = useTranslation("Launcher");
 
     /* prettier-ignore */
-    const { serviceManager, restorableConfig, k8sCredentials, projectConfigs } = useCoreFunctions();
+    const { serviceManager, restorableConfigManager, k8sCredentials, projectConfigs } = useCoreFunctions();
     /* prettier-ignore */
-    const { displayableConfigs } = useCoreState(selectors.restorableConfig.displayableConfigs);
+    const { displayableConfigs } = useCoreState(selectors.restorableConfigManager.displayableConfigs);
     /* prettier-ignore */
     const { isUpdating } = useCoreState(selectors.serviceManager.isUpdating);
     const { runningServices } = useCoreState(selectors.serviceManager.runningServices);
@@ -67,10 +67,6 @@ export default function MyServices(props: Props) {
                 return;
         }
     });
-
-    useEffect(() => {
-        restorableConfig.fetchIconsIfNotAlreadyDone();
-    }, []);
 
     useEffect(() => {
         const { setInactive } = serviceManager.setActive();
@@ -115,7 +111,8 @@ export default function MyServices(props: Props) {
                 );
                 return;
             case "delete":
-                restorableConfig.deleteRestorableConfig({
+                // TODO: Refactor, lame to have to find the restorableConfig again
+                restorableConfigManager.deleteRestorableConfig({
                     "restorableConfig": displayableConfigs.find(
                         ({ restorableConfig }) =>
                             routes.launcher({

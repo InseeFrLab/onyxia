@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useTranslation } from "ui/i18n";
 import { PageHeader, tss } from "ui/theme";
 import { useCoreState, selectors, useCoreFunctions, useCoreEvts } from "core";
@@ -65,6 +65,7 @@ export default function Launcher(props: Props) {
         isLaunchable,
         formFieldsIsWellFormed,
         restorableConfig,
+        isRestorableConfigSaved,
         areAllFieldsDefault,
         chartName,
         chartIconUrl,
@@ -75,11 +76,7 @@ export default function Launcher(props: Props) {
 
     const scrollableDivRef = useStateRef<HTMLDivElement>(null);
 
-    const {
-        launcher,
-        restorableConfig: restorableConfigFunctions,
-        k8sCredentials
-    } = useCoreFunctions();
+    const { launcher, restorableConfigManager, k8sCredentials } = useCoreFunctions();
 
     const { showSplashScreen, hideSplashScreen } = useSplashScreen();
 
@@ -164,10 +161,6 @@ export default function Launcher(props: Props) {
         userConfigs: { isCommandBarEnabled }
     } = useCoreState(selectors.userConfigs.userConfigs);
 
-    const { restorableConfigs } = useCoreState(
-        selectors.restorableConfig.restorableConfigs
-    );
-
     useEffect(() => {
         if (restorableConfig === undefined) {
             return;
@@ -186,25 +179,6 @@ export default function Launcher(props: Props) {
             .replace();
     }, [restorableConfig]);
 
-    const [isBookmarked, setIsBookmarked] = useState(false);
-
-    useEffect(() => {
-        if (restorableConfig === undefined) {
-            return;
-        }
-
-        const isBookmarkedNew = restorableConfigFunctions.getIsRestorableConfigInStore({
-            restorableConfigs,
-            restorableConfig
-        });
-
-        if (isBookmarked && !isBookmarkedNew) {
-            evtNoLongerBookmarkedDialogOpen.post();
-        }
-
-        setIsBookmarked(isBookmarkedNew);
-    }, [restorableConfigs, restorableConfig]);
-
     const onRequestCancel = useConstCallback(() =>
         routes.catalog({ "catalogId": route.params.catalogId }).push()
     );
@@ -213,14 +187,17 @@ export default function Launcher(props: Props) {
         navigator.clipboard.writeText(window.location.href)
     );
 
-    const onIsBookmarkedValueChange = useConstCallback((isBookmarked: boolean) => {
+    const onIsBookmarkedValueChange = useConstCallback(async (isBookmarked: boolean) => {
         assert(restorableConfig !== undefined);
 
-        restorableConfigFunctions[
-            isBookmarked ? "saveRestorableConfig" : "deleteRestorableConfig"
-        ]({
-            restorableConfig,
-            "getDoOverwriteConfiguration": async ({ friendlyName }) => {
+        if (isBookmarked) {
+            restorableConfigManager.deleteRestorableConfig({ restorableConfig });
+        } else {
+            if (
+                restorableConfigManager.getIsThereASavedConfigWithSameFriendlyName({
+                    restorableConfig
+                })
+            ) {
                 const dDoOverwriteConfiguration = new Deferred<boolean>();
 
                 evtOverwriteConfigurationConfirmDialogOpen.post({
@@ -228,9 +205,13 @@ export default function Launcher(props: Props) {
                     "resolveDoOverwriteConfiguration": dDoOverwriteConfiguration.resolve
                 });
 
-                return await dDoOverwriteConfiguration.pr;
+                if (!(await dDoOverwriteConfiguration.pr)) {
+                    return;
+                }
             }
-        });
+
+            restorableConfigManager.saveRestorableConfig({ restorableConfig });
+        }
     });
 
     const {
@@ -322,7 +303,7 @@ export default function Launcher(props: Props) {
                             <LauncherMainCard
                                 chartName={chartName}
                                 chartIconUrl={chartIconUrl}
-                                isBookmarked={isBookmarked}
+                                isBookmarked={isRestorableConfigSaved}
                                 onIsBookmarkedValueChange={onIsBookmarkedValueChange}
                                 friendlyName={friendlyName}
                                 isShared={isShared}

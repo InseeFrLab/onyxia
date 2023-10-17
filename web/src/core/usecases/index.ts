@@ -5,7 +5,7 @@ import * as secretExplorer from "./secretExplorer";
 import * as launcher from "./launcher";
 import * as projectConfigs from "./projectConfigs";
 import * as publicIp from "./publicIp";
-import * as restorableConfigs from "./restorableConfigs";
+import * as restorableConfigManager from "./restorableConfigManager";
 import * as serviceManager from "./serviceManager";
 import * as userAuthentication from "./userAuthentication";
 import * as userConfigs from "./userConfigs";
@@ -23,7 +23,7 @@ export const usecases = {
     launcher,
     projectConfigs,
     publicIp,
-    restorableConfigs,
+    restorableConfigManager,
     serviceManager,
     userAuthentication,
     userConfigs,

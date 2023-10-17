@@ -24,7 +24,7 @@ export type RestorableConfig = {
     formFieldsValueDifferentFromDefault: FormFieldValue[];
 };
 
-export const name = "restorableConfig";
+export const name = "restorableConfigManager";
 
 export const { reducer, actions } = createSlice({
     name,
@@ -139,32 +139,15 @@ const privateThunks = {
                     "value": JSON.stringify(getState().restorableConfig.restorableConfigs)
                 })
             );
-        }
-} satisfies Thunks;
+        },
+    "getSavedConfigWithSameFriendlyName":
+        (params: { restorableConfig: RestorableConfig }) =>
+        (...args): RestorableConfig | undefined => {
+            const [, getState] = args;
 
-export const thunks = {
-    "saveRestorableConfig":
-        (params: {
-            restorableConfig: RestorableConfig;
-            getDoOverwriteConfiguration: (params: {
-                friendlyName: string;
-            }) => Promise<boolean>;
-        }) =>
-        async (...args) => {
-            const [dispatch, getState] = args;
+            const { restorableConfig } = params;
 
-            const { restorableConfig, getDoOverwriteConfiguration } = params;
-
-            const state = getState()[name];
-
-            if (
-                getIsRestorableConfigInStore({
-                    "restorableConfigs": state.restorableConfigs,
-                    restorableConfig
-                })
-            ) {
-                return;
-            }
+            const { restorableConfigs } = getState()[name];
 
             const getFriendlyName = (formFieldsValue: FormFieldValue[]) => {
                 const friendlyName = formFieldsValue.find(({ path }) =>
@@ -174,42 +157,39 @@ export const thunks = {
                 return friendlyName;
             };
 
-            const restorableConfigWithSameFriendlyName = state.restorableConfigs
-                .filter(
-                    ({ catalogId, chartName }) =>
-                        restorableConfig.catalogId === catalogId &&
-                        restorableConfig.chartName === chartName
-                )
-                .find(
-                    ({ formFieldsValueDifferentFromDefault }) =>
-                        getFriendlyName(formFieldsValueDifferentFromDefault) ===
-                        getFriendlyName(
-                            restorableConfig.formFieldsValueDifferentFromDefault
-                        )
-                );
+            return restorableConfigs.find(
+                ({ formFieldsValueDifferentFromDefault }) =>
+                    getFriendlyName(formFieldsValueDifferentFromDefault) ===
+                    getFriendlyName(restorableConfig.formFieldsValueDifferentFromDefault)
+            );
+        }
+} satisfies Thunks;
 
-            if (restorableConfigWithSameFriendlyName !== undefined) {
-                if (
-                    !(await getDoOverwriteConfiguration({
-                        "friendlyName":
-                            getFriendlyName(
-                                restorableConfig.formFieldsValueDifferentFromDefault
-                            ) ?? restorableConfig.chartName
-                    }))
-                ) {
-                    return;
-                }
+export const thunks = {
+    "saveRestorableConfig":
+        (params: { restorableConfig: RestorableConfig }) =>
+        async (...args) => {
+            const [dispatch, getState] = args;
 
-                dispatch(
-                    actions.restorableConfigDeleted({
-                        "restorableConfig": restorableConfigWithSameFriendlyName
-                    })
-                );
-            }
+            const { restorableConfig } = params;
+
+            const { restorableConfigs } = getState()[name];
+
+            const restorableConfigWithSameFriendlyName = dispatch(
+                privateThunks.getSavedConfigWithSameFriendlyName({ restorableConfig })
+            );
 
             dispatch(
                 actions.restorableConfigsUpdated({
-                    "restorableConfigs": [...state.restorableConfigs, restorableConfig]
+                    "restorableConfigs":
+                        restorableConfigWithSameFriendlyName === undefined
+                            ? [...restorableConfigs, restorableConfig]
+                            : restorableConfigs.map(restorableConfig_i =>
+                                  restorableConfig_i ===
+                                  restorableConfigWithSameFriendlyName
+                                      ? restorableConfig
+                                      : restorableConfig_i
+                              )
                 })
             );
 
@@ -218,42 +198,48 @@ export const thunks = {
     "deleteRestorableConfig":
         (params: { restorableConfig: RestorableConfig }) =>
         async (...args) => {
-            const [dispatch] = args;
+            const [dispatch, getState] = args;
 
             const { restorableConfig } = params;
 
+            const { restorableConfigs } = getState()[name];
+
+            const indexOfRestorableConfigToDelete = restorableConfigs.findIndex(
+                restorableConfig_i =>
+                    areSameRestorableConfig(restorableConfig_i, restorableConfig)
+            );
+
+            assert(
+                indexOfRestorableConfigToDelete !== -1,
+                "Restorable config do not exist"
+            );
+
             dispatch(
-                actions.restorableConfigDeleted({
-                    restorableConfig
+                actions.restorableConfigsUpdated({
+                    "restorableConfigs": restorableConfigs.filter(
+                        (_, index) => index !== indexOfRestorableConfigToDelete
+                    )
                 })
             );
 
             await dispatch(privateThunks.syncWithUserConfig());
         },
-    /** Pure */
-    "getIsRestorableConfigInStore":
-        (params: {
-            restorableConfigs: RestorableConfig[];
-            restorableConfig: RestorableConfig;
-        }) =>
-        (): boolean =>
-            getIsRestorableConfigInStore(params)
+    "getIsThereASavedConfigWithSameFriendlyName":
+        (params: { restorableConfig: RestorableConfig }) =>
+        (...args): boolean => {
+            const { restorableConfig } = params;
+
+            const [dispatch] = args;
+
+            return (
+                dispatch(
+                    privateThunks.getSavedConfigWithSameFriendlyName({ restorableConfig })
+                ) !== undefined
+            );
+        }
 } satisfies Thunks;
 
-function getIsRestorableConfigInStore(params: {
-    restorableConfigs: RestorableConfig[];
-    restorableConfig: RestorableConfig;
-}) {
-    const { restorableConfig, restorableConfigs } = params;
-
-    return (
-        restorableConfigs.find(restorableConfig_i =>
-            areSameRestorableConfig(restorableConfig_i, restorableConfig)
-        ) !== undefined
-    );
-}
-
-function areSameRestorableConfig(
+export function areSameRestorableConfig(
     restorableConfiguration1: RestorableConfig,
     restorableConfiguration2: RestorableConfig
 ): boolean {
@@ -266,7 +252,7 @@ function areSameRestorableConfig(
         .reduce(...allEquals(same));
 }
 
-export const selectors = (() => {
+export const { protectedSelectors, selectors } = (() => {
     function state(rootState: RootState) {
         return rootState[name];
     }
@@ -277,18 +263,19 @@ export const selectors = (() => {
         state,
         restorableConfigs,
         (state, restorableConfigs) => {
-            const { iconUrlOfCharts } = state;
+            const { chartIconUrlByChartNameAndCatalogId } = state;
 
             return restorableConfigs
                 .map(restorableConfig => {
                     const { chartName, catalogId } = restorableConfig;
 
                     return {
-                        "chartIconUrl": !iconUrlOfCharts.areFetched
-                            ? undefined
-                            : iconUrlOfCharts.chartIconUrlByChartNameAndCatalogId[
-                                  catalogId
-                              ]?.[chartName],
+                        "chartIconUrl":
+                            chartIconUrlByChartNameAndCatalogId === undefined
+                                ? undefined
+                                : chartIconUrlByChartNameAndCatalogId[catalogId]?.[
+                                      chartName
+                                  ],
                         "friendlyName": (() => {
                             const friendlyName =
                                 restorableConfig.formFieldsValueDifferentFromDefault.find(
@@ -310,8 +297,13 @@ export const selectors = (() => {
         }
     );
 
-    return {
-        restorableConfigs,
+    const protectedSelectors = {
+        restorableConfigs
+    };
+
+    const selectors = {
         displayableConfigs
     };
+
+    return { protectedSelectors, selectors };
 })();
