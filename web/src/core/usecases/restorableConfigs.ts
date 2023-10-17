@@ -11,15 +11,7 @@ import { onyxiaFriendlyNameFormFieldPath } from "core/ports/OnyxiaApi";
 
 type State = {
     restorableConfigs: RestorableConfig[];
-    iconUrlOfCharts:
-        | {
-              areFetched: false;
-              areBeingFetched: boolean;
-          }
-        | {
-              areFetched: true;
-              chartIconUrlByChartNameAndCatalogId: ChartIconUrlByChartNameAndCatalogId;
-          };
+    chartIconUrlByChartNameAndCatalogId: ChartIconUrlByChartNameAndCatalogId | undefined;
 };
 
 type ChartIconUrlByChartNameAndCatalogId = {
@@ -56,16 +48,8 @@ export const { reducer, actions } = createSlice({
             const { restorableConfigs } = payload;
             return {
                 restorableConfigs,
-                "iconUrlOfCharts": {
-                    "areFetched": false,
-                    "areBeingFetched": false
-                }
+                "chartIconUrlByChartNameAndCatalogId": undefined
             };
-        },
-        "chartIconsFetchingStarted": state => {
-            assert(!state.iconUrlOfCharts.areFetched);
-
-            state.iconUrlOfCharts.areBeingFetched = true;
         },
         "chartIconsFetched": (
             state,
@@ -79,46 +63,22 @@ export const { reducer, actions } = createSlice({
         ) => {
             const { chartIconUrlByChartNameAndCatalogId } = payload;
 
-            state.iconUrlOfCharts = {
-                "areFetched": true,
-                chartIconUrlByChartNameAndCatalogId
-            };
+            state.chartIconUrlByChartNameAndCatalogId =
+                chartIconUrlByChartNameAndCatalogId;
         },
-        "restorableConfigSaved": (
+        "restorableConfigsUpdated": (
             state,
             {
                 payload
             }: {
                 payload: {
-                    restorableConfig: RestorableConfig;
+                    restorableConfigs: RestorableConfig[];
                 };
             }
         ) => {
-            const { restorableConfig } = payload;
+            const { restorableConfigs } = payload;
 
-            state.restorableConfigs.push(restorableConfig);
-        },
-        "restorableConfigDeleted": (
-            state,
-            {
-                payload
-            }: {
-                payload: {
-                    restorableConfig: RestorableConfig;
-                };
-            }
-        ) => {
-            const { restorableConfig } = payload;
-
-            const index = state.restorableConfigs.findIndex(restorableConfig_i =>
-                areSameRestorableConfig(restorableConfig_i, restorableConfig)
-            );
-
-            if (index <= -1) {
-                return;
-            }
-
-            state.restorableConfigs.splice(index, 1);
+            state.restorableConfigs = restorableConfigs;
         }
     }
 });
@@ -127,7 +87,7 @@ export const protectedThunks = {
     "initialize":
         () =>
         async (...args) => {
-            const [dispatch, getState] = args;
+            const [dispatch, getState, { onyxiaApi }] = args;
             dispatch(
                 actions.initializationCompleted({
                     "restorableConfigs": (() => {
@@ -137,6 +97,34 @@ export const protectedThunks = {
                     })()
                 })
             );
+
+            // NOTE: We don't want to block the initialization
+            // we can proceed to fetch the icons in parallel.
+            (async () => {
+                const { catalogs, chartsByCatalogId } =
+                    await onyxiaApi.getCatalogsAndCharts();
+
+                const chartIconUrlByChartNameAndCatalogId: ChartIconUrlByChartNameAndCatalogId =
+                    {};
+
+                catalogs.forEach(({ id: catalogId }) => {
+                    const chartIconUrlByChartName: ChartIconUrlByChartNameAndCatalogId[string] =
+                        {};
+
+                    chartsByCatalogId[catalogId].forEach(
+                        chart =>
+                            (chartIconUrlByChartName[chart.name] =
+                                chart.versions[0].iconUrl)
+                    );
+
+                    chartIconUrlByChartNameAndCatalogId[catalogId] =
+                        chartIconUrlByChartName;
+                });
+
+                dispatch(
+                    actions.chartIconsFetched({ chartIconUrlByChartNameAndCatalogId })
+                );
+            })();
         }
 } satisfies Thunks;
 
@@ -155,44 +143,6 @@ const privateThunks = {
 } satisfies Thunks;
 
 export const thunks = {
-    "fetchIconsIfNotAlreadyDone":
-        () =>
-        async (...args) => {
-            const [dispatch, getState, { onyxiaApi }] = args;
-
-            {
-                const state = getState().restorableConfig;
-
-                if (
-                    state.iconUrlOfCharts.areFetched ||
-                    state.iconUrlOfCharts.areBeingFetched
-                ) {
-                    return;
-                }
-            }
-
-            dispatch(actions.chartIconsFetchingStarted());
-
-            const { catalogs, chartsByCatalogId } =
-                await onyxiaApi.getCatalogsAndCharts();
-
-            const chartIconUrlByChartNameAndCatalogId: ChartIconUrlByChartNameAndCatalogId =
-                {};
-
-            catalogs.forEach(({ id: catalogId }) => {
-                const chartIconUrlByChartName: ChartIconUrlByChartNameAndCatalogId[string] =
-                    {};
-
-                chartsByCatalogId[catalogId].forEach(
-                    chart =>
-                        (chartIconUrlByChartName[chart.name] = chart.versions[0].iconUrl)
-                );
-
-                chartIconUrlByChartNameAndCatalogId[catalogId] = chartIconUrlByChartName;
-            });
-
-            dispatch(actions.chartIconsFetched({ chartIconUrlByChartNameAndCatalogId }));
-        },
     "saveRestorableConfig":
         (params: {
             restorableConfig: RestorableConfig;
@@ -205,9 +155,11 @@ export const thunks = {
 
             const { restorableConfig, getDoOverwriteConfiguration } = params;
 
+            const state = getState()[name];
+
             if (
                 getIsRestorableConfigInStore({
-                    "restorableConfigs": getState().restorableConfig.restorableConfigs,
+                    "restorableConfigs": state.restorableConfigs,
                     restorableConfig
                 })
             ) {
@@ -222,8 +174,8 @@ export const thunks = {
                 return friendlyName;
             };
 
-            const restorableConfigWithSameFriendlyName = getState()
-                .restorableConfig.restorableConfigs.filter(
+            const restorableConfigWithSameFriendlyName = state.restorableConfigs
+                .filter(
                     ({ catalogId, chartName }) =>
                         restorableConfig.catalogId === catalogId &&
                         restorableConfig.chartName === chartName
@@ -256,8 +208,8 @@ export const thunks = {
             }
 
             dispatch(
-                actions.restorableConfigSaved({
-                    restorableConfig
+                actions.restorableConfigsUpdated({
+                    "restorableConfigs": [...state.restorableConfigs, restorableConfig]
                 })
             );
 
