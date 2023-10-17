@@ -959,6 +959,15 @@ export function createOnyxiaApi(params: {
                             })
                         )
                     )
+                    .then(projects => {
+                        assert(
+                            projects.filter(project => project.group === undefined)
+                                .length === 1,
+                            "There should be only one project without group (user project)"
+                        );
+
+                        return projects;
+                    })
                     .catch(onError),
             { "promise": true }
         ),

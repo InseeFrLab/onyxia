@@ -1,4 +1,4 @@
-import { assert } from "tsafe/assert";
+import { assert, type Equals } from "tsafe/assert";
 import type { Thunks } from "../core";
 import type { Project } from "../ports/OnyxiaApi";
 import { createSlice } from "@reduxjs/toolkit";
@@ -6,7 +6,6 @@ import type { PayloadAction } from "@reduxjs/toolkit";
 import { createObjectThatThrowsIfAccessed } from "redux-clean-architecture";
 import type { State as RootState, CreateEvt } from "../core";
 import * as userConfigs from "./userConfigs";
-import { hiddenDirectoryBasename } from "./userConfigs";
 import { join as pathJoin } from "path";
 import type { Id } from "tsafe/id";
 import { generateRandomPassword } from "core/tools/generateRandomPassword";
@@ -22,8 +21,12 @@ export type ProjectConfigs = Id<
     {
         servicePassword: string;
         isOnboarded: boolean;
+        restorableConfigsStr: string | null;
     }
 >;
+
+// NOTE: Make sure there's no overlap between userConfigs and projectConfigs as they share the same vault dir.
+assert<Equals<keyof ProjectConfigs & keyof userConfigs.UserConfigs, never>>(true);
 
 export const name = "projectConfigs";
 
@@ -77,7 +80,7 @@ export const thunks = {
         (...args) => {
             const [dispatch] = args;
             dispatch(
-                privateThunks.changeConfigValue({
+                protectedThunks.changeConfigValue({
                     "key": "servicePassword",
                     "value": getDefaultConfig("servicePassword")
                 })
@@ -89,7 +92,7 @@ export const thunks = {
             const [dispatch] = args;
 
             const servicePassword = await dispatch(
-                privateThunks.getConfigValue({ "key": "servicePassword" })
+                protectedThunks.getConfigValue({ "key": "servicePassword" })
             );
 
             return servicePassword;
@@ -109,7 +112,7 @@ export const protectedThunks = {
                         data.actionName === "projectChanged"),
                 async () => {
                     const isOnboarded = await dispatch(
-                        privateThunks.getConfigValue({ "key": "isOnboarded" })
+                        protectedThunks.getConfigValue({ "key": "isOnboarded" })
                     );
 
                     if (isOnboarded) {
@@ -121,7 +124,7 @@ export const protectedThunks = {
                     await onyxiaApi.onboard();
 
                     await dispatch(
-                        privateThunks.changeConfigValue({
+                        protectedThunks.changeConfigValue({
                             "key": "isOnboarded",
                             "value": true
                         })
@@ -156,18 +159,6 @@ export const protectedThunks = {
                     "isOnboarding": false
                 })
             );
-        }
-} satisfies Thunks;
-
-const privateThunks = {
-    "getDirPath":
-        () =>
-        (...args): string => {
-            const [, getState] = args;
-
-            const project = selectors.selectedProject(getState());
-
-            return pathJoin("/", project.vaultTopDir, hiddenDirectoryBasename);
         },
     /**
     Here no state because other project user may have changed 
@@ -197,25 +188,126 @@ const privateThunks = {
 
             const dirPath = dispatch(privateThunks.getDirPath());
 
-            const value = await secretsManager
+            let value = await secretsManager
                 .get({ "path": pathJoin(dirPath, key) })
                 .then(({ secret }) => secret["value"] as ProjectConfigs[K])
                 .catch(() => undefined);
 
             if (value === undefined) {
-                const value = getDefaultConfig(key);
+                value = await dispatch(privateThunks.__migration({ key }));
+            }
+
+            if (value === undefined) {
+                value = getDefaultConfig(key);
 
                 await dispatch(
-                    privateThunks.changeConfigValue({
+                    protectedThunks.changeConfigValue({
                         key,
                         value
                     })
                 );
-
-                return value;
             }
 
             return value;
+        }
+} satisfies Thunks;
+
+const privateThunks = {
+    "getDirPath":
+        () =>
+        (...args): string => {
+            const [, getState] = args;
+
+            const project = selectors.selectedProject(getState());
+
+            return pathJoin("/", project.vaultTopDir, ".onyxia");
+        },
+    /** We wish we could start from a blank late each time we upgrade onyxia
+     *  but we can't because we don't want to erase the user's data
+     *  so when we update the model related to things stored in vault we need to im
+     *  implement a migration system.
+     */
+    "__migration":
+        <K extends keyof ProjectConfigs>(params: { key: K }) =>
+        async (...args): Promise<ProjectConfigs[K] | undefined> => {
+            const { key } = params;
+
+            const [dispatch, getState, { secretsManager }] = args;
+
+            migration_bookmarkedServiceConfigurationStr_to_restorableConfigsStr: {
+                if (key !== "restorableConfigsStr") {
+                    break migration_bookmarkedServiceConfigurationStr_to_restorableConfigsStr;
+                }
+
+                {
+                    const { projects, selectedProjectId } = getState()[name];
+
+                    const userProject = projects.find(
+                        project => project.group === undefined
+                    );
+
+                    assert(userProject !== undefined);
+
+                    if (userProject.id !== selectedProjectId) {
+                        break migration_bookmarkedServiceConfigurationStr_to_restorableConfigsStr;
+                    }
+                }
+
+                const dirPath = dispatch(privateThunks.getDirPath());
+
+                const oldPath = pathJoin(dirPath, "bookmarkedServiceConfigurationStr");
+
+                const oldValue = await secretsManager
+                    .get({ "path": oldPath })
+                    .then(({ secret }) => secret["value"])
+                    .catch(() => undefined);
+
+                if (oldValue === undefined) {
+                    break migration_bookmarkedServiceConfigurationStr_to_restorableConfigsStr;
+                }
+                assert(typeof oldValue === "string" || oldValue === null);
+
+                if (oldValue === null) {
+                    await secretsManager.delete({ "path": oldPath });
+                    break migration_bookmarkedServiceConfigurationStr_to_restorableConfigsStr;
+                }
+
+                const bookmarkedServiceConfiguration: {
+                    catalogId: string;
+                    packageName: string;
+                    formFieldsValueDifferentFromDefault: any[];
+                }[] = JSON.parse(oldValue);
+
+                const restorableConfigs: {
+                    catalogId: string;
+                    chartName: string;
+                    formFieldsValueDifferentFromDefault: any[];
+                }[] = bookmarkedServiceConfiguration.map(
+                    ({
+                        catalogId,
+                        packageName,
+                        formFieldsValueDifferentFromDefault
+                    }) => ({
+                        catalogId,
+                        "chartName": packageName,
+                        formFieldsValueDifferentFromDefault
+                    })
+                );
+
+                const newValue = JSON.stringify(restorableConfigs);
+
+                await secretsManager.put({
+                    "path": pathJoin(dirPath, key),
+                    "secret": { "value": newValue }
+                });
+
+                await secretsManager.delete({ "path": oldPath });
+
+                // @ts-expect-error
+                return newValue;
+            }
+
+            return undefined;
         }
 } satisfies Thunks;
 
@@ -248,9 +340,14 @@ function getDefaultConfig<K extends keyof ProjectConfigs>(key_: K): ProjectConfi
             // @ts-expect-error
             return out;
         }
+        case "restorableConfigsStr": {
+            const out: ProjectConfigs[typeof key] = null;
+            // @ts-expect-error
+            return out;
+        }
     }
 
-    assert(false);
+    assert<Equals<typeof key, never>>(false);
 }
 
 export type ChangeConfigValueParams<
