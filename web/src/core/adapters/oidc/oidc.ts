@@ -8,6 +8,8 @@ import { Evt } from "evt";
 import { fnv1aHashToHex } from "core/tools/fnv1aHashToHex";
 import { Deferred } from "evt/tools/Deferred";
 
+const paramsToRetrieveFromSuccessfulLogin = ["code", "state", "session_state"] as const;
+
 export async function createOidc(params: {
     authority: string;
     clientId: string;
@@ -97,7 +99,7 @@ export async function createOidc(params: {
 
         let loginSuccessUrl = "https://dummy.com";
 
-        for (const name of ["code", "state", "session_state"] as const) {
+        for (const name of paramsToRetrieveFromSuccessfulLogin) {
             const result = retrieveParamFromUrl({ name, url });
 
             assert(result.wasPresent);
@@ -167,7 +169,7 @@ export async function createOidc(params: {
 
             let loginSuccessUrl = "https://dummy.com";
 
-            for (const name of ["code", "state", "session_state"] as const) {
+            for (const name of paramsToRetrieveFromSuccessfulLogin) {
                 const result = retrieveParamFromUrl({ name, url });
 
                 assert(result.wasPresent);
