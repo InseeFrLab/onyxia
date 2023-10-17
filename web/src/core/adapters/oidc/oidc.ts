@@ -30,7 +30,7 @@ export async function createOidc(params: {
         "silent_redirect_uri": `${window.location.origin}/silent-sso.html?${configHashKey}=${configHash}`
     });
 
-    const login: Oidc.NotLoggedIn["login"] = async () => {
+    const login: Oidc.NotLoggedIn["login"] = async ({ doesCurrentHrefRequiresAuth }) => {
         //NOTE: We know there is a extraQueryParameter option but it doesn't allow
         // to control the encoding so we have to hack the global URL Class that is
         // used internally by oidc-client-ts
@@ -69,7 +69,7 @@ export async function createOidc(params: {
 
         await userManager.signinRedirect({
             redirect_uri,
-            "redirectMethod": "replace"
+            "redirectMethod": doesCurrentHrefRequiresAuth ? "replace" : "assign"
         });
         return new Promise<never>(() => {});
     };
