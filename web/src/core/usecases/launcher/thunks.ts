@@ -99,7 +99,8 @@ export const thunks = {
                             "email": user.email,
                             "password": servicePassword,
                             "ip": !doInjectPersonalInfos ? "0.0.0.0" : publicIp,
-                            "darkMode": userConfigs.isDarkModeEnabled
+                            "darkMode": userConfigs.isDarkModeEnabled,
+                            "lang": coreParams.getCurrentLang()
                         },
                         "service": {
                             "oneTimePassword": generateRandomPassword()
