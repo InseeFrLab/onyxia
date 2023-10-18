@@ -38,7 +38,13 @@ const infosAboutWhenFieldsShouldBeHidden = createSelector(
     state => state?.infosAboutWhenFieldsShouldBeHidden
 );
 
-const chartDependencies = createSelector(readyState, state => state?.chartDependencies);
+const chartDependencies = createSelector(readyState, state => {
+    if (state === undefined) {
+        return undefined;
+    }
+
+    return state.chartDependencies.filter(dependency => dependency !== "library-chart");
+});
 
 const friendlyName = createSelector(formFields, formFields => {
     if (formFields === undefined) {
