@@ -24,6 +24,8 @@ type CoreParams = {
 export async function createCore(params: CoreParams) {
     const { apiUrl, transformUrlBeforeRedirectToLogin, getCurrentLang } = params;
 
+    let isCoreCreated = false;
+
     const onyxiaApi = await (async () => {
         if (apiUrl === "") {
             const { onyxiaApi } = await import("core/adapters/onyxiaApiMock");
@@ -49,42 +51,32 @@ export async function createCore(params: CoreParams) {
                 return oidc.getAccessToken().accessToken;
             },
             "getRegionId": () => {
-                try {
-                    core;
-                } catch {
-                    // We haven't initialized the core yet
+                if (!isCoreCreated) {
                     return undefined;
                 }
 
-                const state = core.getState();
-
                 try {
                     return usecases.deploymentRegion.selectors.selectedDeploymentRegion(
-                        state
+                        core.getState()
                     ).id;
                 } catch (error) {
                     if (error instanceof AccessError) {
-                        // We haven't initialized the deployment region yet
                         return undefined;
                     }
                     throw error;
                 }
             },
             "getProject": () => {
-                try {
-                    core;
-                } catch {
-                    // We haven't initialized the core yet
+                if (!isCoreCreated) {
                     return undefined;
                 }
 
-                const state = core.getState();
-
                 try {
-                    return usecases.projectConfigs.selectors.selectedProject(state);
+                    return usecases.projectConfigs.selectors.selectedProject(
+                        core.getState()
+                    );
                 } catch (error) {
                     if (error instanceof AccessError) {
-                        // We haven't initialized the projectConfigs yet
                         return undefined;
                     }
                     throw error;
@@ -134,6 +126,8 @@ export async function createCore(params: CoreParams) {
         thunksExtraArgument,
         usecases
     });
+
+    isCoreCreated = true;
 
     await core.dispatch(usecases.userAuthentication.protectedThunks.initialize());
 
