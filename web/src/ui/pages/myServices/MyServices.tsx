@@ -4,8 +4,10 @@ import { useTranslation } from "ui/i18n";
 import { MyServicesButtonBar } from "./MyServicesButtonBar";
 import { MyServicesCards } from "./MyServicesCards";
 import type { Props as MyServicesCardsProps } from "./MyServicesCards";
-import { MyServicesSavedConfigs } from "./MyServicesSavedConfigs";
-import type { Props as MyServicesSavedConfigsProps } from "./MyServicesSavedConfigs";
+import {
+    MyServicesRestorableConfigs,
+    type Props as MyServicesRestorableConfigsProps
+} from "./MyServicesRestorableConfigs";
 import { ButtonId } from "./MyServicesButtonBar";
 import { useConstCallback } from "powerhooks/useConstCallback";
 import { useCoreFunctions, useCoreState, selectors } from "core";
@@ -101,52 +103,39 @@ export default function MyServices(props: Props) {
             .push()
     );
 
-    const onSavedConfigsCallback = useConstCallback<
-        MyServicesSavedConfigsProps["callback"]
-    >(({ launchLinkHref, action }) => {
-        switch (action) {
-            case "copy link":
-                navigator.clipboard.writeText(
-                    `${window.location.origin}${launchLinkHref}`
-                );
-                return;
-            case "delete":
-                // TODO: Refactor, lame to have to find the restorableConfig again
-                restorableConfigManager.deleteRestorableConfig({
-                    "restorableConfig": displayableConfigs.find(
-                        ({ restorableConfig }) =>
-                            routes.launcher({
-                                "catalogId": restorableConfig.catalogId,
-                                "chartName": restorableConfig.chartName,
-                                "formFieldsValueDifferentFromDefault":
-                                    restorableConfig.formFieldsValueDifferentFromDefault,
-                                "autoLaunch": true
-                            }).href === launchLinkHref
-                    )!.restorableConfig
-                });
-                return;
-        }
+    const onRequestDeleteRestorableConfig = useConstCallback<
+        MyServicesRestorableConfigsProps["onRequestDelete"]
+    >(({ restorableConfigIndex }) => {
+        restorableConfigManager.deleteRestorableConfig({
+            "restorableConfig": displayableConfigs[restorableConfigIndex].restorableConfig
+        });
     });
 
-    const savedConfigs = useMemo(
-        (): MyServicesSavedConfigsProps["savedConfigs"] =>
-            displayableConfigs.map(({ chartIconUrl, friendlyName, restorableConfig }) => {
-                const buildLink = (autoLaunch: boolean) =>
-                    routes.launcher({
-                        "catalogId": restorableConfig.catalogId,
-                        "chartName": restorableConfig.chartName,
-                        "formFieldsValueDifferentFromDefault":
-                            restorableConfig.formFieldsValueDifferentFromDefault,
-                        autoLaunch
-                    }).link;
+    const restorableConfigEntires = useMemo(
+        (): MyServicesRestorableConfigsProps["entries"] =>
+            displayableConfigs.map(
+                (
+                    { chartIconUrl, friendlyName, restorableConfig },
+                    restorableConfigIndex
+                ) => {
+                    const buildLink = (autoLaunch: boolean) =>
+                        routes.launcher({
+                            "catalogId": restorableConfig.catalogId,
+                            "chartName": restorableConfig.chartName,
+                            "formFieldsValueDifferentFromDefault":
+                                restorableConfig.formFieldsValueDifferentFromDefault,
+                            autoLaunch
+                        }).link;
 
-                return {
-                    chartIconUrl,
-                    friendlyName,
-                    "launchLink": buildLink(true),
-                    "editLink": buildLink(false)
-                };
-            }),
+                    return {
+                        restorableConfigIndex,
+                        chartIconUrl,
+                        friendlyName,
+                        "launchLink": buildLink(true),
+                        "editLink": buildLink(false)
+                    };
+                }
+            ),
         [displayableConfigs]
     );
 
@@ -316,11 +305,11 @@ export default function MyServices(props: Props) {
                                 }
                             />
                         )}
-                        <MyServicesSavedConfigs
+                        <MyServicesRestorableConfigs
                             isShortVariant={!isSavedConfigsExtended}
-                            savedConfigs={savedConfigs}
+                            entries={restorableConfigEntires}
                             className={classes.savedConfigs}
-                            callback={onSavedConfigsCallback}
+                            onRequestDelete={onRequestDeleteRestorableConfig}
                             onRequestToggleIsShortVariant={onRequestToggleIsShortVariant}
                         />
                     </>

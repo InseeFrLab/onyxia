@@ -2,16 +2,19 @@ import { memo, useReducer } from "react";
 import { tss } from "ui/theme";
 import { RoundLogo } from "ui/shared/RoundLogo";
 import { Button, Text } from "ui/theme";
-import { MyServicesSavedConfigOptions } from "./MyServicesSavedConfigOptions";
-import type { SavedConfigurationAction } from "./MyServicesSavedConfigOptions";
+import {
+    MyServicesRestorableConfigOptions,
+    type RestorableConfigAction
+} from "./MyServicesRestorableConfigOptions";
 import { useConstCallback } from "powerhooks/useConstCallback";
 import { useTranslation } from "ui/i18n";
 import { IconButton } from "ui/theme";
 import { useEffectOnValueChange } from "powerhooks/useEffectOnValueChange";
 import type { Link } from "type-route";
-import { assert } from "tsafe/assert";
+import { assert, type Equals } from "tsafe/assert";
 import { useStateRef } from "powerhooks/useStateRef";
 import { declareComponentKeys } from "i18nifty";
+import { symToStr } from "tsafe/symToStr";
 
 export type Props = {
     className?: string;
@@ -20,10 +23,10 @@ export type Props = {
     friendlyName: string;
     launchLink: Link;
     editLink: Link;
-    callback: (action: "copy link" | "delete") => void;
+    onRequestDelete: () => void;
 };
 
-export const MyServicesSavedConfig = memo((props: Props) => {
+export const MyServicesRestorableConfig = memo((props: Props) => {
     const {
         isShortVariant,
         friendlyName,
@@ -31,7 +34,7 @@ export const MyServicesSavedConfig = memo((props: Props) => {
         className,
         launchLink,
         editLink,
-        callback
+        onRequestDelete
     } = props;
 
     const { classes, cx } = useStyles({
@@ -39,33 +42,42 @@ export const MyServicesSavedConfig = memo((props: Props) => {
         isShortVariant
     });
 
-    const onLinkClick = useConstCallback(() => callback("copy link"));
+    const { t } = useTranslation({ MyServicesRestorableConfig });
 
-    const { t } = useTranslation({ MyServicesSavedConfig });
+    const { isDeletionScheduled, scheduleDeletion } = (function useClosure() {
+        const onRequestDeleteConst = useConstCallback(onRequestDelete);
 
-    const [isDeletionScheduled, scheduleDeletion] = useReducer(() => true, false);
+        const [isDeletionScheduled, scheduleDeletion] = useReducer(() => true, false);
 
-    useEffectOnValueChange(() => {
-        const timer = setTimeout(() => callback("delete"), 700);
+        useEffectOnValueChange(() => {
+            const timer = setTimeout(() => onRequestDeleteConst(), 700);
 
-        return () => {
-            clearTimeout(timer);
-        };
-    }, [isDeletionScheduled]);
+            return () => {
+                clearTimeout(timer);
+            };
+        }, [isDeletionScheduled]);
+
+        return { isDeletionScheduled, scheduleDeletion };
+    })();
 
     const editButtonRef = useStateRef<HTMLButtonElement>(null);
 
-    const configOptionsCallback = useConstCallback((action: SavedConfigurationAction) => {
+    const configOptionsCallback = useConstCallback((action: RestorableConfigAction) => {
         switch (action) {
             case "copy link":
+                navigator.clipboard.writeText(
+                    `${window.location.origin}${launchLink.href}`
+                );
+                return;
             case "delete":
-                callback(action);
-                break;
+                onRequestDelete();
+                return;
             case "edit":
                 assert(editButtonRef.current !== null);
                 editButtonRef.current.click();
-                break;
+                return;
         }
+        assert<Equals<typeof action, never>>(false);
     });
 
     return (
@@ -86,7 +98,7 @@ export const MyServicesSavedConfig = memo((props: Props) => {
                 <IconButton
                     className={classes.linkIcon}
                     iconId="link"
-                    onClick={onLinkClick}
+                    onClick={() => configOptionsCallback("copy link")}
                 />
                 <Button
                     className={classes.editIcon}
@@ -102,19 +114,21 @@ export const MyServicesSavedConfig = memo((props: Props) => {
                 {t("launch")}
             </Button>
             {isShortVariant && (
-                <MyServicesSavedConfigOptions callback={configOptionsCallback} />
+                <MyServicesRestorableConfigOptions callback={configOptionsCallback} />
             )}
         </div>
     );
 });
 
+MyServicesRestorableConfig.displayName = symToStr({ MyServicesRestorableConfig });
+
 export const { i18n } = declareComponentKeys<"edit" | "launch">()({
-    MyServicesSavedConfig
+    MyServicesRestorableConfig
 });
 
 const useStyles = tss
     .withParams<{ hasIcon: boolean; isShortVariant: boolean }>()
-    .withName({ MyServicesSavedConfig })
+    .withName({ MyServicesRestorableConfig })
     .create(({ theme, isShortVariant, hasIcon }) => ({
         "root": {
             "borderRadius": 16,

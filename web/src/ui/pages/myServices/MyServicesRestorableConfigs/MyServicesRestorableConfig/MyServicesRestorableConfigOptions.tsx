@@ -8,16 +8,17 @@ import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import { useTranslation } from "ui/i18n";
 import { declareComponentKeys } from "i18nifty";
+import { symToStr } from "tsafe/symToStr";
 
 const actions = ["edit", "copy link", "delete"] as const;
 
-export type SavedConfigurationAction = (typeof actions)[number];
+export type RestorableConfigAction = (typeof actions)[number];
 
 export type Props = {
-    callback: (action: SavedConfigurationAction) => void;
+    callback: (action: RestorableConfigAction) => void;
 };
 
-export const MyServicesSavedConfigOptions = memo((props: Props) => {
+export const MyServicesRestorableConfigOptions = memo((props: Props) => {
     const { callback } = props;
 
     const { classes } = useStyles();
@@ -33,13 +34,13 @@ export const MyServicesSavedConfigOptions = memo((props: Props) => {
     const onMenuClose = useConstCallback(() => setMenuElement(undefined));
 
     const onMenuItemClickFactory = useCallbackFactory(
-        ([action]: [SavedConfigurationAction]) => {
+        ([action]: [RestorableConfigAction]) => {
             callback(action);
             onMenuClose();
         }
     );
 
-    const { t } = useTranslation({ MyServicesSavedConfigOptions });
+    const { t } = useTranslation({ MyServicesRestorableConfigOptions });
 
     return (
         <>
@@ -102,33 +103,39 @@ export const MyServicesSavedConfigOptions = memo((props: Props) => {
     );
 });
 
-export const { i18n } = declareComponentKeys<"edit" | "remove bookmark" | "copy link">()({
-    MyServicesSavedConfigOptions
+MyServicesRestorableConfigOptions.displayName = symToStr({
+    MyServicesRestorableConfigOptions
 });
 
-const useStyles = tss.withName({ MyServicesSavedConfigOptions }).create(({ theme }) => ({
-    "icon": {
-        "color": theme.colors.useCases.typography.textPrimary
-    },
-    "menu": {
-        "& .Mui-selected": {
-            "backgroundColor": theme.colors.useCases.surfaces.surface1
-        },
-        "& .MuiPaper-root": {
-            "backgroundColor": theme.colors.useCases.surfaces.background
-        },
-        "& a": {
+export const { i18n } = declareComponentKeys<"edit" | "remove bookmark" | "copy link">()({
+    MyServicesRestorableConfigOptions
+});
+
+const useStyles = tss
+    .withName({ MyServicesRestorableConfigOptions })
+    .create(({ theme }) => ({
+        "icon": {
             "color": theme.colors.useCases.typography.textPrimary
+        },
+        "menu": {
+            "& .Mui-selected": {
+                "backgroundColor": theme.colors.useCases.surfaces.surface1
+            },
+            "& .MuiPaper-root": {
+                "backgroundColor": theme.colors.useCases.surfaces.background
+            },
+            "& a": {
+                "color": theme.colors.useCases.typography.textPrimary
+            }
+        },
+        "menuTypo": {
+            "display": "flex",
+            "alignItems": "center"
+        },
+        "button": {
+            "minWidth": "unset",
+            "marginLeft": theme.spacing(1)
         }
-    },
-    "menuTypo": {
-        "display": "flex",
-        "alignItems": "center"
-    },
-    "button": {
-        "minWidth": "unset",
-        "marginLeft": theme.spacing(1)
-    }
-}));
+    }));
 
 const menuId = "saved-configurations";
