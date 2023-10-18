@@ -14494,10 +14494,10 @@ schema-utils@^4.0.0:
     ajv-formats "^2.1.1"
     ajv-keywords "^5.1.0"
 
-screen-scaler@^1.2.3:
-  version "1.2.3"
-  resolved "https://registry.yarnpkg.com/screen-scaler/-/screen-scaler-1.2.3.tgz#d8c89f5f49e3ed1699b523cdf816c78619eaeb82"
-  integrity sha512-POkV9lTiPQmJiAbyrJHi2Yb1PoYjfD5uJl0HoWiCUVHzeAo/QIwP+YG1IpgQHIZDoQW1GdUFZIcIhYaU7XCsqw==
+screen-scaler@^1.2.5:
+  version "1.2.5"
+  resolved "https://registry.yarnpkg.com/screen-scaler/-/screen-scaler-1.2.5.tgz#5a654153ae764e50d8125bc53d4e080f93eef805"
+  integrity sha512-KiRwPdo6i8ju34BSRn9o8wd1Kqt0Eng5Pmgd/lMn5N6t/vrmrVSogZjU0VhCJavoGkEJ/5NliwcxqqVtsarmQg==
   dependencies:
     evt "^2.5.2"
     tsafe "^1.6.4"
@@ -15892,10 +15892,10 @@ tss-react@^4.9.0:
     "@emotion/serialize" "*"
     "@emotion/utils" "*"
 
-tss-react@^4.9.2:
-  version "4.9.2"
-  resolved "https://registry.yarnpkg.com/tss-react/-/tss-react-4.9.2.tgz#6a03db1df7bbaa4b6e5236e0d5cf633ee5e22e4e"
-  integrity sha512-0qOuDpar3q3N59Jsl50oDd+Zu3wfXv2rdf4VlPzvuekH6mkAgUVobZV3j69NPH0nm3Vv5xDRACjVUqVWmaNW0g==
+tss-react@^4.9.3:
+  version "4.9.3"
+  resolved "https://registry.yarnpkg.com/tss-react/-/tss-react-4.9.3.tgz#69ce18bcf83fe96d99d35f44a036c7b507f66eff"
+  integrity sha512-TqI0kBFmgW0f5YIOD2PMdHu6FnqSxVDUf5uJ7+gVkhemtMfwdlFpvXpddgSesktizr9PU9hY2nZ+kNnf0KQb9A==
   dependencies:
     "@emotion/cache" "*"
     "@emotion/serialize" "*"
