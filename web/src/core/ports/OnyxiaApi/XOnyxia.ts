@@ -1,5 +1,8 @@
 // Documentation: https://docs.onyxia.sh/contributing/catalog-of-services
 
+import type { Language } from "./Language";
+import { assert, type Equals } from "tsafe/assert";
+
 export const onyxiaReservedPropertyNameInFieldDescription = "x-onyxia";
 
 export type XOnyxiaParams = {
@@ -25,6 +28,7 @@ export type XOnyxiaContext = {
         password: string;
         ip: string;
         darkMode: boolean;
+        lang: "en" | "fr" | "zh-CN" | "no" | "fi" | "nl" | "it" | "de";
     };
     service: {
         oneTimePassword: string;
@@ -126,3 +130,5 @@ export type XOnyxiaContext = {
           }
         | undefined;
 };
+
+assert<Equals<XOnyxiaContext["user"]["lang"], Language>>();

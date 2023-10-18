@@ -608,10 +608,48 @@ export function createOnyxiaApi(params: {
                                         case "boolean":
                                             assert(
                                                 typeof resolvedValue !== "object",
-                                                `${overwriteDefaultWith} can't be interpreted as a boolean (${path})`
+                                                `${overwriteDefaultWith} resolved to an object, it can't be interpreted as a boolean (${path})`
                                             );
+
+                                            const trueishStrings = [
+                                                "true",
+                                                "1",
+                                                "yes",
+                                                "y"
+                                            ];
+                                            const falseishStrings = [
+                                                "false",
+                                                "0",
+                                                "no",
+                                                "n"
+                                            ];
+
+                                            if (typeof resolvedValue === "string") {
+                                                assert(
+                                                    [
+                                                        ...trueishStrings,
+                                                        ...falseishStrings
+                                                    ].includes(
+                                                        resolvedValue.toLowerCase()
+                                                    ),
+                                                    [
+                                                        `${overwriteDefaultWith} resolves to a string that can't be interpreted as a boolean (${path})`,
+                                                        `strings that can be interpreted as boolean are: (case insensitive)`,
+                                                        [
+                                                            ...trueishStrings,
+                                                            ...falseishStrings
+                                                        ].join(" "),
+                                                        `You resolved to: ${resolvedValue}`
+                                                    ].join("\n")
+                                                );
+                                            }
+
                                             jsonSchemaFormFieldDescription.default =
-                                                !!resolvedValue;
+                                                typeof resolvedValue === "string"
+                                                    ? trueishStrings.includes(
+                                                          resolvedValue.toLowerCase()
+                                                      )
+                                                    : !!resolvedValue;
                                             break;
                                         case "number":
                                         case "integer":

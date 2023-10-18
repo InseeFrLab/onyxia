@@ -8,6 +8,8 @@ import { Evt } from "evt";
 import { fnv1aHashToHex } from "core/tools/fnv1aHashToHex";
 import { Deferred } from "evt/tools/Deferred";
 
+const paramsToRetrieveFromSuccessfulLogin = ["code", "state", "session_state"] as const;
+
 export async function createOidc(params: {
     authority: string;
     clientId: string;
@@ -17,6 +19,9 @@ export async function createOidc(params: {
 }): Promise<Oidc> {
     const { authority, clientId, transformUrlBeforeRedirect, getUiLocales, log } = params;
 
+    const configHash = fnv1aHashToHex(`${authority} ${clientId}`);
+    const configHashKey = "configHash";
+
     const userManager = new UserManager({
         authority,
         "client_id": clientId,
@@ -24,13 +29,10 @@ export async function createOidc(params: {
         "response_type": "code",
         "scope": "openid profile",
         "automaticSilentRenew": false,
-        "silent_redirect_uri": `${window.location.origin}/silent-sso.html`
+        "silent_redirect_uri": `${window.location.origin}/silent-sso.html?${configHashKey}=${configHash}`
     });
 
-    const configHash = fnv1aHashToHex(`${authority} ${clientId}`);
-    const configHashKey = "configHash";
-
-    const login: Oidc.NotLoggedIn["login"] = async () => {
+    const login: Oidc.NotLoggedIn["login"] = async ({ doesCurrentHrefRequiresAuth }) => {
         //NOTE: We know there is a extraQueryParameter option but it doesn't allow
         // to control the encoding so we have to hack the global URL Class that is
         // used internally by oidc-client-ts
@@ -69,7 +71,7 @@ export async function createOidc(params: {
 
         await userManager.signinRedirect({
             redirect_uri,
-            "redirectMethod": "replace"
+            "redirectMethod": doesCurrentHrefRequiresAuth ? "replace" : "assign"
         });
         return new Promise<never>(() => {});
     };
@@ -97,7 +99,7 @@ export async function createOidc(params: {
 
         let loginSuccessUrl = "https://dummy.com";
 
-        for (const name of ["code", "state", "session_state"] as const) {
+        for (const name of paramsToRetrieveFromSuccessfulLogin) {
             const result = retrieveParamFromUrl({ name, url });
 
             assert(result.wasPresent);
@@ -123,6 +125,10 @@ export async function createOidc(params: {
     async function silentSignInGetAccessToken(): Promise<string | undefined> {
         const dLoginSuccessUrl = new Deferred<string | undefined>();
 
+        const timeout = setTimeout(() => {
+            throw new Error(`SSO silent login timeout with clientId: ${clientId}`);
+        }, 5000);
+
         const listener = (event: MessageEvent) => {
             if (
                 event.origin !== window.location.origin ||
@@ -131,9 +137,26 @@ export async function createOidc(params: {
                 return;
             }
 
-            window.removeEventListener("message", listener);
-
             const url = event.data;
+
+            {
+                let result: ReturnType<typeof retrieveParamFromUrl>;
+
+                try {
+                    result = retrieveParamFromUrl({ "name": configHashKey, url });
+                } catch {
+                    // This could possibly happen if url is not a valid url.
+                    return;
+                }
+
+                if (!result.wasPresent || result.value !== configHash) {
+                    return;
+                }
+            }
+
+            clearTimeout(timeout);
+
+            window.removeEventListener("message", listener);
 
             {
                 const result = retrieveParamFromUrl({ "name": "error", url });
@@ -146,7 +169,7 @@ export async function createOidc(params: {
 
             let loginSuccessUrl = "https://dummy.com";
 
-            for (const name of ["code", "state", "session_state"] as const) {
+            for (const name of paramsToRetrieveFromSuccessfulLogin) {
                 const result = retrieveParamFromUrl({ name, url });
 
                 assert(result.wasPresent);
