@@ -417,10 +417,19 @@ ${
         "launch": "启动",
         "cancel": "取消",
         "copy url helper text": "复制 URL 以恢复此配置",
-        "save configuration": "保存当前服务",
         "share the service": "分享服务",
         "share the service - explain": "让其他组员可以访问该服务",
-        "restore all default": undefined
+        "restore all default": undefined,
+        "bookmark button": ({ isBookmarked }) => `${isBookmarked ? "移除" : "保存"} 配置`,
+        "bookmark button tooltip": ({ myServicesSavedConfigsExtendedLink }) => (
+            <>
+                已保存的配置可以从&nbsp;
+                <MuiLink {...myServicesSavedConfigsExtendedLink} target="_blank">
+                    我的服务
+                </MuiLink>{" "}
+                页面快速重新启动
+            </>
+        )
     },
     "LauncherConfigurationCard": {
         "global config": "全局设置",

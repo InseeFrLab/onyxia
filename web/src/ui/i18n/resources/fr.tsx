@@ -491,11 +491,21 @@ N'hésitez pas à explorer et à prendre en main vos déploiements Kubernetes !
         "cancel": "Annuler",
         "copy url helper text":
             "Copier l'URL permettant de restaurer cette configuration",
-        "save configuration": "Enregistrer cette configuration",
         "share the service": "Partager le service",
         "share the service - explain":
             "Rendre accessible le service aux collaborateurs du groupe",
-        "restore all default": "Réinitialiser les configurations"
+        "restore all default": "Réinitialiser les configurations",
+        "bookmark button": ({ isBookmarked }) =>
+            `${isBookmarked ? "Supprimer" : "Enregistrer"} la configuration`,
+        "bookmark button tooltip": ({ myServicesSavedConfigsExtendedLink }) => (
+            <>
+                Les configurations enregistrées peuvent être relancer rapidement depuis la
+                page&nbsp;
+                <MuiLink {...myServicesSavedConfigsExtendedLink} target="_blank">
+                    Mes Services
+                </MuiLink>
+            </>
+        )
     },
     "LauncherConfigurationCard": {
         "global config": "Configurations globales",

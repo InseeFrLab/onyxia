@@ -1,9 +1,8 @@
 import { memo } from "react";
 import { tss } from "ui/theme";
 import { RoundLogo } from "ui/shared/RoundLogo";
-import { Button, Text } from "ui/theme";
 import { useTranslation } from "ui/i18n";
-import { IconButton } from "ui/theme";
+import { IconButton, Button, Text } from "ui/theme";
 import { useConstCallback } from "powerhooks/useConstCallback";
 import { TextField } from "onyxia-ui/TextField";
 import type { TextFieldProps } from "onyxia-ui/TextField";
@@ -15,12 +14,14 @@ import FormHelperText from "@mui/material/FormHelperText";
 import Checkbox from "@mui/material/Checkbox";
 import { declareComponentKeys } from "i18nifty";
 import { symToStr } from "tsafe/symToStr";
+import type { Link } from "type-route";
 
 export type Props = {
     className?: string;
     chartName: string;
     chartIconUrl: string | undefined;
     isBookmarked: boolean;
+    myServicesSavedConfigsExtendedLink: Link;
     onRequestToggleBookmark: () => void;
 
     friendlyName: string;
@@ -47,6 +48,7 @@ export const LauncherMainCard = memo((props: Props) => {
         chartName,
         chartIconUrl,
         isBookmarked,
+        myServicesSavedConfigsExtendedLink,
         friendlyName,
         isShared,
         isLaunchable,
@@ -80,21 +82,36 @@ export const LauncherMainCard = memo((props: Props) => {
                 </Text>
                 <div style={{ "flex": 1 }} />
 
-                {onRequestRestoreAllDefault !== undefined && (
-                    <Button variant="ternary" onClick={onRequestRestoreAllDefault}>
-                        {t("restore all default")}
-                    </Button>
-                )}
                 {onRequestCopyLaunchUrl !== undefined && (
                     <Tooltip title={t("copy url helper text")}>
                         <IconButton iconId="link" onClick={onRequestCopyLaunchUrl} />
                     </Tooltip>
                 )}
-                <Tooltip title={t("save configuration")}>
-                    <IconButton
-                        iconId={isBookmarked ? "bookmark" : "bookmarkBorder"}
-                        onClick={onRequestToggleBookmark}
-                    />
+                {onRequestRestoreAllDefault !== undefined && (
+                    <Button variant="ternary" onClick={onRequestRestoreAllDefault}>
+                        {t("restore all default")}
+                    </Button>
+                )}
+                <Tooltip
+                    title={t("bookmark button tooltip", {
+                        myServicesSavedConfigsExtendedLink
+                    })}
+                >
+                    {onRequestRestoreAllDefault === undefined && !isBookmarked ? (
+                        <IconButton
+                            iconId={isBookmarked ? "bookmark" : "bookmarkBorder"}
+                            onClick={onRequestToggleBookmark}
+                        />
+                    ) : (
+                        <Button
+                            className={classes.bookmarkButton}
+                            variant="ternary"
+                            startIcon={isBookmarked ? "bookmark" : "bookmarkBorder"}
+                            onClick={onRequestToggleBookmark}
+                        >
+                            {t("bookmark button", { isBookmarked })}
+                        </Button>
+                    )}
                 </Tooltip>
             </div>
             <div className={classes.belowDivider}>
@@ -158,10 +175,19 @@ export const { i18n } = declareComponentKeys<
     | "launch"
     | "friendly name"
     | "copy url helper text"
-    | "save configuration"
     | "share the service"
     | "share the service - explain"
     | "restore all default"
+    | {
+          K: "bookmark button tooltip";
+          P: { myServicesSavedConfigsExtendedLink: Link };
+          R: JSX.Element;
+      }
+    //{isBookmarked? "Suprimmé cette configuration" : "Enregistré cette configuration"}
+    | {
+          K: "bookmark button";
+          P: { isBookmarked: boolean };
+      }
 >()({ LauncherMainCard });
 
 const useStyles = tss.withName({ LauncherMainCard }).create(({ theme }) => ({
@@ -211,6 +237,9 @@ const useStyles = tss.withName({ LauncherMainCard }).create(({ theme }) => ({
         "marginLeft": 0
     },
     "launchButton": {
+        "marginLeft": theme.spacing(2)
+    },
+    "bookmarkButton": {
         "marginLeft": theme.spacing(2)
     }
 }));

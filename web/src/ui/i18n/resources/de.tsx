@@ -488,11 +488,21 @@ Fühlen Sie sich frei, Ihre Kubernetes-Bereitstellungen zu erkunden und die Kont
         "cancel": "Abbrechen",
         "copy url helper text":
             "Kopieren Sie die URL, um diese Konfiguration wiederherzustellen",
-        "save configuration": "Diese Konfiguration speichern",
         "share the service": "Den Dienst teilen",
         "share the service - explain":
             "Machen Sie den Dienst für Projektmitglieder zugänglich",
-        "restore all default": "Konfigurationen zurücksetzen"
+        "restore all default": "Konfigurationen zurücksetzen",
+        "bookmark button": ({ isBookmarked }) =>
+            `${isBookmarked ? "Entfernen" : "Speichern"} Konfiguration`,
+        "bookmark button tooltip": ({ myServicesSavedConfigsExtendedLink }) => (
+            <>
+                Gespeicherte Konfigurationen können schnell von der Seite&nbsp;
+                <MuiLink {...myServicesSavedConfigsExtendedLink} target="_blank">
+                    Meine Dienste
+                </MuiLink>{" "}
+                neu gestartet werden
+            </>
+        )
     },
     "LauncherConfigurationCard": {
         "global config": "Globale Konfigurationen",

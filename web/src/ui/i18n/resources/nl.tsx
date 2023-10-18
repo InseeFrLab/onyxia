@@ -485,11 +485,21 @@ Voel je vrij om te verkennen en de controle over je Kubernetes-implementaties te
         "launch": "Opstarten",
         "cancel": "Annuleren",
         "copy url helper text": "URL kopiëren om deze configuratie te herstellen",
-        "save configuration": "Deze configuratie opslaan",
         "share the service": "De dienst delen",
         "share the service - explain":
             "De dienst beschikbaar maken voor de medewerkers van de groep",
-        "restore all default": "Configuraties opnieuw initialiseren"
+        "restore all default": "Configuraties opnieuw initialiseren",
+        "bookmark button": ({ isBookmarked }) =>
+            `${isBookmarked ? "Verwijderen" : "Opslaan"} configuratie`,
+        "bookmark button tooltip": ({ myServicesSavedConfigsExtendedLink }) => (
+            <>
+                Opgeslagen configuraties kunnen snel opnieuw worden gestart vanaf de
+                pagina&nbsp;
+                <MuiLink {...myServicesSavedConfigsExtendedLink} target="_blank">
+                    Mijn Diensten
+                </MuiLink>
+            </>
+        )
     },
     "LauncherConfigurationCard": {
         "global config": "Globale configuraties",

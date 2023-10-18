@@ -304,6 +304,11 @@ export default function Launcher(props: Props) {
                                 chartName={chartName}
                                 chartIconUrl={chartIconUrl}
                                 isBookmarked={isRestorableConfigSaved}
+                                myServicesSavedConfigsExtendedLink={
+                                    routes.myServices({
+                                        "isSavedConfigsExtended": true
+                                    }).link
+                                }
                                 onRequestToggleBookmark={onRequestToggleBookmark}
                                 friendlyName={friendlyName}
                                 isShared={isShared}

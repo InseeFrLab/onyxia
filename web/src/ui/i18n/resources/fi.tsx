@@ -474,10 +474,19 @@ Tutustu vapaasti ja ota hallintaan Kubernetes-julkaisusi!
         "launch": "Käynnistä",
         "cancel": "Peruuta",
         "copy url helper text": "Kopioi URL-osoite palauttaaksesi tämän konfiguraation",
-        "save configuration": "Tallenna tämä konfiguraatio",
         "share the service": "Jaa palvelu",
         "share the service - explain": "Tee palvelu saataville ryhmän jäsenille",
-        "restore all default": "Palauta oletuskonfiguraatiot"
+        "restore all default": "Palauta oletuskonfiguraatiot",
+        "bookmark button": ({ isBookmarked }) =>
+            `${isBookmarked ? "Poista" : "Tallenna"} asetukset`,
+        "bookmark button tooltip": ({ myServicesSavedConfigsExtendedLink }) => (
+            <>
+                Tallennetut asetukset voidaan käynnistää uudelleen nopeasti sivulta&nbsp;
+                <MuiLink {...myServicesSavedConfigsExtendedLink} target="_blank">
+                    Omat Palvelut
+                </MuiLink>
+            </>
+        )
     },
     "LauncherConfigurationCard": {
         "global config": "Yleinen konfiguraatio",

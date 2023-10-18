@@ -482,11 +482,21 @@ Sentiti libero di esplorare e prendere il controllo dei tuoi deployment Kubernet
         "launch": "Avviare",
         "cancel": "Annullare",
         "copy url helper text": "Copiare l'URL per ripristinare questa configurazione",
-        "save configuration": "Salvare questa configurazione",
         "share the service": "Condividire il servizio",
         "share the service - explain":
             "Rendere il servizio accessibile ai membri del gruppo",
-        "restore all default": "Ripristinare le configurazioni"
+        "restore all default": "Ripristinare le configurazioni",
+        "bookmark button": ({ isBookmarked }) =>
+            `${isBookmarked ? "Rimuovi" : "Salva"} configurazione`,
+        "bookmark button tooltip": ({ myServicesSavedConfigsExtendedLink }) => (
+            <>
+                Le configurazioni salvate possono essere rapidamente riavviate dalla
+                pagina&nbsp;
+                <MuiLink {...myServicesSavedConfigsExtendedLink} target="_blank">
+                    I Miei Servizi
+                </MuiLink>
+            </>
+        )
     },
     "LauncherConfigurationCard": {
         "global config": "Configurazioni globali",

@@ -477,10 +477,20 @@ Feel free to explore and take charge of your Kubernetes deployments!
         "launch": "Launch",
         "cancel": "Cancel",
         "copy url helper text": "Copy url to restore this configuration",
-        "save configuration": "Save this configuration",
         "share the service": "Share the service",
         "share the service - explain": "Make the service accessible to the group members",
-        "restore all default": "Restore default configurations"
+        "restore all default": "Restore default configurations",
+        "bookmark button": ({ isBookmarked }) =>
+            `${isBookmarked ? "Remove" : "Save"} configuration`,
+        "bookmark button tooltip": ({ myServicesSavedConfigsExtendedLink }) => (
+            <>
+                Saved configurations can be quickly relaunched from the&nbsp;
+                <MuiLink {...myServicesSavedConfigsExtendedLink} target="_blank">
+                    My Services
+                </MuiLink>{" "}
+                page
+            </>
+        )
     },
     "LauncherConfigurationCard": {
         "global config": "Global configuration",

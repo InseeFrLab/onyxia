@@ -481,11 +481,20 @@ Føl deg fri til å utforske og ta kontroll over dine Kubernetes-implementeringe
         "launch": "Start",
         "cancel": "Avbryt",
         "copy url helper text": "Kopier URL for å gjenopprette denne konfigurasjonen",
-        "save configuration": "Lagre denne konfigurasjonen",
         "share the service": "Del tjenesten",
         "share the service - explain":
             "Gjør tjenesten tilgjengelig for prosjektmedlemmene",
-        "restore all default": "Gjenopprett standardkonfigurasjoner"
+        "restore all default": "Gjenopprett standardkonfigurasjoner",
+        "bookmark button": ({ isBookmarked }) =>
+            `${isBookmarked ? "Fjern" : "Lagre"} konfigurasjon`,
+        "bookmark button tooltip": ({ myServicesSavedConfigsExtendedLink }) => (
+            <>
+                Lagrede konfigurasjoner kan raskt startes på nytt fra siden&nbsp;
+                <MuiLink {...myServicesSavedConfigsExtendedLink} target="_blank">
+                    Mine Tjenester
+                </MuiLink>
+            </>
+        )
     },
     "LauncherConfigurationCard": {
         "global config": "Global konfigurasjon",

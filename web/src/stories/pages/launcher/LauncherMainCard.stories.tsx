@@ -15,6 +15,10 @@ export const ViewDefault = getStory({
     "chartName": "rstudio",
     "chartIconUrl": rstudioImg,
     "isBookmarked": true,
+    "myServicesSavedConfigsExtendedLink": {
+        "href": "https://example.com",
+        "onClick": () => {}
+    },
     "friendlyName": "rstudio-1615211422",
     "isLaunchable": true,
     "isShared": false,
