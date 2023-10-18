@@ -21,7 +21,7 @@ export type Props = {
     chartName: string;
     chartIconUrl: string | undefined;
     isBookmarked: boolean;
-    onIsBookmarkedValueChange: (isBookmarked: boolean) => void;
+    onRequestToggleBookmark: () => void;
 
     friendlyName: string;
     onFriendlyNameChange: (friendlyName: string) => void;
@@ -50,7 +50,7 @@ export const LauncherMainCard = memo((props: Props) => {
         friendlyName,
         isShared,
         isLaunchable,
-        onIsBookmarkedValueChange,
+        onRequestToggleBookmark,
         onFriendlyNameChange,
         onIsSharedValueChange,
         onRequestLaunch,
@@ -62,10 +62,6 @@ export const LauncherMainCard = memo((props: Props) => {
     const { classes, cx } = useStyles();
 
     const { t } = useTranslation({ LauncherMainCard });
-
-    const onBookmarkIconButtonClick = useConstCallback(() =>
-        onIsBookmarkedValueChange(!isBookmarked)
-    );
 
     const onValueBeingTypedChange = useConstCallback<
         TextFieldProps["onValueBeingTypedChange"]
@@ -97,7 +93,7 @@ export const LauncherMainCard = memo((props: Props) => {
                 <Tooltip title={t("save configuration")}>
                     <IconButton
                         iconId={isBookmarked ? "bookmark" : "bookmarkBorder"}
-                        onClick={onBookmarkIconButtonClick}
+                        onClick={onRequestToggleBookmark}
                     />
                 </Tooltip>
             </div>

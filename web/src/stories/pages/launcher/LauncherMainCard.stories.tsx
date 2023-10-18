@@ -20,7 +20,7 @@ export const ViewDefault = getStory({
     "isShared": false,
     ...logCallbacks([
         "onFriendlyNameChange",
-        "onIsBookmarkedValueChange",
+        "onRequestToggleBookmark",
         "onRequestCancel",
         "onRequestCopyLaunchUrl",
         "onRequestLaunch",

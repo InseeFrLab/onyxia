@@ -74,6 +74,8 @@ export default function Launcher(props: Props) {
         chartSourceUrls
     } = useCoreState(selectors.launcher.wrap).wrap;
 
+    console.log({ isRestorableConfigSaved });
+
     const scrollableDivRef = useStateRef<HTMLDivElement>(null);
 
     const { launcher, restorableConfigManager, k8sCredentials } = useCoreFunctions();
@@ -187,10 +189,10 @@ export default function Launcher(props: Props) {
         navigator.clipboard.writeText(window.location.href)
     );
 
-    const onIsBookmarkedValueChange = useConstCallback(async (isBookmarked: boolean) => {
+    const onRequestToggleBookmark = useConstCallback(async () => {
         assert(restorableConfig !== undefined);
 
-        if (isBookmarked) {
+        if (isRestorableConfigSaved) {
             restorableConfigManager.deleteRestorableConfig({ restorableConfig });
         } else {
             if (
@@ -304,7 +306,7 @@ export default function Launcher(props: Props) {
                                 chartName={chartName}
                                 chartIconUrl={chartIconUrl}
                                 isBookmarked={isRestorableConfigSaved}
-                                onIsBookmarkedValueChange={onIsBookmarkedValueChange}
+                                onRequestToggleBookmark={onRequestToggleBookmark}
                                 friendlyName={friendlyName}
                                 isShared={isShared}
                                 onFriendlyNameChange={launcher.changeFriendlyName}

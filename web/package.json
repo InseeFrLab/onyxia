@@ -43,6 +43,7 @@
         "zod": "^3.19.0",
         "yaml": "^2.0.1",
         "flexsearch": "0.7.21",
+        "async-mutex": "^0.4.0",
         "@ungap/structured-clone": "^1.2.0",
         "minio": "^7.1.1",
         "axios": "^0.26.0",
