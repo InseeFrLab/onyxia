@@ -74,8 +74,6 @@ export default function Launcher(props: Props) {
         chartSourceUrls
     } = useCoreState(selectors.launcher.wrap).wrap;
 
-    console.log({ isRestorableConfigSaved });
-
     const scrollableDivRef = useStateRef<HTMLDivElement>(null);
 
     const { launcher, restorableConfigManager, k8sCredentials } = useCoreFunctions();

@@ -242,11 +242,15 @@ const privateThunks = {
 
             const { restorableConfigs } = getState()[name];
 
-            return restorableConfigs.find(
-                ({ formFieldsValueDifferentFromDefault }) =>
-                    readFriendlyName(formFieldsValueDifferentFromDefault) ===
-                    readFriendlyName(restorableConfig.formFieldsValueDifferentFromDefault)
+            const results = restorableConfigs.filter(
+                restorableConfig_i =>
+                    readFriendlyName(restorableConfig_i) ===
+                    readFriendlyName(restorableConfig)
             );
+
+            assert(results.length <= 1);
+
+            return results[0];
         }
 } satisfies Thunks;
 
@@ -357,12 +361,12 @@ export function areSameRestorableConfig(
         .reduce(...allEquals(same));
 }
 
-function readFriendlyName(formFieldsValue: FormFieldValue[]) {
-    const friendlyName = formFieldsValue.find(({ path }) =>
-        same(path, onyxiaFriendlyNameFormFieldPath.split("."))
+function readFriendlyName(restorableConfig: RestorableConfig) {
+    const friendlyName = restorableConfig.formFieldsValueDifferentFromDefault.find(
+        ({ path }) => same(path, onyxiaFriendlyNameFormFieldPath.split("."))
     )?.value;
     assert(friendlyName === undefined || typeof friendlyName === "string");
-    return friendlyName;
+    return friendlyName ?? restorableConfig.chartName;
 }
 
 export const selectors = (() => {
@@ -393,10 +397,7 @@ export const selectors = (() => {
                                 : chartIconUrlByChartNameAndCatalogId[
                                       restorableConfig.catalogId
                                   ]?.[restorableConfig.chartName],
-                        "friendlyName":
-                            readFriendlyName(
-                                restorableConfig.formFieldsValueDifferentFromDefault
-                            ) ?? restorableConfig.chartName
+                        "friendlyName": readFriendlyName(restorableConfig)
                     }
                 ])
             );
