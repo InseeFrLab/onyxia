@@ -26,7 +26,7 @@
         "i18nifty": "^2.1.1",
         "tsafe": "^1.6.5",
         "redux-clean-architecture": "^3.7.4",
-        "screen-scaler": "^1.2.3",
+        "screen-scaler": "^1.2.5",
         "evt": "^2.5.3",
         "cra-envs": "^1.2.8",
         "powerhooks": "^1.0.3",
