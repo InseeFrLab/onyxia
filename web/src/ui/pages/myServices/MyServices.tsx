@@ -37,7 +37,10 @@ export default function MyServices(props: Props) {
     /* prettier-ignore */
     const { serviceManager, restorableConfigManager, k8sCredentials, projectConfigs } = useCoreFunctions();
     /* prettier-ignore */
-    const { displayableConfigs } = useCoreState(selectors.restorableConfigManager.displayableConfigs);
+    const { restorableConfigs } = useCoreState(selectors.restorableConfigManager.restorableConfigs);
+    const { chartIconAndFriendlyNameByRestorableConfigIndex } = useCoreState(
+        selectors.restorableConfigManager.chartIconAndFriendlyNameByRestorableConfigIndex
+    );
     /* prettier-ignore */
     const { isUpdating } = useCoreState(selectors.serviceManager.isUpdating);
     const { runningServices } = useCoreState(selectors.serviceManager.runningServices);
@@ -107,36 +110,36 @@ export default function MyServices(props: Props) {
         MyServicesRestorableConfigsProps["onRequestDelete"]
     >(({ restorableConfigIndex }) => {
         restorableConfigManager.deleteRestorableConfig({
-            "restorableConfig": displayableConfigs[restorableConfigIndex].restorableConfig
+            "restorableConfig": restorableConfigs[restorableConfigIndex]
         });
     });
 
     const restorableConfigEntires = useMemo(
         (): MyServicesRestorableConfigsProps["entries"] =>
-            displayableConfigs.map(
-                (
-                    { chartIconUrl, friendlyName, restorableConfig },
-                    restorableConfigIndex
-                ) => {
-                    const buildLink = (autoLaunch: boolean) =>
-                        routes.launcher({
-                            "catalogId": restorableConfig.catalogId,
-                            "chartName": restorableConfig.chartName,
-                            "formFieldsValueDifferentFromDefault":
-                                restorableConfig.formFieldsValueDifferentFromDefault,
-                            autoLaunch
-                        }).link;
+            restorableConfigs.map((restorableConfig, restorableConfigIndex) => {
+                const buildLink = (autoLaunch: boolean) =>
+                    routes.launcher({
+                        "catalogId": restorableConfig.catalogId,
+                        "chartName": restorableConfig.chartName,
+                        "formFieldsValueDifferentFromDefault":
+                            restorableConfig.formFieldsValueDifferentFromDefault,
+                        autoLaunch
+                    }).link;
 
-                    return {
-                        restorableConfigIndex,
-                        chartIconUrl,
-                        friendlyName,
-                        "launchLink": buildLink(true),
-                        "editLink": buildLink(false)
-                    };
-                }
-            ),
-        [displayableConfigs]
+                const { chartIconUrl, friendlyName } =
+                    chartIconAndFriendlyNameByRestorableConfigIndex[
+                        restorableConfigIndex
+                    ];
+
+                return {
+                    restorableConfigIndex,
+                    chartIconUrl,
+                    friendlyName,
+                    "launchLink": buildLink(true),
+                    "editLink": buildLink(false)
+                };
+            }),
+        [restorableConfigs, chartIconAndFriendlyNameByRestorableConfigIndex]
     );
 
     const cards = useMemo(

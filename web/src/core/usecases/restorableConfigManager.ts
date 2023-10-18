@@ -149,18 +149,10 @@ const privateThunks = {
 
             const { restorableConfigs } = getState()[name];
 
-            const getFriendlyName = (formFieldsValue: FormFieldValue[]) => {
-                const friendlyName = formFieldsValue.find(({ path }) =>
-                    same(path, onyxiaFriendlyNameFormFieldPath.split("."))
-                )?.value;
-                assert(friendlyName === undefined || typeof friendlyName === "string");
-                return friendlyName;
-            };
-
             return restorableConfigs.find(
                 ({ formFieldsValueDifferentFromDefault }) =>
-                    getFriendlyName(formFieldsValueDifferentFromDefault) ===
-                    getFriendlyName(restorableConfig.formFieldsValueDifferentFromDefault)
+                    readFriendlyName(formFieldsValueDifferentFromDefault) ===
+                    readFriendlyName(restorableConfig.formFieldsValueDifferentFromDefault)
             );
         }
 } satisfies Thunks;
@@ -252,58 +244,54 @@ export function areSameRestorableConfig(
         .reduce(...allEquals(same));
 }
 
-export const { protectedSelectors, selectors } = (() => {
+function readFriendlyName(formFieldsValue: FormFieldValue[]) {
+    const friendlyName = formFieldsValue.find(({ path }) =>
+        same(path, onyxiaFriendlyNameFormFieldPath.split("."))
+    )?.value;
+    assert(friendlyName === undefined || typeof friendlyName === "string");
+    return friendlyName;
+}
+
+export const selectors = (() => {
     function state(rootState: RootState) {
         return rootState[name];
     }
 
-    const restorableConfigs = createSelector(state, state => state.restorableConfigs);
+    const restorableConfigs = createSelector(state, state =>
+        [...state.restorableConfigs].reverse()
+    );
 
-    const displayableConfigs = createSelector(
+    const chartIconAndFriendlyNameByRestorableConfigIndex = createSelector(
         state,
         restorableConfigs,
-        (state, restorableConfigs) => {
+        (
+            state,
+            restorableConfigs
+        ): Record<number, { friendlyName: string; chartIconUrl: string | undefined }> => {
             const { chartIconUrlByChartNameAndCatalogId } = state;
 
-            return restorableConfigs
-                .map(restorableConfig => {
-                    const { chartName, catalogId } = restorableConfig;
-
-                    return {
+            return Object.fromEntries(
+                restorableConfigs.map((restorableConfig, restorableConfigIndex) => [
+                    restorableConfigIndex,
+                    {
                         "chartIconUrl":
                             chartIconUrlByChartNameAndCatalogId === undefined
                                 ? undefined
-                                : chartIconUrlByChartNameAndCatalogId[catalogId]?.[
-                                      chartName
-                                  ],
-                        "friendlyName": (() => {
-                            const friendlyName =
-                                restorableConfig.formFieldsValueDifferentFromDefault.find(
-                                    ({ path }) =>
-                                        same(
-                                            path,
-                                            onyxiaFriendlyNameFormFieldPath.split(".")
-                                        )
-                                )?.value ?? chartName;
-
-                            assert(typeof friendlyName === "string");
-
-                            return friendlyName;
-                        })(),
-                        restorableConfig
-                    };
-                })
-                .reverse();
+                                : chartIconUrlByChartNameAndCatalogId[
+                                      restorableConfig.catalogId
+                                  ]?.[restorableConfig.chartName],
+                        "friendlyName":
+                            readFriendlyName(
+                                restorableConfig.formFieldsValueDifferentFromDefault
+                            ) ?? restorableConfig.chartName
+                    }
+                ])
+            );
         }
     );
 
-    const protectedSelectors = {
-        restorableConfigs
+    return {
+        restorableConfigs,
+        chartIconAndFriendlyNameByRestorableConfigIndex
     };
-
-    const selectors = {
-        displayableConfigs
-    };
-
-    return { protectedSelectors, selectors };
 })();
