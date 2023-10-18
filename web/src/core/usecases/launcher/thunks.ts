@@ -27,6 +27,7 @@ import * as yaml from "yaml";
 import type { Equals } from "tsafe";
 import { actions, name, type State } from "./state";
 import { generateRandomPassword } from "core/tools/generateRandomPassword";
+import * as restorableConfigManager from "core/usecases/restorableConfigManager";
 
 export const thunks = {
     "initialize":
@@ -254,14 +255,15 @@ export const thunks = {
 
                 const sensitiveConfigurations: FormFieldValue[] | undefined = (() => {
                     if (
-                        getState().restorableConfig.restorableConfigs.find(
-                            restorableConfig =>
+                        restorableConfigManager.selectors
+                            .restorableConfigs(getState())
+                            .find(restorableConfig =>
                                 same(restorableConfig, {
                                     catalogId,
                                     chartName,
                                     formFieldsValueDifferentFromDefault
                                 })
-                        ) !== undefined
+                            ) !== undefined
                     ) {
                         return undefined;
                     }

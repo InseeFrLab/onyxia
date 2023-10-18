@@ -539,16 +539,16 @@ Føl deg fri til å utforske og ta kontroll over dine Kubernetes-implementeringe
     "MyServicesRunningTime": {
         "launching": "Starter..."
     },
-    "MyServicesSavedConfigOptions": {
+    "MyServicesRestorableConfigOptions": {
         "edit": "Rediger",
         "copy link": "Kopier URL-lenke",
         "remove bookmark": "Slett"
     },
-    "MyServicesSavedConfig": {
+    "MyServicesRestorableConfig": {
         "edit": "Rediger",
         "launch": "Start"
     },
-    "MyServicesSavedConfigs": {
+    "MyServicesRestorableConfigs": {
         "saved": "Lagret",
         "show all": "Vis alle"
     },

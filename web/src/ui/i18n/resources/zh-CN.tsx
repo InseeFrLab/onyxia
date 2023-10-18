@@ -471,16 +471,16 @@ ${
     "MyServicesRunningTime": {
         "launching": "启动中"
     },
-    "MyServicesSavedConfigOptions": {
+    "MyServicesRestorableConfigOptions": {
         "edit": "编辑服务",
         "copy link": "复制链接",
         "remove bookmark": "删除书签"
     },
-    "MyServicesSavedConfig": {
+    "MyServicesRestorableConfig": {
         "edit": "编辑服务",
         "launch": "启动服务"
     },
-    "MyServicesSavedConfigs": {
+    "MyServicesRestorableConfigs": {
         "saved": "已经保存",
         "show all": "显示所有"
     },

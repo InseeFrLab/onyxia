@@ -532,16 +532,16 @@ Tutustu vapaasti ja ota hallintaan Kubernetes-julkaisusi!
     "MyServicesRunningTime": {
         "launching": "Käynnistetään..."
     },
-    "MyServicesSavedConfigOptions": {
+    "MyServicesRestorableConfigOptions": {
         "edit": "Muokkaa",
         "copy link": "Kopioi URL-osoite",
         "remove bookmark": "Poista"
     },
-    "MyServicesSavedConfig": {
+    "MyServicesRestorableConfig": {
         "edit": "Muokkaa",
         "launch": "Käynnistä"
     },
-    "MyServicesSavedConfigs": {
+    "MyServicesRestorableConfigs": {
         "saved": "Tallennettu",
         "show all": "Näytä kaikki"
     },

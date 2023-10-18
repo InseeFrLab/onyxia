@@ -534,16 +534,16 @@ Feel free to explore and take charge of your Kubernetes deployments!
     "MyServicesRunningTime": {
         "launching": "Launching..."
     },
-    "MyServicesSavedConfigOptions": {
+    "MyServicesRestorableConfigOptions": {
         "edit": "Edit",
         "copy link": "Copy URL link",
         "remove bookmark": "Delete"
     },
-    "MyServicesSavedConfig": {
+    "MyServicesRestorableConfig": {
         "edit": "Edit",
         "launch": "Launch"
     },
-    "MyServicesSavedConfigs": {
+    "MyServicesRestorableConfigs": {
         "saved": "Saved",
         "show all": "Show all"
     },

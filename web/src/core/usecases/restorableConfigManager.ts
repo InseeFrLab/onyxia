@@ -4,7 +4,7 @@ import { same } from "evt/tools/inDepth/same";
 import { assert } from "tsafe/assert";
 import { createSlice, createSelector } from "@reduxjs/toolkit";
 import type { Thunks } from "../core";
-import { thunks as userConfigsThunks } from "./userConfigs";
+import * as projectConfigs from "./projectConfigs";
 import { createObjectThatThrowsIfAccessed } from "redux-clean-architecture";
 import type { State as RootState } from "../core";
 import { onyxiaFriendlyNameFormFieldPath } from "core/ports/OnyxiaApi";
@@ -87,14 +87,39 @@ export const protectedThunks = {
     "initialize":
         () =>
         async (...args) => {
-            const [dispatch, getState, { onyxiaApi }] = args;
+            const [dispatch, , { onyxiaApi, evtAction }] = args;
+
+            const prRestorableConfigs = dispatch(
+                privateThunks.getRemoteRestorableConfigs()
+            );
+
+            evtAction.attach(
+                action =>
+                    action.sliceName === "projectConfigs" &&
+                    action.actionName === "projectChanged",
+                async () => {
+                    //Making sure we are initialized
+                    await prRestorableConfigs;
+
+                    dispatch(
+                        actions.restorableConfigsUpdated({
+                            "restorableConfigs": []
+                        })
+                    );
+
+                    dispatch(
+                        actions.restorableConfigsUpdated({
+                            "restorableConfigs": await dispatch(
+                                privateThunks.getRemoteRestorableConfigs()
+                            )
+                        })
+                    );
+                }
+            );
+
             dispatch(
                 actions.initializationCompleted({
-                    "restorableConfigs": (() => {
-                        const { value } = getState().userConfigs.restorableConfigsStr;
-
-                        return value === null ? [] : JSON.parse(value);
-                    })()
+                    "restorableConfigs": await prRestorableConfigs
                 })
             );
 
@@ -129,14 +154,56 @@ export const protectedThunks = {
 } satisfies Thunks;
 
 const privateThunks = {
-    "syncWithUserConfig":
+    "getRemoteRestorableConfigs":
         () =>
+        async (...args): Promise<RestorableConfig[]> => {
+            const [dispatch] = args;
+
+            const restorableConfigsStr = await dispatch(
+                projectConfigs.protectedThunks.getConfigValue({
+                    "key": "restorableConfigsStr"
+                })
+            );
+
+            return restorableConfigsStr === null ? [] : JSON.parse(restorableConfigsStr);
+        },
+    "updateRemoteAndLocalStore":
+        (params: { newRestorableConfigs: RestorableConfig[] }) =>
         async (...args) => {
+            const { newRestorableConfigs } = params;
+
             const [dispatch, getState] = args;
-            dispatch(
-                userConfigsThunks.changeValue({
+
+            {
+                const currentRemoteRestorableConfigs = await dispatch(
+                    privateThunks.getRemoteRestorableConfigs()
+                );
+
+                const currentLocalRestorableConfigs = getState()[name].restorableConfigs;
+
+                if (
+                    !same(currentRemoteRestorableConfigs, currentLocalRestorableConfigs)
+                ) {
+                    alert(
+                        [
+                            "Another project member has updated the restorable",
+                            "configs, can't save, please refresh the page and try again."
+                        ].join(" ")
+                    );
+                    return;
+                }
+            }
+
+            await dispatch(
+                projectConfigs.protectedThunks.changeConfigValue({
                     "key": "restorableConfigsStr",
-                    "value": JSON.stringify(getState().restorableConfig.restorableConfigs)
+                    "value": JSON.stringify(newRestorableConfigs)
+                })
+            );
+
+            dispatch(
+                actions.restorableConfigsUpdated({
+                    "restorableConfigs": newRestorableConfigs
                 })
             );
         },
@@ -171,21 +238,18 @@ export const thunks = {
                 privateThunks.getSavedConfigWithSameFriendlyName({ restorableConfig })
             );
 
-            dispatch(
-                actions.restorableConfigsUpdated({
-                    "restorableConfigs":
-                        restorableConfigWithSameFriendlyName === undefined
-                            ? [...restorableConfigs, restorableConfig]
-                            : restorableConfigs.map(restorableConfig_i =>
-                                  restorableConfig_i ===
-                                  restorableConfigWithSameFriendlyName
-                                      ? restorableConfig
-                                      : restorableConfig_i
-                              )
-                })
-            );
+            const newRestorableConfigs =
+                restorableConfigWithSameFriendlyName === undefined
+                    ? [...restorableConfigs, restorableConfig]
+                    : restorableConfigs.map(restorableConfig_i =>
+                          restorableConfig_i === restorableConfigWithSameFriendlyName
+                              ? restorableConfig
+                              : restorableConfig_i
+                      );
 
-            await dispatch(privateThunks.syncWithUserConfig());
+            await dispatch(
+                privateThunks.updateRemoteAndLocalStore({ newRestorableConfigs })
+            );
         },
     "deleteRestorableConfig":
         (params: { restorableConfig: RestorableConfig }) =>
@@ -206,15 +270,13 @@ export const thunks = {
                 "Restorable config do not exist"
             );
 
-            dispatch(
-                actions.restorableConfigsUpdated({
-                    "restorableConfigs": restorableConfigs.filter(
-                        (_, index) => index !== indexOfRestorableConfigToDelete
-                    )
-                })
+            const newRestorableConfigs = restorableConfigs.filter(
+                (_, index) => index !== indexOfRestorableConfigToDelete
             );
 
-            await dispatch(privateThunks.syncWithUserConfig());
+            await dispatch(
+                privateThunks.updateRemoteAndLocalStore({ newRestorableConfigs })
+            );
         },
     "getIsThereASavedConfigWithSameFriendlyName":
         (params: { restorableConfig: RestorableConfig }) =>

@@ -542,16 +542,16 @@ Sentiti libero di esplorare e prendere il controllo dei tuoi deployment Kubernet
     "MyServicesRunningTime": {
         "launching": "In corso..."
     },
-    "MyServicesSavedConfigOptions": {
+    "MyServicesRestorableConfigOptions": {
         "edit": "Modificare",
         "copy link": "Copiare l'URL",
         "remove bookmark": "Eliminare"
     },
-    "MyServicesSavedConfig": {
+    "MyServicesRestorableConfig": {
         "edit": "Modificare",
         "launch": "Avviare"
     },
-    "MyServicesSavedConfigs": {
+    "MyServicesRestorableConfigs": {
         "saved": "Salvati",
         "show all": "Mostrare tutti"
     },

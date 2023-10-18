@@ -381,7 +381,7 @@ const restorableConfig = createSelector(
 const isRestorableConfigSaved = createSelector(
     isReady,
     restorableConfig,
-    restorableConfigManager.protectedSelectors.restorableConfigs,
+    restorableConfigManager.selectors.restorableConfigs,
     (isReady, restorableConfig, restorableConfigs) => {
         if (!isReady) {
             return undefined;

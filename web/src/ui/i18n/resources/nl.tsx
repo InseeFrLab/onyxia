@@ -545,16 +545,16 @@ Voel je vrij om te verkennen en de controle over je Kubernetes-implementaties te
     "MyServicesRunningTime": {
         "launching": "In uitvoering..."
     },
-    "MyServicesSavedConfigOptions": {
+    "MyServicesRestorableConfigOptions": {
         "edit": "Wijzigen",
         "copy link": "URL kopiëren",
         "remove bookmark": "Verwijderen"
     },
-    "MyServicesSavedConfig": {
+    "MyServicesRestorableConfig": {
         "edit": "Wijzigen",
         "launch": "Opstarten"
     },
-    "MyServicesSavedConfigs": {
+    "MyServicesRestorableConfigs": {
         "saved": "Opgeslagen",
         "show all": "Alles weergeven"
     },

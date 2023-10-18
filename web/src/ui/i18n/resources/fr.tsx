@@ -552,16 +552,16 @@ N'hésitez pas à explorer et à prendre en main vos déploiements Kubernetes !
     "MyServicesRunningTime": {
         "launching": "En cours..."
     },
-    "MyServicesSavedConfigOptions": {
+    "MyServicesRestorableConfigOptions": {
         "edit": "Modifier",
         "copy link": "Copier l'URL",
         "remove bookmark": "Supprimer"
     },
-    "MyServicesSavedConfig": {
+    "MyServicesRestorableConfig": {
         "edit": "Modifier",
         "launch": "Lancer"
     },
-    "MyServicesSavedConfigs": {
+    "MyServicesRestorableConfigs": {
         "saved": "Enregistrés",
         "show all": "Afficher tous"
     },

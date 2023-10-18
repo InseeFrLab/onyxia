@@ -547,16 +547,16 @@ Fühlen Sie sich frei, Ihre Kubernetes-Bereitstellungen zu erkunden und die Kont
     "MyServicesRunningTime": {
         "launching": "In Arbeit..."
     },
-    "MyServicesSavedConfigOptions": {
+    "MyServicesRestorableConfigOptions": {
         "edit": "Bearbeiten",
         "copy link": "URL kopieren",
         "remove bookmark": "Lesezeichen entfernen"
     },
-    "MyServicesSavedConfig": {
+    "MyServicesRestorableConfig": {
         "edit": "Bearbeiten",
         "launch": "Starten"
     },
-    "MyServicesSavedConfigs": {
+    "MyServicesRestorableConfigs": {
         "saved": "Gespeichert",
         "show all": "Alle anzeigen"
     },
