@@ -674,7 +674,7 @@ export const thunks = {
 
             assert(state.stateDescription === "ready");
 
-            await onyxiaApi.installChart({
+            await onyxiaApi.helmInstall({
                 helmReleaseName,
                 "catalogId": state.catalogId,
                 "chartName": state.chartName,

@@ -781,7 +781,7 @@ export function createOnyxiaApi(params: {
                     }),
                     onError
                 ),
-        "installChart": (() => {
+        "helmInstall": (() => {
             const getMyLab_App = (params: { helmReleaseName: string }) => {
                 const { helmReleaseName } = params;
                 return axiosInstance

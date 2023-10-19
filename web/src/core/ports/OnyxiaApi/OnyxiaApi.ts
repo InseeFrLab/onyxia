@@ -47,7 +47,7 @@ export type OnyxiaApi = {
         sourceUrls: string[];
     }>;
 
-    installChart: (params: {
+    helmInstall: (params: {
         helmReleaseName: string;
         catalogId: string;
         chartName: string;
