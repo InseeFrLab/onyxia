@@ -19,7 +19,6 @@ import * as deploymentRegion from "../deploymentRegion";
 import * as projectConfigs from "../projectConfigs";
 import { parseUrl } from "core/tools/parseUrl";
 import { typeGuard } from "tsafe/typeGuard";
-import { getRandomK8sSubdomain, getServiceId } from "../../ports/OnyxiaApi";
 import { getS3UrlAndRegion } from "../../adapters/s3client/getS3UrlAndRegion";
 import * as secretExplorer from "../secretExplorer";
 import type { FormField } from "./FormField";
@@ -28,6 +27,7 @@ import type { Equals } from "tsafe";
 import { actions, name, type State } from "./state";
 import { generateRandomPassword } from "core/tools/generateRandomPassword";
 import * as restorableConfigManager from "core/usecases/restorableConfigManager";
+import { privateSelectors } from "./selectors";
 
 export const thunks = {
     "initialize":
@@ -69,6 +69,8 @@ export const thunks = {
             }
 
             assert(oidc.isUserLoggedIn);
+
+            const k8sRandomSubdomain = `${Math.floor(Math.random() * 1000000)}`;
 
             const valuesSchemaJson = getChartValuesSchemaJson({
                 "xOnyxiaContext": await (async (): Promise<XOnyxiaContext> => {
@@ -231,8 +233,7 @@ export const thunks = {
                             "ingress": region.ingress,
                             "route": region.route,
                             "istio": region.istio,
-                            "randomSubdomain":
-                                (getRandomK8sSubdomain.clear(), getRandomK8sSubdomain()),
+                            "randomSubdomain": k8sRandomSubdomain,
                             "initScriptUrl": region.initScriptUrl
                         },
                         "proxyInjection": region.proxyInjection,
@@ -616,7 +617,8 @@ export const thunks = {
                     "config": valuesSchemaJson,
                     chartDependencies,
                     formFieldsValueDifferentFromDefault,
-                    "sensitiveConfigurations": sensitiveConfigurations ?? []
+                    "sensitiveConfigurations": sensitiveConfigurations ?? [],
+                    k8sRandomSubdomain
                 })
             );
         },
@@ -662,22 +664,24 @@ export const thunks = {
 
             dispatch(actions.launchStarted());
 
-            const state = getState().launcher;
+            const rootState = getState();
+
+            const releaseName = privateSelectors.releaseName(rootState);
+
+            assert(releaseName !== undefined);
+
+            const state = rootState[name];
 
             assert(state.stateDescription === "ready");
 
             await onyxiaApi.installChart({
+                releaseName,
                 "catalogId": state.catalogId,
                 "chartName": state.chartName,
                 "options": formFieldsValueToObject(state.formFields)
             });
 
-            const { serviceId } = getServiceId({
-                "chartName": state.chartName,
-                "randomK8sSubdomain": getRandomK8sSubdomain()
-            });
-
-            dispatch(actions.launchCompleted({ serviceId }));
+            dispatch(actions.launchCompleted());
         },
     "changeFriendlyName":
         (friendlyName: string) =>

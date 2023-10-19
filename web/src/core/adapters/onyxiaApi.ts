@@ -782,15 +782,19 @@ export function createOnyxiaApi(params: {
                     onError
                 ),
         "installChart": (() => {
-            const getMyLab_App = (params: { serviceId: string }) =>
-                axiosInstance.get("/my-lab/app", { params }).catch(onError);
+            const getMyLab_App = (params: { releaseName: string }) => {
+                const { releaseName } = params;
+                return axiosInstance
+                    .get("/my-lab/app", { "params": { "serviceId": releaseName } })
+                    .catch(onError);
+            };
 
-            return async ({ serviceId, catalogId, chartName, options }) => {
+            return async ({ releaseName, catalogId, chartName, options }) => {
                 await axiosInstance
                     .put("/my-lab/app", {
                         catalogId,
                         "packageName": chartName,
-                        "name": serviceId,
+                        "name": releaseName,
                         options,
                         "dryRun": false
                     })
@@ -798,7 +802,7 @@ export function createOnyxiaApi(params: {
 
                 while (true) {
                     try {
-                        await getMyLab_App({ serviceId });
+                        await getMyLab_App({ releaseName });
                         break;
                     } catch {
                         await new Promise(resolve => setTimeout(resolve, 1000));
@@ -900,7 +904,7 @@ export function createOnyxiaApi(params: {
                             appVersion,
                             revision
                         }) => ({
-                            id,
+                            "releaseName": id,
                             "friendlyName": env["onyxia.friendlyName"],
                             postInstallInstructions,
                             urls,
@@ -966,10 +970,10 @@ export function createOnyxiaApi(params: {
                         })
                     );
         })(),
-        "stopService": ({ serviceId }) =>
+        "stopService": ({ releaseName }) =>
             axiosInstance
                 .delete<{ success: boolean }>(`/my-lab/app`, {
-                    "params": { "path": serviceId }
+                    "params": { "path": releaseName }
                 })
                 .then(({ data }) => {
                     //TODO: Wrong assertion here once, investigate

@@ -81,8 +81,8 @@ export const thunks = {
             const { namespace: kubernetesNamespace } =
                 projectConfigs.selectors.selectedProject(getState());
 
-            const getMonitoringUrl = (params: { serviceId: string }) => {
-                const { serviceId } = params;
+            const getMonitoringUrl = (params: { releaseName: string }) => {
+                const { releaseName } = params;
 
                 const region = deploymentRegion.selectors.selectedDeploymentRegion(
                     getState()
@@ -90,7 +90,7 @@ export const thunks = {
 
                 return region.servicesMonitoringUrlPattern
                     ?.replace("$NAMESPACE", kubernetesNamespace)
-                    .replace("$INSTANCE", serviceId.replace(/^\//, ""));
+                    .replace("$INSTANCE", releaseName.replace(/^\//, ""));
             };
 
             const { username } = await onyxiaApi.getUser();
@@ -102,22 +102,25 @@ export const thunks = {
             dispatch(
                 actions.updateCompleted({
                     kubernetesNamespace,
-                    "envByServiceId": Object.fromEntries(
-                        runningServicesRaw.map(({ id, env }) => [id, env])
+                    "envByReleaseName": Object.fromEntries(
+                        runningServicesRaw.map(({ releaseName, env }) => [
+                            releaseName,
+                            env
+                        ])
                     ),
-                    "postInstallInstructionsByServiceId": Object.fromEntries(
+                    "postInstallInstructionsByReleaseName": Object.fromEntries(
                         runningServicesRaw
-                            .map(({ id, postInstallInstructions }) =>
+                            .map(({ releaseName, postInstallInstructions }) =>
                                 postInstallInstructions === undefined
                                     ? undefined
-                                    : [id, postInstallInstructions]
+                                    : [releaseName, postInstallInstructions]
                             )
                             .filter(exclude(undefined))
                     ),
                     "runningServices": runningServicesRaw
                         .map(
                             ({
-                                id: serviceId,
+                                releaseName,
                                 friendlyName,
                                 urls,
                                 startedAt,
@@ -125,18 +128,16 @@ export const thunks = {
                                 ownerUsername,
                                 env,
                                 postInstallInstructions,
+                                chartName,
                                 ...rest
                             }) => {
-                                //TODO: This is a hacky way of getting the chart
-                                const chartName = serviceId.replace(/-[^-]+$/, "");
-
                                 const common: RunningService.Common = {
-                                    "id": serviceId,
+                                    releaseName,
                                     chartName,
-                                    "friendlyName": friendlyName ?? serviceId,
+                                    "friendlyName": friendlyName ?? releaseName,
                                     "chartIconUrl": getLogoUrl({ chartName }),
                                     "monitoringUrl": getMonitoringUrl({
-                                        serviceId
+                                        releaseName
                                     }),
                                     startedAt,
                                     "vaultTokenExpirationTime":
@@ -154,7 +155,7 @@ export const thunks = {
                                               ({ isConfirmedJustStarted }) =>
                                                   dispatch(
                                                       actions.serviceStarted({
-                                                          serviceId,
+                                                          releaseName,
                                                           "doOverwriteStaredAtToNow":
                                                               isConfirmedJustStarted
                                                       })
@@ -192,22 +193,22 @@ export const thunks = {
             );
         },
     "stopService":
-        (params: { serviceId: string }) =>
+        (params: { releaseName: string }) =>
         async (...args) => {
-            const { serviceId } = params;
+            const { releaseName } = params;
 
             const [dispatch] = args;
 
             const onyxiaApi = dispatch(privateThunks.getLoggedOnyxiaApi());
 
-            dispatch(actions.serviceStopped({ serviceId }));
+            dispatch(actions.serviceStopped({ releaseName }));
 
-            await onyxiaApi.stopService({ serviceId });
+            await onyxiaApi.stopService({ releaseName });
         },
     "getPostInstallInstructions":
-        (params: { serviceId: string }) =>
+        (params: { releaseName: string }) =>
         (...args): string => {
-            const { serviceId } = params;
+            const { releaseName } = params;
 
             const [dispatch, getState] = args;
 
@@ -216,28 +217,28 @@ export const thunks = {
             assert(state.stateDescription === "ready");
 
             const postInstallInstructions =
-                state.postInstallInstructionsByServiceId[serviceId];
+                state.postInstallInstructionsByReleaseName[releaseName];
 
             assert(postInstallInstructions !== undefined);
 
-            dispatch(actions.postInstallInstructionsRequested({ serviceId }));
+            dispatch(actions.postInstallInstructionsRequested({ releaseName }));
 
             return postInstallInstructions;
         },
     "getEnv":
-        (params: { serviceId: string }) =>
+        (params: { releaseName: string }) =>
         (...args): Record<string, string> => {
-            const { serviceId } = params;
+            const { releaseName } = params;
 
             const [dispatch, getState] = args;
 
-            dispatch(actions.envRequested({ serviceId }));
+            dispatch(actions.envRequested({ releaseName }));
 
             const state = getState()[name];
 
             assert(state.stateDescription === "ready");
 
-            return state.envByServiceId[serviceId];
+            return state.envByReleaseName[releaseName];
         }
 } satisfies Thunks;
 
@@ -320,14 +321,21 @@ const privateThunks = {
                             cmdId,
                             "resp": formatHelmLsResp({
                                 "lines": runningServices.map(
-                                    ({ extraForHelmLs, id, startedAt }) => ({
-                                        "name": id,
+                                    ({
+                                        releaseName,
+                                        startedAt,
+                                        revision,
+                                        chartName,
+                                        version,
+                                        appVersion
+                                    }) => ({
+                                        "name": releaseName,
                                         namespace,
-                                        "revision": extraForHelmLs.revision,
+                                        revision,
                                         "updatedTime": startedAt,
                                         "status": "deployed",
-                                        "chart": extraForHelmLs.chart,
-                                        "appVersion": extraForHelmLs.appVersion
+                                        "chart": `${chartName}-${version}`,
+                                        appVersion
                                     })
                                 )
                             })
@@ -336,14 +344,14 @@ const privateThunks = {
 
                     return runningServices;
                 },
-                "stopService": async ({ serviceId }) => {
+                "stopService": async ({ releaseName }) => {
                     const cmdId = Date.now();
 
                     dispatch(
                         actions.commandLogsEntryAdded({
                             "commandLogsEntry": {
                                 cmdId,
-                                "cmd": `helm uninstall ${serviceId} --namespace ${
+                                "cmd": `helm uninstall ${releaseName} --namespace ${
                                     projectConfigs.selectors.selectedProject(getState())
                                         .namespace
                                 }`,
@@ -352,12 +360,12 @@ const privateThunks = {
                         })
                     );
 
-                    await onyxiaApi.stopService({ serviceId });
+                    await onyxiaApi.stopService({ releaseName });
 
                     dispatch(
                         actions.commandLogsRespUpdated({
                             cmdId,
-                            "resp": `release "${serviceId}" uninstalled`
+                            "resp": `release "${releaseName}" uninstalled`
                         })
                     );
                 }

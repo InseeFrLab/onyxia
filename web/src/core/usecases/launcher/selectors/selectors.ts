@@ -424,47 +424,23 @@ const chartIconUrl = createSelector(readyState, state => {
     return state.chartIconUrl;
 });
 
-const helmReleaseName = createSelector(friendlyName, friendlyName => {
-    if (friendlyName === undefined) {
+const releaseName = createSelector(readyState, state => {
+    if (state === undefined) {
         return undefined;
     }
-
-    // Replace spaces with hyphens
-    let releaseName = friendlyName.replace(/ /g, "-");
-
-    // Convert all characters to lowercase
-    releaseName = releaseName.toLowerCase();
-
-    // Remove any invalid characters
-    releaseName = releaseName.replace(/[^a-zA-Z0-9-]/g, "");
-
-    // Ensure the release name starts with an alphanumeric character
-    if (!/^[a-z0-9]/.test(releaseName)) {
-        releaseName = "release-" + releaseName;
-    }
-
-    // Ensure the release name ends with an alphanumeric character
-    if (!/[a-z0-9]$/.test(releaseName)) {
-        if (releaseName.endsWith("-")) {
-            releaseName = releaseName.slice(0, -1);
-        } else {
-            releaseName = releaseName + "-end";
-        }
-    }
-
-    return releaseName;
+    return `${state.chartName}-${state.k8sRandomSubdomain}`;
 });
 
 const launchCommands = createSelector(
     readyState,
-    helmReleaseName,
+    releaseName,
     projectConfigs.selectors.selectedProject,
-    (state, helmReleaseName, project) => {
+    (state, releaseName, project) => {
         if (state === undefined) {
             return undefined;
         }
 
-        assert(helmReleaseName !== undefined);
+        assert(releaseName !== undefined);
 
         return [
             `helm repo add ${state.catalogId} ${state.repositoryUrl}`,
@@ -473,21 +449,23 @@ const launchCommands = createSelector(
                 yaml.stringify(formFieldsValueToObject(state.formFields)),
                 "EOF"
             ].join("\n"),
-            `helm install ${helmReleaseName} ${state.catalogId}/${state.chartName} --namespace ${project.namespace} -f values.yaml`
+            `helm install ${releaseName} ${state.catalogId}/${state.chartName} --namespace ${project.namespace} -f values.yaml`
         ];
     }
 );
 
 const launchScript = createSelector(
+    isReady,
     launchCommands,
-    helmReleaseName,
-    (launchCommands, helmReleaseName) => {
-        if (launchCommands === undefined) {
+    releaseName,
+    (isReady, launchCommands, releaseName) => {
+        if (!isReady) {
             return undefined;
         }
-        assert(helmReleaseName !== undefined);
+        assert(launchCommands !== undefined);
+        assert(releaseName !== undefined);
         return {
-            "fileBasename": `launch-${helmReleaseName}.sh`,
+            "fileBasename": `launch-${releaseName}.sh`,
             "content": launchCommands.join("\n\n")
         };
     }
@@ -600,3 +578,7 @@ const wrap = createSelector(
 );
 
 export const selectors = { wrap };
+
+export const privateSelectors = {
+    releaseName
+};

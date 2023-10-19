@@ -156,9 +156,11 @@ export default function Launcher(props: Props) {
             evtLauncher.$attach(
                 action => (action.actionName === "launchCompleted" ? [action] : null),
                 ctx,
-                ({ serviceId }) => {
+                ({ releaseName }) => {
                     hideSplashScreen();
-                    routes.myServices({ "autoLaunchServiceId": serviceId }).push();
+                    routes
+                        .myServices({ "autoOpenNotesOfReleaseName": releaseName })
+                        .push();
                 }
             );
         },
@@ -438,13 +440,13 @@ const useStyles = tss
         "commandBar": {
             "position": "absolute",
             "right": 0,
-            "width": "min(100%, 1100px)",
+            "width": "min(100%, 1250px)",
             "top": 0,
             "zIndex": 1,
             "transition": "opacity 750ms linear"
         },
         "commandBarWhenExpended": {
-            "width": "min(100%, 1400px)",
+            "width": "min(100%, 1450px)",
             "transition": "width 70ms linear"
         },
         "helpDialog": {

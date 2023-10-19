@@ -32,6 +32,7 @@ export declare namespace State {
         defaultFormFieldsValue: FormFieldValue[];
         chartDependencies: string[];
         config: JSONSchemaObject;
+        k8sRandomSubdomain: string;
     };
 }
 
@@ -68,6 +69,7 @@ export const { reducer, actions } = createSlice({
                         chartDependencies: string[];
                         formFieldsValueDifferentFromDefault: FormFieldValue[];
                         sensitiveConfigurations: FormFieldValue[];
+                        k8sRandomSubdomain: string;
                     };
                 }
             ) => {
@@ -81,7 +83,8 @@ export const { reducer, actions } = createSlice({
                     infosAboutWhenFieldsShouldBeHidden,
                     config,
                     chartDependencies,
-                    formFieldsValueDifferentFromDefault
+                    formFieldsValueDifferentFromDefault,
+                    k8sRandomSubdomain
                 } = payload;
 
                 Object.assign(
@@ -101,7 +104,8 @@ export const { reducer, actions } = createSlice({
                         })),
                         chartDependencies,
                         "pathOfFormFieldsWhoseValuesAreDifferentFromDefault": [],
-                        config
+                        config,
+                        k8sRandomSubdomain
                     })
                 );
 
@@ -175,7 +179,7 @@ export const { reducer, actions } = createSlice({
             "launchStarted": () => {
                 /* NOTE: For coreEvt */
             },
-            "launchCompleted": (_state, _: { payload: { serviceId: string } }) => {
+            "launchCompleted": () => {
                 /* NOTE: For coreEvt */
             }
         } satisfies Record<string, (state: State, ...rest: any[]) => State | void>;

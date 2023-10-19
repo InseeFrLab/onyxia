@@ -146,7 +146,7 @@ export default function MyServices(props: Props) {
         (): MyServicesCardsProps["cards"] | undefined =>
             runningServices?.map(
                 ({
-                    id,
+                    releaseName,
                     chartIconUrl,
                     friendlyName,
                     chartName,
@@ -159,7 +159,7 @@ export default function MyServices(props: Props) {
                     hasPostInstallInstructions,
                     ...rest
                 }) => ({
-                    "serviceId": id,
+                    releaseName,
                     chartIconUrl,
                     friendlyName,
                     chartName,
@@ -182,14 +182,14 @@ export default function MyServices(props: Props) {
     );
 
     useEffect(() => {
-        const { autoLaunchServiceId } = route.params;
+        const { autoOpenNotesOfReleaseName } = route.params;
 
-        if (autoLaunchServiceId === undefined) {
+        if (autoOpenNotesOfReleaseName === undefined) {
             return;
         }
 
         const runningService = (runningServices ?? []).find(
-            ({ id }) => id === autoLaunchServiceId
+            ({ releaseName }) => releaseName === autoOpenNotesOfReleaseName
         );
 
         if (runningService === undefined) {
@@ -202,40 +202,39 @@ export default function MyServices(props: Props) {
                 "isSavedConfigsExtended": route.params.isSavedConfigsExtended
                     ? true
                     : undefined,
-                "autoLaunchServiceId": undefined
+                "autoOpenNotesOfReleaseName": undefined
             })
             .replace();
 
         evtMyServiceCardsAction.post({
             "action": "TRIGGER SHOW POST INSTALL INSTRUCTIONS",
-            "serviceId": runningService.id
+            "releaseName": runningService.releaseName
         });
-    }, [route.params.autoLaunchServiceId, runningServices]);
+    }, [route.params.autoOpenNotesOfReleaseName, runningServices]);
 
     const catalogExplorerLink = useMemo(() => routes.catalog().link, []);
 
-    const [serviceIdRequestedToBeDeleted, setServiceIdRequestedToBeDeleted] = useState<
-        string | undefined
-    >();
+    const [releaseNameRequestedToBeDeleted, setReleaseNameRequestedToBeDeleted] =
+        useState<string | undefined>();
 
     const [isDialogOpen, setIsDialogOpen] = useState(false);
 
     const onRequestDelete = useConstCallback<MyServicesCardsProps["onRequestDelete"]>(
-        ({ serviceId }) => {
-            setServiceIdRequestedToBeDeleted(serviceId);
+        ({ releaseName }) => {
+            setReleaseNameRequestedToBeDeleted(releaseName);
             setIsDialogOpen(true);
         }
     );
 
     const onDialogCloseFactory = useCallbackFactory(([doDelete]: [boolean]) => {
         if (doDelete) {
-            if (serviceIdRequestedToBeDeleted) {
+            if (releaseNameRequestedToBeDeleted) {
                 serviceManager.stopService({
-                    "serviceId": serviceIdRequestedToBeDeleted
+                    "releaseName": releaseNameRequestedToBeDeleted
                 });
             } else {
-                deletableRunningServices.map(({ id }) =>
-                    serviceManager.stopService({ "serviceId": id })
+                deletableRunningServices.map(({ releaseName }) =>
+                    serviceManager.stopService({ releaseName })
                 );
             }
         }
