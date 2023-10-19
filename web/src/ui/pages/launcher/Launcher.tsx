@@ -159,7 +159,7 @@ export default function Launcher(props: Props) {
                 ({ helmReleaseName }) => {
                     hideSplashScreen();
                     routes
-                        .myServices({ "autoOpenNotesOfHelmReleaseName": helmReleaseName })
+                        .myServices({ "autoOpenHelmReleaseName": helmReleaseName })
                         .push();
                 }
             );

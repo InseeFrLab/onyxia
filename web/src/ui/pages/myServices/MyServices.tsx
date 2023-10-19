@@ -198,14 +198,14 @@ export default function MyServices(props: Props) {
     );
 
     useEffect(() => {
-        const { autoOpenNotesOfHelmReleaseName } = route.params;
+        const { autoOpenHelmReleaseName } = route.params;
 
-        if (autoOpenNotesOfHelmReleaseName === undefined) {
+        if (autoOpenHelmReleaseName === undefined) {
             return;
         }
 
         const runningService = (runningServices ?? []).find(
-            ({ helmReleaseName }) => helmReleaseName === autoOpenNotesOfHelmReleaseName
+            ({ helmReleaseName }) => helmReleaseName === autoOpenHelmReleaseName
         );
 
         if (runningService === undefined) {
@@ -218,7 +218,7 @@ export default function MyServices(props: Props) {
                 "isSavedConfigsExtended": route.params.isSavedConfigsExtended
                     ? true
                     : undefined,
-                "autoOpenNotesOfHelmReleaseName": undefined
+                "autoOpenHelmReleaseName": undefined
             })
             .replace();
 
@@ -226,7 +226,7 @@ export default function MyServices(props: Props) {
             "action": "TRIGGER SHOW POST INSTALL INSTRUCTIONS",
             "helmReleaseName": runningService.helmReleaseName
         });
-    }, [route.params.autoOpenNotesOfHelmReleaseName, runningServices]);
+    }, [route.params.autoOpenHelmReleaseName, runningServices]);
 
     const catalogExplorerLink = useMemo(() => routes.catalog().link, []);
 
