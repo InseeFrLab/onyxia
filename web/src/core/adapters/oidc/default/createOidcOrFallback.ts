@@ -1,4 +1,4 @@
-import type { Oidc } from "../../ports/Oidc";
+import type { Oidc } from "core/ports/Oidc";
 import { assert } from "tsafe/assert";
 
 export async function createOidcOrFallback(params: {
@@ -52,7 +52,7 @@ export async function createOidcOrFallback(params: {
         case "oidc client":
             return wrap.oidc;
         case "keycloak params": {
-            const { createOidc } = await import("./oidc");
+            const { createOidc } = await import("./default");
 
             const oidc = await createOidc({
                 "authority": wrap.oidcParams.authority,

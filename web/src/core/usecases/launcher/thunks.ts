@@ -19,7 +19,7 @@ import * as deploymentRegion from "../deploymentRegion";
 import * as projectConfigs from "../projectConfigs";
 import { parseUrl } from "core/tools/parseUrl";
 import { typeGuard } from "tsafe/typeGuard";
-import { getS3UrlAndRegion } from "../../adapters/s3client/getS3UrlAndRegion";
+import { getS3UrlAndRegion } from "core/adapters/s3client2/default/getS3UrlAndRegion";
 import * as secretExplorer from "../secretExplorer";
 import type { FormField } from "./FormField";
 import * as yaml from "yaml";

@@ -10,7 +10,7 @@ import {
     type User,
     onyxiaFriendlyNameFormFieldPath,
     onyxiaIsSharedFormFieldPath
-} from "../ports/OnyxiaApi";
+} from "core/ports/OnyxiaApi";
 import axios from "axios";
 import type { AxiosResponse, AxiosRequestConfig } from "axios";
 import memoize from "memoizee";

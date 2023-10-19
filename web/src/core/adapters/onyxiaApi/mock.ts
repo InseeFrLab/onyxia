@@ -1,4 +1,4 @@
-import type { OnyxiaApi } from "../ports/OnyxiaApi";
+import type { OnyxiaApi } from "core/ports/OnyxiaApi";
 import { createPropertyThatThrowIfAccessed } from "redux-clean-architecture/tools/createObjectThatThrowsIfAccessed";
 import memoize from "memoizee";
 

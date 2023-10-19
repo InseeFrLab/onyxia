@@ -5,11 +5,11 @@ import type {
     Secret,
     SecretWithMetadata,
     SecretsManager
-} from "../../ports/SecretsManager";
+} from "core/ports/SecretsManager";
 import type { ReturnType } from "tsafe";
 import { getNewlyRequestedOrCachedTokenFactory } from "core/tools/getNewlyRequestedOrCachedToken";
 import { id } from "tsafe/id";
-import type { Oidc } from "../../ports/Oidc";
+import type { Oidc } from "core/ports/Oidc";
 
 const version = "v1";
 

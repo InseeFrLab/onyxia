@@ -1,6 +1,6 @@
 import type { CommandLogger } from "core/tools/commandLogger";
 import { join as pathJoin, basename as pathBasename } from "path";
-import type { S3Client } from "../../ports/S3Client";
+import type { S3Client } from "core/ports/S3Client";
 
 export const mcCommandLogger: CommandLogger<S3Client> = {
     "initialHistory": [],

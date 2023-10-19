@@ -1,6 +1,6 @@
 import axios from "axios";
 import type { ReturnType } from "tsafe";
-import { S3Client } from "../../ports/S3Client";
+import { S3Client } from "core/ports/S3Client";
 import { getNewlyRequestedOrCachedTokenFactory } from "core/tools/getNewlyRequestedOrCachedToken";
 import { id } from "tsafe/id";
 import { assert } from "tsafe/assert";
@@ -8,11 +8,11 @@ import { Deferred } from "evt/tools/Deferred";
 import * as Minio from "minio";
 import { parseUrl } from "core/tools/parseUrl";
 import memoize from "memoizee";
-import type { DeploymentRegion } from "../../ports/OnyxiaApi";
+import type { DeploymentRegion } from "core/ports/OnyxiaApi";
 import fileReaderStream from "filereader-stream";
-import type { Oidc } from "../../ports/Oidc";
+import type { Oidc } from "core/ports/Oidc";
 import { addParamToUrl } from "powerhooks/tools/urlSearchParams";
-import { getS3UrlAndRegion } from "core/adapters/s3client/getS3UrlAndRegion";
+import { getS3UrlAndRegion } from "./getS3UrlAndRegion";
 import { Buffer } from "buffer";
 (window as any).Buffer = Buffer;
 

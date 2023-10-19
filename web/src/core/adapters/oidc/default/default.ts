@@ -1,6 +1,6 @@
 import { UserManager } from "oidc-client-ts";
 import { id } from "tsafe/id";
-import type { Oidc } from "../../ports/Oidc";
+import type { Oidc } from "core/ports/Oidc";
 import { decodeJwt } from "core/tools/jwt";
 import { assert } from "tsafe/assert";
 import { addParamToUrl, retrieveParamFromUrl } from "powerhooks/tools/urlSearchParams";

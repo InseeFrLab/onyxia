@@ -1,5 +1,5 @@
 import type { CommandLogger } from "core/tools/commandLogger";
-import type { SecretsManager } from "../../ports/SecretsManager";
+import type { SecretsManager } from "core/ports/SecretsManager";
 import { join as pathJoin } from "path";
 
 export function getVaultCommandLogger(params: {

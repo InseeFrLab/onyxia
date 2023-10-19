@@ -1,7 +1,7 @@
 import "minimal-polyfills/Object.fromEntries";
 import { id } from "tsafe/id";
 import { addParamToUrl, retrieveParamFromUrl } from "powerhooks/tools/urlSearchParams";
-import type { Oidc } from "../ports/Oidc";
+import type { Oidc } from "core/ports/Oidc";
 
 export function createOidc(params: { isUserInitiallyLoggedIn: boolean }): Oidc {
     const isUserLoggedIn = (() => {

@@ -1,4 +1,4 @@
-import { S3Client } from "../ports/S3Client";
+import { S3Client } from "core/ports/S3Client";
 
 export const s3client: S3Client = {
     "list": () =>

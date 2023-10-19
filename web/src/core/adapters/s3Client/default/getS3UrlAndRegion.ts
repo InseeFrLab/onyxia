@@ -1,4 +1,4 @@
-import type { DeploymentRegion } from "../../ports/OnyxiaApi";
+import type { DeploymentRegion } from "core/ports/OnyxiaApi";
 
 export function getS3UrlAndRegion(s3Params: DeploymentRegion.S3) {
     return (() => {
