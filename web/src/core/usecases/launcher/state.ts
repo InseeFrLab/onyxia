@@ -31,7 +31,7 @@ export declare namespace State {
         }[];
         defaultFormFieldsValue: FormFieldValue[];
         chartDependencies: string[];
-        config: JSONSchemaObject;
+        valuesSchema: JSONSchemaObject;
         k8sRandomSubdomain: string;
     };
 }
@@ -65,7 +65,7 @@ export const { reducer, actions } = createSlice({
                         chartSourceUrls: string[];
                         formFields: State.Ready["formFields"];
                         infosAboutWhenFieldsShouldBeHidden: State.Ready["infosAboutWhenFieldsShouldBeHidden"];
-                        config: State.Ready["config"];
+                        valuesSchema: State.Ready["valuesSchema"];
                         chartDependencies: string[];
                         formFieldsValueDifferentFromDefault: FormFieldValue[];
                         sensitiveConfigurations: FormFieldValue[];
@@ -81,7 +81,7 @@ export const { reducer, actions } = createSlice({
                     chartSourceUrls,
                     formFields,
                     infosAboutWhenFieldsShouldBeHidden,
-                    config,
+                    valuesSchema,
                     chartDependencies,
                     formFieldsValueDifferentFromDefault,
                     k8sRandomSubdomain
@@ -104,7 +104,7 @@ export const { reducer, actions } = createSlice({
                         })),
                         chartDependencies,
                         "pathOfFormFieldsWhoseValuesAreDifferentFromDefault": [],
-                        config,
+                        valuesSchema,
                         k8sRandomSubdomain
                     })
                 );

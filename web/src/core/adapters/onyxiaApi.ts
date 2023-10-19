@@ -789,13 +789,13 @@ export function createOnyxiaApi(params: {
                     .catch(onError);
             };
 
-            return async ({ helmReleaseName, catalogId, chartName, options }) => {
+            return async ({ helmReleaseName, catalogId, chartName, values }) => {
                 await axiosInstance
                     .put("/my-lab/app", {
                         catalogId,
                         "packageName": chartName,
                         "name": helmReleaseName,
-                        options,
+                        "options": values,
                         "dryRun": false
                     })
                     .catch(onError);

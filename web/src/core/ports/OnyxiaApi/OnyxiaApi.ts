@@ -51,7 +51,7 @@ export type OnyxiaApi = {
         helmReleaseName: string;
         catalogId: string;
         chartName: string;
-        options: Record<string, unknown>;
+        values: Record<string, unknown>;
     }) => Promise<void>;
 
     listHelmReleases: () => Promise<HelmRelease[]>;

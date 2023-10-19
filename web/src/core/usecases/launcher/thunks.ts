@@ -72,7 +72,7 @@ export const thunks = {
 
             const k8sRandomSubdomain = `${Math.floor(Math.random() * 1000000)}`;
 
-            const valuesSchemaJson = getChartValuesSchemaJson({
+            const valuesSchema = getChartValuesSchemaJson({
                 "xOnyxiaContext": await (async (): Promise<XOnyxiaContext> => {
                     const { publicIp } = await dispatch(publicIpUsecase.thunks.fetch());
 
@@ -573,7 +573,7 @@ export const thunks = {
                     );
                 })({
                     "currentPath": [],
-                    "jsonSchemaObject": valuesSchemaJson
+                    "jsonSchemaObject": valuesSchema
                 });
 
                 return {
@@ -614,7 +614,7 @@ export const thunks = {
                     chartSourceUrls,
                     formFields,
                     infosAboutWhenFieldsShouldBeHidden,
-                    "config": valuesSchemaJson,
+                    valuesSchema,
                     chartDependencies,
                     formFieldsValueDifferentFromDefault,
                     "sensitiveConfigurations": sensitiveConfigurations ?? [],
@@ -678,7 +678,7 @@ export const thunks = {
                 helmReleaseName,
                 "catalogId": state.catalogId,
                 "chartName": state.chartName,
-                "options": formFieldsValueToObject(state.formFields)
+                "values": formFieldsValueToObject(state.formFields)
             });
 
             dispatch(actions.launchCompleted());

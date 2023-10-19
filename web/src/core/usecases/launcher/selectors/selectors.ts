@@ -74,18 +74,18 @@ const isShared = createSelector(formFields, formFields => {
     return isShared;
 });
 
-const config = createSelector(readyState, state => state?.config);
+const valuesSchema = createSelector(readyState, state => state?.valuesSchema);
 
 const indexedFormFields = createSelector(
     isReady,
-    config,
+    valuesSchema,
     formFields,
     infosAboutWhenFieldsShouldBeHidden,
     chartName,
     chartDependencies,
     (
         isReady,
-        config,
+        valuesSchema,
         formFields,
         infosAboutWhenFieldsShouldBeHidden,
         packageName,
@@ -95,6 +95,7 @@ const indexedFormFields = createSelector(
             return undefined;
         }
 
+        assert(valuesSchema !== undefined);
         assert(formFields !== undefined);
         assert(packageName !== undefined);
         assert(dependencies !== undefined);
@@ -120,7 +121,7 @@ const indexedFormFields = createSelector(
                 .forEach(formField => {
                     (formFieldsByTabName[formField.path[1]] ??= {
                         "description": (() => {
-                            const o = config?.properties[formField.path[0]];
+                            const o = valuesSchema.properties[formField.path[0]];
 
                             assert(o?.type === "object" && "properties" in o);
 
@@ -145,7 +146,7 @@ const indexedFormFields = createSelector(
                     dependencyOrGlobal === "global"
                         ? {
                               "type": "global",
-                              "description": config?.properties["global"].description
+                              "description": valuesSchema.properties["global"].description
                           }
                         : {
                               "type": "dependency"
@@ -161,7 +162,8 @@ const indexedFormFields = createSelector(
                 (
                     formFieldsByTabName[formField.path[0]] ??
                     (formFieldsByTabName[formField.path[0]] = {
-                        "description": config?.properties[formField.path[0]].description,
+                        "description":
+                            valuesSchema.properties[formField.path[0]].description,
                         "formFields": []
                     })
                 ).formFields.push(formField)
