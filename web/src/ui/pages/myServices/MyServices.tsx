@@ -447,7 +447,7 @@ const useStyles = tss
                 "zIndex": 1,
                 "opacity": commandBarTop === 0 ? 0 : 1,
                 "transition": "opacity 750ms linear",
-                "width": "min(100%, 1100px)"
+                "width": "min(100%, 900px)"
             },
             "commandBarWhenExpended": {
                 "width": "min(100%, 1350px)",
