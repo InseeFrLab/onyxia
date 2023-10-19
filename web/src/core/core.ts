@@ -28,12 +28,12 @@ export async function createCore(params: CoreParams) {
 
     const onyxiaApi = await (async () => {
         if (apiUrl === "") {
-            const { onyxiaApi } = await import("core/adapters/onyxiaApiMock");
+            const { onyxiaApi } = await import("core/adapters/onyxiaApi/mock");
 
             return onyxiaApi;
         }
 
-        const { createOnyxiaApi } = await import("core/adapters/onyxiaApi");
+        const { createOnyxiaApi } = await import("core/adapters/onyxiaApi/default");
 
         const onyxiaApi = createOnyxiaApi({
             "url": apiUrl,
@@ -93,12 +93,12 @@ export async function createCore(params: CoreParams) {
         oidcParams = (await onyxiaApi.getAvailableRegionsAndOidcParams()).oidcParams;
 
         if (oidcParams === undefined) {
-            const { createOidc } = await import("core/adapters/oidcMock");
+            const { createOidc } = await import("core/adapters/oidc/mock");
 
             return createOidc({ "isUserInitiallyLoggedIn": false });
         }
 
-        const { createOidc } = await import("core/adapters/oidc");
+        const { createOidc } = await import("core/adapters/oidc/default");
 
         return createOidc({
             "authority": oidcParams.authority,
@@ -144,18 +144,18 @@ export async function createCore(params: CoreParams) {
         };
 
         /* prettier-ignore */
-        const { createOidcOrFallback } = await import("core/adapters/oidc/createOidcOrFallback");
+        const { createOidcOrFallback } = await import("core/adapters/oidc/utils/createOidcOrFallback");
 
         thunksExtraArgument.s3Client = await (async () => {
             if (s3Params === undefined) {
-                const { s3client } = await import("core/adapters/s3ClientMock");
+                const { s3client } = await import("core/adapters/s3Client/mock");
 
                 return s3client;
             }
 
             /** prettier-ignore */
             const { createS3Client, getCreateS3ClientParams } = await import(
-                "core/adapters/s3client"
+                "core/adapters/s3Client/default"
             );
 
             return createS3Client({
@@ -171,12 +171,14 @@ export async function createCore(params: CoreParams) {
         thunksExtraArgument.secretsManager = await (async () => {
             if (vaultParams === undefined) {
                 /* prettier-ignore */
-                const { createSecretManager } = await import("core/adapters/secretsManagerMock");
+                const { createSecretManager } = await import("core/adapters/secretManager/mock");
 
                 return createSecretManager();
             }
 
-            const { createSecretManager } = await import("core/adapters/secretsManager");
+            const { createSecretManager } = await import(
+                "core/adapters/secretManager/default"
+            );
 
             return createSecretManager({
                 "kvEngine": vaultParams.kvEngine,

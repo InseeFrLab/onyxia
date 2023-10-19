@@ -21,7 +21,7 @@ import * as deploymentRegion from "./deploymentRegion";
 import { createExtendedFsApi } from "core/tools/extendedFsApi";
 import type { ExtendedFsApi } from "core/tools/extendedFsApi";
 import { createObjectThatThrowsIfAccessed } from "redux-clean-architecture";
-import { mcCommandLogger } from "../adapters/s3client/mcCommandLogger";
+import { mcCommandLogger } from "core/adapters/s3Client/utils/mcCommandLogger";
 import { createUsecaseContextApi } from "redux-clean-architecture";
 // NOTE: Polyfill of a browser feature.
 import structuredClone from "@ungap/structured-clone";

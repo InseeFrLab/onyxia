@@ -52,7 +52,7 @@ export async function createOidcOrFallback(params: {
         case "oidc client":
             return wrap.oidc;
         case "keycloak params": {
-            const { createOidc } = await import("./default");
+            const { createOidc } = await import("../default");
 
             const oidc = await createOidc({
                 "authority": wrap.oidcParams.authority,

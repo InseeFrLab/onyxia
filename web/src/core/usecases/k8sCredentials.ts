@@ -10,7 +10,7 @@ import * as deploymentRegion from "./deploymentRegion";
 import { parseUrl } from "core/tools/parseUrl";
 import { assert } from "tsafe/assert";
 import * as userAuthentication from "./userAuthentication";
-import { createOidcOrFallback } from "core/adapters/oidc/createOidcOrFallback";
+import { createOidcOrFallback } from "core/adapters/oidc/utils/createOidcOrFallback";
 import { createUsecaseContextApi } from "redux-clean-architecture";
 import type { Oidc } from "core/ports/Oidc";
 
