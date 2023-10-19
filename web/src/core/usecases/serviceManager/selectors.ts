@@ -35,12 +35,12 @@ const isUpdating = (rootState: RootState): boolean => {
     return isUpdating;
 };
 
-const deletableRunningServiceReleaseNames = createSelector(
+const deletableRunningServiceHelmReleaseNames = createSelector(
     runningServices,
     runningServices =>
         (runningServices ?? [])
             .filter(({ isOwned }) => isOwned)
-            .map(({ releaseName }) => releaseName)
+            .map(({ helmReleaseName }) => helmReleaseName)
 );
 
 const isThereNonOwnedServices = createSelector(
@@ -60,7 +60,7 @@ const commandLogsEntries = createSelector(state, state => state.commandLogsEntri
 
 export const selectors = {
     runningServices,
-    deletableRunningServiceReleaseNames,
+    deletableRunningServiceHelmReleaseNames,
     isUpdating,
     isThereNonOwnedServices,
     isThereOwnedSharedServices,

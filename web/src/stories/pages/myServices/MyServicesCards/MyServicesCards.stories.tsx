@@ -18,7 +18,7 @@ const props: Props = {
     "className": css({ "width": 300 }),
     "isUpdating": false,
     "cards": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map(i => ({
-        "releaseName": `rstudio-${i}`,
+        "helmReleaseName": `rstudio-${i}`,
         "chartIconUrl": rstudioImgUrl,
         "friendlyName": "My RStudio",
         "chartName": "rstudio",

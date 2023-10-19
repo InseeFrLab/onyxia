@@ -782,19 +782,19 @@ export function createOnyxiaApi(params: {
                     onError
                 ),
         "installChart": (() => {
-            const getMyLab_App = (params: { releaseName: string }) => {
-                const { releaseName } = params;
+            const getMyLab_App = (params: { helmReleaseName: string }) => {
+                const { helmReleaseName } = params;
                 return axiosInstance
-                    .get("/my-lab/app", { "params": { "serviceId": releaseName } })
+                    .get("/my-lab/app", { "params": { "serviceId": helmReleaseName } })
                     .catch(onError);
             };
 
-            return async ({ releaseName, catalogId, chartName, options }) => {
+            return async ({ helmReleaseName, catalogId, chartName, options }) => {
                 await axiosInstance
                     .put("/my-lab/app", {
                         catalogId,
                         "packageName": chartName,
-                        "name": releaseName,
+                        "name": helmReleaseName,
                         options,
                         "dryRun": false
                     })
@@ -802,7 +802,7 @@ export function createOnyxiaApi(params: {
 
                 while (true) {
                     try {
-                        await getMyLab_App({ releaseName });
+                        await getMyLab_App({ helmReleaseName });
                         break;
                     } catch {
                         await new Promise(resolve => setTimeout(resolve, 1000));
@@ -904,7 +904,7 @@ export function createOnyxiaApi(params: {
                             appVersion,
                             revision
                         }) => ({
-                            "releaseName": id,
+                            "helmReleaseName": id,
                             "friendlyName": env["onyxia.friendlyName"],
                             postInstallInstructions,
                             urls,
@@ -970,10 +970,10 @@ export function createOnyxiaApi(params: {
                         })
                     );
         })(),
-        "stopService": ({ releaseName }) =>
+        "stopService": ({ helmReleaseName }) =>
             axiosInstance
                 .delete<{ success: boolean }>(`/my-lab/app`, {
-                    "params": { "path": releaseName }
+                    "params": { "path": helmReleaseName }
                 })
                 .then(({ data }) => {
                     //TODO: Wrong assertion here once, investigate

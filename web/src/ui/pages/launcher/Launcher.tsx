@@ -156,10 +156,10 @@ export default function Launcher(props: Props) {
             evtLauncher.$attach(
                 action => (action.actionName === "launchCompleted" ? [action] : null),
                 ctx,
-                ({ releaseName }) => {
+                ({ helmReleaseName }) => {
                     hideSplashScreen();
                     routes
-                        .myServices({ "autoOpenNotesOfReleaseName": releaseName })
+                        .myServices({ "autoOpenNotesOfHelmReleaseName": helmReleaseName })
                         .push();
                 }
             );

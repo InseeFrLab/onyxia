@@ -2,7 +2,7 @@ export type RunningService = RunningService.Started | RunningService.Starting;
 
 export declare namespace RunningService {
     export type Common = {
-        releaseName: string;
+        helmReleaseName: string;
         friendlyName: string | undefined;
         urls: string[];
         startedAt: number;

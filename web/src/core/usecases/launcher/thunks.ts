@@ -666,16 +666,16 @@ export const thunks = {
 
             const rootState = getState();
 
-            const releaseName = privateSelectors.releaseName(rootState);
+            const helmReleaseName = privateSelectors.helmReleaseName(rootState);
 
-            assert(releaseName !== undefined);
+            assert(helmReleaseName !== undefined);
 
             const state = rootState[name];
 
             assert(state.stateDescription === "ready");
 
             await onyxiaApi.installChart({
-                releaseName,
+                helmReleaseName,
                 "catalogId": state.catalogId,
                 "chartName": state.chartName,
                 "options": formFieldsValueToObject(state.formFields)

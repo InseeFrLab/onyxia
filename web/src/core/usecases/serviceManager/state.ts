@@ -24,8 +24,8 @@ export namespace State {
     export type Ready = Common & {
         stateDescription: "ready";
         runningServices: RunningService[];
-        envByReleaseName: Record<string, Record<string, string>>;
-        postInstallInstructionsByReleaseName: Record<string, string>;
+        envByHelmReleaseName: Record<string, Record<string, string>>;
+        postInstallInstructionsByHelmReleaseName: Record<string, string>;
         kubernetesNamespace: string;
     };
 }
@@ -34,7 +34,7 @@ export type RunningService = RunningService.Owned | RunningService.NotOwned;
 
 export declare namespace RunningService {
     export type Common = {
-        releaseName: string;
+        helmReleaseName: string;
         chartName: string;
         friendlyName: string;
         chartIconUrl: string | undefined;
@@ -81,15 +81,15 @@ export const { reducer, actions } = createSlice({
                 payload
             }: PayloadAction<{
                 runningServices: RunningService[];
-                envByReleaseName: Record<string, Record<string, string>>;
-                postInstallInstructionsByReleaseName: Record<string, string>;
+                envByHelmReleaseName: Record<string, Record<string, string>>;
+                postInstallInstructionsByHelmReleaseName: Record<string, string>;
                 kubernetesNamespace: string;
             }>
         ) => {
             const {
                 runningServices,
-                envByReleaseName,
-                postInstallInstructionsByReleaseName,
+                envByHelmReleaseName,
+                postInstallInstructionsByHelmReleaseName,
                 kubernetesNamespace
             } = payload;
 
@@ -97,8 +97,8 @@ export const { reducer, actions } = createSlice({
                 "stateDescription": "ready",
                 "isUpdating": false,
                 runningServices,
-                envByReleaseName,
-                postInstallInstructionsByReleaseName,
+                envByHelmReleaseName,
+                postInstallInstructionsByHelmReleaseName,
                 kubernetesNamespace,
                 "commandLogsEntries": state.commandLogsEntries
             });
@@ -108,11 +108,11 @@ export const { reducer, actions } = createSlice({
             {
                 payload
             }: PayloadAction<{
-                releaseName: string;
+                helmReleaseName: string;
                 doOverwriteStaredAtToNow: boolean;
             }>
         ) => {
-            const { releaseName, doOverwriteStaredAtToNow } = payload;
+            const { helmReleaseName, doOverwriteStaredAtToNow } = payload;
 
             assert(state.stateDescription === "ready");
 
@@ -121,7 +121,7 @@ export const { reducer, actions } = createSlice({
             assert(runningServices !== undefined);
 
             const runningService = runningServices.find(
-                runningService => runningService.releaseName === releaseName
+                runningService => runningService.helmReleaseName === helmReleaseName
             );
 
             if (runningService === undefined) {
@@ -137,9 +137,9 @@ export const { reducer, actions } = createSlice({
         },
         "serviceStopped": (
             state,
-            { payload }: PayloadAction<{ releaseName: string }>
+            { payload }: PayloadAction<{ helmReleaseName: string }>
         ) => {
-            const { releaseName } = payload;
+            const { helmReleaseName } = payload;
 
             assert(state.stateDescription === "ready");
 
@@ -148,40 +148,43 @@ export const { reducer, actions } = createSlice({
 
             runningServices.splice(
                 runningServices.findIndex(
-                    runningServices => runningServices.releaseName === releaseName
+                    runningServices => runningServices.helmReleaseName === helmReleaseName
                 ),
                 1
             );
         },
         "postInstallInstructionsRequested": (
             state,
-            { payload }: { payload: { releaseName: string } }
+            { payload }: { payload: { helmReleaseName: string } }
         ) => {
-            const { releaseName } = payload;
+            const { helmReleaseName } = payload;
 
             assert(state.stateDescription === "ready");
 
             const postInstallInstructions =
-                state.postInstallInstructionsByReleaseName[releaseName];
+                state.postInstallInstructionsByHelmReleaseName[helmReleaseName];
 
             assert(postInstallInstructions !== undefined);
 
             state.commandLogsEntries.push({
                 "cmdId": Date.now(),
-                "cmd": `helm get notes ${releaseName} --namespace ${state.kubernetesNamespace}`,
+                "cmd": `helm get notes ${helmReleaseName} --namespace ${state.kubernetesNamespace}`,
                 "resp": postInstallInstructions
             });
         },
-        "envRequested": (state, { payload }: { payload: { releaseName: string } }) => {
-            const { releaseName } = payload;
+        "envRequested": (
+            state,
+            { payload }: { payload: { helmReleaseName: string } }
+        ) => {
+            const { helmReleaseName } = payload;
 
             assert(state.stateDescription === "ready");
 
-            const env = state.envByReleaseName[releaseName];
+            const env = state.envByHelmReleaseName[helmReleaseName];
 
             state.commandLogsEntries.push({
                 "cmdId": Date.now(),
-                "cmd": `helm get values ${releaseName} --namespace ${state.kubernetesNamespace}`,
+                "cmd": `helm get values ${helmReleaseName} --namespace ${state.kubernetesNamespace}`,
                 "resp": ["USER-SUPPLIED VALUES:", yaml.stringify(nestObject(env))].join(
                     "\n"
                 )

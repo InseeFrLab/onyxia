@@ -17,7 +17,7 @@ export type Props = {
     isUpdating: boolean;
     cards:
         | {
-              releaseName: string;
+              helmReleaseName: string;
               chartIconUrl: string | undefined;
               chartName: string;
               friendlyName: string;
@@ -34,12 +34,12 @@ export type Props = {
           }[]
         | undefined;
     catalogExplorerLink: Link;
-    onRequestDelete(params: { releaseName: string }): void;
-    getEnv: (params: { releaseName: string }) => Record<string, string>;
-    getPostInstallInstructions: (params: { releaseName: string }) => string;
+    onRequestDelete(params: { helmReleaseName: string }): void;
+    getEnv: (params: { helmReleaseName: string }) => Record<string, string>;
+    getPostInstallInstructions: (params: { helmReleaseName: string }) => string;
     evtAction: NonPostableEvt<{
         action: "TRIGGER SHOW POST INSTALL INSTRUCTIONS";
-        releaseName: string;
+        helmReleaseName: string;
     }>;
     getProjectServicePassword: () => Promise<string>;
 };
@@ -64,7 +64,9 @@ export const MyServicesCards = memo((props: Props) => {
     const { t } = useTranslation({ MyServicesCards });
 
     const getEvtMyServicesCardAction = useConst(() =>
-        memoize((_releaseName: string) => Evt.create<"SHOW POST INSTALL INSTRUCTIONS">())
+        memoize((_helmReleaseName: string) =>
+            Evt.create<"SHOW POST INSTALL INSTRUCTIONS">()
+        )
     );
 
     useEvt(
@@ -73,10 +75,10 @@ export const MyServicesCards = memo((props: Props) => {
                 action =>
                     action.action !== "TRIGGER SHOW POST INSTALL INSTRUCTIONS"
                         ? null
-                        : [action.releaseName],
+                        : [action.helmReleaseName],
                 ctx,
-                releaseName =>
-                    getEvtMyServicesCardAction(releaseName).post(
+                helmReleaseName =>
+                    getEvtMyServicesCardAction(helmReleaseName).post(
                         "SHOW POST INSTALL INSTRUCTIONS"
                     )
             );
@@ -85,11 +87,11 @@ export const MyServicesCards = memo((props: Props) => {
     );
 
     const getMyServicesFunctionProps = useConst(() =>
-        memoize((releaseName: string) => ({
+        memoize((helmReleaseName: string) => ({
             "getPoseInstallInstructions": () =>
-                getPostInstallInstructions({ releaseName }),
-            "onRequestDelete": () => onRequestDelete({ releaseName }),
-            "getEnv": () => getEnv({ releaseName })
+                getPostInstallInstructions({ helmReleaseName }),
+            "onRequestDelete": () => onRequestDelete({ helmReleaseName }),
+            "getEnv": () => getEnv({ helmReleaseName })
         }))
     );
 
@@ -117,12 +119,14 @@ export const MyServicesCards = memo((props: Props) => {
 
                     return cards.map(card => {
                         const { getEnv, getPoseInstallInstructions, onRequestDelete } =
-                            getMyServicesFunctionProps(card.releaseName);
+                            getMyServicesFunctionProps(card.helmReleaseName);
 
                         return (
                             <MyServicesCard
-                                key={card.releaseName}
-                                evtAction={getEvtMyServicesCardAction(card.releaseName)}
+                                key={card.helmReleaseName}
+                                evtAction={getEvtMyServicesCardAction(
+                                    card.helmReleaseName
+                                )}
                                 getPoseInstallInstructions={
                                     !card.hasPostInstallInstructions
                                         ? undefined

@@ -16,7 +16,7 @@ export const createEvt = (({ evtAction, getState }) => {
           }
         | {
               actionName: "launchCompleted";
-              releaseName: string;
+              helmReleaseName: string;
           }
     >();
 
@@ -34,9 +34,9 @@ export const createEvt = (({ evtAction, getState }) => {
         .attach(
             action => action.actionName === "launchCompleted",
             () => {
-                const releaseName = privateSelectors.releaseName(getState());
-                assert(releaseName !== undefined);
-                evtOut.post({ "actionName": "launchCompleted", releaseName });
+                const helmReleaseName = privateSelectors.helmReleaseName(getState());
+                assert(helmReleaseName !== undefined);
+                evtOut.post({ "actionName": "launchCompleted", helmReleaseName });
             }
         );
 

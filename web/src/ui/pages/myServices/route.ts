@@ -4,7 +4,7 @@ export const routeDefs = {
     "myServices": defineRoute(
         {
             "isSavedConfigsExtended": param.query.optional.boolean.default(false),
-            "autoOpenNotesOfReleaseName": param.query.optional.string
+            "autoOpenNotesOfHelmReleaseName": param.query.optional.string
         },
         () => `/my-services`
     )

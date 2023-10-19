@@ -424,7 +424,7 @@ const chartIconUrl = createSelector(readyState, state => {
     return state.chartIconUrl;
 });
 
-const releaseName = createSelector(readyState, state => {
+const helmReleaseName = createSelector(readyState, state => {
     if (state === undefined) {
         return undefined;
     }
@@ -433,14 +433,14 @@ const releaseName = createSelector(readyState, state => {
 
 const launchCommands = createSelector(
     readyState,
-    releaseName,
+    helmReleaseName,
     projectConfigs.selectors.selectedProject,
-    (state, releaseName, project) => {
+    (state, helmReleaseName, project) => {
         if (state === undefined) {
             return undefined;
         }
 
-        assert(releaseName !== undefined);
+        assert(helmReleaseName !== undefined);
 
         return [
             `helm repo add ${state.catalogId} ${state.repositoryUrl}`,
@@ -449,7 +449,7 @@ const launchCommands = createSelector(
                 yaml.stringify(formFieldsValueToObject(state.formFields)),
                 "EOF"
             ].join("\n"),
-            `helm install ${releaseName} ${state.catalogId}/${state.chartName} --namespace ${project.namespace} -f values.yaml`
+            `helm install ${helmReleaseName} ${state.catalogId}/${state.chartName} --namespace ${project.namespace} -f values.yaml`
         ];
     }
 );
@@ -457,15 +457,15 @@ const launchCommands = createSelector(
 const launchScript = createSelector(
     isReady,
     launchCommands,
-    releaseName,
-    (isReady, launchCommands, releaseName) => {
+    helmReleaseName,
+    (isReady, launchCommands, helmReleaseName) => {
         if (!isReady) {
             return undefined;
         }
         assert(launchCommands !== undefined);
-        assert(releaseName !== undefined);
+        assert(helmReleaseName !== undefined);
         return {
-            "fileBasename": `launch-${releaseName}.sh`,
+            "fileBasename": `launch-${helmReleaseName}.sh`,
             "content": launchCommands.join("\n\n")
         };
     }
@@ -580,5 +580,5 @@ const wrap = createSelector(
 export const selectors = { wrap };
 
 export const privateSelectors = {
-    releaseName
+    helmReleaseName
 };

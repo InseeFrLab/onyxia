@@ -48,7 +48,7 @@ export type OnyxiaApi = {
     }>;
 
     installChart: (params: {
-        releaseName: string;
+        helmReleaseName: string;
         catalogId: string;
         chartName: string;
         options: Record<string, unknown>;
@@ -56,7 +56,7 @@ export type OnyxiaApi = {
 
     getRunningServices: () => Promise<RunningService[]>;
 
-    stopService: (params: { releaseName: string }) => Promise<void>;
+    stopService: (params: { helmReleaseName: string }) => Promise<void>;
 
     createAwsBucket: (params: {
         awsRegion: string;

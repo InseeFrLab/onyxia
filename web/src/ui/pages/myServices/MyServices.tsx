@@ -47,7 +47,7 @@ export default function MyServices(props: Props) {
     const { isUpdating } = useCoreState(selectors.serviceManager.isUpdating);
     const { runningServices } = useCoreState(selectors.serviceManager.runningServices);
     /* prettier-ignore */
-    const { deletableRunningServiceReleaseNames } = useCoreState(selectors.serviceManager.deletableRunningServiceReleaseNames);
+    const { deletableRunningServiceHelmReleaseNames } = useCoreState(selectors.serviceManager.deletableRunningServiceHelmReleaseNames);
     /* prettier-ignore */
     const { isThereOwnedSharedServices } = useCoreState(selectors.serviceManager.isThereOwnedSharedServices);
     /* prettier-ignore */
@@ -81,8 +81,8 @@ export default function MyServices(props: Props) {
                     return;
                 }
 
-                deletableRunningServiceReleaseNames.map(releaseName =>
-                    serviceManager.stopService({ releaseName })
+                deletableRunningServiceHelmReleaseNames.map(helmReleaseName =>
+                    serviceManager.stopService({ helmReleaseName })
                 );
 
                 return;
@@ -162,7 +162,7 @@ export default function MyServices(props: Props) {
         (): MyServicesCardsProps["cards"] | undefined =>
             runningServices?.map(
                 ({
-                    releaseName,
+                    helmReleaseName,
                     chartIconUrl,
                     friendlyName,
                     chartName,
@@ -175,7 +175,7 @@ export default function MyServices(props: Props) {
                     hasPostInstallInstructions,
                     ...rest
                 }) => ({
-                    releaseName,
+                    helmReleaseName,
                     chartIconUrl,
                     friendlyName,
                     chartName,
@@ -198,14 +198,14 @@ export default function MyServices(props: Props) {
     );
 
     useEffect(() => {
-        const { autoOpenNotesOfReleaseName } = route.params;
+        const { autoOpenNotesOfHelmReleaseName } = route.params;
 
-        if (autoOpenNotesOfReleaseName === undefined) {
+        if (autoOpenNotesOfHelmReleaseName === undefined) {
             return;
         }
 
         const runningService = (runningServices ?? []).find(
-            ({ releaseName }) => releaseName === autoOpenNotesOfReleaseName
+            ({ helmReleaseName }) => helmReleaseName === autoOpenNotesOfHelmReleaseName
         );
 
         if (runningService === undefined) {
@@ -218,15 +218,15 @@ export default function MyServices(props: Props) {
                 "isSavedConfigsExtended": route.params.isSavedConfigsExtended
                     ? true
                     : undefined,
-                "autoOpenNotesOfReleaseName": undefined
+                "autoOpenNotesOfHelmReleaseName": undefined
             })
             .replace();
 
         evtMyServiceCardsAction.post({
             "action": "TRIGGER SHOW POST INSTALL INSTRUCTIONS",
-            "releaseName": runningService.releaseName
+            "helmReleaseName": runningService.helmReleaseName
         });
-    }, [route.params.autoOpenNotesOfReleaseName, runningServices]);
+    }, [route.params.autoOpenNotesOfHelmReleaseName, runningServices]);
 
     const catalogExplorerLink = useMemo(() => routes.catalog().link, []);
 
@@ -235,7 +235,7 @@ export default function MyServices(props: Props) {
     );
 
     const onRequestDelete = useConstCallback<MyServicesCardsProps["onRequestDelete"]>(
-        async ({ releaseName }) => {
+        async ({ helmReleaseName }) => {
             const dDoProceed = new Deferred<boolean>();
 
             evtConfirmDeleteDialogOpen.post({
@@ -247,7 +247,7 @@ export default function MyServices(props: Props) {
                 return;
             }
 
-            serviceManager.stopService({ releaseName });
+            serviceManager.stopService({ helmReleaseName });
         }
     );
 
@@ -266,7 +266,7 @@ export default function MyServices(props: Props) {
                         onClick={onButtonBarClick}
                         isThereNonOwnedServicesShown={isThereNonOwnedServices}
                         isThereDeletableServices={
-                            deletableRunningServiceReleaseNames.length !== 0
+                            deletableRunningServiceHelmReleaseNames.length !== 0
                         }
                     />
                 </div>
