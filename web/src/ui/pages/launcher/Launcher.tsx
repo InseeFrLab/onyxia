@@ -32,11 +32,18 @@ export default function Launcher(props: Props) {
     const { t } = useTranslation({ Launcher });
 
     const {
+        evtAcknowledgeSharingOfConfigConfirmDialogOpen,
         evtAutoLaunchDisabledDialogOpen,
         evtSensitiveConfigurationDialogOpen,
         evtNoLongerBookmarkedDialogOpen,
         evtOverwriteConfigurationConfirmDialogOpen
     } = useConst(() => ({
+        "evtAcknowledgeSharingOfConfigConfirmDialogOpen":
+            Evt.create<
+                UnpackEvt<
+                    LauncherDialogsProps["evtAcknowledgeSharingOfConfigConfirmDialogOpen"]
+                >
+            >(),
         "evtAutoLaunchDisabledDialogOpen":
             Evt.create<
                 UnpackEvt<LauncherDialogsProps["evtAutoLaunchDisabledDialogOpen"]>
@@ -71,7 +78,8 @@ export default function Launcher(props: Props) {
         chartIconUrl,
         launchScript,
         commandLogsEntries,
-        chartSourceUrls
+        chartSourceUrls,
+        groupProjectName
     } = useCoreState(selectors.launcher.wrap).wrap;
 
     const scrollableDivRef = useStateRef<HTMLDivElement>(null);
@@ -206,6 +214,19 @@ export default function Launcher(props: Props) {
                 });
 
                 if (!(await dDoOverwriteConfiguration.pr)) {
+                    return;
+                }
+            }
+
+            if (groupProjectName !== undefined) {
+                const doProceed = new Deferred<boolean>();
+
+                evtAcknowledgeSharingOfConfigConfirmDialogOpen.post({
+                    groupProjectName,
+                    "resolveDoProceed": doProceed.resolve
+                });
+
+                if (!(await doProceed.pr)) {
                     return;
                 }
             }
@@ -348,6 +369,9 @@ export default function Launcher(props: Props) {
                 </div>
             </div>
             <LauncherDialogs
+                evtAcknowledgeSharingOfConfigConfirmDialogOpen={
+                    evtAcknowledgeSharingOfConfigConfirmDialogOpen
+                }
                 evtAutoLaunchDisabledDialogOpen={evtAutoLaunchDisabledDialogOpen}
                 evtSensitiveConfigurationDialogOpen={evtSensitiveConfigurationDialogOpen}
                 evtNoLongerBookmarkedDialogOpen={evtNoLongerBookmarkedDialogOpen}

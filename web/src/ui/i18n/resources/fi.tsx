@@ -433,6 +433,18 @@ Tutustu vapaasti ja ota hallintaan Kubernetes-julkaisusi!
         `}</Markdown>
         )
     },
+    "AcknowledgeSharingOfConfigConfirmDialog": {
+        "acknowledge sharing of config confirm dialog title":
+            "Huomio, konfiguraatiot jaetaan",
+        "acknowledge sharing of config confirm dialog subtitle": ({
+            groupProjectName
+        }) => `Jos tallennat
+        tämän konfiguraation, jokainen projektin ${groupProjectName} jäsen pystyy käynnistämään sen.`,
+        "acknowledge sharing of config confirm dialog body": `Vaikka Onyxia ei ole automaattisesti lisännyt henkilökohtaisia tietoja,
+        ole varovainen, ettet jaa arkaluonteisia tietoja palautettavassa konfiguraatiossa.`,
+        "cancel": "Peruuta",
+        "i understand, proceed": "Ymmärrän, jatka"
+    },
     "AutoLaunchDisabledDialog": {
         "auto launch disabled dialog title": "Käynnistäminen ei ole mahdollista",
         "auto launch disabled dialog body": (

@@ -1,4 +1,8 @@
 import {
+    AcknowledgeSharingOfConfigConfirmDialog,
+    type Props as AcknowledgeSharingOfConfigConfirmDialogProps
+} from "./AcknowledgeSharingOfConfigConfirmDialog";
+import {
     AutoLaunchDisabledDialog,
     type Props as AutoLaunchDisabledDialogProps
 } from "./AutoLaunchDisabledDialog";
@@ -16,6 +20,7 @@ import {
 } from "./OverwriteConfigurationConfirmDialog";
 
 export type Props = {
+    evtAcknowledgeSharingOfConfigConfirmDialogOpen: AcknowledgeSharingOfConfigConfirmDialogProps["evtOpen"];
     evtAutoLaunchDisabledDialogOpen: AutoLaunchDisabledDialogProps["evtOpen"];
     evtSensitiveConfigurationDialogOpen: SensitiveConfigurationDialogProps["evtOpen"];
     evtNoLongerBookmarkedDialogOpen: NoLongerBookmarkedDialogProps["evtOpen"];
@@ -24,6 +29,7 @@ export type Props = {
 
 export function LauncherDialogs(props: Props) {
     const {
+        evtAcknowledgeSharingOfConfigConfirmDialogOpen,
         evtAutoLaunchDisabledDialogOpen,
         evtSensitiveConfigurationDialogOpen,
         evtNoLongerBookmarkedDialogOpen,
@@ -32,6 +38,9 @@ export function LauncherDialogs(props: Props) {
 
     return (
         <>
+            <AcknowledgeSharingOfConfigConfirmDialog
+                evtOpen={evtAcknowledgeSharingOfConfigConfirmDialogOpen}
+            />
             <AutoLaunchDisabledDialog evtOpen={evtAutoLaunchDisabledDialogOpen} />
             <SensitiveConfigurationDialog evtOpen={evtSensitiveConfigurationDialogOpen} />
             <NoLongerBookmarkedDialog evtOpen={evtNoLongerBookmarkedDialogOpen} />

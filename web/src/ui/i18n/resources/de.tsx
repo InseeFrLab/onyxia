@@ -446,6 +446,18 @@ Fühlen Sie sich frei, Ihre Kubernetes-Bereitstellungen zu erkunden und die Kont
         `}</Markdown>
         )
     },
+    "AcknowledgeSharingOfConfigConfirmDialog": {
+        "acknowledge sharing of config confirm dialog title":
+            "Beachten Sie, Konfigurationen werden geteilt",
+        "acknowledge sharing of config confirm dialog subtitle": ({
+            groupProjectName
+        }) => `Wenn Sie diese Konfiguration speichern,
+        wird jedes Mitglied des Projekts ${groupProjectName} in der Lage sein, es zu starten.`,
+        "acknowledge sharing of config confirm dialog body": `Obwohl keine persönlichen Informationen automatisch von Onyxia eingefügt wurden,
+        achten Sie darauf, keine sensiblen Informationen in der wiederherstellbaren Konfiguration zu teilen.`,
+        "cancel": "Abbrechen",
+        "i understand, proceed": "Ich verstehe, fortfahren"
+    },
     "AutoLaunchDisabledDialog": {
         "ok": "Ok",
         "auto launch disabled dialog title": "Automatisches Starten deaktiviert",

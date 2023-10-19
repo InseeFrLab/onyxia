@@ -443,6 +443,18 @@ Voel je vrij om te verkennen en de controle over je Kubernetes-implementaties te
         `}</Markdown>
         )
     },
+    "AcknowledgeSharingOfConfigConfirmDialog": {
+        "acknowledge sharing of config confirm dialog title":
+            "Wees bewust, configuraties worden gedeeld",
+        "acknowledge sharing of config confirm dialog subtitle": ({
+            groupProjectName
+        }) => `Als je
+        deze configuratie opslaat, zal elk lid van het project ${groupProjectName} in staat zijn om het te starten.`,
+        "acknowledge sharing of config confirm dialog body": `Hoewel er geen persoonlijke informatie automatisch is ingevoegd
+        door Onyxia, wees voorzichtig om geen gevoelige informatie te delen in de herstelbare configuratie.`,
+        "cancel": "Annuleren",
+        "i understand, proceed": "Ik begrijp het, ga verder"
+    },
     "AutoLaunchDisabledDialog": {
         "ok": "Ok",
         "auto launch disabled dialog title": "Deze dienst uitvoeren kan gevaarlijk zijn",

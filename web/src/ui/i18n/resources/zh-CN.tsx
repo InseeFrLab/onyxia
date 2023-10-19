@@ -378,6 +378,17 @@ ${
         `}</Markdown>
         )
     },
+    "AcknowledgeSharingOfConfigConfirmDialog": {
+        "acknowledge sharing of config confirm dialog title": "请注意，配置是共享的",
+        "acknowledge sharing of config confirm dialog subtitle": ({
+            groupProjectName
+        }) => `如果您保存
+        此配置，项目 ${groupProjectName} 的每个成员都将能够启动它。`,
+        "acknowledge sharing of config confirm dialog body": `尽管 Onyxia 没有自动注入任何个人信息，
+        请注意不要在可恢复的配置中分享任何敏感信息。`,
+        "cancel": "取消",
+        "i understand, proceed": "我明白了，继续"
+    },
     "AutoLaunchDisabledDialog": {
         "ok": "是",
         "auto launch disabled dialog title": "您想更换它吗?",

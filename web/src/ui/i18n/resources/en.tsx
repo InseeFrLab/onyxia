@@ -436,6 +436,18 @@ Feel free to explore and take charge of your Kubernetes deployments!
         `}</Markdown>
         )
     },
+    "AcknowledgeSharingOfConfigConfirmDialog": {
+        "acknowledge sharing of config confirm dialog title":
+            "Be aware, configurations are shared",
+        "acknowledge sharing of config confirm dialog subtitle": ({
+            groupProjectName
+        }) => `If you save
+        this configuration every member of the project ${groupProjectName} will be able to launch it.`,
+        "acknowledge sharing of config confirm dialog body": `Although no personal information have been automatically injected 
+        by Onyxia, be aware not to share any sensitive information shared restorable configuration.`,
+        "cancel": "Cancel",
+        "i understand, proceed": "I understand, proceed"
+    },
     "AutoLaunchDisabledDialog": {
         "auto launch disabled dialog title":
             "Auto launch feature disabled on this Onyxia instance",

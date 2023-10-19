@@ -440,6 +440,18 @@ Sentiti libero di esplorare e prendere il controllo dei tuoi deployment Kubernet
         `}</Markdown>
         )
     },
+    "AcknowledgeSharingOfConfigConfirmDialog": {
+        "acknowledge sharing of config confirm dialog title":
+            "Siate consapevoli, le configurazioni sono condivise",
+        "acknowledge sharing of config confirm dialog subtitle": ({
+            groupProjectName
+        }) => `Se salvi
+        questa configurazione, ogni membro del progetto ${groupProjectName} sarà in grado di avviarla.`,
+        "acknowledge sharing of config confirm dialog body": `Sebbene nessuna informazione personale sia stata automaticamente inserita
+        da Onyxia, fai attenzione a non condividere informazioni sensibili nella configurazione ripristinabile.`,
+        "cancel": "Annulla",
+        "i understand, proceed": "Ho capito, procedi"
+    },
     "AutoLaunchDisabledDialog": {
         "ok": "Ok",
         "auto launch disabled dialog title": "Avvio automatico disabilitato",

@@ -8,7 +8,6 @@ import {
     onyxiaFriendlyNameFormFieldPath,
     onyxiaIsSharedFormFieldPath
 } from "core/ports/OnyxiaApi";
-import * as projectConfigs from "../../projectConfigs";
 import { scaffoldingIndexedFormFieldsToFinal } from "./scaffoldingIndexedFormFieldsToFinal";
 import type { IndexedFormFields } from "../FormField";
 import { createGetIsFieldHidden } from "./getIsFieldHidden";
@@ -16,6 +15,7 @@ import * as yaml from "yaml";
 import { name, type State } from "../state";
 import { symToStr } from "tsafe/symToStr";
 import * as restorableConfigManager from "core/usecases/restorableConfigManager";
+import * as projectConfigs from "core/usecases/projectConfigs";
 
 const readyState = (rootState: RootState): State.Ready | undefined => {
     const state = rootState[name];
@@ -507,6 +507,11 @@ const commandLogsEntries = createSelector(launchCommands, launchCommands => {
 
 const chartSourceUrls = createSelector(readyState, state => state?.chartSourceUrls);
 
+const groupProjectName = createSelector(
+    projectConfigs.selectors.selectedProject,
+    project => (project.group === undefined ? undefined : project.name)
+);
+
 const wrap = createSelector(
     isReady,
     friendlyName,
@@ -522,6 +527,7 @@ const wrap = createSelector(
     launchScript,
     commandLogsEntries,
     chartSourceUrls,
+    groupProjectName,
     (
         isReady,
         friendlyName,
@@ -536,7 +542,8 @@ const wrap = createSelector(
         chartIconUrl,
         launchScript,
         commandLogsEntries,
-        chartSourceUrls
+        chartSourceUrls,
+        groupProjectName
     ) => {
         if (!isReady) {
             return {
@@ -554,7 +561,8 @@ const wrap = createSelector(
                 [symToStr({ chartIconUrl })]: undefined,
                 [symToStr({ launchScript })]: undefined,
                 [symToStr({ commandLogsEntries })]: undefined,
-                [symToStr({ chartSourceUrls })]: undefined
+                [symToStr({ chartSourceUrls })]: undefined,
+                groupProjectName
             };
         }
 
@@ -585,7 +593,8 @@ const wrap = createSelector(
             chartIconUrl,
             launchScript,
             commandLogsEntries,
-            chartSourceUrls
+            chartSourceUrls,
+            groupProjectName
         };
     }
 );
