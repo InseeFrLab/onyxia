@@ -39,7 +39,7 @@ export type OnyxiaApi = {
         clear: () => void;
     };
 
-    getChartDetails: (params: { catalogId: string; chartName: string }) => Promise<{
+    getHelmChartDetails: (params: { catalogId: string; chartName: string }) => Promise<{
         getChartValuesSchemaJson: (params: {
             xOnyxiaContext: XOnyxiaContext;
         }) => JSONSchemaObject;

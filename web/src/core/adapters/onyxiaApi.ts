@@ -466,7 +466,7 @@ export function createOnyxiaApi(params: {
                 })
                 .catch(onError)
                 .then(() => undefined),
-        "getChartDetails": ({ catalogId, chartName }) =>
+        "getHelmChartDetails": ({ catalogId, chartName }) =>
             axiosInstance
                 .get<
                     {

@@ -56,7 +56,7 @@ export const thunks = {
                 dependencies: chartDependencies,
                 sourceUrls: chartSourceUrls,
                 getChartValuesSchemaJson
-            } = await onyxiaApi.getChartDetails({ catalogId, chartName });
+            } = await onyxiaApi.getHelmChartDetails({ catalogId, chartName });
 
             {
                 const state = getState()[name];
