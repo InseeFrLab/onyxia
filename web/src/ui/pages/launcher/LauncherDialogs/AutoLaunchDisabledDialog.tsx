@@ -39,7 +39,9 @@ export const AutoLaunchDisabledDialog = memo((props: Props) => {
             }
             buttons={
                 <>
-                    <Button onClick={() => setIsOpen(false)}>{t("ok")}</Button>
+                    <Button autoFocus onClick={() => setIsOpen(false)}>
+                        {t("ok")}
+                    </Button>
                 </>
             }
             onClose={() => setIsOpen(false)}

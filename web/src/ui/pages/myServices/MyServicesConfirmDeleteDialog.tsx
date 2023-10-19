@@ -49,7 +49,7 @@ export const MyServicesConfirmDeleteDialog = memo((props: Props) => {
                     <Button onClick={onCloseFactory(false)} variant="secondary">
                         {t("cancel")}
                     </Button>
-                    <Button autoFocus={true} onClick={onCloseFactory(true)}>
+                    <Button autoFocus onClick={onCloseFactory(true)}>
                         {t("confirm")}
                     </Button>
                 </>

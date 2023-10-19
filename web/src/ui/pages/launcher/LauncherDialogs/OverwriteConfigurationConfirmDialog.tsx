@@ -45,7 +45,9 @@ export const OverwriteConfigurationConfirmDialog = memo((props: Props) => {
                     <Button onClick={onCloseFactory(false)} autoFocus variant="secondary">
                         {t("cancel")}
                     </Button>
-                    <Button onClick={onCloseFactory(true)}>{t("replace")}</Button>
+                    <Button autoFocus onClick={onCloseFactory(true)}>
+                        {t("replace")}
+                    </Button>
                 </>
             }
             isOpen={state !== undefined}

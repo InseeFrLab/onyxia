@@ -45,7 +45,7 @@ export const AcknowledgeSharingOfConfigConfirmDialog = memo((props: Props) => {
                     <Button onClick={onCloseFactory(false)} autoFocus variant="secondary">
                         {t("cancel")}
                     </Button>
-                    <Button onClick={onCloseFactory(true)}>
+                    <Button autoFocus onClick={onCloseFactory(true)}>
                         {t("i understand, proceed")}
                     </Button>
                 </>

@@ -53,7 +53,7 @@ export const SensitiveConfigurationDialog = memo((props: Props) => {
                     <Button onClick={onCloseFactory(false)} variant="secondary">
                         {t("cancel")}
                     </Button>
-                    <Button onClick={onCloseFactory(true)}>
+                    <Button autoFocus onClick={onCloseFactory(true)}>
                         {t("proceed to launch")}
                     </Button>
                 </>
