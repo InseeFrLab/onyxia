@@ -573,7 +573,7 @@ Tutustu vapaasti ja ota hallintaan Kubernetes-julkaisusi!
         "return": "Palaa"
     },
     "CopyOpenButton": {
-        "first copy the password": "Kopioi ensin palvelun...",
+        "first copy the password": "Klikkaa kopioidaksesi salasanan...",
         "open the service": "Avaa palvelu 🚀"
     },
     "MyServicesCards": {

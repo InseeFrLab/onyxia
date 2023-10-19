@@ -587,7 +587,7 @@ Voel je vrij om te verkennen en de controle over je Kubernetes-implementaties te
         "return": "Terug"
     },
     "CopyOpenButton": {
-        "first copy the password": "Begin met het kopiëren van het wachtwoord...",
+        "first copy the password": "Klik om het wachtwoord te kopiëren...",
         "open the service": "De dienst openen 🚀"
     },
     "MyServicesCards": {

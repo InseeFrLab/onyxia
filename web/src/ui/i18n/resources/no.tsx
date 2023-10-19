@@ -580,7 +580,7 @@ Føl deg fri til å utforske og ta kontroll over dine Kubernetes-implementeringe
         "return": "Gå tilbake"
     },
     "CopyOpenButton": {
-        "first copy the password": "Først, kopier tjeneste...",
+        "first copy the password": "Klikk for å kopiere passordet...",
         "open the service": "Åpne tjenesten 🚀"
     },
     "MyServicesCards": {

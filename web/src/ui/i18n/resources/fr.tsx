@@ -594,7 +594,7 @@ N'hésitez pas à explorer et à prendre en main vos déploiements Kubernetes !
         "return": "Retour"
     },
     "CopyOpenButton": {
-        "first copy the password": "Commencez par copier le mot de passe...",
+        "first copy the password": "Cliquez pour copier le mot de passe...",
         "open the service": "Ouvrir le service 🚀"
     },
     "MyServicesCards": {

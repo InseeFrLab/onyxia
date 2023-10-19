@@ -584,7 +584,7 @@ Sentiti libero di esplorare e prendere il controllo dei tuoi deployment Kubernet
         "return": "Ritorno"
     },
     "CopyOpenButton": {
-        "first copy the password": "Inizia copiando la password...",
+        "first copy the password": "Clicca per copiare la password...",
         "open the service": "Aprire il servizio 🚀"
     },
     "MyServicesCards": {

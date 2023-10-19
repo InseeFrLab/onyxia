@@ -589,7 +589,7 @@ Fühlen Sie sich frei, Ihre Kubernetes-Bereitstellungen zu erkunden und die Kont
         "return": "Zurück"
     },
     "CopyOpenButton": {
-        "first copy the password": "Kopieren Sie zuerst das Passwort...",
+        "first copy the password": "Klicken Sie, um das Passwort zu kopieren...",
         "open the service": "Dienst öffnen 🚀"
     },
     "MyServicesCards": {

@@ -511,7 +511,7 @@ ${
         "return": "返回"
     },
     "CopyOpenButton": {
-        "first copy the password": "请复制您的密码",
+        "first copy the password": "点击以复制密码...",
         "open the service": "打开服务 🚀"
     },
     "MyServicesCards": {
