@@ -3,7 +3,7 @@ import type { DeploymentRegion } from "./DeploymentRegion";
 import type { Project } from "./Project";
 import type { Catalog } from "./Catalog";
 import type { Chart } from "./Chart";
-import type { RunningService } from "./RunningService";
+import type { HelmRelease } from "./HelmRelease";
 import type { User } from "./User";
 import { JSONSchemaObject } from "./JSONSchema";
 
@@ -54,7 +54,7 @@ export type OnyxiaApi = {
         options: Record<string, unknown>;
     }) => Promise<void>;
 
-    getRunningServices: () => Promise<RunningService[]>;
+    listHelmReleases: () => Promise<HelmRelease[]>;
 
     stopService: (params: { helmReleaseName: string }) => Promise<void>;
 

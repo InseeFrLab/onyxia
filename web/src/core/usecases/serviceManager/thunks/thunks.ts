@@ -52,7 +52,7 @@ export const thunks = {
 
             const onyxiaApi = dispatch(privateThunks.getLoggedOnyxiaApi());
 
-            const runningServicesRaw = await onyxiaApi.getRunningServices();
+            const helmReleases = await onyxiaApi.listHelmReleases();
 
             //NOTE: We do not have the catalog id nor the chart id so we search in every catalog.
             const { getLogoUrl } = await (async () => {
@@ -103,13 +103,13 @@ export const thunks = {
                 actions.updateCompleted({
                     kubernetesNamespace,
                     "envByHelmReleaseName": Object.fromEntries(
-                        runningServicesRaw.map(({ helmReleaseName, env }) => [
+                        helmReleases.map(({ helmReleaseName, env }) => [
                             helmReleaseName,
                             env
                         ])
                     ),
                     "postInstallInstructionsByHelmReleaseName": Object.fromEntries(
-                        runningServicesRaw
+                        helmReleases
                             .map(({ helmReleaseName, postInstallInstructions }) =>
                                 postInstallInstructions === undefined
                                     ? undefined
@@ -117,7 +117,7 @@ export const thunks = {
                             )
                             .filter(exclude(undefined))
                     ),
-                    "runningServices": runningServicesRaw
+                    "runningServices": helmReleases
                         .map(
                             ({
                                 helmReleaseName,
@@ -297,7 +297,7 @@ const privateThunks = {
 
             sliceContext.loggedOnyxiaApi = {
                 ...onyxiaApi,
-                "getRunningServices": async () => {
+                "listHelmReleases": async () => {
                     const { namespace } = projectConfigs.selectors.selectedProject(
                         getState()
                     );
@@ -314,13 +314,13 @@ const privateThunks = {
                         })
                     );
 
-                    const runningServices = await onyxiaApi.getRunningServices();
+                    const helmReleases = await onyxiaApi.listHelmReleases();
 
                     dispatch(
                         actions.commandLogsRespUpdated({
                             cmdId,
                             "resp": formatHelmLsResp({
-                                "lines": runningServices.map(
+                                "lines": helmReleases.map(
                                     ({
                                         helmReleaseName,
                                         startedAt,
@@ -342,7 +342,7 @@ const privateThunks = {
                         })
                     );
 
-                    return runningServices;
+                    return helmReleases;
                 },
                 "stopService": async ({ helmReleaseName }) => {
                     const cmdId = Date.now();

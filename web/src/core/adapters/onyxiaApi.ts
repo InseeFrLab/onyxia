@@ -810,7 +810,7 @@ export function createOnyxiaApi(params: {
                 }
             };
         })(),
-        "getRunningServices": (() => {
+        "listHelmReleases": (() => {
             type Data = {
                 apps: {
                     id: string;

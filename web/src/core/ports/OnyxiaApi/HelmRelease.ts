@@ -1,6 +1,6 @@
-export type RunningService = RunningService.Started | RunningService.Starting;
+export type HelmRelease = HelmRelease.Started | HelmRelease.Starting;
 
-export declare namespace RunningService {
+export declare namespace HelmRelease {
     export type Common = {
         helmReleaseName: string;
         friendlyName: string | undefined;

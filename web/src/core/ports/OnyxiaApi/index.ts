@@ -10,6 +10,6 @@ export {
 } from "./JSONSchema";
 export type { Language, LocalizedString } from "./Language";
 export type { Project } from "./Project";
-export type { RunningService } from "./RunningService";
+export type { HelmRelease } from "./HelmRelease";
 export type { User } from "./User";
 export type { XOnyxiaContext } from "./XOnyxia";
