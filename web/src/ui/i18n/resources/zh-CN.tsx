@@ -461,7 +461,9 @@ ${
         "text1": "我的服务",
         "text2": "快速启动、查看和管理您正在运行的各种服务。",
         "text3": "建议您在每次工作会话后删除您的服务.",
-        "running services": "正在运行的服务",
+        "running services": "正在运行的服务"
+    },
+    "MyServicesConfirmDeleteDialog": {
         "confirm delete title": "您确定?",
         "confirm delete subtitle": "确保您的服务不包括未保存的工作。",
         "confirm delete body": "在继续之前不要忘记将您的代码推送到 GitHub 或 GitLab.",

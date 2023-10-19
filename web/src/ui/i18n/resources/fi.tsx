@@ -521,7 +521,9 @@ Tutustu vapaasti ja ota hallintaan Kubernetes-julkaisusi!
         "text2": "Käytettävissä olevat palvelusi",
         "text3":
             "Palveluiden odotetaan olevan sammutettuina, kun et enää käytä niitä aktiivisesti.",
-        "running services": "Käynnissä olevat palvelut",
+        "running services": "Käynnissä olevat palvelut"
+    },
+    "MyServicesConfirmDeleteDialog": {
         "confirm delete title": "Oletko varma?",
         "confirm delete subtitle":
             "Varmista, että palvelusi ovat valmiita poistettaviksi",

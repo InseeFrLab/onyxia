@@ -531,7 +531,9 @@ Sentiti libero di esplorare e prendere il controllo dei tuoi deployment Kubernet
         "text2":
             "Avvia, visualizza e gestisci rapidamente i tuoi vari servizi in esecuzione.",
         "text3": "Si consiglia di eliminare i servizi dopo ogni sessione di lavoro.",
-        "running services": "Servizi in corso",
+        "running services": "Servizi in corso"
+    },
+    "MyServicesConfirmDeleteDialog": {
         "confirm delete title": "Sei sicuro?",
         "confirm delete subtitle":
             "Assicurati che i tuoi servizi non contengano lavori non salvati.",

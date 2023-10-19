@@ -525,7 +525,9 @@ Feel free to explore and take charge of your Kubernetes deployments!
         "text2": "Access your running services",
         "text3":
             "Services are supposed to be shut down as soon as you stop using them actively.",
-        "running services": "Running services",
+        "running services": "Running services"
+    },
+    "MyServicesConfirmDeleteDialog": {
         "confirm delete title": "Are you sure?",
         "confirm delete subtitle": "Make sure your service are ready to be deleted",
         "confirm delete body shared services":

@@ -12,9 +12,6 @@ import { ButtonId } from "./MyServicesButtonBar";
 import { useConstCallback } from "powerhooks/useConstCallback";
 import { useCoreFunctions, useCoreState, selectors } from "core";
 import { routes } from "ui/routes";
-import { Dialog } from "onyxia-ui/Dialog";
-import { useCallbackFactory } from "powerhooks/useCallbackFactory";
-import { Button } from "ui/theme";
 import { useConst } from "powerhooks/useConst";
 import { Evt } from "evt";
 import type { UnpackEvt } from "evt";
@@ -22,6 +19,11 @@ import { declareComponentKeys } from "i18nifty";
 import type { PageRoute } from "./route";
 import { CommandBar } from "ui/shared/CommandBar";
 import { useDomRect } from "powerhooks/useDomRect";
+import {
+    MyServicesConfirmDeleteDialog,
+    type Props as MyServicesConfirmDeleteDialogProps
+} from "./MyServicesConfirmDeleteDialog";
+import { Deferred } from "evt/tools/Deferred";
 
 export type Props = {
     route: PageRoute;
@@ -45,7 +47,7 @@ export default function MyServices(props: Props) {
     const { isUpdating } = useCoreState(selectors.serviceManager.isUpdating);
     const { runningServices } = useCoreState(selectors.serviceManager.runningServices);
     /* prettier-ignore */
-    const { deletableRunningServices } = useCoreState(selectors.serviceManager.deletableRunningServices);
+    const { deletableRunningServiceReleaseNames } = useCoreState(selectors.serviceManager.deletableRunningServiceReleaseNames);
     /* prettier-ignore */
     const { isThereOwnedSharedServices } = useCoreState(selectors.serviceManager.isThereOwnedSharedServices);
     /* prettier-ignore */
@@ -59,7 +61,7 @@ export default function MyServices(props: Props) {
         userConfigs: { isCommandBarEnabled }
     } = useCoreState(selectors.userConfigs.userConfigs);
 
-    const onButtonBarClick = useConstCallback((buttonId: ButtonId) => {
+    const onButtonBarClick = useConstCallback(async (buttonId: ButtonId) => {
         switch (buttonId) {
             case "launch":
                 routes.catalog().push();
@@ -68,7 +70,21 @@ export default function MyServices(props: Props) {
                 serviceManager.update();
                 return;
             case "trash":
-                setIsDialogOpen(true);
+                const dDoProceed = new Deferred<boolean>();
+
+                evtConfirmDeleteDialogOpen.post({
+                    isThereOwnedSharedServices,
+                    "resolveDoProceed": dDoProceed.resolve
+                });
+
+                if (!(await dDoProceed.pr)) {
+                    return;
+                }
+
+                deletableRunningServiceReleaseNames.map(releaseName =>
+                    serviceManager.stopService({ releaseName })
+                );
+
                 return;
         }
     });
@@ -214,33 +230,26 @@ export default function MyServices(props: Props) {
 
     const catalogExplorerLink = useMemo(() => routes.catalog().link, []);
 
-    const [releaseNameRequestedToBeDeleted, setReleaseNameRequestedToBeDeleted] =
-        useState<string | undefined>();
-
-    const [isDialogOpen, setIsDialogOpen] = useState(false);
-
-    const onRequestDelete = useConstCallback<MyServicesCardsProps["onRequestDelete"]>(
-        ({ releaseName }) => {
-            setReleaseNameRequestedToBeDeleted(releaseName);
-            setIsDialogOpen(true);
-        }
+    const evtConfirmDeleteDialogOpen = useConst(() =>
+        Evt.create<UnpackEvt<MyServicesConfirmDeleteDialogProps["evtOpen"]>>()
     );
 
-    const onDialogCloseFactory = useCallbackFactory(([doDelete]: [boolean]) => {
-        if (doDelete) {
-            if (releaseNameRequestedToBeDeleted) {
-                serviceManager.stopService({
-                    "releaseName": releaseNameRequestedToBeDeleted
-                });
-            } else {
-                deletableRunningServices.map(({ releaseName }) =>
-                    serviceManager.stopService({ releaseName })
-                );
-            }
-        }
+    const onRequestDelete = useConstCallback<MyServicesCardsProps["onRequestDelete"]>(
+        async ({ releaseName }) => {
+            const dDoProceed = new Deferred<boolean>();
 
-        setIsDialogOpen(false);
-    });
+            evtConfirmDeleteDialogOpen.post({
+                isThereOwnedSharedServices,
+                "resolveDoProceed": dDoProceed.resolve
+            });
+
+            if (!(await dDoProceed.pr)) {
+                return;
+            }
+
+            serviceManager.stopService({ releaseName });
+        }
+    );
 
     return (
         <div className={cx(classes.root, className)}>
@@ -256,7 +265,9 @@ export default function MyServices(props: Props) {
                     <MyServicesButtonBar
                         onClick={onButtonBarClick}
                         isThereNonOwnedServicesShown={isThereNonOwnedServices}
-                        isThereDeletableServices={deletableRunningServices.length !== 0}
+                        isThereDeletableServices={
+                            deletableRunningServiceReleaseNames.length !== 0
+                        }
                     />
                 </div>
                 {isCommandBarEnabled && (
@@ -316,30 +327,7 @@ export default function MyServices(props: Props) {
                         />
                     </>
                 </div>
-                <Dialog
-                    title={t("confirm delete title")}
-                    subtitle={t("confirm delete subtitle")}
-                    body={`${
-                        isThereOwnedSharedServices
-                            ? t("confirm delete body shared services")
-                            : ""
-                    } ${t("confirm delete body")}`}
-                    isOpen={isDialogOpen}
-                    onClose={onDialogCloseFactory(false)}
-                    buttons={
-                        <>
-                            <Button
-                                onClick={onDialogCloseFactory(false)}
-                                variant="secondary"
-                            >
-                                {t("cancel")}
-                            </Button>
-                            <Button onClick={onDialogCloseFactory(true)}>
-                                {t("confirm")}
-                            </Button>
-                        </>
-                    }
-                />
+                <MyServicesConfirmDeleteDialog evtOpen={evtConfirmDeleteDialogOpen} />
             </div>
         </div>
     );
@@ -376,16 +364,7 @@ function useCommandBarPositioning() {
 }
 
 export const { i18n } = declareComponentKeys<
-    | "text1"
-    | "text2"
-    | "text3"
-    | "running services"
-    | "confirm delete title"
-    | "confirm delete subtitle"
-    | "confirm delete body"
-    | "confirm delete body shared services"
-    | "cancel"
-    | "confirm"
+    "text1" | "text2" | "text3" | "running services"
 >()({ MyServices });
 
 const useStyles = tss

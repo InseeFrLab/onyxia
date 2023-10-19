@@ -534,7 +534,9 @@ Voel je vrij om te verkennen en de controle over je Kubernetes-implementaties te
         "text2":
             "Snel uw verschillende diensten in uitvoering starten, bekijken en beheren.",
         "text3": "We raden u aan uw diensten te verwijderen na elke werksessie.",
-        "running services": "Diensten in uitvoering",
+        "running services": "Diensten in uitvoering"
+    },
+    "MyServicesConfirmDeleteDialog": {
         "confirm delete title": "Bent u zeker?",
         "confirm delete subtitle":
             "Zorg ervoor dat uw diensten geen onopgeslagen werk bevatten.",

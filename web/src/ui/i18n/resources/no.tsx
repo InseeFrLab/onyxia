@@ -528,7 +528,9 @@ Føl deg fri til å utforske og ta kontroll over dine Kubernetes-implementeringe
         "text1": "Mine tjenester",
         "text2": "Få tilgang til de kjørende tjenestene dine",
         "text3": "Tjenestene skal avsluttes så snart du slutter å bruke dem aktivt.",
-        "running services": "Kjørende tjenester",
+        "running services": "Kjørende tjenester"
+    },
+    "MyServicesConfirmDeleteDialog": {
         "confirm delete title": "Er du sikker?",
         "confirm delete subtitle":
             "Forsikre deg om at tjenestene dine er klare til å bli slettet",

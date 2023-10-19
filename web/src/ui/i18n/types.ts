@@ -55,6 +55,7 @@ export type ComponentKey =
     | typeof import("ui/pages/launcher/LauncherDialogs/OverwriteConfigurationConfirmDialog").i18n
     | typeof import("ui/pages/launcher/LauncherDialogs/SensitiveConfigurationDialog").i18n
     | typeof import("ui/pages/myServices/MyServices").i18n
+    | typeof import("ui/pages/myServices/MyServicesConfirmDeleteDialog").i18n
     | typeof import("ui/pages/myServices/MyServicesButtonBar").i18n
     | typeof import("ui/pages/myServices/MyServicesCards/MyServicesCard/MyServicesCard").i18n
     | typeof import("ui/pages/myServices/MyServicesCards/MyServicesCard/MyServicesRunningTime").i18n

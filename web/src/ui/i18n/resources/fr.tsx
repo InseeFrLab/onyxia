@@ -541,7 +541,9 @@ N'hésitez pas à explorer et à prendre en main vos déploiements Kubernetes !
             "Lancer, visualiser et gérer rapidement vos différents services en cours d'exécution.",
         "text3":
             "Il est recommandé de supprimer vos services après chaque session de travail.",
-        "running services": "Services en cours",
+        "running services": "Services en cours"
+    },
+    "MyServicesConfirmDeleteDialog": {
         "confirm delete title": "Êtes-vous sûr?",
         "confirm delete subtitle":
             "Assurez-vous que vos services ne contiennent pas de travail non sauvegardé.",

@@ -536,7 +536,9 @@ Fühlen Sie sich frei, Ihre Kubernetes-Bereitstellungen zu erkunden und die Kont
         "text1": "Meine Dienste",
         "text2": "Starten, anzeigen und verwalten Sie schnell Ihre laufenden Dienste.",
         "text3": "Es wird empfohlen, Ihre Dienste nach jeder Arbeitssitzung zu löschen.",
-        "running services": "Laufende Dienste",
+        "running services": "Laufende Dienste"
+    },
+    "MyServicesConfirmDeleteDialog": {
         "confirm delete title": "Sind Sie sicher?",
         "confirm delete subtitle":
             "Stellen Sie sicher, dass Ihre Dienste keine nicht gespeicherte Arbeit enthalten.",
