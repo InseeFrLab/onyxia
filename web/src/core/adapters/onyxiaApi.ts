@@ -970,7 +970,7 @@ export function createOnyxiaApi(params: {
                         })
                     );
         })(),
-        "stopService": ({ helmReleaseName }) =>
+        "helmUninstall": ({ helmReleaseName }) =>
             axiosInstance
                 .delete<{ success: boolean }>(`/my-lab/app`, {
                     "params": { "path": helmReleaseName }

@@ -56,7 +56,7 @@ export type OnyxiaApi = {
 
     listHelmReleases: () => Promise<HelmRelease[]>;
 
-    stopService: (params: { helmReleaseName: string }) => Promise<void>;
+    helmUninstall: (params: { helmReleaseName: string }) => Promise<void>;
 
     createAwsBucket: (params: {
         awsRegion: string;

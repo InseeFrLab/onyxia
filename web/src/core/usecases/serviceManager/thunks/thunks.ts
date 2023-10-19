@@ -203,7 +203,7 @@ export const thunks = {
 
             dispatch(actions.serviceStopped({ helmReleaseName }));
 
-            await onyxiaApi.stopService({ helmReleaseName });
+            await onyxiaApi.helmUninstall({ helmReleaseName });
         },
     "getPostInstallInstructions":
         (params: { helmReleaseName: string }) =>
@@ -344,7 +344,7 @@ const privateThunks = {
 
                     return helmReleases;
                 },
-                "stopService": async ({ helmReleaseName }) => {
+                "helmUninstall": async ({ helmReleaseName }) => {
                     const cmdId = Date.now();
 
                     dispatch(
@@ -360,7 +360,7 @@ const privateThunks = {
                         })
                     );
 
-                    await onyxiaApi.stopService({ helmReleaseName });
+                    await onyxiaApi.helmUninstall({ helmReleaseName });
 
                     dispatch(
                         actions.commandLogsRespUpdated({
