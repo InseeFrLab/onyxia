@@ -48,6 +48,7 @@ export type OnyxiaApi = {
     }>;
 
     installChart: (params: {
+        serviceId: string;
         catalogId: string;
         chartName: string;
         options: Record<string, unknown>;

@@ -12,5 +12,4 @@ export type { Language, LocalizedString } from "./Language";
 export type { Project } from "./Project";
 export type { RunningService } from "./RunningService";
 export type { User } from "./User";
-export { getRandomK8sSubdomain, getServiceId } from "./utils";
 export type { XOnyxiaContext } from "./XOnyxia";

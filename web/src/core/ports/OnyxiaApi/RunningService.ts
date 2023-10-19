@@ -10,11 +10,10 @@ export declare namespace RunningService {
         isShared: boolean;
         env: Record<string, string>;
         ownerUsername: string;
-        extraForHelmLs: {
-            appVersion: string;
-            revision: string;
-            chart: string;
-        };
+        appVersion: string;
+        revision: string;
+        chartName: string;
+        version: string;
     };
 
     export type Started = Common & {

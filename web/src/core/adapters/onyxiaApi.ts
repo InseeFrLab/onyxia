@@ -8,8 +8,6 @@ import {
     type JSONSchemaObject,
     type JSONSchemaFormFieldDescription,
     type User,
-    getRandomK8sSubdomain,
-    getServiceId,
     onyxiaFriendlyNameFormFieldPath,
     onyxiaIsSharedFormFieldPath
 } from "../ports/OnyxiaApi";
@@ -787,14 +785,9 @@ export function createOnyxiaApi(params: {
             const getMyLab_App = (params: { serviceId: string }) =>
                 axiosInstance.get("/my-lab/app", { params }).catch(onError);
 
-            return async ({ catalogId, chartName, options }) => {
-                const { serviceId } = getServiceId({
-                    chartName,
-                    "randomK8sSubdomain": getRandomK8sSubdomain()
-                });
-
+            return async ({ serviceId, catalogId, chartName, options }) => {
                 await axiosInstance
-                    .put(`/my-lab/app`, {
+                    .put("/my-lab/app", {
                         catalogId,
                         "packageName": chartName,
                         "name": serviceId,
@@ -913,10 +906,22 @@ export function createOnyxiaApi(params: {
                             urls,
                             startedAt,
                             env,
+                            appVersion,
+                            revision,
+                            ...(() => {
+                                const [chartName] = chart.split(
+                                    /-[0-9]+\.[0-9]+\.[0-9]+/
+                                );
+
+                                const [, version] = chart.split(`${chartName}-`);
+
+                                return {
+                                    chartName,
+                                    version
+                                };
+                            })(),
                             "extraForHelmLs": {
-                                chart,
-                                appVersion,
-                                revision
+                                chart
                             },
                             "ownerUsername": env["onyxia.owner"],
                             "isShared": env["onyxia.share"] === "true",
