@@ -7,10 +7,11 @@ import {
     type GenericThunks
 } from "redux-clean-architecture";
 import { usecases } from "./usecases";
-import type { SecretsManager } from "./ports/SecretsManager";
-import type { S3Client } from "./ports/S3Client";
+import type { SecretsManager } from "core/ports/SecretsManager";
+import type { Oidc } from "core/ports/Oidc";
+import type { S3Client } from "core/ports/S3Client";
 import type { ReturnType } from "tsafe/ReturnType";
-import type { Language } from "./ports/OnyxiaApi/Language";
+import type { Language } from "core/ports/OnyxiaApi/Language";
 
 type CoreParams = {
     /** Empty string for using mock */
@@ -26,6 +27,8 @@ export async function createCore(params: CoreParams) {
 
     let isCoreCreated = false;
 
+    let oidc: Oidc | undefined = undefined;
+
     const onyxiaApi = await (async () => {
         if (apiUrl === "") {
             const { onyxiaApi } = await import("core/adapters/onyxiaApi/mock");
@@ -38,10 +41,7 @@ export async function createCore(params: CoreParams) {
         const onyxiaApi = createOnyxiaApi({
             "url": apiUrl,
             "getOidcAccessToken": () => {
-                try {
-                    oidc;
-                } catch {
-                    // We haven't initialized oidc yet
+                if (oidc === undefined) {
                     return undefined;
                 }
 
@@ -89,7 +89,7 @@ export async function createCore(params: CoreParams) {
 
     let oidcParams: { authority: string; clientId: string } | undefined = undefined;
 
-    const oidc = await (async () => {
+    oidc = await (async () => {
         oidcParams = (await onyxiaApi.getAvailableRegionsAndOidcParams()).oidcParams;
 
         if (oidcParams === undefined) {
