@@ -131,12 +131,10 @@ export default function Launcher(props: Props) {
                     action.actionName === "chartVersionInternallySet" ? [action] : null,
                 ctx,
                 ({ chartVersion }) =>
-                    routes
-                        .launcher({
-                            ...route.params,
-                            chartVersion
-                        })
-                        .replace()
+                    routes[route.name]({
+                        ...route.params,
+                        chartVersion
+                    }).replace()
             );
 
             evtLauncher.$attach(
@@ -148,12 +146,10 @@ export default function Launcher(props: Props) {
                             break auto_launch;
                         }
 
-                        routes
-                            .launcher({
-                                ...route.params,
-                                "autoLaunch": false
-                            })
-                            .replace();
+                        routes[route.name]({
+                            ...route.params,
+                            "autoLaunch": false
+                        }).replace();
 
                         if (
                             getIsAutoLaunchDisabled() &&
@@ -217,14 +213,12 @@ export default function Launcher(props: Props) {
         const { catalogId, chartName, formFieldsValueDifferentFromDefault } =
             restorableConfig;
 
-        routes
-            .launcher({
-                catalogId,
-                chartName,
-                formFieldsValueDifferentFromDefault,
-                "autoLaunch": route.params.autoLaunch
-            })
-            .replace();
+        routes[route.name]({
+            ...route.params,
+            catalogId,
+            chartName,
+            formFieldsValueDifferentFromDefault
+        }).replace();
     }, [restorableConfig]);
 
     const onRequestCancel = useConstCallback(() =>
@@ -368,12 +362,10 @@ export default function Launcher(props: Props) {
                                 chartVersion={chartVersion}
                                 availableChartVersions={availableChartVersions}
                                 onChartVersionChange={chartVersion =>
-                                    routes
-                                        .launcher({
-                                            ...route.params,
-                                            chartVersion
-                                        })
-                                        .replace()
+                                    routes[route.name]({
+                                        ...route.params,
+                                        chartVersion
+                                    }).replace()
                                 }
                                 catalogName={catalogName}
                                 catalogRepositoryUrl={catalogRepositoryUrl}
