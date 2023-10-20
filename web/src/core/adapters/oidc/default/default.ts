@@ -1,10 +1,9 @@
-import { UserManager } from "oidc-client-ts";
+import { UserManager, type User } from "oidc-client-ts";
 import { id } from "tsafe/id";
 import type { Oidc } from "core/ports/Oidc";
 import { decodeJwt } from "core/tools/jwt";
 import { assert } from "tsafe/assert";
 import { addParamToUrl, retrieveParamFromUrl } from "powerhooks/tools/urlSearchParams";
-import { Evt } from "evt";
 import { fnv1aHashToHex } from "core/tools/fnv1aHashToHex";
 import { Deferred } from "evt/tools/Deferred";
 
@@ -15,9 +14,8 @@ export async function createOidc(params: {
     clientId: string;
     transformUrlBeforeRedirect: (url: string) => string;
     getUiLocales: () => string;
-    log?: typeof console.log;
 }): Promise<Oidc> {
-    const { authority, clientId, transformUrlBeforeRedirect, getUiLocales, log } = params;
+    const { authority, clientId, transformUrlBeforeRedirect, getUiLocales } = params;
 
     const configHash = fnv1aHashToHex(`${authority} ${clientId}`);
     const configHashKey = "configHash";
@@ -28,7 +26,7 @@ export async function createOidc(params: {
         "redirect_uri": "" /* provided when calling login */,
         "response_type": "code",
         "scope": "openid profile",
-        "automaticSilentRenew": false,
+        "automaticSilentRenew": true,
         "silent_redirect_uri": `${window.location.origin}/silent-sso.html?${configHashKey}=${configHash}`
     });
 
@@ -122,7 +120,9 @@ export async function createOidc(params: {
         window.history.pushState(null, "", url);
     }
 
-    async function silentSignInGetAccessToken(): Promise<string | undefined> {
+    async function silentSignInGetAccessToken(): Promise<
+        { accessToken: string; expirationTime: number } | undefined
+    > {
         const dLoginSuccessUrl = new Deferred<string | undefined>();
 
         const timeout = setTimeout(
@@ -202,22 +202,36 @@ export async function createOidc(params: {
 
         const user = await userManager.signinRedirectCallback(loginSuccessUrl);
 
-        assert(user !== undefined);
-
-        return user.access_token;
+        return userToAccessToken(user);
     }
 
-    let currentAccessToken = (await userManager.getUser())?.access_token ?? "";
+    const currentAccessToken:
+        | { accessToken: string; expirationTime: number }
+        | undefined = await (async () => {
+        restore_from_session: {
+            const user = await userManager.getUser();
 
-    if (currentAccessToken === "") {
-        const accessToken = await silentSignInGetAccessToken();
+            if (user === null) {
+                break restore_from_session;
+            }
 
-        if (accessToken !== undefined) {
-            currentAccessToken = accessToken;
+            return userToAccessToken(user);
         }
-    }
 
-    if (currentAccessToken === "") {
+        restore_from_http_only_cookie: {
+            const accessToken = await silentSignInGetAccessToken();
+
+            if (accessToken === undefined) {
+                break restore_from_http_only_cookie;
+            }
+
+            return accessToken;
+        }
+
+        return undefined;
+    })();
+
+    if (currentAccessToken === undefined) {
         return id<Oidc.NotLoggedIn>({
             "isUserLoggedIn": false,
             login
@@ -226,10 +240,7 @@ export async function createOidc(params: {
 
     const oidc = id<Oidc.LoggedIn>({
         "isUserLoggedIn": true,
-        "getAccessToken": () => ({
-            "accessToken": currentAccessToken,
-            "expirationTime": getAccessTokenExpirationTime(currentAccessToken)
-        }),
+        "getAccessToken": () => ({ ...currentAccessToken }),
         "logout": async ({ redirectTo }) => {
             await userManager.signoutRedirect({
                 "post_logout_redirect_uri": (() => {
@@ -248,43 +259,56 @@ export async function createOidc(params: {
 
             assert(user !== null);
 
-            currentAccessToken = user.access_token;
+            const { accessToken, expirationTime } = userToAccessToken(user);
+
+            currentAccessToken.accessToken = accessToken;
+            currentAccessToken.expirationTime = expirationTime;
         }
     });
-
-    (function callee() {
-        const msBeforeExpiration =
-            getAccessTokenExpirationTime(currentAccessToken) - Date.now();
-
-        setTimeout(async () => {
-            log?.(
-                `OIDC access token will expire in ${minValiditySecond} seconds, waiting for user activity before renewing`
-            );
-
-            await Evt.merge([
-                Evt.from(document, "mousemove"),
-                Evt.from(document, "keydown")
-            ]).waitFor();
-
-            log?.("User activity detected. Refreshing access token now");
-
-            try {
-                await oidc.renewToken();
-            } catch {
-                log?.("Can't refresh OIDC access token, getting a new one");
-                //NOTE: Never resolves
-                await login({ "doesCurrentHrefRequiresAuth": true });
-            }
-
-            callee();
-        }, msBeforeExpiration - minValiditySecond * 1000);
-    })();
 
     return oidc;
 }
 
-const minValiditySecond = 25;
+function userToAccessToken(user: User): { accessToken: string; expirationTime: number } {
+    assert(
+        user.expires_in !== undefined,
+        "Failed to get access token and expiration time please submit an issue on github"
+    );
 
-function getAccessTokenExpirationTime(accessToken: string): number {
-    return decodeJwt<{ exp: number }>(accessToken).exp * 1000;
+    const expirationTime = Date.now() + user.expires_in * 1000;
+
+    assert(
+        user.refresh_token !== undefined,
+        "Failed to get access token and expiration time please submit an issue on github"
+    );
+
+    check_refresh_token_lifespan_consistency: {
+        let refreshTokenExpirationTime: number;
+
+        try {
+            refreshTokenExpirationTime =
+                decodeJwt<{ exp: number }>(user.refresh_token).exp * 1000;
+
+            assert(
+                typeof refreshTokenExpirationTime === "number" &&
+                    !isNaN(refreshTokenExpirationTime)
+            );
+        } catch {
+            break check_refresh_token_lifespan_consistency;
+        }
+
+        if (refreshTokenExpirationTime - expirationTime < 2000) {
+            console.warn(
+                [
+                    "The expiration time of the refresh token should be significantly greater ",
+                    "than the expiration time of the access token check your oidc server configuration"
+                ].join(" ")
+            );
+        }
+    }
+
+    return {
+        "accessToken": user.access_token,
+        expirationTime
+    };
 }
