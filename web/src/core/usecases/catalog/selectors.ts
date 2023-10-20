@@ -1,8 +1,7 @@
-import type { Chart } from "core/ports/OnyxiaApi";
 import { assert } from "tsafe/assert";
 import type { State as RootState } from "core/core";
 import { createSelector } from "@reduxjs/toolkit";
-import { name } from "./state";
+import { name, type State } from "./state";
 import { symToStr } from "tsafe/symToStr";
 import type { LocalizedString } from "core/ports/OnyxiaApi";
 
@@ -86,24 +85,17 @@ const filteredCharts = createSelector(
         assert(catalogs !== undefined);
 
         function chartToCardData(params: {
-            chart: Chart;
+            chart: State.Ready["chartsByCatalogId"][string][number];
             chartNameHighlightedIndexes: number[];
             chartDescriptionHighlightedIndexes: number[];
             catalogId: string;
         }): ChartCardData {
             const {
-                chart,
+                chart: { name: chartName, description, projectHomepageUrl, iconUrl },
                 chartNameHighlightedIndexes,
                 chartDescriptionHighlightedIndexes,
                 catalogId
             } = params;
-
-            const {
-                name: chartName,
-                versions: [
-                    { description: chartDescription = "", projectHomepageUrl, iconUrl }
-                ]
-            } = chart;
 
             return {
                 catalogId,
@@ -113,7 +105,7 @@ const filteredCharts = createSelector(
                     "highlightedIndexes": chartNameHighlightedIndexes
                 },
                 "chartDescriptionWithHighlights": {
-                    "charArray": chartDescription.normalize().split(""),
+                    "charArray": description.normalize().split(""),
                     "highlightedIndexes": chartDescriptionHighlightedIndexes
                 },
                 projectHomepageUrl,

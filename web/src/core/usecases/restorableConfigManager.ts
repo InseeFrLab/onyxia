@@ -10,7 +10,7 @@ import {
     createUsecaseContextApi
 } from "redux-clean-architecture";
 import type { State as RootState } from "../core";
-import { onyxiaFriendlyNameFormFieldPath } from "core/ports/OnyxiaApi";
+import { onyxiaFriendlyNameFormFieldPath, Chart } from "core/ports/OnyxiaApi";
 import { Mutex } from "async-mutex";
 
 type State = {
@@ -140,11 +140,13 @@ export const protectedThunks = {
                     const chartIconUrlByChartName: ChartIconUrlByChartNameAndCatalogId[string] =
                         {};
 
-                    chartsByCatalogId[catalogId].forEach(
-                        chart =>
-                            (chartIconUrlByChartName[chart.name] =
-                                chart.versions[0].iconUrl)
-                    );
+                    chartsByCatalogId[catalogId].forEach(chart => {
+                        const defaultVersion = Chart.getDefaultVersion(chart);
+
+                        chartIconUrlByChartName[chart.name] = chart.versions.find(
+                            ({ version }) => version === defaultVersion
+                        )!.iconUrl;
+                    });
 
                     chartIconUrlByChartNameAndCatalogId[catalogId] =
                         chartIconUrlByChartName;
@@ -154,6 +156,21 @@ export const protectedThunks = {
                     actions.chartIconsFetched({ chartIconUrlByChartNameAndCatalogId })
                 );
             })();
+        },
+    "getIsRestorableConfigSaved":
+        (params: { restorableConfig: RestorableConfig }) =>
+        (...args): boolean => {
+            const [, getState] = args;
+
+            const { restorableConfig } = params;
+
+            const { restorableConfigs } = getState()[name];
+
+            return (
+                restorableConfigs.find(restorableConfig_i =>
+                    getAreSameRestorableConfig(restorableConfig_i, restorableConfig)
+                ) !== undefined
+            );
         }
 } satisfies Thunks;
 
@@ -286,7 +303,7 @@ export const thunks = {
                         // NOTE: In case of double call, as we don't provide a "loading state"
                         if (
                             restorableConfigWithSameFriendlyName !== undefined &&
-                            areSameRestorableConfig(
+                            getAreSameRestorableConfig(
                                 restorableConfig,
                                 restorableConfigWithSameFriendlyName
                             )
@@ -313,7 +330,7 @@ export const thunks = {
 
                         const indexOfRestorableConfigToDelete =
                             restorableConfigs.findIndex(restorableConfig_i =>
-                                areSameRestorableConfig(
+                                getAreSameRestorableConfig(
                                     restorableConfig_i,
                                     restorableConfig
                                 )
@@ -348,7 +365,7 @@ export const thunks = {
         }
 } satisfies Thunks;
 
-export function areSameRestorableConfig(
+export function getAreSameRestorableConfig(
     restorableConfiguration1: RestorableConfig,
     restorableConfiguration2: RestorableConfig
 ): boolean {

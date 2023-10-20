@@ -498,6 +498,19 @@ Tutustu vapaasti ja ota hallintaan Kubernetes-julkaisusi!
                     Omat Palvelut
                 </MuiLink>
             </>
+        ),
+        "version select label": "Versio",
+        "version select helper text": ({
+            chartName,
+            catalogRepositoryUrl,
+            catalogName
+        }) => (
+            <>
+                {chartName} kaavion versio&nbsp;
+                <MuiLink href={catalogRepositoryUrl}>
+                    {catalogName} Helm Repository
+                </MuiLink>
+            </>
         )
     },
     "LauncherConfigurationCard": {

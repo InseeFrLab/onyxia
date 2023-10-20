@@ -8,6 +8,9 @@ import { assert } from "tsafe/assert";
 export const createEvt = (({ evtAction, getState }) => {
     const evtOut = Evt.create<
         | {
+              actionName: "initializationStarted";
+          }
+        | {
               actionName: "initialized";
               sensitiveConfigurations: FormFieldValue[];
           }
@@ -18,10 +21,18 @@ export const createEvt = (({ evtAction, getState }) => {
               actionName: "launchCompleted";
               helmReleaseName: string;
           }
+        | {
+              actionName: "chartVersionInternallySet";
+              chartVersion: string;
+          }
     >();
 
     evtAction
         .pipe(action => (action.sliceName !== name ? null : [action]))
+        .attach(
+            action => action.actionName === "initializationStarted",
+            () => evtOut.post({ "actionName": "initializationStarted" })
+        )
         .$attach(
             action => (action.actionName === "initialized" ? [action.payload] : null),
             ({ sensitiveConfigurations }) =>
@@ -37,6 +48,17 @@ export const createEvt = (({ evtAction, getState }) => {
                 const helmReleaseName = privateSelectors.helmReleaseName(getState());
                 assert(helmReleaseName !== undefined);
                 evtOut.post({ "actionName": "launchCompleted", helmReleaseName });
+            }
+        )
+        .attach(
+            action => action.actionName === "defaultChartVersionSelected",
+            () => {
+                const state = getState()[name];
+                assert(state.stateDescription === "ready");
+                evtOut.post({
+                    "actionName": "chartVersionInternallySet",
+                    "chartVersion": state.chartVersion
+                });
             }
         );
 

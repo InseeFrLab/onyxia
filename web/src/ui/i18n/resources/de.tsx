@@ -514,6 +514,19 @@ Fühlen Sie sich frei, Ihre Kubernetes-Bereitstellungen zu erkunden und die Kont
                 </MuiLink>{" "}
                 neu gestartet werden
             </>
+        ),
+        "version select label": "Version",
+        "version select helper text": ({
+            chartName,
+            catalogRepositoryUrl,
+            catalogName
+        }) => (
+            <>
+                Version des {chartName} Charts im&nbsp;
+                <MuiLink href={catalogRepositoryUrl}>
+                    {catalogName} Helm Repository
+                </MuiLink>
+            </>
         )
     },
     "LauncherConfigurationCard": {

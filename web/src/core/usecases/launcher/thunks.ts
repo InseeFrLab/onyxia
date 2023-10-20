@@ -7,7 +7,8 @@ import { type FormFieldValue, formFieldsValueToObject } from "./FormField";
 import {
     type JSONSchemaFormFieldDescription,
     type JSONSchemaObject,
-    type XOnyxiaContext
+    type XOnyxiaContext,
+    Chart
 } from "core/ports/OnyxiaApi";
 import {
     onyxiaFriendlyNameFormFieldPath,
@@ -34,10 +35,16 @@ export const thunks = {
         (params: {
             catalogId: string;
             chartName: string;
+            chartVersion: string | undefined;
             formFieldsValueDifferentFromDefault: FormFieldValue[];
         }) =>
         async (...args) => {
-            const { catalogId, chartName, formFieldsValueDifferentFromDefault } = params;
+            const {
+                catalogId,
+                chartName,
+                chartVersion: chartVersion_params,
+                formFieldsValueDifferentFromDefault
+            } = params;
 
             const [
                 dispatch,
@@ -46,7 +53,7 @@ export const thunks = {
             ] = args;
 
             assert(
-                getState().launcher.stateDescription === "not initialized",
+                getState()[name].stateDescription === "not initialized",
                 "the reset thunk need to be called before initializing again"
             );
 
@@ -57,16 +64,6 @@ export const thunks = {
                 sourceUrls: chartSourceUrls,
                 getChartValuesSchemaJson
             } = await onyxiaApi.getHelmChartDetails({ catalogId, chartName });
-
-            {
-                const state = getState()[name];
-
-                assert(state.stateDescription === "not initialized");
-
-                if (!state.isInitializing) {
-                    return;
-                }
-            }
 
             assert(oidc.isUserLoggedIn);
 
@@ -257,15 +254,17 @@ export const thunks = {
 
                 const sensitiveConfigurations: FormFieldValue[] | undefined = (() => {
                     if (
-                        restorableConfigManager.selectors
-                            .restorableConfigs(getState())
-                            .find(restorableConfig =>
-                                same(restorableConfig, {
-                                    catalogId,
-                                    chartName,
-                                    formFieldsValueDifferentFromDefault
-                                })
-                            ) !== undefined
+                        !dispatch(
+                            restorableConfigManager.protectedThunks.getIsRestorableConfigSaved(
+                                {
+                                    "restorableConfig": {
+                                        catalogId,
+                                        chartName,
+                                        formFieldsValueDifferentFromDefault
+                                    }
+                                }
+                            )
+                        )
                     ) {
                         return undefined;
                     }
@@ -583,34 +582,69 @@ export const thunks = {
                 };
             })();
 
-            const { repositoryUrl, chartIconUrl } = await (async () => {
-                const catalog = await onyxiaApi
-                    .getCatalogsAndCharts()
-                    .then(({ catalogs }) =>
-                        //TODO: Sort in the adapter of even better, assumes version sorted
-                        //and validate this assertion with zod
-                        catalogs.find(({ id }) => id === catalogId)
-                    );
+            const { catalogs, chartsByCatalogId } =
+                await onyxiaApi.getCatalogsAndCharts();
 
-                assert(catalog !== undefined);
+            const catalog = catalogs.find(({ id }) => id === catalogId);
 
-                const charts = await onyxiaApi
-                    .getCatalogsAndCharts()
-                    .then(({ chartsByCatalogId }) => chartsByCatalogId[catalog.id]);
+            assert(catalog !== undefined);
 
-                return {
-                    "repositoryUrl": catalog.repositoryUrl,
-                    "chartIconUrl": charts.find(({ name }) => name === chartName)!
-                        .versions[0].iconUrl
-                };
+            const chart = chartsByCatalogId[catalogId].find(
+                ({ name }) => name === chartName
+            );
+
+            assert(chart !== undefined);
+
+            const defaultChartVersion = Chart.getDefaultVersion(chart);
+
+            const chartVersion = (() => {
+                if (chartVersion_params !== undefined) {
+                    if (
+                        chart.versions.find(
+                            ({ version }) => version === chartVersion_params
+                        ) === undefined
+                    ) {
+                        alert(
+                            [
+                                `No ${chartVersion_params} version found for ${chartName} in ${catalog.repositoryUrl}.`,
+                                `Falling back to default version ${defaultChartVersion}`
+                            ].join("\n")
+                        );
+
+                        return defaultChartVersion;
+                    }
+
+                    return chartVersion_params;
+                }
+
+                return defaultChartVersion;
             })();
+
+            {
+                const state = getState()[name];
+
+                assert(state.stateDescription === "not initialized");
+
+                if (!state.isInitializing) {
+                    // If reset has been called
+                    return;
+                }
+            }
 
             dispatch(
                 actions.initialized({
                     catalogId,
-                    repositoryUrl,
-                    chartIconUrl,
+                    "catalogName": catalog.name,
+                    "catalogRepositoryUrl": catalog.repositoryUrl,
+                    "chartIconUrl": chart.versions.find(
+                        ({ version }) => version === chartVersion
+                    )!.iconUrl,
                     chartName,
+                    defaultChartVersion,
+                    chartVersion,
+                    "availableChartVersions": chart.versions.map(
+                        ({ version }) => version
+                    ),
                     chartSourceUrls,
                     formFields,
                     infosAboutWhenFieldsShouldBeHidden,
@@ -621,6 +655,10 @@ export const thunks = {
                     k8sRandomSubdomain
                 })
             );
+
+            if (chartVersion_params === undefined) {
+                dispatch(actions.defaultChartVersionSelected());
+            }
         },
     "reset":
         () =>
@@ -633,7 +671,7 @@ export const thunks = {
         (...args) => {
             const [dispatch, getState] = args;
 
-            const state = getState().launcher;
+            const state = getState()[name];
 
             assert(state.stateDescription === "ready");
 
@@ -649,6 +687,35 @@ export const thunks = {
                     })
                 );
             });
+        },
+    "changeChartVersion":
+        (params: { chartVersion: string }) =>
+        async (...args) => {
+            const { chartVersion } = params;
+
+            const [dispatch, getState] = args;
+
+            const rootState = getState();
+
+            const state = rootState[name];
+
+            assert(state.stateDescription === "ready");
+
+            const formFieldsValueDifferentFromDefault =
+                privateSelectors.formFieldsValueDifferentFromDefault(rootState);
+
+            assert(formFieldsValueDifferentFromDefault !== undefined);
+
+            dispatch(thunks.reset());
+
+            dispatch(
+                thunks.initialize({
+                    "catalogId": state.catalogId,
+                    "chartName": state.chartName,
+                    chartVersion,
+                    formFieldsValueDifferentFromDefault
+                })
+            );
         },
     "changeFormFieldValue":
         (params: FormFieldValue) =>
@@ -678,6 +745,7 @@ export const thunks = {
                 helmReleaseName,
                 "catalogId": state.catalogId,
                 "chartName": state.chartName,
+                "chartVersion": state.chartVersion,
                 "values": formFieldsValueToObject(state.formFields)
             });
 

@@ -5,9 +5,9 @@ import { actions, name, type State } from "./state";
 import { assert } from "tsafe/assert";
 import { is } from "tsafe/is";
 import memoize from "memoizee";
-import type { Chart, Catalog } from "core/ports/OnyxiaApi";
 import FlexSearch from "flexsearch";
 import { getMatchPositions } from "core/tools/highlightMatches";
+import { Chart } from "core/ports/OnyxiaApi";
 
 export const thunks = {
     "changeSelectedCatalogId":
@@ -19,7 +19,7 @@ export const thunks = {
 
             if (state.stateDescription === "ready") {
                 if (params.catalogId === undefined) {
-                    dispatch(actions.notifyCatalogIdSelected());
+                    dispatch(actions.defaultCatalogSelected());
                     return;
                 }
 
@@ -51,13 +51,42 @@ export const thunks = {
             dispatch(
                 actions.catalogsFetched({
                     catalogs,
-                    chartsByCatalogId,
+                    "chartsByCatalogId": (() => {
+                        const out: State.Ready["chartsByCatalogId"] = {};
+
+                        Object.keys(chartsByCatalogId).forEach(
+                            catalogId =>
+                                (out[catalogId] = chartsByCatalogId[catalogId].map(
+                                    chart => {
+                                        const defaultVersion =
+                                            Chart.getDefaultVersion(chart);
+
+                                        const {
+                                            description = "",
+                                            iconUrl,
+                                            projectHomepageUrl
+                                        } = chart.versions.find(
+                                            ({ version }) => version === defaultVersion
+                                        )!;
+
+                                        return {
+                                            "name": chart.name,
+                                            description,
+                                            iconUrl,
+                                            projectHomepageUrl
+                                        };
+                                    }
+                                ))
+                        );
+
+                        return out;
+                    })(),
                     selectedCatalogId
                 })
             );
 
             if (params.catalogId === undefined) {
-                dispatch(actions.notifyCatalogIdSelected());
+                dispatch(actions.defaultCatalogSelected());
             }
         },
     "setSearch":
@@ -105,7 +134,10 @@ const { getContext } = createUsecaseContextApi(() => {
     const { waitForDebounce } = waitForDebounceFactory({ "delay": 200 });
 
     const getFlexSearch = memoize(
-        (catalogs: Catalog[], chartsByCatalogId: Record<string, Chart[]>) => {
+        (
+            catalogs: State.Ready["catalogs"],
+            chartsByCatalogId: State.Ready["chartsByCatalogId"]
+        ) => {
             const index = new FlexSearch.Document<{
                 catalogIdChartName: `${string}/${string}`;
                 chartNameAndDescription: `${string} ${string}`;
@@ -129,12 +161,12 @@ const { getContext } = createUsecaseContextApi(() => {
                         !catalogs.find(({ id }) => id === catalogId)!.isHidden
                 )
                 .forEach(([catalogId, charts]) =>
-                    charts.forEach(chart => {
+                    charts.forEach(chart =>
                         index.add({
                             "catalogIdChartName": `${catalogId}/${chart.name}`,
-                            "chartNameAndDescription": `${chart.name} ${chart.versions[0].description}`
-                        });
-                    })
+                            "chartNameAndDescription": `${chart.name} ${chart.description}`
+                        })
+                    )
                 );
 
             async function flexSearch(params: {
@@ -169,10 +201,9 @@ const { getContext } = createUsecaseContextApi(() => {
                             }),
                             "chartDescriptionHighlightedIndexes": getMatchPositions({
                                 search,
-                                "text":
-                                    chartsByCatalogId[catalogId].find(
-                                        chart => chart.name === chartName
-                                    )!.versions[0].description ?? ""
+                                "text": chartsByCatalogId[catalogId].find(
+                                    chart => chart.name === chartName
+                                )!.description
                             })
                         };
                     }

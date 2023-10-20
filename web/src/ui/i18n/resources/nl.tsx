@@ -511,6 +511,19 @@ Voel je vrij om te verkennen en de controle over je Kubernetes-implementaties te
                     Mijn Diensten
                 </MuiLink>
             </>
+        ),
+        "version select label": "Versie",
+        "version select helper text": ({
+            chartName,
+            catalogRepositoryUrl,
+            catalogName
+        }) => (
+            <>
+                Versie van de Chart {chartName} in de&nbsp;
+                <MuiLink href={catalogRepositoryUrl}>
+                    Helm repository {catalogName}
+                </MuiLink>
+            </>
         )
     },
     "LauncherConfigurationCard": {

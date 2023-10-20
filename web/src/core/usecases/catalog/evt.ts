@@ -6,19 +6,19 @@ import { assert } from "tsafe/assert";
 
 export const createEvt = (({ evtAction, getState }) => {
     const evtOut = Evt.create<{
-        actionName: "set catalogue id in url";
+        actionName: "catalogIdInternallySet";
         catalogId: string;
     }>();
 
     evtAction
         .pipe(action => (action.sliceName !== name ? null : [action]))
         .attach(
-            ({ actionName }) => actionName === "notifyCatalogIdSelected",
+            ({ actionName }) => actionName === "defaultCatalogSelected",
             () => {
                 const state = getState()[name];
                 assert(state.stateDescription === "ready");
                 evtOut.post({
-                    "actionName": "set catalogue id in url",
+                    "actionName": "catalogIdInternallySet",
                     "catalogId": state.selectedCatalogId
                 });
             }

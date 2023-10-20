@@ -51,6 +51,7 @@ export type OnyxiaApi = {
         helmReleaseName: string;
         catalogId: string;
         chartName: string;
+        chartVersion: string;
         values: Record<string, unknown>;
     }) => Promise<void>;
 

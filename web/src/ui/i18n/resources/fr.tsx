@@ -517,6 +517,17 @@ N'hésitez pas à explorer et à prendre en main vos déploiements Kubernetes !
                     Mes Services
                 </MuiLink>
             </>
+        ),
+        "version select label": "Version",
+        "version select helper text": ({
+            chartName,
+            catalogRepositoryUrl,
+            catalogName
+        }) => (
+            <>
+                Version du Chart {chartName} dans le&nbsp;
+                <MuiLink href={catalogRepositoryUrl}>dépôt Helm {catalogName}</MuiLink>
+            </>
         )
     },
     "LauncherConfigurationCard": {

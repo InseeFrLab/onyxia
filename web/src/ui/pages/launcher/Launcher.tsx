@@ -75,6 +75,10 @@ export default function Launcher(props: Props) {
         isRestorableConfigSaved,
         areAllFieldsDefault,
         chartName,
+        chartVersion,
+        availableChartVersions,
+        catalogName,
+        catalogRepositoryUrl,
         chartIconUrl,
         launchScript,
         commandLogsEntries,
@@ -89,32 +93,71 @@ export default function Launcher(props: Props) {
     const { showSplashScreen, hideSplashScreen } = useSplashScreen();
 
     useEffect(() => {
-        const { catalogId, chartName, formFieldsValueDifferentFromDefault } =
-            route.params;
+        const {
+            catalogId,
+            chartName,
+            chartVersion,
+            formFieldsValueDifferentFromDefault
+        } = route.params;
 
         launcher.initialize({
             catalogId,
             chartName,
+            chartVersion,
             formFieldsValueDifferentFromDefault
         });
 
-        showSplashScreen({ "enableTransparency": true });
-
         return () => launcher.reset();
     }, []);
+
+    useEffect(() => {
+        const { chartVersion } = route.params;
+
+        if (chartVersion === undefined) {
+            return;
+        }
+
+        launcher.changeChartVersion({ chartVersion });
+    }, [route.params.chartVersion]);
 
     const { evtLauncher } = useCoreEvts();
 
     useEvt(
         ctx => {
+            evtLauncher.attach(
+                action => action.actionName === "initializationStarted",
+                ctx,
+                () => showSplashScreen({ "enableTransparency": true })
+            );
+
+            evtLauncher.$attach(
+                action =>
+                    action.actionName === "chartVersionInternallySet" ? [action] : null,
+                ctx,
+                ({ chartVersion }) =>
+                    routes
+                        .launcher({
+                            ...route.params,
+                            chartVersion
+                        })
+                        .replace()
+            );
+
             evtLauncher.$attach(
                 action => (action.actionName === "initialized" ? [action] : null),
                 ctx,
-                ({ sensitiveConfigurations }) => {
+                async ({ sensitiveConfigurations }) => {
                     auto_launch: {
                         if (!route.params.autoLaunch) {
                             break auto_launch;
                         }
+
+                        routes
+                            .launcher({
+                                ...route.params,
+                                "autoLaunch": false
+                            })
+                            .replace();
 
                         if (
                             getIsAutoLaunchDisabled() &&
@@ -126,21 +169,20 @@ export default function Launcher(props: Props) {
                         }
 
                         if (sensitiveConfigurations.length !== 0) {
+                            const dDoProceedToLaunch = new Deferred<boolean>();
+
                             evtSensitiveConfigurationDialogOpen.post({
                                 sensitiveConfigurations,
-                                "resolveDoProceedToLaunch": doProceedToLaunch => {
-                                    if (!doProceedToLaunch) {
-                                        return;
-                                    }
-
-                                    launcher.launch();
-                                }
+                                "resolveDoProceedToLaunch": dDoProceedToLaunch.resolve
                             });
 
-                            break auto_launch;
+                            if (!(await dDoProceedToLaunch.pr)) {
+                                break auto_launch;
+                            }
                         }
 
                         launcher.launch();
+                        return;
                     }
 
                     hideSplashScreen();
@@ -327,6 +369,18 @@ export default function Launcher(props: Props) {
                                 chartName={chartName}
                                 chartIconUrl={chartIconUrl}
                                 isBookmarked={isRestorableConfigSaved}
+                                chartVersion={chartVersion}
+                                availableChartVersions={availableChartVersions}
+                                onChartVersionChange={chartVersion =>
+                                    routes
+                                        .launcher({
+                                            ...route.params,
+                                            chartVersion
+                                        })
+                                        .replace()
+                                }
+                                catalogName={catalogName}
+                                catalogRepositoryUrl={catalogRepositoryUrl}
                                 myServicesSavedConfigsExtendedLink={
                                     routes.myServices({
                                         "isSavedConfigsExtended": true

@@ -440,6 +440,17 @@ ${
                 </MuiLink>{" "}
                 页面快速重新启动
             </>
+        ),
+        "version select label": "版本",
+        "version select helper text": ({
+            chartName,
+            catalogRepositoryUrl,
+            catalogName
+        }) => (
+            <>
+                {chartName} Chart 的版本位于&nbsp;
+                <MuiLink href={catalogRepositoryUrl}>{catalogName} Helm 仓库</MuiLink>
+            </>
         )
     },
     "LauncherConfigurationCard": {

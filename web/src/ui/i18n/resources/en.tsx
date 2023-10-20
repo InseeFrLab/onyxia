@@ -502,6 +502,19 @@ Feel free to explore and take charge of your Kubernetes deployments!
                 </MuiLink>{" "}
                 page
             </>
+        ),
+        "version select label": "Version",
+        "version select helper text": ({
+            chartName,
+            catalogRepositoryUrl,
+            catalogName
+        }) => (
+            <>
+                Version of the {chartName} Chart in the&nbsp;
+                <MuiLink href={catalogRepositoryUrl}>
+                    {catalogName} Helm Repository{" "}
+                </MuiLink>
+            </>
         )
     },
     "LauncherConfigurationCard": {

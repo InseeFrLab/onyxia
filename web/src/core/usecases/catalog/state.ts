@@ -1,6 +1,6 @@
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { createSlice } from "@reduxjs/toolkit";
-import type { Catalog, Chart } from "core/ports/OnyxiaApi";
+import type { Catalog } from "core/ports/OnyxiaApi";
 import { id } from "tsafe/id";
 import { assert } from "tsafe/assert";
 
@@ -15,7 +15,15 @@ export namespace State {
     export type Ready = {
         stateDescription: "ready";
         catalogs: Catalog[];
-        chartsByCatalogId: Record<string, Chart[]>;
+        chartsByCatalogId: Record<
+            string,
+            {
+                name: string;
+                description: string;
+                iconUrl: string | undefined;
+                projectHomepageUrl: string | undefined;
+            }[]
+        >;
         selectedCatalogId: string;
         search: string;
         searchResults: SearchResult[] | undefined;
@@ -51,7 +59,7 @@ export const { reducer, actions } = createSlice({
             }: PayloadAction<{
                 selectedCatalogId: string;
                 catalogs: Catalog[];
-                chartsByCatalogId: Record<string, Chart[]>;
+                chartsByCatalogId: State.Ready["chartsByCatalogId"];
             }>
         ) => {
             const { selectedCatalogId, catalogs, chartsByCatalogId } = payload;
@@ -79,7 +87,7 @@ export const { reducer, actions } = createSlice({
 
             state.selectedCatalogId = selectedCatalogId;
         },
-        "notifyCatalogIdSelected": () => {
+        "defaultCatalogSelected": () => {
             /* Only for evt */
         },
         "searchChanged": (state, { payload }: PayloadAction<{ search: string }>) => {

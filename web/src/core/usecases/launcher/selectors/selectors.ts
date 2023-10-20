@@ -16,6 +16,7 @@ import { name, type State } from "../state";
 import { symToStr } from "tsafe/symToStr";
 import * as restorableConfigManager from "core/usecases/restorableConfigManager";
 import * as projectConfigs from "core/usecases/projectConfigs";
+import { exclude } from "tsafe/exclude";
 
 const readyState = (rootState: RootState): State.Ready | undefined => {
     const state = rootState[name];
@@ -399,7 +400,7 @@ const isRestorableConfigSaved = createSelector(
 
         return (
             restorableConfigs.find(restorableConfig_i =>
-                restorableConfigManager.areSameRestorableConfig(
+                restorableConfigManager.getAreSameRestorableConfig(
                     restorableConfig_i,
                     restorableConfig
                 )
@@ -433,25 +434,72 @@ const helmReleaseName = createSelector(readyState, state => {
     return `${state.chartName}-${state.k8sRandomSubdomain}`;
 });
 
+const chartVersionDifferentFromDefault = createSelector(readyState, state => {
+    if (state === undefined) {
+        return undefined;
+    }
+
+    const { chartVersion, defaultChartVersion } = state;
+
+    return chartVersion === defaultChartVersion ? undefined : chartVersion;
+});
+
+const catalogRepositoryUrl = createSelector(readyState, state => {
+    if (state === undefined) {
+        return undefined;
+    }
+    return state.catalogRepositoryUrl;
+});
+
 const launchCommands = createSelector(
-    readyState,
+    isReady,
+    catalogId,
+    chartName,
+    formFields,
+    catalogRepositoryUrl,
     helmReleaseName,
     projectConfigs.selectors.selectedProject,
-    (state, helmReleaseName, project) => {
-        if (state === undefined) {
+    chartVersionDifferentFromDefault,
+    (
+        isReady,
+        catalogId,
+        chartName,
+        formFields,
+        catalogRepositoryUrl,
+        helmReleaseName,
+        selectedProject,
+        chartVersionDifferentFromDefault
+    ) => {
+        if (!isReady) {
             return undefined;
         }
 
+        assert(catalogId !== undefined);
+        assert(chartName !== undefined);
+        assert(formFields !== undefined);
+        assert(catalogRepositoryUrl !== undefined);
         assert(helmReleaseName !== undefined);
+        assert(selectedProject !== undefined);
 
         return [
-            `helm repo add ${state.catalogId} ${state.repositoryUrl}`,
+            `helm repo add ${catalogId} ${catalogRepositoryUrl}`,
             [
                 "cat << EOF > ./values.yaml",
-                yaml.stringify(formFieldsValueToObject(state.formFields)),
+                yaml.stringify(formFieldsValueToObject(formFields)),
                 "EOF"
             ].join("\n"),
-            `helm install ${helmReleaseName} ${state.catalogId}/${state.chartName} --namespace ${project.namespace} -f values.yaml`
+            [
+                `helm install ${helmReleaseName} ${catalogId}/${chartName}`,
+                selectedProject.group === undefined
+                    ? undefined
+                    : `--namespace ${selectedProject.namespace}`,
+                chartVersionDifferentFromDefault === undefined
+                    ? undefined
+                    : `--version ${chartVersionDifferentFromDefault}`,
+                `-f values.yaml`
+            ]
+                .filter(exclude(undefined))
+                .join(" ")
         ];
     }
 );
@@ -492,6 +540,15 @@ const groupProjectName = createSelector(
     project => (project.group === undefined ? undefined : project.name)
 );
 
+const chartVersion = createSelector(readyState, state => state?.chartVersion);
+
+const availableChartVersions = createSelector(
+    readyState,
+    state => state?.availableChartVersions
+);
+
+const catalogName = createSelector(readyState, state => state?.catalogName);
+
 const wrap = createSelector(
     isReady,
     friendlyName,
@@ -503,6 +560,10 @@ const wrap = createSelector(
     isRestorableConfigSaved,
     areAllFieldsDefault,
     chartName,
+    chartVersion,
+    availableChartVersions,
+    catalogName,
+    catalogRepositoryUrl,
     chartIconUrl,
     launchScript,
     commandLogsEntries,
@@ -519,6 +580,10 @@ const wrap = createSelector(
         isRestorableConfigSaved,
         areAllFieldsDefault,
         chartName,
+        chartVersion,
+        availableChartVersions,
+        catalogName,
+        catalogRepositoryUrl,
         chartIconUrl,
         launchScript,
         commandLogsEntries,
@@ -538,6 +603,10 @@ const wrap = createSelector(
                 [symToStr({ restorableConfig })]: undefined,
                 [symToStr({ areAllFieldsDefault })]: undefined,
                 [symToStr({ chartName })]: undefined,
+                [symToStr({ chartVersion })]: undefined,
+                [symToStr({ availableChartVersions })]: undefined,
+                [symToStr({ catalogName })]: undefined,
+                [symToStr({ catalogRepositoryUrl })]: undefined,
                 [symToStr({ chartIconUrl })]: undefined,
                 [symToStr({ launchScript })]: undefined,
                 [symToStr({ commandLogsEntries })]: undefined,
@@ -555,6 +624,10 @@ const wrap = createSelector(
         assert(formFieldsIsWellFormed !== undefined);
         assert(chartIconUrl !== undefined);
         assert(chartName !== undefined);
+        assert(chartVersion !== undefined);
+        assert(availableChartVersions !== undefined);
+        assert(catalogName !== undefined);
+        assert(catalogRepositoryUrl !== undefined);
         assert(commandLogsEntries !== undefined);
         assert(launchScript !== undefined);
         assert(chartSourceUrls !== undefined);
@@ -570,6 +643,10 @@ const wrap = createSelector(
             isRestorableConfigSaved,
             areAllFieldsDefault,
             chartName,
+            chartVersion,
+            availableChartVersions,
+            catalogName,
+            catalogRepositoryUrl,
             chartIconUrl,
             launchScript,
             commandLogsEntries,
@@ -581,6 +658,21 @@ const wrap = createSelector(
 
 export const selectors = { wrap };
 
+const formFieldsValueDifferentFromDefault = createSelector(
+    isReady,
+    restorableConfig,
+    (isReady, restorableConfig) => {
+        if (!isReady) {
+            return undefined;
+        }
+
+        assert(restorableConfig !== undefined);
+
+        return restorableConfig.formFieldsValueDifferentFromDefault;
+    }
+);
+
 export const privateSelectors = {
-    helmReleaseName
+    helmReleaseName,
+    formFieldsValueDifferentFromDefault
 };
