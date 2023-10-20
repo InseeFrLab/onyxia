@@ -8,9 +8,6 @@ import { assert } from "tsafe/assert";
 export const createEvt = (({ evtAction, getState }) => {
     const evtOut = Evt.create<
         | {
-              actionName: "initializationStarted";
-          }
-        | {
               actionName: "initialized";
               sensitiveConfigurations: FormFieldValue[];
           }
@@ -29,10 +26,6 @@ export const createEvt = (({ evtAction, getState }) => {
 
     evtAction
         .pipe(action => (action.sliceName !== name ? null : [action]))
-        .attach(
-            action => action.actionName === "initializationStarted",
-            () => evtOut.post({ "actionName": "initializationStarted" })
-        )
         .$attach(
             action => (action.actionName === "initialized" ? [action.payload] : null),
             ({ sensitiveConfigurations }) =>

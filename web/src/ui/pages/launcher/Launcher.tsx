@@ -100,6 +100,8 @@ export default function Launcher(props: Props) {
             formFieldsValueDifferentFromDefault
         } = route.params;
 
+        showSplashScreen({ "enableTransparency": true });
+
         launcher.initialize({
             catalogId,
             chartName,
@@ -124,12 +126,6 @@ export default function Launcher(props: Props) {
 
     useEvt(
         ctx => {
-            evtLauncher.attach(
-                action => action.actionName === "initializationStarted",
-                ctx,
-                () => showSplashScreen({ "enableTransparency": true })
-            );
-
             evtLauncher.$attach(
                 action =>
                     action.actionName === "chartVersionInternallySet" ? [action] : null,
