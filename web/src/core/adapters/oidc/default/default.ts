@@ -125,9 +125,13 @@ export async function createOidc(params: {
     async function silentSignInGetAccessToken(): Promise<string | undefined> {
         const dLoginSuccessUrl = new Deferred<string | undefined>();
 
-        const timeout = setTimeout(() => {
-            throw new Error(`SSO silent login timeout with clientId: ${clientId}`);
-        }, 5000);
+        const timeout = setTimeout(
+            () =>
+                dLoginSuccessUrl.reject(
+                    new Error(`SSO silent login timeout with clientId: ${clientId}`)
+                ),
+            5000
+        );
 
         const listener = (event: MessageEvent) => {
             if (
@@ -240,11 +244,11 @@ export async function createOidc(params: {
             return new Promise<never>(() => {});
         },
         "renewToken": async () => {
-            const accessToken = await silentSignInGetAccessToken();
+            const user = await userManager.signinSilent();
 
-            assert(accessToken !== undefined);
+            assert(user !== null);
 
-            currentAccessToken = accessToken;
+            currentAccessToken = user.access_token;
         }
     });
 
