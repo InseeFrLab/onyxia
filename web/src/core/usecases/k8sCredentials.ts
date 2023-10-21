@@ -143,7 +143,7 @@ export const thunks = {
 
             dispatch(
                 actions.refreshed({
-                    "idpIssuerUrl": kubernetesOidcClient.params.authority,
+                    "idpIssuerUrl": kubernetesOidcClient.params.issuerUri,
                     "clientId": kubernetesOidcClient.params.clientId,
                     "refreshToken": oidcTokens.refreshToken,
                     "idToken": oidcTokens.idToken,

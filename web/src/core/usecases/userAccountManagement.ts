@@ -84,9 +84,9 @@ export const protectedThunks = {
                         };
                     }
 
-                    const { authority, clientId } = oidcParams;
+                    const { issuerUri, clientId } = oidcParams;
 
-                    if (!new URL(authority).pathname.match(/^\/(?:auth\/)?realms\/.*$/)) {
+                    if (!new URL(issuerUri).pathname.match(/^\/(?:auth\/)?realms\/.*$/)) {
                         // Not a keycloak server
                         return {
                             "keycloakPasswordResetUrl": undefined
@@ -95,7 +95,7 @@ export const protectedThunks = {
 
                     return {
                         "keycloakPasswordResetUrl": [
-                            authority,
+                            issuerUri,
                             "account",
                             "password"
                         ].join("/"),

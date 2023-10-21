@@ -5,7 +5,7 @@ export async function createOidcOrFallback(params: {
     oidcAdapterImplementationToUseIfNotFallingBack: "default";
     oidcParams:
         | {
-              authority?: string;
+              issuerUri?: string;
               clientId: string;
           }
         | undefined;
@@ -15,19 +15,19 @@ export async function createOidcOrFallback(params: {
         params;
 
     const wrap = (() => {
-        const { authority, clientId } = {
+        const { issuerUri, clientId } = {
             ...fallbackOidc?.params,
             ...oidcParams
         };
 
         assert(
-            authority !== undefined && clientId !== undefined,
+            issuerUri !== undefined && clientId !== undefined,
             "There is no specific oidc config in the region for satellite service and no oidc config to fallback to"
         );
 
         if (
             fallbackOidc !== undefined &&
-            authority === fallbackOidc.params.authority &&
+            issuerUri === fallbackOidc.params.issuerUri &&
             clientId === fallbackOidc.params.clientId
         ) {
             return {
@@ -38,7 +38,7 @@ export async function createOidcOrFallback(params: {
 
         return {
             "type": "oidc params",
-            "oidcParams": { authority, clientId }
+            "oidcParams": { issuerUri, clientId }
         } as const;
     })();
 
@@ -53,7 +53,7 @@ export async function createOidcOrFallback(params: {
             const { createOidc } = await import("../default");
 
             const oidc = await createOidc({
-                "authority": wrap.oidcParams.authority,
+                "issuerUri": wrap.oidcParams.issuerUri,
                 "clientId": wrap.oidcParams.clientId,
                 "transformUrlBeforeRedirect": url => url
             });

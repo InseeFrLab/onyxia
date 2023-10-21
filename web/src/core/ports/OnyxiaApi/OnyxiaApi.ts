@@ -13,7 +13,7 @@ export type OnyxiaApi = {
             regions: DeploymentRegion[];
             oidcParams:
                 | {
-                      authority: string;
+                      issuerUri: string;
                       clientId: string;
                   }
                 | undefined;

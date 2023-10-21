@@ -3,7 +3,7 @@ export declare type Oidc = Oidc.LoggedIn | Oidc.NotLoggedIn;
 export declare namespace Oidc {
     export type Common = {
         params: {
-            authority: string;
+            issuerUri: string;
             clientId: string;
         };
     };

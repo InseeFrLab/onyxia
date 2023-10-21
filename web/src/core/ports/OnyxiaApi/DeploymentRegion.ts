@@ -34,7 +34,7 @@ export type DeploymentRegion = {
               authPath: string | undefined;
               oidcParams:
                   | {
-                        authority?: string;
+                        issuerUri?: string;
                         clientId: string;
                     }
                   | undefined;
@@ -66,7 +66,7 @@ export type DeploymentRegion = {
               url: string;
               oidcParams:
                   | {
-                        authority?: string;
+                        issuerUri?: string;
                         clientId: string;
                     }
                   | undefined;
@@ -100,7 +100,7 @@ export namespace DeploymentRegion {
             monitoringUrlPattern: string | undefined;
             oidcParams:
                 | {
-                      authority?: string;
+                      issuerUri?: string;
                       clientId: string;
                   }
                 | undefined;

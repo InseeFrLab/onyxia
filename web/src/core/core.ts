@@ -87,7 +87,7 @@ export async function createCore(params: CoreParams) {
         return onyxiaApi;
     })();
 
-    let oidcParams: { authority: string; clientId: string } | undefined = undefined;
+    let oidcParams: { issuerUri: string; clientId: string } | undefined = undefined;
 
     oidc = await (async () => {
         oidcParams = (await onyxiaApi.getAvailableRegionsAndOidcParams()).oidcParams;
@@ -101,7 +101,7 @@ export async function createCore(params: CoreParams) {
         const { createOidc } = await import("core/adapters/oidc/default");
 
         return createOidc({
-            "authority": oidcParams.authority,
+            "issuerUri": oidcParams.issuerUri,
             "clientId": oidcParams.clientId,
             "transformUrlBeforeRedirect": transformUrlBeforeRedirectToLogin
         });

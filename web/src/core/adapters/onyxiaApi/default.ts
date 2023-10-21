@@ -237,7 +237,7 @@ export function createOnyxiaApi(params: {
                                         S3.oidcConfiguration === undefined
                                             ? undefined
                                             : {
-                                                  "authority":
+                                                  "issuerUri":
                                                       S3.oidcConfiguration.issuerURI,
                                                   "clientId":
                                                       S3.oidcConfiguration.clientID
@@ -299,7 +299,7 @@ export function createOnyxiaApi(params: {
                                               vault.oidcConfiguration === undefined
                                                   ? undefined
                                                   : {
-                                                        "authority":
+                                                        "issuerUri":
                                                             vault.oidcConfiguration
                                                                 .issuerURI,
                                                         "clientId":
@@ -324,7 +324,7 @@ export function createOnyxiaApi(params: {
                                               undefined
                                                   ? undefined
                                                   : {
-                                                        "authority":
+                                                        "issuerUri":
                                                             k8sPublicEndpoint
                                                                 .oidcConfiguration
                                                                 .issuerURI,
@@ -344,7 +344,7 @@ export function createOnyxiaApi(params: {
                         data.oidcConfiguration === undefined
                             ? undefined
                             : {
-                                  "authority": data.oidcConfiguration.issuerURI,
+                                  "issuerUri": data.oidcConfiguration.issuerURI,
                                   "clientId": data.oidcConfiguration.clientID
                               }
                 }))

@@ -16,7 +16,7 @@ export function createOidc(params: { isUserInitiallyLoggedIn: boolean }): Oidc {
 
     const common: Oidc.Common = {
         "params": {
-            "authority": "",
+            "issuerUri": "",
             "clientId": ""
         }
     };
