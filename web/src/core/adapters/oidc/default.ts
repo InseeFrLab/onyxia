@@ -141,7 +141,7 @@ export async function createOidc(params: {
             try {
                 await userManager.signinSilent();
             } catch {
-                break restore_from_session;
+                return undefined;
             }
 
             return user;
