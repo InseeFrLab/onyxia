@@ -137,6 +137,13 @@ export async function createOidc(params: {
                 break restore_from_session;
             }
 
+            // The server might have restarted and the session might have been lost.
+            try {
+                await userManager.signinSilent();
+            } catch {
+                break restore_from_session;
+            }
+
             return user;
         }
 
@@ -316,13 +323,13 @@ function userToTokens(user: User): OidcTokens {
 
     const accessTokenExpirationTime = (() => {
         read_from_metadata: {
-            const { expires_in } = user;
+            const { expires_at } = user;
 
-            if (expires_in === undefined) {
+            if (expires_at === undefined) {
                 break read_from_metadata;
             }
 
-            return Date.now() + expires_in * 1000;
+            return expires_at * 1000;
         }
 
         read_from_jwt: {
