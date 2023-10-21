@@ -23,7 +23,7 @@ type CoreParams = {
 };
 
 export async function createCore(params: CoreParams) {
-    const { apiUrl, transformUrlBeforeRedirectToLogin, getCurrentLang } = params;
+    const { apiUrl, transformUrlBeforeRedirectToLogin } = params;
 
     let isCoreCreated = false;
 
@@ -103,8 +103,7 @@ export async function createCore(params: CoreParams) {
         return createOidc({
             "authority": oidcParams.authority,
             "clientId": oidcParams.clientId,
-            "transformUrlBeforeRedirect": transformUrlBeforeRedirectToLogin,
-            "getUiLocales": getCurrentLang
+            "transformUrlBeforeRedirect": transformUrlBeforeRedirectToLogin
         });
     })();
 

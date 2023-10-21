@@ -55,8 +55,7 @@ export async function createOidcOrFallback(params: {
             const oidc = await createOidc({
                 "authority": wrap.oidcParams.authority,
                 "clientId": wrap.oidcParams.clientId,
-                "transformUrlBeforeRedirect": url => url,
-                "getUiLocales": () => "en"
+                "transformUrlBeforeRedirect": url => url
             });
 
             if (!oidc.isUserLoggedIn) {

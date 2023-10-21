@@ -17,9 +17,8 @@ export async function createOidc(params: {
     authority: string;
     clientId: string;
     transformUrlBeforeRedirect: (url: string) => string;
-    getUiLocales: () => string;
 }): Promise<Oidc> {
-    const { authority, clientId, transformUrlBeforeRedirect, getUiLocales } = params;
+    const { authority, clientId, transformUrlBeforeRedirect } = params;
 
     const configHash = fnv1aHashToHex(`${authority} ${clientId}`);
     const configHashKey = "configHash";
@@ -47,14 +46,7 @@ export async function createOidc(params: {
             return new Proxy(urlInstance, {
                 "get": (target, prop) => {
                     if (prop === "href") {
-                        return [urlInstance.href].map(transformUrlBeforeRedirect).map(
-                            url =>
-                                addParamToUrl({
-                                    url,
-                                    "name": "ui_locales",
-                                    "value": getUiLocales()
-                                }).newUrl
-                        )[0];
+                        return transformUrlBeforeRedirect(urlInstance.href);
                     }
 
                     //@ts-expect-error
