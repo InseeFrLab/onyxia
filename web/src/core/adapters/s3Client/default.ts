@@ -44,9 +44,12 @@ export async function createS3Client(params: Params): Promise<S3Client> {
     const { getNewlyRequestedOrCachedToken, clearCachedToken } =
         getNewlyRequestedOrCachedTokenFactory({
             "requestNewToken": async (restrictToBucketName: string | undefined) => {
-                const now = Date.now();
-
+                // NOTE: We renew the OIDC access token because it's expiration time
+                // cap the duration of the token we will request to minio so we want it
+                // as fresh as possible.
                 await oidc.renewTokens();
+
+                const now = Date.now();
 
                 const { data } = await axios
                     .create({

@@ -33,8 +33,6 @@ export async function createSecretManager(params: Params): Promise<SecretsManage
     const { getNewlyRequestedOrCachedToken, clearCachedToken } =
         getNewlyRequestedOrCachedTokenFactory({
             "requestNewToken": async () => {
-                await oidc.renewTokens();
-
                 const now = Date.now();
 
                 const {

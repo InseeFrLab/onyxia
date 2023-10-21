@@ -133,7 +133,9 @@ export const AccountKubernetesTab = memo((props: Props) => {
             <Divider className={classes.divider} variant="middle" />
             <AccountSectionHeader
                 title={t("init script section title")}
-                helperText={t("init script section helper")}
+                helperText={t("init script section helper", {
+                    "installKubectlUrl": "https://kubernetes.io/docs/tasks/tools/"
+                })}
             />
             <div className={classes.codeBlockHeaderWrapper}>
                 <div style={{ "flex": 1 }} />
@@ -161,7 +163,11 @@ export const { i18n } = declareComponentKeys<
     | "credentials section title"
     | "credentials section helper"
     | "init script section title"
-    | "init script section helper"
+    | {
+          K: "init script section helper";
+          P: { installKubectlUrl: string };
+          R: JSX.Element;
+      }
     | { K: "expires in"; P: { howMuchTime: string } }
 >()({ AccountKubernetesTab });
 

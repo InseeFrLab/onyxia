@@ -57,12 +57,27 @@ export const translations: Translations<"no"> = {
         "expires in": ({ howMuchTime }) => `Utløper om ${howMuchTime}`
     },
     "AccountKubernetesTab": {
-        "credentials section title": "Koble til Kubernetes-klyngen",
-        "credentials section helper": "Credentials to manage the Kubernetes cluster",
-        "init script section title":
-            "To connect to the Kubernetes cluster via your local kubectl",
-        "init script section helper": "Download or copy the script",
-        "expires in": ({ howMuchTime }) => `The token expires in ${howMuchTime}`
+        "credentials section title": "Koble til Kubernetes-klusteret",
+        "credentials section helper":
+            "Legitimasjon for å direkte samhandle med Kubernetes API-serveren.",
+        "init script section title": "Shell-skript",
+        "init script section helper": ({ installKubectlUrl }) => (
+            <>
+                Dette skriptet gjør det mulig å bruke kubectl eller helm på din lokale
+                maskin. <br />
+                For å bruke det,{" "}
+                <MuiLink href={installKubectlUrl} target="_blank">
+                    installer kubectl på maskinen din
+                </MuiLink>{" "}
+                og kjør skriptet ved å kopiere og lime det inn i terminalen din.
+                <br />
+                Etter å ha gjort dette kan du bekrefte at det fungerer ved å kjøre
+                kommandoen&nbsp;
+                <code>kubectl get pods</code> eller <code>helm list</code>
+            </>
+        ),
+        "expires in": ({ howMuchTime }) =>
+            `Disse legitimasjonene er gyldige for de neste ${howMuchTime}`
     },
     "AccountVaultTab": {
         "credentials section title": "Vault credentials",
