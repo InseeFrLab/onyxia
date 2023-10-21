@@ -7,7 +7,6 @@ import type { I18n } from "../i18n";
 import Link from "@mui/material/Link";
 import { TextField } from "onyxia-ui/TextField";
 import { Button } from "keycloak-theme/login/theme";
-import { useStateRef } from "powerhooks/useStateRef";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import { Checkbox } from "onyxia-ui/Checkbox";
 import { ReactComponent as AgentconnectBtnPrincipal } from "ui/assets/svg/agentconnect-btn-principal.svg";
@@ -45,10 +44,6 @@ export default function Login(
     });
 
     const { classes } = useStyles();
-
-    const usernameInputRef = useStateRef<HTMLInputElement>(null);
-    const passwordInputRef = useStateRef<HTMLInputElement>(null);
-    const submitButtonRef = useStateRef<HTMLButtonElement>(null);
 
     return (
         <Template
@@ -110,7 +105,6 @@ export default function Login(
                                     defaultValue={login.username ?? ""}
                                     id="username"
                                     name="username"
-                                    inputProps_ref={usernameInputRef}
                                     inputProps_aria-label="username"
                                     inputProps_spellCheck={false}
                                     label={
@@ -129,7 +123,6 @@ export default function Login(
                                     defaultValue={""}
                                     id="password"
                                     name="password"
-                                    inputProps_ref={passwordInputRef}
                                     inputProps_aria-label={"password"}
                                     label={msg("password")}
                                     autoComplete="off"
@@ -180,7 +173,6 @@ export default function Login(
                                         : {})}
                                 />
                                 <Button
-                                    ref={submitButtonRef}
                                     className={classes.buttonSubmit}
                                     name="login"
                                     type="submit"
