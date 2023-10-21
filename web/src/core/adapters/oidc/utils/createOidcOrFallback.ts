@@ -1,28 +1,22 @@
 import type { Oidc } from "core/ports/Oidc";
-import { assert } from "tsafe/assert";
+import { assert, type Equals } from "tsafe/assert";
 
 export async function createOidcOrFallback(params: {
+    oidcAdapterImplementationToUseIfNotFallingBack: "default";
     oidcParams:
         | {
               authority?: string;
               clientId: string;
           }
         | undefined;
-    fallback:
-        | {
-              oidcParams: {
-                  authority: string;
-                  clientId: string;
-              };
-              oidc: Oidc.LoggedIn;
-          }
-        | undefined;
+    fallbackOidc: Oidc.LoggedIn | undefined;
 }): Promise<Oidc.LoggedIn> {
-    const { oidcParams, fallback } = params;
+    const { oidcAdapterImplementationToUseIfNotFallingBack, oidcParams, fallbackOidc } =
+        params;
 
     const wrap = (() => {
         const { authority, clientId } = {
-            ...fallback?.oidcParams,
+            ...fallbackOidc?.params,
             ...oidcParams
         };
 
@@ -32,18 +26,18 @@ export async function createOidcOrFallback(params: {
         );
 
         if (
-            fallback !== undefined &&
-            authority === fallback.oidcParams.authority &&
-            clientId === fallback.oidcParams.clientId
+            fallbackOidc !== undefined &&
+            authority === fallbackOidc.params.authority &&
+            clientId === fallbackOidc.params.clientId
         ) {
             return {
                 "type": "oidc client",
-                "oidc": fallback.oidc
+                "oidc": fallbackOidc
             } as const;
         }
 
         return {
-            "type": "keycloak params",
+            "type": "oidc params",
             "oidcParams": { authority, clientId }
         } as const;
     })();
@@ -51,7 +45,11 @@ export async function createOidcOrFallback(params: {
     switch (wrap.type) {
         case "oidc client":
             return wrap.oidc;
-        case "keycloak params": {
+        case "oidc params": {
+            assert<
+                Equals<typeof oidcAdapterImplementationToUseIfNotFallingBack, "default">
+            >();
+
             const { createOidc } = await import("../default");
 
             const oidc = await createOidc({

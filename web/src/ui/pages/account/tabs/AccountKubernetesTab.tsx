@@ -6,7 +6,7 @@ import { useCallbackFactory } from "powerhooks/useCallbackFactory";
 import { copyToClipboard } from "ui/tools/copyToClipboard";
 import Divider from "@mui/material/Divider";
 import { tss } from "ui/theme";
-import { assert } from "tsafe/assert";
+import { assert, type Equals } from "tsafe/assert";
 import { saveAs } from "file-saver";
 import { smartTrim } from "ui/tools/smartTrim";
 import { declareComponentKeys } from "i18nifty";
@@ -29,12 +29,23 @@ export const AccountKubernetesTab = memo((props: Props) => {
 
     const { k8sCredentials } = useCoreFunctions();
 
-    const { uiState } = useCoreState(selectors.k8sCredentials.uiState);
+    const {
+        isReady,
+        clusterUrl,
+        namespace,
+        idpIssuerUrl,
+        clientId,
+        refreshToken,
+        idToken,
+        expirationTime,
+        isRefreshing,
+        shellScript
+    } = useCoreState(selectors.k8sCredentials.wrap).wrap;
 
-    const { fromNowText } = useFromNow({ "dateTime": uiState?.expirationTime ?? 0 });
+    const { fromNowText } = useFromNow({ "dateTime": expirationTime ?? 0 });
 
     useEffect(() => {
-        k8sCredentials.refresh({ "doForceRenewToken": false });
+        k8sCredentials.refresh();
     }, []);
 
     const { t } = useTranslation({ AccountKubernetesTab });
@@ -44,20 +55,16 @@ export const AccountKubernetesTab = memo((props: Props) => {
     );
 
     const onGetAppIconButtonClick = useConstCallback(() => {
-        assert(uiState !== undefined);
+        assert(shellScript !== undefined);
         saveAs(
-            new Blob([uiState.bashScript], {
+            new Blob([shellScript], {
                 "type": "text/plain;charset=utf-8"
             }),
             "config.sh"
         );
     });
 
-    const onRefreshIconButtonClick = useConstCallback(() =>
-        k8sCredentials.refresh({ "doForceRenewToken": true })
-    );
-
-    if (uiState === undefined) {
+    if (!isReady) {
         return <CircularProgress />;
     }
 
@@ -75,31 +82,54 @@ export const AccountKubernetesTab = memo((props: Props) => {
                         <IconButton
                             size="extra small"
                             iconId="refresh"
-                            onClick={onRefreshIconButtonClick}
-                            disabled={uiState.isRefreshing}
+                            onClick={() => k8sCredentials.refresh()}
+                            disabled={isRefreshing}
                         />
                     </>
                 }
             />
             {(
                 [
-                    "kubernetesNamespace",
-                    "kubernetesClusterUrl",
-                    "oidcAccessToken"
+                    "namespace",
+                    "server",
+                    "idp-issuer-url",
+                    "client-id",
+                    "refresh-token",
+                    "id-token"
                 ] as const
-            ).map(key => (
-                <AccountField
-                    type="text"
-                    key={key}
-                    title={key}
-                    text={smartTrim({
-                        "maxLength": 50,
-                        "minCharAtTheEnd": 20,
-                        "text": uiState[key]
-                    })}
-                    onRequestCopy={onFieldRequestCopyFactory(uiState[key])}
-                />
-            ))}
+            ).map(key => {
+                const text = (() => {
+                    switch (key) {
+                        case "namespace":
+                            return namespace;
+                        case "server":
+                            return clusterUrl;
+                        case "idp-issuer-url":
+                            return idpIssuerUrl;
+                        case "client-id":
+                            return clientId;
+                        case "refresh-token":
+                            return refreshToken;
+                        case "id-token":
+                            return idToken;
+                    }
+                    assert<Equals<typeof key, never>>(false);
+                })();
+
+                return (
+                    <AccountField
+                        type="text"
+                        key={key}
+                        title={key}
+                        text={smartTrim({
+                            "maxLength": 50,
+                            "minCharAtTheEnd": 20,
+                            text
+                        })}
+                        onRequestCopy={onFieldRequestCopyFactory(text)}
+                    />
+                );
+            })}
             <Divider className={classes.divider} variant="middle" />
             <AccountSectionHeader
                 title={t("init script section title")}
@@ -117,8 +147,8 @@ export const AccountKubernetesTab = memo((props: Props) => {
                 {/* This component depends on a heavy third party library, we don't want to include it in the main bundle */}
                 <CodeBlock
                     initScript={{
-                        "scriptCode": uiState.bashScript,
-                        "programingLanguage": "shell"
+                        "scriptCode": shellScript,
+                        "programmingLanguage": "shell"
                     }}
                     isDarkModeEnabled={theme.isDarkModeEnabled}
                 />

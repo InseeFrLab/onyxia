@@ -46,6 +46,8 @@ export async function createS3Client(params: Params): Promise<S3Client> {
             "requestNewToken": async (restrictToBucketName: string | undefined) => {
                 const now = Date.now();
 
+                await oidc.renewTokens();
+
                 const { data } = await axios
                     .create({
                         "baseURL":
@@ -58,7 +60,7 @@ export async function createS3Client(params: Params): Promise<S3Client> {
                         "/?" +
                             Object.entries({
                                 "Action": "AssumeRoleWithWebIdentity",
-                                "WebIdentityToken": oidc.getAccessToken().accessToken,
+                                "WebIdentityToken": oidc.getTokens().accessToken,
                                 //Desired TTL of the token, depending of the configuration
                                 //and version of minio we could get less than that but never more.
                                 "DurationSeconds": durationSeconds,

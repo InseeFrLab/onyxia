@@ -48,7 +48,7 @@ export async function createCore(params: CoreParams) {
                 if (!oidc.isUserLoggedIn) {
                     return undefined;
                 }
-                return oidc.getAccessToken().accessToken;
+                return oidc.getTokens().accessToken;
             },
             "getRegionId": () => {
                 if (!isCoreCreated) {
@@ -138,10 +138,7 @@ export async function createCore(params: CoreParams) {
         const { s3: s3Params, vault: vaultParams } = usecases.deploymentRegion.selectors.selectedDeploymentRegion(core.getState());
 
         /* prettier-ignore */
-        const fallback = oidcParams === undefined ? undefined : {
-            oidcParams,
-            oidc
-        };
+        const nonMockOidc = oidcParams === undefined ? undefined : oidc;
 
         /* prettier-ignore */
         const { createOidcOrFallback } = await import("core/adapters/oidc/utils/createOidcOrFallback");
@@ -162,8 +159,9 @@ export async function createCore(params: CoreParams) {
                 ...getCreateS3ClientParams({ s3Params }),
                 "createAwsBucket": onyxiaApi.createAwsBucket,
                 "oidc": await createOidcOrFallback({
+                    "oidcAdapterImplementationToUseIfNotFallingBack": "default",
                     "oidcParams": s3Params.oidcParams,
-                    fallback
+                    "fallbackOidc": nonMockOidc
                 })
             });
         })();
@@ -186,8 +184,9 @@ export async function createCore(params: CoreParams) {
                 "url": vaultParams.url,
                 "authPath": vaultParams.authPath,
                 "oidc": await createOidcOrFallback({
+                    "oidcAdapterImplementationToUseIfNotFallingBack": "default",
                     "oidcParams": vaultParams.oidcParams,
-                    fallback
+                    "fallbackOidc": nonMockOidc
                 })
             });
         })();

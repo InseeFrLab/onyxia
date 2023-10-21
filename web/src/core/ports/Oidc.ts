@@ -1,15 +1,29 @@
 export declare type Oidc = Oidc.LoggedIn | Oidc.NotLoggedIn;
 
 export declare namespace Oidc {
-    export type NotLoggedIn = {
+    export type Common = {
+        params: {
+            authority: string;
+            clientId: string;
+        };
+    };
+
+    export type NotLoggedIn = Common & {
         isUserLoggedIn: false;
         login: (params: { doesCurrentHrefRequiresAuth: boolean }) => Promise<never>;
     };
 
-    export type LoggedIn = {
+    export type LoggedIn = Common & {
         isUserLoggedIn: true;
-        renewToken(): Promise<void>;
-        getAccessToken: () => { accessToken: string; expirationTime: number };
+        renewTokens(): Promise<void>;
+        getTokens: () => Tokens;
         logout: (params: { redirectTo: "home" | "current page" }) => Promise<never>;
+    };
+
+    export type Tokens = {
+        accessToken: string;
+        idToken: string;
+        refreshToken: string;
+        refreshTokenExpirationTime: number;
     };
 }
