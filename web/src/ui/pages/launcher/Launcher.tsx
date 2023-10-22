@@ -148,7 +148,7 @@ export default function Launcher(props: Props) {
 
                         routes[route.name]({
                             ...route.params,
-                            "autoLaunch": false
+                            "autoLaunch": undefined
                         }).replace();
 
                         if (

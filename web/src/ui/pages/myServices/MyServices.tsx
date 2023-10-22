@@ -139,7 +139,7 @@ export default function MyServices(props: Props) {
                         "chartName": restorableConfig.chartName,
                         "formFieldsValueDifferentFromDefault":
                             restorableConfig.formFieldsValueDifferentFromDefault,
-                        autoLaunch
+                        "autoLaunch": autoLaunch ? true : undefined
                     }).link;
 
                 const { chartIconUrl, friendlyName } =

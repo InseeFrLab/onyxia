@@ -136,7 +136,7 @@ export const routeDefs = {
             "catalogId": param.path.string,
             "chartName": param.path.string,
             "chartVersion": param.query.optional.string,
-            "autoLaunch": param.query.optional.boolean.default(false),
+            "autoLaunch": param.query.optional.boolean,
             ...formFieldsDefineRouteParam
         },
         ({ catalogId, chartName }) => `/launcher/${catalogId}/${chartName}`
