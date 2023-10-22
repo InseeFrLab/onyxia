@@ -15,6 +15,20 @@ export const ViewDefault = getStory({
     "chartName": "rstudio",
     "chartIconUrl": rstudioImg,
     "isBookmarked": true,
+    "chartVersion": "1.2.3",
+    "availableChartVersions": [
+        "1.3.0-rc.0",
+        "1.2.4",
+        "1.2.3",
+        "1.2.2",
+        "1.2.1",
+        "1.2.0",
+        "1.1.0",
+        "1.0.0"
+    ],
+    "catalogName": "Interactive services",
+    "catalogRepositoryUrl":
+        "https://inseefrlab.github.io/helm-charts-interactive-services",
     "myServicesSavedConfigsExtendedLink": {
         "href": "https://example.com",
         "onClick": () => {}
@@ -23,6 +37,7 @@ export const ViewDefault = getStory({
     "isLaunchable": true,
     "isShared": false,
     ...logCallbacks([
+        "onChartVersionChange",
         "onFriendlyNameChange",
         "onRequestToggleBookmark",
         "onRequestCancel",

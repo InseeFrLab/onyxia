@@ -40,7 +40,7 @@ export default function Catalog(props: Props) {
         ctx =>
             evtCatalog.$attach(
                 action =>
-                    action.actionName !== "set catalogue id in url" ? null : [action],
+                    action.actionName !== "catalogIdInternallySet" ? null : [action],
                 ctx,
                 ({ catalogId }) => routes.catalog({ catalogId }).replace()
             ),

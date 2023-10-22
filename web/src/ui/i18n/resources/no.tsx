@@ -521,6 +521,17 @@ Føl deg fri til å utforske og ta kontroll over dine Kubernetes-implementeringe
                     Mine Tjenester
                 </MuiLink>
             </>
+        ),
+        "version select label": "Versjon",
+        "version select helper text": ({
+            chartName,
+            catalogRepositoryUrl,
+            catalogName
+        }) => (
+            <>
+                Versjon av Chart {chartName} i&nbsp;
+                <MuiLink href={catalogRepositoryUrl}>Helm depotet {catalogName}</MuiLink>
+            </>
         )
     },
     "LauncherConfigurationCard": {

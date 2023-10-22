@@ -59,15 +59,23 @@ export const thunks = {
                 const { catalogs, chartsByCatalogId } =
                     await onyxiaApi.getCatalogsAndCharts();
 
-                function getLogoUrl(params: { chartName: string }): string | undefined {
-                    const { chartName } = params;
+                function getLogoUrl(params: {
+                    chartName: string;
+                    chartVersion: string;
+                }): string | undefined {
+                    const { chartName, chartVersion } = params;
 
-                    for (const { id: catalogId } of catalogs) {
-                        for (const {
-                            name,
-                            versions: [{ iconUrl }]
-                        } of chartsByCatalogId[catalogId]) {
-                            if (name === chartName) {
+                    catalog: for (const { id: catalogId } of catalogs) {
+                        for (const chart of chartsByCatalogId[catalogId]) {
+                            if (chart.name === chartName) {
+                                const iconUrl = chart.versions.find(
+                                    ({ version }) => version === chartVersion
+                                )?.iconUrl;
+
+                                if (iconUrl === undefined) {
+                                    continue catalog;
+                                }
+
                                 return iconUrl;
                             }
                         }
@@ -129,13 +137,17 @@ export const thunks = {
                                 env,
                                 postInstallInstructions,
                                 chartName,
+                                chartVersion,
                                 ...rest
                             }) => {
                                 const common: RunningService.Common = {
                                     helmReleaseName,
                                     chartName,
                                     "friendlyName": friendlyName ?? helmReleaseName,
-                                    "chartIconUrl": getLogoUrl({ chartName }),
+                                    "chartIconUrl": getLogoUrl({
+                                        chartName,
+                                        chartVersion
+                                    }),
                                     "monitoringUrl": getMonitoringUrl({
                                         helmReleaseName
                                     }),
@@ -326,7 +338,7 @@ const privateThunks = {
                                         startedAt,
                                         revision,
                                         chartName,
-                                        version,
+                                        chartVersion,
                                         appVersion
                                     }) => ({
                                         "name": helmReleaseName,
@@ -334,7 +346,7 @@ const privateThunks = {
                                         revision,
                                         "updatedTime": startedAt,
                                         "status": "deployed",
-                                        "chart": `${chartName}-${version}`,
+                                        "chart": `${chartName}-${chartVersion}`,
                                         appVersion
                                     })
                                 )

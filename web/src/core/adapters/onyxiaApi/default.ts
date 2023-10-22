@@ -8,6 +8,7 @@ import {
     type JSONSchemaObject,
     type JSONSchemaFormFieldDescription,
     type User,
+    type HelmRelease,
     onyxiaFriendlyNameFormFieldPath,
     onyxiaIsSharedFormFieldPath
 } from "core/ports/OnyxiaApi";
@@ -789,11 +790,18 @@ export function createOnyxiaApi(params: {
                     .catch(onError);
             };
 
-            return async ({ helmReleaseName, catalogId, chartName, values }) => {
+            return async ({
+                helmReleaseName,
+                catalogId,
+                chartName,
+                chartVersion,
+                values
+            }) => {
                 await axiosInstance
                     .put("/my-lab/app", {
                         catalogId,
                         "packageName": chartName,
+                        "packageVersion": chartVersion,
                         "name": helmReleaseName,
                         "options": values,
                         "dryRun": false
@@ -903,8 +911,9 @@ export function createOnyxiaApi(params: {
                             chart,
                             appVersion,
                             revision
-                        }) => ({
+                        }): HelmRelease => ({
                             "helmReleaseName": id,
+                            //TODO: Here also get the catalogId
                             "friendlyName": env["onyxia.friendlyName"],
                             postInstallInstructions,
                             urls,
@@ -917,16 +926,13 @@ export function createOnyxiaApi(params: {
                                     /-[0-9]+\.[0-9]+\.[0-9]+/
                                 );
 
-                                const [, version] = chart.split(`${chartName}-`);
+                                const [, chartVersion] = chart.split(`${chartName}-`);
 
                                 return {
                                     chartName,
-                                    version
+                                    chartVersion
                                 };
                             })(),
-                            "extraForHelmLs": {
-                                chart
-                            },
                             "ownerUsername": env["onyxia.owner"],
                             "isShared": env["onyxia.share"] === "true",
                             ...(areAllPodsRunning

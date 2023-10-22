@@ -18,6 +18,10 @@ export const createEvt = (({ evtAction, getState }) => {
               actionName: "launchCompleted";
               helmReleaseName: string;
           }
+        | {
+              actionName: "chartVersionInternallySet";
+              chartVersion: string;
+          }
     >();
 
     evtAction
@@ -37,6 +41,17 @@ export const createEvt = (({ evtAction, getState }) => {
                 const helmReleaseName = privateSelectors.helmReleaseName(getState());
                 assert(helmReleaseName !== undefined);
                 evtOut.post({ "actionName": "launchCompleted", helmReleaseName });
+            }
+        )
+        .attach(
+            action => action.actionName === "defaultChartVersionSelected",
+            () => {
+                const state = getState()[name];
+                assert(state.stateDescription === "ready");
+                evtOut.post({
+                    "actionName": "chartVersionInternallySet",
+                    "chartVersion": state.chartVersion
+                });
             }
         );
 

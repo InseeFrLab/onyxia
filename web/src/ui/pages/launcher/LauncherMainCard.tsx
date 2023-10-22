@@ -1,4 +1,4 @@
-import { memo } from "react";
+import { useId, memo } from "react";
 import { tss } from "ui/theme";
 import { RoundLogo } from "ui/shared/RoundLogo";
 import { useTranslation } from "ui/i18n";
@@ -12,15 +12,28 @@ import FormControl from "@mui/material/FormControl";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import FormHelperText from "@mui/material/FormHelperText";
 import Checkbox from "@mui/material/Checkbox";
+import InputLabel from "@mui/material/InputLabel";
+import Select from "@mui/material/Select";
+import MenuItem from "@mui/material/MenuItem";
 import { declareComponentKeys } from "i18nifty";
 import { symToStr } from "tsafe/symToStr";
 import type { Link } from "type-route";
+import { assert } from "tsafe/assert";
+import { useResolveLocalizedString, type LocalizedString } from "ui/i18n";
 
 export type Props = {
     className?: string;
     chartName: string;
     chartIconUrl: string | undefined;
     isBookmarked: boolean;
+
+    chartVersion: string;
+
+    availableChartVersions: string[];
+    onChartVersionChange: (chartVersion: string) => void;
+    catalogName: LocalizedString;
+    catalogRepositoryUrl: string;
+
     myServicesSavedConfigsExtendedLink: Link;
     onRequestToggleBookmark: () => void;
 
@@ -48,6 +61,13 @@ export const LauncherMainCard = memo((props: Props) => {
         chartName,
         chartIconUrl,
         isBookmarked,
+
+        chartVersion,
+        availableChartVersions,
+        onChartVersionChange,
+        catalogName,
+        catalogRepositoryUrl,
+
         myServicesSavedConfigsExtendedLink,
         friendlyName,
         isShared,
@@ -73,6 +93,12 @@ export const LauncherMainCard = memo((props: Props) => {
         (event: React.ChangeEvent<HTMLInputElement>) =>
             onIsSharedValueChange({ "isShared": event.target.checked })
     );
+
+    const { resolveLocalizedString } = useResolveLocalizedString({
+        "labelWhenMismatchingLanguage": true
+    });
+
+    const chartVersionInputLabelId = `chart-version-input-label-${useId()}`;
 
     return (
         <div className={cx(classes.root, className)}>
@@ -132,6 +158,33 @@ export const LauncherMainCard = memo((props: Props) => {
                         inputProps_spellCheck={false}
                         onValueBeingTypedChange={onValueBeingTypedChange}
                     />
+                    <FormControl variant="standard">
+                        <InputLabel id={chartVersionInputLabelId}>
+                            {t("version select label")}
+                        </InputLabel>
+                        <Select
+                            labelId={chartVersionInputLabelId}
+                            value={chartVersion}
+                            onChange={event => {
+                                const { value: chartVersion } = event.target;
+                                assert(typeof chartVersion === "string");
+                                onChartVersionChange(chartVersion);
+                            }}
+                        >
+                            {availableChartVersions.map(value => (
+                                <MenuItem key={value} value={value}>
+                                    {value}
+                                </MenuItem>
+                            ))}
+                        </Select>
+                        <FormHelperText>
+                            {t("version select helper text", {
+                                chartName,
+                                "catalogName": resolveLocalizedString(catalogName),
+                                catalogRepositoryUrl
+                            })}
+                        </FormHelperText>
+                    </FormControl>
                     <FormControl className={classes.isSharedWrapper}>
                         <FormControlLabel
                             control={
@@ -183,10 +236,24 @@ export const { i18n } = declareComponentKeys<
           P: { myServicesSavedConfigsExtendedLink: Link };
           R: JSX.Element;
       }
-    //{isBookmarked? "Suprimmé cette configuration" : "Enregistré cette configuration"}
     | {
           K: "bookmark button";
           P: { isBookmarked: boolean };
+      }
+    // Version
+    | "version select label"
+    /*
+        Version of the {chartName} Chart in the 
+        <MuiLink href={catalogRepositoryUrl}>{resolveLocalizedString(catalogName)} Helm Repository </MuiLink>
+    */
+    | {
+          K: "version select helper text";
+          P: {
+              chartName: string;
+              catalogName: JSX.Element;
+              catalogRepositoryUrl: string;
+          };
+          R: JSX.Element;
       }
 >()({ LauncherMainCard });
 

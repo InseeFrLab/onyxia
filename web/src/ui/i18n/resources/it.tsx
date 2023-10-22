@@ -521,6 +521,19 @@ Sentiti libero di esplorare e prendere il controllo dei tuoi deployment Kubernet
                     I Miei Servizi
                 </MuiLink>
             </>
+        ),
+        "version select label": "Versione",
+        "version select helper text": ({
+            chartName,
+            catalogRepositoryUrl,
+            catalogName
+        }) => (
+            <>
+                Versione del Chart {chartName} nel&nbsp;
+                <MuiLink href={catalogRepositoryUrl}>
+                    repository Helm {catalogName}
+                </MuiLink>
+            </>
         )
     },
     "LauncherConfigurationCard": {

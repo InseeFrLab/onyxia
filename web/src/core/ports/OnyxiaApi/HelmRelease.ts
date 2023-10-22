@@ -13,7 +13,7 @@ export declare namespace HelmRelease {
         appVersion: string;
         revision: string;
         chartName: string;
-        version: string;
+        chartVersion: string;
     };
 
     export type Started = Common & {
