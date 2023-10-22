@@ -699,7 +699,9 @@ export const thunks = {
 
             const state = rootState[name];
 
-            assert(state.stateDescription === "ready");
+            if (state.stateDescription !== "ready") {
+                return;
+            }
 
             const formFieldsValueDifferentFromDefault =
                 privateSelectors.formFieldsValueDifferentFromDefault(rootState);
