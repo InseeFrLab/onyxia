@@ -96,7 +96,7 @@ export default function Launcher(props: Props) {
         const {
             catalogId,
             chartName,
-            chartVersion,
+            version: chartVersion,
             formFieldsValueDifferentFromDefault
         } = route.params;
 
@@ -113,14 +113,14 @@ export default function Launcher(props: Props) {
     }, []);
 
     useEffect(() => {
-        const { chartVersion } = route.params;
+        const { version: chartVersion } = route.params;
 
         if (chartVersion === undefined) {
             return;
         }
 
         launcher.changeChartVersion({ chartVersion });
-    }, [route.params.chartVersion]);
+    }, [route.params.version]);
 
     const { evtLauncher } = useCoreEvts();
 
@@ -133,7 +133,7 @@ export default function Launcher(props: Props) {
                 ({ chartVersion }) =>
                     routes[route.name]({
                         ...route.params,
-                        chartVersion
+                        "version": chartVersion
                     }).replace()
             );
 
@@ -364,7 +364,7 @@ export default function Launcher(props: Props) {
                                 onChartVersionChange={chartVersion =>
                                     routes[route.name]({
                                         ...route.params,
-                                        chartVersion
+                                        "version": chartVersion
                                     }).replace()
                                 }
                                 catalogName={catalogName}
