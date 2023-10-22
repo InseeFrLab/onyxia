@@ -347,7 +347,10 @@ const privateThunks = {
                       }[]
                     | RestorableConfig[] = JSON.parse(value);
 
-                if ("chartVersion" in legacyRestorableConfigs[0]) {
+                if (
+                    legacyRestorableConfigs.length === 0 ||
+                    "chartVersion" in legacyRestorableConfigs[0]
+                ) {
                     break add_version_to_restorable_configs;
                 }
 
