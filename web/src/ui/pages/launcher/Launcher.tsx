@@ -141,6 +141,8 @@ export default function Launcher(props: Props) {
                 action => (action.actionName === "initialized" ? [action] : null),
                 ctx,
                 async ({ sensitiveConfigurations }) => {
+                    hideSplashScreen();
+
                     auto_launch: {
                         if (!route.params.autoLaunch) {
                             break auto_launch;
@@ -176,8 +178,6 @@ export default function Launcher(props: Props) {
                         launcher.launch();
                         return;
                     }
-
-                    hideSplashScreen();
                 }
             );
 
