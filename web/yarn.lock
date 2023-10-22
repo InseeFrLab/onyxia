@@ -10803,10 +10803,10 @@ jwt-decode@^3.1.2:
   resolved "https://registry.yarnpkg.com/jwt-decode/-/jwt-decode-3.1.2.tgz#3fb319f3675a2df0c2895c8f5e9fa4b67b04ed59"
   integrity sha512-UfpWE/VZn0iP50d8cz9NrZLM9lSWhcJ+0Gt/nm4by88UL+J1SiKN8/5dkjMmbEzwL2CAe+67GsegCbIKtbp75A==
 
-keycloakify@^8.1.3:
-  version "8.1.3"
-  resolved "https://registry.yarnpkg.com/keycloakify/-/keycloakify-8.1.3.tgz#813836b013dc93d5cf43a5b476c9f19537e5435c"
-  integrity sha512-KdAvtqslWNggqtLAgWmPkWxiOK/tfkbxTJUmQw5DGXig1NNpdm39WRRtg9MjLnAlwsRfWw/uOdvlBR95x/5g3g==
+keycloakify@^8.2.1:
+  version "8.2.1"
+  resolved "https://registry.yarnpkg.com/keycloakify/-/keycloakify-8.2.1.tgz#5f817f1c14499f59564e96b06f33401bbe42a948"
+  integrity sha512-qSOSZx7Nc0LFf/8dzCdnlUvE40n2cvDRFqSNEs1rJ/iXKu7HsB+Wd7SEpUYJdBJxe8UexqofaNM2Fii7denyWw==
   dependencies:
     "@babel/generator" "^7.22.9"
     "@babel/parser" "^7.22.7"
@@ -12055,10 +12055,10 @@ oidc-client-ts@^2.3.0:
     crypto-js "^4.1.1"
     jwt-decode "^3.1.2"
 
-oidc-spa@^0.1.0:
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/oidc-spa/-/oidc-spa-0.1.0.tgz#7a8ac053741d070dbef601a1884c0eb56f365193"
-  integrity sha512-6QSbAuhmliO95nhIuONtSzcL1fNCoUDDZei7Z1SOenpzKzid0rOsznA/DiMVJpm3HaHCFHm512yNtnr6ncR/QQ==
+oidc-spa@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/oidc-spa/-/oidc-spa-1.0.1.tgz#205a7613def6b7aea9b4c2ad71e952180f8c3dcb"
+  integrity sha512-vrd0peFSSHphVNEvS1s76ZR21fQr1tPBuwQLK6MyReMN9r9HA+BfDOFEiYs1Q9nixrecMQVDQsF7nBxQfwSscA==
   dependencies:
     jwt-decode "^3.1.2"
     oidc-client-ts "^2.3.0"
