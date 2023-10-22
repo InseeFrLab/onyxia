@@ -7,6 +7,7 @@ import { useConstCallback } from "powerhooks/useConstCallback";
 import { TextField } from "onyxia-ui/TextField";
 import type { TextFieldProps } from "onyxia-ui/TextField";
 import { Tooltip } from "onyxia-ui/Tooltip";
+import { Icon } from "ui/theme";
 import { capitalize } from "tsafe/capitalize";
 import FormControl from "@mui/material/FormControl";
 import FormControlLabel from "@mui/material/FormControlLabel";
@@ -158,9 +159,25 @@ export const LauncherMainCard = memo((props: Props) => {
                         inputProps_spellCheck={false}
                         onValueBeingTypedChange={onValueBeingTypedChange}
                     />
-                    <FormControl variant="standard">
+                    <FormControl
+                        variant="standard"
+                        className={classes.versionSelectWrapper}
+                    >
                         <InputLabel id={chartVersionInputLabelId}>
-                            {t("version select label")}
+                            {t("version select label")}&nbsp;
+                            <Tooltip
+                                title={t("version select helper text", {
+                                    chartName,
+                                    "catalogName": resolveLocalizedString(catalogName),
+                                    catalogRepositoryUrl
+                                })}
+                            >
+                                <Icon
+                                    className={classes.versionSelectHelpIcon}
+                                    iconId="help"
+                                    size="small"
+                                />
+                            </Tooltip>
                         </InputLabel>
                         <Select
                             labelId={chartVersionInputLabelId}
@@ -177,13 +194,6 @@ export const LauncherMainCard = memo((props: Props) => {
                                 </MenuItem>
                             ))}
                         </Select>
-                        <FormHelperText>
-                            {t("version select helper text", {
-                                chartName,
-                                "catalogName": resolveLocalizedString(catalogName),
-                                catalogRepositoryUrl
-                            })}
-                        </FormHelperText>
                     </FormControl>
                     <FormControl className={classes.isSharedWrapper}>
                         <FormControlLabel
@@ -197,9 +207,11 @@ export const LauncherMainCard = memo((props: Props) => {
                             }
                             label={t("share the service")}
                         />
-                        <FormHelperText className={classes.isSharedFormHelperText}>
-                            {t("share the service - explain")}
-                        </FormHelperText>
+                        {
+                            <FormHelperText className={classes.isSharedFormHelperText}>
+                                {t("share the service - explain")}
+                            </FormHelperText>
+                        }
                     </FormControl>
 
                     <div style={{ "flex": 1 }} />
@@ -294,8 +306,16 @@ const useStyles = tss.withName({ LauncherMainCard }).create(({ theme }) => ({
         "display": "flex",
         "alignItems": "center"
     },
+    "versionSelectWrapper": {
+        "minWidth": 200,
+        "marginLeft": theme.spacing(4)
+    },
+    "versionSelectHelpIcon": {
+        "position": "relative",
+        "top": 2
+    },
     "isSharedWrapper": {
-        "marginLeft": theme.spacing(7)
+        "marginLeft": theme.spacing(4)
     },
     "isSharedCheckbox": {
         "padding": theme.spacing(2)
