@@ -50,11 +50,23 @@ export const translations: Translations<"zh-CN"> = {
         "expires in": undefined
     },
     "AccountKubernetesTab": {
-        "credentials section title": undefined,
-        "credentials section helper": undefined,
-        "init script section title": undefined,
-        "init script section helper": undefined,
-        "expires in": undefined
+        "credentials section title": "连接到 Kubernetes 集群",
+        "credentials section helper": "用于直接与 Kubernetes API 服务器交互的凭证。",
+        "init script section title": "Shell 脚本",
+        "init script section helper": ({ installKubectlUrl }) => (
+            <>
+                此脚本使您可以在本地机器上使用 kubectl 或 helm。 <br />
+                要使用它，只需在您的机器上
+                <MuiLink href={installKubectlUrl} target="_blank">
+                    安装 kubectl
+                </MuiLink>
+                ，然后运行脚本 通过在终端中复制粘贴它。
+                <br />
+                做完这些后，您可以通过运行以下命令来确认其是否有效&nbsp;
+                <code>kubectl get pods</code> 或 <code>helm list</code>
+            </>
+        ),
+        "expires in": ({ howMuchTime }) => `这些凭证在接下来的 ${howMuchTime} 内有效`
     },
     "AccountVaultTab": {
         "credentials section title": undefined,

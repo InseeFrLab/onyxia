@@ -53,13 +53,28 @@ export const translations: Translations<"de"> = {
         "expires in": ({ howMuchTime }) => `Läuft in ${howMuchTime} ab`
     },
     "AccountKubernetesTab": {
-        "credentials section title": "Verbindung zu Kubernetes",
+        "credentials section title": "Verbindung zum Kubernetes-Cluster herstellen",
         "credentials section helper":
-            "Anmeldeinformationen zur direkten Interaktion mit dem Kubernetes-Cluster.",
-        "init script section title":
-            "Verbindung zum Kubernetes-Cluster über Ihr lokales kubectl",
-        "init script section helper": `Laden Sie das Skript herunter oder kopieren Sie es.`,
-        "expires in": ({ howMuchTime }) => `Das Token läuft in ${howMuchTime} ab`
+            "Anmeldedaten zur direkten Interaktion mit dem Kubernetes-API-Server.",
+        "init script section title": "Shell-Skript",
+        "init script section helper": ({ installKubectlUrl }) => (
+            <>
+                Dieses Skript ermöglicht die Verwendung von kubectl oder helm auf Ihrem
+                lokalen Rechner. <br />
+                Um es zu verwenden,{" "}
+                <MuiLink href={installKubectlUrl} target="_blank">
+                    installieren Sie einfach kubectl auf Ihrer Maschine
+                </MuiLink>{" "}
+                und führen Sie das Skript aus, indem Sie es in Ihr Terminal kopieren und
+                einfügen.
+                <br />
+                Nachdem Sie dies getan haben, können Sie die Funktion mit den
+                Befehlen&nbsp;
+                <code>kubectl get pods</code> oder <code>helm list</code> bestätigen
+            </>
+        ),
+        "expires in": ({ howMuchTime }) =>
+            `Diese Anmeldedaten sind für die nächsten ${howMuchTime} gültig`
     },
     "AccountVaultTab": {
         "credentials section title": "Vault-Anmeldeinformationen",

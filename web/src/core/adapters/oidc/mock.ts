@@ -1,4 +1,3 @@
-import "minimal-polyfills/Object.fromEntries";
 import { id } from "tsafe/id";
 import { addParamToUrl, retrieveParamFromUrl } from "powerhooks/tools/urlSearchParams";
 import type { Oidc } from "core/ports/Oidc";
@@ -15,8 +14,16 @@ export function createOidc(params: { isUserInitiallyLoggedIn: boolean }): Oidc {
             : params.isUserInitiallyLoggedIn;
     })();
 
+    const common: Oidc.Common = {
+        "params": {
+            "issuerUri": "",
+            "clientId": ""
+        }
+    };
+
     if (!isUserLoggedIn) {
         return id<Oidc.NotLoggedIn>({
+            ...common,
             "isUserLoggedIn": false,
             "login": async () => {
                 const { newUrl } = addParamToUrl({
@@ -33,10 +40,13 @@ export function createOidc(params: { isUserInitiallyLoggedIn: boolean }): Oidc {
     }
 
     return id<Oidc.LoggedIn>({
+        ...common,
         "isUserLoggedIn": true,
-        "getAccessToken": () => ({
-            "accessToken": "--OIDC ACCESS TOKEN--",
-            "expirationTime": Infinity
+        "getTokens": () => ({
+            "accessToken": "",
+            "idToken": "",
+            "refreshToken": "",
+            "refreshTokenExpirationTime": Infinity
         }),
         "logout": () => {
             const { newUrl } = addParamToUrl({
@@ -49,7 +59,7 @@ export function createOidc(params: { isUserInitiallyLoggedIn: boolean }): Oidc {
 
             return new Promise<never>(() => {});
         },
-        "renewToken": () => Promise.reject("Not implemented")
+        "renewTokens": () => Promise.reject("Not implemented")
     });
 }
 

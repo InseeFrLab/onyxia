@@ -41,7 +41,7 @@ export async function createSecretManager(params: Params): Promise<SecretsManage
                     auth: { lease_duration: number; client_token: string };
                 }>(`/${version}/auth/${authPath}/login`, {
                     role,
-                    "jwt": oidc.getAccessToken().accessToken
+                    "jwt": oidc.getTokens().accessToken
                 });
 
                 return id<ReturnType<SecretsManager["getToken"]>>({

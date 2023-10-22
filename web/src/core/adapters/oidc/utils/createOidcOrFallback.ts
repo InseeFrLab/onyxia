@@ -1,64 +1,61 @@
 import type { Oidc } from "core/ports/Oidc";
-import { assert } from "tsafe/assert";
+import { assert, type Equals } from "tsafe/assert";
 
 export async function createOidcOrFallback(params: {
+    oidcAdapterImplementationToUseIfNotFallingBack: "default";
     oidcParams:
         | {
-              authority?: string;
+              issuerUri?: string;
               clientId: string;
           }
         | undefined;
-    fallback:
-        | {
-              oidcParams: {
-                  authority: string;
-                  clientId: string;
-              };
-              oidc: Oidc.LoggedIn;
-          }
-        | undefined;
+    fallbackOidc: Oidc.LoggedIn | undefined;
 }): Promise<Oidc.LoggedIn> {
-    const { oidcParams, fallback } = params;
+    const { oidcAdapterImplementationToUseIfNotFallingBack, oidcParams, fallbackOidc } =
+        params;
 
     const wrap = (() => {
-        const { authority, clientId } = {
-            ...fallback?.oidcParams,
+        const { issuerUri, clientId } = {
+            ...fallbackOidc?.params,
             ...oidcParams
         };
 
         assert(
-            authority !== undefined && clientId !== undefined,
+            issuerUri !== undefined && clientId !== undefined,
             "There is no specific oidc config in the region for satellite service and no oidc config to fallback to"
         );
 
         if (
-            fallback !== undefined &&
-            authority === fallback.oidcParams.authority &&
-            clientId === fallback.oidcParams.clientId
+            fallbackOidc !== undefined &&
+            issuerUri === fallbackOidc.params.issuerUri &&
+            clientId === fallbackOidc.params.clientId
         ) {
             return {
                 "type": "oidc client",
-                "oidc": fallback.oidc
+                "oidc": fallbackOidc
             } as const;
         }
 
         return {
-            "type": "keycloak params",
-            "oidcParams": { authority, clientId }
+            "type": "oidc params",
+            "oidcParams": { issuerUri, clientId }
         } as const;
     })();
 
     switch (wrap.type) {
         case "oidc client":
             return wrap.oidc;
-        case "keycloak params": {
+        case "oidc params": {
+            assert<
+                Equals<typeof oidcAdapterImplementationToUseIfNotFallingBack, "default">
+            >();
+
             const { createOidc } = await import("../default");
 
             const oidc = await createOidc({
-                "authority": wrap.oidcParams.authority,
+                "issuerUri": wrap.oidcParams.issuerUri,
                 "clientId": wrap.oidcParams.clientId,
-                "transformUrlBeforeRedirect": url => url,
-                "getUiLocales": () => "en"
+                "transformUrlBeforeRedirect": url => url
             });
 
             if (!oidc.isUserLoggedIn) {

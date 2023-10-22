@@ -23,7 +23,7 @@ type CoreParams = {
 };
 
 export async function createCore(params: CoreParams) {
-    const { apiUrl, transformUrlBeforeRedirectToLogin, getCurrentLang } = params;
+    const { apiUrl, transformUrlBeforeRedirectToLogin } = params;
 
     let isCoreCreated = false;
 
@@ -48,7 +48,7 @@ export async function createCore(params: CoreParams) {
                 if (!oidc.isUserLoggedIn) {
                     return undefined;
                 }
-                return oidc.getAccessToken().accessToken;
+                return oidc.getTokens().accessToken;
             },
             "getRegionId": () => {
                 if (!isCoreCreated) {
@@ -87,7 +87,7 @@ export async function createCore(params: CoreParams) {
         return onyxiaApi;
     })();
 
-    let oidcParams: { authority: string; clientId: string } | undefined = undefined;
+    let oidcParams: { issuerUri: string; clientId: string } | undefined = undefined;
 
     oidc = await (async () => {
         oidcParams = (await onyxiaApi.getAvailableRegionsAndOidcParams()).oidcParams;
@@ -101,10 +101,9 @@ export async function createCore(params: CoreParams) {
         const { createOidc } = await import("core/adapters/oidc/default");
 
         return createOidc({
-            "authority": oidcParams.authority,
+            "issuerUri": oidcParams.issuerUri,
             "clientId": oidcParams.clientId,
-            "transformUrlBeforeRedirect": transformUrlBeforeRedirectToLogin,
-            "getUiLocales": getCurrentLang
+            "transformUrlBeforeRedirect": transformUrlBeforeRedirectToLogin
         });
     })();
 
@@ -138,10 +137,7 @@ export async function createCore(params: CoreParams) {
         const { s3: s3Params, vault: vaultParams } = usecases.deploymentRegion.selectors.selectedDeploymentRegion(core.getState());
 
         /* prettier-ignore */
-        const fallback = oidcParams === undefined ? undefined : {
-            oidcParams,
-            oidc
-        };
+        const nonMockOidc = oidcParams === undefined ? undefined : oidc;
 
         /* prettier-ignore */
         const { createOidcOrFallback } = await import("core/adapters/oidc/utils/createOidcOrFallback");
@@ -162,8 +158,9 @@ export async function createCore(params: CoreParams) {
                 ...getCreateS3ClientParams({ s3Params }),
                 "createAwsBucket": onyxiaApi.createAwsBucket,
                 "oidc": await createOidcOrFallback({
+                    "oidcAdapterImplementationToUseIfNotFallingBack": "default",
                     "oidcParams": s3Params.oidcParams,
-                    fallback
+                    "fallbackOidc": nonMockOidc
                 })
             });
         })();
@@ -186,8 +183,9 @@ export async function createCore(params: CoreParams) {
                 "url": vaultParams.url,
                 "authPath": vaultParams.authPath,
                 "oidc": await createOidcOrFallback({
+                    "oidcAdapterImplementationToUseIfNotFallingBack": "default",
                     "oidcParams": vaultParams.oidcParams,
-                    fallback
+                    "fallbackOidc": nonMockOidc
                 })
             });
         })();

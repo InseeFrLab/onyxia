@@ -3900,11 +3900,6 @@
   resolved "https://registry.yarnpkg.com/@types/json5/-/json5-0.0.29.tgz#ee28707ae94e11d2b827bcbe5270bcea7f3e71ee"
   integrity sha512-dRLjCWHYg4oaA77cxO64oO+7JwCwnIzkZPdrrC71jQmQtlhM556pwKo5bUzqvZndkVbeFLIIi+9TC40JNF5hNQ==
 
-"@types/jwt-simple@^0.5.33":
-  version "0.5.33"
-  resolved "https://registry.yarnpkg.com/@types/jwt-simple/-/jwt-simple-0.5.33.tgz#fb839cabe81437954f7d0cd01760ad8096ec526e"
-  integrity sha512-RcVbKkbUP6u5yFd9HuLhCkAYlT1FQVZylNsxxgaVMZxMajwrVTmQei7C6yMXSoAkXJXpGOUtbsY6Q9kq3+p93g==
-
 "@types/lodash@^4.14.167":
   version "4.14.194"
   resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.194.tgz#b71eb6f7a0ff11bff59fc987134a093029258a76"
@@ -10808,15 +10803,10 @@ jwt-decode@^3.1.2:
   resolved "https://registry.yarnpkg.com/jwt-decode/-/jwt-decode-3.1.2.tgz#3fb319f3675a2df0c2895c8f5e9fa4b67b04ed59"
   integrity sha512-UfpWE/VZn0iP50d8cz9NrZLM9lSWhcJ+0Gt/nm4by88UL+J1SiKN8/5dkjMmbEzwL2CAe+67GsegCbIKtbp75A==
 
-jwt-simple@^0.5.6:
-  version "0.5.6"
-  resolved "https://registry.yarnpkg.com/jwt-simple/-/jwt-simple-0.5.6.tgz#3357adec55b26547114157be66748995b75b333a"
-  integrity sha512-40aUybvhH9t2h71ncA1/1SbtTNCVZHgsTsTgqPUxGWDmUDrXyDf2wMNQKEbdBjbf4AI+fQhbECNTV6lWxQKUzg==
-
-keycloakify@^8.2.1:
-  version "8.2.1"
-  resolved "https://registry.yarnpkg.com/keycloakify/-/keycloakify-8.2.1.tgz#5f817f1c14499f59564e96b06f33401bbe42a948"
-  integrity sha512-qSOSZx7Nc0LFf/8dzCdnlUvE40n2cvDRFqSNEs1rJ/iXKu7HsB+Wd7SEpUYJdBJxe8UexqofaNM2Fii7denyWw==
+keycloakify@^8.1.3:
+  version "8.1.3"
+  resolved "https://registry.yarnpkg.com/keycloakify/-/keycloakify-8.1.3.tgz#813836b013dc93d5cf43a5b476c9f19537e5435c"
+  integrity sha512-KdAvtqslWNggqtLAgWmPkWxiOK/tfkbxTJUmQw5DGXig1NNpdm39WRRtg9MjLnAlwsRfWw/uOdvlBR95x/5g3g==
   dependencies:
     "@babel/generator" "^7.22.9"
     "@babel/parser" "^7.22.7"
@@ -12064,6 +12054,15 @@ oidc-client-ts@^2.3.0:
   dependencies:
     crypto-js "^4.1.1"
     jwt-decode "^3.1.2"
+
+oidc-spa@^0.1.0:
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/oidc-spa/-/oidc-spa-0.1.0.tgz#7a8ac053741d070dbef601a1884c0eb56f365193"
+  integrity sha512-6QSbAuhmliO95nhIuONtSzcL1fNCoUDDZei7Z1SOenpzKzid0rOsznA/DiMVJpm3HaHCFHm512yNtnr6ncR/QQ==
+  dependencies:
+    jwt-decode "^3.1.2"
+    oidc-client-ts "^2.3.0"
+    tsafe "^1.6.5"
 
 on-finished@2.4.1:
   version "2.4.1"

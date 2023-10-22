@@ -60,11 +60,25 @@ export const translations: Translations<"en"> = {
     },
     "AccountKubernetesTab": {
         "credentials section title": "Connect to the Kubernetes cluster",
-        "credentials section helper": "Credentials to manage the Kubernetes cluster",
-        "init script section title":
-            "To connect to the Kubernetes cluster via your local kubectl",
-        "init script section helper": "Download or copy the script",
-        "expires in": ({ howMuchTime }) => `The token expires in ${howMuchTime}`
+        "credentials section helper":
+            "Credentials to interact directly with the Kubernetes API server.",
+        "init script section title": "Shell script",
+        "init script section helper": ({ installKubectlUrl }) => (
+            <>
+                This script enables to use kubectl or helm on your local machine. <br />
+                To use it simply{" "}
+                <MuiLink href={installKubectlUrl} target="_blank">
+                    install kubectl on your machine
+                </MuiLink>{" "}
+                and run the script by copy pasting it in your terminal.
+                <br />
+                After doing so you you can confirm that it works by running the
+                command&nbsp;
+                <code>kubectl get pods</code> or <code>helm list</code>
+            </>
+        ),
+        "expires in": ({ howMuchTime }) =>
+            `Theses credentials are valid for the next ${howMuchTime}`
     },
     "AccountVaultTab": {
         "credentials section title": "Vault credentials",

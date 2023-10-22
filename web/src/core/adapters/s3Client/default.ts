@@ -44,6 +44,11 @@ export async function createS3Client(params: Params): Promise<S3Client> {
     const { getNewlyRequestedOrCachedToken, clearCachedToken } =
         getNewlyRequestedOrCachedTokenFactory({
             "requestNewToken": async (restrictToBucketName: string | undefined) => {
+                // NOTE: We renew the OIDC access token because it's expiration time
+                // cap the duration of the token we will request to minio so we want it
+                // as fresh as possible.
+                await oidc.renewTokens();
+
                 const now = Date.now();
 
                 const { data } = await axios
@@ -58,7 +63,7 @@ export async function createS3Client(params: Params): Promise<S3Client> {
                         "/?" +
                             Object.entries({
                                 "Action": "AssumeRoleWithWebIdentity",
-                                "WebIdentityToken": oidc.getAccessToken().accessToken,
+                                "WebIdentityToken": oidc.getTokens().accessToken,
                                 //Desired TTL of the token, depending of the configuration
                                 //and version of minio we could get less than that but never more.
                                 "DurationSeconds": durationSeconds,

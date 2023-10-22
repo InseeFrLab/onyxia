@@ -55,13 +55,27 @@ export const translations: Translations<"nl"> = {
         "expires in": ({ howMuchTime }) => `Vervalt binnen ${howMuchTime}`
     },
     "AccountKubernetesTab": {
-        "credentials section title": "Verbinding met Kubernetes",
+        "credentials section title": "Verbind met de Kubernetes-cluster",
         "credentials section helper":
-            "Gebruikersnaam voor directe interactie met het cluster Kubernetes.",
-        "init script section title":
-            "Om verbinding te maken met het cluster Kubernetes via uw lokale kubectl",
-        "init script section helper": `Download of kopieer het script.`,
-        "expires in": ({ howMuchTime }) => `Het token vervalt binnen ${howMuchTime}`
+            "Inloggegevens om direct te communiceren met de Kubernetes API-server.",
+        "init script section title": "Shell-script",
+        "init script section helper": ({ installKubectlUrl }) => (
+            <>
+                Dit script maakt het mogelijk om kubectl of helm op je lokale machine te
+                gebruiken. <br />
+                Om het te gebruiken,{" "}
+                <MuiLink href={installKubectlUrl} target="_blank">
+                    installeer gewoon kubectl op je machine
+                </MuiLink>{" "}
+                en voer het script uit door het te kopiëren en plakken in je terminal.
+                <br />
+                Nadat je dit hebt gedaan, kun je bevestigen dat het werkt door het
+                commando&nbsp;
+                <code>kubectl get pods</code> of <code>helm list</code> uit te voeren
+            </>
+        ),
+        "expires in": ({ howMuchTime }) =>
+            `Deze inloggegevens zijn geldig voor de komende ${howMuchTime}`
     },
     "AccountVaultTab": {
         "credentials section title": "Gebrukersnamen Vault",

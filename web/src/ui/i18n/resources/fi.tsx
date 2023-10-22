@@ -57,11 +57,25 @@ export const translations: Translations<"fi"> = {
     },
     "AccountKubernetesTab": {
         "credentials section title": "Yhdistä Kubernetes-klusteriin",
-        "credentials section helper": "Todennustiedot Kubernetes-klusterin hallintaan",
-        "init script section title":
-            "Yhdistä Kubernetes-klusteriin paikallisen kubectl-komennon kautta",
-        "init script section helper": "Lataa tai kopioi komento",
-        "expires in": ({ howMuchTime }) => `Pääte vanhenee ${howMuchTime} kuluttua`
+        "credentials section helper":
+            "Käyttöoikeudet suoraan yhteyteen Kubernetes API-palvelimen kanssa.",
+        "init script section title": "Komentosarja",
+        "init script section helper": ({ installKubectlUrl }) => (
+            <>
+                Tämä skripti mahdollistaa kubectlin tai helmin käytön paikallisella
+                koneellasi. <br />
+                Käyttääksesi sitä,{" "}
+                <MuiLink href={installKubectlUrl} target="_blank">
+                    asenna kubectl koneellesi
+                </MuiLink>{" "}
+                ja suorita skripti kopioimalla ja liittämällä se terminaaliisi.
+                <br />
+                Tämän jälkeen voit varmistaa, että se toimii ajamalla komennon&nbsp;
+                <code>kubectl get pods</code> tai <code>helm list</code>
+            </>
+        ),
+        "expires in": ({ howMuchTime }) =>
+            `Nämä käyttöoikeudet ovat voimassa seuraavat ${howMuchTime}`
     },
     "AccountVaultTab": {
         "credentials section title": "Vault-todennustiedot",
