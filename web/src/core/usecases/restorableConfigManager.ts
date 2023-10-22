@@ -25,6 +25,7 @@ type ChartIconUrlByChartNameAndCatalogId = {
 export type RestorableConfig = {
     catalogId: string;
     chartName: string;
+    chartVersion: string;
     formFieldsValueDifferentFromDefault: FormFieldValue[];
 };
 

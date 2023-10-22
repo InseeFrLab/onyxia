@@ -137,6 +137,7 @@ export default function MyServices(props: Props) {
                     routes.launcher({
                         "catalogId": restorableConfig.catalogId,
                         "chartName": restorableConfig.chartName,
+                        "version": restorableConfig.chartVersion,
                         "formFieldsValueDifferentFromDefault":
                             restorableConfig.formFieldsValueDifferentFromDefault,
                         "autoLaunch": autoLaunch ? true : undefined

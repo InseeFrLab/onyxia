@@ -338,16 +338,20 @@ const pathOfFormFieldsWhoseValuesAreDifferentFromDefault = createSelector(
 
 const catalogId = createSelector(readyState, state => state?.catalogId);
 
+const chartVersion = createSelector(readyState, state => state?.chartVersion);
+
 const restorableConfig = createSelector(
     isReady,
     catalogId,
     chartName,
+    chartVersion,
     formFields,
     pathOfFormFieldsWhoseValuesAreDifferentFromDefault,
     (
         isReady,
         catalogId,
         chartName,
+        chartVersion,
         formFields,
         pathOfFormFieldsWhoseValuesAreDifferentFromDefault
     ): restorableConfigManager.RestorableConfig | undefined => {
@@ -357,12 +361,14 @@ const restorableConfig = createSelector(
 
         assert(catalogId !== undefined);
         assert(chartName !== undefined);
+        assert(chartVersion !== undefined);
         assert(formFields !== undefined);
         assert(pathOfFormFieldsWhoseValuesAreDifferentFromDefault !== undefined);
 
         return {
             catalogId,
             chartName,
+            chartVersion,
             "formFieldsValueDifferentFromDefault":
                 pathOfFormFieldsWhoseValuesAreDifferentFromDefault.map(({ path }) => ({
                     path,
@@ -550,8 +556,6 @@ const isShared = createSelector(
         return isShared;
     }
 );
-
-const chartVersion = createSelector(readyState, state => state?.chartVersion);
 
 const availableChartVersions = createSelector(
     readyState,

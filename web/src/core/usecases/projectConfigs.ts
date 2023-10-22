@@ -1,3 +1,5 @@
+import { type FormFieldValue } from "./launcher/FormField";
+import type { RestorableConfig } from "./restorableConfigManager";
 import { assert, type Equals } from "tsafe/assert";
 import type { Thunks } from "../core";
 import type { Project } from "../ports/OnyxiaApi";
@@ -8,7 +10,10 @@ import type { State as RootState, CreateEvt } from "../core";
 import * as userConfigs from "./userConfigs";
 import { join as pathJoin } from "path";
 import type { Id } from "tsafe/id";
+import { is } from "tsafe/is";
 import { generateRandomPassword } from "core/tools/generateRandomPassword";
+import { Chart } from "core/ports/OnyxiaApi";
+import { exclude } from "tsafe/exclude";
 
 type State = {
     projects: Project[];
@@ -193,8 +198,16 @@ export const protectedThunks = {
                 .then(({ secret }) => secret["value"] as ProjectConfigs[K])
                 .catch(() => undefined);
 
-            if (value === undefined) {
-                value = await dispatch(privateThunks.__migration({ key }));
+            {
+                const { hasMigrationBeenPerformed } = await dispatch(
+                    privateThunks.__migration({ key, value })
+                );
+
+                if (hasMigrationBeenPerformed) {
+                    value = await secretsManager
+                        .get({ "path": pathJoin(dirPath, key) })
+                        .then(({ secret }) => secret["value"] as ProjectConfigs[K]);
+                }
             }
 
             if (value === undefined) {
@@ -228,14 +241,23 @@ const privateThunks = {
      *  implement a migration system.
      */
     "__migration":
-        <K extends keyof ProjectConfigs>(params: { key: K }) =>
-        async (...args): Promise<ProjectConfigs[K] | undefined> => {
-            const { key } = params;
+        <K extends keyof ProjectConfigs>(params: {
+            key: K;
+            value: ProjectConfigs[K] | undefined;
+        }) =>
+        async (...args): Promise<{ hasMigrationBeenPerformed: boolean }> => {
+            const { key, value } = params;
 
-            const [dispatch, getState, { secretsManager }] = args;
+            const [dispatch, getState, { secretsManager, onyxiaApi }] = args;
+
+            let hasMigrationBeenPerformed = false;
 
             migration_bookmarkedServiceConfigurationStr_to_restorableConfigsStr: {
                 if (key !== "restorableConfigsStr") {
+                    break migration_bookmarkedServiceConfigurationStr_to_restorableConfigsStr;
+                }
+
+                if (value !== undefined) {
                     break migration_bookmarkedServiceConfigurationStr_to_restorableConfigsStr;
                 }
 
@@ -303,11 +325,86 @@ const privateThunks = {
 
                 await secretsManager.delete({ "path": oldPath });
 
-                // @ts-expect-error
-                return newValue;
+                hasMigrationBeenPerformed = true;
             }
 
-            return undefined;
+            add_version_to_restorable_configs: {
+                if (key !== "restorableConfigsStr") {
+                    break add_version_to_restorable_configs;
+                }
+
+                assert(is<string | null | undefined>(value));
+
+                if (value === undefined || value === null) {
+                    break add_version_to_restorable_configs;
+                }
+
+                const legacyRestorableConfigs:
+                    | {
+                          catalogId: string;
+                          chartName: string;
+                          formFieldsValueDifferentFromDefault: FormFieldValue[];
+                      }[]
+                    | RestorableConfig[] = JSON.parse(value);
+
+                if ("chartVersion" in legacyRestorableConfigs[0]) {
+                    break add_version_to_restorable_configs;
+                }
+
+                assert(!is<RestorableConfig[]>(legacyRestorableConfigs));
+
+                console.log("Migrating restorableConfigsStr to add version");
+
+                const { chartsByCatalogId } = await onyxiaApi.getCatalogsAndCharts();
+
+                const restorableConfigs: RestorableConfig[] = legacyRestorableConfigs
+                    .map(
+                        ({
+                            catalogId,
+                            chartName,
+                            formFieldsValueDifferentFromDefault
+                        }) => {
+                            const charts = chartsByCatalogId[catalogId];
+
+                            if (charts === undefined) {
+                                console.log(
+                                    `Dropping restorable config because catalog ${catalogId} not found`
+                                );
+                                return undefined;
+                            }
+
+                            const chart = charts.find(({ name }) => name === chartName);
+
+                            if (chart === undefined) {
+                                console.log(
+                                    `Dropping restorable config because chart ${catalogId}/${chartName} not found`
+                                );
+                                return undefined;
+                            }
+
+                            return {
+                                catalogId,
+                                chartName,
+                                formFieldsValueDifferentFromDefault,
+                                "chartVersion": Chart.getDefaultVersion(chart)
+                            };
+                        }
+                    )
+                    .filter(exclude(undefined));
+
+                const newValue = JSON.stringify(restorableConfigs);
+
+                const dirPath = dispatch(privateThunks.getDirPath());
+
+                await secretsManager.put({
+                    "path": pathJoin(dirPath, key),
+                    "secret": { "value": newValue }
+                });
+
+                hasMigrationBeenPerformed = true;
+            }
+
+            return { hasMigrationBeenPerformed };
         }
 } satisfies Thunks;
 
