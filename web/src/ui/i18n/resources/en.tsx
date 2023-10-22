@@ -305,7 +305,7 @@ export const translations: Translations<"en"> = {
         "reduce": "Reduce",
         "home": "Home",
         "account": "My account",
-        "catalog": "Services catalog",
+        "catalog": "Service catalog",
         "myServices": "My Services",
         "mySecrets": "My Secrets",
         "myFiles": "My Files",
@@ -340,7 +340,7 @@ export const translations: Translations<"en"> = {
         "cardButton3": "Consult the data"
     },
     "Catalog": {
-        "header text1": "Services catalog",
+        "header text1": "Service catalog",
         "header text2": "Explore, launch and configure services with just a few clicks.",
         "header help": ({ catalogName, catalogDescription, repositoryUrl }) => (
             <>
