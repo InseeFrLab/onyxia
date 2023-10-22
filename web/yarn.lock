@@ -10813,10 +10813,10 @@ jwt-simple@^0.5.6:
   resolved "https://registry.yarnpkg.com/jwt-simple/-/jwt-simple-0.5.6.tgz#3357adec55b26547114157be66748995b75b333a"
   integrity sha512-40aUybvhH9t2h71ncA1/1SbtTNCVZHgsTsTgqPUxGWDmUDrXyDf2wMNQKEbdBjbf4AI+fQhbECNTV6lWxQKUzg==
 
-keycloakify@^8.2.0:
-  version "8.2.0"
-  resolved "https://registry.yarnpkg.com/keycloakify/-/keycloakify-8.2.0.tgz#dfafdf92acb493ea9faef94bfecd020366d7851c"
-  integrity sha512-+xanJV9eBt5/y3MRrH3pCBWyhj3J2BeRonIvGyllQ3ymwEsahVHdkCRkquPMW6UQo+7F+BArVbI3ggvfL45j5g==
+keycloakify@^8.2.1:
+  version "8.2.1"
+  resolved "https://registry.yarnpkg.com/keycloakify/-/keycloakify-8.2.1.tgz#5f817f1c14499f59564e96b06f33401bbe42a948"
+  integrity sha512-qSOSZx7Nc0LFf/8dzCdnlUvE40n2cvDRFqSNEs1rJ/iXKu7HsB+Wd7SEpUYJdBJxe8UexqofaNM2Fii7denyWw==
   dependencies:
     "@babel/generator" "^7.22.9"
     "@babel/parser" "^7.22.7"
