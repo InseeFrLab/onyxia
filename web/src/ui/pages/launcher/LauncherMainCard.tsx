@@ -41,8 +41,12 @@ export type Props = {
     friendlyName: string;
     onFriendlyNameChange: (friendlyName: string) => void;
 
-    isShared: boolean;
-    onIsSharedValueChange: (params: { isShared: boolean }) => void;
+    isSharedWrap:
+        | {
+              isShared: boolean;
+              onIsSharedValueChange: (params: { isShared: boolean }) => void;
+          }
+        | undefined;
 
     isLaunchable: boolean;
 
@@ -71,11 +75,10 @@ export const LauncherMainCard = memo((props: Props) => {
 
         myServicesSavedConfigsExtendedLink,
         friendlyName,
-        isShared,
+        isSharedWrap,
         isLaunchable,
         onRequestToggleBookmark,
         onFriendlyNameChange,
-        onIsSharedValueChange,
         onRequestLaunch,
         onRequestCancel,
         onRequestCopyLaunchUrl,
@@ -89,11 +92,6 @@ export const LauncherMainCard = memo((props: Props) => {
     const onValueBeingTypedChange = useConstCallback<
         TextFieldProps["onValueBeingTypedChange"]
     >(({ value }) => onFriendlyNameChange(value));
-
-    const onIsSharedCheckboxChange = useConstCallback(
-        (event: React.ChangeEvent<HTMLInputElement>) =>
-            onIsSharedValueChange({ "isShared": event.target.checked })
-    );
 
     const { resolveLocalizedString } = useResolveLocalizedString({
         "labelWhenMismatchingLanguage": true
@@ -195,24 +193,32 @@ export const LauncherMainCard = memo((props: Props) => {
                             ))}
                         </Select>
                     </FormControl>
-                    <FormControl className={classes.isSharedWrapper}>
-                        <FormControlLabel
-                            control={
-                                <Checkbox
-                                    className={classes.isSharedCheckbox}
-                                    color="primary"
-                                    checked={isShared}
-                                    onChange={onIsSharedCheckboxChange}
-                                />
+                    {isSharedWrap !== undefined && (
+                        <FormControl className={classes.isSharedWrapper}>
+                            <FormControlLabel
+                                control={
+                                    <Checkbox
+                                        className={classes.isSharedCheckbox}
+                                        color="primary"
+                                        checked={isSharedWrap.isShared}
+                                        onChange={event =>
+                                            isSharedWrap.onIsSharedValueChange({
+                                                "isShared": event.target.checked
+                                            })
+                                        }
+                                    />
+                                }
+                                label={t("share the service")}
+                            />
+                            {
+                                <FormHelperText
+                                    className={classes.isSharedFormHelperText}
+                                >
+                                    {t("share the service - explain")}
+                                </FormHelperText>
                             }
-                            label={t("share the service")}
-                        />
-                        {
-                            <FormHelperText className={classes.isSharedFormHelperText}>
-                                {t("share the service - explain")}
-                            </FormHelperText>
-                        }
-                    </FormControl>
+                        </FormControl>
+                    )}
 
                     <div style={{ "flex": 1 }} />
                     <Button variant="secondary" onClick={onRequestCancel}>

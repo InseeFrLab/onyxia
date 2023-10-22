@@ -767,7 +767,9 @@ export const thunks = {
     "changeIsShared":
         (params: { isShared: boolean }) =>
         (...args) => {
-            const [dispatch] = args;
+            const [dispatch, getState] = args;
+
+            assert(privateSelectors.isShared(getState()) !== undefined);
 
             dispatch(
                 thunks.changeFormFieldValue({

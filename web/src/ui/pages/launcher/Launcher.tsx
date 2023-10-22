@@ -376,9 +376,16 @@ export default function Launcher(props: Props) {
                                 }
                                 onRequestToggleBookmark={onRequestToggleBookmark}
                                 friendlyName={friendlyName}
-                                isShared={isShared}
                                 onFriendlyNameChange={launcher.changeFriendlyName}
-                                onIsSharedValueChange={launcher.changeIsShared}
+                                isSharedWrap={
+                                    isShared === undefined
+                                        ? undefined
+                                        : {
+                                              isShared,
+                                              "onIsSharedValueChange":
+                                                  launcher.changeIsShared
+                                          }
+                                }
                                 onRequestLaunch={launcher.launch}
                                 onRequestCancel={onRequestCancel}
                                 onRequestRestoreAllDefault={

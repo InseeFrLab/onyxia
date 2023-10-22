@@ -35,7 +35,7 @@ export const ViewDefault = getStory({
     },
     "friendlyName": "rstudio-1615211422",
     "isLaunchable": true,
-    "isShared": false,
+    "isSharedWrap": undefined,
     ...logCallbacks([
         "onChartVersionChange",
         "onFriendlyNameChange",
@@ -43,7 +43,6 @@ export const ViewDefault = getStory({
         "onRequestCancel",
         "onRequestCopyLaunchUrl",
         "onRequestLaunch",
-        "onIsSharedValueChange",
         "onRequestRestoreAllDefault"
     ])
 });

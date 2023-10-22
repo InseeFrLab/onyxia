@@ -61,20 +61,6 @@ const friendlyName = createSelector(formFields, formFields => {
     return friendlyName;
 });
 
-const isShared = createSelector(formFields, formFields => {
-    if (formFields === undefined) {
-        return undefined;
-    }
-
-    const isShared = formFields.find(({ path }) =>
-        same(path, onyxiaIsSharedFormFieldPath.split("."))
-    )!.value;
-
-    assert(typeof isShared === "boolean");
-
-    return isShared;
-});
-
 const valuesSchema = createSelector(readyState, state => state?.valuesSchema);
 
 const indexedFormFields = createSelector(
@@ -540,6 +526,31 @@ const groupProjectName = createSelector(
     project => (project.group === undefined ? undefined : project.name)
 );
 
+const isShared = createSelector(
+    isReady,
+    formFields,
+    groupProjectName,
+    (isReady, formFields, groupProjectName) => {
+        if (!isReady) {
+            return undefined;
+        }
+
+        assert(formFields !== undefined);
+
+        if (groupProjectName === undefined) {
+            return;
+        }
+
+        const isShared = formFields.find(({ path }) =>
+            same(path, onyxiaIsSharedFormFieldPath.split("."))
+        )!.value;
+
+        assert(typeof isShared === "boolean");
+
+        return isShared;
+    }
+);
+
 const chartVersion = createSelector(readyState, state => state?.chartVersion);
 
 const availableChartVersions = createSelector(
@@ -620,7 +631,7 @@ const wrap = createSelector(
         assert(isRestorableConfigSaved !== undefined);
         assert(indexedFormFields !== undefined);
         assert(isLaunchable !== undefined);
-        assert(isShared !== undefined);
+        // isShared can be undefined, even if isReady is true
         assert(formFieldsIsWellFormed !== undefined);
         assert(chartIconUrl !== undefined);
         assert(chartName !== undefined);
@@ -674,5 +685,6 @@ const formFieldsValueDifferentFromDefault = createSelector(
 
 export const privateSelectors = {
     helmReleaseName,
-    formFieldsValueDifferentFromDefault
+    formFieldsValueDifferentFromDefault,
+    isShared
 };
