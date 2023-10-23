@@ -212,7 +212,7 @@ export const selectors = (() => {
                 `  --auth-provider-arg=refresh-token=${state.refreshToken} \\`,
                 `  --auth-provider-arg=id-token=${state.idToken}`,
                 ``,
-                `kubectl config set-context ${host}`,
+                `kubectl config set-context ${host} \\`,
                 `  --user=${state.user} \\`,
                 `  --cluster=${host} \\`,
                 `  --namespace=${namespace}`,
