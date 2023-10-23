@@ -1,6 +1,7 @@
 import type { Translations } from "../types";
 import MuiLink from "@mui/material/Link";
 import { Markdown } from "onyxia-ui/Markdown";
+import { elementsToSentence } from "ui/tools/elementsToSentence";
 
 export const translations: Translations<"de"> = {
     /* spell-checker: disable */
@@ -52,13 +53,28 @@ export const translations: Translations<"de"> = {
         "expires in": ({ howMuchTime }) => `Läuft in ${howMuchTime} ab`
     },
     "AccountKubernetesTab": {
-        "credentials section title": "Verbindung zu Kubernetes",
+        "credentials section title": "Verbindung zum Kubernetes-Cluster herstellen",
         "credentials section helper":
-            "Anmeldeinformationen zur direkten Interaktion mit dem Kubernetes-Cluster.",
-        "init script section title":
-            "Verbindung zum Kubernetes-Cluster über Ihr lokales kubectl",
-        "init script section helper": `Laden Sie das Skript herunter oder kopieren Sie es.`,
-        "expires in": ({ howMuchTime }) => `Das Token läuft in ${howMuchTime} ab`
+            "Anmeldedaten zur direkten Interaktion mit dem Kubernetes-API-Server.",
+        "init script section title": "Shell-Skript",
+        "init script section helper": ({ installKubectlUrl }) => (
+            <>
+                Dieses Skript ermöglicht die Verwendung von kubectl oder helm auf Ihrem
+                lokalen Rechner. <br />
+                Um es zu verwenden,{" "}
+                <MuiLink href={installKubectlUrl} target="_blank">
+                    installieren Sie einfach kubectl auf Ihrer Maschine
+                </MuiLink>{" "}
+                und führen Sie das Skript aus, indem Sie es in Ihr Terminal kopieren und
+                einfügen.
+                <br />
+                Nachdem Sie dies getan haben, können Sie die Funktion mit den
+                Befehlen&nbsp;
+                <code>kubectl get pods</code> oder <code>helm list</code> bestätigen
+            </>
+        ),
+        "expires in": ({ howMuchTime }) =>
+            `Diese Anmeldedaten sind für die nächsten ${howMuchTime} gültig`
     },
     "AccountVaultTab": {
         "credentials section title": "Vault-Anmeldeinformationen",
@@ -328,58 +344,58 @@ export const translations: Translations<"de"> = {
         "cardButton2": "Der Community beitreten",
         "cardButton3": "Daten anzeigen"
     },
-    "CatalogExplorerCard": {
-        "launch": "Starten",
-        "learn more": "Mehr erfahren"
-    },
-    "CatalogExplorerCards": {
+    "Catalog": {
+        "header text1": "Dienstkatalog",
+        "header text2":
+            "Erkunden, starten und konfigurieren Sie Dienste mit nur wenigen Klicks.",
+        "header help": ({ catalogName, catalogDescription, repositoryUrl }) => (
+            <>
+                Sie erforschen das Helm Chart Repository{" "}
+                <MuiLink href={repositoryUrl} target="_blank">
+                    {catalogName}: {catalogDescription}
+                </MuiLink>
+            </>
+        ),
+        "here": "hier",
         "show more": "Alle anzeigen",
         "no service found": "Dienst nicht gefunden",
         "no result found": ({ forWhat }) => `Keine Ergebnisse gefunden für ${forWhat}`,
         "check spelling": `Überprüfen Sie die Schreibweise des Dienstnamens oder versuchen Sie, Ihre Suche zu erweitern.`,
         "go back": "Zurück zu den Hauptdiensten",
-        "main services": "Hauptdienste",
-        "all services": "Alle Dienste",
         "search results": "Suchergebnisse",
         "search": "Suchen"
     },
-    "Catalog": {
+    "CatalogChartCard": {
+        "launch": "Starten",
+        "learn more": "Mehr erfahren"
+    },
+    "CatalogNoSearchMatches": {
+        "no service found": "Dienst nicht gefunden",
+        "no result found": ({ forWhat }) => `Keine Ergebnisse gefunden für ${forWhat}`,
+        "check spelling": `Überprüfen Sie die Schreibweise des Dienstnamens oder versuchen Sie, Ihre Suche zu erweitern.`,
+        "go back": "Zurück zu den Hauptdiensten"
+    },
+    "Launcher": {
         "header text1": "Dienstkatalog",
         "header text2":
             "Erkunden, starten und konfigurieren Sie Dienste mit nur wenigen Klicks.",
-        "contribute to the catalog": ({ catalogName }) => (
-            <>Beitragen zum Katalog {catalogName}</>
-        ),
-        "contribute to the package": ({ packageName }) =>
-            `Zugriff auf den Quellcode des Pakets ${packageName} `,
-        "here": "hier"
-    },
-    "CatalogLauncher": {
-        "no longer bookmarked dialog title": "Nicht gespeicherte Änderungen",
-        "no longer bookmarked dialog body":
-            "Klicken Sie erneut auf das Lesezeichensymbol, um Ihre gespeicherte Konfiguration zu aktualisieren.",
-        "ok": "Ok",
-        "should overwrite configuration dialog title": "Möchten Sie es ersetzen?",
-        "should overwrite configuration dialog subtitle": ({ friendlyName }) =>
-            `„${friendlyName}“ ist bereits in Ihren Aufzeichnungen vorhanden.`,
-        "should overwrite configuration dialog body":
-            "Ein registrierter Dienst mit dem gleichen Namen existiert bereits. Wenn Sie ihn ersetzen, wird der ursprüngliche Inhalt verloren.",
-        "cancel": "Abbrechen",
-        "replace": "Ersetzen",
-        "sensitive configuration dialog title":
-            "Das Starten dieses Dienstes könnte gefährlich sein",
-        "proceed to launch": "Bewusst starten",
-        "auto launch disabled dialog title": "Automatisches Starten deaktiviert",
-        "auto launch disabled dialog body": (
-            <>
-                <b>WARNUNG</b>: Möglicherweise versucht jemand, Sie dazu zu verleiten, ein
-                zu starten Dienst, der die Integrität Ihres Namespace gefährden könnte.{" "}
-                <br />
-                Bitte überprüfen Sie die Dienstkonfiguration sorgfältig, bevor Sie sie
-                starten. <br />
-                Im Zweifelsfall wenden Sie sich bitte an Ihren Administrator.
-            </>
-        ),
+        "chart sources": ({ chartName, urls }) =>
+            urls.length === 0 ? (
+                <></>
+            ) : (
+                <>
+                    Auf die Quelle{urls.length === 1 ? "" : "n"} des Charts {chartName}{" "}
+                    zugreifen:&nbsp;
+                    {elementsToSentence({
+                        "elements": urls.map(source => (
+                            <MuiLink href={source} target="_blank" underline="hover">
+                                hier
+                            </MuiLink>
+                        )),
+                        "language": "de"
+                    })}
+                </>
+            ),
         "download as script": "Als Skript herunterladen",
         "api logs help body": ({
             k8CredentialsHref,
@@ -445,26 +461,82 @@ Fühlen Sie sich frei, Ihre Kubernetes-Bereitstellungen zu erkunden und die Kont
         `}</Markdown>
         )
     },
-    "Footer": {
-        "contribute": "Zum Projekt beitragen",
-        "terms of service": "Nutzungsbedingungen",
-        "change language": "Sprache ändern",
-        "dark mode switch": "Umschalter für den Dark Mode"
+    "AcknowledgeSharingOfConfigConfirmDialog": {
+        "acknowledge sharing of config confirm dialog title":
+            "Beachten Sie, Konfigurationen werden geteilt",
+        "acknowledge sharing of config confirm dialog subtitle": ({
+            groupProjectName
+        }) => `Wenn Sie diese Konfiguration speichern,
+        wird jedes Mitglied des Projekts ${groupProjectName} in der Lage sein, es zu starten.`,
+        "acknowledge sharing of config confirm dialog body": `Obwohl keine persönlichen Informationen automatisch von Onyxia eingefügt wurden,
+        achten Sie darauf, keine sensiblen Informationen in der wiederherstellbaren Konfiguration zu teilen.`,
+        "cancel": "Abbrechen",
+        "i understand, proceed": "Ich verstehe, fortfahren"
     },
-    "CatalogLauncherMainCard": {
+    "AutoLaunchDisabledDialog": {
+        "ok": "Ok",
+        "auto launch disabled dialog title": "Automatisches Starten deaktiviert",
+        "auto launch disabled dialog body": (
+            <>
+                <b>WARNUNG</b>: Möglicherweise versucht jemand, Sie dazu zu verleiten, ein
+                zu starten Dienst, der die Integrität Ihres Namespace gefährden könnte.{" "}
+                <br />
+                Bitte überprüfen Sie die Dienstkonfiguration sorgfältig, bevor Sie sie
+                starten. <br />
+                Im Zweifelsfall wenden Sie sich bitte an Ihren Administrator.
+            </>
+        )
+    },
+    "NoLongerBookmarkedDialog": {
+        "no longer bookmarked dialog title": "Nicht gespeicherte Änderungen",
+        "no longer bookmarked dialog body":
+            "Klicken Sie erneut auf das Lesezeichensymbol, um Ihre gespeicherte Konfiguration zu aktualisieren.",
+        "ok": "Ok"
+    },
+    "SensitiveConfigurationDialog": {
+        "sensitive configuration dialog title":
+            "Das Starten dieses Dienstes könnte gefährlich sein",
+        "cancel": "Abbrechen",
+        "proceed to launch": "Bewusst starten"
+    },
+    "LauncherMainCard": {
         "card title": "Erstellen Sie Ihren eigenen Dienst",
         "friendly name": "Personalisierter Name",
         "launch": "Starten",
         "cancel": "Abbrechen",
         "copy url helper text":
             "Kopieren Sie die URL, um diese Konfiguration wiederherzustellen",
-        "save configuration": "Diese Konfiguration speichern",
         "share the service": "Den Dienst teilen",
         "share the service - explain":
             "Machen Sie den Dienst für Projektmitglieder zugänglich",
-        "restore all default": "Konfigurationen zurücksetzen"
+        "restore all default": "Konfigurationen zurücksetzen",
+        "bookmark button": ({ isBookmarked }) =>
+            `${isBookmarked ? "Entfernen" : "Speichern"} Konfiguration`,
+        "bookmark button tooltip": ({ myServicesSavedConfigsExtendedLink }) => (
+            <>
+                Gespeicherte Konfigurationen können schnell von der Seite&nbsp;
+                <MuiLink {...myServicesSavedConfigsExtendedLink} target="_blank">
+                    Meine Dienste
+                </MuiLink>{" "}
+                neu gestartet werden
+            </>
+        ),
+        "version select label": "Version",
+        "version select helper text": ({
+            chartName,
+            catalogRepositoryUrl,
+            catalogName
+        }) => (
+            <>
+                Version des {chartName} Charts im&nbsp;
+                <MuiLink href={catalogRepositoryUrl}>
+                    {catalogName} Helm Repository
+                </MuiLink>
+            </>
+        ),
+        "save changes": "Änderungen speichern"
     },
-    "CatalogLauncherConfigurationCard": {
+    "LauncherConfigurationCard": {
         "global config": "Globale Konfigurationen",
         "configuration": ({ packageName }) => `Konfiguration ${packageName}`,
         "dependency": ({ dependencyName }) => `Abhängigkeit ${dependencyName}`,
@@ -474,11 +546,19 @@ Fühlen Sie sich frei, Ihre Kubernetes-Bereitstellungen zu erkunden und die Kont
         "Invalid YAML Object": "Ungültiges YAML-Objekt",
         "Invalid YAML Array": "Ungültiges YAML-Array"
     },
+    "Footer": {
+        "contribute": "Zum Projekt beitragen",
+        "terms of service": "Nutzungsbedingungen",
+        "change language": "Sprache ändern",
+        "dark mode switch": "Umschalter für den Dark Mode"
+    },
     "MyServices": {
         "text1": "Meine Dienste",
         "text2": "Starten, anzeigen und verwalten Sie schnell Ihre laufenden Dienste.",
         "text3": "Es wird empfohlen, Ihre Dienste nach jeder Arbeitssitzung zu löschen.",
-        "running services": "Laufende Dienste",
+        "running services": "Laufende Dienste"
+    },
+    "MyServicesConfirmDeleteDialog": {
         "confirm delete title": "Sind Sie sicher?",
         "confirm delete subtitle":
             "Stellen Sie sicher, dass Ihre Dienste keine nicht gespeicherte Arbeit enthalten.",
@@ -492,7 +572,6 @@ Fühlen Sie sich frei, Ihre Kubernetes-Bereitstellungen zu erkunden und die Kont
     "MyServicesButtonBar": {
         "refresh": "Aktualisieren",
         "launch": "Neuer Dienst",
-        "password": "Passwort kopieren",
         "trash": "Alle löschen",
         "trash my own": "Alle meine Dienste löschen"
     },
@@ -512,16 +591,16 @@ Fühlen Sie sich frei, Ihre Kubernetes-Bereitstellungen zu erkunden und die Kont
     "MyServicesRunningTime": {
         "launching": "In Arbeit..."
     },
-    "MyServicesSavedConfigOptions": {
+    "MyServicesRestorableConfigOptions": {
         "edit": "Bearbeiten",
         "copy link": "URL kopieren",
         "remove bookmark": "Lesezeichen entfernen"
     },
-    "MyServicesSavedConfig": {
+    "MyServicesRestorableConfig": {
         "edit": "Bearbeiten",
         "launch": "Starten"
     },
-    "MyServicesSavedConfigs": {
+    "MyServicesRestorableConfigs": {
         "saved": "Gespeichert",
         "show all": "Alle anzeigen"
     },
@@ -530,7 +609,7 @@ Fühlen Sie sich frei, Ihre Kubernetes-Bereitstellungen zu erkunden und die Kont
         "return": "Zurück"
     },
     "CopyOpenButton": {
-        "first copy the password": "Kopieren Sie zuerst das Passwort...",
+        "first copy the password": "Klicken Sie, um das Passwort zu kopieren...",
         "open the service": "Dienst öffnen 🚀"
     },
     "MyServicesCards": {

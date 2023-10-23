@@ -5,7 +5,6 @@ import { useTranslation } from "ui/i18n";
 import { capitalize } from "tsafe/capitalize";
 import { MyServicesRoundLogo } from "./MyServicesRoundLogo";
 import { MyServicesRunningTime } from "./MyServicesRunningTime";
-import { CircularProgress } from "onyxia-ui/CircularProgress";
 import { Tag } from "onyxia-ui/Tag";
 import { Tooltip } from "onyxia-ui/Tooltip";
 import { exclude } from "tsafe/exclude";
@@ -29,13 +28,13 @@ function getDoesHaveBeenRunningForTooLong(params: { startTime: number }): boolea
 export type Props = {
     className?: string;
     evtAction: NonPostableEvt<"SHOW POST INSTALL INSTRUCTIONS">;
-    packageIconUrl?: string;
+    chartIconUrl: string | undefined;
     friendlyName: string;
-    packageName: string;
+    chartName: string;
     onRequestDelete: (() => void) | undefined;
     getPoseInstallInstructions: (() => string) | undefined;
     getEnv: () => Record<string, string>;
-    getServicePassword: () => Promise<string>;
+    getProjectServicePassword: () => Promise<string>;
     openUrl: string | undefined;
     monitoringUrl: string | undefined;
     /** undefined when the service is not yey launched */
@@ -52,13 +51,13 @@ export const MyServicesCard = memo((props: Props) => {
     const {
         className,
         evtAction,
-        packageIconUrl,
+        chartIconUrl,
         friendlyName,
-        packageName,
+        chartName,
         onRequestDelete,
         getEnv,
         getPoseInstallInstructions,
-        getServicePassword,
+        getProjectServicePassword,
         monitoringUrl,
         openUrl,
         startTime,
@@ -215,7 +214,7 @@ export const MyServicesCard = memo((props: Props) => {
     return (
         <div className={cx(classes.root, className)}>
             <div className={classes.aboveDivider}>
-                <MyServicesRoundLogo url={packageIconUrl} severity={severity} />
+                <MyServicesRoundLogo url={chartIconUrl} severity={severity} />
                 <Text className={classes.title} typo="object heading">
                     {capitalize(friendlyName)}
                 </Text>
@@ -236,7 +235,7 @@ export const MyServicesCard = memo((props: Props) => {
                             {t("service")}
                         </Text>
                         <div className={classes.packageNameWrapper}>
-                            <Text typo="label 1">{capitalize(packageName)}</Text>
+                            <Text typo="label 1">{capitalize(chartName)}</Text>
                             {isShared && (
                                 <Tag
                                     className={classes.sharedTag}
@@ -273,27 +272,23 @@ export const MyServicesCard = memo((props: Props) => {
                     {monitoringUrl !== undefined && (
                         <IconButton iconId="equalizer" href={monitoringUrl} />
                     )}
-                    {getPoseInstallInstructions !== undefined && (
+                    <div style={{ "flex": 1 }} />
+                    {(openUrl !== undefined ||
+                        getPoseInstallInstructions !== undefined) && (
                         <Button
                             onClick={() =>
                                 evtReadmeAndEnvDialogAction.post(
                                     "SHOW POST INSTALL INSTRUCTIONS"
                                 )
                             }
-                            variant="ternary"
+                            variant={openUrl === undefined ? "ternary" : "secondary"}
                         >
-                            <span>{t("readme").toUpperCase()}</span>
+                            <span>
+                                {openUrl !== undefined
+                                    ? capitalize(t("open"))
+                                    : t("readme").toUpperCase()}
+                            </span>
                         </Button>
-                    )}
-                    <div style={{ "flex": 1 }} />
-                    {startTime === undefined ? (
-                        <CircularProgress color="textPrimary" size={20} />
-                    ) : (
-                        openUrl && (
-                            <Button variant="secondary" href={openUrl}>
-                                {t("open")}
-                            </Button>
-                        )
                     )}
                 </div>
             </div>
@@ -301,7 +296,7 @@ export const MyServicesCard = memo((props: Props) => {
                 evtAction={evtReadmeAndEnvDialogAction}
                 getEnv={getEnv}
                 getPostInstallInstructions={getPoseInstallInstructions}
-                getServicePassword={getServicePassword}
+                getProjectServicePassword={getProjectServicePassword}
                 openUrl={openUrl}
                 startTime={startTime}
             />

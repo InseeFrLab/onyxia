@@ -13,9 +13,9 @@ const { meta, getStory } = getStoryFactory({
 export default meta;
 
 export const ViewRegular = getStory({
-    "packageIconUrl": rstudioImgUrl,
+    "chartIconUrl": rstudioImgUrl,
     "friendlyName": "My Rstudio",
-    "packageName": "rstudio",
+    "chartName": "rstudio",
     "openUrl": "https://example.com",
     "monitoringUrl": "https://example.com",
     "startTime": Date.now(),
@@ -31,14 +31,14 @@ export const ViewRegular = getStory({
         "baz": "baz value"
     }),
     "getPoseInstallInstructions": () => "Post **install** instructions",
-    "getServicePassword": () => Promise.resolve("password"),
+    "getProjectServicePassword": () => Promise.resolve("password"),
     ...logCallbacks(["onRequestDelete"])
 });
 
 export const ViewStarting = getStory({
-    "packageIconUrl": rstudioImgUrl,
+    "chartIconUrl": rstudioImgUrl,
     "friendlyName": "My Rstudio",
-    "packageName": "rstudio",
+    "chartName": "rstudio",
     "openUrl": "https://example.com",
     "monitoringUrl": "https://example.com",
     "startTime": undefined,
@@ -54,6 +54,6 @@ export const ViewStarting = getStory({
         "baz": "baz value"
     }),
     "getPoseInstallInstructions": () => "Post **install** instructions",
-    "getServicePassword": () => Promise.resolve("password"),
+    "getProjectServicePassword": () => Promise.resolve("password"),
     ...logCallbacks(["onRequestDelete"])
 });

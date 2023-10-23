@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-expressions */
 import {
     createCoreFromUsecases,
     createObjectThatThrowsIfAccessed,
@@ -6,11 +7,11 @@ import {
     type GenericThunks
 } from "redux-clean-architecture";
 import { usecases } from "./usecases";
-import type { SecretsManager } from "./ports/SecretsManager";
-import type { S3Client } from "./ports/S3Client";
-import type { Oidc } from "./ports/Oidc";
+import type { SecretsManager } from "core/ports/SecretsManager";
+import type { Oidc } from "core/ports/Oidc";
+import type { S3Client } from "core/ports/S3Client";
 import type { ReturnType } from "tsafe/ReturnType";
-import type { Language } from "./ports/OnyxiaApi/Language";
+import type { Language } from "core/ports/OnyxiaApi/Language";
 
 type CoreParams = {
     /** Empty string for using mock */
@@ -22,20 +23,20 @@ type CoreParams = {
 };
 
 export async function createCore(params: CoreParams) {
-    const { apiUrl, transformUrlBeforeRedirectToLogin, getCurrentLang } = params;
-
-    let oidc: Oidc | undefined = undefined;
+    const { apiUrl, transformUrlBeforeRedirectToLogin } = params;
 
     let isCoreCreated = false;
 
+    let oidc: Oidc | undefined = undefined;
+
     const onyxiaApi = await (async () => {
         if (apiUrl === "") {
-            const { onyxiaApi } = await import("core/adapters/onyxiaApiMock");
+            const { onyxiaApi } = await import("core/adapters/onyxiaApi/mock");
 
             return onyxiaApi;
         }
 
-        const { createOnyxiaApi } = await import("core/adapters/onyxiaApi");
+        const { createOnyxiaApi } = await import("core/adapters/onyxiaApi/default");
 
         const onyxiaApi = createOnyxiaApi({
             "url": apiUrl,
@@ -47,7 +48,7 @@ export async function createCore(params: CoreParams) {
                 if (!oidc.isUserLoggedIn) {
                     return undefined;
                 }
-                return oidc.getAccessToken().accessToken;
+                return oidc.getTokens().accessToken;
             },
             "getRegionId": () => {
                 if (!isCoreCreated) {
@@ -86,24 +87,23 @@ export async function createCore(params: CoreParams) {
         return onyxiaApi;
     })();
 
-    let oidcParams: { authority: string; clientId: string } | undefined = undefined;
+    let oidcParams: { issuerUri: string; clientId: string } | undefined = undefined;
 
     oidc = await (async () => {
         oidcParams = (await onyxiaApi.getAvailableRegionsAndOidcParams()).oidcParams;
 
         if (oidcParams === undefined) {
-            const { createOidc } = await import("core/adapters/oidcMock");
+            const { createOidc } = await import("core/adapters/oidc/mock");
 
             return createOidc({ "isUserInitiallyLoggedIn": false });
         }
 
-        const { createOidc } = await import("core/adapters/oidc");
+        const { createOidc } = await import("core/adapters/oidc/default");
 
         return createOidc({
-            "authority": oidcParams.authority,
+            "issuerUri": oidcParams.issuerUri,
             "clientId": oidcParams.clientId,
-            "transformUrlBeforeRedirect": transformUrlBeforeRedirectToLogin,
-            "getUiLocales": getCurrentLang
+            "transformUrlBeforeRedirect": transformUrlBeforeRedirectToLogin
         });
     })();
 
@@ -137,32 +137,30 @@ export async function createCore(params: CoreParams) {
         const { s3: s3Params, vault: vaultParams } = usecases.deploymentRegion.selectors.selectedDeploymentRegion(core.getState());
 
         /* prettier-ignore */
-        const fallback = oidcParams === undefined ? undefined : {
-            oidcParams,
-            oidc
-        };
+        const nonMockOidc = oidcParams === undefined ? undefined : oidc;
 
         /* prettier-ignore */
-        const { createOidcOrFallback } = await import("core/adapters/oidc/createOidcOrFallback");
+        const { createOidcOrFallback } = await import("core/adapters/oidc/utils/createOidcOrFallback");
 
         thunksExtraArgument.s3Client = await (async () => {
             if (s3Params === undefined) {
-                const { s3client } = await import("core/adapters/s3ClientMock");
+                const { s3client } = await import("core/adapters/s3Client/mock");
 
                 return s3client;
             }
 
             /** prettier-ignore */
             const { createS3Client, getCreateS3ClientParams } = await import(
-                "core/adapters/s3client"
+                "core/adapters/s3Client/default"
             );
 
             return createS3Client({
                 ...getCreateS3ClientParams({ s3Params }),
                 "createAwsBucket": onyxiaApi.createAwsBucket,
                 "oidc": await createOidcOrFallback({
+                    "oidcAdapterImplementationToUseIfNotFallingBack": "default",
                     "oidcParams": s3Params.oidcParams,
-                    fallback
+                    "fallbackOidc": nonMockOidc
                 })
             });
         })();
@@ -170,12 +168,14 @@ export async function createCore(params: CoreParams) {
         thunksExtraArgument.secretsManager = await (async () => {
             if (vaultParams === undefined) {
                 /* prettier-ignore */
-                const { createSecretManager } = await import("core/adapters/secretsManagerMock");
+                const { createSecretManager } = await import("core/adapters/secretManager/mock");
 
                 return createSecretManager();
             }
 
-            const { createSecretManager } = await import("core/adapters/secretsManager");
+            const { createSecretManager } = await import(
+                "core/adapters/secretManager/default"
+            );
 
             return createSecretManager({
                 "kvEngine": vaultParams.kvEngine,
@@ -183,8 +183,9 @@ export async function createCore(params: CoreParams) {
                 "url": vaultParams.url,
                 "authPath": vaultParams.authPath,
                 "oidc": await createOidcOrFallback({
+                    "oidcAdapterImplementationToUseIfNotFallingBack": "default",
                     "oidcParams": vaultParams.oidcParams,
-                    fallback
+                    "fallbackOidc": nonMockOidc
                 })
             });
         })();
@@ -195,7 +196,7 @@ export async function createCore(params: CoreParams) {
 
         /** prettier-ignore */
         await core.dispatch(
-            usecases.restorablePackageConfigs.protectedThunks.initialize()
+            usecases.restorableConfigManager.protectedThunks.initialize()
         );
 
         await core.dispatch(usecases.userAccountManagement.protectedThunks.initialize());

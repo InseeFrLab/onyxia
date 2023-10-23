@@ -1,7 +1,7 @@
 import {
-    MyServicesSavedConfigs,
+    MyServicesRestorableConfigs,
     Props
-} from "ui/pages/myServices/MyServicesSavedConfigs";
+} from "ui/pages/myServices/MyServicesRestorableConfigs";
 import { sectionName } from "./sectionName";
 import { getStoryFactory, logCallbacks } from "stories/getStory";
 import rstudioImgUrl from "stories/assets/img/rstudio.png";
@@ -9,7 +9,7 @@ import { css } from "@emotion/css";
 
 const { meta, getStory } = getStoryFactory({
     sectionName,
-    "wrappedComponent": { MyServicesSavedConfigs }
+    "wrappedComponent": { MyServicesRestorableConfigs }
 });
 
 export default meta;
@@ -17,19 +17,20 @@ export default meta;
 const props: Props = {
     "className": css({ "width": 300 }),
     "isShortVariant": true,
-    "savedConfigs": [1, 2, 3, 4, 5, 6, 7].map(i => {
+    "entries": [1, 2, 3, 4, 5, 6, 7].map(i => {
         const link = { "href": `https://example.com/${i}`, "onClick": () => {} };
 
         const out = {
+            "restorableConfigIndex": i,
             "launchLink": link,
             "editLink": link,
-            "logoUrl": rstudioImgUrl,
+            "chartIconUrl": rstudioImgUrl,
             "friendlyName": `RStudio ${i}`
         };
 
         return out;
     }),
-    ...logCallbacks(["callback", "onRequestToggleIsShortVariant"])
+    ...logCallbacks(["onRequestDelete", "onRequestToggleIsShortVariant"])
 };
 
 export const ViewShortVariant = getStory(props);

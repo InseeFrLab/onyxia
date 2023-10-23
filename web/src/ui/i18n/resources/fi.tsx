@@ -1,6 +1,7 @@
 import MuiLink from "@mui/material/Link";
 import type { Translations } from "../types";
 import { Markdown } from "onyxia-ui/Markdown";
+import { elementsToSentence } from "ui/tools/elementsToSentence";
 
 export const translations: Translations<"fi"> = {
     "Account": {
@@ -56,11 +57,25 @@ export const translations: Translations<"fi"> = {
     },
     "AccountKubernetesTab": {
         "credentials section title": "Yhdistä Kubernetes-klusteriin",
-        "credentials section helper": "Todennustiedot Kubernetes-klusterin hallintaan",
-        "init script section title":
-            "Yhdistä Kubernetes-klusteriin paikallisen kubectl-komennon kautta",
-        "init script section helper": "Lataa tai kopioi komento",
-        "expires in": ({ howMuchTime }) => `Pääte vanhenee ${howMuchTime} kuluttua`
+        "credentials section helper":
+            "Käyttöoikeudet suoraan yhteyteen Kubernetes API-palvelimen kanssa.",
+        "init script section title": "Komentosarja",
+        "init script section helper": ({ installKubectlUrl }) => (
+            <>
+                Tämä skripti mahdollistaa kubectlin tai helmin käytön paikallisella
+                koneellasi. <br />
+                Käyttääksesi sitä,{" "}
+                <MuiLink href={installKubectlUrl} target="_blank">
+                    asenna kubectl koneellesi
+                </MuiLink>{" "}
+                ja suorita skripti kopioimalla ja liittämällä se terminaaliisi.
+                <br />
+                Tämän jälkeen voit varmistaa, että se toimii ajamalla komennon&nbsp;
+                <code>kubectl get pods</code> tai <code>helm list</code>
+            </>
+        ),
+        "expires in": ({ howMuchTime }) =>
+            `Nämä käyttöoikeudet ovat voimassa seuraavat ${howMuchTime}`
     },
     "AccountVaultTab": {
         "credentials section title": "Vault-todennustiedot",
@@ -319,58 +334,58 @@ export const translations: Translations<"fi"> = {
         "cardButton2": "Liity yhteisöön",
         "cardButton3": "Selaa tietoja"
     },
-    "CatalogExplorerCard": {
-        "launch": "Käynnistä",
-        "learn more": "Lisätietoja"
-    },
-    "CatalogExplorerCards": {
+    "Catalog": {
+        "header text1": "Palvelukatalogi",
+        "header text2":
+            "Selaa, käynnistä ja määritä palveluita muutamalla napsautuksella.",
+        "header help": ({ catalogName, catalogDescription, repositoryUrl }) => (
+            <>
+                Olet tutkimassa Helm Chart Repositorya{" "}
+                <MuiLink href={repositoryUrl} target="_blank">
+                    {catalogName}: {catalogDescription}
+                </MuiLink>
+            </>
+        ),
+        "here": "täältä",
         "show more": "Näytä enemmän",
         "no service found": "Palvelua ei löytynyt",
         "no result found": ({ forWhat }) => `Tuloksia ei löytynyt haulle ${forWhat}`,
         "check spelling": "Tarkista kirjoitus tai laajenna hakua.",
         "go back": "Palaa pääpalveluihin",
-        "main services": "Pääpalvelut",
-        "all services": "Kaikki palvelut",
         "search results": "Hakutulokset",
         "search": "Haku"
     },
-    "Catalog": {
+    "CatalogChartCard": {
+        "launch": "Käynnistä",
+        "learn more": "Lisätietoja"
+    },
+    "CatalogNoSearchMatches": {
+        "no service found": "Palvelua ei löytynyt",
+        "no result found": ({ forWhat }) => `Tuloksia ei löytynyt haulle ${forWhat}`,
+        "check spelling": "Tarkista kirjoitus tai laajenna hakua.",
+        "go back": "Palaa pääpalveluihin"
+    },
+    "Launcher": {
         "header text1": "Palvelukatalogi",
         "header text2":
             "Selaa, käynnistä ja määritä palveluita muutamalla napsautuksella.",
-        "contribute to the catalog": ({ catalogName }) => (
-            <>Osallistu {catalogName} -katalogiin</>
-        ),
-        "contribute to the package": ({ packageName }) =>
-            `Löydä ${packageName} -paketin lähdekoodit `,
-        "here": "täältä"
-    },
-    "CatalogLauncher": {
-        "no longer bookmarked dialog title": "Muutokset eivät tallennu",
-        "no longer bookmarked dialog body":
-            "Päivitä tallennettu konfiguraatio napsauttamalla kirjanmerkkikuvaketta uudelleen.",
-        "ok": "Ok",
-        "should overwrite configuration dialog title": "Haluatko korvata sen?",
-        "should overwrite configuration dialog subtitle": ({ friendlyName }) =>
-            `«${friendlyName}» on jo tallennettu tietoihisi.`,
-        "should overwrite configuration dialog body":
-            "Sinulla on jo tallennettu palvelu tällä nimellä. Jos korvaat sen, aiempi konfiguraatio menetetään.",
-        "cancel": "Peruuta",
-        "replace": "Korvaa se",
-        "sensitive configuration dialog title":
-            "Palvelun käynnistäminen voi olla vaarallista",
-        "proceed to launch": "Jatka käynnistämistä",
-        "auto launch disabled dialog title": "Käynnistäminen ei ole mahdollista",
-        "auto launch disabled dialog body": (
-            <>
-                <b>VAROITUS</b>: Joku saattaa yrittää huijata sinua käynnistämään
-                palvelun, joka saattaa vaarantaa namespace-integriteettisi.
-                <br />
-                Tarkista palvelun asetukset huolellisesti ennen sen käynnistämistä.
-                <br />
-                Jos olet epävarma, ota yhteyttä ylläpitäjääsi.
-            </>
-        ),
+        "chart sources": ({ chartName, urls }) =>
+            urls.length === 0 ? (
+                <></>
+            ) : (
+                <>
+                    Pääsy kaavion {chartName} lähteese{urls.length === 1 ? "en" : "isiin"}
+                    :&nbsp;
+                    {elementsToSentence({
+                        "elements": urls.map(source => (
+                            <MuiLink href={source} target="_blank" underline="hover">
+                                täällä
+                            </MuiLink>
+                        )),
+                        "language": "fi"
+                    })}
+                </>
+            ),
         "download as script": "Lataa skriptinä",
         "api logs help body": ({
             k8CredentialsHref,
@@ -432,24 +447,79 @@ Tutustu vapaasti ja ota hallintaan Kubernetes-julkaisusi!
         `}</Markdown>
         )
     },
-    "Footer": {
-        "contribute": "Osallistu",
-        "terms of service": "Käyttöehdot",
-        "change language": "Vaihda kieli",
-        "dark mode switch": "Tumma tila"
+    "AcknowledgeSharingOfConfigConfirmDialog": {
+        "acknowledge sharing of config confirm dialog title":
+            "Huomio, konfiguraatiot jaetaan",
+        "acknowledge sharing of config confirm dialog subtitle": ({
+            groupProjectName
+        }) => `Jos tallennat
+        tämän konfiguraation, jokainen projektin ${groupProjectName} jäsen pystyy käynnistämään sen.`,
+        "acknowledge sharing of config confirm dialog body": `Vaikka Onyxia ei ole automaattisesti lisännyt henkilökohtaisia tietoja,
+        ole varovainen, ettet jaa arkaluonteisia tietoja palautettavassa konfiguraatiossa.`,
+        "cancel": "Peruuta",
+        "i understand, proceed": "Ymmärrän, jatka"
     },
-    "CatalogLauncherMainCard": {
+    "AutoLaunchDisabledDialog": {
+        "auto launch disabled dialog title": "Käynnistäminen ei ole mahdollista",
+        "auto launch disabled dialog body": (
+            <>
+                <b>VAROITUS</b>: Joku saattaa yrittää huijata sinua käynnistämään
+                palvelun, joka saattaa vaarantaa namespace-integriteettisi.
+                <br />
+                Tarkista palvelun asetukset huolellisesti ennen sen käynnistämistä.
+                <br />
+                Jos olet epävarma, ota yhteyttä ylläpitäjääsi.
+            </>
+        ),
+        "ok": "Ok"
+    },
+    "NoLongerBookmarkedDialog": {
+        "no longer bookmarked dialog title": "Muutokset eivät tallennu",
+        "no longer bookmarked dialog body":
+            "Päivitä tallennettu konfiguraatio napsauttamalla kirjanmerkkikuvaketta uudelleen.",
+        "ok": "Ok"
+    },
+    "SensitiveConfigurationDialog": {
+        "sensitive configuration dialog title":
+            "Palvelun käynnistäminen voi olla vaarallista",
+        "cancel": "Peruuta",
+        "proceed to launch": "Jatka käynnistämistä"
+    },
+    "LauncherMainCard": {
         "card title": "Luo omat palvelusi",
         "friendly name": "Käyttäjäystävällinen nimi",
         "launch": "Käynnistä",
         "cancel": "Peruuta",
         "copy url helper text": "Kopioi URL-osoite palauttaaksesi tämän konfiguraation",
-        "save configuration": "Tallenna tämä konfiguraatio",
         "share the service": "Jaa palvelu",
         "share the service - explain": "Tee palvelu saataville ryhmän jäsenille",
-        "restore all default": "Palauta oletuskonfiguraatiot"
+        "restore all default": "Palauta oletuskonfiguraatiot",
+        "bookmark button": ({ isBookmarked }) =>
+            `${isBookmarked ? "Poista" : "Tallenna"} asetukset`,
+        "bookmark button tooltip": ({ myServicesSavedConfigsExtendedLink }) => (
+            <>
+                Tallennetut asetukset voidaan käynnistää uudelleen nopeasti sivulta&nbsp;
+                <MuiLink {...myServicesSavedConfigsExtendedLink} target="_blank">
+                    Omat Palvelut
+                </MuiLink>
+            </>
+        ),
+        "version select label": "Versio",
+        "version select helper text": ({
+            chartName,
+            catalogRepositoryUrl,
+            catalogName
+        }) => (
+            <>
+                {chartName} kaavion versio&nbsp;
+                <MuiLink href={catalogRepositoryUrl}>
+                    {catalogName} Helm Repository
+                </MuiLink>
+            </>
+        ),
+        "save changes": "Tallenna muutokset"
     },
-    "CatalogLauncherConfigurationCard": {
+    "LauncherConfigurationCard": {
         "global config": "Yleinen konfiguraatio",
         "configuration": ({ packageName }) => `${packageName} -konfiguraatiot`,
         "dependency": ({ dependencyName }) => `${dependencyName} -riippuvuus`,
@@ -459,12 +529,20 @@ Tutustu vapaasti ja ota hallintaan Kubernetes-julkaisusi!
         "Invalid YAML Object": "Virheellinen YAML-objekti",
         "Invalid YAML Array": "Virheellinen YAML-taulukko"
     },
+    "Footer": {
+        "contribute": "Osallistu",
+        "terms of service": "Käyttöehdot",
+        "change language": "Vaihda kieli",
+        "dark mode switch": "Tumma tila"
+    },
     "MyServices": {
         "text1": "Omat palvelut",
         "text2": "Käytettävissä olevat palvelusi",
         "text3":
             "Palveluiden odotetaan olevan sammutettuina, kun et enää käytä niitä aktiivisesti.",
-        "running services": "Käynnissä olevat palvelut",
+        "running services": "Käynnissä olevat palvelut"
+    },
+    "MyServicesConfirmDeleteDialog": {
         "confirm delete title": "Oletko varma?",
         "confirm delete subtitle":
             "Varmista, että palvelusi ovat valmiita poistettaviksi",
@@ -478,7 +556,6 @@ Tutustu vapaasti ja ota hallintaan Kubernetes-julkaisusi!
     "MyServicesButtonBar": {
         "refresh": "Päivitä",
         "launch": "Uusi palvelu",
-        "password": "Kopioi palveluiden salasana",
         "trash": "Tyhjennä kaikki",
         "trash my own": "Poista kaikki omat palvelut"
     },
@@ -497,16 +574,16 @@ Tutustu vapaasti ja ota hallintaan Kubernetes-julkaisusi!
     "MyServicesRunningTime": {
         "launching": "Käynnistetään..."
     },
-    "MyServicesSavedConfigOptions": {
+    "MyServicesRestorableConfigOptions": {
         "edit": "Muokkaa",
         "copy link": "Kopioi URL-osoite",
         "remove bookmark": "Poista"
     },
-    "MyServicesSavedConfig": {
+    "MyServicesRestorableConfig": {
         "edit": "Muokkaa",
         "launch": "Käynnistä"
     },
-    "MyServicesSavedConfigs": {
+    "MyServicesRestorableConfigs": {
         "saved": "Tallennettu",
         "show all": "Näytä kaikki"
     },
@@ -515,7 +592,7 @@ Tutustu vapaasti ja ota hallintaan Kubernetes-julkaisusi!
         "return": "Palaa"
     },
     "CopyOpenButton": {
-        "first copy the password": "Kopioi ensin palvelun...",
+        "first copy the password": "Klikkaa kopioidaksesi salasanan...",
         "open the service": "Avaa palvelu 🚀"
     },
     "MyServicesCards": {

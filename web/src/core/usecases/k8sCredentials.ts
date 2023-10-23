@@ -1,4 +1,3 @@
-import "minimal-polyfills/Object.fromEntries";
 import type { Thunks } from "../core";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { createSlice } from "@reduxjs/toolkit";
@@ -10,9 +9,10 @@ import * as deploymentRegion from "./deploymentRegion";
 import { parseUrl } from "core/tools/parseUrl";
 import { assert } from "tsafe/assert";
 import * as userAuthentication from "./userAuthentication";
-import { createOidcOrFallback } from "core/adapters/oidc/createOidcOrFallback";
+import { createOidcOrFallback } from "core/adapters/oidc/utils/createOidcOrFallback";
 import { createUsecaseContextApi } from "redux-clean-architecture";
 import type { Oidc } from "core/ports/Oidc";
+import { symToStr } from "tsafe/symToStr";
 
 type State = State.NotRefreshed | State.Ready;
 
@@ -27,9 +27,12 @@ namespace State {
 
     export type Ready = Common & {
         stateDescription: "ready";
+        idpIssuerUrl: string;
+        clientId: string;
+        refreshToken: string;
+        idToken: string;
+        user: string;
         expirationTime: number;
-        oidcAccessToken: string;
-        username: string;
     };
 }
 
@@ -52,19 +55,32 @@ export const { reducer, actions } = createSlice({
             {
                 payload
             }: PayloadAction<{
+                idpIssuerUrl: string;
+                clientId: string;
+                refreshToken: string;
+                idToken: string;
+                user: string;
                 expirationTime: number;
-                oidcAccessToken: string;
-                username: string;
             }>
         ) => {
-            const { expirationTime, oidcAccessToken, username } = payload;
+            const {
+                idpIssuerUrl,
+                clientId,
+                refreshToken,
+                idToken,
+                user,
+                expirationTime
+            } = payload;
 
             return id<State.Ready>({
                 "isRefreshing": false,
                 "stateDescription": "ready",
-                expirationTime,
-                oidcAccessToken,
-                username
+                idpIssuerUrl,
+                clientId,
+                refreshToken,
+                idToken,
+                user,
+                expirationTime
             });
         }
     }
@@ -87,13 +103,11 @@ export const thunks = {
         },
     /** Refresh is expected to be called whenever the component that use this slice mounts */
     "refresh":
-        (params: { doForceRenewToken: boolean }) =>
+        () =>
         async (...args) => {
-            const { doForceRenewToken } = params;
-
             const [dispatch, getState, extraArg] = args;
 
-            const { oidc, onyxiaApi } = extraArg;
+            const { oidc } = extraArg;
 
             if (getState().s3Credentials.isRefreshing) {
                 return;
@@ -115,34 +129,28 @@ export const thunks = {
 
             if (kubernetesOidcClient === undefined) {
                 kubernetesOidcClient = await createOidcOrFallback({
-                    "fallback": {
-                        oidc,
-                        "oidcParams": await (async () => {
-                            const { oidcParams } =
-                                await onyxiaApi.getAvailableRegionsAndOidcParams();
-
-                            assert(oidcParams !== undefined);
-
-                            return oidcParams;
-                        })()
-                    },
+                    "oidcAdapterImplementationToUseIfNotFallingBack": "default",
+                    "fallbackOidc": oidc,
                     "oidcParams": kubernetes.oidcParams
                 });
 
                 context.kubernetesOidcClient = kubernetesOidcClient;
             }
 
-            if (doForceRenewToken) {
-                await kubernetesOidcClient.renewToken();
-            }
+            await kubernetesOidcClient.renewTokens();
 
-            const { accessToken, expirationTime } = kubernetesOidcClient.getAccessToken();
+            const oidcTokens = kubernetesOidcClient.getTokens();
 
             dispatch(
                 actions.refreshed({
-                    "username": dispatch(userAuthentication.thunks.getUser()).username,
-                    "oidcAccessToken": accessToken,
-                    expirationTime
+                    "idpIssuerUrl": kubernetesOidcClient.params.issuerUri,
+                    "clientId": kubernetesOidcClient.params.clientId,
+                    "refreshToken": oidcTokens.refreshToken,
+                    "idToken": oidcTokens.idToken,
+                    "user": `oidc-${
+                        dispatch(userAuthentication.thunks.getUser()).username
+                    }`,
+                    "expirationTime": oidcTokens.refreshTokenExpirationTime
                 })
             );
         }
@@ -165,127 +173,111 @@ export const selectors = (() => {
         }
     };
 
-    const isReady = createSelector(readyState, readyState => readyState !== undefined);
-
-    const kubernetesClusterUrl = createSelector(
+    const clusterUrl = createSelector(
         deploymentRegion.selectors.selectedDeploymentRegion,
         (selectedDeploymentRegion): string => {
             const { kubernetes } = selectedDeploymentRegion;
 
-            assert(kubernetes !== undefined, "isAvailable should have been called");
+            assert(kubernetes !== undefined);
 
             return kubernetes.url;
         }
     );
 
-    const kubernetesNamespace = createSelector(
+    const namespace = createSelector(
         projectConfigs.selectors.selectedProject,
         selectedProject => selectedProject.namespace
     );
 
-    const oidcAccessToken = createSelector(
+    const shellScript = createSelector(
         readyState,
-        (readyState): undefined | string => {
-            if (readyState === undefined) {
+        clusterUrl,
+        namespace,
+        (state, clusterUrl, namespace) => {
+            if (state === undefined) {
                 return undefined;
             }
 
-            return readyState.oidcAccessToken;
-        }
-    );
-
-    const expirationTime = createSelector(readyState, readyState => {
-        if (readyState === undefined) {
-            return undefined;
-        }
-
-        return readyState.expirationTime;
-    });
-
-    const username = createSelector(readyState, readyState => {
-        if (readyState === undefined) {
-            return undefined;
-        }
-
-        return readyState.username;
-    });
-
-    const bashScript = createSelector(
-        isReady,
-        kubernetesNamespace,
-        kubernetesClusterUrl,
-        oidcAccessToken,
-        username,
-        (
-            isReady,
-            kubernetesNamespace,
-            kubernetesClusterUrl,
-            oidcAccessToken,
-            username
-        ) => {
-            if (!isReady) {
-                return undefined;
-            }
-            assert(oidcAccessToken !== undefined);
-            assert(username !== undefined);
-
-            const { host } = parseUrl(kubernetesClusterUrl);
+            const { host } = parseUrl(clusterUrl);
 
             return [
-                `kubectl config set-cluster ${host} --server=${kubernetesClusterUrl} --insecure-skip-tls-verify=true`,
-                `kubectl config set-credentials oidc-${username} --token ${oidcAccessToken}`,
-                `kubectl config set-context ${host} --user=oidc-${username} --cluster=${host} --namespace=${kubernetesNamespace}`,
+                `kubectl config set-cluster ${host} \\`,
+                `  --server=${clusterUrl} \\`,
+                `  --insecure-skip-tls-verify=true`,
+                ``,
+                `kubectl config set-credentials ${state.user} \\`,
+                `  --auth-provider=oidc  \\`,
+                `  --auth-provider-arg=idp-issuer-url=${state.idpIssuerUrl}  \\`,
+                `  --auth-provider-arg=client-id=${state.clientId}  \\`,
+                `  --auth-provider-arg=refresh-token=${state.refreshToken} \\`,
+                `  --auth-provider-arg=id-token=${state.idToken}`,
+                ``,
+                `kubectl config set-context ${host}`,
+                `  --user=${state.user} \\`,
+                `  --cluster=${host} \\`,
+                `  --namespace=${namespace}`,
+                ``,
                 `kubectl config use-context ${host}`
             ].join("\n");
         }
     );
 
-    const isRefreshing = createSelector(readyState, readyState =>
-        readyState === undefined ? false : readyState.isRefreshing
-    );
+    const wrap = createSelector(
+        readyState,
+        clusterUrl,
+        namespace,
+        shellScript,
+        (state, clusterUrl, namespace, shellScript) => {
+            const common = {
+                clusterUrl,
+                namespace
+            };
 
-    const uiState = createSelector(
-        isReady,
-        kubernetesNamespace,
-        kubernetesClusterUrl,
-        oidcAccessToken,
-        bashScript,
-        expirationTime,
-        isRefreshing,
-        (
-            isReady,
-            kubernetesNamespace,
-            kubernetesClusterUrl,
-            oidcAccessToken,
-            bashScript,
-            expirationTime,
-            isRefreshing
-        ) => {
-            if (!isReady) {
-                return undefined;
+            let idpIssuerUrl: string | undefined = undefined;
+            let clientId: string | undefined = undefined;
+            let refreshToken: string | undefined = undefined;
+            let idToken: string | undefined = undefined;
+            let expirationTime: number | undefined = undefined;
+            let isRefreshing: boolean | undefined = undefined;
+
+            if (state === undefined) {
+                return {
+                    "isReady": false as const,
+                    ...common,
+                    [symToStr({ idpIssuerUrl })]: undefined,
+                    [symToStr({ clientId })]: undefined,
+                    [symToStr({ refreshToken })]: undefined,
+                    [symToStr({ idToken })]: undefined,
+                    [symToStr({ expirationTime })]: undefined,
+                    [symToStr({ isRefreshing })]: undefined,
+                    [symToStr({ shellScript })]: undefined
+                };
             }
-            assert(oidcAccessToken !== undefined);
-            assert(bashScript !== undefined);
-            assert(expirationTime !== undefined);
+
+            assert(shellScript !== undefined);
+
+            idpIssuerUrl = state.idpIssuerUrl;
+            clientId = state.clientId;
+            refreshToken = state.refreshToken;
+            idToken = state.idToken;
+            expirationTime = state.expirationTime;
+            isRefreshing = state.isRefreshing;
 
             return {
-                isRefreshing,
-                kubernetesNamespace,
-                kubernetesClusterUrl,
-                oidcAccessToken,
+                "isReady": true as const,
+                ...common,
+                idpIssuerUrl,
+                clientId,
+                refreshToken,
+                idToken,
                 expirationTime,
-                bashScript
+                isRefreshing,
+                shellScript
             };
         }
     );
 
     return {
-        isReady,
-        kubernetesClusterUrl,
-        oidcAccessToken,
-        kubernetesNamespace,
-        expirationTime,
-        bashScript,
-        uiState
+        wrap
     };
 })();

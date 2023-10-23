@@ -7,7 +7,8 @@ import { type FormFieldValue, formFieldsValueToObject } from "./FormField";
 import {
     type JSONSchemaFormFieldDescription,
     type JSONSchemaObject,
-    type XOnyxiaContext
+    type XOnyxiaContext,
+    Chart
 } from "core/ports/OnyxiaApi";
 import {
     onyxiaFriendlyNameFormFieldPath,
@@ -19,24 +20,31 @@ import * as deploymentRegion from "../deploymentRegion";
 import * as projectConfigs from "../projectConfigs";
 import { parseUrl } from "core/tools/parseUrl";
 import { typeGuard } from "tsafe/typeGuard";
-import { getRandomK8sSubdomain, getServiceId } from "../../ports/OnyxiaApi";
-import { getS3UrlAndRegion } from "../../adapters/s3client/getS3UrlAndRegion";
+import { getS3UrlAndRegion } from "core/adapters/s3Client/utils/getS3UrlAndRegion";
 import * as secretExplorer from "../secretExplorer";
 import type { FormField } from "./FormField";
 import * as yaml from "yaml";
 import type { Equals } from "tsafe";
 import { actions, name, type State } from "./state";
+import { generateRandomPassword } from "core/tools/generateRandomPassword";
+import * as restorableConfigManager from "core/usecases/restorableConfigManager";
+import { privateSelectors } from "./selectors";
 
 export const thunks = {
     "initialize":
         (params: {
             catalogId: string;
-            packageName: string;
+            chartName: string;
+            chartVersion: string | undefined;
             formFieldsValueDifferentFromDefault: FormFieldValue[];
         }) =>
         async (...args) => {
-            const { catalogId, packageName, formFieldsValueDifferentFromDefault } =
-                params;
+            const {
+                catalogId,
+                chartName,
+                chartVersion: chartVersion_params,
+                formFieldsValueDifferentFromDefault
+            } = params;
 
             const [
                 dispatch,
@@ -45,31 +53,85 @@ export const thunks = {
             ] = args;
 
             assert(
-                getState().launcher.stateDescription === "not initialized",
+                getState()[name].stateDescription === "not initialized",
                 "the reset thunk need to be called before initializing again"
             );
 
             dispatch(actions.initializationStarted());
 
-            const { dependencies, sources, getValuesSchemaJson } =
-                await onyxiaApi.getPackageConfig({
-                    catalogId,
-                    packageName
-                });
+            const {
+                catalogName,
+                catalogRepositoryUrl,
+                chartIconUrl,
+                defaultChartVersion,
+                chartVersion,
+                availableChartVersions
+            } = await (async () => {
+                const { catalogs, chartsByCatalogId } =
+                    await onyxiaApi.getCatalogsAndCharts();
 
-            {
-                const state = getState()[name];
+                const catalog = catalogs.find(({ id }) => id === catalogId);
 
-                assert(state.stateDescription === "not initialized");
+                assert(catalog !== undefined);
 
-                if (!state.isInitializing) {
-                    return;
-                }
-            }
+                const chart = chartsByCatalogId[catalogId].find(
+                    ({ name }) => name === chartName
+                );
+
+                assert(chart !== undefined);
+
+                const defaultChartVersion = Chart.getDefaultVersion(chart);
+
+                const chartVersion = (() => {
+                    if (chartVersion_params !== undefined) {
+                        if (
+                            chart.versions.find(
+                                ({ version }) => version === chartVersion_params
+                            ) === undefined
+                        ) {
+                            alert(
+                                [
+                                    `No ${chartVersion_params} version found for ${chartName} in ${catalog.repositoryUrl}.`,
+                                    `Falling back to default version ${defaultChartVersion}`
+                                ].join("\n")
+                            );
+
+                            return defaultChartVersion;
+                        }
+
+                        return chartVersion_params;
+                    }
+
+                    return defaultChartVersion;
+                })();
+
+                return {
+                    "catalogName": catalog.name,
+                    "catalogRepositoryUrl": catalog.repositoryUrl,
+                    "chartIconUrl": chart.versions.find(
+                        ({ version }) => version === chartVersion
+                    )!.iconUrl,
+                    defaultChartVersion,
+                    chartVersion,
+                    "availableChartVersions": chart.versions.map(({ version }) => version)
+                };
+            })();
+
+            const {
+                dependencies: chartDependencies,
+                sourceUrls: chartSourceUrls,
+                getChartValuesSchemaJson
+            } = await onyxiaApi.getHelmChartDetails({
+                catalogId,
+                chartName,
+                chartVersion
+            });
 
             assert(oidc.isUserLoggedIn);
 
-            const valuesSchemaJson = getValuesSchemaJson({
+            const k8sRandomSubdomain = `${Math.floor(Math.random() * 1000000)}`;
+
+            const valuesSchema = getChartValuesSchemaJson({
                 "xOnyxiaContext": await (async (): Promise<XOnyxiaContext> => {
                     const { publicIp } = await dispatch(publicIpUsecase.thunks.fetch());
 
@@ -98,7 +160,11 @@ export const thunks = {
                             "email": user.email,
                             "password": servicePassword,
                             "ip": !doInjectPersonalInfos ? "0.0.0.0" : publicIp,
-                            "darkMode": userConfigs.isDarkModeEnabled
+                            "darkMode": userConfigs.isDarkModeEnabled,
+                            "lang": coreParams.getCurrentLang()
+                        },
+                        "service": {
+                            "oneTimePassword": generateRandomPassword()
                         },
                         "project": {
                             "id": project.id,
@@ -226,8 +292,7 @@ export const thunks = {
                             "ingress": region.ingress,
                             "route": region.route,
                             "istio": region.istio,
-                            "randomSubdomain":
-                                (getRandomK8sSubdomain.clear(), getRandomK8sSubdomain()),
+                            "randomSubdomain": k8sRandomSubdomain,
                             "initScriptUrl": region.initScriptUrl
                         },
                         "proxyInjection": region.proxyInjection,
@@ -251,14 +316,18 @@ export const thunks = {
 
                 const sensitiveConfigurations: FormFieldValue[] | undefined = (() => {
                     if (
-                        getState().restorablePackageConfig.restorablePackageConfigs.find(
-                            restorablePackageConfig =>
-                                same(restorablePackageConfig, {
-                                    packageName,
-                                    catalogId,
-                                    formFieldsValueDifferentFromDefault
-                                })
-                        ) !== undefined
+                        !dispatch(
+                            restorableConfigManager.protectedThunks.getIsRestorableConfigSaved(
+                                {
+                                    "restorableConfig": {
+                                        catalogId,
+                                        chartName,
+                                        chartVersion,
+                                        formFieldsValueDifferentFromDefault
+                                    }
+                                }
+                            )
+                        )
                     ) {
                         return undefined;
                     }
@@ -566,7 +635,7 @@ export const thunks = {
                     );
                 })({
                     "currentPath": [],
-                    "jsonSchemaObject": valuesSchemaJson
+                    "jsonSchemaObject": valuesSchema
                 });
 
                 return {
@@ -576,38 +645,41 @@ export const thunks = {
                 };
             })();
 
-            const { catalogLocation, icon } = await (async () => {
-                const catalog = await onyxiaApi.getCatalogs().then(apiRequestResult =>
-                    //TODO: Sort in the adapter of even better, assumes version sorted
-                    //and validate this assertion with zod
-                    apiRequestResult.find(({ id }) => id === catalogId)
-                );
+            {
+                const state = getState()[name];
 
-                assert(catalog !== undefined);
+                assert(state.stateDescription === "not initialized");
 
-                return {
-                    "catalogLocation": catalog.location,
-
-                    "icon": catalog.charts.find(({ name }) => name === packageName)!
-                        .versions[0].icon
-                };
-            })();
+                if (!state.isInitializing) {
+                    // If reset has been called
+                    return;
+                }
+            }
 
             dispatch(
                 actions.initialized({
                     catalogId,
-                    catalogLocation,
-                    icon,
-                    packageName,
-                    sources,
+                    catalogName,
+                    catalogRepositoryUrl,
+                    chartIconUrl,
+                    chartName,
+                    defaultChartVersion,
+                    chartVersion,
+                    availableChartVersions,
+                    chartSourceUrls,
                     formFields,
                     infosAboutWhenFieldsShouldBeHidden,
-                    "config": valuesSchemaJson,
-                    dependencies,
+                    valuesSchema,
+                    chartDependencies,
                     formFieldsValueDifferentFromDefault,
-                    "sensitiveConfigurations": sensitiveConfigurations ?? []
+                    "sensitiveConfigurations": sensitiveConfigurations ?? [],
+                    k8sRandomSubdomain
                 })
             );
+
+            if (chartVersion_params === undefined) {
+                dispatch(actions.defaultChartVersionSelected());
+            }
         },
     "reset":
         () =>
@@ -620,7 +692,7 @@ export const thunks = {
         (...args) => {
             const [dispatch, getState] = args;
 
-            const state = getState().launcher;
+            const state = getState()[name];
 
             assert(state.stateDescription === "ready");
 
@@ -637,6 +709,41 @@ export const thunks = {
                 );
             });
         },
+    "changeChartVersion":
+        (params: { chartVersion: string }) =>
+        async (...args) => {
+            const { chartVersion } = params;
+
+            const [dispatch, getState] = args;
+
+            const rootState = getState();
+
+            const state = rootState[name];
+
+            if (state.stateDescription !== "ready") {
+                return;
+            }
+
+            if (state.chartVersion === chartVersion) {
+                return;
+            }
+
+            const formFieldsValueDifferentFromDefault =
+                privateSelectors.formFieldsValueDifferentFromDefault(rootState);
+
+            assert(formFieldsValueDifferentFromDefault !== undefined);
+
+            dispatch(thunks.reset());
+
+            dispatch(
+                thunks.initialize({
+                    "catalogId": state.catalogId,
+                    "chartName": state.chartName,
+                    chartVersion,
+                    formFieldsValueDifferentFromDefault
+                })
+            );
+        },
     "changeFormFieldValue":
         (params: FormFieldValue) =>
         (...args) => {
@@ -651,22 +758,25 @@ export const thunks = {
 
             dispatch(actions.launchStarted());
 
-            const state = getState().launcher;
+            const rootState = getState();
+
+            const helmReleaseName = privateSelectors.helmReleaseName(rootState);
+
+            assert(helmReleaseName !== undefined);
+
+            const state = rootState[name];
 
             assert(state.stateDescription === "ready");
 
-            await onyxiaApi.launchPackage({
+            await onyxiaApi.helmInstall({
+                helmReleaseName,
                 "catalogId": state.catalogId,
-                "packageName": state.packageName,
-                "options": formFieldsValueToObject(state.formFields)
+                "chartName": state.chartName,
+                "chartVersion": state.chartVersion,
+                "values": formFieldsValueToObject(state.formFields)
             });
 
-            const { serviceId } = getServiceId({
-                "packageName": state.packageName,
-                "randomK8sSubdomain": getRandomK8sSubdomain()
-            });
-
-            dispatch(actions.launchCompleted({ serviceId }));
+            dispatch(actions.launchCompleted());
         },
     "changeFriendlyName":
         (friendlyName: string) =>
@@ -682,7 +792,9 @@ export const thunks = {
     "changeIsShared":
         (params: { isShared: boolean }) =>
         (...args) => {
-            const [dispatch] = args;
+            const [dispatch, getState] = args;
+
+            assert(privateSelectors.isShared(getState()) !== undefined);
 
             dispatch(
                 thunks.changeFormFieldValue({

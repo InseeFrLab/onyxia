@@ -10,7 +10,9 @@ import * as deploymentRegion from "./deploymentRegion";
 import { parseUrl } from "core/tools/parseUrl";
 import { assert } from "tsafe/assert";
 import { createUsecaseContextApi } from "redux-clean-architecture";
-import { getS3UrlAndRegion } from "core/adapters/s3client/getS3UrlAndRegion";
+import { getS3UrlAndRegion } from "core/adapters/s3Client/utils/getS3UrlAndRegion";
+
+//TODO: Refactor, replicate the k8sCredentials usecase
 
 export type Technology =
     | "R (aws.S3)"
@@ -410,7 +412,7 @@ session_token = ${credentials.AWS_SESSION_TOKEN}
                 })()
                     .replace(/^\n/, "")
                     .replace(/[\t\n]+$/, ""),
-                "programingLanguage": ((): string => {
+                "programmingLanguage": ((): string => {
                     switch (selectedTechnology) {
                         case "R (aws.S3)":
                         case "R (paws)":

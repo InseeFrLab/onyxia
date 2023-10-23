@@ -1,6 +1,7 @@
 import MuiLink from "@mui/material/Link";
 import { Markdown } from "onyxia-ui/Markdown";
 import type { Translations } from "../types";
+import { elementsToSentence } from "ui/tools/elementsToSentence";
 
 export const translations: Translations<"en"> = {
     "Account": {
@@ -59,11 +60,25 @@ export const translations: Translations<"en"> = {
     },
     "AccountKubernetesTab": {
         "credentials section title": "Connect to the Kubernetes cluster",
-        "credentials section helper": "Credentials to manage the Kubernetes cluster",
-        "init script section title":
-            "To connect to the Kubernetes cluster via your local kubectl",
-        "init script section helper": "Download or copy the script",
-        "expires in": ({ howMuchTime }) => `The token expires in ${howMuchTime}`
+        "credentials section helper":
+            "Credentials to interact directly with the Kubernetes API server.",
+        "init script section title": "Shell script",
+        "init script section helper": ({ installKubectlUrl }) => (
+            <>
+                This script enables to use kubectl or helm on your local machine. <br />
+                To use it simply{" "}
+                <MuiLink href={installKubectlUrl} target="_blank">
+                    install kubectl on your machine
+                </MuiLink>{" "}
+                and run the script by copy pasting it in your terminal.
+                <br />
+                After doing so you you can confirm that it works by running the
+                command&nbsp;
+                <code>kubectl get pods</code> or <code>helm list</code>
+            </>
+        ),
+        "expires in": ({ howMuchTime }) =>
+            `Theses credentials are valid for the next ${howMuchTime}`
     },
     "AccountVaultTab": {
         "credentials section title": "Vault credentials",
@@ -290,7 +305,7 @@ export const translations: Translations<"en"> = {
         "reduce": "Reduce",
         "home": "Home",
         "account": "My account",
-        "catalog": "Services catalog",
+        "catalog": "Service catalog",
         "myServices": "My Services",
         "mySecrets": "My Secrets",
         "myFiles": "My Files",
@@ -324,57 +339,56 @@ export const translations: Translations<"en"> = {
         "cardButton2": "Join the community",
         "cardButton3": "Consult the data"
     },
-    "CatalogExplorerCard": {
-        "launch": "Launch",
-        "learn more": "Learn more"
-    },
-    "CatalogExplorerCards": {
+    "Catalog": {
+        "header text1": "Service catalog",
+        "header text2": "Explore, launch and configure services with just a few clicks.",
+        "header help": ({ catalogName, catalogDescription, repositoryUrl }) => (
+            <>
+                You are exploring Helm Chart Repository{" "}
+                <MuiLink href={repositoryUrl} target="_blank">
+                    {catalogName}: {catalogDescription}
+                </MuiLink>
+            </>
+        ),
+        "here": "here",
         "show more": "Show more",
         "no service found": "No service found",
         "no result found": ({ forWhat }) => `No result found for ${forWhat}`,
         "check spelling": "Please check your spelling or try widening your search.",
         "go back": "Back to main services",
-        "main services": "Main services",
-        "all services": "All services",
         "search results": "Search result",
         "search": "Search"
     },
-    "Catalog": {
+    "CatalogChartCard": {
+        "launch": "Launch",
+        "learn more": "Learn more"
+    },
+    "CatalogNoSearchMatches": {
+        "no service found": "No service found",
+        "no result found": ({ forWhat }) => `No result found for ${forWhat}`,
+        "check spelling": "Please check your spelling or try widening your search.",
+        "go back": "Back to main services"
+    },
+    "Launcher": {
         "header text1": "Services catalog",
         "header text2": "Explore, launch and configure services with just a few clicks.",
-        "contribute to the catalog": ({ catalogName }) => (
-            <>Contribute to the {catalogName} catalog</>
-        ),
-        "contribute to the package": ({ packageName }) =>
-            `Find the sources of the ${packageName} package `,
-        "here": "here"
-    },
-    "CatalogLauncher": {
-        "no longer bookmarked dialog title": "Your changes wont be saved",
-        "no longer bookmarked dialog body":
-            "Click on the bookmark icon again to update your saved configuration",
-        "ok": "Ok",
-        "should overwrite configuration dialog title": "Would you like to replace it?",
-        "should overwrite configuration dialog subtitle": ({ friendlyName }) =>
-            `«${friendlyName}» already exists in your store.`,
-        "should overwrite configuration dialog body":
-            "You already have a saved service with this name. If you replace it the previous configuration will be lost",
-        "cancel": "Annuler",
-        "replace": "Replace it",
-        "sensitive configuration dialog title": "Launching this service may be dangerous",
-        "proceed to launch": "Proceed to launch",
-        "auto launch disabled dialog title":
-            "Auto launch feature disabled on this Onyxia instance",
-        "auto launch disabled dialog body": (
-            <>
-                <b>WARNING</b>: Someone might be trying to trick you into launching a
-                service that might compromise your namespace integrity.
-                <br />
-                Please carefully review the service configuration before launching it.
-                <br />
-                If you have any doubt, please contact your administrator.
-            </>
-        ),
+        "chart sources": ({ chartName, urls }) =>
+            urls.length === 0 ? (
+                <></>
+            ) : (
+                <>
+                    Access the source{urls.length === 1 ? "" : "s"} of the chart{" "}
+                    {chartName}:&nbsp;
+                    {elementsToSentence({
+                        "elements": urls.map(source => (
+                            <MuiLink href={source} target="_blank" underline="hover">
+                                here
+                            </MuiLink>
+                        )),
+                        "language": "en"
+                    })}
+                </>
+            ),
         "download as script": "Download as script",
         "api logs help body": ({
             k8CredentialsHref,
@@ -436,24 +450,80 @@ Feel free to explore and take charge of your Kubernetes deployments!
         `}</Markdown>
         )
     },
-    "Footer": {
-        "contribute": "Contribute",
-        "terms of service": "Terms of service",
-        "change language": "Change language",
-        "dark mode switch": "Dark mode switch"
+    "AcknowledgeSharingOfConfigConfirmDialog": {
+        "acknowledge sharing of config confirm dialog title":
+            "Be aware, configurations are shared",
+        "acknowledge sharing of config confirm dialog subtitle": ({
+            groupProjectName
+        }) => `If you save
+        this configuration every member of the project ${groupProjectName} will be able to launch it.`,
+        "acknowledge sharing of config confirm dialog body": `Although no personal information have been automatically injected 
+        by Onyxia, be aware not to share any sensitive information shared restorable configuration.`,
+        "cancel": "Cancel",
+        "i understand, proceed": "I understand, proceed"
     },
-    "CatalogLauncherMainCard": {
+    "AutoLaunchDisabledDialog": {
+        "auto launch disabled dialog title":
+            "Auto launch feature disabled on this Onyxia instance",
+        "auto launch disabled dialog body": (
+            <>
+                <b>WARNING</b>: Someone might be trying to trick you into launching a
+                service that might compromise your namespace integrity.
+                <br />
+                Please carefully review the service configuration before launching it.
+                <br />
+                If you have any doubt, please contact your administrator.
+            </>
+        ),
+        "ok": "Ok"
+    },
+    "NoLongerBookmarkedDialog": {
+        "no longer bookmarked dialog title": "Your changes wont be saved",
+        "no longer bookmarked dialog body":
+            "Click on the bookmark icon again to update your saved configuration",
+        "ok": "Ok"
+    },
+    "SensitiveConfigurationDialog": {
+        "sensitive configuration dialog title": "Launching this service may be dangerous",
+        "cancel": "Annuler",
+        "proceed to launch": "Proceed to launch"
+    },
+    "LauncherMainCard": {
         "card title": "Create your personal services",
         "friendly name": "Friendly name",
         "launch": "Launch",
         "cancel": "Cancel",
         "copy url helper text": "Copy url to restore this configuration",
-        "save configuration": "Save this configuration",
         "share the service": "Share the service",
         "share the service - explain": "Make the service accessible to the group members",
-        "restore all default": "Restore default configurations"
+        "restore all default": "Restore default configurations",
+        "bookmark button": ({ isBookmarked }) =>
+            `${isBookmarked ? "Delete" : "Save"} configuration`,
+        "bookmark button tooltip": ({ myServicesSavedConfigsExtendedLink }) => (
+            <>
+                Saved configurations can be quickly relaunched from the&nbsp;
+                <MuiLink {...myServicesSavedConfigsExtendedLink} target="_blank">
+                    My Services
+                </MuiLink>{" "}
+                page
+            </>
+        ),
+        "version select label": "Version",
+        "version select helper text": ({
+            chartName,
+            catalogRepositoryUrl,
+            catalogName
+        }) => (
+            <>
+                Version of the {chartName} Chart in the&nbsp;
+                <MuiLink href={catalogRepositoryUrl}>
+                    {catalogName} Helm Repository{" "}
+                </MuiLink>
+            </>
+        ),
+        "save changes": "Save changes"
     },
-    "CatalogLauncherConfigurationCard": {
+    "LauncherConfigurationCard": {
         "global config": "Global configuration",
         "configuration": ({ packageName }) => `${packageName} configurations`,
         "dependency": ({ dependencyName }) => `${dependencyName} dependency`,
@@ -463,12 +533,20 @@ Feel free to explore and take charge of your Kubernetes deployments!
         "Invalid YAML Object": "Invalid YAML Object",
         "Invalid YAML Array": "Invalid YAML Array"
     },
+    "Footer": {
+        "contribute": "Contribute",
+        "terms of service": "Terms of service",
+        "change language": "Change language",
+        "dark mode switch": "Dark mode switch"
+    },
     "MyServices": {
         "text1": "My Services",
         "text2": "Access your running services",
         "text3":
             "Services are supposed to be shut down as soon as you stop using them actively.",
-        "running services": "Running services",
+        "running services": "Running services"
+    },
+    "MyServicesConfirmDeleteDialog": {
         "confirm delete title": "Are you sure?",
         "confirm delete subtitle": "Make sure your service are ready to be deleted",
         "confirm delete body shared services":
@@ -481,14 +559,13 @@ Feel free to explore and take charge of your Kubernetes deployments!
     "MyServicesButtonBar": {
         "refresh": "Refresh",
         "launch": "New service",
-        "password": "Copy the services password",
         "trash": "Delete all",
         "trash my own": "Delete all my services"
     },
     "MyServicesCard": {
         "service": "Service",
         "running since": "Running since: ",
-        "open": "open",
+        "open": "Open",
         "readme": "readme",
         "shared by you": "Shared by you",
         "which token expire when": ({ which, howMuchTime }) =>
@@ -500,16 +577,16 @@ Feel free to explore and take charge of your Kubernetes deployments!
     "MyServicesRunningTime": {
         "launching": "Launching..."
     },
-    "MyServicesSavedConfigOptions": {
+    "MyServicesRestorableConfigOptions": {
         "edit": "Edit",
         "copy link": "Copy URL link",
         "remove bookmark": "Delete"
     },
-    "MyServicesSavedConfig": {
+    "MyServicesRestorableConfig": {
         "edit": "Edit",
         "launch": "Launch"
     },
-    "MyServicesSavedConfigs": {
+    "MyServicesRestorableConfigs": {
         "saved": "Saved",
         "show all": "Show all"
     },
@@ -518,7 +595,7 @@ Feel free to explore and take charge of your Kubernetes deployments!
         "return": "Return"
     },
     "CopyOpenButton": {
-        "first copy the password": "First, copy the service...",
+        "first copy the password": "Click to copy the password...",
         "open the service": "Open the service 🚀"
     },
     "MyServicesCards": {

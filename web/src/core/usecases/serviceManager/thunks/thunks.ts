@@ -52,25 +52,31 @@ export const thunks = {
 
             const onyxiaApi = dispatch(privateThunks.getLoggedOnyxiaApi());
 
-            const runningServicesRaw = await onyxiaApi.getRunningServices();
+            const helmReleases = await onyxiaApi.listHelmReleases();
 
-            //NOTE: We do not have the catalog id so we search in every catalog.
+            //NOTE: We do not have the catalog id nor the chart id so we search in every catalog.
             const { getLogoUrl } = await (async () => {
-                const apiRequestResult = await onyxiaApi.getCatalogs();
+                const { catalogs, chartsByCatalogId } =
+                    await onyxiaApi.getCatalogsAndCharts();
 
-                function getLogoUrl(params: { packageName: string }): string | undefined {
-                    const { packageName } = params;
+                function getLogoUrl(params: {
+                    chartName: string;
+                    chartVersion: string;
+                }): string | undefined {
+                    const { chartName, chartVersion } = params;
 
-                    for (const { charts } of apiRequestResult) {
-                        for (const { name, versions } of charts) {
-                            if (name !== packageName) {
-                                continue;
-                            }
-                            for (const { icon } of versions) {
-                                if (icon === undefined) {
-                                    continue;
+                    catalog: for (const { id: catalogId } of catalogs) {
+                        for (const chart of chartsByCatalogId[catalogId]) {
+                            if (chart.name === chartName) {
+                                const iconUrl = chart.versions.find(
+                                    ({ version }) => version === chartVersion
+                                )?.iconUrl;
+
+                                if (iconUrl === undefined) {
+                                    continue catalog;
                                 }
-                                return icon;
+
+                                return iconUrl;
                             }
                         }
                     }
@@ -83,8 +89,8 @@ export const thunks = {
             const { namespace: kubernetesNamespace } =
                 projectConfigs.selectors.selectedProject(getState());
 
-            const getMonitoringUrl = (params: { serviceId: string }) => {
-                const { serviceId } = params;
+            const getMonitoringUrl = (params: { helmReleaseName: string }) => {
+                const { helmReleaseName } = params;
 
                 const region = deploymentRegion.selectors.selectedDeploymentRegion(
                     getState()
@@ -92,7 +98,7 @@ export const thunks = {
 
                 return region.servicesMonitoringUrlPattern
                     ?.replace("$NAMESPACE", kubernetesNamespace)
-                    .replace("$INSTANCE", serviceId.replace(/^\//, ""));
+                    .replace("$INSTANCE", helmReleaseName.replace(/^\//, ""));
             };
 
             const { username } = await onyxiaApi.getUser();
@@ -104,39 +110,46 @@ export const thunks = {
             dispatch(
                 actions.updateCompleted({
                     kubernetesNamespace,
-                    "envByServiceId": Object.fromEntries(
-                        runningServicesRaw.map(({ id, env }) => [id, env])
+                    "envByHelmReleaseName": Object.fromEntries(
+                        helmReleases.map(({ helmReleaseName, env }) => [
+                            helmReleaseName,
+                            env
+                        ])
                     ),
-                    "postInstallInstructionsByServiceId": Object.fromEntries(
-                        runningServicesRaw
-                            .map(({ id, postInstallInstructions }) =>
+                    "postInstallInstructionsByHelmReleaseName": Object.fromEntries(
+                        helmReleases
+                            .map(({ helmReleaseName, postInstallInstructions }) =>
                                 postInstallInstructions === undefined
                                     ? undefined
-                                    : [id, postInstallInstructions]
+                                    : [helmReleaseName, postInstallInstructions]
                             )
                             .filter(exclude(undefined))
                     ),
-                    "runningServices": runningServicesRaw
+                    "runningServices": helmReleases
                         .map(
                             ({
-                                id: serviceId,
+                                helmReleaseName,
                                 friendlyName,
-                                packageName,
                                 urls,
                                 startedAt,
                                 isShared,
                                 ownerUsername,
                                 env,
                                 postInstallInstructions,
+                                chartName,
+                                chartVersion,
                                 ...rest
                             }) => {
                                 const common: RunningService.Common = {
-                                    "id": serviceId,
-                                    packageName,
-                                    friendlyName,
-                                    "logoUrl": getLogoUrl({ packageName }),
+                                    helmReleaseName,
+                                    chartName,
+                                    "friendlyName": friendlyName ?? helmReleaseName,
+                                    "chartIconUrl": getLogoUrl({
+                                        chartName,
+                                        chartVersion
+                                    }),
                                     "monitoringUrl": getMonitoringUrl({
-                                        serviceId
+                                        helmReleaseName
                                     }),
                                     startedAt,
                                     "vaultTokenExpirationTime":
@@ -154,7 +167,7 @@ export const thunks = {
                                               ({ isConfirmedJustStarted }) =>
                                                   dispatch(
                                                       actions.serviceStarted({
-                                                          serviceId,
+                                                          helmReleaseName,
                                                           "doOverwriteStaredAtToNow":
                                                               isConfirmedJustStarted
                                                       })
@@ -192,22 +205,22 @@ export const thunks = {
             );
         },
     "stopService":
-        (params: { serviceId: string }) =>
+        (params: { helmReleaseName: string }) =>
         async (...args) => {
-            const { serviceId } = params;
+            const { helmReleaseName } = params;
 
             const [dispatch] = args;
 
             const onyxiaApi = dispatch(privateThunks.getLoggedOnyxiaApi());
 
-            dispatch(actions.serviceStopped({ serviceId }));
+            dispatch(actions.serviceStopped({ helmReleaseName }));
 
-            await onyxiaApi.stopService({ serviceId });
+            await onyxiaApi.helmUninstall({ helmReleaseName });
         },
     "getPostInstallInstructions":
-        (params: { serviceId: string }) =>
+        (params: { helmReleaseName: string }) =>
         (...args): string => {
-            const { serviceId } = params;
+            const { helmReleaseName } = params;
 
             const [dispatch, getState] = args;
 
@@ -216,28 +229,28 @@ export const thunks = {
             assert(state.stateDescription === "ready");
 
             const postInstallInstructions =
-                state.postInstallInstructionsByServiceId[serviceId];
+                state.postInstallInstructionsByHelmReleaseName[helmReleaseName];
 
             assert(postInstallInstructions !== undefined);
 
-            dispatch(actions.postInstallInstructionsRequested({ serviceId }));
+            dispatch(actions.postInstallInstructionsRequested({ helmReleaseName }));
 
             return postInstallInstructions;
         },
     "getEnv":
-        (params: { serviceId: string }) =>
+        (params: { helmReleaseName: string }) =>
         (...args): Record<string, string> => {
-            const { serviceId } = params;
+            const { helmReleaseName } = params;
 
             const [dispatch, getState] = args;
 
-            dispatch(actions.envRequested({ serviceId }));
+            dispatch(actions.envRequested({ helmReleaseName }));
 
             const state = getState()[name];
 
             assert(state.stateDescription === "ready");
 
-            return state.envByServiceId[serviceId];
+            return state.envByHelmReleaseName[helmReleaseName];
         }
 } satisfies Thunks;
 
@@ -296,7 +309,7 @@ const privateThunks = {
 
             sliceContext.loggedOnyxiaApi = {
                 ...onyxiaApi,
-                "getRunningServices": async () => {
+                "listHelmReleases": async () => {
                     const { namespace } = projectConfigs.selectors.selectedProject(
                         getState()
                     );
@@ -313,37 +326,44 @@ const privateThunks = {
                         })
                     );
 
-                    const runningServices = await onyxiaApi.getRunningServices();
+                    const helmReleases = await onyxiaApi.listHelmReleases();
 
                     dispatch(
                         actions.commandLogsRespUpdated({
                             cmdId,
                             "resp": formatHelmLsResp({
-                                "lines": runningServices.map(
-                                    ({ extraForHelmLs, id, startedAt }) => ({
-                                        "name": id,
+                                "lines": helmReleases.map(
+                                    ({
+                                        helmReleaseName,
+                                        startedAt,
+                                        revision,
+                                        chartName,
+                                        chartVersion,
+                                        appVersion
+                                    }) => ({
+                                        "name": helmReleaseName,
                                         namespace,
-                                        "revision": extraForHelmLs.revision,
+                                        revision,
                                         "updatedTime": startedAt,
                                         "status": "deployed",
-                                        "chart": extraForHelmLs.chart,
-                                        "appVersion": extraForHelmLs.appVersion
+                                        "chart": `${chartName}-${chartVersion}`,
+                                        appVersion
                                     })
                                 )
                             })
                         })
                     );
 
-                    return runningServices;
+                    return helmReleases;
                 },
-                "stopService": async ({ serviceId }) => {
+                "helmUninstall": async ({ helmReleaseName }) => {
                     const cmdId = Date.now();
 
                     dispatch(
                         actions.commandLogsEntryAdded({
                             "commandLogsEntry": {
                                 cmdId,
-                                "cmd": `helm uninstall ${serviceId} --namespace ${
+                                "cmd": `helm uninstall ${helmReleaseName} --namespace ${
                                     projectConfigs.selectors.selectedProject(getState())
                                         .namespace
                                 }`,
@@ -352,12 +372,12 @@ const privateThunks = {
                         })
                     );
 
-                    await onyxiaApi.stopService({ serviceId });
+                    await onyxiaApi.helmUninstall({ helmReleaseName });
 
                     dispatch(
                         actions.commandLogsRespUpdated({
                             cmdId,
-                            "resp": `release "${serviceId}" uninstalled`
+                            "resp": `release "${helmReleaseName}" uninstalled`
                         })
                     );
                 }

@@ -1,10 +1,11 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { id } from "tsafe/id";
-import { assert } from "tsafe/assert";
+import { assert, type Equals } from "tsafe/assert";
 import { same } from "evt/tools/inDepth/same";
 import { type FormFieldValue } from "./FormField";
 import { type JSONSchemaObject } from "core/ports/OnyxiaApi";
 import type { FormField } from "./FormField";
+import { type LocalizedString } from "core/ports/OnyxiaApi";
 
 type State = State.NotInitialized | State.Ready;
 
@@ -16,11 +17,16 @@ export declare namespace State {
 
     export type Ready = {
         stateDescription: "ready";
-        icon: string | undefined;
+        chartIconUrl: string | undefined;
         catalogId: string;
-        catalogLocation: string;
-        packageName: string;
-        sources: string[];
+        catalogName: LocalizedString;
+        catalogRepositoryUrl: string;
+        chartName: string;
+        chartVersion: string;
+        // NOTE: Just for knowing if we need to display --version in the helm command bar
+        defaultChartVersion: string;
+        availableChartVersions: string[];
+        chartSourceUrls: string[];
         pathOfFormFieldsWhoseValuesAreDifferentFromDefault: {
             path: string[];
         }[];
@@ -30,8 +36,9 @@ export declare namespace State {
             isHidden: boolean | FormFieldValue;
         }[];
         defaultFormFieldsValue: FormFieldValue[];
-        dependencies?: string[];
-        config: JSONSchemaObject;
+        chartDependencies: string[];
+        valuesSchema: JSONSchemaObject;
+        k8sRandomSubdomain: string;
     };
 }
 
@@ -57,31 +64,41 @@ export const { reducer, actions } = createSlice({
                     payload
                 }: {
                     payload: {
-                        catalogLocation: string;
                         catalogId: string;
-                        packageName: string;
-                        icon: string | undefined;
-                        sources: string[];
+                        catalogName: LocalizedString;
+                        catalogRepositoryUrl: string;
+                        chartName: string;
+                        chartVersion: string;
+                        defaultChartVersion: string;
+                        availableChartVersions: string[];
+                        chartIconUrl: string | undefined;
+                        chartSourceUrls: string[];
                         formFields: State.Ready["formFields"];
                         infosAboutWhenFieldsShouldBeHidden: State.Ready["infosAboutWhenFieldsShouldBeHidden"];
-                        config: State.Ready["config"];
-                        dependencies: string[];
+                        valuesSchema: State.Ready["valuesSchema"];
+                        chartDependencies: string[];
                         formFieldsValueDifferentFromDefault: FormFieldValue[];
                         sensitiveConfigurations: FormFieldValue[];
+                        k8sRandomSubdomain: string;
                     };
                 }
             ) => {
                 const {
-                    catalogLocation,
                     catalogId,
-                    packageName,
-                    icon,
-                    sources,
+                    catalogName,
+                    catalogRepositoryUrl,
+                    chartName,
+                    chartVersion,
+                    defaultChartVersion,
+                    availableChartVersions,
+                    chartIconUrl,
+                    chartSourceUrls,
                     formFields,
                     infosAboutWhenFieldsShouldBeHidden,
-                    config,
-                    dependencies,
-                    formFieldsValueDifferentFromDefault
+                    valuesSchema,
+                    chartDependencies,
+                    formFieldsValueDifferentFromDefault,
+                    k8sRandomSubdomain
                 } = payload;
 
                 Object.assign(
@@ -89,19 +106,24 @@ export const { reducer, actions } = createSlice({
                     id<State.Ready>({
                         "stateDescription": "ready",
                         catalogId,
-                        catalogLocation,
-                        packageName,
-                        icon,
-                        sources,
+                        catalogName,
+                        catalogRepositoryUrl,
+                        chartName,
+                        chartVersion,
+                        defaultChartVersion,
+                        availableChartVersions,
+                        chartIconUrl,
+                        chartSourceUrls,
                         formFields,
                         infosAboutWhenFieldsShouldBeHidden,
                         "defaultFormFieldsValue": formFields.map(({ path, value }) => ({
                             path,
                             value
                         })),
-                        dependencies,
+                        chartDependencies,
                         "pathOfFormFieldsWhoseValuesAreDifferentFromDefault": [],
-                        config
+                        valuesSchema,
+                        k8sRandomSubdomain
                     })
                 );
 
@@ -131,7 +153,53 @@ export const { reducer, actions } = createSlice({
                 {
                     const formField = state.formFields.find(formField =>
                         same(formField.path, path)
-                    )!;
+                    );
+
+                    if (formField === undefined) {
+                        // NOTE: Can happen when restoring config in a different chart version
+                        return;
+                    }
+
+                    const areTypesConsistent = (() => {
+                        switch (formField.type) {
+                            case "boolean":
+                            case "integer":
+                            case "text":
+                            case "password":
+                            case "slider":
+                                return (
+                                    typeof formField.value === typeof formFieldValue.value
+                                );
+                            case "array":
+                                return formFieldValue.value instanceof Array;
+                            case "enum":
+                                return (
+                                    typeof formFieldValue.value === "string" &&
+                                    formField.enum.includes(formFieldValue.value)
+                                );
+                            case "object":
+                                assert<
+                                    Equals<
+                                        typeof formField.value,
+                                        {
+                                            type: "yaml";
+                                            yamlStr: string;
+                                        }
+                                    >
+                                >();
+                                return (
+                                    formFieldValue.value instanceof Object &&
+                                    "yaml" in formFieldValue.value
+                                );
+                        }
+
+                        assert<Equals<typeof formField, never>>();
+                    })();
+
+                    if (!areTypesConsistent) {
+                        // NOTE: Can happen when restoring config in a different chart version
+                        return;
+                    }
 
                     if (same(formField.value, value)) {
                         return;
@@ -175,8 +243,11 @@ export const { reducer, actions } = createSlice({
             "launchStarted": () => {
                 /* NOTE: For coreEvt */
             },
-            "launchCompleted": (_state, _: { payload: { serviceId: string } }) => {
+            "launchCompleted": () => {
                 /* NOTE: For coreEvt */
+            },
+            "defaultChartVersionSelected": () => {
+                /* Only for evt */
             }
         } satisfies Record<string, (state: State, ...rest: any[]) => State | void>;
 

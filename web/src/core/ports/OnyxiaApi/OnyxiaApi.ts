@@ -2,7 +2,8 @@ import type { XOnyxiaContext } from "./XOnyxia";
 import type { DeploymentRegion } from "./DeploymentRegion";
 import type { Project } from "./Project";
 import type { Catalog } from "./Catalog";
-import type { RunningService } from "./RunningService";
+import type { Chart } from "./Chart";
+import type { HelmRelease } from "./HelmRelease";
 import type { User } from "./User";
 import { JSONSchemaObject } from "./JSONSchema";
 
@@ -12,7 +13,7 @@ export type OnyxiaApi = {
             regions: DeploymentRegion[];
             oidcParams:
                 | {
-                      authority: string;
+                      issuerUri: string;
                       clientId: string;
                   }
                 | undefined;
@@ -30,28 +31,37 @@ export type OnyxiaApi = {
         clear: () => void;
     };
 
-    getCatalogs: {
-        (): Promise<Catalog[]>;
+    getCatalogsAndCharts: {
+        (): Promise<{
+            catalogs: Catalog[];
+            chartsByCatalogId: Record<string, Chart[]>;
+        }>;
         clear: () => void;
     };
 
-    getPackageConfig: (params: { catalogId: string; packageName: string }) => Promise<{
-        getValuesSchemaJson: (params: {
+    getHelmChartDetails: (params: {
+        catalogId: string;
+        chartName: string;
+        chartVersion: string;
+    }) => Promise<{
+        getChartValuesSchemaJson: (params: {
             xOnyxiaContext: XOnyxiaContext;
         }) => JSONSchemaObject;
         dependencies: string[];
-        sources: string[];
+        sourceUrls: string[];
     }>;
 
-    launchPackage: (params: {
+    helmInstall: (params: {
+        helmReleaseName: string;
         catalogId: string;
-        packageName: string;
-        options: Record<string, unknown>;
+        chartName: string;
+        chartVersion: string;
+        values: Record<string, unknown>;
     }) => Promise<void>;
 
-    getRunningServices: () => Promise<RunningService[]>;
+    listHelmReleases: () => Promise<HelmRelease[]>;
 
-    stopService: (params: { serviceId: string }) => Promise<void>;
+    helmUninstall: (params: { helmReleaseName: string }) => Promise<void>;
 
     createAwsBucket: (params: {
         awsRegion: string;

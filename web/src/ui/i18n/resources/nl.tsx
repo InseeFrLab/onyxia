@@ -1,6 +1,7 @@
 import type { Translations } from "../types";
 import MuiLink from "@mui/material/Link";
 import { Markdown } from "onyxia-ui/Markdown";
+import { elementsToSentence } from "ui/tools/elementsToSentence";
 
 export const translations: Translations<"nl"> = {
     /* spell-checker: disable */
@@ -54,13 +55,27 @@ export const translations: Translations<"nl"> = {
         "expires in": ({ howMuchTime }) => `Vervalt binnen ${howMuchTime}`
     },
     "AccountKubernetesTab": {
-        "credentials section title": "Verbinding met Kubernetes",
+        "credentials section title": "Verbind met de Kubernetes-cluster",
         "credentials section helper":
-            "Gebruikersnaam voor directe interactie met het cluster Kubernetes.",
-        "init script section title":
-            "Om verbinding te maken met het cluster Kubernetes via uw lokale kubectl",
-        "init script section helper": `Download of kopieer het script.`,
-        "expires in": ({ howMuchTime }) => `Het token vervalt binnen ${howMuchTime}`
+            "Inloggegevens om direct te communiceren met de Kubernetes API-server.",
+        "init script section title": "Shell-script",
+        "init script section helper": ({ installKubectlUrl }) => (
+            <>
+                Dit script maakt het mogelijk om kubectl of helm op je lokale machine te
+                gebruiken. <br />
+                Om het te gebruiken,{" "}
+                <MuiLink href={installKubectlUrl} target="_blank">
+                    installeer gewoon kubectl op je machine
+                </MuiLink>{" "}
+                en voer het script uit door het te kopiëren en plakken in je terminal.
+                <br />
+                Nadat je dit hebt gedaan, kun je bevestigen dat het werkt door het
+                commando&nbsp;
+                <code>kubectl get pods</code> of <code>helm list</code> uit te voeren
+            </>
+        ),
+        "expires in": ({ howMuchTime }) =>
+            `Deze inloggegevens zijn geldig voor de komende ${howMuchTime}`
     },
     "AccountVaultTab": {
         "credentials section title": "Gebrukersnamen Vault",
@@ -323,60 +338,60 @@ export const translations: Translations<"nl"> = {
         "cardButton2": "Lid worden van de gemeenschap",
         "cardButton3": "Gegevens raadplegen"
     },
-    "CatalogExplorerCard": {
-        "launch": "Opstarten",
-        "learn more": "Meer weten ?"
-    },
-    "CatalogExplorerCards": {
+    "Catalog": {
+        "header text1": "Catalogus van de diensten",
+        "header text2":
+            "Ontdek, start en configureer diensten in slechts een paar klikken.",
+        "header help": ({ catalogName, catalogDescription, repositoryUrl }) => (
+            <>
+                Je bent het Helm Chart Repository aan het verkennen{" "}
+                <MuiLink href={repositoryUrl} target="_blank">
+                    {catalogName}: {catalogDescription}
+                </MuiLink>
+            </>
+        ),
+        "here": "hier",
         "show more": "Alles weergeven",
         "no service found": "Dienst niet gevonden",
         "no result found": ({ forWhat }) => `Geen resultaat gevonden voor ${forWhat}`,
         "check spelling": `Controleer of de naam van de dienst correct is gespeld
             of probeer uw zoekopdracht uit te breiden.`,
         "go back": "Terug naar de voornaamste diensten",
-        "main services": "Voornaamste diensten",
-        "all services": "Alle diensten",
         "search results": "Resultaten van de zoekopdracht",
         "search": "Zoeken"
     },
-    "Catalog": {
+    "CatalogChartCard": {
+        "launch": "Opstarten",
+        "learn more": "Meer weten ?"
+    },
+    "CatalogNoSearchMatches": {
+        "no service found": "Dienst niet gevonden",
+        "no result found": ({ forWhat }) => `Geen resultaat gevonden voor ${forWhat}`,
+        "check spelling": `Controleer of de naam van de dienst correct is gespeld
+            of probeer uw zoekopdracht uit te breiden.`,
+        "go back": "Terug naar de voornaamste diensten"
+    },
+    "Launcher": {
         "header text1": "Catalogus van de diensten",
         "header text2":
             "Ontdek, start en configureer diensten in slechts een paar klikken.",
-        "contribute to the catalog": ({ catalogName }) => (
-            <>Bijdragen tot de catalogus {catalogName}</>
-        ),
-        "contribute to the package": ({ packageName }) =>
-            `Toegang krijgen tot de packagebronnen ${packageName} `,
-        "here": "hier"
-    },
-    "CatalogLauncher": {
-        "no longer bookmarked dialog title": "Niet opgeslagen wijzigingen",
-        "no longer bookmarked dialog body":
-            "Klik opnieuw op het symbool van de bladwijzer om de opgeslagen configuratie bij te werken.",
-        "ok": "Ok",
-        "should overwrite configuration dialog title": "Wilt u het vervangen ?",
-        "should overwrite configuration dialog subtitle": ({ friendlyName }) =>
-            `«${friendlyName}» bestaat al in uw opgeslagen diensten.`,
-        "should overwrite configuration dialog body":
-            "Er bestaat al een geregistreerde dienst met dezelfde naam. Als u deze vervangt, gaat de oorspronkelijke inhoud verloren.",
-        "cancel": "Annuleren",
-        "replace": "Vervangen",
-        "sensitive configuration dialog title":
-            "Deze dienst uitvoeren kan gevaarlijk zijn",
-        "proceed to launch": "Bewust uitvoeren",
-        "auto launch disabled dialog title": "Deze dienst uitvoeren kan gevaarlijk zijn",
-        "auto launch disabled dialog body": (
-            <>
-                <b>WAARSCHUWING</b>: Iemand zou kunnen proberen je te misleiden om een
-                dienst te starten die de integriteit van je namespace in gevaar kan
-                brengen.
-                <br />
-                Controleer de configuratie van de dienst zorgvuldig voordat je deze start.
-                <br />
-                Als je twijfels hebt, neem dan contact op met je beheerder.
-            </>
-        ),
+        "chart sources": ({ chartName, urls }) =>
+            urls.length === 0 ? (
+                <></>
+            ) : (
+                <>
+                    Toegang tot de bron{urls.length === 1 ? "" : "nen"} van de grafiek{" "}
+                    {chartName}:&nbsp;
+                    {elementsToSentence({
+                        "elements": urls.map(source => (
+                            <MuiLink href={source} target="_blank" underline="hover">
+                                hier
+                            </MuiLink>
+                        )),
+                        "language": "nl"
+                    })}
+                </>
+            ),
         "download as script": "Downloaden als script",
         "api logs help body": ({
             k8CredentialsHref,
@@ -442,25 +457,82 @@ Voel je vrij om te verkennen en de controle over je Kubernetes-implementaties te
         `}</Markdown>
         )
     },
-    "Footer": {
-        "contribute": "Bijdragen aan het project",
-        "terms of service": "Gebruiksvoorwaarden",
-        "change language": "Taal wijzigen",
-        "dark mode switch": "Schakelaar voor donkere modus"
+    "AcknowledgeSharingOfConfigConfirmDialog": {
+        "acknowledge sharing of config confirm dialog title":
+            "Wees bewust, configuraties worden gedeeld",
+        "acknowledge sharing of config confirm dialog subtitle": ({
+            groupProjectName
+        }) => `Als je
+        deze configuratie opslaat, zal elk lid van het project ${groupProjectName} in staat zijn om het te starten.`,
+        "acknowledge sharing of config confirm dialog body": `Hoewel er geen persoonlijke informatie automatisch is ingevoegd
+        door Onyxia, wees voorzichtig om geen gevoelige informatie te delen in de herstelbare configuratie.`,
+        "cancel": "Annuleren",
+        "i understand, proceed": "Ik begrijp het, ga verder"
     },
-    "CatalogLauncherMainCard": {
+    "AutoLaunchDisabledDialog": {
+        "ok": "Ok",
+        "auto launch disabled dialog title": "Deze dienst uitvoeren kan gevaarlijk zijn",
+        "auto launch disabled dialog body": (
+            <>
+                <b>WAARSCHUWING</b>: Iemand zou kunnen proberen je te misleiden om een
+                dienst te starten die de integriteit van je namespace in gevaar kan
+                brengen.
+                <br />
+                Controleer de configuratie van de dienst zorgvuldig voordat je deze start.
+                <br />
+                Als je twijfels hebt, neem dan contact op met je beheerder.
+            </>
+        )
+    },
+    "NoLongerBookmarkedDialog": {
+        "no longer bookmarked dialog title": "Niet opgeslagen wijzigingen",
+        "no longer bookmarked dialog body":
+            "Klik opnieuw op het symbool van de bladwijzer om de opgeslagen configuratie bij te werken.",
+        "ok": "Ok"
+    },
+    "SensitiveConfigurationDialog": {
+        "cancel": "Annuleren",
+        "sensitive configuration dialog title":
+            "Deze dienst uitvoeren kan gevaarlijk zijn",
+        "proceed to launch": "Bewust uitvoeren"
+    },
+    "LauncherMainCard": {
         "card title": "Uw eigen dienst aanmaken",
         "friendly name": "Gepersonaliseerde naam",
         "launch": "Opstarten",
         "cancel": "Annuleren",
         "copy url helper text": "URL kopiëren om deze configuratie te herstellen",
-        "save configuration": "Deze configuratie opslaan",
         "share the service": "De dienst delen",
         "share the service - explain":
             "De dienst beschikbaar maken voor de medewerkers van de groep",
-        "restore all default": "Configuraties opnieuw initialiseren"
+        "restore all default": "Configuraties opnieuw initialiseren",
+        "bookmark button": ({ isBookmarked }) =>
+            `${isBookmarked ? "Verwijderen" : "Opslaan"} configuratie`,
+        "bookmark button tooltip": ({ myServicesSavedConfigsExtendedLink }) => (
+            <>
+                Opgeslagen configuraties kunnen snel opnieuw worden gestart vanaf de
+                pagina&nbsp;
+                <MuiLink {...myServicesSavedConfigsExtendedLink} target="_blank">
+                    Mijn Diensten
+                </MuiLink>
+            </>
+        ),
+        "version select label": "Versie",
+        "version select helper text": ({
+            chartName,
+            catalogRepositoryUrl,
+            catalogName
+        }) => (
+            <>
+                Versie van de Chart {chartName} in de&nbsp;
+                <MuiLink href={catalogRepositoryUrl}>
+                    Helm repository {catalogName}
+                </MuiLink>
+            </>
+        ),
+        "save changes": "Wijzigingen opslaan"
     },
-    "CatalogLauncherConfigurationCard": {
+    "LauncherConfigurationCard": {
         "global config": "Globale configuraties",
         "configuration": ({ packageName }) => `Configuratie ${packageName}`,
         "dependency": ({ dependencyName }) => `Afhankelijkheid ${dependencyName}`,
@@ -470,12 +542,20 @@ Voel je vrij om te verkennen en de controle over je Kubernetes-implementaties te
         "Invalid YAML Object": "Ongeldig YAML-object",
         "Invalid YAML Array": "Ongeldige YAML-tabel"
     },
+    "Footer": {
+        "contribute": "Bijdragen aan het project",
+        "terms of service": "Gebruiksvoorwaarden",
+        "change language": "Taal wijzigen",
+        "dark mode switch": "Schakelaar voor donkere modus"
+    },
     "MyServices": {
         "text1": "Mijn diensten",
         "text2":
             "Snel uw verschillende diensten in uitvoering starten, bekijken en beheren.",
         "text3": "We raden u aan uw diensten te verwijderen na elke werksessie.",
-        "running services": "Diensten in uitvoering",
+        "running services": "Diensten in uitvoering"
+    },
+    "MyServicesConfirmDeleteDialog": {
         "confirm delete title": "Bent u zeker?",
         "confirm delete subtitle":
             "Zorg ervoor dat uw diensten geen onopgeslagen werk bevatten.",
@@ -489,7 +569,6 @@ Voel je vrij om te verkennen en de controle over je Kubernetes-implementaties te
     "MyServicesButtonBar": {
         "refresh": "Vernieuwen",
         "launch": "Nieuwe dienst",
-        "password": "Wachtwoord kopiëren",
         "trash": "Alles verwijderen",
         "trash my own": "Al mijn diensten verwijderen"
     },
@@ -509,16 +588,16 @@ Voel je vrij om te verkennen en de controle over je Kubernetes-implementaties te
     "MyServicesRunningTime": {
         "launching": "In uitvoering..."
     },
-    "MyServicesSavedConfigOptions": {
+    "MyServicesRestorableConfigOptions": {
         "edit": "Wijzigen",
         "copy link": "URL kopiëren",
         "remove bookmark": "Verwijderen"
     },
-    "MyServicesSavedConfig": {
+    "MyServicesRestorableConfig": {
         "edit": "Wijzigen",
         "launch": "Opstarten"
     },
-    "MyServicesSavedConfigs": {
+    "MyServicesRestorableConfigs": {
         "saved": "Opgeslagen",
         "show all": "Alles weergeven"
     },
@@ -527,7 +606,7 @@ Voel je vrij om te verkennen en de controle over je Kubernetes-implementaties te
         "return": "Terug"
     },
     "CopyOpenButton": {
-        "first copy the password": "Begin met het kopiëren van het wachtwoord...",
+        "first copy the password": "Klik om het wachtwoord te kopiëren...",
         "open the service": "De dienst openen 🚀"
     },
     "MyServicesCards": {

@@ -18,10 +18,10 @@ const props: Props = {
     "className": css({ "width": 300 }),
     "isUpdating": false,
     "cards": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map(i => ({
-        "serviceId": `rstudio-${i}`,
-        "packageIconUrl": rstudioImgUrl,
+        "helmReleaseName": `rstudio-${i}`,
+        "chartIconUrl": rstudioImgUrl,
         "friendlyName": "My RStudio",
-        "packageName": "rstudio",
+        "chartName": "rstudio",
         "infoUrl": url,
         "openUrl": url + "/" + i,
         "monitoringUrl": url,
@@ -43,7 +43,7 @@ const props: Props = {
     })),
     "catalogExplorerLink": { "href": url, "onClick": () => {} },
     "evtAction": new Evt(),
-    "getServicePassword": () => Promise.resolve("xyz"),
+    "getProjectServicePassword": () => Promise.resolve("xyz"),
     "getEnv": () => ({
         "foo": "foo value",
         "bar": "bar value",

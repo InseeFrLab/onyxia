@@ -123,7 +123,7 @@ export const AccountVaultTab = memo((props: Props) => {
                 <CodeBlock
                     initScript={{
                         "scriptCode": uiState.bashScript,
-                        "programingLanguage": "shell"
+                        "programmingLanguage": "shell"
                     }}
                     isDarkModeEnabled={theme.isDarkModeEnabled}
                 />

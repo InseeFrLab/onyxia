@@ -11,13 +11,12 @@ import { useConstCallback } from "powerhooks/useConstCallback";
 import type { NonPostableEvt } from "evt";
 import { useEvt } from "evt/hooks";
 import { CopyOpenButton } from "./CopyOpenButton";
-import { assert } from "tsafe/assert";
 
 type Props = {
     evtAction: NonPostableEvt<"SHOW ENV" | "SHOW POST INSTALL INSTRUCTIONS">;
     startTime: number | undefined;
     openUrl: string | undefined;
-    getServicePassword: () => Promise<string>;
+    getProjectServicePassword: () => Promise<string>;
     getPostInstallInstructions: (() => string) | undefined;
     getEnv: () => Record<string, string>;
 };
@@ -27,7 +26,7 @@ export function ReadmeAndEnvDialog(props: Props) {
         evtAction,
         startTime,
         openUrl,
-        getServicePassword,
+        getProjectServicePassword,
         getPostInstallInstructions,
         getEnv
     } = props;
@@ -36,7 +35,7 @@ export function ReadmeAndEnvDialog(props: Props) {
         | { dialogShowingWhat: "env"; env: Record<string, string> }
         | {
               dialogShowingWhat: "postInstallInstructions";
-              servicePassword: string;
+              projectServicePassword: string;
               postInstallInstructions: string;
           }
         | undefined
@@ -58,11 +57,10 @@ export function ReadmeAndEnvDialog(props: Props) {
                 action => action === "SHOW POST INSTALL INSTRUCTIONS",
                 ctx,
                 async () => {
-                    assert(getPostInstallInstructions !== undefined);
                     setDialogDesc({
                         "dialogShowingWhat": "postInstallInstructions",
-                        "servicePassword": await getServicePassword(),
-                        "postInstallInstructions": getPostInstallInstructions()
+                        "projectServicePassword": await getProjectServicePassword(),
+                        "postInstallInstructions": getPostInstallInstructions?.() ?? ""
                     });
                 }
             );
@@ -119,13 +117,14 @@ export function ReadmeAndEnvDialog(props: Props) {
                                 openUrl !== undefined && (
                                     <CopyOpenButton
                                         openUrl={openUrl}
-                                        servicePassword={
-                                            dialogDesc.postInstallInstructions.indexOf(
-                                                dialogDesc.servicePassword
-                                            ) >= 0
-                                                ? dialogDesc.servicePassword
-                                                : undefined
-                                        }
+                                        servicePassword={extractServicePasswordFromPostInstallInstructions(
+                                            {
+                                                "postInstallInstructions":
+                                                    dialogDesc.postInstallInstructions,
+                                                "projectServicePassword":
+                                                    dialogDesc.projectServicePassword
+                                            }
+                                        )}
                                         onDialogClose={onDialogClose}
                                     />
                                 )
@@ -158,6 +157,27 @@ export function ReadmeAndEnvDialog(props: Props) {
             buttons={dialogButtons ?? null}
         />
     );
+}
+
+function extractServicePasswordFromPostInstallInstructions(params: {
+    postInstallInstructions: string;
+    projectServicePassword: string;
+}): string | undefined {
+    const { postInstallInstructions, projectServicePassword } = params;
+
+    if (postInstallInstructions.includes(projectServicePassword)) {
+        return projectServicePassword;
+    }
+
+    const regex = /password: ?([^\n ]+)/i;
+
+    const match = postInstallInstructions.match(regex);
+
+    if (match === null) {
+        return undefined;
+    }
+
+    return match[1];
 }
 
 const useStyles = tss.withName({ ReadmeAndEnvDialog }).create(({ theme }) => ({

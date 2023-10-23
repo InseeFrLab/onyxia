@@ -1,6 +1,7 @@
 import type { Translations } from "../types";
 import MuiLink from "@mui/material/Link";
 import { Markdown } from "onyxia-ui/Markdown";
+import { elementsToSentence } from "ui/tools/elementsToSentence";
 
 export const translations: Translations<"zh-CN"> = {
     /* spell-checker: disable */
@@ -49,11 +50,23 @@ export const translations: Translations<"zh-CN"> = {
         "expires in": undefined
     },
     "AccountKubernetesTab": {
-        "credentials section title": undefined,
-        "credentials section helper": undefined,
-        "init script section title": undefined,
-        "init script section helper": undefined,
-        "expires in": undefined
+        "credentials section title": "连接到 Kubernetes 集群",
+        "credentials section helper": "用于直接与 Kubernetes API 服务器交互的凭证。",
+        "init script section title": "Shell 脚本",
+        "init script section helper": ({ installKubectlUrl }) => (
+            <>
+                此脚本使您可以在本地机器上使用 kubectl 或 helm。 <br />
+                要使用它，只需在您的机器上
+                <MuiLink href={installKubectlUrl} target="_blank">
+                    安装 kubectl
+                </MuiLink>
+                ，然后运行脚本 通过在终端中复制粘贴它。
+                <br />
+                做完这些后，您可以通过运行以下命令来确认其是否有效&nbsp;
+                <code>kubectl get pods</code> 或 <code>helm list</code>
+            </>
+        ),
+        "expires in": ({ howMuchTime }) => `这些凭证在接下来的 ${howMuchTime} 内有效`
     },
     "AccountVaultTab": {
         "credentials section title": undefined,
@@ -267,54 +280,55 @@ export const translations: Translations<"zh-CN"> = {
         "cardButton2": "加入社区",
         "cardButton3": "查看数据"
     },
-    "CatalogExplorerCard": {
-        "launch": "启动",
-        "learn more": "了解更多"
-    },
-    "CatalogExplorerCards": {
+    "Catalog": {
+        "header text1": "服务目录",
+        "header text2": "只需单击几下即可探索、启动和配置服务.",
+        "header help": ({ catalogName, catalogDescription, repositoryUrl }) => (
+            <>
+                您正在浏览 Helm Chart 仓库{" "}
+                <MuiLink href={repositoryUrl} target="_blank">
+                    {catalogName}：{catalogDescription}
+                </MuiLink>
+            </>
+        ),
+        "here": "此处",
         "show more": "显示所有",
         "no service found": "没有找到服务",
         "no result found": ({ forWhat }) => `没有找到关于 ${forWhat} 的结果`,
         "check spelling": "检查服务名称是否拼写正确或尝试扩大您的搜索范围",
         "go back": "返回主要服务",
-        "main services": "主要服务",
-        "all services": "所有服务",
         "search results": "搜索结果",
         "search": "收索服务"
     },
-    "Catalog": {
+    "CatalogChartCard": {
+        "launch": "启动",
+        "learn more": "了解更多"
+    },
+    "CatalogNoSearchMatches": {
+        "no service found": "没有找到服务",
+        "no result found": ({ forWhat }) => `没有找到关于 ${forWhat} 的结果`,
+        "check spelling": "检查服务名称是否拼写正确或尝试扩大您的搜索范围",
+        "go back": "返回主要服务"
+    },
+    "Launcher": {
         "header text1": "服务目录",
         "header text2": "只需单击几下即可探索、启动和配置服务.",
-        "contribute to the catalog": ({ catalogName }) => (
-            <>为目录 {catalogName} 做贡献</>
-        ),
-        "contribute to the package": ({ packageName }) => `访问源包 ${packageName} `,
-        "here": "此处"
-    },
-    "CatalogLauncher": {
-        "no longer bookmarked dialog title": "更改未保存",
-        "no longer bookmarked dialog body": "再次单击书签符号以更新您保存的配置.",
-        "ok": "是",
-        "should overwrite configuration dialog title": "您想更换它吗?",
-        "should overwrite configuration dialog subtitle": ({ friendlyName }) =>
-            `«${friendlyName}» 已经存在于您的记录中`,
-        "should overwrite configuration dialog body":
-            "已存在同名的注册服务. 如果替换它, 原始内容将丢失.",
-        "cancel": "取消",
-        "replace": "取代",
-        "sensitive configuration dialog title": "您想更换它吗?", //TODO
-        "proceed to launch": "继续启动", //TODO
-        "auto launch disabled dialog title": "您想更换它吗?",
-        "auto launch disabled dialog body": (
-            <>
-                <b>警告</b>：有人可能试图欺骗您，启动一个可能威胁到您 namespace
-                完整性的服务。
-                <br />
-                请在启动之前仔细审查服务配置。
-                <br />
-                如有任何疑问，请联系您的管理员。
-            </>
-        ),
+        "chart sources": ({ chartName, urls }) =>
+            urls.length === 0 ? (
+                <></>
+            ) : (
+                <>
+                    访问图表 {chartName} 的源{urls.length === 1 ? "" : "们"}：&nbsp;
+                    {elementsToSentence({
+                        "elements": urls.map(source => (
+                            <MuiLink href={source} target="_blank" underline="hover">
+                                这里
+                            </MuiLink>
+                        )),
+                        "language": "zh-CN"
+                    })}
+                </>
+            ),
         "download as script": "下载脚本",
         "api logs help body": ({
             k8CredentialsHref,
@@ -376,24 +390,74 @@ ${
         `}</Markdown>
         )
     },
-    "Footer": {
-        "contribute": "为项目做贡献",
-        "terms of service": "使用条款",
-        "change language": "切换语言",
-        "dark mode switch": "黑暗模式切换" // or maybe 黑暗模式开关
+    "AcknowledgeSharingOfConfigConfirmDialog": {
+        "acknowledge sharing of config confirm dialog title": "请注意，配置是共享的",
+        "acknowledge sharing of config confirm dialog subtitle": ({
+            groupProjectName
+        }) => `如果您保存
+        此配置，项目 ${groupProjectName} 的每个成员都将能够启动它。`,
+        "acknowledge sharing of config confirm dialog body": `尽管 Onyxia 没有自动注入任何个人信息，
+        请注意不要在可恢复的配置中分享任何敏感信息。`,
+        "cancel": "取消",
+        "i understand, proceed": "我明白了，继续"
     },
-    "CatalogLauncherMainCard": {
+    "AutoLaunchDisabledDialog": {
+        "ok": "是",
+        "auto launch disabled dialog title": "您想更换它吗?",
+        "auto launch disabled dialog body": (
+            <>
+                <b>警告</b>：有人可能试图欺骗您，启动一个可能威胁到您 namespace
+                完整性的服务。
+                <br />
+                请在启动之前仔细审查服务配置。
+                <br />
+                如有任何疑问，请联系您的管理员。
+            </>
+        )
+    },
+    "NoLongerBookmarkedDialog": {
+        "no longer bookmarked dialog title": "更改未保存",
+        "no longer bookmarked dialog body": "再次单击书签符号以更新您保存的配置.",
+        "ok": "是"
+    },
+    "SensitiveConfigurationDialog": {
+        "cancel": "取消",
+        "sensitive configuration dialog title": "您想更换它吗?", //TODO
+        "proceed to launch": "继续启动" //TODO
+    },
+    "LauncherMainCard": {
         "card title": "创建自定义服务",
         "friendly name": "自定义名称",
         "launch": "启动",
         "cancel": "取消",
         "copy url helper text": "复制 URL 以恢复此配置",
-        "save configuration": "保存当前服务",
         "share the service": "分享服务",
         "share the service - explain": "让其他组员可以访问该服务",
-        "restore all default": undefined
+        "restore all default": undefined,
+        "bookmark button": ({ isBookmarked }) => `${isBookmarked ? "移除" : "保存"} 配置`,
+        "bookmark button tooltip": ({ myServicesSavedConfigsExtendedLink }) => (
+            <>
+                已保存的配置可以从&nbsp;
+                <MuiLink {...myServicesSavedConfigsExtendedLink} target="_blank">
+                    我的服务
+                </MuiLink>{" "}
+                页面快速重新启动
+            </>
+        ),
+        "version select label": "版本",
+        "version select helper text": ({
+            chartName,
+            catalogRepositoryUrl,
+            catalogName
+        }) => (
+            <>
+                {chartName} Chart 的版本位于&nbsp;
+                <MuiLink href={catalogRepositoryUrl}>{catalogName} Helm 仓库</MuiLink>
+            </>
+        ),
+        "save changes": "保存更改"
     },
-    "CatalogLauncherConfigurationCard": {
+    "LauncherConfigurationCard": {
         "global config": "全局设置",
         "configuration": ({ packageName }) => `配置 ${packageName}`,
         "dependency": ({ dependencyName }) => `依赖服务 ${dependencyName}`,
@@ -402,11 +466,19 @@ ${
         "Invalid YAML Object": undefined,
         "Invalid YAML Array": undefined
     },
+    "Footer": {
+        "contribute": "为项目做贡献",
+        "terms of service": "使用条款",
+        "change language": "切换语言",
+        "dark mode switch": "黑暗模式切换" // or maybe 黑暗模式开关
+    },
     "MyServices": {
         "text1": "我的服务",
         "text2": "快速启动、查看和管理您正在运行的各种服务。",
         "text3": "建议您在每次工作会话后删除您的服务.",
-        "running services": "正在运行的服务",
+        "running services": "正在运行的服务"
+    },
+    "MyServicesConfirmDeleteDialog": {
         "confirm delete title": "您确定?",
         "confirm delete subtitle": "确保您的服务不包括未保存的工作。",
         "confirm delete body": "在继续之前不要忘记将您的代码推送到 GitHub 或 GitLab.",
@@ -418,7 +490,6 @@ ${
     "MyServicesButtonBar": {
         "refresh": "刷新",
         "launch": "新的服务",
-        "password": "复制密码",
         "trash": "删除所有",
         "trash my own": "删除您的所有服务"
     },
@@ -437,16 +508,16 @@ ${
     "MyServicesRunningTime": {
         "launching": "启动中"
     },
-    "MyServicesSavedConfigOptions": {
+    "MyServicesRestorableConfigOptions": {
         "edit": "编辑服务",
         "copy link": "复制链接",
         "remove bookmark": "删除书签"
     },
-    "MyServicesSavedConfig": {
+    "MyServicesRestorableConfig": {
         "edit": "编辑服务",
         "launch": "启动服务"
     },
-    "MyServicesSavedConfigs": {
+    "MyServicesRestorableConfigs": {
         "saved": "已经保存",
         "show all": "显示所有"
     },
@@ -455,7 +526,7 @@ ${
         "return": "返回"
     },
     "CopyOpenButton": {
-        "first copy the password": "请复制您的密码",
+        "first copy the password": "点击以复制密码...",
         "open the service": "打开服务 🚀"
     },
     "MyServicesCards": {

@@ -1,4 +1,6 @@
-import { assert } from "tsafe/assert";
+import { type FormFieldValue } from "./launcher/FormField";
+import type { RestorableConfig } from "./restorableConfigManager";
+import { assert, type Equals } from "tsafe/assert";
 import type { Thunks } from "../core";
 import type { Project } from "../ports/OnyxiaApi";
 import { createSlice } from "@reduxjs/toolkit";
@@ -6,9 +8,12 @@ import type { PayloadAction } from "@reduxjs/toolkit";
 import { createObjectThatThrowsIfAccessed } from "redux-clean-architecture";
 import type { State as RootState, CreateEvt } from "../core";
 import * as userConfigs from "./userConfigs";
-import { hiddenDirectoryBasename } from "./userConfigs";
 import { join as pathJoin } from "path";
 import type { Id } from "tsafe/id";
+import { is } from "tsafe/is";
+import { generateRandomPassword } from "core/tools/generateRandomPassword";
+import { Chart } from "core/ports/OnyxiaApi";
+import { exclude } from "tsafe/exclude";
 
 type State = {
     projects: Project[];
@@ -21,8 +26,12 @@ export type ProjectConfigs = Id<
     {
         servicePassword: string;
         isOnboarded: boolean;
+        restorableConfigsStr: string | null;
     }
 >;
+
+// NOTE: Make sure there's no overlap between userConfigs and projectConfigs as they share the same vault dir.
+assert<Equals<keyof ProjectConfigs & keyof userConfigs.UserConfigs, never>>(true);
 
 export const name = "projectConfigs";
 
@@ -76,7 +85,7 @@ export const thunks = {
         (...args) => {
             const [dispatch] = args;
             dispatch(
-                privateThunks.changeConfigValue({
+                protectedThunks.changeConfigValue({
                     "key": "servicePassword",
                     "value": getDefaultConfig("servicePassword")
                 })
@@ -88,7 +97,7 @@ export const thunks = {
             const [dispatch] = args;
 
             const servicePassword = await dispatch(
-                privateThunks.getConfigValue({ "key": "servicePassword" })
+                protectedThunks.getConfigValue({ "key": "servicePassword" })
             );
 
             return servicePassword;
@@ -108,7 +117,7 @@ export const protectedThunks = {
                         data.actionName === "projectChanged"),
                 async () => {
                     const isOnboarded = await dispatch(
-                        privateThunks.getConfigValue({ "key": "isOnboarded" })
+                        protectedThunks.getConfigValue({ "key": "isOnboarded" })
                     );
 
                     if (isOnboarded) {
@@ -120,7 +129,7 @@ export const protectedThunks = {
                     await onyxiaApi.onboard();
 
                     await dispatch(
-                        privateThunks.changeConfigValue({
+                        protectedThunks.changeConfigValue({
                             "key": "isOnboarded",
                             "value": true
                         })
@@ -156,27 +165,6 @@ export const protectedThunks = {
                 })
             );
         },
-    "getIs":
-        (params: { projectId: string }) =>
-        (...args): boolean => {
-            const { projectId } = params;
-
-            const [, getState] = args;
-
-            return getState()[name].projects[0].id === projectId;
-        }
-} satisfies Thunks;
-
-const privateThunks = {
-    "getDirPath":
-        () =>
-        (...args): string => {
-            const [, getState] = args;
-
-            const project = selectors.selectedProject(getState());
-
-            return pathJoin("/", project.vaultTopDir, hiddenDirectoryBasename);
-        },
     /**
     Here no state because other project user may have changed 
     the values here at any time. Unlike in userConfigs we
@@ -205,25 +193,221 @@ const privateThunks = {
 
             const dirPath = dispatch(privateThunks.getDirPath());
 
-            const value = await secretsManager
+            let value = await secretsManager
                 .get({ "path": pathJoin(dirPath, key) })
                 .then(({ secret }) => secret["value"] as ProjectConfigs[K])
                 .catch(() => undefined);
 
+            {
+                const { hasMigrationBeenPerformed } = await dispatch(
+                    privateThunks.__migration({ key, value })
+                );
+
+                if (hasMigrationBeenPerformed) {
+                    value = await secretsManager
+                        .get({ "path": pathJoin(dirPath, key) })
+                        .then(({ secret }) => secret["value"] as ProjectConfigs[K]);
+                }
+            }
+
             if (value === undefined) {
-                const value = getDefaultConfig(key);
+                value = getDefaultConfig(key);
 
                 await dispatch(
-                    privateThunks.changeConfigValue({
+                    protectedThunks.changeConfigValue({
                         key,
                         value
                     })
                 );
-
-                return value;
             }
 
             return value;
+        }
+} satisfies Thunks;
+
+const privateThunks = {
+    "getDirPath":
+        () =>
+        (...args): string => {
+            const [, getState] = args;
+
+            const project = selectors.selectedProject(getState());
+
+            return pathJoin("/", project.vaultTopDir, ".onyxia");
+        },
+    /** We wish we could start from a blank late each time we upgrade onyxia
+     *  but we can't because we don't want to erase the user's data
+     *  so when we update the model related to things stored in vault we need to im
+     *  implement a migration system.
+     */
+    "__migration":
+        <K extends keyof ProjectConfigs>(params: {
+            key: K;
+            value: ProjectConfigs[K] | undefined;
+        }) =>
+        async (...args): Promise<{ hasMigrationBeenPerformed: boolean }> => {
+            const { key, value } = params;
+
+            const [dispatch, getState, { secretsManager, onyxiaApi }] = args;
+
+            let hasMigrationBeenPerformed = false;
+
+            migration_bookmarkedServiceConfigurationStr_to_restorableConfigsStr: {
+                if (key !== "restorableConfigsStr") {
+                    break migration_bookmarkedServiceConfigurationStr_to_restorableConfigsStr;
+                }
+
+                if (value !== undefined) {
+                    break migration_bookmarkedServiceConfigurationStr_to_restorableConfigsStr;
+                }
+
+                {
+                    const { projects, selectedProjectId } = getState()[name];
+
+                    const userProject = projects.find(
+                        project => project.group === undefined
+                    );
+
+                    assert(userProject !== undefined);
+
+                    if (userProject.id !== selectedProjectId) {
+                        break migration_bookmarkedServiceConfigurationStr_to_restorableConfigsStr;
+                    }
+                }
+
+                const dirPath = dispatch(privateThunks.getDirPath());
+
+                const oldPath = pathJoin(dirPath, "bookmarkedServiceConfigurationStr");
+
+                const oldValue = await secretsManager
+                    .get({ "path": oldPath })
+                    .then(({ secret }) => secret["value"])
+                    .catch(() => undefined);
+
+                if (oldValue === undefined) {
+                    break migration_bookmarkedServiceConfigurationStr_to_restorableConfigsStr;
+                }
+                assert(typeof oldValue === "string" || oldValue === null);
+
+                if (oldValue === null) {
+                    await secretsManager.delete({ "path": oldPath });
+                    break migration_bookmarkedServiceConfigurationStr_to_restorableConfigsStr;
+                }
+
+                const bookmarkedServiceConfiguration: {
+                    catalogId: string;
+                    packageName: string;
+                    formFieldsValueDifferentFromDefault: any[];
+                }[] = JSON.parse(oldValue);
+
+                const restorableConfigs: {
+                    catalogId: string;
+                    chartName: string;
+                    formFieldsValueDifferentFromDefault: any[];
+                }[] = bookmarkedServiceConfiguration.map(
+                    ({
+                        catalogId,
+                        packageName,
+                        formFieldsValueDifferentFromDefault
+                    }) => ({
+                        catalogId,
+                        "chartName": packageName,
+                        formFieldsValueDifferentFromDefault
+                    })
+                );
+
+                const newValue = JSON.stringify(restorableConfigs);
+
+                await secretsManager.put({
+                    "path": pathJoin(dirPath, key),
+                    "secret": { "value": newValue }
+                });
+
+                await secretsManager.delete({ "path": oldPath });
+
+                hasMigrationBeenPerformed = true;
+            }
+
+            add_version_to_restorable_configs: {
+                if (key !== "restorableConfigsStr") {
+                    break add_version_to_restorable_configs;
+                }
+
+                assert(is<string | null | undefined>(value));
+
+                if (value === undefined || value === null) {
+                    break add_version_to_restorable_configs;
+                }
+
+                const legacyRestorableConfigs:
+                    | {
+                          catalogId: string;
+                          chartName: string;
+                          formFieldsValueDifferentFromDefault: FormFieldValue[];
+                      }[]
+                    | RestorableConfig[] = JSON.parse(value);
+
+                if (
+                    legacyRestorableConfigs.length === 0 ||
+                    "chartVersion" in legacyRestorableConfigs[0]
+                ) {
+                    break add_version_to_restorable_configs;
+                }
+
+                assert(!is<RestorableConfig[]>(legacyRestorableConfigs));
+
+                console.log("Migrating restorableConfigsStr to add version");
+
+                const { chartsByCatalogId } = await onyxiaApi.getCatalogsAndCharts();
+
+                const restorableConfigs: RestorableConfig[] = legacyRestorableConfigs
+                    .map(
+                        ({
+                            catalogId,
+                            chartName,
+                            formFieldsValueDifferentFromDefault
+                        }) => {
+                            const charts = chartsByCatalogId[catalogId];
+
+                            if (charts === undefined) {
+                                console.log(
+                                    `Dropping restorable config because catalog ${catalogId} not found`
+                                );
+                                return undefined;
+                            }
+
+                            const chart = charts.find(({ name }) => name === chartName);
+
+                            if (chart === undefined) {
+                                console.log(
+                                    `Dropping restorable config because chart ${catalogId}/${chartName} not found`
+                                );
+                                return undefined;
+                            }
+
+                            return {
+                                catalogId,
+                                chartName,
+                                formFieldsValueDifferentFromDefault,
+                                "chartVersion": Chart.getDefaultVersion(chart)
+                            };
+                        }
+                    )
+                    .filter(exclude(undefined));
+
+                const newValue = JSON.stringify(restorableConfigs);
+
+                const dirPath = dispatch(privateThunks.getDirPath());
+
+                await secretsManager.put({
+                    "path": pathJoin(dirPath, key),
+                    "secret": { "value": newValue }
+                });
+
+                hasMigrationBeenPerformed = true;
+            }
+
+            return { hasMigrationBeenPerformed };
         }
 } satisfies Thunks;
 
@@ -246,11 +430,7 @@ function getDefaultConfig<K extends keyof ProjectConfigs>(key_: K): ProjectConfi
     const key = key_ as keyof ProjectConfigs;
     switch (key) {
         case "servicePassword": {
-            const out: ProjectConfigs[typeof key] = Array(2)
-                .fill("")
-                .map(() => Math.random().toString(36).slice(-10))
-                .join("")
-                .replace(/\./g, "");
+            const out: ProjectConfigs[typeof key] = generateRandomPassword();
 
             // @ts-expect-error
             return out;
@@ -260,9 +440,14 @@ function getDefaultConfig<K extends keyof ProjectConfigs>(key_: K): ProjectConfi
             // @ts-expect-error
             return out;
         }
+        case "restorableConfigsStr": {
+            const out: ProjectConfigs[typeof key] = null;
+            // @ts-expect-error
+            return out;
+        }
     }
 
-    assert(false);
+    assert<Equals<typeof key, never>>(false);
 }
 
 export type ChangeConfigValueParams<

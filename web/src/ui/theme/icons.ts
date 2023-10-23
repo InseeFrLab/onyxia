@@ -37,8 +37,6 @@ import ReplayIcon from "@mui/icons-material/Replay";
 import HelpIcon from "@mui/icons-material/Help";
 import SearchIcon from "@mui/icons-material/Search";
 import CancelIcon from "@mui/icons-material/Cancel";
-import BookmarkIcon from "@mui/icons-material/Bookmark";
-import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
 import CodeIcon from "@mui/icons-material/Code";
 import LinkIcon from "@mui/icons-material/Link";
 import EqualizerIcon from "@mui/icons-material/Equalizer";
@@ -47,6 +45,7 @@ import SubdirectoryArrowRightIcon from "@mui/icons-material/SubdirectoryArrowRig
 import PeopleIcon from "@mui/icons-material/People";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import ScreenRotationIcon from "@mui/icons-material/ScreenRotation";
+import SaveIcon from "@mui/icons-material/Save";
 
 /** @see: <https://next.material-ui.com/components/material-icons/> */
 export const componentByIconId = {
@@ -71,8 +70,6 @@ export const componentByIconId = {
     "help": HelpIcon,
     "search": SearchIcon,
     "cancel": CancelIcon,
-    "bookmark": BookmarkIcon,
-    "bookmarkBorder": BookmarkBorderIcon,
     "code": CodeIcon,
     "link": LinkIcon,
     "subdirectoryArrowRight": SubdirectoryArrowRightIcon,
@@ -98,7 +95,8 @@ export const componentByIconId = {
     "assuredWorkload": AssuredWorkloadIcon,
     "grading": GradingIcon,
     "refresh": RefreshLogoSvg,
-    "screenRotation": ScreenRotationIcon
+    "screenRotation": ScreenRotationIcon,
+    "save": SaveIcon
 } as const;
 
 export type IconId = keyof typeof componentByIconId;

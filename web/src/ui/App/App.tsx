@@ -39,6 +39,7 @@ import { Markdown } from "onyxia-ui/Markdown";
 import { type LocalizedString, useIsI18nFetching } from "ui/i18n";
 import { getGlobalAlert, getDisablePersonalInfosInjectionInGroup } from "ui/env";
 import { enableScreenScaler } from "screen-scaler/react";
+import { addParamToUrl } from "powerhooks/tools/urlSearchParams";
 
 const { CoreProvider } = createCoreProvider({
     "apiUrl": getEnv().ONYXIA_API_URL,
@@ -46,7 +47,15 @@ const { CoreProvider } = createCoreProvider({
     "transformUrlBeforeRedirectToLogin": url =>
         [url]
             .map(injectTransferableEnvsInSearchParams)
-            .map(injectGlobalStatesInSearchParams)[0],
+            .map(injectGlobalStatesInSearchParams)
+            .map(
+                url =>
+                    addParamToUrl({
+                        url,
+                        "name": "ui_locales",
+                        "value": evtLang.state
+                    }).newUrl
+            )[0],
     "disablePersonalInfosInjectionInGroup": getDisablePersonalInfosInjectionInGroup(),
     "isCommandBarEnabledByDefault": !getDisableCommandBar()
 });
@@ -149,7 +158,7 @@ function ContextualizedApp() {
                 "catalog": {
                     "iconId": "catalog",
                     "label": t("catalog"),
-                    "link": routes.catalogExplorer().link
+                    "link": routes.catalog().link
                 },
                 "myServices": {
                     "iconId": "services",
@@ -250,9 +259,9 @@ function ContextualizedApp() {
                                 return "home" as const;
                             case "account":
                                 return "account";
-                            case "catalogExplorer":
+                            case "catalog":
                                 return "catalog";
-                            case "catalogLauncher":
+                            case "launcher":
                                 return "catalog";
                             case "myServices":
                                 return "myServices";
@@ -627,7 +636,7 @@ function useRegionSelectProps() {
     }
 
     switch (route.name) {
-        case "catalogLauncher":
+        case "launcher":
             break;
         case "myFiles":
             break;

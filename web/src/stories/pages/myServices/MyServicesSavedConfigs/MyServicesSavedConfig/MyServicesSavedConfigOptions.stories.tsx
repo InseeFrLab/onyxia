@@ -1,10 +1,10 @@
-import { MyServicesSavedConfigOptions } from "ui/pages/myServices/MyServicesSavedConfigs/MyServicesSavedConfig/MyServicesSavedConfigOptions";
+import { MyServicesRestorableConfigOptions } from "ui/pages/myServices/MyServicesRestorableConfigs/MyServicesRestorableConfig/MyServicesRestorableConfigOptions";
 import { sectionName } from "./sectionName";
 import { getStoryFactory, logCallbacks } from "stories/getStory";
 
 const { meta, getStory } = getStoryFactory({
     sectionName,
-    "wrappedComponent": { MyServicesSavedConfigOptions }
+    "wrappedComponent": { MyServicesRestorableConfigOptions }
 });
 
 export default meta;

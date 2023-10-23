@@ -29,7 +29,6 @@ export type UserConfigs = Id<
         isDarkModeEnabled: boolean;
         githubPersonalAccessToken: string | null;
         doDisplayMySecretsUseInServiceDialog: boolean;
-        bookmarkedServiceConfigurationStr: string | null;
         selectedProjectId: string | null;
         isCommandBarEnabled: boolean;
     }
@@ -131,7 +130,7 @@ export const protectedThunks = {
 
             const { username, email } = dispatch(userAuthentication.thunks.getUser());
 
-            //Default values
+            // NOTE: Default values
             const userConfigs: UserConfigs = {
                 "kaggleApiToken": null,
                 "gitName": username,
@@ -142,7 +141,6 @@ export const protectedThunks = {
                 "isDarkModeEnabled": getIsDarkModeEnabledOsDefault(),
                 "githubPersonalAccessToken": null,
                 "doDisplayMySecretsUseInServiceDialog": true,
-                "bookmarkedServiceConfigurationStr": null,
                 "selectedProjectId": null,
                 "isCommandBarEnabled": coreParams.isCommandBarEnabledByDefault
             };
@@ -182,11 +180,13 @@ const privateThunks = {
         async (...args): Promise<string> => {
             const [, , { onyxiaApi }] = args;
 
-            //We can't use the slice project selection yet because the slice userConfig
-            //is initialized first.
-            const { vaultTopDir } = (await onyxiaApi.getUserProjects())[0];
+            const userProject = (await onyxiaApi.getUserProjects()).find(
+                project => project.group === undefined
+            );
 
-            return pathJoin("/", vaultTopDir, hiddenDirectoryBasename);
+            assert(userProject !== undefined);
+
+            return pathJoin("/", userProject.vaultTopDir, ".onyxia");
         }
 } satisfies Thunks;
 
@@ -204,5 +204,3 @@ export const selectors = (() => {
 
     return { userConfigs };
 })();
-
-export const hiddenDirectoryBasename = ".onyxia";

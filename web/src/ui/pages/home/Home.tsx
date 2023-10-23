@@ -29,7 +29,7 @@ export default function Home(props: Props) {
 
     useConst(() => {
         if (getIsHomePageDisabled()) {
-            routes.catalogExplorer().replace();
+            routes.catalog().replace();
         }
     });
 
@@ -42,7 +42,7 @@ export default function Home(props: Props) {
     const { t } = useTranslation({ Home });
 
     const myFilesLink = useMemo(() => routes.myFiles().link, []);
-    const catalogExplorerLink = useMemo(() => routes.catalogExplorer().link, []);
+    const catalogExplorerLink = useMemo(() => routes.catalog().link, []);
 
     return (
         <div className={cx(classes.root, className)}>

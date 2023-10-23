@@ -1,26 +1,29 @@
-import { useEffect, useMemo, useState, useReducer } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { tss, PageHeader } from "ui/theme";
 import { useTranslation } from "ui/i18n";
 import { MyServicesButtonBar } from "./MyServicesButtonBar";
 import { MyServicesCards } from "./MyServicesCards";
 import type { Props as MyServicesCardsProps } from "./MyServicesCards";
-import { MyServicesSavedConfigs } from "./MyServicesSavedConfigs";
-import type { Props as MyServicesSavedConfigsProps } from "./MyServicesSavedConfigs";
+import {
+    MyServicesRestorableConfigs,
+    type Props as MyServicesRestorableConfigsProps
+} from "./MyServicesRestorableConfigs";
 import { ButtonId } from "./MyServicesButtonBar";
 import { useConstCallback } from "powerhooks/useConstCallback";
 import { useCoreFunctions, useCoreState, selectors } from "core";
 import { routes } from "ui/routes";
-import { Dialog } from "onyxia-ui/Dialog";
-import { useCallbackFactory } from "powerhooks/useCallbackFactory";
-import { Button } from "ui/theme";
 import { useConst } from "powerhooks/useConst";
 import { Evt } from "evt";
 import type { UnpackEvt } from "evt";
-import { assert } from "tsafe/assert";
 import { declareComponentKeys } from "i18nifty";
 import type { PageRoute } from "./route";
 import { CommandBar } from "ui/shared/CommandBar";
 import { useDomRect } from "powerhooks/useDomRect";
+import {
+    MyServicesConfirmDeleteDialog,
+    type Props as MyServicesConfirmDeleteDialogProps
+} from "./MyServicesConfirmDeleteDialog";
+import { Deferred } from "evt/tools/Deferred";
 
 export type Props = {
     route: PageRoute;
@@ -31,17 +34,19 @@ export default function MyServices(props: Props) {
     const { className, route } = props;
 
     const { t } = useTranslation({ MyServices });
-    const { t: tCatalogLauncher } = useTranslation("CatalogLauncher");
+    const { t: tCatalogLauncher } = useTranslation("Launcher");
 
     /* prettier-ignore */
-    const { serviceManager, restorablePackageConfig, projectConfigs, k8sCredentials } = useCoreFunctions();
+    const { serviceManager, restorableConfigManager, k8sCredentials, projectConfigs } = useCoreFunctions();
     /* prettier-ignore */
-    const { displayableConfigs } = useCoreState(selectors.restorablePackageConfig.displayableConfigs);
+    const { restorableConfigs, chartIconAndFriendlyNameByRestorableConfigIndex } = useCoreState(
+        selectors.restorableConfigManager.wrap
+    ).wrap;
     /* prettier-ignore */
     const { isUpdating } = useCoreState(selectors.serviceManager.isUpdating);
     const { runningServices } = useCoreState(selectors.serviceManager.runningServices);
     /* prettier-ignore */
-    const { deletableRunningServices } = useCoreState(selectors.serviceManager.deletableRunningServices);
+    const { deletableRunningServiceHelmReleaseNames } = useCoreState(selectors.serviceManager.deletableRunningServiceHelmReleaseNames);
     /* prettier-ignore */
     const { isThereOwnedSharedServices } = useCoreState(selectors.serviceManager.isThereOwnedSharedServices);
     /* prettier-ignore */
@@ -55,48 +60,33 @@ export default function MyServices(props: Props) {
         userConfigs: { isCommandBarEnabled }
     } = useCoreState(selectors.userConfigs.userConfigs);
 
-    const [password, setPassword] = useState<string | undefined>(undefined);
-
-    const [refreshPasswordTrigger, pullRefreshPasswordTrigger] = useReducer(
-        count => count + 1,
-        0
-    );
-
-    useEffect(() => {
-        projectConfigs.getServicesPassword().then(upToDatePassword => {
-            setPassword(upToDatePassword);
-
-            if (password !== undefined && password !== upToDatePassword) {
-                alert("Outdated password copied. Please click the button again");
-            }
-        });
-    }, [password, refreshPasswordTrigger]);
-
-    const onButtonBarClick = useConstCallback((buttonId: ButtonId) => {
+    const onButtonBarClick = useConstCallback(async (buttonId: ButtonId) => {
         switch (buttonId) {
             case "launch":
-                routes.catalogExplorer().push();
+                routes.catalog().push();
                 return;
             case "refresh":
                 serviceManager.update();
                 return;
-            case "password":
-                assert(password !== undefined);
-
-                navigator.clipboard.writeText(password);
-
-                pullRefreshPasswordTrigger();
-
-                return;
             case "trash":
-                setIsDialogOpen(true);
+                const dDoProceed = new Deferred<boolean>();
+
+                evtConfirmDeleteDialogOpen.post({
+                    isThereOwnedSharedServices,
+                    "resolveDoProceed": dDoProceed.resolve
+                });
+
+                if (!(await dDoProceed.pr)) {
+                    return;
+                }
+
+                deletableRunningServiceHelmReleaseNames.map(helmReleaseName =>
+                    serviceManager.stopService({ helmReleaseName })
+                );
+
                 return;
         }
     });
-
-    useEffect(() => {
-        restorablePackageConfig.fetchIconsIfNotAlreadyDone();
-    }, []);
 
     useEffect(() => {
         const { setInactive } = serviceManager.setActive();
@@ -131,58 +121,51 @@ export default function MyServices(props: Props) {
             .push()
     );
 
-    const onSavedConfigsCallback = useConstCallback<
-        MyServicesSavedConfigsProps["callback"]
-    >(({ launchLinkHref, action }) => {
-        switch (action) {
-            case "copy link":
-                navigator.clipboard.writeText(
-                    `${window.location.origin}${launchLinkHref}`
-                );
-                return;
-            case "delete":
-                restorablePackageConfig.deleteRestorablePackageConfig({
-                    "restorablePackageConfig": displayableConfigs.find(
-                        ({ restorablePackageConfig }) =>
-                            routes.catalogLauncher({
-                                ...restorablePackageConfig,
-                                "autoLaunch": true
-                            }).href === launchLinkHref
-                    )!.restorablePackageConfig
-                });
-                return;
-        }
+    const onRequestDeleteRestorableConfig = useConstCallback<
+        MyServicesRestorableConfigsProps["onRequestDelete"]
+    >(({ restorableConfigIndex }) => {
+        restorableConfigManager.deleteRestorableConfig({
+            "restorableConfig": restorableConfigs[restorableConfigIndex]
+        });
     });
 
-    const savedConfigs = useMemo(
-        (): MyServicesSavedConfigsProps["savedConfigs"] =>
-            displayableConfigs.map(
-                ({ logoUrl, friendlyName, restorablePackageConfig }) => {
-                    const buildLink = (autoLaunch: boolean) =>
-                        routes.catalogLauncher({
-                            ...restorablePackageConfig,
-                            autoLaunch
-                        }).link;
+    const restorableConfigEntires = useMemo(
+        (): MyServicesRestorableConfigsProps["entries"] =>
+            restorableConfigs.map((restorableConfig, restorableConfigIndex) => {
+                const buildLink = (autoLaunch: boolean) =>
+                    routes.launcher({
+                        "catalogId": restorableConfig.catalogId,
+                        "chartName": restorableConfig.chartName,
+                        "version": restorableConfig.chartVersion,
+                        "formFieldsValueDifferentFromDefault":
+                            restorableConfig.formFieldsValueDifferentFromDefault,
+                        "autoLaunch": autoLaunch ? true : undefined
+                    }).link;
 
-                    return {
-                        logoUrl,
-                        friendlyName,
-                        "launchLink": buildLink(true),
-                        "editLink": buildLink(false)
-                    };
-                }
-            ),
-        [displayableConfigs]
+                const { chartIconUrl, friendlyName } =
+                    chartIconAndFriendlyNameByRestorableConfigIndex[
+                        restorableConfigIndex
+                    ];
+
+                return {
+                    restorableConfigIndex,
+                    chartIconUrl,
+                    friendlyName,
+                    "launchLink": buildLink(true),
+                    "editLink": buildLink(false)
+                };
+            }),
+        [restorableConfigs, chartIconAndFriendlyNameByRestorableConfigIndex]
     );
 
     const cards = useMemo(
         (): MyServicesCardsProps["cards"] | undefined =>
             runningServices?.map(
                 ({
-                    id,
-                    logoUrl,
+                    helmReleaseName,
+                    chartIconUrl,
                     friendlyName,
-                    packageName,
+                    chartName,
                     urls,
                     startedAt,
                     monitoringUrl,
@@ -192,10 +175,10 @@ export default function MyServices(props: Props) {
                     hasPostInstallInstructions,
                     ...rest
                 }) => ({
-                    "serviceId": id,
-                    "packageIconUrl": logoUrl,
+                    helmReleaseName,
+                    chartIconUrl,
                     friendlyName,
-                    packageName,
+                    chartName,
                     "openUrl": urls[0],
                     monitoringUrl,
                     "startTime": isStarting ? undefined : startedAt,
@@ -215,14 +198,14 @@ export default function MyServices(props: Props) {
     );
 
     useEffect(() => {
-        const { autoLaunchServiceId } = route.params;
+        const { autoOpenHelmReleaseName } = route.params;
 
-        if (autoLaunchServiceId === undefined) {
+        if (autoOpenHelmReleaseName === undefined) {
             return;
         }
 
         const runningService = (runningServices ?? []).find(
-            ({ id }) => id === autoLaunchServiceId
+            ({ helmReleaseName }) => helmReleaseName === autoOpenHelmReleaseName
         );
 
         if (runningService === undefined) {
@@ -235,49 +218,37 @@ export default function MyServices(props: Props) {
                 "isSavedConfigsExtended": route.params.isSavedConfigsExtended
                     ? true
                     : undefined,
-                "autoLaunchServiceId": undefined
+                "autoOpenHelmReleaseName": undefined
             })
             .replace();
 
         evtMyServiceCardsAction.post({
             "action": "TRIGGER SHOW POST INSTALL INSTRUCTIONS",
-            "serviceId": runningService.id
+            "helmReleaseName": runningService.helmReleaseName
         });
-    }, [route.params.autoLaunchServiceId, runningServices]);
+    }, [route.params.autoOpenHelmReleaseName, runningServices]);
 
-    const catalogExplorerLink = useMemo(() => routes.catalogExplorer().link, []);
+    const catalogExplorerLink = useMemo(() => routes.catalog().link, []);
 
-    const [serviceIdRequestedToBeDeleted, setServiceIdRequestedToBeDeleted] = useState<
-        string | undefined
-    >();
-
-    const [isDialogOpen, setIsDialogOpen] = useState(false);
-
-    const onRequestDelete = useConstCallback<MyServicesCardsProps["onRequestDelete"]>(
-        ({ serviceId }) => {
-            setServiceIdRequestedToBeDeleted(serviceId);
-            setIsDialogOpen(true);
-        }
+    const evtConfirmDeleteDialogOpen = useConst(() =>
+        Evt.create<UnpackEvt<MyServicesConfirmDeleteDialogProps["evtOpen"]>>()
     );
 
-    const onDialogCloseFactory = useCallbackFactory(([doDelete]: [boolean]) => {
-        if (doDelete) {
-            if (serviceIdRequestedToBeDeleted) {
-                serviceManager.stopService({
-                    "serviceId": serviceIdRequestedToBeDeleted
-                });
-            } else {
-                deletableRunningServices.map(({ id }) =>
-                    serviceManager.stopService({ "serviceId": id })
-                );
+    const onRequestDelete = useConstCallback<MyServicesCardsProps["onRequestDelete"]>(
+        async ({ helmReleaseName }) => {
+            const dDoProceed = new Deferred<boolean>();
+
+            evtConfirmDeleteDialogOpen.post({
+                isThereOwnedSharedServices,
+                "resolveDoProceed": dDoProceed.resolve
+            });
+
+            if (!(await dDoProceed.pr)) {
+                return;
             }
+
+            serviceManager.stopService({ helmReleaseName });
         }
-
-        setIsDialogOpen(false);
-    });
-
-    const getServicePassword = useConstCallback(() =>
-        projectConfigs.getServicesPassword()
     );
 
     return (
@@ -294,7 +265,9 @@ export default function MyServices(props: Props) {
                     <MyServicesButtonBar
                         onClick={onButtonBarClick}
                         isThereNonOwnedServicesShown={isThereNonOwnedServices}
-                        isThereDeletableServices={deletableRunningServices.length !== 0}
+                        isThereDeletableServices={
+                            deletableRunningServiceHelmReleaseNames.length !== 0
+                        }
                     />
                 </div>
                 {isCommandBarEnabled && (
@@ -336,46 +309,25 @@ export default function MyServices(props: Props) {
                                 onRequestDelete={onRequestDelete}
                                 catalogExplorerLink={catalogExplorerLink}
                                 evtAction={evtMyServiceCardsAction}
-                                getServicePassword={getServicePassword}
+                                getProjectServicePassword={
+                                    projectConfigs.getServicesPassword
+                                }
                                 getEnv={serviceManager.getEnv}
                                 getPostInstallInstructions={
                                     serviceManager.getPostInstallInstructions
                                 }
                             />
                         )}
-                        <MyServicesSavedConfigs
+                        <MyServicesRestorableConfigs
                             isShortVariant={!isSavedConfigsExtended}
-                            savedConfigs={savedConfigs}
+                            entries={restorableConfigEntires}
                             className={classes.savedConfigs}
-                            callback={onSavedConfigsCallback}
+                            onRequestDelete={onRequestDeleteRestorableConfig}
                             onRequestToggleIsShortVariant={onRequestToggleIsShortVariant}
                         />
                     </>
                 </div>
-                <Dialog
-                    title={t("confirm delete title")}
-                    subtitle={t("confirm delete subtitle")}
-                    body={`${
-                        isThereOwnedSharedServices
-                            ? t("confirm delete body shared services")
-                            : ""
-                    } ${t("confirm delete body")}`}
-                    isOpen={isDialogOpen}
-                    onClose={onDialogCloseFactory(false)}
-                    buttons={
-                        <>
-                            <Button
-                                onClick={onDialogCloseFactory(false)}
-                                variant="secondary"
-                            >
-                                {t("cancel")}
-                            </Button>
-                            <Button onClick={onDialogCloseFactory(true)}>
-                                {t("confirm")}
-                            </Button>
-                        </>
-                    }
-                />
+                <MyServicesConfirmDeleteDialog evtOpen={evtConfirmDeleteDialogOpen} />
             </div>
         </div>
     );
@@ -412,16 +364,7 @@ function useCommandBarPositioning() {
 }
 
 export const { i18n } = declareComponentKeys<
-    | "text1"
-    | "text2"
-    | "text3"
-    | "running services"
-    | "confirm delete title"
-    | "confirm delete subtitle"
-    | "confirm delete body"
-    | "confirm delete body shared services"
-    | "cancel"
-    | "confirm"
+    "text1" | "text2" | "text3" | "running services"
 >()({ MyServices });
 
 const useStyles = tss
@@ -483,7 +426,7 @@ const useStyles = tss
                 "zIndex": 1,
                 "opacity": commandBarTop === 0 ? 0 : 1,
                 "transition": "opacity 750ms linear",
-                "width": "min(100%, 1100px)"
+                "width": "min(100%, 900px)"
             },
             "commandBarWhenExpended": {
                 "width": "min(100%, 1350px)",
@@ -493,7 +436,7 @@ const useStyles = tss
                 "maxWidth": 800
             },
             "helpDialogBody": {
-                "maxHeight": (console.log({ bellowHeaderHeight }), bellowHeaderHeight),
+                "maxHeight": bellowHeaderHeight,
                 "overflow": "auto"
             }
         })

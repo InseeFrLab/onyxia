@@ -20,7 +20,7 @@ import type { WritableDraft } from "immer/dist/types/types-external";
 import * as deploymentRegion from "./deploymentRegion";
 import { createExtendedFsApi } from "core/tools/extendedFsApi";
 import type { ExtendedFsApi } from "core/tools/extendedFsApi";
-import { getVaultCommandLogger } from "core/adapters/secretsManager/vaultCommandLogger";
+import { getVaultCommandLogger } from "core/adapters/secretManager/utils/vaultCommandLogger";
 import { createUsecaseContextApi } from "redux-clean-architecture";
 // NOTE: Polyfill of a browser feature.
 import structuredClone from "@ungap/structured-clone";

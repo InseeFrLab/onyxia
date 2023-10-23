@@ -24,8 +24,8 @@ export namespace State {
     export type Ready = Common & {
         stateDescription: "ready";
         runningServices: RunningService[];
-        envByServiceId: Record<string, Record<string, string>>;
-        postInstallInstructionsByServiceId: Record<string, string>;
+        envByHelmReleaseName: Record<string, Record<string, string>>;
+        postInstallInstructionsByHelmReleaseName: Record<string, string>;
         kubernetesNamespace: string;
     };
 }
@@ -34,10 +34,10 @@ export type RunningService = RunningService.Owned | RunningService.NotOwned;
 
 export declare namespace RunningService {
     export type Common = {
-        id: string;
-        packageName: string;
+        helmReleaseName: string;
+        chartName: string;
         friendlyName: string;
-        logoUrl: string | undefined;
+        chartIconUrl: string | undefined;
         monitoringUrl: string | undefined;
         isStarting: boolean;
         startedAt: number;
@@ -81,15 +81,15 @@ export const { reducer, actions } = createSlice({
                 payload
             }: PayloadAction<{
                 runningServices: RunningService[];
-                envByServiceId: Record<string, Record<string, string>>;
-                postInstallInstructionsByServiceId: Record<string, string>;
+                envByHelmReleaseName: Record<string, Record<string, string>>;
+                postInstallInstructionsByHelmReleaseName: Record<string, string>;
                 kubernetesNamespace: string;
             }>
         ) => {
             const {
                 runningServices,
-                envByServiceId,
-                postInstallInstructionsByServiceId,
+                envByHelmReleaseName,
+                postInstallInstructionsByHelmReleaseName,
                 kubernetesNamespace
             } = payload;
 
@@ -97,8 +97,8 @@ export const { reducer, actions } = createSlice({
                 "stateDescription": "ready",
                 "isUpdating": false,
                 runningServices,
-                envByServiceId,
-                postInstallInstructionsByServiceId,
+                envByHelmReleaseName,
+                postInstallInstructionsByHelmReleaseName,
                 kubernetesNamespace,
                 "commandLogsEntries": state.commandLogsEntries
             });
@@ -108,11 +108,11 @@ export const { reducer, actions } = createSlice({
             {
                 payload
             }: PayloadAction<{
-                serviceId: string;
+                helmReleaseName: string;
                 doOverwriteStaredAtToNow: boolean;
             }>
         ) => {
-            const { serviceId, doOverwriteStaredAtToNow } = payload;
+            const { helmReleaseName, doOverwriteStaredAtToNow } = payload;
 
             assert(state.stateDescription === "ready");
 
@@ -120,7 +120,9 @@ export const { reducer, actions } = createSlice({
 
             assert(runningServices !== undefined);
 
-            const runningService = runningServices.find(({ id }) => id === serviceId);
+            const runningService = runningServices.find(
+                runningService => runningService.helmReleaseName === helmReleaseName
+            );
 
             if (runningService === undefined) {
                 return;
@@ -133,8 +135,11 @@ export const { reducer, actions } = createSlice({
                 runningService.startedAt = Date.now();
             }
         },
-        "serviceStopped": (state, { payload }: PayloadAction<{ serviceId: string }>) => {
-            const { serviceId } = payload;
+        "serviceStopped": (
+            state,
+            { payload }: PayloadAction<{ helmReleaseName: string }>
+        ) => {
+            const { helmReleaseName } = payload;
 
             assert(state.stateDescription === "ready");
 
@@ -142,39 +147,44 @@ export const { reducer, actions } = createSlice({
             assert(runningServices !== undefined);
 
             runningServices.splice(
-                runningServices.findIndex(({ id }) => id === serviceId),
+                runningServices.findIndex(
+                    runningServices => runningServices.helmReleaseName === helmReleaseName
+                ),
                 1
             );
         },
         "postInstallInstructionsRequested": (
             state,
-            { payload }: { payload: { serviceId: string } }
+            { payload }: { payload: { helmReleaseName: string } }
         ) => {
-            const { serviceId } = payload;
+            const { helmReleaseName } = payload;
 
             assert(state.stateDescription === "ready");
 
             const postInstallInstructions =
-                state.postInstallInstructionsByServiceId[serviceId];
+                state.postInstallInstructionsByHelmReleaseName[helmReleaseName];
 
             assert(postInstallInstructions !== undefined);
 
             state.commandLogsEntries.push({
                 "cmdId": Date.now(),
-                "cmd": `helm get notes ${serviceId} --namespace ${state.kubernetesNamespace}`,
+                "cmd": `helm get notes ${helmReleaseName} --namespace ${state.kubernetesNamespace}`,
                 "resp": postInstallInstructions
             });
         },
-        "envRequested": (state, { payload }: { payload: { serviceId: string } }) => {
-            const { serviceId } = payload;
+        "envRequested": (
+            state,
+            { payload }: { payload: { helmReleaseName: string } }
+        ) => {
+            const { helmReleaseName } = payload;
 
             assert(state.stateDescription === "ready");
 
-            const env = state.envByServiceId[serviceId];
+            const env = state.envByHelmReleaseName[helmReleaseName];
 
             state.commandLogsEntries.push({
                 "cmdId": Date.now(),
-                "cmd": `helm get values ${serviceId} --namespace ${state.kubernetesNamespace}`,
+                "cmd": `helm get values ${helmReleaseName} --namespace ${state.kubernetesNamespace}`,
                 "resp": ["USER-SUPPLIED VALUES:", yaml.stringify(nestObject(env))].join(
                     "\n"
                 )

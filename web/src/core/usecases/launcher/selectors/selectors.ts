@@ -8,14 +8,15 @@ import {
     onyxiaFriendlyNameFormFieldPath,
     onyxiaIsSharedFormFieldPath
 } from "core/ports/OnyxiaApi";
-import type { RestorablePackageConfig } from "../../restorablePackageConfigs";
-import * as projectConfigs from "../../projectConfigs";
 import { scaffoldingIndexedFormFieldsToFinal } from "./scaffoldingIndexedFormFieldsToFinal";
 import type { IndexedFormFields } from "../FormField";
 import { createGetIsFieldHidden } from "./getIsFieldHidden";
 import * as yaml from "yaml";
 import { name, type State } from "../state";
 import { symToStr } from "tsafe/symToStr";
+import * as restorableConfigManager from "core/usecases/restorableConfigManager";
+import * as projectConfigs from "core/usecases/projectConfigs";
+import { exclude } from "tsafe/exclude";
 
 const readyState = (rootState: RootState): State.Ready | undefined => {
     const state = rootState[name];
@@ -29,7 +30,7 @@ const readyState = (rootState: RootState): State.Ready | undefined => {
 
 const isReady = createSelector(readyState, state => state !== undefined);
 
-const packageName = createSelector(readyState, state => state?.packageName);
+const chartName = createSelector(readyState, state => state?.chartName);
 
 const formFields = createSelector(readyState, state => state?.formFields);
 
@@ -38,7 +39,13 @@ const infosAboutWhenFieldsShouldBeHidden = createSelector(
     state => state?.infosAboutWhenFieldsShouldBeHidden
 );
 
-const dependencies = createSelector(readyState, state => state?.dependencies);
+const chartDependencies = createSelector(readyState, state => {
+    if (state === undefined) {
+        return undefined;
+    }
+
+    return state.chartDependencies.filter(dependency => dependency !== "library-chart");
+});
 
 const friendlyName = createSelector(formFields, formFields => {
     if (formFields === undefined) {
@@ -54,32 +61,18 @@ const friendlyName = createSelector(formFields, formFields => {
     return friendlyName;
 });
 
-const isShared = createSelector(formFields, formFields => {
-    if (formFields === undefined) {
-        return undefined;
-    }
-
-    const isShared = formFields.find(({ path }) =>
-        same(path, onyxiaIsSharedFormFieldPath.split("."))
-    )!.value;
-
-    assert(typeof isShared === "boolean");
-
-    return isShared;
-});
-
-const config = createSelector(readyState, state => state?.config);
+const valuesSchema = createSelector(readyState, state => state?.valuesSchema);
 
 const indexedFormFields = createSelector(
     isReady,
-    config,
+    valuesSchema,
     formFields,
     infosAboutWhenFieldsShouldBeHidden,
-    packageName,
-    dependencies,
+    chartName,
+    chartDependencies,
     (
         isReady,
-        config,
+        valuesSchema,
         formFields,
         infosAboutWhenFieldsShouldBeHidden,
         packageName,
@@ -89,6 +82,7 @@ const indexedFormFields = createSelector(
             return undefined;
         }
 
+        assert(valuesSchema !== undefined);
         assert(formFields !== undefined);
         assert(packageName !== undefined);
         assert(dependencies !== undefined);
@@ -114,7 +108,7 @@ const indexedFormFields = createSelector(
                 .forEach(formField => {
                     (formFieldsByTabName[formField.path[1]] ??= {
                         "description": (() => {
-                            const o = config?.properties[formField.path[0]];
+                            const o = valuesSchema.properties[formField.path[0]];
 
                             assert(o?.type === "object" && "properties" in o);
 
@@ -139,7 +133,7 @@ const indexedFormFields = createSelector(
                     dependencyOrGlobal === "global"
                         ? {
                               "type": "global",
-                              "description": config?.properties["global"].description
+                              "description": valuesSchema.properties["global"].description
                           }
                         : {
                               "type": "dependency"
@@ -155,7 +149,8 @@ const indexedFormFields = createSelector(
                 (
                     formFieldsByTabName[formField.path[0]] ??
                     (formFieldsByTabName[formField.path[0]] = {
-                        "description": config?.properties[formField.path[0]].description,
+                        "description":
+                            valuesSchema.properties[formField.path[0]].description,
                         "formFields": []
                     })
                 ).formFields.push(formField)
@@ -343,31 +338,37 @@ const pathOfFormFieldsWhoseValuesAreDifferentFromDefault = createSelector(
 
 const catalogId = createSelector(readyState, state => state?.catalogId);
 
-const restorablePackageConfig = createSelector(
+const chartVersion = createSelector(readyState, state => state?.chartVersion);
+
+const restorableConfig = createSelector(
     isReady,
     catalogId,
-    packageName,
+    chartName,
+    chartVersion,
     formFields,
     pathOfFormFieldsWhoseValuesAreDifferentFromDefault,
     (
         isReady,
         catalogId,
-        packageName,
+        chartName,
+        chartVersion,
         formFields,
         pathOfFormFieldsWhoseValuesAreDifferentFromDefault
-    ): RestorablePackageConfig | undefined => {
+    ): restorableConfigManager.RestorableConfig | undefined => {
         if (!isReady) {
             return undefined;
         }
 
         assert(catalogId !== undefined);
-        assert(packageName !== undefined);
+        assert(chartName !== undefined);
+        assert(chartVersion !== undefined);
         assert(formFields !== undefined);
         assert(pathOfFormFieldsWhoseValuesAreDifferentFromDefault !== undefined);
 
         return {
             catalogId,
-            packageName,
+            chartName,
+            chartVersion,
             "formFieldsValueDifferentFromDefault":
                 pathOfFormFieldsWhoseValuesAreDifferentFromDefault.map(({ path }) => ({
                     path,
@@ -378,85 +379,142 @@ const restorablePackageConfig = createSelector(
     }
 );
 
-const areAllFieldsDefault = createSelector(
-    pathOfFormFieldsWhoseValuesAreDifferentFromDefault,
-    pathOfFormFieldsWhoseValuesAreDifferentFromDefault => {
-        if (pathOfFormFieldsWhoseValuesAreDifferentFromDefault === undefined) {
+const isRestorableConfigSaved = createSelector(
+    isReady,
+    restorableConfig,
+    restorableConfigManager.protectedSelectors.restorableConfigs,
+    (isReady, restorableConfig, restorableConfigs) => {
+        if (!isReady) {
             return undefined;
         }
 
-        return pathOfFormFieldsWhoseValuesAreDifferentFromDefault.length === 0;
+        assert(restorableConfig !== undefined);
+
+        return (
+            restorableConfigs.find(restorableConfig_i =>
+                restorableConfigManager.getAreSameRestorableConfig(
+                    restorableConfig_i,
+                    restorableConfig
+                )
+            ) !== undefined
+        );
     }
 );
 
-const icon = createSelector(readyState, state => {
+const chartVersionDifferentFromDefault = createSelector(readyState, state => {
     if (state === undefined) {
         return undefined;
     }
-    return state.icon;
+
+    const { chartVersion, defaultChartVersion } = state;
+
+    return chartVersion === defaultChartVersion ? undefined : chartVersion;
 });
 
-const helmReleaseName = createSelector(friendlyName, friendlyName => {
-    if (friendlyName === undefined) {
+const areAllFieldsDefault = createSelector(
+    isReady,
+    pathOfFormFieldsWhoseValuesAreDifferentFromDefault,
+    chartVersionDifferentFromDefault,
+    (
+        isReady,
+        pathOfFormFieldsWhoseValuesAreDifferentFromDefault,
+        chartVersionDifferentFromDefault
+    ) => {
+        if (!isReady) {
+            return undefined;
+        }
+        assert(pathOfFormFieldsWhoseValuesAreDifferentFromDefault !== undefined);
+
+        return (
+            pathOfFormFieldsWhoseValuesAreDifferentFromDefault.length === 0 &&
+            chartVersionDifferentFromDefault === undefined
+        );
+    }
+);
+
+const chartIconUrl = createSelector(readyState, state => {
+    if (state === undefined) {
         return undefined;
     }
+    return state.chartIconUrl;
+});
 
-    // Replace spaces with hyphens
-    let releaseName = friendlyName.replace(/ /g, "-");
-
-    // Convert all characters to lowercase
-    releaseName = releaseName.toLowerCase();
-
-    // Remove any invalid characters
-    releaseName = releaseName.replace(/[^a-zA-Z0-9-]/g, "");
-
-    // Ensure the release name starts with an alphanumeric character
-    if (!/^[a-z0-9]/.test(releaseName)) {
-        releaseName = "release-" + releaseName;
+const helmReleaseName = createSelector(readyState, state => {
+    if (state === undefined) {
+        return undefined;
     }
+    return `${state.chartName}-${state.k8sRandomSubdomain}`;
+});
 
-    // Ensure the release name ends with an alphanumeric character
-    if (!/[a-z0-9]$/.test(releaseName)) {
-        if (releaseName.endsWith("-")) {
-            releaseName = releaseName.slice(0, -1);
-        } else {
-            releaseName = releaseName + "-end";
-        }
+const catalogRepositoryUrl = createSelector(readyState, state => {
+    if (state === undefined) {
+        return undefined;
     }
-
-    return releaseName;
+    return state.catalogRepositoryUrl;
 });
 
 const launchCommands = createSelector(
-    readyState,
+    isReady,
+    catalogId,
+    chartName,
+    formFields,
+    catalogRepositoryUrl,
     helmReleaseName,
     projectConfigs.selectors.selectedProject,
-    (state, helmReleaseName, project) => {
-        if (state === undefined) {
+    chartVersionDifferentFromDefault,
+    (
+        isReady,
+        catalogId,
+        chartName,
+        formFields,
+        catalogRepositoryUrl,
+        helmReleaseName,
+        selectedProject,
+        chartVersionDifferentFromDefault
+    ) => {
+        if (!isReady) {
             return undefined;
         }
 
+        assert(catalogId !== undefined);
+        assert(chartName !== undefined);
+        assert(formFields !== undefined);
+        assert(catalogRepositoryUrl !== undefined);
         assert(helmReleaseName !== undefined);
+        assert(selectedProject !== undefined);
 
         return [
-            `helm repo add ${state.catalogId} ${state.catalogLocation}`,
+            `helm repo add ${catalogId} ${catalogRepositoryUrl}`,
             [
                 "cat << EOF > ./values.yaml",
-                yaml.stringify(formFieldsValueToObject(state.formFields)),
+                yaml.stringify(formFieldsValueToObject(formFields)),
                 "EOF"
             ].join("\n"),
-            `helm install ${helmReleaseName} ${state.catalogId}/${state.packageName} --namespace ${project.namespace} -f values.yaml`
+            [
+                `helm install ${helmReleaseName} ${catalogId}/${chartName}`,
+                selectedProject.group === undefined
+                    ? undefined
+                    : `--namespace ${selectedProject.namespace}`,
+                chartVersionDifferentFromDefault === undefined
+                    ? undefined
+                    : `--version ${chartVersionDifferentFromDefault}`,
+                `-f values.yaml`
+            ]
+                .filter(exclude(undefined))
+                .join(" ")
         ];
     }
 );
 
 const launchScript = createSelector(
+    isReady,
     launchCommands,
     helmReleaseName,
-    (launchCommands, helmReleaseName) => {
-        if (launchCommands === undefined) {
+    (isReady, launchCommands, helmReleaseName) => {
+        if (!isReady) {
             return undefined;
         }
+        assert(launchCommands !== undefined);
         assert(helmReleaseName !== undefined);
         return {
             "fileBasename": `launch-${helmReleaseName}.sh`,
@@ -477,103 +535,190 @@ const commandLogsEntries = createSelector(launchCommands, launchCommands => {
     }));
 });
 
-const launcherWrap = createSelector(
+const chartSourceUrls = createSelector(readyState, state => state?.chartSourceUrls);
+
+const groupProjectName = createSelector(
+    projectConfigs.selectors.selectedProject,
+    project => (project.group === undefined ? undefined : project.name)
+);
+
+const isShared = createSelector(
+    isReady,
+    formFields,
+    groupProjectName,
+    (isReady, formFields, groupProjectName) => {
+        if (!isReady) {
+            return undefined;
+        }
+
+        assert(formFields !== undefined);
+
+        if (groupProjectName === undefined) {
+            return;
+        }
+
+        const isShared = formFields.find(({ path }) =>
+            same(path, onyxiaIsSharedFormFieldPath.split("."))
+        )!.value;
+
+        assert(typeof isShared === "boolean");
+
+        return isShared;
+    }
+);
+
+const availableChartVersions = createSelector(
+    readyState,
+    state => state?.availableChartVersions
+);
+
+const catalogName = createSelector(readyState, state => state?.catalogName);
+
+const isThereASavedConfigWithThisFriendlyName = createSelector(
     isReady,
     friendlyName,
+    restorableConfigManager.protectedSelectors.savedConfigFriendlyNames,
+    (isReady, friendlyName, savedConfigFriendlyNames) => {
+        if (!isReady) {
+            return undefined;
+        }
+
+        assert(friendlyName !== undefined);
+
+        return savedConfigFriendlyNames.includes(friendlyName);
+    }
+);
+
+const wrap = createSelector(
+    isReady,
+    friendlyName,
+    isThereASavedConfigWithThisFriendlyName,
     isShared,
     indexedFormFields,
     isLaunchable,
     formFieldsIsWellFormed,
-    restorablePackageConfig,
+    restorableConfig,
+    isRestorableConfigSaved,
     areAllFieldsDefault,
-    packageName,
-    icon,
+    chartName,
+    chartVersion,
+    availableChartVersions,
+    catalogName,
+    catalogRepositoryUrl,
+    chartIconUrl,
     launchScript,
     commandLogsEntries,
+    chartSourceUrls,
+    groupProjectName,
     (
         isReady,
         friendlyName,
+        isThereASavedConfigWithThisFriendlyName,
         isShared,
         indexedFormFields,
         isLaunchable,
         formFieldsIsWellFormed,
-        restorablePackageConfig,
+        restorableConfig,
+        isRestorableConfigSaved,
         areAllFieldsDefault,
-        packageName,
-        icon,
+        chartName,
+        chartVersion,
+        availableChartVersions,
+        catalogName,
+        catalogRepositoryUrl,
+        chartIconUrl,
         launchScript,
-        commandLogsEntries
+        commandLogsEntries,
+        chartSourceUrls,
+        groupProjectName
     ) => {
         if (!isReady) {
             return {
                 "isReady": false as const,
                 [symToStr({ friendlyName })]: undefined,
+                [symToStr({ isThereASavedConfigWithThisFriendlyName })]: undefined,
                 [symToStr({ isShared })]: undefined,
                 [symToStr({ indexedFormFields })]: undefined,
                 [symToStr({ isLaunchable })]: undefined,
                 [symToStr({ formFieldsIsWellFormed })]: undefined,
-                [symToStr({ restorablePackageConfig })]: undefined,
-                [symToStr({ restorablePackageConfig })]: undefined,
+                [symToStr({ restorableConfig })]: undefined,
+                [symToStr({ isRestorableConfigSaved })]: undefined,
+                [symToStr({ restorableConfig })]: undefined,
                 [symToStr({ areAllFieldsDefault })]: undefined,
-                [symToStr({ packageName })]: undefined,
-                [symToStr({ icon })]: undefined,
+                [symToStr({ chartName })]: undefined,
+                [symToStr({ chartVersion })]: undefined,
+                [symToStr({ availableChartVersions })]: undefined,
+                [symToStr({ catalogName })]: undefined,
+                [symToStr({ catalogRepositoryUrl })]: undefined,
+                [symToStr({ chartIconUrl })]: undefined,
                 [symToStr({ launchScript })]: undefined,
-                [symToStr({ commandLogsEntries })]: undefined
+                [symToStr({ commandLogsEntries })]: undefined,
+                [symToStr({ chartSourceUrls })]: undefined,
+                groupProjectName
             };
         }
 
         assert(friendlyName !== undefined);
-        assert(restorablePackageConfig !== undefined);
+        assert(isThereASavedConfigWithThisFriendlyName !== undefined);
+        assert(restorableConfig !== undefined);
+        assert(isRestorableConfigSaved !== undefined);
         assert(indexedFormFields !== undefined);
         assert(isLaunchable !== undefined);
-        assert(isShared !== undefined);
+        // isShared can be undefined, even if isReady is true
         assert(formFieldsIsWellFormed !== undefined);
-        assert(icon !== undefined);
-        assert(packageName !== undefined);
+        assert(chartIconUrl !== undefined);
+        assert(chartName !== undefined);
+        assert(chartVersion !== undefined);
+        assert(availableChartVersions !== undefined);
+        assert(catalogName !== undefined);
+        assert(catalogRepositoryUrl !== undefined);
         assert(commandLogsEntries !== undefined);
         assert(launchScript !== undefined);
+        assert(chartSourceUrls !== undefined);
 
         return {
             "isReady": true as const,
             friendlyName,
+            isThereASavedConfigWithThisFriendlyName,
             isShared,
             indexedFormFields,
             isLaunchable,
             formFieldsIsWellFormed,
-            restorablePackageConfig,
+            restorableConfig,
+            isRestorableConfigSaved,
             areAllFieldsDefault,
-            packageName,
-            icon,
+            chartName,
+            chartVersion,
+            availableChartVersions,
+            catalogName,
+            catalogRepositoryUrl,
+            chartIconUrl,
             launchScript,
-            commandLogsEntries
+            commandLogsEntries,
+            chartSourceUrls,
+            groupProjectName
         };
     }
 );
 
-const sources = createSelector(readyState, state => state?.sources);
+export const selectors = { wrap };
 
-const headerWrap = createSelector(
+const formFieldsValueDifferentFromDefault = createSelector(
     isReady,
-    packageName,
-    sources,
-    (isReady, packageName, sources) => {
+    restorableConfig,
+    (isReady, restorableConfig) => {
         if (!isReady) {
-            return {
-                "isLauncherReady": false as const,
-                [symToStr({ packageName })]: undefined,
-                [symToStr({ sources })]: undefined
-            };
+            return undefined;
         }
 
-        assert(packageName !== undefined);
-        assert(sources !== undefined);
+        assert(restorableConfig !== undefined);
 
-        return {
-            "isLauncherReady": true as const,
-            packageName,
-            sources
-        };
+        return restorableConfig.formFieldsValueDifferentFromDefault;
     }
 );
 
-export const selectors = { launcherWrap, headerWrap };
+export const privateSelectors = {
+    helmReleaseName,
+    formFieldsValueDifferentFromDefault,
+    isShared
+};
