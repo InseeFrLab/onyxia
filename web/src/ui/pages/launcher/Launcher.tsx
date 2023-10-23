@@ -192,7 +192,7 @@ export default function Launcher(props: Props) {
                 }
             );
         },
-        [evtLauncher]
+        [evtLauncher, route.params]
     );
 
     const {
