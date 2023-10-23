@@ -3,11 +3,7 @@ import {
     declareComponentKeys,
     LocalizedString as GenericLocalizedString
 } from "i18nifty";
-import {
-    fallbackLanguage,
-    type Language,
-    doAllowOptionalKeysForNonFallbackLanguage
-} from "./types";
+import { fallbackLanguage, type Language } from "./types";
 import { ComponentKey } from "./types";
 import { statefulObservableToStatefulEvt } from "powerhooks/tools/StatefulObservable/statefulObservableToStatefulEvt";
 import { getEnabledLanguages } from "ui/env";
@@ -23,10 +19,7 @@ export const {
 } = createI18nApi<ComponentKey>()(
     {
         "languages": getEnabledLanguages(),
-        "fallbackLanguage": (getEnabledLanguages().includes("en")
-            ? "en"
-            : getEnabledLanguages()[0]) as typeof fallbackLanguage,
-        doAllowOptionalKeysForNonFallbackLanguage
+        fallbackLanguage
     },
     {
         "en": () => import("./resources/en").then(({ translations }) => translations),

@@ -1,18 +1,13 @@
 import type { GenericTranslations } from "i18nifty";
 import type { Language } from "core";
 import { languages } from "./z";
-import { getEnabledLanguages } from "ui/env";
 
 export type { Language };
 export { languages };
 
 //If the user's browser language doesn't match any
 //of the languages above specify the language to fallback to:
-export const fallbackLanguage = getEnabledLanguages().includes("en")
-    ? "en"
-    : getEnabledLanguages()[0];
-
-export const doAllowOptionalKeysForNonFallbackLanguage = false;
+export const fallbackLanguage = "en";
 
 export type ComponentKey =
     | typeof import("ui/pages/mySecrets/MySecrets").i18n
@@ -72,6 +67,5 @@ export type Translations<L extends Language> = GenericTranslations<
     ComponentKey,
     Language,
     typeof fallbackLanguage,
-    L,
-    typeof doAllowOptionalKeysForNonFallbackLanguage
+    L
 >;
