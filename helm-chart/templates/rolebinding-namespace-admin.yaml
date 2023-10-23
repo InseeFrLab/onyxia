@@ -1,5 +1,5 @@
-{{- if .Values.serviceAccount.create -}}
-{{- if not .Values.serviceAccount.clusterAdmin -}}
+{{- if .Values.api.serviceAccount.create -}}
+{{- if not .Values.api.serviceAccount.clusterAdmin -}}
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:

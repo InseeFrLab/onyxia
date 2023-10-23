@@ -9,7 +9,7 @@ Onyxia is distributed as a [Helm](https://helm.sh/) Package.
 
 ## Installation
 
-Theses instructions are just the gist for a comprehensive, step-by-step, installation guide
+These instructions are just the gist for a comprehensive, step-by-step, installation guide
 please refer to [the installation guide](https://docs.onyxia.sh).  
 
 ```bash
@@ -60,7 +60,7 @@ EOF
 helm install keycloak codecentric/keycloak -f keycloak-values.yaml
 ```
 
-After that, you should should be able to select *onyxia* as *Login Theme*.  
+After that, you should be able to select *onyxia* as *Login Theme*.  
 
 ![image](https://github.com/InseeFrLab/onyxia/assets/6702424/e53ac4cf-1787-406d-b360-e61de41d2607)  
 
