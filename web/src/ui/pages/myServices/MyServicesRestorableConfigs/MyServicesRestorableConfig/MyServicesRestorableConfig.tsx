@@ -1,4 +1,4 @@
-import { memo, useReducer } from "react";
+import { memo } from "react";
 import { tss } from "ui/theme";
 import { RoundLogo } from "ui/shared/RoundLogo";
 import { Button, Text } from "ui/theme";
@@ -9,7 +9,6 @@ import {
 import { useConstCallback } from "powerhooks/useConstCallback";
 import { useTranslation } from "ui/i18n";
 import { IconButton } from "ui/theme";
-import { useEffectOnValueChange } from "powerhooks/useEffectOnValueChange";
 import type { Link } from "type-route";
 import { assert, type Equals } from "tsafe/assert";
 import { useStateRef } from "powerhooks/useStateRef";
@@ -44,22 +43,6 @@ export const MyServicesRestorableConfig = memo((props: Props) => {
 
     const { t } = useTranslation({ MyServicesRestorableConfig });
 
-    const { isDeletionScheduled, scheduleDeletion } = (function useClosure() {
-        const onRequestDeleteConst = useConstCallback(onRequestDelete);
-
-        const [isDeletionScheduled, scheduleDeletion] = useReducer(() => true, false);
-
-        useEffectOnValueChange(() => {
-            const timer = setTimeout(() => onRequestDeleteConst(), 700);
-
-            return () => {
-                clearTimeout(timer);
-            };
-        }, [isDeletionScheduled]);
-
-        return { isDeletionScheduled, scheduleDeletion };
-    })();
-
     const editButtonRef = useStateRef<HTMLButtonElement>(null);
 
     const configOptionsCallback = useConstCallback((action: RestorableConfigAction) => {
@@ -82,12 +65,7 @@ export const MyServicesRestorableConfig = memo((props: Props) => {
 
     return (
         <div className={cx(classes.root, className)}>
-            {!isShortVariant && (
-                <IconButton
-                    iconId={isDeletionScheduled ? "bookmarkBorder" : "bookmark"}
-                    onClick={scheduleDeletion}
-                />
-            )}
+            {!isShortVariant && <IconButton iconId="delete" onClick={onRequestDelete} />}
             <RoundLogo url={chartIconUrl} className={classes.logo} size="medium" />
             <div className={classes.friendlyNameWrapper}>
                 <Text typo="label 1" className={classes.friendlyName}>

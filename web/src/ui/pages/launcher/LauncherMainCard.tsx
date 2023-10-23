@@ -126,7 +126,7 @@ export const LauncherMainCard = memo((props: Props) => {
                 >
                     {onRequestRestoreAllDefault === undefined && !isBookmarked ? (
                         <IconButton
-                            iconId={isBookmarked ? "bookmark" : "bookmarkBorder"}
+                            iconId={isBookmarked ? "delete" : "save"}
                             onClick={onRequestToggleBookmark}
                         />
                     ) : isThereASavedConfigWithThisFriendlyName && !isBookmarked ? (
@@ -136,7 +136,7 @@ export const LauncherMainCard = memo((props: Props) => {
                             startIcon="save"
                             onClick={onRequestToggleBookmark}
                         >
-                            Save changes
+                            {t("save changes")}
                         </Button>
                     ) : (
                         <Button

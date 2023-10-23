@@ -37,8 +37,6 @@ import ReplayIcon from "@mui/icons-material/Replay";
 import HelpIcon from "@mui/icons-material/Help";
 import SearchIcon from "@mui/icons-material/Search";
 import CancelIcon from "@mui/icons-material/Cancel";
-import BookmarkIcon from "@mui/icons-material/Bookmark";
-import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
 import CodeIcon from "@mui/icons-material/Code";
 import LinkIcon from "@mui/icons-material/Link";
 import EqualizerIcon from "@mui/icons-material/Equalizer";
@@ -72,8 +70,6 @@ export const componentByIconId = {
     "help": HelpIcon,
     "search": SearchIcon,
     "cancel": CancelIcon,
-    "bookmark": BookmarkIcon,
-    "bookmarkBorder": BookmarkBorderIcon,
     "code": CodeIcon,
     "link": LinkIcon,
     "subdirectoryArrowRight": SubdirectoryArrowRightIcon,
