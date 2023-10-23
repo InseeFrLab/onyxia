@@ -724,6 +724,10 @@ export const thunks = {
                 return;
             }
 
+            if (state.chartVersion === chartVersion) {
+                return;
+            }
+
             const formFieldsValueDifferentFromDefault =
                 privateSelectors.formFieldsValueDifferentFromDefault(rootState);
 
