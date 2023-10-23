@@ -1,17 +1,18 @@
 import type { GenericTranslations } from "i18nifty";
 import type { Language } from "core";
-import { assert, type Equals } from "tsafe/assert";
+import { languages } from "./z";
+import { getEnabledLanguages } from "ui/env";
 
 export type { Language };
-
-//List the languages you with to support
-export const languages = ["en", "fr", "zh-CN", "no", "fi", "nl", "it", "de"] as const;
-
-assert<Equals<(typeof languages)[number], Language>>();
+export { languages };
 
 //If the user's browser language doesn't match any
 //of the languages above specify the language to fallback to:
-export const fallbackLanguage = "en";
+export const fallbackLanguage = getEnabledLanguages().includes("en")
+    ? "en"
+    : getEnabledLanguages()[0];
+
+export const doAllowOptionalKeysForNonFallbackLanguage = false;
 
 export type ComponentKey =
     | typeof import("ui/pages/mySecrets/MySecrets").i18n
@@ -71,5 +72,6 @@ export type Translations<L extends Language> = GenericTranslations<
     ComponentKey,
     Language,
     typeof fallbackLanguage,
-    L
+    L,
+    typeof doAllowOptionalKeysForNonFallbackLanguage
 >;

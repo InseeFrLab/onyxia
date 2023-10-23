@@ -21,6 +21,9 @@ import { THEME_ID, PALETTE_OVERRIDE } from "keycloak-theme/login/envCarriedOverT
 import { mergeDeep } from "ui/tools/mergeDeep";
 import { AnimatedOnyxiaLogo } from "onyxia-ui/AnimatedOnyxiaLogo";
 import { componentByIconId, type IconId } from "./icons";
+import { objectEntries } from "tsafe/objectEntries";
+import { objectFromEntries } from "tsafe/objectFromEntries";
+import { getEnabledLanguages } from "ui/env";
 
 const palette = {
     ...(() => {
@@ -111,16 +114,20 @@ export const { PageHeader } = createPageHeader({ Icon });
 export const { ButtonBarButton } = createButtonBarButton({ Icon });
 export const { ButtonBar } = createButtonBar({ Icon });
 export const { LanguageSelect } = createLanguageSelect<Language>({
-    "languagesPrettyPrint": {
-        "en": "English",
-        "fr": "Français",
-        "de": "Deutsch",
-        "it": "Italiano",
-        "nl": "Nederlands",
-        "no": "Norsk",
-        "fi": "Suomi",
-        "zh-CN": "简体中文"
-    }
+    "languagesPrettyPrint": objectFromEntries(
+        objectEntries({
+            /* spell-checker: disable */
+            "en": "English",
+            "fr": "Français",
+            "de": "Deutsch",
+            "it": "Italiano",
+            "nl": "Nederlands",
+            "no": "Norsk",
+            "fi": "Suomi",
+            "zh-CN": "简体中文"
+            /* spell-checker: enable */
+        }).filter(([language]) => getEnabledLanguages().includes(language))
+    )
 });
 
 export const { LeftBar } = createLeftBar({

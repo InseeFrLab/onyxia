@@ -1,10 +1,12 @@
 import "minimal-polyfills/Object.fromEntries";
-import { type LocalizedString, zLocalizedString } from "ui/i18n";
+import { type LocalizedString, type Language } from "ui/i18n";
 import { getEnv } from "env";
 import { symToStr } from "tsafe/symToStr";
 import memoize from "memoizee";
 import { z } from "zod";
 import { assert } from "tsafe/assert";
+import { removeDuplicates } from "evt/tools/reducers/removeDuplicates";
+import { zLocalizedString, zLanguage, languages } from "ui/i18n/z";
 
 export type AdminProvidedLink = {
     iconId: string;
@@ -161,4 +163,27 @@ export const getDisableCommandBar = memoize((): boolean => {
     );
 
     return DISABLE_COMMAND_BAR === "true";
+});
+
+export const getEnabledLanguages = memoize((): readonly Language[] => {
+    const { ENABLED_LANGUAGES } = getEnv();
+
+    if (ENABLED_LANGUAGES === "") {
+        return languages;
+    }
+
+    return ENABLED_LANGUAGES.split(",")
+        .map(part => part.trim())
+        .reduce(...removeDuplicates<string>())
+        .map(language => {
+            try {
+                return zLanguage.parse(language);
+            } catch {
+                throw new Error(
+                    `Language ${language} not supported by Onyxia. Supported languages are ${languages.join(
+                        ", "
+                    )}`
+                );
+            }
+        });
 });

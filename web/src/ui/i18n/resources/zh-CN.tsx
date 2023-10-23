@@ -10,12 +10,12 @@ export const translations: Translations<"zh-CN"> = {
         "third-party-integration": "外部服务",
         "storage": "链接到储存器",
         "user-interface": "变换显示模式",
-        "k8sCredentials": undefined,
+        "k8sCredentials": "Kubernetes",
         "text1": "我的账号",
         "text2": "访问我的账号信息",
         "text3": "设置您的用户名, 电子邮件, 密码和访问令牌",
         "personal tokens tooltip": "服务的访问令牌",
-        "vault": undefined
+        "vault": "Vault"
     },
     "AccountInfoTab": {
         "general information": "一般信息",
@@ -47,7 +47,7 @@ export const translations: Translations<"zh-CN"> = {
         "accessible as env": "可在您的服务中作为环境变量被访问",
         "init script section title": "访问datalab服务之外的存储器",
         "init script section helper": `下载或复制用您选择的编程语言编写的初始化脚本.`,
-        "expires in": undefined
+        "expires in": ({ howMuchTime }) => `有效期至 ${howMuchTime}`
     },
     "AccountKubernetesTab": {
         "credentials section title": "连接到 Kubernetes 集群",
@@ -69,12 +69,29 @@ export const translations: Translations<"zh-CN"> = {
         "expires in": ({ howMuchTime }) => `这些凭证在接下来的 ${howMuchTime} 内有效`
     },
     "AccountVaultTab": {
-        "credentials section title": undefined,
-        "credentials section helper": undefined,
-        "init script section title": undefined,
-        "init script section helper": undefined,
-        "expires in": undefined
+        "credentials section title": "保险库凭证",
+        "credentials section helper": ({ vaultDocHref, mySecretLink }) => (
+            <>
+                <MuiLink href={vaultDocHref} target="_blank">
+                    保险库
+                </MuiLink>{" "}
+                是存储 &nbsp;
+                <MuiLink {...mySecretLink}>您的密钥</MuiLink> 的系统。
+            </>
+        ),
+        "init script section title": "从您的终端使用保险库",
+        "init script section helper": ({ vaultCliDocLink }) => (
+            <>
+                下载或复制配置您本地{" "}
+                <MuiLink href={vaultCliDocLink} target="_blank">
+                    保险库 CLI
+                </MuiLink>{" "}
+                的 <code>ENV</code> 变量。
+            </>
+        ),
+        "expires in": ({ howMuchTime }) => `该令牌有效期至 ${howMuchTime}`
     },
+
     "AccountUserInterfaceTab": {
         "title": "配置界面模式",
         "enable dark mode": "开启深色模式",
@@ -110,7 +127,16 @@ export const translations: Translations<"zh-CN"> = {
         "what this page is used for - my files": "在此处存储您的数据.",
         "what this page is used for - my secrets":
             "在此处存储可作为服务中的环境变量访问的密钥.",
-        "help content": undefined
+        "help content": ({ accountTabLink, docHref }) => (
+            <>
+                阅读{" "}
+                <MuiLink href={docHref} target="_blank">
+                    我们的文档
+                </MuiLink>
+                。&nbsp;
+                <MuiLink {...accountTabLink}>配置 Minio 客户端</MuiLink>。
+            </>
+        )
     },
     "MySecrets": {
         "page title - my files": "我的文件",
@@ -119,7 +145,16 @@ export const translations: Translations<"zh-CN"> = {
         "what this page is used for - my secrets":
             "在此处存储可作为服务中的环境变量访问的密钥.",
         "learn more - my files": "了解有关使用 S3 存储的更多信息,",
-        "help content": undefined
+        "help content": ({ accountTabLink, docHref }) => (
+            <>
+                阅读{" "}
+                <MuiLink href={docHref} target="_blank">
+                    我们的文档
+                </MuiLink>
+                。&nbsp;
+                <MuiLink {...accountTabLink}>配置您的本地 Vault CLI</MuiLink>。
+            </>
+        )
     },
     "ExplorerItem": {
         "description": "描述"
@@ -128,16 +163,16 @@ export const translations: Translations<"zh-CN"> = {
         "description": "描述"
     },
     "ExplorerButtonBar": {
-        "file": "文档",
-        "secret": "密码",
+        "file": "文件",
+        "secret": "密钥",
         "delete": "删除",
-        "create secret": "新的密钥",
+        "create secret": "创建密钥",
         "upload file": "上传文件",
-        "copy path": undefined,
-        "create directory": "新建文件夹",
+        "copy path": "复制 S3 对象名称",
+        "create directory": "创建目录",
         "refresh": "刷新",
-        "create what": ({ what }) => `新 ${what}`,
-        "new": undefined
+        "create what": ({ what }) => `创建 ${what}`,
+        "new": "新建"
     },
     "SecretsExplorerButtonBar": {
         "file": "文档",
@@ -150,7 +185,7 @@ export const translations: Translations<"zh-CN"> = {
         "create directory": "新建文件夹",
         "refresh": "刷新",
         "create what": ({ what }) => `新 ${what}`,
-        "new": undefined
+        "new": "新建"
     },
     "Explorer": {
         "file": "文档",
@@ -158,7 +193,7 @@ export const translations: Translations<"zh-CN"> = {
         "cancel": "取消",
         "delete": "删除",
         "do not display again": "不要再显示",
-        "untitled what": undefined,
+        "untitled what": ({ what }) => `untitled_${what}`,
         "directory": "目录",
         "deletion dialog title": ({ deleteWhat }) => `删除 ${deleteWhat} ?`,
         "deletion dialog body": ({ deleteWhat }) => `
@@ -176,7 +211,7 @@ export const translations: Translations<"zh-CN"> = {
         "cancel": "取消",
         "delete": "删除",
         "do not display again": "不要再显示",
-        "untitled what": undefined,
+        "untitled what": ({ what }) => `untitled_${what}`,
         "directory": "目录",
         "deletion dialog title": ({ deleteWhat }) => `删除 ${deleteWhat} ?`,
         "deletion dialog body": ({ deleteWhat }) => `
@@ -433,7 +468,7 @@ ${
         "copy url helper text": "复制 URL 以恢复此配置",
         "share the service": "分享服务",
         "share the service - explain": "让其他组员可以访问该服务",
-        "restore all default": undefined,
+        "restore all default": "恢复默认配置",
         "bookmark button": ({ isBookmarked }) => `${isBookmarked ? "移除" : "保存"} 配置`,
         "bookmark button tooltip": ({ myServicesSavedConfigsExtendedLink }) => (
             <>
@@ -458,13 +493,14 @@ ${
         "save changes": "保存更改"
     },
     "LauncherConfigurationCard": {
-        "global config": "全局设置",
-        "configuration": ({ packageName }) => `配置 ${packageName}`,
-        "dependency": ({ dependencyName }) => `依赖服务 ${dependencyName}`,
-        "launch of a service": ({ dependencyName }) => `启动一个服务 ${dependencyName}`,
-        "mismatching pattern": undefined,
-        "Invalid YAML Object": undefined,
-        "Invalid YAML Array": undefined
+        "global config": "全局配置",
+        "configuration": ({ packageName }) => `${packageName} 配置`,
+        "dependency": ({ dependencyName }) => `${dependencyName} 依赖`,
+        "launch of a service": ({ dependencyName }) =>
+            `将启动一个 ${dependencyName} 服务`,
+        "mismatching pattern": ({ pattern }) => `应匹配 ${pattern}`,
+        "Invalid YAML Object": "无效的 YAML 对象",
+        "Invalid YAML Array": "无效的 YAML 数组"
     },
     "Footer": {
         "contribute": "为项目做贡献",
