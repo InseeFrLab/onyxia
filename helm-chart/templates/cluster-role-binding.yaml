@@ -1,5 +1,5 @@
-{{- if .Values.serviceAccount.create -}}
-{{- if .Values.serviceAccount.clusterAdmin -}}
+{{- if .Values.api.serviceAccount.create -}}
+{{- if .Values.api.serviceAccount.clusterAdmin -}}
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
@@ -9,7 +9,7 @@ metadata:
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: {{ default "cluster-admin" .Values.serviceAccount.existingClusterRole }}
+  name: {{ default "cluster-admin" .Values.api.serviceAccount.existingClusterRole }}
 subjects:
 - kind: ServiceAccount
   name: {{ include "onyxia.api.serviceAccountName" . }}

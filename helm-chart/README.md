@@ -9,7 +9,7 @@ Onyxia is distributed as a [Helm](https://helm.sh/) Package.
 
 ## Installation
 
-Theses instructions are just the gist for a comprehensive, step-by-step, installation guide
+These instructions are just the gist for a comprehensive, step-by-step, installation guide
 please refer to [the installation guide](https://docs.onyxia.sh).  
 
 ```bash
@@ -22,7 +22,7 @@ ingress:
     - host: datalab.my-domain.net
 EOF
 
-helm install onyxia onyxia/onyxia --version "5.3.5" -f onyxia-values.yaml
+helm install onyxia onyxia/onyxia --version "6.0.0" -f onyxia-values.yaml
 ```
 
 ### Using the Keycloak Theme (Optional)
@@ -44,7 +44,7 @@ extraInitContainers: |
     args:
       - -c
       - |
-        curl -L -f -S -o /extensions/onyxia.jar https://github.com/InseeFrLab/onyxia/releases/download/v5.3.5/keycloak-theme.jar
+        curl -L -f -S -o /extensions/onyxia.jar https://github.com/InseeFrLab/onyxia/releases/download/v6.0.0/keycloak-theme.jar
     volumeMounts:
       - name: extensions
         mountPath: /extensions
@@ -60,7 +60,7 @@ EOF
 helm install keycloak codecentric/keycloak -f keycloak-values.yaml
 ```
 
-After that, you should should be able to select *onyxia* as *Login Theme*.  
+After that, you should be able to select *onyxia* as *Login Theme*.  
 
 ![image](https://github.com/InseeFrLab/onyxia/assets/6702424/e53ac4cf-1787-406d-b360-e61de41d2607)  
 

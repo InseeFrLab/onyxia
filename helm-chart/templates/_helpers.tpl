@@ -108,17 +108,17 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 {{/*Create the name of the service account to use*/}}
 
 {{- define "onyxia.api.serviceAccountName" -}}
-{{- if .Values.serviceAccount.create -}}
-    {{ default (include "onyxia.api.fullname" .) .Values.serviceAccount.name }}
+{{- if .Values.api.serviceAccount.create -}}
+    {{ default (include "onyxia.api.fullname" .) .Values.api.serviceAccount.name }}
 {{- else -}}
-    {{ default "default" .Values.serviceAccount.name }}
+    {{ default "default" .Values.api.serviceAccount.name }}
 {{- end -}}
 {{- end -}}
 
 {{- define "onyxia.web.serviceAccountName" -}}
-{{- if .Values.serviceAccount.create -}}
-    {{ default (include "onyxia.web.fullname" .) .Values.serviceAccount.name }}
+{{- if .Values.web.serviceAccount.create -}}
+    {{ default (include "onyxia.web.fullname" .) .Values.web.serviceAccount.name }}
 {{- else -}}
-    {{ default "default" .Values.serviceAccount.name }}
+    {{ default "default" .Values.web.serviceAccount.name }}
 {{- end -}}
 {{- end -}}

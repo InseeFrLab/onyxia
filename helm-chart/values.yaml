@@ -1,21 +1,6 @@
 imagePullSecrets: []
 hostAliases: []
 
-serviceAccount:
-  # Specifies whether a service account should be created
-  create: true
-  # If true, the created service account is bound to a ClusterRole (default : cluster-admin) ;
-  # if false, it is instead bound to the admin Role, and thus scoped to the namespace
-  clusterAdmin: false
-  # Existing ClusterRole to use for the CRB if clusterAdmin is set to true
-  # existingClusterRole: "" 
-  # Annotations to add to the service account
-  annotations: {}
-  # The name of the service account to use.
-  # If not set and create is true, a name is generated using the fullname template
-  name:
-
-
 ingress:
   enabled: false
   # The name of the Ingress Class associated with this ingress
@@ -88,6 +73,18 @@ web:
   tolerations: []
   affinity: {}
   env:
+
+  serviceAccount:
+    # Specifies whether a service account should be created
+    create: true
+    # If true, the created service account is bound to a ClusterRole (default : cluster-admin) ;
+    # if false, it is instead bound to the admin Role, and thus scoped to the namespace
+    clusterAdmin: false
+    # Annotations to add to the service account
+    annotations: {}
+    # The name of the service account to use.
+    # If not set and create is true, a name is generated using the fullname template
+    name:
 
 
 api:
@@ -162,3 +159,12 @@ api:
     #     "type": "helm",
     #   }
     # ]
+
+  serviceAccount:
+    # Specifies whether a service account should be created
+    create: true
+    # Annotations to add to the service account
+    annotations: {}
+    # The name of the service account to use.
+    # If not set and create is true, a name is generated using the fullname template
+    name:
