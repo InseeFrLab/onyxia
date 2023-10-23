@@ -401,14 +401,34 @@ const isRestorableConfigSaved = createSelector(
     }
 );
 
+const chartVersionDifferentFromDefault = createSelector(readyState, state => {
+    if (state === undefined) {
+        return undefined;
+    }
+
+    const { chartVersion, defaultChartVersion } = state;
+
+    return chartVersion === defaultChartVersion ? undefined : chartVersion;
+});
+
 const areAllFieldsDefault = createSelector(
+    isReady,
     pathOfFormFieldsWhoseValuesAreDifferentFromDefault,
-    pathOfFormFieldsWhoseValuesAreDifferentFromDefault => {
-        if (pathOfFormFieldsWhoseValuesAreDifferentFromDefault === undefined) {
+    chartVersionDifferentFromDefault,
+    (
+        isReady,
+        pathOfFormFieldsWhoseValuesAreDifferentFromDefault,
+        chartVersionDifferentFromDefault
+    ) => {
+        if (!isReady) {
             return undefined;
         }
+        assert(pathOfFormFieldsWhoseValuesAreDifferentFromDefault !== undefined);
 
-        return pathOfFormFieldsWhoseValuesAreDifferentFromDefault.length === 0;
+        return (
+            pathOfFormFieldsWhoseValuesAreDifferentFromDefault.length === 0 &&
+            chartVersionDifferentFromDefault === undefined
+        );
     }
 );
 
@@ -424,16 +444,6 @@ const helmReleaseName = createSelector(readyState, state => {
         return undefined;
     }
     return `${state.chartName}-${state.k8sRandomSubdomain}`;
-});
-
-const chartVersionDifferentFromDefault = createSelector(readyState, state => {
-    if (state === undefined) {
-        return undefined;
-    }
-
-    const { chartVersion, defaultChartVersion } = state;
-
-    return chartVersion === defaultChartVersion ? undefined : chartVersion;
 });
 
 const catalogRepositoryUrl = createSelector(readyState, state => {

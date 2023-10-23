@@ -1,7 +1,7 @@
 import { type FormFieldValue, formFieldsValueToObject } from "./launcher/FormField";
 import { allEquals } from "evt/tools/reducers/allEquals";
 import { same } from "evt/tools/inDepth/same";
-import { assert } from "tsafe/assert";
+import { assert, type Equals } from "tsafe/assert";
 import { createSlice, createSelector } from "@reduxjs/toolkit";
 import type { Thunks } from "../core";
 import * as projectConfigs from "./projectConfigs";
@@ -371,11 +371,24 @@ export function getAreSameRestorableConfig(
     restorableConfiguration2: RestorableConfig
 ): boolean {
     return [restorableConfiguration1, restorableConfiguration2]
-        .map(({ catalogId, chartName, formFieldsValueDifferentFromDefault }) => [
-            catalogId,
-            chartName,
-            formFieldsValueToObject(formFieldsValueDifferentFromDefault)
-        ])
+        .map(
+            ({
+                catalogId,
+                chartName,
+                chartVersion,
+                formFieldsValueDifferentFromDefault,
+                ...rest
+            }) => {
+                assert<Equals<typeof rest, {}>>();
+
+                return [
+                    catalogId,
+                    chartName,
+                    chartVersion,
+                    formFieldsValueToObject(formFieldsValueDifferentFromDefault)
+                ];
+            }
+        )
         .reduce(...allEquals(same));
 }
 
