@@ -27,6 +27,7 @@ export type Props = {
     chartName: string;
     chartIconUrl: string | undefined;
     isBookmarked: boolean;
+    isThereASavedConfigWithThisFriendlyName: boolean;
 
     chartVersion: string;
 
@@ -66,6 +67,7 @@ export const LauncherMainCard = memo((props: Props) => {
         chartName,
         chartIconUrl,
         isBookmarked,
+        isThereASavedConfigWithThisFriendlyName,
 
         chartVersion,
         availableChartVersions,
@@ -127,11 +129,20 @@ export const LauncherMainCard = memo((props: Props) => {
                             iconId={isBookmarked ? "bookmark" : "bookmarkBorder"}
                             onClick={onRequestToggleBookmark}
                         />
+                    ) : isThereASavedConfigWithThisFriendlyName && !isBookmarked ? (
+                        <Button
+                            className={classes.bookmarkButton}
+                            variant="ternary"
+                            startIcon="save"
+                            onClick={onRequestToggleBookmark}
+                        >
+                            Save changes
+                        </Button>
                     ) : (
                         <Button
                             className={classes.bookmarkButton}
                             variant="ternary"
-                            startIcon={isBookmarked ? "bookmark" : "bookmarkBorder"}
+                            startIcon={isBookmarked ? "delete" : "save"}
                             onClick={onRequestToggleBookmark}
                         >
                             {t("bookmark button", { isBookmarked })}
@@ -273,6 +284,7 @@ export const { i18n } = declareComponentKeys<
           };
           R: JSX.Element;
       }
+    | "save changes"
 >()({ LauncherMainCard });
 
 const useStyles = tss.withName({ LauncherMainCard }).create(({ theme }) => ({

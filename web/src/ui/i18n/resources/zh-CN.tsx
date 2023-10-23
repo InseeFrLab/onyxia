@@ -420,15 +420,6 @@ ${
         "no longer bookmarked dialog body": "再次单击书签符号以更新您保存的配置.",
         "ok": "是"
     },
-    "OverwriteConfigurationConfirmDialog": {
-        "should overwrite configuration dialog title": "您想更换它吗?",
-        "should overwrite configuration dialog subtitle": ({ friendlyName }) =>
-            `«${friendlyName}» 已经存在于您的记录中`,
-        "should overwrite configuration dialog body":
-            "已存在同名的注册服务. 如果替换它, 原始内容将丢失.",
-        "cancel": "取消",
-        "replace": "取代"
-    },
     "SensitiveConfigurationDialog": {
         "cancel": "取消",
         "sensitive configuration dialog title": "您想更换它吗?", //TODO
@@ -463,7 +454,8 @@ ${
                 {chartName} Chart 的版本位于&nbsp;
                 <MuiLink href={catalogRepositoryUrl}>{catalogName} Helm 仓库</MuiLink>
             </>
-        )
+        ),
+        "save changes": "保存更改"
     },
     "LauncherConfigurationCard": {
         "global config": "全局设置",

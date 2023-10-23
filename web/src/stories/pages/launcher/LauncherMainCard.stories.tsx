@@ -15,6 +15,7 @@ export const ViewDefault = getStory({
     "chartName": "rstudio",
     "chartIconUrl": rstudioImg,
     "isBookmarked": true,
+    "isThereASavedConfigWithThisFriendlyName": false,
     "chartVersion": "1.2.3",
     "availableChartVersions": [
         "1.3.0-rc.0",

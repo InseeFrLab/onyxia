@@ -490,15 +490,6 @@ Voel je vrij om te verkennen en de controle over je Kubernetes-implementaties te
             "Klik opnieuw op het symbool van de bladwijzer om de opgeslagen configuratie bij te werken.",
         "ok": "Ok"
     },
-    "OverwriteConfigurationConfirmDialog": {
-        "should overwrite configuration dialog title": "Wilt u het vervangen ?",
-        "should overwrite configuration dialog subtitle": ({ friendlyName }) =>
-            `«${friendlyName}» bestaat al in uw opgeslagen diensten.`,
-        "should overwrite configuration dialog body":
-            "Er bestaat al een geregistreerde dienst met dezelfde naam. Als u deze vervangt, gaat de oorspronkelijke inhoud verloren.",
-        "cancel": "Annuleren",
-        "replace": "Vervangen"
-    },
     "SensitiveConfigurationDialog": {
         "cancel": "Annuleren",
         "sensitive configuration dialog title":
@@ -538,7 +529,8 @@ Voel je vrij om te verkennen en de controle over je Kubernetes-implementaties te
                     Helm repository {catalogName}
                 </MuiLink>
             </>
-        )
+        ),
+        "save changes": "Wijzigingen opslaan"
     },
     "LauncherConfigurationCard": {
         "global config": "Globale configuraties",

@@ -483,15 +483,6 @@ Feel free to explore and take charge of your Kubernetes deployments!
             "Click on the bookmark icon again to update your saved configuration",
         "ok": "Ok"
     },
-    "OverwriteConfigurationConfirmDialog": {
-        "should overwrite configuration dialog title": "Would you like to replace it?",
-        "should overwrite configuration dialog subtitle": ({ friendlyName }) =>
-            `«${friendlyName}» already exists in your store.`,
-        "should overwrite configuration dialog body":
-            "You already have a saved service with this name. If you replace it the previous configuration will be lost",
-        "cancel": "Annuler",
-        "replace": "Replace it"
-    },
     "SensitiveConfigurationDialog": {
         "sensitive configuration dialog title": "Launching this service may be dangerous",
         "cancel": "Annuler",
@@ -507,7 +498,7 @@ Feel free to explore and take charge of your Kubernetes deployments!
         "share the service - explain": "Make the service accessible to the group members",
         "restore all default": "Restore default configurations",
         "bookmark button": ({ isBookmarked }) =>
-            `${isBookmarked ? "Remove" : "Save"} configuration`,
+            `${isBookmarked ? "Delete" : "Save"} configuration`,
         "bookmark button tooltip": ({ myServicesSavedConfigsExtendedLink }) => (
             <>
                 Saved configurations can be quickly relaunched from the&nbsp;
@@ -529,7 +520,8 @@ Feel free to explore and take charge of your Kubernetes deployments!
                     {catalogName} Helm Repository{" "}
                 </MuiLink>
             </>
-        )
+        ),
+        "save changes": "Save changes"
     },
     "LauncherConfigurationCard": {
         "global config": "Global configuration",

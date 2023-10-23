@@ -493,15 +493,6 @@ Fühlen Sie sich frei, Ihre Kubernetes-Bereitstellungen zu erkunden und die Kont
             "Klicken Sie erneut auf das Lesezeichensymbol, um Ihre gespeicherte Konfiguration zu aktualisieren.",
         "ok": "Ok"
     },
-    "OverwriteConfigurationConfirmDialog": {
-        "should overwrite configuration dialog title": "Möchten Sie es ersetzen?",
-        "should overwrite configuration dialog subtitle": ({ friendlyName }) =>
-            `„${friendlyName}“ ist bereits in Ihren Aufzeichnungen vorhanden.`,
-        "should overwrite configuration dialog body":
-            "Ein registrierter Dienst mit dem gleichen Namen existiert bereits. Wenn Sie ihn ersetzen, wird der ursprüngliche Inhalt verloren.",
-        "cancel": "Abbrechen",
-        "replace": "Ersetzen"
-    },
     "SensitiveConfigurationDialog": {
         "sensitive configuration dialog title":
             "Das Starten dieses Dienstes könnte gefährlich sein",
@@ -542,7 +533,8 @@ Fühlen Sie sich frei, Ihre Kubernetes-Bereitstellungen zu erkunden und die Kont
                     {catalogName} Helm Repository
                 </MuiLink>
             </>
-        )
+        ),
+        "save changes": "Änderungen speichern"
     },
     "LauncherConfigurationCard": {
         "global config": "Globale Konfigurationen",

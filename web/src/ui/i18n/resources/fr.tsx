@@ -495,15 +495,6 @@ N'hésitez pas à explorer et à prendre en main vos déploiements Kubernetes !
             "Cliquer une nouvelle fois sur le symbole marque-page pour mettre à jour votre configuration enregistrée.",
         "ok": "Ok"
     },
-    "OverwriteConfigurationConfirmDialog": {
-        "should overwrite configuration dialog title": "Souhaitez-vous le remplacer ?",
-        "should overwrite configuration dialog subtitle": ({ friendlyName }) =>
-            `«${friendlyName}» existe déjà dans vos enregistrements.`,
-        "should overwrite configuration dialog body":
-            "Un service enregistré du même nom existe déjà. Si vous le remplacez, le contenu d'origine sera perdu.",
-        "cancel": "Annuler",
-        "replace": "Remplacer"
-    },
     "SensitiveConfigurationDialog": {
         "sensitive configuration dialog title":
             "Lancer ce service pourrait être dangereux",
@@ -542,7 +533,8 @@ N'hésitez pas à explorer et à prendre en main vos déploiements Kubernetes !
                 Version du Chart {chartName} dans le&nbsp;
                 <MuiLink href={catalogRepositoryUrl}>dépôt Helm {catalogName}</MuiLink>
             </>
-        )
+        ),
+        "save changes": "Enregistrer les modifications"
     },
     "LauncherConfigurationCard": {
         "global config": "Configurations globales",

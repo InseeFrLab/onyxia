@@ -47,6 +47,7 @@ import SubdirectoryArrowRightIcon from "@mui/icons-material/SubdirectoryArrowRig
 import PeopleIcon from "@mui/icons-material/People";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import ScreenRotationIcon from "@mui/icons-material/ScreenRotation";
+import SaveIcon from "@mui/icons-material/Save";
 
 /** @see: <https://next.material-ui.com/components/material-icons/> */
 export const componentByIconId = {
@@ -98,7 +99,8 @@ export const componentByIconId = {
     "assuredWorkload": AssuredWorkloadIcon,
     "grading": GradingIcon,
     "refresh": RefreshLogoSvg,
-    "screenRotation": ScreenRotationIcon
+    "screenRotation": ScreenRotationIcon,
+    "save": SaveIcon
 } as const;
 
 export type IconId = keyof typeof componentByIconId;

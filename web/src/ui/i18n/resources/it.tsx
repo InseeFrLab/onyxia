@@ -486,15 +486,6 @@ Sentiti libero di esplorare e prendere il controllo dei tuoi deployment Kubernet
             "Clicca nuovamente sull'icona del segnalibro per aggiornare la configurazione salvata.",
         "ok": "Ok"
     },
-    "OverwriteConfigurationConfirmDialog": {
-        "should overwrite configuration dialog title": "Vuoi sostituirlo?",
-        "should overwrite configuration dialog subtitle": ({ friendlyName }) =>
-            `«${friendlyName}» esiste già nelle tuoi registrazioni.`,
-        "should overwrite configuration dialog body":
-            "Esiste già un servizio registrato con lo stesso nome. Se lo sostituisci, il contenuto originale verrà perso.",
-        "cancel": "Annullare",
-        "replace": "Sostituire"
-    },
     "SensitiveConfigurationDialog": {
         "cancel": "Annullare",
         "sensitive configuration dialog title":
@@ -534,7 +525,8 @@ Sentiti libero di esplorare e prendere il controllo dei tuoi deployment Kubernet
                     repository Helm {catalogName}
                 </MuiLink>
             </>
-        )
+        ),
+        "save changes": "Salva modifiche"
     },
     "LauncherConfigurationCard": {
         "global config": "Configurazioni globali",

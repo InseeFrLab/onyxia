@@ -479,15 +479,6 @@ Tutustu vapaasti ja ota hallintaan Kubernetes-julkaisusi!
             "Päivitä tallennettu konfiguraatio napsauttamalla kirjanmerkkikuvaketta uudelleen.",
         "ok": "Ok"
     },
-    "OverwriteConfigurationConfirmDialog": {
-        "should overwrite configuration dialog title": "Haluatko korvata sen?",
-        "should overwrite configuration dialog subtitle": ({ friendlyName }) =>
-            `«${friendlyName}» on jo tallennettu tietoihisi.`,
-        "should overwrite configuration dialog body":
-            "Sinulla on jo tallennettu palvelu tällä nimellä. Jos korvaat sen, aiempi konfiguraatio menetetään.",
-        "cancel": "Peruuta",
-        "replace": "Korvaa se"
-    },
     "SensitiveConfigurationDialog": {
         "sensitive configuration dialog title":
             "Palvelun käynnistäminen voi olla vaarallista",
@@ -525,7 +516,8 @@ Tutustu vapaasti ja ota hallintaan Kubernetes-julkaisusi!
                     {catalogName} Helm Repository
                 </MuiLink>
             </>
-        )
+        ),
+        "save changes": "Tallenna muutokset"
     },
     "LauncherConfigurationCard": {
         "global config": "Yleinen konfiguraatio",

@@ -52,7 +52,6 @@ export type ComponentKey =
     | typeof import("ui/pages/launcher/LauncherDialogs/AcknowledgeSharingOfConfigConfirmDialog").i18n
     | typeof import("ui/pages/launcher/LauncherDialogs/AutoLaunchDisabledDialog").i18n
     | typeof import("ui/pages/launcher/LauncherDialogs/NoLongerBookmarkedDialog").i18n
-    | typeof import("ui/pages/launcher/LauncherDialogs/OverwriteConfigurationConfirmDialog").i18n
     | typeof import("ui/pages/launcher/LauncherDialogs/SensitiveConfigurationDialog").i18n
     | typeof import("ui/pages/myServices/MyServices").i18n
     | typeof import("ui/pages/myServices/MyServicesConfirmDeleteDialog").i18n

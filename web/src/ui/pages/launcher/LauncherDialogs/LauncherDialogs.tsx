@@ -14,17 +14,12 @@ import {
     NoLongerBookmarkedDialog,
     type Props as NoLongerBookmarkedDialogProps
 } from "./NoLongerBookmarkedDialog";
-import {
-    OverwriteConfigurationConfirmDialog,
-    type Props as OverwriteConfigurationConfirmDialogProps
-} from "./OverwriteConfigurationConfirmDialog";
 
 export type Props = {
     evtAcknowledgeSharingOfConfigConfirmDialogOpen: AcknowledgeSharingOfConfigConfirmDialogProps["evtOpen"];
     evtAutoLaunchDisabledDialogOpen: AutoLaunchDisabledDialogProps["evtOpen"];
     evtSensitiveConfigurationDialogOpen: SensitiveConfigurationDialogProps["evtOpen"];
     evtNoLongerBookmarkedDialogOpen: NoLongerBookmarkedDialogProps["evtOpen"];
-    evtOverwriteConfigurationConfirmDialogOpen: OverwriteConfigurationConfirmDialogProps["evtOpen"];
 };
 
 export function LauncherDialogs(props: Props) {
@@ -32,8 +27,7 @@ export function LauncherDialogs(props: Props) {
         evtAcknowledgeSharingOfConfigConfirmDialogOpen,
         evtAutoLaunchDisabledDialogOpen,
         evtSensitiveConfigurationDialogOpen,
-        evtNoLongerBookmarkedDialogOpen,
-        evtOverwriteConfigurationConfirmDialogOpen
+        evtNoLongerBookmarkedDialogOpen
     } = props;
 
     return (
@@ -44,9 +38,6 @@ export function LauncherDialogs(props: Props) {
             <AutoLaunchDisabledDialog evtOpen={evtAutoLaunchDisabledDialogOpen} />
             <SensitiveConfigurationDialog evtOpen={evtSensitiveConfigurationDialogOpen} />
             <NoLongerBookmarkedDialog evtOpen={evtNoLongerBookmarkedDialogOpen} />
-            <OverwriteConfigurationConfirmDialog
-                evtOpen={evtOverwriteConfigurationConfirmDialogOpen}
-            />
         </>
     );
 }

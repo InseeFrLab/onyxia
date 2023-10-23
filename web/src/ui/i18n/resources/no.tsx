@@ -487,15 +487,6 @@ Føl deg fri til å utforske og ta kontroll over dine Kubernetes-implementeringe
             "Klikk på bokmerkeikonet igjen for å oppdatere den lagrede konfigurasjonen din",
         "ok": "Ok"
     },
-    "OverwriteConfigurationConfirmDialog": {
-        "should overwrite configuration dialog title": "Ønsker du å erstatte den?",
-        "should overwrite configuration dialog subtitle": ({ friendlyName }) =>
-            `«${friendlyName}» finnes allerede i lagringen din.`,
-        "should overwrite configuration dialog body":
-            "Du har allerede en lagret tjeneste med dette navnet. Hvis du erstatter den, vil den forrige konfigurasjonen gå tapt",
-        "cancel": "Avbryt",
-        "replace": "Erstatt den"
-    },
     "SensitiveConfigurationDialog": {
         "cancel": "Avbryt",
         "sensitive configuration dialog title":
@@ -532,7 +523,8 @@ Føl deg fri til å utforske og ta kontroll over dine Kubernetes-implementeringe
                 Versjon av Chart {chartName} i&nbsp;
                 <MuiLink href={catalogRepositoryUrl}>Helm depotet {catalogName}</MuiLink>
             </>
-        )
+        ),
+        "save changes": "Lagre endringer"
     },
     "LauncherConfigurationCard": {
         "global config": "Global konfigurasjon",

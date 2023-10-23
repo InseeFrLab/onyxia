@@ -382,7 +382,7 @@ const restorableConfig = createSelector(
 const isRestorableConfigSaved = createSelector(
     isReady,
     restorableConfig,
-    restorableConfigManager.selectors.restorableConfigs,
+    restorableConfigManager.protectedSelectors.restorableConfigs,
     (isReady, restorableConfig, restorableConfigs) => {
         if (!isReady) {
             return undefined;
@@ -574,9 +574,25 @@ const availableChartVersions = createSelector(
 
 const catalogName = createSelector(readyState, state => state?.catalogName);
 
+const isThereASavedConfigWithThisFriendlyName = createSelector(
+    isReady,
+    friendlyName,
+    restorableConfigManager.protectedSelectors.savedConfigFriendlyNames,
+    (isReady, friendlyName, savedConfigFriendlyNames) => {
+        if (!isReady) {
+            return undefined;
+        }
+
+        assert(friendlyName !== undefined);
+
+        return savedConfigFriendlyNames.includes(friendlyName);
+    }
+);
+
 const wrap = createSelector(
     isReady,
     friendlyName,
+    isThereASavedConfigWithThisFriendlyName,
     isShared,
     indexedFormFields,
     isLaunchable,
@@ -597,6 +613,7 @@ const wrap = createSelector(
     (
         isReady,
         friendlyName,
+        isThereASavedConfigWithThisFriendlyName,
         isShared,
         indexedFormFields,
         isLaunchable,
@@ -619,6 +636,7 @@ const wrap = createSelector(
             return {
                 "isReady": false as const,
                 [symToStr({ friendlyName })]: undefined,
+                [symToStr({ isThereASavedConfigWithThisFriendlyName })]: undefined,
                 [symToStr({ isShared })]: undefined,
                 [symToStr({ indexedFormFields })]: undefined,
                 [symToStr({ isLaunchable })]: undefined,
@@ -641,6 +659,7 @@ const wrap = createSelector(
         }
 
         assert(friendlyName !== undefined);
+        assert(isThereASavedConfigWithThisFriendlyName !== undefined);
         assert(restorableConfig !== undefined);
         assert(isRestorableConfigSaved !== undefined);
         assert(indexedFormFields !== undefined);
@@ -660,6 +679,7 @@ const wrap = createSelector(
         return {
             "isReady": true as const,
             friendlyName,
+            isThereASavedConfigWithThisFriendlyName,
             isShared,
             indexedFormFields,
             isLaunchable,

@@ -1,92 +1,19 @@
-import { type FormFieldValue, formFieldsValueToObject } from "./launcher/FormField";
+import { formFieldsValueToObject } from "core/usecases/launcher/FormField";
 import { allEquals } from "evt/tools/reducers/allEquals";
 import { same } from "evt/tools/inDepth/same";
 import { assert, type Equals } from "tsafe/assert";
-import { createSlice, createSelector } from "@reduxjs/toolkit";
-import type { Thunks } from "../core";
-import * as projectConfigs from "./projectConfigs";
-import {
-    createObjectThatThrowsIfAccessed,
-    createUsecaseContextApi
-} from "redux-clean-architecture";
-import type { State as RootState } from "../core";
-import { onyxiaFriendlyNameFormFieldPath, Chart } from "core/ports/OnyxiaApi";
+import type { Thunks } from "core/core";
+import * as projectConfigs from "core/usecases/projectConfigs";
+import { createUsecaseContextApi } from "redux-clean-architecture";
+import { Chart } from "core/ports/OnyxiaApi";
 import { Mutex } from "async-mutex";
-
-type State = {
-    restorableConfigs: RestorableConfig[];
-    chartIconUrlByChartNameAndCatalogId: ChartIconUrlByChartNameAndCatalogId | undefined;
-};
-
-type ChartIconUrlByChartNameAndCatalogId = {
-    [catalogId: string]: { [chartName: string]: string | undefined };
-};
-
-export type RestorableConfig = {
-    catalogId: string;
-    chartName: string;
-    chartVersion: string;
-    formFieldsValueDifferentFromDefault: FormFieldValue[];
-};
-
-export const name = "restorableConfigManager";
-
-export const { reducer, actions } = createSlice({
+import {
     name,
-    "initialState": createObjectThatThrowsIfAccessed<State>({
-        "debugMessage": [
-            "The restorableConfigState should have been",
-            "initialized during the store initialization"
-        ].join(" ")
-    }),
-    "reducers": {
-        "initializationCompleted": (
-            _,
-            {
-                payload
-            }: {
-                payload: {
-                    restorableConfigs: RestorableConfig[];
-                };
-            }
-        ) => {
-            const { restorableConfigs } = payload;
-            return {
-                restorableConfigs,
-                "chartIconUrlByChartNameAndCatalogId": undefined
-            };
-        },
-        "chartIconsFetched": (
-            state,
-            {
-                payload
-            }: {
-                payload: {
-                    chartIconUrlByChartNameAndCatalogId: ChartIconUrlByChartNameAndCatalogId;
-                };
-            }
-        ) => {
-            const { chartIconUrlByChartNameAndCatalogId } = payload;
-
-            state.chartIconUrlByChartNameAndCatalogId =
-                chartIconUrlByChartNameAndCatalogId;
-        },
-        "restorableConfigsUpdated": (
-            state,
-            {
-                payload
-            }: {
-                payload: {
-                    restorableConfigs: RestorableConfig[];
-                };
-            }
-        ) => {
-            const { restorableConfigs } = payload;
-
-            state.restorableConfigs = restorableConfigs;
-        }
-    }
-});
+    actions,
+    type ChartIconUrlByChartNameAndCatalogId,
+    type RestorableConfig
+} from "./state";
+import { readFriendlyName } from "./selectors";
 
 export const protectedThunks = {
     "initialize":
@@ -250,25 +177,6 @@ const privateThunks = {
                     })
                 );
             });
-        },
-    "getSavedConfigWithSameFriendlyName":
-        (params: { restorableConfig: RestorableConfig }) =>
-        (...args): RestorableConfig | undefined => {
-            const [, getState] = args;
-
-            const { restorableConfig } = params;
-
-            const { restorableConfigs } = getState()[name];
-
-            const results = restorableConfigs.filter(
-                restorableConfig_i =>
-                    readFriendlyName(restorableConfig_i) ===
-                    readFriendlyName(restorableConfig)
-            );
-
-            assert(results.length <= 1);
-
-            return results[0];
         }
 } satisfies Thunks;
 
@@ -283,23 +191,23 @@ export const thunks = {
             await dispatch(
                 privateThunks.updateRemoteAndLocalStore({
                     "getNewRestorableConfigs": () => {
-                        const restorableConfigWithSameFriendlyName = dispatch(
-                            privateThunks.getSavedConfigWithSameFriendlyName({
-                                restorableConfig
-                            })
-                        );
-
                         const { restorableConfigs } = getState()[name];
 
-                        const newRestorableConfigs =
-                            restorableConfigWithSameFriendlyName === undefined
-                                ? [...restorableConfigs, restorableConfig]
-                                : restorableConfigs.map(restorableConfig_i =>
-                                      restorableConfig_i ===
-                                      restorableConfigWithSameFriendlyName
-                                          ? restorableConfig
-                                          : restorableConfig_i
-                                  );
+                        const restorableConfigWithSameFriendlyName = (() => {
+                            const results = restorableConfigs.filter(
+                                restorableConfig_i =>
+                                    readFriendlyName(restorableConfig_i) ===
+                                    readFriendlyName(restorableConfig)
+                            );
+
+                            if (results.length === 0) {
+                                return undefined;
+                            }
+
+                            assert(results.length === 1);
+
+                            return results[0];
+                        })();
 
                         // NOTE: In case of double call, as we don't provide a "loading state"
                         if (
@@ -311,6 +219,16 @@ export const thunks = {
                         ) {
                             return { "newRestorableConfigs": undefined };
                         }
+
+                        const newRestorableConfigs =
+                            restorableConfigWithSameFriendlyName === undefined
+                                ? [...restorableConfigs, restorableConfig]
+                                : restorableConfigs.map(restorableConfig_i =>
+                                      restorableConfig_i ===
+                                      restorableConfigWithSameFriendlyName
+                                          ? restorableConfig
+                                          : restorableConfig_i
+                                  );
 
                         return { newRestorableConfigs };
                     }
@@ -350,19 +268,6 @@ export const thunks = {
                     }
                 })
             );
-        },
-    "getIsThereASavedConfigWithSameFriendlyName":
-        (params: { restorableConfig: RestorableConfig }) =>
-        (...args): boolean => {
-            const { restorableConfig } = params;
-
-            const [dispatch] = args;
-
-            return (
-                dispatch(
-                    privateThunks.getSavedConfigWithSameFriendlyName({ restorableConfig })
-                ) !== undefined
-            );
         }
 } satisfies Thunks;
 
@@ -391,52 +296,3 @@ export function getAreSameRestorableConfig(
         )
         .reduce(...allEquals(same));
 }
-
-function readFriendlyName(restorableConfig: RestorableConfig) {
-    const friendlyName = restorableConfig.formFieldsValueDifferentFromDefault.find(
-        ({ path }) => same(path, onyxiaFriendlyNameFormFieldPath.split("."))
-    )?.value;
-    assert(friendlyName === undefined || typeof friendlyName === "string");
-    return friendlyName ?? restorableConfig.chartName;
-}
-
-export const selectors = (() => {
-    function state(rootState: RootState) {
-        return rootState[name];
-    }
-
-    const restorableConfigs = createSelector(state, state =>
-        [...state.restorableConfigs].reverse()
-    );
-
-    const chartIconAndFriendlyNameByRestorableConfigIndex = createSelector(
-        state,
-        restorableConfigs,
-        (
-            state,
-            restorableConfigs
-        ): Record<number, { friendlyName: string; chartIconUrl: string | undefined }> => {
-            const { chartIconUrlByChartNameAndCatalogId } = state;
-
-            return Object.fromEntries(
-                restorableConfigs.map((restorableConfig, restorableConfigIndex) => [
-                    restorableConfigIndex,
-                    {
-                        "chartIconUrl":
-                            chartIconUrlByChartNameAndCatalogId === undefined
-                                ? undefined
-                                : chartIconUrlByChartNameAndCatalogId[
-                                      restorableConfig.catalogId
-                                  ]?.[restorableConfig.chartName],
-                        "friendlyName": readFriendlyName(restorableConfig)
-                    }
-                ])
-            );
-        }
-    );
-
-    return {
-        restorableConfigs,
-        chartIconAndFriendlyNameByRestorableConfigIndex
-    };
-})();

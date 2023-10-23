@@ -39,10 +39,9 @@ export default function MyServices(props: Props) {
     /* prettier-ignore */
     const { serviceManager, restorableConfigManager, k8sCredentials, projectConfigs } = useCoreFunctions();
     /* prettier-ignore */
-    const { restorableConfigs } = useCoreState(selectors.restorableConfigManager.restorableConfigs);
-    const { chartIconAndFriendlyNameByRestorableConfigIndex } = useCoreState(
-        selectors.restorableConfigManager.chartIconAndFriendlyNameByRestorableConfigIndex
-    );
+    const { restorableConfigs, chartIconAndFriendlyNameByRestorableConfigIndex } = useCoreState(
+        selectors.restorableConfigManager.wrap
+    ).wrap;
     /* prettier-ignore */
     const { isUpdating } = useCoreState(selectors.serviceManager.isUpdating);
     const { runningServices } = useCoreState(selectors.serviceManager.runningServices);

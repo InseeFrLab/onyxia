@@ -35,8 +35,7 @@ export default function Launcher(props: Props) {
         evtAcknowledgeSharingOfConfigConfirmDialogOpen,
         evtAutoLaunchDisabledDialogOpen,
         evtSensitiveConfigurationDialogOpen,
-        evtNoLongerBookmarkedDialogOpen,
-        evtOverwriteConfigurationConfirmDialogOpen
+        evtNoLongerBookmarkedDialogOpen
     } = useConst(() => ({
         "evtAcknowledgeSharingOfConfigConfirmDialogOpen":
             Evt.create<
@@ -55,18 +54,13 @@ export default function Launcher(props: Props) {
         "evtNoLongerBookmarkedDialogOpen":
             Evt.create<
                 UnpackEvt<LauncherDialogsProps["evtNoLongerBookmarkedDialogOpen"]>
-            >(),
-        "evtOverwriteConfigurationConfirmDialogOpen":
-            Evt.create<
-                UnpackEvt<
-                    LauncherDialogsProps["evtOverwriteConfigurationConfirmDialogOpen"]
-                >
             >()
     }));
 
     const {
         isReady,
         friendlyName,
+        isThereASavedConfigWithThisFriendlyName,
         isShared,
         indexedFormFields,
         isLaunchable,
@@ -235,23 +229,6 @@ export default function Launcher(props: Props) {
         if (isRestorableConfigSaved) {
             restorableConfigManager.deleteRestorableConfig({ restorableConfig });
         } else {
-            if (
-                restorableConfigManager.getIsThereASavedConfigWithSameFriendlyName({
-                    restorableConfig
-                })
-            ) {
-                const dDoOverwriteConfiguration = new Deferred<boolean>();
-
-                evtOverwriteConfigurationConfirmDialogOpen.post({
-                    friendlyName,
-                    "resolveDoOverwriteConfiguration": dDoOverwriteConfiguration.resolve
-                });
-
-                if (!(await dDoOverwriteConfiguration.pr)) {
-                    return;
-                }
-            }
-
             if (groupProjectName !== undefined) {
                 const doProceed = new Deferred<boolean>();
 
@@ -358,6 +335,9 @@ export default function Launcher(props: Props) {
                             <LauncherMainCard
                                 chartName={chartName}
                                 chartIconUrl={chartIconUrl}
+                                isThereASavedConfigWithThisFriendlyName={
+                                    isThereASavedConfigWithThisFriendlyName
+                                }
                                 isBookmarked={isRestorableConfigSaved}
                                 chartVersion={chartVersion}
                                 availableChartVersions={availableChartVersions}
@@ -426,9 +406,6 @@ export default function Launcher(props: Props) {
                 evtAutoLaunchDisabledDialogOpen={evtAutoLaunchDisabledDialogOpen}
                 evtSensitiveConfigurationDialogOpen={evtSensitiveConfigurationDialogOpen}
                 evtNoLongerBookmarkedDialogOpen={evtNoLongerBookmarkedDialogOpen}
-                evtOverwriteConfigurationConfirmDialogOpen={
-                    evtOverwriteConfigurationConfirmDialogOpen
-                }
             />
         </>
     );
