@@ -60,10 +60,72 @@ export const thunks = {
             dispatch(actions.initializationStarted());
 
             const {
+                catalogName,
+                catalogRepositoryUrl,
+                chartIconUrl,
+                defaultChartVersion,
+                chartVersion,
+                availableChartVersions
+            } = await (async () => {
+                const { catalogs, chartsByCatalogId } =
+                    await onyxiaApi.getCatalogsAndCharts();
+
+                const catalog = catalogs.find(({ id }) => id === catalogId);
+
+                assert(catalog !== undefined);
+
+                const chart = chartsByCatalogId[catalogId].find(
+                    ({ name }) => name === chartName
+                );
+
+                assert(chart !== undefined);
+
+                const defaultChartVersion = Chart.getDefaultVersion(chart);
+
+                const chartVersion = (() => {
+                    if (chartVersion_params !== undefined) {
+                        if (
+                            chart.versions.find(
+                                ({ version }) => version === chartVersion_params
+                            ) === undefined
+                        ) {
+                            alert(
+                                [
+                                    `No ${chartVersion_params} version found for ${chartName} in ${catalog.repositoryUrl}.`,
+                                    `Falling back to default version ${defaultChartVersion}`
+                                ].join("\n")
+                            );
+
+                            return defaultChartVersion;
+                        }
+
+                        return chartVersion_params;
+                    }
+
+                    return defaultChartVersion;
+                })();
+
+                return {
+                    "catalogName": catalog.name,
+                    "catalogRepositoryUrl": catalog.repositoryUrl,
+                    "chartIconUrl": chart.versions.find(
+                        ({ version }) => version === chartVersion
+                    )!.iconUrl,
+                    defaultChartVersion,
+                    chartVersion,
+                    "availableChartVersions": chart.versions.map(({ version }) => version)
+                };
+            })();
+
+            const {
                 dependencies: chartDependencies,
                 sourceUrls: chartSourceUrls,
                 getChartValuesSchemaJson
-            } = await onyxiaApi.getHelmChartDetails({ catalogId, chartName });
+            } = await onyxiaApi.getHelmChartDetails({
+                catalogId,
+                chartName,
+                chartVersion
+            });
 
             assert(oidc.isUserLoggedIn);
 
@@ -242,64 +304,6 @@ export const thunks = {
                     return xOnyxiaContext;
                 })()
             });
-
-            const {
-                catalogName,
-                catalogRepositoryUrl,
-                chartIconUrl,
-                defaultChartVersion,
-                chartVersion,
-                availableChartVersions
-            } = await (async () => {
-                const { catalogs, chartsByCatalogId } =
-                    await onyxiaApi.getCatalogsAndCharts();
-
-                const catalog = catalogs.find(({ id }) => id === catalogId);
-
-                assert(catalog !== undefined);
-
-                const chart = chartsByCatalogId[catalogId].find(
-                    ({ name }) => name === chartName
-                );
-
-                assert(chart !== undefined);
-
-                const defaultChartVersion = Chart.getDefaultVersion(chart);
-
-                const chartVersion = (() => {
-                    if (chartVersion_params !== undefined) {
-                        if (
-                            chart.versions.find(
-                                ({ version }) => version === chartVersion_params
-                            ) === undefined
-                        ) {
-                            alert(
-                                [
-                                    `No ${chartVersion_params} version found for ${chartName} in ${catalog.repositoryUrl}.`,
-                                    `Falling back to default version ${defaultChartVersion}`
-                                ].join("\n")
-                            );
-
-                            return defaultChartVersion;
-                        }
-
-                        return chartVersion_params;
-                    }
-
-                    return defaultChartVersion;
-                })();
-
-                return {
-                    "catalogName": catalog.name,
-                    "catalogRepositoryUrl": catalog.repositoryUrl,
-                    "chartIconUrl": chart.versions.find(
-                        ({ version }) => version === chartVersion
-                    )!.iconUrl,
-                    defaultChartVersion,
-                    chartVersion,
-                    "availableChartVersions": chart.versions.map(({ version }) => version)
-                };
-            })();
 
             const {
                 formFields,

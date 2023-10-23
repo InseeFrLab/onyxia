@@ -467,26 +467,25 @@ export function createOnyxiaApi(params: {
                 })
                 .catch(onError)
                 .then(() => undefined),
-        "getHelmChartDetails": ({ catalogId, chartName }) =>
+        "getHelmChartDetails": ({ catalogId, chartName, chartVersion }) =>
             axiosInstance
-                .get<
-                    {
-                        config: JSONSchemaObject;
-                        sources?: string[];
-                        dependencies?: {
-                            name: string;
-                        }[];
-                    }[]
-                >(`/public/catalogs/${catalogId}/charts/${chartName}`)
+                .get<{
+                    config: JSONSchemaObject;
+                    sources?: string[];
+                    dependencies?: {
+                        name: string;
+                    }[];
+                }>(
+                    `/public/catalogs/${catalogId}/charts/${chartName}/versions/${chartVersion}`
+                )
                 .then(
                     ({ data }) => ({
-                        "dependencies":
-                            data[0].dependencies?.map(({ name }) => name) ?? [],
-                        "sourceUrls": data[0].sources ?? [],
+                        "dependencies": data.dependencies?.map(({ name }) => name) ?? [],
+                        "sourceUrls": data.sources ?? [],
                         "getChartValuesSchemaJson": ({ xOnyxiaContext }) => {
                             //WARNING: The type is not exactly correct here. JSONSchemaFormFieldDescription["default"] can be undefined.
                             const configCopy = JSON.parse(
-                                JSON.stringify(data[0].config)
+                                JSON.stringify(data.config)
                             ) as JSONSchemaObject;
 
                             function overrideDefaultsRec(
