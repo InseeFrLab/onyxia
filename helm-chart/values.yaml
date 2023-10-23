@@ -81,10 +81,11 @@ web:
     # if false, it is instead bound to the admin Role, and thus scoped to the namespace
     clusterAdmin: false
     # Annotations to add to the service account
-    annotations: { }
+    annotations: {}
     # The name of the service account to use.
     # If not set and create is true, a name is generated using the fullname template
     name:
+
 
 api:
   name: api
@@ -163,7 +164,7 @@ api:
     # Specifies whether a service account should be created
     create: true
     # Annotations to add to the service account
-    annotations: { }
+    annotations: {}
     # The name of the service account to use.
     # If not set and create is true, a name is generated using the fullname template
     name:
