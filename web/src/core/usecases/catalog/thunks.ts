@@ -56,8 +56,8 @@ export const thunks = {
 
                         Object.keys(chartsByCatalogId).forEach(
                             catalogId =>
-                                (out[catalogId] = chartsByCatalogId[catalogId].map(
-                                    chart => {
+                                (out[catalogId] = chartsByCatalogId[catalogId]
+                                    .map(chart => {
                                         const defaultVersion =
                                             Chart.getDefaultVersion(chart);
 
@@ -75,8 +75,8 @@ export const thunks = {
                                             iconUrl,
                                             projectHomepageUrl
                                         };
-                                    }
-                                ))
+                                    })
+                                    .filter(({ name }) => name !== "library-chart"))
                         );
 
                         return out;
