@@ -104,3 +104,6 @@ Onyxia is developed by the French National institute of statistics and economic 
 ## Contributing
 
 If your are a new contributor, please refer to the [technical documentation](https://docs.onyxia.sh/contributing).
+
+📣 **Monthly Onyxia Community Calls!** 📣
+Starting November 2023, we're thrilled to introduce community calls on the last Friday of every month at 1pm Paris time. This is your chance to engage, pose questions, and stay updated on the newest Onyxia advancements. Don't forget to set a reminder! 📅🕐
