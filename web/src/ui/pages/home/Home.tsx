@@ -5,19 +5,20 @@ import { tss, Text, useStyles as useClasslessStyles } from "ui/theme";
 import { ReactComponent as OnyxiaLogoSvg } from "ui/assets/svg/OnyxiaLogo.svg";
 import { useCoreFunctions } from "core";
 import { useTranslation } from "ui/i18n";
-import { ReactComponent as IconCommunitySvg } from "ui/assets/svg/IconCommunity.svg";
-import { ReactComponent as IconServiceSvg } from "ui/assets/svg/IconService.svg";
-import { ReactComponent as IconStorageSvg } from "ui/assets/svg/IconStorage.svg";
+import iconCommunitySvgUrl from "ui/assets/svg/IconCommunity.svg";
+import iconServiceSvg from "ui/assets/svg/IconService.svg";
+import iconStorageSvg from "ui/assets/svg/IconStorage.svg";
 import { Card as OnyxiaUiCard } from "onyxia-ui/Card";
 import type { Link } from "type-route";
 import onyxiaNeumorphismDarkModeUrl from "ui/assets/svg/OnyxiaNeumorphismDarkMode.svg";
 import onyxiaNeumorphismLightModeUrl from "ui/assets/svg/OnyxiaNeumorphismLightMode.svg";
-import { ReactComponent as DragoonSvg } from "ui/assets/svg/Dragoon.svg";
+import dragoonSvgUrl from "ui/assets/svg/Dragoon.svg";
 import { getIsHomePageDisabled } from "ui/env";
 import { useConst } from "powerhooks/useConst";
 import { useStateRef } from "powerhooks/useStateRef";
 import { declareComponentKeys } from "i18nifty";
 import type { PageRoute } from "./route";
+import { DynamicSvg, createDynamicSvg } from "ui/tools/DynamicSvg";
 
 type Props = {
     route: PageRoute;
@@ -63,11 +64,11 @@ export default function Home(props: Props) {
                         <Button href="https://docs.sspcloud.fr/">{t("new user")}</Button>
                     )}
                 </div>
-                <DragoonSvg className={classes.dragoon} />
+                <DynamicSvg svgUrl={dragoonSvgUrl} className={classes.dragoon} />
             </div>
             <div className={classes.cardsWrapper}>
                 <Card
-                    Icon={IconServiceSvg}
+                    Icon={createDynamicSvg(iconServiceSvg)}
                     title={t("cardTitle1")}
                     text={t("cardText1")}
                     buttonText={t("cardButton1")}
@@ -75,14 +76,14 @@ export default function Home(props: Props) {
                 />
                 <Card
                     className={classes.middleCard}
-                    Icon={IconCommunitySvg}
+                    Icon={createDynamicSvg(iconCommunitySvgUrl)}
                     title={t("cardTitle2")}
                     text={t("cardText2")}
                     buttonText={t("cardButton2")}
                     link="https://join.slack.com/t/3innovation/shared_invite/zt-1hnzukjcn-6biCSmVy4qvyDGwbNI~sWg"
                 />
                 <Card
-                    Icon={IconStorageSvg}
+                    Icon={createDynamicSvg(iconStorageSvg)}
                     title={t("cardTitle3")}
                     text={t("cardText3")}
                     buttonText={t("cardButton3")}
@@ -185,8 +186,11 @@ const { Card } = (() => {
         const iconRef = useStateRef<SVGSVGElement>(null);
 
         useEffect(() => {
-            iconRef
-                .current!.querySelectorAll("g")
+            if (iconRef.current === null) {
+                return;
+            }
+            iconRef.current
+                .querySelectorAll("g")
                 .forEach(g =>
                     g.setAttribute(
                         "fill",
