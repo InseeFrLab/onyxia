@@ -367,6 +367,7 @@ export function createOnyxiaApi(params: {
                                     {
                                         description?: string;
                                         version: string;
+                                        type: "library" | "application";
                                         icon?: string | undefined;
                                         home?: string | undefined;
                                     }[]
@@ -409,6 +410,7 @@ export function createOnyxiaApi(params: {
                                         ([name, versions]): Chart => ({
                                             name,
                                             "versions": versions
+                                                .filter(({ type }) => type !== "library")
                                                 .map(
                                                     ({
                                                         description,
@@ -428,6 +430,7 @@ export function createOnyxiaApi(params: {
                                                 )
                                         })
                                     )
+                                    .filter(({ versions }) => versions.length !== 0)
                                     .sort(
                                         (chartA, chartB) =>
                                             getChartWeight(chartB.name) -

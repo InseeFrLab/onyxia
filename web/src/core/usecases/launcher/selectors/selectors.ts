@@ -44,7 +44,7 @@ const chartDependencies = createSelector(readyState, state => {
         return undefined;
     }
 
-    return state.chartDependencies.filter(dependency => dependency !== "library-chart");
+    return state.chartDependencies;
 });
 
 const friendlyName = createSelector(formFields, formFields => {
