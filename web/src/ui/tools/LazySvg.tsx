@@ -3,14 +3,15 @@ import React, { useEffect, useState, forwardRef, memo } from "react";
 import memoize from "memoizee";
 import { symToStr } from "tsafe/symToStr";
 
-type Props = React.SVGProps<SVGSVGElement> & {
+export type LazySvgProps = {
+    className?: string;
     svgUrl: string;
+    width?: number;
+    height?: number;
 };
 
-export const DynamicSvg: React.FunctionComponent<
-    React.SVGProps<SVGSVGElement> & { svgUrl: string }
-> = memo(
-    forwardRef<SVGSVGElement, Props>((props, ref) => {
+export const LazySvg = memo(
+    forwardRef<SVGSVGElement, LazySvgProps>((props, ref) => {
         const { svgUrl, ...svgComponentProps } = props;
 
         const [state, setState] = useState<
@@ -54,7 +55,10 @@ export const DynamicSvg: React.FunctionComponent<
             return null;
         }
 
-        const { svgRootAttrs, svgInnerHtml } = state;
+        const {
+            svgRootAttrs: { class: x, ...svgRootAttrs },
+            svgInnerHtml
+        } = state;
 
         return (
             <svg
@@ -68,24 +72,24 @@ export const DynamicSvg: React.FunctionComponent<
             />
         );
     })
-) as any;
+);
 
-DynamicSvg.displayName = symToStr({ DynamicSvg });
+LazySvg.displayName = symToStr({ LazySvg });
 
-export const createDynamicSvg = memoize((svgUrl: string) => {
-    svgUrlToSvgComponent(svgUrl);
+export const createDynamicSvg = memoize(
+    (svgUrl: string): ((props: Omit<LazySvgProps, "svgUrl">) => ReturnType<React.FC>) => {
+        svgUrlToSvgComponent(svgUrl);
 
-    const DynamicSvgWithUrl: React.FunctionComponent<React.SVGProps<SVGSVGElement>> =
-        memo(
-            forwardRef<SVGSVGElement, Omit<Props, "svgUrl" | "ref">>((props, ref) => (
-                <DynamicSvg svgUrl={svgUrl} ref={ref} {...props} />
-            ))
-        ) as any;
+        const DynamicSvgWithUrl = forwardRef<
+            SVGSVGElement,
+            Omit<LazySvgProps, "svgUrl" | "ref">
+        >((props, ref) => <LazySvg svgUrl={svgUrl} ref={ref} {...props} />);
 
-    DynamicSvgWithUrl.displayName = DynamicSvg.displayName;
+        DynamicSvgWithUrl.displayName = LazySvg.displayName;
 
-    return DynamicSvgWithUrl;
-});
+        return DynamicSvgWithUrl;
+    }
+);
 
 const svgUrlToSvgComponent = memoize(
     async (svgUrl: string) => {

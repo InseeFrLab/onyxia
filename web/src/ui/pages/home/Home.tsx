@@ -17,7 +17,7 @@ import { getIsHomePageDisabled } from "ui/env";
 import { useConst } from "powerhooks/useConst";
 import { declareComponentKeys } from "i18nifty";
 import type { PageRoute } from "./route";
-import { DynamicSvg, createDynamicSvg } from "ui/tools/DynamicSvg";
+import { LazyImage } from "ui/tools/LazyImage";
 import { useSvgStyles } from "ui/shared/useSvgStyles";
 
 type Props = {
@@ -50,9 +50,14 @@ export default function Home(props: Props) {
         <div className={cx(classes.root, className)}>
             <div className={classes.hero}>
                 <div className={classes.heroTextWrapper}>
-                    <DynamicSvg
-                        svgUrl={onyxiaLogoSvgUrl}
-                        className={cx(svgClassName, classes.svg)}
+                    <LazyImage
+                        url={onyxiaLogoSvgUrl}
+                        className={classes.logo}
+                        svgProps={{
+                            "className": svgClassName
+                        }}
+                        imgProps={{ "alt": "" }}
+                        cx={cx}
                     />
                     <Text typo="display heading">
                         {isUserLoggedIn
@@ -68,14 +73,19 @@ export default function Home(props: Props) {
                         <Button href="https://docs.sspcloud.fr/">{t("new user")}</Button>
                     )}
                 </div>
-                <DynamicSvg
-                    svgUrl={dragoonSvgUrl}
-                    className={cx(svgClassName, classes.dragoon)}
+                <LazyImage
+                    url={dragoonSvgUrl}
+                    className={classes.dragoon}
+                    svgProps={{
+                        "className": svgClassName
+                    }}
+                    imgProps={{ "alt": "" }}
+                    cx={cx}
                 />
             </div>
             <div className={classes.cardsWrapper}>
                 <Card
-                    Pictogram={createDynamicSvg(pictogramServiceSvg)}
+                    pictogramUrl={pictogramServiceSvg}
                     title={t("cardTitle1")}
                     text={t("cardText1")}
                     buttonText={t("cardButton1")}
@@ -83,14 +93,14 @@ export default function Home(props: Props) {
                 />
                 <Card
                     className={classes.middleCard}
-                    Pictogram={createDynamicSvg(pictogramCommunitySvgUrl)}
+                    pictogramUrl={pictogramCommunitySvgUrl}
                     title={t("cardTitle2")}
                     text={t("cardText2")}
                     buttonText={t("cardButton2")}
                     link="https://join.slack.com/t/3innovation/shared_invite/zt-1hnzukjcn-6biCSmVy4qvyDGwbNI~sWg"
                 />
                 <Card
-                    Pictogram={createDynamicSvg(iconStorageSvg)}
+                    pictogramUrl={iconStorageSvg}
                     title={t("cardTitle3")}
                     text={t("cardText3")}
                     buttonText={t("cardButton3")}
@@ -166,7 +176,7 @@ const useStyles = tss.withName({ Home }).create(({ theme }) => ({
     "middleCard": {
         ...theme.spacing.rightLeft("margin", 3)
     },
-    "svg": {
+    "logo": {
         "fill": theme.colors.useCases.typography.textFocus,
         "width": 122
     }
@@ -178,12 +188,12 @@ const { Card } = (() => {
         title: string;
         text: string;
         buttonText: string;
-        Pictogram: React.FunctionComponent<React.SVGProps<SVGSVGElement>>;
+        pictogramUrl: string;
         link: Link | string;
     };
 
     const Card = memo((props: Props) => {
-        const { title, text, buttonText, Pictogram, className, link } = props;
+        const { title, text, buttonText, pictogramUrl, className, link } = props;
 
         const { css, cx, theme } = useClasslessStyles();
 
@@ -202,7 +212,16 @@ const { Card } = (() => {
                 )}
             >
                 <div className={css({ "display": "flex" })}>
-                    <Pictogram className={svgClassName} width={120} height={120} />
+                    <LazyImage
+                        cx={cx}
+                        url={pictogramUrl}
+                        svgProps={{
+                            "className": svgClassName,
+                            "width": 120,
+                            "height": 120
+                        }}
+                        imgProps={{ "alt": "" }}
+                    />
                     <div
                         className={css({
                             "flex": 1,
