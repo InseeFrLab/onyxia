@@ -574,6 +574,90 @@ ${
     },
     "CommandBar": {
         "ok": "是"
+    },
+    "moment": {
+        "date format": ({ isSameYear }) =>
+            `dddd, MMMM Do${isSameYear ? "" : " YYYY"}, h:mm a`,
+        "past1": ({ divisorKey }) => {
+            switch (divisorKey) {
+                case "now":
+                    return "刚刚";
+                case "second":
+                    return "一秒前";
+                case "minute":
+                    return "一分钟前";
+                case "hour":
+                    return "一小时前";
+                case "day":
+                    return "昨天";
+                case "week":
+                    return "上周";
+                case "month":
+                    return "上个月";
+                case "year":
+                    return "去年";
+            }
+        },
+        "pastN": ({ divisorKey }) => {
+            switch (divisorKey) {
+                case "now":
+                    return "刚刚";
+                case "second":
+                    return "# 秒前";
+                case "minute":
+                    return "# 分钟前";
+                case "hour":
+                    return "# 小时前";
+                case "day":
+                    return "# 天前";
+                case "week":
+                    return "# 周前";
+                case "month":
+                    return "# 个月前";
+                case "year":
+                    return "# 年前";
+            }
+        },
+        "future1": ({ divisorKey }) => {
+            switch (divisorKey) {
+                case "now":
+                    return "刚刚";
+                case "second":
+                    return "一秒后";
+                case "minute":
+                    return "一分钟后";
+                case "hour":
+                    return "一小时后";
+                case "day":
+                    return "明天";
+                case "week":
+                    return "下周";
+                case "month":
+                    return "下个月";
+                case "year":
+                    return "明年";
+            }
+        },
+        "futureN": ({ divisorKey }) => {
+            switch (divisorKey) {
+                case "now":
+                    return "刚刚";
+                case "second":
+                    return "# 秒后";
+                case "minute":
+                    return "# 分钟后";
+                case "hour":
+                    return "# 小时后";
+                case "day":
+                    return "# 天后";
+                case "week":
+                    return "# 周后";
+                case "month":
+                    return "# 个月后";
+                case "year":
+                    return "# 年后";
+            }
+        }
     }
     /* spell-checker: enable */
 };

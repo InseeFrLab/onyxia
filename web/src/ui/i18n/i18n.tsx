@@ -15,7 +15,8 @@ export const {
     useLang,
     $lang,
     useResolveLocalizedString,
-    useIsI18nFetching
+    useIsI18nFetching,
+    getTranslation
 } = createI18nApi<ComponentKey>()(
     {
         "languages": getEnabledLanguages(),

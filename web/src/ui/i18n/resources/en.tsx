@@ -607,5 +607,89 @@ Feel free to explore and take charge of your Kubernetes deployments!
     },
     "CommandBar": {
         "ok": "Ok"
+    },
+    "moment": {
+        "date format": ({ isSameYear }) =>
+            `dddd, MMMM Do${isSameYear ? "" : " YYYY"}, h:mm a`,
+        "past1": ({ divisorKey }) => {
+            switch (divisorKey) {
+                case "now":
+                    return "just now";
+                case "second":
+                    return "a second ago";
+                case "minute":
+                    return "a minute ago";
+                case "hour":
+                    return "an hour ago";
+                case "day":
+                    return "yesterday";
+                case "week":
+                    return "last week";
+                case "month":
+                    return "last month";
+                case "year":
+                    return "last year";
+            }
+        },
+        "pastN": ({ divisorKey }) => {
+            switch (divisorKey) {
+                case "now":
+                    return "just now";
+                case "second":
+                    return "# seconds ago";
+                case "minute":
+                    return "# minutes ago";
+                case "hour":
+                    return "# hours ago";
+                case "day":
+                    return "# days ago";
+                case "week":
+                    return "# weeks ago";
+                case "month":
+                    return "# months ago";
+                case "year":
+                    return "# years ago";
+            }
+        },
+        "future1": ({ divisorKey }) => {
+            switch (divisorKey) {
+                case "now":
+                    return "just now";
+                case "second":
+                    return "in a second";
+                case "minute":
+                    return "in a minute";
+                case "hour":
+                    return "in an hour";
+                case "day":
+                    return "in a day";
+                case "week":
+                    return "in a week";
+                case "month":
+                    return "in a month";
+                case "year":
+                    return "in a year";
+            }
+        },
+        "futureN": ({ divisorKey }) => {
+            switch (divisorKey) {
+                case "now":
+                    return "just now";
+                case "second":
+                    return "in # seconds";
+                case "minute":
+                    return "in # minutes";
+                case "hour":
+                    return "in # hours";
+                case "day":
+                    return "in # days";
+                case "week":
+                    return "in # weeks";
+                case "month":
+                    return "in # months";
+                case "year":
+                    return "in # years";
+            }
+        }
     }
 };

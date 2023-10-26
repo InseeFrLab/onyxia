@@ -604,5 +604,89 @@ Tutustu vapaasti ja ota hallintaan Kubernetes-julkaisusi!
     },
     "CommandBar": {
         "ok": "ok"
+    },
+    "moment": {
+        "date format": ({ isSameYear }) =>
+            `dddd, Do MMMM${isSameYear ? "" : " YYYY"}, HH:mm`,
+        "past1": ({ divisorKey }) => {
+            switch (divisorKey) {
+                case "now":
+                    return "juuri nyt";
+                case "second":
+                    return "sekunti sitten";
+                case "minute":
+                    return "minuutti sitten";
+                case "hour":
+                    return "tunti sitten";
+                case "day":
+                    return "eilen";
+                case "week":
+                    return "viime viikolla";
+                case "month":
+                    return "viime kuussa";
+                case "year":
+                    return "viime vuonna";
+            }
+        },
+        "pastN": ({ divisorKey }) => {
+            switch (divisorKey) {
+                case "now":
+                    return "juuri nyt";
+                case "second":
+                    return "# sekuntia sitten";
+                case "minute":
+                    return "# minuuttia sitten";
+                case "hour":
+                    return "# tuntia sitten";
+                case "day":
+                    return "# päivää sitten";
+                case "week":
+                    return "# viikkoa sitten";
+                case "month":
+                    return "# kuukautta sitten";
+                case "year":
+                    return "# vuotta sitten";
+            }
+        },
+        "future1": ({ divisorKey }) => {
+            switch (divisorKey) {
+                case "now":
+                    return "juuri nyt";
+                case "second":
+                    return "sekunnin kuluttua";
+                case "minute":
+                    return "minuutin kuluttua";
+                case "hour":
+                    return "tunnin kuluttua";
+                case "day":
+                    return "huomenna";
+                case "week":
+                    return "ensi viikolla";
+                case "month":
+                    return "ensi kuussa";
+                case "year":
+                    return "ensi vuonna";
+            }
+        },
+        "futureN": ({ divisorKey }) => {
+            switch (divisorKey) {
+                case "now":
+                    return "juuri nyt";
+                case "second":
+                    return "# sekunnin kuluttua";
+                case "minute":
+                    return "# minuutin kuluttua";
+                case "hour":
+                    return "# tunnin kuluttua";
+                case "day":
+                    return "# päivän kuluttua";
+                case "week":
+                    return "# viikon kuluttua";
+                case "month":
+                    return "# kuukauden kuluttua";
+                case "year":
+                    return "# vuoden kuluttua";
+            }
+        }
     }
 };

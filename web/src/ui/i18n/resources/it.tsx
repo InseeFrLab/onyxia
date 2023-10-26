@@ -614,6 +614,90 @@ Sentiti libero di esplorare e prendere il controllo dei tuoi deployment Kubernet
     },
     "CommandBar": {
         "ok": "ok"
+    },
+    "moment": {
+        "date format": ({ isSameYear }) =>
+            `dddd, Do MMMM${isSameYear ? "" : " YYYY"}, HH:mm`,
+        "past1": ({ divisorKey }) => {
+            switch (divisorKey) {
+                case "now":
+                    return "proprio ora";
+                case "second":
+                    return "un secondo fa";
+                case "minute":
+                    return "un minuto fa";
+                case "hour":
+                    return "un'ora fa";
+                case "day":
+                    return "ieri";
+                case "week":
+                    return "la settimana scorsa";
+                case "month":
+                    return "il mese scorso";
+                case "year":
+                    return "l'anno scorso";
+            }
+        },
+        "pastN": ({ divisorKey }) => {
+            switch (divisorKey) {
+                case "now":
+                    return "proprio ora";
+                case "second":
+                    return "# secondi fa";
+                case "minute":
+                    return "# minuti fa";
+                case "hour":
+                    return "# ore fa";
+                case "day":
+                    return "# giorni fa";
+                case "week":
+                    return "# settimane fa";
+                case "month":
+                    return "# mesi fa";
+                case "year":
+                    return "# anni fa";
+            }
+        },
+        "future1": ({ divisorKey }) => {
+            switch (divisorKey) {
+                case "now":
+                    return "proprio ora";
+                case "second":
+                    return "tra un secondo";
+                case "minute":
+                    return "tra un minuto";
+                case "hour":
+                    return "tra un'ora";
+                case "day":
+                    return "domani";
+                case "week":
+                    return "la prossima settimana";
+                case "month":
+                    return "il prossimo mese";
+                case "year":
+                    return "il prossimo anno";
+            }
+        },
+        "futureN": ({ divisorKey }) => {
+            switch (divisorKey) {
+                case "now":
+                    return "proprio ora";
+                case "second":
+                    return "tra # secondi";
+                case "minute":
+                    return "tra # minuti";
+                case "hour":
+                    return "tra # ore";
+                case "day":
+                    return "tra # giorni";
+                case "week":
+                    return "tra # settimane";
+                case "month":
+                    return "tra # mesi";
+                case "year":
+                    return "tra # anni";
+            }
+        }
     }
     /* spell-checker: enable */
 };

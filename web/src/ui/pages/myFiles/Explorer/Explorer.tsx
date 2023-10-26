@@ -25,7 +25,7 @@ import { ExplorerButtonBar } from "./ExplorerButtonBar";
 import { DirectoryHeader } from "onyxia-ui/DirectoryHeader";
 import { useDomRect } from "powerhooks/useDomRect";
 import { ExplorerIcon } from "./ExplorerIcon";
-import { getFormattedDate } from "ui/useMoment";
+import { getFormattedDate } from "ui/shared/useMoment";
 import { Dialog } from "onyxia-ui/Dialog";
 import { useCallbackFactory } from "powerhooks/useCallbackFactory";
 import { Deferred } from "evt/tools/Deferred";
@@ -252,13 +252,14 @@ export const Explorer = memo((props: ExplorerProps) => {
     });
 
     const { formattedDate } = (function useClosure() {
-        const { lang } = useLang();
+        // NOTE: This is to get a refresh if the lang is changed
+        useLang();
 
         const formattedDate = !props.isFileOpen ? undefined : props.openFileTime ===
           undefined ? (
             <>&nbsp;</>
         ) : (
-            getFormattedDate({ "time": props.openFileTime, lang })
+            getFormattedDate({ "time": props.openFileTime })
         );
 
         return { formattedDate };

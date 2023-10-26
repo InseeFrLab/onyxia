@@ -9,8 +9,7 @@ import { Tag } from "onyxia-ui/Tag";
 import { Tooltip } from "onyxia-ui/Tooltip";
 import { exclude } from "tsafe/exclude";
 import { objectKeys } from "tsafe/objectKeys";
-import { fromNow } from "ui/useMoment";
-import { evtLang } from "ui/i18n";
+import { fromNow } from "ui/shared/useMoment";
 import { declareComponentKeys } from "i18nifty";
 import { ReadmeAndEnvDialog } from "./ReadmeAndEnvDialog";
 import { Evt, NonPostableEvt } from "evt";
@@ -163,7 +162,6 @@ export const MyServicesCard = memo((props: Props) => {
                                             {t("which token expire when", {
                                                 "which": tokenType,
                                                 "howMuchTime": fromNow({
-                                                    "lang": evtLang.state,
                                                     "dateTime": expirationTime
                                                 })
                                             })}

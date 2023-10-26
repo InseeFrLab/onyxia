@@ -1,6 +1,6 @@
 import { memo } from "react";
 import { tss, Icon, Text } from "ui/theme";
-import { useFromNow } from "ui/useMoment";
+import { useFromNow } from "ui/shared/useMoment";
 import { useTranslation } from "ui/i18n";
 import { declareComponentKeys } from "i18nifty";
 

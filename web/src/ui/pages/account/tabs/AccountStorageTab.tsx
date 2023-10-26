@@ -9,7 +9,7 @@ import { tss } from "ui/theme";
 import { assert } from "tsafe/assert";
 import { saveAs } from "file-saver";
 import { smartTrim } from "ui/tools/smartTrim";
-import { useFromNow } from "ui/useMoment";
+import { useFromNow } from "ui/shared/useMoment";
 import { useCoreFunctions, useCoreState, selectors } from "core";
 import { declareComponentKeys } from "i18nifty";
 import { useConstCallback } from "powerhooks/useConstCallback";

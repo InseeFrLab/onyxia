@@ -624,6 +624,90 @@ N'hésitez pas à explorer et à prendre en main vos déploiements Kubernetes !
     },
     "CommandBar": {
         "ok": "ok"
+    },
+    "moment": {
+        "date format": ({ isSameYear }) =>
+            `dddd Do MMMM${isSameYear ? "" : " YYYY"} à H[h]mm`,
+        "past1": ({ divisorKey }) => {
+            switch (divisorKey) {
+                case "now":
+                    return "à l'instant";
+                case "second":
+                    return "il y a une seconde";
+                case "minute":
+                    return "il y a une minute";
+                case "hour":
+                    return "il y a une heure";
+                case "day":
+                    return "hier";
+                case "week":
+                    return "la semaine dernière";
+                case "month":
+                    return "le mois dernier";
+                case "year":
+                    return "l'année dernière";
+            }
+        },
+        "pastN": ({ divisorKey }) => {
+            switch (divisorKey) {
+                case "now":
+                    return "à l'instant";
+                case "second":
+                    return "il y a # secondes";
+                case "minute":
+                    return "il y a # minutes";
+                case "hour":
+                    return "il y a # heures";
+                case "day":
+                    return "il y a # jours";
+                case "week":
+                    return "il y a # semaines";
+                case "month":
+                    return "il y a # mois";
+                case "year":
+                    return "il y a # ans";
+            }
+        },
+        "future1": ({ divisorKey }) => {
+            switch (divisorKey) {
+                case "now":
+                    return "à l'instant";
+                case "second":
+                    return "dans une seconde";
+                case "minute":
+                    return "dans une minute";
+                case "hour":
+                    return "dans une heure";
+                case "day":
+                    return "demain";
+                case "week":
+                    return "la semaine prochaine";
+                case "month":
+                    return "le mois prochain";
+                case "year":
+                    return "l'année prochaine";
+            }
+        },
+        "futureN": ({ divisorKey }) => {
+            switch (divisorKey) {
+                case "now":
+                    return "à l'instant";
+                case "second":
+                    return "dans # secondes";
+                case "minute":
+                    return "dans # minutes";
+                case "hour":
+                    return "dans # heures";
+                case "day":
+                    return "dans # jours";
+                case "week":
+                    return "dans # semaines";
+                case "month":
+                    return "dans # mois";
+                case "year":
+                    return "dans # ans";
+            }
+        }
     }
     /* spell-checker: enable */
 };

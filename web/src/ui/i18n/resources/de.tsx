@@ -621,6 +621,90 @@ Fühlen Sie sich frei, Ihre Kubernetes-Bereitstellungen zu erkunden und die Kont
     },
     "CommandBar": {
         "ok": "Ok"
+    },
+    "moment": {
+        "date format": ({ isSameYear }) =>
+            `dddd, Do MMMM${isSameYear ? "" : " YYYY"}, HH:mm`,
+        "past1": ({ divisorKey }) => {
+            switch (divisorKey) {
+                case "now":
+                    return "gerade eben";
+                case "second":
+                    return "vor einer Sekunde";
+                case "minute":
+                    return "vor einer Minute";
+                case "hour":
+                    return "vor einer Stunde";
+                case "day":
+                    return "gestern";
+                case "week":
+                    return "letzte Woche";
+                case "month":
+                    return "letzten Monat";
+                case "year":
+                    return "letztes Jahr";
+            }
+        },
+        "pastN": ({ divisorKey }) => {
+            switch (divisorKey) {
+                case "now":
+                    return "gerade eben";
+                case "second":
+                    return "vor # Sekunden";
+                case "minute":
+                    return "vor # Minuten";
+                case "hour":
+                    return "vor # Stunden";
+                case "day":
+                    return "vor # Tagen";
+                case "week":
+                    return "vor # Wochen";
+                case "month":
+                    return "vor # Monaten";
+                case "year":
+                    return "vor # Jahren";
+            }
+        },
+        "future1": ({ divisorKey }) => {
+            switch (divisorKey) {
+                case "now":
+                    return "gerade eben";
+                case "second":
+                    return "in einer Sekunde";
+                case "minute":
+                    return "in einer Minute";
+                case "hour":
+                    return "in einer Stunde";
+                case "day":
+                    return "morgen";
+                case "week":
+                    return "nächste Woche";
+                case "month":
+                    return "nächsten Monat";
+                case "year":
+                    return "nächstes Jahr";
+            }
+        },
+        "futureN": ({ divisorKey }) => {
+            switch (divisorKey) {
+                case "now":
+                    return "gerade eben";
+                case "second":
+                    return "in # Sekunden";
+                case "minute":
+                    return "in # Minuten";
+                case "hour":
+                    return "in # Stunden";
+                case "day":
+                    return "in # Tagen";
+                case "week":
+                    return "in # Wochen";
+                case "month":
+                    return "in # Monaten";
+                case "year":
+                    return "in # Jahren";
+            }
+        }
     }
     /* spell-checker: enable */
 };

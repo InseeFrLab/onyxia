@@ -610,5 +610,89 @@ Føl deg fri til å utforske og ta kontroll over dine Kubernetes-implementeringe
     },
     "CommandBar": {
         "ok": "ok"
+    },
+    "moment": {
+        "date format": ({ isSameYear }) =>
+            `dddd, Do MMMM${isSameYear ? "" : " YYYY"}, HH:mm`,
+        "past1": ({ divisorKey }) => {
+            switch (divisorKey) {
+                case "now":
+                    return "akkurat nå";
+                case "second":
+                    return "et sekund siden";
+                case "minute":
+                    return "et minutt siden";
+                case "hour":
+                    return "en time siden";
+                case "day":
+                    return "i går";
+                case "week":
+                    return "forrige uke";
+                case "month":
+                    return "forrige måned";
+                case "year":
+                    return "i fjor";
+            }
+        },
+        "pastN": ({ divisorKey }) => {
+            switch (divisorKey) {
+                case "now":
+                    return "akkurat nå";
+                case "second":
+                    return "# sekunder siden";
+                case "minute":
+                    return "# minutter siden";
+                case "hour":
+                    return "# timer siden";
+                case "day":
+                    return "# dager siden";
+                case "week":
+                    return "# uker siden";
+                case "month":
+                    return "# måneder siden";
+                case "year":
+                    return "# år siden";
+            }
+        },
+        "future1": ({ divisorKey }) => {
+            switch (divisorKey) {
+                case "now":
+                    return "akkurat nå";
+                case "second":
+                    return "om et sekund";
+                case "minute":
+                    return "om et minutt";
+                case "hour":
+                    return "om en time";
+                case "day":
+                    return "i morgen";
+                case "week":
+                    return "neste uke";
+                case "month":
+                    return "neste måned";
+                case "year":
+                    return "neste år";
+            }
+        },
+        "futureN": ({ divisorKey }) => {
+            switch (divisorKey) {
+                case "now":
+                    return "akkurat nå";
+                case "second":
+                    return "om # sekunder";
+                case "minute":
+                    return "om # minutter";
+                case "hour":
+                    return "om # timer";
+                case "day":
+                    return "om # dager";
+                case "week":
+                    return "om # uker";
+                case "month":
+                    return "om # måneder";
+                case "year":
+                    return "om # år";
+            }
+        }
     }
 };

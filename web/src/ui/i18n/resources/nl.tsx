@@ -618,6 +618,90 @@ Voel je vrij om te verkennen en de controle over je Kubernetes-implementaties te
     },
     "CommandBar": {
         "ok": "ok"
+    },
+    "moment": {
+        "date format": ({ isSameYear }) =>
+            `dddd, Do MMMM${isSameYear ? "" : " YYYY"}, HH:mm`,
+        "past1": ({ divisorKey }) => {
+            switch (divisorKey) {
+                case "now":
+                    return "zojuist";
+                case "second":
+                    return "een seconde geleden";
+                case "minute":
+                    return "een minuut geleden";
+                case "hour":
+                    return "een uur geleden";
+                case "day":
+                    return "gisteren";
+                case "week":
+                    return "vorige week";
+                case "month":
+                    return "vorige maand";
+                case "year":
+                    return "vorig jaar";
+            }
+        },
+        "pastN": ({ divisorKey }) => {
+            switch (divisorKey) {
+                case "now":
+                    return "zojuist";
+                case "second":
+                    return "# seconden geleden";
+                case "minute":
+                    return "# minuten geleden";
+                case "hour":
+                    return "# uren geleden";
+                case "day":
+                    return "# dagen geleden";
+                case "week":
+                    return "# weken geleden";
+                case "month":
+                    return "# maanden geleden";
+                case "year":
+                    return "# jaar geleden";
+            }
+        },
+        "future1": ({ divisorKey }) => {
+            switch (divisorKey) {
+                case "now":
+                    return "zojuist";
+                case "second":
+                    return "over een seconde";
+                case "minute":
+                    return "over een minuut";
+                case "hour":
+                    return "over een uur";
+                case "day":
+                    return "morgen";
+                case "week":
+                    return "volgende week";
+                case "month":
+                    return "volgende maand";
+                case "year":
+                    return "volgend jaar";
+            }
+        },
+        "futureN": ({ divisorKey }) => {
+            switch (divisorKey) {
+                case "now":
+                    return "zojuist";
+                case "second":
+                    return "over # seconden";
+                case "minute":
+                    return "over # minuten";
+                case "hour":
+                    return "over # uren";
+                case "day":
+                    return "over # dagen";
+                case "week":
+                    return "over # weken";
+                case "month":
+                    return "over # maanden";
+                case "year":
+                    return "over # jaar";
+            }
+        }
     }
     /* spell-checker: enable */
 };
