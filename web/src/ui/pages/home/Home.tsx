@@ -1,13 +1,13 @@
-import { useEffect, useMemo, memo } from "react";
+import { useMemo, memo } from "react";
 import { Button } from "ui/theme";
 import { routes } from "ui/routes";
 import { tss, Text, useStyles as useClasslessStyles } from "ui/theme";
-import { ReactComponent as OnyxiaLogoSvg } from "ui/assets/svg/OnyxiaLogo.svg";
+import onyxiaLogoSvgUrl from "ui/assets/svg/OnyxiaLogo.svg";
 import { useCoreFunctions } from "core";
 import { useTranslation } from "ui/i18n";
-import iconCommunitySvgUrl from "ui/assets/svg/IconCommunity.svg";
-import iconServiceSvg from "ui/assets/svg/IconService.svg";
-import iconStorageSvg from "ui/assets/svg/IconStorage.svg";
+import pictogramCommunitySvgUrl from "ui/assets/svg/PictogramCommunity.svg";
+import pictogramServiceSvg from "ui/assets/svg/PictogramService.svg";
+import iconStorageSvg from "ui/assets/svg/PictogramStorage.svg";
 import { Card as OnyxiaUiCard } from "onyxia-ui/Card";
 import type { Link } from "type-route";
 import onyxiaNeumorphismDarkModeUrl from "ui/assets/svg/OnyxiaNeumorphismDarkMode.svg";
@@ -15,10 +15,10 @@ import onyxiaNeumorphismLightModeUrl from "ui/assets/svg/OnyxiaNeumorphismLightM
 import dragoonSvgUrl from "ui/assets/svg/Dragoon.svg";
 import { getIsHomePageDisabled } from "ui/env";
 import { useConst } from "powerhooks/useConst";
-import { useStateRef } from "powerhooks/useStateRef";
 import { declareComponentKeys } from "i18nifty";
 import type { PageRoute } from "./route";
 import { DynamicSvg, createDynamicSvg } from "ui/tools/DynamicSvg";
+import { useSvgStyles } from "ui/shared/useSvgStyles";
 
 type Props = {
     route: PageRoute;
@@ -44,12 +44,16 @@ export default function Home(props: Props) {
 
     const myFilesLink = useMemo(() => routes.myFiles().link, []);
     const catalogExplorerLink = useMemo(() => routes.catalog().link, []);
+    const { svgClassName } = useSvgStyles();
 
     return (
         <div className={cx(classes.root, className)}>
             <div className={classes.hero}>
                 <div className={classes.heroTextWrapper}>
-                    <OnyxiaLogoSvg className={classes.svg} />
+                    <DynamicSvg
+                        svgUrl={onyxiaLogoSvgUrl}
+                        className={cx(svgClassName, classes.svg)}
+                    />
                     <Text typo="display heading">
                         {isUserLoggedIn
                             ? t("welcome", {
@@ -64,11 +68,14 @@ export default function Home(props: Props) {
                         <Button href="https://docs.sspcloud.fr/">{t("new user")}</Button>
                     )}
                 </div>
-                <DynamicSvg svgUrl={dragoonSvgUrl} className={classes.dragoon} />
+                <DynamicSvg
+                    svgUrl={dragoonSvgUrl}
+                    className={cx(svgClassName, classes.dragoon)}
+                />
             </div>
             <div className={classes.cardsWrapper}>
                 <Card
-                    Icon={createDynamicSvg(iconServiceSvg)}
+                    Pictogram={createDynamicSvg(pictogramServiceSvg)}
                     title={t("cardTitle1")}
                     text={t("cardText1")}
                     buttonText={t("cardButton1")}
@@ -76,14 +83,14 @@ export default function Home(props: Props) {
                 />
                 <Card
                     className={classes.middleCard}
-                    Icon={createDynamicSvg(iconCommunitySvgUrl)}
+                    Pictogram={createDynamicSvg(pictogramCommunitySvgUrl)}
                     title={t("cardTitle2")}
                     text={t("cardText2")}
                     buttonText={t("cardButton2")}
                     link="https://join.slack.com/t/3innovation/shared_invite/zt-1hnzukjcn-6biCSmVy4qvyDGwbNI~sWg"
                 />
                 <Card
-                    Icon={createDynamicSvg(iconStorageSvg)}
+                    Pictogram={createDynamicSvg(iconStorageSvg)}
                     title={t("cardTitle3")}
                     text={t("cardText3")}
                     buttonText={t("cardButton3")}
@@ -136,10 +143,7 @@ const useStyles = tss.withName({ Home }).create(({ theme }) => ({
         "position": "absolute",
         "width": "46%",
         "right": -82,
-        "top": -206,
-        "& .focus-color": {
-            "fill": theme.colors.useCases.typography.textFocus
-        }
+        "top": -206
     },
     "heroTextWrapper": {
         "paddingLeft": theme.spacing(3),
@@ -174,32 +178,16 @@ const { Card } = (() => {
         title: string;
         text: string;
         buttonText: string;
-        Icon: React.FunctionComponent<React.SVGProps<SVGSVGElement>>;
+        Pictogram: React.FunctionComponent<React.SVGProps<SVGSVGElement>>;
         link: Link | string;
     };
 
     const Card = memo((props: Props) => {
-        const { title, text, buttonText, Icon, className, link } = props;
+        const { title, text, buttonText, Pictogram, className, link } = props;
 
         const { css, cx, theme } = useClasslessStyles();
 
-        const iconRef = useStateRef<SVGSVGElement>(null);
-
-        useEffect(() => {
-            if (iconRef.current === null) {
-                return;
-            }
-            iconRef.current
-                .querySelectorAll("g")
-                .forEach(g =>
-                    g.setAttribute(
-                        "fill",
-                        g.classList.contains("colorPrimary")
-                            ? theme.colors.useCases.typography.textFocus
-                            : theme.colors.useCases.typography.textPrimary
-                    )
-                );
-        }, [theme, iconRef.current]);
+        const { svgClassName } = useSvgStyles();
 
         return (
             <OnyxiaUiCard
@@ -214,7 +202,7 @@ const { Card } = (() => {
                 )}
             >
                 <div className={css({ "display": "flex" })}>
-                    <Icon ref={iconRef} width={120} height={120} />
+                    <Pictogram className={svgClassName} width={120} height={120} />
                     <div
                         className={css({
                             "flex": 1,
