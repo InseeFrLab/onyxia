@@ -17,8 +17,7 @@ import { getIsHomePageDisabled } from "ui/env";
 import { useConst } from "powerhooks/useConst";
 import { declareComponentKeys } from "i18nifty";
 import type { PageRoute } from "./route";
-import { LazyImage } from "ui/tools/LazyImage";
-import { useSvgStyles } from "ui/shared/useSvgStyles";
+import { ImageFromConfigs } from "ui/shared/ImageFromConfigs";
 
 type Props = {
     route: PageRoute;
@@ -44,21 +43,12 @@ export default function Home(props: Props) {
 
     const myFilesLink = useMemo(() => routes.myFiles().link, []);
     const catalogExplorerLink = useMemo(() => routes.catalog().link, []);
-    const { svgClassName } = useSvgStyles();
 
     return (
         <div className={cx(classes.root, className)}>
             <div className={classes.hero}>
                 <div className={classes.heroTextWrapper}>
-                    <LazyImage
-                        url={onyxiaLogoSvgUrl}
-                        className={classes.logo}
-                        svgProps={{
-                            "className": svgClassName
-                        }}
-                        imgProps={{ "alt": "" }}
-                        cx={cx}
-                    />
+                    <ImageFromConfigs url={onyxiaLogoSvgUrl} className={classes.logo} />
                     <Text typo="display heading">
                         {isUserLoggedIn
                             ? t("welcome", {
@@ -73,15 +63,7 @@ export default function Home(props: Props) {
                         <Button href="https://docs.sspcloud.fr/">{t("new user")}</Button>
                     )}
                 </div>
-                <LazyImage
-                    url={dragoonSvgUrl}
-                    className={classes.dragoon}
-                    svgProps={{
-                        "className": svgClassName
-                    }}
-                    imgProps={{ "alt": "" }}
-                    cx={cx}
-                />
+                <ImageFromConfigs url={dragoonSvgUrl} className={classes.dragoon} />
             </div>
             <div className={classes.cardsWrapper}>
                 <Card
@@ -182,88 +164,79 @@ const useStyles = tss.withName({ Home }).create(({ theme }) => ({
     }
 }));
 
-const { Card } = (() => {
-    type Props = {
-        className?: string;
-        title: string;
-        text: string;
-        buttonText: string;
-        pictogramUrl: string;
-        link: Link | string;
-    };
+type CardProps = {
+    className?: string;
+    title: string;
+    text: string;
+    buttonText: string;
+    pictogramUrl: string;
+    link: Link | string;
+};
 
-    const Card = memo((props: Props) => {
-        const { title, text, buttonText, pictogramUrl, className, link } = props;
+const Card = memo((props: CardProps) => {
+    const { title, text, buttonText, pictogramUrl, className, link } = props;
 
-        const { css, cx, theme } = useClasslessStyles();
+    const { css, cx, theme } = useClasslessStyles();
 
-        const { svgClassName } = useSvgStyles();
-
-        return (
-            <OnyxiaUiCard
-                className={cx(
-                    css({
-                        "display": "flex",
-                        "flexDirection": "column",
-                        "padding": theme.spacing(4),
-                        "backgroundColor": theme.isDarkModeEnabled ? "#383E50" : undefined
-                    }),
-                    className
-                )}
-            >
-                <div className={css({ "display": "flex" })}>
-                    <LazyImage
-                        cx={cx}
-                        url={pictogramUrl}
-                        svgProps={{
-                            "className": svgClassName,
-                            "width": 120,
-                            "height": 120
-                        }}
-                        imgProps={{ "alt": "" }}
-                    />
-                    <div
-                        className={css({
-                            "flex": 1,
-                            "display": "flex",
-                            "alignItems": "center",
-                            ...theme.spacing.rightLeft("padding", 4)
-                        })}
-                    >
-                        <Text typo="section heading">{title}</Text>
-                    </div>
-                </div>
+    return (
+        <OnyxiaUiCard
+            className={cx(
+                css({
+                    "display": "flex",
+                    "flexDirection": "column",
+                    "padding": theme.spacing(4),
+                    "backgroundColor": theme.isDarkModeEnabled ? "#383E50" : undefined
+                }),
+                className
+            )}
+        >
+            <div className={css({ "display": "flex" })}>
+                <ImageFromConfigs
+                    url={pictogramUrl}
+                    className={css({
+                        "width": 120,
+                        "height": 120
+                    })}
+                />
                 <div
                     className={css({
                         "flex": 1,
                         "display": "flex",
-                        "flexDirection": "column",
-                        "paddingTop": theme.spacing(3)
+                        "alignItems": "center",
+                        ...theme.spacing.rightLeft("padding", 4)
                     })}
                 >
-                    <div className={css({ "flex": 1 })}>
-                        <Text typo="body 1">{text}</Text>
-                    </div>
-                    <div
-                        className={css({
-                            "marginTop": theme.spacing(5),
-                            "display": "flex"
-                        })}
-                    >
-                        <div style={{ "flex": 1 }} />
-                        <Button
-                            variant="secondary"
-                            {...(typeof link === "string"
-                                ? { "href": link }
-                                : { ...link, "doOpenNewTabIfHref": false })}
-                        >
-                            {buttonText}
-                        </Button>
-                    </div>
+                    <Text typo="section heading">{title}</Text>
                 </div>
-            </OnyxiaUiCard>
-        );
-    });
-
-    return { Card };
-})();
+            </div>
+            <div
+                className={css({
+                    "flex": 1,
+                    "display": "flex",
+                    "flexDirection": "column",
+                    "paddingTop": theme.spacing(3)
+                })}
+            >
+                <div className={css({ "flex": 1 })}>
+                    <Text typo="body 1">{text}</Text>
+                </div>
+                <div
+                    className={css({
+                        "marginTop": theme.spacing(5),
+                        "display": "flex"
+                    })}
+                >
+                    <div style={{ "flex": 1 }} />
+                    <Button
+                        variant="secondary"
+                        {...(typeof link === "string"
+                            ? { "href": link }
+                            : { ...link, "doOpenNewTabIfHref": false })}
+                    >
+                        {buttonText}
+                    </Button>
+                </div>
+            </div>
+        </OnyxiaUiCard>
+    );
+});

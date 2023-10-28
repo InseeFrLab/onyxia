@@ -3,11 +3,8 @@ import React, { useEffect, useState, forwardRef, memo } from "react";
 import memoize from "memoizee";
 import { symToStr } from "tsafe/symToStr";
 
-export type LazySvgProps = {
-    className?: string;
+export type LazySvgProps = Omit<React.SVGProps<SVGSVGElement>, "ref"> & {
     svgUrl: string;
-    width?: number;
-    height?: number;
 };
 
 export const LazySvg = memo(
