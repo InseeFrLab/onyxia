@@ -1,4 +1,5 @@
-import { tss, PageHeader } from "ui/theme";
+import { tss } from "ui/theme";
+import { PageHeader } from "onyxia-ui/PageHeader";
 import { useEffect, useMemo } from "react";
 import { useConstCallback } from "powerhooks/useConstCallback";
 import { copyToClipboard } from "ui/tools/copyToClipboard";
@@ -17,6 +18,7 @@ import { useConst } from "powerhooks/useConst";
 import type { Link } from "type-route";
 import type { PageRoute } from "./route";
 import { useEvt } from "evt/hooks";
+import { customIcons } from "ui/theme";
 
 export type Props = {
     route: PageRoute;
@@ -152,7 +154,7 @@ export default function MyFiles(props: Props) {
     return (
         <div className={cx(classes.root, className)}>
             <PageHeader
-                mainIcon="files"
+                mainIcon={customIcons.filesSvgUrl}
                 title={t("page title - my files")}
                 helpTitle={t("what this page is used for - my files")}
                 helpContent={t("help content", {

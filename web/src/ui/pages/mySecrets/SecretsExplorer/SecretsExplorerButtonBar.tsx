@@ -1,8 +1,7 @@
 import { useMemo, memo } from "react";
 import { useTranslation } from "ui/i18n";
 import { useConstCallback } from "powerhooks/useConstCallback";
-import { ButtonBar, IconId } from "ui/theme";
-import type { ButtonBarProps } from "onyxia-ui/ButtonBar";
+import { ButtonBar, type ButtonBarProps } from "onyxia-ui/ButtonBar";
 import { declareComponentKeys } from "i18nifty";
 
 export type Props = {
@@ -24,7 +23,7 @@ export const SecretsExplorerButtonBar = memo((props: Props) => {
     );
 
     const buttons = useMemo(
-        (): ButtonBarProps<ButtonId, IconId>["buttons"] =>
+        (): ButtonBarProps<ButtonId>["buttons"] =>
             buttonIds.map(buttonId => ({
                 "buttonId": buttonId,
                 "icon": (() => {

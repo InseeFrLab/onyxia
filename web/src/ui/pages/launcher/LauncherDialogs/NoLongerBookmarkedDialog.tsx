@@ -2,7 +2,7 @@ import { useState, memo } from "react";
 import { declareComponentKeys } from "i18nifty";
 import { useTranslation } from "ui/i18n";
 import { Dialog } from "onyxia-ui/Dialog";
-import { Button } from "ui/theme";
+import { Button } from "onyxia-ui/Button";
 import { symToStr } from "tsafe/symToStr";
 import type { NonPostableEvt } from "evt";
 import { useEvt } from "evt/hooks";

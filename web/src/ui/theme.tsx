@@ -6,26 +6,12 @@ import {
     verdantPalette,
     defaultGetTypographyDesc
 } from "onyxia-ui";
-import { createIcon } from "onyxia-ui/Icon";
-import { createIconButton } from "onyxia-ui/IconButton";
-import { createButton } from "onyxia-ui/Button";
-import { createButtonBarButton } from "onyxia-ui/ButtonBarButton";
-import { createButtonBar } from "onyxia-ui/ButtonBar";
-import { createText } from "onyxia-ui/Text";
-import { createPageHeader } from "onyxia-ui/PageHeader";
 import { createTss } from "tss-react";
-import { createLanguageSelect } from "onyxia-ui/LanguageSelect";
-import { createLeftBar } from "onyxia-ui/LeftBar";
-import type { Language } from "ui/i18n";
 import { THEME_ID, PALETTE_OVERRIDE } from "keycloak-theme/login/envCarriedOverToKc";
 import { mergeDeep } from "ui/tools/mergeDeep";
 import { AnimatedOnyxiaLogo } from "onyxia-ui/AnimatedOnyxiaLogo";
-import { componentByIconId, type IconId } from "./icons";
-import { objectEntries } from "tsafe/objectEntries";
-import { objectFromEntries } from "tsafe/objectFromEntries";
-import { getEnabledLanguages } from "ui/env";
 
-const palette = {
+export const palette = {
     ...(() => {
         const selectedBuiltinPalette = (() => {
             switch (THEME_ID) {
@@ -55,39 +41,32 @@ const palette = {
     }
 };
 
+export const fontFamily = `${(() => {
+    switch (THEME_ID) {
+        case "france":
+            return "Marianne";
+        case "onyxia":
+        case "ultraviolet":
+        case "verdant":
+            return '"Work Sans"';
+    }
+})()}, sans-serif`;
+
 export const targetWindowInnerWidth = 1980;
 
-const [{ ThemeProvider, useTheme }, themeProviderWithoutSplashScreen] = (
-    [true, false] as const
-).map(isSplashScreenEnabled =>
-    createThemeProvider({
-        "getTypographyDesc": params => ({
-            ...defaultGetTypographyDesc({
-                // We don't want the font to be responsive
-                "windowInnerWidth": targetWindowInnerWidth,
-                "rootFontSizePx": params.rootFontSizePx
-            }),
-            "fontFamily": `${(() => {
-                switch (THEME_ID) {
-                    case "france":
-                        return "Marianne";
-                    case "onyxia":
-                    case "ultraviolet":
-                    case "verdant":
-                        return '"Work Sans"';
-                }
-            })()}, sans-serif`
+const { useTheme, ThemeProvider } = createThemeProvider({
+    "getTypographyDesc": params => ({
+        ...defaultGetTypographyDesc({
+            ...params,
+            // We don't want the font to be responsive
+            "windowInnerWidth": targetWindowInnerWidth
         }),
-        palette,
-        "splashScreenParams": !isSplashScreenEnabled
-            ? undefined
-            : {
-                  "Logo": AnimatedOnyxiaLogo
-              }
-    })
-);
-
-export { themeProviderWithoutSplashScreen };
+        fontFamily
+    }),
+    palette,
+    "splashScreenParams": { "Logo": AnimatedOnyxiaLogo },
+    "publicUrl": ""
+});
 
 export { ThemeProvider };
 
@@ -99,42 +78,6 @@ export const { tss } = createTss({
 });
 
 export const useStyles = tss.create({});
-
-/** @see: <https://next.material-ui.com/components/material-icons/> */
-export const { Icon } = createIcon(componentByIconId);
-
-export { IconId };
-
-export const { IconButton } = createIconButton({ Icon });
-export const { Button } = createButton({ Icon });
-export const { Text } = createText({ useTheme });
-
-export const { PageHeader } = createPageHeader({ Icon });
-
-export const { ButtonBarButton } = createButtonBarButton({ Icon });
-export const { ButtonBar } = createButtonBar({ Icon });
-export const { LanguageSelect } = createLanguageSelect<Language>({
-    "languagesPrettyPrint": objectFromEntries(
-        objectEntries({
-            /* spell-checker: disable */
-            "en": "English",
-            "fr": "Français",
-            "de": "Deutsch",
-            "it": "Italiano",
-            "nl": "Nederlands",
-            "no": "Norsk",
-            "fi": "Suomi",
-            "zh-CN": "简体中文"
-            /* spell-checker: enable */
-        }).filter(([language]) => getEnabledLanguages().includes(language))
-    )
-});
-
-export const { LeftBar } = createLeftBar({
-    Icon,
-    "persistIsPanelOpen": true,
-    "defaultIsPanelOpen": true
-});
 
 export function applyFaviconColor() {
     const color = palette.focus.main;
@@ -167,3 +110,12 @@ export function applyFaviconColor() {
     // This is necessary in case a favicon already exists
     document.getElementsByTagName("head")[0].appendChild(link);
 }
+
+export const customIcons = {
+    "servicesSvgUrl": "/custom-icons/services_v1.svg",
+    "secretsSvgUrl": "/custom-icons/secrets_v1.svg",
+    "accountSvgUrl": "/custom-icons/account_v1.svg",
+    "homeSvgUrl": "/custom-icons/home_v1.svg",
+    "filesSvgUrl": "/custom-icons/files_v1.svg",
+    "catalogSvgUrl": "/custom-icons/catalog_v1.svg"
+};

@@ -1,12 +1,16 @@
-import { themeProviderWithoutSplashScreen } from "ui/theme";
-import { componentByIconId } from "ui/theme/icons";
+import { createThemeProvider, defaultGetTypographyDesc } from "onyxia-ui";
 import { createTss } from "tss-react";
-import { createIcon } from "onyxia-ui/Icon";
-import { createIconButton } from "onyxia-ui/IconButton";
-import { createButton } from "onyxia-ui/Button";
-import { createText } from "onyxia-ui/Text";
+import { palette, fontFamily } from "ui/theme";
 
-const { ThemeProvider, useTheme } = themeProviderWithoutSplashScreen;
+const { useTheme, ThemeProvider } = createThemeProvider({
+    "getTypographyDesc": params => ({
+        ...defaultGetTypographyDesc(params),
+        fontFamily
+    }),
+    palette,
+    "splashScreenParams": undefined,
+    "publicUrl": undefined
+});
 
 export { ThemeProvider };
 
@@ -18,9 +22,3 @@ export const { tss } = createTss({
 });
 
 export const useStyles = tss.create({});
-
-/** @see: <https://next.material-ui.com/components/material-icons/> */
-export const { Icon } = createIcon(componentByIconId);
-export const { IconButton } = createIconButton({ Icon });
-export const { Button } = createButton({ Icon });
-export const { Text } = createText({ useTheme });

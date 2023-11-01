@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { useTranslation } from "ui/i18n";
-import { PageHeader, tss } from "ui/theme";
+import { tss } from "ui/theme";
+import { PageHeader } from "onyxia-ui/PageHeader";
 import { useCoreState, selectors, useCoreFunctions, useCoreEvts } from "core";
 import { useStateRef } from "powerhooks/useStateRef";
 import { useConstCallback } from "powerhooks/useConstCallback";
@@ -20,6 +21,7 @@ import { CommandBar } from "ui/shared/CommandBar";
 import { saveAs } from "file-saver";
 import { LauncherMainCard } from "./LauncherMainCard";
 import { LauncherConfigurationCard } from "./LauncherConfigurationCard";
+import { customIcons } from "ui/theme";
 
 export type Props = {
     route: PageRoute;
@@ -268,7 +270,7 @@ export default function Launcher(props: Props) {
                     classes={{
                         "title": css({ "paddingBottom": 3 })
                     }}
-                    mainIcon="catalog"
+                    mainIcon={customIcons.catalogSvgUrl}
                     title={t("header text1")}
                     helpTitle={t("header text2")}
                     helpContent={t("chart sources", {

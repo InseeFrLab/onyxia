@@ -1,7 +1,8 @@
 import { memo } from "react";
-import { tss, Text } from "ui/theme";
+import { tss } from "ui/theme";
 import { RoundLogo } from "ui/shared/RoundLogo";
-import { Button } from "ui/theme";
+import { Button } from "onyxia-ui/Button";
+import { Text } from "onyxia-ui/Text";
 import { useTranslation } from "ui/i18n";
 import { declareComponentKeys } from "i18nifty";
 import { symToStr } from "tsafe/symToStr";

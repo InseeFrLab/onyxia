@@ -6,7 +6,9 @@ import { Evt } from "evt";
 import { useEvt } from "evt/hooks";
 import type { UnpackEvt } from "evt";
 import { useTranslation } from "ui/i18n";
-import { IconButton, Text, tss } from "ui/theme";
+import { tss } from "ui/theme";
+import { IconButton } from "onyxia-ui/IconButton";
+import { Text } from "onyxia-ui/Text";
 import { useCallbackFactory } from "powerhooks/useCallbackFactory";
 import { useConstCallback } from "powerhooks/useConstCallback";
 import TableRow from "@mui/material/TableRow";
@@ -15,6 +17,8 @@ import type { Parameters } from "tsafe";
 import { useDomRect } from "powerhooks/useDomRect";
 import type { Param0 } from "tsafe";
 import { declareComponentKeys } from "i18nifty";
+import { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
+import { id } from "tsafe/id";
 
 export type Props = {
     isLocked: boolean;
@@ -22,12 +26,12 @@ export type Props = {
     /** NOTE: We can't use "key" as it's a reserved props*/
     keyOfSecret: string;
     strValue: string;
-    onEdit(params: {
+    onEdit: (params: {
         editedKey: string | undefined;
         editedStrValue: string | undefined;
-    }): void;
-    onDelete(): void;
-    getResolvedValue(params: { strValue: string }):
+    }) => void;
+    onDelete: () => void;
+    getResolvedValue: (params: { strValue: string }) =>
         | {
               isResolvedSuccessfully: true;
               resolvedValue: string;
@@ -36,7 +40,7 @@ export type Props = {
               isResolvedSuccessfully: false;
               message: string;
           };
-    getIsValidAndAvailableKey(params: { key: string }):
+    getIsValidAndAvailableKey: (params: { key: string }) =>
         | {
               isValidAndAvailableKey: true;
           }
@@ -44,7 +48,7 @@ export type Props = {
               isValidAndAvailableKey: false;
               message: string;
           };
-    onStartEdit(): void;
+    onStartEdit: () => void;
 
     evtAction: NonPostableEvt<"ENTER EDITING STATE" | "SUBMIT EDIT">;
 
@@ -322,7 +326,11 @@ export const MySecretsEditorRow = memo((props: Props) => {
             <TableCell align="right">
                 <div className={css({ "display": "flex" })}>
                     <IconButton
-                        iconId={isInEditingState ? "check" : "edit"}
+                        icon={
+                            isInEditingState
+                                ? id<MuiIconComponentName>("Check")
+                                : id<MuiIconComponentName>("Edit")
+                        }
                         disabled={isInEditingState ? isSubmitButtonDisabled : isLocked}
                         onClick={
                             isInEditingState ? onSubmitButtonClick : onEditButtonClick
@@ -331,7 +339,7 @@ export const MySecretsEditorRow = memo((props: Props) => {
                     />
                     <IconButton
                         disabled={isLocked}
-                        iconId="delete"
+                        icon={id<MuiIconComponentName>("Delete")}
                         onClick={onDelete}
                         size="small"
                     />

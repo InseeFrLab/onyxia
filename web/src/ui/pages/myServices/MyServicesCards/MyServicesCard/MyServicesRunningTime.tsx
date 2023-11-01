@@ -1,8 +1,12 @@
 import { memo } from "react";
-import { tss, Icon, Text } from "ui/theme";
+import { tss } from "ui/theme";
+import { Icon } from "onyxia-ui/Icon";
+import { Text } from "onyxia-ui/Text";
 import { useFromNow } from "ui/shared/useMoment";
 import { useTranslation } from "ui/i18n";
 import { declareComponentKeys } from "i18nifty";
+import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
+import { id } from "tsafe/id";
 
 export type Props = {
     className?: string;
@@ -32,7 +36,11 @@ export const MyServicesRunningTime = memo((props: Props) => {
 
     return (
         <Text typo="label 1" className={cx(classes.root, className)}>
-            <Icon iconId="accessTime" className={classes.icon} /> &nbsp;
+            <Icon
+                icon={id<MuiIconComponentName>("AccessTime")}
+                className={classes.icon}
+            />{" "}
+            &nbsp;
             {props.isRunning ? fromNowText : t("launching")}
         </Text>
     );

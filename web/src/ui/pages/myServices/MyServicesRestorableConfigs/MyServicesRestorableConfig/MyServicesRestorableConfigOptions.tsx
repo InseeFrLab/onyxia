@@ -3,12 +3,16 @@ import { useCallbackFactory } from "powerhooks/useCallbackFactory";
 import { useConstCallback } from "powerhooks/useConstCallback";
 import MuiButton from "@mui/material/Button";
 import type { ButtonProps as MuiButtonProps } from "@mui/material/Button";
-import { tss, Icon, Text } from "ui/theme";
+import { tss } from "ui/theme";
+import { Icon } from "onyxia-ui/Icon";
+import { Text } from "onyxia-ui/Text";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import { useTranslation } from "ui/i18n";
 import { declareComponentKeys } from "i18nifty";
 import { symToStr } from "tsafe/symToStr";
+import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
+import { id } from "tsafe/id";
 
 const actions = ["edit", "copy link", "delete"] as const;
 
@@ -52,7 +56,10 @@ export const MyServicesRestorableConfigOptions = memo((props: Props) => {
                 data-ga-event-category="header"
                 data-ga-event-action="language"
             >
-                <Icon iconId="moreVert" className={classes.icon} />
+                <Icon
+                    icon={id<MuiIconComponentName>("MoreVert")}
+                    className={classes.icon}
+                />
             </MuiButton>
             <Menu
                 id={menuId}
@@ -71,14 +78,14 @@ export const MyServicesRestorableConfigOptions = memo((props: Props) => {
                     >
                         <Text typo="body 1" className={classes.menuTypo}>
                             <Icon
-                                iconId={(() => {
+                                icon={(() => {
                                     switch (action) {
                                         case "edit":
-                                            return "edit";
+                                            return id<MuiIconComponentName>("Edit");
                                         case "copy link":
-                                            return "link" as const;
+                                            return id<MuiIconComponentName>("Link");
                                         case "delete":
-                                            return "delete" as const;
+                                            return id<MuiIconComponentName>("Delete");
                                     }
                                 })()}
                             />

@@ -1,4 +1,5 @@
-import { Text, tss } from "ui/theme";
+import { tss } from "ui/theme";
+import { Text } from "onyxia-ui/Text";
 
 export type Props = {
     className?: string;

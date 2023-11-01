@@ -1,4 +1,5 @@
-import { tss, PageHeader } from "ui/theme";
+import { tss } from "ui/theme";
+import { PageHeader } from "onyxia-ui/PageHeader";
 import { useEffect, useState, useMemo } from "react";
 import { useConstCallback } from "powerhooks/useConstCallback";
 import { copyToClipboard } from "ui/tools/copyToClipboard";
@@ -19,6 +20,7 @@ import { declareComponentKeys } from "i18nifty";
 import type { Link } from "type-route";
 import type { PageRoute } from "./route";
 import { useEvt } from "evt/hooks";
+import { customIcons } from "ui/theme";
 
 export type Props = {
     route: PageRoute;
@@ -220,7 +222,7 @@ export default function MySecrets(props: Props) {
     return (
         <div className={cx(classes.root, className)}>
             <PageHeader
-                mainIcon={"secrets"}
+                mainIcon={customIcons.secretsSvgUrl}
                 title={t("page title - my secrets")}
                 helpTitle={t("what this page is used for - my secrets")}
                 helpContent={t("help content", {

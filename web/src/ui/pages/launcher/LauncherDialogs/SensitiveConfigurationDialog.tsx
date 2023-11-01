@@ -6,7 +6,7 @@ import { useCallbackFactory } from "powerhooks/useCallbackFactory";
 import { useEvt } from "evt/hooks";
 import { Dialog } from "onyxia-ui/Dialog";
 import { Markdown } from "onyxia-ui/Markdown";
-import { Button } from "ui/theme";
+import { Button } from "onyxia-ui/Button";
 import { symToStr } from "tsafe/symToStr";
 import type { NonPostableEvt, UnpackEvt } from "evt";
 import { assert } from "tsafe/assert";

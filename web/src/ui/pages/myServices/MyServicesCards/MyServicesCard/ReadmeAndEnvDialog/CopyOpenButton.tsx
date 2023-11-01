@@ -1,6 +1,6 @@
 import { useMemo, memo, useReducer, useRef } from "react";
 import { tss } from "ui/theme";
-import { Button } from "ui/theme";
+import { Button } from "onyxia-ui/Button";
 import { useTranslation } from "ui/i18n";
 import { declareComponentKeys } from "i18nifty";
 import { assert } from "tsafe/assert";

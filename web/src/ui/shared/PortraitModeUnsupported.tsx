@@ -1,7 +1,11 @@
 import { memo } from "react";
 import { useTranslation } from "ui/i18n";
-import { tss, Text, Icon } from "ui/theme";
+import { tss } from "ui/theme";
+import { Text } from "onyxia-ui/Text";
+import { Icon } from "onyxia-ui/Icon";
 import { declareComponentKeys } from "i18nifty";
+import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
+import { id } from "tsafe/id";
 
 export type Props = {
     className?: string;
@@ -17,7 +21,10 @@ export const PortraitModeUnsupported = memo((props: Props) => {
     return (
         <div className={cx(classes.root, className)}>
             <div className={classes.wrapper}>
-                <Icon iconId="screenRotation" className={classes.icon} />
+                <Icon
+                    icon={id<MuiIconComponentName>("ScreenRotation")}
+                    className={classes.icon}
+                />
                 <Text typo="body 1" className={classes.instructions}>
                     {t("instructions")}
                 </Text>

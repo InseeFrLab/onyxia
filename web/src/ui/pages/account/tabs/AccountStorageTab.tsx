@@ -19,9 +19,11 @@ import FormControl from "@mui/material/FormControl";
 import type { Technology } from "core/usecases/s3Credentials";
 import type { SelectChangeEvent } from "@mui/material/Select";
 import type { Equals } from "tsafe";
-import { IconButton } from "ui/theme";
+import { IconButton } from "onyxia-ui/IconButton";
 import { CircularProgress } from "onyxia-ui/CircularProgress";
 import { capitalize } from "tsafe/capitalize";
+import { id } from "tsafe/id";
+import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
 
 const CodeBlock = lazy(() => import("ui/shared/CodeBlock"));
 
@@ -113,7 +115,7 @@ export const AccountStorageTab = memo((props: Props) => {
                         </strong>
                         <IconButton
                             size="extra small"
-                            iconId="refresh"
+                            icon={id<MuiIconComponentName>("Refresh")}
                             onClick={onRefreshIconButtonClick}
                             disabled={isRefreshing}
                         />
@@ -170,7 +172,7 @@ export const AccountStorageTab = memo((props: Props) => {
                 </FormControl>
                 <div style={{ "flex": 1 }} />
                 <IconButton
-                    iconId="getApp"
+                    icon={id<MuiIconComponentName>("GetApp")}
                     onClick={onGetAppIconButtonClick}
                     size="small"
                 />

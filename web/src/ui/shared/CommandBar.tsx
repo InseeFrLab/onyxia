@@ -2,7 +2,9 @@ import { tss } from "ui/theme";
 import { useReducer, memo, useState, type ReactNode } from "react";
 import { useDomRect } from "powerhooks/useDomRect";
 import { CircularProgress } from "onyxia-ui/CircularProgress";
-import { IconButton, Icon, Button } from "ui/theme";
+import { Button } from "onyxia-ui/Button";
+import { Icon } from "onyxia-ui/Icon";
+import { IconButton } from "onyxia-ui/IconButton";
 import { assert } from "tsafe/assert";
 import { useStateRef } from "powerhooks/useStateRef";
 import { Tooltip } from "onyxia-ui/Tooltip";
@@ -13,6 +15,8 @@ import { useTranslation } from "ui/i18n";
 import { useConst } from "powerhooks/useConst";
 import { Evt } from "evt";
 import { useEvt } from "evt/hooks";
+import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
+import { id } from "tsafe/id";
 
 export type CommandBarProps = {
     className?: string;
@@ -99,7 +103,11 @@ export const CommandBar = memo((props: CommandBarProps) => {
             >
                 <div ref={headerRef} className={classes.header}>
                     <div className={classes.dollarContainer}>
-                        <Icon className="dollarSign" iconId="attachMoney" size="small" />
+                        <Icon
+                            className="dollarSign"
+                            icon={id<MuiIconComponentName>("AttachMoney")}
+                            size="small"
+                        />
                     </div>
 
                     <div className={classes.lastTranslatedCmd}>
@@ -108,7 +116,7 @@ export const CommandBar = memo((props: CommandBarProps) => {
 
                     {helpDialog !== undefined && (
                         <IconButton
-                            iconId="help"
+                            icon={id<MuiIconComponentName>("Help")}
                             className={classes.iconButton}
                             onClick={() => setIsHelpDialogOpen(true)}
                         />
@@ -117,7 +125,7 @@ export const CommandBar = memo((props: CommandBarProps) => {
                     {downloadButton !== undefined && (
                         <Tooltip title={downloadButton.tooltipTitle}>
                             <IconButton
-                                iconId="getApp"
+                                icon={id<MuiIconComponentName>("GetApp")}
                                 className={classes.iconButton}
                                 onClick={downloadButton.onClick}
                             />
@@ -125,7 +133,7 @@ export const CommandBar = memo((props: CommandBarProps) => {
                     )}
 
                     <IconButton
-                        iconId="expandMore"
+                        icon={id<MuiIconComponentName>("ExpandMore")}
                         className={cx(classes.iconButton, classes.expandIconButton)}
                         onClick={toggleIsExpended}
                     />
@@ -140,7 +148,7 @@ export const CommandBar = memo((props: CommandBarProps) => {
                         <div key={cmdId} className={classes.entryRoot}>
                             <div className={classes.dollarContainer}>
                                 <Icon
-                                    iconId="attachMoney"
+                                    icon={id<MuiIconComponentName>("AttachMoney")}
                                     size="small"
                                     className={classes.dollarIcon}
                                 />

@@ -10,14 +10,14 @@ import type { AccountTabId } from "./accountTabIds";
 import { useTranslation } from "ui/i18n";
 import { AccountStorageTab } from "./tabs/AccountStorageTab";
 import { AccountUserInterfaceTab } from "./tabs/AccountUserInterfaceTab";
-import { PageHeader } from "ui/theme";
+import { PageHeader } from "onyxia-ui/PageHeader";
 import { useConstCallback } from "powerhooks/useConstCallback";
 import { tss } from "ui/theme";
 import { declareComponentKeys } from "i18nifty";
 import { useCoreFunctions } from "core";
-import { assert } from "tsafe/assert";
-import type { Equals } from "tsafe";
+import { assert, type Equals } from "tsafe/assert";
 import type { PageRoute } from "./route";
+import { customIcons } from "ui/theme";
 
 export type Props = {
     route: PageRoute;
@@ -58,7 +58,7 @@ export default function Account(props: Props) {
     return (
         <div className={cx(classes.root, className)}>
             <PageHeader
-                mainIcon="account"
+                mainIcon={customIcons.accountSvgUrl}
                 title={t("text1")}
                 helpTitle={t("text2")}
                 helpContent={t("text3")}

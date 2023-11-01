@@ -1,8 +1,10 @@
 import { memo } from "react";
-import { /*IconButton, */ Button, ButtonBarButton } from "ui/theme";
+import { Button } from "onyxia-ui/Button";
+import { ButtonBarButton } from "onyxia-ui/ButtonBarButton";
 import { useTranslation } from "ui/i18n";
 import { useConstCallback } from "powerhooks/useConstCallback";
-import { tss, Text } from "ui/theme";
+import { tss } from "ui/theme";
+import { Text } from "onyxia-ui/Text";
 import { ReactComponent as OnyxiaLogoSvg } from "ui/assets/svg/OnyxiaLogo.svg";
 import {
     HEADER_ORGANIZATION,

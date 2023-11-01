@@ -9,9 +9,12 @@ import { memo } from "react";
 import { useConstCallback } from "powerhooks/useConstCallback";
 import { Header } from "ui/shared/Header";
 import { logoContainerWidthInPercent } from "ui/App/logoContainerWidthInPercent";
-import { ThemeProvider, IconButton, Text, tss } from "keycloak-theme/login/theme";
+import { ThemeProvider, tss } from "keycloak-theme/login/theme";
+import { Text } from "onyxia-ui/Text";
+import { IconButton } from "onyxia-ui/IconButton";
 import { useDomRect } from "powerhooks/useDomRect";
 import { useWindowInnerSize } from "powerhooks/useWindowInnerSize";
+import CloseIcon from "@mui/icons-material/Close";
 import onyxiaNeumorphismDarkModeUrl from "ui/assets/svg/OnyxiaNeumorphismDarkMode.svg";
 import onyxiaNeumorphismLightModeUrl from "ui/assets/svg/OnyxiaNeumorphismLightMode.svg";
 import { Card } from "onyxia-ui/Card";
@@ -177,7 +180,7 @@ const { Page } = (() => {
                         <div className={classes.crossButtonWrapper}>
                             <div style={{ "flex": 1 }} />
                             <IconButton
-                                iconId="close"
+                                icon={CloseIcon}
                                 tabIndex={-1}
                                 onClick={() => window.history.back()}
                             />

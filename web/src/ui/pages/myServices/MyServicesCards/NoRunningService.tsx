@@ -1,5 +1,6 @@
 import { memo } from "react";
-import { tss, Text } from "ui/theme";
+import { tss } from "ui/theme";
+import { Text } from "onyxia-ui/Text";
 import { useTranslation } from "ui/i18n";
 import { ReactComponent as ServiceNotFoundSvg } from "ui/assets/svg/ServiceNotFound.svg";
 import MuiLink from "@mui/material/Link";

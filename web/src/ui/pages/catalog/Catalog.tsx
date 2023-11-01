@@ -1,13 +1,14 @@
 import { useEffect, useState } from "react";
 import { useTranslation, useResolveLocalizedString } from "ui/i18n";
-import { PageHeader, tss } from "ui/theme";
+import { PageHeader } from "onyxia-ui/PageHeader";
+import { tss } from "ui/theme";
 import { useCoreState, selectors, useCoreEvts, useCoreFunctions } from "core";
 import { useStateRef } from "powerhooks/useStateRef";
 import { declareComponentKeys } from "i18nifty";
 import type { PageRoute } from "./route";
 import { routes } from "ui/routes";
 import { breakpointsValues } from "onyxia-ui";
-import { Text } from "ui/theme";
+import { Text } from "onyxia-ui/Text";
 import { useEvt } from "evt/hooks";
 import { SearchBar, type SearchBarProps } from "onyxia-ui/SearchBar";
 import { Evt } from "evt";
@@ -17,6 +18,7 @@ import { CatalogNoSearchMatches } from "./CatalogNoSearchMatches";
 import { assert } from "tsafe/assert";
 import { useCallbackFactory } from "powerhooks/useCallbackFactory";
 import { CatalogChartCard } from "./CatalogChartCard";
+import { customIcons } from "ui/theme";
 
 export type Props = {
     route: PageRoute;
@@ -100,7 +102,7 @@ export default function Catalog(props: Props) {
                 classes={{
                     "title": css({ "paddingBottom": 3 })
                 }}
-                mainIcon="catalog"
+                mainIcon={customIcons.catalogSvgUrl}
                 title={t("header text1")}
                 helpTitle={t("header text2")}
                 helpContent={t("header help", {

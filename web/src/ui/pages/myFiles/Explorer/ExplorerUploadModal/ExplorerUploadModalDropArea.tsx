@@ -1,6 +1,7 @@
 import { useState, memo } from "react";
 import type { DragEvent } from "react";
-import { tss, Text } from "ui/theme";
+import { tss } from "ui/theme";
+import { Text } from "onyxia-ui/Text";
 import { ExplorerIcon } from "../ExplorerIcon";
 import { useTranslation } from "ui/i18n";
 import Link from "@mui/material/Link";

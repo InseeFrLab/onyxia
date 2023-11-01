@@ -1,19 +1,22 @@
 import { memo } from "react";
 import { tss } from "ui/theme";
 import { RoundLogo } from "ui/shared/RoundLogo";
-import { Button, Text } from "ui/theme";
 import {
     MyServicesRestorableConfigOptions,
     type RestorableConfigAction
 } from "./MyServicesRestorableConfigOptions";
 import { useConstCallback } from "powerhooks/useConstCallback";
 import { useTranslation } from "ui/i18n";
-import { IconButton } from "ui/theme";
+import { IconButton } from "onyxia-ui/IconButton";
+import { Button } from "onyxia-ui/Button";
+import { Text } from "onyxia-ui/Text";
 import type { Link } from "type-route";
 import { assert, type Equals } from "tsafe/assert";
 import { useStateRef } from "powerhooks/useStateRef";
 import { declareComponentKeys } from "i18nifty";
 import { symToStr } from "tsafe/symToStr";
+import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
+import { id } from "tsafe/id";
 
 export type Props = {
     className?: string;
@@ -65,7 +68,12 @@ export const MyServicesRestorableConfig = memo((props: Props) => {
 
     return (
         <div className={cx(classes.root, className)}>
-            {!isShortVariant && <IconButton iconId="delete" onClick={onRequestDelete} />}
+            {!isShortVariant && (
+                <IconButton
+                    icon={id<MuiIconComponentName>("Delete")}
+                    onClick={onRequestDelete}
+                />
+            )}
             <RoundLogo url={chartIconUrl} className={classes.logo} size="medium" />
             <div className={classes.friendlyNameWrapper}>
                 <Text typo="label 1" className={classes.friendlyName}>
@@ -75,7 +83,7 @@ export const MyServicesRestorableConfig = memo((props: Props) => {
             <div className={classes.linkAndEditButtonWrapper}>
                 <IconButton
                     className={classes.linkIcon}
-                    iconId="link"
+                    icon={id<MuiIconComponentName>("Link")}
                     onClick={() => configOptionsCallback("copy link")}
                 />
                 <Button

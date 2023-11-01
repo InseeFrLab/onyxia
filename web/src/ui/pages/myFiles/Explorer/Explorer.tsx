@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
-import { tss, Button } from "ui/theme";
+import { tss } from "ui/theme";
+import { Button } from "onyxia-ui/Button";
 import { useState, useEffect, useMemo, memo } from "react";
 import type { RefObject } from "react";
 import { useConstCallback } from "powerhooks/useConstCallback";

@@ -1,12 +1,13 @@
 import { useState, type FormEventHandler } from "react";
 import { useConstCallback } from "keycloakify/tools/useConstCallback";
 import type { PageProps } from "keycloakify/login/pages/PageProps";
-import { tss, Text } from "keycloak-theme/login/theme";
+import { tss } from "keycloak-theme/login/theme";
+import { Text } from "onyxia-ui/Text";
 import type { KcContext } from "../kcContext";
 import type { I18n } from "../i18n";
 import Link from "@mui/material/Link";
 import { TextField } from "onyxia-ui/TextField";
-import { Button } from "keycloak-theme/login/theme";
+import { Button } from "onyxia-ui/Button";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import { Checkbox } from "onyxia-ui/Checkbox";
 import { ReactComponent as AgentconnectBtnPrincipal } from "ui/assets/svg/agentconnect-btn-principal.svg";

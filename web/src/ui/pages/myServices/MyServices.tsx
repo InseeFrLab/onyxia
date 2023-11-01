@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
-import { tss, PageHeader } from "ui/theme";
+import { tss } from "ui/theme";
+import { PageHeader } from "onyxia-ui/PageHeader";
 import { useTranslation } from "ui/i18n";
 import { MyServicesButtonBar } from "./MyServicesButtonBar";
 import { MyServicesCards } from "./MyServicesCards";
@@ -24,6 +25,7 @@ import {
     type Props as MyServicesConfirmDeleteDialogProps
 } from "./MyServicesConfirmDeleteDialog";
 import { Deferred } from "evt/tools/Deferred";
+import { customIcons } from "ui/theme";
 
 export type Props = {
     route: PageRoute;
@@ -254,7 +256,7 @@ export default function MyServices(props: Props) {
     return (
         <div className={cx(classes.root, className)}>
             <PageHeader
-                mainIcon="services"
+                mainIcon={customIcons.servicesSvgUrl}
                 title={t("text1")}
                 helpTitle={t("text2")}
                 helpContent={t("text3")}

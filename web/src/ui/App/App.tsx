@@ -1,8 +1,8 @@
 import "minimal-polyfills/Object.fromEntries";
 import { useMemo, useEffect, useReducer, Suspense } from "react";
 import { Header } from "ui/shared/Header";
-import { tss, useStyles as useCss, LeftBar, type IconId } from "ui/theme";
-import type { LeftBarProps } from "onyxia-ui/LeftBar";
+import { tss, useStyles as useCss } from "ui/theme";
+import { LeftBar, type LeftBarProps } from "onyxia-ui/LeftBar";
 import { Footer } from "./Footer";
 import { useTranslation, useResolveLocalizedString } from "ui/i18n";
 import { useConstCallback } from "powerhooks/useConstCallback";
@@ -13,7 +13,6 @@ import { useDomRect } from "powerhooks/useDomRect";
 import { id } from "tsafe/id";
 import { useIsDarkModeEnabled } from "onyxia-ui";
 import { keyframes } from "tss-react";
-import type { Item } from "onyxia-ui/LeftBar";
 import {
     getExtraLeftBarItemsFromEnv,
     getIsHomePageDisabled,
@@ -40,6 +39,7 @@ import { type LocalizedString, useIsI18nFetching } from "ui/i18n";
 import { getGlobalAlert, getDisablePersonalInfosInjectionInGroup } from "ui/env";
 import { enableScreenScaler } from "screen-scaler/react";
 import { addParamToUrl } from "powerhooks/tools/urlSearchParams";
+import { customIcons } from "ui/theme";
 
 const { CoreProvider } = createCoreProvider({
     "apiUrl": getEnv().ONYXIA_API_URL,
@@ -144,24 +144,24 @@ function ContextualizedApp() {
                     ? ({} as never)
                     : {
                           "home": {
-                              "iconId": "home",
+                              "icon": customIcons.homeSvgUrl,
                               "label": t("home"),
                               "link": routes.home().link
                           } as const
                       }),
                 "account": {
-                    "iconId": "account",
+                    "icon": customIcons.accountSvgUrl,
                     "label": t("account"),
                     "link": routes.account().link,
                     "belowDivider": t("divider: services features")
                 },
                 "catalog": {
-                    "iconId": "catalog",
+                    "icon": customIcons.catalogSvgUrl,
                     "label": t("catalog"),
                     "link": routes.catalog().link
                 },
                 "myServices": {
-                    "iconId": "services",
+                    "icon": customIcons.servicesSvgUrl,
                     "label": t("myServices"),
                     "link": routes.myServices().link,
                     "belowDivider": t("divider: external services features")
@@ -170,7 +170,7 @@ function ContextualizedApp() {
                     ? ({} as never)
                     : {
                           "mySecrets": {
-                              "iconId": "secrets",
+                              "icon": customIcons.secretsSvgUrl,
                               "label": t("mySecrets"),
                               "link": routes.mySecrets().link
                           } as const
@@ -179,7 +179,7 @@ function ContextualizedApp() {
                     ? ({} as never)
                     : {
                           "myFiles": {
-                              "iconId": "files",
+                              "icon": customIcons.filesSvgUrl,
                               "label": t("myFiles"),
                               "link": routes.myFiles().link,
                               "belowDivider":
@@ -196,8 +196,8 @@ function ContextualizedApp() {
                         : Object.fromEntries(
                               extraLeftBarItems.map(({ iconId, label, url }, i) => [
                                   `extraItem${i}`,
-                                  id<Item>({
-                                      "iconId": iconId as any,
+                                  id<LeftBarProps.Item>({
+                                      "icon": iconId,
                                       "label": resolveLocalizedString(label),
                                       "link": {
                                           "href": url,
@@ -207,7 +207,7 @@ function ContextualizedApp() {
                               ])
                           );
                 })()
-            } satisfies LeftBarProps<IconId, string>["items"]),
+            } satisfies LeftBarProps<string>["items"]),
         [t, lang]
     );
 
@@ -249,6 +249,8 @@ function ContextualizedApp() {
             />
             <section className={classes.betweenHeaderAndFooter}>
                 <LeftBar
+                    doPersistIsPanelOpen={true}
+                    defaultIsPanelOpen={true}
                     className={classes.leftBar}
                     collapsedWidth={logoContainerWidth}
                     reduceText={t("reduce")}

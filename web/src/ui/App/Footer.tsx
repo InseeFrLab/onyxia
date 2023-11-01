@@ -1,5 +1,8 @@
 import { memo } from "react";
-import { tss, Text, LanguageSelect } from "ui/theme";
+import { tss } from "ui/theme";
+import { Text } from "onyxia-ui/Text";
+import { LanguageSelect } from "onyxia-ui/LanguageSelect";
+import { languagesPrettyPrint } from "ui/i18n";
 import { useTranslation } from "ui/i18n";
 import { ReactComponent as GitHubSvg } from "ui/assets/svg/GitHub.svg";
 import { useLang } from "ui/i18n";
@@ -48,6 +51,7 @@ export const Footer = memo((props: Props) => {
             <div className={classes.sep} />
             {getEnabledLanguages().length !== 1 && (
                 <LanguageSelect
+                    languagesPrettyPrint={languagesPrettyPrint}
                     language={lang}
                     onLanguageChange={setLang}
                     variant="small"

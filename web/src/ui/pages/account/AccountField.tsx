@@ -6,19 +6,24 @@ import type { NonPostableEvt } from "evt";
 import type { TextFieldProps } from "onyxia-ui/TextField";
 import { TextField } from "onyxia-ui/TextField";
 import { Tooltip } from "onyxia-ui/Tooltip";
-import { tss, Text } from "ui/theme";
+import { tss } from "ui/theme";
+import { Text } from "onyxia-ui/Text";
 import { UnpackEvt } from "evt";
 import { Evt } from "evt";
 import type { Param0 } from "tsafe";
-import { IconButton, LanguageSelect } from "ui/theme";
+import { LanguageSelect } from "onyxia-ui/LanguageSelect";
 import Switch from "@mui/material/Switch";
 import { useTranslation } from "ui/i18n";
 import { useEvt } from "evt/hooks";
 import { assert } from "tsafe/assert";
-import { Button } from "ui/theme";
+import { Button } from "onyxia-ui/Button";
+import { IconButton } from "onyxia-ui/IconButton";
 import { useLang } from "ui/i18n";
 import { useEffectOnValueChange } from "powerhooks/useEffectOnValueChange";
 import { declareComponentKeys } from "i18nifty";
+import { id } from "tsafe/id";
+import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
+import { languagesPrettyPrint } from "ui/i18n";
 
 export type Props =
     | Props.ServicePassword
@@ -161,7 +166,7 @@ export const AccountField = memo((props: Props): ReturnType<FunctionComponent> =
             (
                 <Tooltip title={t("copy tooltip")}>
                     <IconButton
-                        iconId="filterNone"
+                        icon={id<MuiIconComponentName>("FilterNone")}
                         onClick={props.onClick}
                         size="small"
                         disabled={props.disabled ?? false}
@@ -327,6 +332,7 @@ export const AccountField = memo((props: Props): ReturnType<FunctionComponent> =
                             case "language":
                                 return (
                                     <LanguageSelect
+                                        languagesPrettyPrint={languagesPrettyPrint}
                                         doShowIcon={false}
                                         variant="big"
                                         language={lang}
@@ -385,7 +391,11 @@ export const AccountField = memo((props: Props): ReturnType<FunctionComponent> =
                 <div className={classes.cellActions}>
                     {isSensitiveInformation && (
                         <IconButton
-                            iconId={isTextHidden ? "visibility" : "visibilityOff"}
+                            icon={
+                                isTextHidden
+                                    ? id<MuiIconComponentName>("Visibility")
+                                    : id<MuiIconComponentName>("VisibilityOff")
+                            }
                             onClick={toggleIsTextHidden}
                         />
                     )}
@@ -395,7 +405,11 @@ export const AccountField = memo((props: Props): ReturnType<FunctionComponent> =
                                 return (
                                     <>
                                         <IconButton
-                                            iconId={isInEditingState ? "check" : "edit"}
+                                            icon={
+                                                isInEditingState
+                                                    ? id<MuiIconComponentName>("Check")
+                                                    : id<MuiIconComponentName>("Edit")
+                                            }
                                             disabled={
                                                 props.isLocked ||
                                                 (isInEditingState &&
@@ -430,7 +444,7 @@ export const AccountField = memo((props: Props): ReturnType<FunctionComponent> =
                                 return (
                                     <>
                                         <IconButton
-                                            iconId="replay"
+                                            icon={id<MuiIconComponentName>("Replay")}
                                             size="small"
                                             disabled={props.isLocked}
                                             onClick={

@@ -1,13 +1,17 @@
 import { useMemo, memo } from "react";
-import { tss, Text } from "ui/theme";
+import { tss } from "ui/theme";
+import { Text } from "onyxia-ui/Text";
 import { useDomRect } from "powerhooks/useDomRect";
 import { useTranslation } from "ui/i18n";
 import { fileSizePrettyPrint } from "ui/tools/fileSizePrettyPrint";
 import { ExplorerIcon } from "../ExplorerIcon";
-import { IconButton, Icon } from "ui/theme";
+import { IconButton } from "onyxia-ui/IconButton";
+import { Icon } from "onyxia-ui/Icon";
 import { useCallbackFactory } from "powerhooks/useCallbackFactory";
 import { assert } from "tsafe/assert";
 import { declareComponentKeys } from "i18nifty";
+import { id } from "tsafe/id";
+import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
 
 export type Props = {
     className?: string;
@@ -83,16 +87,22 @@ export const ExplorerUploadProgress = memo((props: Props) => {
             {props.isFailed && (
                 <div className={classes.iconButtonWrapper}>
                     <IconButton
-                        iconId="close"
+                        icon={id<MuiIconComponentName>("Close")}
                         className={classes.closeIconButton}
                         onClick={onClickFactory("clear")}
                     />
-                    <IconButton iconId="refresh" onClick={onClickFactory("restart")} />
+                    <IconButton
+                        icon={id<MuiIconComponentName>("Refresh")}
+                        onClick={onClickFactory("restart")}
+                    />
                 </div>
             )}
             {percentUploaded === 100 && (
                 <div className={classes.checkWrapper}>
-                    <Icon iconId="check" className={classes.check} />
+                    <Icon
+                        icon={id<MuiIconComponentName>("Check")}
+                        className={classes.check}
+                    />
                 </div>
             )}
         </div>

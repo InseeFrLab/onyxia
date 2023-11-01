@@ -7,6 +7,8 @@ import { fallbackLanguage, type Language } from "./types";
 import { ComponentKey } from "./types";
 import { statefulObservableToStatefulEvt } from "powerhooks/tools/StatefulObservable/statefulObservableToStatefulEvt";
 import { getEnabledLanguages } from "ui/env";
+import { objectEntries } from "tsafe/objectEntries";
+import { objectFromEntries } from "tsafe/objectFromEntries";
 export { declareComponentKeys };
 
 export const {
@@ -40,3 +42,18 @@ export type LocalizedString = GenericLocalizedString<Language>;
 export const evtLang = statefulObservableToStatefulEvt({
     "statefulObservable": $lang
 });
+
+export const languagesPrettyPrint: Record<Language, string> = objectFromEntries(
+    objectEntries({
+        /* spell-checker: disable */
+        "en": "English",
+        "fr": "Français",
+        "de": "Deutsch",
+        "it": "Italiano",
+        "nl": "Nederlands",
+        "no": "Norsk",
+        "fi": "Suomi",
+        "zh-CN": "简体中文"
+        /* spell-checker: enable */
+    }).filter(([language]) => getEnabledLanguages().includes(language))
+);

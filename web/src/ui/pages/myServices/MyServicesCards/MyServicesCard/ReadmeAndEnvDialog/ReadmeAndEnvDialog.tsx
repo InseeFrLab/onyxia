@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { tss } from "ui/theme";
-import { Button } from "ui/theme";
+import { Button } from "onyxia-ui/Button";
 import { useTranslation } from "ui/i18n";
 import { CircularProgress } from "onyxia-ui/CircularProgress";
 import { declareComponentKeys } from "i18nifty";

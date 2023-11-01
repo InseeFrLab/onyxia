@@ -1,6 +1,9 @@
 import { Fragment, useMemo, memo } from "react";
 import { tss } from "ui/theme";
-import { Button, Text, Icon, IconButton } from "ui/theme";
+import { Button } from "onyxia-ui/Button";
+import { Text } from "onyxia-ui/Text";
+import { Icon } from "onyxia-ui/Icon";
+import { IconButton } from "onyxia-ui/IconButton";
 import { useTranslation } from "ui/i18n";
 import { capitalize } from "tsafe/capitalize";
 import { MyServicesRoundLogo } from "./MyServicesRoundLogo";
@@ -15,6 +18,8 @@ import { ReadmeAndEnvDialog } from "./ReadmeAndEnvDialog";
 import { Evt, NonPostableEvt } from "evt";
 import { useConst } from "powerhooks/useConst";
 import { useEvt } from "evt/hooks";
+import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
+import { id } from "tsafe/id";
 
 const runningTimeThreshold = 7 * 24 * 3600 * 1000;
 
@@ -219,11 +224,14 @@ export const MyServicesCard = memo((props: Props) => {
                 <div style={{ "flex": 1 }} />
                 {isShared && (
                     <Tooltip title={t("this is a shared service")}>
-                        <Icon iconId="people" />
+                        <Icon icon={id<MuiIconComponentName>("People")} />
                     </Tooltip>
                 )}
                 <Tooltip title={tooltipTitle}>
-                    <Icon iconId="errorOutline" className={classes.errorOutlineIcon} />
+                    <Icon
+                        icon={id<MuiIconComponentName>("ErrorOutline")}
+                        className={classes.errorOutlineIcon}
+                    />
                 </Tooltip>
             </div>
             <div className={classes.belowDivider}>
@@ -261,14 +269,20 @@ export const MyServicesCard = memo((props: Props) => {
                 </div>
                 <div className={classes.belowDividerBottom}>
                     <IconButton
-                        iconId="infoOutlined"
+                        icon={id<MuiIconComponentName>("InfoOutlined")}
                         onClick={() => evtReadmeAndEnvDialogAction.post("SHOW ENV")}
                     />
                     {onRequestDelete !== undefined && (
-                        <IconButton iconId="delete" onClick={onRequestDelete} />
+                        <IconButton
+                            icon={id<MuiIconComponentName>("Delete")}
+                            onClick={onRequestDelete}
+                        />
                     )}
                     {monitoringUrl !== undefined && (
-                        <IconButton iconId="equalizer" href={monitoringUrl} />
+                        <IconButton
+                            icon={id<MuiIconComponentName>("Equalizer")}
+                            href={monitoringUrl}
+                        />
                     )}
                     <div style={{ "flex": 1 }} />
                     {(openUrl !== undefined ||

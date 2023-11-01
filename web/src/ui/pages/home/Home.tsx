@@ -1,7 +1,8 @@
 import { useMemo, memo } from "react";
-import { Button } from "ui/theme";
 import { routes } from "ui/routes";
-import { tss, Text, useStyles as useClasslessStyles } from "ui/theme";
+import { tss, useStyles as useClasslessStyles } from "ui/theme";
+import { Text } from "onyxia-ui/Text";
+import { Button } from "onyxia-ui/Button";
 import onyxiaLogoSvgUrl from "ui/assets/svg/OnyxiaLogo.svg";
 import { useCoreFunctions } from "core";
 import { useTranslation } from "ui/i18n";

@@ -1,8 +1,11 @@
 import { memo } from "react";
 import type { ReactNode } from "react";
 import { Tooltip } from "onyxia-ui/Tooltip";
-import { Icon, Text } from "ui/theme";
+import { Text } from "onyxia-ui/Text";
+import { Icon } from "onyxia-ui/Icon";
 import { tss } from "ui/theme";
+import { id } from "tsafe/id";
+import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
 
 export type Props = {
     className?: string;
@@ -23,7 +26,11 @@ export const AccountSectionHeader = memo((props: Props) => {
             </Text>
             {tooltipText && (
                 <Tooltip title={tooltipText}>
-                    <Icon className={classes.helpIcon} iconId="help" size="small" />
+                    <Icon
+                        className={classes.helpIcon}
+                        icon={id<MuiIconComponentName>("Help")}
+                        size="small"
+                    />
                 </Tooltip>
             )}
             {helperText && (

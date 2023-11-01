@@ -12,8 +12,11 @@ import { same } from "evt/tools/inDepth/same";
 import { memo, useMemo, useState } from "react";
 import { Tabs } from "onyxia-ui/Tabs";
 import MuiTextField from "@mui/material/TextField";
-import { Icon, IconButton, tss, Text } from "ui/theme";
+import { tss } from "ui/theme";
+import { Text } from "onyxia-ui/Text";
+import { Icon } from "onyxia-ui/Icon";
 import { useConstCallback } from "powerhooks/useConstCallback";
+import { IconButton } from "onyxia-ui/IconButton";
 import type {
     FormField,
     IndexedFormFields,
@@ -33,6 +36,8 @@ import { assert } from "tsafe/assert";
 import { declareComponentKeys } from "i18nifty";
 import { symToStr } from "tsafe/symToStr";
 import type { FormFieldValidity } from "core/usecases/launcher/selectors";
+import { id } from "tsafe/id";
+import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
 
 export type LauncherConfigurationCardProps = {
     className?: string;
@@ -212,7 +217,11 @@ const { Header } = (() => {
                                 case "dependency":
                                     return (
                                         <>
-                                            <Icon iconId="subdirectoryArrowRight" />
+                                            <Icon
+                                                icon={id<MuiIconComponentName>(
+                                                    "SubdirectoryArrowRight"
+                                                )}
+                                            />
                                             &nbsp;
                                             {t("dependency", {
                                                 "dependencyName": capitalize(
@@ -255,7 +264,7 @@ const { Header } = (() => {
                 </div>
                 <div style={{ "flex": 1 }} />
                 <IconButton
-                    iconId="expandMore"
+                    icon={id<MuiIconComponentName>("ExpandMore")}
                     onClick={onClick}
                     className={classes.expandIcon}
                 />

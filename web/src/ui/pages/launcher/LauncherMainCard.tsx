@@ -2,12 +2,14 @@ import { useId, memo } from "react";
 import { tss } from "ui/theme";
 import { RoundLogo } from "ui/shared/RoundLogo";
 import { useTranslation } from "ui/i18n";
-import { IconButton, Button, Text } from "ui/theme";
+import { IconButton } from "onyxia-ui/IconButton";
+import { Button } from "onyxia-ui/Button";
+import { Text } from "onyxia-ui/Text";
 import { useConstCallback } from "powerhooks/useConstCallback";
 import { TextField } from "onyxia-ui/TextField";
 import type { TextFieldProps } from "onyxia-ui/TextField";
 import { Tooltip } from "onyxia-ui/Tooltip";
-import { Icon } from "ui/theme";
+import { Icon } from "onyxia-ui/Icon";
 import { capitalize } from "tsafe/capitalize";
 import FormControl from "@mui/material/FormControl";
 import FormControlLabel from "@mui/material/FormControlLabel";
@@ -21,6 +23,8 @@ import { symToStr } from "tsafe/symToStr";
 import type { Link } from "type-route";
 import { assert } from "tsafe/assert";
 import { useResolveLocalizedString, type LocalizedString } from "ui/i18n";
+import { id } from "tsafe/id";
+import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
 
 export type Props = {
     className?: string;
@@ -111,7 +115,10 @@ export const LauncherMainCard = memo((props: Props) => {
 
                 {onRequestCopyLaunchUrl !== undefined && (
                     <Tooltip title={t("copy url helper text")}>
-                        <IconButton iconId="link" onClick={onRequestCopyLaunchUrl} />
+                        <IconButton
+                            icon={id<MuiIconComponentName>("Link")}
+                            onClick={onRequestCopyLaunchUrl}
+                        />
                     </Tooltip>
                 )}
                 {onRequestRestoreAllDefault !== undefined && (
@@ -126,7 +133,11 @@ export const LauncherMainCard = memo((props: Props) => {
                 >
                     {onRequestRestoreAllDefault === undefined && !isBookmarked ? (
                         <IconButton
-                            iconId={isBookmarked ? "delete" : "save"}
+                            icon={
+                                isBookmarked
+                                    ? id<MuiIconComponentName>("Delete")
+                                    : id<MuiIconComponentName>("Save")
+                            }
                             onClick={onRequestToggleBookmark}
                         />
                     ) : isThereASavedConfigWithThisFriendlyName && !isBookmarked ? (
@@ -183,7 +194,7 @@ export const LauncherMainCard = memo((props: Props) => {
                             >
                                 <Icon
                                     className={classes.versionSelectHelpIcon}
-                                    iconId="help"
+                                    icon={id<MuiIconComponentName>("Help")}
                                     size="small"
                                 />
                             </Tooltip>
