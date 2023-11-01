@@ -4,7 +4,9 @@ import {
     francePalette,
     ultravioletPalette,
     verdantPalette,
-    defaultGetTypographyDesc
+    defaultGetTypographyDesc,
+    createDefaultColorUseCases,
+    evtIsDarkModeEnabled
 } from "onyxia-ui";
 import { createTss } from "tss-react";
 import { THEME_ID, PALETTE_OVERRIDE } from "keycloak-theme/login/envCarriedOverToKc";
@@ -79,36 +81,75 @@ export const { tss } = createTss({
 
 export const useStyles = tss.create({});
 
-export function applyFaviconColor() {
-    const color = palette.focus.main;
+export async function applyFaviconColor() {
+    const faviconSvgUrl = "/favicon.svg";
 
-    // Define the SVG as a string
-    const svg = `<svg viewBox="43 35 360 225.88" xmlns="http://www.w3.org/2000/svg">
-                  <g fill="${color}">
-                    <path d="M106.253 215.9L140.204 250.02C151.012 260.883 168.528 260.883 179.322 250.02L213.273 215.9L159.763 162.123L106.253 215.9Z"  />
-                    <path d="M232.743 215.9L266.693 250.02C277.502 260.883 295.018 260.883 305.812 250.02L339.762 215.9L286.253 162.123L232.743 215.9Z"  />
-                  </g>
-                  <g fill="${color}">
-                    <path d="M43 152.331L76.9508 186.452C87.7594 197.314 105.275 197.314 116.069 186.452L150.02 152.331L96.5099 98.5537L43 152.331Z"  />
-                    <path d="M169.49 152.331L203.441 186.452C214.25 197.314 231.765 197.314 242.559 186.452L276.51 152.331L223 98.5537L169.49 152.331Z"  />
-                    <path d="M349.49 98.5537L295.98 152.331L329.931 186.452C340.74 197.314 358.256 197.314 369.049 186.452L403 152.331L349.49 98.5537Z"  />
-                  </g>
-                  <g fill="${color}">
-                    <path d="M232.743 88.7774L266.693 122.898C277.502 133.761 295.018 133.761 305.812 122.898L339.762 88.7774L286.253 35L232.743 88.7774Z"  />
-                    <path d="M106.253 88.7774L140.204 122.898C151.012 133.761 168.528 133.761 179.322 122.898L213.273 88.7774L159.763 35L106.253 88.7774Z"  />   
-                  </g>
-                </svg>`;
+    const rawSvgString = await fetch(faviconSvgUrl)
+        .then(response => response.text())
+        .catch(() => undefined);
 
-    // Create a data URL from the SVG
-    const url = "data:image/svg+xml," + encodeURIComponent(svg);
+    if (rawSvgString === undefined) {
+        console.warn(`Failed to fetch favicon ${faviconSvgUrl}`);
+        return;
+    }
 
-    // Set the favicon
-    const link: any = document.querySelector("link[rel*='icon']");
-    link.type = "image/svg+xml";
-    link.href = url;
+    const svgRoot = (() => {
+        let svgElement: SVGSVGElement | null;
 
-    // This is necessary in case a favicon already exists
-    document.getElementsByTagName("head")[0].appendChild(link);
+        try {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(rawSvgString, "image/svg+xml");
+            svgElement = doc.querySelector("svg");
+        } catch (error) {
+            console.error(`Failed to parse ${faviconSvgUrl}, ${String(error)}`);
+            return undefined;
+        }
+
+        if (svgElement === null) {
+            console.error(`${faviconSvgUrl} is empty`);
+            return undefined;
+        }
+
+        return svgElement;
+    })();
+
+    if (svgRoot === undefined) {
+        return;
+    }
+
+    evtIsDarkModeEnabled.attach(isDarkModeEnabled => {
+        const colorUsecases = createDefaultColorUseCases({ palette, isDarkModeEnabled });
+
+        (function updateFillColor(element: Element) {
+            for (const [className, color] of [
+                ["focus-color-fill", colorUsecases.typography.textFocus],
+                ["text-color-fill", colorUsecases.typography.textPrimary],
+                ["surface-color-fill", colorUsecases.surfaces.surface1],
+                ["background-color-fill", colorUsecases.surfaces.background]
+            ] as const) {
+                if (element.getAttribute("class")?.includes(className)) {
+                    element.setAttribute("fill", color);
+                }
+            }
+
+            // Recursively update child elements
+            for (const child of Array.from(element.children)) {
+                updateFillColor(child);
+            }
+        })(svgRoot);
+
+        // Convert updated SVG DOM object back to string
+        const serializer = new XMLSerializer();
+        const updatedRawSvg = serializer.serializeToString(svgRoot);
+
+        const url = "data:image/svg+xml," + encodeURIComponent(updatedRawSvg);
+
+        const link: any = document.querySelector("link[rel*='icon']");
+        link.type = "image/svg+xml";
+        link.href = url;
+
+        document.getElementsByTagName("head")[0].appendChild(link);
+    });
 }
 
 export const customIcons = {
