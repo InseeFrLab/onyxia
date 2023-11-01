@@ -6,7 +6,7 @@ import { elementsToSentence } from "ui/tools/elementsToSentence";
 export const translations: Translations<"en"> = {
     "Account": {
         "infos": "Account infos",
-        "third-party-integration": "external services",
+        "third-party-integration": "External services",
         "storage": "Connect to storage",
         "k8sCredentials": "Kubernetes",
         "user-interface": "Interface preferences",
