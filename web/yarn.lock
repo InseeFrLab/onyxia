@@ -12460,15 +12460,16 @@ onetime@^5.1.0, onetime@^5.1.2:
   dependencies:
     mimic-fn "^2.1.0"
 
-onyxia-ui@^2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/onyxia-ui/-/onyxia-ui-2.0.0.tgz#cf8c2482a79aa47817e172213b77dea02c354dac"
-  integrity sha512-Q7raDQh/r36ksh3J17PwoH4Gkdpc+2C8WQ/IFVQwd4w7Kj7YaNOYjKkQMRVnDGCLuBjtUrK0NDw0OW1BW8GB8A==
+onyxia-ui@^2.1.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/onyxia-ui/-/onyxia-ui-2.1.0.tgz#1adddf9b664e3422a61bc48b2cc944947acbe7c0"
+  integrity sha512-quY9O/eyUPxRXGkomH/UUb3C8qGapNMCanDeb/Grz1tTkrq5qswu+9VhT+tB4l7W2gRFxzhUa+QzoE+AX21kCA==
   dependencies:
     "@mui/icons-material" "^5.14.15"
     color "3.1.3"
     evt "^2.5.2"
     make-fetch-happen "^10.2.1"
+    memoizee "^0.4.15"
     minimal-polyfills "^2.2.3"
     powerhooks "^1.0.0"
     run-exclusive "^2.2.19"

@@ -27,6 +27,11 @@ import { objectKeys } from "tsafe/objectKeys";
 import type { Language } from "ui/i18n";
 import type { PaletteBase } from "onyxia-ui";
 import type { DeepPartial } from "keycloakify/tools/DeepPartial";
+import { type AssetVariantUrl, parseAssetVariantUrl } from "ui/shared/AssetVariantUrl";
+import defaultFaviconSvgUrl from "ui/assets/svg/favicon.svg";
+import { symToStr } from "tsafe/symToStr";
+
+console.log({ defaultFaviconSvgUrl });
 
 const paletteIds = ["onyxia", "france", "ultraviolet", "verdant"] as const;
 
@@ -163,6 +168,28 @@ const { TERMS_OF_SERVICES, injectTERMS_OF_SERVICESInSearchParams } = getTransfer
 
 export { TERMS_OF_SERVICES };
 
+const { FAVICON, injectFAVICONInSearchParams } = getTransferableEnv({
+    "name": "FAVICON" as const,
+    "getSerializedValueFromEnv": () => getEnv().FAVICON,
+    "validateAndParseOrGetDefault": (valueStr): AssetVariantUrl => {
+        if (valueStr === "") {
+            return defaultFaviconSvgUrl;
+        }
+
+        let faviconUrl: AssetVariantUrl;
+
+        try {
+            faviconUrl = parseAssetVariantUrl(valueStr);
+        } catch (error) {
+            throw new Error(`${symToStr({ FAVICON })} is malformed. ${String(error)}`);
+        }
+
+        return faviconUrl;
+    }
+});
+
+export { FAVICON };
+
 export function injectTransferableEnvsInSearchParams(url: string): string {
     let newUrl = url;
 
@@ -171,7 +198,8 @@ export function injectTransferableEnvsInSearchParams(url: string): string {
         injectHEADER_ORGANIZATIONInSearchParams,
         injectHEADER_USECASE_DESCRIPTIONInSearchParams,
         injectTERMS_OF_SERVICESInSearchParams,
-        injectPALETTE_OVERRIDEInSearchParams
+        injectPALETTE_OVERRIDEInSearchParams,
+        injectFAVICONInSearchParams
     ]) {
         newUrl = inject(newUrl);
     }

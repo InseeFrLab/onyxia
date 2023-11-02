@@ -188,8 +188,6 @@ export const getEnabledLanguages = memoize((): readonly Language[] => {
                 }
             });
     } catch (error) {
-        console.log("=========>", process.env);
-
         throw new Error(JSON.stringify(process.env.NODE_ENV) + " " + String(error));
     }
 });
