@@ -6838,10 +6838,10 @@ cpy@^8.1.2:
     p-filter "^2.1.0"
     p-map "^3.0.0"
 
-cra-envs@^1.2.8:
-  version "1.2.8"
-  resolved "https://registry.yarnpkg.com/cra-envs/-/cra-envs-1.2.8.tgz#1c4d8bc2cac0066686c8422bf6e7346e8b662f3d"
-  integrity sha512-V9AI4VF6ibLwE3b/1srlCeebpi4PTPpP6VRhiGiX39lv7BNZ69B7XI1xI2+XTnw9jO7UaxG5/RFDTB3ncC9JLA==
+cra-envs@^1.2.9:
+  version "1.2.9"
+  resolved "https://registry.yarnpkg.com/cra-envs/-/cra-envs-1.2.9.tgz#f2cc262f815dc84ea58eb6e8c191b85be40146e1"
+  integrity sha512-Yu8vaiWNAij3jTetxBI1GofURlyUCKlzLdFNppoTfeCmFN+nQwbkDib87cgBHEeTDP79wT7AgaBpIBhXjuZY6g==
   dependencies:
     "@types/ejs" "^3.1.0"
     "@types/node" "^10.0.0"
