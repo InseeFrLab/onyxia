@@ -86,7 +86,7 @@ export function parseAssetVariantUrl(serializedAssetVariantUrl: string): AssetVa
         zAssetVariantUrl.parse(assetVariantUrl);
     } catch (error) {
         throw new Error(
-            `${serializedAssetVariantUrl} is sot a valid AssetVariantUrl: ${String(
+            `${serializedAssetVariantUrl} is not a valid AssetVariantUrl: ${String(
                 error
             )}`
         );

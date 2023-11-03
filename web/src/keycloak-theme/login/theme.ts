@@ -1,6 +1,6 @@
 import { createThemeProvider, defaultGetTypographyDesc } from "onyxia-ui";
 import { createTss } from "tss-react";
-import { palette, fontFamily } from "ui/theme";
+import { palette, fontFamily, loadThemedFavicon } from "ui/theme";
 
 const { useTheme, ThemeProvider } = createThemeProvider({
     "getTypographyDesc": params => ({
@@ -22,3 +22,5 @@ export const { tss } = createTss({
 });
 
 export const useStyles = tss.create({});
+
+export { loadThemedFavicon };

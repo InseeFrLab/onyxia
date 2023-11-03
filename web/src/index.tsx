@@ -1,8 +1,8 @@
 import { lazy, Suspense } from "react";
 import { createRoot } from "react-dom/client";
 import { kcContext as kcLoginThemeContext } from "keycloak-theme/login/kcContext";
+import { injectCustomFontFace } from "keycloak-theme/login/injectCustomFontFace";
 import { assert } from "tsafe/assert";
-import { applyFaviconColor } from "ui/theme";
 
 {
     const version = process.env.WEB_VERSION;
@@ -15,7 +15,9 @@ import { applyFaviconColor } from "ui/theme";
     );
 }
 
-applyFaviconColor();
+if (kcLoginThemeContext !== undefined) {
+    injectCustomFontFace();
+}
 
 const App = lazy(() => import("ui/App"));
 const KcLoginThemeApp = lazy(() => import("keycloak-theme/login/KcApp"));

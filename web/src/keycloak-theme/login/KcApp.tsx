@@ -2,9 +2,11 @@ import { lazy, Suspense } from "react";
 import Fallback, { type PageProps } from "keycloakify/login";
 import type { KcContext } from "./kcContext";
 import { useI18n } from "./i18n";
-import { tss } from "keycloak-theme/login/theme";
+import { tss, loadThemedFavicon } from "keycloak-theme/login/theme";
 import onyxiaNeumorphismDarkModeUrl from "ui/assets/svg/OnyxiaNeumorphismDarkMode.svg";
 import onyxiaNeumorphismLightModeUrl from "ui/assets/svg/OnyxiaNeumorphismLightMode.svg";
+
+loadThemedFavicon();
 
 const DefaultTemplate = lazy(() => import("keycloakify/login/Template"));
 const Template = lazy(() => import("./Template"));

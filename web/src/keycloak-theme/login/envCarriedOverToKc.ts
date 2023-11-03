@@ -18,7 +18,8 @@ import {
     addParamToUrl,
     updateSearchBarUrl
 } from "powerhooks/tools/urlSearchParams";
-import { assert } from "tsafe/assert";
+import { assert, type Equals } from "tsafe/assert";
+import { is } from "tsafe/is";
 import { isStorybook } from "ui/tools/isStorybook";
 import { capitalize } from "tsafe/capitalize";
 import { typeGuard } from "tsafe/typeGuard";
@@ -28,12 +29,19 @@ import type { Language } from "ui/i18n";
 import type { PaletteBase } from "onyxia-ui";
 import type { DeepPartial } from "keycloakify/tools/DeepPartial";
 import { type AssetVariantUrl, parseAssetVariantUrl } from "ui/shared/AssetVariantUrl";
-import defaultFaviconSvgUrl from "ui/assets/svg/favicon.svg";
 import { symToStr } from "tsafe/symToStr";
+import { z } from "zod";
 
 const paletteIds = ["onyxia", "france", "ultraviolet", "verdant"] as const;
 
 export type PaletteId = (typeof paletteIds)[number];
+
+function replaceAllPublicUrl(valueStr: string): string {
+    return valueStr.replace(
+        /%PUBLIC_URL%/g,
+        kcContext === undefined ? process.env.PUBLIC_URL : kcContext.url.resourcesPath
+    );
+}
 
 const { THEME_ID, injectTHEME_IDInSearchParams } = getTransferableEnv({
     "name": "THEME_ID" as const,
@@ -170,9 +178,9 @@ const { FAVICON, injectFAVICONInSearchParams } = getTransferableEnv({
     "name": "FAVICON" as const,
     "getSerializedValueFromEnv": () => getEnv().FAVICON,
     "validateAndParseOrGetDefault": (valueStr): AssetVariantUrl => {
-        if (valueStr === "") {
-            return defaultFaviconSvgUrl;
-        }
+        assert(valueStr !== "Should have default in .env");
+
+        valueStr = replaceAllPublicUrl(valueStr);
 
         let faviconUrl: AssetVariantUrl;
 
@@ -188,6 +196,63 @@ const { FAVICON, injectFAVICONInSearchParams } = getTransferableEnv({
 
 export { FAVICON };
 
+type Font = {
+    fontFamily: string;
+    dirUrl: string;
+    400: string;
+    ["400-italic"]?: string;
+    500?: string;
+    ["500-italic"]?: string;
+    600?: string;
+    ["600-italic"]?: string;
+    700?: string;
+    ["700-italic"]?: string;
+};
+
+const { FONT, injectFONTInSearchParams } = getTransferableEnv({
+    "name": "FONT" as const,
+    "getSerializedValueFromEnv": () => getEnv().FONT,
+    "validateAndParseOrGetDefault": (valueStr): Font => {
+        assert(valueStr !== "Should have default in .env");
+
+        valueStr = replaceAllPublicUrl(valueStr);
+
+        let font: unknown;
+
+        try {
+            font = JSON.parse(valueStr);
+        } catch {
+            throw new Error(`${valueStr} is not a valid JSON`);
+        }
+
+        const zFont = z.object({
+            "fontFamily": z.string(),
+            "dirUrl": z.string(),
+            "400": z.string(),
+            "400-italic": z.string().optional(),
+            "500": z.string().optional(),
+            "500-italic": z.string().optional(),
+            "600": z.string().optional(),
+            "600-italic": z.string().optional(),
+            "700": z.string().optional(),
+            "700-italic": z.string().optional()
+        });
+
+        assert<Equals<ReturnType<(typeof zFont)["parse"]>, Font>>();
+
+        try {
+            zFont.parse(font);
+        } catch (error) {
+            throw new Error(`${valueStr} is not a valid Font object: ${String(error)}`);
+        }
+        assert(is<Font>(font));
+
+        return font;
+    }
+});
+
+export { FONT };
+
 export function injectTransferableEnvsInSearchParams(url: string): string {
     let newUrl = url;
 
@@ -197,7 +262,8 @@ export function injectTransferableEnvsInSearchParams(url: string): string {
         injectHEADER_USECASE_DESCRIPTIONInSearchParams,
         injectTERMS_OF_SERVICESInSearchParams,
         injectPALETTE_OVERRIDEInSearchParams,
-        injectFAVICONInSearchParams
+        injectFAVICONInSearchParams,
+        injectFONTInSearchParams
     ]) {
         newUrl = inject(newUrl);
     }

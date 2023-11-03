@@ -5,6 +5,7 @@
 
 	<meta charset="utf-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<link rel="icon" type="image/svg+xml" href="%PUBLIC_URL%/favicon.svg" />
 
 	<!--
       	Notice the use of %PUBLIC_URL% in the tag above.
@@ -37,126 +38,56 @@
 	<meta property="twitter:image" content="%PUBLIC_URL%/Prewiew-%REACT_APP_THEME_ID%.png">
 	<!-- cspell: enable -->
 
-	<% if (process.env.REACT_APP_THEME_ID==="france" ) { %>
-		<!-- We only preload the default font -->
-		<link rel="preload" href="%PUBLIC_URL%/fonts/Marianne/Marianne-Bold_Italic.woff2" as="font" crossorigin="anonymous">
-		<link rel="preload" href="%PUBLIC_URL%/fonts/Marianne/Marianne-Bold.woff2" as="font" crossorigin="anonymous">
-		<link rel="preload" href="%PUBLIC_URL%/fonts/Marianne/Marianne-Light_Italic.woff2" as="font" crossorigin="anonymous">
-		<link rel="preload" href="%PUBLIC_URL%/fonts/Marianne/Marianne-Light.woff2" as="font" crossorigin="anonymous">
-		<link rel="preload" href="%PUBLIC_URL%/fonts/Marianne/Marianne-Regular_Italic.woff2" as="font" crossorigin="anonymous">
-		<link rel="preload" href="%PUBLIC_URL%/fonts/Marianne/Marianne-Regular.woff2" as="font" crossorigin="anonymous">
-		<!--<link rel="stylesheet" type="text/css" href="%PUBLIC_URL%/fonts/Marianne/font.css">-->
-	<% } else { %>
-		<link rel="preload" href="%PUBLIC_URL%/fonts/WorkSans/worksans-bold-webfont.woff2" as="font" crossorigin="anonymous">
-		<link rel="preload" href="%PUBLIC_URL%/fonts/WorkSans/worksans-medium-webfont.woff2" as="font" crossorigin="anonymous">
-		<link rel="preload" href="%PUBLIC_URL%/fonts/WorkSans/worksans-regular-webfont.woff2" as="font" crossorigin="anonymous">
-		<link rel="preload" href="%PUBLIC_URL%/fonts/WorkSans/worksans-semibold-webfont.woff2" as="font" crossorigin="anonymous">
-		<!--<link rel="stylesheet" type="text/css" href="%PUBLIC_URL%/fonts/WorkSans/font.css">-->
-	<% } %>
+	<%
+    const FONT = JSON.parse(process.env.REACT_APP_FONT);
+    const { fontFamily, dirUrl } = FONT;
+    const fontWeights = [400, 500, 600, 700];
+    let fontFaceRules = '';
+    let preloadLinks = '';
 
-	<!-- 
-		We need to put it plain in the html because of Keycloakify, when we build without --external-assets 
-		SEE: https://github.com/InseeFrLab/keycloakify#font-face-importing-fonts-from-thesrc-dir 
-		We also put it outside the EJS 'if' because it won't be run on Keycloak. This way we will have the fonts
-		they just aren't going to be preloaded according to the (right) theme.
-		(@font-face) are downloaded lazily. If they are not used, they are not downloaded so it has no impact 
-		to put it here.
-	-->
-	<style>
-		/* latin */
-		@font-face {
-			font-family: 'Work Sans';
-			font-style: normal;
-			font-weight: normal;
-			/*400*/
-			font-display: swap;
-			src: url("%PUBLIC_URL%/fonts/WorkSans/worksans-regular-webfont.woff2") format("woff2");
-		}
+    fontWeights.forEach(weight => {
+        const normalFontFileBasename = FONT[weight];
+        const italicFontFileBasename = FONT[`${weight}-italic`];
 
-		/* latin */
-		@font-face {
-			font-family: 'Work Sans';
-			font-style: normal;
-			font-weight: 500;
-			font-display: swap;
-			src: url("%PUBLIC_URL%/fonts/WorkSans/worksans-medium-webfont.woff2") format("woff2");
-		}
+        ['normal', 'italic'].forEach(fontStyle => {
+            let fontFileBasename;
+            switch (fontStyle) {
+                case 'normal':
+                    fontFileBasename = normalFontFileBasename;
+                    break;
+                case 'italic':
+                    fontFileBasename = italicFontFileBasename;
+                    break;
+            }
 
-		/* latin */
-		@font-face {
-			font-family: 'Work Sans';
-			font-style: normal;
-			font-weight: 600;
-			font-display: swap;
-			src: url("%PUBLIC_URL%/fonts/WorkSans/worksans-semibold-webfont.woff2") format("woff2");
-		}
+			if(fontFileBasename === undefined){
+				return;
+			}
 
-		/* latin */
-		@font-face {
-			font-family: 'Work Sans';
-			font-style: normal;
-			font-weight: bold;
-			/*700*/
-			font-display: swap;
-			src: url("%PUBLIC_URL%/fonts/WorkSans/worksans-bold-webfont.woff2") format("woff2");
-		}
-	</style>
-	<style>
-		@font-face {
-			font-family: Marianne;
-			src: url("%PUBLIC_URL%/fonts/Marianne/Marianne-Light.woff2") format("woff2");
-			font-weight: 300;
-			font-style: normal;
-		}
+			const url = `${dirUrl}/${fontFileBasename}`;
+            
+            const format = fontFileBasename.split('.').pop();
+            fontFaceRules += [
+                `@font-face {`,
+                `    font-family: '${fontFamily}';`,
+                `    font-style: ${fontStyle};`,
+                `    font-weight: ${weight};`,
+                `    font-display: swap;`,
+                `    src: url('${url}') format('${format}');`,
+                `}\n`
+            ].join("\n");
 
-		@font-face {
-			font-family: Marianne;
-			src: url("%PUBLIC_URL%/fonts/Marianne/Marianne-Light_Italic.woff2") format("woff2");
-			font-weight: 300;
-			font-style: italic;
-		}
+			if( fontStyle === 'normal' ){
+            	preloadLinks += `<link rel="preload" href="${url}" as="font" type="font/${format}" crossorigin="anonymous">\n`;
+			}
 
-		@font-face {
-			font-family: Marianne;
-			src: url("%PUBLIC_URL%/fonts/Marianne/Marianne-Regular.woff2") format("woff2");
-			font-weight: normal;
-			/*400*/
-			font-style: normal;
-		}
+        });
+    });
+	%>
+	<%= preloadLinks %>
+	<style><%= fontFaceRules %></style>
 
-		@font-face {
-			font-family: Marianne;
-			src: url("%PUBLIC_URL%/fonts/Marianne/Marianne-Regular_Italic.woff2") format("woff2");
-			font-weight: normal;
-			/*400*/
-			font-style: italic;
-		}
 
-		@font-face {
-			font-family: Marianne;
-			src: url("%PUBLIC_URL%/fonts/Marianne/Marianne-Medium.woff2") format("woff2");
-			font-weight: 500;
-			font-display: swap;
-			font-style: normal;
-		}
-
-		@font-face {
-			font-family: Marianne;
-			src: url("%PUBLIC_URL%/fonts/Marianne/Marianne-Bold.woff2") format("woff2");
-			font-weight: bold
-				/*700*/
-			;
-			font-style: normal;
-		}
-
-		@font-face {
-			font-family: Marianne;
-			src: url("%PUBLIC_URL%/fonts/Marianne/Marianne-Bold_Italic.woff2") format("woff2");
-			font-weight: bold;
-			/*700*/
-			font-style: italic;
-		}
-	</style>
 
 	<script>
 		/*

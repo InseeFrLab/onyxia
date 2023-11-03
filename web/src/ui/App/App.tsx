@@ -26,7 +26,7 @@ import { injectGlobalStatesInSearchParams } from "powerhooks/useGlobalState";
 import { evtLang } from "ui/i18n";
 import { getEnv } from "env";
 import { logoContainerWidthInPercent } from "./logoContainerWidthInPercent";
-import { ThemeProvider, targetWindowInnerWidth } from "ui/theme";
+import { ThemeProvider, targetWindowInnerWidth, loadThemedFavicon } from "ui/theme";
 import { PortraitModeUnsupported } from "ui/shared/PortraitModeUnsupported";
 import { objectKeys } from "tsafe/objectKeys";
 import { pages } from "ui/pages";
@@ -40,6 +40,8 @@ import { getGlobalAlert, getDisablePersonalInfosInjectionInGroup } from "ui/env"
 import { enableScreenScaler } from "screen-scaler/react";
 import { addParamToUrl } from "powerhooks/tools/urlSearchParams";
 import { customIcons } from "ui/theme";
+
+loadThemedFavicon();
 
 const { CoreProvider } = createCoreProvider({
     "apiUrl": getEnv().ONYXIA_API_URL,
