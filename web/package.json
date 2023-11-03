@@ -33,7 +33,7 @@
         "buffer": "^6.0.3",
         "color": "^4.2.3",
         "compare-versions": "^5.0.1",
-        "cra-envs": "^1.2.8",
+        "cra-envs": "^1.2.9",
         "crypto-browserify": "^3.12.0",
         "evt": "^2.5.3",
         "file-saver": "^2.0.2",
