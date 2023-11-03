@@ -28,7 +28,8 @@ import { objectKeys } from "tsafe/objectKeys";
 import type { Language } from "ui/i18n";
 import type { PaletteBase } from "onyxia-ui";
 import type { DeepPartial } from "keycloakify/tools/DeepPartial";
-import { type AssetVariantUrl, parseAssetVariantUrl } from "ui/shared/AssetVariantUrl";
+import type { AssetVariantUrl } from "ui/shared/AssetVariantUrl";
+import { parseAssetVariantUrl } from "ui/shared/AssetVariantUrl/z";
 import { symToStr } from "tsafe/symToStr";
 import { z } from "zod";
 
