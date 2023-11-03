@@ -19,6 +19,12 @@ import { AnimatedOnyxiaLogo } from "onyxia-ui/AnimatedOnyxiaLogo";
 import { $lang, resolveLocalizedString } from "ui/i18n";
 import { statefulObservableToStatefulEvt } from "powerhooks/tools/StatefulObservable/statefulObservableToStatefulEvt";
 import { resolveAssetVariantUrl } from "ui/shared/AssetVariantUrl";
+import servicesSvgUrl from "ui/assets/svg/custom-icons/services.svg";
+import secretsSvgUrl from "ui/assets/svg/custom-icons/secrets.svg";
+import accountSvgUrl from "ui/assets/svg/custom-icons/account.svg";
+import homeSvgUrl from "ui/assets/svg/custom-icons/home.svg";
+import filesSvgUrl from "ui/assets/svg/custom-icons/files.svg";
+import catalogSvgUrl from "ui/assets/svg/custom-icons/catalog.svg";
 import { Evt } from "evt";
 
 export const palette = {
@@ -176,10 +182,10 @@ export async function applyFaviconColor() {
 }
 
 export const customIcons = {
-    "servicesSvgUrl": "/custom-icons/services_v1.svg",
-    "secretsSvgUrl": "/custom-icons/secrets_v1.svg",
-    "accountSvgUrl": "/custom-icons/account_v1.svg",
-    "homeSvgUrl": "/custom-icons/home_v1.svg",
-    "filesSvgUrl": "/custom-icons/files_v1.svg",
-    "catalogSvgUrl": "/custom-icons/catalog_v1.svg"
+    servicesSvgUrl,
+    secretsSvgUrl,
+    accountSvgUrl,
+    homeSvgUrl,
+    filesSvgUrl,
+    catalogSvgUrl
 };

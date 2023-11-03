@@ -31,8 +31,6 @@ import { type AssetVariantUrl, parseAssetVariantUrl } from "ui/shared/AssetVaria
 import defaultFaviconSvgUrl from "ui/assets/svg/favicon.svg";
 import { symToStr } from "tsafe/symToStr";
 
-console.log({ defaultFaviconSvgUrl });
-
 const paletteIds = ["onyxia", "france", "ultraviolet", "verdant"] as const;
 
 export type PaletteId = (typeof paletteIds)[number];
