@@ -131,14 +131,38 @@
 				return "false";
 			
 			})());
-		
-			var backgroundColor = (function () {
-				switch ("%REACT_APP_THEME_ID%") {
-					case "france": return isDarkModeEnabled ? "#2A2A2A" : "#F1F0EB";
-					case "ultraviolet": return isDarkModeEnabled ? "#2D1C3A" : "#F7F5F4";
-					default: return isDarkModeEnabled ? "#2C323F" : "#F1F0EB";
-				}
-			})();
+
+			<%
+				const PALETTE_OVERRIDE = process.env.REACT_APP_PALETTE_OVERRIDE;
+
+				const palette = PALETTE_OVERRIDE === "" ? {}: JSON.parse(PALETTE_OVERRIDE);
+
+				const [backgroundColorWhenLightMode, backgroundColorWhenDarkMode] = [false, true].map(isDarkModeEnabled=> {
+
+					custom: {
+
+						const wrap= palette[isDarkModeEnabled ? "dark" : "light"];
+
+						if(wrap === undefined){
+							break custom;
+						}
+
+						const backgroundColor = wrap.main;
+
+						if( backgroundColor === undefined ){
+							break custom;
+						}
+
+						return backgroundColor;
+
+					}
+
+					return isDarkModeEnabled ? "#2C323F" : "#F1F0EB";
+
+				});
+			%>
+
+			var backgroundColor = isDarkModeEnabled ? "<%= backgroundColorWhenDarkMode %>" : "<%= backgroundColorWhenLightMode %>";
 		
 			document.documentElement.style.backgroundColor = backgroundColor;
 		
