@@ -33,7 +33,7 @@ web:
   replicaCount: 1
   image:
     repository: inseefrlab/onyxia-web
-    tag: 3.6.0
+    tag: 3.6.1
     pullPolicy: IfNotPresent
 
   ## Pod priority settings
