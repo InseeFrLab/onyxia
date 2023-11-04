@@ -326,7 +326,7 @@ function getTransferableEnv<T, Name extends string>(params: {
             return serializedValue;
         }
 
-        return "";
+        return getSerializedValueFromEnv();
     })();
 
     return {
