@@ -40,7 +40,9 @@ export type PaletteId = (typeof paletteIds)[number];
 function replaceAllPublicUrl(valueStr: string): string {
     return valueStr.replace(
         /%PUBLIC_URL%/g,
-        kcContext === undefined ? process.env.PUBLIC_URL : kcContext.url.resourcesPath
+        kcContext === undefined || process.env.NODE_ENV === "development"
+            ? process.env.PUBLIC_URL
+            : `${kcContext.url.resourcesPath}/build`
     );
 }
 
