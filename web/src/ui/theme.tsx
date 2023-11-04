@@ -59,10 +59,6 @@ export const palette = {
     }
 };
 
-export const fontFamily = `'${FONT.fontFamily}'${
-    FONT.fontFamily === "Work Sans" ? "" : ", 'Work Sans'"
-}`;
-
 export const targetWindowInnerWidth = 1980;
 
 const { useTheme, ThemeProvider } = createThemeProvider({
@@ -72,7 +68,7 @@ const { useTheme, ThemeProvider } = createThemeProvider({
             // We don't want the font to be responsive
             "windowInnerWidth": targetWindowInnerWidth
         }),
-        fontFamily
+        "fontFamily": `'${FONT.fontFamily}'`
     }),
     palette,
     "splashScreenParams": { "Logo": AnimatedOnyxiaLogo },
