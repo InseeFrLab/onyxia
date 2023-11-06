@@ -66,6 +66,8 @@ const { useTheme, ThemeProvider } = createThemeProvider({
         ...defaultGetTypographyDesc({
             ...params,
             // We don't want the font to be responsive
+            // By default, the font size change depending on the screen size,
+            // we don't want that here so we fix the windowInnerWidth.
             "windowInnerWidth": targetWindowInnerWidth
         }),
         "fontFamily": `'${FONT.fontFamily}'`

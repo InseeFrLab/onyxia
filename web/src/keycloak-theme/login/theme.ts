@@ -1,11 +1,15 @@
 import { createThemeProvider, defaultGetTypographyDesc } from "onyxia-ui";
 import { createTss } from "tss-react";
-import { palette, loadThemedFavicon } from "ui/theme";
+import { palette, loadThemedFavicon, targetWindowInnerWidth } from "ui/theme";
 import { FONT } from "./envCarriedOverToKc";
 
 const { useTheme, ThemeProvider } = createThemeProvider({
     "getTypographyDesc": params => ({
-        ...defaultGetTypographyDesc(params),
+        ...defaultGetTypographyDesc({
+            ...params,
+            // NOTE: Prevent the font from being responsive.
+            "windowInnerWidth": targetWindowInnerWidth
+        }),
         "fontFamily": `'${FONT.fontFamily}'${
             FONT.fontFamily === "Work Sans" ? "" : ", 'Work Sans'"
         }`
