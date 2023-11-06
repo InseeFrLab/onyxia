@@ -45,7 +45,7 @@ export type AdminProvidedLink = {
     url: string;
 };
 
-export const env = createParsedEnvs([
+export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
     {
         "envName": "THEME_ID",
         "isUsedInKeycloakTheme": true,
@@ -426,18 +426,6 @@ export const env = createParsedEnvs([
     }
 ]);
 
-export function injectTransferableEnvsInQueryParams(url: string): string {
-    let newUrl = url;
-
-    for (const inject of injectFunctions) {
-        newUrl = inject(newUrl);
-    }
-
-    return newUrl;
-}
-
-const injectFunctions: ((url: string) => string)[] = [];
-
 type Entry<N extends EnvName> = {
     envName: N;
     validateAndParseOrGetDefault: (params: { envValue: string; envName: N }) => any;
@@ -447,11 +435,16 @@ type Entry<N extends EnvName> = {
 function createParsedEnvs<Parser extends Entry<EnvName>>(
     parsers: Parser[]
 ): {
-    [K in Parser["envName"]]: ReturnType<
-        Extract<Parser, { envName: K }>["validateAndParseOrGetDefault"]
-    >;
+    env: {
+        [K in Parser["envName"]]: ReturnType<
+            Extract<Parser, { envName: K }>["validateAndParseOrGetDefault"]
+        >;
+    };
+    injectTransferableEnvsInQueryParams: (url: string) => string;
 } {
     const parsedValueOrGetterByEnvName: Record<string, any> = {};
+
+    const injectFunctions: ((url: string) => string)[] = [];
 
     const replacePUBLIC_URL = (envValue: string) =>
         envValue.replace(
@@ -548,17 +541,32 @@ function createParsedEnvs<Parser extends Entry<EnvName>>(
         }
     }
 
-    return new Proxy({} as any, {
-        "get": (...[, envName]) => {
-            assert(typeof envName === "string");
+    const env: any = new Proxy(
+        {},
+        {
+            "get": (...[, envName]) => {
+                assert(typeof envName === "string");
 
-            assert(envName in parsedValueOrGetterByEnvName);
+                assert(envName in parsedValueOrGetterByEnvName);
 
-            const parsedValueOrGetter = parsedValueOrGetterByEnvName[envName];
+                const parsedValueOrGetter = parsedValueOrGetterByEnvName[envName];
 
-            return typeof parsedValueOrGetter === "function"
-                ? parsedValueOrGetter()
-                : parsedValueOrGetter;
+                return typeof parsedValueOrGetter === "function"
+                    ? parsedValueOrGetter()
+                    : parsedValueOrGetter;
+            }
         }
-    });
+    );
+
+    function injectTransferableEnvsInQueryParams(url: string): string {
+        let newUrl = url;
+
+        for (const inject of injectFunctions) {
+            newUrl = inject(newUrl);
+        }
+
+        return newUrl;
+    }
+
+    return { env, injectTransferableEnvsInQueryParams };
 }
