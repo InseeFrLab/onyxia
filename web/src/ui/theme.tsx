@@ -10,11 +10,11 @@ import {
 } from "onyxia-ui";
 import { createTss } from "tss-react";
 import {
-    THEME_ID,
-    PALETTE_OVERRIDE,
-    FAVICON,
-    FONT
-} from "env-parsed_main-app+login-pages";
+    parsed_THEME_ID,
+    parsed_PALETTE_OVERRIDE,
+    parsed_FAVICON,
+    parsed_FONT
+} from "env-parsed";
 import { mergeDeep } from "ui/tools/mergeDeep";
 import { AnimatedOnyxiaLogo } from "onyxia-ui/AnimatedOnyxiaLogo";
 import { $lang, resolveLocalizedString } from "ui/i18n";
@@ -32,7 +32,7 @@ import { Evt } from "evt";
 export const palette = {
     ...(() => {
         const selectedBuiltinPalette = (() => {
-            switch (THEME_ID) {
+            switch (parsed_THEME_ID) {
                 case "onyxia":
                     return defaultPalette;
                 case "france":
@@ -44,8 +44,8 @@ export const palette = {
             }
         })();
 
-        return PALETTE_OVERRIDE !== undefined
-            ? mergeDeep(selectedBuiltinPalette, PALETTE_OVERRIDE)
+        return parsed_PALETTE_OVERRIDE !== undefined
+            ? mergeDeep(selectedBuiltinPalette, parsed_PALETTE_OVERRIDE)
             : selectedBuiltinPalette;
     })(),
     "limeGreen": {
@@ -70,7 +70,7 @@ const { useTheme, ThemeProvider } = createThemeProvider({
             // we don't want that here so we fix the windowInnerWidth.
             "windowInnerWidth": targetWindowInnerWidth
         }),
-        "fontFamily": `'${FONT.fontFamily}'`
+        "fontFamily": `'${parsed_FONT.fontFamily}'`
     }),
     palette,
     "splashScreenParams": { "Logo": AnimatedOnyxiaLogo },
@@ -100,7 +100,7 @@ export async function loadThemedFavicon() {
             const svgUrl = resolveAssetVariantUrl({
                 resolveLocalizedString,
                 isDarkModeEnabled,
-                "assetVariantUrl": FAVICON
+                "assetVariantUrl": parsed_FAVICON
             });
 
             const rawSvgString = await fetch(svgUrl)

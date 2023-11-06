@@ -19,7 +19,7 @@ import {
     getParsed_DISABLE_COMMAND_BAR,
     getParsed_GLOBAL_ALERT,
     getParsed_DISABLE_PERSONAL_INFOS_INJECTION_IN_GROUP
-} from "env-parsed_main-app-only";
+} from "env-parsed";
 import { injectTransferableEnvsInQueryParams } from "env-parsed_main-app+login-pages";
 import { declareComponentKeys } from "i18nifty";
 import { RouteProvider } from "ui/routes";
