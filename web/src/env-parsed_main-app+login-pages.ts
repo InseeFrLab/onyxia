@@ -1,10 +1,3 @@
-/**
- * Here are the envs that are both accessible in the web app and in the Onyxia Keycloak theme.
- * When redirecting to the login page we transfer those values as url query parameters.
- *
- * BE MINDFUL: This module should be evaluated as soon as possible
- * to cleanup the url query parameter.
- */
 import { getEnv, type EnvName } from "env";
 import { kcContext as kcLoginThemeContext } from "keycloak-theme/login/kcContext";
 import {
@@ -23,12 +16,14 @@ import type { DeepPartial } from "keycloakify/tools/DeepPartial";
 import type { AssetVariantUrl } from "ui/shared/AssetVariantUrl";
 import { parseAssetVariantUrl } from "ui/shared/AssetVariantUrl/z";
 import { z } from "zod";
+import memoize from "memoizee";
 
 const paletteIds = ["onyxia", "france", "ultraviolet", "verdant"] as const;
 
 export type PaletteId = (typeof paletteIds)[number];
 
-export const { THEME_ID } = registerEnvParser({
+export const { parsed_THEME_ID } = parseEnv({
+    "isUsedInKeycloakTheme": true,
     "envName": "THEME_ID",
     "validateAndParseOrGetDefault": ({ envValue }): PaletteId =>
         envValue === ""
@@ -48,7 +43,8 @@ export const { THEME_ID } = registerEnvParser({
               })()
 });
 
-export const { PALETTE_OVERRIDE } = registerEnvParser({
+export const { parsed_PALETTE_OVERRIDE } = parseEnv({
+    "isUsedInKeycloakTheme": true,
     "envName": "PALETTE_OVERRIDE",
     "validateAndParseOrGetDefault": ({
         envValue,
@@ -80,17 +76,20 @@ export const { PALETTE_OVERRIDE } = registerEnvParser({
     }
 });
 
-export const { HEADER_ORGANIZATION } = registerEnvParser({
+export const { parsed_HEADER_ORGANIZATION } = parseEnv({
+    "isUsedInKeycloakTheme": true,
     "envName": "HEADER_ORGANIZATION" as const,
     "validateAndParseOrGetDefault": ({ envValue }) => envValue
 });
 
-export const { HEADER_USECASE_DESCRIPTION } = registerEnvParser({
+export const { parsed_HEADER_USECASE_DESCRIPTION } = parseEnv({
+    "isUsedInKeycloakTheme": true,
     "envName": "HEADER_USECASE_DESCRIPTION",
     "validateAndParseOrGetDefault": ({ envValue }) => envValue
 });
 
-export const { TERMS_OF_SERVICES } = registerEnvParser({
+export const { parsed_TERMS_OF_SERVICES } = parseEnv({
+    "isUsedInKeycloakTheme": true,
     "envName": "TERMS_OF_SERVICES",
     "validateAndParseOrGetDefault": ({
         envValue,
@@ -144,7 +143,8 @@ export const { TERMS_OF_SERVICES } = registerEnvParser({
     }
 });
 
-export const { FAVICON } = registerEnvParser({
+export const { parsed_FAVICON } = parseEnv({
+    "isUsedInKeycloakTheme": true,
     "envName": "FAVICON",
     "validateAndParseOrGetDefault": ({ envValue, envName }): AssetVariantUrl => {
         assert(envValue !== "Should have default in .env");
@@ -174,7 +174,8 @@ type Font = {
     ["700-italic"]?: string;
 };
 
-export const { FONT } = registerEnvParser({
+export const { parsed_FONT } = parseEnv({
+    "isUsedInKeycloakTheme": true,
     "envName": "FONT",
     "validateAndParseOrGetDefault": ({ envValue, envName }): Font => {
         assert(envValue !== "Should have default in .env");
@@ -225,17 +226,32 @@ export function injectTransferableEnvsInQueryParams(url: string): string {
 
 injectTransferableEnvsInQueryParams.injectFunctions = id<((url: string) => string)[]>([]);
 
-function registerEnvParser<T, N extends EnvName>(params: {
+function parseEnv<T, N extends EnvName>(params: {
+    isUsedInKeycloakTheme: true;
     envName: N;
-    validateAndParseOrGetDefault: (params: { envValue: string; envName: string }) => T;
-}): Record<N, T> {
-    const { envName, validateAndParseOrGetDefault } = params;
+    validateAndParseOrGetDefault: (params: { envValue: string; envName: N }) => T;
+}): Record<`parsed_${N}`, T>;
+function parseEnv<T, N extends EnvName>(params: {
+    isUsedInKeycloakTheme: false;
+    envName: N;
+    validateAndParseOrGetDefault: (params: { envValue: string; envName: N }) => T;
+}): Record<`getParsed_${N}`, () => T>;
+function parseEnv<T, N extends EnvName>(params: {
+    isUsedInKeycloakTheme: boolean;
+    envName: N;
+    validateAndParseOrGetDefault: (params: { envValue: string; envName: N }) => T;
+}): any {
+    const { envName, validateAndParseOrGetDefault, isUsedInKeycloakTheme } = params;
 
     const isProductionKeycloak =
         process.env.NODE_ENV === "production" && kcLoginThemeContext !== undefined;
 
-    const serializedValue = (() => {
+    const envValue = (() => {
         look_in_url: {
+            if (!isUsedInKeycloakTheme) {
+                break look_in_url;
+            }
+
             const result = retrieveParamFromUrl({
                 "url": window.location.href,
                 "name": envName
@@ -245,15 +261,15 @@ function registerEnvParser<T, N extends EnvName>(params: {
                 break look_in_url;
             }
 
-            const { newUrl, value: serializedValue } = result;
+            const { newUrl, value: envValue } = result;
 
             updateSearchBarUrl(newUrl);
 
             if (isProductionKeycloak) {
-                localStorage.setItem(envName, serializedValue);
+                localStorage.setItem(envName, envValue);
             }
 
-            return serializedValue;
+            return envValue;
         }
 
         read_what_have_been_injected_by_cra_envs: {
@@ -269,13 +285,13 @@ function registerEnvParser<T, N extends EnvName>(params: {
                 break restore_from_local_storage;
             }
 
-            const serializedValue = localStorage.getItem(envName);
+            const envValue = localStorage.getItem(envName);
 
-            if (serializedValue === null) {
+            if (envValue === null) {
                 break restore_from_local_storage;
             }
 
-            return serializedValue;
+            return envValue;
         }
 
         // NOTE: Here we are in production Keycloak
@@ -284,23 +300,32 @@ function registerEnvParser<T, N extends EnvName>(params: {
         return getEnv()[envName];
     })();
 
-    function replaceAllPublicUrl(valueStr: string): string {
-        return valueStr.replace(
-            /%PUBLIC_URL%/g,
-            kcLoginThemeContext === undefined || process.env.NODE_ENV === "development"
-                ? process.env.PUBLIC_URL
-                : `${kcLoginThemeContext.url.resourcesPath}/build`
+    if (isUsedInKeycloakTheme) {
+        injectTransferableEnvsInQueryParams.injectFunctions.push(
+            url => addParamToUrl({ url, "name": envName, "value": envValue }).newUrl
         );
     }
 
-    injectTransferableEnvsInQueryParams.injectFunctions.push(
-        url => addParamToUrl({ url, "name": envName, "value": serializedValue }).newUrl
+    const envValueWithPublicUrlReplaced = envValue.replace(
+        /%PUBLIC_URL%/g,
+        kcLoginThemeContext === undefined || process.env.NODE_ENV === "development"
+            ? process.env.PUBLIC_URL
+            : `${kcLoginThemeContext.url.resourcesPath}/build`
     );
 
-    return {
-        [envName]: validateAndParseOrGetDefault({
-            "envValue": replaceAllPublicUrl(serializedValue),
-            envName
-        })
-    } as any;
+    return isUsedInKeycloakTheme
+        ? {
+              [`parsed_${envName}`]: validateAndParseOrGetDefault({
+                  "envValue": envValueWithPublicUrlReplaced,
+                  envName
+              })
+          }
+        : {
+              [`getParsed_${envName}`]: memoize(() =>
+                  validateAndParseOrGetDefault({
+                      "envValue": envValueWithPublicUrlReplaced,
+                      envName
+                  })
+              )
+          };
 }
