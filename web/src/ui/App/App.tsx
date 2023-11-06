@@ -13,14 +13,7 @@ import { useDomRect } from "powerhooks/useDomRect";
 import { id } from "tsafe/id";
 import { useIsDarkModeEnabled } from "onyxia-ui";
 import { keyframes } from "tss-react";
-import {
-    getParsed_EXTRA_LEFTBAR_ITEMS,
-    getParsed_DISABLE_HOME_PAGE,
-    getParsed_DISABLE_COMMAND_BAR,
-    getParsed_GLOBAL_ALERT,
-    getParsed_DISABLE_PERSONAL_INFOS_INJECTION_IN_GROUP,
-    injectTransferableEnvsInQueryParams
-} from "env-parsed";
+import { env, injectTransferableEnvsInQueryParams } from "env-parsed";
 import { declareComponentKeys } from "i18nifty";
 import { RouteProvider } from "ui/routes";
 import { createCoreProvider, useCoreState, useCoreFunctions, selectors } from "core";
@@ -59,9 +52,8 @@ const { CoreProvider } = createCoreProvider({
                         "value": evtLang.state
                     }).newUrl
             )[0],
-    "disablePersonalInfosInjectionInGroup":
-        getParsed_DISABLE_PERSONAL_INFOS_INJECTION_IN_GROUP(),
-    "isCommandBarEnabledByDefault": !getParsed_DISABLE_COMMAND_BAR()
+    "disablePersonalInfosInjectionInGroup": env.DISABLE_PERSONAL_INFOS_INJECTION_IN_GROUP,
+    "isCommandBarEnabledByDefault": !env.DISABLE_COMMAND_BAR
 });
 
 const { ScreenScalerOutOfRangeFallbackProvider } = enableScreenScaler({
@@ -144,7 +136,7 @@ function ContextualizedApp() {
     const leftBarItems = useMemo(
         () =>
             ({
-                ...(getParsed_DISABLE_HOME_PAGE()
+                ...(env.DISABLE_HOME_PAGE
                     ? ({} as never)
                     : {
                           "home": {
@@ -187,51 +179,39 @@ function ContextualizedApp() {
                               "label": t("myFiles"),
                               "link": routes.myFiles().link,
                               "belowDivider":
-                                  getParsed_EXTRA_LEFTBAR_ITEMS() === undefined
+                                  env.EXTRA_LEFTBAR_ITEMS === undefined
                                       ? true
                                       : t("divider: onyxia instance specific features")
                           } as const
                       }),
-                ...(() => {
-                    const extraLeftBarItems = getParsed_EXTRA_LEFTBAR_ITEMS();
-
-                    return extraLeftBarItems === undefined
-                        ? ({} as never)
-                        : Object.fromEntries(
-                              extraLeftBarItems.map(({ iconId, label, url }, i) => [
-                                  `extraItem${i}`,
-                                  id<LeftBarProps.Item>({
-                                      "icon": iconId,
-                                      "label": resolveLocalizedString(label),
-                                      "link": {
-                                          "href": url,
-                                          "target": "_blank"
-                                      }
-                                  })
-                              ])
-                          );
-                })()
+                ...(env.EXTRA_LEFTBAR_ITEMS === undefined
+                    ? ({} as never)
+                    : Object.fromEntries(
+                          env.EXTRA_LEFTBAR_ITEMS.map(({ iconId, label, url }, i) => [
+                              `extraItem${i}`,
+                              id<LeftBarProps.Item>({
+                                  "icon": iconId,
+                                  "label": resolveLocalizedString(label),
+                                  "link": {
+                                      "href": url,
+                                      "target": "_blank"
+                                  }
+                              })
+                          ])
+                      ))
             } satisfies LeftBarProps<string>["items"]),
         [t, lang]
     );
 
     return (
         <div ref={rootRef} className={classes.root}>
-            {(() => {
-                const globalAlert = getParsed_GLOBAL_ALERT();
-
-                if (globalAlert === undefined) {
-                    return null;
-                }
-
-                return (
-                    <GlobalAlert
-                        className={classes.globalAlert}
-                        severity={globalAlert.severity}
-                        message={globalAlert.message}
-                    />
-                );
-            })()}
+            {env.GLOBAL_ALERT !== undefined && (
+                <GlobalAlert
+                    className={classes.globalAlert}
+                    severity={env.GLOBAL_ALERT.severity}
+                    message={env.GLOBAL_ALERT.message}
+                />
+            )}
             <Header
                 className={classes.header}
                 useCase="core app"

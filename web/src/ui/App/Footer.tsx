@@ -9,7 +9,7 @@ import { useLang } from "ui/i18n";
 import { DarkModeSwitch } from "onyxia-ui/DarkModeSwitch";
 import { declareComponentKeys } from "i18nifty";
 import type { Link } from "type-route";
-import { getEnabledLanguages } from "ui/env";
+import { env } from "env-parsed";
 
 export type Props = {
     className?: string;
@@ -49,7 +49,7 @@ export const Footer = memo((props: Props) => {
                 <Text typo="body 2">{t("contribute")}</Text>
             </a>
             <div className={classes.sep} />
-            {getEnabledLanguages().length !== 1 && (
+            {env.ENABLED_LANGUAGES.length !== 1 && (
                 <LanguageSelect
                     languagesPrettyPrint={languagesPrettyPrint}
                     language={lang}

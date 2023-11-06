@@ -1,9 +1,9 @@
-import { FONT } from "./envCarriedOverToKc";
+import { env } from "env-parsed";
 import { assert, type Equals } from "tsafe/assert";
 import { exclude } from "tsafe/exclude";
 
 export function injectCustomFontFace(): void {
-    const { fontFamily, dirUrl } = FONT;
+    const { fontFamily, dirUrl } = env.FONT;
 
     if (fontFamily === "Work Sans") {
         return;
@@ -14,8 +14,8 @@ export function injectCustomFontFace(): void {
     const fontFaceRules = ([400, 500, 600, 700] as const)
         .map(weight => ({
             weight,
-            "normalFontFileBasename": FONT[weight],
-            "italicFontFileBasename": FONT[`${weight}-italic`]
+            "normalFontFileBasename": env.FONT[weight],
+            "italicFontFileBasename": env.FONT[`${weight}-italic`]
         }))
         .map(({ weight, normalFontFileBasename, italicFontFileBasename }) =>
             (["normal", "italic"] as const)

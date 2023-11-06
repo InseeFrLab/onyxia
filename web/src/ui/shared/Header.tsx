@@ -10,12 +10,7 @@ import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
-import {
-    getParsed_HEADER_HIDE_ONYXIA,
-    getParsed_HEADER_LINKS,
-    parsed_HEADER_ORGANIZATION,
-    parsed_HEADER_USECASE_DESCRIPTION
-} from "env-parsed";
+import { env } from "env-parsed";
 import { useResolveLocalizedString } from "ui/i18n";
 import { declareComponentKeys } from "i18nifty";
 
@@ -58,7 +53,7 @@ export const Header = memo((props: Props) => {
         "labelWhenMismatchingLanguage": true
     });
 
-    const doShowOnyxia = props.useCase === "core app" && !getParsed_HEADER_HIDE_ONYXIA();
+    const doShowOnyxia = props.useCase === "core app" && !env.HEADER_HIDE_ONYXIA;
 
     return (
         <header className={cx(classes.root, className)}>
@@ -71,23 +66,23 @@ export const Header = memo((props: Props) => {
                         Onyxia -
                     </Text>
                 )}
-                {parsed_HEADER_ORGANIZATION && (
+                {env.HEADER_ORGANIZATION && (
                     <Text
                         typo="section heading"
                         className={cx(css({ ...theme.spacing.rightLeft("margin", 2) }), {
                             [css({ "marginLeft": 0 })]: !doShowOnyxia
                         })}
                     >
-                        {parsed_HEADER_ORGANIZATION}
+                        {env.HEADER_ORGANIZATION}
                     </Text>
                 )}
-                {theme.windowInnerWidth > 450 && parsed_HEADER_USECASE_DESCRIPTION && (
+                {theme.windowInnerWidth > 450 && env.HEADER_USECASE_DESCRIPTION && (
                     <Text
                         typo="section heading"
                         className={css({ "fontWeight": 500 })}
                         color="focus"
                     >
-                        {parsed_HEADER_USECASE_DESCRIPTION}
+                        {env.HEADER_USECASE_DESCRIPTION}
                     </Text>
                 )}
             </div>
@@ -118,14 +113,8 @@ export const Header = memo((props: Props) => {
             <div className={classes.rightEndActionsContainer}>
                 {props.useCase === "core app" && (
                     <>
-                        {(() => {
-                            const headerLinksFromEnv = getParsed_HEADER_LINKS();
-
-                            if (headerLinksFromEnv === undefined) {
-                                return null;
-                            }
-
-                            return headerLinksFromEnv.map(({ iconId, url, label }) => (
+                        {env.HEADER_LINKS !== undefined &&
+                            env.HEADER_LINKS.map(({ iconId, url, label }) => (
                                 <ButtonBarButton
                                     key={url}
                                     className={classes.button}
@@ -135,9 +124,7 @@ export const Header = memo((props: Props) => {
                                 >
                                     {resolveLocalizedString(label)}
                                 </ButtonBarButton>
-                            ));
-                        })()}
-
+                            ))}
                         <Button
                             onClick={
                                 props.auth.isUserLoggedIn

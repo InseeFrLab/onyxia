@@ -14,7 +14,7 @@ import type { Link } from "type-route";
 import onyxiaNeumorphismDarkModeUrl from "ui/assets/svg/OnyxiaNeumorphismDarkMode.svg";
 import onyxiaNeumorphismLightModeUrl from "ui/assets/svg/OnyxiaNeumorphismLightMode.svg";
 import dragoonSvgUrl from "ui/assets/svg/Dragoon.svg";
-import { getParsed_DISABLE_HOME_PAGE } from "env-parsed";
+import { env } from "env-parsed";
 import { useConst } from "powerhooks/useConst";
 import { declareComponentKeys } from "i18nifty";
 import type { PageRoute } from "./route";
@@ -29,7 +29,7 @@ export default function Home(props: Props) {
     const { className } = props;
 
     useConst(() => {
-        if (getParsed_DISABLE_HOME_PAGE()) {
+        if (env.DISABLE_HOME_PAGE) {
             routes.catalog().replace();
         }
     });

@@ -6,7 +6,7 @@ import type { KcContext } from "../kcContext";
 import type { I18n } from "../i18n";
 import { useDownloadTerms } from "keycloakify/login";
 import { createResolveLocalizedStringFactory } from "i18nifty/LocalizedString/LocalizedString";
-import { TERMS_OF_SERVICES } from "../envCarriedOverToKc";
+import { env } from "env-parsed";
 import { tss } from "keycloak-theme/login/theme";
 import { Button } from "onyxia-ui/Button";
 import { useConst } from "powerhooks/useConst";
@@ -111,7 +111,7 @@ const { createResolveLocalizedString } = createResolveLocalizedStringFactory({
 export async function downloadTermMarkdown(params: { currentLanguageTag: string }) {
     const { currentLanguageTag } = params;
 
-    if (TERMS_OF_SERVICES === undefined) {
+    if (env.TERMS_OF_SERVICES === undefined) {
         return { "markdownString": "No terms provided", "lang": "en" };
     }
 
@@ -121,7 +121,7 @@ export async function downloadTermMarkdown(params: { currentLanguageTag: string 
         "labelWhenMismatchingLanguage": true
     });
 
-    const { text: tos_url, lang } = resolveLocalizedString(TERMS_OF_SERVICES);
+    const { text: tos_url, lang } = resolveLocalizedString(env.TERMS_OF_SERVICES);
 
     const markdownString = await fetch(tos_url).then(response => response.text());
 
