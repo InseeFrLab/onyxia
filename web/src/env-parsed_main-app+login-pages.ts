@@ -228,8 +228,7 @@ injectTransferableEnvsInQueryParams.injectFunctions = id<((url: string) => strin
 function registerEnvParser<T, N extends EnvName>(params: {
     envName: N;
     validateAndParseOrGetDefault: (params: { envValue: string; envName: string }) => T;
-}): Record<N, T> &
-    Record<`inject${Capitalize<N>}InSearchParams`, (url: string) => string> {
+}): Record<N, T> {
     const { envName, validateAndParseOrGetDefault } = params;
 
     const isProductionKeycloak =
