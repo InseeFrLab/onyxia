@@ -5,10 +5,8 @@
  * BE MINDFUL: This module should be evaluated as soon as possible
  * to cleanup the url query parameter.
  */
-
-import "minimal-polyfills/Object.fromEntries";
-import { getEnv } from "env";
-import { kcContext } from "keycloak-theme/login/kcContext";
+import { getEnv, type EnvName } from "env";
+import { kcContext as kcLoginThemeContext } from "keycloak-theme/login/kcContext";
 import {
     retrieveParamFromUrl,
     addParamToUrl,
@@ -16,7 +14,6 @@ import {
 } from "powerhooks/tools/urlSearchParams";
 import { assert, type Equals } from "tsafe/assert";
 import { is } from "tsafe/is";
-import { capitalize } from "tsafe/capitalize";
 import { typeGuard } from "tsafe/typeGuard";
 import { id } from "tsafe/id";
 import { objectKeys } from "tsafe/objectKeys";
@@ -25,52 +22,48 @@ import type { PaletteBase } from "onyxia-ui";
 import type { DeepPartial } from "keycloakify/tools/DeepPartial";
 import type { AssetVariantUrl } from "ui/shared/AssetVariantUrl";
 import { parseAssetVariantUrl } from "ui/shared/AssetVariantUrl/z";
-import { symToStr } from "tsafe/symToStr";
 import { z } from "zod";
 
 const paletteIds = ["onyxia", "france", "ultraviolet", "verdant"] as const;
 
 export type PaletteId = (typeof paletteIds)[number];
 
-const { THEME_ID, injectTHEME_IDInSearchParams } = getTransferableEnv({
-    "name": "THEME_ID" as const,
-    "getSerializedValueFromEnv": () => getEnv().THEME_ID,
-    "validateAndParseOrGetDefault": (valueStr): PaletteId =>
-        valueStr === ""
+export const { THEME_ID } = registerEnvParser({
+    "envName": "THEME_ID",
+    "validateAndParseOrGetDefault": ({ envValue }): PaletteId =>
+        envValue === ""
             ? "onyxia"
             : (() => {
                   assert(
                       typeGuard<PaletteId>(
-                          valueStr,
-                          id<readonly string[]>(paletteIds).includes(valueStr)
+                          envValue,
+                          id<readonly string[]>(paletteIds).includes(envValue)
                       ),
-                      `${valueStr} is not a valid palette. Available are: ${paletteIds.join(
+                      `${envValue} is not a valid palette. Available are: ${paletteIds.join(
                           ", "
                       )}`
                   );
 
-                  return valueStr;
+                  return envValue;
               })()
 });
 
-export { THEME_ID };
-
-const { PALETTE_OVERRIDE, injectPALETTE_OVERRIDEInSearchParams } = getTransferableEnv({
-    "name": "PALETTE_OVERRIDE" as const,
-    "getSerializedValueFromEnv": () => getEnv().PALETTE_OVERRIDE,
-    "validateAndParseOrGetDefault": (valueStr): DeepPartial<PaletteBase> | undefined => {
-        if (valueStr === "") {
+export const { PALETTE_OVERRIDE } = registerEnvParser({
+    "envName": "PALETTE_OVERRIDE",
+    "validateAndParseOrGetDefault": ({
+        envValue,
+        envName
+    }): DeepPartial<PaletteBase> | undefined => {
+        if (envValue === "") {
             return undefined;
         }
 
         let paletteOverride: any;
 
         try {
-            paletteOverride = JSON.parse(valueStr);
+            paletteOverride = JSON.parse(envValue);
         } catch (err) {
-            throw new Error(`palette override is not parsable JSON`, {
-                "cause": err
-            });
+            throw new Error(`${envName} is not parsable JSON`);
         }
 
         assert(
@@ -80,57 +73,47 @@ const { PALETTE_OVERRIDE, injectPALETTE_OVERRIDEInSearchParams } = getTransferab
                     paletteOverride !== null &&
                     !(paletteOverride instanceof Array)
             ),
-            `palette override should be a JSON object`
+            `${envName} should be a JSON object`
         );
 
         return paletteOverride;
     }
 });
 
-export { PALETTE_OVERRIDE };
+export const { HEADER_ORGANIZATION } = registerEnvParser({
+    "envName": "HEADER_ORGANIZATION" as const,
+    "validateAndParseOrGetDefault": ({ envValue }) => envValue
+});
 
-const { HEADER_ORGANIZATION, injectHEADER_ORGANIZATIONInSearchParams } =
-    getTransferableEnv({
-        "name": "HEADER_ORGANIZATION" as const,
-        "getSerializedValueFromEnv": () => getEnv().HEADER_ORGANIZATION,
-        "validateAndParseOrGetDefault": (valueStr): string => valueStr
-    });
+export const { HEADER_USECASE_DESCRIPTION } = registerEnvParser({
+    "envName": "HEADER_USECASE_DESCRIPTION",
+    "validateAndParseOrGetDefault": ({ envValue }) => envValue
+});
 
-export { HEADER_ORGANIZATION };
-
-const { HEADER_USECASE_DESCRIPTION, injectHEADER_USECASE_DESCRIPTIONInSearchParams } =
-    getTransferableEnv({
-        "name": "HEADER_USECASE_DESCRIPTION" as const,
-        "getSerializedValueFromEnv": () => getEnv().HEADER_USECASE_DESCRIPTION,
-        "validateAndParseOrGetDefault": (valueStr): string => valueStr
-    });
-
-export { HEADER_USECASE_DESCRIPTION };
-
-const { TERMS_OF_SERVICES, injectTERMS_OF_SERVICESInSearchParams } = getTransferableEnv({
-    "name": "TERMS_OF_SERVICES" as const,
-    "getSerializedValueFromEnv": () => getEnv().TERMS_OF_SERVICES,
-    "validateAndParseOrGetDefault": (
-        valueStr
-    ): Partial<Record<Language, string>> | string | undefined => {
-        if (valueStr === "") {
+export const { TERMS_OF_SERVICES } = registerEnvParser({
+    "envName": "TERMS_OF_SERVICES",
+    "validateAndParseOrGetDefault": ({
+        envValue,
+        envName
+    }): Partial<Record<Language, string>> | string | undefined => {
+        if (envValue === "") {
             return undefined;
         }
 
         {
-            const match = valueStr.match(/^ *{/);
+            const match = envValue.match(/^ *{/);
 
             if (match === null) {
-                return valueStr;
+                return envValue;
             }
         }
 
         let tosUrlByLng: Partial<Record<Language, string>>;
 
         try {
-            tosUrlByLng = JSON.parse(valueStr);
+            tosUrlByLng = JSON.parse(envValue);
         } catch {
-            throw new Error("Terms of services malformed");
+            throw new Error(`${envName} malformed`);
         }
 
         {
@@ -161,27 +144,22 @@ const { TERMS_OF_SERVICES, injectTERMS_OF_SERVICESInSearchParams } = getTransfer
     }
 });
 
-export { TERMS_OF_SERVICES };
-
-const { FAVICON, injectFAVICONInSearchParams } = getTransferableEnv({
-    "name": "FAVICON" as const,
-    "getSerializedValueFromEnv": () => getEnv().FAVICON,
-    "validateAndParseOrGetDefault": (valueStr): AssetVariantUrl => {
-        assert(valueStr !== "Should have default in .env");
+export const { FAVICON } = registerEnvParser({
+    "envName": "FAVICON",
+    "validateAndParseOrGetDefault": ({ envValue, envName }): AssetVariantUrl => {
+        assert(envValue !== "Should have default in .env");
 
         let faviconUrl: AssetVariantUrl;
 
         try {
-            faviconUrl = parseAssetVariantUrl(valueStr);
+            faviconUrl = parseAssetVariantUrl(envValue);
         } catch (error) {
-            throw new Error(`${symToStr({ FAVICON })} is malformed. ${String(error)}`);
+            throw new Error(`${envName} is malformed. ${String(error)}`);
         }
 
         return faviconUrl;
     }
 });
-
-export { FAVICON };
 
 type Font = {
     fontFamily: string;
@@ -196,18 +174,17 @@ type Font = {
     ["700-italic"]?: string;
 };
 
-const { FONT, injectFONTInSearchParams } = getTransferableEnv({
-    "name": "FONT" as const,
-    "getSerializedValueFromEnv": () => getEnv().FONT,
-    "validateAndParseOrGetDefault": (valueStr): Font => {
-        assert(valueStr !== "Should have default in .env");
+export const { FONT } = registerEnvParser({
+    "envName": "FONT",
+    "validateAndParseOrGetDefault": ({ envValue, envName }): Font => {
+        assert(envValue !== "Should have default in .env");
 
         let font: unknown;
 
         try {
-            font = JSON.parse(valueStr);
+            font = JSON.parse(envValue);
         } catch {
-            throw new Error(`${valueStr} is not a valid JSON`);
+            throw new Error(`${envName} is not a valid JSON`);
         }
 
         const zFont = z.object({
@@ -228,7 +205,7 @@ const { FONT, injectFONTInSearchParams } = getTransferableEnv({
         try {
             zFont.parse(font);
         } catch (error) {
-            throw new Error(`${valueStr} is not a valid Font object: ${String(error)}`);
+            throw new Error(`${envName} is not a valid Font object: ${String(error)}`);
         }
         assert(is<Font>(font));
 
@@ -236,46 +213,37 @@ const { FONT, injectFONTInSearchParams } = getTransferableEnv({
     }
 });
 
-export { FONT };
-
-export function injectTransferableEnvsInSearchParams(url: string): string {
+export function injectTransferableEnvsInQueryParams(url: string): string {
     let newUrl = url;
 
-    for (const inject of [
-        injectTHEME_IDInSearchParams,
-        injectHEADER_ORGANIZATIONInSearchParams,
-        injectHEADER_USECASE_DESCRIPTIONInSearchParams,
-        injectTERMS_OF_SERVICESInSearchParams,
-        injectPALETTE_OVERRIDEInSearchParams,
-        injectFAVICONInSearchParams,
-        injectFONTInSearchParams
-    ]) {
+    for (const inject of injectTransferableEnvsInQueryParams.injectFunctions) {
         newUrl = inject(newUrl);
     }
 
     return newUrl;
 }
 
-function getTransferableEnv<T, Name extends string>(params: {
-    name: Name;
-    getSerializedValueFromEnv: () => string;
-    validateAndParseOrGetDefault: (serializedValue: string) => T;
-}): Record<Name, T> &
-    Record<`inject${Capitalize<Name>}InSearchParams`, (url: string) => string> {
-    const { name, getSerializedValueFromEnv, validateAndParseOrGetDefault } = params;
+injectTransferableEnvsInQueryParams.injectFunctions = id<((url: string) => string)[]>([]);
+
+function registerEnvParser<T, N extends EnvName>(params: {
+    envName: N;
+    validateAndParseOrGetDefault: (params: { envValue: string; envName: string }) => T;
+}): Record<N, T> &
+    Record<`inject${Capitalize<N>}InSearchParams`, (url: string) => string> {
+    const { envName, validateAndParseOrGetDefault } = params;
 
     const isProductionKeycloak =
-        process.env.NODE_ENV === "production" && kcContext !== undefined;
+        process.env.NODE_ENV === "production" && kcLoginThemeContext !== undefined;
 
     const serializedValue = (() => {
-        scope: {
+        look_in_url: {
             const result = retrieveParamFromUrl({
                 "url": window.location.href,
-                name
+                "name": envName
             });
 
             if (!result.wasPresent) {
-                break scope;
+                break look_in_url;
             }
 
             const { newUrl, value: serializedValue } = result;
@@ -283,51 +251,57 @@ function getTransferableEnv<T, Name extends string>(params: {
             updateSearchBarUrl(newUrl);
 
             if (isProductionKeycloak) {
-                localStorage.setItem(name, serializedValue);
+                localStorage.setItem(envName, serializedValue);
             }
 
             return serializedValue;
         }
 
-        scope: {
+        read_what_have_been_injected_by_cra_envs: {
             if (isProductionKeycloak) {
-                break scope;
+                break read_what_have_been_injected_by_cra_envs;
             }
 
-            return getSerializedValueFromEnv();
+            return getEnv()[envName];
         }
 
-        scope: {
+        restore_from_local_storage: {
             if (!isProductionKeycloak) {
-                break scope;
+                break restore_from_local_storage;
             }
 
-            const serializedValue = localStorage.getItem(name);
+            const serializedValue = localStorage.getItem(envName);
 
             if (serializedValue === null) {
-                break scope;
+                break restore_from_local_storage;
             }
 
             return serializedValue;
         }
 
-        // NOTE: We get the default that was injected at build time.
+        // NOTE: Here we are in production Keycloak
+        // We get the default that was injected at build time. (cra-envs do not work with keycloak)
         // This can happen when the user has never navigated to the login page via onyxia.
-        return getSerializedValueFromEnv();
+        return getEnv()[envName];
     })();
 
     function replaceAllPublicUrl(valueStr: string): string {
         return valueStr.replace(
             /%PUBLIC_URL%/g,
-            kcContext === undefined || process.env.NODE_ENV === "development"
+            kcLoginThemeContext === undefined || process.env.NODE_ENV === "development"
                 ? process.env.PUBLIC_URL
-                : `${kcContext.url.resourcesPath}/build`
+                : `${kcLoginThemeContext.url.resourcesPath}/build`
         );
     }
 
+    injectTransferableEnvsInQueryParams.injectFunctions.push(
+        url => addParamToUrl({ url, "name": envName, "value": serializedValue }).newUrl
+    );
+
     return {
-        [name]: validateAndParseOrGetDefault(replaceAllPublicUrl(serializedValue)),
-        [`inject${capitalize(name)}InSearchParams`]: (url: string) =>
-            addParamToUrl({ url, name, "value": serializedValue }).newUrl
+        [envName]: validateAndParseOrGetDefault({
+            "envValue": replaceAllPublicUrl(serializedValue),
+            envName
+        })
     } as any;
 }
