@@ -6828,10 +6828,10 @@ cpy@^8.1.2:
     p-filter "^2.1.0"
     p-map "^3.0.0"
 
-cra-envs@^1.2.13:
-  version "1.2.13"
-  resolved "https://registry.yarnpkg.com/cra-envs/-/cra-envs-1.2.13.tgz#8573a5404f186c8b25ad75ca6fad6442fa0bf588"
-  integrity sha512-/NFth4v83KbMRdczxvPRpr9qYQ1frCcKQSGcoup5zAVlASnwp0xVgI20wDrV3XdpDzUQ7gn7465V37BefqX1iQ==
+cra-envs@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/cra-envs/-/cra-envs-2.0.0.tgz#095e7b2c659cd0e2750657597ffb7bee30f98973"
+  integrity sha512-dJtngNFQA7WcxKXMmmxF47tNQIaRXZZoBJ7CKkLQWqbzjkjFX6Q5d99kCq5GGgo6TxO5nfSRmfrem+NPYSt/4w==
   dependencies:
     cheerio "^1.0.0-rc.5"
     dotenv "^8.2.0"
