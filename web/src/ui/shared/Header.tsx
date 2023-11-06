@@ -12,12 +12,10 @@ import FormControl from "@mui/material/FormControl";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 import {
     getParsed_HEADER_HIDE_ONYXIA,
-    getParsed_HEADER_LINKS
-} from "env-parsed_main-app-only";
-import {
-    HEADER_ORGANIZATION,
-    HEADER_USECASE_DESCRIPTION
-} from "env-parsed_main-app+login-pages";
+    getParsed_HEADER_LINKS,
+    parsed_HEADER_ORGANIZATION,
+    parsed_HEADER_USECASE_DESCRIPTION
+} from "env-parsed";
 import { useResolveLocalizedString } from "ui/i18n";
 import { declareComponentKeys } from "i18nifty";
 
@@ -73,23 +71,23 @@ export const Header = memo((props: Props) => {
                         Onyxia -
                     </Text>
                 )}
-                {HEADER_ORGANIZATION && (
+                {parsed_HEADER_ORGANIZATION && (
                     <Text
                         typo="section heading"
                         className={cx(css({ ...theme.spacing.rightLeft("margin", 2) }), {
                             [css({ "marginLeft": 0 })]: !doShowOnyxia
                         })}
                     >
-                        {HEADER_ORGANIZATION}
+                        {parsed_HEADER_ORGANIZATION}
                     </Text>
                 )}
-                {theme.windowInnerWidth > 450 && HEADER_USECASE_DESCRIPTION && (
+                {theme.windowInnerWidth > 450 && parsed_HEADER_USECASE_DESCRIPTION && (
                     <Text
                         typo="section heading"
                         className={css({ "fontWeight": 500 })}
                         color="focus"
                     >
-                        {HEADER_USECASE_DESCRIPTION}
+                        {parsed_HEADER_USECASE_DESCRIPTION}
                     </Text>
                 )}
             </div>

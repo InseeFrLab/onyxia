@@ -12,7 +12,7 @@ import type { PageRoute } from "./route";
 import { useSplashScreen } from "onyxia-ui";
 import { useEvt } from "evt/hooks";
 import { routes, getPreviousRouteName } from "ui/routes";
-import { getIsAutoLaunchDisabled } from "ui/env";
+import { getParsed_DISABLE_AUTO_LAUNCH } from "env-parsed";
 import { assert } from "tsafe/assert";
 import { Deferred } from "evt/tools/Deferred";
 import { Evt, type UnpackEvt } from "evt";
@@ -150,7 +150,7 @@ export default function Launcher(props: Props) {
                         }).replace();
 
                         if (
-                            getIsAutoLaunchDisabled() &&
+                            getParsed_DISABLE_AUTO_LAUNCH() &&
                             //If auto launch from myServices the user is launching one of his service, it's safe
                             getPreviousRouteName() !== "myServices"
                         ) {

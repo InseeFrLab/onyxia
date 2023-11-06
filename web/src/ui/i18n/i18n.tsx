@@ -6,7 +6,7 @@ import {
 import { fallbackLanguage, type Language } from "./types";
 import { ComponentKey } from "./types";
 import { statefulObservableToStatefulEvt } from "powerhooks/tools/StatefulObservable/statefulObservableToStatefulEvt";
-import { getEnabledLanguages } from "ui/env";
+import { getParsed_ENABLED_LANGUAGES } from "env-parsed";
 import { objectEntries } from "tsafe/objectEntries";
 import { objectFromEntries } from "tsafe/objectFromEntries";
 export { declareComponentKeys };
@@ -21,7 +21,7 @@ export const {
     getTranslation
 } = createI18nApi<ComponentKey>()(
     {
-        "languages": getEnabledLanguages(),
+        "languages": getParsed_ENABLED_LANGUAGES(),
         fallbackLanguage
     },
     {
@@ -55,5 +55,5 @@ export const languagesPrettyPrint: Record<Language, string> = objectFromEntries(
         "fi": "Suomi",
         "zh-CN": "简体中文"
         /* spell-checker: enable */
-    }).filter(([language]) => getEnabledLanguages().includes(language))
+    }).filter(([language]) => getParsed_ENABLED_LANGUAGES().includes(language))
 );

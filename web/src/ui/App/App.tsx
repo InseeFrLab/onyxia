@@ -18,9 +18,9 @@ import {
     getParsed_DISABLE_HOME_PAGE,
     getParsed_DISABLE_COMMAND_BAR,
     getParsed_GLOBAL_ALERT,
-    getParsed_DISABLE_PERSONAL_INFOS_INJECTION_IN_GROUP
+    getParsed_DISABLE_PERSONAL_INFOS_INJECTION_IN_GROUP,
+    injectTransferableEnvsInQueryParams
 } from "env-parsed";
-import { injectTransferableEnvsInQueryParams } from "env-parsed_main-app+login-pages";
 import { declareComponentKeys } from "i18nifty";
 import { RouteProvider } from "ui/routes";
 import { createCoreProvider, useCoreState, useCoreFunctions, selectors } from "core";
