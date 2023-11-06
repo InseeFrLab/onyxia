@@ -6,16 +6,12 @@ import { useConstCallback } from "powerhooks/useConstCallback";
 import { tss } from "ui/theme";
 import { Text } from "onyxia-ui/Text";
 import { ReactComponent as OnyxiaLogoSvg } from "ui/assets/svg/OnyxiaLogo.svg";
-import {
-    HEADER_ORGANIZATION,
-    HEADER_USECASE_DESCRIPTION
-} from "keycloak-theme/login/envCarriedOverToKc";
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
-import { getHeaderLinksFromEnv } from "ui/env";
-import { getDoHideOnyxia } from "ui/env";
+import { getParsed_HEADER_HIDE_ONYXIA, getParsed_HEADER_LINKS } from "envParsedUiOnly";
+import { HEADER_ORGANIZATION, HEADER_USECASE_DESCRIPTION } from "envParsedUiAndKeycloak";
 import { useResolveLocalizedString } from "ui/i18n";
 import { declareComponentKeys } from "i18nifty";
 
@@ -58,7 +54,7 @@ export const Header = memo((props: Props) => {
         "labelWhenMismatchingLanguage": true
     });
 
-    const doShowOnyxia = props.useCase === "core app" && !getDoHideOnyxia();
+    const doShowOnyxia = props.useCase === "core app" && !getParsed_HEADER_HIDE_ONYXIA();
 
     return (
         <header className={cx(classes.root, className)}>
@@ -119,7 +115,7 @@ export const Header = memo((props: Props) => {
                 {props.useCase === "core app" && (
                     <>
                         {(() => {
-                            const headerLinksFromEnv = getHeaderLinksFromEnv();
+                            const headerLinksFromEnv = getParsed_HEADER_LINKS();
 
                             if (headerLinksFromEnv === undefined) {
                                 return null;

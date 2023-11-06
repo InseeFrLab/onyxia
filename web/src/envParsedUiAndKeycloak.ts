@@ -1,10 +1,6 @@
 /**
- * Here are the envs that are both accessible in the regular app and on
- * the Keycloak pages.
- * When redirecting to the login page we transfer those values as url
- * query parameters.
- * In the pages served by Keycloak we can't use getEnv()
- * so we need to pass the params as url query parameters.
+ * Here are the envs that are both accessible in the web app and in the Onyxia Keycloak theme.
+ * When redirecting to the login page we transfer those values as url query parameters.
  *
  * BE MINDFUL: This module should be evaluated as soon as possible
  * to cleanup the url query parameter.
@@ -12,7 +8,7 @@
 
 import "minimal-polyfills/Object.fromEntries";
 import { getEnv } from "env";
-import { kcContext } from "./kcContext";
+import { kcContext } from "keycloak-theme/login/kcContext";
 import {
     retrieveParamFromUrl,
     addParamToUrl,
@@ -20,7 +16,6 @@ import {
 } from "powerhooks/tools/urlSearchParams";
 import { assert, type Equals } from "tsafe/assert";
 import { is } from "tsafe/is";
-import { isStorybook } from "ui/tools/isStorybook";
 import { capitalize } from "tsafe/capitalize";
 import { typeGuard } from "tsafe/typeGuard";
 import { id } from "tsafe/id";
@@ -36,15 +31,6 @@ import { z } from "zod";
 const paletteIds = ["onyxia", "france", "ultraviolet", "verdant"] as const;
 
 export type PaletteId = (typeof paletteIds)[number];
-
-function replaceAllPublicUrl(valueStr: string): string {
-    return valueStr.replace(
-        /%PUBLIC_URL%/g,
-        kcContext === undefined || process.env.NODE_ENV === "development"
-            ? process.env.PUBLIC_URL
-            : `${kcContext.url.resourcesPath}/build`
-    );
-}
 
 const { THEME_ID, injectTHEME_IDInSearchParams } = getTransferableEnv({
     "name": "THEME_ID" as const,
@@ -183,8 +169,6 @@ const { FAVICON, injectFAVICONInSearchParams } = getTransferableEnv({
     "validateAndParseOrGetDefault": (valueStr): AssetVariantUrl => {
         assert(valueStr !== "Should have default in .env");
 
-        valueStr = replaceAllPublicUrl(valueStr);
-
         let faviconUrl: AssetVariantUrl;
 
         try {
@@ -217,8 +201,6 @@ const { FONT, injectFONTInSearchParams } = getTransferableEnv({
     "getSerializedValueFromEnv": () => getEnv().FONT,
     "validateAndParseOrGetDefault": (valueStr): Font => {
         assert(valueStr !== "Should have default in .env");
-
-        valueStr = replaceAllPublicUrl(valueStr);
 
         let font: unknown;
 
@@ -282,7 +264,8 @@ function getTransferableEnv<T, Name extends string>(params: {
     Record<`inject${Capitalize<Name>}InSearchParams`, (url: string) => string> {
     const { name, getSerializedValueFromEnv, validateAndParseOrGetDefault } = params;
 
-    const isKeycloak = process.env.NODE_ENV === "production" && kcContext !== undefined;
+    const isProductionKeycloak =
+        process.env.NODE_ENV === "production" && kcContext !== undefined;
 
     const serializedValue = (() => {
         scope: {
@@ -299,7 +282,7 @@ function getTransferableEnv<T, Name extends string>(params: {
 
             updateSearchBarUrl(newUrl);
 
-            if (isKeycloak) {
+            if (isProductionKeycloak) {
                 localStorage.setItem(name, serializedValue);
             }
 
@@ -307,7 +290,7 @@ function getTransferableEnv<T, Name extends string>(params: {
         }
 
         scope: {
-            if (isKeycloak || isStorybook) {
+            if (isProductionKeycloak) {
                 break scope;
             }
 
@@ -315,7 +298,7 @@ function getTransferableEnv<T, Name extends string>(params: {
         }
 
         scope: {
-            if (!isKeycloak) {
+            if (!isProductionKeycloak) {
                 break scope;
             }
 
@@ -328,11 +311,22 @@ function getTransferableEnv<T, Name extends string>(params: {
             return serializedValue;
         }
 
+        // NOTE: We get the default that was injected at build time.
+        // This can happen when the user has never navigated to the login page via onyxia.
         return getSerializedValueFromEnv();
     })();
 
+    function replaceAllPublicUrl(valueStr: string): string {
+        return valueStr.replace(
+            /%PUBLIC_URL%/g,
+            kcContext === undefined || process.env.NODE_ENV === "development"
+                ? process.env.PUBLIC_URL
+                : `${kcContext.url.resourcesPath}/build`
+        );
+    }
+
     return {
-        [name]: validateAndParseOrGetDefault(serializedValue),
+        [name]: validateAndParseOrGetDefault(replaceAllPublicUrl(serializedValue)),
         [`inject${capitalize(name)}InSearchParams`]: (url: string) =>
             addParamToUrl({ url, name, "value": serializedValue }).newUrl
     } as any;

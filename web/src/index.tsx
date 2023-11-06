@@ -16,6 +16,7 @@ import { assert } from "tsafe/assert";
 }
 
 if (kcLoginThemeContext !== undefined) {
+    // We want to do that as soon as possible to prevent Flash Of Unstyled Content (FOUC)
     injectCustomFontFace();
 }
 
