@@ -9,7 +9,12 @@ import {
     evtIsDarkModeEnabled
 } from "onyxia-ui";
 import { createTss } from "tss-react";
-import { THEME_ID, PALETTE_OVERRIDE, FAVICON, FONT } from "envParsedUiAndKeycloak";
+import {
+    THEME_ID,
+    PALETTE_OVERRIDE,
+    FAVICON,
+    FONT
+} from "env-parsed_main-app+login-pages";
 import { mergeDeep } from "ui/tools/mergeDeep";
 import { AnimatedOnyxiaLogo } from "onyxia-ui/AnimatedOnyxiaLogo";
 import { $lang, resolveLocalizedString } from "ui/i18n";

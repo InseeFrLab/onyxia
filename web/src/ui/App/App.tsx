@@ -14,14 +14,16 @@ import { id } from "tsafe/id";
 import { useIsDarkModeEnabled } from "onyxia-ui";
 import { keyframes } from "tss-react";
 import {
-    getExtraLeftBarItemsFromEnv,
-    getIsHomePageDisabled,
-    getDisableCommandBar
-} from "ui/env";
+    getParsed_EXTRA_LEFTBAR_ITEMS,
+    getParsed_DISABLE_HOME_PAGE,
+    getParsed_DISABLE_COMMAND_BAR,
+    getParsed_GLOBAL_ALERT,
+    getParsed_DISABLE_PERSONAL_INFOS_INJECTION_IN_GROUP
+} from "env-parsed_main-app-only";
+import { injectTransferableEnvsInQueryParams } from "env-parsed_main-app+login-pages";
 import { declareComponentKeys } from "i18nifty";
 import { RouteProvider } from "ui/routes";
 import { createCoreProvider, useCoreState, useCoreFunctions, selectors } from "core";
-import { injectTransferableEnvsInSearchParams } from "keycloak-theme/login/envCarriedOverToKc";
 import { injectGlobalStatesInSearchParams } from "powerhooks/useGlobalState";
 import { evtLang } from "ui/i18n";
 import { getEnv } from "env";
@@ -36,7 +38,6 @@ import { Alert } from "onyxia-ui/Alert";
 import { simpleHash } from "ui/tools/simpleHash";
 import { Markdown } from "onyxia-ui/Markdown";
 import { type LocalizedString, useIsI18nFetching } from "ui/i18n";
-import { getGlobalAlert, getDisablePersonalInfosInjectionInGroup } from "ui/env";
 import { enableScreenScaler } from "screen-scaler/react";
 import { addParamToUrl } from "powerhooks/tools/urlSearchParams";
 import { customIcons } from "ui/theme";
@@ -48,7 +49,7 @@ const { CoreProvider } = createCoreProvider({
     "getCurrentLang": () => evtLang.state,
     "transformUrlBeforeRedirectToLogin": url =>
         [url]
-            .map(injectTransferableEnvsInSearchParams)
+            .map(injectTransferableEnvsInQueryParams)
             .map(injectGlobalStatesInSearchParams)
             .map(
                 url =>
@@ -58,8 +59,9 @@ const { CoreProvider } = createCoreProvider({
                         "value": evtLang.state
                     }).newUrl
             )[0],
-    "disablePersonalInfosInjectionInGroup": getDisablePersonalInfosInjectionInGroup(),
-    "isCommandBarEnabledByDefault": !getDisableCommandBar()
+    "disablePersonalInfosInjectionInGroup":
+        getParsed_DISABLE_PERSONAL_INFOS_INJECTION_IN_GROUP(),
+    "isCommandBarEnabledByDefault": !getParsed_DISABLE_COMMAND_BAR()
 });
 
 const { ScreenScalerOutOfRangeFallbackProvider } = enableScreenScaler({
@@ -142,7 +144,7 @@ function ContextualizedApp() {
     const leftBarItems = useMemo(
         () =>
             ({
-                ...(getIsHomePageDisabled()
+                ...(getParsed_DISABLE_HOME_PAGE()
                     ? ({} as never)
                     : {
                           "home": {
@@ -185,13 +187,13 @@ function ContextualizedApp() {
                               "label": t("myFiles"),
                               "link": routes.myFiles().link,
                               "belowDivider":
-                                  getExtraLeftBarItemsFromEnv() === undefined
+                                  getParsed_EXTRA_LEFTBAR_ITEMS() === undefined
                                       ? true
                                       : t("divider: onyxia instance specific features")
                           } as const
                       }),
                 ...(() => {
-                    const extraLeftBarItems = getExtraLeftBarItemsFromEnv();
+                    const extraLeftBarItems = getParsed_EXTRA_LEFTBAR_ITEMS();
 
                     return extraLeftBarItems === undefined
                         ? ({} as never)
@@ -216,7 +218,7 @@ function ContextualizedApp() {
     return (
         <div ref={rootRef} className={classes.root}>
             {(() => {
-                const globalAlert = getGlobalAlert();
+                const globalAlert = getParsed_GLOBAL_ALERT();
 
                 if (globalAlert === undefined) {
                     return null;

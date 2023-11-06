@@ -10,8 +10,14 @@ import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
-import { getParsed_HEADER_HIDE_ONYXIA, getParsed_HEADER_LINKS } from "envParsedUiOnly";
-import { HEADER_ORGANIZATION, HEADER_USECASE_DESCRIPTION } from "envParsedUiAndKeycloak";
+import {
+    getParsed_HEADER_HIDE_ONYXIA,
+    getParsed_HEADER_LINKS
+} from "env-parsed_main-app-only";
+import {
+    HEADER_ORGANIZATION,
+    HEADER_USECASE_DESCRIPTION
+} from "env-parsed_main-app+login-pages";
 import { useResolveLocalizedString } from "ui/i18n";
 import { declareComponentKeys } from "i18nifty";
 
