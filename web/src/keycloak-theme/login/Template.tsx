@@ -7,9 +7,8 @@ import type { KcContext } from "./kcContext";
 import type { I18n } from "./i18n";
 import { memo } from "react";
 import { useConstCallback } from "powerhooks/useConstCallback";
-import { Header } from "ui/shared/Header";
-import { logoContainerWidthInPercent } from "ui/App/logoContainerWidthInPercent";
-import { ThemeProvider, tss } from "keycloak-theme/login/theme";
+import { ThemeProvider } from "keycloak-theme/login/theme";
+import { tss } from "tss";
 import { Text } from "onyxia-ui/Text";
 import { IconButton } from "onyxia-ui/IconButton";
 import { useDomRect } from "powerhooks/useDomRect";
@@ -20,6 +19,7 @@ import onyxiaNeumorphismLightModeUrl from "ui/assets/svg/OnyxiaNeumorphismLightM
 import { Card } from "onyxia-ui/Card";
 import { Alert } from "onyxia-ui/Alert";
 import { symToStr } from "tsafe/symToStr";
+import { BrandHeaderSection } from "ui/shared/BrandHeaderSection";
 
 type TemplateProps = GenericTemplateProps<KcContext, I18n>;
 
@@ -34,23 +34,7 @@ export default function Template(props: TemplateProps) {
 function ContextualizedTemplate(props: TemplateProps) {
     const { kcContext, doUseDefaultCss, classes: classes_props, children } = props;
 
-    const {
-        domRect: { width: rootWidth },
-        ref: rootRef
-    } = useDomRect();
-
-    const logoContainerWidth = Math.max(
-        Math.floor((Math.min(rootWidth, 1920) * logoContainerWidthInPercent) / 100),
-        45
-    );
-
-    const { windowInnerWidth, windowInnerHeight } = useWindowInnerSize();
-
-    const { classes, cx } = useStyles({
-        windowInnerWidth,
-        "aspectRatio": windowInnerWidth / windowInnerHeight,
-        windowInnerHeight
-    });
+    const { classes, cx } = useStyles();
 
     const { getClassName } = useGetClassName({
         doUseDefaultCss,
@@ -76,17 +60,8 @@ function ContextualizedTemplate(props: TemplateProps) {
     }
 
     return (
-        <div ref={rootRef} className={cx(classes.root, getClassName("kcLoginClass"))}>
-            {windowInnerHeight > 700 && (
-                <Header
-                    useCase="login pages"
-                    className={classes.header}
-                    logoContainerWidth={logoContainerWidth}
-                    onLogoClick={() =>
-                        (window.location.href = "https://docs.sspcloud.fr")
-                    }
-                />
-            )}
+        <div className={cx(classes.root, getClassName("kcLoginClass"))}>
+            <Header className={classes.header} />
             <section className={classes.betweenHeaderAndFooter}>
                 <Page {...props} className={classes.page}>
                     {children}
@@ -126,6 +101,42 @@ const useStyles = tss.create(({ theme }) => ({
         "overflow": "auto"
     }
 }));
+
+const { Header } = (() => {
+    type Params = {
+        className?: string;
+    };
+
+    function Header(params: Params) {
+        const { className } = params;
+
+        const { cx, classes } = useStyles();
+
+        const { windowInnerHeight } = useWindowInnerSize();
+
+        if (windowInnerHeight < 700) {
+            return null;
+        }
+
+        return (
+            <header className={cx(classes.root, className)}>
+                <BrandHeaderSection doShowOnyxia={true} link={routes.home().link} />
+            </header>
+        );
+    }
+
+    const useStyles = tss.withName({ Header }).create(({ theme }) => ({
+        "root": {
+            "backgroundColor": theme.colors.useCases.surfaces.background,
+            "overflow": "auto",
+            "display": "flex",
+            "alignItems": "center",
+            ...theme.spacing.topBottom("padding", 2)
+        }
+    }));
+
+    return { Header };
+})();
 
 const { Page } = (() => {
     type Props = { className: string } & Pick<

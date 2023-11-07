@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 import { Tooltip } from "onyxia-ui/Tooltip";
 import { Text } from "onyxia-ui/Text";
 import { Icon } from "onyxia-ui/Icon";
-import { tss } from "ui/theme";
+import { tss } from "tss";
 import { id } from "tsafe/id";
 import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
 

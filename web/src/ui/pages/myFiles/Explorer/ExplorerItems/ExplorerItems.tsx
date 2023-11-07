@@ -10,7 +10,7 @@ import { useArrayDiff } from "powerhooks/useArrayDiff";
 import { useTranslation } from "ui/i18n";
 import { useCallbackFactory } from "powerhooks/useCallbackFactory";
 import { useConstCallback } from "powerhooks/useConstCallback";
-import { tss } from "ui/theme";
+import { tss } from "tss";
 import { Text } from "onyxia-ui/Text";
 import { useConst } from "powerhooks/useConst";
 import type { Param0 } from "tsafe";

@@ -302,7 +302,7 @@ export const translations: Translations<"fr"> = {
         "project": "Projet",
         "region": "Région"
     },
-    "App": {
+    "LeftBar": {
         "reduce": "Réduire",
         "home": "Accueil",
         "account": "Mon compte",

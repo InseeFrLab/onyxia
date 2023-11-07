@@ -1,5 +1,5 @@
 import { useMemo, memo, useReducer, useRef } from "react";
-import { tss } from "ui/theme";
+import { tss } from "tss";
 import { Button } from "onyxia-ui/Button";
 import { useTranslation } from "ui/i18n";
 import { declareComponentKeys } from "i18nifty";

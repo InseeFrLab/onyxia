@@ -1,5 +1,5 @@
 import { Fragment, useMemo, memo } from "react";
-import { tss } from "ui/theme";
+import { tss } from "tss";
 import { Button } from "onyxia-ui/Button";
 import { Text } from "onyxia-ui/Text";
 import { Icon } from "onyxia-ui/Icon";

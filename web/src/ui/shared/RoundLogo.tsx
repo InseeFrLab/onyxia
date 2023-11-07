@@ -1,7 +1,7 @@
 import { memo } from "react";
 import Avatar from "@mui/material/Avatar";
 import { ReactComponent as FallbackSvg } from "ui/assets/svg/singlePackage.svg";
-import { tss } from "ui/theme";
+import { tss } from "tss";
 import type { IconSizeName } from "onyxia-ui";
 
 export type RoundLogoProps = {

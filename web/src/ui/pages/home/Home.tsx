@@ -1,9 +1,8 @@
 import { useMemo, memo } from "react";
 import { routes } from "ui/routes";
-import { tss, useStyles as useClasslessStyles } from "ui/theme";
+import { tss, useStyles as useClasslessStyles } from "tss";
 import { Text } from "onyxia-ui/Text";
 import { Button } from "onyxia-ui/Button";
-import onyxiaLogoSvgUrl from "ui/assets/svg/OnyxiaLogo.svg";
 import { useCoreFunctions } from "core";
 import { useTranslation } from "ui/i18n";
 import pictogramCommunitySvgUrl from "ui/assets/svg/PictogramCommunity.svg";
@@ -49,7 +48,7 @@ export default function Home(props: Props) {
         <div className={cx(classes.root, className)}>
             <div className={classes.hero}>
                 <div className={classes.heroTextWrapper}>
-                    <ImageFromConfigs url={onyxiaLogoSvgUrl} className={classes.logo} />
+                    <ImageFromConfigs url={env.LOGO} className={classes.logo} />
                     <Text typo="display heading">
                         {isUserLoggedIn
                             ? t("welcome", {
@@ -160,7 +159,6 @@ const useStyles = tss.withName({ Home }).create(({ theme }) => ({
         ...theme.spacing.rightLeft("margin", 3)
     },
     "logo": {
-        "fill": theme.colors.useCases.typography.textFocus,
         "width": 122
     }
 }));

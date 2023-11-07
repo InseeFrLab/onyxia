@@ -1,7 +1,6 @@
 import { lazy, Suspense } from "react";
 import { createRoot } from "react-dom/client";
 import { kcContext as kcLoginThemeContext } from "keycloak-theme/login/kcContext";
-import { injectCustomFontFace } from "keycloak-theme/login/injectCustomFontFace";
 import { assert } from "tsafe/assert";
 
 {
@@ -17,7 +16,9 @@ import { assert } from "tsafe/assert";
 
 if (kcLoginThemeContext !== undefined) {
     // We want to do that as soon as possible to prevent Flash Of Unstyled Content (FOUC)
-    injectCustomFontFace();
+    import("keycloak-theme/login/injectCustomFontFace").then(({ injectCustomFontFace }) =>
+        injectCustomFontFace()
+    );
 }
 
 const App = lazy(() => import("ui/App"));

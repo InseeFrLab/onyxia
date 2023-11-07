@@ -1,5 +1,5 @@
 import { memo } from "react";
-import { tss } from "ui/theme";
+import { tss } from "tss";
 import { Icon } from "onyxia-ui/Icon";
 import { Text } from "onyxia-ui/Text";
 import { useFromNow } from "ui/shared/useMoment";

@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { tss } from "ui/theme";
+import { tss } from "tss";
 import { Button } from "onyxia-ui/Button";
 import { useState, useEffect, useMemo, memo } from "react";
 import type { RefObject } from "react";

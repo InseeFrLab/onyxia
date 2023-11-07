@@ -298,7 +298,7 @@ export const translations: Translations<"nl"> = {
         "project": "Project",
         "region": "Regio"
     },
-    "App": {
+    "LeftBar": {
         "reduce": "Verkleinen",
         "home": "Onthaal",
         "account": "Mijn account",

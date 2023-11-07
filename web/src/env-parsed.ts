@@ -47,6 +47,23 @@ export type AdminProvidedLink = {
 
 export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
     {
+        "envName": "LOGO",
+        "isUsedInKeycloakTheme": true,
+        "validateAndParseOrGetDefault": ({ envValue, envName }): AssetVariantUrl => {
+            assert(envValue !== "Should have default in .env");
+
+            let faviconUrl: AssetVariantUrl;
+
+            try {
+                faviconUrl = parseAssetVariantUrl(envValue);
+            } catch (error) {
+                throw new Error(`${envName} is malformed. ${String(error)}`);
+            }
+
+            return faviconUrl;
+        }
+    },
+    {
         "envName": "THEME_ID",
         "isUsedInKeycloakTheme": true,
         "validateAndParseOrGetDefault": ({ envValue }): PaletteId =>

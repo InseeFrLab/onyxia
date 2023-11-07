@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useTranslation } from "ui/i18n";
-import { tss } from "ui/theme";
+import { tss } from "tss";
 import { PageHeader } from "onyxia-ui/PageHeader";
 import { useCoreState, selectors, useCoreFunctions, useCoreEvts } from "core";
 import { useStateRef } from "powerhooks/useStateRef";

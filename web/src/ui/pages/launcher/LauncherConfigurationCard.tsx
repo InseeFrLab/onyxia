@@ -12,7 +12,7 @@ import { same } from "evt/tools/inDepth/same";
 import { memo, useMemo, useState } from "react";
 import { Tabs } from "onyxia-ui/Tabs";
 import MuiTextField from "@mui/material/TextField";
-import { tss } from "ui/theme";
+import { tss } from "tss";
 import { Text } from "onyxia-ui/Text";
 import { Icon } from "onyxia-ui/Icon";
 import { useConstCallback } from "powerhooks/useConstCallback";

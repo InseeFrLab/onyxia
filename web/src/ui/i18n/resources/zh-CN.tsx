@@ -280,7 +280,7 @@ export const translations: Translations<"zh-CN"> = {
         "project": "项目",
         "region": "区域"
     },
-    "App": {
+    "LeftBar": {
         "reduce": "缩小",
         "home": "我的主页",
         "account": "我的账号",

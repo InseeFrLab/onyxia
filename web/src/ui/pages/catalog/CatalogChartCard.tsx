@@ -1,5 +1,5 @@
 import { memo } from "react";
-import { tss } from "ui/theme";
+import { tss } from "tss";
 import { RoundLogo } from "ui/shared/RoundLogo";
 import { Button } from "onyxia-ui/Button";
 import { Text } from "onyxia-ui/Text";

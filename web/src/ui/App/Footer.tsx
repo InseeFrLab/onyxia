@@ -1,5 +1,5 @@
 import { memo } from "react";
-import { tss } from "ui/theme";
+import { tss } from "tss";
 import { Text } from "onyxia-ui/Text";
 import { LanguageSelect } from "onyxia-ui/LanguageSelect";
 import { languagesPrettyPrint } from "ui/i18n";

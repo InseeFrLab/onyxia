@@ -6,7 +6,7 @@ import type { NonPostableEvt } from "evt";
 import type { TextFieldProps } from "onyxia-ui/TextField";
 import { TextField } from "onyxia-ui/TextField";
 import { Tooltip } from "onyxia-ui/Tooltip";
-import { tss } from "ui/theme";
+import { tss } from "tss";
 import { Text } from "onyxia-ui/Text";
 import { UnpackEvt } from "evt";
 import { Evt } from "evt";

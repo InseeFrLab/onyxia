@@ -294,7 +294,7 @@ export const translations: Translations<"fi"> = {
         "project": "Projekti",
         "region": "Alue"
     },
-    "App": {
+    "LeftBar": {
         "reduce": "Pienennä",
         "home": "Koti",
         "account": "Oma tili",

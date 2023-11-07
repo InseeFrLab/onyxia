@@ -1,5 +1,5 @@
 import { useMemo, memo } from "react";
-import { tss } from "ui/theme";
+import { tss } from "tss";
 import { Text } from "onyxia-ui/Text";
 import { useDomRect } from "powerhooks/useDomRect";
 import { useTranslation } from "ui/i18n";

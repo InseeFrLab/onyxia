@@ -8,7 +8,7 @@ import { useCallbackFactory } from "powerhooks/useCallbackFactory";
 import { copyToClipboard } from "ui/tools/copyToClipboard";
 import Divider from "@mui/material/Divider";
 import Link from "@mui/material/Link";
-import { tss } from "ui/theme";
+import { tss } from "tss";
 import { Evt } from "evt";
 import type { UnpackEvt } from "evt";
 import memoize from "memoizee";

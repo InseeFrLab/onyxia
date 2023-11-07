@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { tss } from "ui/theme";
+import { tss } from "tss";
 import { PageHeader } from "onyxia-ui/PageHeader";
 import { useTranslation } from "ui/i18n";
 import { MyServicesButtonBar } from "./MyServicesButtonBar";

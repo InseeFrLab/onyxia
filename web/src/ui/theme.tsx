@@ -8,7 +8,6 @@ import {
     createDefaultColorUseCases,
     evtIsDarkModeEnabled
 } from "onyxia-ui";
-import { createTss } from "tss-react";
 import { env } from "env-parsed";
 import { mergeDeep } from "ui/tools/mergeDeep";
 import { AnimatedOnyxiaLogo } from "onyxia-ui/AnimatedOnyxiaLogo";
@@ -56,7 +55,7 @@ export const palette = {
 
 export const targetWindowInnerWidth = 1980;
 
-const { useTheme, ThemeProvider } = createThemeProvider({
+export const { useTheme, ThemeProvider } = createThemeProvider({
     "getTypographyDesc": params => ({
         ...defaultGetTypographyDesc({
             ...params,
@@ -71,17 +70,6 @@ const { useTheme, ThemeProvider } = createThemeProvider({
     "splashScreenParams": { "Logo": AnimatedOnyxiaLogo },
     "publicUrl": ""
 });
-
-export { ThemeProvider };
-
-export const { tss } = createTss({
-    "useContext": function useContext() {
-        const theme = useTheme();
-        return { theme };
-    }
-});
-
-export const useStyles = tss.create({});
 
 export async function loadThemedFavicon() {
     Evt.merge([

@@ -301,7 +301,7 @@ export const translations: Translations<"de"> = {
         "project": "Projekt",
         "region": "Region"
     },
-    "App": {
+    "LeftBar": {
         "reduce": "Reduzieren",
         "home": "Startseite",
         "account": "Mein Konto",

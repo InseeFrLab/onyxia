@@ -12,7 +12,7 @@ import { AccountStorageTab } from "./tabs/AccountStorageTab";
 import { AccountUserInterfaceTab } from "./tabs/AccountUserInterfaceTab";
 import { PageHeader } from "onyxia-ui/PageHeader";
 import { useConstCallback } from "powerhooks/useConstCallback";
-import { tss } from "ui/theme";
+import { tss } from "tss";
 import { declareComponentKeys } from "i18nifty";
 import { useCoreFunctions } from "core";
 import { assert, type Equals } from "tsafe/assert";

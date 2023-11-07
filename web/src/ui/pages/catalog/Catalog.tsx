@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useTranslation, useResolveLocalizedString } from "ui/i18n";
 import { PageHeader } from "onyxia-ui/PageHeader";
-import { tss } from "ui/theme";
+import { tss } from "tss";
 import { useCoreState, selectors, useCoreEvts, useCoreFunctions } from "core";
 import { useStateRef } from "powerhooks/useStateRef";
 import { declareComponentKeys } from "i18nifty";

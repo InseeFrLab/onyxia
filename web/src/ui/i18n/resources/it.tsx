@@ -299,7 +299,7 @@ export const translations: Translations<"it"> = {
         "project": "Proggetto",
         "region": "Regione"
     },
-    "App": {
+    "LeftBar": {
         "reduce": "Ridurre",
         "home": "Home",
         "account": "Il mio account",

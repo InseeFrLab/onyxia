@@ -1,6 +1,6 @@
 import { useEffect, memo } from "react";
 import { useTranslation } from "ui/i18n";
-import { tss } from "ui/theme";
+import { tss } from "tss";
 import { ExplorerUploadModalDropArea } from "./ExplorerUploadModalDropArea";
 import type { Props as ExplorerUploadModalDropAreaProps } from "./ExplorerUploadModalDropArea";
 import { ExplorerUploadProgress } from "./ExplorerUploadProgress";

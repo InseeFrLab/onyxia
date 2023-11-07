@@ -1,5 +1,5 @@
 import { memo } from "react";
-import { tss } from "ui/theme";
+import { tss } from "tss";
 import { MyServicesRestorableConfig } from "./MyServicesRestorableConfig";
 import { useCallbackFactory } from "powerhooks/useCallbackFactory";
 import { useTranslation } from "ui/i18n";

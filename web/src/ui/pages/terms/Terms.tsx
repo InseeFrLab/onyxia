@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useSplashScreen } from "onyxia-ui";
 import { Markdown } from "onyxia-ui/Markdown";
 import { useLang } from "ui/i18n";
-import { tss } from "ui/theme";
+import { tss } from "tss";
 import { downloadTermMarkdown } from "keycloak-theme/login/pages/Terms";
 import type { PageRoute } from "./route";
 

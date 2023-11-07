@@ -1,4 +1,4 @@
-import { tss } from "ui/theme";
+import { tss } from "tss";
 import { useReducer, memo, useState, type ReactNode } from "react";
 import { useDomRect } from "powerhooks/useDomRect";
 import { CircularProgress } from "onyxia-ui/CircularProgress";

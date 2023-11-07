@@ -1,4 +1,4 @@
-import { tss } from "ui/theme";
+import { tss } from "tss";
 import { useMemo, memo } from "react";
 import { ReactComponent as SvgData } from "ui/assets/svg/explorer/data.svg";
 import { ReactComponent as SvgSecret } from "ui/assets/svg/explorer/secret.svg";

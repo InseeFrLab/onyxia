@@ -1,5 +1,5 @@
 import { useTranslation } from "ui/i18n";
-import { tss } from "ui/theme";
+import { tss } from "tss";
 import { Text } from "onyxia-ui/Text";
 import { declareComponentKeys } from "i18nifty";
 

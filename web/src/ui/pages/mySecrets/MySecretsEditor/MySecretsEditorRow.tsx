@@ -6,7 +6,7 @@ import { Evt } from "evt";
 import { useEvt } from "evt/hooks";
 import type { UnpackEvt } from "evt";
 import { useTranslation } from "ui/i18n";
-import { tss } from "ui/theme";
+import { tss } from "tss";
 import { IconButton } from "onyxia-ui/IconButton";
 import { Text } from "onyxia-ui/Text";
 import { useCallbackFactory } from "powerhooks/useCallbackFactory";

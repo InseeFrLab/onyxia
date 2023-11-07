@@ -1,6 +1,6 @@
 import { memo } from "react";
 import { MyServicesCard } from "./MyServicesCard";
-import { tss } from "ui/theme";
+import { tss } from "tss";
 import { Text } from "onyxia-ui/Text";
 import { useTranslation } from "ui/i18n";
 import type { Link } from "type-route";

@@ -1,4 +1,4 @@
-import { tss } from "ui/theme";
+import { tss } from "tss";
 import { Text } from "onyxia-ui/Text";
 import { useState, useEffect, useMemo, memo } from "react";
 import { useConstCallback } from "powerhooks/useConstCallback";

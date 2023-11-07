@@ -1,4 +1,4 @@
-import { tss } from "ui/theme";
+import { tss } from "tss";
 import { useMemo, useState, memo } from "react";
 import { useCallbackFactory } from "powerhooks/useCallbackFactory";
 import { useConstCallback } from "powerhooks/useConstCallback";
