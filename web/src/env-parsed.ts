@@ -129,6 +129,14 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
         }
     },
     {
+        "envName": "TAB_TITLE",
+        "isUsedInKeycloakTheme": true,
+        "validateAndParseOrGetDefault": ({ envValue }) => {
+            assert(envValue !== "", "Should have default in .env");
+            return envValue;
+        }
+    },
+    {
         "envName": "TERMS_OF_SERVICES",
         "isUsedInKeycloakTheme": true,
         "validateAndParseOrGetDefault": ({

@@ -12,7 +12,8 @@ export const { useI18n } = createUseI18n({
             "Please make sure the form is properly filled out",
         "must respect the pattern": "Must respect the pattern",
         "or": "or",
-        "doRegister": "Create an account"
+        "doRegister": "Create an account",
+        "tabTitleSuffix": "Sign in"
     },
     /* spell-checker: disable */
     "fr": {
@@ -26,33 +27,36 @@ export const { useI18n } = createUseI18n({
             "Veuillez vérifier que vous avez bien rempli le formulaire",
         "must respect the pattern": "Doit respecter le format",
         "or": "ou",
-        "doRegister": "Créer un compte"
+        "doRegister": "Créer un compte",
+        "tabTitleSuffix": "Connexion"
     },
     "de": {
         "alphanumericalCharsOnly": "Nur alphanumerische Zeichen",
-        "allowed email domains": "Erlaubte Domains",
+        "allowed email domains": "Erlaubte Domänen",
         "minimum length": "Mindestlänge: {0}",
         "must be different from username":
             "Passwort darf nicht gleich dem Benutzernamen sein",
         "password mismatch": "Passwörter stimmen nicht überein",
         "go back": "Zurückgehen",
         "form not filled properly yet":
-            "Bitte stellen Sie sicher, dass das Formular korrekt ausgefüllt ist",
+            "Bitte stellen Sie sicher, dass das Formular richtig ausgefüllt ist",
         "must respect the pattern": "Muss dem Muster entsprechen",
         "or": "oder",
-        "doRegister": "Konto erstellen"
+        "doRegister": "Konto erstellen",
+        "tabTitleSuffix": "Anmeldung"
     },
     "fi": {
-        "alphanumericalCharsOnly": "Vain alfanumeeriset merkit sallittu",
+        "alphanumericalCharsOnly": "Vain alfanumeeriset merkit",
         "allowed email domains": "Sallitut sähköpostidomainit",
-        "minimum length": "Vähimmäispituus: {0}",
+        "minimum length": "Minimipituus: {0}",
         "must be different from username": "Salasanan on oltava eri kuin käyttäjänimi",
         "password mismatch": "Salasanat eivät täsmää",
         "go back": "Palaa takaisin",
         "form not filled properly yet": "Varmista, että lomake on täytetty oikein",
         "must respect the pattern": "On noudatettava kaavaa",
         "or": "tai",
-        "doRegister": "Luo tili"
+        "doRegister": "Luo tili",
+        "tabTitleSuffix": "Kirjaudu sisään"
     },
     "it": {
         "alphanumericalCharsOnly": "Solo caratteri alfanumerici",
@@ -60,30 +64,32 @@ export const { useI18n } = createUseI18n({
         "minimum length": "Lunghezza minima: {0}",
         "must be different from username":
             "La password non può essere uguale all'username",
-        "password mismatch": "Le password non coincidono",
+        "password mismatch": "Le password non corrispondono",
         "go back": "Torna indietro",
         "form not filled properly yet":
             "Assicurati che il modulo sia compilato correttamente",
         "must respect the pattern": "Deve rispettare il pattern",
         "or": "o",
-        "doRegister": "Crea un account"
+        "doRegister": "Crea un account",
+        "tabTitleSuffix": "Accedi"
     },
     "nl": {
-        "alphanumericalCharsOnly": "Alleen alfanumerieke tekens",
+        "alphanumericalCharsOnly": "Alleen alfanumerieke karakters",
         "allowed email domains": "Toegestane e-maildomeinen",
         "minimum length": "Minimale lengte: {0}",
         "must be different from username":
-            "Wachtwoord mag niet gelijk zijn aan gebruikersnaam",
+            "Wachtwoord mag niet hetzelfde zijn als gebruikersnaam",
         "password mismatch": "Wachtwoorden komen niet overeen",
         "go back": "Ga terug",
         "form not filled properly yet":
             "Zorg ervoor dat het formulier correct is ingevuld",
         "must respect the pattern": "Moet het patroon respecteren",
         "or": "of",
-        "doRegister": "Maak een account aan"
+        "doRegister": "Maak een account aan",
+        "tabTitleSuffix": "Inloggen"
     },
     "no": {
-        "alphanumericalCharsOnly": "Bare alfanumeriske tegn tillatt",
+        "alphanumericalCharsOnly": "Bare alfanumeriske tegn",
         "allowed email domains": "Tillatte e-postdomener",
         "minimum length": "Minimum lengde: {0}",
         "must be different from username":
@@ -94,19 +100,21 @@ export const { useI18n } = createUseI18n({
             "Vennligst sørg for at skjemaet er fylt ut riktig",
         "must respect the pattern": "Må respektere mønsteret",
         "or": "eller",
-        "doRegister": "Registrer konto"
+        "doRegister": "Opprett konto",
+        "tabTitleSuffix": "Logg inn"
     },
     "zh-CN": {
         "alphanumericalCharsOnly": "仅限字母数字字符",
-        "allowed email domains": "允许的邮箱域",
+        "allowed email domains": "允许的电子邮件域",
         "minimum length": "最小长度：{0}",
         "must be different from username": "密码不能与用户名相同",
-        "password mismatch": "密码不一致",
+        "password mismatch": "密码不匹配",
         "go back": "返回",
         "form not filled properly yet": "请确保表单填写正确",
-        "must respect the pattern": "必须遵守规则",
+        "must respect the pattern": "必须遵循模式",
         "or": "或",
-        "doRegister": "创建账户"
+        "doRegister": "创建账户",
+        "tabTitleSuffix": "登录"
     }
     /* spell-checker: enable */
 });
