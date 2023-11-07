@@ -118,12 +118,15 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
     {
         "envName": "HEADER_ORGANIZATION",
         "isUsedInKeycloakTheme": true,
-        "validateAndParseOrGetDefault": ({ envValue }) => envValue
+        "validateAndParseOrGetDefault": ({ envValue }) => envValue || undefined
     },
     {
         "envName": "HEADER_USECASE_DESCRIPTION",
         "isUsedInKeycloakTheme": true,
-        "validateAndParseOrGetDefault": ({ envValue }) => envValue
+        "validateAndParseOrGetDefault": ({ envValue }) => {
+            assert(envValue !== "", "Should have default in .env");
+            return envValue;
+        }
     },
     {
         "envName": "TERMS_OF_SERVICES",

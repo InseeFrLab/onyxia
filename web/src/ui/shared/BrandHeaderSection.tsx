@@ -32,7 +32,7 @@ export function BrandHeaderSection(props: Props) {
                         Onyxia -
                     </Text>
                 )}
-                {env.HEADER_ORGANIZATION && (
+                {env.HEADER_ORGANIZATION !== undefined && (
                     <Text typo="section heading" className={classes.text_organization}>
                         {env.HEADER_ORGANIZATION}
                     </Text>
