@@ -1,14 +1,13 @@
 import { z } from "zod";
-import { zLocalizedString } from "ui/i18n/z";
 import { assert } from "tsafe/assert";
 import { is } from "tsafe/is";
 import type { AssetVariantUrl } from "./AssetVariantUrl";
 
 const zAssetVariantUrl = z.union([
-    zLocalizedString,
+    z.string(),
     z.object({
-        "light": zLocalizedString,
-        "dark": zLocalizedString
+        "light": z.string(),
+        "dark": z.string()
     })
 ]);
 

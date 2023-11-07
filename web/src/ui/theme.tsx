@@ -11,7 +11,7 @@ import {
 import { env } from "env-parsed";
 import { mergeDeep } from "ui/tools/mergeDeep";
 import { AnimatedOnyxiaLogo } from "onyxia-ui/AnimatedOnyxiaLogo";
-import { resolveAssetVariantUrl } from "ui/shared/AssetVariantUrl/resolveAssetVariantUrl";
+import { resolveAssetVariantUrl } from "ui/shared/AssetVariantUrl";
 import { assert } from "tsafe/assert";
 import servicesSvgUrl from "ui/assets/svg/custom-icons/services.svg";
 import secretsSvgUrl from "ui/assets/svg/custom-icons/secrets.svg";
@@ -71,13 +71,6 @@ export const { useTheme, ThemeProvider } = createThemeProvider({
 export async function loadThemedFavicon() {
     evtIsDarkModeEnabled.attach(async isDarkModeEnabled => {
         const svgUrl = resolveAssetVariantUrl({
-            "resolveLocalizedString": localizedString => {
-                assert(
-                    typeof localizedString === "string",
-                    "Can't provide a localized string for the favicon"
-                );
-                return localizedString;
-            },
             isDarkModeEnabled,
             "assetVariantUrl": env.FAVICON
         });
