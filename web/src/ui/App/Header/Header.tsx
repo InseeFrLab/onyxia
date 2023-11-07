@@ -10,6 +10,7 @@ import { routes } from "ui/routes";
 import { ProjectSelect } from "./ProjectSelect";
 import { RegionSelect } from "./RegionSelect";
 import { useCoreFunctions } from "core";
+import { session } from "ui/routes";
 
 export type Props = {
     className?: string;
@@ -36,18 +37,25 @@ export function Header(props: Props) {
             <RegionSelect className={classes.regionSelect} tRegion={t("region")} />
             <ProjectSelect className={classes.projectSelect} tProject={t("project")} />
             <div className={classes.rightEndActionsContainer}>
-                {env.HEADER_LINKS !== undefined &&
-                    env.HEADER_LINKS.map(({ iconId, url, label }) => (
-                        <ButtonBarButton
-                            key={url}
-                            className={classes.button}
-                            startIcon={iconId as any}
-                            href={url}
-                            doOpenNewTabIfHref={true}
-                        >
-                            {resolveLocalizedString(label)}
-                        </ButtonBarButton>
-                    ))}
+                {env.HEADER_LINKS.map(({ icon, url, label }) => (
+                    <ButtonBarButton
+                        key={url}
+                        className={classes.button}
+                        startIcon={icon}
+                        href={url}
+                        doOpenNewTabIfHref={!url.startsWith("/")}
+                        onClick={
+                            !url.startsWith("/")
+                                ? undefined
+                                : e => {
+                                      e.preventDefault();
+                                      session.push(url);
+                                  }
+                        }
+                    >
+                        {resolveLocalizedString(label)}
+                    </ButtonBarButton>
+                ))}
                 <Button
                     onClick={() => {
                         if (isUserLoggedIn) {

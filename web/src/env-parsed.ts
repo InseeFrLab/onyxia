@@ -16,34 +16,16 @@ import type { PaletteBase } from "onyxia-ui";
 import type { DeepPartial } from "keycloakify/tools/DeepPartial";
 import type { AssetVariantUrl } from "ui/shared/AssetVariantUrl";
 import { parseAssetVariantUrl } from "ui/shared/AssetVariantUrl/z";
-import type { LocalizedString, Language } from "ui/i18n";
+import type { Language } from "ui/i18n";
 import memoize from "memoizee";
 import { z } from "zod";
 import { removeDuplicates } from "evt/tools/reducers/removeDuplicates";
 import { zLocalizedString, zLanguage, languages } from "ui/i18n/z";
+import { type LinkFromConfig, zLinkFromConfig } from "ui/shared/LinkFromConfig";
 
 const paletteIds = ["onyxia", "france", "ultraviolet", "verdant"] as const;
 
 export type PaletteId = (typeof paletteIds)[number];
-
-type Font = {
-    fontFamily: string;
-    dirUrl: string;
-    400: string;
-    ["400-italic"]?: string;
-    500?: string;
-    ["500-italic"]?: string;
-    600?: string;
-    ["600-italic"]?: string;
-    700?: string;
-    ["700-italic"]?: string;
-};
-
-export type AdminProvidedLink = {
-    iconId: string;
-    label: LocalizedString;
-    url: string;
-};
 
 export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
     {
@@ -210,18 +192,31 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
     {
         "envName": "FONT",
         "isUsedInKeycloakTheme": true,
-        "validateAndParseOrGetDefault": ({ envValue, envName }): Font => {
+        "validateAndParseOrGetDefault": ({ envValue, envName }) => {
             assert(envValue !== "Should have default in .env");
 
-            let font: unknown;
+            let parsedValue: unknown;
 
             try {
-                font = JSON.parse(envValue);
+                parsedValue = JSON.parse(envValue);
             } catch {
                 throw new Error(`${envName} is not a valid JSON`);
             }
 
-            const zFont = z.object({
+            type ParsedValue = {
+                fontFamily: string;
+                dirUrl: string;
+                400: string;
+                ["400-italic"]?: string;
+                500?: string;
+                ["500-italic"]?: string;
+                600?: string;
+                ["600-italic"]?: string;
+                700?: string;
+                ["700-italic"]?: string;
+            };
+
+            const zParsedValue = z.object({
                 "fontFamily": z.string(),
                 "dirUrl": z.string(),
                 "400": z.string(),
@@ -234,53 +229,63 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
                 "700-italic": z.string().optional()
             });
 
-            assert<Equals<ReturnType<(typeof zFont)["parse"]>, Font>>();
+            {
+                type Got = ReturnType<(typeof zParsedValue)["parse"]>;
+                type Expected = ParsedValue;
+
+                assert<Equals<Expected, Got>>();
+            }
 
             try {
-                zFont.parse(font);
+                zParsedValue.parse(parsedValue);
             } catch (error) {
                 throw new Error(
-                    `${envName} is not a valid Font object: ${String(error)}`
+                    `The format of ${envName} is not valid: ${String(error)}`
                 );
             }
-            assert(is<Font>(font));
+            assert(is<ParsedValue>(parsedValue));
 
-            return font;
+            return parsedValue;
         }
     },
     {
         "envName": "EXTRA_LEFTBAR_ITEMS",
         "isUsedInKeycloakTheme": false,
-        "validateAndParseOrGetDefault": ({ envValue, envName }) => {
+        "validateAndParseOrGetDefault": ({ envValue, envName }): LinkFromConfig[] => {
             if (envValue === "") {
-                return undefined;
+                return [];
             }
 
-            const errorMessage = `${envName} is malformed`;
-
-            let extraLeftBarItems: AdminProvidedLink[];
+            let parsedValue: unknown;
 
             try {
-                extraLeftBarItems = JSON.parse(envValue);
+                parsedValue = JSON.parse(envValue);
             } catch {
-                throw new Error(errorMessage);
+                throw new Error(`${envName} is not a valid JSON`);
             }
 
-            assert(
-                extraLeftBarItems instanceof Array &&
-                    extraLeftBarItems.find(
-                        extraLeftBarItem =>
-                            !(
-                                extraLeftBarItem instanceof Object &&
-                                typeof extraLeftBarItem.url === "string" &&
-                                (typeof extraLeftBarItem.label === "string" ||
-                                    extraLeftBarItem.label instanceof Object)
-                            )
-                    ) === undefined,
-                errorMessage
-            );
+            type ParsedValue = LinkFromConfig[];
 
-            return extraLeftBarItems;
+            const zParsedValue = z.array(zLinkFromConfig);
+
+            {
+                type Got = ReturnType<(typeof zParsedValue)["parse"]>;
+                type Expected = ParsedValue;
+
+                assert<Got extends Expected ? true : false>();
+                assert<Expected extends Got ? true : false>();
+            }
+
+            try {
+                zParsedValue.parse(parsedValue);
+            } catch (error) {
+                throw new Error(
+                    `The format of ${envName} is not valid: ${String(error)}`
+                );
+            }
+            assert(is<ParsedValue>(parsedValue));
+
+            return parsedValue;
         }
     },
     {
@@ -288,34 +293,39 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
         "isUsedInKeycloakTheme": false,
         "validateAndParseOrGetDefault": ({ envValue, envName }) => {
             if (envValue === "") {
-                return undefined;
+                return [];
             }
 
-            const errorMessage = `${envName} is malformed`;
-
-            let extraLeftBarItems: AdminProvidedLink[];
+            let parsedValue: unknown;
 
             try {
-                extraLeftBarItems = JSON.parse(envValue);
+                parsedValue = JSON.parse(envValue);
             } catch {
-                throw new Error(errorMessage);
+                throw new Error(`${envName} is not a valid JSON`);
             }
 
-            assert(
-                extraLeftBarItems instanceof Array &&
-                    extraLeftBarItems.find(
-                        extraLeftBarItem =>
-                            !(
-                                extraLeftBarItem instanceof Object &&
-                                typeof extraLeftBarItem.url === "string" &&
-                                (typeof extraLeftBarItem.label === "string" ||
-                                    extraLeftBarItem.label instanceof Object)
-                            )
-                    ) === undefined,
-                errorMessage
-            );
+            type ParsedValue = LinkFromConfig[];
 
-            return extraLeftBarItems;
+            const zParsedValue = z.array(zLinkFromConfig);
+
+            {
+                type Got = ReturnType<(typeof zParsedValue)["parse"]>;
+                type Expected = ParsedValue;
+
+                assert<Got extends Expected ? true : false>();
+                assert<Expected extends Got ? true : false>();
+            }
+
+            try {
+                zParsedValue.parse(parsedValue);
+            } catch (error) {
+                throw new Error(
+                    `The format of ${envName} is not valid: ${String(error)}`
+                );
+            }
+            assert(is<ParsedValue>(parsedValue));
+
+            return parsedValue;
         }
     },
     {

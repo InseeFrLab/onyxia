@@ -3,7 +3,7 @@ import { memo } from "react";
 import { LeftBar as OnyxiaUiLeftBar, type LeftBarProps } from "onyxia-ui/LeftBar";
 import { useTranslation, useResolveLocalizedString } from "ui/i18n";
 import { useLogoContainerWidth } from "ui/shared/BrandHeaderSection";
-import { useRoute, routes } from "ui/routes";
+import { useRoute, routes, session } from "ui/routes";
 import { id } from "tsafe/id";
 import { env } from "env-parsed";
 import { declareComponentKeys } from "i18nifty";
@@ -11,6 +11,7 @@ import { useCoreFunctions } from "core";
 import { assert, type Equals } from "tsafe/assert";
 import { customIcons } from "ui/theme";
 import { symToStr } from "tsafe/symToStr";
+import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
 
 type Props = {
     className?: string;
@@ -82,26 +83,30 @@ export const LeftBar = memo((props: Props) => {
                               "label": t("myFiles"),
                               "link": routes.myFiles().link,
                               "belowDivider":
-                                  env.EXTRA_LEFTBAR_ITEMS === undefined
+                                  env.EXTRA_LEFTBAR_ITEMS.length === 0
                                       ? true
                                       : t("divider: onyxia instance specific features")
                           } as const
                       }),
-                ...(env.EXTRA_LEFTBAR_ITEMS === undefined
-                    ? ({} as never)
-                    : Object.fromEntries(
-                          env.EXTRA_LEFTBAR_ITEMS.map(({ iconId, label, url }, i) => [
-                              `extraItem${i}`,
-                              id<LeftBarProps.Item>({
-                                  "icon": iconId,
-                                  "label": resolveLocalizedString(label),
-                                  "link": {
-                                      "href": url,
-                                      "target": "_blank"
-                                  }
-                              })
-                          ])
-                      ))
+                ...Object.fromEntries(
+                    env.EXTRA_LEFTBAR_ITEMS.map(({ icon, label, url }, i) => [
+                        `extraItem${i}`,
+                        id<LeftBarProps.Item>({
+                            "icon": icon ?? id<MuiIconComponentName>("OpenInNew"),
+                            "label": resolveLocalizedString(label),
+                            "link": {
+                                "href": url,
+                                "target": !url.startsWith("/") ? "_blank" : undefined,
+                                "onClick": !url.startsWith("/")
+                                    ? undefined
+                                    : e => {
+                                          e.preventDefault();
+                                          session.push(url);
+                                      }
+                            }
+                        })
+                    ])
+                )
             }}
             currentItemId={(() => {
                 switch (route.name) {
