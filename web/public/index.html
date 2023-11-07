@@ -9,23 +9,21 @@
 
 	<title>%REACT_APP_TAB_TITLE%</title>
 
-	<!-- cspell: disable -->
 	<!-- Primary Meta Tags -->
-	<meta name="title" content="%REACT_APP_HEADER_USECASE_DESCRIPTION% - %REACT_APP_HEADER_ORGANIZATION%">
-	<meta name="description" content="%REACT_APP_DESCRIPTION%">
+	<meta name="title" content="%REACT_APP_SOCIAL_MEDIA_TITLE%">
+	<meta name="description" content="%REACT_APP_SOCIAL_MEDIA_DESCRIPTION%">
 
 	<!-- Open Graph / Facebook -->
 	<meta property="og:type" content="website">
-	<meta property="og:title" content="%REACT_APP_HEADER_USECASE_DESCRIPTION% - %REACT_APP_HEADER_ORGANIZATION%">
-	<meta property="og:description" content="%REACT_APP_DESCRIPTION%">
-	<meta property="og:image" content="%PUBLIC_URL%/Prewiew-%REACT_APP_THEME_ID%.png">
+	<meta property="og:title" content="%REACT_APP_SOCIAL_MEDIA_TITLE%">
+	<meta property="og:description" content="%REACT_APP_SOCIAL_MEDIA_DESCRIPTION%">
+	<meta property="og:image" content="<%= process.env.REACT_APP_SOCIAL_MEDIA_IMAGE %>">
 
 	<!-- Twitter -->
 	<meta property="twitter:card" content="summary_large_image">
-	<meta property="twitter:title" content="%REACT_APP_HEADER_USECASE_DESCRIPTION% - %REACT_APP_HEADER_ORGANIZATION%">
-	<meta property="twitter:description" content="%REACT_APP_DESCRIPTION%">
-	<meta property="twitter:image" content="%PUBLIC_URL%/Prewiew-%REACT_APP_THEME_ID%.png">
-	<!-- cspell: enable -->
+	<meta property="twitter:title" content="%REACT_APP_SOCIAL_MEDIA_TITLE%">
+	<meta property="twitter:description" content="%REACT_APP_SOCIAL_MEDIA_DESCRIPTION%">
+	<meta property="twitter:image" content="<%= process.env.REACT_APP_SOCIAL_MEDIA_IMAGE %>">
 
 	<%
     const FONT = JSON.parse(process.env.REACT_APP_FONT);
@@ -181,16 +179,6 @@
 
 <body>
 	<div id="root"></div>
-	<!--
-      	This HTML file is a template.
-      	If you open it directly in the browser, you will see an empty page.
-
-      	You can add webfonts, meta tags, or analytics to this file.
-      	The build step will place the bundled scripts into the <body> tag.
-
-      	To begin the development, run `npm start`.
-      	To create a production bundle, use `npm run build`.
-    	-->
 </body>
 
 </html>
