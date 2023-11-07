@@ -47,15 +47,15 @@
                     break;
             }
 
-			if(fontFileBasename === undefined){
-				return;
-			}
+            if(fontFileBasename === undefined){
+                return;
+            }
 
-			const url = `${dirUrl}/${fontFileBasename}`;
+            const url = `${dirUrl}/${fontFileBasename}`;
             
             const format = fontFileBasename.split('.').pop();
             fontFaceRules += [
-				``,
+                ``,
                 `@font-face {`,
                 `    font-family: '${fontFamily}';`,
                 `    font-style: ${fontStyle};`,
@@ -65,115 +65,114 @@
                 `}\n`
             ].join("\n");
 
-			if( fontStyle === 'normal' ){
-            	preloadLinks += `    <link rel="preload" href="${url}" as="font" type="font/${format}" crossorigin="anonymous">\n`;
-			}
+            if( fontStyle === 'normal' ){
+                preloadLinks += `    <link rel="preload" href="${url}" as="font" type="font/${format}" crossorigin="anonymous">\n`;
+            }
 
         });
     });
-	%>
-	<%= preloadLinks %>
-	<style><%= fontFaceRules %></style>
+    %>
+    <%= preloadLinks %>
+    <style><%= fontFaceRules %></style>
 
 
 
-	<script>
-		/*
-		This is a way to get the correct background color as soon as possible,
-		even before the JavaScript bundle is evaluated.
-		It is to prevent a white flash when the user has dark mode enabled.
-		It is very implementation dependent and can easily break...
-		if it does no big deal.
-		*/
-		(function () {
-		
-			var isDarkModeEnabled = /true/.test((function () {
-			
-				var key = "powerhooks_useGlobalState_isDarkModeEnabled";
-				var value = null;
-			
-				try {
-					value = (new URLSearchParams(location.search)).get(key);
-				} catch (_) { }
-			
-				if (value !== null) {
-					return value;
-				}
-			
-				try {
-					value = localStorage.getItem(key);
-				} catch (_) { }
-			
-				if (value !== null) {
-					return value;
-				}
-			
-				try {
-					value = window.matchMedia("(prefers-color-scheme: dark)")
-						.matches ? "true" : "false";
-				} catch (_) { }
-			
-				if (value !== null) {
-					return value;
-				}
-			
-				return "false";
-			
-			})());
+    <script>
+        /*
+        This is a way to get the correct background color as soon as possible,
+        even before the JavaScript bundle is evaluated.
+        It is to prevent a white flash when the user has dark mode enabled.
+        It is very implementation dependent and can easily break...
+        if it does no big deal.
+        */
+        (function () {
+        
+            var isDarkModeEnabled = /true/.test((function () {
+            
+                var key = "powerhooks_useGlobalState_isDarkModeEnabled";
+                var value = null;
+            
+                try {
+                    value = (new URLSearchParams(location.search)).get(key);
+                } catch (_) { }
+            
+                if (value !== null) {
+                    return value;
+                }
+            
+                try {
+                    value = localStorage.getItem(key);
+                } catch (_) { }
+            
+                if (value !== null) {
+                    return value;
+                }
+            
+                try {
+                    value = window.matchMedia("(prefers-color-scheme: dark)").matches ? "true" : "false";
+                } catch (_) { }
+            
+                if (value !== null) {
+                    return value;
+                }
+            
+                return "false";
+            
+            })());
 
-			<%
-				const PALETTE_OVERRIDE = process.env.REACT_APP_PALETTE_OVERRIDE;
+            <%
+                const PALETTE_OVERRIDE = process.env.REACT_APP_PALETTE_OVERRIDE;
 
-				const palette = PALETTE_OVERRIDE === "" ? {}: JSON.parse(PALETTE_OVERRIDE);
+                const palette = PALETTE_OVERRIDE === "" ? {}: JSON.parse(PALETTE_OVERRIDE);
 
-				const [backgroundColorWhenLightMode, backgroundColorWhenDarkMode] = [false, true].map(isDarkModeEnabled=> {
+                const [backgroundColorWhenLightMode, backgroundColorWhenDarkMode] = [false, true].map(isDarkModeEnabled=> {
 
-					custom: {
+                    custom: {
 
-						const wrap= palette[isDarkModeEnabled ? "dark" : "light"];
+                        const wrap= palette[isDarkModeEnabled ? "dark" : "light"];
 
-						if(wrap === undefined){
-							break custom;
-						}
+                        if(wrap === undefined){
+                            break custom;
+                        }
 
-						const backgroundColor = wrap.main;
+                        const backgroundColor = wrap.main;
 
-						if( backgroundColor === undefined ){
-							break custom;
-						}
+                        if( backgroundColor === undefined ){
+                            break custom;
+                        }
 
-						return backgroundColor;
+                        return backgroundColor;
 
-					}
+                    }
 
-					return isDarkModeEnabled ? "#2C323F" : "#F1F0EB";
+                    return isDarkModeEnabled ? "#2C323F" : "#F1F0EB";
 
-				});
-			%>
+                });
+            %>
 
-			var backgroundColor = isDarkModeEnabled ? "<%= backgroundColorWhenDarkMode %>" : "<%= backgroundColorWhenLightMode %>";
-		
-			document.documentElement.style.backgroundColor = backgroundColor;
-		
-			while (true) {
-			
-				var element = document.querySelector("meta[name=theme-color]");
-			
-				if (element === null) {
-					break;
-				}
-			
-				element.remove();
-			
-			}
-		
-			document.head.insertAdjacentHTML(
-				"beforeend",
-				'<meta name="theme-color" content="' + backgroundColor + '">',
-			);
-		
-		})();
-	</script>
+            var backgroundColor = isDarkModeEnabled ? "<%= backgroundColorWhenDarkMode %>" : "<%= backgroundColorWhenLightMode %>";
+            
+            document.documentElement.style.backgroundColor = backgroundColor;
+            
+            while (true) {
+            
+                var element = document.querySelector("meta[name=theme-color]");
+            
+                if (element === null) {
+                	break;
+                }
+            
+                element.remove();
+            
+            }
+            
+            document.head.insertAdjacentHTML(
+                "beforeend",
+                '<meta name="theme-color" content="' + backgroundColor + '">',
+            );
+        
+        })();
+    </script>
 
 </head>
 
