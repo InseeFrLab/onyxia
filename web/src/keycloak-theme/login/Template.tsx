@@ -20,6 +20,8 @@ import { Card } from "onyxia-ui/Card";
 import { Alert } from "onyxia-ui/Alert";
 import { symToStr } from "tsafe/symToStr";
 import { BrandHeaderSection } from "ui/shared/BrandHeaderSection";
+import { getReferrerUrl } from "keycloak-theme/login/tools/getReferrerUrl";
+import { useConst } from "powerhooks/useConst";
 
 type TemplateProps = GenericTemplateProps<KcContext, I18n>;
 
@@ -114,13 +116,21 @@ const { Header } = (() => {
 
         const { windowInnerHeight } = useWindowInnerSize();
 
+        const referrerUrl = useConst(() => getReferrerUrl());
+
         if (windowInnerHeight < 700) {
             return null;
         }
 
         return (
             <header className={cx(classes.root, className)}>
-                <BrandHeaderSection doShowOnyxia={true} link={routes.home().link} />
+                <BrandHeaderSection
+                    doShowOnyxia={true}
+                    link={{
+                        "href": referrerUrl ?? "#",
+                        "onClick": () => {}
+                    }}
+                />
             </header>
         );
     }

@@ -2,7 +2,7 @@ import "minimal-polyfills/Object.fromEntries";
 import { memo } from "react";
 import { LeftBar as OnyxiaUiLeftBar, type LeftBarProps } from "onyxia-ui/LeftBar";
 import { useTranslation, useResolveLocalizedString } from "ui/i18n";
-import { useLogoContainerWidth } from "./Header";
+import { useLogoContainerWidth } from "ui/shared/BrandHeaderSection";
 import { useRoute, routes } from "ui/routes";
 import { id } from "tsafe/id";
 import { env } from "env-parsed";

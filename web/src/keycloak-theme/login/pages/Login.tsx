@@ -1,7 +1,7 @@
 import { useState, type FormEventHandler } from "react";
 import { useConstCallback } from "keycloakify/tools/useConstCallback";
 import type { PageProps } from "keycloakify/login/pages/PageProps";
-import { tss } from "keycloak-theme/login/theme";
+import { tss } from "tss";
 import { Text } from "onyxia-ui/Text";
 import type { KcContext } from "../kcContext";
 import type { I18n } from "../i18n";

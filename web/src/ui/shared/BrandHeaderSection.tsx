@@ -58,7 +58,8 @@ const useStyles = tss
         "root": {
             "textDecoration": "none",
             "color": "unset",
-            "display": "block"
+            "display": "flex",
+            "alignItems": "center"
         },
         "logoContainer": {
             "width": logoContainerWidth,
@@ -80,7 +81,7 @@ const useStyles = tss
         },
         "text_organization": {
             ...theme.spacing.rightLeft("margin", 2),
-            ...(doShowOnyxia ? { "marginLeft": 0 } : {})
+            ...(doShowOnyxia ? {} : { "marginLeft": 0 })
         },
         "text_usecase": {
             "fontWeight": 500

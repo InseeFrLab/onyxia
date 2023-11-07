@@ -1,5 +1,5 @@
 import { useState, memo } from "react";
-import { useStyles } from "ui/theme";
+import { useStyles } from "tss";
 import { Text } from "onyxia-ui/Text";
 import { Button } from "onyxia-ui/Button";
 import { type NonPostableEvt } from "evt";

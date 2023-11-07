@@ -11,9 +11,7 @@ import {
 import { env } from "env-parsed";
 import { mergeDeep } from "ui/tools/mergeDeep";
 import { AnimatedOnyxiaLogo } from "onyxia-ui/AnimatedOnyxiaLogo";
-import { $lang, resolveLocalizedString } from "ui/i18n";
-import { statefulObservableToStatefulEvt } from "powerhooks/tools/StatefulObservable/statefulObservableToStatefulEvt";
-import { resolveAssetVariantUrl } from "ui/shared/AssetVariantUrl";
+import { resolveAssetVariantUrl } from "ui/shared/AssetVariantUrl/resolveAssetVariantUrl";
 import { assert } from "tsafe/assert";
 import servicesSvgUrl from "ui/assets/svg/custom-icons/services.svg";
 import secretsSvgUrl from "ui/assets/svg/custom-icons/secrets.svg";
@@ -21,7 +19,6 @@ import accountSvgUrl from "ui/assets/svg/custom-icons/account.svg";
 import homeSvgUrl from "ui/assets/svg/custom-icons/home.svg";
 import filesSvgUrl from "ui/assets/svg/custom-icons/files.svg";
 import catalogSvgUrl from "ui/assets/svg/custom-icons/catalog.svg";
-import { Evt } from "evt";
 
 export const palette = {
     ...(() => {
@@ -72,88 +69,87 @@ export const { useTheme, ThemeProvider } = createThemeProvider({
 });
 
 export async function loadThemedFavicon() {
-    Evt.merge([
-        evtIsDarkModeEnabled,
-        statefulObservableToStatefulEvt({ "statefulObservable": $lang })
-    ])
-        .toStateful()
-        .attach(async () => {
-            const isDarkModeEnabled = evtIsDarkModeEnabled.state;
-
-            const svgUrl = resolveAssetVariantUrl({
-                resolveLocalizedString,
-                isDarkModeEnabled,
-                "assetVariantUrl": env.FAVICON
-            });
-
-            const rawSvgString = await fetch(svgUrl)
-                .then(response => response.text())
-                .catch(() => undefined);
-
-            if (rawSvgString === undefined) {
-                console.warn(`Failed to fetch favicon ${svgUrl}`);
-                return;
-            }
-
-            const svgRoot = (() => {
-                let svgElement: SVGSVGElement | null;
-
-                try {
-                    const parser = new DOMParser();
-                    const doc = parser.parseFromString(rawSvgString, "image/svg+xml");
-                    svgElement = doc.querySelector("svg");
-                } catch (error) {
-                    console.error(`Failed to parse ${svgUrl}, ${String(error)}`);
-                    return undefined;
-                }
-
-                if (svgElement === null) {
-                    console.error(`${svgUrl} is empty`);
-                    return undefined;
-                }
-
-                return svgElement;
-            })();
-
-            if (svgRoot === undefined) {
-                return;
-            }
-
-            const colorUsecases = createDefaultColorUseCases({
-                palette,
-                isDarkModeEnabled
-            });
-
-            (function updateFillColor(element: Element) {
-                for (const [className, color] of [
-                    ["focus-color-fill", colorUsecases.typography.textFocus],
-                    ["text-color-fill", colorUsecases.typography.textPrimary],
-                    ["surface-color-fill", colorUsecases.surfaces.surface1],
-                    ["background-color-fill", colorUsecases.surfaces.background]
-                ] as const) {
-                    if (element.getAttribute("class")?.includes(className)) {
-                        element.setAttribute("fill", color);
-                    }
-                }
-
-                // Recursively update child elements
-                for (const child of Array.from(element.children)) {
-                    updateFillColor(child);
-                }
-            })(svgRoot);
-
-            // Convert updated SVG DOM object back to string
-            const serializer = new XMLSerializer();
-            const updatedRawSvg = serializer.serializeToString(svgRoot);
-
-            const url = "data:image/svg+xml," + encodeURIComponent(updatedRawSvg);
-
-            const link = document.querySelector("link[rel*='icon']");
-            assert(link !== null, "Expect a favicon already present in the head");
-            Object.assign(link, { "type": "image/svg+xml", "href": url });
-
-            document.getElementsByTagName("head")[0].appendChild(link);
+    evtIsDarkModeEnabled.attach(async isDarkModeEnabled => {
+        const svgUrl = resolveAssetVariantUrl({
+            "resolveLocalizedString": localizedString => {
+                assert(
+                    typeof localizedString === "string",
+                    "Can't provide a localized string for the favicon"
+                );
+                return localizedString;
+            },
+            isDarkModeEnabled,
+            "assetVariantUrl": env.FAVICON
         });
+
+        const rawSvgString = await fetch(svgUrl)
+            .then(response => response.text())
+            .catch(() => undefined);
+
+        if (rawSvgString === undefined) {
+            console.warn(`Failed to fetch favicon ${svgUrl}`);
+            return;
+        }
+
+        const svgRoot = (() => {
+            let svgElement: SVGSVGElement | null;
+
+            try {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(rawSvgString, "image/svg+xml");
+                svgElement = doc.querySelector("svg");
+            } catch (error) {
+                console.error(`Failed to parse ${svgUrl}, ${String(error)}`);
+                return undefined;
+            }
+
+            if (svgElement === null) {
+                console.error(`${svgUrl} is empty`);
+                return undefined;
+            }
+
+            return svgElement;
+        })();
+
+        if (svgRoot === undefined) {
+            return;
+        }
+
+        const colorUsecases = createDefaultColorUseCases({
+            palette,
+            isDarkModeEnabled
+        });
+
+        (function updateFillColor(element: Element) {
+            for (const [className, color] of [
+                ["focus-color-fill", colorUsecases.typography.textFocus],
+                ["text-color-fill", colorUsecases.typography.textPrimary],
+                ["surface-color-fill", colorUsecases.surfaces.surface1],
+                ["background-color-fill", colorUsecases.surfaces.background]
+            ] as const) {
+                if (element.getAttribute("class")?.includes(className)) {
+                    element.setAttribute("fill", color);
+                }
+            }
+
+            // Recursively update child elements
+            for (const child of Array.from(element.children)) {
+                updateFillColor(child);
+            }
+        })(svgRoot);
+
+        // Convert updated SVG DOM object back to string
+        const serializer = new XMLSerializer();
+        const updatedRawSvg = serializer.serializeToString(svgRoot);
+
+        const url = "data:image/svg+xml," + encodeURIComponent(updatedRawSvg);
+
+        const link = document.querySelector("link[rel*='icon']");
+        assert(link !== null, "Expect a favicon already present in the head");
+        Object.assign(link, { "type": "image/svg+xml", "href": url });
+
+        document.getElementsByTagName("head")[0].appendChild(link);
+    });
 }
 
 export const customIcons = {

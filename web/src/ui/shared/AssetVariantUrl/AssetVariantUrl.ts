@@ -1,6 +1,4 @@
-import { useMemo } from "react";
-import { useResolveLocalizedString, type LocalizedString } from "ui/i18n";
-import { useIsDarkModeEnabled } from "onyxia-ui";
+import type { LocalizedString } from "ui/i18n";
 
 /**
  * AssetVariantUrl is a type that enable Onyxia administrators to provide a different asset url
@@ -38,41 +36,3 @@ export type AssetVariantUrl =
           light: LocalizedString;
           dark: LocalizedString;
       };
-
-export function resolveAssetVariantUrl(params: {
-    resolveLocalizedString: (localizedString: LocalizedString) => string;
-    isDarkModeEnabled: boolean;
-    assetVariantUrl: AssetVariantUrl;
-}): string {
-    const { resolveLocalizedString, isDarkModeEnabled, assetVariantUrl } = params;
-
-    if (typeof assetVariantUrl === "string") {
-        return assetVariantUrl;
-    }
-
-    return resolveLocalizedString(
-        "light" in assetVariantUrl
-            ? isDarkModeEnabled
-                ? assetVariantUrl.dark
-                : assetVariantUrl.light
-            : assetVariantUrl
-    );
-}
-
-export function useResolveAssetVariantUrl(assetVariantUrl: AssetVariantUrl) {
-    const { resolveLocalizedString } = useResolveLocalizedString();
-
-    const { isDarkModeEnabled } = useIsDarkModeEnabled();
-
-    const url = useMemo(
-        () =>
-            resolveAssetVariantUrl({
-                resolveLocalizedString,
-                isDarkModeEnabled,
-                assetVariantUrl
-            }),
-        [isDarkModeEnabled, assetVariantUrl, resolveLocalizedString]
-    );
-
-    return url;
-}

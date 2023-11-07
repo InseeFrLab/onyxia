@@ -4,7 +4,7 @@ import type { PageProps } from "keycloakify/login/pages/PageProps";
 import { useGetClassName } from "keycloakify/login/lib/useGetClassName";
 import type { KcContext } from "../kcContext";
 import type { I18n } from "../i18n";
-import { tss } from "keycloak-theme/login/theme";
+import { tss } from "tss";
 import { Button } from "onyxia-ui/Button";
 import { Tooltip } from "onyxia-ui/Tooltip";
 
