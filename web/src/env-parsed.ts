@@ -440,6 +440,18 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
                 );
             }
         }
+    },
+    {
+        "envName": "ONYXIA_VERSION",
+        "isUsedInKeycloakTheme": false,
+        "validateAndParseOrGetDefault": ({ envValue }) =>
+            envValue === "" ? undefined : envValue
+    },
+    {
+        "envName": "ONYXIA_VERSION_URL",
+        "isUsedInKeycloakTheme": false,
+        "validateAndParseOrGetDefault": ({ envValue }) =>
+            envValue === "" ? undefined : envValue
     }
 ]);
 

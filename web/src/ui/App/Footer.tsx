@@ -8,23 +8,15 @@ import { ReactComponent as GitHubSvg } from "ui/assets/svg/GitHub.svg";
 import { useLang } from "ui/i18n";
 import { DarkModeSwitch } from "onyxia-ui/DarkModeSwitch";
 import { declareComponentKeys } from "i18nifty";
-import type { Link } from "type-route";
 import { env } from "env-parsed";
+import { routes } from "ui/routes";
 
 export type Props = {
     className?: string;
-    contributeUrl: string;
-    onyxiaVersion:
-        | {
-              number: string;
-              url: string;
-          }
-        | undefined;
-    termsLink: Link;
 };
 
 export const Footer = memo((props: Props) => {
-    const { className, contributeUrl, onyxiaVersion, termsLink } = props;
+    const { className } = props;
 
     const { classes, cx } = useStyles(props);
 
@@ -39,7 +31,7 @@ export const Footer = memo((props: Props) => {
             <Text typo="body 2">2017 - 2023 Onyxia, INSEE, CodeGouv</Text>
             {spacing}
             <a
-                href={contributeUrl}
+                href="https://github.com/InseeFrLab/onyxia"
                 className={classes.contribute}
                 target="_blank"
                 rel="noreferrer"
@@ -59,14 +51,14 @@ export const Footer = memo((props: Props) => {
                 />
             )}
             {spacing}
-            <a {...termsLink} target="_blank" rel="noreferrer">
+            <a {...routes.terms().link}>
                 {" "}
                 <Text typo="body 2">{t("terms of service")}</Text>{" "}
             </a>
             {spacing}
-            {onyxiaVersion !== undefined && (
-                <a href={onyxiaVersion.url} target="_blank" rel="noreferrer">
-                    <Text typo="body 2">v{onyxiaVersion.number}</Text>
+            {env.ONYXIA_VERSION !== undefined && (
+                <a href={env.ONYXIA_VERSION_URL} target="_blank" rel="noreferrer">
+                    <Text typo="body 2">v{env.ONYXIA_VERSION}</Text>
                 </a>
             )}
             {spacing}

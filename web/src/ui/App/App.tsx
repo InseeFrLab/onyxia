@@ -1,12 +1,10 @@
-import { useEffect, Suspense } from "react";
+import { useEffect } from "react";
 import { tss } from "tss";
 import { Footer } from "./Footer";
-import { Header, useLogoContainerWidth } from "./Header";
-import { useRoute, routes } from "ui/routes";
+import { Header } from "./Header";
 import { useEffectOnValueChange } from "powerhooks/useEffectOnValueChange";
 import { useSplashScreen } from "onyxia-ui";
 import { useIsDarkModeEnabled } from "onyxia-ui";
-import { keyframes } from "tss-react";
 import { env, injectTransferableEnvsInQueryParams } from "env-parsed";
 import { RouteProvider } from "ui/routes";
 import { createCoreProvider, useCoreState, useCoreFunctions } from "core";
@@ -15,14 +13,12 @@ import { evtLang } from "ui/i18n";
 import { getEnv } from "env";
 import { ThemeProvider, targetWindowInnerWidth, loadThemedFavicon } from "ui/theme";
 import { PortraitModeUnsupported } from "ui/shared/PortraitModeUnsupported";
-import { objectKeys } from "tsafe/objectKeys";
-import { pages } from "ui/pages";
-import { assert } from "tsafe/assert";
 import { useIsI18nFetching } from "ui/i18n";
 import { enableScreenScaler } from "screen-scaler/react";
 import { addParamToUrl } from "powerhooks/tools/urlSearchParams";
 import { LeftBar } from "./LeftBar";
 import { GlobalAlert } from "./GlobalAlert";
+import { Main } from "./Main";
 
 loadThemedFavicon();
 
@@ -86,12 +82,6 @@ function ContextualizedApp() {
 
     const { classes } = useStyles();
 
-    const { logoContainerWidth } = useLogoContainerWidth();
-
-    const route = useRoute();
-
-    const { userAuthentication } = useCoreFunctions();
-
     return (
         <div className={classes.root}>
             {env.GLOBAL_ALERT !== undefined && (
@@ -101,72 +91,14 @@ function ContextualizedApp() {
                     message={env.GLOBAL_ALERT.message}
                 />
             )}
-            <Header className={classes.header} logoContainerWidth={logoContainerWidth} />
+            <Header className={classes.header} />
             <section className={classes.betweenHeaderAndFooter}>
                 <LeftBar className={classes.leftBar} />
-                <main className={classes.main}>
-                    <Suspense fallback={<SuspenseFallback />}>
-                        {(() => {
-                            for (const pageName of objectKeys(pages)) {
-                                //You must be able to replace "home" by any other page and get no type error.
-                                const page = pages[pageName as "home"];
-
-                                if (page.routeGroup.has(route)) {
-                                    if (
-                                        page.getDoRequireUserLoggedIn(route) &&
-                                        !userAuthentication.getIsUserLoggedIn()
-                                    ) {
-                                        /* prettier-ignore */
-                                        userAuthentication.login({ "doesCurrentHrefRequiresAuth": true });
-                                        return null;
-                                    }
-
-                                    return (
-                                        <page.LazyComponent
-                                            className={classes.page}
-                                            route={route}
-                                        />
-                                    );
-                                }
-                            }
-
-                            return <pages.page404.LazyComponent />;
-                        })()}
-                    </Suspense>
-                </main>
+                <Main className={classes.main} />
             </section>
-            <Footer
-                className={classes.footer}
-                onyxiaVersion={(() => {
-                    const version = getEnv().ONYXIA_VERSION;
-
-                    if (version === "") {
-                        return undefined;
-                    }
-
-                    const url = getEnv().ONYXIA_VERSION_URL;
-
-                    assert(url !== "");
-
-                    return { "number": version, url };
-                })()}
-                contributeUrl={"https://github.com/inseefrlab/onyxia"}
-                termsLink={routes.terms().link}
-            />
+            <Footer className={classes.footer} />
         </div>
     );
-}
-
-function SuspenseFallback() {
-    const { hideRootSplashScreen } = useSplashScreen();
-
-    useEffect(() => {
-        return () => {
-            hideRootSplashScreen();
-        };
-    }, []);
-
-    return null;
 }
 
 const useStyles = tss.withName({ App }).create(({ theme }) => {
@@ -215,16 +147,6 @@ const useStyles = tss.withName({ App }).create(({ theme }) => {
             //TODO: See if scroll delegation works if we put auto here instead of "hidden"
             "paddingLeft": theme.spacing(4),
             "overflow": "hidden"
-        },
-        "page": {
-            "animation": `${keyframes`
-            0% {
-                opacity: 0;
-            }
-            100% {
-                opacity: 1;
-            }
-            `} 400ms`
         }
     };
 });

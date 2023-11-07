@@ -13,7 +13,6 @@ import { useCoreFunctions } from "core";
 
 export type Props = {
     className?: string;
-    logoContainerWidth: number;
 };
 
 export function Header(props: Props) {
