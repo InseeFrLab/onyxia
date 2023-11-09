@@ -395,6 +395,19 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
         }
     },
     {
+        "envName": "HOMEPAGE_MAIN_ASSET_SCALE_FACTOR",
+        "isUsedInKeycloakTheme": false,
+        "validateAndParseOrGetDefault": ({ envValue, envName }) => {
+            assert(envValue !== "Should have default in .env");
+
+            const parsedValue = Number(envValue);
+
+            assert(!isNaN(parsedValue), `${envName} is not a number`);
+
+            return parsedValue;
+        }
+    },
+    {
         "envName": "DISABLE_AUTO_LAUNCH",
         "isUsedInKeycloakTheme": false,
         "validateAndParseOrGetDefault": ({ envValue, envName }) => {

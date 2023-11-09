@@ -135,7 +135,7 @@ const useStyles = tss.withName({ Home }).create(({ theme }) => ({
     },
     "mainAsset": {
         "position": "absolute",
-        "width": "46%",
+        "width": `${46 * env.HOMEPAGE_MAIN_ASSET_SCALE_FACTOR}%`,
         "right": `calc(-82px - ${env.HOMEPAGE_MAIN_ASSET_X_OFFSET})`,
         "top": `calc(-206px + ${env.HOMEPAGE_MAIN_ASSET_Y_OFFSET} )`
     },
