@@ -10,13 +10,12 @@ import pictogramServiceSvg from "ui/assets/svg/PictogramService.svg";
 import iconStorageSvg from "ui/assets/svg/PictogramStorage.svg";
 import { Card as OnyxiaUiCard } from "onyxia-ui/Card";
 import type { Link } from "type-route";
-import onyxiaNeumorphismDarkModeUrl from "ui/assets/svg/OnyxiaNeumorphismDarkMode.svg";
-import onyxiaNeumorphismLightModeUrl from "ui/assets/svg/OnyxiaNeumorphismLightMode.svg";
 import { env } from "env-parsed";
 import { useConst } from "powerhooks/useConst";
 import { declareComponentKeys } from "i18nifty";
 import type { PageRoute } from "./route";
 import { ImageFromConfigs } from "ui/shared/ImageFromConfigs";
+import { useResolveAssetVariantUrl } from "ui/shared/AssetVariantUrl";
 
 type Props = {
     route: PageRoute;
@@ -32,7 +31,9 @@ export default function Home(props: Props) {
         }
     });
 
-    const { classes, cx } = useStyles();
+    const backgroundUrl = useResolveAssetVariantUrl(env.BACKGROUND_ASSET);
+
+    const { classes, cx } = useStyles({ backgroundUrl });
 
     const { userAuthentication } = useCoreFunctions();
 
@@ -112,58 +113,57 @@ export const { i18n } = declareComponentKeys<
     | "cardButton3"
 >()({ Home });
 
-const useStyles = tss.withName({ Home }).create(({ theme }) => ({
-    "root": {
-        "height": "100%",
-        "overflow": "auto",
-        "backgroundColor": "transparent",
-        "display": "flex",
-        "flexDirection": "column"
-    },
-    "hero": {
-        "flex": 1,
-        "position": "relative",
-        "backgroundImage": `url(${
-            theme.isDarkModeEnabled
-                ? onyxiaNeumorphismDarkModeUrl
-                : onyxiaNeumorphismLightModeUrl
-        })`,
-        "backgroundPosition": "100% 0%",
-        "backgroundRepeat": "no-repeat",
-        "backgroundSize": "80%",
-        "overflow": "hidden"
-    },
-    "mainAsset": {
-        "position": "absolute",
-        "width": `${46 * env.HOMEPAGE_MAIN_ASSET_SCALE_FACTOR}%`,
-        "right": `calc(-82px - ${env.HOMEPAGE_MAIN_ASSET_X_OFFSET})`,
-        "top": `calc(-206px + ${env.HOMEPAGE_MAIN_ASSET_Y_OFFSET} )`
-    },
-    "heroTextWrapper": {
-        "paddingLeft": theme.spacing(3),
-        "maxWidth": "42%",
-        "& > *": {
-            "marginBottom": theme.spacing(4)
+const useStyles = tss
+    .withName({ Home })
+    .withParams<{ backgroundUrl: string }>()
+    .create(({ theme, backgroundUrl }) => ({
+        "root": {
+            "height": "100%",
+            "overflow": "auto",
+            "backgroundColor": "transparent",
+            "display": "flex",
+            "flexDirection": "column"
+        },
+        "hero": {
+            "flex": 1,
+            "position": "relative",
+            "backgroundImage": `url(${backgroundUrl})`,
+            "backgroundPosition": "100% 0%",
+            "backgroundRepeat": "no-repeat",
+            "backgroundSize": "80%",
+            "overflow": "hidden"
+        },
+        "mainAsset": {
+            "position": "absolute",
+            "width": `${46 * env.HOMEPAGE_MAIN_ASSET_SCALE_FACTOR}%`,
+            "right": `calc(-82px - ${env.HOMEPAGE_MAIN_ASSET_X_OFFSET})`,
+            "top": `calc(-206px + ${env.HOMEPAGE_MAIN_ASSET_Y_OFFSET} )`
+        },
+        "heroTextWrapper": {
+            "paddingLeft": theme.spacing(3),
+            "maxWidth": "42%",
+            "& > *": {
+                "marginBottom": theme.spacing(4)
+            }
+        },
+        "heroSubtitle": {
+            "marginBottom": theme.spacing(5)
+        },
+        "cardsWrapper": {
+            "borderTop": `1px solid ${theme.colors.useCases.typography.textPrimary}`,
+            "display": "flex",
+            ...theme.spacing.topBottom("padding", 4),
+            "& > *": {
+                "flex": 1
+            }
+        },
+        "middleCard": {
+            ...theme.spacing.rightLeft("margin", 3)
+        },
+        "logo": {
+            "width": 122
         }
-    },
-    "heroSubtitle": {
-        "marginBottom": theme.spacing(5)
-    },
-    "cardsWrapper": {
-        "borderTop": `1px solid ${theme.colors.useCases.typography.textPrimary}`,
-        "display": "flex",
-        ...theme.spacing.topBottom("padding", 4),
-        "& > *": {
-            "flex": 1
-        }
-    },
-    "middleCard": {
-        ...theme.spacing.rightLeft("margin", 3)
-    },
-    "logo": {
-        "width": 122
-    }
-}));
+    }));
 
 type CardProps = {
     className?: string;

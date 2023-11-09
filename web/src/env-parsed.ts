@@ -24,6 +24,8 @@ import { zLocalizedString, zLanguage, languages } from "ui/i18n/z";
 import { type LinkFromConfig, zLinkFromConfig } from "ui/shared/LinkFromConfig";
 import dragoonSvgUrl from "ui/assets/svg/Dragoon.svg";
 import { parseCssSpacing } from "ui/tools/parseCssSpacing";
+import onyxiaNeumorphismDarkModeUrl from "ui/assets/svg/OnyxiaNeumorphismDarkMode.svg";
+import onyxiaNeumorphismLightModeUrl from "ui/assets/svg/OnyxiaNeumorphismLightMode.svg";
 
 const paletteIds = ["onyxia", "france", "ultraviolet", "verdant"] as const;
 
@@ -403,6 +405,28 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
             const parsedValue = Number(envValue);
 
             assert(!isNaN(parsedValue), `${envName} is not a number`);
+
+            return parsedValue;
+        }
+    },
+    {
+        "envName": "BACKGROUND_ASSET",
+        "isUsedInKeycloakTheme": true,
+        "validateAndParseOrGetDefault": ({ envValue, envName }): AssetVariantUrl => {
+            if (envValue === "") {
+                return {
+                    "dark": onyxiaNeumorphismDarkModeUrl,
+                    "light": onyxiaNeumorphismLightModeUrl
+                };
+            }
+
+            let parsedValue: AssetVariantUrl;
+
+            try {
+                parsedValue = parseAssetVariantUrl(envValue);
+            } catch (error) {
+                throw new Error(`${envName} is malformed. ${String(error)}`);
+            }
 
             return parsedValue;
         }

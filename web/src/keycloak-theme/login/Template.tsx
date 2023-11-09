@@ -14,14 +14,14 @@ import { IconButton } from "onyxia-ui/IconButton";
 import { useDomRect } from "powerhooks/useDomRect";
 import { useWindowInnerSize } from "powerhooks/useWindowInnerSize";
 import CloseIcon from "@mui/icons-material/Close";
-import onyxiaNeumorphismDarkModeUrl from "ui/assets/svg/OnyxiaNeumorphismDarkMode.svg";
-import onyxiaNeumorphismLightModeUrl from "ui/assets/svg/OnyxiaNeumorphismLightMode.svg";
 import { Card } from "onyxia-ui/Card";
 import { Alert } from "onyxia-ui/Alert";
 import { symToStr } from "tsafe/symToStr";
 import { BrandHeaderSection } from "ui/shared/BrandHeaderSection";
 import { getReferrerUrl } from "keycloak-theme/login/tools/getReferrerUrl";
 import { useConst } from "powerhooks/useConst";
+import { useResolveAssetVariantUrl } from "ui/shared/AssetVariantUrl";
+import { env } from "env-parsed";
 
 type TemplateProps = GenericTemplateProps<KcContext, I18n>;
 
@@ -36,7 +36,9 @@ export default function Template(props: TemplateProps) {
 function ContextualizedTemplate(props: TemplateProps) {
     const { kcContext, doUseDefaultCss, classes: classes_props, children } = props;
 
-    const { classes, cx } = useStyles();
+    const backgroundUrl = useResolveAssetVariantUrl(env.BACKGROUND_ASSET);
+
+    const { classes, cx } = useStyles({ backgroundUrl });
 
     const { getClassName } = useGetClassName({
         doUseDefaultCss,
@@ -73,36 +75,35 @@ function ContextualizedTemplate(props: TemplateProps) {
     );
 }
 
-const useStyles = tss.create(({ theme }) => ({
-    "root": {
-        "height": "100vh",
-        "display": "flex",
-        "flexDirection": "column",
-        "backgroundColor": theme.colors.useCases.surfaces.background
-    },
+const useStyles = tss
+    .withName({ Template })
+    .withParams<{ backgroundUrl: string }>()
+    .create(({ theme, backgroundUrl }) => ({
+        "root": {
+            "height": "100vh",
+            "display": "flex",
+            "flexDirection": "column",
+            "backgroundColor": theme.colors.useCases.surfaces.background
+        },
 
-    "header": {
-        "width": "100%",
-        "paddingRight": "2%",
-        "height": 64
-    },
-    "betweenHeaderAndFooter": {
-        "flex": 1,
-        "overflow": "hidden",
-        "backgroundImage": `url( ${
-            theme.isDarkModeEnabled
-                ? onyxiaNeumorphismDarkModeUrl
-                : onyxiaNeumorphismLightModeUrl
-        })`,
-        "backgroundSize": "auto 90%",
-        "backgroundPosition": "center",
-        "backgroundRepeat": "no-repeat"
-    },
-    "page": {
-        "height": "100%",
-        "overflow": "auto"
-    }
-}));
+        "header": {
+            "width": "100%",
+            "paddingRight": "2%",
+            "height": 64
+        },
+        "betweenHeaderAndFooter": {
+            "flex": 1,
+            "overflow": "hidden",
+            "backgroundImage": `url( ${backgroundUrl})`,
+            "backgroundSize": "auto 90%",
+            "backgroundPosition": "center",
+            "backgroundRepeat": "no-repeat"
+        },
+        "page": {
+            "height": "100%",
+            "overflow": "auto"
+        }
+    }));
 
 const { Header } = (() => {
     type Params = {
