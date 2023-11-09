@@ -12,7 +12,6 @@ import { Card as OnyxiaUiCard } from "onyxia-ui/Card";
 import type { Link } from "type-route";
 import onyxiaNeumorphismDarkModeUrl from "ui/assets/svg/OnyxiaNeumorphismDarkMode.svg";
 import onyxiaNeumorphismLightModeUrl from "ui/assets/svg/OnyxiaNeumorphismLightMode.svg";
-import dragoonSvgUrl from "ui/assets/svg/Dragoon.svg";
 import { env } from "env-parsed";
 import { useConst } from "powerhooks/useConst";
 import { declareComponentKeys } from "i18nifty";
@@ -28,7 +27,7 @@ export default function Home(props: Props) {
     const { className } = props;
 
     useConst(() => {
-        if (env.DISABLE_HOME_PAGE) {
+        if (env.DISABLE_HOMEPAGE) {
             routes.catalog().replace();
         }
     });
@@ -63,7 +62,10 @@ export default function Home(props: Props) {
                         <Button href="https://docs.sspcloud.fr/">{t("new user")}</Button>
                     )}
                 </div>
-                <ImageFromConfigs url={dragoonSvgUrl} className={classes.dragoon} />
+                <ImageFromConfigs
+                    url={env.HOMEPAGE_MAIN_ASSET}
+                    className={classes.mainAsset}
+                />
             </div>
             <div className={classes.cardsWrapper}>
                 <Card
@@ -131,11 +133,11 @@ const useStyles = tss.withName({ Home }).create(({ theme }) => ({
         "backgroundSize": "80%",
         "overflow": "hidden"
     },
-    "dragoon": {
+    "mainAsset": {
         "position": "absolute",
         "width": "46%",
-        "right": -82,
-        "top": -206
+        "right": `calc(-82px - ${env.HOMEPAGE_MAIN_ASSET_X_OFFSET})`,
+        "top": `calc(-206px + ${env.HOMEPAGE_MAIN_ASSET_Y_OFFSET} )`
     },
     "heroTextWrapper": {
         "paddingLeft": theme.spacing(3),

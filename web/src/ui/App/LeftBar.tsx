@@ -40,7 +40,7 @@ export const LeftBar = memo((props: Props) => {
             collapsedWidth={logoContainerWidth}
             reduceText={t("reduce")}
             items={{
-                ...(env.DISABLE_HOME_PAGE
+                ...(env.DISABLE_HOMEPAGE
                     ? ({} as never)
                     : {
                           "home": {

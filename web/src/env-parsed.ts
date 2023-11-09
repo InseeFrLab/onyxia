@@ -22,6 +22,8 @@ import { z } from "zod";
 import { removeDuplicates } from "evt/tools/reducers/removeDuplicates";
 import { zLocalizedString, zLanguage, languages } from "ui/i18n/z";
 import { type LinkFromConfig, zLinkFromConfig } from "ui/shared/LinkFromConfig";
+import dragoonSvgUrl from "ui/assets/svg/Dragoon.svg";
+import { parseCssSpacing } from "ui/tools/parseCssSpacing";
 
 const paletteIds = ["onyxia", "france", "ultraviolet", "verdant"] as const;
 
@@ -34,15 +36,15 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
         "validateAndParseOrGetDefault": ({ envValue, envName }): AssetVariantUrl => {
             assert(envValue !== "Should have default in .env");
 
-            let faviconUrl: AssetVariantUrl;
+            let parsedValue: AssetVariantUrl;
 
             try {
-                faviconUrl = parseAssetVariantUrl(envValue);
+                parsedValue = parseAssetVariantUrl(envValue);
             } catch (error) {
                 throw new Error(`${envName} is malformed. ${String(error)}`);
             }
 
-            return faviconUrl;
+            return parsedValue;
         }
     },
     {
@@ -334,7 +336,7 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
         }
     },
     {
-        "envName": "DISABLE_HOME_PAGE",
+        "envName": "DISABLE_HOMEPAGE",
         "isUsedInKeycloakTheme": false,
         "validateAndParseOrGetDefault": ({ envValue, envName }) => {
             const possibleValues = ["true", "false"];
@@ -345,6 +347,51 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
             );
 
             return envValue === "true";
+        }
+    },
+    {
+        "envName": "HOMEPAGE_MAIN_ASSET",
+        "isUsedInKeycloakTheme": false,
+        "validateAndParseOrGetDefault": ({ envValue, envName }) => {
+            if (envValue === "") {
+                return dragoonSvgUrl;
+            }
+
+            let parsedValue: AssetVariantUrl;
+
+            try {
+                parsedValue = parseAssetVariantUrl(envValue);
+            } catch (error) {
+                throw new Error(`${envName} is malformed. ${String(error)}`);
+            }
+
+            return parsedValue;
+        }
+    },
+    {
+        "envName": "HOMEPAGE_MAIN_ASSET_X_OFFSET",
+        "isUsedInKeycloakTheme": false,
+        "validateAndParseOrGetDefault": ({ envValue, envName }) => {
+            assert(envValue !== "Should have default in .env");
+
+            try {
+                return parseCssSpacing(envValue);
+            } catch (error) {
+                throw new Error(`${envName} is malformed. ${String(error)}`);
+            }
+        }
+    },
+    {
+        "envName": "HOMEPAGE_MAIN_ASSET_Y_OFFSET",
+        "isUsedInKeycloakTheme": false,
+        "validateAndParseOrGetDefault": ({ envValue, envName }) => {
+            assert(envValue !== "Should have default in .env");
+
+            try {
+                return parseCssSpacing(envValue);
+            } catch (error) {
+                throw new Error(`${envName} is malformed. ${String(error)}`);
+            }
         }
     },
     {
