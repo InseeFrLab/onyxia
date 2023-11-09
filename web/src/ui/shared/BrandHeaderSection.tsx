@@ -32,18 +32,18 @@ export function BrandHeaderSection(props: Props) {
                         Onyxia -
                     </Text>
                 )}
-                {env.HEADER_ORGANIZATION !== undefined && (
+                {env.HEADER_TEXT_BOLD !== undefined && (
                     <Text typo="section heading" className={classes.text_organization}>
-                        {env.HEADER_ORGANIZATION}
+                        {env.HEADER_TEXT_BOLD}
                     </Text>
                 )}
-                {windowInnerWidth > 450 && env.HEADER_USECASE_DESCRIPTION && (
+                {windowInnerWidth > 450 && (
                     <Text
                         typo="section heading"
                         className={classes.text_usecase}
                         color="focus"
                     >
-                        {env.HEADER_USECASE_DESCRIPTION}
+                        {env.HEADER_TEXT_FOCUS}
                     </Text>
                 )}
             </div>

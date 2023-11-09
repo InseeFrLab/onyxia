@@ -98,12 +98,17 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
         }
     },
     {
-        "envName": "HEADER_ORGANIZATION",
+        "envName": "HEADER_TEXT_BOLD",
         "isUsedInKeycloakTheme": true,
-        "validateAndParseOrGetDefault": ({ envValue }) => envValue || undefined
+        "validateAndParseOrGetDefault": ({ envValue }) => {
+            if (envValue === "") {
+                return undefined;
+            }
+            return envValue;
+        }
     },
     {
-        "envName": "HEADER_USECASE_DESCRIPTION",
+        "envName": "HEADER_TEXT_FOCUS",
         "isUsedInKeycloakTheme": true,
         "validateAndParseOrGetDefault": ({ envValue }) => {
             assert(envValue !== "", "Should have default in .env");
