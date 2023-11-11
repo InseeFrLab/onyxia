@@ -446,7 +446,7 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
         "envName": "HOMEPAGE_MAIN_ASSET_X_OFFSET",
         "isUsedInKeycloakTheme": false,
         "validateAndParseOrGetDefault": ({ envValue, envName }) => {
-            assert(envValue !== "Should have default in .env");
+            assert(envValue !== "", "Should have default in .env");
 
             try {
                 return parseCssSpacing(envValue);
@@ -472,7 +472,7 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
         "envName": "HOMEPAGE_MAIN_ASSET_SCALE_FACTOR",
         "isUsedInKeycloakTheme": false,
         "validateAndParseOrGetDefault": ({ envValue, envName }) => {
-            assert(envValue !== "Should have default in .env");
+            assert(envValue !== "", "Should have default in .env");
 
             const parsedValue = Number(envValue);
 

@@ -135,8 +135,8 @@ const useStyles = tss
         },
         "mainAsset": {
             "position": "absolute",
-            "width": `${43 * env.HOMEPAGE_MAIN_ASSET_SCALE_FACTOR}%`,
-            "right": `calc(-82px - ${env.HOMEPAGE_MAIN_ASSET_X_OFFSET})`,
+            "width": `${41 * env.HOMEPAGE_MAIN_ASSET_SCALE_FACTOR}%`,
+            "right": `calc(-1 * (${env.HOMEPAGE_MAIN_ASSET_X_OFFSET}))`,
             "top": env.HOMEPAGE_MAIN_ASSET_Y_OFFSET
         },
         "heroTextWrapper": {
