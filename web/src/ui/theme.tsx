@@ -1,9 +1,6 @@
 import {
     createThemeProvider,
     defaultPalette,
-    francePalette,
-    ultravioletPalette,
-    verdantPalette,
     defaultGetTypographyDesc,
     createDefaultColorUseCases,
     evtIsDarkModeEnabled
@@ -21,24 +18,7 @@ import filesSvgUrl from "ui/assets/svg/custom-icons/files.svg";
 import catalogSvgUrl from "ui/assets/svg/custom-icons/catalog.svg";
 
 export const palette = {
-    ...(() => {
-        const selectedBuiltinPalette = (() => {
-            switch (env.THEME_ID) {
-                case "onyxia":
-                    return defaultPalette;
-                case "france":
-                    return francePalette;
-                case "ultraviolet":
-                    return ultravioletPalette;
-                case "verdant":
-                    return verdantPalette;
-            }
-        })();
-
-        return env.PALETTE_OVERRIDE !== undefined
-            ? mergeDeep(selectedBuiltinPalette, env.PALETTE_OVERRIDE)
-            : selectedBuiltinPalette;
-    })(),
+    ...mergeDeep(defaultPalette, env.PALETTE_OVERRIDE),
     "limeGreen": {
         "main": "#BAFF29",
         "light": "#E2FFA6"

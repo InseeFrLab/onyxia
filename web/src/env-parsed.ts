@@ -50,34 +50,14 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
         }
     },
     {
-        "envName": "THEME_ID",
-        "isUsedInKeycloakTheme": true,
-        "validateAndParseOrGetDefault": ({ envValue }): PaletteId =>
-            envValue === ""
-                ? "onyxia"
-                : (() => {
-                      assert(
-                          typeGuard<PaletteId>(
-                              envValue,
-                              id<readonly string[]>(paletteIds).includes(envValue)
-                          ),
-                          `${envValue} is not a valid palette. Available are: ${paletteIds.join(
-                              ", "
-                          )}`
-                      );
-
-                      return envValue;
-                  })()
-    },
-    {
         "envName": "PALETTE_OVERRIDE",
         "isUsedInKeycloakTheme": true,
         "validateAndParseOrGetDefault": ({
             envValue,
             envName
-        }): DeepPartial<PaletteBase> | undefined => {
+        }): DeepPartial<PaletteBase> => {
             if (envValue === "") {
-                return undefined;
+                return {};
             }
 
             let paletteOverride: any;
