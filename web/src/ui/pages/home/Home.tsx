@@ -14,8 +14,8 @@ import { env } from "env-parsed";
 import { useConst } from "powerhooks/useConst";
 import { declareComponentKeys } from "i18nifty";
 import type { PageRoute } from "./route";
-import { ImageFromConfigs } from "ui/shared/ImageFromConfigs";
-import { useResolveAssetVariantUrl } from "ui/shared/AssetVariantUrl";
+import { ThemedImage } from "onyxia-ui/ThemedImage";
+import { useResolveAssetVariantUrl } from "onyxia-ui";
 
 type Props = {
     route: PageRoute;
@@ -48,7 +48,7 @@ export default function Home(props: Props) {
         <div className={cx(classes.root, className)}>
             <div className={classes.hero}>
                 <div className={classes.heroTextWrapper}>
-                    <ImageFromConfigs url={env.LOGO} className={classes.logo} />
+                    <ThemedImage url={env.LOGO} className={classes.logo} />
                     <Text typo="display heading">
                         {isUserLoggedIn
                             ? t("welcome", {
@@ -63,7 +63,7 @@ export default function Home(props: Props) {
                         <Button href="https://docs.sspcloud.fr/">{t("new user")}</Button>
                     )}
                 </div>
-                <ImageFromConfigs
+                <ThemedImage
                     url={env.HOMEPAGE_MAIN_ASSET}
                     className={classes.mainAsset}
                 />
@@ -192,7 +192,7 @@ const Card = memo((props: CardProps) => {
             )}
         >
             <div className={css({ "display": "flex" })}>
-                <ImageFromConfigs
+                <ThemedImage
                     url={pictogramUrl}
                     className={css({
                         "width": 120,

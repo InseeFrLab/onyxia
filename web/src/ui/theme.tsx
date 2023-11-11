@@ -8,10 +8,10 @@ import {
     createDefaultColorUseCases,
     evtIsDarkModeEnabled
 } from "onyxia-ui";
+import { getClassesAndColors } from "onyxia-ui/ThemedSvg";
 import { env } from "env-parsed";
 import { mergeDeep } from "ui/tools/mergeDeep";
-import { AnimatedOnyxiaLogo } from "onyxia-ui/AnimatedOnyxiaLogo";
-import { resolveAssetVariantUrl } from "ui/shared/AssetVariantUrl";
+import { resolveAssetVariantUrl } from "onyxia-ui";
 import { assert } from "tsafe/assert";
 import servicesSvgUrl from "ui/assets/svg/custom-icons/services.svg";
 import secretsSvgUrl from "ui/assets/svg/custom-icons/secrets.svg";
@@ -52,7 +52,7 @@ export const palette = {
 
 export const targetWindowInnerWidth = 1980;
 
-export const { useTheme, ThemeProvider } = createThemeProvider({
+const { ThemeProvider, ofTypeTheme } = createThemeProvider({
     "getTypographyDesc": params => ({
         ...defaultGetTypographyDesc({
             ...params,
@@ -64,15 +64,21 @@ export const { useTheme, ThemeProvider } = createThemeProvider({
         "fontFamily": `'${env.FONT.fontFamily}'`
     }),
     palette,
-    "splashScreenParams": { "Logo": AnimatedOnyxiaLogo },
-    "publicUrl": ""
+    "splashScreenParams": {
+        "assetUrl": env.LOGO
+    },
+    "publicUrl": process.env.PUBLIC_URL
 });
+
+export { ThemeProvider };
+
+export type Theme = typeof ofTypeTheme;
 
 export async function loadThemedFavicon() {
     evtIsDarkModeEnabled.attach(async isDarkModeEnabled => {
         const faviconUrl = resolveAssetVariantUrl({
             isDarkModeEnabled,
-            "assetVariantUrl": env.FAVICON
+            "themedAssetUrl": env.FAVICON
         });
 
         const link = document.querySelector("link[rel*='icon']");
@@ -128,22 +134,17 @@ export async function loadThemedFavicon() {
                 return undefined;
             }
 
-            const colorUsecases = createDefaultColorUseCases({
+            const colorUseCases = createDefaultColorUseCases({
                 palette,
                 isDarkModeEnabled
             });
 
             (function updateFillColor(element: Element) {
-                for (const [className, color] of [
-                    ["focus-color-fill", colorUsecases.typography.textFocus],
-                    ["text-color-fill", colorUsecases.typography.textPrimary],
-                    ["surface-color-fill", colorUsecases.surfaces.surface1],
-                    ["background-color-fill", colorUsecases.surfaces.background]
-                ] as const) {
+                getClassesAndColors({ colorUseCases }).forEach(({ className, color }) => {
                     if (element.getAttribute("class")?.includes(className)) {
                         element.setAttribute("fill", color);
                     }
-                }
+                });
 
                 // Recursively update child elements
                 for (const child of Array.from(element.children)) {

@@ -1,13 +1,10 @@
 import { createTss } from "tss-react";
-import { useTheme as useAppTheme } from "ui/theme";
-import { useTheme as useLoginTheme } from "keycloak-theme/login/theme";
-import { kcContext as kcLoginThemeContext } from "keycloak-theme/login/kcContext";
-
-const useTheme = kcLoginThemeContext === undefined ? useAppTheme : useLoginTheme;
+import { useTheme } from "onyxia-ui";
+import type { Theme } from "ui/theme";
 
 export const { tss } = createTss({
     "useContext": function useContext() {
-        const theme = useTheme();
+        const theme = useTheme<Theme>();
         return { theme };
     }
 });

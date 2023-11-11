@@ -3,7 +3,7 @@ import { env } from "env-parsed";
 import { Text } from "onyxia-ui/Text";
 import type { Link } from "type-route";
 import { tss } from "tss";
-import { ImageFromConfigs } from "ui/shared/ImageFromConfigs";
+import { ThemedImage } from "onyxia-ui/ThemedImage";
 import { useWindowInnerSize } from "powerhooks/useWindowInnerSize";
 
 export type Props = {
@@ -24,7 +24,7 @@ export function BrandHeaderSection(props: Props) {
     return (
         <a className={cx(classes.root, className)} {...link}>
             <div className={classes.logoContainer}>
-                <ImageFromConfigs className={classes.logo} url={env.LOGO} />
+                <ThemedImage className={classes.logo} url={env.LOGO} />
             </div>
             <div className={classes.textContainer}>
                 {doShowOnyxia && (

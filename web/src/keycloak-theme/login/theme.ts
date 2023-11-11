@@ -2,7 +2,7 @@ import { createThemeProvider, defaultGetTypographyDesc } from "onyxia-ui";
 import { palette, loadThemedFavicon, targetWindowInnerWidth } from "ui/theme";
 import { env } from "env-parsed";
 
-export const { useTheme, ThemeProvider } = createThemeProvider({
+export const { ThemeProvider } = createThemeProvider({
     "getTypographyDesc": params => ({
         ...defaultGetTypographyDesc({
             ...params,

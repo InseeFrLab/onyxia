@@ -14,8 +14,8 @@ import { id } from "tsafe/id";
 import { objectKeys } from "tsafe/objectKeys";
 import type { PaletteBase } from "onyxia-ui";
 import type { DeepPartial } from "keycloakify/tools/DeepPartial";
-import type { AssetVariantUrl } from "ui/shared/AssetVariantUrl";
-import { parseAssetVariantUrl } from "ui/shared/AssetVariantUrl/z";
+import { parseThemedAssetUrl } from "ui/shared/parseThemedAssetUrl";
+import type { ThemedAssetUrl } from "onyxia-ui";
 import type { Language } from "ui/i18n";
 import memoize from "memoizee";
 import { z } from "zod";
@@ -35,13 +35,13 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
     {
         "envName": "LOGO",
         "isUsedInKeycloakTheme": true,
-        "validateAndParseOrGetDefault": ({ envValue, envName }): AssetVariantUrl => {
+        "validateAndParseOrGetDefault": ({ envValue, envName }): ThemedAssetUrl => {
             assert(envValue !== "Should have default in .env");
 
-            let parsedValue: AssetVariantUrl;
+            let parsedValue: ThemedAssetUrl;
 
             try {
-                parsedValue = parseAssetVariantUrl(envValue);
+                parsedValue = parseThemedAssetUrl(envValue);
             } catch (error) {
                 throw new Error(`${envName} is malformed. ${String(error)}`);
             }
@@ -184,18 +184,18 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
     {
         "envName": "FAVICON",
         "isUsedInKeycloakTheme": true,
-        "validateAndParseOrGetDefault": ({ envValue, envName }): AssetVariantUrl => {
+        "validateAndParseOrGetDefault": ({ envValue, envName }): ThemedAssetUrl => {
             assert(envValue !== "Should have default in .env");
 
-            let faviconUrl: AssetVariantUrl;
+            let parsedValue: ThemedAssetUrl;
 
             try {
-                faviconUrl = parseAssetVariantUrl(envValue);
+                parsedValue = parseThemedAssetUrl(envValue);
             } catch (error) {
                 throw new Error(`${envName} is malformed. ${String(error)}`);
             }
 
-            return faviconUrl;
+            return parsedValue;
         }
     },
     {
@@ -354,15 +354,15 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
     {
         "envName": "HOMEPAGE_MAIN_ASSET",
         "isUsedInKeycloakTheme": false,
-        "validateAndParseOrGetDefault": ({ envValue, envName }) => {
+        "validateAndParseOrGetDefault": ({ envValue, envName }): ThemedAssetUrl => {
             if (envValue === "") {
                 return dragoonSvgUrl;
             }
 
-            let parsedValue: AssetVariantUrl;
+            let parsedValue: ThemedAssetUrl;
 
             try {
-                parsedValue = parseAssetVariantUrl(envValue);
+                parsedValue = parseThemedAssetUrl(envValue);
             } catch (error) {
                 throw new Error(`${envName} is malformed. ${String(error)}`);
             }
@@ -412,7 +412,7 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
     {
         "envName": "BACKGROUND_ASSET",
         "isUsedInKeycloakTheme": true,
-        "validateAndParseOrGetDefault": ({ envValue, envName }): AssetVariantUrl => {
+        "validateAndParseOrGetDefault": ({ envValue, envName }): ThemedAssetUrl => {
             if (envValue === "") {
                 return {
                     "dark": onyxiaNeumorphismDarkModeUrl,
@@ -420,10 +420,10 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
                 };
             }
 
-            let parsedValue: AssetVariantUrl;
+            let parsedValue: ThemedAssetUrl;
 
             try {
-                parsedValue = parseAssetVariantUrl(envValue);
+                parsedValue = parseThemedAssetUrl(envValue);
             } catch (error) {
                 throw new Error(`${envName} is malformed. ${String(error)}`);
             }

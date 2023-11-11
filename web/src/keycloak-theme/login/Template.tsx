@@ -20,7 +20,7 @@ import { symToStr } from "tsafe/symToStr";
 import { BrandHeaderSection } from "ui/shared/BrandHeaderSection";
 import { getReferrerUrl } from "keycloak-theme/login/tools/getReferrerUrl";
 import { useConst } from "powerhooks/useConst";
-import { useResolveAssetVariantUrl } from "ui/shared/AssetVariantUrl";
+import { useResolveAssetVariantUrl } from "onyxia-ui";
 import { env } from "env-parsed";
 
 type TemplateProps = GenericTemplateProps<KcContext, I18n>;

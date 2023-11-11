@@ -1,7 +1,7 @@
 import { z } from "zod";
-import { assert } from "tsafe/assert";
+import { assert, type Equals } from "tsafe/assert";
 import { is } from "tsafe/is";
-import type { AssetVariantUrl } from "./AssetVariantUrl";
+import type { ThemedAssetUrl } from "onyxia-ui";
 
 const zAssetVariantUrl = z.union([
     z.string(),
@@ -13,15 +13,14 @@ const zAssetVariantUrl = z.union([
 
 {
     type Got = ReturnType<(typeof zAssetVariantUrl)["parse"]>;
-    type Expected = AssetVariantUrl;
+    type Expected = ThemedAssetUrl;
 
     // NOTE: This is too much for Equals so we lock it this way.
-    assert<Got extends Expected ? true : false>();
-    assert<Expected extends Got ? true : false>();
+    assert<Equals<Got, Expected>>();
 }
 
 /** Throw an error if parsing fails */
-export function parseAssetVariantUrl(serializedAssetVariantUrl: string): AssetVariantUrl {
+export function parseThemedAssetUrl(serializedAssetVariantUrl: string): ThemedAssetUrl {
     if (serializedAssetVariantUrl === "") {
         throw new Error("Empty string is not a valid AssetVariantUrl");
     }
@@ -51,7 +50,7 @@ export function parseAssetVariantUrl(serializedAssetVariantUrl: string): AssetVa
             )}`
         );
     }
-    assert(is<AssetVariantUrl>(assetVariantUrl));
+    assert(is<ThemedAssetUrl>(assetVariantUrl));
 
     return assetVariantUrl;
 }
