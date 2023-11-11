@@ -65,7 +65,8 @@ const { ThemeProvider, ofTypeTheme } = createThemeProvider({
     }),
     palette,
     "splashScreenParams": {
-        "assetUrl": env.SPLASHSCREEN_LOGO
+        "assetUrl": env.SPLASHSCREEN_LOGO,
+        "assetScaleFactor": env.SPLASHSCREEN_LOGO_SCALE_FACTOR
     },
     "publicUrl": process.env.PUBLIC_URL
 });

@@ -126,6 +126,19 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
             return parsedValue;
         }
     },
+    {
+        "envName": "SPLASHSCREEN_LOGO_SCALE_FACTOR",
+        "isUsedInKeycloakTheme": false,
+        "validateAndParseOrGetDefault": ({ envValue, envName }) => {
+            assert(envValue !== "Should have default in .env");
+
+            const parsedValue = Number(envValue);
+
+            assert(!isNaN(parsedValue), `${envName} is not a number`);
+
+            return parsedValue;
+        }
+    },
 
     {
         "envName": "HEADER_TEXT_BOLD",
@@ -675,6 +688,10 @@ function createParsedEnvs<Parser extends Entry<EnvName>>(
 
     for (const parser of parsers) {
         const { envName, validateAndParseOrGetDefault, isUsedInKeycloakTheme } = parser;
+
+        if (envName in parsedValueOrGetterByEnvName) {
+            throw new Error(`Duplicate parser for ${envName}`);
+        }
 
         const isProductionKeycloak =
             process.env.NODE_ENV === "production" && kcLoginThemeContext !== undefined;
