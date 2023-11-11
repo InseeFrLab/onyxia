@@ -135,9 +135,9 @@ const useStyles = tss
         },
         "mainAsset": {
             "position": "absolute",
-            "width": `${46 * env.HOMEPAGE_MAIN_ASSET_SCALE_FACTOR}%`,
+            "width": `${43 * env.HOMEPAGE_MAIN_ASSET_SCALE_FACTOR}%`,
             "right": `calc(-82px - ${env.HOMEPAGE_MAIN_ASSET_X_OFFSET})`,
-            "top": `calc(-206px + ${env.HOMEPAGE_MAIN_ASSET_Y_OFFSET} )`
+            "top": env.HOMEPAGE_MAIN_ASSET_Y_OFFSET
         },
         "heroTextWrapper": {
             "paddingLeft": theme.spacing(3),
