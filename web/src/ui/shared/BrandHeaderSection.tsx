@@ -24,7 +24,7 @@ export function BrandHeaderSection(props: Props) {
     return (
         <a className={cx(classes.root, className)} {...link}>
             <div className={classes.logoContainer}>
-                <ThemedImage className={classes.logo} url={env.LOGO} />
+                <ThemedImage className={classes.logo} url={env.HEADER_LOGO} />
             </div>
             <div className={classes.textContainer}>
                 {doShowOnyxia && (
@@ -69,7 +69,7 @@ const useStyles = tss
             "justifyContent": "center"
         },
         "logo": {
-            "width": "70%"
+            "width": "60%"
         },
         "textContainer": {
             "& > *": {

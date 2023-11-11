@@ -48,7 +48,7 @@ export default function Home(props: Props) {
         <div className={cx(classes.root, className)}>
             <div className={classes.hero}>
                 <div className={classes.heroTextWrapper}>
-                    <ThemedImage url={env.LOGO} className={classes.logo} />
+                    <ThemedImage url={env.HOMEPAGE_LOGO} className={classes.logo} />
                     <Text typo="display heading">
                         {isUserLoggedIn
                             ? t("welcome", {
@@ -141,6 +141,7 @@ const useStyles = tss
         },
         "heroTextWrapper": {
             "paddingLeft": theme.spacing(3),
+            "paddingTop": theme.spacing(3),
             "maxWidth": "42%",
             "& > *": {
                 "marginBottom": theme.spacing(4)
@@ -161,7 +162,7 @@ const useStyles = tss
             ...theme.spacing.rightLeft("margin", 3)
         },
         "logo": {
-            "width": 122
+            "width": 100
         }
     }));
 

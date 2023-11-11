@@ -33,10 +33,10 @@ export type PaletteId = (typeof paletteIds)[number];
 
 export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
     {
-        "envName": "LOGO",
+        "envName": "HEADER_LOGO",
         "isUsedInKeycloakTheme": true,
         "validateAndParseOrGetDefault": ({ envValue, envName }): ThemedAssetUrl => {
-            assert(envValue !== "Should have default in .env");
+            assert(envValue !== "", "Should have default in .env");
 
             let parsedValue: ThemedAssetUrl;
 
@@ -101,6 +101,32 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
             return paletteOverride;
         }
     },
+    {
+        "envName": "SPLASHSCREEN_LOGO",
+        "isUsedInKeycloakTheme": false,
+        "validateAndParseOrGetDefault": ({
+            envValue,
+            envName,
+            env: env_
+        }): ThemedAssetUrl => {
+            if (envValue === "") {
+                assert(is<typeof env>(env_));
+
+                return env_.HEADER_LOGO;
+            }
+
+            let parsedValue: ThemedAssetUrl;
+
+            try {
+                parsedValue = parseThemedAssetUrl(envValue);
+            } catch (error) {
+                throw new Error(`${envName} is malformed. ${String(error)}`);
+            }
+
+            return parsedValue;
+        }
+    },
+
     {
         "envName": "HEADER_TEXT_BOLD",
         "isUsedInKeycloakTheme": true,
@@ -184,8 +210,16 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
     {
         "envName": "FAVICON",
         "isUsedInKeycloakTheme": true,
-        "validateAndParseOrGetDefault": ({ envValue, envName }): ThemedAssetUrl => {
-            assert(envValue !== "Should have default in .env");
+        "validateAndParseOrGetDefault": ({
+            envValue,
+            envName,
+            env: env_
+        }): ThemedAssetUrl => {
+            if (envValue === "") {
+                assert(is<typeof env>(env_));
+
+                return env_.HEADER_LOGO;
+            }
 
             let parsedValue: ThemedAssetUrl;
 
@@ -349,6 +383,31 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
             );
 
             return envValue === "true";
+        }
+    },
+    {
+        "envName": "HOMEPAGE_LOGO",
+        "isUsedInKeycloakTheme": false,
+        "validateAndParseOrGetDefault": ({
+            envValue,
+            envName,
+            env: env_
+        }): ThemedAssetUrl => {
+            if (envValue === "") {
+                assert(is<typeof env>(env_));
+
+                return env_.HEADER_LOGO;
+            }
+
+            let parsedValue: ThemedAssetUrl;
+
+            try {
+                parsedValue = parseThemedAssetUrl(envValue);
+            } catch (error) {
+                throw new Error(`${envName} is malformed. ${String(error)}`);
+            }
+
+            return parsedValue;
         }
     },
     {
@@ -567,7 +626,11 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
 
 type Entry<N extends EnvName> = {
     envName: N;
-    validateAndParseOrGetDefault: (params: { envValue: string; envName: N }) => any;
+    validateAndParseOrGetDefault: (params: {
+        envValue: string;
+        envName: N;
+        env: Record<string, unknown>;
+    }) => any;
     isUsedInKeycloakTheme: boolean;
 };
 
@@ -592,6 +655,23 @@ function createParsedEnvs<Parser extends Entry<EnvName>>(
                 ? process.env.PUBLIC_URL
                 : `${kcLoginThemeContext.url.resourcesPath}/build`
         );
+
+    const env: any = new Proxy(
+        {},
+        {
+            "get": (...[, envName]) => {
+                assert(typeof envName === "string");
+
+                assert(envName in parsedValueOrGetterByEnvName);
+
+                const parsedValueOrGetter = parsedValueOrGetterByEnvName[envName];
+
+                return typeof parsedValueOrGetter === "function"
+                    ? parsedValueOrGetter()
+                    : parsedValueOrGetter;
+            }
+        }
+    );
 
     for (const parser of parsers) {
         const { envName, validateAndParseOrGetDefault, isUsedInKeycloakTheme } = parser;
@@ -668,34 +748,19 @@ function createParsedEnvs<Parser extends Entry<EnvName>>(
 
             parsedValueOrGetterByEnvName[envName] = validateAndParseOrGetDefault({
                 "envValue": replacePUBLIC_URL(envValue),
-                envName
+                envName,
+                env
             });
         } else {
             parsedValueOrGetterByEnvName[envName] = memoize(() =>
                 validateAndParseOrGetDefault({
                     "envValue": replacePUBLIC_URL(getEnvValue()),
-                    envName
+                    envName,
+                    env
                 })
             );
         }
     }
-
-    const env: any = new Proxy(
-        {},
-        {
-            "get": (...[, envName]) => {
-                assert(typeof envName === "string");
-
-                assert(envName in parsedValueOrGetterByEnvName);
-
-                const parsedValueOrGetter = parsedValueOrGetterByEnvName[envName];
-
-                return typeof parsedValueOrGetter === "function"
-                    ? parsedValueOrGetter()
-                    : parsedValueOrGetter;
-            }
-        }
-    );
 
     function injectTransferableEnvsInQueryParams(url: string): string {
         let newUrl = url;
