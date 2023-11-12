@@ -19,8 +19,11 @@ import { addParamToUrl } from "powerhooks/tools/urlSearchParams";
 import { LeftBar } from "./LeftBar";
 import { GlobalAlert } from "./GlobalAlert";
 import { Main } from "./Main";
+import { injectCustomFontFaceIfNotAlreadyDone } from "keycloak-theme/login/injectCustomFontFaceIfNotAlreadyDone";
 
 loadThemedFavicon();
+// NOTE: We do that only to showcase the app with an other font with the URL.
+injectCustomFontFaceIfNotAlreadyDone();
 
 const { CoreProvider } = createCoreProvider({
     "apiUrl": getEnv().ONYXIA_API_URL,

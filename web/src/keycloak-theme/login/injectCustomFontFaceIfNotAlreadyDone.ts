@@ -1,12 +1,19 @@
 import { env } from "env-parsed";
 import { assert, type Equals } from "tsafe/assert";
 import { exclude } from "tsafe/exclude";
+import { typeGuard } from "tsafe/typeGuard";
 
-export function injectCustomFontFace(): void {
+export function injectCustomFontFaceIfNotAlreadyDone(): void {
     const { fontFamily, dirUrl } = env.FONT;
 
-    if (fontFamily === "Work Sans") {
-        return;
+    {
+        const metaTag = document.querySelector(`meta[name='onyxia-font']`);
+
+        assert(typeGuard<HTMLMetaElement>(metaTag, metaTag !== null));
+
+        if (metaTag.content === fontFamily) {
+            return;
+        }
     }
 
     const styleElement = document.createElement("style");

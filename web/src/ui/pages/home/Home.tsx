@@ -63,10 +63,12 @@ export default function Home(props: Props) {
                         <Button href="https://docs.sspcloud.fr/">{t("new user")}</Button>
                     )}
                 </div>
-                <ThemedImage
-                    url={env.HOMEPAGE_MAIN_ASSET}
-                    className={classes.mainAsset}
-                />
+                {env.HOMEPAGE_MAIN_ASSET !== undefined && (
+                    <ThemedImage
+                        url={env.HOMEPAGE_MAIN_ASSET}
+                        className={classes.mainAsset}
+                    />
+                )}
             </div>
             <div className={classes.cardsWrapper}>
                 <Card

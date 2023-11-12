@@ -406,9 +406,16 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
     {
         "envName": "HOMEPAGE_MAIN_ASSET",
         "isUsedInKeycloakTheme": false,
-        "validateAndParseOrGetDefault": ({ envValue, envName }): ThemedAssetUrl => {
+        "validateAndParseOrGetDefault": ({
+            envValue,
+            envName
+        }): ThemedAssetUrl | undefined => {
             if (envValue === "") {
                 return dragoonSvgUrl;
+            }
+
+            if (envValue === "false") {
+                return undefined;
             }
 
             let parsedValue: ThemedAssetUrl;
@@ -684,10 +691,6 @@ function createParsedEnvs<Parser extends Entry<EnvName>>(
             }
 
             look_in_url: {
-                if (!isUsedInKeycloakTheme) {
-                    break look_in_url;
-                }
-
                 const result = retrieveParamFromUrl({
                     "url": window.location.href,
                     "name": envName
@@ -768,6 +771,29 @@ function createParsedEnvs<Parser extends Entry<EnvName>>(
 
         return newUrl;
     }
+
+    /*
+    //Do not remove, helper to generate an url to preview the theme.  
+    {
+
+        let url = "https://datalab.sspcloud.fr";
+
+        for( const envName of id<EnvName[]>([
+            "FONT",
+            "PALETTE_OVERRIDE",
+            "HOMEPAGE_MAIN_ASSET",
+            "HOMEPAGE_MAIN_ASSET_X_OFFSET",
+            "HOMEPAGE_MAIN_ASSET_Y_OFFSET",
+            "HOMEPAGE_MAIN_ASSET_SCALE_FACTOR",
+            "HEADER_TEXT_BOLD"
+        ])){
+            url = addParamToUrl({ url, "name": envName, "value": env[envName] }).newUrl;
+        }
+
+        console.log(url);
+
+    }
+    */
 
     return { env, injectTransferableEnvsInQueryParams };
 }
