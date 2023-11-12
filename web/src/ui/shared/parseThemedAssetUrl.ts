@@ -2,6 +2,7 @@ import { z } from "zod";
 import { assert, type Equals } from "tsafe/assert";
 import { is } from "tsafe/is";
 import type { ThemedAssetUrl } from "onyxia-ui";
+import { getDoesLooksLikeJsonObjectOrArray } from "ui/tools/getDoesLooksLikeJsonObjectOrArray";
 
 const zAssetVariantUrl = z.union([
     z.string(),
@@ -25,12 +26,8 @@ export function parseThemedAssetUrl(serializedAssetVariantUrl: string): ThemedAs
         throw new Error("Empty string is not a valid AssetVariantUrl");
     }
 
-    {
-        const match = serializedAssetVariantUrl.match(/^ *{/);
-
-        if (match === null) {
-            return serializedAssetVariantUrl;
-        }
+    if (!getDoesLooksLikeJsonObjectOrArray(serializedAssetVariantUrl)) {
+        return serializedAssetVariantUrl;
     }
 
     let assetVariantUrl: unknown;

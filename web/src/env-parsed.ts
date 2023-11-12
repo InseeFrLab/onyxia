@@ -16,7 +16,7 @@ import type { PaletteBase } from "onyxia-ui";
 import type { DeepPartial } from "keycloakify/tools/DeepPartial";
 import { parseThemedAssetUrl } from "ui/shared/parseThemedAssetUrl";
 import type { ThemedAssetUrl } from "onyxia-ui";
-import type { Language } from "ui/i18n";
+import type { Language, LocalizedString } from "ui/i18n";
 import memoize from "memoizee";
 import { z } from "zod";
 import { removeDuplicates } from "evt/tools/reducers/removeDuplicates";
@@ -26,6 +26,7 @@ import dragoonSvgUrl from "ui/assets/svg/Dragoon.svg";
 import { parseCssSpacing } from "ui/tools/parseCssSpacing";
 import onyxiaNeumorphismDarkModeUrl from "ui/assets/svg/OnyxiaNeumorphismDarkMode.svg";
 import onyxiaNeumorphismLightModeUrl from "ui/assets/svg/OnyxiaNeumorphismLightMode.svg";
+import { getDoesLooksLikeJsonObjectOrArray } from "ui/tools/getDoesLooksLikeJsonObjectOrArray";
 
 const paletteIds = ["onyxia", "france", "ultraviolet", "verdant"] as const;
 
@@ -157,12 +158,8 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
                 return undefined;
             }
 
-            {
-                const match = envValue.match(/^ *{/);
-
-                if (match === null) {
-                    return envValue;
-                }
+            if (!getDoesLooksLikeJsonObjectOrArray(envValue)) {
+                return envValue;
             }
 
             let tosUrlByLng: Partial<Record<Language, string>>;
@@ -530,29 +527,49 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
                 return undefined;
             }
 
-            if (/^\s*\{.*\}\s*$/.test(envValue.replace(/\r?\n/g, " "))) {
-                const zSchema = z.object({
-                    "severity": z.enum(["error", "warning", "info", "success"]),
-                    "message": zLocalizedString
-                });
-
-                let parsedEnvValue: z.infer<typeof zSchema>;
-
-                try {
-                    parsedEnvValue = JSON.parse(envValue);
-
-                    zSchema.parse(parsedEnvValue);
-                } catch {
-                    throw new Error(`${envName} is malformed, ${envValue}`);
-                }
-
-                return parsedEnvValue;
+            if (!getDoesLooksLikeJsonObjectOrArray(envValue)) {
+                return {
+                    "severity": "info" as const,
+                    "message": envValue
+                };
             }
 
-            return {
-                "severity": "info" as const,
-                "message": envValue
+            let parsedValue: unknown;
+
+            try {
+                parsedValue = JSON.parse(envValue);
+            } catch {
+                throw new Error(`${envName} is not a valid JSON`);
+            }
+
+            type ParsedValue = {
+                severity: "error" | "warning" | "info" | "success";
+                message: LocalizedString;
             };
+
+            const zParsedValue = z.object({
+                "severity": z.enum(["error", "warning", "info", "success"]),
+                "message": zLocalizedString
+            });
+
+            {
+                type Got = ReturnType<(typeof zParsedValue)["parse"]>;
+                type Expected = ParsedValue;
+
+                assert<Got extends Expected ? true : false>();
+                assert<Expected extends Got ? true : false>();
+            }
+
+            try {
+                zParsedValue.parse(parsedValue);
+            } catch (error) {
+                throw new Error(
+                    `The format of ${envName} is not valid: ${String(error)}`
+                );
+            }
+            assert(is<ParsedValue>(parsedValue));
+
+            return parsedValue;
         }
     },
     {
