@@ -772,23 +772,49 @@ function createParsedEnvs<Parser extends Entry<EnvName>>(
         return newUrl;
     }
 
+    //Do not remove, helper to generate an url to preview the theme.
     /*
-    //Do not remove, helper to generate an url to preview the theme.  
     {
 
         let url = "https://datalab.sspcloud.fr";
+        let helmValues = [
+            "web:",
+            "    env:",
+        ].join("\n");
 
-        for( const envName of id<EnvName[]>([
+        for (const envName of id<EnvName[]>([
             "FONT",
             "PALETTE_OVERRIDE",
             "HOMEPAGE_MAIN_ASSET",
             "HOMEPAGE_MAIN_ASSET_X_OFFSET",
             "HOMEPAGE_MAIN_ASSET_Y_OFFSET",
             "HOMEPAGE_MAIN_ASSET_SCALE_FACTOR",
-            "HEADER_TEXT_BOLD"
-        ])){
-            url = addParamToUrl({ url, "name": envName, "value": env[envName] }).newUrl;
+            "HEADER_TEXT_FOCUS"
+        ])) {
+
+            const envValue = getEnv()[envName];
+
+            url = addParamToUrl({ url, "name": envName, "value": envValue }).newUrl;
+
+            if (envValue === "") {
+                continue;
+            }
+
+            if (envName === "FONT" || envName === "PALETTE_OVERRIDE") {
+
+
+                helmValues += `\n        ${envName}: |\n            ${JSON.stringify(JSON.parse(envValue), null, 2).split("\n").join("\n            ")}`;
+            } else {
+
+                helmValues += [
+                    `\n        ${envName}: "${env[envName]}"`,
+                ].join("\n");
+
+            }
+
         }
+
+        console.log(helmValues);
 
         console.log(url);
 
