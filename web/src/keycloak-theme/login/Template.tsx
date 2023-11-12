@@ -7,7 +7,6 @@ import type { KcContext } from "./kcContext";
 import type { I18n } from "./i18n";
 import { memo } from "react";
 import { useConstCallback } from "powerhooks/useConstCallback";
-import { ThemeProvider } from "keycloak-theme/login/theme";
 import { tss } from "tss";
 import { Text } from "onyxia-ui/Text";
 import { IconButton } from "onyxia-ui/IconButton";
@@ -26,14 +25,6 @@ import { env } from "env-parsed";
 type TemplateProps = GenericTemplateProps<KcContext, I18n>;
 
 export default function Template(props: TemplateProps) {
-    return (
-        <ThemeProvider>
-            <ContextualizedTemplate {...props} />
-        </ThemeProvider>
-    );
-}
-
-function ContextualizedTemplate(props: TemplateProps) {
     const { kcContext, doUseDefaultCss, classes: classes_props, children } = props;
 
     const backgroundUrl = useResolveAssetVariantUrl(env.BACKGROUND_ASSET);

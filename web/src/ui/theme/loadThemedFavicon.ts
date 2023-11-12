@@ -1,59 +1,9 @@
-import {
-    createThemeProvider,
-    defaultPalette,
-    defaultGetTypographyDesc,
-    createDefaultColorUseCases,
-    evtIsDarkModeEnabled
-} from "onyxia-ui";
+import { createDefaultColorUseCases, evtIsDarkModeEnabled } from "onyxia-ui";
 import { getClassesAndColors } from "onyxia-ui/ThemedSvg";
 import { env } from "env-parsed";
-import { mergeDeep } from "ui/tools/mergeDeep";
 import { resolveAssetVariantUrl } from "onyxia-ui";
 import { assert } from "tsafe/assert";
-import servicesSvgUrl from "ui/assets/svg/custom-icons/services.svg";
-import secretsSvgUrl from "ui/assets/svg/custom-icons/secrets.svg";
-import accountSvgUrl from "ui/assets/svg/custom-icons/account.svg";
-import homeSvgUrl from "ui/assets/svg/custom-icons/home.svg";
-import filesSvgUrl from "ui/assets/svg/custom-icons/files.svg";
-import catalogSvgUrl from "ui/assets/svg/custom-icons/catalog.svg";
-
-export const palette = {
-    ...mergeDeep(defaultPalette, env.PALETTE_OVERRIDE),
-    "limeGreen": {
-        "main": "#BAFF29",
-        "light": "#E2FFA6"
-    },
-    "agentConnectBlue": {
-        "main": "#0579EE",
-        "light": "#2E94FA",
-        "lighter": "#E5EDF5"
-    }
-};
-
-export const targetWindowInnerWidth = 1980;
-
-const { ThemeProvider, ofTypeTheme } = createThemeProvider({
-    "getTypographyDesc": params => ({
-        ...defaultGetTypographyDesc({
-            ...params,
-            // We don't want the font to be responsive
-            // By default, the font size change depending on the screen size,
-            // we don't want that here so we fix the windowInnerWidth.
-            "windowInnerWidth": targetWindowInnerWidth
-        }),
-        "fontFamily": `'${env.FONT.fontFamily}'`
-    }),
-    palette,
-    "splashScreenParams": {
-        "assetUrl": env.SPLASHSCREEN_LOGO,
-        "assetScaleFactor": env.SPLASHSCREEN_LOGO_SCALE_FACTOR
-    },
-    "publicUrl": process.env.PUBLIC_URL
-});
-
-export { ThemeProvider };
-
-export type Theme = typeof ofTypeTheme;
+import { palette } from "./palette";
 
 export async function loadThemedFavicon() {
     evtIsDarkModeEnabled.attach(async isDarkModeEnabled => {
@@ -152,12 +102,3 @@ export async function loadThemedFavicon() {
         document.getElementsByTagName("head")[0].appendChild(link);
     });
 }
-
-export const customIcons = {
-    servicesSvgUrl,
-    secretsSvgUrl,
-    accountSvgUrl,
-    homeSvgUrl,
-    filesSvgUrl,
-    catalogSvgUrl
-};

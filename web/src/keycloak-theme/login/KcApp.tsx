@@ -7,6 +7,7 @@ import { tss } from "tss";
 import { env } from "env-parsed";
 import onyxiaNeumorphismDarkModeUrl from "ui/assets/svg/OnyxiaNeumorphismDarkMode.svg";
 import onyxiaNeumorphismLightModeUrl from "ui/assets/svg/OnyxiaNeumorphismLightMode.svg";
+import { ThemeProvider } from "keycloak-theme/login/theme";
 
 loadThemedFavicon();
 
@@ -16,7 +17,19 @@ const Login = lazy(() => import("./pages/Login"));
 const RegisterUserProfile = lazy(() => import("./pages/RegisterUserProfile"));
 const Terms = lazy(() => import("./pages/Terms"));
 
-export default function KcApp(props: { kcContext: KcContext }) {
+type Props = {
+    kcContext: KcContext;
+};
+
+export default function KcApp(props: Props) {
+    return (
+        <ThemeProvider>
+            <ContextualizedKcApp {...props} />
+        </ThemeProvider>
+    );
+}
+
+function ContextualizedKcApp(props: Props) {
     const { kcContext } = props;
 
     const i18n = useI18n({ kcContext });

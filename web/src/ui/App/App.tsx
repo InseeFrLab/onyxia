@@ -11,7 +11,12 @@ import { createCoreProvider, useCoreState, useCoreFunctions } from "core";
 import { injectGlobalStatesInSearchParams } from "powerhooks/useGlobalState";
 import { evtLang } from "ui/i18n";
 import { getEnv } from "env";
-import { ThemeProvider, targetWindowInnerWidth, loadThemedFavicon } from "ui/theme";
+import {
+    ThemeProvider,
+    targetWindowInnerWidth,
+    loadThemedFavicon,
+    injectCustomFontFaceIfNotAlreadyDone
+} from "ui/theme";
 import { PortraitModeUnsupported } from "ui/shared/PortraitModeUnsupported";
 import { useIsI18nFetching } from "ui/i18n";
 import { enableScreenScaler } from "screen-scaler/react";
@@ -19,7 +24,6 @@ import { addParamToUrl } from "powerhooks/tools/urlSearchParams";
 import { LeftBar } from "./LeftBar";
 import { GlobalAlert } from "./GlobalAlert";
 import { Main } from "./Main";
-import { injectCustomFontFaceIfNotAlreadyDone } from "keycloak-theme/login/injectCustomFontFaceIfNotAlreadyDone";
 
 loadThemedFavicon();
 // NOTE: We do that only to showcase the app with an other font with the URL.
