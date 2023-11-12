@@ -1,6 +1,6 @@
 import type { Translations } from "../types";
 import MuiLink from "@mui/material/Link";
-import { Markdown } from "onyxia-ui/Markdown";
+import { Markdown } from "ui/shared/Markdown";
 import { elementsToSentence } from "ui/tools/elementsToSentence";
 
 export const translations: Translations<"nl"> = {
@@ -399,17 +399,26 @@ export const translations: Translations<"nl"> = {
             interfacePreferenceHref
         }) => (
             <Markdown
-                getDoesLinkShouldOpenNewTab={href => {
-                    switch (href) {
-                        case k8CredentialsHref:
-                            return true;
-                        case myServicesHref:
-                            return true;
-                        case interfacePreferenceHref:
-                            return false;
-                        default:
-                            return false;
-                    }
+                getLinkProps={({ href }) => {
+                    const doOpensNewTab = (() => {
+                        switch (href) {
+                            case k8CredentialsHref:
+                                return true;
+                            case myServicesHref:
+                                return true;
+                            case interfacePreferenceHref:
+                                return false;
+                            default:
+                                return false;
+                        }
+                    })();
+
+                    return {
+                        href,
+                        ...(doOpensNewTab
+                            ? { "target": "_blank", "onClick": undefined }
+                            : {})
+                    };
                 }}
             >{`We hebben de commandobalk ontworpen om jou volledige controle te geven over je Kubernetes-implementaties.
 Hier is wat je moet weten:

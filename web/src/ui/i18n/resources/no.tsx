@@ -1,6 +1,6 @@
 import MuiLink from "@mui/material/Link";
 import type { Translations } from "../types";
-import { Markdown } from "onyxia-ui/Markdown";
+import { Markdown } from "ui/shared/Markdown";
 import { elementsToSentence } from "ui/tools/elementsToSentence";
 
 export const translations: Translations<"no"> = {
@@ -397,17 +397,26 @@ export const translations: Translations<"no"> = {
             interfacePreferenceHref
         }) => (
             <Markdown
-                getDoesLinkShouldOpenNewTab={href => {
-                    switch (href) {
-                        case k8CredentialsHref:
-                            return true;
-                        case myServicesHref:
-                            return true;
-                        case interfacePreferenceHref:
-                            return false;
-                        default:
-                            return false;
-                    }
+                getLinkProps={({ href }) => {
+                    const doOpensNewTab = (() => {
+                        switch (href) {
+                            case k8CredentialsHref:
+                                return true;
+                            case myServicesHref:
+                                return true;
+                            case interfacePreferenceHref:
+                                return false;
+                            default:
+                                return false;
+                        }
+                    })();
+
+                    return {
+                        href,
+                        ...(doOpensNewTab
+                            ? { "target": "_blank", "onClick": undefined }
+                            : {})
+                    };
                 }}
             >{`Vi har designet kommandolinjen for å gi deg full kontroll over dine Kubernetes-implementeringer.
 Her er det du trenger å vite:

@@ -1,6 +1,6 @@
 import MuiLink from "@mui/material/Link";
 import type { Translations } from "../types";
-import { Markdown } from "onyxia-ui/Markdown";
+import { Markdown } from "ui/shared/Markdown";
 import { elementsToSentence } from "ui/tools/elementsToSentence";
 
 export const translations: Translations<"fi"> = {
@@ -393,17 +393,26 @@ export const translations: Translations<"fi"> = {
             interfacePreferenceHref
         }) => (
             <Markdown
-                getDoesLinkShouldOpenNewTab={href => {
-                    switch (href) {
-                        case k8CredentialsHref:
-                            return true;
-                        case myServicesHref:
-                            return true;
-                        case interfacePreferenceHref:
-                            return false;
-                        default:
-                            return false;
-                    }
+                getLinkProps={({ href }) => {
+                    const doOpensNewTab = (() => {
+                        switch (href) {
+                            case k8CredentialsHref:
+                                return true;
+                            case myServicesHref:
+                                return true;
+                            case interfacePreferenceHref:
+                                return false;
+                            default:
+                                return false;
+                        }
+                    })();
+
+                    return {
+                        href,
+                        ...(doOpensNewTab
+                            ? { "target": "_blank", "onClick": undefined }
+                            : {})
+                    };
                 }}
             >{`Olemme suunnitelleet komentopalkin siten, että voit ottaa hallinnan Kubernetes-julkaisuistasi.
 Tässä on mitä sinun tarvitsee tietää:

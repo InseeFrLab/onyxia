@@ -4,7 +4,7 @@ import { tss, useStyles as useClasslessStyles } from "tss";
 import { Text } from "onyxia-ui/Text";
 import { Button } from "onyxia-ui/Button";
 import { useCoreFunctions } from "core";
-import { useTranslation, useResolveLocalizedString } from "ui/i18n";
+import { useTranslation } from "ui/i18n";
 import pictogramCommunitySvgUrl from "ui/assets/svg/PictogramCommunity.svg";
 import pictogramServiceSvg from "ui/assets/svg/PictogramService.svg";
 import iconStorageSvg from "ui/assets/svg/PictogramStorage.svg";
@@ -16,6 +16,7 @@ import { declareComponentKeys } from "i18nifty";
 import type { PageRoute } from "./route";
 import { ThemedImage } from "onyxia-ui/ThemedImage";
 import { useResolveAssetVariantUrl } from "onyxia-ui";
+import { LocalizedMarkdown } from "ui/shared/Markdown";
 
 type Props = {
     route: PageRoute;
@@ -47,10 +48,6 @@ export default function Home(props: Props) {
     const myFilesLink = useMemo(() => routes.myFiles().link, []);
     const catalogExplorerLink = useMemo(() => routes.catalog().link, []);
 
-    const { resolveLocalizedString } = useResolveLocalizedString({
-        "labelWhenMismatchingLanguage": true
-    });
-
     const title = useMemo(() => {
         const userFirstname = userAuthentication.getUser().firstName ?? "";
 
@@ -58,16 +55,42 @@ export default function Home(props: Props) {
             if (env.HOMEPAGE_TITLE_AUTHENTICATED === undefined) {
                 return t("title authenticated", { userFirstname });
             }
-            return resolveLocalizedString(
-                env.HOMEPAGE_TITLE_AUTHENTICATED({ userFirstname })
+
+            return (
+                <LocalizedMarkdown inline>
+                    {env.HOMEPAGE_TITLE_AUTHENTICATED({ userFirstname })}
+                </LocalizedMarkdown>
             );
         } else {
             if (env.HOMEPAGE_TITLE === undefined) {
                 return t("title");
             }
-            return resolveLocalizedString(env.HOMEPAGE_TITLE);
+            return <LocalizedMarkdown inline>{env.HOMEPAGE_TITLE}</LocalizedMarkdown>;
         }
-    }, [resolveLocalizedString]);
+    }, [t]);
+
+    const subtitle = useMemo(() => {
+        const userFirstname = userAuthentication.getUser().firstName ?? "";
+
+        const defaultNode = t("subtitle");
+
+        if (isUserLoggedIn) {
+            if (env.HOMEPAGE_SUBTITLE_AUTHENTICATED === undefined) {
+                return defaultNode;
+            }
+
+            return (
+                <LocalizedMarkdown inline>
+                    {env.HOMEPAGE_SUBTITLE_AUTHENTICATED({ userFirstname })}
+                </LocalizedMarkdown>
+            );
+        } else {
+            if (env.HOMEPAGE_SUBTITLE === undefined) {
+                return defaultNode;
+            }
+            return <LocalizedMarkdown inline>{env.HOMEPAGE_SUBTITLE}</LocalizedMarkdown>;
+        }
+    }, [t]);
 
     return (
         <div className={cx(classes.root, className)}>
@@ -78,7 +101,7 @@ export default function Home(props: Props) {
                     )}
                     <Text typo="display heading">{title}</Text>
                     <Text typo="subtitle" className={classes.heroSubtitle}>
-                        {t("subtitle")}
+                        {subtitle}
                     </Text>
                     {isUserLoggedIn && (
                         <Button href="https://docs.sspcloud.fr/">{t("new user")}</Button>

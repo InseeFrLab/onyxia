@@ -4,7 +4,7 @@ import { symToStr } from "tsafe/symToStr";
 import { useResolveLocalizedString } from "ui/i18n";
 import { Alert } from "onyxia-ui/Alert";
 import { simpleHash } from "ui/tools/simpleHash";
-import { Markdown } from "onyxia-ui/Markdown";
+import { Markdown } from "ui/shared/Markdown";
 import { type LocalizedString } from "ui/i18n";
 
 type Props = {

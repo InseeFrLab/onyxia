@@ -558,6 +558,94 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
         }
     },
     {
+        "envName": "HOMEPAGE_SUBTITLE",
+        "isUsedInKeycloakTheme": false,
+        "validateAndParseOrGetDefault": ({
+            envValue,
+            envName
+        }): LocalizedString | undefined => {
+            if (envValue === "") {
+                return undefined;
+            }
+
+            if (!getDoesLooksLikeJsonObjectOrArray(envValue)) {
+                return envValue;
+            }
+
+            let parsedValue: unknown;
+
+            try {
+                parsedValue = JSON.parse(envValue);
+            } catch {
+                throw new Error(`${envName} is not a valid JSON`);
+            }
+
+            try {
+                zLocalizedString.parse(parsedValue);
+            } catch (error) {
+                throw new Error(
+                    `The format of ${envName} is not valid: ${String(error)}`
+                );
+            }
+            assert(is<LocalizedString>(parsedValue));
+
+            return parsedValue;
+        }
+    },
+    {
+        "envName": "HOMEPAGE_SUBTITLE_AUTHENTICATED",
+        "isUsedInKeycloakTheme": false,
+        "validateAndParseOrGetDefault": ({
+            envValue,
+            envName,
+            env: env_
+        }): ((params: { userFirstname: string }) => LocalizedString) | undefined => {
+            const toFn =
+                (localizedString: LocalizedString) =>
+                (params: { userFirstname: string }): LocalizedString => {
+                    const { userFirstname } = params;
+
+                    return JSON.parse(
+                        JSON.stringify(localizedString).replace(
+                            /%USER_FIRSTNAME%/g,
+                            userFirstname
+                        )
+                    );
+                };
+
+            if (envValue === "") {
+                assert(is<typeof env>(env_));
+
+                return env_.HOMEPAGE_TITLE === undefined
+                    ? undefined
+                    : toFn(env_.HOMEPAGE_TITLE);
+            }
+
+            if (!getDoesLooksLikeJsonObjectOrArray(envValue)) {
+                return toFn(envValue);
+            }
+
+            let parsedValue: unknown;
+
+            try {
+                parsedValue = JSON.parse(envValue);
+            } catch {
+                throw new Error(`${envName} is not a valid JSON`);
+            }
+
+            try {
+                zLocalizedString.parse(parsedValue);
+            } catch (error) {
+                throw new Error(
+                    `The format of ${envName} is not valid: ${String(error)}`
+                );
+            }
+            assert(is<LocalizedString>(parsedValue));
+
+            return toFn(parsedValue);
+        }
+    },
+    {
         "envName": "BACKGROUND_ASSET",
         "isUsedInKeycloakTheme": true,
         "validateAndParseOrGetDefault": ({ envValue, envName }): ThemedAssetUrl => {

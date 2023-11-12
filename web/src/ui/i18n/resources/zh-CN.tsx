@@ -1,6 +1,6 @@
 import type { Translations } from "../types";
 import MuiLink from "@mui/material/Link";
-import { Markdown } from "onyxia-ui/Markdown";
+import { Markdown } from "ui/shared/Markdown";
 import { elementsToSentence } from "ui/tools/elementsToSentence";
 
 export const translations: Translations<"zh-CN"> = {
@@ -371,17 +371,26 @@ export const translations: Translations<"zh-CN"> = {
             interfacePreferenceHref
         }) => (
             <Markdown
-                getDoesLinkShouldOpenNewTab={href => {
-                    switch (href) {
-                        case k8CredentialsHref:
-                            return true;
-                        case myServicesHref:
-                            return true;
-                        case interfacePreferenceHref:
-                            return false;
-                        default:
-                            return false;
-                    }
+                getLinkProps={({ href }) => {
+                    const doOpensNewTab = (() => {
+                        switch (href) {
+                            case k8CredentialsHref:
+                                return true;
+                            case myServicesHref:
+                                return true;
+                            case interfacePreferenceHref:
+                                return false;
+                            default:
+                                return false;
+                        }
+                    })();
+
+                    return {
+                        href,
+                        ...(doOpensNewTab
+                            ? { "target": "_blank", "onClick": undefined }
+                            : {})
+                    };
                 }}
             >{`我们设计了命令栏，目的是让您能够全面掌控您的 Kubernetes 部署。
 以下是您需要了解的信息：
