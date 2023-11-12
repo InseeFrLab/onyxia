@@ -385,11 +385,15 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
             envValue,
             envName,
             env: env_
-        }): ThemedAssetUrl => {
+        }): ThemedAssetUrl | undefined => {
             if (envValue === "") {
                 assert(is<typeof env>(env_));
 
                 return env_.HEADER_LOGO;
+            }
+
+            if (envValue === "false") {
+                return undefined;
             }
 
             let parsedValue: ThemedAssetUrl;

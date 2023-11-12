@@ -33,7 +33,10 @@ export default function Home(props: Props) {
 
     const backgroundUrl = useResolveAssetVariantUrl(env.BACKGROUND_ASSET);
 
-    const { classes, cx } = useStyles({ backgroundUrl });
+    const { classes, cx } = useStyles({
+        backgroundUrl,
+        "hasLogo": env.HOMEPAGE_LOGO !== undefined
+    });
 
     const { userAuthentication } = useCoreFunctions();
 
@@ -48,7 +51,9 @@ export default function Home(props: Props) {
         <div className={cx(classes.root, className)}>
             <div className={classes.hero}>
                 <div className={classes.heroTextWrapper}>
-                    <ThemedImage url={env.HOMEPAGE_LOGO} className={classes.logo} />
+                    {env.HOMEPAGE_LOGO !== undefined && (
+                        <ThemedImage url={env.HOMEPAGE_LOGO} className={classes.logo} />
+                    )}
                     <Text typo="display heading">
                         {isUserLoggedIn
                             ? t("welcome", {
@@ -117,8 +122,8 @@ export const { i18n } = declareComponentKeys<
 
 const useStyles = tss
     .withName({ Home })
-    .withParams<{ backgroundUrl: string }>()
-    .create(({ theme, backgroundUrl }) => ({
+    .withParams<{ backgroundUrl: string; hasLogo: boolean }>()
+    .create(({ theme, backgroundUrl, hasLogo }) => ({
         "root": {
             "height": "100%",
             "overflow": "auto",
@@ -143,7 +148,7 @@ const useStyles = tss
         },
         "heroTextWrapper": {
             "paddingLeft": theme.spacing(3),
-            "paddingTop": theme.spacing(3),
+            "paddingTop": hasLogo ? theme.spacing(3) : theme.spacing(7),
             "maxWidth": "42%",
             "& > *": {
                 "marginBottom": theme.spacing(4)
