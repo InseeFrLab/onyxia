@@ -4,7 +4,7 @@ import { tss, useStyles as useClasslessStyles } from "tss";
 import { Text } from "onyxia-ui/Text";
 import { Button } from "onyxia-ui/Button";
 import { useCoreFunctions } from "core";
-import { useTranslation } from "ui/i18n";
+import { useTranslation, useResolveLocalizedString } from "ui/i18n";
 import pictogramCommunitySvgUrl from "ui/assets/svg/PictogramCommunity.svg";
 import pictogramServiceSvg from "ui/assets/svg/PictogramService.svg";
 import iconStorageSvg from "ui/assets/svg/PictogramStorage.svg";
@@ -47,6 +47,28 @@ export default function Home(props: Props) {
     const myFilesLink = useMemo(() => routes.myFiles().link, []);
     const catalogExplorerLink = useMemo(() => routes.catalog().link, []);
 
+    const { resolveLocalizedString } = useResolveLocalizedString({
+        "labelWhenMismatchingLanguage": true
+    });
+
+    const title = useMemo(() => {
+        const userFirstname = userAuthentication.getUser().firstName ?? "";
+
+        if (isUserLoggedIn) {
+            if (env.HOMEPAGE_TITLE_AUTHENTICATED === undefined) {
+                return t("title authenticated", { userFirstname });
+            }
+            return resolveLocalizedString(
+                env.HOMEPAGE_TITLE_AUTHENTICATED({ userFirstname })
+            );
+        } else {
+            if (env.HOMEPAGE_TITLE === undefined) {
+                return t("title");
+            }
+            return resolveLocalizedString(env.HOMEPAGE_TITLE);
+        }
+    }, [resolveLocalizedString]);
+
     return (
         <div className={cx(classes.root, className)}>
             <div className={classes.hero}>
@@ -54,13 +76,7 @@ export default function Home(props: Props) {
                     {env.HOMEPAGE_LOGO !== undefined && (
                         <ThemedImage url={env.HOMEPAGE_LOGO} className={classes.logo} />
                     )}
-                    <Text typo="display heading">
-                        {isUserLoggedIn
-                            ? t("welcome", {
-                                  "who": userAuthentication.getUser().firstName ?? ""
-                              })
-                            : t("title")}
-                    </Text>
+                    <Text typo="display heading">{title}</Text>
                     <Text typo="subtitle" className={classes.heroSubtitle}>
                         {t("subtitle")}
                     </Text>
@@ -104,10 +120,10 @@ export default function Home(props: Props) {
 }
 
 export const { i18n } = declareComponentKeys<
-    | { K: "welcome"; P: { who: string } }
     | "login"
     | "new user"
     | "title"
+    | { K: "title authenticated"; P: { userFirstname: string } }
     | "subtitle"
     | "cardTitle1"
     | "cardTitle2"

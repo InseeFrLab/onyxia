@@ -320,7 +320,7 @@ export const translations: Translations<"nl"> = {
             "Om deze applicatie op uw mobiele telefoon te gebruiken, activeert u de rotatiesensor en draait u uw telefoon."
     },
     "Home": {
-        "welcome": ({ who }) => `Welkom ${who}!`,
+        "title authenticated": ({ userFirstname }) => `Welkom ${userFirstname}!`,
         "title": "Welkom in het datalab",
         "login": "Inloggen",
         "new user": "Nieuwe gebruiker van het datalab ?",

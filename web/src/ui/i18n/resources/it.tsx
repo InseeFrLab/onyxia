@@ -320,7 +320,7 @@ export const translations: Translations<"it"> = {
             "Per utilizzare questa applicazione dal tuo cellulare, attiva il sensore di rotazione e ruota il tuo telefono."
     },
     "Home": {
-        "welcome": ({ who }) => `Benvenuto ${who}!`,
+        "title authenticated": ({ userFirstname }) => `Benvenuto ${userFirstname}!`,
         "title": "Benvenuto sul datalab",
         "login": "Connessione",
         "new user": "Nuovo utente del datalab?",

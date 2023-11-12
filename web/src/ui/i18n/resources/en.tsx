@@ -321,7 +321,7 @@ export const translations: Translations<"en"> = {
             "To use this app on your phone please enable the rotation sensor and turn your phone."
     },
     "Home": {
-        "welcome": ({ who }) => `Welcome ${who}!`,
+        "title authenticated": ({ userFirstname }) => `Welcome ${userFirstname}!`,
         "title": "Welcome to the Onyxia datalab",
         "new user": "New to the datalab?",
         "login": "Login",

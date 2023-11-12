@@ -324,7 +324,7 @@ export const translations: Translations<"fr"> = {
             "Pour utiliser cette application depuis votre mobile, veuillez activer le capteur de rotation et tourner votre téléphone."
     },
     "Home": {
-        "welcome": ({ who }) => `Bienvenue ${who}!`,
+        "title authenticated": ({ userFirstname }) => `Bienvenue ${userFirstname}!`,
         "title": "Bienvenue sur le datalab",
         "login": "Connexion",
         "new user": "Nouvel utilisateur du datalab ?",

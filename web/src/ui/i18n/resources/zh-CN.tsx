@@ -299,7 +299,7 @@ export const translations: Translations<"zh-CN"> = {
         "instructions": "要在您的手机中使用此应用程序，请激活旋转传感器并转动您的手机"
     },
     "Home": {
-        "welcome": ({ who }) => `你好 ${who}!`,
+        "title authenticated": ({ userFirstname }) => `你好 ${userFirstname}!`,
         "title": "欢迎来到 datalab",
         "login": "登录",
         "new user": "您是datalab的新用户?",

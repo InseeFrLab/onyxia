@@ -321,7 +321,7 @@ export const translations: Translations<"no"> = {
             "For å bruke denne appen på telefonen din, må du aktivere rotasjonssensoren og snu telefonen."
     },
     "Home": {
-        "welcome": ({ who }) => `Velkommen ${who}!`,
+        "title authenticated": ({ userFirstname }) => `Velkommen ${userFirstname}!`,
         "title": "Velkommen til Onyxia datalab",
         "new user": "Ny på datalaben?",
         "login": "Logg inn",

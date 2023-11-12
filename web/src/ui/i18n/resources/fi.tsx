@@ -315,7 +315,7 @@ export const translations: Translations<"fi"> = {
             "Voit käyttää tätä sovellusta puhelimellasi ottamalla käyttöön kääntöanturin ja kääntämällä puhelimesi."
     },
     "Home": {
-        "welcome": ({ who }) => `Tervetuloa, ${who}!`,
+        "title authenticated": ({ userFirstname }) => `Tervetuloa, ${userFirstname}!`,
         "title": "Tervetuloa Onyxia datalabiin",
         "new user": "Uusi käyttäjä?",
         "login": "Kirjaudu sisään",
