@@ -17,6 +17,7 @@ import type { PageRoute } from "./route";
 import { ThemedImage } from "onyxia-ui/ThemedImage";
 import { useResolveAssetVariantUrl } from "onyxia-ui";
 import { LocalizedMarkdown } from "ui/shared/Markdown";
+import { LinkFromConfigButton } from "./LinkFromConfigButton";
 
 type Props = {
     route: PageRoute;
@@ -92,6 +93,45 @@ export default function Home(props: Props) {
         }
     }, [t]);
 
+    const callToActionButton = useMemo(() => {
+        if (isUserLoggedIn) {
+            if (env.HOMEPAGE_CALL_TO_ACTION_BUTTON_AUTHENTICATED === null) {
+                return null;
+            }
+
+            if (env.HOMEPAGE_CALL_TO_ACTION_BUTTON_AUTHENTICATED === undefined) {
+                return (
+                    <Button
+                        href="https://docs.onyxia.sh/user-guide"
+                        doOpenNewTabIfHref={true}
+                    >
+                        {t("new user")}
+                    </Button>
+                );
+            }
+
+            return (
+                <LinkFromConfigButton
+                    linkFromConfig={env.HOMEPAGE_CALL_TO_ACTION_BUTTON_AUTHENTICATED}
+                />
+            );
+        } else {
+            if (env.HOMEPAGE_CALL_TO_ACTION_BUTTON === null) {
+                return null;
+            }
+
+            if (env.HOMEPAGE_CALL_TO_ACTION_BUTTON === undefined) {
+                return null;
+            }
+
+            return (
+                <LinkFromConfigButton
+                    linkFromConfig={env.HOMEPAGE_CALL_TO_ACTION_BUTTON}
+                />
+            );
+        }
+    }, [t]);
+
     return (
         <div className={cx(classes.root, className)}>
             <div className={classes.hero}>
@@ -103,9 +143,7 @@ export default function Home(props: Props) {
                     <Text typo="subtitle" className={classes.heroSubtitle}>
                         {subtitle}
                     </Text>
-                    {isUserLoggedIn && (
-                        <Button href="https://docs.sspcloud.fr/">{t("new user")}</Button>
-                    )}
+                    {callToActionButton}
                 </div>
                 {env.HOMEPAGE_MAIN_ASSET !== undefined && (
                     <ThemedImage

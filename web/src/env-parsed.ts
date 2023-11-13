@@ -646,6 +646,88 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
         }
     },
     {
+        "envName": "HOMEPAGE_CALL_TO_ACTION_BUTTON",
+        "isUsedInKeycloakTheme": false,
+        "validateAndParseOrGetDefault": ({
+            envValue,
+            envName
+        }): LinkFromConfig | undefined | null => {
+            if (envValue === "") {
+                return undefined;
+            }
+
+            if (envValue === "false") {
+                return null;
+            }
+
+            let parsedValue: unknown;
+
+            try {
+                parsedValue = JSON.parse(envValue);
+            } catch {
+                throw new Error(`${envName} is not a valid JSON`);
+            }
+
+            type ParsedValue = LinkFromConfig;
+
+            const zParsedValue = zLinkFromConfig;
+
+            try {
+                zParsedValue.parse(parsedValue);
+            } catch (error) {
+                throw new Error(
+                    `The format of ${envName} is not valid: ${String(error)}`
+                );
+            }
+            assert(is<ParsedValue>(parsedValue));
+
+            return parsedValue;
+        }
+    },
+    {
+        "envName": "HOMEPAGE_CALL_TO_ACTION_BUTTON_AUTHENTICATED",
+        "isUsedInKeycloakTheme": false,
+        "validateAndParseOrGetDefault": ({
+            envValue,
+            envName,
+            env: env_
+        }): LinkFromConfig | undefined | null => {
+            if (envValue === "") {
+                assert(is<typeof env>(env_));
+
+                return env_.HOMEPAGE_CALL_TO_ACTION_BUTTON;
+            }
+
+            if (envValue === "false") {
+                return null;
+            }
+
+            let parsedValue: unknown;
+
+            try {
+                parsedValue = JSON.parse(envValue);
+            } catch {
+                throw new Error(`${envName} is not a valid JSON`);
+            }
+
+            type ParsedValue = LinkFromConfig;
+
+            const zParsedValue = zLinkFromConfig;
+
+            try {
+                zParsedValue.parse(parsedValue);
+            } catch (error) {
+                throw new Error(
+                    `The format of ${envName} is not valid: ${String(error)}`
+                );
+            }
+            assert(is<ParsedValue>(parsedValue));
+
+            return parsedValue;
+        }
+    },
+
+    {
         "envName": "BACKGROUND_ASSET",
         "isUsedInKeycloakTheme": true,
         "validateAndParseOrGetDefault": ({ envValue, envName }): ThemedAssetUrl => {
