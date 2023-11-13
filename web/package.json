@@ -5,14 +5,14 @@
     "license": "MIT",
     "scripts": {
         "_comment": "Yes... We're still using CRA. We'll migrate to Vite as soon as Keycloakify gets support for it",
-        "start": "react-app-rewired start",
+        "start": "ts-node scripts/unyamlify-env-local.ts && react-app-rewired start",
         "build": "react-app-rewired build",
         "build-keycloak-theme": "yarn build && keycloakify",
         "prestart": "generate-env-getter",
         "_format": "prettier '**/*.{ts,tsx,json,md}'",
         "format": "yarn _format --write",
         "format:check": "yarn _format --list-different",
-        "emails-domain-accept-list-helper": "ts-node --skip-project src/bin/emails-domain-accept-list-helper.ts",
+        "emails-domain-accept-list-helper": "ts-node scripts/emails-domain-accept-list-helper.ts",
         "prepare": "cp -rf patches/fs node_modules/ && patch-package && generate-env-getter && copy-keycloak-resources-to-public && copy-material-icons-to-public",
         "_comment2": "Sb not currently working REACT_APP_* not loaded",
         "storybook": "start-storybook -p 6006"
