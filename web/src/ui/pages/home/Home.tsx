@@ -4,12 +4,11 @@ import { tss, useStyles as useClasslessStyles } from "tss";
 import { Text } from "onyxia-ui/Text";
 import { Button } from "onyxia-ui/Button";
 import { useCoreFunctions } from "core";
-import { useTranslation } from "ui/i18n";
+import { useTranslation, useResolveLocalizedString } from "ui/i18n";
 import pictogramCommunitySvgUrl from "ui/assets/svg/PictogramCommunity.svg";
 import pictogramServiceSvg from "ui/assets/svg/PictogramService.svg";
 import iconStorageSvg from "ui/assets/svg/PictogramStorage.svg";
 import { Card as OnyxiaUiCard } from "onyxia-ui/Card";
-import type { Link } from "type-route";
 import { env } from "env-parsed";
 import { useConst } from "powerhooks/useConst";
 import { declareComponentKeys } from "i18nifty";
@@ -18,6 +17,7 @@ import { ThemedImage } from "onyxia-ui/ThemedImage";
 import { useResolveAssetVariantUrl } from "onyxia-ui";
 import { LocalizedMarkdown } from "ui/shared/Markdown";
 import { LinkFromConfigButton } from "./LinkFromConfigButton";
+import { id } from "tsafe/id";
 
 type Props = {
     route: PageRoute;
@@ -40,14 +40,11 @@ export default function Home(props: Props) {
         "hasLogo": env.HOMEPAGE_LOGO !== undefined
     });
 
-    const { userAuthentication } = useCoreFunctions();
+    const { userAuthentication, fileExplorer } = useCoreFunctions();
 
     const isUserLoggedIn = userAuthentication.getIsUserLoggedIn();
 
     const { t } = useTranslation({ Home });
-
-    const myFilesLink = useMemo(() => routes.myFiles().link, []);
-    const catalogExplorerLink = useMemo(() => routes.catalog().link, []);
 
     const title = useMemo(() => {
         const userFirstname = userAuthentication.getUser().firstName ?? "";
@@ -132,6 +129,46 @@ export default function Home(props: Props) {
         }
     }, [t]);
 
+    const cards = useMemo(() => {
+        if (env.HOMEPAGE_CARDS === undefined) {
+            return id<CardProps["card"][]>([
+                {
+                    "pictogram": pictogramServiceSvg,
+                    "title": t("cardTitle1"),
+                    "description": t("cardText1"),
+                    "button": {
+                        "label": t("cardButton1"),
+                        "url": routes.catalog().link.href
+                    }
+                },
+                {
+                    "pictogram": pictogramCommunitySvgUrl,
+                    "title": t("cardTitle2"),
+                    "description": t("cardText2"),
+                    "button": {
+                        "label": t("cardButton2"),
+                        "url": "https://join.slack.com/t/3innovation/shared_invite/zt-1hnzukjcn-6biCSmVy4qvyDGwbNI~sWg"
+                    }
+                },
+                ...(!fileExplorer.getIsEnabled()
+                    ? []
+                    : [
+                          {
+                              "pictogram": iconStorageSvg,
+                              "title": t("cardTitle3"),
+                              "description": t("cardText3"),
+                              "button": {
+                                  "label": t("cardButton3"),
+                                  "url": routes.myFiles().link.href
+                              }
+                          }
+                      ])
+            ]);
+        }
+
+        return env.HOMEPAGE_CARDS;
+    }, [t]);
+
     return (
         <div className={cx(classes.root, className)}>
             <div className={classes.hero}>
@@ -152,30 +189,13 @@ export default function Home(props: Props) {
                     />
                 )}
             </div>
-            <div className={classes.cardsWrapper}>
-                <Card
-                    pictogramUrl={pictogramServiceSvg}
-                    title={t("cardTitle1")}
-                    text={t("cardText1")}
-                    buttonText={t("cardButton1")}
-                    link={catalogExplorerLink}
-                />
-                <Card
-                    className={classes.middleCard}
-                    pictogramUrl={pictogramCommunitySvgUrl}
-                    title={t("cardTitle2")}
-                    text={t("cardText2")}
-                    buttonText={t("cardButton2")}
-                    link="https://join.slack.com/t/3innovation/shared_invite/zt-1hnzukjcn-6biCSmVy4qvyDGwbNI~sWg"
-                />
-                <Card
-                    pictogramUrl={iconStorageSvg}
-                    title={t("cardTitle3")}
-                    text={t("cardText3")}
-                    buttonText={t("cardButton3")}
-                    link={myFilesLink}
-                />
-            </div>
+            {cards.length !== 0 && (
+                <div className={classes.cardsWrapper}>
+                    {cards.map((card, index) => (
+                        <Card key={index} card={card} />
+                    ))}
+                </div>
+            )}
         </div>
     );
 }
@@ -240,10 +260,10 @@ const useStyles = tss
             ...theme.spacing.topBottom("padding", 4),
             "& > *": {
                 "flex": 1
+            },
+            "& > *:not(:last-child)": {
+                "marginRight": theme.spacing(3)
             }
-        },
-        "middleCard": {
-            ...theme.spacing.rightLeft("margin", 3)
         },
         "logo": {
             "width": 100
@@ -252,17 +272,17 @@ const useStyles = tss
 
 type CardProps = {
     className?: string;
-    title: string;
-    text: string;
-    buttonText: string;
-    pictogramUrl: string;
-    link: Link | string;
+    card: Exclude<typeof env.HOMEPAGE_CARDS, undefined>[number];
 };
 
 const Card = memo((props: CardProps) => {
-    const { title, text, buttonText, pictogramUrl, className, link } = props;
+    const { className, card } = props;
 
     const { css, cx, theme } = useClasslessStyles();
+
+    const { resolveLocalizedString } = useResolveLocalizedString({
+        "labelWhenMismatchingLanguage": true
+    });
 
     return (
         <OnyxiaUiCard
@@ -270,15 +290,14 @@ const Card = memo((props: CardProps) => {
                 css({
                     "display": "flex",
                     "flexDirection": "column",
-                    "padding": theme.spacing(4),
-                    "backgroundColor": theme.isDarkModeEnabled ? "#383E50" : undefined
+                    "padding": theme.spacing(4)
                 }),
                 className
             )}
         >
             <div className={css({ "display": "flex" })}>
                 <ThemedImage
-                    url={pictogramUrl}
+                    url={card.pictogram}
                     className={css({
                         "width": 120,
                         "height": 120
@@ -292,7 +311,9 @@ const Card = memo((props: CardProps) => {
                         ...theme.spacing.rightLeft("padding", 4)
                     })}
                 >
-                    <Text typo="section heading">{title}</Text>
+                    <Text typo="section heading">
+                        {resolveLocalizedString(card.title)}
+                    </Text>
                 </div>
             </div>
             <div
@@ -304,7 +325,7 @@ const Card = memo((props: CardProps) => {
                 })}
             >
                 <div className={css({ "flex": 1 })}>
-                    <Text typo="body 1">{text}</Text>
+                    <Text typo="body 1">{resolveLocalizedString(card.description)}</Text>
                 </div>
                 <div
                     className={css({
@@ -313,14 +334,10 @@ const Card = memo((props: CardProps) => {
                     })}
                 >
                     <div style={{ "flex": 1 }} />
-                    <Button
+                    <LinkFromConfigButton
+                        linkFromConfig={card.button}
                         variant="secondary"
-                        {...(typeof link === "string"
-                            ? { "href": link }
-                            : { ...link, "doOpenNewTabIfHref": false })}
-                    >
-                        {buttonText}
-                    </Button>
+                    />
                 </div>
             </div>
         </OnyxiaUiCard>

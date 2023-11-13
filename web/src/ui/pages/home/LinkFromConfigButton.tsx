@@ -1,4 +1,4 @@
-import { Button } from "onyxia-ui/Button";
+import { Button, type ButtonProps } from "onyxia-ui/Button";
 import { urlToLink } from "ui/routes";
 import { useResolveLocalizedString } from "ui/i18n";
 import type { LinkFromConfig } from "ui/shared/LinkFromConfig";
@@ -6,16 +6,17 @@ import type { LinkFromConfig } from "ui/shared/LinkFromConfig";
 type Props = {
     className?: string;
     linkFromConfig: LinkFromConfig;
+    variant?: ButtonProps["variant"];
 };
 
 export function LinkFromConfigButton(props: Props) {
-    const { className, linkFromConfig } = props;
+    const { className, linkFromConfig, variant } = props;
 
     const { resolveLocalizedString } = useResolveLocalizedString({
         "labelWhenMismatchingLanguage": true
     });
 
-    const { label, url, icon } = linkFromConfig;
+    const { label, url, icon, startIcon, endIcon } = linkFromConfig;
 
     const link = urlToLink(url);
 
@@ -25,7 +26,9 @@ export function LinkFromConfigButton(props: Props) {
             href={link.href}
             doOpenNewTabIfHref={link.target === "_blank"}
             onClick={link.onClick}
-            startIcon={icon}
+            startIcon={icon ?? startIcon}
+            endIcon={endIcon}
+            variant={variant}
         >
             {resolveLocalizedString(label)}
         </Button>

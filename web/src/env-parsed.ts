@@ -14,7 +14,7 @@ import { id } from "tsafe/id";
 import { objectKeys } from "tsafe/objectKeys";
 import type { PaletteBase } from "onyxia-ui";
 import type { DeepPartial } from "keycloakify/tools/DeepPartial";
-import { parseThemedAssetUrl } from "ui/shared/parseThemedAssetUrl";
+import { parseThemedAssetUrl, zAssetVariantUrl } from "ui/shared/parseThemedAssetUrl";
 import type { ThemedAssetUrl } from "onyxia-ui";
 import type { Language, LocalizedString } from "ui/i18n";
 import memoize from "memoizee";
@@ -27,10 +27,6 @@ import { parseCssSpacing } from "ui/tools/parseCssSpacing";
 import onyxiaNeumorphismDarkModeUrl from "ui/assets/svg/OnyxiaNeumorphismDarkMode.svg";
 import onyxiaNeumorphismLightModeUrl from "ui/assets/svg/OnyxiaNeumorphismLightMode.svg";
 import { getDoesLooksLikeJsonObjectOrArray } from "ui/tools/getDoesLooksLikeJsonObjectOrArray";
-
-const paletteIds = ["onyxia", "france", "ultraviolet", "verdant"] as const;
-
-export type PaletteId = (typeof paletteIds)[number];
 
 export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
     {
@@ -299,7 +295,27 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
 
             type ParsedValue = LinkFromConfig[];
 
-            const zParsedValue = z.array(zLinkFromConfig);
+            const zParsedValue = z.array(
+                zLinkFromConfig.superRefine((data, ctx) => {
+                    if (data.endIcon !== undefined) {
+                        ctx.addIssue({
+                            "code": z.ZodIssueCode.custom,
+                            "message": `You can specify endIcons in ${envName}, see: ${JSON.stringify(
+                                data
+                            )}`
+                        });
+                    }
+
+                    if (data.startIcon === undefined && data.icon === undefined) {
+                        ctx.addIssue({
+                            "code": z.ZodIssueCode.custom,
+                            "message": `You must chose an icon for ${JSON.stringify(
+                                data
+                            )}`
+                        });
+                    }
+                })
+            );
 
             {
                 type Got = ReturnType<(typeof zParsedValue)["parse"]>;
@@ -339,7 +355,27 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
 
             type ParsedValue = LinkFromConfig[];
 
-            const zParsedValue = z.array(zLinkFromConfig);
+            const zParsedValue = z.array(
+                zLinkFromConfig.superRefine((data, ctx) => {
+                    if (data.endIcon !== undefined) {
+                        ctx.addIssue({
+                            "code": z.ZodIssueCode.custom,
+                            "message": `You can specify endIcons in ${envName}, see: ${JSON.stringify(
+                                data
+                            )}`
+                        });
+                    }
+
+                    if (data.startIcon === undefined && data.icon === undefined) {
+                        ctx.addIssue({
+                            "code": z.ZodIssueCode.custom,
+                            "message": `You must chose an icon for ${JSON.stringify(
+                                data
+                            )}`
+                        });
+                    }
+                })
+            );
 
             {
                 type Got = ReturnType<(typeof zParsedValue)["parse"]>;
@@ -726,7 +762,56 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
             return parsedValue;
         }
     },
+    {
+        "envName": "HOMEPAGE_CARDS",
+        "isUsedInKeycloakTheme": false,
+        "validateAndParseOrGetDefault": ({ envValue, envName }) => {
+            if (envValue === "") {
+                return undefined;
+            }
 
+            let parsedValue: unknown;
+
+            try {
+                parsedValue = JSON.parse(envValue);
+            } catch {
+                throw new Error(`${envName} is not a valid JSON`);
+            }
+
+            type ParsedValue = {
+                pictogram: ThemedAssetUrl;
+                title: LocalizedString;
+                description: LocalizedString;
+                button: LinkFromConfig;
+            }[];
+
+            const zParsedValue = z.object({
+                "pictogram": zAssetVariantUrl,
+                "title": zLocalizedString,
+                "description": zLocalizedString,
+                "button": zLinkFromConfig
+            });
+
+            {
+                type Got = ReturnType<(typeof zParsedValue)["parse"]>;
+                type Expected = ParsedValue[0];
+
+                assert<Got extends Expected ? true : false>();
+                assert<Expected extends Got ? true : false>();
+            }
+
+            try {
+                zParsedValue.parse(parsedValue);
+            } catch (error) {
+                throw new Error(
+                    `The format of ${envName} is not valid: ${String(error)}`
+                );
+            }
+            assert(is<ParsedValue>(parsedValue));
+
+            return parsedValue;
+        }
+    },
     {
         "envName": "BACKGROUND_ASSET",
         "isUsedInKeycloakTheme": true,

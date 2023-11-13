@@ -10,7 +10,7 @@ import { routes } from "ui/routes";
 import { ProjectSelect } from "./ProjectSelect";
 import { RegionSelect } from "./RegionSelect";
 import { useCoreFunctions } from "core";
-import { session } from "ui/routes";
+import { urlToLink } from "ui/routes";
 
 export type Props = {
     className?: string;
@@ -37,21 +37,17 @@ export function Header(props: Props) {
             <RegionSelect className={classes.regionSelect} tRegion={t("region")} />
             <ProjectSelect className={classes.projectSelect} tProject={t("project")} />
             <div className={classes.rightEndActionsContainer}>
-                {env.HEADER_LINKS.map(({ icon, url, label }) => (
+                {env.HEADER_LINKS.map(({ url, ...rest }) => ({
+                    "link": urlToLink(url),
+                    ...rest
+                })).map(({ link, icon, startIcon, label }) => (
                     <ButtonBarButton
-                        key={url}
+                        key={link.href}
                         className={classes.button}
-                        startIcon={icon}
-                        href={url}
-                        doOpenNewTabIfHref={!url.startsWith("/")}
-                        onClick={
-                            !url.startsWith("/")
-                                ? undefined
-                                : e => {
-                                      e.preventDefault();
-                                      session.push(url);
-                                  }
-                        }
+                        startIcon={startIcon ?? icon}
+                        href={link.href}
+                        doOpenNewTabIfHref={link.target === "_blank"}
+                        onClick={link.onClick}
                     >
                         {resolveLocalizedString(label)}
                     </ButtonBarButton>
