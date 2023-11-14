@@ -9410,10 +9410,10 @@ husky@^4.3.8:
     slash "^3.0.0"
     which-pm-runs "^1.0.0"
 
-i18nifty@^3.0.1:
-  version "3.0.1"
-  resolved "https://registry.yarnpkg.com/i18nifty/-/i18nifty-3.0.1.tgz#0f9d43bf0779f542864746e24efb71475b8ad773"
-  integrity sha512-z+pCq/mLCDHgz5vANpWUtRFISLpXrlnw3yLZbuqQJkKLc2PHJckbtgn59PUZpFp2QKtghsk4YfMwTCHOStUObQ==
+i18nifty@^3.0.3:
+  version "3.0.3"
+  resolved "https://registry.yarnpkg.com/i18nifty/-/i18nifty-3.0.3.tgz#69a326799648b76bc72138a23e85ff4a4be181cf"
+  integrity sha512-vUDoFCDDQQkolfgOT8FEtlQtSek9pW6iXAfYUQnJz2rkdFRsgR7B1laHpeQ7iw8XscWGmcxqGzIqZFiYP3j5Sg==
   dependencies:
     powerhooks "^1.0.1"
     tsafe "^1.6.5"

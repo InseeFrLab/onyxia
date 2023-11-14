@@ -39,7 +39,7 @@
         "filereader-stream": "^2.0.0",
         "flexsearch": "0.7.21",
         "https-browserify": "^1.0.0",
-        "i18nifty": "^3.0.1",
+        "i18nifty": "^3.0.3",
         "keycloakify": "^8.3.3",
         "memoizee": "^0.4.14",
         "minimal-polyfills": "^2.2.3",
