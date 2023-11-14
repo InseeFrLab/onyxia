@@ -12,10 +12,10 @@ const zUrl = z.string().superRefine((data, ctx) => {
         });
     }
 
-    if (!/\.(svg)|(png)|(jpg)|(jpeg)|(ico)$/i.test(data)) {
+    if (!/\.(svg)|(png)|(jpg)|(jpeg)|(webp)|(ico)$/i.test(data)) {
         ctx.addIssue({
             "code": z.ZodIssueCode.custom,
-            "message": `Your ThemedAssetUrl should point to an image file of type: svg, png, jpg, jpeg or ico. Got: ${data}`
+            "message": `Your ThemedAssetUrl should point to an image file. Got: ${data}`
         });
     }
 });
