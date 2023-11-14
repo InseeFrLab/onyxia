@@ -50,9 +50,9 @@ export default function Home(props: Props) {
     const { t } = useTranslation({ Home });
 
     const title = useMemo(() => {
-        const userFirstname = userAuthentication.getUser().firstName ?? "";
-
         if (isUserLoggedIn) {
+            const userFirstname = userAuthentication.getUser().firstName ?? "";
+
             if (env.HOMEPAGE_TITLE_AUTHENTICATED === undefined) {
                 return t("title authenticated", { userFirstname });
             }
@@ -71,14 +71,14 @@ export default function Home(props: Props) {
     }, [t]);
 
     const subtitle = useMemo(() => {
-        const userFirstname = userAuthentication.getUser().firstName ?? "";
-
         const defaultNode = t("subtitle");
 
         if (isUserLoggedIn) {
             if (env.HOMEPAGE_SUBTITLE_AUTHENTICATED === undefined) {
                 return defaultNode;
             }
+
+            const userFirstname = userAuthentication.getUser().firstName ?? "";
 
             return (
                 <LocalizedMarkdown inline>

@@ -278,7 +278,7 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
         }
     },
     {
-        "envName": "EXTRA_LEFTBAR_ITEMS",
+        "envName": "LEFTBAR_LINKS",
         "isUsedInKeycloakTheme": false,
         "validateAndParseOrGetDefault": ({ envValue, envName }): LinkFromConfig[] => {
             if (envValue === "") {

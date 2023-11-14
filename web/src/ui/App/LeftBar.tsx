@@ -82,13 +82,13 @@ export const LeftBar = memo((props: Props) => {
                               "label": t("myFiles"),
                               "link": routes.myFiles().link,
                               "belowDivider":
-                                  env.EXTRA_LEFTBAR_ITEMS.length === 0
+                                  env.LEFTBAR_LINKS.length === 0
                                       ? true
                                       : t("divider: onyxia instance specific features")
                           } as const
                       }),
                 ...Object.fromEntries(
-                    env.EXTRA_LEFTBAR_ITEMS.map(({ url, ...rest }) => ({
+                    env.LEFTBAR_LINKS.map(({ url, ...rest }) => ({
                         "link": urlToLink(url),
                         ...rest
                     }))

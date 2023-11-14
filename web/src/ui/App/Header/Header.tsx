@@ -40,9 +40,9 @@ export function Header(props: Props) {
                 {env.HEADER_LINKS.map(({ url, ...rest }) => ({
                     "link": urlToLink(url),
                     ...rest
-                })).map(({ link, icon, startIcon, label }) => (
+                })).map(({ link, icon, startIcon, label }, index) => (
                     <ButtonBarButton
-                        key={link.href}
+                        key={index}
                         className={classes.button}
                         startIcon={startIcon ?? icon}
                         href={link.href}
