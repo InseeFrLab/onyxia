@@ -4,7 +4,7 @@ import { tss, useStyles as useClasslessStyles } from "tss";
 import { Text } from "onyxia-ui/Text";
 import { Button } from "onyxia-ui/Button";
 import { useCoreFunctions } from "core";
-import { useTranslation, useResolveLocalizedString } from "ui/i18n";
+import { useTranslation } from "ui/i18n";
 import pictogramCommunitySvgUrl from "ui/assets/svg/PictogramCommunity.svg";
 import pictogramServiceSvg from "ui/assets/svg/PictogramService.svg";
 import iconStorageSvg from "ui/assets/svg/PictogramStorage.svg";
@@ -280,10 +280,6 @@ const Card = memo((props: CardProps) => {
 
     const { css, cx, theme } = useClasslessStyles();
 
-    const { resolveLocalizedString } = useResolveLocalizedString({
-        "labelWhenMismatchingLanguage": true
-    });
-
     return (
         <OnyxiaUiCard
             className={cx(
@@ -312,7 +308,7 @@ const Card = memo((props: CardProps) => {
                     })}
                 >
                     <Text typo="section heading">
-                        {resolveLocalizedString(card.title)}
+                        <LocalizedMarkdown inline>{card.title}</LocalizedMarkdown>
                     </Text>
                 </div>
             </div>
@@ -325,7 +321,9 @@ const Card = memo((props: CardProps) => {
                 })}
             >
                 <div className={css({ "flex": 1 })}>
-                    <Text typo="body 1">{resolveLocalizedString(card.description)}</Text>
+                    <Text typo="body 1">
+                        {<LocalizedMarkdown inline>{card.description}</LocalizedMarkdown>}
+                    </Text>
                 </div>
                 <div
                     className={css({
