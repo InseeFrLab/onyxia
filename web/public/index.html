@@ -76,9 +76,7 @@
     <%= preloadLinks %>
     <style><%= fontFaceRules %></style>
 
-
-
-    <script>
+    <script data-script-purpose="set background color early">
         /*
         This is a way to get the correct background color as soon as possible,
         even before the JavaScript bundle is evaluated.
@@ -174,6 +172,8 @@
         
         })();
     </script>
+
+    <%= process.env.REACT_APP_CUSTOM_HTML_HEAD %>
 
 </head>
 
