@@ -7,47 +7,29 @@ import type { KcContext } from "./kcContext";
 import type { I18n } from "./i18n";
 import { memo } from "react";
 import { useConstCallback } from "powerhooks/useConstCallback";
-import { Header } from "ui/shared/Header";
-import { logoContainerWidthInPercent } from "ui/App/logoContainerWidthInPercent";
-import { ThemeProvider, IconButton, Text, tss } from "keycloak-theme/login/theme";
+import { tss } from "tss";
+import { Text } from "onyxia-ui/Text";
+import { IconButton } from "onyxia-ui/IconButton";
 import { useDomRect } from "powerhooks/useDomRect";
 import { useWindowInnerSize } from "powerhooks/useWindowInnerSize";
-import onyxiaNeumorphismDarkModeUrl from "ui/assets/svg/OnyxiaNeumorphismDarkMode.svg";
-import onyxiaNeumorphismLightModeUrl from "ui/assets/svg/OnyxiaNeumorphismLightMode.svg";
+import CloseIcon from "@mui/icons-material/Close";
 import { Card } from "onyxia-ui/Card";
 import { Alert } from "onyxia-ui/Alert";
 import { symToStr } from "tsafe/symToStr";
+import { BrandHeaderSection } from "ui/shared/BrandHeaderSection";
+import { getReferrerUrl } from "keycloak-theme/login/tools/getReferrerUrl";
+import { useConst } from "powerhooks/useConst";
+import { useResolveAssetVariantUrl } from "onyxia-ui";
+import { env } from "env-parsed";
 
 type TemplateProps = GenericTemplateProps<KcContext, I18n>;
 
 export default function Template(props: TemplateProps) {
-    return (
-        <ThemeProvider>
-            <ContextualizedTemplate {...props} />
-        </ThemeProvider>
-    );
-}
-
-function ContextualizedTemplate(props: TemplateProps) {
     const { kcContext, doUseDefaultCss, classes: classes_props, children } = props;
 
-    const {
-        domRect: { width: rootWidth },
-        ref: rootRef
-    } = useDomRect();
+    const backgroundUrl = useResolveAssetVariantUrl(env.BACKGROUND_ASSET);
 
-    const logoContainerWidth = Math.max(
-        Math.floor((Math.min(rootWidth, 1920) * logoContainerWidthInPercent) / 100),
-        45
-    );
-
-    const { windowInnerWidth, windowInnerHeight } = useWindowInnerSize();
-
-    const { classes, cx } = useStyles({
-        windowInnerWidth,
-        "aspectRatio": windowInnerWidth / windowInnerHeight,
-        windowInnerHeight
-    });
+    const { classes, cx } = useStyles({ backgroundUrl });
 
     const { getClassName } = useGetClassName({
         doUseDefaultCss,
@@ -73,17 +55,8 @@ function ContextualizedTemplate(props: TemplateProps) {
     }
 
     return (
-        <div ref={rootRef} className={cx(classes.root, getClassName("kcLoginClass"))}>
-            {windowInnerHeight > 700 && (
-                <Header
-                    useCase="login pages"
-                    className={classes.header}
-                    logoContainerWidth={logoContainerWidth}
-                    onLogoClick={() =>
-                        (window.location.href = "https://docs.sspcloud.fr")
-                    }
-                />
-            )}
+        <div className={cx(classes.root, getClassName("kcLoginClass"))}>
+            <Header className={classes.header} />
             <section className={classes.betweenHeaderAndFooter}>
                 <Page {...props} className={classes.page}>
                     {children}
@@ -93,36 +66,79 @@ function ContextualizedTemplate(props: TemplateProps) {
     );
 }
 
-const useStyles = tss.create(({ theme }) => ({
-    "root": {
-        "height": "100vh",
-        "display": "flex",
-        "flexDirection": "column",
-        "backgroundColor": theme.colors.useCases.surfaces.background
-    },
+const useStyles = tss
+    .withName({ Template })
+    .withParams<{ backgroundUrl: string }>()
+    .create(({ theme, backgroundUrl }) => ({
+        "root": {
+            "height": "100vh",
+            "display": "flex",
+            "flexDirection": "column",
+            "backgroundColor": theme.colors.useCases.surfaces.background
+        },
 
-    "header": {
-        "width": "100%",
-        "paddingRight": "2%",
-        "height": 64
-    },
-    "betweenHeaderAndFooter": {
-        "flex": 1,
-        "overflow": "hidden",
-        "backgroundImage": `url( ${
-            theme.isDarkModeEnabled
-                ? onyxiaNeumorphismDarkModeUrl
-                : onyxiaNeumorphismLightModeUrl
-        })`,
-        "backgroundSize": "auto 90%",
-        "backgroundPosition": "center",
-        "backgroundRepeat": "no-repeat"
-    },
-    "page": {
-        "height": "100%",
-        "overflow": "auto"
+        "header": {
+            "width": "100%",
+            "paddingRight": "2%",
+            "height": 64
+        },
+        "betweenHeaderAndFooter": {
+            "flex": 1,
+            "overflow": "hidden",
+            "backgroundImage": `url( ${backgroundUrl})`,
+            "backgroundSize": "auto 90%",
+            "backgroundPosition": "center",
+            "backgroundRepeat": "no-repeat"
+        },
+        "page": {
+            "height": "100%",
+            "overflow": "auto"
+        }
+    }));
+
+const { Header } = (() => {
+    type Params = {
+        className?: string;
+    };
+
+    function Header(params: Params) {
+        const { className } = params;
+
+        const { cx, classes } = useStyles();
+
+        const { windowInnerHeight } = useWindowInnerSize();
+
+        const referrerUrl = useConst(() => getReferrerUrl());
+
+        if (windowInnerHeight < 700) {
+            return null;
+        }
+
+        return (
+            <header className={cx(classes.root, className)}>
+                <BrandHeaderSection
+                    doShowOnyxia={true}
+                    link={{
+                        "href": referrerUrl ?? "#",
+                        "onClick": () => {}
+                    }}
+                />
+            </header>
+        );
     }
-}));
+
+    const useStyles = tss.withName({ Header }).create(({ theme }) => ({
+        "root": {
+            "backgroundColor": theme.colors.useCases.surfaces.background,
+            "overflow": "auto",
+            "display": "flex",
+            "alignItems": "center",
+            ...theme.spacing.topBottom("padding", 2)
+        }
+    }));
+
+    return { Header };
+})();
 
 const { Page } = (() => {
     type Props = { className: string } & Pick<
@@ -177,7 +193,7 @@ const { Page } = (() => {
                         <div className={classes.crossButtonWrapper}>
                             <div style={{ "flex": 1 }} />
                             <IconButton
-                                iconId="close"
+                                icon={CloseIcon}
                                 tabIndex={-1}
                                 onClick={() => window.history.back()}
                             />

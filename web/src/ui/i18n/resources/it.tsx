@@ -1,6 +1,6 @@
 import type { Translations } from "../types";
 import MuiLink from "@mui/material/Link";
-import { Markdown } from "onyxia-ui/Markdown";
+import { Markdown } from "ui/shared/Markdown";
 import { elementsToSentence } from "ui/tools/elementsToSentence";
 
 export const translations: Translations<"it"> = {
@@ -299,7 +299,7 @@ export const translations: Translations<"it"> = {
         "project": "Proggetto",
         "region": "Regione"
     },
-    "App": {
+    "LeftBar": {
         "reduce": "Ridurre",
         "home": "Home",
         "account": "Il mio account",
@@ -320,7 +320,7 @@ export const translations: Translations<"it"> = {
             "Per utilizzare questa applicazione dal tuo cellulare, attiva il sensore di rotazione e ruota il tuo telefono."
     },
     "Home": {
-        "welcome": ({ who }) => `Benvenuto ${who}!`,
+        "title authenticated": ({ userFirstname }) => `Benvenuto ${userFirstname}!`,
         "title": "Benvenuto sul datalab",
         "login": "Connessione",
         "new user": "Nuovo utente del datalab?",
@@ -395,17 +395,26 @@ export const translations: Translations<"it"> = {
             interfacePreferenceHref
         }) => (
             <Markdown
-                getDoesLinkShouldOpenNewTab={href => {
-                    switch (href) {
-                        case k8CredentialsHref:
-                            return true;
-                        case myServicesHref:
-                            return true;
-                        case interfacePreferenceHref:
-                            return false;
-                        default:
-                            return false;
-                    }
+                getLinkProps={({ href }) => {
+                    const doOpensNewTab = (() => {
+                        switch (href) {
+                            case k8CredentialsHref:
+                                return true;
+                            case myServicesHref:
+                                return true;
+                            case interfacePreferenceHref:
+                                return false;
+                            default:
+                                return false;
+                        }
+                    })();
+
+                    return {
+                        href,
+                        ...(doOpensNewTab
+                            ? { "target": "_blank", "onClick": undefined }
+                            : {})
+                    };
                 }}
             >{`Abbiamo progettato la barra dei comandi per darti il controllo completo sui tuoi deployment Kubernetes.
 Ecco cosa devi sapere:

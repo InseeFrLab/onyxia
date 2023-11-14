@@ -1,6 +1,6 @@
 import type { Translations } from "../types";
 import MuiLink from "@mui/material/Link";
-import { Markdown } from "onyxia-ui/Markdown";
+import { Markdown } from "ui/shared/Markdown";
 import { elementsToSentence } from "ui/tools/elementsToSentence";
 
 export const translations: Translations<"zh-CN"> = {
@@ -280,7 +280,7 @@ export const translations: Translations<"zh-CN"> = {
         "project": "项目",
         "region": "区域"
     },
-    "App": {
+    "LeftBar": {
         "reduce": "缩小",
         "home": "我的主页",
         "account": "我的账号",
@@ -299,7 +299,7 @@ export const translations: Translations<"zh-CN"> = {
         "instructions": "要在您的手机中使用此应用程序，请激活旋转传感器并转动您的手机"
     },
     "Home": {
-        "welcome": ({ who }) => `你好 ${who}!`,
+        "title authenticated": ({ userFirstname }) => `你好 ${userFirstname}!`,
         "title": "欢迎来到 datalab",
         "login": "登录",
         "new user": "您是datalab的新用户?",
@@ -371,17 +371,26 @@ export const translations: Translations<"zh-CN"> = {
             interfacePreferenceHref
         }) => (
             <Markdown
-                getDoesLinkShouldOpenNewTab={href => {
-                    switch (href) {
-                        case k8CredentialsHref:
-                            return true;
-                        case myServicesHref:
-                            return true;
-                        case interfacePreferenceHref:
-                            return false;
-                        default:
-                            return false;
-                    }
+                getLinkProps={({ href }) => {
+                    const doOpensNewTab = (() => {
+                        switch (href) {
+                            case k8CredentialsHref:
+                                return true;
+                            case myServicesHref:
+                                return true;
+                            case interfacePreferenceHref:
+                                return false;
+                            default:
+                                return false;
+                        }
+                    })();
+
+                    return {
+                        href,
+                        ...(doOpensNewTab
+                            ? { "target": "_blank", "onClick": undefined }
+                            : {})
+                    };
                 }}
             >{`我们设计了命令栏，目的是让您能够全面掌控您的 Kubernetes 部署。
 以下是您需要了解的信息：

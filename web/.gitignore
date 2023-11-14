@@ -35,3 +35,4 @@ package-lock.json
 
 # Jetbrains
 .idea/
+.env.local.yaml

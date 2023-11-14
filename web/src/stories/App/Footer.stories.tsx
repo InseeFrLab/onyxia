@@ -5,19 +5,10 @@ import { sectionName } from "./sectionName";
 const { meta, getStory } = getStoryFactory({
     sectionName,
     "wrappedComponent": { Footer },
-    "defaultContainerWidth": 1000
+    "defaultContainerWidth": 1000,
+    "doNeedCore": true
 });
 
 export default meta;
 
-export const View1 = getStory({
-    "onyxiaVersion": {
-        "number": "v3.0.1",
-        "url": "https://github.com/InseeFrLab/onyxia/tree/v3.0.1/helm-chart"
-    },
-    "contributeUrl": "#",
-    "termsLink": {
-        "href": "https://example.com",
-        "onClick": () => {}
-    }
-});
+export const View1 = getStory({});

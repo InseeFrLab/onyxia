@@ -5,19 +5,21 @@ import { AccountField } from "../AccountField";
 import { useCallbackFactory } from "powerhooks/useCallbackFactory";
 import { copyToClipboard } from "ui/tools/copyToClipboard";
 import Divider from "@mui/material/Divider";
-import { tss } from "ui/theme";
+import { tss } from "tss";
 import { assert } from "tsafe/assert";
 import { saveAs } from "file-saver";
 import { smartTrim } from "ui/tools/smartTrim";
 import { declareComponentKeys } from "i18nifty";
 import { useConstCallback } from "powerhooks/useConstCallback";
-import { IconButton } from "ui/theme";
+import { IconButton } from "onyxia-ui/IconButton";
 import { CircularProgress } from "onyxia-ui/CircularProgress";
 import { useCoreState, selectors, useCoreFunctions } from "core";
 import { useFromNow } from "ui/shared/useMoment";
 import type { Link } from "type-route";
 import { routes } from "ui/routes";
 import { capitalize } from "tsafe/capitalize";
+import { id } from "tsafe/id";
+import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
 
 const CodeBlock = lazy(() => import("ui/shared/CodeBlock"));
 
@@ -80,7 +82,7 @@ export const AccountVaultTab = memo((props: Props) => {
                         </strong>
                         <IconButton
                             size="extra small"
-                            iconId="refresh"
+                            icon={id<MuiIconComponentName>("Refresh")}
                             onClick={onRefreshIconButtonClick}
                             disabled={uiState.isRefreshing}
                         />
@@ -113,7 +115,7 @@ export const AccountVaultTab = memo((props: Props) => {
             <div className={classes.codeBlockHeaderWrapper}>
                 <div style={{ "flex": 1 }} />
                 <IconButton
-                    iconId="getApp"
+                    icon={id<MuiIconComponentName>("GetApp")}
                     onClick={onGetAppIconButtonClick}
                     size="small"
                 />

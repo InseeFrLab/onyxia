@@ -1,8 +1,6 @@
 import { memo, useMemo } from "react";
 import { useTranslation } from "ui/i18n";
-import { ButtonBar } from "ui/theme";
-import type { IconId } from "ui/theme";
-import type { ButtonBarProps } from "onyxia-ui/ButtonBar";
+import { ButtonBar, type ButtonBarProps } from "onyxia-ui/ButtonBar";
 import { declareComponentKeys } from "i18nifty";
 
 const buttonIds = ["refresh", "launch", "trash"] as const;
@@ -23,7 +21,7 @@ export const MyServicesButtonBar = memo((props: Props) => {
     const { t } = useTranslation({ MyServicesButtonBar });
 
     const buttons = useMemo(
-        (): ButtonBarProps<ButtonId, IconId>["buttons"] =>
+        (): ButtonBarProps<ButtonId>["buttons"] =>
             buttonIds.map(buttonId => ({
                 buttonId,
                 "icon": (() => {

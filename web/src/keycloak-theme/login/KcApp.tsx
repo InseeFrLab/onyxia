@@ -1,10 +1,15 @@
-import { lazy, Suspense } from "react";
+import { useEffect, lazy, Suspense } from "react";
 import Fallback, { type PageProps } from "keycloakify/login";
 import type { KcContext } from "./kcContext";
 import { useI18n } from "./i18n";
-import { tss } from "keycloak-theme/login/theme";
+import { loadThemedFavicon } from "keycloak-theme/login/theme";
+import { tss } from "tss";
+import { env } from "env-parsed";
 import onyxiaNeumorphismDarkModeUrl from "ui/assets/svg/OnyxiaNeumorphismDarkMode.svg";
 import onyxiaNeumorphismLightModeUrl from "ui/assets/svg/OnyxiaNeumorphismLightMode.svg";
+import { ThemeProvider } from "keycloak-theme/login/theme";
+
+loadThemedFavicon();
 
 const DefaultTemplate = lazy(() => import("keycloakify/login/Template"));
 const Template = lazy(() => import("./Template"));
@@ -12,12 +17,32 @@ const Login = lazy(() => import("./pages/Login"));
 const RegisterUserProfile = lazy(() => import("./pages/RegisterUserProfile"));
 const Terms = lazy(() => import("./pages/Terms"));
 
-export default function KcApp(props: { kcContext: KcContext }) {
+type Props = {
+    kcContext: KcContext;
+};
+
+export default function KcApp(props: Props) {
+    return (
+        <ThemeProvider>
+            <ContextualizedKcApp {...props} />
+        </ThemeProvider>
+    );
+}
+
+function ContextualizedKcApp(props: Props) {
     const { kcContext } = props;
 
     const i18n = useI18n({ kcContext });
 
     const { classes } = useStyles();
+
+    useEffect(() => {
+        if (i18n === null) {
+            return;
+        }
+
+        document.title = `${env.TAB_TITLE} - ${i18n.msgStr("tabTitleSuffix")}`;
+    }, [i18n]);
 
     if (i18n === null) {
         return null;

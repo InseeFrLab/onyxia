@@ -1,12 +1,12 @@
 import MuiLink from "@mui/material/Link";
-import { Markdown } from "onyxia-ui/Markdown";
+import { Markdown } from "ui/shared/Markdown";
 import type { Translations } from "../types";
 import { elementsToSentence } from "ui/tools/elementsToSentence";
 
 export const translations: Translations<"en"> = {
     "Account": {
         "infos": "Account infos",
-        "third-party-integration": "external services",
+        "third-party-integration": "External services",
         "storage": "Connect to storage",
         "k8sCredentials": "Kubernetes",
         "user-interface": "Interface preferences",
@@ -301,7 +301,7 @@ export const translations: Translations<"en"> = {
         "project": "Project",
         "region": "Region"
     },
-    "App": {
+    "LeftBar": {
         "reduce": "Reduce",
         "home": "Home",
         "account": "My account",
@@ -321,7 +321,7 @@ export const translations: Translations<"en"> = {
             "To use this app on your phone please enable the rotation sensor and turn your phone."
     },
     "Home": {
-        "welcome": ({ who }) => `Welcome ${who}!`,
+        "title authenticated": ({ userFirstname }) => `Welcome ${userFirstname}!`,
         "title": "Welcome to the Onyxia datalab",
         "new user": "New to the datalab?",
         "login": "Login",
@@ -396,17 +396,26 @@ export const translations: Translations<"en"> = {
             interfacePreferenceHref
         }) => (
             <Markdown
-                getDoesLinkShouldOpenNewTab={href => {
-                    switch (href) {
-                        case k8CredentialsHref:
-                            return true;
-                        case myServicesHref:
-                            return true;
-                        case interfacePreferenceHref:
-                            return false;
-                        default:
-                            return false;
-                    }
+                getLinkProps={({ href }) => {
+                    const doOpensNewTab = (() => {
+                        switch (href) {
+                            case k8CredentialsHref:
+                                return true;
+                            case myServicesHref:
+                                return true;
+                            case interfacePreferenceHref:
+                                return false;
+                            default:
+                                return false;
+                        }
+                    })();
+
+                    return {
+                        href,
+                        ...(doOpensNewTab
+                            ? { "target": "_blank", "onClick": undefined }
+                            : {})
+                    };
                 }}
             >{`We've designed the command bar to empower you to take control over your Kubernetes deployments. 
 Here's what you need to know:

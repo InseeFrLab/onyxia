@@ -1,8 +1,8 @@
 import { useMemo, memo } from "react";
-import { Button } from "ui/theme";
 import { routes } from "ui/routes";
-import { tss, Text, useStyles as useClasslessStyles } from "ui/theme";
-import onyxiaLogoSvgUrl from "ui/assets/svg/OnyxiaLogo.svg";
+import { tss, useStyles as useClasslessStyles } from "tss";
+import { Text } from "onyxia-ui/Text";
+import { Button } from "onyxia-ui/Button";
 import { useCoreFunctions } from "core";
 import { useTranslation } from "ui/i18n";
 import pictogramCommunitySvgUrl from "ui/assets/svg/PictogramCommunity.svg";
@@ -10,15 +10,14 @@ import pictogramServiceSvg from "ui/assets/svg/PictogramService.svg";
 import iconStorageSvg from "ui/assets/svg/PictogramStorage.svg";
 import { Card as OnyxiaUiCard } from "onyxia-ui/Card";
 import type { Link } from "type-route";
-import onyxiaNeumorphismDarkModeUrl from "ui/assets/svg/OnyxiaNeumorphismDarkMode.svg";
-import onyxiaNeumorphismLightModeUrl from "ui/assets/svg/OnyxiaNeumorphismLightMode.svg";
-import dragoonSvgUrl from "ui/assets/svg/Dragoon.svg";
-import { getIsHomePageDisabled } from "ui/env";
+import { env } from "env-parsed";
 import { useConst } from "powerhooks/useConst";
 import { declareComponentKeys } from "i18nifty";
 import type { PageRoute } from "./route";
-import { LazyImage } from "ui/tools/LazyImage";
-import { useSvgStyles } from "ui/shared/useSvgStyles";
+import { ThemedImage } from "onyxia-ui/ThemedImage";
+import { useResolveAssetVariantUrl } from "onyxia-ui";
+import { LocalizedMarkdown } from "ui/shared/Markdown";
+import { LinkFromConfigButton } from "./LinkFromConfigButton";
 
 type Props = {
     route: PageRoute;
@@ -29,12 +28,17 @@ export default function Home(props: Props) {
     const { className } = props;
 
     useConst(() => {
-        if (getIsHomePageDisabled()) {
+        if (env.DISABLE_HOMEPAGE) {
             routes.catalog().replace();
         }
     });
 
-    const { classes, cx } = useStyles();
+    const backgroundUrl = useResolveAssetVariantUrl(env.BACKGROUND_ASSET);
+
+    const { classes, cx } = useStyles({
+        backgroundUrl,
+        "hasLogo": env.HOMEPAGE_LOGO !== undefined
+    });
 
     const { userAuthentication } = useCoreFunctions();
 
@@ -44,44 +48,109 @@ export default function Home(props: Props) {
 
     const myFilesLink = useMemo(() => routes.myFiles().link, []);
     const catalogExplorerLink = useMemo(() => routes.catalog().link, []);
-    const { svgClassName } = useSvgStyles();
+
+    const title = useMemo(() => {
+        const userFirstname = userAuthentication.getUser().firstName ?? "";
+
+        if (isUserLoggedIn) {
+            if (env.HOMEPAGE_TITLE_AUTHENTICATED === undefined) {
+                return t("title authenticated", { userFirstname });
+            }
+
+            return (
+                <LocalizedMarkdown inline>
+                    {env.HOMEPAGE_TITLE_AUTHENTICATED({ userFirstname })}
+                </LocalizedMarkdown>
+            );
+        } else {
+            if (env.HOMEPAGE_TITLE === undefined) {
+                return t("title");
+            }
+            return <LocalizedMarkdown inline>{env.HOMEPAGE_TITLE}</LocalizedMarkdown>;
+        }
+    }, [t]);
+
+    const subtitle = useMemo(() => {
+        const userFirstname = userAuthentication.getUser().firstName ?? "";
+
+        const defaultNode = t("subtitle");
+
+        if (isUserLoggedIn) {
+            if (env.HOMEPAGE_SUBTITLE_AUTHENTICATED === undefined) {
+                return defaultNode;
+            }
+
+            return (
+                <LocalizedMarkdown inline>
+                    {env.HOMEPAGE_SUBTITLE_AUTHENTICATED({ userFirstname })}
+                </LocalizedMarkdown>
+            );
+        } else {
+            if (env.HOMEPAGE_SUBTITLE === undefined) {
+                return defaultNode;
+            }
+            return <LocalizedMarkdown inline>{env.HOMEPAGE_SUBTITLE}</LocalizedMarkdown>;
+        }
+    }, [t]);
+
+    const callToActionButton = useMemo(() => {
+        if (isUserLoggedIn) {
+            if (env.HOMEPAGE_CALL_TO_ACTION_BUTTON_AUTHENTICATED === null) {
+                return null;
+            }
+
+            if (env.HOMEPAGE_CALL_TO_ACTION_BUTTON_AUTHENTICATED === undefined) {
+                return (
+                    <Button
+                        href="https://docs.onyxia.sh/user-guide"
+                        doOpenNewTabIfHref={true}
+                    >
+                        {t("new user")}
+                    </Button>
+                );
+            }
+
+            return (
+                <LinkFromConfigButton
+                    linkFromConfig={env.HOMEPAGE_CALL_TO_ACTION_BUTTON_AUTHENTICATED}
+                />
+            );
+        } else {
+            if (env.HOMEPAGE_CALL_TO_ACTION_BUTTON === null) {
+                return null;
+            }
+
+            if (env.HOMEPAGE_CALL_TO_ACTION_BUTTON === undefined) {
+                return null;
+            }
+
+            return (
+                <LinkFromConfigButton
+                    linkFromConfig={env.HOMEPAGE_CALL_TO_ACTION_BUTTON}
+                />
+            );
+        }
+    }, [t]);
 
     return (
         <div className={cx(classes.root, className)}>
             <div className={classes.hero}>
                 <div className={classes.heroTextWrapper}>
-                    <LazyImage
-                        url={onyxiaLogoSvgUrl}
-                        className={classes.logo}
-                        svgProps={{
-                            "className": svgClassName
-                        }}
-                        imgProps={{ "alt": "" }}
-                        cx={cx}
-                    />
-                    <Text typo="display heading">
-                        {isUserLoggedIn
-                            ? t("welcome", {
-                                  "who": userAuthentication.getUser().firstName ?? ""
-                              })
-                            : t("title")}
-                    </Text>
-                    <Text typo="subtitle" className={classes.heroSubtitle}>
-                        {t("subtitle")}
-                    </Text>
-                    {isUserLoggedIn && (
-                        <Button href="https://docs.sspcloud.fr/">{t("new user")}</Button>
+                    {env.HOMEPAGE_LOGO !== undefined && (
+                        <ThemedImage url={env.HOMEPAGE_LOGO} className={classes.logo} />
                     )}
+                    <Text typo="display heading">{title}</Text>
+                    <Text typo="subtitle" className={classes.heroSubtitle}>
+                        {subtitle}
+                    </Text>
+                    {callToActionButton}
                 </div>
-                <LazyImage
-                    url={dragoonSvgUrl}
-                    className={classes.dragoon}
-                    svgProps={{
-                        "className": svgClassName
-                    }}
-                    imgProps={{ "alt": "" }}
-                    cx={cx}
-                />
+                {env.HOMEPAGE_MAIN_ASSET !== undefined && (
+                    <ThemedImage
+                        url={env.HOMEPAGE_MAIN_ASSET}
+                        className={classes.mainAsset}
+                    />
+                )}
             </div>
             <div className={classes.cardsWrapper}>
                 <Card
@@ -112,10 +181,10 @@ export default function Home(props: Props) {
 }
 
 export const { i18n } = declareComponentKeys<
-    | { K: "welcome"; P: { who: string } }
     | "login"
     | "new user"
     | "title"
+    | { K: "title authenticated"; P: { userFirstname: string } }
     | "subtitle"
     | "cardTitle1"
     | "cardTitle2"
@@ -128,142 +197,132 @@ export const { i18n } = declareComponentKeys<
     | "cardButton3"
 >()({ Home });
 
-const useStyles = tss.withName({ Home }).create(({ theme }) => ({
-    "root": {
-        "height": "100%",
-        "overflow": "auto",
-        "backgroundColor": "transparent",
-        "display": "flex",
-        "flexDirection": "column"
-    },
-    "hero": {
-        "flex": 1,
-        "position": "relative",
-        "backgroundImage": `url(${
-            theme.isDarkModeEnabled
-                ? onyxiaNeumorphismDarkModeUrl
-                : onyxiaNeumorphismLightModeUrl
-        })`,
-        "backgroundPosition": "100% 0%",
-        "backgroundRepeat": "no-repeat",
-        "backgroundSize": "80%",
-        "overflow": "hidden"
-    },
-    "dragoon": {
-        "position": "absolute",
-        "width": "46%",
-        "right": -82,
-        "top": -206
-    },
-    "heroTextWrapper": {
-        "paddingLeft": theme.spacing(3),
-        "maxWidth": "42%",
-        "& > *": {
-            "marginBottom": theme.spacing(4)
+const useStyles = tss
+    .withName({ Home })
+    .withParams<{ backgroundUrl: string; hasLogo: boolean }>()
+    .create(({ theme, backgroundUrl, hasLogo }) => ({
+        "root": {
+            "height": "100%",
+            "overflow": "auto",
+            "backgroundColor": "transparent",
+            "display": "flex",
+            "flexDirection": "column"
+        },
+        "hero": {
+            "flex": 1,
+            "position": "relative",
+            "backgroundImage": `url(${backgroundUrl})`,
+            "backgroundPosition": "100% 0%",
+            "backgroundRepeat": "no-repeat",
+            "backgroundSize": "80%",
+            "overflow": "hidden"
+        },
+        "mainAsset": {
+            "position": "absolute",
+            "width": `${41 * env.HOMEPAGE_MAIN_ASSET_SCALE_FACTOR}%`,
+            "right": `calc(-1 * (${env.HOMEPAGE_MAIN_ASSET_X_OFFSET}))`,
+            "top": env.HOMEPAGE_MAIN_ASSET_Y_OFFSET
+        },
+        "heroTextWrapper": {
+            "paddingLeft": theme.spacing(3),
+            "paddingTop": hasLogo ? theme.spacing(3) : theme.spacing(7),
+            "maxWidth": "42%",
+            "& > *": {
+                "marginBottom": theme.spacing(4)
+            }
+        },
+        "heroSubtitle": {
+            "marginBottom": theme.spacing(5)
+        },
+        "cardsWrapper": {
+            "borderTop": `1px solid ${theme.colors.useCases.typography.textPrimary}`,
+            "display": "flex",
+            ...theme.spacing.topBottom("padding", 4),
+            "& > *": {
+                "flex": 1
+            }
+        },
+        "middleCard": {
+            ...theme.spacing.rightLeft("margin", 3)
+        },
+        "logo": {
+            "width": 100
         }
-    },
-    "heroSubtitle": {
-        "marginBottom": theme.spacing(5)
-    },
-    "cardsWrapper": {
-        "borderTop": `1px solid ${theme.colors.useCases.typography.textPrimary}`,
-        "display": "flex",
-        ...theme.spacing.topBottom("padding", 4),
-        "& > *": {
-            "flex": 1
-        }
-    },
-    "middleCard": {
-        ...theme.spacing.rightLeft("margin", 3)
-    },
-    "logo": {
-        "fill": theme.colors.useCases.typography.textFocus,
-        "width": 122
-    }
-}));
+    }));
 
-const { Card } = (() => {
-    type Props = {
-        className?: string;
-        title: string;
-        text: string;
-        buttonText: string;
-        pictogramUrl: string;
-        link: Link | string;
-    };
+type CardProps = {
+    className?: string;
+    title: string;
+    text: string;
+    buttonText: string;
+    pictogramUrl: string;
+    link: Link | string;
+};
 
-    const Card = memo((props: Props) => {
-        const { title, text, buttonText, pictogramUrl, className, link } = props;
+const Card = memo((props: CardProps) => {
+    const { title, text, buttonText, pictogramUrl, className, link } = props;
 
-        const { css, cx, theme } = useClasslessStyles();
+    const { css, cx, theme } = useClasslessStyles();
 
-        const { svgClassName } = useSvgStyles();
-
-        return (
-            <OnyxiaUiCard
-                className={cx(
-                    css({
-                        "display": "flex",
-                        "flexDirection": "column",
-                        "padding": theme.spacing(4),
-                        "backgroundColor": theme.isDarkModeEnabled ? "#383E50" : undefined
-                    }),
-                    className
-                )}
-            >
-                <div className={css({ "display": "flex" })}>
-                    <LazyImage
-                        cx={cx}
-                        url={pictogramUrl}
-                        svgProps={{
-                            "className": svgClassName,
-                            "width": 120,
-                            "height": 120
-                        }}
-                        imgProps={{ "alt": "" }}
-                    />
-                    <div
-                        className={css({
-                            "flex": 1,
-                            "display": "flex",
-                            "alignItems": "center",
-                            ...theme.spacing.rightLeft("padding", 4)
-                        })}
-                    >
-                        <Text typo="section heading">{title}</Text>
-                    </div>
-                </div>
+    return (
+        <OnyxiaUiCard
+            className={cx(
+                css({
+                    "display": "flex",
+                    "flexDirection": "column",
+                    "padding": theme.spacing(4),
+                    "backgroundColor": theme.isDarkModeEnabled ? "#383E50" : undefined
+                }),
+                className
+            )}
+        >
+            <div className={css({ "display": "flex" })}>
+                <ThemedImage
+                    url={pictogramUrl}
+                    className={css({
+                        "width": 120,
+                        "height": 120
+                    })}
+                />
                 <div
                     className={css({
                         "flex": 1,
                         "display": "flex",
-                        "flexDirection": "column",
-                        "paddingTop": theme.spacing(3)
+                        "alignItems": "center",
+                        ...theme.spacing.rightLeft("padding", 4)
                     })}
                 >
-                    <div className={css({ "flex": 1 })}>
-                        <Text typo="body 1">{text}</Text>
-                    </div>
-                    <div
-                        className={css({
-                            "marginTop": theme.spacing(5),
-                            "display": "flex"
-                        })}
-                    >
-                        <div style={{ "flex": 1 }} />
-                        <Button
-                            variant="secondary"
-                            {...(typeof link === "string"
-                                ? { "href": link }
-                                : { ...link, "doOpenNewTabIfHref": false })}
-                        >
-                            {buttonText}
-                        </Button>
-                    </div>
+                    <Text typo="section heading">{title}</Text>
                 </div>
-            </OnyxiaUiCard>
-        );
-    });
-
-    return { Card };
-})();
+            </div>
+            <div
+                className={css({
+                    "flex": 1,
+                    "display": "flex",
+                    "flexDirection": "column",
+                    "paddingTop": theme.spacing(3)
+                })}
+            >
+                <div className={css({ "flex": 1 })}>
+                    <Text typo="body 1">{text}</Text>
+                </div>
+                <div
+                    className={css({
+                        "marginTop": theme.spacing(5),
+                        "display": "flex"
+                    })}
+                >
+                    <div style={{ "flex": 1 }} />
+                    <Button
+                        variant="secondary"
+                        {...(typeof link === "string"
+                            ? { "href": link }
+                            : { ...link, "doOpenNewTabIfHref": false })}
+                    >
+                        {buttonText}
+                    </Button>
+                </div>
+            </div>
+        </OnyxiaUiCard>
+    );
+});

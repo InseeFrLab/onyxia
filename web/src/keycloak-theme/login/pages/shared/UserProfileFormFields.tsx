@@ -3,7 +3,7 @@ import type { ClassKey } from "keycloakify/login/TemplateProps";
 import { useFormValidation } from "keycloakify/login/lib/useFormValidation";
 import type { Attribute } from "keycloakify/login/kcContext/KcContext";
 import type { I18n } from "../../i18n";
-import { useStyles } from "keycloak-theme/login/theme";
+import { useStyles } from "tss";
 import { TextField } from "onyxia-ui/TextField";
 import { capitalize } from "tsafe/capitalize";
 import { regExpStrToEmailDomains } from "../../emailDomainAcceptListHelper";

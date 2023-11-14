@@ -8,7 +8,7 @@ import { copyToClipboard } from "ui/tools/copyToClipboard";
 import Divider from "@mui/material/Divider";
 import Link from "@mui/material/Link";
 import { useConstCallback } from "powerhooks/useConstCallback";
-import { tss } from "ui/theme";
+import { tss } from "tss";
 import { useAsync } from "react-async-hook";
 import { declareComponentKeys } from "i18nifty";
 

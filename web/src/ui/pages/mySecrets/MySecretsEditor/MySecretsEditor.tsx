@@ -1,4 +1,4 @@
-import { tss } from "ui/theme";
+import { tss } from "tss";
 import { useMemo, useState, memo } from "react";
 import { useCallbackFactory } from "powerhooks/useCallbackFactory";
 import { useConstCallback } from "powerhooks/useConstCallback";
@@ -11,7 +11,8 @@ import type { UnpackEvt } from "evt";
 import { assert } from "tsafe/assert";
 import { MySecretsEditorRow, Props as RowProps } from "./MySecretsEditorRow";
 import { useArrayDiff } from "powerhooks/useArrayDiff";
-import { Button, Text } from "ui/theme";
+import { Text } from "onyxia-ui/Text";
+import { Button } from "onyxia-ui/Button";
 import {
     generateUniqDefaultName,
     buildNameFactory

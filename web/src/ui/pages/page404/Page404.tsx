@@ -1,5 +1,6 @@
 import { useTranslation } from "ui/i18n";
-import { Text, tss } from "ui/theme";
+import { tss } from "tss";
+import { Text } from "onyxia-ui/Text";
 import { declareComponentKeys } from "i18nifty";
 
 export type Props = {

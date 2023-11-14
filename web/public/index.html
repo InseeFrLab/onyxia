@@ -5,248 +5,180 @@
 
 	<meta charset="utf-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<link rel="icon" type="image/svg+xml" href="<%= process.env.REACT_APP_FAVICON || process.env.REACT_APP_HEADER_LOGO %>" />
 
-	<!--
-      	Notice the use of %PUBLIC_URL% in the tag above.
-      	It will be replaced with the URL of the `public` folder during the build.
-      	Only files inside the `public` folder can be referenced from the HTML.
+	<title>%REACT_APP_TAB_TITLE%</title>
 
-      	Unlike "/favicon.ico" or "favicon.ico", "%PUBLIC_URL%/favicon.ico" will
-      	work correctly both with client-side routing and a non-root public URL.
-      	Learn how to configure a non-root public URL by running `npm run build`.
-    	-->
-	<title>%REACT_APP_HEADER_USECASE_DESCRIPTION%</title>
-
-	<link rel="icon" type="image/png" sizes="32x32" href="%PUBLIC_URL%/favicon-32x32.png">
-
-	<!-- cspell: disable -->
 	<!-- Primary Meta Tags -->
-	<meta name="title" content="%REACT_APP_HEADER_USECASE_DESCRIPTION% - %REACT_APP_HEADER_ORGANIZATION%">
-	<meta name="description" content="%REACT_APP_DESCRIPTION%">
+	<meta name="title" content="%REACT_APP_SOCIAL_MEDIA_TITLE%">
+	<meta name="description" content="%REACT_APP_SOCIAL_MEDIA_DESCRIPTION%">
 
 	<!-- Open Graph / Facebook -->
 	<meta property="og:type" content="website">
-	<meta property="og:title" content="%REACT_APP_HEADER_USECASE_DESCRIPTION% - %REACT_APP_HEADER_ORGANIZATION%">
-	<meta property="og:description" content="%REACT_APP_DESCRIPTION%">
-	<meta property="og:image" content="%PUBLIC_URL%/Prewiew-%REACT_APP_THEME_ID%.png">
+	<meta property="og:title" content="%REACT_APP_SOCIAL_MEDIA_TITLE%">
+	<meta property="og:description" content="%REACT_APP_SOCIAL_MEDIA_DESCRIPTION%">
+	<meta property="og:image" content="<%= process.env.REACT_APP_SOCIAL_MEDIA_IMAGE %>">
 
 	<!-- Twitter -->
 	<meta property="twitter:card" content="summary_large_image">
-	<meta property="twitter:title" content="%REACT_APP_HEADER_USECASE_DESCRIPTION% - %REACT_APP_HEADER_ORGANIZATION%">
-	<meta property="twitter:description" content="%REACT_APP_DESCRIPTION%">
-	<meta property="twitter:image" content="%PUBLIC_URL%/Prewiew-%REACT_APP_THEME_ID%.png">
-	<!-- cspell: enable -->
+	<meta property="twitter:title" content="%REACT_APP_SOCIAL_MEDIA_TITLE%">
+	<meta property="twitter:description" content="%REACT_APP_SOCIAL_MEDIA_DESCRIPTION%">
+	<meta property="twitter:image" content="<%= process.env.REACT_APP_SOCIAL_MEDIA_IMAGE %>">
 
-	<% if (process.env.REACT_APP_THEME_ID==="france" ) { %>
-		<!-- We only preload the default font -->
-		<link rel="preload" href="%PUBLIC_URL%/fonts/Marianne/Marianne-Bold_Italic.woff2" as="font" crossorigin="anonymous">
-		<link rel="preload" href="%PUBLIC_URL%/fonts/Marianne/Marianne-Bold.woff2" as="font" crossorigin="anonymous">
-		<link rel="preload" href="%PUBLIC_URL%/fonts/Marianne/Marianne-Light_Italic.woff2" as="font" crossorigin="anonymous">
-		<link rel="preload" href="%PUBLIC_URL%/fonts/Marianne/Marianne-Light.woff2" as="font" crossorigin="anonymous">
-		<link rel="preload" href="%PUBLIC_URL%/fonts/Marianne/Marianne-Regular_Italic.woff2" as="font" crossorigin="anonymous">
-		<link rel="preload" href="%PUBLIC_URL%/fonts/Marianne/Marianne-Regular.woff2" as="font" crossorigin="anonymous">
-		<!--<link rel="stylesheet" type="text/css" href="%PUBLIC_URL%/fonts/Marianne/font.css">-->
-	<% } else { %>
-		<link rel="preload" href="%PUBLIC_URL%/fonts/WorkSans/worksans-bold-webfont.woff2" as="font" crossorigin="anonymous">
-		<link rel="preload" href="%PUBLIC_URL%/fonts/WorkSans/worksans-medium-webfont.woff2" as="font" crossorigin="anonymous">
-		<link rel="preload" href="%PUBLIC_URL%/fonts/WorkSans/worksans-regular-webfont.woff2" as="font" crossorigin="anonymous">
-		<link rel="preload" href="%PUBLIC_URL%/fonts/WorkSans/worksans-semibold-webfont.woff2" as="font" crossorigin="anonymous">
-		<!--<link rel="stylesheet" type="text/css" href="%PUBLIC_URL%/fonts/WorkSans/font.css">-->
-	<% } %>
+	<%
+    const FONT = JSON.parse(process.env.REACT_APP_FONT);
+    const { fontFamily, dirUrl } = FONT;
+    const fontWeights = [400, 500, 600, 700];
+    let fontFaceRules = '';
+    let preloadLinks = '';
 
-	<!-- 
-		We need to put it plain in the html because of Keycloakify, when we build without --external-assets 
-		SEE: https://github.com/InseeFrLab/keycloakify#font-face-importing-fonts-from-thesrc-dir 
-		We also put it outside the EJS 'if' because it won't be run on Keycloak. This way we will have the fonts
-		they just aren't going to be preloaded according to the (right) theme.
-		(@font-face) are downloaded lazily. If they are not used, they are not downloaded so it has no impact 
-		to put it here.
-	-->
-	<style>
-		/* latin */
-		@font-face {
-			font-family: 'Work Sans';
-			font-style: normal;
-			font-weight: normal;
-			/*400*/
-			font-display: swap;
-			src: url("%PUBLIC_URL%/fonts/WorkSans/worksans-regular-webfont.woff2") format("woff2");
-		}
+    fontWeights.forEach(weight => {
+        const normalFontFileBasename = FONT[weight];
+        const italicFontFileBasename = FONT[`${weight}-italic`];
 
-		/* latin */
-		@font-face {
-			font-family: 'Work Sans';
-			font-style: normal;
-			font-weight: 500;
-			font-display: swap;
-			src: url("%PUBLIC_URL%/fonts/WorkSans/worksans-medium-webfont.woff2") format("woff2");
-		}
+        ['normal', 'italic'].forEach(fontStyle => {
+            let fontFileBasename;
+            switch (fontStyle) {
+                case 'normal':
+                    fontFileBasename = normalFontFileBasename;
+                    break;
+                case 'italic':
+                    fontFileBasename = italicFontFileBasename;
+                    break;
+            }
 
-		/* latin */
-		@font-face {
-			font-family: 'Work Sans';
-			font-style: normal;
-			font-weight: 600;
-			font-display: swap;
-			src: url("%PUBLIC_URL%/fonts/WorkSans/worksans-semibold-webfont.woff2") format("woff2");
-		}
+            if(fontFileBasename === undefined){
+                return;
+            }
 
-		/* latin */
-		@font-face {
-			font-family: 'Work Sans';
-			font-style: normal;
-			font-weight: bold;
-			/*700*/
-			font-display: swap;
-			src: url("%PUBLIC_URL%/fonts/WorkSans/worksans-bold-webfont.woff2") format("woff2");
-		}
-	</style>
-	<style>
-		@font-face {
-			font-family: Marianne;
-			src: url("%PUBLIC_URL%/fonts/Marianne/Marianne-Light.woff2") format("woff2");
-			font-weight: 300;
-			font-style: normal;
-		}
+            const url = `${dirUrl}/${fontFileBasename}`;
+            
+            const format = fontFileBasename.split('.').pop();
+            fontFaceRules += [
+                ``,
+                `@font-face {`,
+                `    font-family: '${fontFamily}';`,
+                `    font-style: ${fontStyle};`,
+                `    font-weight: ${weight};`,
+                `    font-display: swap;`,
+                `    src: url('${url}') format('${format}');`,
+                `}\n`
+            ].join("\n");
 
-		@font-face {
-			font-family: Marianne;
-			src: url("%PUBLIC_URL%/fonts/Marianne/Marianne-Light_Italic.woff2") format("woff2");
-			font-weight: 300;
-			font-style: italic;
-		}
+            if( fontStyle === 'normal' ){
+                preloadLinks += `    <link rel="preload" href="${url}" as="font" type="font/${format}" crossorigin="anonymous">\n`;
+            }
 
-		@font-face {
-			font-family: Marianne;
-			src: url("%PUBLIC_URL%/fonts/Marianne/Marianne-Regular.woff2") format("woff2");
-			font-weight: normal;
-			/*400*/
-			font-style: normal;
-		}
+        });
+    });
+    %>
+    <meta name="onyxia-font" content="<%= fontFamily %>">
+    <%= preloadLinks %>
+    <style><%= fontFaceRules %></style>
 
-		@font-face {
-			font-family: Marianne;
-			src: url("%PUBLIC_URL%/fonts/Marianne/Marianne-Regular_Italic.woff2") format("woff2");
-			font-weight: normal;
-			/*400*/
-			font-style: italic;
-		}
 
-		@font-face {
-			font-family: Marianne;
-			src: url("%PUBLIC_URL%/fonts/Marianne/Marianne-Medium.woff2") format("woff2");
-			font-weight: 500;
-			font-display: swap;
-			font-style: normal;
-		}
 
-		@font-face {
-			font-family: Marianne;
-			src: url("%PUBLIC_URL%/fonts/Marianne/Marianne-Bold.woff2") format("woff2");
-			font-weight: bold
-				/*700*/
-			;
-			font-style: normal;
-		}
+    <script>
+        /*
+        This is a way to get the correct background color as soon as possible,
+        even before the JavaScript bundle is evaluated.
+        It is to prevent a white flash when the user has dark mode enabled.
+        It is very implementation dependent and can easily break...
+        if it does no big deal.
+        */
+        (function () {
+        
+            var isDarkModeEnabled = /true/.test((function () {
+            
+                var key = "powerhooks_useGlobalState_isDarkModeEnabled";
+                var value = null;
+            
+                try {
+                    value = (new URLSearchParams(location.search)).get(key);
+                } catch (_) { }
+            
+                if (value !== null) {
+                    return value;
+                }
+            
+                try {
+                    value = localStorage.getItem(key);
+                } catch (_) { }
+            
+                if (value !== null) {
+                    return value;
+                }
+            
+                try {
+                    value = window.matchMedia("(prefers-color-scheme: dark)").matches ? "true" : "false";
+                } catch (_) { }
+            
+                if (value !== null) {
+                    return value;
+                }
+            
+                return "false";
+            
+            })());
 
-		@font-face {
-			font-family: Marianne;
-			src: url("%PUBLIC_URL%/fonts/Marianne/Marianne-Bold_Italic.woff2") format("woff2");
-			font-weight: bold;
-			/*700*/
-			font-style: italic;
-		}
-	</style>
+            <%
+                const PALETTE_OVERRIDE = process.env.REACT_APP_PALETTE_OVERRIDE;
 
-	<script>
-		/*
-		This is a way to get the correct background color as soon as possible,
-		even before the JavaScript bundle is evaluated.
-		It is to prevent a white flash when the user has dark mode enabled.
-		It is very implementation dependent and can easily break...
-		if it does no big deal.
-		*/
-		(function () {
-		
-			var isDarkModeEnabled = /true/.test((function () {
-			
-				var key = "powerhooks_useGlobalState_isDarkModeEnabled";
-				var value = null;
-			
-				try {
-					value = (new URLSearchParams(location.search)).get(key);
-				} catch (_) { }
-			
-				if (value !== null) {
-					return value;
-				}
-			
-				try {
-					value = localStorage.getItem(key);
-				} catch (_) { }
-			
-				if (value !== null) {
-					return value;
-				}
-			
-				try {
-					value = window.matchMedia("(prefers-color-scheme: dark)")
-						.matches ? "true" : "false";
-				} catch (_) { }
-			
-				if (value !== null) {
-					return value;
-				}
-			
-				return "false";
-			
-			})());
-		
-			var backgroundColor = (function () {
-				switch ("%REACT_APP_THEME_ID%") {
-					case "france": return isDarkModeEnabled ? "#2A2A2A" : "#F1F0EB";
-					case "ultraviolet": return isDarkModeEnabled ? "#2D1C3A" : "#F7F5F4";
-					default: return isDarkModeEnabled ? "#2C323F" : "#F1F0EB";
-				}
-			})();
-		
-			document.documentElement.style.backgroundColor = backgroundColor;
-		
-			while (true) {
-			
-				var element = document.querySelector("meta[name=theme-color]");
-			
-				if (element === null) {
-					break;
-				}
-			
-				element.remove();
-			
-			}
-		
-			document.head.insertAdjacentHTML(
-				"beforeend",
-				'<meta name="theme-color" content="' + backgroundColor + '">',
-			);
-		
-		
-		})();
-	</script>
+                const palette = PALETTE_OVERRIDE === "" ? {}: JSON.parse(PALETTE_OVERRIDE);
+
+                const [backgroundColorWhenLightMode, backgroundColorWhenDarkMode] = [false, true].map(isDarkModeEnabled=> {
+
+                    custom: {
+
+                        const wrap= palette[isDarkModeEnabled ? "dark" : "light"];
+
+                        if(wrap === undefined){
+                            break custom;
+                        }
+
+                        const backgroundColor = wrap.main;
+
+                        if( backgroundColor === undefined ){
+                            break custom;
+                        }
+
+                        return backgroundColor;
+
+                    }
+
+                    return isDarkModeEnabled ? "#2C323F" : "#F1F0EB";
+
+                });
+            %>
+
+            var backgroundColor = isDarkModeEnabled ? "<%= backgroundColorWhenDarkMode %>" : "<%= backgroundColorWhenLightMode %>";
+            
+            document.documentElement.style.backgroundColor = backgroundColor;
+            
+            while (true) {
+            
+                var element = document.querySelector("meta[name=theme-color]");
+            
+                if (element === null) {
+                	break;
+                }
+            
+                element.remove();
+            
+            }
+            
+            document.head.insertAdjacentHTML(
+                "beforeend",
+                '<meta name="theme-color" content="' + backgroundColor + '">',
+            );
+        
+        })();
+    </script>
 
 </head>
 
 <body>
 	<div id="root"></div>
-	<!--
-      	This HTML file is a template.
-      	If you open it directly in the browser, you will see an empty page.
-
-      	You can add webfonts, meta tags, or analytics to this file.
-      	The build step will place the bundled scripts into the <body> tag.
-
-      	To begin the development, run `npm start`.
-      	To create a production bundle, use `npm run build`.
-    	-->
 </body>
 
 </html>
