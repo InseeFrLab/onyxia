@@ -14,7 +14,7 @@ import { useConst } from "powerhooks/useConst";
 import { declareComponentKeys } from "i18nifty";
 import type { PageRoute } from "./route";
 import { ThemedImage } from "onyxia-ui/ThemedImage";
-import { useResolveAssetVariantUrl } from "onyxia-ui";
+import { useResolveThemedAsset } from "onyxia-ui";
 import { LocalizedMarkdown } from "ui/shared/Markdown";
 import { LinkFromConfigButton } from "./LinkFromConfigButton";
 import { id } from "tsafe/id";
@@ -33,10 +33,13 @@ export default function Home(props: Props) {
         }
     });
 
-    const backgroundUrl = useResolveAssetVariantUrl(env.BACKGROUND_ASSET);
+    const { resolveThemedAsset } = useResolveThemedAsset();
 
     const { classes, cx } = useStyles({
-        backgroundUrl,
+        "backgroundUrl":
+            env.BACKGROUND_ASSET === undefined
+                ? undefined
+                : resolveThemedAsset(env.BACKGROUND_ASSET),
         "hasLogo": env.HOMEPAGE_LOGO !== undefined
     });
 
@@ -219,7 +222,7 @@ export const { i18n } = declareComponentKeys<
 
 const useStyles = tss
     .withName({ Home })
-    .withParams<{ backgroundUrl: string; hasLogo: boolean }>()
+    .withParams<{ backgroundUrl: string | undefined; hasLogo: boolean }>()
     .create(({ theme, backgroundUrl, hasLogo }) => ({
         "root": {
             "height": "100%",
@@ -231,10 +234,14 @@ const useStyles = tss
         "hero": {
             "flex": 1,
             "position": "relative",
-            "backgroundImage": `url(${backgroundUrl})`,
-            "backgroundPosition": "100% 0%",
-            "backgroundRepeat": "no-repeat",
-            "backgroundSize": "80%",
+            ...(backgroundUrl === undefined
+                ? undefined
+                : {
+                      "backgroundImage": `url(${backgroundUrl})`,
+                      "backgroundPosition": "100% 0%",
+                      "backgroundRepeat": "no-repeat",
+                      "backgroundSize": "80%"
+                  }),
             "overflow": "hidden"
         },
         "mainAsset": {

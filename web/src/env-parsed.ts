@@ -815,7 +815,14 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
     {
         "envName": "BACKGROUND_ASSET",
         "isUsedInKeycloakTheme": true,
-        "validateAndParseOrGetDefault": ({ envValue, envName }): ThemedAssetUrl => {
+        "validateAndParseOrGetDefault": ({
+            envValue,
+            envName
+        }): ThemedAssetUrl | undefined => {
+            if (envValue === "false") {
+                return undefined;
+            }
+
             if (envValue === "") {
                 return {
                     "dark": onyxiaNeumorphismDarkModeUrl,
