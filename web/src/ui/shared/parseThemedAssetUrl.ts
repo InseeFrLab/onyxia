@@ -5,13 +5,6 @@ import type { ThemedAssetUrl } from "onyxia-ui";
 import { getDoesLooksLikeJsonObjectOrArray } from "ui/tools/getDoesLooksLikeJsonObjectOrArray";
 
 const zUrl = z.string().superRefine((data, ctx) => {
-    if (data.startsWith("/")) {
-        ctx.addIssue({
-            "code": z.ZodIssueCode.custom,
-            "message": `If you want to reference a file in the public directory, you must write: %PUBLIC_URL%/${data}`
-        });
-    }
-
     if (!/\.(svg)|(png)|(jpg)|(jpeg)|(webp)|(ico)$/i.test(data)) {
         ctx.addIssue({
             "code": z.ZodIssueCode.custom,

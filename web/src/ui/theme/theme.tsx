@@ -2,12 +2,6 @@ import { createThemeProvider, defaultGetTypographyDesc } from "onyxia-ui";
 import { palette } from "./palette";
 import { targetWindowInnerWidth } from "./targetWindowInnerWidth";
 import { env } from "env-parsed";
-import servicesSvgUrl from "ui/assets/svg/custom-icons/services.svg";
-import secretsSvgUrl from "ui/assets/svg/custom-icons/secrets.svg";
-import accountSvgUrl from "ui/assets/svg/custom-icons/account.svg";
-import homeSvgUrl from "ui/assets/svg/custom-icons/home.svg";
-import filesSvgUrl from "ui/assets/svg/custom-icons/files.svg";
-import catalogSvgUrl from "ui/assets/svg/custom-icons/catalog.svg";
 
 const { ThemeProvider, ofTypeTheme } = createThemeProvider({
     "getTypographyDesc": params => ({
@@ -25,7 +19,7 @@ const { ThemeProvider, ofTypeTheme } = createThemeProvider({
         "assetUrl": env.SPLASHSCREEN_LOGO,
         "assetScaleFactor": env.SPLASHSCREEN_LOGO_SCALE_FACTOR
     },
-    "publicUrl": process.env.PUBLIC_URL
+    "publicUrl": env.PUBLIC_URL
 });
 
 export { ThemeProvider };
@@ -33,10 +27,10 @@ export { ThemeProvider };
 export type Theme = typeof ofTypeTheme;
 
 export const customIcons = {
-    servicesSvgUrl,
-    secretsSvgUrl,
-    accountSvgUrl,
-    homeSvgUrl,
-    filesSvgUrl,
-    catalogSvgUrl
+    "servicesSvgUrl": `${env.PUBLIC_URL}/custom-icons/services.svg`,
+    "secretsSvgUrl": `${env.PUBLIC_URL}/custom-icons/secrets.svg`,
+    "accountSvgUrl": `${env.PUBLIC_URL}/custom-icons/account.svg`,
+    "homeSvgUrl": `${env.PUBLIC_URL}/custom-icons/home.svg`,
+    "filesSvgUrl": `${env.PUBLIC_URL}/custom-icons/files.svg`,
+    "catalogSvgUrl": `${env.PUBLIC_URL}/custom-icons/catalog.svg`
 };

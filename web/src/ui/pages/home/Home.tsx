@@ -5,9 +5,6 @@ import { Text } from "onyxia-ui/Text";
 import { Button } from "onyxia-ui/Button";
 import { useCoreFunctions } from "core";
 import { useTranslation } from "ui/i18n";
-import pictogramCommunitySvgUrl from "ui/assets/svg/PictogramCommunity.svg";
-import pictogramServiceSvg from "ui/assets/svg/PictogramService.svg";
-import iconStorageSvg from "ui/assets/svg/PictogramStorage.svg";
 import { Card as OnyxiaUiCard } from "onyxia-ui/Card";
 import { env } from "env-parsed";
 import { useConst } from "powerhooks/useConst";
@@ -140,7 +137,7 @@ export default function Home(props: Props) {
         if (env.HOMEPAGE_CARDS === undefined) {
             return id<CardProps["card"][]>([
                 {
-                    "pictogram": pictogramServiceSvg,
+                    "pictogram": `${env.PUBLIC_URL}/pictograms/service.svg`,
                     "title": t("cardTitle1"),
                     "description": t("cardText1"),
                     "button": {
@@ -149,7 +146,7 @@ export default function Home(props: Props) {
                     }
                 },
                 {
-                    "pictogram": pictogramCommunitySvgUrl,
+                    "pictogram": `${env.PUBLIC_URL}/pictograms/community.svg`,
                     "title": t("cardTitle2"),
                     "description": t("cardText2"),
                     "button": {
@@ -161,7 +158,7 @@ export default function Home(props: Props) {
                     ? []
                     : [
                           {
-                              "pictogram": iconStorageSvg,
+                              "pictogram": `${env.PUBLIC_URL}/pictograms/storage.svg`,
                               "title": t("cardTitle3"),
                               "description": t("cardText3"),
                               "button": {

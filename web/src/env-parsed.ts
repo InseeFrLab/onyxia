@@ -785,16 +785,18 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
                 button: LinkFromConfig;
             }[];
 
-            const zParsedValue = z.object({
-                "pictogram": zAssetVariantUrl,
-                "title": zLocalizedString,
-                "description": zLocalizedString,
-                "button": zLinkFromConfig
-            });
+            const zParsedValue = z.array(
+                z.object({
+                    "pictogram": zAssetVariantUrl,
+                    "title": zLocalizedString,
+                    "description": zLocalizedString,
+                    "button": zLinkFromConfig
+                })
+            );
 
             {
                 type Got = ReturnType<(typeof zParsedValue)["parse"]>;
-                type Expected = ParsedValue[0];
+                type Expected = ParsedValue;
 
                 assert<Got extends Expected ? true : false>();
                 assert<Expected extends Got ? true : false>();
@@ -1012,26 +1014,27 @@ function createParsedEnvs<Parser extends Entry<EnvName>>(
         [K in Parser["envName"]]: ReturnType<
             Extract<Parser, { envName: K }>["validateAndParseOrGetDefault"]
         >;
-    };
+    } & { PUBLIC_URL: string };
     injectTransferableEnvsInQueryParams: (url: string) => string;
 } {
     const parsedValueOrGetterByEnvName: Record<string, any> = {};
 
     const injectFunctions: ((url: string) => string)[] = [];
 
-    const replacePUBLIC_URL = (envValue: string) =>
-        envValue.replace(
-            /%PUBLIC_URL%/g,
-            kcLoginThemeContext === undefined || process.env.NODE_ENV === "development"
-                ? process.env.PUBLIC_URL
-                : `${kcLoginThemeContext.url.resourcesPath}/build`
-        );
+    const PUBLIC_URL =
+        kcLoginThemeContext === undefined || process.env.NODE_ENV === "development"
+            ? process.env.PUBLIC_URL
+            : `${kcLoginThemeContext.url.resourcesPath}/build`;
 
     const env: any = new Proxy(
         {},
         {
             "get": (...[, envName]) => {
                 assert(typeof envName === "string");
+
+                if (envName === "PUBLIC_URL") {
+                    return PUBLIC_URL;
+                }
 
                 assert(envName in parsedValueOrGetterByEnvName);
 
@@ -1109,6 +1112,9 @@ function createParsedEnvs<Parser extends Entry<EnvName>>(
             // This can happen when the user has never navigated to the login page via onyxia.
             return getEnv()[envName];
         };
+
+        const replacePUBLIC_URL = (envValue: string) =>
+            envValue.replace(/%PUBLIC_URL%/g, PUBLIC_URL);
 
         if (isUsedInKeycloakTheme) {
             const envValue = getEnvValue();
