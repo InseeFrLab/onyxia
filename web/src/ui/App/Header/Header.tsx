@@ -3,7 +3,6 @@ import { ButtonBarButton } from "onyxia-ui/ButtonBarButton";
 import { useTranslation } from "ui/i18n";
 import { tss } from "tss";
 import { env } from "env-parsed";
-import { useResolveLocalizedString } from "ui/i18n";
 import { declareComponentKeys } from "i18nifty";
 import { BrandHeaderSection } from "ui/shared/BrandHeaderSection";
 import { routes } from "ui/routes";
@@ -11,6 +10,7 @@ import { ProjectSelect } from "./ProjectSelect";
 import { RegionSelect } from "./RegionSelect";
 import { useCoreFunctions } from "core";
 import { urlToLink } from "ui/routes";
+import { LocalizedMarkdown } from "ui/shared/Markdown";
 
 export type Props = {
     className?: string;
@@ -22,10 +22,6 @@ export function Header(props: Props) {
     const { t } = useTranslation({ Header });
 
     const { classes, cx } = useStyles();
-
-    const { resolveLocalizedString } = useResolveLocalizedString({
-        "labelWhenMismatchingLanguage": true
-    });
 
     const { userAuthentication } = useCoreFunctions();
 
@@ -49,7 +45,7 @@ export function Header(props: Props) {
                         doOpenNewTabIfHref={link.target === "_blank"}
                         onClick={link.onClick}
                     >
-                        {resolveLocalizedString(label)}
+                        <LocalizedMarkdown inline>{label}</LocalizedMarkdown>
                     </ButtonBarButton>
                 ))}
                 <Button

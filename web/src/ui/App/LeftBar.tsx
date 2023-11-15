@@ -1,7 +1,7 @@
 import "minimal-polyfills/Object.fromEntries";
 import { memo } from "react";
 import { LeftBar as OnyxiaUiLeftBar, type LeftBarProps } from "onyxia-ui/LeftBar";
-import { useTranslation, useResolveLocalizedString } from "ui/i18n";
+import { useTranslation } from "ui/i18n";
 import { useLogoContainerWidth } from "ui/shared/BrandHeaderSection";
 import { useRoute, routes, urlToLink } from "ui/routes";
 import { id } from "tsafe/id";
@@ -11,6 +11,7 @@ import { useCoreFunctions } from "core";
 import { assert, type Equals } from "tsafe/assert";
 import { customIcons } from "ui/theme";
 import { symToStr } from "tsafe/symToStr";
+import { LocalizedMarkdown } from "ui/shared/Markdown";
 
 type Props = {
     className?: string;
@@ -20,10 +21,6 @@ export const LeftBar = memo((props: Props) => {
     const { className } = props;
 
     const { fileExplorer, secretExplorer } = useCoreFunctions();
-
-    const { resolveLocalizedString } = useResolveLocalizedString({
-        "labelWhenMismatchingLanguage": true
-    });
 
     const route = useRoute();
 
@@ -105,7 +102,9 @@ export const LeftBar = memo((props: Props) => {
                                         "We should have validated that when parsing the env"
                                     ),
                                     icon),
-                                "label": resolveLocalizedString(label),
+                                "label": (
+                                    <LocalizedMarkdown inline>{label}</LocalizedMarkdown>
+                                ),
                                 link
                             })
                         ])
