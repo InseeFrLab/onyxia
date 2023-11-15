@@ -1,7 +1,7 @@
 import { Button, type ButtonProps } from "onyxia-ui/Button";
 import { urlToLink } from "ui/routes";
-import { useResolveLocalizedString } from "ui/i18n";
 import type { LinkFromConfig } from "ui/shared/LinkFromConfig";
+import { LocalizedMarkdown } from "ui/shared/Markdown";
 
 type Props = {
     className?: string;
@@ -11,10 +11,6 @@ type Props = {
 
 export function LinkFromConfigButton(props: Props) {
     const { className, linkFromConfig, variant } = props;
-
-    const { resolveLocalizedString } = useResolveLocalizedString({
-        "labelWhenMismatchingLanguage": true
-    });
 
     const { label, url, icon, startIcon, endIcon } = linkFromConfig;
 
@@ -30,7 +26,7 @@ export function LinkFromConfigButton(props: Props) {
             endIcon={endIcon}
             variant={variant}
         >
-            {resolveLocalizedString(label)}
+            <LocalizedMarkdown inline>{label}</LocalizedMarkdown>
         </Button>
     );
 }
