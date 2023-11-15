@@ -53,20 +53,20 @@ export default function Home(props: Props) {
         if (isUserLoggedIn) {
             const userFirstname = userAuthentication.getUser().firstName ?? "";
 
-            if (env.HOMEPAGE_TITLE_AUTHENTICATED === undefined) {
+            if (env.HOMEPAGE_HERO_TEXT_AUTHENTICATED === undefined) {
                 return t("title authenticated", { userFirstname });
             }
 
             return (
                 <LocalizedMarkdown inline>
-                    {env.HOMEPAGE_TITLE_AUTHENTICATED({ userFirstname })}
+                    {env.HOMEPAGE_HERO_TEXT_AUTHENTICATED({ userFirstname })}
                 </LocalizedMarkdown>
             );
         } else {
-            if (env.HOMEPAGE_TITLE === undefined) {
+            if (env.HOMEPAGE_HERO_TEXT === undefined) {
                 return t("title");
             }
-            return <LocalizedMarkdown inline>{env.HOMEPAGE_TITLE}</LocalizedMarkdown>;
+            return <LocalizedMarkdown inline>{env.HOMEPAGE_HERO_TEXT}</LocalizedMarkdown>;
         }
     }, [t]);
 
@@ -74,7 +74,7 @@ export default function Home(props: Props) {
         const defaultNode = t("subtitle");
 
         if (isUserLoggedIn) {
-            if (env.HOMEPAGE_SUBTITLE_AUTHENTICATED === undefined) {
+            if (env.HOMEPAGE_BELOW_HERO_TEXT_AUTHENTICATED === undefined) {
                 return defaultNode;
             }
 
@@ -82,14 +82,18 @@ export default function Home(props: Props) {
 
             return (
                 <LocalizedMarkdown inline>
-                    {env.HOMEPAGE_SUBTITLE_AUTHENTICATED({ userFirstname })}
+                    {env.HOMEPAGE_BELOW_HERO_TEXT_AUTHENTICATED({ userFirstname })}
                 </LocalizedMarkdown>
             );
         } else {
-            if (env.HOMEPAGE_SUBTITLE === undefined) {
+            if (env.HOMEPAGE_BELOW_HERO_TEXT === undefined) {
                 return defaultNode;
             }
-            return <LocalizedMarkdown inline>{env.HOMEPAGE_SUBTITLE}</LocalizedMarkdown>;
+            return (
+                <LocalizedMarkdown inline>
+                    {env.HOMEPAGE_BELOW_HERO_TEXT}
+                </LocalizedMarkdown>
+            );
         }
     }, [t]);
 

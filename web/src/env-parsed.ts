@@ -506,7 +506,7 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
         }
     },
     {
-        "envName": "HOMEPAGE_TITLE",
+        "envName": "HOMEPAGE_HERO_TEXT",
         "isUsedInKeycloakTheme": false,
         "validateAndParseOrGetDefault": ({
             envValue,
@@ -541,7 +541,7 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
         }
     },
     {
-        "envName": "HOMEPAGE_TITLE_AUTHENTICATED",
+        "envName": "HOMEPAGE_HERO_TEXT_AUTHENTICATED",
         "isUsedInKeycloakTheme": false,
         "validateAndParseOrGetDefault": ({
             envValue,
@@ -564,9 +564,9 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
             if (envValue === "") {
                 assert(is<typeof env>(env_));
 
-                return env_.HOMEPAGE_TITLE === undefined
+                return env_.HOMEPAGE_HERO_TEXT === undefined
                     ? undefined
-                    : toFn(env_.HOMEPAGE_TITLE);
+                    : toFn(env_.HOMEPAGE_HERO_TEXT);
             }
 
             if (!getDoesLooksLikeJsonObjectOrArray(envValue)) {
@@ -594,7 +594,7 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
         }
     },
     {
-        "envName": "HOMEPAGE_SUBTITLE",
+        "envName": "HOMEPAGE_BELOW_HERO_TEXT",
         "isUsedInKeycloakTheme": false,
         "validateAndParseOrGetDefault": ({
             envValue,
@@ -629,7 +629,7 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
         }
     },
     {
-        "envName": "HOMEPAGE_SUBTITLE_AUTHENTICATED",
+        "envName": "HOMEPAGE_BELOW_HERO_TEXT_AUTHENTICATED",
         "isUsedInKeycloakTheme": false,
         "validateAndParseOrGetDefault": ({
             envValue,
@@ -652,9 +652,9 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
             if (envValue === "") {
                 assert(is<typeof env>(env_));
 
-                return env_.HOMEPAGE_TITLE === undefined
+                return env_.HOMEPAGE_HERO_TEXT === undefined
                     ? undefined
-                    : toFn(env_.HOMEPAGE_TITLE);
+                    : toFn(env_.HOMEPAGE_HERO_TEXT);
             }
 
             if (!getDoesLooksLikeJsonObjectOrArray(envValue)) {
