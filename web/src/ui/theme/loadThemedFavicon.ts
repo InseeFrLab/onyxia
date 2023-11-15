@@ -1,13 +1,13 @@
 import { createDefaultColorUseCases, evtIsDarkModeEnabled } from "onyxia-ui";
 import { getClassesAndColors } from "onyxia-ui/ThemedSvg";
 import { env } from "env-parsed";
-import { resolveThemedAsset } from "onyxia-ui";
+import { resolveThemedAssetUrl } from "onyxia-ui";
 import { assert } from "tsafe/assert";
 import { palette } from "./palette";
 
 export async function loadThemedFavicon() {
     evtIsDarkModeEnabled.attach(async isDarkModeEnabled => {
-        const faviconUrl = resolveThemedAsset({
+        const faviconUrl = resolveThemedAssetUrl({
             isDarkModeEnabled,
             "themedAssetUrl": env.FAVICON
         });

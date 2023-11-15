@@ -19,7 +19,7 @@ import { symToStr } from "tsafe/symToStr";
 import { BrandHeaderSection } from "ui/shared/BrandHeaderSection";
 import { getReferrerUrl } from "keycloak-theme/login/tools/getReferrerUrl";
 import { useConst } from "powerhooks/useConst";
-import { useResolveThemedAsset } from "onyxia-ui";
+import { useResolveThemedAssetUrl } from "onyxia-ui";
 import { env } from "env-parsed";
 
 type TemplateProps = GenericTemplateProps<KcContext, I18n>;
@@ -27,13 +27,13 @@ type TemplateProps = GenericTemplateProps<KcContext, I18n>;
 export default function Template(props: TemplateProps) {
     const { kcContext, doUseDefaultCss, classes: classes_props, children } = props;
 
-    const { resolveThemedAsset } = useResolveThemedAsset();
+    const { resolveThemedAssetUrl } = useResolveThemedAssetUrl();
 
     const { classes, cx } = useStyles({
         "backgroundUrl":
             env.BACKGROUND_ASSET === undefined
                 ? undefined
-                : resolveThemedAsset(env.BACKGROUND_ASSET)
+                : resolveThemedAssetUrl(env.BACKGROUND_ASSET)
     });
 
     const { getClassName } = useGetClassName({

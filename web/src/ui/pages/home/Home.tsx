@@ -14,7 +14,7 @@ import { useConst } from "powerhooks/useConst";
 import { declareComponentKeys } from "i18nifty";
 import type { PageRoute } from "./route";
 import { ThemedImage } from "onyxia-ui/ThemedImage";
-import { useResolveThemedAsset } from "onyxia-ui";
+import { useResolveThemedAssetUrl } from "onyxia-ui";
 import { LocalizedMarkdown } from "ui/shared/Markdown";
 import { LinkFromConfigButton } from "./LinkFromConfigButton";
 import { id } from "tsafe/id";
@@ -33,13 +33,13 @@ export default function Home(props: Props) {
         }
     });
 
-    const { resolveThemedAsset } = useResolveThemedAsset();
+    const { resolveThemedAssetUrl } = useResolveThemedAssetUrl();
 
     const { classes, cx } = useStyles({
         "backgroundUrl":
             env.BACKGROUND_ASSET === undefined
                 ? undefined
-                : resolveThemedAsset(env.BACKGROUND_ASSET),
+                : resolveThemedAssetUrl(env.BACKGROUND_ASSET),
         "hasLogo": env.HOMEPAGE_LOGO !== undefined
     });
 
