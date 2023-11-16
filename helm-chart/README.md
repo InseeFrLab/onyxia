@@ -82,13 +82,13 @@ Below is a sample `onyxia-values.yaml` file that illustrates where to specify th
        - host: datalab.yourdomain.com
 +web:
 +    env:
-+        THEME_ID=ultraviolet
-+        TERMS_OF_SERVICES: |
-+            {
-+              "en": "https://www.sspcloud.fr/tos_en.md",
-+              "fr": "https://www.sspcloud.fr/tos_fr.md"
-+            }
-+        # ...
++      HEADER_LOGO=https://example.com/logo.svg
++      HEADER_TEXT_BOLD=Your organization
++      TERMS_OF_SERVICES: |
++        {
++          en: "https://sspcloud.fr/tos_en.md",
++          fr: "https://sspcloud.fr/tos_fr.md",
++        }
 +api:
 +    env:
 +      authentication.mode: openidconnect
