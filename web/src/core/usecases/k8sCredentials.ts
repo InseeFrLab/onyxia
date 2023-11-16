@@ -12,7 +12,6 @@ import * as userAuthentication from "./userAuthentication";
 import { createOidcOrFallback } from "core/adapters/oidc/utils/createOidcOrFallback";
 import { createUsecaseContextApi } from "redux-clean-architecture";
 import type { Oidc } from "core/ports/Oidc";
-import { symToStr } from "tsafe/symToStr";
 
 type State = State.NotRefreshed | State.Ready;
 
@@ -228,44 +227,27 @@ export const selectors = (() => {
         namespace,
         shellScript,
         (state, clusterUrl, namespace, shellScript) => {
-            const common = {
-                clusterUrl,
-                namespace
-            };
-
-            let idpIssuerUrl: string | undefined = undefined;
-            let clientId: string | undefined = undefined;
-            let refreshToken: string | undefined = undefined;
-            let idToken: string | undefined = undefined;
-            let expirationTime: number | undefined = undefined;
-            let isRefreshing: boolean | undefined = undefined;
-
             if (state === undefined) {
                 return {
                     "isReady": false as const,
-                    ...common,
-                    [symToStr({ idpIssuerUrl })]: undefined,
-                    [symToStr({ clientId })]: undefined,
-                    [symToStr({ refreshToken })]: undefined,
-                    [symToStr({ idToken })]: undefined,
-                    [symToStr({ expirationTime })]: undefined,
-                    [symToStr({ isRefreshing })]: undefined,
-                    [symToStr({ shellScript })]: undefined
+                    clusterUrl,
+                    namespace
                 };
             }
 
             assert(shellScript !== undefined);
 
-            idpIssuerUrl = state.idpIssuerUrl;
-            clientId = state.clientId;
-            refreshToken = state.refreshToken;
-            idToken = state.idToken;
-            expirationTime = state.expirationTime;
-            isRefreshing = state.isRefreshing;
+            const idpIssuerUrl = state.idpIssuerUrl;
+            const clientId = state.clientId;
+            const refreshToken = state.refreshToken;
+            const idToken = state.idToken;
+            const expirationTime = state.expirationTime;
+            const isRefreshing = state.isRefreshing;
 
             return {
                 "isReady": true as const,
-                ...common,
+                clusterUrl,
+                namespace,
                 idpIssuerUrl,
                 clientId,
                 refreshToken,

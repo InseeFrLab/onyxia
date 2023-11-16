@@ -13,7 +13,6 @@ import type { IndexedFormFields } from "../FormField";
 import { createGetIsFieldHidden } from "./getIsFieldHidden";
 import * as yaml from "yaml";
 import { name, type State } from "../state";
-import { symToStr } from "tsafe/symToStr";
 import * as restorableConfigManager from "core/usecases/restorableConfigManager";
 import * as projectConfigs from "core/usecases/projectConfigs";
 import { exclude } from "tsafe/exclude";
@@ -635,25 +634,6 @@ const wrap = createSelector(
         if (!isReady) {
             return {
                 "isReady": false as const,
-                [symToStr({ friendlyName })]: undefined,
-                [symToStr({ isThereASavedConfigWithThisFriendlyName })]: undefined,
-                [symToStr({ isShared })]: undefined,
-                [symToStr({ indexedFormFields })]: undefined,
-                [symToStr({ isLaunchable })]: undefined,
-                [symToStr({ formFieldsIsWellFormed })]: undefined,
-                [symToStr({ restorableConfig })]: undefined,
-                [symToStr({ isRestorableConfigSaved })]: undefined,
-                [symToStr({ restorableConfig })]: undefined,
-                [symToStr({ areAllFieldsDefault })]: undefined,
-                [symToStr({ chartName })]: undefined,
-                [symToStr({ chartVersion })]: undefined,
-                [symToStr({ availableChartVersions })]: undefined,
-                [symToStr({ catalogName })]: undefined,
-                [symToStr({ catalogRepositoryUrl })]: undefined,
-                [symToStr({ chartIconUrl })]: undefined,
-                [symToStr({ launchScript })]: undefined,
-                [symToStr({ commandLogsEntries })]: undefined,
-                [symToStr({ chartSourceUrls })]: undefined,
                 groupProjectName
             };
         }

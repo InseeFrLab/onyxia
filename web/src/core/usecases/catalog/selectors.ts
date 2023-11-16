@@ -2,7 +2,6 @@ import { assert } from "tsafe/assert";
 import type { State as RootState } from "core/core";
 import { createSelector } from "@reduxjs/toolkit";
 import { name, type State } from "./state";
-import { symToStr } from "tsafe/symToStr";
 import type { LocalizedString } from "core/ports/OnyxiaApi";
 
 const readyState = (rootState: RootState) => {
@@ -185,10 +184,7 @@ const wrap = createSelector(
     (isReady, selectedCatalog, filteredCharts, availableCatalogs) => {
         if (!isReady) {
             return {
-                "isReady": false as const,
-                [symToStr({ selectedCatalog })]: undefined,
-                [symToStr({ filteredCharts })]: undefined,
-                [symToStr({ availableCatalogs })]: undefined
+                "isReady": false as const
             };
         }
 
