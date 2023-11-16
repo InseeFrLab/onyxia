@@ -474,7 +474,11 @@ ${
         "friendly name": "自定义名称",
         "launch": "启动",
         "cancel": "取消",
-        "copy url helper text": "复制 URL 以恢复此配置",
+        "copy auto launch url": "复制自动启动 URL",
+        "copy auto launch url helper": ({
+            chartName
+        }) => `复制 URL，使任何这个 Onyxia 实例的用户都能够
+            在他们的 namespace 中以这种配置启动一个 ${chartName}`,
         "share the service": "分享服务",
         "share the service - explain": "让其他组员可以访问该服务",
         "restore all default": "恢复默认配置",
@@ -499,7 +503,8 @@ ${
                 <MuiLink href={catalogRepositoryUrl}>{catalogName} Helm 仓库</MuiLink>
             </>
         ),
-        "save changes": "保存更改"
+        "save changes": "保存更改",
+        "copied to clipboard": "已复制到剪贴板！"
     },
     "LauncherConfigurationCard": {
         "global config": "全局配置",

@@ -222,7 +222,13 @@ export default function Launcher(props: Props) {
     );
 
     const onRequestCopyLaunchUrl = useConstCallback(() =>
-        navigator.clipboard.writeText(window.location.href)
+        navigator.clipboard.writeText(
+            window.location.origin +
+                routes.launcher({
+                    ...route.params,
+                    "autoLaunch": true
+                }).link.href
+        )
     );
 
     const onRequestToggleBookmark = useConstCallback(async () => {
@@ -376,7 +382,7 @@ export default function Launcher(props: Props) {
                                         : launcher.restoreAllDefault
                                 }
                                 onRequestCopyLaunchUrl={
-                                    areAllFieldsDefault
+                                    areAllFieldsDefault || env.DISABLE_AUTO_LAUNCH
                                         ? undefined
                                         : onRequestCopyLaunchUrl
                                 }
@@ -460,7 +466,7 @@ const useStyles = tss
             "position": "relative"
         },
         "wrapperForMawWidth": {
-            "maxWidth": 1200,
+            "maxWidth": 1300,
             "& > *": {
                 "marginBottom": theme.spacing(3)
             }

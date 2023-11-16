@@ -507,7 +507,11 @@ Føl deg fri til å utforske og ta kontroll over dine Kubernetes-implementeringe
         "friendly name": "Vennlig navn",
         "launch": "Start",
         "cancel": "Avbryt",
-        "copy url helper text": "Kopier URL for å gjenopprette denne konfigurasjonen",
+        "copy auto launch url": "Kopier URL for automatisk oppstart",
+        "copy auto launch url helper": ({
+            chartName
+        }) => `Kopier URL-en som gjør at enhver bruker av denne Onyxia-instansen kan 
+            starte en ${chartName} i denne konfigurasjonen i sitt namespace`,
         "share the service": "Del tjenesten",
         "share the service - explain":
             "Gjør tjenesten tilgjengelig for prosjektmedlemmene",
@@ -533,7 +537,8 @@ Føl deg fri til å utforske og ta kontroll over dine Kubernetes-implementeringe
                 <MuiLink href={catalogRepositoryUrl}>Helm depotet {catalogName}</MuiLink>
             </>
         ),
-        "save changes": "Lagre endringer"
+        "save changes": "Lagre endringer",
+        "copied to clipboard": "Kopiert til utklippstavlen!"
     },
     "LauncherConfigurationCard": {
         "global config": "Global konfigurasjon",

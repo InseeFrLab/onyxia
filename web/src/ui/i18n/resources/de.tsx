@@ -513,8 +513,11 @@ Fühlen Sie sich frei, Ihre Kubernetes-Bereitstellungen zu erkunden und die Kont
         "friendly name": "Personalisierter Name",
         "launch": "Starten",
         "cancel": "Abbrechen",
-        "copy url helper text":
-            "Kopieren Sie die URL, um diese Konfiguration wiederherzustellen",
+        "copy auto launch url": "URL für automatisches Starten kopieren",
+        "copy auto launch url helper": ({
+            chartName
+        }) => `Kopieren Sie die URL, die es jedem Benutzer dieser Onyxia-Instanz ermöglicht, 
+            ein ${chartName} in dieser Konfiguration in ihrem Namespace zu starten`,
         "share the service": "Den Dienst teilen",
         "share the service - explain":
             "Machen Sie den Dienst für Projektmitglieder zugänglich",
@@ -543,7 +546,8 @@ Fühlen Sie sich frei, Ihre Kubernetes-Bereitstellungen zu erkunden und die Kont
                 </MuiLink>
             </>
         ),
-        "save changes": "Änderungen speichern"
+        "save changes": "Änderungen speichern",
+        "copied to clipboard": "In die Zwischenablage kopiert!"
     },
     "LauncherConfigurationCard": {
         "global config": "Globale Konfigurationen",

@@ -515,8 +515,11 @@ N'hésitez pas à explorer et à prendre en main vos déploiements Kubernetes !
         "friendly name": "Nom personnalisé",
         "launch": "Lancer",
         "cancel": "Annuler",
-        "copy url helper text":
-            "Copier l'URL permettant de restaurer cette configuration",
+        "copy auto launch url": "Copier l'URL de lancement automatique",
+        "copy auto launch url helper": ({
+            chartName
+        }) => `Copier l'URL qui permettra à tout utilisateur de cette instance Onyxia de 
+            lancer un ${chartName} dans cette configuration dans leur namespace`,
         "share the service": "Partager le service",
         "share the service - explain":
             "Rendre accessible le service aux collaborateurs du groupe",
@@ -543,7 +546,8 @@ N'hésitez pas à explorer et à prendre en main vos déploiements Kubernetes !
                 <MuiLink href={catalogRepositoryUrl}>dépôt Helm {catalogName}</MuiLink>
             </>
         ),
-        "save changes": "Enregistrer les modifications"
+        "save changes": "Enregistrer les modifications",
+        "copied to clipboard": "Copié dans le presse-papiers !"
     },
     "LauncherConfigurationCard": {
         "global config": "Configurations globales",

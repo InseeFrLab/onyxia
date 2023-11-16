@@ -502,7 +502,11 @@ Feel free to explore and take charge of your Kubernetes deployments!
         "friendly name": "Friendly name",
         "launch": "Launch",
         "cancel": "Cancel",
-        "copy url helper text": "Copy url to restore this configuration",
+        "copy auto launch url": "Copy auto launch URL",
+        "copy auto launch url helper": ({
+            chartName
+        }) => `Copy the URL that will enable any user of this Onyxia instance to 
+            launch a ${chartName} in this configuration on their namespace`,
         "share the service": "Share the service",
         "share the service - explain": "Make the service accessible to the group members",
         "restore all default": "Restore default configurations",
@@ -530,7 +534,8 @@ Feel free to explore and take charge of your Kubernetes deployments!
                 </MuiLink>
             </>
         ),
-        "save changes": "Save changes"
+        "save changes": "Save changes",
+        "copied to clipboard": "Copied to clipboard!"
     },
     "LauncherConfigurationCard": {
         "global config": "Global configuration",

@@ -510,7 +510,11 @@ Voel je vrij om te verkennen en de controle over je Kubernetes-implementaties te
         "friendly name": "Gepersonaliseerde naam",
         "launch": "Opstarten",
         "cancel": "Annuleren",
-        "copy url helper text": "URL kopiëren om deze configuratie te herstellen",
+        "copy auto launch url": "URL voor automatisch starten kopiëren",
+        "copy auto launch url helper": ({
+            chartName
+        }) => `Kopieer de URL waarmee elke gebruiker van deze Onyxia-instantie 
+            een ${chartName} in deze configuratie in hun namespace kan starten`,
         "share the service": "De dienst delen",
         "share the service - explain":
             "De dienst beschikbaar maken voor de medewerkers van de groep",
@@ -539,7 +543,8 @@ Voel je vrij om te verkennen en de controle over je Kubernetes-implementaties te
                 </MuiLink>
             </>
         ),
-        "save changes": "Wijzigingen opslaan"
+        "save changes": "Wijzigingen opslaan",
+        "copied to clipboard": "Gekopieerd naar klembord!"
     },
     "LauncherConfigurationCard": {
         "global config": "Globale configuraties",

@@ -506,7 +506,11 @@ Sentiti libero di esplorare e prendere il controllo dei tuoi deployment Kubernet
         "friendly name": "Nome personalizzato",
         "launch": "Avviare",
         "cancel": "Annullare",
-        "copy url helper text": "Copiare l'URL per ripristinare questa configurazione",
+        "copy auto launch url": "Copia URL di avvio automatico",
+        "copy auto launch url helper": ({
+            chartName
+        }) => `Copia l'URL che consentirà a qualsiasi utente di questa istanza Onyxia di 
+            lanciare un ${chartName} in questa configurazione nel loro namespace`,
         "share the service": "Condividire il servizio",
         "share the service - explain":
             "Rendere il servizio accessibile ai membri del gruppo",
@@ -535,7 +539,8 @@ Sentiti libero di esplorare e prendere il controllo dei tuoi deployment Kubernet
                 </MuiLink>
             </>
         ),
-        "save changes": "Salva modifiche"
+        "save changes": "Salva modifiche",
+        "copied to clipboard": "Copiato negli appunti!"
     },
     "LauncherConfigurationCard": {
         "global config": "Configurazioni globali",

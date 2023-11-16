@@ -499,7 +499,11 @@ Tutustu vapaasti ja ota hallintaan Kubernetes-julkaisusi!
         "friendly name": "Käyttäjäystävällinen nimi",
         "launch": "Käynnistä",
         "cancel": "Peruuta",
-        "copy url helper text": "Kopioi URL-osoite palauttaaksesi tämän konfiguraation",
+        "copy auto launch url": "Kopioi automaattisen käynnistyksen URL",
+        "copy auto launch url helper": ({
+            chartName
+        }) => `Kopioi URL, jonka avulla tämän Onyxia-instanssin käyttäjä voi 
+            käynnistää ${chartName} tässä konfiguraatiossa omassa Namespace:ssaan`,
         "share the service": "Jaa palvelu",
         "share the service - explain": "Tee palvelu saataville ryhmän jäsenille",
         "restore all default": "Palauta oletuskonfiguraatiot",
@@ -526,7 +530,8 @@ Tutustu vapaasti ja ota hallintaan Kubernetes-julkaisusi!
                 </MuiLink>
             </>
         ),
-        "save changes": "Tallenna muutokset"
+        "save changes": "Tallenna muutokset",
+        "copied to clipboard": "Kopioitu leikepöydälle!"
     },
     "LauncherConfigurationCard": {
         "global config": "Yleinen konfiguraatio",

@@ -493,7 +493,7 @@ export function createOnyxiaApi(params: {
                 if (catalog === undefined) {
                     console.warn(
                         [
-                            "Here we have a dependency is not in the catalog, we can't tel if it's a library or not",
+                            "Here we have a dependency that is not in any catalog, we can't tel if it's a library or not",
                             "Please submit an issue about it on the onyxia repo"
                         ].join(" ")
                     );
