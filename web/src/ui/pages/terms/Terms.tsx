@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
-import { useSplashScreen } from "onyxia-ui";
 import { Markdown } from "ui/shared/Markdown";
 import { useLang } from "ui/i18n";
 import { tss } from "tss";
 import { downloadTermMarkdown } from "keycloak-theme/login/pages/Terms";
 import type { PageRoute } from "./route";
+import { CircularProgress } from "onyxia-ui/CircularProgress";
 
 export type Props = {
     className?: string;
@@ -24,24 +24,10 @@ export default function Terms(props: Props) {
         downloadTermMarkdown({ "currentLanguageTag": lang }).then(setTos);
     }, [lang]);
 
-    {
-        const { showSplashScreen, hideSplashScreen } = useSplashScreen();
-
-        useEffect(() => {
-            if (tos !== undefined) {
-                hideSplashScreen();
-            } else {
-                showSplashScreen({
-                    "enableTransparency": false
-                });
-            }
-        }, [tos]);
-    }
-
     const { classes, cx } = useStyles();
 
     if (tos === undefined) {
-        return null;
+        return <CircularProgress />;
     }
 
     return (
