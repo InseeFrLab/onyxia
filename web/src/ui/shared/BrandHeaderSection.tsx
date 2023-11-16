@@ -19,7 +19,11 @@ export function BrandHeaderSection(props: Props) {
 
     const { logoContainerWidth } = useLogoContainerWidth();
 
-    const { cx, classes } = useStyles({ logoContainerWidth, doShowOnyxia });
+    const { cx, classes } = useStyles({
+        logoContainerWidth,
+        doShowOnyxia,
+        "hasBoldText": env.HEADER_TEXT_BOLD !== undefined
+    });
 
     return (
         <a className={cx(classes.root, className)} {...link}>
@@ -53,8 +57,12 @@ export function BrandHeaderSection(props: Props) {
 
 const useStyles = tss
     .withName({ BrandHeaderSection })
-    .withParams<{ logoContainerWidth: number; doShowOnyxia: boolean }>()
-    .create(({ logoContainerWidth, doShowOnyxia, theme }) => ({
+    .withParams<{
+        logoContainerWidth: number;
+        doShowOnyxia: boolean;
+        hasBoldText: boolean;
+    }>()
+    .create(({ logoContainerWidth, doShowOnyxia, hasBoldText, theme }) => ({
         "root": {
             "textDecoration": "none",
             "color": "unset",
@@ -84,7 +92,8 @@ const useStyles = tss
             ...(doShowOnyxia ? {} : { "marginLeft": 0 })
         },
         "text_usecase": {
-            "fontWeight": 500
+            "fontWeight": 500,
+            "marginLeft": hasBoldText ? undefined : theme.spacing(2)
         }
     }));
 
