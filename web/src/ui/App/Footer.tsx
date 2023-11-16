@@ -28,7 +28,7 @@ export const Footer = memo((props: Props) => {
 
     return (
         <footer className={cx(classes.root, className)}>
-            <Text typo="body 2">2017 - 2023 Onyxia, INSEE, CodeGouv</Text>
+            <Text typo="body 2">2017 - 2023 Onyxia</Text>
             {spacing}
             <a
                 href="https://github.com/InseeFrLab/onyxia"
