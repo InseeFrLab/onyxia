@@ -118,7 +118,7 @@ export const thunks = {
             })();
 
             const {
-                dependencies: chartDependencies,
+                nonLibraryDependencies: nonLibraryChartDependencies,
                 sourceUrls: chartSourceUrls,
                 getChartValuesSchemaJson
             } = await onyxiaApi.getHelmChartDetails({
@@ -670,7 +670,7 @@ export const thunks = {
                     formFields,
                     infosAboutWhenFieldsShouldBeHidden,
                     valuesSchema,
-                    chartDependencies,
+                    nonLibraryChartDependencies,
                     formFieldsValueDifferentFromDefault,
                     "sensitiveConfigurations": sensitiveConfigurations ?? [],
                     k8sRandomSubdomain

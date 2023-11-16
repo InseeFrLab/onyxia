@@ -47,7 +47,7 @@ export type OnyxiaApi = {
         getChartValuesSchemaJson: (params: {
             xOnyxiaContext: XOnyxiaContext;
         }) => JSONSchemaObject;
-        dependencies: string[];
+        nonLibraryDependencies: string[];
         sourceUrls: string[];
     }>;
 

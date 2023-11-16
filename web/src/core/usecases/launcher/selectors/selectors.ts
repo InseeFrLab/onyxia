@@ -39,12 +39,12 @@ const infosAboutWhenFieldsShouldBeHidden = createSelector(
     state => state?.infosAboutWhenFieldsShouldBeHidden
 );
 
-const chartDependencies = createSelector(readyState, state => {
+const nonLibraryChartDependencies = createSelector(readyState, state => {
     if (state === undefined) {
         return undefined;
     }
 
-    return state.chartDependencies;
+    return state.nonLibraryChartDependencies;
 });
 
 const friendlyName = createSelector(formFields, formFields => {
@@ -69,14 +69,14 @@ const indexedFormFields = createSelector(
     formFields,
     infosAboutWhenFieldsShouldBeHidden,
     chartName,
-    chartDependencies,
+    nonLibraryChartDependencies,
     (
         isReady,
         valuesSchema,
         formFields,
         infosAboutWhenFieldsShouldBeHidden,
         packageName,
-        dependencies
+        nonLibraryChartDependencies
     ): IndexedFormFields | undefined => {
         if (!isReady) {
             return undefined;
@@ -85,7 +85,7 @@ const indexedFormFields = createSelector(
         assert(valuesSchema !== undefined);
         assert(formFields !== undefined);
         assert(packageName !== undefined);
-        assert(dependencies !== undefined);
+        assert(nonLibraryChartDependencies !== undefined);
         assert(infosAboutWhenFieldsShouldBeHidden !== undefined);
 
         const indexedFormFields: IndexedFormFields.Scaffolding = {};
@@ -99,7 +99,7 @@ const indexedFormFields = createSelector(
             ({ path }) => !getIsFieldHidden({ path })
         );
 
-        [...dependencies, "global"].forEach(dependencyOrGlobal => {
+        [...nonLibraryChartDependencies, "global"].forEach(dependencyOrGlobal => {
             const formFieldsByTabName: IndexedFormFields.Scaffolding[string]["formFieldsByTabName"] =
                 {};
 
