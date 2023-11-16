@@ -26,7 +26,8 @@ import dragoonSvgUrl from "ui/assets/svg/Dragoon.svg";
 import { parseCssSpacing } from "ui/tools/parseCssSpacing";
 import onyxiaNeumorphismDarkModeUrl from "ui/assets/svg/OnyxiaNeumorphismDarkMode.svg";
 import onyxiaNeumorphismLightModeUrl from "ui/assets/svg/OnyxiaNeumorphismLightMode.svg";
-import { getDoesLooksLikeJsonObjectOrArray } from "ui/tools/getDoesLooksLikeJsonObjectOrArray";
+import { getIsJSON5ObjectOrArray } from "ui/tools/getIsJSON5ObjectOrArray";
+import JSON5 from "json5";
 
 export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
     {
@@ -60,7 +61,7 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
             let paletteOverride: any;
 
             try {
-                paletteOverride = JSON.parse(envValue);
+                paletteOverride = JSON5.parse(envValue);
             } catch (err) {
                 throw new Error(`${envName} is not parsable JSON`);
             }
@@ -154,14 +155,14 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
                 return undefined;
             }
 
-            if (!getDoesLooksLikeJsonObjectOrArray(envValue)) {
+            if (!getIsJSON5ObjectOrArray(envValue)) {
                 return envValue;
             }
 
             let tosUrlByLng: Partial<Record<Language, string>>;
 
             try {
-                tosUrlByLng = JSON.parse(envValue);
+                tosUrlByLng = JSON5.parse(envValue);
             } catch {
                 throw new Error(`${envName} malformed`);
             }
@@ -227,7 +228,7 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
             let parsedValue: unknown;
 
             try {
-                parsedValue = JSON.parse(envValue);
+                parsedValue = JSON5.parse(envValue);
             } catch {
                 throw new Error(`${envName} is not a valid JSON`);
             }
@@ -288,7 +289,7 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
             let parsedValue: unknown;
 
             try {
-                parsedValue = JSON.parse(envValue);
+                parsedValue = JSON5.parse(envValue);
             } catch {
                 throw new Error(`${envName} is not a valid JSON`);
             }
@@ -348,7 +349,7 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
             let parsedValue: unknown;
 
             try {
-                parsedValue = JSON.parse(envValue);
+                parsedValue = JSON5.parse(envValue);
             } catch {
                 throw new Error(`${envName} is not a valid JSON`);
             }
@@ -516,14 +517,14 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
                 return undefined;
             }
 
-            if (!getDoesLooksLikeJsonObjectOrArray(envValue)) {
+            if (!getIsJSON5ObjectOrArray(envValue)) {
                 return envValue;
             }
 
             let parsedValue: unknown;
 
             try {
-                parsedValue = JSON.parse(envValue);
+                parsedValue = JSON5.parse(envValue);
             } catch {
                 throw new Error(`${envName} is not a valid JSON`);
             }
@@ -553,7 +554,7 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
                 (params: { userFirstname: string }): LocalizedString => {
                     const { userFirstname } = params;
 
-                    return JSON.parse(
+                    return JSON5.parse(
                         JSON.stringify(localizedString).replace(
                             /%USER_FIRSTNAME%/g,
                             userFirstname
@@ -569,14 +570,14 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
                     : toFn(env_.HOMEPAGE_HERO_TEXT);
             }
 
-            if (!getDoesLooksLikeJsonObjectOrArray(envValue)) {
+            if (!getIsJSON5ObjectOrArray(envValue)) {
                 return toFn(envValue);
             }
 
             let parsedValue: unknown;
 
             try {
-                parsedValue = JSON.parse(envValue);
+                parsedValue = JSON5.parse(envValue);
             } catch {
                 throw new Error(`${envName} is not a valid JSON`);
             }
@@ -604,14 +605,14 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
                 return undefined;
             }
 
-            if (!getDoesLooksLikeJsonObjectOrArray(envValue)) {
+            if (!getIsJSON5ObjectOrArray(envValue)) {
                 return envValue;
             }
 
             let parsedValue: unknown;
 
             try {
-                parsedValue = JSON.parse(envValue);
+                parsedValue = JSON5.parse(envValue);
             } catch {
                 throw new Error(`${envName} is not a valid JSON`);
             }
@@ -641,7 +642,7 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
                 (params: { userFirstname: string }): LocalizedString => {
                     const { userFirstname } = params;
 
-                    return JSON.parse(
+                    return JSON5.parse(
                         JSON.stringify(localizedString).replace(
                             /%USER_FIRSTNAME%/g,
                             userFirstname
@@ -657,14 +658,14 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
                     : toFn(env_.HOMEPAGE_HERO_TEXT);
             }
 
-            if (!getDoesLooksLikeJsonObjectOrArray(envValue)) {
+            if (!getIsJSON5ObjectOrArray(envValue)) {
                 return toFn(envValue);
             }
 
             let parsedValue: unknown;
 
             try {
-                parsedValue = JSON.parse(envValue);
+                parsedValue = JSON5.parse(envValue);
             } catch {
                 throw new Error(`${envName} is not a valid JSON`);
             }
@@ -699,7 +700,7 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
             let parsedValue: unknown;
 
             try {
-                parsedValue = JSON.parse(envValue);
+                parsedValue = JSON5.parse(envValue);
             } catch {
                 throw new Error(`${envName} is not a valid JSON`);
             }
@@ -741,7 +742,7 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
             let parsedValue: unknown;
 
             try {
-                parsedValue = JSON.parse(envValue);
+                parsedValue = JSON5.parse(envValue);
             } catch {
                 throw new Error(`${envName} is not a valid JSON`);
             }
@@ -773,7 +774,7 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
             let parsedValue: unknown;
 
             try {
-                parsedValue = JSON.parse(envValue);
+                parsedValue = JSON5.parse(envValue);
             } catch {
                 throw new Error(`${envName} is not a valid JSON`);
             }
@@ -879,25 +880,45 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
                 return undefined;
             }
 
-            if (!getDoesLooksLikeJsonObjectOrArray(envValue)) {
-                return {
+            type ParsedValue = {
+                severity: "error" | "warning" | "info" | "success";
+                message: LocalizedString;
+            };
+
+            if (!getIsJSON5ObjectOrArray(envValue)) {
+                return id<ParsedValue>({
                     "severity": "info" as const,
                     "message": envValue
-                };
+                });
             }
 
             let parsedValue: unknown;
 
             try {
-                parsedValue = JSON.parse(envValue);
+                parsedValue = JSON5.parse(envValue);
             } catch {
                 throw new Error(`${envName} is not a valid JSON`);
             }
 
-            type ParsedValue = {
-                severity: "error" | "warning" | "info" | "success";
-                message: LocalizedString;
-            };
+            if (
+                parsedValue !== null &&
+                typeof parsedValue === "object" &&
+                !("severity" in parsedValue)
+            ) {
+                try {
+                    zLocalizedString.parse(parsedValue);
+                } catch (error) {
+                    throw new Error(
+                        `The format of ${envName} is not valid: ${String(error)}`
+                    );
+                }
+                assert(is<LocalizedString>(parsedValue));
+
+                return id<ParsedValue>({
+                    "severity": "info" as const,
+                    "message": parsedValue
+                });
+            }
 
             const zParsedValue = z.object({
                 "severity": z.enum(["error", "warning", "info", "success"]),
@@ -1180,7 +1201,7 @@ function createParsedEnvs<Parser extends Entry<EnvName>>(
             if (envName === "FONT" || envName === "PALETTE_OVERRIDE") {
 
 
-                helmValues += `\n        ${envName}: |\n            ${JSON.stringify(JSON.parse(envValue), null, 2).split("\n").join("\n            ")}`;
+                helmValues += `\n        ${envName}: |\n            ${JSON.stringify(JSON5.parse(envValue), null, 2).split("\n").join("\n            ")}`;
             } else {
 
                 helmValues += [

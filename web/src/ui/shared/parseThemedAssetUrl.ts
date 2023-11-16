@@ -2,7 +2,8 @@ import { z } from "zod";
 import { assert, type Equals } from "tsafe/assert";
 import { is } from "tsafe/is";
 import type { ThemedAssetUrl } from "onyxia-ui";
-import { getDoesLooksLikeJsonObjectOrArray } from "ui/tools/getDoesLooksLikeJsonObjectOrArray";
+import { getIsJSON5ObjectOrArray } from "ui/tools/getIsJSON5ObjectOrArray";
+import JSON5 from "json5";
 
 const zUrl = z.string().superRefine((data, ctx) => {
     if (!/\.(svg)|(png)|(jpg)|(jpeg)|(webp)|(ico)$/i.test(data)) {
@@ -35,14 +36,14 @@ export function parseThemedAssetUrl(serializedAssetVariantUrl: string): ThemedAs
         throw new Error("Empty string is not a valid AssetVariantUrl");
     }
 
-    if (!getDoesLooksLikeJsonObjectOrArray(serializedAssetVariantUrl)) {
+    if (!getIsJSON5ObjectOrArray(serializedAssetVariantUrl)) {
         return serializedAssetVariantUrl;
     }
 
     let assetVariantUrl: unknown;
 
     try {
-        assetVariantUrl = JSON.parse(serializedAssetVariantUrl);
+        assetVariantUrl = JSON5.parse(serializedAssetVariantUrl);
     } catch {
         throw new Error(`${serializedAssetVariantUrl} is not a valid JSON`);
     }

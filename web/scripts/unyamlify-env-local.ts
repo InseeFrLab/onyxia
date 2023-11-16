@@ -21,19 +21,20 @@ if (!fs.existsSync(envLocalYamlFilePath)) {
                 `      HEADER_TEXT_BOLD: SSP Cloud`,
                 `      HEADER_TEXT_FOCUS: Datalab`,
                 `      TERMS_OF_SERVICES: |`,
+                `        // This is JSON5, a more permissive JSON syntax, see https://json5.org/`,
                 `        { `,
-                `          "en": "https://www.sspcloud.fr/tos_en.md",`,
-                `          "fr": "https://www.sspcloud.fr/tos_fr.md"`,
+                `          en: "https://www.sspcloud.fr/tos_en.md",`,
+                `          fr: "https://www.sspcloud.fr/tos_fr.md",`,
                 `        }`,
                 `      HEADER_LINKS: |`,
                 `        [`,
                 `          {`,
-                `            "label": {`,
-                `              "en": "Tutorials",`,
-                `              "fr": "Tutoriels"`,
+                `            label: {`,
+                `              en: "Tutorials",`,
+                `              fr: "Tutoriels",`,
                 `            },`,
-                `            "icon": "https://www.sspcloud.fr/trainings.svg",`,
-                `            "url": "https://www.sspcloud.fr/formation"`,
+                `            icon: "https://www.sspcloud.fr/trainings.svg",`,
+                `            url: "https://www.sspcloud.fr/formation"`,
                 `          }`,
                 `        ]`,
                 ``
@@ -56,7 +57,7 @@ fs.writeFileSync(
             `# Do not edit it manually!`,
             "",
             ...Object.entries(parsedEnvLocalYaml.onyxia.web.env).map(
-                ([key, value]) => `REACT_APP_${key}=${value.replace(/\n/g, "")}`
+                ([key, value]) => `REACT_APP_${key}="${value.replace(/\n/g, "\\n")}"`
             )
         ].join("\n"),
         "utf8"
