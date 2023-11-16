@@ -1042,10 +1042,19 @@ function createParsedEnvs<Parser extends Entry<EnvName>>(
 
     const injectFunctions: ((url: string) => string)[] = [];
 
-    const PUBLIC_URL =
-        kcLoginThemeContext === undefined || process.env.NODE_ENV === "development"
+    const PUBLIC_URL = (() => {
+        const kcContext = (() => {
+            if (kcLoginThemeContext !== undefined) {
+                return kcLoginThemeContext;
+            }
+
+            return undefined;
+        })();
+
+        return kcContext === undefined || process.env.NODE_ENV === "development"
             ? process.env.PUBLIC_URL
-            : `${kcLoginThemeContext.url.resourcesPath}/build`;
+            : `${kcContext.url.resourcesPath}/build`;
+    })();
 
     const env: any = new Proxy(
         {},
