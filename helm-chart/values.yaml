@@ -33,7 +33,7 @@ web:
   replicaCount: 1
   image:
     repository: inseefrlab/onyxia-web
-    tag: 3.7.1
+    tag: 4.0.0
     pullPolicy: IfNotPresent
 
   ## Pod priority settings
@@ -76,12 +76,13 @@ web:
     # If not set and create is true, a name is generated using the fullname template
     name:
 
+
 api:
   name: api
   replicaCount: 1
   image:
     repository: inseefrlab/onyxia-api
-    tag: v1.1.0
+    tag: v1.2.0
     pullPolicy: IfNotPresent
   contextPath: /api
 
