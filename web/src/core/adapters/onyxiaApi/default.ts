@@ -203,7 +203,12 @@ export function createOnyxiaApi(params: {
                     console.log(
                         [
                             `inseefrlab/onyxia-api version ${version}`,
-                            `https://github.com/InseeFrLab/onyxia-api/tree/${version}`
+                            `https://github.com/InseeFrLab/onyxia-api/tree/${version}`,
+                            `Swagger: ${
+                                url.startsWith("/")
+                                    ? `${window.location.origin}${url}`
+                                    : url
+                            }`
                         ].join("\n")
                     );
                     return data;
