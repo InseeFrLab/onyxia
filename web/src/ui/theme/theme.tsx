@@ -27,10 +27,10 @@ export { ThemeProvider };
 export type Theme = typeof ofTypeTheme;
 
 export const customIcons = {
-    "servicesSvgUrl": `${env.PUBLIC_URL}/custom-icons/services.svg`,
-    "secretsSvgUrl": `${env.PUBLIC_URL}/custom-icons/secrets.svg`,
-    "accountSvgUrl": `${env.PUBLIC_URL}/custom-icons/account.svg`,
-    "homeSvgUrl": `${env.PUBLIC_URL}/custom-icons/home.svg`,
-    "filesSvgUrl": `${env.PUBLIC_URL}/custom-icons/files.svg`,
-    "catalogSvgUrl": `${env.PUBLIC_URL}/custom-icons/catalog.svg`
+    "servicesSvgUrl": `${env.PUBLIC_URL}/icons/services.svg`,
+    "secretsSvgUrl": `${env.PUBLIC_URL}/icons/secrets.svg`,
+    "accountSvgUrl": `${env.PUBLIC_URL}/icons/account.svg`,
+    "homeSvgUrl": `${env.PUBLIC_URL}/icons/home.svg`,
+    "filesSvgUrl": `${env.PUBLIC_URL}/icons/files.svg`,
+    "catalogSvgUrl": `${env.PUBLIC_URL}/icons/catalog.svg`
 };

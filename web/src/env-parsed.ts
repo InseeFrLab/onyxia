@@ -1042,19 +1042,18 @@ function createParsedEnvs<Parser extends Entry<EnvName>>(
 
     const injectFunctions: ((url: string) => string)[] = [];
 
-    const PUBLIC_URL = (() => {
-        const kcContext = (() => {
-            if (kcLoginThemeContext !== undefined) {
-                return kcLoginThemeContext;
-            }
+    const kcContext = (() => {
+        if (kcLoginThemeContext !== undefined) {
+            return kcLoginThemeContext;
+        }
 
-            return undefined;
-        })();
+        return undefined;
+    })();
 
-        return kcContext === undefined || process.env.NODE_ENV === "development"
+    const PUBLIC_URL =
+        kcContext === undefined || process.env.NODE_ENV === "development"
             ? process.env.PUBLIC_URL
             : `${kcContext.url.resourcesPath}/build`;
-    })();
 
     const env: any = new Proxy(
         {},
@@ -1085,7 +1084,7 @@ function createParsedEnvs<Parser extends Entry<EnvName>>(
         }
 
         const isProductionKeycloak =
-            process.env.NODE_ENV === "production" && kcLoginThemeContext !== undefined;
+            process.env.NODE_ENV === "production" && kcContext !== undefined;
 
         const getEnvValue = () => {
             if (!isUsedInKeycloakTheme && kcLoginThemeContext !== undefined) {
@@ -1149,9 +1148,19 @@ function createParsedEnvs<Parser extends Entry<EnvName>>(
         if (isUsedInKeycloakTheme) {
             const envValue = getEnvValue();
 
-            injectFunctions.push(
-                url => addParamToUrl({ url, "name": envName, "value": envValue }).newUrl
-            );
+            if (kcContext === undefined) {
+                injectFunctions.push(
+                    url =>
+                        addParamToUrl({
+                            url,
+                            "name": envName,
+                            "value": envValue.replace(
+                                /%PUBLIC_URL%\/custom-resources/g,
+                                `${window.location.origin}${process.env.PUBLIC_URL}/custom-resources`
+                            )
+                        }).newUrl
+                );
+            }
 
             parsedValueOrGetterByEnvName[envName] = validateAndParseOrGetDefault({
                 "envValue": replacePUBLIC_URL(envValue),
