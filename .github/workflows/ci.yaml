@@ -110,7 +110,7 @@ jobs:
         with:
           ignore-skipped: true
           jobs: publish_web_docker_image
-          ttl: 10
+          ttl: 20
       - uses: InseeFrLab/onyxia@gh-actions
         with: 
           action_name: release_helm_chart
