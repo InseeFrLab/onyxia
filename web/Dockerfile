@@ -29,9 +29,9 @@ COPY --from=build /app/.env .
 COPY --from=build /app/public/index.html ./public/
 
 RUN echo $'#!/bin/sh\n\
-if [ -n "$CUSTOM_RESOURCES_ZIP_URL" ]; then\n\
-    wget -O /tmp/assets.zip "$CUSTOM_RESOURCES_ZIP_URL"\n\
-    unzip /tmp/assets.zip -d /usr/share/nginx/html/custom-resources\n\
+if [ -n "$CUSTOM_RESOURCES" ]; then\n\
+    wget -O /tmp/custom-resources.zip "$CUSTOM_RESOURCES"\n\
+    unzip /tmp/custom-resources.zip -d /usr/share/nginx/html/custom-resources\n\
 fi\n\
 npx embed-environnement-variables\n\
 exec nginx -g "daemon off;"' > /entrypoint.sh && chmod +x /entrypoint.sh
@@ -43,9 +43,5 @@ RUN sed -i.orig -e '/user[[:space:]]\+nginx/d' -e 's@pid[[:space:]]\+.*@pid /tmp
     chown -Rc nginx /var/cache/nginx
 # Equivalent to 'USER nginx', see: https://github.com/inseefrlab/onyxia/pull/279
 USER 101
-
-
-
-
 
 ENTRYPOINT ["/entrypoint.sh"]
