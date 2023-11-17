@@ -92,7 +92,9 @@ const useStyles = tss.withName({ Header }).create(({ theme }) => ({
         "flex": 1,
         "display": "flex",
         "justifyContent": "flex-end",
-        "alignItems": "center"
+        "alignItems": "center",
+        // For when there's no link
+        "minHeight": 47.6
     },
     "projectSelect": {
         "marginLeft": theme.spacing(4)
