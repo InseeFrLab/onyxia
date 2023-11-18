@@ -4,7 +4,7 @@ import { Footer } from "./Footer";
 import { Header } from "./Header";
 import { useEffectOnValueChange } from "powerhooks/useEffectOnValueChange";
 import { useSplashScreen } from "onyxia-ui";
-import { useIsDarkModeEnabled } from "onyxia-ui";
+import { useDarkMode } from "onyxia-ui";
 import { env, injectTransferableEnvsInQueryParams } from "env-parsed";
 import { RouteProvider } from "ui/routes";
 import { createCoreProvider, useCoreState, useCoreFunctions } from "core";
@@ -12,7 +12,7 @@ import { injectGlobalStatesInSearchParams } from "powerhooks/useGlobalState";
 import { evtLang } from "ui/i18n";
 import { getEnv } from "env";
 import {
-    ThemeProvider,
+    OnyxiaUi,
     targetWindowInnerWidth,
     loadThemedFavicon,
     injectCustomFontFaceIfNotAlreadyDone
@@ -60,7 +60,7 @@ export default function App() {
     }
 
     return (
-        <ThemeProvider>
+        <OnyxiaUi>
             <ScreenScalerOutOfRangeFallbackProvider
                 fallback={<ScreenScalerOutOfRangeFallback />}
             >
@@ -70,7 +70,7 @@ export default function App() {
                     </CoreProvider>
                 </RouteProvider>
             </ScreenScalerOutOfRangeFallbackProvider>
-        </ThemeProvider>
+        </OnyxiaUi>
     );
 }
 
@@ -170,7 +170,7 @@ function useSyncDarkModeWithValueInProfile() {
 
     const isUserLoggedIn = userAuthentication.getIsUserLoggedIn();
 
-    const { isDarkModeEnabled, setIsDarkModeEnabled } = useIsDarkModeEnabled();
+    const { isDarkModeEnabled, setIsDarkModeEnabled } = useDarkMode();
 
     const userConfigsIsDarkModeEnabled = useCoreState(state =>
         !isUserLoggedIn ? undefined : state.userConfigs.isDarkModeEnabled.value

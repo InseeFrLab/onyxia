@@ -7,7 +7,7 @@ import { tss } from "tss";
 import { env } from "env-parsed";
 import onyxiaNeumorphismDarkModeUrl from "ui/assets/svg/OnyxiaNeumorphismDarkMode.svg";
 import onyxiaNeumorphismLightModeUrl from "ui/assets/svg/OnyxiaNeumorphismLightMode.svg";
-import { ThemeProvider } from "keycloak-theme/login/theme";
+import { OnyxiaUi } from "keycloak-theme/login/theme";
 
 loadThemedFavicon();
 
@@ -23,9 +23,9 @@ type Props = {
 
 export default function KcApp(props: Props) {
     return (
-        <ThemeProvider>
+        <OnyxiaUi>
             <ContextualizedKcApp {...props} />
-        </ThemeProvider>
+        </OnyxiaUi>
     );
 }
 

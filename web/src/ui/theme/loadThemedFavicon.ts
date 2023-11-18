@@ -1,11 +1,16 @@
-import { createDefaultColorUseCases, evtIsDarkModeEnabled } from "onyxia-ui";
+import { createDefaultColorUseCases } from "onyxia-ui";
 import { getClassesAndColors } from "onyxia-ui/ThemedSvg";
 import { env } from "env-parsed";
 import { resolveThemedAssetUrl } from "onyxia-ui";
 import { assert } from "tsafe/assert";
 import { palette } from "./palette";
+import type { StatefulReadonlyEvt } from "evt";
 
-export async function loadThemedFavicon() {
+export async function loadThemedFavicon(params: {
+    evtIsDarkModeEnabled: StatefulReadonlyEvt<boolean>;
+}) {
+    const { evtIsDarkModeEnabled } = params;
+
     evtIsDarkModeEnabled.attach(async isDarkModeEnabled => {
         const faviconUrl = resolveThemedAssetUrl({
             isDarkModeEnabled,

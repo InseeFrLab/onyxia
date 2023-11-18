@@ -2,7 +2,7 @@ import { memo } from "react";
 import { useTranslation } from "ui/i18n";
 import { AccountSectionHeader } from "../AccountSectionHeader";
 import { AccountField } from "../AccountField";
-import { useIsDarkModeEnabled } from "onyxia-ui";
+import { useDarkMode } from "onyxia-ui";
 import { useConstCallback } from "powerhooks/useConstCallback";
 import { useCoreFunctions, useCoreState, selectors } from "core";
 import { declareComponentKeys } from "i18nifty";
@@ -16,7 +16,7 @@ export const AccountUserInterfaceTab = memo((props: Props) => {
 
     const { t } = useTranslation({ AccountUserInterfaceTab });
 
-    const { isDarkModeEnabled, setIsDarkModeEnabled } = useIsDarkModeEnabled();
+    const { isDarkModeEnabled, setIsDarkModeEnabled } = useDarkMode();
 
     const onRequestToggleIsDarkModeEnabled = useConstCallback(() =>
         setIsDarkModeEnabled(!isDarkModeEnabled)

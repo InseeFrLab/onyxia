@@ -1,10 +1,10 @@
-import { createThemeProvider, defaultGetTypographyDesc } from "onyxia-ui";
+import { createOnyxiaUi, defaultGetTypographyDesc } from "onyxia-ui";
 import { palette } from "ui/theme/palette";
-import { loadThemedFavicon } from "ui/theme/loadThemedFavicon";
 import { targetWindowInnerWidth } from "ui/theme/targetWindowInnerWidth";
 import { env } from "env-parsed";
+import { loadThemedFavicon as loadThemedFavicon_base } from "ui/theme/loadThemedFavicon";
 
-export const { ThemeProvider } = createThemeProvider({
+const { OnyxiaUi, evtIsDarkModeEnabled } = createOnyxiaUi({
     "getTypographyDesc": params => ({
         ...defaultGetTypographyDesc({
             ...params,
@@ -18,7 +18,12 @@ export const { ThemeProvider } = createThemeProvider({
     palette,
     "splashScreenParams": undefined,
     // NOTE: Equivalent to join(env.CUSTOM_RESOURCES_URL, "..")
-    "publicUrl": env.CUSTOM_RESOURCES_URL.replace(/\/[^/]*\/?$/, "")
+    "BASE_URL": env.CUSTOM_RESOURCES_URL.replace(/\/[^/]*\/?$/, "")
 });
 
-export { loadThemedFavicon };
+export { OnyxiaUi };
+
+export const loadThemedFavicon = () =>
+    loadThemedFavicon_base({
+        evtIsDarkModeEnabled
+    });

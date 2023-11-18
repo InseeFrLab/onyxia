@@ -1,9 +1,10 @@
-import { createThemeProvider, defaultGetTypographyDesc } from "onyxia-ui";
+import { createOnyxiaUi, defaultGetTypographyDesc } from "onyxia-ui";
 import { palette } from "./palette";
 import { targetWindowInnerWidth } from "./targetWindowInnerWidth";
 import { env } from "env-parsed";
+import { loadThemedFavicon as loadThemedFavicon_base } from "./loadThemedFavicon";
 
-const { ThemeProvider, ofTypeTheme } = createThemeProvider({
+const { OnyxiaUi, evtIsDarkModeEnabled, ofTypeTheme } = createOnyxiaUi({
     "getTypographyDesc": params => ({
         ...defaultGetTypographyDesc({
             ...params,
@@ -19,10 +20,15 @@ const { ThemeProvider, ofTypeTheme } = createThemeProvider({
         "assetUrl": env.SPLASHSCREEN_LOGO,
         "assetScaleFactor": env.SPLASHSCREEN_LOGO_SCALE_FACTOR
     },
-    "publicUrl": env.PUBLIC_URL
+    "BASE_URL": env.PUBLIC_URL
 });
 
-export { ThemeProvider };
+export { OnyxiaUi };
+
+export const loadThemedFavicon = () =>
+    loadThemedFavicon_base({
+        evtIsDarkModeEnabled
+    });
 
 export type Theme = typeof ofTypeTheme;
 
