@@ -17,7 +17,8 @@ export const { ThemeProvider } = createThemeProvider({
     }),
     palette,
     "splashScreenParams": undefined,
-    "publicUrl": undefined
+    // NOTE: Equivalent to join(env.CUSTOM_RESOURCES_URL, "..")
+    "publicUrl": env.CUSTOM_RESOURCES_URL.replace(/\/[^/]*\/?$/, "")
 });
 
 export { loadThemedFavicon };

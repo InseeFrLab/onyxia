@@ -1015,6 +1015,14 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
         "isUsedInKeycloakTheme": false,
         "validateAndParseOrGetDefault": ({ envValue }) =>
             envValue === "" ? undefined : envValue
+    },
+    {
+        "envName": "CUSTOM_RESOURCES_URL",
+        "isUsedInKeycloakTheme": true,
+        "validateAndParseOrGetDefault": ({ envValue }) => {
+            assert(envValue !== "", "Should have default in .env");
+            return envValue;
+        }
     }
 ]);
 
