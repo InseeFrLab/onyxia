@@ -71,17 +71,19 @@ export async function loadThemedFavicon(params: {
                 return undefined;
             }
 
-            const colorUseCases = createDefaultColorUseCases({
+            const useCases = createDefaultColorUseCases({
                 palette,
                 isDarkModeEnabled
             });
 
             (function updateFillColor(element: Element) {
-                getClassesAndColors({ colorUseCases }).forEach(({ className, color }) => {
-                    if (element.getAttribute("class")?.includes(className)) {
-                        element.setAttribute("fill", color);
+                getClassesAndColors({ palette, useCases }).forEach(
+                    ({ className, color }) => {
+                        if (element.getAttribute("class")?.includes(className)) {
+                            element.setAttribute("fill", color);
+                        }
                     }
-                });
+                );
 
                 // Recursively update child elements
                 for (const child of Array.from(element.children)) {
