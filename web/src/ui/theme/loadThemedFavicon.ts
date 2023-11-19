@@ -17,8 +17,9 @@ export async function loadThemedFavicon(params: {
             "themedAssetUrl": env.FAVICON
         });
 
-        const link = document.querySelector("link[rel*='icon']");
-        assert(link !== null, "Expect a favicon already present in the head");
+        const link = document.createElement("link");
+
+        link.rel = "icon";
 
         const linkProps = await (async (): Promise<
             { type: string; href: string } | undefined
@@ -104,6 +105,14 @@ export async function loadThemedFavicon(params: {
 
         Object.assign(link, linkProps);
 
-        document.getElementsByTagName("head")[0].appendChild(link);
+        {
+            const existingLink = document.querySelector("link[rel*='icon']");
+
+            if (existingLink) {
+                existingLink.remove();
+            }
+        }
+
+        document.getElementsByTagName("head")[0].prepend(link);
     });
 }
