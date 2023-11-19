@@ -12133,10 +12133,10 @@ oidc-client-ts@^2.3.0:
     crypto-js "^4.1.1"
     jwt-decode "^3.1.2"
 
-oidc-spa@^2.1.0:
-  version "2.1.0"
-  resolved "https://registry.yarnpkg.com/oidc-spa/-/oidc-spa-2.1.0.tgz#0ae133b3f5fcae5fa3c4df07d61f72231eb86bdb"
-  integrity sha512-VlN1h4Ic3ndQy3ZkEKN8KQS2xbW11mAhq6AfEIzqWm7udRDLwHQ24XLXti0MzGYzyeNd8SVGrhI9eBfrAOCzGg==
+oidc-spa@2.2.0-rc.0:
+  version "2.2.0-rc.0"
+  resolved "https://registry.yarnpkg.com/oidc-spa/-/oidc-spa-2.2.0-rc.0.tgz#ced0ce2cc507a62a40bb956225ff367ab16fe1c5"
+  integrity sha512-akys9Yb59pDVvBSM131kSgH6x9KJyKHqawHzOq++EJ2kdaWKWinyIxX84KdbeY3mdZsycCTEQXCZGzcceGugqA==
   dependencies:
     jwt-decode "^3.1.2"
     oidc-client-ts "^2.3.0"
