@@ -204,7 +204,16 @@ const { Page } = (() => {
                             <IconButton
                                 icon={CloseIcon}
                                 tabIndex={-1}
-                                onClick={() => window.history.back()}
+                                onClick={() => {
+                                    const referrerUrl = getReferrerUrl();
+
+                                    if (referrerUrl === undefined) {
+                                        window.history.back();
+                                        return;
+                                    }
+
+                                    window.location.href = referrerUrl;
+                                }}
                             />
                         </div>
                     )}

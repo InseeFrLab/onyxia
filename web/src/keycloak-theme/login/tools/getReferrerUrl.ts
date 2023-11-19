@@ -1,35 +1,20 @@
-import {
-    retrieveQueryParamFromUrl,
-    retrieveAllQueryParamStartingWithPrefixFromUrl
-} from "oidc-spa/tools/urlQueryParams";
+function getRefererUrlFromUrl() {
+    const queryParams = new URLSearchParams(window.location.search);
+    const redirectUri = queryParams.get("redirect_uri");
 
-function inferRefererUrlFromUrl() {
-    const url = window.location.href;
-
-    const result = retrieveQueryParamFromUrl({
-        "name": "redirect_uri",
-        url
-    });
-
-    if (!result.wasPresent) {
+    if (redirectUri === null) {
         return undefined;
     }
 
-    const redirectUri = result.value;
+    const redirectUrl = new URL(redirectUri);
 
-    const result2 = retrieveAllQueryParamStartingWithPrefixFromUrl({
-        "url": redirectUri,
-        "prefix": "",
-        "doLeavePrefixInResults": true
-    });
-
-    return result2.newUrl.replace(/callback?\/$/, "");
+    return redirectUrl.origin;
 }
 
 const localStorageKey = "theme-onyxia_refererUrl";
 
 export function getReferrerUrl() {
-    const refererUrl = inferRefererUrlFromUrl();
+    const refererUrl = getRefererUrlFromUrl();
 
     if (refererUrl === undefined) {
         return localStorage.getItem(localStorageKey) ?? undefined;
