@@ -6,6 +6,7 @@ import { keyframes } from "tss-react";
 import { objectKeys } from "tsafe/objectKeys";
 import { pages } from "ui/pages";
 import { useCoreFunctions } from "core";
+import { CircularProgress } from "onyxia-ui/CircularProgress";
 
 type Props = {
     className?: string;
@@ -35,7 +36,11 @@ export const Main = memo((props: Props) => {
                             ) {
                                 /* prettier-ignore */
                                 userAuthentication.login({ "doesCurrentHrefRequiresAuth": true });
-                                return null;
+                                return (
+                                    <div className={classes.loginRedirect}>
+                                        <CircularProgress size={70} />
+                                    </div>
+                                );
                             }
 
                             return (
@@ -76,5 +81,11 @@ const useStyles = tss.create({
                 opacity: 1;
             }
             `} 400ms`
+    },
+    "loginRedirect": {
+        "display": "flex",
+        "justifyContent": "center",
+        "alignItems": "center",
+        "height": "100%"
     }
 });
