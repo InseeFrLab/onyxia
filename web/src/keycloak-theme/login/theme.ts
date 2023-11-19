@@ -11,9 +11,7 @@ const { OnyxiaUi, evtIsDarkModeEnabled } = createOnyxiaUi({
             // NOTE: Prevent the font from being responsive.
             "windowInnerWidth": targetWindowInnerWidth
         }),
-        "fontFamily": `'${env.FONT.fontFamily}'${
-            env.FONT.fontFamily === "Work Sans" ? "" : ", 'Work Sans'"
-        }`
+        "fontFamily": `'${env.FONT.fontFamily}', 'Roboto', sans-serif`
     }),
     palette,
     "splashScreenParams": undefined,
