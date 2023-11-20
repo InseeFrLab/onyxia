@@ -1151,12 +1151,19 @@ function createParsedEnvs<Parser extends Entry<EnvName>>(
                     break look_in_url;
                 }
 
-                const { newUrl, value: envValue } = result;
+                let { newUrl, value: envValue } = result;
 
                 updateSearchBarUrl(newUrl);
 
                 if (isProductionKeycloak) {
-                    localStorage.setItem(envName, envValue);
+                    const kcEnvValue = (kcContext as any).properties[envName] ?? "";
+
+                    if (kcEnvValue !== "") {
+                        localStorage.removeItem(envName);
+                        envValue = kcEnvValue;
+                    } else {
+                        localStorage.setItem(envName, envValue);
+                    }
                 }
 
                 return envValue;
