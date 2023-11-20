@@ -5,6 +5,7 @@ import { resolveThemedAssetUrl } from "onyxia-ui";
 import { assert } from "tsafe/assert";
 import { palette } from "./palette";
 import type { StatefulReadonlyEvt } from "evt";
+import domPurify from "dompurify";
 
 export async function loadThemedFavicon(params: {
     evtIsDarkModeEnabled: StatefulReadonlyEvt<boolean>;
@@ -52,7 +53,12 @@ export async function loadThemedFavicon(params: {
 
                 try {
                     const parser = new DOMParser();
-                    const doc = parser.parseFromString(rawSvgString, "image/svg+xml");
+                    const doc = parser.parseFromString(
+                        domPurify.sanitize(rawSvgString, {
+                            "USE_PROFILES": { "svg": true }
+                        }),
+                        "image/svg+xml"
+                    );
                     svgElement = doc.querySelector("svg");
                 } catch (error) {
                     console.error(`Failed to parse ${faviconUrl}, ${String(error)}`);

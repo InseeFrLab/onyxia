@@ -3772,6 +3772,13 @@
   dependencies:
     "@types/node" "*"
 
+"@types/dompurify@^3.0.5":
+  version "3.0.5"
+  resolved "https://registry.yarnpkg.com/@types/dompurify/-/dompurify-3.0.5.tgz#02069a2fcb89a163bacf1a788f73cb415dd75cb7"
+  integrity sha512-1Wg0g3BtQF7sSb27fJQAKck1HECM6zV1EB66j8JH9i3LCjYabJa0FSdiSgsD5K/RbrsR0SiraKacLB+T8ZVYAg==
+  dependencies:
+    "@types/trusted-types" "*"
+
 "@types/eslint-scope@^3.7.3":
   version "3.7.4"
   resolved "https://registry.yarnpkg.com/@types/eslint-scope/-/eslint-scope-3.7.4.tgz#37fc1223f0786c39627068a12e94d6e6fc61de16"
@@ -4147,6 +4154,11 @@
   version "1.0.8"
   resolved "https://registry.yarnpkg.com/@types/tapable/-/tapable-1.0.8.tgz#b94a4391c85666c7b73299fd3ad79d4faa435310"
   integrity sha512-ipixuVrh2OdNmauvtT51o3d8z12p6LtFW9in7U79der/kwejjdNchQC5UMn5u/KxNoM7VHHOs/l8KS8uHxhODQ==
+
+"@types/trusted-types@*":
+  version "2.0.6"
+  resolved "https://registry.yarnpkg.com/@types/trusted-types/-/trusted-types-2.0.6.tgz#d12451beaeb9c3838f12024580dc500b7e88b0ad"
+  integrity sha512-HYtNooPvUY9WAVRBr4u+4Qa9fYD1ze2IUlAD3HoA6oehn1taGwBx3Oa52U4mTslTS+GAExKpaFu39Y5xUEwfjg==
 
 "@types/trusted-types@^2.0.2":
   version "2.0.3"
@@ -7313,6 +7325,11 @@ domhandler@^5.0, domhandler@^5.0.1, domhandler@^5.0.2, domhandler@^5.0.3:
   integrity sha512-cgwlv/1iFQiFnU96XXgROh8xTeetsnJiDsTc7TYCLFd9+/WNkIqPTxiM/8pSd8VIrhXGTf1Ny1q1hquVqDJB5w==
   dependencies:
     domelementtype "^2.3.0"
+
+dompurify@^3.0.6:
+  version "3.0.6"
+  resolved "https://registry.yarnpkg.com/dompurify/-/dompurify-3.0.6.tgz#925ebd576d54a9531b5d76f0a5bef32548351dae"
+  integrity sha512-ilkD8YEnnGh1zJ240uJsW7AzE+2qpbOUYjacomn3AvJ6J4JhKGSZ2nh4wUIXPZrEPppaCLx5jFe8T89Rk8tQ7w==
 
 domutils@^1.7.0:
   version "1.7.0"
@@ -12168,13 +12185,14 @@ onetime@^5.1.0, onetime@^5.1.2:
   dependencies:
     mimic-fn "^2.1.0"
 
-onyxia-ui@^4.2.1:
-  version "4.2.1"
-  resolved "https://registry.yarnpkg.com/onyxia-ui/-/onyxia-ui-4.2.1.tgz#dfd5581ef988d0de3ef4bc8e7f4eeb56fb964be9"
-  integrity sha512-BnCIf5F+xnfSnEobL5y1XRtGImf3CCgdcF10YwLRJsEXX3JE0BM4AQ/CnlpS070BRt98mg2SaPGx89hgp78nAQ==
+onyxia-ui@^4.2.2:
+  version "4.2.2"
+  resolved "https://registry.yarnpkg.com/onyxia-ui/-/onyxia-ui-4.2.2.tgz#27fd7e2e3375f10248424bc96429f387c764a926"
+  integrity sha512-BmFzTfiJ+Yz0Iq2HXL8BMGeBgH2Qrk2IZxDitaj9WLmZUzGAD6CgdvY2Ebfx28mdY8yt1tbGyynzNQADXAS+Sg==
   dependencies:
     "@mui/icons-material" "^5.14.18"
     color "3.1.3"
+    dompurify "^3.0.6"
     evt "^2.5.3"
     make-fetch-happen "^10.2.1"
     memoizee "^0.4.15"

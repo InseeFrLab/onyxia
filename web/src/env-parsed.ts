@@ -28,6 +28,7 @@ import onyxiaNeumorphismDarkModeUrl from "ui/assets/svg/OnyxiaNeumorphismDarkMod
 import onyxiaNeumorphismLightModeUrl from "ui/assets/svg/OnyxiaNeumorphismLightMode.svg";
 import { getIsJSON5ObjectOrArray } from "ui/tools/getIsJSON5ObjectOrArray";
 import JSON5 from "json5";
+import { getSafeUrl } from "ui/shared/getSafeUrl";
 
 export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
     {
@@ -141,7 +142,20 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
         "isUsedInKeycloakTheme": true,
         "validateAndParseOrGetDefault": ({ envValue }) => {
             assert(envValue !== "", "Should have default in .env");
-            return envValue;
+
+            function sanitizeTitle(title: string) {
+                // Basic sanitization: remove script tags, encode special characters, etc.
+                return title.replace(/<\/?script[^>]*>/gi, "").replace(
+                    /[<>]/g,
+                    char =>
+                        ({
+                            "<": "&lt;",
+                            ">": "&gt;"
+                        }[char]!)
+                );
+            }
+
+            return sanitizeTitle(envValue);
         }
     },
     {
@@ -156,7 +170,7 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
             }
 
             if (!getIsJSON5ObjectOrArray(envValue)) {
-                return envValue;
+                return getSafeUrl(envValue);
             }
 
             let tosUrlByLng: Partial<Record<Language, string>>;
@@ -166,6 +180,10 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
             } catch {
                 throw new Error(`${envName} malformed`);
             }
+
+            tosUrlByLng = Object.fromEntries(
+                Object.entries(tosUrlByLng).map(([lang, url]) => [lang, getSafeUrl(url)])
+            );
 
             {
                 const languages = objectKeys(tosUrlByLng);
@@ -274,6 +292,19 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
                 );
             }
             assert(is<ParsedValue>(parsedValue));
+
+            parsedValue.fontFamily = parsedValue.fontFamily.replace(
+                /[^a-zA-Z0-9 \-áéíóúÁÉÍÓÚäëïöüÄËÏÖÜ]/g,
+                ""
+            );
+
+            {
+                const { fontFamily, dirUrl, ...rest } = parsedValue;
+
+                Object.values(rest).forEach(fontFileBasename =>
+                    getSafeUrl(`${dirUrl}/${fontFileBasename}`)
+                );
+            }
 
             return parsedValue;
         }
@@ -1021,6 +1052,7 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
         "isUsedInKeycloakTheme": true,
         "validateAndParseOrGetDefault": ({ envValue }) => {
             assert(envValue !== "", "Should have default in .env");
+            getSafeUrl(envValue);
             return envValue;
         }
     }
@@ -1102,6 +1134,14 @@ function createParsedEnvs<Parser extends Entry<EnvName>>(
             }
 
             look_in_url: {
+                if (
+                    kcContext === undefined &&
+                    (getEnv().ALLOW_THEME_TESTING_VIA_URL !== "true" ||
+                        !id<EnvName[]>(["FONT", "PALETTE_OVERRIDE"]).includes(envName))
+                ) {
+                    break look_in_url;
+                }
+
                 const result = retrieveParamFromUrl({
                     "url": window.location.href,
                     "name": envName

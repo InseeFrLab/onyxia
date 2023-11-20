@@ -18,7 +18,10 @@
         "storybook": "start-storybook -p 6006"
     },
     "keycloakify": {
-        "themeName": "onyxia"
+        "themeName": "onyxia",
+        "extraThemeProperties": [
+            "allowedAssetOrigin=${env.ALLOWED_ASSET_ORIGIN:*}"
+        ]
     },
     "dependencies": {
         "@emotion/react": "^11.11.1",
@@ -34,6 +37,7 @@
         "compare-versions": "^5.0.1",
         "cra-envs": "^2.1.0",
         "crypto-browserify": "^3.12.0",
+        "dompurify": "^3.0.6",
         "evt": "^2.5.3",
         "file-saver": "^2.0.2",
         "filereader-stream": "^2.0.0",
@@ -48,7 +52,7 @@
         "moment": "^2.29.1",
         "mustache": "^4.2.0",
         "oidc-spa": "^2.2.0",
-        "onyxia-ui": "^4.2.1",
+        "onyxia-ui": "^4.2.2",
         "path": "^0.12.7",
         "path-browserify": "^1.0.1",
         "powerhooks": "^1.0.3",
@@ -83,6 +87,7 @@
         "@storybook/preset-create-react-app": "^4.1.2",
         "@storybook/react": "^6.5.14",
         "@types/color": "^3.0.3",
+        "@types/dompurify": "^3.0.5",
         "@types/file-saver": "^2.0.2",
         "@types/flexsearch": "^0.7.3",
         "@types/memoizee": "^0.4.4",
