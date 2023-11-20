@@ -12185,10 +12185,10 @@ onetime@^5.1.0, onetime@^5.1.2:
   dependencies:
     mimic-fn "^2.1.0"
 
-onyxia-ui@^4.2.2:
-  version "4.2.2"
-  resolved "https://registry.yarnpkg.com/onyxia-ui/-/onyxia-ui-4.2.2.tgz#27fd7e2e3375f10248424bc96429f387c764a926"
-  integrity sha512-BmFzTfiJ+Yz0Iq2HXL8BMGeBgH2Qrk2IZxDitaj9WLmZUzGAD6CgdvY2Ebfx28mdY8yt1tbGyynzNQADXAS+Sg==
+onyxia-ui@^4.2.3:
+  version "4.2.3"
+  resolved "https://registry.yarnpkg.com/onyxia-ui/-/onyxia-ui-4.2.3.tgz#c2019e09e2aac93041a99d05609c8ff99f52a517"
+  integrity sha512-pGFvZX6QNL9D89yhcp/1j0xJ22brtKSCmym4111zLGId2sl4soVZUYVC3GcHfkBVsS87tmgOrOvV9YDx4gPf9g==
   dependencies:
     "@mui/icons-material" "^5.14.18"
     color "3.1.3"
