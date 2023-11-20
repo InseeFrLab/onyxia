@@ -20,7 +20,7 @@
     "keycloakify": {
         "themeName": "onyxia",
         "extraThemeProperties": [
-            "allowedAssetOrigin=${env.ALLOWED_ASSET_ORIGIN:*}"
+            "ALLOWED_ASSET_ORIGIN=${env.ALLOWED_ASSET_ORIGIN:*}"
         ]
     },
     "dependencies": {

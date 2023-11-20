@@ -6,12 +6,12 @@ export function getSafeUrl(url: string) {
     getSafeUrl_base(url);
 
     if (kcContext !== undefined) {
-        const allowedAssetOrigin = (kcContext as any).properties.ALLOWED_ASSET_ORIGIN;
+        const ALLOWED_ASSET_ORIGIN = (kcContext as any).properties.ALLOWED_ASSET_ORIGIN;
 
-        assert(allowedAssetOrigin !== undefined);
+        assert(ALLOWED_ASSET_ORIGIN !== undefined);
 
-        if (allowedAssetOrigin !== "*") {
-            assert(url.startsWith(allowedAssetOrigin));
+        if (ALLOWED_ASSET_ORIGIN !== "*") {
+            assert(url.startsWith(ALLOWED_ASSET_ORIGIN));
         }
     } else {
         assert(url.startsWith("/"));
