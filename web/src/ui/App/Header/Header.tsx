@@ -29,7 +29,10 @@ export function Header(props: Props) {
 
     return (
         <header className={cx(classes.root, className)}>
-            <BrandHeaderSection doShowOnyxia={true} link={routes.home().link} />
+            <BrandHeaderSection
+                doShowOnyxia={!env.HEADER_HIDE_ONYXIA}
+                link={routes.home().link}
+            />
             <RegionSelect className={classes.regionSelect} tRegion={t("region")} />
             <ProjectSelect className={classes.projectSelect} tProject={t("project")} />
             <div className={classes.rightEndActionsContainer}>
