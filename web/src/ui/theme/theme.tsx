@@ -33,10 +33,10 @@ export const loadThemedFavicon = () =>
 export type Theme = typeof ofTypeTheme;
 
 export const customIcons = {
-    "servicesSvgUrl": `${env.PUBLIC_URL}/icons/services.svg`,
-    "secretsSvgUrl": `${env.PUBLIC_URL}/icons/secrets.svg`,
-    "accountSvgUrl": `${env.PUBLIC_URL}/icons/account.svg`,
-    "homeSvgUrl": `${env.PUBLIC_URL}/icons/home.svg`,
-    "filesSvgUrl": `${env.PUBLIC_URL}/icons/files.svg`,
-    "catalogSvgUrl": `${env.PUBLIC_URL}/icons/catalog.svg`
+    "servicesSvgUrl": `${env.PUBLIC_URL}/icons/services.svg?v=2`,
+    "secretsSvgUrl": `${env.PUBLIC_URL}/icons/secrets.svg?v=2`,
+    "accountSvgUrl": `${env.PUBLIC_URL}/icons/account.svg?v=2`,
+    "homeSvgUrl": `${env.PUBLIC_URL}/icons/home.svg?v=2`,
+    "filesSvgUrl": `${env.PUBLIC_URL}/icons/files.svg?v=2`,
+    "catalogSvgUrl": `${env.PUBLIC_URL}/icons/catalog.svg?v=2`
 };

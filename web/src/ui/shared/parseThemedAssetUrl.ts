@@ -7,19 +7,19 @@ import JSON5 from "json5";
 import { getSafeUrl } from "ui/shared/getSafeUrl";
 
 const zUrl = z.string().superRefine((data, ctx) => {
-    if (!/\.(svg)|(png)|(jpg)|(jpeg)|(webp)|(ico)$/i.test(data)) {
-        ctx.addIssue({
-            "code": z.ZodIssueCode.custom,
-            "message": `Your ThemedAssetUrl should point to an image file. Got: ${data}`
-        });
-    }
-
     try {
         getSafeUrl(data);
     } catch (error) {
         ctx.addIssue({
             "code": z.ZodIssueCode.custom,
             "message": String(error)
+        });
+    }
+
+    if (!/\.(svg)|(png)|(jpg)|(jpeg)|(webp)|(ico)$/i.test(data.split("?")[0])) {
+        ctx.addIssue({
+            "code": z.ZodIssueCode.custom,
+            "message": `Your ThemedAssetUrl should point to an image file. Got: ${data}`
         });
     }
 });

@@ -25,9 +25,9 @@ export async function loadThemedFavicon(params: {
         const linkProps = await (async (): Promise<
             { type: string; href: string } | undefined
         > => {
-            if (!faviconUrl.endsWith(".svg")) {
-                const extension = faviconUrl.split(".").pop();
+            const extension = faviconUrl.split("?")[0].split(".").pop();
 
+            if (extension !== "svg") {
                 assert(
                     extension !== undefined && ["png", "ico"].includes(extension),
                     "Expect a png or ico favicon"

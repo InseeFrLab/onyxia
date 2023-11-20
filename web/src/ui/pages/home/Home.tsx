@@ -137,7 +137,7 @@ export default function Home(props: Props) {
         if (env.HOMEPAGE_CARDS === undefined) {
             return id<CardProps["card"][]>([
                 {
-                    "pictogram": `${env.PUBLIC_URL}/pictograms/service.svg`,
+                    "pictogram": `${env.PUBLIC_URL}/pictograms/service.svg?v=2`,
                     "title": t("cardTitle1"),
                     "description": t("cardText1"),
                     "button": {
@@ -146,7 +146,7 @@ export default function Home(props: Props) {
                     }
                 },
                 {
-                    "pictogram": `${env.PUBLIC_URL}/pictograms/community.svg`,
+                    "pictogram": `${env.PUBLIC_URL}/pictograms/community.svg?v=2`,
                     "title": t("cardTitle2"),
                     "description": t("cardText2"),
                     "button": {
@@ -158,7 +158,7 @@ export default function Home(props: Props) {
                     ? []
                     : [
                           {
-                              "pictogram": `${env.PUBLIC_URL}/pictograms/storage.svg`,
+                              "pictogram": `${env.PUBLIC_URL}/pictograms/storage.svg?v=2`,
                               "title": t("cardTitle3"),
                               "description": t("cardText3"),
                               "button": {
