@@ -4,11 +4,11 @@ import { is } from "tsafe/is";
 import type { ThemedAssetUrl } from "onyxia-ui";
 import { getIsJSON5ObjectOrArray } from "ui/tools/getIsJSON5ObjectOrArray";
 import JSON5 from "json5";
-import { getSafeUrl } from "ui/shared/getSafeUrl";
+import { ensureUrlIsSafe } from "ui/shared/ensureUrlIsSafe";
 
 const zUrl = z.string().superRefine((data, ctx) => {
     try {
-        getSafeUrl(data);
+        ensureUrlIsSafe(data);
     } catch (error) {
         ctx.addIssue({
             "code": z.ZodIssueCode.custom,

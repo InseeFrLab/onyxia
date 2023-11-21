@@ -20,11 +20,11 @@
     "keycloakify": {
         "themeName": "onyxia",
         "extraThemeProperties": [
-            "ALLOWED_ASSET_ORIGIN=${env.ALLOWED_ASSET_ORIGIN:*}",
-            "HEADER_TEXT_BOLD=${env.HEADER_TEXT_BOLD:}",
-            "HEADER_TEXT_FOCUS=${env.HEADER_TEXT_FOCUS:}",
-            "PALETTE_OVERRIDE=${env.PALETTE_OVERRIDE:}",
-            "TAB_TITLE=${env.TAB_TITLE:}"
+            "RESOURCES_ALLOWED_ORIGINS=${env.ONYXIA_RESOURCES_ALLOWED_ORIGINS:*}",
+            "HEADER_TEXT_BOLD=${env.ONYXIA_HEADER_TEXT_BOLD:}",
+            "HEADER_TEXT_FOCUS=${env.ONYXIA_HEADER_TEXT_FOCUS:}",
+            "PALETTE_OVERRIDE=${env.ONYXIA_PALETTE_OVERRIDE:}",
+            "TAB_TITLE=${env.ONYXIA_TAB_TITLE:}"
         ]
     },
     "dependencies": {

@@ -28,7 +28,7 @@ import onyxiaNeumorphismDarkModeUrl from "ui/assets/svg/OnyxiaNeumorphismDarkMod
 import onyxiaNeumorphismLightModeUrl from "ui/assets/svg/OnyxiaNeumorphismLightMode.svg";
 import { getIsJSON5ObjectOrArray } from "ui/tools/getIsJSON5ObjectOrArray";
 import JSON5 from "json5";
-import { getSafeUrl } from "ui/shared/getSafeUrl";
+import { ensureUrlIsSafe } from "ui/shared/ensureUrlIsSafe";
 
 export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
     {
@@ -170,7 +170,8 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
             }
 
             if (!getIsJSON5ObjectOrArray(envValue)) {
-                return getSafeUrl(envValue);
+                ensureUrlIsSafe(envValue);
+                return envValue;
             }
 
             let tosUrlByLng: Partial<Record<Language, string>>;
@@ -180,10 +181,6 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
             } catch {
                 throw new Error(`${envName} malformed`);
             }
-
-            tosUrlByLng = Object.fromEntries(
-                Object.entries(tosUrlByLng).map(([lang, url]) => [lang, getSafeUrl(url)])
-            );
 
             {
                 const languages = objectKeys(tosUrlByLng);
@@ -208,6 +205,10 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
             if (Object.keys(tosUrlByLng).length === 0) {
                 return undefined;
             }
+
+            Object.values(tosUrlByLng).forEach(url => {
+                ensureUrlIsSafe(url);
+            });
 
             return tosUrlByLng;
         }
@@ -302,7 +303,7 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
                 const { fontFamily, dirUrl, ...rest } = parsedValue;
 
                 Object.values(rest).forEach(fontFileBasename =>
-                    getSafeUrl(`${dirUrl}/${fontFileBasename}`)
+                    ensureUrlIsSafe(`${dirUrl}/${fontFileBasename}`)
                 );
             }
 
@@ -1052,7 +1053,7 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
         "isUsedInKeycloakTheme": true,
         "validateAndParseOrGetDefault": ({ envValue }) => {
             assert(envValue !== "", "Should have default in .env");
-            getSafeUrl(envValue);
+            ensureUrlIsSafe(envValue);
             return envValue;
         }
     }
