@@ -3,8 +3,9 @@ import { palette } from "./palette";
 import { targetWindowInnerWidth } from "./targetWindowInnerWidth";
 import { env } from "env-parsed";
 import { loadThemedFavicon as loadThemedFavicon_base } from "./loadThemedFavicon";
+import { Evt } from "evt";
 
-const { OnyxiaUi, evtIsDarkModeEnabled, ofTypeTheme } = createOnyxiaUi({
+const { OnyxiaUi, evtTheme, ofTypeTheme } = createOnyxiaUi({
     "getTypographyDesc": params => ({
         ...defaultGetTypographyDesc({
             ...params,
@@ -25,12 +26,10 @@ const { OnyxiaUi, evtIsDarkModeEnabled, ofTypeTheme } = createOnyxiaUi({
 
 export { OnyxiaUi };
 
-export const loadThemedFavicon = () =>
-    loadThemedFavicon_base({
-        evtIsDarkModeEnabled
-    });
-
 export type Theme = typeof ofTypeTheme;
+
+export const loadThemedFavicon = () =>
+    loadThemedFavicon_base({ "evtTheme": Evt.loosenType(evtTheme) });
 
 export const customIcons = {
     "servicesSvgUrl": `${env.PUBLIC_URL}/icons/services.svg?v=2`,
