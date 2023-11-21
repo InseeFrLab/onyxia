@@ -28,13 +28,18 @@ COPY --from=build /app/.env .
 # public/index.html is infact an ejs template that needs to be rendered with the runtime environment variables, it's handled by cra-envs.
 COPY --from=build /app/public/index.html ./public/
 
-RUN echo $'#!/bin/sh\n\
-if [ -n "$CUSTOM_RESOURCES" ]; then\n\
-    wget -O /tmp/custom-resources.zip "$CUSTOM_RESOURCES"\n\
-    unzip /tmp/custom-resources.zip -d /usr/share/nginx/html/custom-resources\n\
-fi\n\
-npx embed-environnement-variables\n\
-exec nginx -g "daemon off;"' > /entrypoint.sh && chmod +x /entrypoint.sh
+# Generating /entrypoint.sh  
+# Be mindfull that the entrypoint is generated a build time but the 
+# bash code is executed at container startup.
+RUN echo $'                                                                    \n\
+#!/bin/sh                                                                      \n\
+if [ -n "$CUSTOM_RESOURCES" ]; then                                            \n\
+    wget -O /tmp/custom-resources.zip "$CUSTOM_RESOURCES"                      \n\
+    unzip /tmp/custom-resources.zip -d /usr/share/nginx/html/custom-resources  \n\
+fi                                                                             \n\
+npx embed-environnement-variables                                              \n\
+exec nginx -g "daemon off;"                                                    \n\
+' > /entrypoint.sh && chmod +x /entrypoint.sh
 
 # Run nginx as non-root
 RUN sed -i.orig -e '/user[[:space:]]\+nginx/d' -e 's@pid[[:space:]]\+.*@pid /tmp/nginx.pid;@' /etc/nginx/nginx.conf && \
