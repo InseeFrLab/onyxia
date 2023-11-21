@@ -4,8 +4,15 @@ import { targetWindowInnerWidth } from "./targetWindowInnerWidth";
 import { env } from "env-parsed";
 import { loadThemedFavicon as loadThemedFavicon_base } from "./loadThemedFavicon";
 import { Evt } from "evt";
+import { CacheProvider } from "@emotion/react";
+import { createCssAndCx } from "tss-react/cssAndCx";
+import createCache from "@emotion/cache";
 
-const { OnyxiaUi, evtTheme, ofTypeTheme } = createOnyxiaUi({
+const {
+    OnyxiaUi: OnyxiaUiWithoutEmotionCache,
+    evtTheme,
+    ofTypeTheme
+} = createOnyxiaUi({
     "getTypographyDesc": params => ({
         ...defaultGetTypographyDesc({
             ...params,
@@ -24,7 +31,35 @@ const { OnyxiaUi, evtTheme, ofTypeTheme } = createOnyxiaUi({
     "BASE_URL": env.PUBLIC_URL
 });
 
-export { OnyxiaUi };
+const emotionCache = createCache({
+    "key": "tss"
+});
+
+{
+    const onyxia = {};
+
+    Object.assign(window, { onyxia });
+
+    const { css, cx } = createCssAndCx({ "cache": emotionCache });
+
+    Object.assign(onyxia, { css, cx });
+
+    evtTheme.attach(theme => {
+        Object.assign(onyxia, { css, cx, theme });
+        window.dispatchEvent(new CustomEvent("onyxiaThemeUpdate"));
+    });
+
+    window.dispatchEvent(new CustomEvent("onyxiaReady"));
+}
+
+export function OnyxiaUi(props: { children: React.ReactNode }) {
+    const { children } = props;
+    return (
+        <CacheProvider value={emotionCache}>
+            <OnyxiaUiWithoutEmotionCache>{children}</OnyxiaUiWithoutEmotionCache>
+        </CacheProvider>
+    );
+}
 
 export type Theme = typeof ofTypeTheme;
 
