@@ -126,7 +126,7 @@ const { Header } = (() => {
         return (
             <header className={cx(classes.root, className)}>
                 <BrandHeaderSection
-                    doShowOnyxia={true}
+                    doShowOnyxia={false}
                     link={{
                         "href": referrerUrl ?? "#",
                         "onClick": () => {}
