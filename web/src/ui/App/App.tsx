@@ -3,8 +3,7 @@ import { tss } from "tss";
 import { Footer } from "./Footer";
 import { Header } from "./Header";
 import { useEffectOnValueChange } from "powerhooks/useEffectOnValueChange";
-import { useSplashScreen } from "onyxia-ui";
-import { useDarkMode } from "onyxia-ui";
+import { useSplashScreen, useDarkMode } from "onyxia-ui";
 import { env, injectTransferableEnvsInQueryParams } from "env-parsed";
 import { RouteProvider } from "ui/routes";
 import { createCoreProvider, useCoreState, useCoreFunctions } from "core";
@@ -13,13 +12,12 @@ import { evtLang } from "ui/i18n";
 import { getEnv } from "env";
 import {
     OnyxiaUi,
-    targetWindowInnerWidth,
+    ScreenScalerOutOfRangeFallbackProvider,
     loadThemedFavicon,
     injectCustomFontFaceIfNotAlreadyDone
 } from "ui/theme";
 import { PortraitModeUnsupported } from "ui/shared/PortraitModeUnsupported";
 import { useIsI18nFetching } from "ui/i18n";
-import { enableScreenScaler } from "screen-scaler/react";
 import { addParamToUrl } from "powerhooks/tools/urlSearchParams";
 import { LeftBar } from "./LeftBar";
 import { GlobalAlert } from "./GlobalAlert";
@@ -46,12 +44,6 @@ const { CoreProvider } = createCoreProvider({
             )[0],
     "disablePersonalInfosInjectionInGroup": env.DISABLE_PERSONAL_INFOS_INJECTION_IN_GROUP,
     "isCommandBarEnabledByDefault": !env.DISABLE_COMMAND_BAR
-});
-
-const { ScreenScalerOutOfRangeFallbackProvider } = enableScreenScaler({
-    "rootDivId": "root",
-    "targetWindowInnerWidth": ({ zoomFactor, isPortraitOrientation }) =>
-        isPortraitOrientation ? undefined : targetWindowInnerWidth * zoomFactor
 });
 
 export default function App() {

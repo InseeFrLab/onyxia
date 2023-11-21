@@ -7,6 +7,14 @@ import { Evt } from "evt";
 import { CacheProvider } from "@emotion/react";
 import { createCssAndCx } from "tss-react/cssAndCx";
 import createCache from "@emotion/cache";
+import { enableScreenScaler } from "screen-scaler/react";
+
+// NOTE: This must happen very early-on, if overwrite some DOM APIs.
+export const { ScreenScalerOutOfRangeFallbackProvider } = enableScreenScaler({
+    "rootDivId": "root",
+    "targetWindowInnerWidth": ({ zoomFactor, isPortraitOrientation }) =>
+        isPortraitOrientation ? undefined : targetWindowInnerWidth * zoomFactor
+});
 
 const {
     OnyxiaUi: OnyxiaUiWithoutEmotionCache,
@@ -45,7 +53,7 @@ const emotionCache = createCache({
     Object.assign(onyxia, { css, cx });
 
     evtTheme.attach(theme => {
-        Object.assign(onyxia, { css, cx, theme });
+        Object.assign(onyxia, { theme });
         window.dispatchEvent(new CustomEvent("onyxiaThemeUpdate"));
     });
 
