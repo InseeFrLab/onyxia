@@ -11,10 +11,10 @@ import { useConst } from "powerhooks/useConst";
 import { declareComponentKeys } from "i18nifty";
 import type { PageRoute } from "./route";
 import { ThemedImage } from "onyxia-ui/ThemedImage";
-import { useResolveThemedAssetUrl } from "onyxia-ui";
 import { LocalizedMarkdown } from "ui/shared/Markdown";
 import { LinkFromConfigButton } from "./LinkFromConfigButton";
 import { id } from "tsafe/id";
+import { useThemedImageUrl } from "onyxia-ui/ThemedImage";
 
 type Props = {
     route: PageRoute;
@@ -30,13 +30,10 @@ export default function Home(props: Props) {
         }
     });
 
-    const { resolveThemedAssetUrl } = useResolveThemedAssetUrl();
+    const backgroundUrl = useThemedImageUrl(env.BACKGROUND_ASSET);
 
     const { classes, cx } = useStyles({
-        "backgroundUrl":
-            env.BACKGROUND_ASSET === undefined
-                ? undefined
-                : resolveThemedAssetUrl(env.BACKGROUND_ASSET),
+        backgroundUrl,
         "hasLogo": env.HOMEPAGE_LOGO !== undefined
     });
 

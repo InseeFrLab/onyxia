@@ -14,8 +14,6 @@ import { ReactComponent as AgentconnectBtnPrincipal } from "ui/assets/svg/agentc
 import { ReactComponent as AgentconnectBtnPrincipalHover } from "ui/assets/svg/agentconnect-btn-principal-hover.svg";
 import { ReactComponent as AgentconnectBtnAlternatif } from "ui/assets/svg/agentconnect-btn-alternatif.svg";
 import { ReactComponent as AgentconnectBtnAlternatifHover } from "ui/assets/svg/agentconnect-btn-alternatif-hover.svg";
-import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
-import { id } from "tsafe/id";
 
 export default function Login(
     props: PageProps<Extract<KcContext, { pageId: "login.ftl" }>, I18n>
@@ -179,7 +177,6 @@ export default function Login(
                                     name="login"
                                     type="submit"
                                     disabled={isLoginButtonDisabled}
-                                    endIcon={id<MuiIconComponentName>("RocketLaunch")}
                                 >
                                     {msgStr("doLogIn")}
                                 </Button>
