@@ -17,6 +17,7 @@ if (!fs.existsSync(envLocalYamlFilePath)) {
                 `onyxia:`,
                 `  web:`,
                 `    env:`,
+                `      #CUSTOM_RESOURCES: "https://example.com/onyxia-resources.zip"`,
                 `      ONYXIA_API_URL: https://datalab.sspcloud.fr/api`,
                 `      HEADER_TEXT_BOLD: My Organization`,
                 `      HEADER_TEXT_FOCUS: Datalab`,
