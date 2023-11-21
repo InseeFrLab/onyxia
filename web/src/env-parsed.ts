@@ -64,7 +64,7 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
             try {
                 paletteOverride = JSON5.parse(envValue);
             } catch (err) {
-                throw new Error(`${envName} is not parsable JSON`);
+                throw new Error(`${envName} is not parsable JSON5: ${envValue}`);
             }
 
             assert(
