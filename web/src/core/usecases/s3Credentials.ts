@@ -20,7 +20,7 @@ export type Technology =
     | "R (paws)"
     | "Python (s3fs)"
     | "Python (boto3)"
-    | "shell environnement variables"
+    | "shell environment variables"
     | "MC client"
     | "s3cmd"
     | "rclone";
