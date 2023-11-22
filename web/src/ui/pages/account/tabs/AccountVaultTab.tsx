@@ -102,6 +102,7 @@ export const AccountVaultTab = memo((props: Props) => {
                         "text": uiState[key]
                     })}
                     onRequestCopy={onFieldRequestCopyFactory(uiState[key])}
+                    isSensitiveInformation={key === "vaultToken"}
                 />
             ))}
             <Divider className={classes.divider} variant="middle" />
