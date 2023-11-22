@@ -129,6 +129,7 @@ export const AccountKubernetesTab = memo((props: Props) => {
                             text
                         })}
                         onRequestCopy={onFieldRequestCopyFactory(text)}
+                        isSensitiveInformation={key === "refresh-token" || key === "id-token"}
                     />
                 );
             })}
