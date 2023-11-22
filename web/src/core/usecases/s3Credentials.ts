@@ -246,7 +246,7 @@ export const selectors = (() => {
                         case "Python (s3fs)":
                         case "Python (boto3)":
                             return "credentials.py";
-                        case "shell environnement variables":
+                        case "shell environment variables":
                         case "MC client":
                             return ".bashrc";
                         case "s3cmd":
@@ -306,7 +306,7 @@ s3 = boto3.client("s3",endpoint_url = 'https://'+'${credentials.AWS_S3_ENDPOINT}
                   aws_secret_access_key= '${credentials.AWS_SECRET_ACCESS_KEY}', 
                   aws_session_token = '${credentials.AWS_SESSION_TOKEN}')
 						`;
-                        case "shell environnement variables":
+                        case "shell environment variables":
                             return `
 export AWS_ACCESS_KEY_ID=${credentials.AWS_ACCESS_KEY_ID}
 export AWS_SECRET_ACCESS_KEY=${credentials.AWS_SECRET_ACCESS_KEY}
@@ -420,7 +420,7 @@ session_token = ${credentials.AWS_SESSION_TOKEN}
                         case "Python (s3fs)":
                         case "Python (boto3)":
                             return "python";
-                        case "shell environnement variables":
+                        case "shell environment variables":
                         case "MC client":
                             return "bash";
                         case "s3cmd":
