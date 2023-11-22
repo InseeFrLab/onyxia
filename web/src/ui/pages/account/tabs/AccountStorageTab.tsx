@@ -32,7 +32,7 @@ const technologies = [
     "R (paws)",
     "Python (s3fs)",
     "Python (boto3)",
-    "shell environnement variables",
+    "shell environment variables",
     "MC client",
     "s3cmd",
     "rclone"
@@ -150,6 +150,7 @@ export const AccountStorageTab = memo((props: Props) => {
                         </>
                     }
                     onRequestCopy={onFieldRequestCopyFactory(credentials[key])}
+                    isSensitiveInformation={key === "AWS_SECRET_ACCESS_KEY" || key === "AWS_SESSION_TOKEN"}
                 />
             ))}
             <Divider className={classes.divider} variant="middle" />
