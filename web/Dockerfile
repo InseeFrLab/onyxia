@@ -31,8 +31,7 @@ COPY --from=build /app/public/index.html ./public/
 # Generating /entrypoint.sh  
 # Be mindfull that the entrypoint is generated a build time but the 
 # bash code is executed at container startup.
-RUN echo $'                                                                    \n\
-#!/bin/sh                                                                      \n\
+RUN echo $'#!/bin/sh                                                           \n\
 if [ -n "$CUSTOM_RESOURCES" ]; then                                            \n\
     wget -O /tmp/custom-resources.zip "$CUSTOM_RESOURCES"                      \n\
     unzip /tmp/custom-resources.zip -d /usr/share/nginx/html/custom-resources  \n\
