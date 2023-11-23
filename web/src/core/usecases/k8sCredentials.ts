@@ -163,7 +163,7 @@ const { getContext } = createUsecaseContextApi<{
 
 export const selectors = (() => {
     const readyState = (rootState: RootState): State.Ready | undefined => {
-        const state = rootState.k8sCredentials;
+        const state = rootState[name];
         switch (state.stateDescription) {
             case "ready":
                 return state;

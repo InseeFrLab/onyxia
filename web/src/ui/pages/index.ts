@@ -7,6 +7,7 @@ import * as mySecrets from "./mySecrets";
 import * as myServices from "./myServices";
 import * as page404 from "./page404";
 import * as terms from "./terms";
+import * as sqlOlapShell from "./sqlOlapShell";
 
 import { objectKeys } from "tsafe/objectKeys";
 import type { UnionToIntersection } from "tsafe";
@@ -21,7 +22,8 @@ export const pages = {
     mySecrets,
     myServices,
     page404,
-    terms
+    terms,
+    sqlOlapShell
 };
 
 export const routeDefs = {} as UnionToIntersection<

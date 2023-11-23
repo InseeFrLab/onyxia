@@ -7,7 +7,7 @@ import { useRoute, routes, urlToLink } from "ui/routes";
 import { id } from "tsafe/id";
 import { env } from "env-parsed";
 import { declareComponentKeys } from "i18nifty";
-import { useCoreFunctions } from "core";
+import { useCoreFunctions, useCoreState, selectors } from "core";
 import { assert, type Equals } from "tsafe/assert";
 import { customIcons } from "ui/theme";
 import { symToStr } from "tsafe/symToStr";
@@ -21,6 +21,8 @@ export const LeftBar = memo((props: Props) => {
     const { className } = props;
 
     const { fileExplorer, secretExplorer } = useCoreFunctions();
+
+    const { userConfigs } = useCoreState(selectors.userConfigs.userConfigs);
 
     const route = useRoute();
 
@@ -69,6 +71,15 @@ export const LeftBar = memo((props: Props) => {
                               "icon": customIcons.secretsSvgUrl,
                               "label": t("mySecrets"),
                               "link": routes.mySecrets().link
+                          } as const
+                      }),
+                ...(!userConfigs.isDevModeEnabled
+                    ? ({} as never)
+                    : {
+                          "sqlOlapShell": {
+                              "icon": "Terminal",
+                              "label": "SQL OLAP Shell",
+                              "link": routes.sqlOlapShell().link
                           } as const
                       }),
                 ...(!fileExplorer.getIsEnabled()
@@ -126,6 +137,8 @@ export const LeftBar = memo((props: Props) => {
                         return "mySecrets";
                     case "myFiles":
                         return "myFiles";
+                    case "sqlOlapShell":
+                        return "sqlOlapShell";
                     case "page404":
                         return null;
                     case "terms":

@@ -12,6 +12,7 @@ import type { Oidc } from "core/ports/Oidc";
 import type { S3Client } from "core/ports/S3Client";
 import type { ReturnType } from "tsafe/ReturnType";
 import type { Language } from "core/ports/OnyxiaApi/Language";
+import { createSqlOlap } from "core/adapters/sqlOlap/default";
 
 type CoreParams = {
     /** Empty string for using mock */
@@ -118,7 +119,8 @@ export async function createCore(params: CoreParams) {
         /** prettier-ignore */
         "s3Client": createObjectThatThrowsIfAccessed<S3Client>({
             "debugMessage": "s3 client is not yet initialized"
-        })
+        }),
+        "sqlOlap": createSqlOlap()
     };
 
     const core = createCoreFromUsecases({
