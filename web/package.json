@@ -50,6 +50,8 @@
         "i18nifty": "^3.0.3",
         "json5": "^2.2.3",
         "keycloakify": "^8.4.1",
+        "@duckdb/duckdb-wasm": "^1.13.1-dev230.0",
+        "@duckdb/duckdb-wasm-shell": "^1.13.1-dev230.0",
         "memoizee": "^0.4.14",
         "minimal-polyfills": "^2.2.3",
         "minio": "^7.1.1",
