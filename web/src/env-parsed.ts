@@ -1117,6 +1117,39 @@ function createParsedEnvs<Parser extends Entry<EnvName>>(
         }
     );
 
+    const localStoragePrefix = "onyxiaTheme_";
+
+    local_storage_invalidation_strategy: {
+        if (kcContext === undefined) {
+            break local_storage_invalidation_strategy;
+        }
+
+        const themeVersionLocalStorageKey = `${localStoragePrefix}themeVersion`;
+
+        const localStorageThemeVersion = localStorage.getItem(
+            themeVersionLocalStorageKey
+        );
+
+        if (localStorageThemeVersion === kcContext.themeVersion) {
+            break local_storage_invalidation_strategy;
+        }
+
+        // Remove all keys from localStorage that start with "onyxiaTheme_"
+        for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+
+            if (key === null) {
+                continue;
+            }
+
+            if (key.startsWith(localStoragePrefix)) {
+                localStorage.removeItem(key);
+            }
+        }
+
+        localStorage.setItem(themeVersionLocalStorageKey, kcContext.themeVersion);
+    }
+
     for (const parser of parsers) {
         const { envName, validateAndParseOrGetDefault, isUsedInKeycloakTheme } = parser;
 
@@ -1133,6 +1166,8 @@ function createParsedEnvs<Parser extends Entry<EnvName>>(
                     `Env ${envName} not labeled as being used in keycloak theme`
                 );
             }
+
+            const localStorageKey = `${localStoragePrefix}${envName}`;
 
             look_in_url: {
                 if (
@@ -1160,10 +1195,10 @@ function createParsedEnvs<Parser extends Entry<EnvName>>(
                     const kcEnvValue = (kcContext as any).properties[envName] ?? "";
 
                     if (kcEnvValue !== "") {
-                        localStorage.removeItem(envName);
+                        localStorage.removeItem(localStorageKey);
                         envValue = kcEnvValue;
                     } else {
-                        localStorage.setItem(envName, envValue);
+                        localStorage.setItem(localStorageKey, envValue);
                     }
                 }
 
@@ -1183,7 +1218,7 @@ function createParsedEnvs<Parser extends Entry<EnvName>>(
                     break restore_from_local_storage;
                 }
 
-                const envValue = localStorage.getItem(envName);
+                const envValue = localStorage.getItem(localStorageKey);
 
                 if (envValue === null) {
                     break restore_from_local_storage;
