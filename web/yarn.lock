@@ -9533,12 +9533,12 @@ husky@^4.3.8:
     slash "^3.0.0"
     which-pm-runs "^1.0.0"
 
-i18nifty@^3.0.3:
-  version "3.0.3"
-  resolved "https://registry.yarnpkg.com/i18nifty/-/i18nifty-3.0.3.tgz#69a326799648b76bc72138a23e85ff4a4be181cf"
-  integrity sha512-vUDoFCDDQQkolfgOT8FEtlQtSek9pW6iXAfYUQnJz2rkdFRsgR7B1laHpeQ7iw8XscWGmcxqGzIqZFiYP3j5Sg==
+i18nifty@^3.1.2:
+  version "3.1.2"
+  resolved "https://registry.yarnpkg.com/i18nifty/-/i18nifty-3.1.2.tgz#f82bdb9b6b40a038997790d82492db7d4cc72b67"
+  integrity sha512-QsHrFzH0DEEW2WPXKLyVjFEnEaL3n1W+9P9Ul7jCiyrRxdY1tGaBxNjZSoOYCoaZOMP5t2a6KRCuYa50gNUI/A==
   dependencies:
-    powerhooks "^1.0.1"
+    powerhooks "^1.0.5"
     tsafe "^1.6.5"
 
 iconv-lite@0.4.24:
@@ -13458,19 +13458,19 @@ postcss@^8.0.9, postcss@^8.2.15, postcss@^8.3.5, postcss@^8.4.19, postcss@^8.4.4
     picocolors "^1.0.0"
     source-map-js "^1.0.2"
 
-powerhooks@^1.0.1:
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/powerhooks/-/powerhooks-1.0.1.tgz#23973fa8b6a81cbcb3b7107c147d2f294f7a8d7a"
-  integrity sha512-HvB3yKK3uF1P5i+GIZYebRPh6y9FRsrG0VvbQ2b9k/FUFxjMZ54sx2P+pRtsMyhChK5/nb98jdwovRJsqTXpGQ==
-  dependencies:
-    evt "^2.5.2"
-    memoizee "^0.4.15"
-    tsafe "^1.6.4"
-
 powerhooks@^1.0.3:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/powerhooks/-/powerhooks-1.0.3.tgz#b5ab065d663f4ac03c9fa1638f9c0aa70ab09454"
   integrity sha512-zvakanvHYkkbsnfOJmMKHV0jtCfgRF1ji37BPjX6/JA8jAiqkVm1OWlis2l+pK0mvEpOz7boZounD0/AxD5sSA==
+  dependencies:
+    evt "^2.5.3"
+    memoizee "^0.4.15"
+    tsafe "^1.6.5"
+
+powerhooks@^1.0.5:
+  version "1.0.5"
+  resolved "https://registry.yarnpkg.com/powerhooks/-/powerhooks-1.0.5.tgz#750a31856b079675e79dfbd462e569cb6ea4a996"
+  integrity sha512-Hy8OuHI+Ky3SIPtjcWCcUFqakdJjJB5Lnh26AHuoofUbO/G6LLe4h3jrFKQlbilY1DgpbJJzJOAyHEFmdp6byQ==
   dependencies:
     evt "^2.5.3"
     memoizee "^0.4.15"

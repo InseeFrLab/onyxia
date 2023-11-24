@@ -4,3 +4,4 @@
 # But not these files...
 !.gitignore
 !README.md
+!my-plugin.js

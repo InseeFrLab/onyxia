@@ -32,6 +32,8 @@ if (!fs.existsSync(envLocalYamlFilePath)) {
                 `            url: "https://www.sspcloud.fr/formation"`,
                 `          }`,
                 `        ]`,
+                `      CUSTOM_HTML_HEAD: |`,
+                `          <script src="%PUBLIC_URL%/custom-resources/my-plugin.js"></script>`,
                 ``
             ].join("\n"),
             "utf8"

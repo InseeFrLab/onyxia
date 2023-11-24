@@ -9,6 +9,7 @@ import { statefulObservableToStatefulEvt } from "powerhooks/tools/StatefulObserv
 import { env } from "env-parsed";
 import { objectEntries } from "tsafe/objectEntries";
 import { objectFromEntries } from "tsafe/objectFromEntries";
+import { pluginSystemInitI18n } from "pluginSystem";
 export { declareComponentKeys };
 
 export const {
@@ -18,7 +19,8 @@ export const {
     $lang,
     useResolveLocalizedString,
     useIsI18nFetching,
-    getTranslation
+    getTranslation,
+    $readyLang
 } = createI18nApi<ComponentKey>()(
     {
         "languages": env.ENABLED_LANGUAGES,
@@ -37,11 +39,19 @@ export const {
     }
 );
 
-export type LocalizedString = GenericLocalizedString<Language>;
-
 export const evtLang = statefulObservableToStatefulEvt({
     "statefulObservable": $lang
 });
+
+pluginSystemInitI18n({
+    "setLang": lang => (evtLang.state = lang),
+    "evtReadyLang": statefulObservableToStatefulEvt({
+        "statefulObservable": $readyLang
+    }),
+    getTranslation
+});
+
+export type LocalizedString = GenericLocalizedString<Language>;
 
 export const languagesPrettyPrint: Record<Language, string> = objectFromEntries(
     objectEntries({

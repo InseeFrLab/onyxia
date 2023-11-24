@@ -13,6 +13,7 @@ import type { S3Client } from "core/ports/S3Client";
 import type { ReturnType } from "tsafe/ReturnType";
 import type { Language } from "core/ports/OnyxiaApi/Language";
 import { createSqlOlap } from "core/adapters/sqlOlap/default";
+import { pluginSystemInitCore } from "pluginSystem";
 
 type CoreParams = {
     /** Empty string for using mock */
@@ -203,6 +204,12 @@ export async function createCore(params: CoreParams) {
 
         await core.dispatch(usecases.userAccountManagement.protectedThunks.initialize());
     }
+
+    pluginSystemInitCore({
+        "core": {
+            "note": "TODO"
+        }
+    });
 
     return core;
 }

@@ -8,6 +8,7 @@ import { CacheProvider } from "@emotion/react";
 import { createCssAndCx } from "tss-react/cssAndCx";
 import createCache from "@emotion/cache";
 import { enableScreenScaler } from "screen-scaler/react";
+import { pluginSystemInitTheme } from "pluginSystem";
 
 // NOTE: This must happen very early-on, if overwrite some DOM APIs.
 export const { ScreenScalerOutOfRangeFallbackProvider } = enableScreenScaler({
@@ -43,22 +44,10 @@ const emotionCache = createCache({
     "key": "tss"
 });
 
-{
-    const onyxia = {};
-
-    Object.assign(window, { onyxia });
-
-    const { css, cx } = createCssAndCx({ "cache": emotionCache });
-
-    Object.assign(onyxia, { css, cx });
-
-    evtTheme.attach(theme => {
-        Object.assign(onyxia, { theme });
-        window.dispatchEvent(new CustomEvent("onyxiaThemeUpdate"));
-    });
-
-    window.dispatchEvent(new CustomEvent("onyxiaReady"));
-}
+pluginSystemInitTheme({
+    "evtTheme": Evt.loosenType(evtTheme),
+    ...createCssAndCx({ "cache": emotionCache })
+});
 
 export function OnyxiaUi(props: { children: React.ReactNode }) {
     const { children } = props;
