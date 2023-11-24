@@ -2,6 +2,7 @@ import { createRouter, type Link } from "type-route";
 import { createTypeRouteMock } from "ui/tools/typeRouteMock";
 import { isStorybook } from "ui/tools/isStorybook";
 import { routeDefs, routerOpts } from "ui/pages";
+import { pluginSystemInitRouter } from "pluginSystem";
 
 const {
     RouteProvider,
@@ -9,6 +10,8 @@ const {
     routes: realRoutes,
     session
 } = createRouter(routerOpts, routeDefs);
+
+pluginSystemInitRouter({ "routes": realRoutes, session });
 
 export { RouteProvider, useRoute, session };
 

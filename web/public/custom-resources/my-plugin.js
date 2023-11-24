@@ -13,8 +13,13 @@ window.addEventListener("onyxiaready", ()=> {
             case "lang updated": 
                 console.log(`Language changed to ${onyxia.lang}`);
                 break;
+            case "route changed":
+                console.log(`Route changed: ${onyxia.route.name}`);
+                break;
+            case "route params changed":
+                console.log(`Route params changed: `, onyxia.route.params);
+                break;
             default:
-                // Never
         }
 
     });

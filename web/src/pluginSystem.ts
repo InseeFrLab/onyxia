@@ -3,6 +3,9 @@ import type { StatefulReadonlyEvt } from "evt";
 import type { Theme } from "onyxia-ui";
 import type { Language, getTranslation as ofTypeGetTranslation } from "ui/i18n";
 import { symToStr } from "tsafe/symToStr";
+import type { session as ofTypeSession, routes as ofTypeRoutes } from "ui/routes";
+import type { Param0 } from "tsafe/Param0";
+import { id } from "tsafe/id";
 
 type Core = {
     note: "TODO";
@@ -16,8 +19,16 @@ type Onyxia = {
     lang: Language;
     setLang: (lang: Language) => void;
     getTranslation: typeof ofTypeGetTranslation;
+    routes: typeof ofTypeRoutes;
+    route: ReturnType<(typeof ofTypeSession)["getInitialRoute"]>;
     addEventListener: (
-        callback: (eventName: "theme updated" | "language changed") => void
+        callback: (
+            eventName:
+                | "theme updated"
+                | "language changed"
+                | "route changed"
+                | "route params changed"
+        ) => void
     ) => void;
 };
 
@@ -35,22 +46,15 @@ const attachToGlobalIfReady = () => {
     window.dispatchEvent(new CustomEvent("onyxiaready"));
 };
 
-const callbacks: ((eventName: "theme updated" | "language changed") => void)[] = [
-    attachToGlobalIfReady
-];
+const callbacks: Param0<Onyxia["addEventListener"]>[] = [attachToGlobalIfReady];
 
 const onyxia: Onyxia = {
-    "core": undefined as any,
-    "theme": undefined as any,
-    "css": undefined as any,
-    "cx": undefined as any,
-    "lang": undefined as any,
-    "setLang": undefined as any,
-    "getTranslation": undefined as any,
-    "addEventListener": callback => {
-        callbacks.push(callback);
-    }
-};
+    ...id<Pick<Onyxia, "addEventListener">>({
+        "addEventListener": callback => {
+            callbacks.push(callback);
+        }
+    })
+} as any;
 
 export function pluginSystemInitCore(params: { core: Core }) {
     const { core } = params;
@@ -74,6 +78,27 @@ export function pluginSystemInitTheme(params: {
         onyxia.theme = theme;
 
         callbacks.forEach(callback => callback("theme updated"));
+    });
+}
+
+export function pluginSystemInitRouter(params: {
+    routes: typeof ofTypeRoutes;
+    session: typeof ofTypeSession;
+}) {
+    const { routes, session } = params;
+
+    onyxia.routes = routes;
+
+    onyxia.route = session.getInitialRoute();
+
+    session.listen(nextRoute => {
+        const isNameChange = nextRoute.name !== onyxia.route.name;
+
+        onyxia.route = nextRoute;
+
+        callbacks.forEach(callback =>
+            callback(isNameChange ? "route changed" : "route params changed")
+        );
     });
 }
 
