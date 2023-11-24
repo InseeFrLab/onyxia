@@ -1,6 +1,5 @@
-import type { State as RootState } from "core/core";
-import { createSelector } from "@reduxjs/toolkit";
-
+import type { State as RootState } from "core/bootstrap";
+import { createSelector } from "redux-clean-architecture";
 import { name, type RunningService } from "./state";
 
 const state = (rootState: RootState) => rootState[name];

@@ -1,6 +1,6 @@
 import { assert } from "tsafe/assert";
-import type { State as RootState } from "core/core";
-import { createSelector } from "@reduxjs/toolkit";
+import type { State as RootState } from "core/bootstrap";
+import { createSelector } from "redux-clean-architecture";
 import { name, type State } from "./state";
 import type { LocalizedString } from "core/ports/OnyxiaApi";
 
@@ -176,7 +176,7 @@ const availableCatalogs = createSelector(
     }
 );
 
-const wrap = createSelector(
+const main = createSelector(
     isReady,
     selectedCatalog,
     filteredCharts,
@@ -201,4 +201,4 @@ const wrap = createSelector(
     }
 );
 
-export const selectors = { wrap };
+export const selectors = { main };

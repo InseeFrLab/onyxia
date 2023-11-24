@@ -13,7 +13,7 @@ import { declareComponentKeys } from "i18nifty";
 import { useConstCallback } from "powerhooks/useConstCallback";
 import { IconButton } from "onyxia-ui/IconButton";
 import { CircularProgress } from "onyxia-ui/CircularProgress";
-import { useCoreState, selectors, useCoreFunctions } from "core";
+import { useCoreState, useCore } from "core";
 import { useFromNow } from "ui/shared/useMoment";
 import type { Link } from "type-route";
 import { routes } from "ui/routes";
@@ -32,9 +32,9 @@ export const AccountVaultTab = memo((props: Props) => {
 
     const { classes, theme } = useStyles();
 
-    const { vaultCredentials } = useCoreFunctions();
+    const { vaultCredentials } = useCore().functions;
 
-    const { uiState } = useCoreState(selectors.vaultCredentials.uiState);
+    const uiState = useCoreState("vaultCredentials", "main");
 
     const { fromNowText } = useFromNow({ "dateTime": uiState?.expirationTime ?? 0 });
 

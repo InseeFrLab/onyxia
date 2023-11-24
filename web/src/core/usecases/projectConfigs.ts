@@ -1,12 +1,12 @@
 import { type FormFieldValue } from "./launcher/FormField";
 import type { RestorableConfig } from "./restorableConfigManager";
 import { assert, type Equals } from "tsafe/assert";
-import type { Thunks } from "../core";
 import type { Project } from "../ports/OnyxiaApi";
-import { createSlice } from "@reduxjs/toolkit";
-import type { PayloadAction } from "@reduxjs/toolkit";
-import { createObjectThatThrowsIfAccessed } from "redux-clean-architecture";
-import type { State as RootState, CreateEvt } from "../core";
+import {
+    createUsecaseActions,
+    createObjectThatThrowsIfAccessed
+} from "redux-clean-architecture";
+import type { State as RootState, CreateEvt, Thunks } from "core/bootstrap";
 import * as userConfigs from "./userConfigs";
 import { join as pathJoin } from "path";
 import type { Id } from "tsafe/id";
@@ -35,12 +35,12 @@ assert<Equals<keyof ProjectConfigs & keyof userConfigs.UserConfigs, never>>(true
 
 export const name = "projectConfigs";
 
-export const { reducer, actions } = createSlice({
+export const { reducer, actions } = createUsecaseActions({
     name,
     "initialState": createObjectThatThrowsIfAccessed<State>(),
     "reducers": {
-        "initialized": (_, { payload }: PayloadAction<State>) => payload,
-        "projectChanged": (state, { payload }: PayloadAction<{ projectId: string }>) => {
+        "initialized": (_, { payload }: { payload: State }) => payload,
+        "projectChanged": (state, { payload }: { payload: { projectId: string } }) => {
             const { projectId } = payload;
 
             state.selectedProjectId = projectId;
@@ -112,7 +112,7 @@ export const protectedThunks = {
 
             evtAction.attach(
                 data =>
-                    data.sliceName === name &&
+                    data.usecaseName === name &&
                     (data.actionName === "initialized" ||
                         data.actionName === "projectChanged"),
                 async () => {
@@ -423,7 +423,16 @@ export const selectors = (() => {
         return selectedProject;
     };
 
-    return { selectedProject };
+    /** Undefined if use not authenticated */
+    const main = (rootState: RootState): State | undefined => {
+        if (!rootState.userAuthentication.isUserLoggedIn) {
+            return undefined;
+        }
+
+        return rootState[name];
+    };
+
+    return { selectedProject, main };
 })();
 
 function getDefaultConfig<K extends keyof ProjectConfigs>(key_: K): ProjectConfigs[K] {
@@ -459,7 +468,7 @@ export type ChangeConfigValueParams<
 
 export const createEvt = (({ evtAction }) =>
     evtAction.pipe(action =>
-        action.sliceName === name && action.actionName === "projectChanged"
+        action.usecaseName === name && action.actionName === "projectChanged"
             ? [
                   {
                       "actionName": action.actionName,

@@ -5,7 +5,7 @@ import { useSplashScreen } from "onyxia-ui";
 import { keyframes } from "tss-react";
 import { objectKeys } from "tsafe/objectKeys";
 import { pages } from "ui/pages";
-import { useCoreFunctions } from "core";
+import { useCore } from "core";
 import { CircularProgress } from "onyxia-ui/CircularProgress";
 
 type Props = {
@@ -17,7 +17,7 @@ export const Main = memo((props: Props) => {
 
     const route = useRoute();
 
-    const { userAuthentication } = useCoreFunctions();
+    const { userAuthentication } = useCore().functions;
 
     const { classes } = useStyles();
 

@@ -1,19 +1,17 @@
-import type { Thunks } from "../core";
-import type { PayloadAction } from "@reduxjs/toolkit";
-import { createSlice } from "@reduxjs/toolkit";
 import { id } from "tsafe/id";
 import { Evt } from "evt";
-import { createUsecaseContextApi } from "redux-clean-architecture";
+import type { Thunks, State as RootState } from "core/bootstrap";
+import { createUsecaseActions, createUsecaseContextApi } from "redux-clean-architecture";
 
 type State = string | null;
 
 export const name = "publicIp";
 
-export const { reducer, actions } = createSlice({
+export const { reducer, actions } = createUsecaseActions({
     name,
     "initialState": id<State>(null),
     "reducers": {
-        "fetched": (_, { payload }: PayloadAction<string>) => payload,
+        "fetched": (_state, { payload }: { payload: string }) => payload,
         "publicIpMightHaveChanged": () => null
     }
 });
@@ -28,13 +26,13 @@ export const thunks = {
     "fetch":
         () =>
         async (...args): Promise<{ publicIp: string }> => {
-            const [dispatch, , extraArg] = args;
+            const [dispatch, , rootContext] = args;
 
-            const { onyxiaApi } = extraArg;
+            const { onyxiaApi } = rootContext;
 
             const publicIp = await onyxiaApi.getIp();
 
-            const context = getContext(extraArg);
+            const context = getContext(rootContext);
 
             if (!context.isEvtOnlineRegisteredByStoreInst) {
                 Evt.from(window, "online").attach(() => {
@@ -53,3 +51,12 @@ export const thunks = {
             return { publicIp };
         }
 } satisfies Thunks;
+
+export const selectors = (() => {
+    const main = (rootState: RootState): string | null => {
+        const publicIp = rootState[name];
+        return publicIp;
+    };
+
+    return { main };
+})();

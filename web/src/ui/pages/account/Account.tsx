@@ -14,7 +14,7 @@ import { PageHeader } from "onyxia-ui/PageHeader";
 import { useConstCallback } from "powerhooks/useConstCallback";
 import { tss } from "tss";
 import { declareComponentKeys } from "i18nifty";
-import { useCoreFunctions } from "core";
+import { useCore } from "core";
 import { assert, type Equals } from "tsafe/assert";
 import type { PageRoute } from "./route";
 import { customIcons } from "ui/theme";
@@ -29,7 +29,7 @@ export default function Account(props: Props) {
 
     const { t } = useTranslation({ Account });
 
-    const { s3Credentials, k8sCredentials, vaultCredentials } = useCoreFunctions();
+    const { s3Credentials, k8sCredentials, vaultCredentials } = useCore().functions;
 
     const tabs = useMemo(
         () =>

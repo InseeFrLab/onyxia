@@ -3,7 +3,7 @@ import { PageHeader } from "onyxia-ui/PageHeader";
 import { useEffect, useMemo } from "react";
 import { useConstCallback } from "powerhooks/useConstCallback";
 import { copyToClipboard } from "ui/tools/copyToClipboard";
-import { useCoreState, useCoreFunctions, useCoreEvts, selectors } from "core";
+import { useCoreState, useCore } from "core";
 import { Explorer } from "./Explorer";
 import { ExplorerProps } from "./Explorer";
 import { useTranslation } from "ui/i18n";
@@ -30,20 +30,18 @@ export default function MyFiles(props: Props) {
 
     const { t } = useTranslation({ MyFiles });
 
-    const { currentWorkingDirectoryView } = useCoreState(
-        selectors.fileExplorer.currentWorkingDirectoryView
+    const currentWorkingDirectoryView = useCoreState(
+        "fileExplorer",
+        "currentWorkingDirectoryView"
     );
 
-    const { commandLogsEntries } = useCoreState(
-        selectors.fileExplorer.commandLogsEntries
-    );
-    const {
-        userConfigs: { isCommandBarEnabled }
-    } = useCoreState(selectors.userConfigs.userConfigs);
+    const commandLogsEntries = useCoreState("fileExplorer", "commandLogsEntries");
 
-    const { fileExplorer } = useCoreFunctions();
+    const { isCommandBarEnabled } = useCoreState("userConfigs", "main");
 
-    const { evtProjectConfigs } = useCoreEvts();
+    const { fileExplorer } = useCore().functions;
+
+    const { evtProjectConfigs } = useCore().evts;
 
     useEvt(
         ctx => {
@@ -145,7 +143,7 @@ export default function MyFiles(props: Props) {
             )
     );
 
-    const { uploadProgress } = useCoreState(selectors.fileExplorer.uploadProgress);
+    const uploadProgress = useCoreState("fileExplorer", "uploadProgress");
 
     if (currentWorkingDirectoryView === undefined) {
         return null;

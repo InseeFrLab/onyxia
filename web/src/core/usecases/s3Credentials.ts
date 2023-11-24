@@ -1,15 +1,15 @@
 import "minimal-polyfills/Object.fromEntries";
-import type { Thunks } from "../core";
-import type { PayloadAction } from "@reduxjs/toolkit";
-import { createSlice } from "@reduxjs/toolkit";
 import { id } from "tsafe/id";
-import type { State as RootState } from "../core";
-import { createSelector } from "@reduxjs/toolkit";
+import type { State as RootState, Thunks } from "core/bootstrap";
 import * as projectConfigs from "./projectConfigs";
 import * as deploymentRegion from "./deploymentRegion";
 import { parseUrl } from "core/tools/parseUrl";
 import { assert } from "tsafe/assert";
-import { createUsecaseContextApi } from "redux-clean-architecture";
+import {
+    createUsecaseActions,
+    createSelector,
+    createUsecaseContextApi
+} from "redux-clean-architecture";
 import { getS3UrlAndRegion } from "core/adapters/s3Client/utils/getS3UrlAndRegion";
 
 //TODO: Refactor, replicate the k8sCredentials usecase
@@ -52,7 +52,7 @@ namespace State {
 
 export const name = "s3Credentials";
 
-export const { reducer, actions } = createSlice({
+export const { reducer, actions } = createUsecaseActions({
     name,
     "initialState": id<State>(
         id<State.NotRefreshed>({
@@ -68,10 +68,12 @@ export const { reducer, actions } = createSlice({
             state,
             {
                 payload
-            }: PayloadAction<{
-                credentials: State.Ready["credentials"];
-                expirationTime: number;
-            }>
+            }: {
+                payload: {
+                    credentials: State.Ready["credentials"];
+                    expirationTime: number;
+                };
+            }
         ) => {
             const { credentials, expirationTime } = payload;
 
@@ -90,7 +92,7 @@ export const { reducer, actions } = createSlice({
         },
         "technologyChanged": (
             state,
-            { payload }: PayloadAction<{ technology: Technology }>
+            { payload }: { payload: { technology: Technology } }
         ) => {
             const { technology } = payload;
             assert(state.stateDescription === "ready");
@@ -132,7 +134,7 @@ export const thunks = {
 
                 evtAction.attach(
                     action =>
-                        action.sliceName === "projectConfigs" &&
+                        action.usecaseName === "projectConfigs" &&
                         action.actionName === "projectChanged",
                     () => dispatch(thunks.refresh({ "doForceRenewToken": false }))
                 );

@@ -6,7 +6,7 @@ import { useEffectOnValueChange } from "powerhooks/useEffectOnValueChange";
 import { useSplashScreen, useDarkMode } from "onyxia-ui";
 import { env, injectTransferableEnvsInQueryParams } from "env-parsed";
 import { RouteProvider } from "ui/routes";
-import { createCoreProvider, useCoreState, useCoreFunctions } from "core";
+import { createCoreProvider, useCoreState, useCore } from "core";
 import { injectGlobalStatesInSearchParams } from "powerhooks/useGlobalState";
 import { evtLang } from "ui/i18n";
 import { getEnv } from "env";
@@ -158,15 +158,13 @@ const useStyles = tss.withName({ App }).create(({ theme }) => {
  * user configs.
  */
 function useSyncDarkModeWithValueInProfile() {
-    const { userAuthentication, userConfigs } = useCoreFunctions();
+    const { userAuthentication, userConfigs } = useCore().functions;
 
     const isUserLoggedIn = userAuthentication.getIsUserLoggedIn();
 
     const { isDarkModeEnabled, setIsDarkModeEnabled } = useDarkMode();
 
-    const userConfigsIsDarkModeEnabled = useCoreState(state =>
-        !isUserLoggedIn ? undefined : state.userConfigs.isDarkModeEnabled.value
-    );
+    const userConfigsIsDarkModeEnabled = useCoreState("userConfigs", "isDarkModeEnabled");
 
     useEffect(() => {
         if (userConfigsIsDarkModeEnabled === undefined) {

@@ -1,10 +1,7 @@
 import "minimal-polyfills/Object.fromEntries";
-import type { Thunks } from "../core";
-import type { PayloadAction } from "@reduxjs/toolkit";
-import { createSlice } from "@reduxjs/toolkit";
+import { createUsecaseActions, createSelector } from "redux-clean-architecture";
 import { id } from "tsafe/id";
-import type { State as RootState } from "../core";
-import { createSelector } from "@reduxjs/toolkit";
+import type { State as RootState, Thunks } from "core/bootstrap";
 import * as deploymentRegion from "./deploymentRegion";
 import { assert } from "tsafe/assert";
 
@@ -28,7 +25,7 @@ namespace State {
 
 export const name = "vaultCredentials";
 
-export const { reducer, actions } = createSlice({
+export const { reducer, actions } = createUsecaseActions({
     name,
     "initialState": id<State>(
         id<State.NotRefreshed>({
@@ -44,10 +41,12 @@ export const { reducer, actions } = createSlice({
             _state,
             {
                 payload
-            }: PayloadAction<{
-                expirationTime: number;
-                token: string;
-            }>
+            }: {
+                payload: {
+                    expirationTime: number;
+                    token: string;
+                };
+            }
         ) => {
             const { expirationTime, token } = payload;
 
@@ -84,7 +83,7 @@ export const thunks = {
 
             const [dispatch, getState, { secretsManager }] = args;
 
-            if (getState().s3Credentials.isRefreshing) {
+            if (getState()[name].isRefreshing) {
                 return;
             }
 
@@ -105,7 +104,7 @@ export const thunks = {
 
 export const selectors = (() => {
     const readyState = (rootState: RootState): State.Ready | undefined => {
-        const state = rootState.vaultCredentials;
+        const state = rootState[name];
         switch (state.stateDescription) {
             case "ready":
                 return state;
@@ -162,11 +161,11 @@ export const selectors = (() => {
     );
 
     const isRefreshing = (rootState: RootState) => {
-        const state = rootState.vaultCredentials;
+        const state = rootState[name];
         return state.isRefreshing;
     };
 
-    const uiState = createSelector(
+    const main = createSelector(
         isReady,
         vaultToken,
         vaultUrl,
@@ -191,5 +190,5 @@ export const selectors = (() => {
         }
     );
 
-    return { uiState };
+    return { main };
 })();

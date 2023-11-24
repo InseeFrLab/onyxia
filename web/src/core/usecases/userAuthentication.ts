@@ -1,19 +1,38 @@
 import { assert } from "tsafe/assert";
-import type { User } from "../ports/OnyxiaApi";
-import type { Thunks } from "../core";
-import { createUsecaseContextApi } from "redux-clean-architecture";
+import type { User } from "core/ports/OnyxiaApi";
+import type { Thunks } from "core/bootstrap";
+import {
+    createUsecaseActions,
+    createUsecaseContextApi,
+    createObjectThatThrowsIfAccessed
+} from "redux-clean-architecture";
 
 export const name = "userAuthentication";
 
-export const reducer = null;
+// Just so it can be accessed in other selectors.
+type State = { isUserLoggedIn: boolean };
+
+export const { reducer, actions } = createUsecaseActions({
+    name,
+    "initialState": createObjectThatThrowsIfAccessed<State>({
+        "debugMessage": "Not initialized"
+    }),
+    "reducers": {
+        "initialized": (_, { payload }: { payload: { isUserLoggedIn: boolean } }) => {
+            const { isUserLoggedIn } = payload;
+
+            return { isUserLoggedIn };
+        }
+    }
+});
 
 export const thunks = {
     "getUser":
         () =>
         (...args): User => {
-            const [, , extraArg] = args;
+            const [, , rootContext] = args;
 
-            const { user } = getContext(extraArg);
+            const { user } = getContext(rootContext);
 
             assert(user !== undefined, "Can't use getUser when not authenticated");
 
@@ -54,12 +73,12 @@ export const protectedThunks = {
     "initialize":
         () =>
         async (...args) => {
-            const [, , extraArg] = args;
-            setContext(extraArg, {
-                "user": !extraArg.oidc.isUserLoggedIn
-                    ? undefined
-                    : await extraArg.onyxiaApi.getUser()
+            const [dispatch, , rootContext] = args;
+            const { oidc, onyxiaApi } = rootContext;
+            setContext(rootContext, {
+                "user": !oidc.isUserLoggedIn ? undefined : await onyxiaApi.getUser()
             });
+            dispatch(actions.initialized({ "isUserLoggedIn": oidc.isUserLoggedIn }));
         }
 } satisfies Thunks;
 

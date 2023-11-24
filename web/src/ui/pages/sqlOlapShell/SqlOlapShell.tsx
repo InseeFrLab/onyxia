@@ -2,7 +2,7 @@ import "xterm/css/xterm.css";
 import { useState, useEffect } from "react";
 import { useConst } from "powerhooks/useConst";
 import { tss } from "tss";
-import { useCoreFunctions, useCoreState, selectors } from "core";
+import { useCoreState, useCore } from "core";
 import type { PageRoute } from "./route";
 import { CircularProgress } from "onyxia-ui/CircularProgress";
 import * as duckdbWasmShell from "@duckdb/duckdb-wasm-shell";
@@ -16,8 +16,8 @@ type Props = {
 export default function SqlOlapShell(props: Props) {
     const { className } = props;
 
-    const { isReady } = useCoreState(selectors.sqlOlapShell.isReady);
-    const { sqlOlapShell } = useCoreFunctions();
+    const isReady = useCoreState("sqlOlapShell", "isReady");
+    const { sqlOlapShell } = useCore().functions;
 
     useEffect(() => {
         sqlOlapShell.initialize();
@@ -45,7 +45,7 @@ function ReadySqlOlapShell(params: Props) {
 
     const isEmbeddedByElement = useConst(() => new WeakMap<HTMLElement, true>());
 
-    const { sqlOlapShell } = useCoreFunctions();
+    const { sqlOlapShell } = useCore().functions;
 
     useEffect(() => {
         if (containerElement === null) {
@@ -85,7 +85,7 @@ const useStyles = tss.withName({ SqlOlapShell }).create(({ theme }) => ({
         "height": "100%",
         "overflow": "hidden",
         "padding": "16px 0 0 20px",
-        "background-color": "#333333",
+        "backgroundColor": "#333333",
         "borderRadius": 10,
         "boxShadow": theme.shadows[1]
     }

@@ -2,7 +2,7 @@ import { formFieldsValueToObject } from "core/usecases/launcher/FormField";
 import { allEquals } from "evt/tools/reducers/allEquals";
 import { same } from "evt/tools/inDepth/same";
 import { assert, type Equals } from "tsafe/assert";
-import type { Thunks } from "core/core";
+import type { Thunks } from "core/bootstrap";
 import * as projectConfigs from "core/usecases/projectConfigs";
 import { createUsecaseContextApi } from "redux-clean-architecture";
 import { Chart } from "core/ports/OnyxiaApi";
@@ -27,7 +27,7 @@ export const protectedThunks = {
 
             evtAction.attach(
                 action =>
-                    action.sliceName === "projectConfigs" &&
+                    action.usecaseName === "projectConfigs" &&
                     action.actionName === "projectChanged",
                 async () => {
                     //Making sure we are initialized
@@ -127,11 +127,11 @@ const privateThunks = {
             };
         }) =>
         async (...args) => {
-            const [dispatch, getState, extraArg] = args;
+            const [dispatch, getState, rootContext] = args;
 
             const { getNewRestorableConfigs } = params;
 
-            const { mutex } = getContext(extraArg);
+            const { mutex } = getContext(rootContext);
 
             await mutex.runExclusive(async () => {
                 {

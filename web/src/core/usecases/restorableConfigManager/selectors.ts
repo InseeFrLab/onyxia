@@ -1,5 +1,5 @@
-import { createSelector } from "@reduxjs/toolkit";
-import type { State as RootState } from "core/core";
+import { createSelector } from "redux-clean-architecture";
+import type { State as RootState } from "core/bootstrap";
 import { name, type RestorableConfig } from "./state";
 import { same } from "evt/tools/inDepth/same";
 import { assert } from "tsafe/assert";
@@ -47,7 +47,7 @@ const chartIconAndFriendlyNameByRestorableConfigIndex = createSelector(
     }
 );
 
-const wrap = createSelector(
+const main = createSelector(
     restorableConfigs,
     chartIconAndFriendlyNameByRestorableConfigIndex,
     (restorableConfigs, chartIconAndFriendlyNameByRestorableConfigIndex) => ({
@@ -70,5 +70,5 @@ export const protectedSelectors = {
 };
 
 export const selectors = {
-    wrap
+    main
 };

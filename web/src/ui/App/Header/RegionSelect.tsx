@@ -5,7 +5,7 @@ import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 import { useRoute } from "ui/routes";
-import { useCoreFunctions, useCoreState, selectors } from "core";
+import { useCoreState, useCore } from "core";
 import { assert } from "tsafe/assert";
 
 type Props = {
@@ -16,13 +16,15 @@ type Props = {
 export function RegionSelect(props: Props) {
     const { className, tRegion } = props;
 
-    const { deploymentRegion } = useCoreFunctions();
-    const { availableDeploymentRegionIds } = useCoreState(
-        selectors.deploymentRegion.availableDeploymentRegionIds
+    const { deploymentRegion } = useCore().functions;
+    const availableDeploymentRegionIds = useCoreState(
+        "deploymentRegion",
+        "availableDeploymentRegionIds"
     );
-    const {
-        selectedDeploymentRegion: { id: selectedDeploymentRegionId }
-    } = useCoreState(selectors.deploymentRegion.selectedDeploymentRegion);
+    const { id: selectedDeploymentRegionId } = useCoreState(
+        "deploymentRegion",
+        "selectedDeploymentRegion"
+    );
 
     const route = useRoute();
 

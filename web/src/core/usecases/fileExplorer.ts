@@ -1,8 +1,5 @@
 import "minimal-polyfills/Object.fromEntries";
-import { createSlice } from "@reduxjs/toolkit";
-import type { PayloadAction } from "@reduxjs/toolkit";
 import { id } from "tsafe/id";
-import type { Thunks } from "../core";
 import {
     join as pathJoin,
     relative as pathRelative,
@@ -14,13 +11,16 @@ import { assert } from "tsafe/assert";
 import * as projectConfigs from "./projectConfigs";
 import { Evt } from "evt";
 import type { Ctx } from "evt";
-import type { State as RootState } from "../core";
+import type { State as RootState, Thunks } from "core/bootstrap";
 import memoize from "memoizee";
 import type { WritableDraft } from "immer/dist/types/types-external";
 import * as deploymentRegion from "./deploymentRegion";
 import { createExtendedFsApi } from "core/tools/extendedFsApi";
 import type { ExtendedFsApi } from "core/tools/extendedFsApi";
-import { createObjectThatThrowsIfAccessed } from "redux-clean-architecture";
+import {
+    createUsecaseActions,
+    createObjectThatThrowsIfAccessed
+} from "redux-clean-architecture";
 import { mcCommandLogger } from "core/adapters/s3Client/utils/mcCommandLogger";
 import { createUsecaseContextApi } from "redux-clean-architecture";
 // NOTE: Polyfill of a browser feature.
@@ -56,7 +56,7 @@ export type State = {
 
 export const name = "fileExplorer";
 
-export const { reducer, actions } = createSlice({
+export const { reducer, actions } = createUsecaseActions({
     name,
     "initialState": id<State>({
         "directoryPath": undefined,
@@ -71,11 +71,13 @@ export const { reducer, actions } = createSlice({
             state,
             {
                 payload
-            }: PayloadAction<{
-                directoryPath: string;
-                basename: string;
-                size: number;
-            }>
+            }: {
+                payload: {
+                    directoryPath: string;
+                    basename: string;
+                    size: number;
+                };
+            }
         ) => {
             const { directoryPath, basename, size } = payload;
 
@@ -90,11 +92,13 @@ export const { reducer, actions } = createSlice({
             state,
             {
                 payload
-            }: PayloadAction<{
-                directoryPath: string;
-                basename: string;
-                uploadPercent: number;
-            }>
+            }: {
+                payload: {
+                    directoryPath: string;
+                    basename: string;
+                    uploadPercent: number;
+                };
+            }
         ) => {
             const { basename, directoryPath, uploadPercent } = payload;
             const { s3FilesBeingUploaded } = state;
@@ -122,13 +126,15 @@ export const { reducer, actions } = createSlice({
             state,
             {
                 payload
-            }: PayloadAction<{
-                directoryPath: string;
-                directoryItems: {
-                    kind: "file" | "directory";
-                    basename: string;
-                }[];
-            }>
+            }: {
+                payload: {
+                    directoryPath: string;
+                    directoryItems: {
+                        kind: "file" | "directory";
+                        basename: string;
+                    }[];
+                };
+            }
         ) => {
             const { directoryPath, directoryItems } = payload;
 
@@ -160,11 +166,13 @@ export const { reducer, actions } = createSlice({
             state,
             {
                 payload
-            }: PayloadAction<{
-                kind: "file" | "directory";
-                basename: string;
-                operation: "create" | "delete";
-            }>
+            }: {
+                payload: {
+                    kind: "file" | "directory";
+                    basename: string;
+                    operation: "create" | "delete";
+                };
+            }
         ) => {
             const { kind, basename } = payload;
 
@@ -195,11 +203,13 @@ export const { reducer, actions } = createSlice({
             state,
             {
                 payload
-            }: PayloadAction<{
-                kind: "file" | "directory";
-                basename: string;
-                directoryPath: string;
-            }>
+            }: {
+                payload: {
+                    kind: "file" | "directory";
+                    basename: string;
+                    directoryPath: string;
+                };
+            }
         ) => {
             const { kind, basename, directoryPath } = payload;
 
@@ -233,9 +243,7 @@ export const { reducer, actions } = createSlice({
         },
         "apiHistoryUpdated": (
             state,
-            {
-                payload
-            }: PayloadAction<{ commandLogsEntries: State["commandLogsEntries"] }>
+            { payload }: { payload: { commandLogsEntries: State["commandLogsEntries"] } }
         ) => {
             const { commandLogsEntries } = payload;
 
@@ -267,15 +275,15 @@ const privateThunks = {
     "lazyInitialization":
         () =>
         (...args) => {
-            const [dispatch, , extraArg] = args;
+            const [dispatch, , rootContext] = args;
 
-            if (getIsContextSet(extraArg)) {
+            if (getIsContextSet(rootContext)) {
                 //NOTE: We don't want to initialize twice.
                 return;
             }
 
             const { commandLogs, loggedApi } = logApi({
-                "api": extraArg.s3Client,
+                "api": rootContext.s3Client,
                 "commandLogger": mcCommandLogger
             });
 
@@ -288,7 +296,7 @@ const privateThunks = {
                 )
             );
 
-            setContext(extraArg, {
+            setContext(rootContext, {
                 "loggedS3Client": loggedApi,
                 "loggedExtendedFsApi": createExtendedFsApi({
                     "baseFsApi": {
@@ -324,7 +332,7 @@ const privateThunks = {
 
             //Avoid navigating to the current directory.
             if (!forceReload) {
-                const currentDirectoryPath = getState().fileExplorer.directoryPath;
+                const currentDirectoryPath = getState()[name].directoryPath;
 
                 if (
                     currentDirectoryPath !== undefined &&
@@ -344,7 +352,7 @@ const privateThunks = {
 
             extraArg.evtAction.attach(
                 event =>
-                    event.sliceName === "fileExplorer" &&
+                    event.usecaseName === "fileExplorer" &&
                     event.actionName === "navigationCanceled",
                 ctx,
                 () => ctx.done()
@@ -391,7 +399,7 @@ const privateThunks = {
 
             const { kind, basename, directoryPath, ctx = Evt.newCtx() } = params;
 
-            const { ongoingOperations } = getState().fileExplorer;
+            const { ongoingOperations } = getState()[name];
 
             const ongoingOperation = ongoingOperations.find(
                 o =>
@@ -406,7 +414,7 @@ const privateThunks = {
 
             await evtAction.waitFor(
                 event =>
-                    event.sliceName === "fileExplorer" &&
+                    event.usecaseName === "fileExplorer" &&
                     event.actionName === "operationCompleted" &&
                     event.payload.kind === kind &&
                     event.payload.basename === basename &&
@@ -426,7 +434,7 @@ export const thunks = {
                 projectConfigs.selectors.selectedProject(getState()).bucket
             }`;
 
-            const currentDirectoryPath = getState().fileExplorer.directoryPath;
+            const currentDirectoryPath = getState()[name].directoryPath;
 
             return_current_path: {
                 if (currentDirectoryPath === undefined) {
@@ -468,7 +476,7 @@ export const thunks = {
         () =>
         (...args) => {
             const [dispatch, getState] = args;
-            if (!getState().fileExplorer.isNavigationOngoing) {
+            if (!getState()[name].isNavigationOngoing) {
                 return;
             }
             dispatch(actions.navigationCanceled());
@@ -478,7 +486,7 @@ export const thunks = {
         async (...args) => {
             const [dispatch, getState] = args;
 
-            const { directoryPath } = getState().fileExplorer;
+            const { directoryPath } = getState()[name];
 
             if (directoryPath === undefined) {
                 return;
@@ -494,9 +502,9 @@ export const thunks = {
     "create":
         (params: ExplorersCreateParams) =>
         async (...args) => {
-            const [dispatch, getState, extraArg] = args;
+            const [dispatch, getState, rootContext] = args;
 
-            const contextualState = getState().fileExplorer;
+            const contextualState = getState()[name];
 
             const { directoryPath } = contextualState;
 
@@ -518,7 +526,7 @@ export const thunks = {
                 })
             );
 
-            const sliceContext = getContext(extraArg);
+            const context = getContext(rootContext);
 
             const path = pathJoin(directoryPath, params.basename);
 
@@ -534,7 +542,7 @@ export const thunks = {
                         })
                     );
 
-                    sliceContext.loggedS3Client.uploadFile({
+                    context.loggedS3Client.uploadFile({
                         path,
                         "blob": params.blob,
                         "onUploadProgress": ({ uploadPercent }) =>
@@ -548,7 +556,7 @@ export const thunks = {
                     });
                     break;
                 case "directory":
-                    await sliceContext.loggedExtendedFsApi.createDirectory({ path });
+                    await context.loggedExtendedFsApi.createDirectory({ path });
                     break;
             }
 
@@ -571,9 +579,9 @@ export const thunks = {
         async (...args) => {
             const { deleteWhat, basename } = params;
 
-            const [dispatch, getState, extraArg] = args;
+            const [dispatch, getState, rootContext] = args;
 
-            const contextualState = getState().fileExplorer;
+            const contextualState = getState()[name];
 
             const { directoryPath } = contextualState;
 
@@ -595,16 +603,16 @@ export const thunks = {
                 })
             );
 
-            const sliceContext = getContext(extraArg);
+            const context = getContext(rootContext);
 
             const path = pathJoin(directoryPath, basename);
 
             switch (deleteWhat) {
                 case "directory":
-                    await sliceContext.loggedExtendedFsApi.deleteDirectory({ path });
+                    await context.loggedExtendedFsApi.deleteDirectory({ path });
                     break;
                 case "file":
-                    await sliceContext.loggedS3Client.deleteFile({
+                    await context.loggedS3Client.deleteFile({
                         path
                     });
                     break;
@@ -634,19 +642,19 @@ export const thunks = {
         async (...args): Promise<string> => {
             const { basename } = params;
 
-            const [, getState, extraArg] = args;
+            const [, getState, rootContext] = args;
 
-            const contextualState = getState().fileExplorer;
+            const contextualState = getState()[name];
 
             const { directoryPath } = contextualState;
 
             assert(directoryPath !== undefined);
 
-            const sliceContext = getContext(extraArg);
+            const context = getContext(rootContext);
 
             const path = pathJoin(directoryPath, basename);
 
-            const downloadUrl = await sliceContext.loggedS3Client.getFileDownloadUrl({
+            const downloadUrl = await context.loggedS3Client.getFileDownloadUrl({
                 path
             });
 
@@ -690,7 +698,7 @@ export const selectors = (() => {
     const currentWorkingDirectoryView = (
         rootState: RootState
     ): CurrentWorkingDirectoryView | undefined => {
-        const state = rootState.fileExplorer;
+        const state = rootState[name];
         const { directoryPath, isNavigationOngoing, directoryItems, ongoingOperations } =
             state;
 
@@ -748,7 +756,7 @@ export const selectors = (() => {
     };
 
     const uploadProgress = (rootState: RootState): UploadProgress => {
-        const { s3FilesBeingUploaded } = rootState.fileExplorer;
+        const { s3FilesBeingUploaded } = rootState[name];
 
         const completedFileCount = s3FilesBeingUploaded.map(
             ({ uploadPercent }) => uploadPercent === 100

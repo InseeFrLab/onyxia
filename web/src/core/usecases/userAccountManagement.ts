@@ -1,4 +1,4 @@
-import type { Thunks } from "../core";
+import type { Thunks } from "core/bootstrap";
 import { addParamToUrl } from "powerhooks/tools/urlSearchParams";
 import { createUsecaseContextApi } from "redux-clean-architecture";
 
@@ -10,9 +10,9 @@ export const thunks = {
     "getPasswordResetUrl":
         () =>
         (...args): string | undefined => {
-            const [, , extraArg] = args;
+            const [, , rootContext] = args;
 
-            const { keycloakPasswordResetUrl, clientId } = getContext(extraArg);
+            const { keycloakPasswordResetUrl, clientId } = getContext(rootContext);
 
             if (keycloakPasswordResetUrl === undefined) {
                 return undefined;
@@ -44,7 +44,7 @@ export const thunks = {
                 const { newUrl } = addParamToUrl({
                     url,
                     "name": "kc_locale",
-                    "value": extraArg.coreParams.getCurrentLang()
+                    "value": rootContext.paramsOfBootstrapCore.getCurrentLang()
                 });
 
                 url = newUrl;
@@ -69,14 +69,14 @@ export const protectedThunks = {
     "initialize":
         () =>
         async (...args) => {
-            const [, , extraArg] = args;
+            const [, , rootContext] = args;
 
-            const { onyxiaApi } = extraArg;
+            const { onyxiaApi } = rootContext;
 
             const { oidcParams } = await onyxiaApi.getAvailableRegionsAndOidcParams();
 
             setContext(
-                extraArg,
+                rootContext,
                 (() => {
                     if (oidcParams === undefined) {
                         return {

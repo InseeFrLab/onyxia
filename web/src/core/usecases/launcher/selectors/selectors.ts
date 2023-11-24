@@ -1,6 +1,5 @@
 import "minimal-polyfills/Object.fromEntries";
-import type { State as RootState } from "../../../core";
-import { createSelector } from "@reduxjs/toolkit";
+import type { State as RootState } from "core/bootstrap";
 import { assert } from "tsafe/assert";
 import { same } from "evt/tools/inDepth/same";
 import { formFieldsValueToObject } from "../FormField";
@@ -16,6 +15,7 @@ import { name, type State } from "../state";
 import * as restorableConfigManager from "core/usecases/restorableConfigManager";
 import * as projectConfigs from "core/usecases/projectConfigs";
 import { exclude } from "tsafe/exclude";
+import { createSelector } from "redux-clean-architecture";
 
 const readyState = (rootState: RootState): State.Ready | undefined => {
     const state = rootState[name];
@@ -588,7 +588,7 @@ const isThereASavedConfigWithThisFriendlyName = createSelector(
     }
 );
 
-const wrap = createSelector(
+const main = createSelector(
     isReady,
     friendlyName,
     isThereASavedConfigWithThisFriendlyName,
@@ -681,7 +681,7 @@ const wrap = createSelector(
     }
 );
 
-export const selectors = { wrap };
+export const selectors = { main };
 
 const formFieldsValueDifferentFromDefault = createSelector(
     isReady,

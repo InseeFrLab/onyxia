@@ -1,8 +1,7 @@
-import type { PayloadAction } from "@reduxjs/toolkit";
-import { createSlice } from "@reduxjs/toolkit";
 import type { Catalog } from "core/ports/OnyxiaApi";
 import { id } from "tsafe/id";
 import { assert } from "tsafe/assert";
+import { createUsecaseActions } from "redux-clean-architecture";
 
 export type State = State.NotFetched | State.Ready;
 
@@ -39,7 +38,7 @@ export namespace State {
 
 export const name = "catalog";
 
-export const { reducer, actions } = createSlice({
+export const { reducer, actions } = createUsecaseActions({
     name,
     "initialState": id<State>(
         id<State.NotFetched>({
@@ -56,11 +55,13 @@ export const { reducer, actions } = createSlice({
             _state,
             {
                 payload
-            }: PayloadAction<{
-                selectedCatalogId: string;
-                catalogs: Catalog[];
-                chartsByCatalogId: State.Ready["chartsByCatalogId"];
-            }>
+            }: {
+                payload: {
+                    selectedCatalogId: string;
+                    catalogs: Catalog[];
+                    chartsByCatalogId: State.Ready["chartsByCatalogId"];
+                };
+            }
         ) => {
             const { selectedCatalogId, catalogs, chartsByCatalogId } = payload;
 
@@ -75,7 +76,7 @@ export const { reducer, actions } = createSlice({
         },
         "selectedCatalogChanged": (
             state,
-            { payload }: PayloadAction<{ selectedCatalogId: string }>
+            { payload }: { payload: { selectedCatalogId: string } }
         ) => {
             const { selectedCatalogId } = payload;
 
@@ -90,7 +91,7 @@ export const { reducer, actions } = createSlice({
         "defaultCatalogSelected": () => {
             /* Only for evt */
         },
-        "searchChanged": (state, { payload }: PayloadAction<{ search: string }>) => {
+        "searchChanged": (state, { payload }: { payload: { search: string } }) => {
             const { search } = payload;
 
             assert(state.stateDescription === "ready");

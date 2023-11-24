@@ -4,7 +4,7 @@ import { AccountSectionHeader } from "../AccountSectionHeader";
 import { AccountField } from "../AccountField";
 import { useDarkMode } from "onyxia-ui";
 import { useConstCallback } from "powerhooks/useConstCallback";
-import { useCoreFunctions, useCoreState, selectors } from "core";
+import { useCore, useCoreState } from "core";
 import { declareComponentKeys } from "i18nifty";
 
 export type Props = {
@@ -22,11 +22,12 @@ export const AccountUserInterfaceTab = memo((props: Props) => {
         setIsDarkModeEnabled(!isDarkModeEnabled)
     );
 
-    const { userConfigs } = useCoreFunctions();
+    const { userConfigs } = useCore().functions;
 
-    const {
-        userConfigs: { isBetaModeEnabled, isDevModeEnabled, isCommandBarEnabled }
-    } = useCoreState(selectors.userConfigs.userConfigs);
+    const { isBetaModeEnabled, isDevModeEnabled, isCommandBarEnabled } = useCoreState(
+        "userConfigs",
+        "main"
+    );
 
     const onRequestToggleIsBetaModeEnabled = useConstCallback(() => {
         const isBetaModeEnabledNew = !isBetaModeEnabled;

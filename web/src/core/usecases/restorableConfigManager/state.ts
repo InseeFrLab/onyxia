@@ -1,6 +1,8 @@
 import { type FormFieldValue } from "core/usecases/launcher/FormField";
-import { createSlice } from "@reduxjs/toolkit";
-import { createObjectThatThrowsIfAccessed } from "redux-clean-architecture";
+import {
+    createUsecaseActions,
+    createObjectThatThrowsIfAccessed
+} from "redux-clean-architecture";
 
 type State = {
     restorableConfigs: RestorableConfig[];
@@ -20,7 +22,7 @@ export type RestorableConfig = {
 
 export const name = "restorableConfigManager";
 
-export const { reducer, actions } = createSlice({
+export const { reducer, actions } = createUsecaseActions({
     name,
     "initialState": createObjectThatThrowsIfAccessed<State>({
         "debugMessage": [

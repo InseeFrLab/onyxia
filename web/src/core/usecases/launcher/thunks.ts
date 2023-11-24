@@ -1,4 +1,4 @@
-import type { Thunks } from "../../core";
+import type { Thunks } from "core/bootstrap";
 import { id } from "tsafe/id";
 import { assert } from "tsafe/assert";
 import { selectors as userConfigsSelectors } from "../userConfigs";
@@ -49,7 +49,7 @@ export const thunks = {
             const [
                 dispatch,
                 getState,
-                { onyxiaApi, oidc, secretsManager, s3Client, coreParams }
+                { onyxiaApi, oidc, secretsManager, s3Client, paramsOfBootstrapCore }
             ] = args;
 
             assert(
@@ -137,7 +137,7 @@ export const thunks = {
 
                     const user = dispatch(userAuthentication.thunks.getUser());
 
-                    const userConfigs = userConfigsSelectors.userConfigs(getState());
+                    const userConfigs = userConfigsSelectors.main(getState());
 
                     const region = deploymentRegion.selectors.selectedDeploymentRegion(
                         getState()
@@ -151,7 +151,7 @@ export const thunks = {
 
                     const doInjectPersonalInfos =
                         project.group === undefined ||
-                        !coreParams.disablePersonalInfosInjectionInGroup;
+                        !paramsOfBootstrapCore.disablePersonalInfosInjectionInGroup;
 
                     const xOnyxiaContext: XOnyxiaContext = {
                         "user": {
@@ -161,7 +161,7 @@ export const thunks = {
                             "password": servicePassword,
                             "ip": !doInjectPersonalInfos ? "0.0.0.0" : publicIp,
                             "darkMode": userConfigs.isDarkModeEnabled,
-                            "lang": coreParams.getCurrentLang()
+                            "lang": paramsOfBootstrapCore.getCurrentLang()
                         },
                         "service": {
                             "oneTimePassword": generateRandomPassword()

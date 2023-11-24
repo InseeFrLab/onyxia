@@ -1,6 +1,5 @@
 import { assert } from "tsafe/assert";
-import { createSlice } from "@reduxjs/toolkit";
-import type { PayloadAction } from "@reduxjs/toolkit";
+import { createUsecaseActions } from "redux-clean-architecture";
 import { id } from "tsafe/id";
 import { nestObject } from "core/tools/nestObject";
 import * as yaml from "yaml";
@@ -62,7 +61,7 @@ export declare namespace RunningService {
 
 export const name = "serviceManager";
 
-export const { reducer, actions } = createSlice({
+export const { reducer, actions } = createUsecaseActions({
     name,
     "initialState": id<State>(
         id<State.NotInitialized>({
@@ -79,12 +78,14 @@ export const { reducer, actions } = createSlice({
             state,
             {
                 payload
-            }: PayloadAction<{
-                runningServices: RunningService[];
-                envByHelmReleaseName: Record<string, Record<string, string>>;
-                postInstallInstructionsByHelmReleaseName: Record<string, string>;
-                kubernetesNamespace: string;
-            }>
+            }: {
+                payload: {
+                    runningServices: RunningService[];
+                    envByHelmReleaseName: Record<string, Record<string, string>>;
+                    postInstallInstructionsByHelmReleaseName: Record<string, string>;
+                    kubernetesNamespace: string;
+                };
+            }
         ) => {
             const {
                 runningServices,
@@ -107,10 +108,12 @@ export const { reducer, actions } = createSlice({
             state,
             {
                 payload
-            }: PayloadAction<{
-                helmReleaseName: string;
-                doOverwriteStaredAtToNow: boolean;
-            }>
+            }: {
+                payload: {
+                    helmReleaseName: string;
+                    doOverwriteStaredAtToNow: boolean;
+                };
+            }
         ) => {
             const { helmReleaseName, doOverwriteStaredAtToNow } = payload;
 
@@ -137,7 +140,7 @@ export const { reducer, actions } = createSlice({
         },
         "serviceStopped": (
             state,
-            { payload }: PayloadAction<{ helmReleaseName: string }>
+            { payload }: { payload: { helmReleaseName: string } }
         ) => {
             const { helmReleaseName } = payload;
 

@@ -7,7 +7,7 @@ import { useRoute, routes, urlToLink } from "ui/routes";
 import { id } from "tsafe/id";
 import { env } from "env-parsed";
 import { declareComponentKeys } from "i18nifty";
-import { useCoreFunctions, useCoreState, selectors } from "core";
+import { useCore, useCoreState } from "core";
 import { assert, type Equals } from "tsafe/assert";
 import { customIcons } from "ui/theme";
 import { symToStr } from "tsafe/symToStr";
@@ -20,9 +20,9 @@ type Props = {
 export const LeftBar = memo((props: Props) => {
     const { className } = props;
 
-    const { fileExplorer, secretExplorer } = useCoreFunctions();
+    const { fileExplorer, secretExplorer } = useCore().functions;
 
-    const { userConfigs } = useCoreState(selectors.userConfigs.userConfigs);
+    const { isDevModeEnabled } = useCoreState("userConfigs", "main");
 
     const route = useRoute();
 
@@ -73,7 +73,7 @@ export const LeftBar = memo((props: Props) => {
                               "link": routes.mySecrets().link
                           } as const
                       }),
-                ...(!userConfigs.isDevModeEnabled
+                ...(!isDevModeEnabled
                     ? ({} as never)
                     : {
                           "sqlOlapShell": {

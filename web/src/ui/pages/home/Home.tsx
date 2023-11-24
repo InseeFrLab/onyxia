@@ -3,7 +3,7 @@ import { routes } from "ui/routes";
 import { tss, useStyles as useClasslessStyles } from "tss";
 import { Text } from "onyxia-ui/Text";
 import { Button } from "onyxia-ui/Button";
-import { useCoreFunctions } from "core";
+import { useCore } from "core";
 import { useTranslation } from "ui/i18n";
 import { Card as OnyxiaUiCard } from "onyxia-ui/Card";
 import { env } from "env-parsed";
@@ -37,7 +37,7 @@ export default function Home(props: Props) {
         "hasLogo": env.HOMEPAGE_LOGO !== undefined
     });
 
-    const { userAuthentication, fileExplorer } = useCoreFunctions();
+    const { userAuthentication, fileExplorer } = useCore().functions;
 
     const isUserLoggedIn = userAuthentication.getIsUserLoggedIn();
 

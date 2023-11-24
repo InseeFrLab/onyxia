@@ -1,10 +1,11 @@
-import type { Thunks } from "../core";
-import { createSlice } from "@reduxjs/toolkit";
+import {
+    createUsecaseActions,
+    createSelector,
+    createUsecaseContextApi
+} from "redux-clean-architecture";
 import { id } from "tsafe/id";
-import type { State as RootState } from "../core";
-import { createSelector } from "@reduxjs/toolkit";
+import type { State as RootState, Thunks } from "core/bootstrap";
 import { assert } from "tsafe/assert";
-import { createUsecaseContextApi } from "redux-clean-architecture";
 import type { SqlOlap } from "core/ports/SqlOlap";
 import type { ReturnType } from "tsafe";
 
@@ -14,7 +15,7 @@ type State = {
 
 export const name = "sqlOlapShell";
 
-export const { reducer, actions } = createSlice({
+export const { reducer, actions } = createUsecaseActions({
     name,
     "initialState": id<State>({
         "isReady": false
@@ -30,13 +31,13 @@ export const thunks = {
     "initialize":
         () =>
         async (...args) => {
-            const [dispatch, , extraArg] = args;
+            const [dispatch, , rootContext] = args;
 
-            const { sqlOlap } = extraArg;
+            const { sqlOlap } = rootContext;
 
             const db = await sqlOlap.getDb();
 
-            setContext(extraArg, { db });
+            setContext(rootContext, { db });
 
             dispatch(actions.ready());
         },
@@ -65,7 +66,7 @@ const { getContext, setContext } = createUsecaseContextApi<{
 export const selectors = (() => {
     const state = (rootState: RootState): State => rootState[name];
 
-    const isReady = createSelector([state], state => state.isReady);
+    const isReady = createSelector(state, state => state.isReady);
 
     return { isReady };
 })();

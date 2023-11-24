@@ -3,7 +3,7 @@ import { PageHeader } from "onyxia-ui/PageHeader";
 import { useEffect, useState, useMemo } from "react";
 import { useConstCallback } from "powerhooks/useConstCallback";
 import { copyToClipboard } from "ui/tools/copyToClipboard";
-import { useCoreState, useCoreFunctions, useCoreEvts, selectors } from "core";
+import { useCoreState, useCore } from "core";
 import { SecretsExplorer } from "./SecretsExplorer";
 import { ExplorerProps } from "./SecretsExplorer";
 import { useTranslation } from "ui/i18n";
@@ -32,22 +32,19 @@ export default function MySecrets(props: Props) {
 
     const { t } = useTranslation({ MySecrets });
 
-    const { currentWorkingDirectoryView } = useCoreState(
-        selectors.secretExplorer.currentWorkingDirectoryView
+    const currentWorkingDirectoryView = useCoreState(
+        "secretExplorer",
+        "currentWorkingDirectoryView"
     );
-    const { commandLogsEntries } = useCoreState(
-        selectors.secretExplorer.commandLogsEntries
-    );
+    const commandLogsEntries = useCoreState("secretExplorer", "commandLogsEntries");
 
-    const {
-        userConfigs: { isCommandBarEnabled }
-    } = useCoreState(selectors.userConfigs.userConfigs);
+    const { isCommandBarEnabled } = useCoreState("userConfigs", "main");
 
-    const secretEditorState = useCoreState(state => state.secretsEditor);
+    const secretEditorState = useCoreState("secretsEditor", "main");
 
-    const { secretExplorer, secretsEditor, userConfigs } = useCoreFunctions();
+    const { secretExplorer, secretsEditor, userConfigs } = useCore().functions;
 
-    const { evtProjectConfigs } = useCoreEvts();
+    const { evtProjectConfigs } = useCore().evts;
 
     useEvt(
         ctx => {
@@ -204,9 +201,7 @@ export default function MySecrets(props: Props) {
         evtExplorerAction.post("TRIGGER COPY PATH")
     );
 
-    const {
-        userConfigs: { doDisplayMySecretsUseInServiceDialog }
-    } = useCoreState(selectors.userConfigs.userConfigs);
+    const { doDisplayMySecretsUseInServiceDialog } = useCoreState("userConfigs", "main");
 
     const onDoDisplayUseInServiceDialogValueChange = useConstCallback(value =>
         userConfigs.changeValue({

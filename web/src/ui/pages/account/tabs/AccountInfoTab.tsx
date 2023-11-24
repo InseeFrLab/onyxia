@@ -2,7 +2,7 @@ import { useEffect, useReducer, memo } from "react";
 import { useTranslation } from "ui/i18n";
 import { AccountSectionHeader } from "../AccountSectionHeader";
 import { AccountField } from "../AccountField";
-import { useCoreState, useCoreFunctions, selectors } from "core";
+import { useCore, useCoreState } from "core";
 import { useCallbackFactory } from "powerhooks/useCallbackFactory";
 import { copyToClipboard } from "ui/tools/copyToClipboard";
 import Divider from "@mui/material/Divider";
@@ -26,17 +26,17 @@ export const AccountInfoTab = memo((props: Props) => {
         projectConfigs,
         userAuthentication,
         userAccountManagement
-    } = useCoreFunctions();
+    } = useCore().functions;
 
     const onRequestCopyFactory = useCallbackFactory(([textToCopy]: [string]) =>
         copyToClipboard(textToCopy)
     );
 
     /* prettier-ignore */
-    const publicIp = useCoreState(state => state.publicIp) ?? "Loading...";
+    const publicIp = useCoreState("publicIp", "main") ?? "Loading...";
 
     /* prettier-ignore */
-    const { selectedProject: { id: selectedProjectId } } = useCoreState(selectors.projectConfigs.selectedProject);
+    const { id: selectedProjectId } = useCoreState("projectConfigs", "selectedProject");
 
     /* prettier-ignore */
     useEffect(() => { fetchPublicIp(); }, []);

@@ -1,7 +1,6 @@
-import { createSlice } from "@reduxjs/toolkit";
-import type { PayloadAction } from "@reduxjs/toolkit";
+import { createUsecaseActions } from "redux-clean-architecture";
 import { id } from "tsafe/id";
-import type { Thunks } from "../core";
+import type { Thunks, State as RootState } from "core/bootstrap";
 import type { SecretWithMetadata } from "core/ports/SecretsManager";
 import { assert } from "tsafe/assert";
 import { join as pathJoin } from "path";
@@ -48,7 +47,7 @@ type ExtraValue = { hiddenKeys: string[]; keysOrdering: string[] };
 
 export const name = "secretsEditor";
 
-export const { reducer, actions } = createSlice({
+export const { reducer, actions } = createUsecaseActions({
     name,
     "initialState": id<State | null>(null),
     "reducers": {
@@ -56,10 +55,12 @@ export const { reducer, actions } = createSlice({
             _state,
             {
                 payload
-            }: PayloadAction<{
-                directoryPath: string;
-                basename: string;
-            }>
+            }: {
+                payload: {
+                    directoryPath: string;
+                    basename: string;
+                };
+            }
         ) => {
             const { basename, directoryPath } = payload;
 
@@ -75,10 +76,12 @@ export const { reducer, actions } = createSlice({
             state,
             {
                 payload
-            }: PayloadAction<{
-                secretWithMetadata: SecretWithMetadata;
-                hiddenKeys: string[];
-            }>
+            }: {
+                payload: {
+                    secretWithMetadata: SecretWithMetadata;
+                    hiddenKeys: string[];
+                };
+            }
         ) => {
             const { secretWithMetadata, hiddenKeys } = payload;
 
@@ -90,7 +93,7 @@ export const { reducer, actions } = createSlice({
             state.hiddenKeys = hiddenKeys;
             state.isBeingUpdated = false;
         },
-        "editSecretStarted": (state, { payload }: PayloadAction<EditSecretParams>) => {
+        "editSecretStarted": (state, { payload }: { payload: EditSecretParams }) => {
             const { key } = payload;
 
             assert(state !== null);
@@ -340,3 +343,9 @@ export const thunks = {
             dispatch(actions.editSecretCompleted());
         }
 } satisfies Thunks;
+
+export const selectors = (() => {
+    const main = (rootState: RootState): State | null => rootState[name];
+
+    return { main };
+})();

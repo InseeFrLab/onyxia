@@ -1,5 +1,5 @@
 import "minimal-polyfills/Object.fromEntries";
-import type { CreateEvt } from "core/core";
+import type { CreateEvt } from "core/bootstrap";
 import { Evt } from "evt";
 import { name } from "./state";
 import { assert } from "tsafe/assert";
@@ -11,7 +11,7 @@ export const createEvt = (({ evtAction, getState }) => {
     }>();
 
     evtAction
-        .pipe(action => (action.sliceName !== name ? null : [action]))
+        .pipe(action => (action.usecaseName !== name ? null : [action]))
         .attach(
             ({ actionName }) => actionName === "defaultCatalogSelected",
             () => {

@@ -1,10 +1,10 @@
 import { assert } from "tsafe/assert";
-import type { Thunks } from "../core";
 import type { DeploymentRegion } from "../ports/OnyxiaApi";
-import { createSlice } from "@reduxjs/toolkit";
-import type { PayloadAction } from "@reduxjs/toolkit";
-import { createObjectThatThrowsIfAccessed } from "redux-clean-architecture";
-import type { State as RootState } from "../core";
+import {
+    createUsecaseActions,
+    createObjectThatThrowsIfAccessed
+} from "redux-clean-architecture";
+import type { State as RootState, Thunks } from "core/bootstrap";
 
 type State = {
     availableDeploymentRegions: DeploymentRegion[];
@@ -13,11 +13,11 @@ type State = {
 
 export const name = "deploymentRegion";
 
-export const { reducer, actions } = createSlice({
+export const { reducer, actions } = createUsecaseActions({
     name,
     "initialState": createObjectThatThrowsIfAccessed<State>(),
     "reducers": {
-        "initialize": (_, { payload }: PayloadAction<State>) => payload
+        "initialize": (_, { payload }: { payload: State }) => payload
     }
 });
 

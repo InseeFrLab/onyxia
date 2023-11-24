@@ -5,7 +5,7 @@ import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 import { useRoute } from "ui/routes";
-import { useCoreFunctions, useCoreState } from "core";
+import { useCoreState, useCore } from "core";
 import { useSplashScreen } from "onyxia-ui";
 
 type ProjectSelectProps = {
@@ -24,10 +24,9 @@ export function ProjectSelect(props: ProjectSelectProps) {
 
     const labelId = useId();
 
-    const { projectConfigs, userAuthentication } = useCoreFunctions();
-    const projectsState = useCoreState(state =>
-        !userAuthentication.getIsUserLoggedIn() ? undefined : state.projectConfigs
-    );
+    const { projectConfigs } = useCore().functions;
+
+    const projectsState = useCoreState("projectConfigs", "main");
 
     const route = useRoute();
 

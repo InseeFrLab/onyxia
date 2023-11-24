@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useTranslation } from "ui/i18n";
 import { tss } from "tss";
 import { PageHeader } from "onyxia-ui/PageHeader";
-import { useCoreState, selectors, useCoreFunctions, useCoreEvts } from "core";
+import { useCoreState, useCore } from "core";
 import { useStateRef } from "powerhooks/useStateRef";
 import { useConstCallback } from "powerhooks/useConstCallback";
 import { useDomRect } from "powerhooks/useDomRect";
@@ -80,11 +80,11 @@ export default function Launcher(props: Props) {
         commandLogsEntries,
         chartSourceUrls,
         groupProjectName
-    } = useCoreState(selectors.launcher.wrap).wrap;
+    } = useCoreState("launcher", "main");
 
     const scrollableDivRef = useStateRef<HTMLDivElement>(null);
 
-    const { launcher, restorableConfigManager, k8sCredentials } = useCoreFunctions();
+    const { launcher, restorableConfigManager, k8sCredentials } = useCore().functions;
 
     const { showSplashScreen, hideSplashScreen } = useSplashScreen();
 
@@ -118,7 +118,7 @@ export default function Launcher(props: Props) {
         launcher.changeChartVersion({ chartVersion });
     }, [route.params.version]);
 
-    const { evtLauncher } = useCoreEvts();
+    const { evtLauncher } = useCore().evts;
 
     useEvt(
         ctx => {
@@ -197,9 +197,7 @@ export default function Launcher(props: Props) {
         [evtLauncher, route.params]
     );
 
-    const {
-        userConfigs: { isCommandBarEnabled }
-    } = useCoreState(selectors.userConfigs.userConfigs);
+    const { isCommandBarEnabled } = useCoreState("userConfigs", "main");
 
     useEffect(() => {
         if (restorableConfig === undefined) {

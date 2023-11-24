@@ -1,13 +1,13 @@
-import { createSlice } from "@reduxjs/toolkit";
-import type { PayloadAction } from "@reduxjs/toolkit";
-import type { Thunks } from "../core";
-import { Id } from "tsafe/id";
+import "minimal-polyfills/Object.fromEntries";
+import type { Thunks, State as RootState } from "core/bootstrap";
+import type { Id } from "tsafe";
 import { objectKeys } from "tsafe/objectKeys";
 import { assert } from "tsafe/assert";
-import { createObjectThatThrowsIfAccessed } from "redux-clean-architecture";
-import "minimal-polyfills/Object.fromEntries";
+import {
+    createUsecaseActions,
+    createObjectThatThrowsIfAccessed
+} from "redux-clean-architecture";
 import * as userAuthentication from "./userAuthentication";
-import type { State as RootState } from "../core";
 import { join as pathJoin } from "path";
 import { getIsDarkModeEnabledOsDefault } from "onyxia-ui/tools/getIsDarkModeEnabledOsDefault";
 
@@ -43,7 +43,7 @@ export type State = {
 
 export const name = "userConfigs";
 
-export const { reducer, actions } = createSlice({
+export const { reducer, actions } = createUsecaseActions({
     name,
     "initialState": createObjectThatThrowsIfAccessed<State>({
         "debugMessage":
@@ -51,7 +51,7 @@ export const { reducer, actions } = createSlice({
     }),
     "reducers": {
         "initializationCompleted": (
-            ...[, { payload }]: [any, PayloadAction<{ userConfigs: UserConfigs }>]
+            ...[, { payload }]: [any, { payload: { userConfigs: UserConfigs } }]
         ) => {
             const { userConfigs } = payload;
 
@@ -62,7 +62,7 @@ export const { reducer, actions } = createSlice({
                 ])
             ) as any;
         },
-        "changeStarted": (state, { payload }: PayloadAction<ChangeValueParams>) => {
+        "changeStarted": (state, { payload }: { payload: ChangeValueParams }) => {
             const wrap = state[payload.key];
 
             wrap.value = payload.value;
@@ -70,7 +70,7 @@ export const { reducer, actions } = createSlice({
         },
         "changeCompleted": (
             state,
-            { payload }: PayloadAction<{ key: keyof UserConfigs }>
+            { payload }: { payload: { key: keyof UserConfigs } }
         ) => {
             state[payload.key].isBeingChanged = false;
         }
@@ -90,7 +90,7 @@ export const thunks = {
 
             assert(oidc.isUserLoggedIn);
 
-            if (getState().userConfigs[params.key].value === params.value) {
+            if (getState()[name][params.key].value === params.value) {
                 return;
             }
 
@@ -124,7 +124,7 @@ export const protectedThunks = {
         () =>
         async (...args) => {
             /* prettier-ignore */
-            const [dispatch, , { secretsManager, oidc, coreParams }] = args;
+            const [dispatch, , { secretsManager, oidc, paramsOfBootstrapCore }] = args;
 
             assert(oidc.isUserLoggedIn);
 
@@ -142,7 +142,7 @@ export const protectedThunks = {
                 "githubPersonalAccessToken": null,
                 "doDisplayMySecretsUseInServiceDialog": true,
                 "selectedProjectId": null,
-                "isCommandBarEnabled": coreParams.isCommandBarEnabledByDefault
+                "isCommandBarEnabled": paramsOfBootstrapCore.isCommandBarEnabledByDefault
             };
 
             const dirPath = await dispatch(privateThunks.getDirPath());
@@ -192,15 +192,26 @@ const privateThunks = {
 
 export const selectors = (() => {
     /** Give the value directly (without isBeingChanged) */
-    const userConfigs = (rootState: RootState): UserConfigs => {
+    const main = (rootState: RootState): UserConfigs => {
         const userConfigs: any = {};
 
-        const state = rootState.userConfigs;
+        const state = rootState[name];
 
         objectKeys(state).forEach(key => (userConfigs[key] = state[key].value));
 
         return userConfigs;
     };
 
-    return { userConfigs };
+    const stateWithProgress = (rootState: RootState): State => rootState[name];
+
+    // NOTE: This will not crash even if the user is not logged in.
+    const isDarkModeEnabled = (rootState: RootState): boolean | undefined => {
+        if (!rootState.userAuthentication.isUserLoggedIn) {
+            return undefined;
+        }
+
+        return main(rootState).isDarkModeEnabled;
+    };
+
+    return { main, stateWithProgress, isDarkModeEnabled };
 })();

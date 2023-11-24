@@ -1,7 +1,7 @@
 import { id } from "tsafe/id";
 import * as deploymentRegion from "core/usecases/deploymentRegion";
 import * as projectConfigs from "core/usecases/projectConfigs";
-import type { Thunks } from "core/core";
+import type { Thunks } from "core/bootstrap";
 import { exclude } from "tsafe/exclude";
 import { createUsecaseContextApi } from "redux-clean-architecture";
 import { assert } from "tsafe/assert";
@@ -23,7 +23,7 @@ export const thunks = {
                 .pipe(
                     ctx,
                     action =>
-                        action.sliceName === "projectConfigs" &&
+                        action.usecaseName === "projectConfigs" &&
                         action.actionName === "projectChanged"
                 )
                 .toStateful()
@@ -259,17 +259,17 @@ const privateThunks = {
     "getDefaultTokenTTL":
         () =>
         async (...args): Promise<{ s3TokensTTLms: number; vaultTokenTTLms: number }> => {
-            const [, getState, extraArgs] = args;
+            const [, getState, rootContext] = args;
 
-            const sliceContext = getContext(extraArgs);
+            const context = getContext(rootContext);
 
-            if (sliceContext.prDefaultTokenTTL !== undefined) {
-                return sliceContext.prDefaultTokenTTL;
+            if (context.prDefaultTokenTTL !== undefined) {
+                return context.prDefaultTokenTTL;
             }
 
-            const { s3Client, secretsManager } = extraArgs;
+            const { s3Client, secretsManager } = rootContext;
 
-            return (sliceContext.prDefaultTokenTTL = Promise.all([
+            return (context.prDefaultTokenTTL = Promise.all([
                 (async () => {
                     const project = projectConfigs.selectors.selectedProject(getState());
 
@@ -294,20 +294,20 @@ const privateThunks = {
     "getLoggedOnyxiaApi":
         () =>
         (...args): OnyxiaApi => {
-            const [dispatch, getState, extraArg] = args;
+            const [dispatch, getState, rootContext] = args;
 
-            const sliceContext = getContext(extraArg);
+            const context = getContext(rootContext);
 
             {
-                const { loggedOnyxiaApi } = sliceContext;
+                const { loggedOnyxiaApi } = context;
                 if (loggedOnyxiaApi !== undefined) {
                     return loggedOnyxiaApi;
                 }
             }
 
-            const { onyxiaApi } = extraArg;
+            const { onyxiaApi } = rootContext;
 
-            sliceContext.loggedOnyxiaApi = {
+            context.loggedOnyxiaApi = {
                 ...onyxiaApi,
                 "listHelmReleases": async () => {
                     const { namespace } = projectConfigs.selectors.selectedProject(

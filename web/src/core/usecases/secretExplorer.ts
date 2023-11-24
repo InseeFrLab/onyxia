@@ -1,8 +1,5 @@
 import "minimal-polyfills/Object.fromEntries";
-import { createSlice } from "@reduxjs/toolkit";
-import type { PayloadAction } from "@reduxjs/toolkit";
 import { id } from "tsafe/id";
-import type { Thunks } from "../core";
 import type { SecretsManager, Secret } from "core/ports/SecretsManager";
 import {
     join as pathJoin,
@@ -14,14 +11,14 @@ import { assert } from "tsafe/assert";
 import * as projectConfigs from "./projectConfigs";
 import { Evt } from "evt";
 import type { Ctx } from "evt";
-import type { State as RootState } from "../core";
+import type { State as RootState, Thunks } from "core/bootstrap";
 import memoize from "memoizee";
 import type { WritableDraft } from "immer/dist/types/types-external";
 import * as deploymentRegion from "./deploymentRegion";
 import { createExtendedFsApi } from "core/tools/extendedFsApi";
 import type { ExtendedFsApi } from "core/tools/extendedFsApi";
 import { getVaultCommandLogger } from "core/adapters/secretManager/utils/vaultCommandLogger";
-import { createUsecaseContextApi } from "redux-clean-architecture";
+import { createUsecaseActions, createUsecaseContextApi } from "redux-clean-architecture";
 // NOTE: Polyfill of a browser feature.
 import structuredClone from "@ungap/structured-clone";
 
@@ -57,7 +54,7 @@ export type State = {
 
 export const name = "secretExplorer";
 
-export const { reducer, actions } = createSlice({
+export const { reducer, actions } = createUsecaseActions({
     name,
     "initialState": id<State>({
         "directoryPath": undefined,
@@ -74,13 +71,15 @@ export const { reducer, actions } = createSlice({
             state,
             {
                 payload
-            }: PayloadAction<{
-                directoryPath: string;
-                directoryItems: {
-                    kind: "file" | "directory";
-                    basename: string;
-                }[];
-            }>
+            }: {
+                payload: {
+                    directoryPath: string;
+                    directoryItems: {
+                        kind: "file" | "directory";
+                        basename: string;
+                    }[];
+                };
+            }
         ) => {
             const { directoryPath, directoryItems } = payload;
 
@@ -118,8 +117,8 @@ export const { reducer, actions } = createSlice({
             state,
             {
                 payload
-            }: PayloadAction<
-                {
+            }: {
+                payload: {
                     kind: "file" | "directory";
                     basename: string;
                 } & (
@@ -130,8 +129,8 @@ export const { reducer, actions } = createSlice({
                           operation: "rename";
                           newBasename: string;
                       }
-                )
-            >
+                );
+            }
         ) => {
             const { kind, basename } = payload;
 
@@ -169,11 +168,13 @@ export const { reducer, actions } = createSlice({
             state,
             {
                 payload
-            }: PayloadAction<{
-                kind: "file" | "directory";
-                basename: string;
-                directoryPath: string;
-            }>
+            }: {
+                payload: {
+                    kind: "file" | "directory";
+                    basename: string;
+                    directoryPath: string;
+                };
+            }
         ) => {
             const { kind, basename, directoryPath } = payload;
 
@@ -208,9 +209,7 @@ export const { reducer, actions } = createSlice({
         },
         "apiHistoryUpdated": (
             state,
-            {
-                payload
-            }: PayloadAction<{ commandLogsEntries: State["commandLogsEntries"] }>
+            { payload }: { payload: { commandLogsEntries: State["commandLogsEntries"] } }
         ) => {
             const { commandLogsEntries } = payload;
 
@@ -296,7 +295,7 @@ const privateThunks = {
         async (...args) => {
             const { directoryPath, forceReload } = params;
 
-            const [dispatch, getState, extraArg] = args;
+            const [dispatch, getState, rootContext] = args;
 
             //Avoid navigating to the current directory.
             if (!forceReload) {
@@ -310,7 +309,7 @@ const privateThunks = {
                 }
             }
 
-            const { loggedSecretClient } = getContext(extraArg);
+            const { loggedSecretClient } = getContext(rootContext);
 
             dispatch(thunks.cancelNavigation());
 
@@ -318,9 +317,9 @@ const privateThunks = {
 
             const ctx = Evt.newCtx();
 
-            extraArg.evtAction.attach(
+            rootContext.evtAction.attach(
                 event =>
-                    event.sliceName === "secretExplorer" &&
+                    event.usecaseName === "secretExplorer" &&
                     event.actionName === "navigationCanceled",
                 ctx,
                 () => ctx.done()
@@ -382,7 +381,7 @@ const privateThunks = {
 
             await evtAction.waitFor(
                 event =>
-                    event.sliceName === "secretExplorer" &&
+                    event.usecaseName === "secretExplorer" &&
                     event.actionName === "operationCompleted" &&
                     event.payload.kind === kind &&
                     (event.payload.basename === basename ||
@@ -422,7 +421,7 @@ export const thunks = {
 
             const homeDirectoryPath = dispatch(protectedThunks.getHomeDirectoryPath());
 
-            const currentDirectoryPath = getState().secretExplorer.directoryPath;
+            const currentDirectoryPath = getState()[name].directoryPath;
 
             return_current_path: {
                 if (currentDirectoryPath === undefined) {
@@ -568,19 +567,19 @@ export const thunks = {
                 })
             );
 
-            const sliceContexts = getContext(extraArg);
+            const context = getContext(extraArg);
 
             const path = pathJoin(directoryPath, params.basename);
 
             switch (params.createWhat) {
                 case "file":
-                    await sliceContexts.loggedSecretClient.put({
+                    await context.loggedSecretClient.put({
                         path,
                         "secret": {}
                     });
                     break;
                 case "directory":
-                    await sliceContexts.loggedExtendedFsApi.createDirectory({ path });
+                    await context.loggedExtendedFsApi.createDirectory({ path });
                     break;
             }
 
@@ -627,16 +626,16 @@ export const thunks = {
                 })
             );
 
-            const sliceContexts = getContext(extraArg);
+            const context = getContext(extraArg);
 
             const path = pathJoin(directoryPath, basename);
 
             switch (deleteWhat) {
                 case "directory":
-                    await sliceContexts.loggedExtendedFsApi.deleteDirectory({ path });
+                    await context.loggedExtendedFsApi.deleteDirectory({ path });
                     break;
                 case "file":
-                    await sliceContexts.loggedSecretClient.delete({
+                    await context.loggedSecretClient.delete({
                         path
                     });
                     break;

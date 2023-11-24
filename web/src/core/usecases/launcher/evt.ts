@@ -1,4 +1,4 @@
-import type { CreateEvt } from "core/core";
+import type { CreateEvt } from "core/bootstrap";
 import { type FormFieldValue } from "./FormField";
 import { Evt } from "evt";
 import { name } from "./state";
@@ -25,7 +25,7 @@ export const createEvt = (({ evtAction, getState }) => {
     >();
 
     evtAction
-        .pipe(action => (action.sliceName !== name ? null : [action]))
+        .pipe(action => (action.usecaseName !== name ? null : [action]))
         .$attach(
             action => (action.actionName === "initialized" ? [action.payload] : null),
             ({ sensitiveConfigurations }) =>

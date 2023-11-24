@@ -2416,10 +2416,10 @@
     prop-types "^15.6.1"
     react-lifecycles-compat "^3.0.4"
 
-"@reduxjs/toolkit@^1.9.1":
-  version "1.9.5"
-  resolved "https://registry.yarnpkg.com/@reduxjs/toolkit/-/toolkit-1.9.5.tgz#d3987849c24189ca483baa7aa59386c8e52077c4"
-  integrity sha512-Rt97jHmfTeaxL4swLRNPD/zV4OxTes4la07Xc4hetpUW/vc75t5m1ANyxG6ymnEQ2FsLQsoMlYB2vV1sO3m8tQ==
+"@reduxjs/toolkit@^1.9.6":
+  version "1.9.7"
+  resolved "https://registry.yarnpkg.com/@reduxjs/toolkit/-/toolkit-1.9.7.tgz#7fc07c0b0ebec52043f8cb43510cf346405f78a6"
+  integrity sha512-t7v8ZPxhhKgOKtU+uyJT13lu4vL7az5aFi4IdoDs/eS548edn2M8Ik9h8fxgvMjGoAUVFSt6ZC1P5cWmQ014QQ==
   dependencies:
     immer "^9.0.21"
     redux "^4.2.1"
@@ -14158,11 +14158,12 @@ redent@^1.0.0:
     indent-string "^2.1.0"
     strip-indent "^1.0.1"
 
-redux-clean-architecture@^3.7.4:
-  version "3.7.4"
-  resolved "https://registry.yarnpkg.com/redux-clean-architecture/-/redux-clean-architecture-3.7.4.tgz#312574c6cbbc0e6b79a4b14532223579db94aea8"
-  integrity sha512-SQmzU/UZRdWw+EuXpU97QfTmRWBs7ygCoEHG5iy9G/QPJG1iaRxxhh03B4/IScdHE7L1CJa+WxG3ddUNy761bg==
+redux-clean-architecture@^4.1.0:
+  version "4.1.0"
+  resolved "https://registry.yarnpkg.com/redux-clean-architecture/-/redux-clean-architecture-4.1.0.tgz#1c6b57466ba305b7c7d1508c6256fd0c792a4e2e"
+  integrity sha512-+/UmDb0i3M1yYuE1If6o7A6TFn84W41uJu1ykl41GWA+5PlSMAVeJjUe3t/R0N9UUh6F8W6PVaNRSI9Nb8USDQ==
   dependencies:
+    "@reduxjs/toolkit" "^1.9.6"
     minimal-polyfills "^2.2.3"
     tsafe "^1.6.5"
 

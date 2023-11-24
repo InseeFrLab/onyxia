@@ -3,7 +3,7 @@ import { useTranslation, useLang } from "ui/i18n";
 import { AccountSectionHeader } from "../AccountSectionHeader";
 import { AccountField } from "../AccountField";
 import type { Props as AccountFieldProps } from "../AccountField";
-import { useCoreState, useCoreFunctions } from "core";
+import { useCoreState, useCore } from "core";
 import { useCallbackFactory } from "powerhooks/useCallbackFactory";
 import { copyToClipboard } from "ui/tools/copyToClipboard";
 import Divider from "@mui/material/Divider";
@@ -38,9 +38,9 @@ export const AccountIntegrationsTab = memo((props: Props) => {
 
     const { classes } = useStyles();
 
-    const userConfigsState = useCoreState(state => state.userConfigs);
+    const userConfigsState = useCoreState("userConfigs", "stateWithProgress");
 
-    const { userConfigs } = useCoreFunctions();
+    const { userConfigs } = useCore().functions;
 
     const onRequestEditFactory = useCallbackFactory(
         ([key]: [EditableFieldKey], [value]: [string]) =>

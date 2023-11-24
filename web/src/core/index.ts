@@ -7,18 +7,9 @@ export an API more adapted to our new front. (But we don't plan to leave React)
 */
 
 import { createReactApi } from "redux-clean-architecture/react";
-import { createCore } from "./core";
-import { usecases } from "./usecases";
+import { bootstrapCore } from "./bootstrap";
 export type { Language } from "./ports/OnyxiaApi";
 
-export const {
-    createCoreProvider,
-    selectors,
-    useCoreEvts,
-    useCoreExtras,
-    useCoreFunctions,
-    useCoreState
-} = createReactApi({
-    createCore,
-    usecases
+export const { createCoreProvider, useCoreState, useCore } = createReactApi({
+    bootstrapCore
 });

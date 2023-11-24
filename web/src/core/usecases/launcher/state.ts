@@ -1,4 +1,3 @@
-import { createSlice } from "@reduxjs/toolkit";
 import { id } from "tsafe/id";
 import { assert, type Equals } from "tsafe/assert";
 import { same } from "evt/tools/inDepth/same";
@@ -6,6 +5,7 @@ import { type FormFieldValue } from "./FormField";
 import { type JSONSchemaObject } from "core/ports/OnyxiaApi";
 import type { FormField } from "./FormField";
 import { type LocalizedString } from "core/ports/OnyxiaApi";
+import { createUsecaseActions } from "redux-clean-architecture";
 
 type State = State.NotInitialized | State.Ready;
 
@@ -44,7 +44,7 @@ export declare namespace State {
 
 export const name = "launcher";
 
-export const { reducer, actions } = createSlice({
+export const { reducer, actions } = createUsecaseActions({
     name,
     "initialState": id<State>(
         id<State.NotInitialized>({

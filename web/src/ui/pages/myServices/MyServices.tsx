@@ -11,7 +11,7 @@ import {
 } from "./MyServicesRestorableConfigs";
 import { ButtonId } from "./MyServicesButtonBar";
 import { useConstCallback } from "powerhooks/useConstCallback";
-import { useCoreFunctions, useCoreState, selectors } from "core";
+import { useCoreState, useCore } from "core";
 import { routes } from "ui/routes";
 import { useConst } from "powerhooks/useConst";
 import { Evt } from "evt";
@@ -39,28 +39,28 @@ export default function MyServices(props: Props) {
     const { t: tCatalogLauncher } = useTranslation("Launcher");
 
     /* prettier-ignore */
-    const { serviceManager, restorableConfigManager, k8sCredentials, projectConfigs } = useCoreFunctions();
+    const { serviceManager, restorableConfigManager, k8sCredentials, projectConfigs } = useCore().functions;
     /* prettier-ignore */
     const { restorableConfigs, chartIconAndFriendlyNameByRestorableConfigIndex } = useCoreState(
-        selectors.restorableConfigManager.wrap
-    ).wrap;
-    /* prettier-ignore */
-    const { isUpdating } = useCoreState(selectors.serviceManager.isUpdating);
-    const { runningServices } = useCoreState(selectors.serviceManager.runningServices);
-    /* prettier-ignore */
-    const { deletableRunningServiceHelmReleaseNames } = useCoreState(selectors.serviceManager.deletableRunningServiceHelmReleaseNames);
-    /* prettier-ignore */
-    const { isThereOwnedSharedServices } = useCoreState(selectors.serviceManager.isThereOwnedSharedServices);
-    /* prettier-ignore */
-    const { isThereNonOwnedServices } = useCoreState(selectors.serviceManager.isThereNonOwnedServices);
-
-    const { commandLogsEntries } = useCoreState(
-        selectors.serviceManager.commandLogsEntries
+        "restorableConfigManager", "main"
     );
+    const isUpdating = useCoreState("serviceManager", "isUpdating");
+    const runningServices = useCoreState("serviceManager", "runningServices");
+    const deletableRunningServiceHelmReleaseNames = useCoreState(
+        "serviceManager",
+        "deletableRunningServiceHelmReleaseNames"
+    );
+    const isThereOwnedSharedServices = useCoreState(
+        "serviceManager",
+        "isThereOwnedSharedServices"
+    );
+    const isThereNonOwnedServices = useCoreState(
+        "serviceManager",
+        "isThereNonOwnedServices"
+    );
+    const commandLogsEntries = useCoreState("serviceManager", "commandLogsEntries");
 
-    const {
-        userConfigs: { isCommandBarEnabled }
-    } = useCoreState(selectors.userConfigs.userConfigs);
+    const { isCommandBarEnabled } = useCoreState("userConfigs", "main");
 
     const onButtonBarClick = useConstCallback(async (buttonId: ButtonId) => {
         switch (buttonId) {

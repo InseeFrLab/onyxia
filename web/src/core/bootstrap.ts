@@ -1,21 +1,21 @@
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 import {
-    createCoreFromUsecases,
+    createCore,
     createObjectThatThrowsIfAccessed,
     AccessError,
-    type GenericCreateEvt,
-    type GenericThunks
+    type GenericCore
 } from "redux-clean-architecture";
+import type { OnyxiaApi } from "core/ports/OnyxiaApi";
+import type { SqlOlap } from "core/ports/SqlOlap";
 import { usecases } from "./usecases";
 import type { SecretsManager } from "core/ports/SecretsManager";
 import type { Oidc } from "core/ports/Oidc";
 import type { S3Client } from "core/ports/S3Client";
-import type { ReturnType } from "tsafe/ReturnType";
 import type { Language } from "core/ports/OnyxiaApi/Language";
 import { createSqlOlap } from "core/adapters/sqlOlap/default";
 import { pluginSystemInitCore } from "pluginSystem";
 
-type CoreParams = {
+type ParamsOfBootstrapCore = {
     /** Empty string for using mock */
     apiUrl: string;
     transformUrlBeforeRedirectToLogin: (url: string) => string;
@@ -24,7 +24,20 @@ type CoreParams = {
     isCommandBarEnabledByDefault: boolean;
 };
 
-export async function createCore(params: CoreParams) {
+export type Context = {
+    paramsOfBootstrapCore: ParamsOfBootstrapCore;
+    oidc: Oidc;
+    onyxiaApi: OnyxiaApi;
+    secretsManager: SecretsManager;
+    s3Client: S3Client;
+    sqlOlap: SqlOlap;
+};
+
+export type Core = GenericCore<typeof usecases, Context>;
+
+export async function bootstrapCore(
+    params: ParamsOfBootstrapCore
+): Promise<{ core: Core }> {
     const { apiUrl, transformUrlBeforeRedirectToLogin } = params;
 
     let isCoreCreated = false;
@@ -59,7 +72,7 @@ export async function createCore(params: CoreParams) {
 
                 try {
                     return usecases.deploymentRegion.selectors.selectedDeploymentRegion(
-                        core.getState()
+                        getState()
                     ).id;
                 } catch (error) {
                     if (error instanceof AccessError) {
@@ -74,9 +87,7 @@ export async function createCore(params: CoreParams) {
                 }
 
                 try {
-                    return usecases.projectConfigs.selectors.selectedProject(
-                        core.getState()
-                    );
+                    return usecases.projectConfigs.selectors.selectedProject(getState());
                 } catch (error) {
                     if (error instanceof AccessError) {
                         return undefined;
@@ -109,8 +120,8 @@ export async function createCore(params: CoreParams) {
         });
     })();
 
-    const thunksExtraArgument = {
-        "coreParams": params,
+    const context: Context = {
+        "paramsOfBootstrapCore": params,
         oidc,
         onyxiaApi,
         /** prettier-ignore */
@@ -124,20 +135,20 @@ export async function createCore(params: CoreParams) {
         "sqlOlap": createSqlOlap()
     };
 
-    const core = createCoreFromUsecases({
-        thunksExtraArgument,
+    const { core, dispatch, getState } = createCore({
+        context,
         usecases
     });
 
     isCoreCreated = true;
 
-    await core.dispatch(usecases.userAuthentication.protectedThunks.initialize());
+    await dispatch(usecases.userAuthentication.protectedThunks.initialize());
 
-    await core.dispatch(usecases.deploymentRegion.protectedThunks.initialize());
+    await dispatch(usecases.deploymentRegion.protectedThunks.initialize());
 
     if (oidc.isUserLoggedIn) {
         /* prettier-ignore */
-        const { s3: s3Params, vault: vaultParams } = usecases.deploymentRegion.selectors.selectedDeploymentRegion(core.getState());
+        const { s3: s3Params, vault: vaultParams } = usecases.deploymentRegion.selectors.selectedDeploymentRegion(getState());
 
         /* prettier-ignore */
         const nonMockOidc = oidcParams === undefined ? undefined : oidc;
@@ -145,7 +156,7 @@ export async function createCore(params: CoreParams) {
         /* prettier-ignore */
         const { createOidcOrFallback } = await import("core/adapters/oidc/utils/createOidcOrFallback");
 
-        thunksExtraArgument.s3Client = await (async () => {
+        context.s3Client = await (async () => {
             if (s3Params === undefined) {
                 const { s3client } = await import("core/adapters/s3Client/mock");
 
@@ -168,7 +179,7 @@ export async function createCore(params: CoreParams) {
             });
         })();
 
-        thunksExtraArgument.secretsManager = await (async () => {
+        context.secretsManager = await (async () => {
             if (vaultParams === undefined) {
                 /* prettier-ignore */
                 const { createSecretManager } = await import("core/adapters/secretManager/mock");
@@ -193,33 +204,22 @@ export async function createCore(params: CoreParams) {
             });
         })();
 
-        await core.dispatch(usecases.userConfigs.protectedThunks.initialize());
+        await dispatch(usecases.userConfigs.protectedThunks.initialize());
 
-        await core.dispatch(usecases.projectConfigs.protectedThunks.initialize());
+        await dispatch(usecases.projectConfigs.protectedThunks.initialize());
 
-        /** prettier-ignore */
-        await core.dispatch(
-            usecases.restorableConfigManager.protectedThunks.initialize()
-        );
+        await dispatch(usecases.restorableConfigManager.protectedThunks.initialize());
 
-        await core.dispatch(usecases.userAccountManagement.protectedThunks.initialize());
+        await dispatch(usecases.userAccountManagement.protectedThunks.initialize());
     }
 
-    pluginSystemInitCore({
-        "core": {
-            "note": "TODO"
-        }
-    });
+    pluginSystemInitCore({ core, context });
 
-    return core;
+    return { core };
 }
 
-export type Core = ReturnType<typeof createCore>;
+export type State = Core["types"]["State"];
 
-export type State = ReturnType<Core["getState"]>;
+export type Thunks = Core["types"]["Thunks"];
 
-export type ThunksExtraArgument = Core["thunksExtraArgument"];
-
-export type Thunks = GenericThunks<Core>;
-
-export type CreateEvt = GenericCreateEvt<Core>;
+export type CreateEvt = Core["types"]["CreateEvt"];

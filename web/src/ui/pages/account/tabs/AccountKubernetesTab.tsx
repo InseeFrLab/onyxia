@@ -13,7 +13,7 @@ import { declareComponentKeys } from "i18nifty";
 import { useConstCallback } from "powerhooks/useConstCallback";
 import { IconButton } from "onyxia-ui/IconButton";
 import { CircularProgress } from "onyxia-ui/CircularProgress";
-import { useCoreState, selectors, useCoreFunctions } from "core";
+import { useCoreState, useCore } from "core";
 import { useFromNow } from "ui/shared/useMoment";
 import { id } from "tsafe/id";
 import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
@@ -29,7 +29,7 @@ export const AccountKubernetesTab = memo((props: Props) => {
 
     const { classes, theme } = useStyles();
 
-    const { k8sCredentials } = useCoreFunctions();
+    const { k8sCredentials } = useCore().functions;
 
     const {
         isReady,
@@ -42,7 +42,7 @@ export const AccountKubernetesTab = memo((props: Props) => {
         expirationTime,
         isRefreshing,
         shellScript
-    } = useCoreState(selectors.k8sCredentials.wrap).wrap;
+    } = useCoreState("k8sCredentials", "main");
 
     const { fromNowText } = useFromNow({ "dateTime": expirationTime ?? 0 });
 

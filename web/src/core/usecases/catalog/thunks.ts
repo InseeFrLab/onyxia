@@ -1,4 +1,4 @@
-import type { Thunks } from "core/core";
+import type { Thunks } from "core/bootstrap";
 import { waitForDebounceFactory } from "core/tools/waitForDebounce";
 import { createUsecaseContextApi } from "redux-clean-architecture";
 import { actions, name, type State } from "./state";
@@ -93,18 +93,18 @@ export const thunks = {
         (params: { search: string }) =>
         async (...args) => {
             const { search } = params;
-            const [dispatch, getState, extra] = args;
+            const [dispatch, getState, rootContext] = args;
 
-            const { evtAction } = extra;
+            const { evtAction } = rootContext;
 
-            const { waitForSearchDebounce, getFlexSearch } = getContext(extra);
+            const { waitForSearchDebounce, getFlexSearch } = getContext(rootContext);
 
             await waitForSearchDebounce();
 
             if (getState()[name].stateDescription === "not fetched") {
                 await evtAction.waitFor(
                     action =>
-                        action.sliceName === name &&
+                        action.usecaseName === name &&
                         action.actionName === "catalogsFetched"
                 );
             }

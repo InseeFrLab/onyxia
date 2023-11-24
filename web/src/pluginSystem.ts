@@ -6,13 +6,11 @@ import { symToStr } from "tsafe/symToStr";
 import type { session as ofTypeSession, routes as ofTypeRoutes } from "ui/routes";
 import type { Param0 } from "tsafe/Param0";
 import { id } from "tsafe/id";
-
-type Core = {
-    note: "TODO";
-};
+import type { Core, Context as CoreContext } from "core/bootstrap";
 
 type Onyxia = {
     core: Core;
+    coreAdapters: CoreContext;
     theme: Theme;
     css: Css;
     cx: Cx;
@@ -56,10 +54,11 @@ const onyxia: Onyxia = {
     })
 } as any;
 
-export function pluginSystemInitCore(params: { core: Core }) {
-    const { core } = params;
+export function pluginSystemInitCore(params: { core: Core; context: CoreContext }) {
+    const { core, context } = params;
 
     onyxia.core = core;
+    onyxia.coreAdapters = context;
 
     attachToGlobalIfReady();
 }
