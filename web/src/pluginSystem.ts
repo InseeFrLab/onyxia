@@ -8,7 +8,7 @@ import type { Param0 } from "tsafe/Param0";
 import { id } from "tsafe/id";
 import type { Core, Context as CoreContext } from "core/bootstrap";
 
-type Onyxia = {
+export type Onyxia = {
     core: Core;
     coreAdapters: CoreContext;
     theme: Theme;
