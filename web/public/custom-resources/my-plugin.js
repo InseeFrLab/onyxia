@@ -10,7 +10,7 @@ window.addEventListener("onyxiaready", ()=> {
             case "theme updated": 
                 console.log("Onyxia theme updated: ", onyxia.theme);
                 break;
-            case "lang updated": 
+            case "language changed": 
                 console.log(`Language changed to ${onyxia.lang}`);
                 break;
             case "route changed":
