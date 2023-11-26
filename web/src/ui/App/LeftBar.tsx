@@ -82,6 +82,15 @@ export const LeftBar = memo((props: Props) => {
                               "link": routes.sqlOlapShell().link
                           } as const
                       }),
+                ...(!isDevModeEnabled
+                    ? ({} as never)
+                    : {
+                          "dataExplorer": {
+                              "icon": "DocumentScanner",
+                              "label": "Data Explorer",
+                              "link": routes.dataExplorer().link
+                          } as const
+                      }),
                 ...(!fileExplorer.getIsEnabled()
                     ? ({} as never)
                     : {
@@ -139,6 +148,8 @@ export const LeftBar = memo((props: Props) => {
                         return "myFiles";
                     case "sqlOlapShell":
                         return "sqlOlapShell";
+                    case "dataExplorer":
+                        return "dataExplorer";
                     case "page404":
                         return null;
                     case "terms":

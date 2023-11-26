@@ -5,11 +5,12 @@ import duckdbMvpWasmUrl from "@duckdb/duckdb-wasm/dist/duckdb-mvp.wasm";
 import duckdbEhWasmUrl from "@duckdb/duckdb-wasm/dist/duckdb-eh.wasm";
 import duckdbBrowserEhWorkerJsUrl from "@duckdb/duckdb-wasm/dist/duckdb-browser-eh.worker.js";
 import { Deferred } from "evt/tools/Deferred";
+import { assert } from "tsafe/assert";
 
 export const createSqlOlap = (): SqlOlap => {
     let dDb: Deferred<AsyncDuckDB> | undefined = undefined;
 
-    return {
+    const sqlOlap: SqlOlap = {
         "getDb": async () => {
             if (dDb !== undefined) {
                 return dDb.pr;
@@ -28,14 +29,37 @@ export const createSqlOlap = (): SqlOlap => {
                     "mainWorker": duckdbBrowserEhWorkerJsUrl
                 }
             });
-            const logger = new duckdb.ConsoleLogger();
-            const worker = new Worker(bundle.mainWorker!);
-            const db = new duckdb.AsyncDuckDB(logger, worker);
+
+            assert(bundle.mainWorker !== null);
+
+            const db = new duckdb.AsyncDuckDB(
+                new duckdb.ConsoleLogger(),
+                new Worker(bundle.mainWorker)
+            );
             await db.instantiate(bundle.mainModule);
 
             dDb.resolve(db);
 
             return db;
+        },
+        "getData": async ({ sourceUrl, limit, offset }) => {
+            const db = await sqlOlap.getDb();
+
+            const conn = await db.connect();
+
+            const stmt = await conn.prepare(
+                `SELECT * FROM "${sourceUrl}" LIMIT ${limit} OFFSET ${offset}`
+            );
+
+            const res = await stmt.query();
+
+            const outArr = JSON.parse(JSON.stringify(res.toArray()));
+
+            await conn.close();
+
+            return outArr;
         }
     };
+
+    return sqlOlap;
 };
