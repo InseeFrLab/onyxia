@@ -4,6 +4,7 @@ import type { PageRoute } from "./route";
 import { SearchBar } from "onyxia-ui/SearchBar";
 import { routes } from "ui/routes";
 import { useCore, useCoreState } from "core";
+import { Alert } from "onyxia-ui/Alert";
 
 export type Props = {
     route: PageRoute;
@@ -21,7 +22,7 @@ export default function DataExplorer(props: Props) {
         dataExplorer.setQueryParams({
             "source": route.params.source ?? "",
             "limit": route.params.limit ?? 10,
-            "offset": route.params.offset ?? 0
+            "page": route.params.page ?? 1
         });
     }, [route]);
 
@@ -30,6 +31,7 @@ export default function DataExplorer(props: Props) {
     return (
         <div className={cx(classes.root, className)}>
             <SearchBar
+                className={classes.searchBar}
                 placeholder="URL data source"
                 search={route.params.source ?? ""}
                 onSearchChange={source =>
@@ -39,25 +41,48 @@ export default function DataExplorer(props: Props) {
                     }).replace()
                 }
             />
-            <div>
+            <div className={classes.mainArea}>
                 {(() => {
                     if (errorMessage !== undefined) {
-                        return <div>{errorMessage}</div>;
+                        return (
+                            <Alert className={classes.errorAlert} severity="error">
+                                {errorMessage}
+                            </Alert>
+                        );
                     }
 
                     if (isQuerying) {
                         return <div>Querying...</div>;
                     }
 
-                    return <pre>{JSON.stringify(data, null, 2)}</pre>;
+                    if (data === undefined) {
+                        return null;
+                    }
+
+                    console.log("count: ", data.rowCount);
+
+                    return <pre>{JSON.stringify(data.rows, null, 2)}</pre>;
                 })()}
             </div>
         </div>
     );
 }
 
-const useStyles = tss.withName({ DataExplorer }).create(() => ({
+const useStyles = tss.withName({ DataExplorer }).create(({ theme }) => ({
     "root": {
-        "height": "100%"
+        "height": "100%",
+        "display": "flex",
+        "flexDirection": "column"
+    },
+    "searchBar": {
+        "maxWidth": 950
+    },
+    "errorAlert": {
+        "marginTop": theme.spacing(4),
+        "maxWidth": 950
+    },
+    "mainArea": {
+        "flex": 1,
+        "overflow": "auto"
     }
 }));

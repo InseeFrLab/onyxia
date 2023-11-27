@@ -12,7 +12,7 @@ import type { SecretsManager } from "core/ports/SecretsManager";
 import type { Oidc } from "core/ports/Oidc";
 import type { S3Client } from "core/ports/S3Client";
 import type { Language } from "core/ports/OnyxiaApi/Language";
-import { createSqlOlap } from "core/adapters/sqlOlap/default";
+import { createDuckDbSqlOlap } from "core/adapters/sqlOlap/default";
 import { pluginSystemInitCore } from "pluginSystem";
 
 type ParamsOfBootstrapCore = {
@@ -132,7 +132,7 @@ export async function bootstrapCore(
         "s3Client": createObjectThatThrowsIfAccessed<S3Client>({
             "debugMessage": "s3 client is not yet initialized"
         }),
-        "sqlOlap": createSqlOlap()
+        "sqlOlap": createDuckDbSqlOlap()
     };
 
     const { core, dispatch, getState } = createCore({

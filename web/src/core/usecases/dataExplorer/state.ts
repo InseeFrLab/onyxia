@@ -9,11 +9,16 @@ type State = {
         | {
               source: string;
               limit: number;
-              offset: number;
+              page: number;
           }
         | undefined;
     errorMessage: string | undefined;
-    data: any[] | undefined;
+    data:
+        | {
+              rows: any[];
+              rowCount: number;
+          }
+        | undefined;
 };
 
 export const { actions, reducer } = createUsecaseActions({
@@ -34,10 +39,13 @@ export const { actions, reducer } = createUsecaseActions({
             state.isQuerying = true;
             state.queryParams = queryParams;
         },
-        "querySucceeded": (state, { payload }: { payload: { data: any[] } }) => {
-            const { data } = payload;
+        "querySucceeded": (
+            state,
+            { payload }: { payload: { rows: any[]; rowCount: number } }
+        ) => {
+            const { rowCount, rows } = payload;
             state.isQuerying = false;
-            state.data = data;
+            state.data = { rowCount, rows };
         },
         "queryFailed": (state, { payload }: { payload: { errorMessage: string } }) => {
             const { errorMessage } = payload;

@@ -6,9 +6,9 @@ import { waitForDebounceFactory } from "core/tools/waitForDebounce";
 
 export const thunks = {
     "setQueryParams":
-        (params: { source: string; limit: number; offset: number }) =>
+        (params: { source: string; limit: number; page: number }) =>
         async (...args) => {
-            const { source, limit, offset } = params;
+            const { source, limit, page } = params;
 
             const [dispatch, getState, rootContext] = args;
 
@@ -21,7 +21,7 @@ export const thunks = {
                 return;
             }
 
-            if (same(getState()[name].queryParams, { source, limit, offset })) {
+            if (same(getState()[name].queryParams, { source, limit, page })) {
                 return;
             }
 
@@ -31,32 +31,57 @@ export const thunks = {
 
             dispatch(
                 actions.queryStarted({
-                    "queryParams": { source, limit, offset }
+                    "queryParams": { source, limit, page }
                 })
             );
 
-            const dataOrErrorMessage = await sqlOlap
-                .getData({ "sourceUrl": source, limit, offset })
-                .catch(error => {
-                    return String(error);
-                });
+            const getIsActive = () =>
+                same(getState()[name].queryParams, { source, limit, page });
 
-            if (!same(getState()[name].queryParams, { source, limit, offset })) {
+            const rowCountOrErrorMessage = await sqlOlap
+                .getRowCount(source)
+                .catch(error => String(error));
+
+            if (!getIsActive()) {
                 //An other query has been made in the meantime
                 return;
             }
 
-            if (typeof dataOrErrorMessage === "string") {
+            if (typeof rowCountOrErrorMessage === "string") {
                 dispatch(
                     actions.queryFailed({
-                        "errorMessage": dataOrErrorMessage
+                        "errorMessage": rowCountOrErrorMessage
                     })
                 );
 
                 return;
             }
 
-            dispatch(actions.querySucceeded({ "data": dataOrErrorMessage }));
+            const rowsOrErrorMessage = await sqlOlap
+                .getRows({ "sourceUrl": source, limit, page })
+                .catch(error => String(error));
+
+            if (!getIsActive()) {
+                //An other query has been made in the meantime
+                return;
+            }
+
+            if (typeof rowsOrErrorMessage === "string") {
+                dispatch(
+                    actions.queryFailed({
+                        "errorMessage": rowsOrErrorMessage
+                    })
+                );
+
+                return;
+            }
+
+            dispatch(
+                actions.querySucceeded({
+                    "rows": rowsOrErrorMessage,
+                    "rowCount": rowCountOrErrorMessage
+                })
+            );
         }
 } satisfies Thunks;
 

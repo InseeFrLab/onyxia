@@ -5,7 +5,7 @@ export const routeDefs = {
         {
             "source": param.query.optional.string,
             "limit": param.query.optional.number,
-            "offset": param.query.optional.number
+            "page": param.query.optional.number
         },
         () => `/data-explorer`
     )

@@ -6,8 +6,9 @@ import duckdbEhWasmUrl from "@duckdb/duckdb-wasm/dist/duckdb-eh.wasm";
 import duckdbBrowserEhWorkerJsUrl from "@duckdb/duckdb-wasm/dist/duckdb-browser-eh.worker.js";
 import { Deferred } from "evt/tools/Deferred";
 import { assert } from "tsafe/assert";
+import memoize from "memoizee";
 
-export const createSqlOlap = (): SqlOlap => {
+export const createDuckDbSqlOlap = (): SqlOlap => {
     let dDb: Deferred<AsyncDuckDB> | undefined = undefined;
 
     const sqlOlap: SqlOlap = {
@@ -42,23 +43,39 @@ export const createSqlOlap = (): SqlOlap => {
 
             return db;
         },
-        "getData": async ({ sourceUrl, limit, offset }) => {
+        "getRows": async ({ sourceUrl, limit, page }) => {
             const db = await sqlOlap.getDb();
 
             const conn = await db.connect();
 
             const stmt = await conn.prepare(
-                `SELECT * FROM "${sourceUrl}" LIMIT ${limit} OFFSET ${offset}`
+                `SELECT * FROM "${sourceUrl}" LIMIT ${limit} OFFSET ${limit * (page - 1)}`
             );
 
             const res = await stmt.query();
 
-            const outArr = JSON.parse(JSON.stringify(res.toArray()));
+            const rows = JSON.parse(JSON.stringify(res.toArray()));
 
             await conn.close();
 
-            return outArr;
-        }
+            return rows;
+        },
+        "getRowCount": memoize(
+            async sourceUrl => {
+                const db = await sqlOlap.getDb();
+
+                const conn = await db.connect();
+
+                const stmt = await conn.prepare(
+                    `SELECT count(*)::INTEGER as v FROM "${sourceUrl}"`
+                );
+
+                const res = await stmt.query();
+
+                return JSON.parse(JSON.stringify(res.toArray()))[0]["v"];
+            },
+            { "promise": true, "max": 1 }
+        )
     };
 
     return sqlOlap;
