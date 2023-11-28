@@ -4,7 +4,7 @@ export const routeDefs = {
     "dataExplorer": defineRoute(
         {
             "source": param.query.optional.string,
-            "limit": param.query.optional.number,
+            "rowsPerPage": param.query.optional.number,
             "page": param.query.optional.number
         },
         () => `/data-explorer`

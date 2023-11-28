@@ -43,13 +43,15 @@ export const createDuckDbSqlOlap = (): SqlOlap => {
 
             return db;
         },
-        "getRows": async ({ sourceUrl, limit, page }) => {
+        "getRows": async ({ sourceUrl, rowsPerPage, page }) => {
             const db = await sqlOlap.getDb();
 
             const conn = await db.connect();
 
             const stmt = await conn.prepare(
-                `SELECT * FROM "${sourceUrl}" LIMIT ${limit} OFFSET ${limit * (page - 1)}`
+                `SELECT * FROM "${sourceUrl}" LIMIT ${rowsPerPage} OFFSET ${
+                    rowsPerPage * (page - 1)
+                }`
             );
 
             const res = await stmt.query();
@@ -62,6 +64,10 @@ export const createDuckDbSqlOlap = (): SqlOlap => {
         },
         "getRowCount": memoize(
             async sourceUrl => {
+                if (!sourceUrl.endsWith(".parquet")) {
+                    return undefined;
+                }
+
                 const db = await sqlOlap.getDb();
 
                 const conn = await db.connect();
@@ -72,7 +78,9 @@ export const createDuckDbSqlOlap = (): SqlOlap => {
 
                 const res = await stmt.query();
 
-                return JSON.parse(JSON.stringify(res.toArray()))[0]["v"];
+                const count: number = JSON.parse(JSON.stringify(res.toArray()))[0]["v"];
+
+                return count;
             },
             { "promise": true, "max": 1 }
         )

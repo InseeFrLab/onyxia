@@ -5,6 +5,8 @@ import { SearchBar } from "onyxia-ui/SearchBar";
 import { routes } from "ui/routes";
 import { useCore, useCoreState } from "core";
 import { Alert } from "onyxia-ui/Alert";
+import { DataGrid, GridToolbar } from "@mui/x-data-grid";
+import { CircularProgress } from "onyxia-ui/CircularProgress";
 
 export type Props = {
     route: PageRoute;
@@ -21,12 +23,15 @@ export default function DataExplorer(props: Props) {
     useEffect(() => {
         dataExplorer.setQueryParams({
             "source": route.params.source ?? "",
-            "limit": route.params.limit ?? 10,
+            "rowsPerPage": route.params.rowsPerPage ?? 100,
             "page": route.params.page ?? 1
         });
     }, [route]);
 
-    const { data, errorMessage, isQuerying } = useCoreState("dataExplorer", "main");
+    const { rows, columns, rowCount, errorMessage, isQuerying } = useCoreState(
+        "dataExplorer",
+        "main"
+    );
 
     return (
         <div className={cx(classes.root, className)}>
@@ -51,17 +56,31 @@ export default function DataExplorer(props: Props) {
                         );
                     }
 
-                    if (isQuerying) {
-                        return <div>Querying...</div>;
+                    if (rows === undefined) {
+                        return !isQuerying ? null : <CircularProgress />;
                     }
 
-                    if (data === undefined) {
-                        return null;
-                    }
-
-                    console.log("count: ", data.rowCount);
-
-                    return <pre>{JSON.stringify(data.rows, null, 2)}</pre>;
+                    return (
+                        <div className={classes.dataGridWrapper}>
+                            <DataGrid
+                                rows={rows}
+                                columns={columns}
+                                slots={{
+                                    "toolbar": GridToolbar
+                                }}
+                                loading={isQuerying}
+                                paginationMode="server"
+                                rowCount={rowCount}
+                                onPaginationModelChange={({ page, pageSize }) =>
+                                    routes[route.name]({
+                                        ...route.params,
+                                        "rowsPerPage": pageSize,
+                                        "page": page + 1
+                                    }).replace()
+                                }
+                            />
+                        </div>
+                    );
                 })()}
             </div>
         </div>
@@ -75,7 +94,8 @@ const useStyles = tss.withName({ DataExplorer }).create(({ theme }) => ({
         "flexDirection": "column"
     },
     "searchBar": {
-        "maxWidth": 950
+        "maxWidth": 950,
+        "marginBottom": theme.spacing(4)
     },
     "errorAlert": {
         "marginTop": theme.spacing(4),
@@ -83,6 +103,13 @@ const useStyles = tss.withName({ DataExplorer }).create(({ theme }) => ({
     },
     "mainArea": {
         "flex": 1,
-        "overflow": "auto"
+        "border": `1px solid ${theme.colors.useCases.typography.textTertiary}`,
+        "overflow": "hidden"
+    },
+    "dataGridWrapper": {
+        "width": "100%",
+        "height": "100%",
+        "overflowY": "hidden",
+        "overflowX": "auto"
     }
 }));

@@ -6,9 +6,9 @@ import { waitForDebounceFactory } from "core/tools/waitForDebounce";
 
 export const thunks = {
     "setQueryParams":
-        (params: { source: string; limit: number; page: number }) =>
+        (params: { source: string; rowsPerPage: number; page: number }) =>
         async (...args) => {
-            const { source, limit, page } = params;
+            const { source, rowsPerPage, page } = params;
 
             const [dispatch, getState, rootContext] = args;
 
@@ -21,7 +21,7 @@ export const thunks = {
                 return;
             }
 
-            if (same(getState()[name].queryParams, { source, limit, page })) {
+            if (same(getState()[name].queryParams, { source, rowsPerPage, page })) {
                 return;
             }
 
@@ -31,12 +31,12 @@ export const thunks = {
 
             dispatch(
                 actions.queryStarted({
-                    "queryParams": { source, limit, page }
+                    "queryParams": { source, rowsPerPage, page }
                 })
             );
 
             const getIsActive = () =>
-                same(getState()[name].queryParams, { source, limit, page });
+                same(getState()[name].queryParams, { source, rowsPerPage, page });
 
             const rowCountOrErrorMessage = await sqlOlap
                 .getRowCount(source)
@@ -58,7 +58,7 @@ export const thunks = {
             }
 
             const rowsOrErrorMessage = await sqlOlap
-                .getRows({ "sourceUrl": source, limit, page })
+                .getRows({ "sourceUrl": source, rowsPerPage, page })
                 .catch(error => String(error));
 
             if (!getIsActive()) {

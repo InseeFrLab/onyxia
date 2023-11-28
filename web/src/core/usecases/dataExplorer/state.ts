@@ -8,7 +8,7 @@ type State = {
     queryParams:
         | {
               source: string;
-              limit: number;
+              rowsPerPage: number;
               page: number;
           }
         | undefined;
@@ -16,7 +16,7 @@ type State = {
     data:
         | {
               rows: any[];
-              rowCount: number;
+              rowCount: number | undefined;
           }
         | undefined;
 };
@@ -41,7 +41,7 @@ export const { actions, reducer } = createUsecaseActions({
         },
         "querySucceeded": (
             state,
-            { payload }: { payload: { rows: any[]; rowCount: number } }
+            { payload }: { payload: { rows: any[]; rowCount: number | undefined } }
         ) => {
             const { rowCount, rows } = payload;
             state.isQuerying = false;

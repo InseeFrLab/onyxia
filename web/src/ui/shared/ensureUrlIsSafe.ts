@@ -18,7 +18,8 @@ export function ensureUrlIsSafe(url: string): void {
         throw new Error(`${url} is not a local url. (Local urls start with "/")`);
     }
 
-    const RESOURCES_ALLOWED_ORIGINS = (kcContext as any).properties.RESOURCES_ALLOWED_ORIGINS;
+    const RESOURCES_ALLOWED_ORIGINS = (kcContext as any).properties
+        .RESOURCES_ALLOWED_ORIGINS;
 
     assert(typeof RESOURCES_ALLOWED_ORIGINS === "string");
 
