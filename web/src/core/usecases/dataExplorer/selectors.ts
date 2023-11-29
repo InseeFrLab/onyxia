@@ -25,7 +25,6 @@ const columns = createSelector(state, state => {
         propertyName =>
             ({
                 "field": propertyName,
-                "width": propertyName.length * 12,
                 "sortable": false
             } satisfies GridColDef)
     );

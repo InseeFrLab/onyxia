@@ -6,12 +6,12 @@ import { routes } from "ui/routes";
 import { useCore, useCoreState } from "core";
 import { Alert } from "onyxia-ui/Alert";
 import {
-    DataGrid,
     GridToolbarContainer,
     GridToolbarColumnsButton,
     GridToolbarDensitySelector
 } from "@mui/x-data-grid";
 import { CircularProgress } from "onyxia-ui/CircularProgress";
+import { ResizableDataGrid } from "./ResizableDataGrid";
 
 export type Props = {
     route: PageRoute;
@@ -69,7 +69,7 @@ export default function DataExplorer(props: Props) {
 
                     return (
                         <div className={classes.dataGridWrapper}>
-                            <DataGrid
+                            <ResizableDataGrid
                                 disableVirtualization
                                 rows={rows}
                                 columns={columns}

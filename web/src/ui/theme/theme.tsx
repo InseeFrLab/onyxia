@@ -17,6 +17,22 @@ export const { ScreenScalerOutOfRangeFallbackProvider } = enableScreenScaler({
         isPortraitOrientation ? undefined : targetWindowInnerWidth * zoomFactor
 });
 
+/*
+export const ScreenScalerOutOfRangeFallbackProvider = ({ children}: { 
+    children: React.ReactNode;
+    fallback?: React.ReactNode;
+})=> {
+
+
+    return (
+        <>
+            {children}
+        </>
+    );
+
+}
+*/
+
 const {
     OnyxiaUi: OnyxiaUiWithoutEmotionCache,
     evtTheme,
