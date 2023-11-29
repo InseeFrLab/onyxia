@@ -52,13 +52,16 @@ export const ResizableDataGrid: typeof DataGrid = ({ columns, ...props }) => {
                         "flex": 1
                     })
                 ),
-                "columnHeader": css({
-                    "&:focus, &:focus-within": {
-                        "&&&": {
-                            "outline": "none"
+                "columnHeader": cx(
+                    props.classes?.columnHeader,
+                    css({
+                        "&:focus, &:focus-within": {
+                            "&&&": {
+                                "outline": "none"
+                            }
                         }
-                    }
-                })
+                    })
+                )
             }}
             columns={modifiedColumns}
         />
