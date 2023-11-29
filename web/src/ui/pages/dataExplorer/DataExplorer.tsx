@@ -5,7 +5,12 @@ import { SearchBar } from "onyxia-ui/SearchBar";
 import { routes } from "ui/routes";
 import { useCore, useCoreState } from "core";
 import { Alert } from "onyxia-ui/Alert";
-import { DataGrid, GridToolbar } from "@mui/x-data-grid";
+import {
+    DataGrid,
+    GridToolbarContainer,
+    GridToolbarColumnsButton,
+    GridToolbarDensitySelector
+} from "@mui/x-data-grid";
 import { CircularProgress } from "onyxia-ui/CircularProgress";
 
 export type Props = {
@@ -60,13 +65,18 @@ export default function DataExplorer(props: Props) {
                         return !isQuerying ? null : <CircularProgress />;
                     }
 
+                    console.log({ isQuerying });
+
                     return (
                         <div className={classes.dataGridWrapper}>
                             <DataGrid
+                                disableVirtualization
                                 rows={rows}
                                 columns={columns}
+                                disableColumnMenu
+                                disableColumnFilter
                                 slots={{
-                                    "toolbar": GridToolbar
+                                    "toolbar": CustomToolbar
                                 }}
                                 loading={isQuerying}
                                 paginationMode="server"
@@ -87,6 +97,15 @@ export default function DataExplorer(props: Props) {
     );
 }
 
+function CustomToolbar() {
+    return (
+        <GridToolbarContainer>
+            <GridToolbarColumnsButton />
+            <GridToolbarDensitySelector />
+        </GridToolbarContainer>
+    );
+}
+
 const useStyles = tss.withName({ DataExplorer }).create(({ theme }) => ({
     "root": {
         "height": "100%",
@@ -103,7 +122,6 @@ const useStyles = tss.withName({ DataExplorer }).create(({ theme }) => ({
     },
     "mainArea": {
         "flex": 1,
-        "border": `1px solid ${theme.colors.useCases.typography.textTertiary}`,
         "overflow": "hidden"
     },
     "dataGridWrapper": {
