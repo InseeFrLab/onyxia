@@ -85,6 +85,15 @@ maintenance:
       email: "joseph.garrone@protonmail.com"
       affiliation: INSEE
 
+metadataFiles:
+  readme: README.md
+  license: LICENSE
+  contributing: CONTRIBUTING.md
+  changelog: null
+  codeOfConduct: CODE_OF_CONDUCT.md
+  governance: GOVERNANCE.md
+  funding: null
+
 localisation:
   localisationReady: true
   availableLanguages:
