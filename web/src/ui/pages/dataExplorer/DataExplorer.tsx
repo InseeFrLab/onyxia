@@ -12,6 +12,7 @@ import {
 } from "@mui/x-data-grid";
 import { CircularProgress } from "onyxia-ui/CircularProgress";
 import { ResizableDataGrid } from "./ResizableDataGrid";
+import { assert } from "tsafe/assert";
 
 export type Props = {
     route: PageRoute;
@@ -28,8 +29,8 @@ export default function DataExplorer(props: Props) {
     useEffect(() => {
         dataExplorer.setQueryParams({
             "source": route.params.source ?? "",
-            "rowsPerPage": route.params.rowsPerPage ?? 100,
-            "page": route.params.page ?? 1
+            "rowsPerPage": route.params.rowsPerPage,
+            "page": route.params.page
         });
     }, [route]);
 
@@ -65,8 +66,6 @@ export default function DataExplorer(props: Props) {
                         return !isQuerying ? null : <CircularProgress />;
                     }
 
-                    console.log({ isQuerying });
-
                     return (
                         <div className={classes.dataGridWrapper}>
                             <ResizableDataGrid
@@ -81,6 +80,19 @@ export default function DataExplorer(props: Props) {
                                 loading={isQuerying}
                                 paginationMode="server"
                                 rowCount={rowCount}
+                                pageSizeOptions={(() => {
+                                    const pageSizeOptions = [25, 50, 100];
+
+                                    assert(
+                                        pageSizeOptions.includes(route.params.rowsPerPage)
+                                    );
+
+                                    return pageSizeOptions;
+                                })()}
+                                paginationModel={{
+                                    "page": route.params.page - 1,
+                                    "pageSize": route.params.rowsPerPage
+                                }}
                                 onPaginationModelChange={({ page, pageSize }) =>
                                     routes[route.name]({
                                         ...route.params,
