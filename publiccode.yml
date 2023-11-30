@@ -81,11 +81,9 @@ maintenance:
     - name: Frederic Comte
       email: "frederic.comte@insee.fr"
       affiliation: INSEE
-      phone: "+33627137276"
     - name: Joseph Garrone
       email: "joseph.garrone@protonmail.com"
       affiliation: INSEE
-      phone: "+33636786385"
 
 localisation:
   localisationReady: true
