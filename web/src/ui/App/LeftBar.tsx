@@ -73,6 +73,15 @@ export const LeftBar = memo((props: Props) => {
                               "link": routes.mySecrets().link
                           } as const
                       }),
+                ...(!fileExplorer.getIsEnabled()
+                    ? ({} as never)
+                    : {
+                          "myFiles": {
+                              "icon": customIcons.filesSvgUrl,
+                              "label": t("myFiles"),
+                              "link": routes.myFiles().link
+                          } as const
+                      }),
                 ...(!isDevModeEnabled
                     ? ({} as never)
                     : {
@@ -82,28 +91,15 @@ export const LeftBar = memo((props: Props) => {
                               "link": routes.sqlOlapShell().link
                           } as const
                       }),
-                ...(!isDevModeEnabled
-                    ? ({} as never)
-                    : {
-                          "dataExplorer": {
-                              "icon": "DocumentScanner",
-                              "label": "Data Explorer",
-                              "link": routes.dataExplorer().link
-                          } as const
-                      }),
-                ...(!fileExplorer.getIsEnabled()
-                    ? ({} as never)
-                    : {
-                          "myFiles": {
-                              "icon": customIcons.filesSvgUrl,
-                              "label": t("myFiles"),
-                              "link": routes.myFiles().link,
-                              "belowDivider":
-                                  env.LEFTBAR_LINKS.length === 0
-                                      ? true
-                                      : t("divider: onyxia instance specific features")
-                          } as const
-                      }),
+                "dataExplorer": {
+                    "icon": "DocumentScanner",
+                    "label": "Data Explorer",
+                    "link": routes.dataExplorer().link,
+                    "belowDivider":
+                        env.LEFTBAR_LINKS.length === 0
+                            ? true
+                            : t("divider: onyxia instance specific features")
+                } as const,
                 ...Object.fromEntries(
                     env.LEFTBAR_LINKS.map(({ url, ...rest }) => ({
                         "link": urlToLink(url),

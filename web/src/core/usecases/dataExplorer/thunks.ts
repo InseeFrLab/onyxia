@@ -12,7 +12,7 @@ export const thunks = {
 
             const [dispatch, getState, rootContext] = args;
 
-            const { sqlOlap, s3Client } = rootContext;
+            const { sqlOlap, s3Client, oidc } = rootContext;
 
             // NOTE: Preload for minimizing load time when querying.
             sqlOlap.getDb();
@@ -31,7 +31,7 @@ export const thunks = {
 
             const getIsActive = () => same(getState()[name].queryParams, queryParams);
 
-            const httpsUrl = await (() => {
+            const httpsUrl = await (async () => {
                 if (sourceUrl.startsWith("https://")) {
                     return sourceUrl;
                 }
@@ -40,6 +40,13 @@ export const thunks = {
 
                 if (s3path === sourceUrl) {
                     throw new Error("Only https:// and s3:// urls are supported");
+                }
+
+                if (!oidc.isUserLoggedIn) {
+                    oidc.login({
+                        "doesCurrentHrefRequiresAuth": true
+                    });
+                    await new Promise(() => {});
                 }
 
                 return s3Client.getFileDownloadUrl({ "path": s3path });
