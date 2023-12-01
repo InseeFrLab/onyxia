@@ -130,7 +130,18 @@ export default function MyFiles(props: Props) {
 
     const onOpenFile = useConstCallback<
         Extract<ExplorerProps, { isFileOpen: false }>["onOpenFile"]
-    >(({ basename }) => fileExplorer.getFileDownloadUrl({ basename }).then(window.open));
+    >(({ basename }) => {
+        if (basename.endsWith(".parquet") || basename.endsWith(".s3")) {
+            routes
+                .dataExplorer({
+                    "source": `s3:/${route.params.path}/${basename}`
+                })
+                .push();
+            return;
+        }
+
+        fileExplorer.getFileDownloadUrl({ basename }).then(window.open);
+    });
 
     const onFileSelected = useConstCallback<ExplorerProps["onFileSelected"]>(
         ({ files }) =>
