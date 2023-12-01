@@ -134,7 +134,7 @@ export default function MyFiles(props: Props) {
 
     const onFileSelected = useConstCallback<ExplorerProps["onFileSelected"]>(
         ({ files }) =>
-            files.map(file =>
+            files.forEach(file =>
                 fileExplorer.create({
                     "createWhat": "file",
                     "basename": file.name,
