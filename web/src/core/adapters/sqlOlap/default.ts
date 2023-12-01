@@ -64,7 +64,7 @@ export const createDuckDbSqlOlap = (): SqlOlap => {
         },
         "getRowCount": memoize(
             async sourceUrl => {
-                if (!sourceUrl.endsWith(".parquet")) {
+                if (!new URL(sourceUrl).pathname.endsWith(".parquet")) {
                     return undefined;
                 }
 

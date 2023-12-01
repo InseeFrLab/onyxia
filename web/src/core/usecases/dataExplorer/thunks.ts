@@ -17,8 +17,12 @@ export const thunks = {
             // NOTE: Preload for minimizing load time when querying.
             sqlOlap.getDb();
 
-            if (!source.endsWith(".parquet") && !source.endsWith(".csv")) {
-                return;
+            {
+                const { pathname } = new URL(source);
+
+                if (!pathname.endsWith(".parquet") && !pathname.endsWith(".csv")) {
+                    return;
+                }
             }
 
             if (same(getState()[name].queryParams, { source, rowsPerPage, page })) {
