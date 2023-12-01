@@ -718,6 +718,10 @@ Fühlen Sie sich frei, Ihre Kubernetes-Bereitstellungen zu erkunden und die Kont
                     return "in # Jahren";
             }
         }
+    },
+    "CopyToClipboardIconButton": {
+        "copied to clipboard": "Kopiert!",
+        "copy to clipboard": "In die Zwischenablage kopieren"
     }
     /* spell-checker: enable */
 };

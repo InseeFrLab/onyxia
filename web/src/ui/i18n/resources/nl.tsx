@@ -716,6 +716,10 @@ Voel je vrij om te verkennen en de controle over je Kubernetes-implementaties te
                     return "over # jaar";
             }
         }
+    },
+    "CopyToClipboardIconButton": {
+        "copied to clipboard": "Gekopieerd!",
+        "copy to clipboard": "Kopiëren naar klembord"
     }
     /* spell-checker: enable */
 };

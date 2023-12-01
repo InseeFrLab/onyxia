@@ -62,7 +62,8 @@ export type ComponentKey =
     | typeof import("ui/pages/myServices/MyServicesCards").i18n
     | typeof import("ui/pages/myServices/MyServicesCards/NoRunningService").i18n
     | typeof import("ui/shared/CommandBar").i18n
-    | typeof import("ui/shared/useMoment").i18n;
+    | typeof import("ui/shared/useMoment").i18n
+    | typeof import("ui/shared/CopyToClipboardIconButton").i18n;
 
 export type Translations<L extends Language> = GenericTranslations<
     ComponentKey,

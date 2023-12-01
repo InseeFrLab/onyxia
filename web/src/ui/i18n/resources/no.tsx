@@ -708,5 +708,9 @@ Føl deg fri til å utforske og ta kontroll over dine Kubernetes-implementeringe
                     return "om # år";
             }
         }
+    },
+    "CopyToClipboardIconButton": {
+        "copied to clipboard": "Kopiert!",
+        "copy to clipboard": "Kopier til utklippstavlen"
     }
 };

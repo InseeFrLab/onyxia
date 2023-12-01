@@ -712,6 +712,10 @@ Sentiti libero di esplorare e prendere il controllo dei tuoi deployment Kubernet
                     return "tra # anni";
             }
         }
+    },
+    "CopyToClipboardIconButton": {
+        "copied to clipboard": "Copiato!",
+        "copy to clipboard": "Copia negli appunti"
     }
     /* spell-checker: enable */
 };

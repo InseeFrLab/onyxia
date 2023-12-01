@@ -702,5 +702,9 @@ Tutustu vapaasti ja ota hallintaan Kubernetes-julkaisusi!
                     return "# vuoden kuluttua";
             }
         }
+    },
+    "CopyToClipboardIconButton": {
+        "copied to clipboard": "Kopioitu!",
+        "copy to clipboard": "Kopioi leikepöydälle"
     }
 };

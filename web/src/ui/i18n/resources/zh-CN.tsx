@@ -672,6 +672,10 @@ ${
                     return "# 年后";
             }
         }
+    },
+    "CopyToClipboardIconButton": {
+        "copied to clipboard": "已复制！",
+        "copy to clipboard": "复制到剪贴板"
     }
     /* spell-checker: enable */
 };

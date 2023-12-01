@@ -11,7 +11,7 @@ import {
     GridToolbarDensitySelector
 } from "@mui/x-data-grid";
 import { CircularProgress } from "onyxia-ui/CircularProgress";
-import { ResizableDataGrid } from "./ResizableDataGrid";
+import { CustomDataGrid } from "./CustomDataGrid";
 import { assert } from "tsafe/assert";
 
 export type Props = {
@@ -63,12 +63,20 @@ export default function DataExplorer(props: Props) {
                     }
 
                     if (rows === undefined) {
-                        return !isQuerying ? null : <CircularProgress />;
+                        if (!isQuerying) {
+                            return null;
+                        }
+
+                        return (
+                            <div className={cx(classes.initializing, className)}>
+                                <CircularProgress size={70} />
+                            </div>
+                        );
                     }
 
                     return (
-                        <div className={classes.dataGridWrapper}>
-                            <ResizableDataGrid
+                        <div className={cx(classes.dataGridWrapper, className)}>
+                            <CustomDataGrid
                                 disableVirtualization
                                 rows={rows}
                                 columns={columns}
@@ -123,6 +131,12 @@ const useStyles = tss.withName({ DataExplorer }).create(({ theme }) => ({
         "height": "100%",
         "display": "flex",
         "flexDirection": "column"
+    },
+    "initializing": {
+        "display": "flex",
+        "justifyContent": "center",
+        "alignItems": "center",
+        "height": "100%"
     },
     "searchBar": {
         "maxWidth": 950,

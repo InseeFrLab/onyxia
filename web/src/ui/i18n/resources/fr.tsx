@@ -721,6 +721,10 @@ N'hésitez pas à explorer et à prendre en main vos déploiements Kubernetes !
                     return "dans # ans";
             }
         }
+    },
+    "CopyToClipboardIconButton": {
+        "copied to clipboard": "Copié !",
+        "copy to clipboard": "Copier dans le presse-papiers"
     }
     /* spell-checker: enable */
 };
