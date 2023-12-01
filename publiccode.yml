@@ -18,6 +18,8 @@ usedBy:
   - Insee
   - Statistics Norway
   - Mercator Ocean
+  - Expertise France
+  - Genes
 
 roadmap: "https://docs.onyxia.sh/roadmap"
 
@@ -81,11 +83,18 @@ maintenance:
     - name: Frederic Comte
       email: "frederic.comte@insee.fr"
       affiliation: INSEE
-      phone: "+33627137276"
     - name: Joseph Garrone
       email: "joseph.garrone@protonmail.com"
       affiliation: INSEE
-      phone: "+33636786385"
+
+metadataFiles:
+  readme: README.md
+  license: LICENSE
+  contributing: CONTRIBUTING.md
+  changelog: null
+  codeOfConduct: CODE_OF_CONDUCT.md
+  governance: GOVERNANCE.md
+  funding: null
 
 localisation:
   localisationReady: true
