@@ -6,26 +6,20 @@ import { waitForDebounceFactory } from "core/tools/waitForDebounce";
 
 export const thunks = {
     "setQueryParams":
-        (params: { source: string; rowsPerPage: number; page: number }) =>
+        (params: { sourceUrl: string; rowsPerPage: number; page: number }) =>
         async (...args) => {
-            const { source, rowsPerPage, page } = params;
+            const { sourceUrl, rowsPerPage, page } = params;
 
             const [dispatch, getState, rootContext] = args;
 
-            const { sqlOlap } = rootContext;
+            const { sqlOlap, s3Client } = rootContext;
 
             // NOTE: Preload for minimizing load time when querying.
             sqlOlap.getDb();
 
-            {
-                const { pathname } = new URL(source);
+            const queryParams = { sourceUrl, rowsPerPage, page };
 
-                if (!pathname.endsWith(".parquet") && !pathname.endsWith(".csv")) {
-                    return;
-                }
-            }
-
-            if (same(getState()[name].queryParams, { source, rowsPerPage, page })) {
+            if (same(getState()[name].queryParams, queryParams)) {
                 return;
             }
 
@@ -33,17 +27,26 @@ export const thunks = {
 
             await waitForDebounce();
 
-            dispatch(
-                actions.queryStarted({
-                    "queryParams": { source, rowsPerPage, page }
-                })
-            );
+            dispatch(actions.queryStarted({ queryParams }));
 
-            const getIsActive = () =>
-                same(getState()[name].queryParams, { source, rowsPerPage, page });
+            const getIsActive = () => same(getState()[name].queryParams, queryParams);
+
+            const httpsUrl = await (() => {
+                if (sourceUrl.startsWith("https://")) {
+                    return sourceUrl;
+                }
+
+                const s3path = sourceUrl.replace(/^s3:\/\//, "/");
+
+                if (s3path === sourceUrl) {
+                    throw new Error("Only https:// and s3:// urls are supported");
+                }
+
+                return s3Client.getFileDownloadUrl({ "path": s3path });
+            })();
 
             const rowCountOrErrorMessage = await sqlOlap
-                .getRowCount(source)
+                .getRowCount(httpsUrl)
                 .catch(error => String(error));
 
             if (!getIsActive()) {
@@ -62,7 +65,7 @@ export const thunks = {
             }
 
             const rowsOrErrorMessage = await sqlOlap
-                .getRows({ "sourceUrl": source, rowsPerPage, page })
+                .getRows({ "sourceUrl": httpsUrl, rowsPerPage, page })
                 .catch(error => String(error));
 
             if (!getIsActive()) {

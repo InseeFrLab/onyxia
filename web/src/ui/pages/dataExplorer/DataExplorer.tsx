@@ -28,7 +28,7 @@ export default function DataExplorer(props: Props) {
 
     useEffect(() => {
         dataExplorer.setQueryParams({
-            "source": route.params.source ?? "",
+            "sourceUrl": route.params.source ?? "",
             "rowsPerPage": route.params.rowsPerPage,
             "page": route.params.page
         });

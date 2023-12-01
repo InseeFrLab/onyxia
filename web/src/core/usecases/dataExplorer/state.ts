@@ -7,7 +7,7 @@ type State = {
     isQuerying: boolean;
     queryParams:
         | {
-              source: string;
+              sourceUrl: string;
               rowsPerPage: number;
               page: number;
           }
