@@ -17,6 +17,41 @@ export const thunks = {
             // NOTE: Preload for minimizing load time when querying.
             sqlOlap.getDb();
 
+            if (sourceUrl === "" && getState()[name].queryParams !== undefined) {
+                await Promise.resolve();
+                dispatch(actions.restoreStateNeeded());
+                return;
+            }
+
+            {
+                let pathname: string;
+
+                try {
+                    pathname = new URL(sourceUrl).pathname;
+                } catch {
+                    return;
+                }
+
+                // capture the extension of the path
+                const match = pathname.match(/\.(\w+)$/);
+
+                if (match === null) {
+                    return;
+                }
+
+                const [, extension] = match;
+
+                if (!["parquet", "csv"].includes(extension)) {
+                    dispatch(
+                        actions.queryFailed({
+                            "errorMessage": `Unsupported file extension: ${extension}`
+                        })
+                    );
+
+                    return;
+                }
+            }
+
             const queryParams = { sourceUrl, rowsPerPage, page };
 
             if (same(getState()[name].queryParams, queryParams)) {
@@ -39,7 +74,12 @@ export const thunks = {
                 const s3path = sourceUrl.replace(/^s3:\/\//, "/");
 
                 if (s3path === sourceUrl) {
-                    throw new Error("Only https:// and s3:// urls are supported");
+                    dispatch(
+                        actions.queryFailed({
+                            "errorMessage": `Unsupported protocol, only https:// and s3:// are supported`
+                        })
+                    );
+                    await new Promise(() => {});
                 }
 
                 if (!oidc.isUserLoggedIn) {

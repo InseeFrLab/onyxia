@@ -51,6 +51,8 @@ export const { actions, reducer } = createUsecaseActions({
             const { errorMessage } = payload;
             state.isQuerying = false;
             state.errorMessage = errorMessage;
-        }
+        },
+        /** Only for evt */
+        "restoreStateNeeded": () => {}
     }
 });

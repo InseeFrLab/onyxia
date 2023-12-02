@@ -12,7 +12,8 @@ import {
 } from "@mui/x-data-grid";
 import { CircularProgress } from "onyxia-ui/CircularProgress";
 import { CustomDataGrid } from "./CustomDataGrid";
-import { assert } from "tsafe/assert";
+import { assert, type Equals } from "tsafe/assert";
+import { useEvt } from "evt/hooks";
 
 export type Props = {
     route: PageRoute;
@@ -33,6 +34,31 @@ export default function DataExplorer(props: Props) {
             "page": route.params.page
         });
     }, [route]);
+
+    const { evtDataExplorer } = useCore().evts;
+
+    useEvt(
+        ctx => {
+            evtDataExplorer.$attach(
+                eventData =>
+                    eventData.actionName === "restoreQueryParams"
+                        ? [eventData.queryParams]
+                        : null,
+                ctx,
+                ({ page, rowsPerPage, sourceUrl, ...rest }) => {
+                    assert<Equals<typeof rest, {}>>();
+
+                    routes[route.name]({
+                        ...route.params,
+                        page,
+                        rowsPerPage,
+                        "source": sourceUrl
+                    }).replace();
+                }
+            );
+        },
+        [evtDataExplorer]
+    );
 
     const { rows, columns, rowCount, errorMessage, isQuerying } = useCoreState(
         "dataExplorer",
