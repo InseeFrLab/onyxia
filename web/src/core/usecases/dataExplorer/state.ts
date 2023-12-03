@@ -12,6 +12,7 @@ type State = {
               page: number;
           }
         | undefined;
+    selectedRowIndex: number | undefined;
     errorMessage: string | undefined;
     data:
         | {
@@ -26,18 +27,34 @@ export const { actions, reducer } = createUsecaseActions({
     "initialState": id<State>({
         "isQuerying": false,
         "queryParams": undefined,
+        "selectedRowIndex": undefined,
         "errorMessage": undefined,
         "data": undefined
     }),
     "reducers": {
         "queryStarted": (
             state,
-            { payload }: { payload: { queryParams: NonNullable<State["queryParams"]> } }
+            {
+                payload
+            }: {
+                payload: {
+                    queryParams: NonNullable<State["queryParams"]>;
+                    selectedRowIndex: number | undefined;
+                };
+            }
         ) => {
-            const { queryParams } = payload;
+            const { queryParams, selectedRowIndex } = payload;
             state.errorMessage = undefined;
             state.isQuerying = true;
             state.queryParams = queryParams;
+            state.selectedRowIndex = selectedRowIndex;
+        },
+        "rowSelectionChanged": (
+            state,
+            { payload }: { payload: { selectedRowIndex: number | undefined } }
+        ) => {
+            const { selectedRowIndex } = payload;
+            state.selectedRowIndex = selectedRowIndex;
         },
         "querySucceeded": (
             state,

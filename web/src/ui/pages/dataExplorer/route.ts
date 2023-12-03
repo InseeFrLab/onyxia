@@ -5,7 +5,8 @@ export const routeDefs = {
         {
             "source": param.query.optional.string,
             "rowsPerPage": param.query.optional.number.default(25),
-            "page": param.query.optional.number.default(1)
+            "page": param.query.optional.number.default(1),
+            "selectedRow": param.query.optional.number
         },
         () => `/data-explorer`
     )

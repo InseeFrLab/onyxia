@@ -14,6 +14,7 @@ import { CircularProgress } from "onyxia-ui/CircularProgress";
 import { CustomDataGrid } from "./CustomDataGrid";
 import { assert, type Equals } from "tsafe/assert";
 import { useEvt } from "evt/hooks";
+import { exclude } from "tsafe/exclude";
 
 export type Props = {
     route: PageRoute;
@@ -31,7 +32,8 @@ export default function DataExplorer(props: Props) {
         dataExplorer.setQueryParams({
             "sourceUrl": route.params.source ?? "",
             "rowsPerPage": route.params.rowsPerPage,
-            "page": route.params.page
+            "page": route.params.page,
+            "selectedRowIndex": route.params.selectedRow
         });
     }, [route]);
 
@@ -41,18 +43,16 @@ export default function DataExplorer(props: Props) {
         ctx => {
             evtDataExplorer.$attach(
                 eventData =>
-                    eventData.actionName === "restoreQueryParams"
-                        ? [eventData.queryParams]
-                        : null,
+                    eventData.actionName === "restoreState" ? [eventData.state] : null,
                 ctx,
-                ({ page, rowsPerPage, sourceUrl, ...rest }) => {
+                ({ page, rowsPerPage, sourceUrl, selectedRowIndex, ...rest }) => {
                     assert<Equals<typeof rest, {}>>();
-
                     routes[route.name]({
                         ...route.params,
                         page,
                         rowsPerPage,
-                        "source": sourceUrl
+                        "source": sourceUrl,
+                        "selectedRow": selectedRowIndex
                     }).replace();
                 }
             );
@@ -104,6 +104,26 @@ export default function DataExplorer(props: Props) {
                         <div className={cx(classes.dataGridWrapper, className)}>
                             <CustomDataGrid
                                 disableVirtualization
+                                onRowSelectionModelChange={rowSelectionModel => {
+                                    const selectedRowIndex = rowSelectionModel[0];
+
+                                    assert(
+                                        typeof selectedRowIndex === "number" ||
+                                            selectedRowIndex === undefined
+                                    );
+
+                                    routes[route.name]({
+                                        ...route.params,
+                                        "selectedRow": selectedRowIndex
+                                    }).replace();
+
+                                    dataExplorer.setSelectedRowIndex({
+                                        selectedRowIndex
+                                    });
+                                }}
+                                rowSelectionModel={[
+                                    route.params.selectedRow ?? undefined
+                                ].filter(exclude(undefined))}
                                 rows={rows}
                                 columns={columns}
                                 disableColumnMenu

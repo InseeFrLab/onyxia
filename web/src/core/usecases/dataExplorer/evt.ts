@@ -6,11 +6,12 @@ import { assert } from "tsafe/assert";
 
 export const createEvt = (({ evtAction, getState }) => {
     const evtOut = Evt.create<{
-        actionName: "restoreQueryParams";
-        queryParams: {
+        actionName: "restoreState";
+        state: {
             sourceUrl: string;
             rowsPerPage: number;
             page: number;
+            selectedRowIndex: number | undefined;
         };
     }>();
 
@@ -19,15 +20,18 @@ export const createEvt = (({ evtAction, getState }) => {
         .attach(
             ({ actionName }) => actionName === "restoreStateNeeded",
             () => {
-                const { queryParams } = getState()[name];
+                const { queryParams, selectedRowIndex } = getState()[name];
 
                 assert(queryParams !== undefined);
 
-                console.log({ queryParams });
-
                 evtOut.post({
-                    "actionName": "restoreQueryParams",
-                    queryParams
+                    "actionName": "restoreState",
+                    "state": {
+                        "sourceUrl": queryParams.sourceUrl,
+                        "rowsPerPage": queryParams.rowsPerPage,
+                        "page": queryParams.page,
+                        selectedRowIndex
+                    }
                 });
             }
         );

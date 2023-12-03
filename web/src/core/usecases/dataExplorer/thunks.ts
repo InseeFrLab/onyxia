@@ -6,9 +6,14 @@ import { waitForDebounceFactory } from "core/tools/waitForDebounce";
 
 export const thunks = {
     "setQueryParams":
-        (params: { sourceUrl: string; rowsPerPage: number; page: number }) =>
+        (params: {
+            sourceUrl: string;
+            rowsPerPage: number;
+            page: number;
+            selectedRowIndex: number | undefined;
+        }) =>
         async (...args) => {
-            const { sourceUrl, rowsPerPage, page } = params;
+            const { sourceUrl, rowsPerPage, page, selectedRowIndex } = params;
 
             const [dispatch, getState, rootContext] = args;
 
@@ -62,7 +67,7 @@ export const thunks = {
 
             await waitForDebounce();
 
-            dispatch(actions.queryStarted({ queryParams }));
+            dispatch(actions.queryStarted({ queryParams, selectedRowIndex }));
 
             const getIsActive = () => same(getState()[name].queryParams, queryParams);
 
@@ -136,6 +141,16 @@ export const thunks = {
                     "rowCount": rowCountOrErrorMessage
                 })
             );
+        },
+    /** NOTE: This is only for restoring the state when navigating back */
+    "setSelectedRowIndex":
+        (params: { selectedRowIndex: number | undefined }) =>
+        (...args) => {
+            const [dispatch] = args;
+
+            const { selectedRowIndex } = params;
+
+            dispatch(actions.rowSelectionChanged({ selectedRowIndex }));
         }
 } satisfies Thunks;
 
