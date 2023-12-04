@@ -16,6 +16,14 @@ export const routeDefs = {
                         "stringify": value => JSON.stringify(value)
                     })
                 )
+                .default({}),
+            "columnVisibility": param.query.optional
+                .ofType(
+                    id<ValueSerializer<Record<string, boolean>>>({
+                        "parse": raw => JSON.parse(raw),
+                        "stringify": value => JSON.stringify(value)
+                    })
+                )
                 .default({})
         },
         () => `/data-explorer`

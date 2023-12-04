@@ -37,7 +37,8 @@ export default function DataExplorer(props: Props) {
             },
             "extraRestorableStates": {
                 "columnWidths": route.params.columnWidths,
-                "selectedRowIndex": route.params.selectedRow
+                "selectedRowIndex": route.params.selectedRow,
+                "columnVisibility": route.params.columnVisibility
             }
         });
     }, [route]);
@@ -53,7 +54,7 @@ export default function DataExplorer(props: Props) {
                 ({ queryParams, extraRestorableStates }) => {
                     const { sourceUrl, rowsPerPage, page, ...rest1 } = queryParams;
                     assert<Equals<typeof rest1, {}>>();
-                    const { columnWidths, selectedRowIndex, ...rest2 } =
+                    const { columnWidths, selectedRowIndex, columnVisibility, ...rest2 } =
                         extraRestorableStates;
                     assert<Equals<typeof rest2, {}>>();
 
@@ -63,7 +64,8 @@ export default function DataExplorer(props: Props) {
                         rowsPerPage,
                         "source": sourceUrl,
                         "selectedRow": selectedRowIndex,
-                        columnWidths
+                        columnWidths,
+                        columnVisibility
                     }).replace();
                 }
             );
@@ -115,15 +117,22 @@ export default function DataExplorer(props: Props) {
                         <div className={cx(classes.dataGridWrapper, className)}>
                             <CustomDataGrid
                                 disableVirtualization
-                                onColumnWidthChange={({ field, width }) => {
+                                columnVisibilityModel={route.params.columnVisibility}
+                                onColumnVisibilityModelChange={columnVisibilityModel =>
+                                    routes[route.name]({
+                                        ...route.params,
+                                        "columnVisibility": columnVisibilityModel
+                                    }).replace()
+                                }
+                                onColumnWidthChange={({ field, width }) =>
                                     routes[route.name]({
                                         ...route.params,
                                         "columnWidths": {
                                             ...route.params.columnWidths,
                                             [field]: width
                                         }
-                                    }).replace();
-                                }}
+                                    }).replace()
+                                }
                                 columnWidths={route.params.columnWidths}
                                 onRowSelectionModelChange={rowSelectionModel => {
                                     const selectedRowIndex = rowSelectionModel[0];

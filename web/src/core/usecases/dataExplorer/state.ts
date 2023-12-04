@@ -3,7 +3,7 @@ import { id } from "tsafe/id";
 
 export const name = "dataExplorer";
 
-type State = {
+export type State = {
     isQuerying: boolean;
     queryParams:
         | {
@@ -12,10 +12,13 @@ type State = {
               page: number;
           }
         | undefined;
-    extraRestorableStates: {
-        selectedRowIndex: number | undefined;
-        columnWidths: Record<string, number> | undefined;
-    };
+    extraRestorableStates:
+        | {
+              selectedRowIndex: number | undefined;
+              columnWidths: Record<string, number>;
+              columnVisibility: Record<string, boolean>;
+          }
+        | undefined;
     errorMessage: string | undefined;
     data:
         | {
@@ -30,10 +33,7 @@ export const { actions, reducer } = createUsecaseActions({
     "initialState": id<State>({
         "isQuerying": false,
         "queryParams": undefined,
-        "extraRestorableStates": {
-            "columnWidths": undefined,
-            "selectedRowIndex": undefined
-        },
+        "extraRestorableStates": undefined,
         "errorMessage": undefined,
         "data": undefined
     }),
