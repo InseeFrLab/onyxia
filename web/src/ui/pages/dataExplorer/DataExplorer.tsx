@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 import { tss } from "tss";
 import type { PageRoute } from "./route";
-import { SearchBar } from "onyxia-ui/SearchBar";
 import { routes } from "ui/routes";
 import { useCore, useCoreState } from "core";
 import { Alert } from "onyxia-ui/Alert";
@@ -15,6 +14,7 @@ import { CustomDataGrid } from "./CustomDataGrid";
 import { assert, type Equals } from "tsafe/assert";
 import { useEvt } from "evt/hooks";
 import { exclude } from "tsafe/exclude";
+import { UrlInput } from "./UrlInput";
 
 export type Props = {
     route: PageRoute;
@@ -80,16 +80,20 @@ export default function DataExplorer(props: Props) {
 
     return (
         <div className={cx(classes.root, className)}>
-            <SearchBar
-                className={classes.searchBar}
-                placeholder="URL data source"
-                search={route.params.source ?? ""}
-                onSearchChange={source =>
+            <UrlInput
+                className={classes.urlInput}
+                getIsValidUrl={url =>
+                    dataExplorer.getIsValidSourceUrl({
+                        "sourceUrl": url
+                    })
+                }
+                onUrlChange={value => {
                     routes[route.name]({
                         ...route.params,
-                        source
-                    }).replace()
-                }
+                        "source": value
+                    }).replace();
+                }}
+                url={route.params.source ?? ""}
             />
             <div className={classes.mainArea}>
                 {(() => {
@@ -210,7 +214,7 @@ const useStyles = tss.withName({ DataExplorer }).create(({ theme }) => ({
         "alignItems": "center",
         "height": "100%"
     },
-    "searchBar": {
+    "urlInput": {
         "maxWidth": 950,
         "marginBottom": theme.spacing(4)
     },

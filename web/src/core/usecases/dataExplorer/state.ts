@@ -74,6 +74,7 @@ export const { actions, reducer } = createUsecaseActions({
             const { errorMessage } = payload;
             state.isQuerying = false;
             state.errorMessage = errorMessage;
+            state.queryParams = undefined;
         },
         /** Only for evt */
         "restoreStateNeeded": () => {}

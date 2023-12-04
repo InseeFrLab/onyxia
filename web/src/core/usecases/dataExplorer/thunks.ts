@@ -3,8 +3,41 @@ import { name, actions } from "./state";
 import { same } from "evt/tools/inDepth/same";
 import { createUsecaseContextApi } from "redux-clean-architecture";
 import { waitForDebounceFactory } from "core/tools/waitForDebounce";
+import { assert } from "tsafe/assert";
 
 export const thunks = {
+    "getIsValidSourceUrl": (params: { sourceUrl: string }) => () => {
+        const { sourceUrl } = params;
+
+        {
+            let pathname: string;
+
+            try {
+                pathname = new URL(sourceUrl).pathname;
+            } catch {
+                return false;
+            }
+
+            // capture the extension of the path
+            const match = pathname.match(/\.(\w+)$/);
+
+            if (match === null) {
+                return false;
+            }
+
+            const [, extension] = match;
+
+            if (!["parquet", "csv"].includes(extension)) {
+                return false;
+            }
+        }
+
+        if (!sourceUrl.startsWith("s3://") && !sourceUrl.startsWith("https://")) {
+            return false;
+        }
+
+        return true;
+    },
     "setQueryParamsAndExtraRestorableStates":
         (params: {
             queryParams: {
@@ -28,42 +61,12 @@ export const thunks = {
             // NOTE: Preload for minimizing load time when querying.
             sqlOlap.getDb();
 
-            if (
-                queryParams.sourceUrl === "" &&
-                getState()[name].queryParams !== undefined
-            ) {
-                await Promise.resolve();
-                dispatch(actions.restoreStateNeeded());
+            if (queryParams.sourceUrl === "") {
+                if (getState()[name].queryParams !== undefined) {
+                    await Promise.resolve();
+                    dispatch(actions.restoreStateNeeded());
+                }
                 return;
-            }
-
-            {
-                let pathname: string;
-
-                try {
-                    pathname = new URL(queryParams.sourceUrl).pathname;
-                } catch {
-                    return;
-                }
-
-                // capture the extension of the path
-                const match = pathname.match(/\.(\w+)$/);
-
-                if (match === null) {
-                    return;
-                }
-
-                const [, extension] = match;
-
-                if (!["parquet", "csv"].includes(extension)) {
-                    dispatch(
-                        actions.queryFailed({
-                            "errorMessage": `Unsupported file extension: ${extension}`
-                        })
-                    );
-
-                    return;
-                }
             }
 
             dispatch(actions.extraRestorableStateSet({ extraRestorableStates }));
@@ -89,14 +92,7 @@ export const thunks = {
 
                 const s3path = sourceUrl.replace(/^s3:\/\//, "/");
 
-                if (s3path === sourceUrl) {
-                    dispatch(
-                        actions.queryFailed({
-                            "errorMessage": `Unsupported protocol, only https:// and s3:// are supported`
-                        })
-                    );
-                    await new Promise(() => {});
-                }
+                assert(s3path !== sourceUrl, "Unsupported protocol");
 
                 if (!oidc.isUserLoggedIn) {
                     oidc.login({
