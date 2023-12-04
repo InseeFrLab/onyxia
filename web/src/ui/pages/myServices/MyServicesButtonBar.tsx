@@ -2,6 +2,8 @@ import { memo, useMemo } from "react";
 import { useTranslation } from "ui/i18n";
 import { ButtonBar, type ButtonBarProps } from "onyxia-ui/ButtonBar";
 import { declareComponentKeys } from "i18nifty";
+import { id } from "tsafe/id";
+import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
 
 const buttonIds = ["refresh", "launch", "trash"] as const;
 
@@ -27,11 +29,11 @@ export const MyServicesButtonBar = memo((props: Props) => {
                 "icon": (() => {
                     switch (buttonId) {
                         case "refresh":
-                            return "cached" as const;
+                            return id<MuiIconComponentName>("Cached");
                         case "launch":
-                            return "add" as const;
+                            return id<MuiIconComponentName>("Add");
                         case "trash":
-                            return "delete" as const;
+                            return id<MuiIconComponentName>("Delete");
                     }
                 })(),
                 "isDisabled": buttonId === "trash" && !isThereDeletableServices,
