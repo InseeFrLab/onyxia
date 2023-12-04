@@ -7,11 +7,14 @@ import { assert } from "tsafe/assert";
 export const createEvt = (({ evtAction, getState }) => {
     const evtOut = Evt.create<{
         actionName: "restoreState";
-        state: {
+        queryParams: {
             sourceUrl: string;
             rowsPerPage: number;
             page: number;
+        };
+        extraRestorableStates: {
             selectedRowIndex: number | undefined;
+            columnWidths: Record<string, number> | undefined;
         };
     }>();
 
@@ -20,18 +23,14 @@ export const createEvt = (({ evtAction, getState }) => {
         .attach(
             ({ actionName }) => actionName === "restoreStateNeeded",
             () => {
-                const { queryParams, selectedRowIndex } = getState()[name];
+                const { queryParams, extraRestorableStates } = getState()[name];
 
                 assert(queryParams !== undefined);
 
                 evtOut.post({
                     "actionName": "restoreState",
-                    "state": {
-                        "sourceUrl": queryParams.sourceUrl,
-                        "rowsPerPage": queryParams.rowsPerPage,
-                        "page": queryParams.page,
-                        selectedRowIndex
-                    }
+                    queryParams,
+                    extraRestorableStates
                 });
             }
         );

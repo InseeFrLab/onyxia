@@ -9,12 +9,21 @@ import { assert } from "tsafe/assert";
 import { tss } from "tss";
 import { CopyToClipboardIconButton } from "ui/shared/CopyToClipboardIconButton";
 
+export type Props = React.ComponentProps<typeof DataGrid> & {
+    onColumnWidthChange?: (params: { field: string; width: number }) => void;
+    /** width by column.field */
+    columnInitialWidthsOverwrite?: Record<string, number>;
+};
+
 /**
  * This DataGrid is a wrapper around MUI DataGrid that allows to resize columns
  * and also to copy the content of a cell to the clipboard.
  * It also computes a good default for the initial width of each column.
  */
-export const CustomDataGrid: typeof DataGrid = ({ columns, ...props }) => {
+export function CustomDataGrid(props: Props) {
+    const { columns, onColumnWidthChange, columnInitialWidthsOverwrite, ...propsRest } =
+        props;
+
     const { getInitialWidths } = (function useClosure() {
         const columnsDigest = useConst(() =>
             memoize(
@@ -33,7 +42,9 @@ export const CustomDataGrid: typeof DataGrid = ({ columns, ...props }) => {
             const initialWidths: Record<string, number> = {};
             columns.forEach(column => {
                 initialWidths[column.field] =
-                    column.width ?? column.field.length * 9 + 100;
+                    columnInitialWidthsOverwrite?.[column.field] ??
+                    column.width ??
+                    column.field.length * 9 + 100;
             });
 
             const sum = Object.values(initialWidths).reduce((a, b) => a + b, 0);
@@ -100,6 +111,10 @@ export const CustomDataGrid: typeof DataGrid = ({ columns, ...props }) => {
                                         ...prevWidths,
                                         [column.field]: newWidth
                                     }));
+                                    onColumnWidthChange?.({
+                                        "field": column.field,
+                                        "width": newWidth
+                                    });
                                 }}
                             />
                         )
@@ -120,8 +135,10 @@ export const CustomDataGrid: typeof DataGrid = ({ columns, ...props }) => {
         [props.classes, cx, classes]
     );
 
-    return <DataGrid {...props} classes={dataGridClasses} columns={modifiedColumns} />;
-};
+    return (
+        <DataGrid {...propsRest} classes={dataGridClasses} columns={modifiedColumns} />
+    );
+}
 
 const useStyles = tss.withName({ CustomDataGrid }).create({
     "cell": {

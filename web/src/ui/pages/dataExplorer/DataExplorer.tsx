@@ -29,11 +29,16 @@ export default function DataExplorer(props: Props) {
     const { dataExplorer } = useCore().functions;
 
     useEffect(() => {
-        dataExplorer.setQueryParams({
-            "sourceUrl": route.params.source ?? "",
-            "rowsPerPage": route.params.rowsPerPage,
-            "page": route.params.page,
-            "selectedRowIndex": route.params.selectedRow
+        dataExplorer.setQueryParamsAndExtraRestorableStates({
+            "queryParams": {
+                "sourceUrl": route.params.source ?? "",
+                "rowsPerPage": route.params.rowsPerPage,
+                "page": route.params.page
+            },
+            "extraRestorableStates": {
+                "columnWidths": route.params.columnWidths,
+                "selectedRowIndex": route.params.selectedRow
+            }
         });
     }, [route]);
 
@@ -43,16 +48,24 @@ export default function DataExplorer(props: Props) {
         ctx => {
             evtDataExplorer.$attach(
                 eventData =>
-                    eventData.actionName === "restoreState" ? [eventData.state] : null,
+                    eventData.actionName === "restoreState" ? [eventData] : null,
                 ctx,
-                ({ page, rowsPerPage, sourceUrl, selectedRowIndex, ...rest }) => {
-                    assert<Equals<typeof rest, {}>>();
+                ({ queryParams, extraRestorableStates }) => {
+                    const { sourceUrl, rowsPerPage, page, ...rest1 } = queryParams;
+                    assert<Equals<typeof rest1, {}>>();
+                    const { columnWidths, selectedRowIndex, ...rest2 } =
+                        extraRestorableStates;
+                    assert<Equals<typeof rest2, {}>>();
+
+                    console.log("=============>", columnWidths);
+
                     routes[route.name]({
                         ...route.params,
                         page,
                         rowsPerPage,
                         "source": sourceUrl,
-                        "selectedRow": selectedRowIndex
+                        "selectedRow": selectedRowIndex,
+                        columnWidths
                     }).replace();
                 }
             );
@@ -104,6 +117,16 @@ export default function DataExplorer(props: Props) {
                         <div className={cx(classes.dataGridWrapper, className)}>
                             <CustomDataGrid
                                 disableVirtualization
+                                onColumnWidthChange={({ field, width }) => {
+                                    routes[route.name]({
+                                        ...route.params,
+                                        "columnWidths": {
+                                            ...route.params.columnWidths,
+                                            [field]: width
+                                        }
+                                    }).replace();
+                                }}
+                                columnInitialWidthsOverwrite={route.params.columnWidths}
                                 onRowSelectionModelChange={rowSelectionModel => {
                                     const selectedRowIndex = rowSelectionModel[0];
 
@@ -116,10 +139,6 @@ export default function DataExplorer(props: Props) {
                                         ...route.params,
                                         "selectedRow": selectedRowIndex
                                     }).replace();
-
-                                    dataExplorer.setSelectedRowIndex({
-                                        selectedRowIndex
-                                    });
                                 }}
                                 rowSelectionModel={[
                                     route.params.selectedRow ?? undefined

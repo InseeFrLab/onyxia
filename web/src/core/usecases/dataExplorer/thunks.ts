@@ -5,15 +5,20 @@ import { createUsecaseContextApi } from "redux-clean-architecture";
 import { waitForDebounceFactory } from "core/tools/waitForDebounce";
 
 export const thunks = {
-    "setQueryParams":
+    "setQueryParamsAndExtraRestorableStates":
         (params: {
-            sourceUrl: string;
-            rowsPerPage: number;
-            page: number;
-            selectedRowIndex: number | undefined;
+            queryParams: {
+                sourceUrl: string;
+                rowsPerPage: number;
+                page: number;
+            };
+            extraRestorableStates: {
+                selectedRowIndex: number | undefined;
+                columnWidths: Record<string, number> | undefined;
+            };
         }) =>
         async (...args) => {
-            const { sourceUrl, rowsPerPage, page, selectedRowIndex } = params;
+            const { queryParams, extraRestorableStates } = params;
 
             const [dispatch, getState, rootContext] = args;
 
@@ -22,7 +27,10 @@ export const thunks = {
             // NOTE: Preload for minimizing load time when querying.
             sqlOlap.getDb();
 
-            if (sourceUrl === "" && getState()[name].queryParams !== undefined) {
+            if (
+                queryParams.sourceUrl === "" &&
+                getState()[name].queryParams !== undefined
+            ) {
                 await Promise.resolve();
                 dispatch(actions.restoreStateNeeded());
                 return;
@@ -32,7 +40,7 @@ export const thunks = {
                 let pathname: string;
 
                 try {
-                    pathname = new URL(sourceUrl).pathname;
+                    pathname = new URL(queryParams.sourceUrl).pathname;
                 } catch {
                     return;
                 }
@@ -57,7 +65,7 @@ export const thunks = {
                 }
             }
 
-            const queryParams = { sourceUrl, rowsPerPage, page };
+            dispatch(actions.extraRestorableStateSet({ extraRestorableStates }));
 
             if (same(getState()[name].queryParams, queryParams)) {
                 return;
@@ -67,11 +75,13 @@ export const thunks = {
 
             await waitForDebounce();
 
-            dispatch(actions.queryStarted({ queryParams, selectedRowIndex }));
+            dispatch(actions.queryStarted({ queryParams }));
 
             const getIsActive = () => same(getState()[name].queryParams, queryParams);
 
             const httpsUrl = await (async () => {
+                const { sourceUrl } = queryParams;
+
                 if (sourceUrl.startsWith("https://")) {
                     return sourceUrl;
                 }
@@ -117,7 +127,11 @@ export const thunks = {
             }
 
             const rowsOrErrorMessage = await sqlOlap
-                .getRows({ "sourceUrl": httpsUrl, rowsPerPage, page })
+                .getRows({
+                    "sourceUrl": httpsUrl,
+                    "rowsPerPage": queryParams.rowsPerPage,
+                    "page": queryParams.page
+                })
                 .catch(error => String(error));
 
             if (!getIsActive()) {
@@ -141,16 +155,6 @@ export const thunks = {
                     "rowCount": rowCountOrErrorMessage
                 })
             );
-        },
-    /** NOTE: This is only for restoring the state when navigating back */
-    "setSelectedRowIndex":
-        (params: { selectedRowIndex: number | undefined }) =>
-        (...args) => {
-            const [dispatch] = args;
-
-            const { selectedRowIndex } = params;
-
-            dispatch(actions.rowSelectionChanged({ selectedRowIndex }));
         }
 } satisfies Thunks;
 

@@ -12,7 +12,10 @@ type State = {
               page: number;
           }
         | undefined;
-    selectedRowIndex: number | undefined;
+    extraRestorableStates: {
+        selectedRowIndex: number | undefined;
+        columnWidths: Record<string, number> | undefined;
+    };
     errorMessage: string | undefined;
     data:
         | {
@@ -27,7 +30,10 @@ export const { actions, reducer } = createUsecaseActions({
     "initialState": id<State>({
         "isQuerying": false,
         "queryParams": undefined,
-        "selectedRowIndex": undefined,
+        "extraRestorableStates": {
+            "columnWidths": undefined,
+            "selectedRowIndex": undefined
+        },
         "errorMessage": undefined,
         "data": undefined
     }),
@@ -39,22 +45,22 @@ export const { actions, reducer } = createUsecaseActions({
             }: {
                 payload: {
                     queryParams: NonNullable<State["queryParams"]>;
-                    selectedRowIndex: number | undefined;
                 };
             }
         ) => {
-            const { queryParams, selectedRowIndex } = payload;
+            const { queryParams } = payload;
             state.errorMessage = undefined;
             state.isQuerying = true;
             state.queryParams = queryParams;
-            state.selectedRowIndex = selectedRowIndex;
         },
-        "rowSelectionChanged": (
+        "extraRestorableStateSet": (
             state,
-            { payload }: { payload: { selectedRowIndex: number | undefined } }
+            {
+                payload
+            }: { payload: { extraRestorableStates: State["extraRestorableStates"] } }
         ) => {
-            const { selectedRowIndex } = payload;
-            state.selectedRowIndex = selectedRowIndex;
+            const { extraRestorableStates } = payload;
+            state.extraRestorableStates = extraRestorableStates;
         },
         "querySucceeded": (
             state,
