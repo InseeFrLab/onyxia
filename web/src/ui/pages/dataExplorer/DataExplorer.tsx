@@ -57,8 +57,6 @@ export default function DataExplorer(props: Props) {
                         extraRestorableStates;
                     assert<Equals<typeof rest2, {}>>();
 
-                    console.log("=============>", columnWidths);
-
                     routes[route.name]({
                         ...route.params,
                         page,
@@ -126,7 +124,7 @@ export default function DataExplorer(props: Props) {
                                         }
                                     }).replace();
                                 }}
-                                columnInitialWidthsOverwrite={route.params.columnWidths}
+                                columnWidths={route.params.columnWidths}
                                 onRowSelectionModelChange={rowSelectionModel => {
                                     const selectedRowIndex = rowSelectionModel[0];
 

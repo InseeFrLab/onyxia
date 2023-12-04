@@ -9,12 +9,14 @@ export const routeDefs = {
             "rowsPerPage": param.query.optional.number.default(25),
             "page": param.query.optional.number.default(1),
             "selectedRow": param.query.optional.number,
-            "columnWidths": param.query.optional.ofType(
-                id<ValueSerializer<Record<string, number>>>({
-                    "parse": raw => JSON.parse(raw),
-                    "stringify": value => JSON.stringify(value)
-                })
-            )
+            "columnWidths": param.query.optional
+                .ofType(
+                    id<ValueSerializer<Record<string, number>>>({
+                        "parse": raw => JSON.parse(raw),
+                        "stringify": value => JSON.stringify(value)
+                    })
+                )
+                .default({})
         },
         () => `/data-explorer`
     )

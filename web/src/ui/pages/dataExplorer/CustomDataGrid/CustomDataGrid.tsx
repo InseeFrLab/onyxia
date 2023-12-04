@@ -10,9 +10,9 @@ import { tss } from "tss";
 import { CopyToClipboardIconButton } from "ui/shared/CopyToClipboardIconButton";
 
 export type Props = React.ComponentProps<typeof DataGrid> & {
-    onColumnWidthChange?: (params: { field: string; width: number }) => void;
+    onColumnWidthChange: (params: { field: string; width: number }) => void;
     /** width by column.field */
-    columnInitialWidthsOverwrite?: Record<string, number>;
+    columnWidths: Record<string, number>;
 };
 
 /**
@@ -21,15 +21,14 @@ export type Props = React.ComponentProps<typeof DataGrid> & {
  * It also computes a good default for the initial width of each column.
  */
 export function CustomDataGrid(props: Props) {
-    const { columns, onColumnWidthChange, columnInitialWidthsOverwrite, ...propsRest } =
-        props;
+    const { columns, onColumnWidthChange, columnWidths, ...propsRest } = props;
 
-    const { getInitialWidths } = (function useClosure() {
-        const columnsDigest = useConst(() =>
+    const { defaultColumnWidths } = (function useClosure() {
+        const getColumnsDigest = useConst(() =>
             memoize(
-                (c: typeof columns) =>
+                (o: typeof columns) =>
                     JSON.stringify(
-                        c.map(column => ({
+                        o.map(column => ({
                             "field": column.field,
                             "width": column.width
                         }))
@@ -38,13 +37,11 @@ export function CustomDataGrid(props: Props) {
             )
         );
 
-        const getInitialWidths = useCallback(() => {
+        const getDefaultColumnWidth = useCallback(() => {
             const initialWidths: Record<string, number> = {};
             columns.forEach(column => {
                 initialWidths[column.field] =
-                    columnInitialWidthsOverwrite?.[column.field] ??
-                    column.width ??
-                    column.field.length * 9 + 100;
+                    column.width ?? column.field.length * 9 + 100;
             });
 
             const sum = Object.values(initialWidths).reduce((a, b) => a + b, 0);
@@ -62,66 +59,79 @@ export function CustomDataGrid(props: Props) {
             }
 
             return initialWidths;
-        }, [columnsDigest(columns)]);
+        }, [getColumnsDigest(columns)]);
 
-        return { getInitialWidths };
+        const [defaultColumnWidths, setDefaultColumnWidths] =
+            useState(getDefaultColumnWidth);
+
+        useEffectOnValueChange(() => {
+            setDefaultColumnWidths(getDefaultColumnWidth());
+        }, [getDefaultColumnWidth]);
+
+        return { defaultColumnWidths };
     })();
-
-    const [columnWidths, setColumnWidths] = useState(getInitialWidths);
-
-    useEffectOnValueChange(() => {
-        setColumnWidths(getInitialWidths());
-    }, [getInitialWidths]);
 
     const { classes, cx } = useStyles();
 
-    const modifiedColumns = useMemo(
-        () =>
-            columns
-                .map(column => ({ column, "width": columnWidths[column.field] }))
-                .map(({ column, width }) => {
-                    assert(column.renderCell === undefined, "Cannot override renderCell");
-                    assert(
-                        column.renderHeader === undefined,
-                        "Cannot override renderHeader"
-                    );
-                    return {
-                        ...column,
-                        width,
-                        "renderCell": ({ value, hasFocus }) => (
-                            <>
-                                <div
-                                    className={classes.cell}
-                                    role="presentation"
-                                    title={value}
-                                >
-                                    <span>{value}</span>
-                                </div>
-                                {hasFocus && (
-                                    <CopyToClipboardIconButton textToCopy={value} />
-                                )}
-                            </>
-                        ),
-                        "renderHeader": () => (
-                            <ResizableColumnHeader
-                                label={column.field}
-                                width={width}
-                                onResize={({ newWidth }) => {
-                                    setColumnWidths(prevWidths => ({
-                                        ...prevWidths,
-                                        [column.field]: newWidth
-                                    }));
-                                    onColumnWidthChange?.({
-                                        "field": column.field,
-                                        "width": newWidth
-                                    });
-                                }}
-                            />
-                        )
-                    } satisfies GridColDef;
-                }),
-        [columns, columnWidths]
-    );
+    const { modifiedColumns } = (function useClosure() {
+        const getColumnWidthsDigest = useConst(() =>
+            memoize((o: typeof columnWidths) => JSON.stringify(o), { "max": 1 })
+        );
+
+        const modifiedColumns = useMemo(
+            () =>
+                columns
+                    .map(column => ({
+                        column,
+                        "width":
+                            columnWidths[column.field] ??
+                            defaultColumnWidths[column.field]
+                    }))
+                    .map(({ column, width }) => {
+                        assert(
+                            column.renderCell === undefined,
+                            "Cannot override renderCell"
+                        );
+                        assert(
+                            column.renderHeader === undefined,
+                            "Cannot override renderHeader"
+                        );
+                        return {
+                            ...column,
+                            width,
+                            "renderCell": ({ value, hasFocus }) => (
+                                <>
+                                    <div
+                                        className={classes.cell}
+                                        role="presentation"
+                                        title={value}
+                                    >
+                                        <span>{value}</span>
+                                    </div>
+                                    {hasFocus && (
+                                        <CopyToClipboardIconButton textToCopy={value} />
+                                    )}
+                                </>
+                            ),
+                            "renderHeader": () => (
+                                <ResizableColumnHeader
+                                    label={column.field}
+                                    width={width}
+                                    onResize={({ newWidth }) =>
+                                        onColumnWidthChange({
+                                            "field": column.field,
+                                            "width": newWidth
+                                        })
+                                    }
+                                />
+                            )
+                        } satisfies GridColDef;
+                    }),
+            [columns, getColumnWidthsDigest(columnWidths)]
+        );
+
+        return { modifiedColumns };
+    })();
 
     const dataGridClasses = useMemo(
         () => ({
