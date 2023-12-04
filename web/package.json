@@ -70,7 +70,7 @@
         "react-scripts": "5.0.1",
         "redux-clean-architecture": "^4.1.1",
         "run-exclusive": "^2.2.19",
-        "screen-scaler": "^1.2.5",
+        "screen-scaler": "^1.2.6",
         "shell-quote": "^1.7.2",
         "stream-browserify": "^3.0.0",
         "stream-http": "^3.2.0",
