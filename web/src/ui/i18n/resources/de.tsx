@@ -313,7 +313,9 @@ export const translations: Translations<"de"> = {
         "divider: external services features":
             "Funktionen im Zusammenhang mit externen Diensten",
         "divider: onyxia instance specific features":
-            "Funktionen spezifisch für diese Onyxia-Instanz"
+            "Funktionen spezifisch für diese Onyxia-Instanz",
+        "dataExplorer": "Daten-Explorer",
+        "sqlOlapShell": "SQL OLAP-Shell"
     },
     "Page404": {
         "not found": "Seite nicht gefunden"
@@ -631,6 +633,26 @@ Fühlen Sie sich frei, Ihre Kubernetes-Bereitstellungen zu erkunden und die Kont
     "NoRunningService": {
         "launch one": "Klicken Sie hier, um einen zu starten",
         "no services running": "Sie haben derzeit keine laufenden Dienste"
+    },
+    "DataExplorer": {
+        "page header title": "Daten-Explorer",
+        "page header help title":
+            "Vorschau Ihrer Parquet- und CSV-Dateien direkt in Ihrem Browser!",
+        "page header help content": ({ demoParquetFileLink }) => (
+            <>
+                Geben Sie einfach die <code>https://</code> oder <code>s3://</code> URL
+                einer Daten-Datei ein, um sie zu betrachten.
+                <br />
+                Die Datei wird nicht vollständig heruntergeladen; ihr Inhalt wird
+                gestreamt, während Sie durch die Seiten navigieren.
+                <br />
+                Sie können einen Permalink zur Datei oder sogar zu einer bestimmten Zeile
+                der Datei teilen, indem Sie die URL aus der Adressleiste kopieren.
+                <br />
+                Nicht sicher, wo Sie anfangen sollen? Probieren Sie diese{" "}
+                <MuiLink {...demoParquetFileLink}>Demodatei</MuiLink>!
+            </>
+        )
     },
     "CommandBar": {
         "ok": "Ok"

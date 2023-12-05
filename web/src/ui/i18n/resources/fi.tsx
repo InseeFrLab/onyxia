@@ -305,7 +305,9 @@ export const translations: Translations<"fi"> = {
         "divider: services features": "Palvelun ominaisuudet",
         "divider: external services features": "Ulkoisten palveluiden ominaisuudet",
         "divider: onyxia instance specific features":
-            "Onyxia-instanssin erityisominaisuudet"
+            "Onyxia-instanssin erityisominaisuudet",
+        "dataExplorer": "Data Explorer",
+        "sqlOlapShell": "SQL OLAP-kuori"
     },
     "Page404": {
         "not found": "Sivua ei löydy"
@@ -615,6 +617,26 @@ Tutustu vapaasti ja ota hallintaan Kubernetes-julkaisusi!
     "NoRunningService": {
         "launch one": "Käynnistä palvelu",
         "no services running": "Sinulla ei ole käynnissä olevia palveluita"
+    },
+    "DataExplorer": {
+        "page header title": "Data Explorer",
+        "page header help title":
+            "Esikatsele Parquet- ja CSV-tiedostoja suoraan selaimessasi!",
+        "page header help content": ({ demoParquetFileLink }) => (
+            <>
+                Syötä vain <code>https://</code> tai <code>s3://</code> URL tiedostoon
+                päästäksesi esikatseluun.
+                <br />
+                Tiedostoa ei ladata kokonaan; sen sisältö virtaa, kun navigoit sivujen
+                läpi.
+                <br />
+                Voit jakaa pysyvän linkin tiedostoon tai jopa tiettyyn tiedoston riviin
+                kopioimalla URL:n osoitepalkista.
+                <br />
+                Etkö ole varma, mistä aloittaa? Kokeile tätä{" "}
+                <MuiLink {...demoParquetFileLink}>demotiedostoa</MuiLink>!
+            </>
+        )
     },
     "CommandBar": {
         "ok": "ok"

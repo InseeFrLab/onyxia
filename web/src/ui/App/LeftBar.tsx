@@ -12,6 +12,7 @@ import { assert, type Equals } from "tsafe/assert";
 import { customIcons } from "ui/theme";
 import { symToStr } from "tsafe/symToStr";
 import { LocalizedMarkdown } from "ui/shared/Markdown";
+import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
 
 type Props = {
     className?: string;
@@ -87,13 +88,13 @@ export const LeftBar = memo((props: Props) => {
                     : {
                           "sqlOlapShell": {
                               "icon": "Terminal",
-                              "label": "SQL OLAP Shell",
+                              "label": t("sqlOlapShell"),
                               "link": routes.sqlOlapShell().link
                           } as const
                       }),
                 "dataExplorer": {
-                    "icon": "DocumentScanner",
-                    "label": "Data Explorer",
+                    "icon": id<MuiIconComponentName>("DocumentScanner"),
+                    "label": t("dataExplorer"),
                     "link": routes.dataExplorer().link,
                     "belowDivider":
                         env.LEFTBAR_LINKS.length === 0
@@ -169,6 +170,8 @@ export const { i18n } = declareComponentKeys<
     | "myServices"
     | "mySecrets"
     | "myFiles"
+    | "dataExplorer"
+    | "sqlOlapShell"
     | "divider: services features"
     | "divider: external services features"
     | "divider: onyxia instance specific features"

@@ -19,6 +19,8 @@ import { assert } from "tsafe/assert";
 import { useCallbackFactory } from "powerhooks/useCallbackFactory";
 import { CatalogChartCard } from "./CatalogChartCard";
 import { customIcons } from "ui/theme";
+import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
+import { id } from "tsafe/id";
 
 export type Props = {
     route: PageRoute;
@@ -113,7 +115,7 @@ export default function Catalog(props: Props) {
                     "catalogName": resolveLocalizedString(selectedCatalog.name),
                     "repositoryUrl": selectedCatalog.repositoryUrl
                 })}
-                helpIcon="sentimentSatisfied"
+                helpIcon={id<MuiIconComponentName>("SentimentSatisfied")}
                 titleCollapseParams={{
                     "behavior": "collapses on scroll",
                     "scrollTopThreshold": 650,

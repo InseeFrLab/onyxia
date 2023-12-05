@@ -290,7 +290,9 @@ export const translations: Translations<"zh-CN"> = {
         "myFiles": "我的文档",
         "divider: services features": "服务功能",
         "divider: external services features": "外部服务功能",
-        "divider: onyxia instance specific features": "Onyxia实例特定功能"
+        "divider: onyxia instance specific features": "Onyxia实例特定功能",
+        "dataExplorer": "数据浏览器",
+        "sqlOlapShell": "SQL OLAP 外壳"
     },
     "Page404": {
         "not found": "网页未找到"
@@ -585,6 +587,24 @@ ${
     "NoRunningService": {
         "launch one": "点击来启动此服务",
         "no services running": "You don't have any service running"
+    },
+    "DataExplorer": {
+        "page header title": "数据浏览器",
+        "page header help title": "直接在您的浏览器中预览您的 Parquet 和 CSV 文件！",
+        "page header help content": ({ demoParquetFileLink }) => (
+            <>
+                只需输入数据文件的 <code>https://</code> 或 <code>s3://</code> URL
+                即可预览。
+                <br />
+                文件不会完全下载；您在翻阅页面时，其内容会实时流式传输。
+                <br />
+                您可以复制地址栏中的
+                URL，分享文件的永久链接，甚至是文件中某个特定行的链接。
+                <br />
+                不知道从哪里开始？尝试这个{" "}
+                <MuiLink {...demoParquetFileLink}>演示文件</MuiLink>！
+            </>
+        )
     },
     "CommandBar": {
         "ok": "是"

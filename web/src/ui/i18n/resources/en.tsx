@@ -311,7 +311,9 @@ export const translations: Translations<"en"> = {
         "myFiles": "My Files",
         "divider: services features": "Services features",
         "divider: external services features": "External services features",
-        "divider: onyxia instance specific features": "Onyxia instance specific features"
+        "divider: onyxia instance specific features": "Onyxia instance specific features",
+        "dataExplorer": "Data Explorer",
+        "sqlOlapShell": "SQL Olap Shell"
     },
     "Page404": {
         "not found": "Page not found"
@@ -618,6 +620,26 @@ Feel free to explore and take charge of your Kubernetes deployments!
     "NoRunningService": {
         "launch one": "Click here to launch one",
         "no services running": "You don't have any service running"
+    },
+    "DataExplorer": {
+        "page header title": "Data Explorer",
+        "page header help title":
+            "Preview your Parquet and CSV files right from your browser!",
+        "page header help content": ({ demoParquetFileLink }) => (
+            <>
+                Simply pass the <code>https://</code> or <code>s3://</code> URL of a data
+                file to preview it.
+                <br />
+                The file isn't fully downloaded; its content is streamed as you navigate
+                through the pages.
+                <br />
+                You can share a permalink to the file or even to a specific row of the
+                file by copying the URL from the address bar.
+                <br />
+                Not sure where to start? Try this{" "}
+                <MuiLink {...demoParquetFileLink}>demo file</MuiLink>!
+            </>
+        )
     },
     "CommandBar": {
         "ok": "Ok"

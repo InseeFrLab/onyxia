@@ -15,6 +15,11 @@ import { assert, type Equals } from "tsafe/assert";
 import { useEvt } from "evt/hooks";
 import { exclude } from "tsafe/exclude";
 import { UrlInput } from "./UrlInput";
+import { PageHeader } from "onyxia-ui/PageHeader";
+import { id } from "tsafe/id";
+import { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
+import { declareComponentKeys, useTranslation } from "ui/i18n";
+import type { Link } from "type-route";
 
 export type Props = {
     route: PageRoute;
@@ -78,8 +83,34 @@ export default function DataExplorer(props: Props) {
         "main"
     );
 
+    const { t } = useTranslation({ DataExplorer });
+
     return (
         <div className={cx(classes.root, className)}>
+            <PageHeader
+                classes={{
+                    "helpMiddle": classes.pageHeaderHelpMiddle
+                }}
+                mainIcon={id<MuiIconComponentName>("DocumentScanner")}
+                title={t("page header title")}
+                helpTitle={t("page header help title")}
+                helpContent={t("page header help content", {
+                    "demoParquetFileLink": routes[route.name]({
+                        ...route.params,
+                        "source":
+                            "https://shell.duckdb.org/data/tpch/0_01/parquet/lineitem.parquet"
+                    }).link
+                })}
+                helpIcon={id<MuiIconComponentName>("SentimentSatisfied")}
+                titleCollapseParams={{
+                    "behavior": "controlled",
+                    "isCollapsed": rows !== undefined
+                }}
+                helpCollapseParams={{
+                    "behavior": "controlled",
+                    "isCollapsed": rows !== undefined
+                }}
+            />
             <UrlInput
                 className={classes.urlInput}
                 getIsValidUrl={url =>
@@ -208,6 +239,11 @@ const useStyles = tss.withName({ DataExplorer }).create(({ theme }) => ({
         "display": "flex",
         "flexDirection": "column"
     },
+    "pageHeaderHelpMiddle": {
+        "& > h5": {
+            "marginBottom": theme.spacing(2)
+        }
+    },
     "initializing": {
         "display": "flex",
         "justifyContent": "center",
@@ -233,3 +269,13 @@ const useStyles = tss.withName({ DataExplorer }).create(({ theme }) => ({
         "overflowX": "auto"
     }
 }));
+
+export const { i18n } = declareComponentKeys<
+    | "page header title"
+    | "page header help title"
+    | {
+          K: "page header help content";
+          P: { demoParquetFileLink: Link };
+          R: JSX.Element;
+      }
+>()({ DataExplorer });

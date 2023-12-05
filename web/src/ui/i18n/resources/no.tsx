@@ -311,7 +311,9 @@ export const translations: Translations<"no"> = {
         "divider: services features": "Tjenestefunksjoner",
         "divider: external services features": "Eksterne tjenestefunksjoner",
         "divider: onyxia instance specific features":
-            "Onyxia-instansspesifikke funksjoner"
+            "Onyxia-instansspesifikke funksjoner",
+        "dataExplorer": "Datautforsker",
+        "sqlOlapShell": "SQL OLAP-Skall"
     },
     "Page404": {
         "not found": "Side ikke funnet"
@@ -621,6 +623,26 @@ Føl deg fri til å utforske og ta kontroll over dine Kubernetes-implementeringe
     "NoRunningService": {
         "launch one": "Klikk her for å starte en",
         "no services running": "Du har ingen kjørende tjenester"
+    },
+    "DataExplorer": {
+        "page header title": "Datautforsker",
+        "page header help title":
+            "Forhåndsvis dine Parquet og CSV-filer direkte fra nettleseren din!",
+        "page header help content": ({ demoParquetFileLink }) => (
+            <>
+                Skriv inn URL-en <code>https://</code> eller <code>s3://</code> til en
+                datafil for å forhåndsvise den.
+                <br />
+                Filen blir ikke lastet ned i sin helhet; innholdet blir strømmet etter
+                hvert som du navigerer gjennom sidene.
+                <br />
+                Du kan dele en permanent lenke til filen, eller til og med til en
+                spesifikk rad i filen, ved å kopiere URL-en fra adresselinjen.
+                <br />
+                Usikker på hvor du skal starte? Prøv denne{" "}
+                <MuiLink {...demoParquetFileLink}>demofilen</MuiLink>!
+            </>
+        )
     },
     "CommandBar": {
         "ok": "ok"

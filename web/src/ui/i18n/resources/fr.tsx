@@ -314,7 +314,9 @@ export const translations: Translations<"fr"> = {
         "divider: external services features":
             "Fonctionnalités relative aux services externes",
         "divider: onyxia instance specific features":
-            "Fonctionnalités spécifiques à cette instance d'Onyxia"
+            "Fonctionnalités spécifiques à cette instance d'Onyxia",
+        "dataExplorer": "Explorateur de Données",
+        "sqlOlapShell": "Coquille SQL OLAP"
     },
     "Page404": {
         "not found": "Page non trouvée"
@@ -634,6 +636,26 @@ N'hésitez pas à explorer et à prendre en main vos déploiements Kubernetes !
         "launch one": "Clickez ici pour en lancer un",
         "no services running":
             "Vous n'avez actuellement aucun service en cours d'exécution"
+    },
+    "DataExplorer": {
+        "page header title": "Explorateur de Données",
+        "page header help title":
+            "Prévisualisez vos fichiers Parquet et CSV directement depuis votre navigateur !",
+        "page header help content": ({ demoParquetFileLink }) => (
+            <>
+                Entrez simplement l'URL <code>https://</code> ou <code>s3://</code> d'un
+                fichier de données pour le prévisualiser.
+                <br />
+                Le fichier n'est pas entièrement téléchargé ; son contenu est diffusé au
+                fur et à mesure que vous naviguez à travers les pages.
+                <br />
+                Vous pouvez partager un permalien vers le fichier ou même vers une ligne
+                spécifique du fichier en copiant l'URL de la barre d'adresse.
+                <br />
+                Vous ne savez pas par où commencer ? Essayez ce{" "}
+                <MuiLink {...demoParquetFileLink}>fichier de démonstration</MuiLink> !
+            </>
+        )
     },
     "CommandBar": {
         "ok": "ok"

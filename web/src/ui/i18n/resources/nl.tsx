@@ -310,7 +310,9 @@ export const translations: Translations<"nl"> = {
         "divider: external services features":
             "Functionaliteiten met betrekking tot de externe diensten",
         "divider: onyxia instance specific features":
-            "Functionaliteiten die specifiek zijn voor deze instantie van Onyxia"
+            "Functionaliteiten die specifiek zijn voor deze instantie van Onyxia",
+        "dataExplorer": "Data Verkenner",
+        "sqlOlapShell": "SQL OLAP Shell"
     },
     "Page404": {
         "not found": "Pagina niet gevonden"
@@ -629,6 +631,26 @@ Voel je vrij om te verkennen en de controle over je Kubernetes-implementaties te
     "NoRunningService": {
         "launch one": "Klik hier om er een te starten",
         "no services running": "You don't have any service running"
+    },
+    "DataExplorer": {
+        "page header title": "Data Verkenner",
+        "page header help title":
+            "Bekijk uw Parquet en CSV-bestanden direct vanuit uw browser!",
+        "page header help content": ({ demoParquetFileLink }) => (
+            <>
+                Voer gewoon de <code>https://</code> of <code>s3://</code> URL van een
+                databestand in om een voorvertoning te krijgen.
+                <br />
+                Het bestand wordt niet volledig gedownload; de inhoud ervan wordt
+                gestreamd terwijl u door de pagina's navigeert.
+                <br />
+                U kunt een permanente link naar het bestand of zelfs naar een specifieke
+                rij van het bestand delen door de URL uit de adresbalk te kopiëren.
+                <br />
+                Weet u niet waar u moet beginnen? Probeer dit{" "}
+                <MuiLink {...demoParquetFileLink}>demobestand</MuiLink>!
+            </>
+        )
     },
     "CommandBar": {
         "ok": "ok"
