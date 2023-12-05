@@ -21,6 +21,7 @@ import { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
 import { declareComponentKeys, useTranslation } from "ui/i18n";
 import type { Link } from "type-route";
 import { createUseDebounce } from "powerhooks/useDebounce";
+import { useOnOpenBrowserSearch } from "ui/tools/useOnOpenBrowserSearch";
 
 export type Props = {
     route: PageRoute;
@@ -67,6 +68,15 @@ export default function DataExplorer(props: Props) {
     }, [route.params.columnWidths]);
 
     const { evtDataExplorer } = useCore().evts;
+
+    const [isVirtualizationEnabled, setIsVirtualizationEnabled] = useState(true);
+
+    useOnOpenBrowserSearch(() => {
+        console.log(
+            "Disabling data grid virtualization to allow search on all loaded rows"
+        );
+        setIsVirtualizationEnabled(false);
+    });
 
     useEvt(
         ctx => {
@@ -167,6 +177,7 @@ export default function DataExplorer(props: Props) {
                     return (
                         <div className={cx(classes.dataGridWrapper, className)}>
                             <CustomDataGrid
+                                disableVirtualization={!isVirtualizationEnabled}
                                 columnVisibilityModel={route.params.columnVisibility}
                                 onColumnVisibilityModelChange={columnVisibilityModel =>
                                     routes[route.name]({
