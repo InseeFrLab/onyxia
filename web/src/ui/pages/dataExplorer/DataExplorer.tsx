@@ -119,7 +119,6 @@ export default function DataExplorer(props: Props) {
                 }
                 onUrlChange={value => {
                     routes[route.name]({
-                        ...route.params,
                         "source": value
                     }).replace();
                 }}

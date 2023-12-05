@@ -127,7 +127,7 @@ export function CustomDataGrid(props: Props) {
                             )
                         } satisfies GridColDef;
                     }),
-            [columns, getColumnWidthsDigest(columnWidths)]
+            [columns, defaultColumnWidths, getColumnWidthsDigest(columnWidths)]
         );
 
         return { modifiedColumns };
