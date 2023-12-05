@@ -96,7 +96,6 @@ export default function DataExplorer(props: Props) {
                 helpTitle={t("page header help title")}
                 helpContent={t("page header help content", {
                     "demoParquetFileLink": routes[route.name]({
-                        ...route.params,
                         "source":
                             "https://shell.duckdb.org/data/tpch/0_01/parquet/lineitem.parquet"
                     }).link
