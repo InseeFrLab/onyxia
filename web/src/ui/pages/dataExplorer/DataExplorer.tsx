@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { tss } from "tss";
 import type { PageRoute } from "./route";
 import { routes } from "ui/routes";
@@ -20,11 +20,16 @@ import { id } from "tsafe/id";
 import { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
 import { declareComponentKeys, useTranslation } from "ui/i18n";
 import type { Link } from "type-route";
+import { createUseDebounce } from "powerhooks/useDebounce";
 
 export type Props = {
     route: PageRoute;
     className?: string;
 };
+
+const { useDebounce } = createUseDebounce({
+    "delay": 1000
+});
 
 export default function DataExplorer(props: Props) {
     const { className, route } = props;
@@ -47,6 +52,19 @@ export default function DataExplorer(props: Props) {
             }
         });
     }, [route]);
+
+    const [columnWidths, setColumnWidths] = useState(route.params.columnWidths);
+
+    useDebounce(() => {
+        routes[route.name]({
+            ...route.params,
+            columnWidths
+        }).replace();
+    }, [columnWidths]);
+
+    useEffect(() => {
+        setColumnWidths(route.params.columnWidths);
+    }, [route.params.columnWidths]);
 
     const { evtDataExplorer } = useCore().evts;
 
@@ -97,7 +115,7 @@ export default function DataExplorer(props: Props) {
                 helpContent={t("page header help content", {
                     "demoParquetFileLink": routes[route.name]({
                         "source":
-                            "https://shell.duckdb.org/data/tpch/0_01/parquet/lineitem.parquet"
+                            "https://static.data.gouv.fr/resources/recensement-de-la-population-fichiers-detail-individus-localises-au-canton-ou-ville-2020-1/20231023-122841/fd-indcvi-2020.parquet"
                     }).link
                 })}
                 helpIcon={id<MuiIconComponentName>("SentimentSatisfied")}
@@ -149,7 +167,6 @@ export default function DataExplorer(props: Props) {
                     return (
                         <div className={cx(classes.dataGridWrapper, className)}>
                             <CustomDataGrid
-                                disableVirtualization
                                 columnVisibilityModel={route.params.columnVisibility}
                                 onColumnVisibilityModelChange={columnVisibilityModel =>
                                     routes[route.name]({
@@ -158,15 +175,12 @@ export default function DataExplorer(props: Props) {
                                     }).replace()
                                 }
                                 onColumnWidthChange={({ field, width }) =>
-                                    routes[route.name]({
-                                        ...route.params,
-                                        "columnWidths": {
-                                            ...route.params.columnWidths,
-                                            [field]: width
-                                        }
-                                    }).replace()
+                                    setColumnWidths(columnWidths => ({
+                                        ...columnWidths,
+                                        [field]: width
+                                    }))
                                 }
-                                columnWidths={route.params.columnWidths}
+                                columnWidths={columnWidths}
                                 onRowSelectionModelChange={rowSelectionModel => {
                                     const selectedRowIndex = rowSelectionModel[0];
 
@@ -249,7 +263,6 @@ const useStyles = tss.withName({ DataExplorer }).create(({ theme }) => ({
         "height": "100%"
     },
     "urlInput": {
-        "maxWidth": 950,
         "marginBottom": theme.spacing(4)
     },
     "errorAlert": {
