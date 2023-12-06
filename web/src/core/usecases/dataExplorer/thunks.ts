@@ -149,7 +149,7 @@ export const thunks = {
             dispatch(
                 actions.querySucceeded({
                     "rows": rowsOrErrorMessage,
-                    "rowCount": rowCountOrErrorMessage
+                    "rowCount": rowCountOrErrorMessage ?? 99999999
                 })
             );
         },

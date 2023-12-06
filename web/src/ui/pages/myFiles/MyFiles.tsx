@@ -131,7 +131,7 @@ export default function MyFiles(props: Props) {
     const onOpenFile = useConstCallback<
         Extract<ExplorerProps, { isFileOpen: false }>["onOpenFile"]
     >(({ basename }) => {
-        if (basename.endsWith(".parquet") || basename.endsWith(".s3")) {
+        if (basename.endsWith(".parquet") || basename.endsWith(".csv")) {
             routes
                 .dataExplorer({
                     "source": `s3:/${route.params.path}/${basename}`
