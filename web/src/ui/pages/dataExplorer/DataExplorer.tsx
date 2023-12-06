@@ -258,6 +258,7 @@ function CustomToolbar() {
         <GridToolbarContainer>
             <GridToolbarColumnsButton />
             <GridToolbarDensitySelector />
+            <div style={{ "flex": 1 }} />
             <Button
                 variant="ternary"
                 onClick={() => {
