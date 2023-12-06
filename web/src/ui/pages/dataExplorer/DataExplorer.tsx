@@ -22,6 +22,8 @@ import { declareComponentKeys, useTranslation } from "ui/i18n";
 import type { Link } from "type-route";
 import { createUseDebounce } from "powerhooks/useDebounce";
 import { useOnOpenBrowserSearch } from "ui/tools/useOnOpenBrowserSearch";
+import { Button } from "onyxia-ui/Button";
+import { useLang } from "ui/i18n";
 
 export type Props = {
     route: PageRoute;
@@ -248,10 +250,26 @@ export default function DataExplorer(props: Props) {
 }
 
 function CustomToolbar() {
+    const { dataExplorer } = useCore().functions;
+
+    const { lang } = useLang();
+
     return (
         <GridToolbarContainer>
             <GridToolbarColumnsButton />
             <GridToolbarDensitySelector />
+            <Button
+                variant="ternary"
+                onClick={() => {
+                    dataExplorer.getFileDownloadUrl().then(window.open);
+                }}
+                startIcon={id<MuiIconComponentName>("Download")}
+            >
+                {
+                    //TODO: Hack because I'm tired but change first thing tomorrow
+                    lang === "fr" ? "Télécharger le fichier" : "Download file"
+                }
+            </Button>
         </GridToolbarContainer>
     );
 }
