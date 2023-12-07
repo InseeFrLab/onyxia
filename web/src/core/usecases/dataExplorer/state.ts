@@ -24,6 +24,7 @@ export type State = {
         | {
               rows: any[];
               rowCount: number | undefined;
+              fileDownloadUrl: string;
           }
         | undefined;
 };
@@ -64,11 +65,11 @@ export const { actions, reducer } = createUsecaseActions({
         },
         "querySucceeded": (
             state,
-            { payload }: { payload: { rows: any[]; rowCount: number | undefined } }
+            { payload }: { payload: NonNullable<State["data"]> }
         ) => {
-            const { rowCount, rows } = payload;
+            const { rowCount, rows, fileDownloadUrl } = payload;
             state.isQuerying = false;
-            state.data = { rowCount, rows };
+            state.data = { rowCount, rows, fileDownloadUrl };
         },
         "queryFailed": (state, { payload }: { payload: { errorMessage: string } }) => {
             const { errorMessage } = payload;

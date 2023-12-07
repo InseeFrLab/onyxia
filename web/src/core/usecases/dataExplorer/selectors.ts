@@ -53,6 +53,7 @@ const main = createSelector(state, columns, (state, columns) => {
             ...row
         })),
         "rowCount": data.rowCount,
+        "fileDownloadUrl": data.fileDownloadUrl,
         columns
     };
 });

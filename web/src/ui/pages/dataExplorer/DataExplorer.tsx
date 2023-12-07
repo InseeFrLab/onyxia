@@ -266,7 +266,9 @@ export default function DataExplorer(props: Props) {
 }
 
 function CustomToolbar() {
-    const { dataExplorer } = useCore().functions;
+    const { fileDownloadUrl } = useCoreState("dataExplorer", "main");
+
+    assert(fileDownloadUrl !== undefined);
 
     const { lang } = useLang();
 
@@ -296,21 +298,14 @@ function CustomToolbar() {
                         "label": "Density"
                     },
                     {
-                        "buttonId": "download" as const,
                         "icon": id<MuiIconComponentName>("Download"),
-                        "isDisabled": false,
                         "label":
-                            lang === "fr" ? "Télécharger le fichier" : "Download file"
-                    }
-                    /*
-                    {
-                        "icon": "",
-                        "label": "",
+                            lang === "fr" ? "Télécharger le fichier" : "Download file",
                         "link": {
-                            "href": "",
+                            "href": fileDownloadUrl,
+                            "target": "_blank"
                         }
                     }
-                    */
                 ]}
                 onClick={buttonId => {
                     switch (buttonId) {
@@ -321,9 +316,6 @@ function CustomToolbar() {
                         case "density":
                             assert(gridToolbarDensitySelectorElement !== null);
                             gridToolbarDensitySelectorElement.click();
-                            return;
-                        case "download":
-                            dataExplorer.getFileDownloadUrl().then(window.open);
                             return;
                     }
                     assert<Equals<typeof buttonId, never>>(false);
@@ -414,7 +406,6 @@ const useStyles = tss.withName({ DataExplorer }).create(({ theme }) => ({
                 "color": theme.colors.useCases.typography.textPrimary
             },
             "&:hover": {
-                //"color": theme.colors.useCases.typography.textPrimary,
                 "backgroundColor": theme.colors.palette.focus.light
             }
         }

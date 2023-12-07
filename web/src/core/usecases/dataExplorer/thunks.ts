@@ -149,40 +149,10 @@ export const thunks = {
             dispatch(
                 actions.querySucceeded({
                     "rows": rowsOrErrorMessage,
-                    "rowCount": rowCountOrErrorMessage ?? 99999999
+                    "rowCount": rowCountOrErrorMessage ?? 99999999,
+                    "fileDownloadUrl": httpsUrl
                 })
             );
-        },
-    "getFileDownloadUrl":
-        () =>
-        async (...args) => {
-            const [, getState, { s3Client, oidc }] = args;
-            const { queryParams } = getState()[name];
-
-            assert(queryParams !== undefined);
-
-            const httpsUrl = await (async () => {
-                const { sourceUrl } = queryParams;
-
-                if (sourceUrl.startsWith("https://")) {
-                    return sourceUrl;
-                }
-
-                const s3path = sourceUrl.replace(/^s3:\/\//, "/");
-
-                assert(s3path !== sourceUrl, "Unsupported protocol");
-
-                if (!oidc.isUserLoggedIn) {
-                    oidc.login({
-                        "doesCurrentHrefRequiresAuth": true
-                    });
-                    await new Promise(() => {});
-                }
-
-                return s3Client.getFileDownloadUrl({ "path": s3path });
-            })();
-
-            return httpsUrl;
         }
 } satisfies Thunks;
 
