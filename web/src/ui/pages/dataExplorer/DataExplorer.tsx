@@ -22,8 +22,9 @@ import { declareComponentKeys, useTranslation } from "ui/i18n";
 import type { Link } from "type-route";
 import { createUseDebounce } from "powerhooks/useDebounce";
 import { useOnOpenBrowserSearch } from "ui/tools/useOnOpenBrowserSearch";
-import { Button } from "onyxia-ui/Button";
 import { useLang } from "ui/i18n";
+import { ButtonBar } from "onyxia-ui/ButtonBar";
+import { useApplyClassNameToParent } from "ui/tools/useApplyClassNameToParent";
 
 export type Props = {
     route: PageRoute;
@@ -115,6 +116,13 @@ export default function DataExplorer(props: Props) {
 
     const { t } = useTranslation({ DataExplorer });
 
+    // Theres a bug in MUI classes.panel does not apply so have to apply the class manually
+    const { childrenClassName: dataGridPanelWrapperRefClassName } =
+        useApplyClassNameToParent({
+            "parentSelector": ".MuiDataGrid-panel",
+            "className": classes.dataGridPanel
+        });
+
     return (
         <div className={cx(classes.root, className)}>
             <PageHeader
@@ -179,6 +187,14 @@ export default function DataExplorer(props: Props) {
                     return (
                         <div className={cx(classes.dataGridWrapper, className)}>
                             <CustomDataGrid
+                                classes={{
+                                    "panelWrapper": cx(
+                                        dataGridPanelWrapperRefClassName,
+                                        classes.dataGridPanelWrapper
+                                    ),
+                                    "panelFooter": classes.dataGridPanelFooter,
+                                    "menu": classes.dataGridMenu
+                                }}
                                 disableVirtualization={!isVirtualizationEnabled}
                                 columnVisibilityModel={route.params.columnVisibility}
                                 onColumnVisibilityModelChange={columnVisibilityModel =>
@@ -254,23 +270,86 @@ function CustomToolbar() {
 
     const { lang } = useLang();
 
+    const { css, theme } = useStyles();
+
+    const [gridToolbarColumnsButtonElement, setGridToolbarColumnsButtonElement] =
+        useState<HTMLElement | null>(null);
+    const [gridToolbarDensitySelectorElement, setGridToolbarDensitySelectorElement] =
+        useState<HTMLElement | null>(null);
+
     return (
         <GridToolbarContainer>
-            <GridToolbarColumnsButton />
-            <GridToolbarDensitySelector />
-            <div style={{ "flex": 1 }} />
-            <Button
-                variant="ternary"
-                onClick={() => {
-                    dataExplorer.getFileDownloadUrl().then(window.open);
+            <ButtonBar
+                className={css({
+                    "flex": 1,
+                    "marginBottom": theme.spacing(2)
+                })}
+                buttons={[
+                    {
+                        "buttonId": "columns" as const,
+                        "icon": id<MuiIconComponentName>("ViewColumn"),
+                        "label": "Column"
+                    },
+                    {
+                        "buttonId": "density" as const,
+                        "icon": id<MuiIconComponentName>("DensityMedium"),
+                        "label": "Density"
+                    },
+                    {
+                        "buttonId": "download" as const,
+                        "icon": id<MuiIconComponentName>("Download"),
+                        "isDisabled": false,
+                        "label":
+                            lang === "fr" ? "Télécharger le fichier" : "Download file"
+                    }
+                    /*
+                    {
+                        "icon": "",
+                        "label": "",
+                        "link": {
+                            "href": "",
+                        }
+                    }
+                    */
+                ]}
+                onClick={buttonId => {
+                    switch (buttonId) {
+                        case "columns":
+                            assert(gridToolbarColumnsButtonElement !== null);
+                            gridToolbarColumnsButtonElement.click();
+                            return;
+                        case "density":
+                            assert(gridToolbarDensitySelectorElement !== null);
+                            gridToolbarDensitySelectorElement.click();
+                            return;
+                        case "download":
+                            dataExplorer.getFileDownloadUrl().then(window.open);
+                            return;
+                    }
+                    assert<Equals<typeof buttonId, never>>(false);
                 }}
-                startIcon={id<MuiIconComponentName>("Download")}
-            >
-                {
-                    //TODO: Hack because I'm tired but change first thing tomorrow
-                    lang === "fr" ? "Télécharger le fichier" : "Download file"
-                }
-            </Button>
+            />
+
+            <GridToolbarColumnsButton
+                component="span"
+                aria-hidden="true"
+                className={css({ "display": "none" })}
+                ref={setGridToolbarColumnsButtonElement}
+            />
+
+            <GridToolbarDensitySelector
+                component="span"
+                aria-hidden="true"
+                className={css({
+                    "position": "absolute",
+                    "width": 0,
+                    "height": 0,
+                    "left": 120,
+                    "top": 42,
+                    "visibility": "hidden"
+                })}
+                ref={setGridToolbarDensitySelectorElement}
+            />
         </GridToolbarContainer>
     );
 }
@@ -308,6 +387,37 @@ const useStyles = tss.withName({ DataExplorer }).create(({ theme }) => ({
         "height": "100%",
         "overflowY": "hidden",
         "overflowX": "auto"
+    },
+    "dataGridPanel": {
+        "overflow": "hidden",
+        "borderRadius": 8,
+        "boxShadow": theme.shadows[1],
+        "&:hover": {
+            "boxShadow": theme.shadows[6]
+        }
+    },
+    "dataGridPanelWrapper": {
+        "backgroundColor": theme.colors.useCases.surfaces.surface1,
+        "padding": theme.spacing(2)
+    },
+    "dataGridPanelFooter": {
+        "& .MuiButton-root": {
+            "textTransform": "unset"
+        }
+    },
+    "dataGridMenu": {
+        "& .MuiMenuItem-root": {
+            "&.Mui-selected": {
+                "backgroundColor": theme.colors.useCases.surfaces.surface2
+            },
+            "& svg": {
+                "color": theme.colors.useCases.typography.textPrimary
+            },
+            "&:hover": {
+                //"color": theme.colors.useCases.typography.textPrimary,
+                "backgroundColor": theme.colors.palette.focus.light
+            }
+        }
     }
 }));
 
