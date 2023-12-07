@@ -24,6 +24,7 @@ import { createUseDebounce } from "powerhooks/useDebounce";
 import { useOnOpenBrowserSearch } from "ui/tools/useOnOpenBrowserSearch";
 import { ButtonBar } from "onyxia-ui/ButtonBar";
 import { useApplyClassNameToParent } from "ui/tools/useApplyClassNameToParent";
+import { env } from "env-parsed";
 
 export type Props = {
     route: PageRoute;
@@ -133,8 +134,7 @@ export default function DataExplorer(props: Props) {
                 helpTitle={t("page header help title")}
                 helpContent={t("page header help content", {
                     "demoParquetFileLink": routes[route.name]({
-                        "source":
-                            "https://static.data.gouv.fr/resources/recensement-de-la-population-fichiers-detail-individus-localises-au-canton-ou-ville-2020-1/20231023-122841/fd-indcvi-2020.parquet"
+                        "source": env.SAMPLE_DATASET_URL
                     }).link
                 })}
                 helpIcon={id<MuiIconComponentName>("SentimentSatisfied")}

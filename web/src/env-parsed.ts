@@ -1056,6 +1056,14 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
             ensureUrlIsSafe(envValue);
             return envValue;
         }
+    },
+    {
+        "envName": "SAMPLE_DATASET_URL",
+        "isUsedInKeycloakTheme": false,
+        "validateAndParseOrGetDefault": ({ envValue }) => {
+            assert(envValue !== "", "Should have default in .env");
+            return envValue;
+        }
     }
 ]);
 
