@@ -30,24 +30,25 @@ export function UrlInput(props: Props) {
 
     return (
         <div className={cx(classes.root, className)}>
-            <SearchBar
-                className={classes.searchBar}
-                search={urlBeingTyped}
-                onSearchChange={setUrlBeingTyped}
-                placeholder="Data source"
-                restorableSearch={url}
-                onKeyPress={key => {
-                    if (key !== "Enter") {
-                        return;
-                    }
+            <div className={classes.searchBarWrapper}>
+                <SearchBar
+                    search={urlBeingTyped}
+                    onSearchChange={setUrlBeingTyped}
+                    placeholder="Data source"
+                    restorableSearch={url}
+                    onKeyPress={key => {
+                        if (key !== "Enter") {
+                            return;
+                        }
 
-                    if (!isLoadable) {
-                        return;
-                    }
+                        if (!isLoadable) {
+                            return;
+                        }
 
-                    onButtonClick();
-                }}
-            />
+                        onButtonClick();
+                    }}
+                />
+            </div>
             <Button
                 className={classes.loadButton}
                 startIcon={id<MuiIconComponentName>("CloudDownload")}
@@ -66,7 +67,7 @@ const useStyles = tss
         "root": {
             "display": "flex"
         },
-        "searchBar": {
+        "searchBarWrapper": {
             "flex": 1
         },
         "loadButton": {
