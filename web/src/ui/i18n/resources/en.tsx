@@ -639,7 +639,13 @@ Feel free to explore and take charge of your Kubernetes deployments!
                 Not sure where to start? Try this{" "}
                 <MuiLink {...demoParquetFileLink}>demo file</MuiLink>!
             </>
-        )
+        ),
+        "column": "column",
+        "density": "density",
+        "download file": "Download file"
+    },
+    "UrlInput": {
+        "load": "Load"
     },
     "CommandBar": {
         "ok": "Ok"

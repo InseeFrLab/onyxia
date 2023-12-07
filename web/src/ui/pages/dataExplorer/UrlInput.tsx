@@ -5,6 +5,7 @@ import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
 import { id } from "tsafe/id";
 import { SearchBar } from "onyxia-ui/SearchBar";
 import { useEffectOnValueChange } from "powerhooks/useEffectOnValueChange";
+import { declareComponentKeys } from "ui/i18n";
 
 type Props = {
     className?: string;
@@ -75,3 +76,5 @@ const useStyles = tss
             "marginLeft": theme.spacing(4)
         }
     }));
+
+export const { i18n } = declareComponentKeys<"load">()({ UrlInput });

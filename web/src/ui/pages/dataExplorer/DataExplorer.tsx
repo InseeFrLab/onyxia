@@ -22,7 +22,6 @@ import { declareComponentKeys, useTranslation } from "ui/i18n";
 import type { Link } from "type-route";
 import { createUseDebounce } from "powerhooks/useDebounce";
 import { useOnOpenBrowserSearch } from "ui/tools/useOnOpenBrowserSearch";
-import { useLang } from "ui/i18n";
 import { ButtonBar } from "onyxia-ui/ButtonBar";
 import { useApplyClassNameToParent } from "ui/tools/useApplyClassNameToParent";
 
@@ -266,13 +265,13 @@ export default function DataExplorer(props: Props) {
 }
 
 function CustomToolbar() {
+    const { t } = useTranslation({ DataExplorer });
+
+    const { css, theme } = useStyles();
+
     const { fileDownloadUrl } = useCoreState("dataExplorer", "main");
 
     assert(fileDownloadUrl !== undefined);
-
-    const { lang } = useLang();
-
-    const { css, theme } = useStyles();
 
     const [gridToolbarColumnsButtonElement, setGridToolbarColumnsButtonElement] =
         useState<HTMLElement | null>(null);
@@ -290,17 +289,16 @@ function CustomToolbar() {
                     {
                         "buttonId": "columns" as const,
                         "icon": id<MuiIconComponentName>("ViewColumn"),
-                        "label": "Column"
+                        "label": t("column")
                     },
                     {
                         "buttonId": "density" as const,
                         "icon": id<MuiIconComponentName>("DensityMedium"),
-                        "label": "Density"
+                        "label": t("density")
                     },
                     {
                         "icon": id<MuiIconComponentName>("Download"),
-                        "label":
-                            lang === "fr" ? "Télécharger le fichier" : "Download file",
+                        "label": t("download file"),
                         "link": {
                             "href": fileDownloadUrl,
                             "target": "_blank"
@@ -420,4 +418,7 @@ export const { i18n } = declareComponentKeys<
           P: { demoParquetFileLink: Link };
           R: JSX.Element;
       }
+    | "column"
+    | "density"
+    | "download file"
 >()({ DataExplorer });

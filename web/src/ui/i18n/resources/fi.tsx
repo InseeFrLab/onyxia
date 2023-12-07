@@ -636,7 +636,13 @@ Tutustu vapaasti ja ota hallintaan Kubernetes-julkaisusi!
                 Etkö ole varma, mistä aloittaa? Kokeile tätä{" "}
                 <MuiLink {...demoParquetFileLink}>demotiedostoa</MuiLink>!
             </>
-        )
+        ),
+        "column": "sarake",
+        "density": "tiheys",
+        "download file": "lataa tiedosto"
+    },
+    "UrlInput": {
+        "load": "Lataa"
     },
     "CommandBar": {
         "ok": "ok"

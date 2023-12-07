@@ -646,7 +646,13 @@ Sentiti libero di esplorare e prendere il controllo dei tuoi deployment Kubernet
                 Non sai da dove iniziare? Prova questo{" "}
                 <MuiLink {...demoParquetFileLink}>file dimostrativo</MuiLink>!
             </>
-        )
+        ),
+        "column": "colonna",
+        "density": "densità",
+        "download file": "scarica file"
+    },
+    "UrlInput": {
+        "load": "Carica"
     },
     "CommandBar": {
         "ok": "ok"

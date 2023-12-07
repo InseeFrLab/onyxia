@@ -655,7 +655,13 @@ N'hésitez pas à explorer et à prendre en main vos déploiements Kubernetes !
                 Vous ne savez pas par où commencer ? Essayez ce{" "}
                 <MuiLink {...demoParquetFileLink}>fichier de démonstration</MuiLink> !
             </>
-        )
+        ),
+        "column": "colonne",
+        "density": "densité",
+        "download file": "télécharger le fichier"
+    },
+    "UrlInput": {
+        "load": "Charger"
     },
     "CommandBar": {
         "ok": "ok"

@@ -604,7 +604,13 @@ ${
                 不知道从哪里开始？尝试这个{" "}
                 <MuiLink {...demoParquetFileLink}>演示文件</MuiLink>！
             </>
-        )
+        ),
+        "column": "列",
+        "density": "密度",
+        "download file": "下载文件"
+    },
+    "UrlInput": {
+        "load": "加载"
     },
     "CommandBar": {
         "ok": "是"

@@ -652,7 +652,13 @@ Fühlen Sie sich frei, Ihre Kubernetes-Bereitstellungen zu erkunden und die Kont
                 Nicht sicher, wo Sie anfangen sollen? Probieren Sie diese{" "}
                 <MuiLink {...demoParquetFileLink}>Demodatei</MuiLink>!
             </>
-        )
+        ),
+        "column": "Spalte",
+        "density": "Dichte",
+        "download file": "Datei herunterladen"
+    },
+    "UrlInput": {
+        "load": "Laden"
     },
     "CommandBar": {
         "ok": "Ok"

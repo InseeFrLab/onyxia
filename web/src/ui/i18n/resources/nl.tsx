@@ -650,7 +650,13 @@ Voel je vrij om te verkennen en de controle over je Kubernetes-implementaties te
                 Weet u niet waar u moet beginnen? Probeer dit{" "}
                 <MuiLink {...demoParquetFileLink}>demobestand</MuiLink>!
             </>
-        )
+        ),
+        "column": "kolom",
+        "density": "dichtheid",
+        "download file": "bestand downloaden"
+    },
+    "UrlInput": {
+        "load": "Laden"
     },
     "CommandBar": {
         "ok": "ok"

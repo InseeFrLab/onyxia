@@ -642,7 +642,13 @@ Føl deg fri til å utforske og ta kontroll over dine Kubernetes-implementeringe
                 Usikker på hvor du skal starte? Prøv denne{" "}
                 <MuiLink {...demoParquetFileLink}>demofilen</MuiLink>!
             </>
-        )
+        ),
+        "column": "kolonne",
+        "density": "tetthet",
+        "download file": "last ned fil"
+    },
+    "UrlInput": {
+        "load": "Last"
     },
     "CommandBar": {
         "ok": "ok"
