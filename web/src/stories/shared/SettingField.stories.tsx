@@ -1,4 +1,4 @@
-import { AccountField, type Props } from "ui/pages/account/AccountField";
+import { SettingField, type Props } from "ui/shared/SettingField";
 import { sectionName } from "./sectionName";
 import { getStoryFactory, logCallbacks } from "stories/getStory";
 import { id } from "tsafe/id";
@@ -7,7 +7,7 @@ import { css } from "@emotion/css";
 
 const { meta, getStory } = getStoryFactory({
     sectionName,
-    "wrappedComponent": { "AccountField": AccountField as any }
+    "wrappedComponent": { SettingField }
 });
 
 export default meta;

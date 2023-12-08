@@ -14,7 +14,7 @@ export type Props = {
     tooltipText?: string;
 };
 
-export const AccountSectionHeader = memo((props: Props) => {
+export const SettingSectionHeader = memo((props: Props) => {
     const { title, helperText, tooltipText, className } = props;
 
     const { classes, cx } = useStyles();
@@ -42,7 +42,7 @@ export const AccountSectionHeader = memo((props: Props) => {
     );
 });
 
-const useStyles = tss.withName({ AccountSectionHeader }).create(({ theme }) => ({
+const useStyles = tss.withName({ SettingSectionHeader }).create(({ theme }) => ({
     "root": {
         "marginBottom": theme.spacing(4)
     },

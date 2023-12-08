@@ -110,7 +110,7 @@ export const translations: Translations<"zh-CN"> = {
             </>
         )
     },
-    "AccountField": {
+    "SettingField": {
         "copy tooltip": "复制到剪贴板",
         "language": "更改语言",
         "service password": "您的服务密码",

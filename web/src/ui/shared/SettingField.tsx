@@ -92,8 +92,8 @@ export declare namespace Props {
 
 const flashDurationMs = 600;
 
-export const AccountField = memo((props: Props): ReturnType<FunctionComponent> => {
-    const { t } = useTranslation({ AccountField });
+export const SettingField = memo((props: Props): ReturnType<FunctionComponent> => {
+    const { t } = useTranslation({ SettingField });
 
     const { className } = props;
 
@@ -488,10 +488,10 @@ export const { i18n } = declareComponentKeys<
     | "not yet defined"
     | "reset helper dialogs helper text"
     | "reset"
->()({ AccountField });
+>()({ SettingField });
 
 const useStyles = tss
-    .withName({ AccountField })
+    .withName({ SettingField })
     .withParams<{ isFlashing: boolean }>()
     .create(({ theme, isFlashing }) => ({
         "root": {

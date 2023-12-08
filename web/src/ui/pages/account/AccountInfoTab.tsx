@@ -1,7 +1,7 @@
 import { useEffect, useReducer, memo } from "react";
 import { useTranslation } from "ui/i18n";
-import { AccountSectionHeader } from "../AccountSectionHeader";
-import { AccountField } from "../AccountField";
+import { SettingSectionHeader } from "ui/shared/SettingSectionHeader";
+import { SettingField } from "ui/shared/SettingField";
 import { useCore, useCoreState } from "core";
 import { useCallbackFactory } from "powerhooks/useCallbackFactory";
 import { copyToClipboard } from "ui/tools/copyToClipboard";
@@ -68,20 +68,20 @@ export const AccountInfoTab = memo((props: Props) => {
 
     return (
         <div className={className}>
-            <AccountSectionHeader title={t("general information")} />
-            <AccountField
+            <SettingSectionHeader title={t("general information")} />
+            <SettingField
                 type="text"
                 title={t("user id")}
                 text={user.username}
                 onRequestCopy={onRequestCopyFactory(user.username)}
             />
-            <AccountField
+            <SettingField
                 type="text"
                 title={t("full name")}
                 text={fullName}
                 onRequestCopy={onRequestCopyFactory(fullName)}
             />
-            <AccountField
+            <SettingField
                 type="text"
                 title={t("email")}
                 text={user.email}
@@ -98,11 +98,11 @@ export const AccountInfoTab = memo((props: Props) => {
                 </Link>
             )}
             <Divider className={classes.divider} variant="middle" />
-            <AccountSectionHeader
+            <SettingSectionHeader
                 title={t("auth information")}
                 helperText={t("auth information helper")}
             />
-            <AccountField
+            <SettingField
                 type="service password"
                 isLocked={servicePasswordAsync.loading}
                 servicePassword={servicePasswordAsync.result ?? "⏳"}
@@ -113,7 +113,7 @@ export const AccountInfoTab = memo((props: Props) => {
                 }
                 onRequestServicePasswordRenewal={onRequestServicePasswordRenewal}
             />
-            <AccountField
+            <SettingField
                 type="text"
                 title={t("ip address")}
                 text={publicIp}

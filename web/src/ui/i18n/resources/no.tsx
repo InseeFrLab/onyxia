@@ -121,7 +121,7 @@ export const translations: Translations<"no"> = {
             </>
         )
     },
-    "AccountField": {
+    "SettingField": {
         "copy tooltip": "Kopier til utklippstavlen",
         "language": "Bytt språk",
         "service password": "Passord for tjenestene dine",

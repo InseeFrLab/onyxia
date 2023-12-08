@@ -1,7 +1,7 @@
 import { useEffect, memo, lazy, Suspense } from "react";
 import { useTranslation } from "ui/i18n";
-import { AccountSectionHeader } from "../AccountSectionHeader";
-import { AccountField } from "../AccountField";
+import { SettingSectionHeader } from "ui/shared/SettingSectionHeader";
+import { SettingField } from "ui/shared/SettingField";
 import { useCallbackFactory } from "powerhooks/useCallbackFactory";
 import { copyToClipboard } from "ui/tools/copyToClipboard";
 import Divider from "@mui/material/Divider";
@@ -102,7 +102,7 @@ export const AccountStorageTab = memo((props: Props) => {
 
     return (
         <div className={className}>
-            <AccountSectionHeader
+            <SettingSectionHeader
                 title={t("credentials section title")}
                 helperText={
                     <>
@@ -129,7 +129,7 @@ export const AccountStorageTab = memo((props: Props) => {
                     "AWS_DEFAULT_REGION"
                 ] as const
             ).map(key => (
-                <AccountField
+                <SettingField
                     type="text"
                     key={key}
                     title={capitalize(
@@ -154,7 +154,7 @@ export const AccountStorageTab = memo((props: Props) => {
                 />
             ))}
             <Divider className={classes.divider} variant="middle" />
-            <AccountSectionHeader
+            <SettingSectionHeader
                 title={t("init script section title")}
                 helperText={t("init script section helper")}
             />

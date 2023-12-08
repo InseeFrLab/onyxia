@@ -123,7 +123,7 @@ export const translations: Translations<"de"> = {
             </>
         )
     },
-    "AccountField": {
+    "SettingField": {
         "copy tooltip": "In die Zwischenablage kopieren",
         "language": "Sprache ändern",
         "service password": "Passwort für Ihre Dienste",

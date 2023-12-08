@@ -122,7 +122,7 @@ export const translations: Translations<"en"> = {
             </>
         )
     },
-    "AccountField": {
+    "SettingField": {
         "copy tooltip": "Copy in clipboard",
         "language": "Change language",
         "service password": "Password for your services",

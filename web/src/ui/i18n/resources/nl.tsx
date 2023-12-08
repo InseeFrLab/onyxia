@@ -122,7 +122,7 @@ export const translations: Translations<"nl"> = {
             </>
         )
     },
-    "AccountField": {
+    "SettingField": {
         "copy tooltip": "Kopiëren naar klembord",
         "language": "Taal wijzigen",
         "service password": "Wachtwoord voor uw diensten",

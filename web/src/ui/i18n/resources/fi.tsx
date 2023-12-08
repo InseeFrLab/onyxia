@@ -119,7 +119,7 @@ export const translations: Translations<"fi"> = {
             </>
         )
     },
-    "AccountField": {
+    "SettingField": {
         "copy tooltip": "Kopioi leikepöydälle",
         "language": "Vaihda kieltä",
         "service password": "Salasana palveluillesi",

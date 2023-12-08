@@ -1,11 +1,11 @@
-import { AccountSectionHeader } from "ui/pages/account/AccountSectionHeader";
+import { SettingSectionHeader } from "ui/shared/SettingSectionHeader";
 import { sectionName } from "./sectionName";
 import { getStoryFactory } from "stories/getStory";
 import { css } from "@emotion/css";
 
 const { meta, getStory } = getStoryFactory({
     sectionName,
-    "wrappedComponent": { AccountSectionHeader }
+    "wrappedComponent": { SettingSectionHeader }
 });
 
 export default meta;

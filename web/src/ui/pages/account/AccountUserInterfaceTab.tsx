@@ -1,7 +1,7 @@
 import { memo } from "react";
 import { useTranslation } from "ui/i18n";
-import { AccountSectionHeader } from "../AccountSectionHeader";
-import { AccountField } from "../AccountField";
+import { SettingSectionHeader } from "ui/shared/SettingSectionHeader";
+import { SettingField } from "ui/shared/SettingField";
 import { useDarkMode } from "onyxia-ui";
 import { useConstCallback } from "powerhooks/useConstCallback";
 import { useCore, useCoreState } from "core";
@@ -61,8 +61,8 @@ export const AccountUserInterfaceTab = memo((props: Props) => {
 
     return (
         <div className={className}>
-            <AccountSectionHeader title={t("title")} />
-            <AccountField
+            <SettingSectionHeader title={t("title")} />
+            <SettingField
                 type="toggle"
                 title={t("enable dark mode")}
                 helperText={t("dark mode helper")}
@@ -70,7 +70,7 @@ export const AccountUserInterfaceTab = memo((props: Props) => {
                 isOn={isDarkModeEnabled}
                 onRequestToggle={onRequestToggleIsDarkModeEnabled}
             />
-            <AccountField
+            <SettingField
                 type="toggle"
                 title={t("enable beta")}
                 helperText={t("beta mode helper")}
@@ -79,7 +79,7 @@ export const AccountUserInterfaceTab = memo((props: Props) => {
                 onRequestToggle={onRequestToggleIsBetaModeEnabled}
             />
             {isBetaModeEnabled && (
-                <AccountField
+                <SettingField
                     type="toggle"
                     title={t("enable dev mode")}
                     helperText={t("dev mode helper")}
@@ -88,7 +88,7 @@ export const AccountUserInterfaceTab = memo((props: Props) => {
                     onRequestToggle={onRequestToggleIsDevModeEnabled}
                 />
             )}
-            <AccountField
+            <SettingField
                 type="toggle"
                 title={t("Enable command bar")}
                 helperText={t("Enable command bar helper", {
@@ -99,11 +99,11 @@ export const AccountUserInterfaceTab = memo((props: Props) => {
                 isOn={isCommandBarEnabled}
                 onRequestToggle={onRequestToggleIsCommandBarEnabled}
             />
-            <AccountField
+            <SettingField
                 type="reset helper dialogs"
                 onResetHelperDialogsClick={userConfigs.resetHelperDialogs}
             />
-            <AccountField type="language" />
+            <SettingField type="language" />
         </div>
     );
 });

@@ -1,8 +1,7 @@
 import { useMemo, memo } from "react";
 import { useTranslation, useLang } from "ui/i18n";
-import { AccountSectionHeader } from "../AccountSectionHeader";
-import { AccountField } from "../AccountField";
-import type { Props as AccountFieldProps } from "../AccountField";
+import { SettingSectionHeader } from "ui/shared/SettingSectionHeader";
+import { SettingField, type Props as SettingFieldProps } from "ui/shared/SettingField";
 import { useCoreState, useCore } from "core";
 import { useCallbackFactory } from "powerhooks/useCallbackFactory";
 import { copyToClipboard } from "ui/tools/copyToClipboard";
@@ -50,7 +49,7 @@ export const AccountIntegrationsTab = memo((props: Props) => {
     const getEvtFieldAction = useMemo(
         () =>
             memoize((_key: EditableFieldKey) =>
-                Evt.create<UnpackEvt<AccountFieldProps.EditableText["evtAction"]>>()
+                Evt.create<UnpackEvt<SettingFieldProps.EditableText["evtAction"]>>()
             ),
         []
     );
@@ -65,7 +64,7 @@ export const AccountIntegrationsTab = memo((props: Props) => {
 
     return (
         <div className={className}>
-            <AccountSectionHeader
+            <SettingSectionHeader
                 title={t("git section title")}
                 helperText={t("git section helper")}
             />
@@ -73,7 +72,7 @@ export const AccountIntegrationsTab = memo((props: Props) => {
                 const { value, isBeingChanged } = userConfigsState[key];
 
                 return (
-                    <AccountField
+                    <SettingField
                         key={key}
                         type="editable text"
                         title={t(key)}
@@ -87,7 +86,7 @@ export const AccountIntegrationsTab = memo((props: Props) => {
                 );
             })}
             <Divider className={classes.divider} variant="middle" />
-            <AccountSectionHeader
+            <SettingSectionHeader
                 title={t("third party tokens section title")}
                 helperText={t("third party tokens section helper")}
             />
@@ -122,7 +121,7 @@ export const AccountIntegrationsTab = memo((props: Props) => {
                 })();
 
                 return (
-                    <AccountField
+                    <SettingField
                         key={key}
                         type="editable text"
                         title={t("personal token", { serviceName })}

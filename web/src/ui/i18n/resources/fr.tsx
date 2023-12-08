@@ -126,7 +126,7 @@ export const translations: Translations<"fr"> = {
             </>
         )
     },
-    "AccountField": {
+    "SettingField": {
         "copy tooltip": "Copier dans le presse-papier",
         "language": "Changer la langue",
         "service password": "Mot de passe pour vos services",
