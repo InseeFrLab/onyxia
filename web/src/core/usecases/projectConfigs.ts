@@ -82,9 +82,9 @@ export const thunks = {
 
     "renewServicePassword":
         () =>
-        (...args) => {
+        async (...args) => {
             const [dispatch] = args;
-            dispatch(
+            await dispatch(
                 protectedThunks.changeConfigValue({
                     "key": "servicePassword",
                     "value": getDefaultConfig("servicePassword")
