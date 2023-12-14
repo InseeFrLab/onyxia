@@ -31,13 +31,13 @@ COPY --from=build /app/public/index.html ./public/
 # Generating /entrypoint.sh  
 # Be mindfull that the entrypoint is generated a build time but the 
 # bash code is executed at container startup.
-RUN echo $'#!/bin/sh                                                           \n\
-if [ -n "$CUSTOM_RESOURCES" ]; then                                            \n\
-    wget -O /tmp/custom-resources.zip "$CUSTOM_RESOURCES"                      \n\
-    unzip /tmp/custom-resources.zip -d /usr/share/nginx/html/custom-resources  \n\
-fi                                                                             \n\
-npx embed-environnement-variables                                              \n\
-exec nginx -g "daemon off;"                                                    \n\
+RUN echo $'#!/bin/sh                                                                                       \n\
+if [ -n "$CUSTOM_RESOURCES" ]; then                                                                        \n\
+    wget -O /tmp/custom-resources.zip "$CUSTOM_RESOURCES" --ca-directory="$CUSTOM_RESOURCES_CA_DIRECTORY"  \n\
+    unzip /tmp/custom-resources.zip -d /usr/share/nginx/html/custom-resources                              \n\
+fi                                                                                                         \n\
+npx embed-environnement-variables                                                                          \n\
+exec nginx -g "daemon off;"                                                                                \n\
 ' > /entrypoint.sh && chmod +x /entrypoint.sh
 
 # Run nginx as non-root
