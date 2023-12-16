@@ -278,6 +278,7 @@ export const thunks = {
                             "defaultNetworkPolicy": region.defaultNetworkPolicy,
                             "allowedURIPattern":
                                 region.allowedURIPatternForUserDefinedInitScript,
+                            "customValues": region.customValues ?? {},
                             "kafka": region.kafka,
                             "from": region.from,
                             "tolerations": region.tolerations,
