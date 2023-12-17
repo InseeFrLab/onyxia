@@ -347,7 +347,7 @@ export const translations: Translations<"no"> = {
         "header text2": "Utforsk, start og konfigurer tjenester med noen få klikk.",
         "header help": ({ catalogName, catalogDescription, repositoryUrl }) => (
             <>
-                Du utforsker Helm Chart Repository{" "}
+                Du utforsker Helm-tjenestekatalogen{" "}
                 <MuiLink href={repositoryUrl} target="_blank">
                     {catalogName}: {catalogDescription}
                 </MuiLink>
