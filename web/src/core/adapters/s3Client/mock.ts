@@ -14,7 +14,6 @@ export const s3client: S3Client = {
             "sessionToken": "",
             "acquisitionTime": Date.now()
         }),
-    "createBucketIfNotExist": () => Promise.resolve(),
     "uploadFile": () => Promise.resolve(),
     "deleteFile": () => Promise.resolve(),
     "getFileDownloadUrl": () => Promise.resolve("https://example.com")

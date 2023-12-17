@@ -1,18 +1,12 @@
 /** All path are supposed to start with /<bucket_name> */
 export type S3Client = {
-    getToken: (params: {
-        restrictToBucketName: string | undefined;
-        doForceRenew?: boolean;
-    }) => Promise<{
+    getToken: (params: { doForceRenew?: boolean }) => Promise<{
         accessKeyId: string;
         secretAccessKey: string;
-        sessionToken: string;
-        expirationTime: number;
-        acquisitionTime: number;
+        sessionToken: string | undefined;
+        expirationTime: number | undefined;
+        acquisitionTime: number | undefined;
     }>;
-
-    /** Memoized */
-    createBucketIfNotExist: (bucketName: string) => Promise<void>;
 
     /** In charge of creating bucket if doesn't exist. */
     list: (params: { path: string }) => Promise<{
