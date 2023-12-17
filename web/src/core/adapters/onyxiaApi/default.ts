@@ -82,6 +82,7 @@ export function createOnyxiaApi(params: {
                         id: string;
                         services: {
                             allowedURIPattern: string;
+                            customValues?: Record<string, unknown>;
                             expose: {
                                 domain: string;
                                 ingressClassName: string;
@@ -319,6 +320,7 @@ export function createOnyxiaApi(params: {
                                 region.packageRepositoryInjection,
                             "certificateAuthorityInjection":
                                 region.certificateAuthorityInjection,
+                            "customValues": region.services.customValues,
                             "kubernetes": (() => {
                                 const { k8sPublicEndpoint } = region.services;
                                 return k8sPublicEndpoint?.URL === undefined

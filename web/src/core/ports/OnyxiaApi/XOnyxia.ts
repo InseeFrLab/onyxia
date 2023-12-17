@@ -64,6 +64,7 @@ export type XOnyxiaContext = {
         defaultIpProtection: boolean | undefined;
         defaultNetworkPolicy: boolean | undefined;
         allowedURIPattern: string;
+        customValues: Record<string, unknown> | undefined;
         kafka:
             | {
                   url: string;
