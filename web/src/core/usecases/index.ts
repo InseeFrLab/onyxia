@@ -1,5 +1,5 @@
 import * as catalog from "./catalog";
-import * as deploymentRegion from "./deploymentRegion";
+import * as deploymentRegionSelection from "./deploymentRegionSelection";
 import * as fileExplorer from "./fileExplorer";
 import * as secretExplorer from "./secretExplorer";
 import * as launcher from "./launcher";
@@ -16,10 +16,11 @@ import * as vaultCredentials from "./vaultCredentials";
 import * as userAccountManagement from "./userAccountManagement";
 import * as sqlOlapShell from "./sqlOlapShell";
 import * as dataExplorer from "./dataExplorer";
+import * as projectSelection from "./projectSelection";
 
 export const usecases = {
     catalog,
-    deploymentRegion,
+    deploymentRegionSelection,
     fileExplorer,
     secretExplorer,
     launcher,
@@ -35,5 +36,6 @@ export const usecases = {
     vaultCredentials,
     userAccountManagement,
     sqlOlapShell,
-    dataExplorer
+    dataExplorer,
+    projectSelection
 };
