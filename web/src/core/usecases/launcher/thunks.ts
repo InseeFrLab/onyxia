@@ -16,11 +16,14 @@ import {
 } from "core/ports/OnyxiaApi";
 import * as publicIpUsecase from "../publicIp";
 import * as userAuthentication from "../userAuthentication";
-import * as deploymentRegion from "../deploymentRegion";
-import * as projectConfigs from "../projectConfigs";
+import * as deploymentRegionSelection from "core/usecases/deploymentRegionSelection";
+import * as projectSelection from "core/usecases/projectSelection";
+import * as projectConfigs from "core/usecases/projectConfigs";
+import { amazonS3Url } from "core/adapters/s3Client/utils/amazonS3Url";
+import { defaultS3Region } from "core/adapters/s3Client/utils/defaultS3Region";
+import { bucketNameAndObjectNameFromS3Path } from "core/adapters/s3Client/utils/bucketNameAndObjectNameFromS3Path";
 import { parseUrl } from "core/tools/parseUrl";
 import { typeGuard } from "tsafe/typeGuard";
-import { getS3UrlAndRegion } from "core/adapters/s3Client/utils/getS3UrlAndRegion";
 import * as secretExplorer from "../secretExplorer";
 import type { FormField } from "./FormField";
 import * as yaml from "yaml";
@@ -139,15 +142,15 @@ export const thunks = {
 
                     const userConfigs = userConfigsSelectors.main(getState());
 
-                    const region = deploymentRegion.selectors.selectedDeploymentRegion(
-                        getState()
-                    );
+                    const region =
+                        deploymentRegionSelection.selectors.currentDeploymentRegion(
+                            getState()
+                        );
 
-                    const servicePassword = await dispatch(
-                        projectConfigs.thunks.getServicesPassword()
-                    );
+                    const { servicePassword } =
+                        projectConfigs.selectors.selectedProjectConfigs(getState());
 
-                    const project = projectConfigs.selectors.selectedProject(getState());
+                    const project = projectSelection.selectors.currentProject(getState());
 
                     const doInjectPersonalInfos =
                         project.group === undefined ||
@@ -217,60 +220,97 @@ export const thunks = {
                             ? undefined
                             : userConfigs.kaggleApiToken ?? undefined,
                         "s3": await (async () => {
-                            const project = projectConfigs.selectors.selectedProject(
+                            inject_from_project_config: {
+                                const { customS3Configs } =
+                                    projectConfigs.selectors.selectedProjectConfigs(
+                                        getState()
+                                    );
+
+                                if (customS3Configs.indexForXOnyxia === undefined) {
+                                    break inject_from_project_config;
+                                }
+
+                                const dataSource =
+                                    customS3Configs.availableConfigs[
+                                        customS3Configs.indexForXOnyxia
+                                    ];
+
+                                assert(dataSource !== undefined);
+
+                                const { host, port = 443 } = parseUrl(dataSource.url);
+
+                                return {
+                                    "AWS_ACCESS_KEY_ID": dataSource.accessKeyId,
+                                    "AWS_BUCKET_NAME": bucketNameAndObjectNameFromS3Path(
+                                        dataSource.rootDirPath
+                                    ).bucketName,
+                                    "AWS_SECRET_ACCESS_KEY": dataSource.secretAccessKey,
+                                    "AWS_SESSION_TOKEN": dataSource.sessionToken ?? "",
+                                    "AWS_DEFAULT_REGION": dataSource.region,
+                                    "AWS_S3_ENDPOINT": host,
+                                    port
+                                };
+                            }
+
+                            if (region.s3Params.serverIntegratedWithOidc === undefined) {
+                                return {
+                                    "AWS_ACCESS_KEY_ID": "",
+                                    "AWS_SECRET_ACCESS_KEY": "",
+                                    "AWS_SESSION_TOKEN": "",
+                                    "AWS_BUCKET_NAME": "",
+                                    "AWS_DEFAULT_REGION": "",
+                                    "AWS_S3_ENDPOINT": "",
+                                    "port": 0
+                                };
+                            }
+
+                            const project = projectSelection.selectors.currentProject(
                                 getState()
                             );
 
-                            const { accessKeyId, secretAccessKey, sessionToken } =
-                                await s3Client.getToken({
-                                    "restrictToBucketName":
-                                        project.group === undefined
-                                            ? undefined
-                                            : project.bucket
-                                });
-
-                            s3Client.createBucketIfNotExist(project.bucket);
+                            const { host, port = 443 } = parseUrl(
+                                region.s3Params.serverIntegratedWithOidc.isOnPremise
+                                    ? region.s3Params.serverIntegratedWithOidc.url
+                                    : (() => {
+                                          switch (
+                                              region.s3Params.serverIntegratedWithOidc
+                                                  .cloudProvider
+                                          ) {
+                                              case "Amazon web services":
+                                                  return amazonS3Url;
+                                          }
+                                      })()
+                            );
 
                             return {
-                                "AWS_ACCESS_KEY_ID": !doInjectPersonalInfos
-                                    ? ""
-                                    : accessKeyId,
-                                "AWS_BUCKET_NAME": project.bucket,
-                                "AWS_SECRET_ACCESS_KEY": !doInjectPersonalInfos
-                                    ? ""
-                                    : secretAccessKey,
-                                "AWS_SESSION_TOKEN": !doInjectPersonalInfos
-                                    ? ""
-                                    : sessionToken,
-                                ...(() => {
-                                    const { s3: s3Params } =
-                                        deploymentRegion.selectors.selectedDeploymentRegion(
-                                            getState()
-                                        );
-
-                                    if (s3Params === undefined) {
+                                ...(await (async () => {
+                                    if (!doInjectPersonalInfos) {
                                         return {
-                                            "AWS_DEFAULT_REGION": "",
-                                            "AWS_S3_ENDPOINT": "",
-                                            "port": 443
+                                            "AWS_ACCESS_KEY_ID": "",
+                                            "AWS_SECRET_ACCESS_KEY": "",
+                                            "AWS_SESSION_TOKEN": ""
                                         };
                                     }
 
-                                    const { region, host, port } = (() => {
-                                        const { region, url } =
-                                            getS3UrlAndRegion(s3Params);
+                                    const { accessKeyId, secretAccessKey, sessionToken } =
+                                        await s3Client.getToken({
+                                            "doForceRenew": false
+                                        });
 
-                                        const { host, port = 443 } = parseUrl(url);
-
-                                        return { region, host, port };
-                                    })();
+                                    assert(sessionToken !== undefined);
 
                                     return {
-                                        "AWS_DEFAULT_REGION": region,
-                                        "AWS_S3_ENDPOINT": host,
-                                        port
+                                        "AWS_ACCESS_KEY_ID": accessKeyId,
+                                        "AWS_SECRET_ACCESS_KEY": secretAccessKey,
+                                        "AWS_SESSION_TOKEN": sessionToken
                                     };
-                                })()
+                                })()),
+                                "AWS_BUCKET_NAME": project.bucket,
+                                "AWS_DEFAULT_REGION":
+                                    region.s3Params.serverIntegratedWithOidc.region ??
+                                    defaultS3Region,
+                                "AWS_S3_ENDPOINT": host,
+                                port
                             };
                         })(),
                         "region": {
@@ -733,7 +773,7 @@ export const thunks = {
 
             assert(formFieldsValueDifferentFromDefault !== undefined);
 
-            dispatch(thunks.reset());
+            dispatch(actions.reset());
 
             dispatch(
                 thunks.initialize({

@@ -14,7 +14,7 @@ export type DeploymentRegion = {
           }
         | undefined;
     initScriptUrl: string;
-    s3: DeploymentRegion.S3 | undefined;
+    s3Params: DeploymentRegion.S3Params;
     allowedURIPatternForUserDefinedInitScript: string;
     kafka:
         | {
@@ -93,30 +93,55 @@ export type DeploymentRegion = {
         | undefined;
 };
 export namespace DeploymentRegion {
-    export type S3 = S3.Minio | S3.Amazon;
-    export namespace S3 {
-        export type Common = {
-            defaultDurationSeconds: number | undefined;
-            monitoringUrlPattern: string | undefined;
-            oidcParams:
-                | {
-                      issuerUri?: string;
-                      clientId: string;
-                  }
-                | undefined;
-        };
+    export type S3Params = {
+        serverIntegratedWithOidc: S3Params.ServerIntegratedWithOidc | undefined;
+        doAllowConnectionToOtherS3Servers:
+            | boolean
+            | {
+                  defaultUrl: string;
+                  defaultRegion: string;
+              };
+    };
 
-        export type Minio = Common & {
-            type: "minio";
-            url: string; //"https://minio.sspcloud.fr",
-            region: string | undefined; // default "us-east-1"
-        };
+    export namespace S3Params {
+        export type ServerIntegratedWithOidc =
+            | ServerIntegratedWithOidc.OnPremise
+            | ServerIntegratedWithOidc.CloudProvider;
 
-        export type Amazon = Common & {
-            type: "amazon";
-            region: string; //"us-east-1"
-            roleARN: string; //"arn:aws:iam::873875581780:role/test";
-            roleSessionName: string; //"onyxia";
-        };
+        export namespace ServerIntegratedWithOidc {
+            type Common = {
+                oidcParams:
+                    | {
+                          issuerUri?: string;
+                          clientId: string;
+                      }
+                    | undefined;
+                requestedTokenValidityDurationSeconds: number | undefined;
+                doSupportDynamicBucketCreation: boolean;
+                region: string | undefined;
+                roleARN: string | undefined;
+                roleSessionName: string | undefined;
+            };
+
+            export type OnPremise = Common & {
+                isOnPremise: true;
+                url: string;
+            };
+
+            export type CloudProvider = CloudProvider.AmazonWebServices;
+
+            export namespace CloudProvider {
+                type CloudProviderCommon = Common & {
+                    isOnPremise: false;
+                    cloudProvider: "Amazon web services";
+                };
+
+                export type AmazonWebServices = CloudProviderCommon & {
+                    region: string;
+                    roleARN: string;
+                    roleSessionName: string;
+                };
+            }
+        }
     }
 }
