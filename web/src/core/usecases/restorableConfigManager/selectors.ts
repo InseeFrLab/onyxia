@@ -4,14 +4,17 @@ import { name, type RestorableConfig } from "./state";
 import { same } from "evt/tools/inDepth/same";
 import { assert } from "tsafe/assert";
 import { onyxiaFriendlyNameFormFieldPath } from "core/ports/OnyxiaApi";
+import * as projectConfigs from "core/usecases/projectConfigs";
 
 function state(rootState: RootState) {
     return rootState[name];
 }
 
-const restorableConfigs = createSelector(state, state =>
-    [...state.restorableConfigs].reverse()
-);
+const restorableConfigs = (rootState: RootState) => {
+    const { restorableConfigs } =
+        projectConfigs.selectors.selectedProjectConfigs(rootState);
+    return [...restorableConfigs].reverse();
+};
 
 export function readFriendlyName(restorableConfig: RestorableConfig): string {
     const userSetFriendlyName = restorableConfig.formFieldsValueDifferentFromDefault.find(
@@ -35,11 +38,9 @@ const chartIconAndFriendlyNameByRestorableConfigIndex = createSelector(
                 restorableConfigIndex,
                 {
                     "chartIconUrl":
-                        chartIconUrlByChartNameAndCatalogId === undefined
-                            ? undefined
-                            : chartIconUrlByChartNameAndCatalogId[
-                                  restorableConfig.catalogId
-                              ]?.[restorableConfig.chartName],
+                        chartIconUrlByChartNameAndCatalogId[restorableConfig.catalogId]?.[
+                            restorableConfig.chartName
+                        ],
                     "friendlyName": readFriendlyName(restorableConfig)
                 }
             ])

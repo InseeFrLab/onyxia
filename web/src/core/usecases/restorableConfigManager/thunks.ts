@@ -4,56 +4,15 @@ import { same } from "evt/tools/inDepth/same";
 import { assert, type Equals } from "tsafe/assert";
 import type { Thunks } from "core/bootstrap";
 import * as projectConfigs from "core/usecases/projectConfigs";
-import { createUsecaseContextApi } from "redux-clean-architecture";
 import { Chart } from "core/ports/OnyxiaApi";
-import { Mutex } from "async-mutex";
-import {
-    name,
-    actions,
-    type ChartIconUrlByChartNameAndCatalogId,
-    type RestorableConfig
-} from "./state";
-import { readFriendlyName } from "./selectors";
+import { actions, type State, type RestorableConfig } from "./state";
+import { readFriendlyName, protectedSelectors } from "./selectors";
 
 export const protectedThunks = {
     "initialize":
         () =>
         async (...args) => {
-            const [dispatch, , { onyxiaApi, evtAction }] = args;
-
-            const prRestorableConfigs = dispatch(
-                privateThunks.getRemoteRestorableConfigs()
-            );
-
-            evtAction.attach(
-                action =>
-                    action.usecaseName === "projectConfigs" &&
-                    action.actionName === "projectChanged",
-                async () => {
-                    //Making sure we are initialized
-                    await prRestorableConfigs;
-
-                    dispatch(
-                        actions.restorableConfigsUpdated({
-                            "restorableConfigs": []
-                        })
-                    );
-
-                    dispatch(
-                        actions.restorableConfigsUpdated({
-                            "restorableConfigs": await dispatch(
-                                privateThunks.getRemoteRestorableConfigs()
-                            )
-                        })
-                    );
-                }
-            );
-
-            dispatch(
-                actions.initializationCompleted({
-                    "restorableConfigs": await prRestorableConfigs
-                })
-            );
+            const [dispatch, , { onyxiaApi }] = args;
 
             // NOTE: We don't want to block the initialization
             // we can proceed to fetch the icons in parallel.
@@ -61,11 +20,11 @@ export const protectedThunks = {
                 const { catalogs, chartsByCatalogId } =
                     await onyxiaApi.getCatalogsAndCharts();
 
-                const chartIconUrlByChartNameAndCatalogId: ChartIconUrlByChartNameAndCatalogId =
+                const chartIconUrlByChartNameAndCatalogId: State.ChartIconUrlByChartNameAndCatalogId =
                     {};
 
                 catalogs.forEach(({ id: catalogId }) => {
-                    const chartIconUrlByChartName: ChartIconUrlByChartNameAndCatalogId[string] =
+                    const chartIconUrlByChartName: State.ChartIconUrlByChartNameAndCatalogId[string] =
                         {};
 
                     chartsByCatalogId[catalogId].forEach(chart => {
@@ -92,91 +51,13 @@ export const protectedThunks = {
 
             const { restorableConfig } = params;
 
-            const { restorableConfigs } = getState()[name];
+            const restorableConfigs = protectedSelectors.restorableConfigs(getState());
 
             return (
                 restorableConfigs.find(restorableConfig_i =>
                     getAreSameRestorableConfig(restorableConfig_i, restorableConfig)
                 ) !== undefined
             );
-        }
-} satisfies Thunks;
-
-const { getContext } = createUsecaseContextApi(() => ({
-    "mutex": new Mutex()
-}));
-
-const privateThunks = {
-    "getRemoteRestorableConfigs":
-        () =>
-        async (...args): Promise<RestorableConfig[]> => {
-            const [dispatch] = args;
-
-            const restorableConfigsStr = await dispatch(
-                projectConfigs.protectedThunks.getConfigValue({
-                    "key": "restorableConfigsStr"
-                })
-            );
-
-            return restorableConfigsStr === null ? [] : JSON.parse(restorableConfigsStr);
-        },
-    "updateRemoteAndLocalStore":
-        (params: {
-            getNewRestorableConfigs: () => {
-                newRestorableConfigs: RestorableConfig[] | undefined;
-            };
-        }) =>
-        async (...args) => {
-            const [dispatch, getState, rootContext] = args;
-
-            const { getNewRestorableConfigs } = params;
-
-            const { mutex } = getContext(rootContext);
-
-            await mutex.runExclusive(async () => {
-                {
-                    const currentRemoteRestorableConfigs = await dispatch(
-                        privateThunks.getRemoteRestorableConfigs()
-                    );
-
-                    const currentLocalRestorableConfigs =
-                        getState()[name].restorableConfigs;
-
-                    if (
-                        !same(
-                            currentRemoteRestorableConfigs,
-                            currentLocalRestorableConfigs
-                        )
-                    ) {
-                        alert(
-                            [
-                                "Another project member has updated the restorable",
-                                "configs, can't save, please refresh the page and try again."
-                            ].join(" ")
-                        );
-                        return;
-                    }
-                }
-
-                const { newRestorableConfigs } = getNewRestorableConfigs();
-
-                if (newRestorableConfigs === undefined) {
-                    return undefined;
-                }
-
-                await dispatch(
-                    projectConfigs.protectedThunks.changeConfigValue({
-                        "key": "restorableConfigsStr",
-                        "value": JSON.stringify(newRestorableConfigs)
-                    })
-                );
-
-                dispatch(
-                    actions.restorableConfigsUpdated({
-                        "restorableConfigs": newRestorableConfigs
-                    })
-                );
-            });
         }
 } satisfies Thunks;
 
@@ -188,50 +69,48 @@ export const thunks = {
 
             const { restorableConfig } = params;
 
+            const restorableConfigs = protectedSelectors.restorableConfigs(getState());
+
+            const restorableConfigWithSameFriendlyName = (() => {
+                const results = restorableConfigs.filter(
+                    restorableConfig_i =>
+                        readFriendlyName(restorableConfig_i) ===
+                        readFriendlyName(restorableConfig)
+                );
+
+                if (results.length === 0) {
+                    return undefined;
+                }
+
+                assert(results.length === 1);
+
+                return results[0];
+            })();
+
+            // NOTE: In case of double call, as we don't provide a "loading state"
+            if (
+                restorableConfigWithSameFriendlyName !== undefined &&
+                getAreSameRestorableConfig(
+                    restorableConfig,
+                    restorableConfigWithSameFriendlyName
+                )
+            ) {
+                return;
+            }
+
+            const newRestorableConfigs =
+                restorableConfigWithSameFriendlyName === undefined
+                    ? [...restorableConfigs, restorableConfig]
+                    : restorableConfigs.map(restorableConfig_i =>
+                          restorableConfig_i === restorableConfigWithSameFriendlyName
+                              ? restorableConfig
+                              : restorableConfig_i
+                      );
+
             await dispatch(
-                privateThunks.updateRemoteAndLocalStore({
-                    "getNewRestorableConfigs": () => {
-                        const { restorableConfigs } = getState()[name];
-
-                        const restorableConfigWithSameFriendlyName = (() => {
-                            const results = restorableConfigs.filter(
-                                restorableConfig_i =>
-                                    readFriendlyName(restorableConfig_i) ===
-                                    readFriendlyName(restorableConfig)
-                            );
-
-                            if (results.length === 0) {
-                                return undefined;
-                            }
-
-                            assert(results.length === 1);
-
-                            return results[0];
-                        })();
-
-                        // NOTE: In case of double call, as we don't provide a "loading state"
-                        if (
-                            restorableConfigWithSameFriendlyName !== undefined &&
-                            getAreSameRestorableConfig(
-                                restorableConfig,
-                                restorableConfigWithSameFriendlyName
-                            )
-                        ) {
-                            return { "newRestorableConfigs": undefined };
-                        }
-
-                        const newRestorableConfigs =
-                            restorableConfigWithSameFriendlyName === undefined
-                                ? [...restorableConfigs, restorableConfig]
-                                : restorableConfigs.map(restorableConfig_i =>
-                                      restorableConfig_i ===
-                                      restorableConfigWithSameFriendlyName
-                                          ? restorableConfig
-                                          : restorableConfig_i
-                                  );
-
-                        return { newRestorableConfigs };
-                    }
+                projectConfigs.protectedThunks.updateValue({
+                    "key": "restorableConfigs",
+                    "value": newRestorableConfigs
                 })
             );
         },
@@ -242,30 +121,26 @@ export const thunks = {
 
             const { restorableConfig } = params;
 
+            const restorableConfigs = protectedSelectors.restorableConfigs(getState());
+
+            const indexOfRestorableConfigToDelete = restorableConfigs.findIndex(
+                restorableConfig_i =>
+                    getAreSameRestorableConfig(restorableConfig_i, restorableConfig)
+            );
+
+            // NOTE: In case of double call, as we don't provide a "loading state"
+            if (indexOfRestorableConfigToDelete === -1) {
+                return;
+            }
+
+            const newRestorableConfigs = restorableConfigs.filter(
+                (_, index) => index !== indexOfRestorableConfigToDelete
+            );
+
             await dispatch(
-                privateThunks.updateRemoteAndLocalStore({
-                    "getNewRestorableConfigs": () => {
-                        const { restorableConfigs } = getState()[name];
-
-                        const indexOfRestorableConfigToDelete =
-                            restorableConfigs.findIndex(restorableConfig_i =>
-                                getAreSameRestorableConfig(
-                                    restorableConfig_i,
-                                    restorableConfig
-                                )
-                            );
-
-                        // NOTE: In case of double call, as we don't provide a "loading state"
-                        if (indexOfRestorableConfigToDelete === -1) {
-                            return { "newRestorableConfigs": undefined };
-                        }
-
-                        const newRestorableConfigs = restorableConfigs.filter(
-                            (_, index) => index !== indexOfRestorableConfigToDelete
-                        );
-
-                        return { newRestorableConfigs };
-                    }
+                projectConfigs.protectedThunks.updateValue({
+                    "key": "restorableConfigs",
+                    "value": newRestorableConfigs
                 })
             );
         }

@@ -4,14 +4,15 @@ import {
     createObjectThatThrowsIfAccessed
 } from "redux-clean-architecture";
 
-type State = {
-    restorableConfigs: RestorableConfig[];
-    chartIconUrlByChartNameAndCatalogId: ChartIconUrlByChartNameAndCatalogId | undefined;
+export type State = {
+    chartIconUrlByChartNameAndCatalogId: State.ChartIconUrlByChartNameAndCatalogId;
 };
 
-export type ChartIconUrlByChartNameAndCatalogId = {
-    [catalogId: string]: { [chartName: string]: string | undefined };
-};
+export namespace State {
+    export type ChartIconUrlByChartNameAndCatalogId = {
+        [catalogId: string]: { [chartName: string]: string | undefined };
+    };
+}
 
 export type RestorableConfig = {
     catalogId: string;
@@ -31,29 +32,13 @@ export const { reducer, actions } = createUsecaseActions({
         ].join(" ")
     }),
     "reducers": {
-        "initializationCompleted": (
-            _,
-            {
-                payload
-            }: {
-                payload: {
-                    restorableConfigs: RestorableConfig[];
-                };
-            }
-        ) => {
-            const { restorableConfigs } = payload;
-            return {
-                restorableConfigs,
-                "chartIconUrlByChartNameAndCatalogId": undefined
-            };
-        },
         "chartIconsFetched": (
             state,
             {
                 payload
             }: {
                 payload: {
-                    chartIconUrlByChartNameAndCatalogId: ChartIconUrlByChartNameAndCatalogId;
+                    chartIconUrlByChartNameAndCatalogId: State.ChartIconUrlByChartNameAndCatalogId;
                 };
             }
         ) => {
@@ -61,20 +46,6 @@ export const { reducer, actions } = createUsecaseActions({
 
             state.chartIconUrlByChartNameAndCatalogId =
                 chartIconUrlByChartNameAndCatalogId;
-        },
-        "restorableConfigsUpdated": (
-            state,
-            {
-                payload
-            }: {
-                payload: {
-                    restorableConfigs: RestorableConfig[];
-                };
-            }
-        ) => {
-            const { restorableConfigs } = payload;
-
-            state.restorableConfigs = restorableConfigs;
         }
     }
 });
