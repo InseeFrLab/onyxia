@@ -19,8 +19,6 @@ import * as userAuthentication from "../userAuthentication";
 import * as deploymentRegionSelection from "core/usecases/deploymentRegionSelection";
 import * as projectSelection from "core/usecases/projectSelection";
 import * as projectConfigs from "core/usecases/projectConfigs";
-import { amazonS3Url } from "core/adapters/s3Client/utils/amazonS3Url";
-import { defaultS3Region } from "core/adapters/s3Client/utils/defaultS3Region";
 import { bucketNameAndObjectNameFromS3Path } from "core/adapters/s3Client/utils/bucketNameAndObjectNameFromS3Path";
 import { parseUrl } from "core/tools/parseUrl";
 import { typeGuard } from "tsafe/typeGuard";
@@ -252,7 +250,7 @@ export const thunks = {
                                 };
                             }
 
-                            if (region.s3Params.serverIntegratedWithOidc === undefined) {
+                            if (region.s3Params.sts === undefined) {
                                 return {
                                     "AWS_ACCESS_KEY_ID": "",
                                     "AWS_SECRET_ACCESS_KEY": "",
@@ -268,19 +266,7 @@ export const thunks = {
                                 getState()
                             );
 
-                            const { host, port = 443 } = parseUrl(
-                                region.s3Params.serverIntegratedWithOidc.isOnPremise
-                                    ? region.s3Params.serverIntegratedWithOidc.url
-                                    : (() => {
-                                          switch (
-                                              region.s3Params.serverIntegratedWithOidc
-                                                  .cloudProvider
-                                          ) {
-                                              case "Amazon web services":
-                                                  return amazonS3Url;
-                                          }
-                                      })()
-                            );
+                            const { host, port = 443 } = parseUrl(region.s3Params.url);
 
                             return {
                                 ...(await (async () => {
@@ -307,8 +293,7 @@ export const thunks = {
                                 })()),
                                 "AWS_BUCKET_NAME": project.bucket,
                                 "AWS_DEFAULT_REGION":
-                                    region.s3Params.serverIntegratedWithOidc.region ??
-                                    defaultS3Region,
+                                    region.s3Params.region ?? "us-east-1",
                                 "AWS_S3_ENDPOINT": host,
                                 port
                             };

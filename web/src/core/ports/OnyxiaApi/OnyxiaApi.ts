@@ -63,14 +63,6 @@ export type OnyxiaApi = {
 
     helmUninstall: (params: { helmReleaseName: string }) => Promise<void>;
 
-    createAwsBucket: (params: {
-        awsRegion: string;
-        accessKey: string;
-        secretKey: string;
-        sessionToken: string;
-        bucketName: string;
-    }) => Promise<void>;
-
     onboard: () => Promise<void>;
 
     getUser: () => Promise<User>;

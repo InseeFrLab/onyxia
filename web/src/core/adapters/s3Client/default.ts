@@ -3,95 +3,51 @@ import type * as Minio from "minio";
 import type { ReturnType } from "tsafe";
 import { S3Client } from "core/ports/S3Client";
 import { getNewlyRequestedOrCachedTokenFactory } from "core/tools/getNewlyRequestedOrCachedToken";
-import { assert, type Equals } from "tsafe/assert";
+import { assert } from "tsafe/assert";
 import { Deferred } from "evt/tools/Deferred";
 import { parseUrl } from "core/tools/parseUrl";
 import fileReaderStream from "filereader-stream";
 import type { Oidc } from "core/ports/Oidc";
 import { addParamToUrl } from "powerhooks/tools/urlSearchParams";
-import { amazonS3Url } from "./utils/amazonS3Url";
-import { defaultS3Region } from "./utils/defaultS3Region";
 import { bucketNameAndObjectNameFromS3Path } from "./utils/bucketNameAndObjectNameFromS3Path";
 import { exclude } from "tsafe/exclude";
 
 export type ParamsOfCreateS3Client =
-    | ParamsOfCreateS3Client.AuthWithProvidedAccount
-    | ParamsOfCreateS3Client.AuthWithVolatileAccount;
+    | ParamsOfCreateS3Client.NoSts
+    | ParamsOfCreateS3Client.Sts;
 
 export namespace ParamsOfCreateS3Client {
-    export type AuthWithProvidedAccount = {
-        authWith: "provided S3 account credentials";
+    export type Common = {
         url: string;
+    };
+
+    export type NoSts = Common & {
+        isStsEnabled: false;
         region: string;
         accessKeyId: string;
         secretAccessKey: string;
         sessionToken: string | undefined;
     };
 
-    export type AuthWithVolatileAccount =
-        | AuthWithVolatileAccount.OnPremise
-        | AuthWithVolatileAccount.CloudProvider;
-
-    export namespace AuthWithVolatileAccount {
-        export type Common = {
-            authWith: "volatile S3 Account dynamically created with OIDC";
-            oidc: Oidc.LoggedIn;
-            requestedTokenValidityDurationSeconds: number | undefined;
-            nameOfBucketToCreateIfNotExist: string | undefined;
-            region: string | undefined;
-            roleARN: string | undefined;
-            roleSessionName: string | undefined;
-        };
-
-        export type OnPremise = Common & {
-            isOnPremise: true;
-            url: string;
-        };
-
-        export type CloudProvider = CloudProvider.AmazonWebServices;
-
-        export namespace CloudProvider {
-            type CloudProviderCommon = Common & {
-                isOnPremise: false;
-                cloudProvider: "Amazon web services";
-            };
-
-            export type AmazonWebServices = CloudProviderCommon & {
-                region: string;
-                roleARN: string;
-                roleSessionName: string;
-                createAwsBucket: (params: {
-                    region: string;
-                    accessKey: string;
-                    secretKey: string;
-                    sessionToken: string;
-                    bucketName: string;
-                }) => Promise<void>;
-            };
-        }
-    }
+    export type Sts = Common & {
+        isStsEnabled: true;
+        region: string | undefined;
+        oidc: Oidc.LoggedIn;
+        durationSeconds: number | undefined;
+        role:
+            | {
+                  roleARN: string;
+                  roleSessionName: string;
+              }
+            | undefined;
+        nameOfBucketToCreateIfNotExist: string | undefined;
+    };
 }
 
 export function createS3Client(params: ParamsOfCreateS3Client): S3Client {
     const { getNewlyRequestedOrCachedToken, clearCachedToken, getMinioClient } = (() => {
-        const url: string = (() => {
-            switch (params.authWith) {
-                case "provided S3 account credentials":
-                    return params.url;
-                case "volatile S3 Account dynamically created with OIDC":
-                    return params.isOnPremise
-                        ? params.url
-                        : (() => {
-                              switch (params.cloudProvider) {
-                                  case "Amazon web services":
-                                      return amazonS3Url;
-                              }
-                          })();
-            }
-        })();
-
         const { getNewlyRequestedOrCachedToken, clearCachedToken } = (() => {
-            if (params.authWith === "provided S3 account credentials") {
+            if (!params.isStsEnabled) {
                 const tokens = {
                     "accessKeyId": params.accessKeyId,
                     "secretAccessKey": params.secretAccessKey,
@@ -110,24 +66,7 @@ export function createS3Client(params: ParamsOfCreateS3Client): S3Client {
                 };
             }
 
-            assert<
-                Equals<
-                    typeof params.authWith,
-                    "volatile S3 Account dynamically created with OIDC"
-                >
-            >();
-
             const { oidc } = params;
-
-            const requestedTokenValidityDurationSeconds: number =
-                params.requestedTokenValidityDurationSeconds ?? params.isOnPremise
-                    ? 7 * 24 * 3600
-                    : (() => {
-                          switch (params.cloudProvider) {
-                              case "Amazon web services":
-                                  return 12 * 3600; // AWS STS session token max duration is 12 hours
-                          }
-                      })();
 
             const { getNewlyRequestedOrCachedToken, clearCachedToken } =
                 getNewlyRequestedOrCachedTokenFactory({
@@ -141,7 +80,7 @@ export function createS3Client(params: ParamsOfCreateS3Client): S3Client {
 
                         const { data } = await axios
                             .create({
-                                "baseURL": url,
+                                "baseURL": params.url,
                                 "headers": {
                                     "Accept": "*/*"
                                 }
@@ -152,10 +91,15 @@ export function createS3Client(params: ParamsOfCreateS3Client): S3Client {
                                         "Action": "AssumeRoleWithWebIdentity",
                                         "WebIdentityToken": oidc.getTokens().accessToken,
                                         "DurationSeconds":
-                                            requestedTokenValidityDurationSeconds,
+                                            params.durationSeconds ?? 7 * 24 * 3600,
                                         "Version": "2011-06-15",
-                                        "RoleSessionName": params.roleSessionName,
-                                        "RoleArn": params.roleARN
+                                        ...(params.role === undefined
+                                            ? {}
+                                            : {
+                                                  "RoleSessionName":
+                                                      params.role.roleSessionName,
+                                                  "RoleArn": params.role.roleARN
+                                              })
                                     })
                                         .map(([key, value]) =>
                                             value === undefined
@@ -208,22 +152,6 @@ export function createS3Client(params: ParamsOfCreateS3Client): S3Client {
             return { getNewlyRequestedOrCachedToken, clearCachedToken };
         })();
 
-        const region: string = (() => {
-            switch (params.authWith) {
-                case "provided S3 account credentials":
-                    return params.region;
-                case "volatile S3 Account dynamically created with OIDC":
-                    return params.isOnPremise
-                        ? params.region ?? defaultS3Region
-                        : (() => {
-                              switch (params.cloudProvider) {
-                                  case "Amazon web services":
-                                      return params.region;
-                              }
-                          })();
-            }
-        })();
-
         const { getMinioClient } = (() => {
             const minioClientByTokens = new WeakMap<
                 { accessKeyId: string },
@@ -244,7 +172,7 @@ export function createS3Client(params: ParamsOfCreateS3Client): S3Client {
                     };
                 }
 
-                const { host, port = 443 } = parseUrl(url);
+                const { host, port = 443 } = parseUrl(params.url);
 
                 import_nodejs_buffer_polyfill: {
                     if (hasBufferBeenPolyfilled) {
@@ -267,7 +195,7 @@ export function createS3Client(params: ParamsOfCreateS3Client): S3Client {
                     "accessKey": tokens.accessKeyId,
                     "secretKey": tokens.secretAccessKey,
                     "sessionToken": tokens.sessionToken,
-                    region
+                    "region": params.region ?? "us-east-1"
                 });
 
                 minioClientByTokens.set(tokens, minioClient);
@@ -281,16 +209,9 @@ export function createS3Client(params: ParamsOfCreateS3Client): S3Client {
         let hasBucketBeenCreated = false;
 
         async function createBucketIfApplicableAndNotExist() {
-            if (params.authWith === "provided S3 account credentials") {
+            if (!params.isStsEnabled) {
                 return;
             }
-
-            assert<
-                Equals<
-                    typeof params.authWith,
-                    "volatile S3 Account dynamically created with OIDC"
-                >
-            >();
 
             const { nameOfBucketToCreateIfNotExist } = params;
 
@@ -302,73 +223,31 @@ export function createS3Client(params: ParamsOfCreateS3Client): S3Client {
                 return;
             }
 
-            const { minioClient, tokens } = await getMinioClient();
+            const { minioClient } = await getMinioClient();
 
-            let doExist: boolean;
-
-            try {
-                doExist = await new Promise<boolean>((resolve, reject) =>
-                    minioClient.bucketExists(
-                        nameOfBucketToCreateIfNotExist,
-                        (error, doExist) => {
-                            if (error !== null) {
-                                reject(error);
-                                return;
-                            }
-                            resolve(doExist);
+            const doExist = await new Promise<boolean>((resolve, reject) =>
+                minioClient.bucketExists(
+                    nameOfBucketToCreateIfNotExist,
+                    (error, doExist) => {
+                        if (error !== null) {
+                            reject(error);
+                            return;
                         }
-                    )
-                );
-            } catch (error) {
-                const isCorsError = (function isCorsError(error: unknown): boolean {
-                    console.log(`TODO: Test if actually a CORS error`, error);
-                    return true;
-                })(error);
+                        resolve(doExist);
+                    }
+                )
+            );
 
-                if (!isCorsError) {
-                    throw error;
-                }
-                console.log(
-                    [
-                        `You can ignore the CORS error above, it mean that`,
-                        `the ${params.nameOfBucketToCreateIfNotExist} bucket doesn't exist yet.`,
-                        `and we need to create it`
-                    ].join(" ")
-                );
-
-                doExist = false;
-            }
-
-            if (doExist) {
+            if (!doExist) {
                 hasBucketBeenCreated = true;
                 return;
             }
 
-            if (params.isOnPremise) {
-                await new Promise<void>((resolve, reject) =>
-                    minioClient.makeBucket(nameOfBucketToCreateIfNotExist, error =>
-                        error !== null ? reject(error) : resolve()
-                    )
-                );
-            } else {
-                // Because we are in volatile account mode
-                assert(tokens.sessionToken !== undefined);
-
-                switch (params.cloudProvider) {
-                    case "Amazon web services":
-                        await params.createAwsBucket({
-                            "accessKey": tokens.accessKeyId,
-                            "secretKey": tokens.secretAccessKey,
-                            "sessionToken": tokens.sessionToken,
-                            region,
-                            "bucketName": nameOfBucketToCreateIfNotExist
-                        });
-
-                        break;
-                    default:
-                        assert<Equals<typeof params.cloudProvider, never>>();
-                }
-            }
+            await new Promise<void>((resolve, reject) =>
+                minioClient.makeBucket(nameOfBucketToCreateIfNotExist, error =>
+                    error !== null ? reject(error) : resolve()
+                )
+            );
 
             hasBucketBeenCreated = true;
         }
