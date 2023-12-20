@@ -114,10 +114,8 @@ export async function bootstrapCore(
         return onyxiaApi;
     })();
 
-    let oidcParams: { issuerUri: string; clientId: string } | undefined = undefined;
-
     oidc = await (async () => {
-        oidcParams = (await onyxiaApi.getAvailableRegionsAndOidcParams()).oidcParams;
+        const { oidcParams } = await onyxiaApi.getAvailableRegionsAndOidcParams();
 
         if (oidcParams === undefined) {
             const { createOidc } = await import("core/adapters/oidc/mock");
@@ -138,12 +136,8 @@ export async function bootstrapCore(
         "paramsOfBootstrapCore": params,
         oidc,
         onyxiaApi,
-        "secretsManager": createObjectThatThrowsIfAccessed<SecretsManager>({
-            "debugMessage": "secretsManager is not yet initialized"
-        }),
-        "s3Client": createObjectThatThrowsIfAccessed<S3Client>({
-            "debugMessage": "s3 client is not yet initialized"
-        }),
+        "secretsManager": createObjectThatThrowsIfAccessed<SecretsManager>(),
+        "s3Client": createObjectThatThrowsIfAccessed<S3Client>(),
         "sqlOlap": createDuckDbSqlOlap()
     };
 
@@ -163,36 +157,33 @@ export async function bootstrapCore(
             break init_secrets_manager;
         }
 
-        context.secretsManager = await (async () => {
+        /* prettier-ignore */
+        const deploymentRegion = usecases.deploymentRegionSelection.selectors.currentDeploymentRegion(getState());
+
+        if (deploymentRegion.vault === undefined) {
             /* prettier-ignore */
-            const deploymentRegion = usecases.deploymentRegionSelection.selectors.currentDeploymentRegion(getState());
+            const { createSecretManager } = await import("core/adapters/secretManager/mock");
 
-            if (deploymentRegion.vault === undefined) {
-                /* prettier-ignore */
-                const { createSecretManager } = await import("core/adapters/secretManager/mock");
+            context.secretsManager = createSecretManager();
+            break init_secrets_manager;
+        }
 
-                return createSecretManager();
-            }
+        const [{ createSecretManager }, { createOidcOrFallback }] = await Promise.all([
+            import("core/adapters/secretManager/default"),
+            import("core/adapters/oidc/utils/createOidcOrFallback")
+        ]);
 
-            const [{ createSecretManager }, { createOidcOrFallback }] = await Promise.all(
-                [
-                    import("core/adapters/secretManager/default"),
-                    import("core/adapters/oidc/utils/createOidcOrFallback")
-                ]
-            );
-
-            return createSecretManager({
-                "kvEngine": deploymentRegion.vault.kvEngine,
-                "role": deploymentRegion.vault.role,
-                "url": deploymentRegion.vault.url,
-                "authPath": deploymentRegion.vault.authPath,
-                "oidc": await createOidcOrFallback({
-                    "oidcAdapterImplementationToUseIfNotFallingBack": "default",
-                    "oidcParams": deploymentRegion.vault.oidcParams,
-                    "fallbackOidc": oidcParams === undefined ? undefined : oidc
-                })
-            });
-        })();
+        context.secretsManager = await createSecretManager({
+            "kvEngine": deploymentRegion.vault.kvEngine,
+            "role": deploymentRegion.vault.role,
+            "url": deploymentRegion.vault.url,
+            "authPath": deploymentRegion.vault.authPath,
+            "oidc": await createOidcOrFallback({
+                "oidcAdapterImplementationToUseIfNotFallingBack": "default",
+                "oidcParams": deploymentRegion.vault.oidcParams,
+                "fallbackOidc": oidc
+            })
+        });
     }
 
     if (oidc.isUserLoggedIn) {
@@ -236,7 +227,7 @@ export async function bootstrapCore(
                 : await createOidcOrFallback({
                       "oidcAdapterImplementationToUseIfNotFallingBack": "default",
                       "oidcParams": deploymentRegion.s3Params.sts.oidcParams,
-                      "fallbackOidc": oidcParams === undefined ? undefined : oidc
+                      "fallbackOidc": oidc
                   });
 
         evtAction
