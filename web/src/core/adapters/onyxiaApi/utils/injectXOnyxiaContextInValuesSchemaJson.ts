@@ -95,7 +95,7 @@ function injectXOnyxiaContextInValuesSchemaJsonRec(params: {
 
             if (typeof overwriteDefaultWith === "string") {
                 full_substitution: {
-                    const match = overwriteDefaultWith.match(/^{{(.+)}}$/);
+                    const match = overwriteDefaultWith.match(/^{{([^}]+)}}$/);
 
                     if (match === null) {
                         break full_substitution;
