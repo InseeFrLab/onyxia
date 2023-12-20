@@ -12,11 +12,9 @@ import type { SecretsManager } from "core/ports/SecretsManager";
 import type { Oidc } from "core/ports/Oidc";
 import type { S3Client } from "core/ports/S3Client";
 import type { Language } from "core/ports/OnyxiaApi/Language";
-import type { ParamsOfCreateS3Client } from "core/adapters/s3Client/default";
 import { createDuckDbSqlOlap } from "core/adapters/sqlOlap/default";
 import { pluginSystemInitCore } from "pluginSystem";
 import { assert } from "tsafe/assert";
-import { id } from "tsafe/id";
 import { onlyIfChanged } from "evt/operators";
 
 type ParamsOfBootstrapCore = {
@@ -216,13 +214,11 @@ export async function bootstrapCore(
                 );
 
             const oidcForS3 =
-                deploymentRegion.s3Params.serverIntegratedWithOidc === undefined
+                deploymentRegion.s3Params.sts === undefined
                     ? undefined
                     : await createOidcOrFallback({
                           "oidcAdapterImplementationToUseIfNotFallingBack": "default",
-                          "oidcParams":
-                              deploymentRegion.s3Params.serverIntegratedWithOidc
-                                  .oidcParams,
+                          "oidcParams": deploymentRegion.s3Params.sts.oidcParams,
                           "fallbackOidc": oidcParams === undefined ? undefined : oidc
                       });
 
@@ -248,15 +244,15 @@ export async function bootstrapCore(
                     return [
                         {
                             customS3Configs,
-                            "projectBucketName": project.bucket
+                            "group": project.group
                         }
                     ];
                 })
                 .pipe(onlyIfChanged())
-                .attach(({ customS3Configs, projectBucketName }) => {
-                    init_with_region_params: {
-                        if (customS3Configs.indexForXOnyxia === undefined) {
-                            break init_with_region_params;
+                .attach(({ customS3Configs, group }) => {
+                    init_with_project_params: {
+                        if (customS3Configs.indexForExplorer === undefined) {
+                            break init_with_project_params;
                         }
 
                         const {
@@ -267,11 +263,11 @@ export async function bootstrapCore(
                             sessionToken
                         } =
                             customS3Configs.availableConfigs[
-                                customS3Configs.indexForXOnyxia
+                                customS3Configs.indexForExplorer
                             ];
 
                         context.s3Client = createS3Client({
-                            "authWith": "provided S3 account credentials",
+                            "isStsEnabled": false,
                             url,
                             region,
                             accessKeyId,
@@ -282,78 +278,36 @@ export async function bootstrapCore(
                         return;
                     }
 
-                    const deploymentRegion =
-                        usecases.deploymentRegionSelection.selectors.currentDeploymentRegion(
-                            getState()
-                        );
-
-                    if (
-                        deploymentRegion.s3Params.serverIntegratedWithOidc === undefined
-                    ) {
+                    if (deploymentRegion.s3Params.sts === undefined) {
+                        context.s3Client = createObjectThatThrowsIfAccessed<S3Client>();
                         return;
                     }
 
                     assert(oidcForS3 !== undefined);
 
-                    const common: ParamsOfCreateS3Client.AuthWithVolatileAccount.Common =
-                        {
-                            "authWith":
-                                "volatile S3 Account dynamically created with OIDC",
-                            "oidc": oidcForS3,
-                            "requestedTokenValidityDurationSeconds":
-                                deploymentRegion.s3Params.serverIntegratedWithOidc
-                                    .requestedTokenValidityDurationSeconds,
-                            "nameOfBucketToCreateIfNotExist": deploymentRegion.s3Params
-                                .serverIntegratedWithOidc.doSupportDynamicBucketCreation
-                                ? projectBucketName
-                                : undefined,
-                            "region":
-                                deploymentRegion.s3Params.serverIntegratedWithOidc.region,
-                            "roleARN":
-                                deploymentRegion.s3Params.serverIntegratedWithOidc
-                                    .roleARN,
-                            "roleSessionName":
-                                deploymentRegion.s3Params.serverIntegratedWithOidc
-                                    .roleSessionName
-                        };
+                    const { username } = dispatch(
+                        usecases.userAuthentication.thunks.getUser()
+                    );
 
-                    const paramsOfCreateS3Client = deploymentRegion.s3Params
-                        .serverIntegratedWithOidc.isOnPremise
-                        ? id<ParamsOfCreateS3Client.AuthWithVolatileAccount.OnPremise>({
-                              ...common,
-                              "isOnPremise": true,
-                              "url": deploymentRegion.s3Params.serverIntegratedWithOidc
-                                  .url
-                          })
-                        : (() => {
-                              switch (
-                                  deploymentRegion.s3Params.serverIntegratedWithOidc
-                                      .cloudProvider
-                              ) {
-                                  case "Amazon web services":
-                                      return id<ParamsOfCreateS3Client.AuthWithVolatileAccount.CloudProvider.AmazonWebServices>(
-                                          {
-                                              ...common,
-                                              "isOnPremise": false,
-                                              "cloudProvider": "Amazon web services",
-                                              "region":
-                                                  deploymentRegion.s3Params
-                                                      .serverIntegratedWithOidc.region,
-                                              "roleARN":
-                                                  deploymentRegion.s3Params
-                                                      .serverIntegratedWithOidc.roleARN,
-                                              "roleSessionName":
-                                                  deploymentRegion.s3Params
-                                                      .serverIntegratedWithOidc
-                                                      .roleSessionName,
-                                              "createAwsBucket":
-                                                  context.onyxiaApi.createAwsBucket
-                                          }
-                                      );
-                              }
-                          })();
+                    context.s3Client = createS3Client({
+                        "isStsEnabled": true,
+                        "url": deploymentRegion.s3Params.url,
+                        "region": deploymentRegion.s3Params.region,
+                        "oidc": oidcForS3,
+                        "durationSeconds": deploymentRegion.s3Params.sts.durationSeconds,
+                        "role": deploymentRegion.s3Params.sts.role,
+                        "nameOfBucketToCreateIfNotExist": (() => {
+                            const { workingDirectory } = deploymentRegion.s3Params;
 
-                    context.s3Client = createS3Client(paramsOfCreateS3Client);
+                            if (workingDirectory.type === "single bucket") {
+                                return undefined;
+                            }
+
+                            return group === undefined
+                                ? `${workingDirectory.bucketNamePrefix}${username}`
+                                : `${workingDirectory.bucketNamePrefix}${group}`;
+                        })()
+                    });
                 });
         }
 
