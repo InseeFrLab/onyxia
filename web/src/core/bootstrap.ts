@@ -59,7 +59,7 @@ export async function bootstrapCore(
 
         const { createOnyxiaApi } = await import("core/adapters/onyxiaApi/default");
 
-        const onyxiaApi = createOnyxiaApi({
+        return createOnyxiaApi({
             "url": apiUrl,
             "getOidcAccessToken": () => {
                 if (oidc === undefined) {
@@ -110,8 +110,6 @@ export async function bootstrapCore(
                 return { id, group };
             }
         });
-
-        return onyxiaApi;
     })();
 
     oidc = await (async () => {
