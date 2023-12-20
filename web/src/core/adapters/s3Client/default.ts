@@ -14,9 +14,11 @@ import { defaultS3Region } from "./utils/defaultS3Region";
 import { bucketNameAndObjectNameFromS3Path } from "./utils/bucketNameAndObjectNameFromS3Path";
 import { exclude } from "tsafe/exclude";
 
-export type Params = Params.AuthWithProvidedAccount | Params.AuthWithVolatileAccount;
+export type ParamsOfCreateS3Client =
+    | ParamsOfCreateS3Client.AuthWithProvidedAccount
+    | ParamsOfCreateS3Client.AuthWithVolatileAccount;
 
-export namespace Params {
+export namespace ParamsOfCreateS3Client {
     export type AuthWithProvidedAccount = {
         authWith: "provided S3 account credentials";
         url: string;
@@ -31,11 +33,11 @@ export namespace Params {
         | AuthWithVolatileAccount.CloudProvider;
 
     export namespace AuthWithVolatileAccount {
-        type Common = {
+        export type Common = {
             authWith: "volatile S3 Account dynamically created with OIDC";
             oidc: Oidc.LoggedIn;
             requestedTokenValidityDurationSeconds: number | undefined;
-            nameOfBucketToCreateIfNotExist: string;
+            nameOfBucketToCreateIfNotExist: string | undefined;
             region: string | undefined;
             roleARN: string | undefined;
             roleSessionName: string | undefined;
@@ -70,7 +72,7 @@ export namespace Params {
     }
 }
 
-export async function createS3Client(params: Params): Promise<S3Client> {
+export function createS3Client(params: ParamsOfCreateS3Client): S3Client {
     const { getNewlyRequestedOrCachedToken, clearCachedToken, getMinioClient } = (() => {
         const url: string = (() => {
             switch (params.authWith) {
@@ -290,6 +292,12 @@ export async function createS3Client(params: Params): Promise<S3Client> {
                 >
             >();
 
+            const { nameOfBucketToCreateIfNotExist } = params;
+
+            if (nameOfBucketToCreateIfNotExist === undefined) {
+                return;
+            }
+
             if (hasBucketBeenCreated) {
                 return;
             }
@@ -301,7 +309,7 @@ export async function createS3Client(params: Params): Promise<S3Client> {
             try {
                 doExist = await new Promise<boolean>((resolve, reject) =>
                     minioClient.bucketExists(
-                        params.nameOfBucketToCreateIfNotExist,
+                        nameOfBucketToCreateIfNotExist,
                         (error, doExist) => {
                             if (error !== null) {
                                 reject(error);
@@ -338,7 +346,7 @@ export async function createS3Client(params: Params): Promise<S3Client> {
 
             if (params.isOnPremise) {
                 await new Promise<void>((resolve, reject) =>
-                    minioClient.makeBucket(params.nameOfBucketToCreateIfNotExist, error =>
+                    minioClient.makeBucket(nameOfBucketToCreateIfNotExist, error =>
                         error !== null ? reject(error) : resolve()
                     )
                 );
@@ -353,7 +361,7 @@ export async function createS3Client(params: Params): Promise<S3Client> {
                             "secretKey": tokens.secretAccessKey,
                             "sessionToken": tokens.sessionToken,
                             region,
-                            "bucketName": params.nameOfBucketToCreateIfNotExist
+                            "bucketName": nameOfBucketToCreateIfNotExist
                         });
 
                         break;
