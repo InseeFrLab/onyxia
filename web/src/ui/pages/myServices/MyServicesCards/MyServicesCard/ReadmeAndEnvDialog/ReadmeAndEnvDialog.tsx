@@ -16,7 +16,7 @@ type Props = {
     evtAction: NonPostableEvt<"SHOW ENV" | "SHOW POST INSTALL INSTRUCTIONS">;
     startTime: number | undefined;
     openUrl: string | undefined;
-    getProjectServicePassword: () => Promise<string>;
+    projectServicePassword: string;
     getPostInstallInstructions: (() => string) | undefined;
     getEnv: () => Record<string, string>;
 };
@@ -26,7 +26,7 @@ export function ReadmeAndEnvDialog(props: Props) {
         evtAction,
         startTime,
         openUrl,
-        getProjectServicePassword,
+        projectServicePassword,
         getPostInstallInstructions,
         getEnv
     } = props;
@@ -59,13 +59,13 @@ export function ReadmeAndEnvDialog(props: Props) {
                 async () => {
                     setDialogDesc({
                         "dialogShowingWhat": "postInstallInstructions",
-                        "projectServicePassword": await getProjectServicePassword(),
+                        projectServicePassword,
                         "postInstallInstructions": getPostInstallInstructions?.() ?? ""
                     });
                 }
             );
         },
-        [evtAction]
+        [evtAction, projectServicePassword]
     );
 
     const onDialogClose = useConstCallback(() => setDialogDesc(undefined));
@@ -106,7 +106,6 @@ export function ReadmeAndEnvDialog(props: Props) {
                             <Button variant="secondary" onClick={onDialogClose}>
                                 {t("return")}
                             </Button>
-
                             {startTime === undefined ? (
                                 <CircularProgress
                                     className={classes.circularProgress}

@@ -35,7 +35,7 @@ export type Props = {
     onRequestDelete: (() => void) | undefined;
     getPoseInstallInstructions: (() => string) | undefined;
     getEnv: () => Record<string, string>;
-    getProjectServicePassword: () => Promise<string>;
+    projectServicePassword: string;
     openUrl: string | undefined;
     monitoringUrl: string | undefined;
     /** undefined when the service is not yey launched */
@@ -56,7 +56,7 @@ export const MyServicesCard = memo((props: Props) => {
         onRequestDelete,
         getEnv,
         getPoseInstallInstructions,
-        getProjectServicePassword,
+        projectServicePassword,
         monitoringUrl,
         openUrl,
         startTime,
@@ -201,7 +201,7 @@ export const MyServicesCard = memo((props: Props) => {
                 evtAction={evtReadmeAndEnvDialogAction}
                 getEnv={getEnv}
                 getPostInstallInstructions={getPoseInstallInstructions}
-                getProjectServicePassword={getProjectServicePassword}
+                projectServicePassword={projectServicePassword}
                 openUrl={openUrl}
                 startTime={startTime}
             />

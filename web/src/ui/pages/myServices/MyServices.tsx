@@ -39,11 +39,9 @@ export default function MyServices(props: Props) {
     const { t: tCatalogLauncher } = useTranslation("Launcher");
 
     /* prettier-ignore */
-    const { serviceManager, restorableConfigManager, k8sCredentials, projectConfigs } = useCore().functions;
+    const { serviceManager, restorableConfigManager, k8sCredentials } = useCore().functions;
     /* prettier-ignore */
-    const { restorableConfigs, chartIconAndFriendlyNameByRestorableConfigIndex } = useCoreState(
-        "restorableConfigManager", "main"
-    );
+    const { restorableConfigs, chartIconAndFriendlyNameByRestorableConfigIndex } = useCoreState("restorableConfigManager", "main");
     const isUpdating = useCoreState("serviceManager", "isUpdating");
     const runningServices = useCoreState("serviceManager", "runningServices");
     const deletableRunningServiceHelmReleaseNames = useCoreState(
@@ -61,6 +59,7 @@ export default function MyServices(props: Props) {
     const commandLogsEntries = useCoreState("serviceManager", "commandLogsEntries");
 
     const { isCommandBarEnabled } = useCoreState("userConfigs", "userConfigs");
+    const { servicePassword } = useCoreState("projectConfigs", "selectedProjectConfigs");
 
     const onButtonBarClick = useConstCallback(async (buttonId: ButtonId) => {
         switch (buttonId) {
@@ -307,9 +306,7 @@ export default function MyServices(props: Props) {
                                 onRequestDelete={onRequestDelete}
                                 catalogExplorerLink={catalogExplorerLink}
                                 evtAction={evtMyServiceCardsAction}
-                                getProjectServicePassword={
-                                    projectConfigs.getServicesPassword
-                                }
+                                projectServicePassword={servicePassword}
                                 getEnv={serviceManager.getEnv}
                                 getPostInstallInstructions={
                                     serviceManager.getPostInstallInstructions
