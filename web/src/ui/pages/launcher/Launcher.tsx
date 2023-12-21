@@ -197,8 +197,6 @@ export default function Launcher(props: Props) {
         [evtLauncher, route.params]
     );
 
-    const { isCommandBarEnabled } = useCoreState("userConfigs", "main");
-
     useEffect(() => {
         if (restorableConfig === undefined) {
             return;
@@ -260,7 +258,7 @@ export default function Launcher(props: Props) {
 
     const { classes, cx, css } = useStyles({
         rootHeight,
-        isCommandBarEnabled
+        "isCommandBarEnabled": commandLogsEntries !== undefined
     });
 
     if (!isReady) {
@@ -295,7 +293,7 @@ export default function Launcher(props: Props) {
                 />
                 <div className={classes.bodyWrapper}>
                     <div className={classes.body} ref={scrollableDivRef}>
-                        {isCommandBarEnabled && (
+                        {commandLogsEntries !== undefined && (
                             <CommandBar
                                 classes={{
                                     "root": classes.commandBar,

@@ -13,7 +13,8 @@ import { createGetIsFieldHidden } from "./getIsFieldHidden";
 import * as yaml from "yaml";
 import { name, type State } from "../state";
 import * as restorableConfigManager from "core/usecases/restorableConfigManager";
-import * as projectConfigs from "core/usecases/projectConfigs";
+import * as projectSelection from "core/usecases/projectSelection";
+import * as userConfigs from "core/usecases/userConfigs";
 import { exclude } from "tsafe/exclude";
 import { createSelector } from "redux-clean-architecture";
 
@@ -459,7 +460,7 @@ const launchCommands = createSelector(
     formFields,
     catalogRepositoryUrl,
     helmReleaseName,
-    projectConfigs.selectors.selectedProject,
+    projectSelection.selectors.currentProject,
     chartVersionDifferentFromDefault,
     (
         isReady,
@@ -468,7 +469,7 @@ const launchCommands = createSelector(
         formFields,
         catalogRepositoryUrl,
         helmReleaseName,
-        selectedProject,
+        project,
         chartVersionDifferentFromDefault
     ) => {
         if (!isReady) {
@@ -480,7 +481,6 @@ const launchCommands = createSelector(
         assert(formFields !== undefined);
         assert(catalogRepositoryUrl !== undefined);
         assert(helmReleaseName !== undefined);
-        assert(selectedProject !== undefined);
 
         return [
             `helm repo add ${catalogId} ${catalogRepositoryUrl}`,
@@ -491,9 +491,9 @@ const launchCommands = createSelector(
             ].join("\n"),
             [
                 `helm install ${helmReleaseName} ${catalogId}/${chartName}`,
-                selectedProject.group === undefined
+                project.group === undefined
                     ? undefined
-                    : `--namespace ${selectedProject.namespace}`,
+                    : `--namespace ${project.namespace}`,
                 chartVersionDifferentFromDefault === undefined
                     ? undefined
                     : `--version ${chartVersionDifferentFromDefault}`,
@@ -522,22 +522,30 @@ const launchScript = createSelector(
     }
 );
 
-const commandLogsEntries = createSelector(launchCommands, launchCommands => {
-    if (launchCommands === undefined) {
-        return undefined;
-    }
+const commandLogsEntries = createSelector(
+    launchCommands,
+    userConfigs.selectors.userConfigs,
+    (launchCommands, userConfigs) => {
+        if (launchCommands === undefined) {
+            return undefined;
+        }
 
-    return launchCommands.map((cmd, i) => ({
-        "cmdId": i,
-        cmd,
-        "resp": ""
-    }));
-});
+        if (!userConfigs.isCommandBarEnabled) {
+            return undefined;
+        }
+
+        return launchCommands.map((cmd, i) => ({
+            "cmdId": i,
+            cmd,
+            "resp": ""
+        }));
+    }
+);
 
 const chartSourceUrls = createSelector(readyState, state => state?.chartSourceUrls);
 
 const groupProjectName = createSelector(
-    projectConfigs.selectors.selectedProject,
+    projectSelection.selectors.currentProject,
     project => (project.group === undefined ? undefined : project.name)
 );
 
@@ -644,7 +652,6 @@ const main = createSelector(
         assert(isRestorableConfigSaved !== undefined);
         assert(indexedFormFields !== undefined);
         assert(isLaunchable !== undefined);
-        // isShared can be undefined, even if isReady is true
         assert(formFieldsIsWellFormed !== undefined);
         assert(chartIconUrl !== undefined);
         assert(chartName !== undefined);
@@ -652,7 +659,6 @@ const main = createSelector(
         assert(availableChartVersions !== undefined);
         assert(catalogName !== undefined);
         assert(catalogRepositoryUrl !== undefined);
-        assert(commandLogsEntries !== undefined);
         assert(launchScript !== undefined);
         assert(chartSourceUrls !== undefined);
 
