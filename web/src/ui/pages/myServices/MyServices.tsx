@@ -172,8 +172,6 @@ export default function MyServices(props: Props) {
                     startedAt,
                     monitoringUrl,
                     isStarting,
-                    vaultTokenExpirationTime,
-                    s3TokenExpirationTime,
                     hasPostInstallInstructions,
                     ...rest
                 }) => ({
@@ -187,9 +185,7 @@ export default function MyServices(props: Props) {
                     hasPostInstallInstructions,
                     "isShared": rest.isShared,
                     "isOwned": rest.isOwned,
-                    "ownerUsername": rest.isOwned ? undefined : rest.ownerUsername,
-                    vaultTokenExpirationTime,
-                    s3TokenExpirationTime
+                    "ownerUsername": rest.isOwned ? undefined : rest.ownerUsername
                 })
             ),
         [runningServices]
