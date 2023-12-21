@@ -199,7 +199,7 @@ export const selectors = (() => {
 
         objectKeys(state).forEach(key => (userConfigs[key] = state[key].value));
 
-        return userConfigs;
+        return userConfigs as UserConfigs;
     });
 
     // NOTE: This will not crash even if the user is not logged in.

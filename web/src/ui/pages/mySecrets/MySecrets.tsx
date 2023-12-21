@@ -38,23 +38,30 @@ export default function MySecrets(props: Props) {
     );
     const commandLogsEntries = useCoreState("secretExplorer", "commandLogsEntries");
 
-    const { isCommandBarEnabled } = useCoreState("userConfigs", "main");
+    const { isCommandBarEnabled, doDisplayMySecretsUseInServiceDialog } = useCoreState(
+        "userConfigs",
+        "userConfigs"
+    );
 
     const secretEditorState = useCoreState("secretsEditor", "main");
 
     const { secretExplorer, secretsEditor, userConfigs } = useCore().functions;
 
-    const { evtProjectConfigs } = useCore().evts;
+    const { evtProjectSelection } = useCore().evts;
 
     useEvt(
         ctx => {
-            evtProjectConfigs.attach(
-                action => action.actionName === "projectChanged",
+            evtProjectSelection.attach(
+                event => event.action === "currentProjectChanged",
                 ctx,
-                () => routes[route.name]({ "path": undefined }).replace()
+                () =>
+                    routes[route.name]({
+                        ...route.params,
+                        "path": undefined
+                    }).replace()
             );
         },
-        [evtProjectConfigs]
+        [evtProjectSelection]
     );
 
     useEffect(() => {
@@ -200,8 +207,6 @@ export default function MySecrets(props: Props) {
     const onMySecretEditorCopyPath = useConstCallback(() =>
         evtExplorerAction.post("TRIGGER COPY PATH")
     );
-
-    const { doDisplayMySecretsUseInServiceDialog } = useCoreState("userConfigs", "main");
 
     const onDoDisplayUseInServiceDialogValueChange = useConstCallback(value =>
         userConfigs.changeValue({
