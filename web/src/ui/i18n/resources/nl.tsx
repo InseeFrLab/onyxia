@@ -594,9 +594,6 @@ Voel je vrij om te verkennen en de controle over je Kubernetes-implementaties te
         "open": "openen",
         "readme": "readme",
         "shared by you": "gedeeld door u",
-        "which token expire when": ({ which, howMuchTime }) =>
-            `Het token ${which} vervalt ${howMuchTime}.`,
-        "which token expired": ({ which }) => `Het token ${which} is vervallen.`,
         "reminder to delete services":
             "Vergeet niet uw diensten te verwijderen na gebruik.",
         "this is a shared service": "Deze dienst wordt gedeeld binnen het project"

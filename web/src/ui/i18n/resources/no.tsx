@@ -587,9 +587,6 @@ Føl deg fri til å utforske og ta kontroll over dine Kubernetes-implementeringe
         "open": "åpne",
         "readme": "lesmeg",
         "shared by you": "Delt av deg",
-        "which token expire when": ({ which, howMuchTime }) =>
-            `${which}-tokenet utløper ${howMuchTime}.`,
-        "which token expired": ({ which }) => `${which}-tokenet er utløpt.`,
         "reminder to delete services": "Husk å slette tjenestene dine.",
         "this is a shared service": "Denne tjenesten deles blant prosjektets medlemmer"
     },

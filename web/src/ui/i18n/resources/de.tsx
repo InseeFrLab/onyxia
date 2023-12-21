@@ -596,9 +596,6 @@ Fühlen Sie sich frei, Ihre Kubernetes-Bereitstellungen zu erkunden und die Kont
         "open": "öffnen",
         "readme": "readme",
         "shared by you": "von Ihnen geteilt",
-        "which token expire when": ({ which, howMuchTime }) =>
-            `Das Token ${which} läuft in ${howMuchTime} ab.`,
-        "which token expired": ({ which }) => `Das Token ${which} ist abgelaufen.`,
         "reminder to delete services":
             "Denken Sie daran, Ihre Dienste nach Gebrauch zu löschen.",
         "this is a shared service": "Dieser Dienst wird im Projekt geteilt"

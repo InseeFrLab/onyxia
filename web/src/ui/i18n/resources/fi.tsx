@@ -581,9 +581,6 @@ Tutustu vapaasti ja ota hallintaan Kubernetes-julkaisusi!
         "open": "avata",
         "readme": "lueminut",
         "shared by you": "Jaettu sinun kanssasi",
-        "which token expire when": ({ which, howMuchTime }) =>
-            `The ${which} token expires ${howMuchTime}.`,
-        "which token expired": ({ which }) => `The ${which} token is expired.`,
         "reminder to delete services": "Muista poistaa palvelusi.",
         "this is a shared service": "Tämä palvelu on jaettu projektin jäsenten kesken"
     },

@@ -598,9 +598,6 @@ N'hésitez pas à explorer et à prendre en main vos déploiements Kubernetes !
         "open": "ouvrir",
         "readme": "readme",
         "shared by you": "partagé par vous",
-        "which token expire when": ({ which, howMuchTime }) =>
-            `Le token ${which} expire ${howMuchTime}.`,
-        "which token expired": ({ which }) => `Le token ${which} a expiré.`,
         "reminder to delete services":
             "Rappelez-vous de supprimer vos services après utilisation.",
         "this is a shared service": "Ce service est partagé au sein du projet"

@@ -551,9 +551,6 @@ ${
         "open": "打开",
         "readme": "自述文件",
         "shared by you": "你分享的",
-        "which token expire when": ({ which, howMuchTime }) =>
-            `令牌 ${which} 在 ${howMuchTime} 后过期.`,
-        "which token expired": ({ which }) => `令牌 ${which} 已经过期.`,
         "reminder to delete services": "请在使用后删除您的服务。",
         "this is a shared service": "该服务在项目内共享"
     },

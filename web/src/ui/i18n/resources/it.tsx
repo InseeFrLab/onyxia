@@ -590,9 +590,6 @@ Sentiti libero di esplorare e prendere il controllo dei tuoi deployment Kubernet
         "open": "Aprire",
         "readme": "readme",
         "shared by you": "Condiviso da te",
-        "which token expire when": ({ which, howMuchTime }) =>
-            `Il token ${which} scade ${howMuchTime}.`,
-        "which token expired": ({ which }) => `Il token ${which} è scaduto.`,
         "reminder to delete services":
             "Ricordati di eliminare i tuoi servizi dopo l'utilizzo.",
         "this is a shared service": "Questo servizio è condiviso all'interno del progetto"

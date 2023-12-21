@@ -29,8 +29,6 @@ export type Props = {
               isOwned: boolean;
               /** undefined when isOwned === true*/
               ownerUsername: string | undefined;
-              vaultTokenExpirationTime: number | undefined;
-              s3TokenExpirationTime: number | undefined;
               hasPostInstallInstructions: boolean;
           }[]
         | undefined;
