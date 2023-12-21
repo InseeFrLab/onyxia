@@ -19,6 +19,7 @@ export type ParamsOfCreateS3Client =
 export namespace ParamsOfCreateS3Client {
     export type Common = {
         url: string;
+        pathStyleAccess: boolean;
     };
 
     export type NoSts = Common & {
@@ -195,7 +196,7 @@ export function createS3Client(params: ParamsOfCreateS3Client): S3Client {
                     "accessKey": tokens.accessKeyId,
                     "secretKey": tokens.secretAccessKey,
                     "sessionToken": tokens.sessionToken,
-                    "region": params.region ?? "us-east-1"
+                    "region": params.region
                 });
 
                 minioClientByTokens.set(tokens, minioClient);
@@ -384,6 +385,18 @@ export function createS3Client(params: ParamsOfCreateS3Client): S3Client {
                     }
                 );
             });
+
+            if (params.pathStyleAccess) {
+                downloadUrl = (() => {
+                    const urlObj = new URL(downloadUrl);
+                    const subdomain = urlObj.pathname.split("/")[1];
+
+                    urlObj.hostname = `${subdomain}.${urlObj.hostname}`;
+                    urlObj.pathname = urlObj.pathname.replace(`/${subdomain}`, "");
+
+                    return urlObj.toString();
+                })();
+            }
 
             if (tokens.sessionToken !== undefined) {
                 downloadUrl = addParamToUrl({

@@ -14,7 +14,7 @@ import type { S3Client } from "core/ports/S3Client";
 import type { Language } from "core/ports/OnyxiaApi/Language";
 import { createDuckDbSqlOlap } from "core/adapters/sqlOlap/default";
 import { pluginSystemInitCore } from "pluginSystem";
-import { assert } from "tsafe/assert";
+import { assert, type Equals } from "tsafe/assert";
 import { onlyIfChanged } from "evt/operators";
 import type { ParamsOfCreateS3Client } from "core/adapters/s3Client/default";
 import { id } from "tsafe/id";
@@ -220,7 +220,7 @@ export async function bootstrapCore(
             );
 
         const oidcForS3 =
-            deploymentRegion.s3Params.sts === undefined
+            deploymentRegion.s3Params?.sts === undefined
                 ? undefined
                 : await createOidcOrFallback({
                       "oidcAdapterImplementationToUseIfNotFallingBack": "default",
@@ -246,7 +246,14 @@ export async function bootstrapCore(
                         break init_with_project_params;
                     }
 
-                    const { url, region, accessKeyId, secretAccessKey, sessionToken } =
+                    const {
+                        url,
+                        region,
+                        accessKeyId,
+                        secretAccessKey,
+                        sessionToken,
+                        pathStyleAccess
+                    } =
                         customS3Configs.availableConfigs[
                             customS3Configs.indexForExplorer
                         ];
@@ -255,6 +262,7 @@ export async function bootstrapCore(
                         id<ParamsOfCreateS3Client.NoSts>({
                             "isStsEnabled": false,
                             url,
+                            pathStyleAccess,
                             region,
                             accessKeyId,
                             secretAccessKey,
@@ -263,7 +271,7 @@ export async function bootstrapCore(
                     ];
                 }
 
-                if (deploymentRegion.s3Params.sts === undefined) {
+                if (deploymentRegion.s3Params?.sts === undefined) {
                     return [undefined];
                 }
 
@@ -273,6 +281,7 @@ export async function bootstrapCore(
                     id<ParamsOfCreateS3Client.Sts>({
                         "isStsEnabled": true,
                         "url": deploymentRegion.s3Params.url,
+                        "pathStyleAccess": deploymentRegion.s3Params.pathStyleAccess,
                         "region": deploymentRegion.s3Params.region,
                         "oidc": oidcForS3,
                         "durationSeconds": deploymentRegion.s3Params.sts.durationSeconds,
@@ -280,18 +289,19 @@ export async function bootstrapCore(
                         "nameOfBucketToCreateIfNotExist": (() => {
                             const { workingDirectory } = deploymentRegion.s3Params;
 
-                            if (workingDirectory.type === "single bucket") {
+                            if (workingDirectory.bucketMode === "shared") {
                                 return undefined;
                             }
+
+                            assert<Equals<typeof workingDirectory.bucketMode, "multi">>();
 
                             const project =
                                 usecases.projectSelection.selectors.currentProject(
                                     getState()
                                 );
 
-                            const { username } = dispatch(
-                                usecases.userAuthentication.thunks.getUser()
-                            );
+                            const { username } =
+                                usecases.userAuthentication.selectors.user(getState());
 
                             return project.group === undefined
                                 ? `${workingDirectory.bucketNamePrefix}${username}`
@@ -316,6 +326,10 @@ export async function bootstrapCore(
 
     if (oidc.isUserLoggedIn) {
         await dispatch(usecases.userAccountManagement.protectedThunks.initialize());
+    }
+
+    if (oidc.isUserLoggedIn) {
+        dispatch(usecases.fileExplorer.protectedThunks.initialize());
     }
 
     pluginSystemInitCore({ core, context });

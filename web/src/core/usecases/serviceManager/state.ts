@@ -40,9 +40,6 @@ export declare namespace RunningService {
         monitoringUrl: string | undefined;
         isStarting: boolean;
         startedAt: number;
-        /** Undefined if the service don't use the token */
-        vaultTokenExpirationTime: number | undefined;
-        s3TokenExpirationTime: number | undefined;
         urls: string[];
         hasPostInstallInstructions: boolean;
     };

@@ -136,7 +136,7 @@ export const thunks = {
                 "xOnyxiaContext": await (async (): Promise<XOnyxiaContext> => {
                     const { publicIp } = await dispatch(publicIpUsecase.thunks.fetch());
 
-                    const user = dispatch(userAuthentication.thunks.getUser());
+                    const user = userAuthentication.selectors.user(getState());
 
                     const userConfigs = userConfigsSelectors.main(getState());
 
@@ -240,17 +240,18 @@ export const thunks = {
                                 return {
                                     "AWS_ACCESS_KEY_ID": dataSource.accessKeyId,
                                     "AWS_BUCKET_NAME": bucketNameAndObjectNameFromS3Path(
-                                        dataSource.rootDirPath
+                                        dataSource.workingDirectoryPath
                                     ).bucketName,
                                     "AWS_SECRET_ACCESS_KEY": dataSource.secretAccessKey,
                                     "AWS_SESSION_TOKEN": dataSource.sessionToken ?? "",
                                     "AWS_DEFAULT_REGION": dataSource.region,
                                     "AWS_S3_ENDPOINT": host,
-                                    port
+                                    port,
+                                    "pathStyleAccess": dataSource.pathStyleAccess
                                 };
                             }
 
-                            if (region.s3Params.sts === undefined) {
+                            if (region.s3Params?.sts === undefined) {
                                 return {
                                     "AWS_ACCESS_KEY_ID": "",
                                     "AWS_SECRET_ACCESS_KEY": "",
@@ -258,7 +259,8 @@ export const thunks = {
                                     "AWS_BUCKET_NAME": "",
                                     "AWS_DEFAULT_REGION": "",
                                     "AWS_S3_ENDPOINT": "",
-                                    "port": 0
+                                    "port": 0,
+                                    "pathStyleAccess": true
                                 };
                             }
 
@@ -291,11 +293,23 @@ export const thunks = {
                                         "AWS_SESSION_TOKEN": sessionToken
                                     };
                                 })()),
-                                "AWS_BUCKET_NAME": project.bucket,
-                                "AWS_DEFAULT_REGION":
-                                    region.s3Params.region ?? "us-east-1",
+                                "AWS_BUCKET_NAME": (() => {
+                                    const { workingDirectory } = region.s3Params;
+
+                                    switch (workingDirectory.bucketMode) {
+                                        case "multi":
+                                            return project.group === undefined
+                                                ? `${workingDirectory.bucketNamePrefixGroup}${project.group}`
+                                                : `${workingDirectory.bucketNamePrefix}${user.username}`;
+                                        case "shared":
+                                            return workingDirectory.bucketName;
+                                    }
+                                    assert<Equals<typeof workingDirectory, never>>(true);
+                                })(),
+                                "AWS_DEFAULT_REGION": region.s3Params.region ?? "",
                                 "AWS_S3_ENDPOINT": host,
-                                port
+                                port,
+                                "pathStyleAccess": region.s3Params.pathStyleAccess
                             };
                         })(),
                         "region": {

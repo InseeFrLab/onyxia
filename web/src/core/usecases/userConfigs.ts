@@ -5,7 +5,8 @@ import { objectKeys } from "tsafe/objectKeys";
 import { assert } from "tsafe/assert";
 import {
     createUsecaseActions,
-    createObjectThatThrowsIfAccessed
+    createObjectThatThrowsIfAccessed,
+    createSelector
 } from "redux-clean-architecture";
 import * as userAuthentication from "./userAuthentication";
 import { join as pathJoin } from "path";
@@ -124,11 +125,11 @@ export const protectedThunks = {
         () =>
         async (...args) => {
             /* prettier-ignore */
-            const [dispatch, , { secretsManager, oidc, paramsOfBootstrapCore }] = args;
+            const [dispatch, getState, { secretsManager, oidc, paramsOfBootstrapCore }] = args;
 
             assert(oidc.isUserLoggedIn);
 
-            const { username, email } = dispatch(userAuthentication.thunks.getUser());
+            const { username, email } = userAuthentication.selectors.user(getState());
 
             // NOTE: Default values
             const userConfigs: UserConfigs = {
@@ -191,27 +192,30 @@ const privateThunks = {
 } satisfies Thunks;
 
 export const selectors = (() => {
-    /** Give the value directly (without isBeingChanged) */
-    const main = (rootState: RootState): UserConfigs => {
-        const userConfigs: any = {};
+    const state = (rootState: RootState): State => rootState[name];
 
-        const state = rootState[name];
+    const userConfigs = createSelector(state, state => {
+        const userConfigs: any = {};
 
         objectKeys(state).forEach(key => (userConfigs[key] = state[key].value));
 
         return userConfigs;
-    };
-
-    const stateWithProgress = (rootState: RootState): State => rootState[name];
+    });
 
     // NOTE: This will not crash even if the user is not logged in.
     const isDarkModeEnabled = (rootState: RootState): boolean | undefined => {
-        if (!rootState.userAuthentication.isUserLoggedIn) {
+        const isUserLoggedIn = userAuthentication.selectors.isUserLoggedIn(rootState);
+
+        if (!isUserLoggedIn) {
             return undefined;
         }
 
-        return main(rootState).isDarkModeEnabled;
+        return userConfigs(rootState).isDarkModeEnabled;
     };
 
-    return { main, stateWithProgress, isDarkModeEnabled };
+    return {
+        userConfigs,
+        "userConfigsWithUpdateProgress": state,
+        isDarkModeEnabled
+    };
 })();

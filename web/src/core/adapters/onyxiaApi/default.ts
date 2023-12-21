@@ -1,6 +1,5 @@
 import {
     type OnyxiaApi,
-    type Project,
     type DeploymentRegion,
     type LocalizedString,
     type Catalog,
@@ -26,10 +25,16 @@ export function createOnyxiaApi(params: {
     url: string;
     /** undefined if user not logged in */
     getOidcAccessToken: () => string | undefined;
-    getRegionId: () => string | undefined;
-    getProject: () => Pick<Project, "id" | "group"> | undefined;
+    getCurrentRegionId: () => string | undefined;
+    getCurrentProjectIdAndGroup: () =>
+        | {
+              id: string;
+              group: string | undefined;
+          }
+        | undefined;
 }): OnyxiaApi {
-    const { url, getOidcAccessToken, getRegionId, getProject } = params;
+    const { url, getOidcAccessToken, getCurrentRegionId, getCurrentProjectIdAndGroup } =
+        params;
 
     const { axiosInstance } = (() => {
         const axiosInstance = axios.create({ "baseURL": url, "timeout": 120_000 });
@@ -60,8 +65,8 @@ export function createOnyxiaApi(params: {
             ...config,
             "headers": {
                 ...config?.headers,
-                "ONYXIA-REGION": getRegionId(),
-                "ONYXIA-PROJECT": getProject()?.id
+                "ONYXIA-REGION": getCurrentRegionId(),
+                "ONYXIA-PROJECT": getCurrentProjectIdAndGroup()?.id
             }
         }));
 
@@ -236,7 +241,7 @@ export function createOnyxiaApi(params: {
                                     return undefined;
                                 }
 
-                                const common: DeploymentRegion.S3.Common = {
+                                const common: DeploymentRegion.S3Params.Common = {
                                     "monitoringUrlPattern": S3.monitoring?.URLPattern,
                                     "defaultDurationSeconds": S3.defaultDurationSeconds,
                                     "oidcParams":
@@ -254,7 +259,7 @@ export function createOnyxiaApi(params: {
                                     switch (S3.type) {
                                         case "minio":
                                             _s3url = S3.URL;
-                                            return id<DeploymentRegion.S3.Minio>({
+                                            return id<DeploymentRegion.S3Params.Minio>({
                                                 "type": "minio",
                                                 "url": S3.URL,
                                                 "region": S3.region,
@@ -262,7 +267,7 @@ export function createOnyxiaApi(params: {
                                             });
                                         case "amazon":
                                             _s3url = "https://s3.amazonaws.com";
-                                            return id<DeploymentRegion.S3.Amazon>({
+                                            return id<DeploymentRegion.S3Params.Amazon>({
                                                 "type": "amazon",
                                                 "region": S3.region,
                                                 "roleARN": S3.roleARN,
@@ -454,9 +459,9 @@ export function createOnyxiaApi(params: {
             axiosInstance
                 .post("/onboarding", {
                     "group": (() => {
-                        const project = getProject();
-                        assert(project !== undefined);
-                        return project.group;
+                        const projectIdAndGroup = getCurrentProjectIdAndGroup();
+                        assert(projectIdAndGroup !== undefined);
+                        return projectIdAndGroup.group;
                     })()
                 })
                 .catch(error => {
@@ -1091,18 +1096,12 @@ export function createOnyxiaApi(params: {
                     .catch(onError),
             { "promise": true }
         ),
-        "createAwsBucket": ({
-            awsRegion,
-            accessKey,
-            secretKey,
-            sessionToken,
-            bucketName
-        }) =>
+        "createAwsBucket": ({ region, accessKey, secretKey, sessionToken, bucketName }) =>
             axiosInstance
                 .post<void>(
                     "/s3",
                     Object.entries({
-                        awsRegion,
+                        "awsRegion": region,
                         accessKey,
                         secretKey,
                         sessionToken,

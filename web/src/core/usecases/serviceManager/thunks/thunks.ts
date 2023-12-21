@@ -103,10 +103,6 @@ export const thunks = {
 
             const { username } = await onyxiaApi.getUser();
 
-            const { s3TokensTTLms, vaultTokenTTLms } = await dispatch(
-                privateThunks.getDefaultTokenTTL()
-            );
-
             dispatch(
                 actions.updateCompleted({
                     kubernetesNamespace,
@@ -255,42 +251,6 @@ export const thunks = {
 } satisfies Thunks;
 
 const privateThunks = {
-    /** We ask tokens just to tel how long is their lifespan */
-    "getDefaultTokenTTL":
-        () =>
-        async (...args): Promise<{ s3TokensTTLms: number; vaultTokenTTLms: number }> => {
-            const [, getState, rootContext] = args;
-
-            const context = getContext(rootContext);
-
-            if (context.prDefaultTokenTTL !== undefined) {
-                return context.prDefaultTokenTTL;
-            }
-
-            const { s3Client, secretsManager } = rootContext;
-
-            return (context.prDefaultTokenTTL = Promise.all([
-                (async () => {
-                    const project = projectConfigs.selectors.selectedProject(getState());
-
-                    const { expirationTime, acquisitionTime } = await s3Client.getToken({
-                        "restrictToBucketName":
-                            project.group === undefined ? undefined : project.bucket
-                    });
-
-                    return { "s3TokensTTLms": expirationTime - acquisitionTime };
-                })(),
-                (async () => {
-                    const { acquisitionTime, expirationTime } =
-                        await secretsManager.getToken();
-
-                    return { "vaultTokenTTLms": expirationTime - acquisitionTime };
-                })()
-            ]).then(([{ s3TokensTTLms }, { vaultTokenTTLms }]) => ({
-                s3TokensTTLms,
-                vaultTokenTTLms
-            })));
-        },
     "getLoggedOnyxiaApi":
         () =>
         (...args): OnyxiaApi => {

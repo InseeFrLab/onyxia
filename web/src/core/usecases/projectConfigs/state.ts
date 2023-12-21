@@ -21,10 +21,11 @@ export namespace State {
     export type CustomS3Config = {
         url: string;
         region: string;
-        rootDirPath: string;
+        workingDirectoryPath: string;
         accessKeyId: string;
         secretAccessKey: string;
         sessionToken: string | undefined;
+        pathStyleAccess: boolean;
     };
 }
 

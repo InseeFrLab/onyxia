@@ -52,7 +52,7 @@ export type ExplorerProps = {
 
     directoryPath: string;
     isNavigating: boolean;
-    commandLogsEntries: CommandBarProps.Entry[];
+    commandLogsEntries: CommandBarProps.Entry[] | undefined;
     evtAction: NonPostableEvt<"TRIGGER COPY PATH">;
     files: string[];
     directories: string[];
@@ -67,7 +67,6 @@ export type ExplorerProps = {
     pathMinDepth: number;
     //TODO: Find a better way
     scrollableDivRef: RefObject<any>;
-    isCommandBarEnabled: boolean;
 } & (
     | {
           isFileOpen: true;
@@ -105,8 +104,7 @@ export const Explorer = memo((props: ExplorerProps) => {
         scrollableDivRef,
         pathMinDepth,
         onFileSelected,
-        filesBeingUploaded,
-        isCommandBarEnabled
+        filesBeingUploaded
     } = props;
 
     const [files, directories, directoriesBeingCreated, filesBeingCreated] = useMemo(
@@ -344,7 +342,7 @@ export const Explorer = memo((props: ExplorerProps) => {
                         callback={buttonBarCallback}
                     />
                 </div>
-                {isCommandBarEnabled && (
+                {commandLogsEntries !== undefined && (
                     <CommandBar
                         className={classes.commandBar}
                         entries={commandLogsEntries}

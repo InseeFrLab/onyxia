@@ -59,6 +59,7 @@ export type XOnyxiaContext = {
         AWS_S3_ENDPOINT: string;
         AWS_BUCKET_NAME: string;
         port: number;
+        pathStyleAccess: boolean;
     };
     region: {
         defaultIpProtection: boolean | undefined;

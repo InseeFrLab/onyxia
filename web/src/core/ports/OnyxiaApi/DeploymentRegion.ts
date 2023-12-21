@@ -14,7 +14,8 @@ export type DeploymentRegion = {
           }
         | undefined;
     initScriptUrl: string;
-    s3Params: DeploymentRegion.S3;
+    s3Params: DeploymentRegion.S3 | undefined;
+    doAllowS3ConfigurationByUser: boolean;
     allowedURIPatternForUserDefinedInitScript: string;
     kafka:
         | {
@@ -95,30 +96,15 @@ export type DeploymentRegion = {
 export namespace DeploymentRegion {
     export type S3 = {
         /**
-         * Enables users to override the default S3 configuration. When overridden,
-         * users must provide their own credentials (access key and secret key).
-         * This allows specifying a custom S3 server and a working directory on a per-project basis.
-         */
-        allowUserOverride: boolean;
-
-        /**
          * The URL of the S3 server.
          * Examples: "https://minio.sspcloud.fr" or "https://s3.amazonaws.com".
          */
         url: string;
 
-        /**
-         * Specifies how the bucket name is included in the URL.
-         * - For MinIO, a typical URL looks like: https://minio.sspcloud.fr/<bucket-name>/path/to/file.parquet
-         *   In this case, set this property to "path".
-         * - For other S3 implementations (like AWS), a typical URL is: https://<bucket-name>.s3.amazonaws.com/path/to/file.parquet
-         *   Here, set this property to "subdomain".
-         */
-        bucketNameSpecifiedInUrlAs: "subdomain" | "path";
+        pathStyleAccess: boolean;
 
         /**
          * The region for the S3 service. Optional for MinIO as it's not relevant.
-         * Defaults to "us-east-1" if not provided.
          */
         region: string | undefined;
 
@@ -169,7 +155,7 @@ export namespace DeploymentRegion {
          * All users and projects share the same bucket. Commonly used with AWS.
          * Example configuration for a user 'bob' in a project group 'exploration':
          *    "workingDirectory": {
-         *        "type": "single bucket",
+         *        "bucketMode": "single",
          *        "bucketName": "onyxia",
          *        "prefix": "user-",
          *        "prefixGroup": "project-",
@@ -183,7 +169,7 @@ export namespace DeploymentRegion {
          * Each user and project has its own bucket. Recommended for MinIO.
          * Example configuration for user 'bob' in the 'exploration' group:
          *    "workingDirectory": {
-         *       "type": "multi bucket",
+         *       "bucketMode": "multi",
          *       "bucketNamePrefix": "user-",
          *       "bucketNamePrefixGroup": "project-",
          *       "usbPath": "",
@@ -194,19 +180,15 @@ export namespace DeploymentRegion {
          */
         workingDirectory:
             | {
-                  type: "single bucket";
+                  bucketMode: "shared";
                   bucketName: string;
                   prefix: string;
                   prefixGroup: string;
-                  subPath: string;
-                  subPathGroup: string;
               }
             | {
-                  type: "multi bucket";
+                  bucketMode: "multi";
                   bucketNamePrefix: string;
                   bucketNamePrefixGroup: string;
-                  usbPath: string;
-                  usbPathGroup: string;
               };
     };
 }
