@@ -26,7 +26,7 @@ export const AccountUserInterfaceTab = memo((props: Props) => {
 
     const { isBetaModeEnabled, isDevModeEnabled, isCommandBarEnabled } = useCoreState(
         "userConfigs",
-        "main"
+        "userConfigs"
     );
 
     const onRequestToggleIsBetaModeEnabled = useConstCallback(() => {
