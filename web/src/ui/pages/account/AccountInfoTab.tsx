@@ -21,7 +21,7 @@ export const AccountInfoTab = memo((props: Props) => {
 
     const {
         publicIp: { fetch: fetchPublicIp },
-        projectConfigs,
+        projectManagement,
         userAccountManagement
     } = useCore().functions;
 
@@ -32,7 +32,10 @@ export const AccountInfoTab = memo((props: Props) => {
     /* prettier-ignore */
     const publicIp = useCoreState("publicIp", "main") ?? "Loading...";
 
-    const { servicePassword } = useCoreState("projectConfigs", "selectedProjectConfigs");
+    const { servicePassword } = useCoreState(
+        "projectManagement",
+        "selectedProjectConfigs"
+    );
 
     /* prettier-ignore */
     useEffect(() => { fetchPublicIp(); }, []);
@@ -87,7 +90,7 @@ export const AccountInfoTab = memo((props: Props) => {
                 servicePassword={servicePassword}
                 onRequestCopy={onRequestCopyFactory(servicePassword)}
                 onRequestServicePasswordRenewal={() =>
-                    projectConfigs.renewServicePassword()
+                    projectManagement.renewServicePassword()
                 }
             />
             <SettingField
