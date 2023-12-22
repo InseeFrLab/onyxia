@@ -139,23 +139,24 @@ const main = createSelector(
 );
 
 const isFileExplorerEnabled = (rootState: RootState) => {
-    const isUserLoggedIn = userAuthentication.selectors.isUserLoggedIn(rootState);
+    const { isUserLoggedIn } =
+        userAuthentication.selectors.authenticationState(rootState);
 
     if (!isUserLoggedIn) {
-        return false;
+        return { "isFileExplorerEnabled": false };
     }
 
     const deploymentRegion =
         deploymentRegionSelection.selectors.currentDeploymentRegion(rootState);
 
     if (deploymentRegion.s3Params?.sts !== undefined) {
-        return true;
+        return { "isFileExplorerEnabled": true };
     }
 
     const { indexForExplorer } =
         projectConfigs.selectors.selectedProjectConfigs(rootState).customS3Configs;
 
-    return indexForExplorer !== undefined;
+    return { "isFileExplorerEnabled": indexForExplorer !== undefined };
 };
 
 const workingDirectoryPath = createSelector(
