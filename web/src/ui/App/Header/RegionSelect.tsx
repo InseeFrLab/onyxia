@@ -16,14 +16,14 @@ type Props = {
 export function RegionSelect(props: Props) {
     const { className, tRegion } = props;
 
-    const { deploymentRegion } = useCore().functions;
+    const { regionSelection } = useCore().functions;
     const availableDeploymentRegionIds = useCoreState(
-        "deploymentRegion",
+        "regionSelection",
         "availableDeploymentRegionIds"
     );
-    const { id: selectedDeploymentRegionId } = useCoreState(
-        "deploymentRegion",
-        "selectedDeploymentRegion"
+    const { id: currentDeploymentRegionId } = useCoreState(
+        "regionSelection",
+        "currentDeploymentRegion"
     );
 
     const route = useRoute();
@@ -32,7 +32,7 @@ export function RegionSelect(props: Props) {
         async (props: { deploymentRegionId: string }) => {
             const { deploymentRegionId } = props;
 
-            deploymentRegion.changeDeploymentRegion({
+            regionSelection.changeDeploymentRegion({
                 deploymentRegionId,
                 "reload": () => {
                     window.location.reload();
@@ -72,7 +72,7 @@ export function RegionSelect(props: Props) {
             <InputLabel id={labelId}>{tRegion}</InputLabel>
             <Select
                 labelId={labelId}
-                value={selectedDeploymentRegionId}
+                value={currentDeploymentRegionId}
                 label={tRegion}
                 onChange={onChange}
             >
