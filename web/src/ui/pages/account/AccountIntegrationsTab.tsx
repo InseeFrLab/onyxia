@@ -37,7 +37,7 @@ export const AccountIntegrationsTab = memo((props: Props) => {
 
     const { classes } = useStyles();
 
-    const userConfigsState = useCoreState("userConfigs", "stateWithProgress");
+    const userConfigsState = useCoreState("userConfigs", "userConfigsWithUpdateProgress");
 
     const { userConfigs } = useCore().functions;
 
