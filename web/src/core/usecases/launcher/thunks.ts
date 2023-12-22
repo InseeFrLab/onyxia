@@ -1,7 +1,6 @@
 import type { Thunks } from "core/bootstrap";
 import { id } from "tsafe/id";
 import { assert } from "tsafe/assert";
-import { selectors as userConfigsSelectors } from "../userConfigs";
 import { same } from "evt/tools/inDepth/same";
 import { type FormFieldValue, formFieldsValueToObject } from "./FormField";
 import {
@@ -17,8 +16,8 @@ import {
 import * as publicIpUsecase from "../publicIp";
 import * as userAuthentication from "../userAuthentication";
 import * as deploymentRegionSelection from "core/usecases/deploymentRegionSelection";
-import * as projectSelection from "core/usecases/projectSelection";
-import * as projectConfigs from "core/usecases/projectConfigs";
+import * as projectManagement from "core/usecases/projectManagement";
+import * as userConfigsUsecase from "core/usecases/userConfigs";
 import { bucketNameAndObjectNameFromS3Path } from "core/adapters/s3Client/utils/bucketNameAndObjectNameFromS3Path";
 import { parseUrl } from "core/tools/parseUrl";
 import { typeGuard } from "tsafe/typeGuard";
@@ -138,7 +137,9 @@ export const thunks = {
 
                     const user = userAuthentication.selectors.user(getState());
 
-                    const userConfigs = userConfigsSelectors.main(getState());
+                    const userConfigs = userConfigsUsecase.selectors.userConfigs(
+                        getState()
+                    );
 
                     const region =
                         deploymentRegionSelection.selectors.currentDeploymentRegion(
@@ -146,9 +147,11 @@ export const thunks = {
                         );
 
                     const { servicePassword } =
-                        projectConfigs.selectors.selectedProjectConfigs(getState());
+                        projectManagement.selectors.selectedProjectConfigs(getState());
 
-                    const project = projectSelection.selectors.currentProject(getState());
+                    const project = projectManagement.selectors.currentProject(
+                        getState()
+                    );
 
                     const doInjectPersonalInfos =
                         project.group === undefined ||
@@ -220,7 +223,7 @@ export const thunks = {
                         "s3": await (async () => {
                             inject_from_project_config: {
                                 const { customS3Configs } =
-                                    projectConfigs.selectors.selectedProjectConfigs(
+                                    projectManagement.selectors.selectedProjectConfigs(
                                         getState()
                                     );
 
@@ -264,7 +267,7 @@ export const thunks = {
                                 };
                             }
 
-                            const project = projectSelection.selectors.currentProject(
+                            const project = projectManagement.selectors.currentProject(
                                 getState()
                             );
 
