@@ -42,7 +42,6 @@ export declare namespace Props {
         type: "service password";
         servicePassword: string;
         onRequestServicePasswordRenewal: () => void;
-        isLocked: boolean;
     } & ICopyable;
 
     export type Language = Common & {
@@ -446,7 +445,6 @@ export const SettingField = memo((props: Props): ReturnType<FunctionComponent> =
                                         <IconButton
                                             icon={id<MuiIconComponentName>("Replay")}
                                             size="small"
-                                            disabled={props.isLocked}
                                             onClick={
                                                 props.onRequestServicePasswordRenewal
                                             }

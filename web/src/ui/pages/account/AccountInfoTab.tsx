@@ -1,4 +1,4 @@
-import { useEffect, useReducer, memo } from "react";
+import { useEffect, memo } from "react";
 import { useTranslation } from "ui/i18n";
 import { SettingSectionHeader } from "ui/shared/SettingSectionHeader";
 import { SettingField } from "ui/shared/SettingField";
@@ -7,9 +7,7 @@ import { useCallbackFactory } from "powerhooks/useCallbackFactory";
 import { copyToClipboard } from "ui/tools/copyToClipboard";
 import Divider from "@mui/material/Divider";
 import Link from "@mui/material/Link";
-import { useConstCallback } from "powerhooks/useConstCallback";
 import { tss } from "tss";
-import { useAsync } from "react-async-hook";
 import { declareComponentKeys } from "i18nifty";
 
 export type Props = {
@@ -24,7 +22,6 @@ export const AccountInfoTab = memo((props: Props) => {
     const {
         publicIp: { fetch: fetchPublicIp },
         projectConfigs,
-        userAuthentication,
         userAccountManagement
     } = useCore().functions;
 
@@ -35,29 +32,12 @@ export const AccountInfoTab = memo((props: Props) => {
     /* prettier-ignore */
     const publicIp = useCoreState("publicIp", "main") ?? "Loading...";
 
-    /* prettier-ignore */
-    const { id: selectedProjectId } = useCoreState("projectConfigs", "selectedProject");
+    const { servicePassword } = useCoreState("projectConfigs", "selectedProjectConfigs");
 
     /* prettier-ignore */
     useEffect(() => { fetchPublicIp(); }, []);
 
-    const [refreshServicePasswordTrigger, pullRefreshServicePasswordTrigger] = useReducer(
-        n => n + 1,
-        0
-    );
-
-    const servicePasswordAsync = useAsync(
-        () => projectConfigs.getServicesPassword(),
-        [refreshServicePasswordTrigger, selectedProjectId]
-    );
-
-    const onRequestServicePasswordRenewal = useConstCallback(async () => {
-        await projectConfigs.renewServicePassword();
-
-        pullRefreshServicePasswordTrigger();
-    });
-
-    const user = userAuthentication.getUser();
+    const user = useCoreState("userAuthentication", "user");
 
     const fullName = `${user.firstName} ${user.familyName}`;
 
@@ -104,14 +84,11 @@ export const AccountInfoTab = memo((props: Props) => {
             />
             <SettingField
                 type="service password"
-                isLocked={servicePasswordAsync.loading}
-                servicePassword={servicePasswordAsync.result ?? "⏳"}
-                onRequestCopy={
-                    servicePasswordAsync.result === undefined
-                        ? () => {}
-                        : onRequestCopyFactory(servicePasswordAsync.result)
+                servicePassword={servicePassword}
+                onRequestCopy={onRequestCopyFactory(servicePassword)}
+                onRequestServicePasswordRenewal={() =>
+                    projectConfigs.renewServicePassword()
                 }
-                onRequestServicePasswordRenewal={onRequestServicePasswordRenewal}
             />
             <SettingField
                 type="text"
