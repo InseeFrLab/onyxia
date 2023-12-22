@@ -26,7 +26,10 @@ export function ProjectSelect(props: ProjectSelectProps) {
 
     const { projectConfigs } = useCore().functions;
 
-    const projectsState = useCoreState("projectConfigs", "main");
+    const selectedProjectConfigs = useCoreState(
+        "projectConfigs",
+        "selectedProjectConfigs"
+    );
 
     const route = useRoute();
 

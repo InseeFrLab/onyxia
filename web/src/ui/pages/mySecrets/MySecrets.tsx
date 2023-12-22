@@ -47,12 +47,12 @@ export default function MySecrets(props: Props) {
 
     const { secretExplorer, secretsEditor, userConfigs } = useCore().functions;
 
-    const { evtProjectSelection } = useCore().evts;
+    const { evtSecretExplorer } = useCore().evts;
 
     useEvt(
         ctx => {
-            evtProjectSelection.attach(
-                event => event.action === "currentProjectChanged",
+            evtSecretExplorer.attach(
+                event => event.action === "reset path",
                 ctx,
                 () =>
                     routes[route.name]({
@@ -61,7 +61,7 @@ export default function MySecrets(props: Props) {
                     }).replace()
             );
         },
-        [evtProjectSelection]
+        [evtSecretExplorer]
     );
 
     useEffect(() => {

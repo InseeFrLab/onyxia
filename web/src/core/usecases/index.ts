@@ -3,7 +3,6 @@ import * as deploymentRegionSelection from "./deploymentRegionSelection";
 import * as fileExplorer from "./fileExplorer";
 import * as secretExplorer from "./secretExplorer";
 import * as launcher from "./launcher";
-import * as projectConfigs from "./projectConfigs";
 import * as publicIp from "./publicIp";
 import * as restorableConfigManager from "./restorableConfigManager";
 import * as serviceManager from "./serviceManager";
@@ -16,7 +15,7 @@ import * as vaultCredentials from "./vaultCredentials";
 import * as userAccountManagement from "./userAccountManagement";
 import * as sqlOlapShell from "./sqlOlapShell";
 import * as dataExplorer from "./dataExplorer";
-import * as projectSelection from "./projectSelection";
+import * as projectManagement from "./projectManagement";
 
 export const usecases = {
     catalog,
@@ -24,7 +23,6 @@ export const usecases = {
     fileExplorer,
     secretExplorer,
     launcher,
-    projectConfigs,
     publicIp,
     restorableConfigManager,
     serviceManager,
@@ -37,5 +35,5 @@ export const usecases = {
     userAccountManagement,
     sqlOlapShell,
     dataExplorer,
-    projectSelection
+    projectManagement
 };

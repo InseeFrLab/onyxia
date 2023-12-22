@@ -8,13 +8,13 @@ import {
 } from "path";
 import { logApi } from "core/tools/commandLogger";
 import { assert } from "tsafe/assert";
-import * as projectConfigs from "./projectConfigs";
+import * as projectManagement from "./projectManagement";
 import { Evt } from "evt";
 import type { Ctx } from "evt";
-import type { State as RootState, Thunks } from "core/bootstrap";
+import type { State as RootState, Thunks, CreateEvt } from "core/bootstrap";
 import memoize from "memoizee";
 import type { WritableDraft } from "immer/dist/types/types-external";
-import * as deploymentRegion from "./deploymentRegion";
+import * as deploymentRegionSelection from "./deploymentRegionSelection";
 import { createExtendedFsApi } from "core/tools/extendedFsApi";
 import type { ExtendedFsApi } from "core/tools/extendedFsApi";
 import { getVaultCommandLogger } from "core/adapters/secretManager/utils/vaultCommandLogger";
@@ -252,8 +252,9 @@ const privateThunks = {
                 "commandLogger": getVaultCommandLogger({
                     "clientType": "CLI",
                     "engine":
-                        deploymentRegion.selectors.selectedDeploymentRegion(getState())
-                            .vault?.kvEngine ?? "onyxia-kv"
+                        deploymentRegionSelection.selectors.currentDeploymentRegion(
+                            getState()
+                        ).vault?.kvEngine ?? "onyxia-kv"
                 })
             });
 
@@ -409,7 +410,9 @@ export const protectedThunks = {
         (...args) => {
             const [, getState] = args;
 
-            return `/${projectConfigs.selectors.selectedProject(getState()).vaultTopDir}`;
+            return `/${
+                projectManagement.selectors.currentProject(getState()).vaultTopDir
+            }`;
         }
 } satisfies Thunks;
 
@@ -654,7 +657,7 @@ export const thunks = {
         (...args) => {
             const [, getState] = args;
 
-            const region = deploymentRegion.selectors.selectedDeploymentRegion(
+            const region = deploymentRegionSelection.selectors.currentDeploymentRegion(
                 getState()
             );
 
@@ -753,3 +756,21 @@ export const selectors = (() => {
 
     return { currentWorkingDirectoryView, commandLogsEntries };
 })();
+
+export const createEvt = (({ evtAction }) => {
+    const evt = Evt.create<{
+        action: "reset path";
+    }>();
+
+    evtAction.attach(
+        action =>
+            action.usecaseName === "projectManagement" &&
+            action.actionName === "projectChanged",
+        () =>
+            evt.post({
+                "action": "reset path"
+            })
+    );
+
+    return evt;
+}) satisfies CreateEvt;
