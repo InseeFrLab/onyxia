@@ -21,9 +21,13 @@ type Props = {
 export const LeftBar = memo((props: Props) => {
     const { className } = props;
 
-    const { fileExplorer, secretExplorer } = useCore().functions;
+    const { secretExplorer } = useCore().functions;
 
-    const { isDevModeEnabled } = useCoreState("userConfigs", "main");
+    const { isDevModeEnabled } = useCoreState("userConfigs", "userConfigs");
+    const { isFileExplorerEnabled } = useCoreState(
+        "fileExplorer",
+        "isFileExplorerEnabled"
+    );
 
     const route = useRoute();
 
@@ -74,7 +78,7 @@ export const LeftBar = memo((props: Props) => {
                               "link": routes.mySecrets().link
                           } as const
                       }),
-                ...(!fileExplorer.getIsEnabled()
+                ...(!isFileExplorerEnabled
                     ? ({} as never)
                     : {
                           "myFiles": {
