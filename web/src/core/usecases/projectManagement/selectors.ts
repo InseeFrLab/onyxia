@@ -21,5 +21,9 @@ const currentProject = createSelector(state, (state): Project => {
     return project;
 });
 
+const availableProjects = createSelector(state, state =>
+    state.projects.map(({ id, name }) => ({ id, name }))
+);
+
 //export const privateSelectors = { dirPath };
-export const selectors = { currentProject, selectedProjectConfigs };
+export const selectors = { availableProjects, currentProject, selectedProjectConfigs };

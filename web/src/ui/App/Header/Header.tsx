@@ -8,7 +8,7 @@ import { BrandHeaderSection } from "ui/shared/BrandHeaderSection";
 import { routes } from "ui/routes";
 import { ProjectSelect } from "./ProjectSelect";
 import { RegionSelect } from "./RegionSelect";
-import { useCore } from "core";
+import { useCore, useCoreState } from "core";
 import { urlToLink } from "ui/routes";
 import { LocalizedMarkdown } from "ui/shared/Markdown";
 
@@ -25,7 +25,7 @@ export function Header(props: Props) {
 
     const { userAuthentication } = useCore().functions;
 
-    const isUserLoggedIn = userAuthentication.getIsUserLoggedIn();
+    const { isUserLoggedIn } = useCoreState("userAuthentication", "authenticationState");
 
     return (
         <header className={cx(classes.root, className)}>
@@ -34,7 +34,12 @@ export function Header(props: Props) {
                 link={routes.home().link}
             />
             <RegionSelect className={classes.regionSelect} tRegion={t("region")} />
-            <ProjectSelect className={classes.projectSelect} tProject={t("project")} />
+            {isUserLoggedIn && (
+                <ProjectSelect
+                    className={classes.projectSelect}
+                    tProject={t("project")}
+                />
+            )}
             <div className={classes.rightEndActionsContainer}>
                 {env.HEADER_LINKS.map(({ url, ...rest }) => ({
                     "link": urlToLink(url),
