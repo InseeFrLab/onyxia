@@ -69,7 +69,7 @@ export const thunks = {
         (...args): boolean => {
             const [, getState] = args;
 
-            const region = deploymentRegion.selectors.selectedDeploymentRegion(
+            const region = deploymentRegionSelection.selectors.currentDeploymentRegion(
                 getState()
             );
 
