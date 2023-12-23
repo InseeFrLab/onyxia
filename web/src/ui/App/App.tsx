@@ -158,9 +158,9 @@ const useStyles = tss.withName({ App }).create(({ theme }) => {
  * user configs.
  */
 function useSyncDarkModeWithValueInProfile() {
-    const { userAuthentication, userConfigs } = useCore().functions;
+    const { userConfigs } = useCore().functions;
 
-    const isUserLoggedIn = userAuthentication.getIsUserLoggedIn();
+    const { isUserLoggedIn } = useCoreState("userAuthentication", "authenticationState");
 
     const { isDarkModeEnabled, setIsDarkModeEnabled } = useDarkMode();
 
