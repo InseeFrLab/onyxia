@@ -12,17 +12,12 @@ export const mcCommandLogger: CommandLogger<S3Client> = {
                 [...directories.map(directory => `${directory}/`), ...files].join("\n")
         },
         "getToken": {
-            "buildCmd": ({ restrictToBucketName }) =>
+            "buildCmd": () =>
                 [
-                    `# We generate a token restricted to the bucket ${restrictToBucketName}`,
+                    `# We generate a token`,
                     `# See https://docs.min.io/docs/minio-sts-quickstart-guide.html`
                 ].join("\n"),
             "fmtResult": ({ result }) => `The token we got is ${JSON.stringify(result)}`
-        },
-        "createBucketIfNotExist": {
-            "buildCmd": bucketName =>
-                `# We create the token ${bucketName} if it doesn't exist.`,
-            "fmtResult": () => `# Done`
         },
         "uploadFile": {
             "buildCmd": ({ path }) => `mc cp ${pathBasename(path)} s3${path}`,
