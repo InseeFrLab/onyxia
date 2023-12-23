@@ -101,6 +101,12 @@ export namespace DeploymentRegion {
          */
         url: string;
 
+        /**
+         * If the bucket is specified as a subdomain, set this to true.
+         * Example: "https://onyxia.amazonaws.com/user-foo/my-file.parquet" -> true
+         * If the bucket is specified as a path, set this to false.
+         * Example: "https://minio.lab.sspcloud.fr/onyxia/user-foo/my-file.parquet" -> false
+         */
         pathStyleAccess: boolean;
 
         /**
