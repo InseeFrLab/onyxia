@@ -13,7 +13,7 @@ import { createGetIsFieldHidden } from "./getIsFieldHidden";
 import * as yaml from "yaml";
 import { name, type State } from "../state";
 import * as restorableConfigManager from "core/usecases/restorableConfigManager";
-import * as projectSelection from "core/usecases/projectSelection";
+import * as projectManagement from "core/usecases/projectManagement";
 import * as userConfigs from "core/usecases/userConfigs";
 import { exclude } from "tsafe/exclude";
 import { createSelector } from "redux-clean-architecture";
@@ -460,7 +460,7 @@ const launchCommands = createSelector(
     formFields,
     catalogRepositoryUrl,
     helmReleaseName,
-    projectSelection.selectors.currentProject,
+    projectManagement.selectors.currentProject,
     chartVersionDifferentFromDefault,
     (
         isReady,
@@ -545,7 +545,7 @@ const commandLogsEntries = createSelector(
 const chartSourceUrls = createSelector(readyState, state => state?.chartSourceUrls);
 
 const groupProjectName = createSelector(
-    projectSelection.selectors.currentProject,
+    projectManagement.selectors.currentProject,
     project => (project.group === undefined ? undefined : project.name)
 );
 

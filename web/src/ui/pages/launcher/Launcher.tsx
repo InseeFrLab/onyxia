@@ -98,14 +98,14 @@ export default function Launcher(props: Props) {
 
         showSplashScreen({ "enableTransparency": true });
 
-        launcher.initialize({
+        const { cleanup } = launcher.initialize({
             catalogId,
             chartName,
             chartVersion,
             formFieldsValueDifferentFromDefault
         });
 
-        return () => launcher.reset();
+        return cleanup;
     }, []);
 
     useEffect(() => {
