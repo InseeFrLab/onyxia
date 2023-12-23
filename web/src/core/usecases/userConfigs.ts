@@ -204,7 +204,8 @@ export const selectors = (() => {
 
     // NOTE: This will not crash even if the user is not logged in.
     const isDarkModeEnabled = (rootState: RootState): boolean | undefined => {
-        const isUserLoggedIn = userAuthentication.selectors.isUserLoggedIn(rootState);
+        const { isUserLoggedIn } =
+            userAuthentication.selectors.authenticationState(rootState);
 
         if (!isUserLoggedIn) {
             return undefined;
