@@ -1,6 +1,6 @@
 import { id } from "tsafe/id";
-import * as deploymentRegion from "core/usecases/deploymentRegion";
-import * as projectConfigs from "core/usecases/projectConfigs";
+import * as deploymentRegionSelection from "core/usecases/deploymentRegionSelection";
+import * as projectManagement from "core/usecases/projectManagement";
 import type { Thunks } from "core/bootstrap";
 import { exclude } from "tsafe/exclude";
 import { createUsecaseContextApi } from "redux-clean-architecture";
@@ -23,7 +23,7 @@ export const thunks = {
                 .pipe(
                     ctx,
                     action =>
-                        action.usecaseName === "projectConfigs" &&
+                        action.usecaseName === "projectManagement" &&
                         action.actionName === "projectChanged"
                 )
                 .toStateful()
@@ -87,14 +87,15 @@ export const thunks = {
             })();
 
             const { namespace: kubernetesNamespace } =
-                projectConfigs.selectors.selectedProject(getState());
+                projectManagement.selectors.currentProject(getState());
 
             const getMonitoringUrl = (params: { helmReleaseName: string }) => {
                 const { helmReleaseName } = params;
 
-                const region = deploymentRegion.selectors.selectedDeploymentRegion(
-                    getState()
-                );
+                const region =
+                    deploymentRegionSelection.selectors.currentDeploymentRegion(
+                        getState()
+                    );
 
                 return region.servicesMonitoringUrlPattern
                     ?.replace("$NAMESPACE", kubernetesNamespace)
@@ -148,14 +149,6 @@ export const thunks = {
                                         helmReleaseName
                                     }),
                                     startedAt,
-                                    "vaultTokenExpirationTime":
-                                        env["vault.enabled"] !== "true"
-                                            ? undefined
-                                            : startedAt + vaultTokenTTLms,
-                                    "s3TokenExpirationTime":
-                                        env["s3.enabled"] !== "true"
-                                            ? undefined
-                                            : startedAt + s3TokensTTLms,
                                     "urls": urls.sort(),
                                     "isStarting": !rest.isStarting
                                         ? false
@@ -270,7 +263,7 @@ const privateThunks = {
             context.loggedOnyxiaApi = {
                 ...onyxiaApi,
                 "listHelmReleases": async () => {
-                    const { namespace } = projectConfigs.selectors.selectedProject(
+                    const { namespace } = projectManagement.selectors.currentProject(
                         getState()
                     );
 
@@ -324,7 +317,7 @@ const privateThunks = {
                             "commandLogsEntry": {
                                 cmdId,
                                 "cmd": `helm uninstall ${helmReleaseName} --namespace ${
-                                    projectConfigs.selectors.selectedProject(getState())
+                                    projectManagement.selectors.currentProject(getState())
                                         .namespace
                                 }`,
                                 "resp": undefined
@@ -348,8 +341,5 @@ const privateThunks = {
 } satisfies Thunks;
 
 const { getContext } = createUsecaseContextApi(() => ({
-    "prDefaultTokenTTL": id<
-        Promise<{ s3TokensTTLms: number; vaultTokenTTLms: number }> | undefined
-    >(undefined),
     "loggedOnyxiaApi": id<OnyxiaApi | undefined>(undefined)
 }));
