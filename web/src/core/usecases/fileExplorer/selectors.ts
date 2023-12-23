@@ -5,9 +5,8 @@ import { createSelector } from "redux-clean-architecture";
 import { assert, type Equals } from "tsafe/assert";
 import * as deploymentRegionSelection from "core/usecases/deploymentRegionSelection";
 import * as userConfigs from "core/usecases/userConfigs";
-import * as projectConfigs from "core/usecases/projectConfigs";
 import * as userAuthentication from "core/usecases/userAuthentication";
-import * as projectSelection from "core/usecases/projectSelection";
+import * as projectManagement from "core/usecases/projectManagement";
 
 const state = (rootState: RootState): State => rootState[name];
 
@@ -154,19 +153,19 @@ const isFileExplorerEnabled = (rootState: RootState) => {
     }
 
     const { indexForExplorer } =
-        projectConfigs.selectors.selectedProjectConfigs(rootState).customS3Configs;
+        projectManagement.selectors.currentProjectConfigs(rootState).customS3Configs;
 
     return { "isFileExplorerEnabled": indexForExplorer !== undefined };
 };
 
 const workingDirectoryPath = createSelector(
     deploymentRegionSelection.selectors.currentDeploymentRegion,
-    projectSelection.selectors.currentProject,
-    projectConfigs.selectors.selectedProjectConfigs,
+    projectManagement.selectors.currentProject,
+    projectManagement.selectors.currentProjectConfigs,
     userAuthentication.selectors.user,
-    (deploymentRegion, project, selectedProjectConfigs, user) => {
+    (deploymentRegion, project, currentProjectConfigs, user) => {
         from_project_configs: {
-            const { customS3Configs } = selectedProjectConfigs;
+            const { customS3Configs } = currentProjectConfigs;
 
             const { availableConfigs, indexForExplorer } = customS3Configs;
 

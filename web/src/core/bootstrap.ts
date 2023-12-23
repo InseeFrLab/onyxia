@@ -96,7 +96,7 @@ export async function bootstrapCore(
                 let group: string | undefined;
 
                 try {
-                    const project = usecases.projectSelection.selectors.currentProject(
+                    const project = usecases.projectManagement.selectors.currentProject(
                         getState()
                     );
                     id = project.id;
@@ -189,11 +189,7 @@ export async function bootstrapCore(
     }
 
     if (oidc.isUserLoggedIn) {
-        await dispatch(usecases.projectSelection.protectedThunks.initialize());
-    }
-
-    if (oidc.isUserLoggedIn) {
-        await dispatch(usecases.projectConfigs.protectedThunks.initialize());
+        await dispatch(usecases.projectManagement.protectedThunks.initialize());
     }
 
     init_s3_client: {
@@ -231,15 +227,17 @@ export async function bootstrapCore(
         evtAction
             .pipe(
                 data =>
-                    data.usecaseName === "projectConfigs" &&
+                    data.usecaseName === "projectManagement" &&
                     (data.actionName === "projectChanged" ||
-                        (data.actionName === "updated" &&
+                        (data.actionName === "configValueUpdated" &&
                             data.payload.key === "customS3Configs"))
             )
             .toStateful()
             .pipe((): [ParamsOfCreateS3Client | undefined] => {
                 const { customS3Configs } =
-                    usecases.projectConfigs.selectors.selectedProjectConfigs(getState());
+                    usecases.projectManagement.selectors.currentProjectConfigs(
+                        getState()
+                    );
 
                 init_with_project_params: {
                     if (customS3Configs.indexForExplorer === undefined) {
@@ -296,7 +294,7 @@ export async function bootstrapCore(
                             assert<Equals<typeof workingDirectory.bucketMode, "multi">>();
 
                             const project =
-                                usecases.projectSelection.selectors.currentProject(
+                                usecases.projectManagement.selectors.currentProject(
                                     getState()
                                 );
 

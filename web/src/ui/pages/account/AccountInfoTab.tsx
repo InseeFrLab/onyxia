@@ -34,7 +34,7 @@ export const AccountInfoTab = memo((props: Props) => {
 
     const { servicePassword } = useCoreState(
         "projectManagement",
-        "selectedProjectConfigs"
+        "currentProjectConfigs"
     );
 
     /* prettier-ignore */

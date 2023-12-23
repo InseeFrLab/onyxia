@@ -288,8 +288,9 @@ const privateThunks = {
                 getState()
             );
 
-            const { servicePassword } =
-                projectManagement.selectors.selectedProjectConfigs(getState());
+            const { servicePassword } = projectManagement.selectors.currentProjectConfigs(
+                getState()
+            );
 
             const project = projectManagement.selectors.currentProject(getState());
 
@@ -360,9 +361,7 @@ const privateThunks = {
                 "s3": await (async () => {
                     inject_from_project_config: {
                         const { customS3Configs } =
-                            projectManagement.selectors.selectedProjectConfigs(
-                                getState()
-                            );
+                            projectManagement.selectors.currentProjectConfigs(getState());
 
                         if (customS3Configs.indexForXOnyxia === undefined) {
                             break inject_from_project_config;

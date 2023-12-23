@@ -4,7 +4,7 @@ import { name, type RestorableConfig } from "./state";
 import { same } from "evt/tools/inDepth/same";
 import { assert } from "tsafe/assert";
 import { onyxiaFriendlyNameFormFieldPath } from "core/ports/OnyxiaApi";
-import * as projectConfigs from "core/usecases/projectConfigs";
+import * as projectManagement from "core/usecases/projectManagement";
 
 function state(rootState: RootState) {
     return rootState[name];
@@ -12,7 +12,7 @@ function state(rootState: RootState) {
 
 const restorableConfigs = (rootState: RootState) => {
     const { restorableConfigs } =
-        projectConfigs.selectors.selectedProjectConfigs(rootState);
+        projectManagement.selectors.currentProjectConfigs(rootState);
     return [...restorableConfigs].reverse();
 };
 

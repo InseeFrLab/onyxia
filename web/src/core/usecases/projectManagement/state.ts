@@ -10,7 +10,7 @@ import * as userConfigs from "core/usecases/userConfigs";
 export type State = {
     projects: Project[];
     selectedProjectId: string;
-    selectedProjectConfigs: State.ProjectConfigs;
+    currentProjectConfigs: State.ProjectConfigs;
 };
 
 export namespace State {
@@ -52,7 +52,7 @@ export const { reducer, actions } = createUsecaseActions({
         ) => {
             const { key, value } = payload;
 
-            Object.assign(state.selectedProjectConfigs, { [key]: value });
+            Object.assign(state.currentProjectConfigs, { [key]: value });
         }
     }
 });

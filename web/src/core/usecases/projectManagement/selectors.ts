@@ -6,10 +6,7 @@ import { assert } from "tsafe/assert";
 
 const state = (rootState: RootState) => rootState[name];
 
-const selectedProjectConfigs = createSelector(
-    state,
-    state => state.selectedProjectConfigs
-);
+const currentProjectConfigs = createSelector(state, state => state.currentProjectConfigs);
 
 const currentProject = createSelector(state, (state): Project => {
     const { projects, selectedProjectId } = state;
@@ -26,4 +23,4 @@ const availableProjects = createSelector(state, state =>
 );
 
 //export const privateSelectors = { dirPath };
-export const selectors = { availableProjects, currentProject, selectedProjectConfigs };
+export const selectors = { availableProjects, currentProject, currentProjectConfigs };

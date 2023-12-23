@@ -63,7 +63,7 @@ export const thunks = {
                 actions.projectChanged({
                     projects,
                     "selectedProjectId": projectId,
-                    "selectedProjectConfigs": projectConfigs
+                    "currentProjectConfigs": projectConfigs
                 })
             );
 
@@ -206,7 +206,7 @@ export const protectedThunks = {
                     return;
                 }
 
-                const currentLocalValue = selectors.selectedProjectConfigs(getState())[
+                const currentLocalValue = selectors.currentProjectConfigs(getState())[
                     params.key
                 ];
 
