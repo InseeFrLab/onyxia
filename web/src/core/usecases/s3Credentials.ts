@@ -1,16 +1,10 @@
 import "minimal-polyfills/Object.fromEntries";
 import { id } from "tsafe/id";
 import type { State as RootState, Thunks } from "core/bootstrap";
-import * as projectConfigs from "./projectConfigs";
-import * as deploymentRegion from "./deploymentRegion";
+import * as deploymentRegionSelection from "./deploymentRegionSelection";
 import { parseUrl } from "core/tools/parseUrl";
 import { assert } from "tsafe/assert";
-import {
-    createUsecaseActions,
-    createSelector,
-    createUsecaseContextApi
-} from "redux-clean-architecture";
-import { getS3UrlAndRegion } from "core/adapters/s3Client/utils/getS3UrlAndRegion";
+import { createUsecaseActions, createSelector } from "redux-clean-architecture";
 
 //TODO: Refactor, replicate the k8sCredentials usecase
 
@@ -42,7 +36,7 @@ namespace State {
         credentials: {
             AWS_ACCESS_KEY_ID: string;
             AWS_SECRET_ACCESS_KEY: string;
-            AWS_DEFAULT_REGION: string;
+            AWS_DEFAULT_REGION: string | undefined;
             AWS_SESSION_TOKEN: string;
             AWS_S3_ENDPOINT: string;
         };
@@ -111,8 +105,8 @@ export const thunks = {
             const [, getState] = args;
 
             return (
-                deploymentRegion.selectors.selectedDeploymentRegion(getState()).s3 !==
-                undefined
+                deploymentRegionSelection.selectors.currentDeploymentRegion(getState())
+                    .s3Params?.sts !== undefined
             );
         },
     /** Refresh is expected to be called whenever the component that use this slice mounts */
@@ -123,24 +117,7 @@ export const thunks = {
 
             const [dispatch, getState, thunkExtraArguments] = args;
 
-            const { s3Client, evtAction } = thunkExtraArguments;
-
-            initialize: {
-                const context = getContext(thunkExtraArguments);
-
-                if (context.isInitialized) {
-                    break initialize;
-                }
-
-                evtAction.attach(
-                    action =>
-                        action.usecaseName === "projectConfigs" &&
-                        action.actionName === "projectChanged",
-                    () => dispatch(thunks.refresh({ "doForceRenewToken": false }))
-                );
-
-                context.isInitialized = true;
-            }
+            const { s3Client } = thunkExtraArguments;
 
             if (getState().s3Credentials.isRefreshing) {
                 return;
@@ -149,26 +126,25 @@ export const thunks = {
             dispatch(actions.refreshStarted());
 
             const { region, host, port } = (() => {
-                const { s3: s3Params } =
-                    deploymentRegion.selectors.selectedDeploymentRegion(getState());
+                const { s3Params } =
+                    deploymentRegionSelection.selectors.currentDeploymentRegion(
+                        getState()
+                    );
 
                 assert(s3Params !== undefined);
 
-                const { region, url } = getS3UrlAndRegion(s3Params);
+                const { host, port = 443 } = parseUrl(s3Params.url);
 
-                const { host, port = 443 } = parseUrl(url);
+                const region = s3Params.region;
 
                 return { region, host, port };
             })();
 
-            const project = projectConfigs.selectors.selectedProject(getState());
-
             const { accessKeyId, secretAccessKey, sessionToken, expirationTime } =
-                await s3Client.getToken({
-                    "restrictToBucketName":
-                        project.group === undefined ? undefined : project.bucket,
-                    "doForceRenew": doForceRenewToken
-                });
+                await s3Client.getToken({ "doForceRenew": doForceRenewToken });
+
+            assert(sessionToken !== undefined);
+            assert(expirationTime !== undefined);
 
             dispatch(
                 actions.refreshed({
@@ -195,8 +171,6 @@ export const thunks = {
             dispatch(actions.technologyChanged({ technology }));
         }
 } satisfies Thunks;
-
-const { getContext } = createUsecaseContextApi(() => ({ "isInitialized": false }));
 
 export const selectors = (() => {
     const readyState = (rootState: RootState): State.Ready | undefined => {
@@ -265,7 +239,7 @@ install.packages("aws.s3", repos = "https://cloud.R-project.org")
 
 Sys.setenv("AWS_ACCESS_KEY_ID" = "${credentials.AWS_ACCESS_KEY_ID}",
            "AWS_SECRET_ACCESS_KEY" = "${credentials.AWS_SECRET_ACCESS_KEY}",
-           "AWS_DEFAULT_REGION" = "${credentials.AWS_DEFAULT_REGION}",
+           "AWS_DEFAULT_REGION" = "${credentials.AWS_DEFAULT_REGION ?? ""}",
            "AWS_SESSION_TOKEN" = "${credentials.AWS_SESSION_TOKEN}",
            "AWS_S3_ENDPOINT"= "${credentials.AWS_S3_ENDPOINT}")
 
@@ -278,7 +252,7 @@ install.packages("paws", repos = "https://cloud.R-project.org")
 
 Sys.setenv("AWS_ACCESS_KEY_ID" = "${credentials.AWS_ACCESS_KEY_ID}",
            "AWS_SECRET_ACCESS_KEY" = "${credentials.AWS_SECRET_ACCESS_KEY}",
-           "AWS_DEFAULT_REGION" = "${credentials.AWS_DEFAULT_REGION}",
+           "AWS_DEFAULT_REGION" = "${credentials.AWS_DEFAULT_REGION ?? ""}",
            "AWS_SESSION_TOKEN" = "${credentials.AWS_SESSION_TOKEN}",
            "AWS_S3_ENDPOINT"= "${credentials.AWS_S3_ENDPOINT}")
 
@@ -312,7 +286,7 @@ s3 = boto3.client("s3",endpoint_url = 'https://'+'${credentials.AWS_S3_ENDPOINT}
                             return `
 export AWS_ACCESS_KEY_ID=${credentials.AWS_ACCESS_KEY_ID}
 export AWS_SECRET_ACCESS_KEY=${credentials.AWS_SECRET_ACCESS_KEY}
-export AWS_DEFAULT_REGION=${credentials.AWS_DEFAULT_REGION}
+export AWS_DEFAULT_REGION=${credentials.AWS_DEFAULT_REGION ?? ""}
 export AWS_SESSION_TOKEN=${credentials.AWS_SESSION_TOKEN}
 export AWS_S3_ENDPOINT=${credentials.AWS_S3_ENDPOINT}
 						`;
