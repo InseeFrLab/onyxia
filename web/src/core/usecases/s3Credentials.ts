@@ -36,7 +36,7 @@ namespace State {
         credentials: {
             AWS_ACCESS_KEY_ID: string;
             AWS_SECRET_ACCESS_KEY: string;
-            AWS_DEFAULT_REGION: string | undefined;
+            AWS_DEFAULT_REGION: string;
             AWS_SESSION_TOKEN: string;
             AWS_S3_ENDPOINT: string;
         };
@@ -151,7 +151,7 @@ export const thunks = {
                     "credentials": {
                         "AWS_ACCESS_KEY_ID": accessKeyId,
                         "AWS_SECRET_ACCESS_KEY": secretAccessKey,
-                        "AWS_DEFAULT_REGION": region,
+                        "AWS_DEFAULT_REGION": region ?? "",
                         "AWS_SESSION_TOKEN": sessionToken,
                         "AWS_S3_ENDPOINT": `${
                             host === "s3.amazonaws.com"
@@ -239,7 +239,7 @@ install.packages("aws.s3", repos = "https://cloud.R-project.org")
 
 Sys.setenv("AWS_ACCESS_KEY_ID" = "${credentials.AWS_ACCESS_KEY_ID}",
            "AWS_SECRET_ACCESS_KEY" = "${credentials.AWS_SECRET_ACCESS_KEY}",
-           "AWS_DEFAULT_REGION" = "${credentials.AWS_DEFAULT_REGION ?? ""}",
+           "AWS_DEFAULT_REGION" = "${credentials.AWS_DEFAULT_REGION}",
            "AWS_SESSION_TOKEN" = "${credentials.AWS_SESSION_TOKEN}",
            "AWS_S3_ENDPOINT"= "${credentials.AWS_S3_ENDPOINT}")
 
@@ -252,7 +252,7 @@ install.packages("paws", repos = "https://cloud.R-project.org")
 
 Sys.setenv("AWS_ACCESS_KEY_ID" = "${credentials.AWS_ACCESS_KEY_ID}",
            "AWS_SECRET_ACCESS_KEY" = "${credentials.AWS_SECRET_ACCESS_KEY}",
-           "AWS_DEFAULT_REGION" = "${credentials.AWS_DEFAULT_REGION ?? ""}",
+           "AWS_DEFAULT_REGION" = "${credentials.AWS_DEFAULT_REGION}",
            "AWS_SESSION_TOKEN" = "${credentials.AWS_SESSION_TOKEN}",
            "AWS_S3_ENDPOINT"= "${credentials.AWS_S3_ENDPOINT}")
 
@@ -286,7 +286,7 @@ s3 = boto3.client("s3",endpoint_url = 'https://'+'${credentials.AWS_S3_ENDPOINT}
                             return `
 export AWS_ACCESS_KEY_ID=${credentials.AWS_ACCESS_KEY_ID}
 export AWS_SECRET_ACCESS_KEY=${credentials.AWS_SECRET_ACCESS_KEY}
-export AWS_DEFAULT_REGION=${credentials.AWS_DEFAULT_REGION ?? ""}
+export AWS_DEFAULT_REGION=${credentials.AWS_DEFAULT_REGION}
 export AWS_SESSION_TOKEN=${credentials.AWS_SESSION_TOKEN}
 export AWS_S3_ENDPOINT=${credentials.AWS_S3_ENDPOINT}
 						`;

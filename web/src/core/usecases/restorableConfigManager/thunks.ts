@@ -3,7 +3,7 @@ import { allEquals } from "evt/tools/reducers/allEquals";
 import { same } from "evt/tools/inDepth/same";
 import { assert, type Equals } from "tsafe/assert";
 import type { Thunks } from "core/bootstrap";
-import * as projectConfigs from "core/usecases/projectConfigs";
+import * as projectManagement from "core/usecases/projectManagement";
 import { Chart } from "core/ports/OnyxiaApi";
 import { actions, type State, type RestorableConfig } from "./state";
 import { readFriendlyName, protectedSelectors } from "./selectors";
@@ -108,7 +108,7 @@ export const thunks = {
                       );
 
             await dispatch(
-                projectConfigs.protectedThunks.updateValue({
+                projectManagement.protectedThunks.updateConfigValue({
                     "key": "restorableConfigs",
                     "value": newRestorableConfigs
                 })
@@ -138,7 +138,7 @@ export const thunks = {
             );
 
             await dispatch(
-                projectConfigs.protectedThunks.updateValue({
+                projectManagement.protectedThunks.updateConfigValue({
                     "key": "restorableConfigs",
                     "value": newRestorableConfigs
                 })
