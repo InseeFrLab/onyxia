@@ -66,6 +66,7 @@ export type DeploymentRegion = {
     kubernetes:
         | {
               url: string;
+              usernamePrefix?: string;
               oidcParams:
                   | {
                         issuerUri?: string;

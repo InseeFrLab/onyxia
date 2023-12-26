@@ -116,10 +116,11 @@ export const thunks = {
 
             dispatch(actions.refreshStarted());
 
-            const { kubernetes } =
-                deploymentRegionSelection.selectors.currentDeploymentRegion(getState());
+            const region = deploymentRegionSelection.selectors.currentDeploymentRegion(
+                getState()
+            );
 
-            assert(kubernetes !== undefined);
+            assert(region.kubernetes !== undefined);
 
             assert(oidc.isUserLoggedIn);
 
@@ -131,7 +132,7 @@ export const thunks = {
                 kubernetesOidcClient = await createOidcOrFallback({
                     "oidcAdapterImplementationToUseIfNotFallingBack": "default",
                     "fallbackOidc": oidc,
-                    "oidcParams": kubernetes.oidcParams
+                    "oidcParams": region.kubernetes.oidcParams
                 });
 
                 context.kubernetesOidcClient = kubernetesOidcClient;
@@ -147,7 +148,7 @@ export const thunks = {
                     "clientId": kubernetesOidcClient.params.clientId,
                     "refreshToken": oidcTokens.refreshToken,
                     "idToken": oidcTokens.idToken,
-                    "user": `oidc-${
+                    "user": `${region.kubernetes.usernamePrefix ?? ""}${
                         userAuthentication.selectors.user(getState()).username
                     }`,
                     "expirationTime": oidcTokens.refreshTokenExpirationTime
