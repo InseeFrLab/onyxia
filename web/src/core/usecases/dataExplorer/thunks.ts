@@ -101,7 +101,10 @@ export const thunks = {
                     await new Promise(() => {});
                 }
 
-                return s3Client.getFileDownloadUrl({ "path": s3path });
+                return s3Client.getFileDownloadUrl({
+                    "path": s3path,
+                    "validityDurationSecond": 3600 * 6
+                });
             })();
 
             const rowCountOrErrorMessage = await sqlOlap

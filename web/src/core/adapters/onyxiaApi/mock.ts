@@ -69,6 +69,5 @@ export const onyxiaApi: OnyxiaApi = {
     ...createPropertyThatThrowIfAccessed("getHelmChartDetails", "Not mocked"),
     ...createPropertyThatThrowIfAccessed("helmInstall", "Not mocked"),
     ...createPropertyThatThrowIfAccessed("listHelmReleases", "Not mocked"),
-    ...createPropertyThatThrowIfAccessed("helmUninstall", "Not mocked"),
-    ...createPropertyThatThrowIfAccessed("createAwsBucket", "Not mocked")
+    ...createPropertyThatThrowIfAccessed("helmUninstall", "Not mocked")
 };
