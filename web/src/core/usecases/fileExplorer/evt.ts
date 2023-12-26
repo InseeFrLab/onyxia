@@ -13,7 +13,7 @@ export const createEvt = (({ evtAction, getState }) => {
     evtAction.attach(
         data =>
             data.usecaseName === name &&
-            (data.actionName === "contextChanged" ||
+            (data.actionName === "workingDirectoryChanged" ||
                 data.actionName === "notifyDirectoryPath"),
         () => {
             const { directoryPath } = getState()[name];

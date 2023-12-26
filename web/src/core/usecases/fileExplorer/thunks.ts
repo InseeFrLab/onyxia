@@ -1,19 +1,11 @@
-import { logApi } from "core/tools/commandLogger";
-import type { S3Client } from "core/ports/S3Client";
 import { assert } from "tsafe/assert";
 import { Evt } from "evt";
-import type { Ctx } from "evt";
 import type { Thunks } from "core/bootstrap";
-import { createExtendedFsApi } from "core/tools/extendedFsApi";
-import type { ExtendedFsApi } from "core/tools/extendedFsApi";
-import { createObjectThatThrowsIfAccessed } from "redux-clean-architecture";
-import { mcCommandLogger } from "core/adapters/s3Client/utils/mcCommandLogger";
-import { createUsecaseContextApi } from "redux-clean-architecture";
-// NOTE: Polyfill of a browser feature.
-import structuredClone from "@ungap/structured-clone";
 import { name, actions } from "./state";
 import { protectedSelectors } from "./selectors";
 import { onlyIfChanged } from "evt/operators/onlyIfChanged";
+import { join as pathJoin, basename as pathBasename } from "path";
+import { crawlFactory } from "core/tools/crawl";
 
 export type ExplorersCreateParams =
     | ExplorersCreateParams.Directory
@@ -40,12 +32,11 @@ const privateThunks = {
             kind: "file" | "directory";
             basename: string;
             directoryPath: string;
-            ctx?: Ctx;
         }) =>
         async (...args) => {
             const [, getState, { evtAction }] = args;
 
-            const { kind, basename, directoryPath, ctx = Evt.newCtx() } = params;
+            const { kind, basename, directoryPath } = params;
 
             const { ongoingOperations } = getState()[name];
 
@@ -66,8 +57,7 @@ const privateThunks = {
                     event.actionName === "operationCompleted" &&
                     event.payload.kind === kind &&
                     event.payload.basename === basename &&
-                    event.payload.directoryPath === directoryPath,
-                ctx
+                    event.payload.directoryPath === directoryPath
             );
         },
 
@@ -79,7 +69,7 @@ const privateThunks = {
         async (...args) => {
             const { directoryPath, doListAgainIfSamePath } = params;
 
-            const [dispatch, getState, extraArg] = args;
+            const [dispatch, getState, { evtAction, s3Client }] = args;
 
             if (
                 !doListAgainIfSamePath &&
@@ -88,37 +78,53 @@ const privateThunks = {
                 return;
             }
 
-            const { loggedS3Client } = getContext(extraArg);
-
-            dispatch(thunks.cancelNavigation());
-
             dispatch(actions.navigationStarted());
 
             const ctx = Evt.newCtx();
 
-            extraArg.evtAction.attach(
+            evtAction.attachOnce(
                 event =>
                     event.usecaseName === name &&
-                    event.actionName === "navigationCanceled",
+                    event.actionName === "navigationStarted",
                 ctx,
-                () => ctx.done()
+                () => ctx.abort(new Error("Other navigation started"))
             );
 
             await dispatch(
                 privateThunks.waitForNoOngoingOperation({
                     "kind": "directory",
-                    "directoryPath": directoryPath.replace(/[^/]+\/$/, ""), //pathJoin(directoryPath, ".."),
-                    "basename": directoryPath.match(/([^/]+)\/$/)![1], //pathBasename(directoryPath),
-                    ctx
+                    "directoryPath": pathJoin(directoryPath, "..") + "/",
+                    "basename": pathBasename(directoryPath)
                 })
             );
 
-            const { directories, files } = await Evt.from(
-                ctx,
-                loggedS3Client.list({ "path": directoryPath })
-            ).waitFor();
+            const cmdId = Date.now();
+
+            dispatch(
+                actions.commandLogIssued({
+                    cmdId,
+                    "cmd": `mc ls ${pathJoin("s3", directoryPath)}`
+                })
+            );
+
+            const { directories, files } = await s3Client.list({ "path": directoryPath });
+
+            if (ctx.completionStatus !== undefined) {
+                dispatch(actions.commandLogCancelled({ cmdId }));
+                return;
+            }
 
             ctx.done();
+
+            dispatch(
+                actions.commandLogResponseReceived({
+                    cmdId,
+                    "resp": [
+                        ...directories.map(directory => `${directory}/`),
+                        ...files
+                    ].join("\n")
+                })
+            );
 
             dispatch(
                 actions.navigationCompleted({
@@ -150,10 +156,7 @@ export const thunks = {
 
             await dispatch(
                 privateThunks.navigate({
-                    "directoryPath": directoryPath
-                        .replace(/\/\//g, "/")
-                        .replace(/^\//g, "")
-                        .replace(/\/$/g, "/"),
+                    "directoryPath": directoryPath,
                     "doListAgainIfSamePath": false
                 })
             );
@@ -174,7 +177,7 @@ export const thunks = {
     "create":
         (params: ExplorersCreateParams) =>
         async (...args) => {
-            const [dispatch, getState, rootContext] = args;
+            const [dispatch, getState, { s3Client }] = args;
 
             const state = getState()[name];
 
@@ -198,9 +201,40 @@ export const thunks = {
                 })
             );
 
-            const context = getContext(rootContext);
+            const uploadFileAndLogCommand = async (params: {
+                path: string;
+                blob: Blob;
+                onUploadProgress: (params: { uploadPercent: number }) => void;
+            }) => {
+                const { path, blob, onUploadProgress } = params;
 
-            const path = `${directoryPath}${params.basename}/`;
+                const cmdId = Date.now();
+
+                dispatch(
+                    actions.commandLogIssued({
+                        cmdId,
+                        "cmd": `mc cp ${pathJoin(".", pathBasename(path))} ${pathJoin(
+                            "s3",
+                            path
+                        )}`
+                    })
+                );
+
+                await s3Client.uploadFile({
+                    path,
+                    blob,
+                    "onUploadProgress": ({ uploadPercent }) => {
+                        onUploadProgress({ uploadPercent });
+
+                        dispatch(
+                            actions.commandLogResponseReceived({
+                                cmdId,
+                                "resp": `... ${uploadPercent}% of ${blob.size} Bytes uploaded`
+                            })
+                        );
+                    }
+                });
+            };
 
             switch (params.createWhat) {
                 case "file":
@@ -211,9 +245,8 @@ export const thunks = {
                             "size": params.blob.size
                         })
                     );
-
-                    context.loggedS3Client.uploadFile({
-                        path,
+                    await uploadFileAndLogCommand({
+                        "path": pathJoin(directoryPath, params.basename),
                         "blob": params.blob,
                         "onUploadProgress": ({ uploadPercent }) =>
                             dispatch(
@@ -226,7 +259,13 @@ export const thunks = {
                     });
                     break;
                 case "directory":
-                    await context.loggedExtendedFsApi.createDirectory({ path });
+                    await uploadFileAndLogCommand({
+                        "path": pathJoin(directoryPath, params.basename, ".keep"),
+                        "blob": new Blob(["This file tells that a directory exists"], {
+                            "type": "text/plain"
+                        }),
+                        "onUploadProgress": () => {}
+                    });
                     break;
             }
 
@@ -249,7 +288,7 @@ export const thunks = {
         async (...args) => {
             const { deleteWhat, basename } = params;
 
-            const [dispatch, getState, rootContext] = args;
+            const [dispatch, getState, { s3Client }] = args;
 
             const state = getState()[name];
 
@@ -273,18 +312,63 @@ export const thunks = {
                 })
             );
 
-            const context = getContext(rootContext);
+            const deleteFileAndLogCommand = async (filePath: string) => {
+                const cmdId = Date.now();
 
-            const path = `${directoryPath}${basename}/`;
+                dispatch(
+                    actions.commandLogIssued({
+                        cmdId,
+                        "cmd": `mc rm ${pathJoin("s3", filePath)}`
+                    })
+                );
+
+                await s3Client.deleteFile({ "path": filePath });
+
+                dispatch(
+                    actions.commandLogResponseReceived({
+                        cmdId,
+                        "resp": `Removed \`${pathJoin("s3", filePath)}\``
+                    })
+                );
+            };
 
             switch (deleteWhat) {
                 case "directory":
-                    await context.loggedExtendedFsApi.deleteDirectory({ path });
+                    {
+                        const { crawl } = crawlFactory({
+                            "list": async ({ directoryPath }) => {
+                                const { directories, files } = await s3Client.list({
+                                    "path": directoryPath
+                                });
+
+                                return {
+                                    "fileBasenames": files,
+                                    "directoryBasenames": directories
+                                };
+                            }
+                        });
+
+                        const directoryToDeletePath = pathJoin(directoryPath, basename);
+
+                        const { filePaths } = await crawl({
+                            "directoryPath": directoryToDeletePath
+                        });
+
+                        await Promise.all(
+                            filePaths
+                                .map(filePathRelative =>
+                                    pathJoin(directoryToDeletePath, filePathRelative)
+                                )
+                                .map(deleteFileAndLogCommand)
+                        );
+                    }
                     break;
                 case "file":
-                    await context.loggedS3Client.deleteFile({
-                        path
-                    });
+                    {
+                        const fileToDeletePath = pathJoin(directoryPath, basename);
+
+                        await deleteFileAndLogCommand(fileToDeletePath);
+                    }
                     break;
             }
 
@@ -301,7 +385,7 @@ export const thunks = {
         async (...args): Promise<string> => {
             const { basename } = params;
 
-            const [, getState, rootContext] = args;
+            const [dispatch, getState, { s3Client }] = args;
 
             const state = getState()[name];
 
@@ -309,11 +393,32 @@ export const thunks = {
 
             assert(directoryPath !== undefined);
 
-            const context = getContext(rootContext);
+            const path = pathJoin(directoryPath, basename);
 
-            const downloadUrl = await context.loggedS3Client.getFileDownloadUrl({
-                "path": `${directoryPath}${basename}/`
+            const cmdId = Date.now();
+
+            dispatch(
+                actions.commandLogIssued({
+                    cmdId,
+                    "cmd": `mc share download --expire 1h ${pathJoin("s3", path)}`
+                })
+            );
+
+            const downloadUrl = await s3Client.getFileDownloadUrl({
+                path,
+                "validityDurationSecond": 3600
             });
+
+            dispatch(
+                actions.commandLogResponseReceived({
+                    cmdId,
+                    "resp": [
+                        `URL: ${downloadUrl.split("?")[0]}`,
+                        `Expire: 0 days 1 hours 0 minutes 0 seconds`,
+                        `Share: ${downloadUrl}`
+                    ].join("\n")
+                })
+            );
 
             return downloadUrl;
         }
@@ -332,54 +437,6 @@ export const protectedThunks = {
                 .pipe(() => [protectedSelectors.workingDirectoryPath(getState())])
                 .pipe(onlyIfChanged())
                 .toStateless()
-                .attach(() => dispatch(actions.contextChanged()));
-
-            setContext(rootContext, () => {
-                const { commandLogs, loggedApi } = logApi({
-                    "api": rootContext.s3Client,
-                    "commandLogger": mcCommandLogger
-                });
-
-                commandLogs.evt.toStateful().attach(() =>
-                    dispatch(
-                        actions.apiHistoryUpdated({
-                            // NOTE: We spread only for the type.
-                            "commandLogsEntries": [
-                                ...structuredClone(commandLogs.history)
-                            ]
-                        })
-                    )
-                );
-
-                return {
-                    "loggedS3Client": loggedApi,
-                    "loggedExtendedFsApi": createExtendedFsApi({
-                        "baseFsApi": {
-                            "list": loggedApi.list,
-                            "deleteFile": loggedApi.deleteFile,
-                            "downloadFile": createObjectThatThrowsIfAccessed({
-                                "debugMessage":
-                                    "We are not supposed to have do download file here. Moving file is too expensive in S3"
-                            }),
-                            "uploadFile": ({ file, path }) =>
-                                loggedApi.uploadFile({
-                                    path,
-                                    "blob": file,
-                                    "onUploadProgress": () => {}
-                                })
-                        },
-                        "keepFile": new Blob(
-                            ["This file tells that a directory exists"],
-                            { "type": "text/plain" }
-                        ),
-                        "keepFileBasename": ".keep"
-                    })
-                };
-            });
+                .attach(() => dispatch(actions.workingDirectoryChanged()));
         }
 } satisfies Thunks;
-
-const { getContext, setContext } = createUsecaseContextApi<{
-    loggedS3Client: S3Client;
-    loggedExtendedFsApi: ExtendedFsApi;
-}>();

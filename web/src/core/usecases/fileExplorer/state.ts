@@ -137,9 +137,6 @@ export const { reducer, actions } = createUsecaseActions({
                     }
                 });
         },
-        "navigationCanceled": state => {
-            state.isNavigationOngoing = false;
-        },
         "operationStarted": (
             state,
             {
@@ -219,15 +216,65 @@ export const { reducer, actions } = createUsecaseActions({
                     break;
             }
         },
-        "apiHistoryUpdated": (
+        "commandLogIssued": (
             state,
-            { payload }: { payload: { commandLogsEntries: State["commandLogsEntries"] } }
+            {
+                payload
+            }: {
+                payload: {
+                    cmdId: number;
+                    cmd: string;
+                };
+            }
         ) => {
-            const { commandLogsEntries } = payload;
+            const { cmdId, cmd } = payload;
 
-            state.commandLogsEntries = commandLogsEntries;
+            state.commandLogsEntries.push({
+                cmdId,
+                cmd,
+                "resp": undefined
+            });
         },
-        "contextChanged": state => {
+        "commandLogCancelled": (
+            state,
+            {
+                payload
+            }: {
+                payload: {
+                    cmdId: number;
+                };
+            }
+        ) => {
+            const { cmdId } = payload;
+
+            const index = state.commandLogsEntries.findIndex(
+                entry => entry.cmdId === cmdId
+            );
+
+            assert(index >= 0);
+
+            state.commandLogsEntries.splice(index, 1);
+        },
+        "commandLogResponseReceived": (
+            state,
+            {
+                payload
+            }: {
+                payload: {
+                    cmdId: number;
+                    resp: string;
+                };
+            }
+        ) => {
+            const { cmdId, resp } = payload;
+
+            const entry = state.commandLogsEntries.find(entry => entry.cmdId === cmdId);
+
+            assert(entry !== undefined);
+
+            entry.resp = resp;
+        },
+        "workingDirectoryChanged": state => {
             state.directoryPath = undefined;
             state.directoryItems = [];
             state.isNavigationOngoing = false;

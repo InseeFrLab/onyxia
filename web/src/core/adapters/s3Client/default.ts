@@ -366,7 +366,7 @@ export function createS3Client(params: ParamsOfCreateS3Client): S3Client {
                 })
             );
         },
-        "getFileDownloadUrl": async ({ path }) => {
+        "getFileDownloadUrl": async ({ path, validityDurationSecond }) => {
             const { bucketName, objectName } = bucketNameAndObjectNameFromS3Path(path);
 
             const { minioClient, tokens } = await getMinioClient();
@@ -375,7 +375,7 @@ export function createS3Client(params: ParamsOfCreateS3Client): S3Client {
                 minioClient.presignedGetObject(
                     bucketName,
                     objectName,
-                    3600, //One hour
+                    validityDurationSecond,
                     (err, url: string) => {
                         if (err) {
                             reject(err);
