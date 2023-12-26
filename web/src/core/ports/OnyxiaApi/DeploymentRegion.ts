@@ -7,6 +7,7 @@ export type DeploymentRegion = {
     ingressClassName: string | undefined;
     ingress: boolean | undefined;
     route: boolean | undefined;
+    customValues: Record<string, unknown> | undefined;
     istio:
         | {
               enabled: boolean;

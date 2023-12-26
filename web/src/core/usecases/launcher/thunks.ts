@@ -461,7 +461,8 @@ const privateThunks = {
                     "nodeSelector": region.nodeSelector,
                     "startupProbe": region.startupProbe,
                     "sliders": region.sliders,
-                    "resources": region.resources
+                    "resources": region.resources,
+                    "customValues": region.customValues ?? {}
                 },
                 "k8s": {
                     "domain": region.kubernetesClusterDomain,

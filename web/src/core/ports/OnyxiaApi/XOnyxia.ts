@@ -11,10 +11,18 @@ export type XOnyxiaParams = {
      * are dynamically injected by the Onyxia launcher.
      *
      * Examples:
-     * "overwriteDefaultWith": "user.email"
+     * "overwriteDefaultWith": "user.email" ( You can also write "{{user.email}}" it's equivalent )
      * "overwriteDefaultWith": "{{project.id}}-{{k8s.randomSubdomain}}.{{k8s.domain}}"
+     * "overwriteDefaultWith": [ "a hardcoded value", "some other hardcoded value", "{{region.oauth2.clientId}}" ]
+     * "overwriteDefaultWith": { "foo": "bar", "bar": "{{region.oauth2.clientId}}" }
+     *
      */
-    overwriteDefaultWith?: string;
+    overwriteDefaultWith?:
+        | string
+        | number
+        | boolean
+        | unknown[]
+        | Record<string, unknown>;
     hidden?: boolean;
     readonly?: boolean;
     useRegionSliderConfig?: string;
@@ -65,6 +73,7 @@ export type XOnyxiaContext = {
         defaultIpProtection: boolean | undefined;
         defaultNetworkPolicy: boolean | undefined;
         allowedURIPattern: string;
+        customValues: Record<string, unknown> | undefined;
         kafka:
             | {
                   url: string;
