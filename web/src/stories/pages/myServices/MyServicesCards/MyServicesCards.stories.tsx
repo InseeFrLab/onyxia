@@ -43,7 +43,7 @@ const props: Props = {
     })),
     "catalogExplorerLink": { "href": url, "onClick": () => {} },
     "evtAction": new Evt(),
-    "getProjectServicePassword": () => Promise.resolve("xyz"),
+    "projectServicePassword": "abc",
     "getEnv": () => ({
         "foo": "foo value",
         "bar": "bar value",

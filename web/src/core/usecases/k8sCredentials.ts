@@ -1,7 +1,7 @@
 import { id } from "tsafe/id";
 import type { State as RootState, Thunks } from "core/bootstrap";
-import * as projectConfigs from "./projectConfigs";
-import * as deploymentRegion from "./deploymentRegion";
+import * as projectManagement from "core/usecases/projectManagement";
+import * as deploymentRegionSelection from "core/usecases/deploymentRegionSelection";
 import { parseUrl } from "core/tools/parseUrl";
 import { assert } from "tsafe/assert";
 import * as userAuthentication from "./userAuthentication";
@@ -96,7 +96,7 @@ export const thunks = {
         (...args): boolean => {
             const [, getState] = args;
 
-            const region = deploymentRegion.selectors.selectedDeploymentRegion(
+            const region = deploymentRegionSelection.selectors.currentDeploymentRegion(
                 getState()
             );
 
@@ -116,9 +116,8 @@ export const thunks = {
 
             dispatch(actions.refreshStarted());
 
-            const { kubernetes } = deploymentRegion.selectors.selectedDeploymentRegion(
-                getState()
-            );
+            const { kubernetes } =
+                deploymentRegionSelection.selectors.currentDeploymentRegion(getState());
 
             assert(kubernetes !== undefined);
 
@@ -149,7 +148,7 @@ export const thunks = {
                     "refreshToken": oidcTokens.refreshToken,
                     "idToken": oidcTokens.idToken,
                     "user": `oidc-${
-                        dispatch(userAuthentication.thunks.getUser()).username
+                        userAuthentication.selectors.user(getState()).username
                     }`,
                     "expirationTime": oidcTokens.refreshTokenExpirationTime
                 })
@@ -175,9 +174,9 @@ export const selectors = (() => {
     };
 
     const clusterUrl = createSelector(
-        deploymentRegion.selectors.selectedDeploymentRegion,
-        (selectedDeploymentRegion): string => {
-            const { kubernetes } = selectedDeploymentRegion;
+        deploymentRegionSelection.selectors.currentDeploymentRegion,
+        (region): string => {
+            const { kubernetes } = region;
 
             assert(kubernetes !== undefined);
 
@@ -186,7 +185,7 @@ export const selectors = (() => {
     );
 
     const namespace = createSelector(
-        projectConfigs.selectors.selectedProject,
+        projectManagement.selectors.currentProject,
         selectedProject => selectedProject.namespace
     );
 

@@ -20,7 +20,6 @@ export const ServicePassword = getStory(
         "type": "service password",
         "servicePassword":
             "xiLdIdjNdiF39djKxiLdIdjNdiF39djKdxiLdIdjNdiF39djKxiLdIdjNdiF39djKd",
-        "isLocked": false,
         ...logCallbacks(["onRequestServicePasswordRenewal", "onRequestCopy"])
     })
 );

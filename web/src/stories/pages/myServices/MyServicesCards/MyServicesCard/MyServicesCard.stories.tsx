@@ -22,8 +22,6 @@ export const ViewRegular = getStory({
     "isShared": true,
     "isOwned": false,
     "ownerUsername": "jdoe",
-    "s3TokenExpirationTime": Date.now() + 3600 * 1000,
-    "vaultTokenExpirationTime": Infinity,
     "evtAction": new Evt(),
     "getEnv": () => ({
         "foo": "foo value",
@@ -31,7 +29,7 @@ export const ViewRegular = getStory({
         "baz": "baz value"
     }),
     "getPoseInstallInstructions": () => "Post **install** instructions",
-    "getProjectServicePassword": () => Promise.resolve("password"),
+    "projectServicePassword": "xyz",
     ...logCallbacks(["onRequestDelete"])
 });
 
@@ -45,8 +43,6 @@ export const ViewStarting = getStory({
     "isShared": true,
     "isOwned": true,
     "ownerUsername": undefined,
-    "s3TokenExpirationTime": Infinity,
-    "vaultTokenExpirationTime": Infinity,
     "evtAction": new Evt(),
     "getEnv": () => ({
         "foo": "foo value",
@@ -54,6 +50,6 @@ export const ViewStarting = getStory({
         "baz": "baz value"
     }),
     "getPoseInstallInstructions": () => "Post **install** instructions",
-    "getProjectServicePassword": () => Promise.resolve("password"),
+    "projectServicePassword": "xyz",
     ...logCallbacks(["onRequestDelete"])
 });
