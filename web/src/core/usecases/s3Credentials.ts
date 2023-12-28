@@ -105,8 +105,8 @@ export const thunks = {
             const [, getState] = args;
 
             return (
-                deploymentRegionSelection.selectors.currentDeploymentRegion(getState())
-                    .s3Params?.sts !== undefined
+                deploymentRegionSelection.selectors.currentDeploymentRegion(getState()).s3
+                    ?.sts !== undefined
             );
         },
     /** Refresh is expected to be called whenever the component that use this slice mounts */
@@ -126,16 +126,16 @@ export const thunks = {
             dispatch(actions.refreshStarted());
 
             const { region, host, port } = (() => {
-                const { s3Params } =
+                const { s3 } =
                     deploymentRegionSelection.selectors.currentDeploymentRegion(
                         getState()
                     );
 
-                assert(s3Params !== undefined);
+                assert(s3 !== undefined);
 
-                const { host, port = 443 } = parseUrl(s3Params.url);
+                const { host, port = 443 } = parseUrl(s3.url);
 
-                const region = s3Params.region;
+                const region = s3.region;
 
                 return { region, host, port };
             })();

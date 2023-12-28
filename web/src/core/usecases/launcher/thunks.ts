@@ -390,7 +390,7 @@ const privateThunks = {
                         };
                     }
 
-                    if (region.s3Params?.sts === undefined) {
+                    if (region.s3?.sts === undefined) {
                         return {
                             "AWS_ACCESS_KEY_ID": "",
                             "AWS_SECRET_ACCESS_KEY": "",
@@ -407,7 +407,7 @@ const privateThunks = {
                         getState()
                     );
 
-                    const { host, port = 443 } = parseUrl(region.s3Params.url);
+                    const { host, port = 443 } = parseUrl(region.s3.url);
 
                     return {
                         ...(await (async () => {
@@ -433,7 +433,7 @@ const privateThunks = {
                             };
                         })()),
                         "AWS_BUCKET_NAME": (() => {
-                            const { workingDirectory } = region.s3Params;
+                            const { workingDirectory } = region.s3;
 
                             switch (workingDirectory.bucketMode) {
                                 case "multi":
@@ -445,10 +445,10 @@ const privateThunks = {
                             }
                             assert<Equals<typeof workingDirectory, never>>(true);
                         })(),
-                        "AWS_DEFAULT_REGION": region.s3Params.region ?? "",
+                        "AWS_DEFAULT_REGION": region.s3.region ?? "",
                         "AWS_S3_ENDPOINT": host,
                         port,
-                        "pathStyleAccess": region.s3Params.pathStyleAccess
+                        "pathStyleAccess": region.s3.pathStyleAccess
                     };
                 })(),
                 "region": {

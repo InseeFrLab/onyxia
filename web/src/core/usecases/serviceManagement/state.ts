@@ -56,7 +56,7 @@ export declare namespace RunningService {
     };
 }
 
-export const name = "serviceManager";
+export const name = "serviceManagement";
 
 export const { reducer, actions } = createUsecaseActions({
     name,

@@ -13,7 +13,6 @@ import type { AxiosResponse, AxiosRequestConfig } from "axios";
 import memoize from "memoizee";
 import { assert } from "tsafe/assert";
 import { is } from "tsafe/is";
-import { id } from "tsafe/id";
 import { compareVersions } from "compare-versions";
 import { injectXOnyxiaContextInValuesSchemaJson } from "./injectXOnyxiaContextInValuesSchemaJson";
 import type { ApiTypes } from "./ApiTypes";
@@ -100,6 +99,14 @@ export function createOnyxiaApi(params: {
                     );
                 }
 
+                const oidcParams =
+                    data.oidcConfiguration === undefined
+                        ? undefined
+                        : {
+                              "issuerUri": data.oidcConfiguration.issuerURI,
+                              "clientId": data.oidcConfiguration.clientID
+                          };
+
                 const regions = data.regions.map(
                     (apiRegion): DeploymentRegion => ({
                         "id": apiRegion.id,
@@ -113,6 +120,7 @@ export function createOnyxiaApi(params: {
                         "ingressClassName": apiRegion.services.expose.ingressClassName,
                         "ingress": apiRegion.services.expose.ingress,
                         "route": apiRegion.services.expose.route,
+                        "customValues": apiRegion.services.customValues,
                         "istio": apiRegion.services.expose.istio,
                         "initScriptUrl": apiRegion.services.initScript,
                         "s3": (() => {
@@ -122,39 +130,30 @@ export function createOnyxiaApi(params: {
                                 return undefined;
                             }
 
-                            const common: DeploymentRegion.S3Params.Common = {
-                                "monitoringUrlPattern": S3.monitoring?.URLPattern,
-                                "defaultDurationSeconds": S3.defaultDurationSeconds,
-                                "oidcParams":
-                                    S3.oidcConfiguration === undefined
+                            return {
+                                "url": S3.URL,
+                                "pathStyleAccess": S3.pathStyleAcess ?? true,
+                                "region": S3.region,
+                                "sts":
+                                    S3.sts === undefined
                                         ? undefined
                                         : {
-                                              "issuerUri": S3.oidcConfiguration.issuerURI,
-                                              "clientId": S3.oidcConfiguration.clientID
-                                          }
+                                              "durationSeconds": S3.sts.durationSeconds,
+                                              "role": S3.sts.role,
+                                              "oidcParams":
+                                                  S3.sts.oidcConfiguration === undefined
+                                                      ? undefined
+                                                      : {
+                                                            "issuerUri":
+                                                                S3.sts.oidcConfiguration
+                                                                    .issuerURI,
+                                                            "clientId":
+                                                                S3.sts.oidcConfiguration
+                                                                    .clientID
+                                                        }
+                                          },
+                                "workingDirectory": S3.workingDirectory
                             };
-
-                            return (() => {
-                                switch (S3.type) {
-                                    case "minio":
-                                        _s3url = S3.URL;
-                                        return id<DeploymentRegion.S3Params.Minio>({
-                                            "type": "minio",
-                                            "url": S3.URL,
-                                            "region": S3.region,
-                                            ...common
-                                        });
-                                    case "amazon":
-                                        _s3url = "https://s3.amazonaws.com";
-                                        return id<DeploymentRegion.S3Params.Amazon>({
-                                            "type": "amazon",
-                                            "region": S3.region,
-                                            "roleARN": S3.roleARN,
-                                            "roleSessionName": S3.roleSessionName,
-                                            ...common
-                                        });
-                                }
-                            })();
                         })(),
                         "allowedURIPatternForUserDefinedInitScript":
                             apiRegion.services.allowedURIPattern,
@@ -169,9 +168,9 @@ export function createOnyxiaApi(params: {
 
                             return { "url": URL, topicName };
                         })(),
-                        "from": apiRegion.services?.defaultConfiguration?.from,
                         "tolerations":
                             apiRegion.services?.defaultConfiguration?.tolerations,
+                        "from": apiRegion.services?.defaultConfiguration?.from,
                         "nodeSelector":
                             apiRegion.services.defaultConfiguration?.nodeSelector,
                         "startupProbe":
@@ -201,7 +200,6 @@ export function createOnyxiaApi(params: {
                             apiRegion.packageRepositoryInjection,
                         "certificateAuthorityInjection":
                             apiRegion.certificateAuthorityInjection,
-                        "customValues": apiRegion.services.customValues,
                         "kubernetes": (() => {
                             const { k8sPublicEndpoint } = apiRegion.services;
                             return k8sPublicEndpoint?.URL === undefined
@@ -226,14 +224,6 @@ export function createOnyxiaApi(params: {
                         "resources": apiRegion.services.defaultConfiguration?.resources
                     })
                 );
-
-                const oidcParams =
-                    data.oidcConfiguration === undefined
-                        ? undefined
-                        : {
-                              "issuerUri": data.oidcConfiguration.issuerURI,
-                              "clientId": data.oidcConfiguration.clientID
-                          };
 
                 return { regions, oidcParams };
             },

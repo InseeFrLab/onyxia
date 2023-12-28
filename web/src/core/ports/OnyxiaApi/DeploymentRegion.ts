@@ -15,8 +15,7 @@ export type DeploymentRegion = {
           }
         | undefined;
     initScriptUrl: string;
-    s3Params: DeploymentRegion.S3 | undefined;
-    doAllowS3ConfigurationByUser: boolean;
+    s3: DeploymentRegion.S3 | undefined;
     allowedURIPatternForUserDefinedInitScript: string;
     kafka:
         | {

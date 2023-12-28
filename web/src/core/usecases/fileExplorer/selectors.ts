@@ -148,7 +148,7 @@ const isFileExplorerEnabled = (rootState: RootState) => {
     const deploymentRegion =
         deploymentRegionSelection.selectors.currentDeploymentRegion(rootState);
 
-    if (deploymentRegion.s3Params?.sts !== undefined) {
+    if (deploymentRegion.s3?.sts !== undefined) {
         return { "isFileExplorerEnabled": true };
     }
 
@@ -176,9 +176,9 @@ const workingDirectoryPath = createSelector(
             return availableConfigs[indexForExplorer].workingDirectoryPath;
         }
 
-        assert(deploymentRegion.s3Params !== undefined);
+        assert(deploymentRegion.s3 !== undefined);
 
-        const { workingDirectory } = deploymentRegion.s3Params;
+        const { workingDirectory } = deploymentRegion.s3;
 
         const workingDirectoryPath: string = (() => {
             switch (workingDirectory.bucketMode) {

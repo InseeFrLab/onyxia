@@ -81,27 +81,37 @@ export type ApiTypes = {
             };
             data?: {
                 S3?: {
-                    monitoring?: {
-                        URLPattern: string;
+                    URL: string;
+                    pathStyleAcess?: true;
+
+                    region?: string;
+                    sts?: {
+                        durationSeconds?: number;
+                        role:
+                            | {
+                                  roleARN: string;
+                                  roleSessionName: string;
+                              }
+                            | undefined;
+                        oidcConfiguration?: {
+                            issuerURI?: string;
+                            clientID: string;
+                        };
                     };
-                    oidcConfiguration?: {
-                        issuerURI?: string;
-                        clientID: string;
-                    };
-                    defaultDurationSeconds?: number;
-                } & (
-                    | {
-                          type: "minio";
-                          URL: string;
-                          region?: string;
-                      }
-                    | {
-                          type: "amazon";
-                          region: string;
-                          roleARN: string;
-                          roleSessionName: string;
-                      }
-                );
+
+                    workingDirectory:
+                        | {
+                              bucketMode: "shared";
+                              bucketName: string;
+                              prefix: string;
+                              prefixGroup: string;
+                          }
+                        | {
+                              bucketMode: "multi";
+                              bucketNamePrefix: string;
+                              bucketNamePrefixGroup: string;
+                          };
+                };
             };
             vault?: {
                 URL: string;

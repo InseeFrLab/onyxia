@@ -216,11 +216,11 @@ export async function bootstrapCore(
             );
 
         const oidcForS3 =
-            deploymentRegion.s3Params?.sts === undefined
+            deploymentRegion.s3?.sts === undefined
                 ? undefined
                 : await createOidcOrFallback({
                       "oidcAdapterImplementationToUseIfNotFallingBack": "default",
-                      "oidcParams": deploymentRegion.s3Params.sts.oidcParams,
+                      "oidcParams": deploymentRegion.s3.sts.oidcParams,
                       "fallbackOidc": oidc
                   });
 
@@ -269,7 +269,7 @@ export async function bootstrapCore(
                     ];
                 }
 
-                if (deploymentRegion.s3Params?.sts === undefined) {
+                if (deploymentRegion.s3?.sts === undefined) {
                     return [undefined];
                 }
 
@@ -278,14 +278,14 @@ export async function bootstrapCore(
                 return [
                     id<ParamsOfCreateS3Client.Sts>({
                         "isStsEnabled": true,
-                        "url": deploymentRegion.s3Params.url,
-                        "pathStyleAccess": deploymentRegion.s3Params.pathStyleAccess,
-                        "region": deploymentRegion.s3Params.region,
+                        "url": deploymentRegion.s3.url,
+                        "pathStyleAccess": deploymentRegion.s3.pathStyleAccess,
+                        "region": deploymentRegion.s3.region,
                         "oidc": oidcForS3,
-                        "durationSeconds": deploymentRegion.s3Params.sts.durationSeconds,
-                        "role": deploymentRegion.s3Params.sts.role,
+                        "durationSeconds": deploymentRegion.s3.sts.durationSeconds,
+                        "role": deploymentRegion.s3.sts.role,
                         "nameOfBucketToCreateIfNotExist": (() => {
-                            const { workingDirectory } = deploymentRegion.s3Params;
+                            const { workingDirectory } = deploymentRegion.s3;
 
                             if (workingDirectory.bucketMode === "shared") {
                                 return undefined;

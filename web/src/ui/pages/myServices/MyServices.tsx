@@ -39,24 +39,24 @@ export default function MyServices(props: Props) {
     const { t: tCatalogLauncher } = useTranslation("Launcher");
 
     /* prettier-ignore */
-    const { serviceManager, restorableConfigManager, k8sCredentials } = useCore().functions;
+    const { serviceManagement, restorableConfigManager, k8sCredentials } = useCore().functions;
     /* prettier-ignore */
     const { restorableConfigs, chartIconAndFriendlyNameByRestorableConfigIndex } = useCoreState("restorableConfigManager", "main");
-    const isUpdating = useCoreState("serviceManager", "isUpdating");
-    const runningServices = useCoreState("serviceManager", "runningServices");
+    const isUpdating = useCoreState("serviceManagement", "isUpdating");
+    const runningServices = useCoreState("serviceManagement", "runningServices");
     const deletableRunningServiceHelmReleaseNames = useCoreState(
-        "serviceManager",
+        "serviceManagement",
         "deletableRunningServiceHelmReleaseNames"
     );
     const isThereOwnedSharedServices = useCoreState(
-        "serviceManager",
+        "serviceManagement",
         "isThereOwnedSharedServices"
     );
     const isThereNonOwnedServices = useCoreState(
-        "serviceManager",
+        "serviceManagement",
         "isThereNonOwnedServices"
     );
-    const commandLogsEntries = useCoreState("serviceManager", "commandLogsEntries");
+    const commandLogsEntries = useCoreState("serviceManagement", "commandLogsEntries");
 
     const { isCommandBarEnabled } = useCoreState("userConfigs", "userConfigs");
     const { servicePassword } = useCoreState(
@@ -70,7 +70,7 @@ export default function MyServices(props: Props) {
                 routes.catalog().push();
                 return;
             case "refresh":
-                serviceManager.update();
+                serviceManagement.update();
                 return;
             case "trash":
                 const dDoProceed = new Deferred<boolean>();
@@ -85,7 +85,7 @@ export default function MyServices(props: Props) {
                 }
 
                 deletableRunningServiceHelmReleaseNames.map(helmReleaseName =>
-                    serviceManager.stopService({ helmReleaseName })
+                    serviceManagement.stopService({ helmReleaseName })
                 );
 
                 return;
@@ -93,7 +93,7 @@ export default function MyServices(props: Props) {
     });
 
     useEffect(() => {
-        const { setInactive } = serviceManager.setActive();
+        const { setInactive } = serviceManagement.setActive();
         return () => setInactive();
     }, []);
 
@@ -247,7 +247,7 @@ export default function MyServices(props: Props) {
                 return;
             }
 
-            serviceManager.stopService({ helmReleaseName });
+            serviceManagement.stopService({ helmReleaseName });
         }
     );
 
@@ -310,9 +310,9 @@ export default function MyServices(props: Props) {
                                 catalogExplorerLink={catalogExplorerLink}
                                 evtAction={evtMyServiceCardsAction}
                                 projectServicePassword={servicePassword}
-                                getEnv={serviceManager.getEnv}
+                                getEnv={serviceManagement.getEnv}
                                 getPostInstallInstructions={
-                                    serviceManager.getPostInstallInstructions
+                                    serviceManagement.getPostInstallInstructions
                                 }
                             />
                         )}
