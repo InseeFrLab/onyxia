@@ -138,18 +138,18 @@ const main = createSelector(
 );
 
 const isFileExplorerEnabled = (rootState: RootState) => {
-    const { isUserLoggedIn } =
-        userAuthentication.selectors.authenticationState(rootState);
-
-    if (!isUserLoggedIn) {
-        return { "isFileExplorerEnabled": false };
-    }
-
     const deploymentRegion =
         deploymentRegionManagement.selectors.currentDeploymentRegion(rootState);
 
     if (deploymentRegion.s3?.sts !== undefined) {
         return { "isFileExplorerEnabled": true };
+    }
+
+    const { isUserLoggedIn } =
+        userAuthentication.selectors.authenticationState(rootState);
+
+    if (!isUserLoggedIn) {
+        return { "isFileExplorerEnabled": false };
     }
 
     const { indexForExplorer } =
