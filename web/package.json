@@ -68,7 +68,7 @@
         "react-code-blocks": "^0.0.9-0",
         "react-dom": "^18.2.0",
         "react-scripts": "5.0.1",
-        "redux-clean-architecture": "^4.2.0",
+        "redux-clean-architecture": "^4.2.1",
         "run-exclusive": "^2.2.19",
         "screen-scaler": "^1.2.7",
         "shell-quote": "^1.7.2",
