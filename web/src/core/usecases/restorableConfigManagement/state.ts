@@ -21,7 +21,7 @@ export type RestorableConfig = {
     formFieldsValueDifferentFromDefault: FormFieldValue[];
 };
 
-export const name = "restorableConfigManager";
+export const name = "restorableConfigManagement";
 
 export const { reducer, actions } = createUsecaseActions({
     name,

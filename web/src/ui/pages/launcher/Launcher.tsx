@@ -84,7 +84,7 @@ export default function Launcher(props: Props) {
 
     const scrollableDivRef = useStateRef<HTMLDivElement>(null);
 
-    const { launcher, restorableConfigManager, k8sCredentials } = useCore().functions;
+    const { launcher, restorableConfigManagement, k8sCredentials } = useCore().functions;
 
     const { showSplashScreen, hideSplashScreen } = useSplashScreen();
 
@@ -231,7 +231,7 @@ export default function Launcher(props: Props) {
         assert(restorableConfig !== undefined);
 
         if (isRestorableConfigSaved) {
-            restorableConfigManager.deleteRestorableConfig({ restorableConfig });
+            restorableConfigManagement.deleteRestorableConfig({ restorableConfig });
         } else {
             if (groupProjectName !== undefined) {
                 const doProceed = new Deferred<boolean>();
@@ -246,7 +246,7 @@ export default function Launcher(props: Props) {
                 }
             }
 
-            restorableConfigManager.saveRestorableConfig({ restorableConfig });
+            restorableConfigManagement.saveRestorableConfig({ restorableConfig });
         }
     });
 

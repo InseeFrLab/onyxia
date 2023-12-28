@@ -322,7 +322,7 @@ export async function bootstrapCore(
     }
 
     if (oidc.isUserLoggedIn) {
-        await dispatch(usecases.restorableConfigManager.protectedThunks.initialize());
+        await dispatch(usecases.restorableConfigManagement.protectedThunks.initialize());
     }
 
     if (oidc.isUserLoggedIn) {

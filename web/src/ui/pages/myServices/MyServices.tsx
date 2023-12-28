@@ -39,9 +39,9 @@ export default function MyServices(props: Props) {
     const { t: tCatalogLauncher } = useTranslation("Launcher");
 
     /* prettier-ignore */
-    const { serviceManagement, restorableConfigManager, k8sCredentials } = useCore().functions;
+    const { serviceManagement, restorableConfigManagement, k8sCredentials } = useCore().functions;
     /* prettier-ignore */
-    const { restorableConfigs, chartIconAndFriendlyNameByRestorableConfigIndex } = useCoreState("restorableConfigManager", "main");
+    const { restorableConfigs, chartIconAndFriendlyNameByRestorableConfigIndex } = useCoreState("restorableConfigManagement", "main");
     const isUpdating = useCoreState("serviceManagement", "isUpdating");
     const runningServices = useCoreState("serviceManagement", "runningServices");
     const deletableRunningServiceHelmReleaseNames = useCoreState(
@@ -128,7 +128,7 @@ export default function MyServices(props: Props) {
     const onRequestDeleteRestorableConfig = useConstCallback<
         MyServicesRestorableConfigsProps["onRequestDelete"]
     >(({ restorableConfigIndex }) => {
-        restorableConfigManager.deleteRestorableConfig({
+        restorableConfigManagement.deleteRestorableConfig({
             "restorableConfig": restorableConfigs[restorableConfigIndex]
         });
     });

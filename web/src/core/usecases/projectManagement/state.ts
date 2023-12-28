@@ -1,5 +1,5 @@
 import type { Project } from "core/ports/OnyxiaApi";
-import type { RestorableConfig } from "core/usecases/restorableConfigManager";
+import type { RestorableConfig } from "core/usecases/restorableConfigManagement";
 import { assert, type Equals } from "tsafe/assert";
 import {
     createUsecaseActions,

@@ -12,7 +12,7 @@ import type { IndexedFormFields } from "../FormField";
 import { createGetIsFieldHidden } from "./getIsFieldHidden";
 import * as yaml from "yaml";
 import { name, type State } from "../state";
-import * as restorableConfigManager from "core/usecases/restorableConfigManager";
+import * as restorableConfigManagement from "core/usecases/restorableConfigManagement";
 import * as projectManagement from "core/usecases/projectManagement";
 import * as userConfigs from "core/usecases/userConfigs";
 import { exclude } from "tsafe/exclude";
@@ -354,7 +354,7 @@ const restorableConfig = createSelector(
         chartVersion,
         formFields,
         pathOfFormFieldsWhoseValuesAreDifferentFromDefault
-    ): restorableConfigManager.RestorableConfig | undefined => {
+    ): restorableConfigManagement.RestorableConfig | undefined => {
         if (!isReady) {
             return undefined;
         }
@@ -382,7 +382,7 @@ const restorableConfig = createSelector(
 const isRestorableConfigSaved = createSelector(
     isReady,
     restorableConfig,
-    restorableConfigManager.protectedSelectors.restorableConfigs,
+    restorableConfigManagement.protectedSelectors.restorableConfigs,
     (isReady, restorableConfig, restorableConfigs) => {
         if (!isReady) {
             return undefined;
@@ -392,7 +392,7 @@ const isRestorableConfigSaved = createSelector(
 
         return (
             restorableConfigs.find(restorableConfig_i =>
-                restorableConfigManager.getAreSameRestorableConfig(
+                restorableConfigManagement.getAreSameRestorableConfig(
                     restorableConfig_i,
                     restorableConfig
                 )
@@ -584,7 +584,7 @@ const catalogName = createSelector(readyState, state => state?.catalogName);
 const isThereASavedConfigWithThisFriendlyName = createSelector(
     isReady,
     friendlyName,
-    restorableConfigManager.protectedSelectors.savedConfigFriendlyNames,
+    restorableConfigManagement.protectedSelectors.savedConfigFriendlyNames,
     (isReady, friendlyName, savedConfigFriendlyNames) => {
         if (!isReady) {
             return undefined;

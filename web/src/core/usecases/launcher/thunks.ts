@@ -27,7 +27,7 @@ import * as yaml from "yaml";
 import type { Equals } from "tsafe";
 import { actions, name, type State } from "./state";
 import { generateRandomPassword } from "core/tools/generateRandomPassword";
-import * as restorableConfigManager from "core/usecases/restorableConfigManager";
+import * as restorableConfigManagement from "core/usecases/restorableConfigManagement";
 import { privateSelectors } from "./selectors";
 import { Evt } from "evt";
 
@@ -515,7 +515,7 @@ const privateThunks = {
             const sensitiveConfigurations: FormFieldValue[] | undefined = (() => {
                 if (
                     !dispatch(
-                        restorableConfigManager.protectedThunks.getIsRestorableConfigSaved(
+                        restorableConfigManagement.protectedThunks.getIsRestorableConfigSaved(
                             {
                                 "restorableConfig": {
                                     catalogId,
