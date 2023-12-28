@@ -82,7 +82,7 @@ export type ApiTypes = {
             data?: {
                 S3?: {
                     URL: string;
-                    pathStyleAcess?: true;
+                    pathStyleAccess?: true;
 
                     region?: string;
                     sts?: {

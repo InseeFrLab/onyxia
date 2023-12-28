@@ -15,7 +15,7 @@ import {
 } from "core/ports/OnyxiaApi";
 import * as publicIpUsecase from "../publicIp";
 import * as userAuthentication from "../userAuthentication";
-import * as deploymentRegionSelection from "core/usecases/deploymentRegionSelection";
+import * as deploymentRegionManagement from "core/usecases/deploymentRegionManagement";
 import * as projectManagement from "core/usecases/projectManagement";
 import * as userConfigsUsecase from "core/usecases/userConfigs";
 import { bucketNameAndObjectNameFromS3Path } from "core/adapters/s3Client/utils/bucketNameAndObjectNameFromS3Path";
@@ -284,7 +284,7 @@ const privateThunks = {
 
             const userConfigs = userConfigsUsecase.selectors.userConfigs(getState());
 
-            const region = deploymentRegionSelection.selectors.currentDeploymentRegion(
+            const region = deploymentRegionManagement.selectors.currentDeploymentRegion(
                 getState()
             );
 

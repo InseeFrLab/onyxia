@@ -1,5 +1,5 @@
 import * as catalog from "./catalog";
-import * as deploymentRegionSelection from "./deploymentRegionSelection";
+import * as deploymentRegionManagement from "./deploymentRegionManagement";
 import * as fileExplorer from "./fileExplorer";
 import * as secretExplorer from "./secretExplorer";
 import * as launcher from "./launcher";
@@ -19,7 +19,7 @@ import * as projectManagement from "./projectManagement";
 
 export const usecases = {
     catalog,
-    deploymentRegionSelection,
+    deploymentRegionManagement,
     fileExplorer,
     secretExplorer,
     launcher,

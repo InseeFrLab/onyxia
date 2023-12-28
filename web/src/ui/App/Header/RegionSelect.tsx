@@ -15,13 +15,13 @@ type Props = {
 export function RegionSelect(props: Props) {
     const { className, tRegion } = props;
 
-    const { regionSelection } = useCore().functions;
+    const { deploymentRegionManagement } = useCore().functions;
     const availableDeploymentRegionIds = useCoreState(
-        "regionSelection",
+        "deploymentRegionManagement",
         "availableDeploymentRegionIds"
     );
     const { id: currentDeploymentRegionId } = useCoreState(
-        "regionSelection",
+        "deploymentRegionManagement",
         "currentDeploymentRegion"
     );
 
@@ -29,7 +29,7 @@ export function RegionSelect(props: Props) {
         async (props: { deploymentRegionId: string }) => {
             const { deploymentRegionId } = props;
 
-            regionSelection.changeDeploymentRegion({
+            deploymentRegionManagement.changeDeploymentRegion({
                 deploymentRegionId,
                 "reload": () => {
                     window.location.reload();

@@ -1,7 +1,7 @@
 import { id } from "tsafe/id";
 import type { State as RootState, Thunks } from "core/bootstrap";
 import * as projectManagement from "core/usecases/projectManagement";
-import * as deploymentRegionSelection from "core/usecases/deploymentRegionSelection";
+import * as deploymentRegionManagement from "core/usecases/deploymentRegionManagement";
 import { parseUrl } from "core/tools/parseUrl";
 import { assert } from "tsafe/assert";
 import * as userAuthentication from "./userAuthentication";
@@ -96,7 +96,7 @@ export const thunks = {
         (...args): boolean => {
             const [, getState] = args;
 
-            const region = deploymentRegionSelection.selectors.currentDeploymentRegion(
+            const region = deploymentRegionManagement.selectors.currentDeploymentRegion(
                 getState()
             );
 
@@ -116,7 +116,7 @@ export const thunks = {
 
             dispatch(actions.refreshStarted());
 
-            const region = deploymentRegionSelection.selectors.currentDeploymentRegion(
+            const region = deploymentRegionManagement.selectors.currentDeploymentRegion(
                 getState()
             );
 
@@ -175,7 +175,7 @@ export const selectors = (() => {
     };
 
     const clusterUrl = createSelector(
-        deploymentRegionSelection.selectors.currentDeploymentRegion,
+        deploymentRegionManagement.selectors.currentDeploymentRegion,
         (region): string => {
             const { kubernetes } = region;
 

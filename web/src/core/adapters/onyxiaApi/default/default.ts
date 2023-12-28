@@ -132,7 +132,7 @@ export function createOnyxiaApi(params: {
 
                             return {
                                 "url": S3.URL,
-                                "pathStyleAccess": S3.pathStyleAcess ?? true,
+                                "pathStyleAccess": S3.pathStyleAccess ?? true,
                                 "region": S3.region,
                                 "sts":
                                     S3.sts === undefined

@@ -9,7 +9,7 @@ type State = {
     currentDeploymentRegionId: string;
 };
 
-export const name = "regionSelection";
+export const name = "deploymentRegionManagement";
 
 export const { reducer, actions } = createUsecaseActions({
     name,

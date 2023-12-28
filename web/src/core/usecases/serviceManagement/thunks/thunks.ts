@@ -1,5 +1,5 @@
 import { id } from "tsafe/id";
-import * as deploymentRegionSelection from "core/usecases/deploymentRegionSelection";
+import * as deploymentRegionManagement from "core/usecases/deploymentRegionManagement";
 import * as projectManagement from "core/usecases/projectManagement";
 import type { Thunks } from "core/bootstrap";
 import { exclude } from "tsafe/exclude";
@@ -93,7 +93,7 @@ export const thunks = {
                 const { helmReleaseName } = params;
 
                 const region =
-                    deploymentRegionSelection.selectors.currentDeploymentRegion(
+                    deploymentRegionManagement.selectors.currentDeploymentRegion(
                         getState()
                     );
 

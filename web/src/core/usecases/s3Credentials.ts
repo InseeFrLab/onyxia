@@ -1,7 +1,7 @@
 import "minimal-polyfills/Object.fromEntries";
 import { id } from "tsafe/id";
 import type { State as RootState, Thunks } from "core/bootstrap";
-import * as deploymentRegionSelection from "./deploymentRegionSelection";
+import * as deploymentRegionManagement from "core/usecases/deploymentRegionManagement";
 import { parseUrl } from "core/tools/parseUrl";
 import { assert } from "tsafe/assert";
 import { createUsecaseActions, createSelector } from "redux-clean-architecture";
@@ -105,8 +105,8 @@ export const thunks = {
             const [, getState] = args;
 
             return (
-                deploymentRegionSelection.selectors.currentDeploymentRegion(getState()).s3
-                    ?.sts !== undefined
+                deploymentRegionManagement.selectors.currentDeploymentRegion(getState())
+                    .s3?.sts !== undefined
             );
         },
     /** Refresh is expected to be called whenever the component that use this slice mounts */
@@ -127,7 +127,7 @@ export const thunks = {
 
             const { region, host, port } = (() => {
                 const { s3 } =
-                    deploymentRegionSelection.selectors.currentDeploymentRegion(
+                    deploymentRegionManagement.selectors.currentDeploymentRegion(
                         getState()
                     );
 

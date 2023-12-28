@@ -3,7 +3,7 @@ import memoize from "memoizee";
 import { type State, name } from "./state";
 import { createSelector } from "redux-clean-architecture";
 import { assert, type Equals } from "tsafe/assert";
-import * as deploymentRegionSelection from "core/usecases/deploymentRegionSelection";
+import * as deploymentRegionManagement from "core/usecases/deploymentRegionManagement";
 import * as userConfigs from "core/usecases/userConfigs";
 import * as userAuthentication from "core/usecases/userAuthentication";
 import * as projectManagement from "core/usecases/projectManagement";
@@ -146,7 +146,7 @@ const isFileExplorerEnabled = (rootState: RootState) => {
     }
 
     const deploymentRegion =
-        deploymentRegionSelection.selectors.currentDeploymentRegion(rootState);
+        deploymentRegionManagement.selectors.currentDeploymentRegion(rootState);
 
     if (deploymentRegion.s3?.sts !== undefined) {
         return { "isFileExplorerEnabled": true };
@@ -159,7 +159,7 @@ const isFileExplorerEnabled = (rootState: RootState) => {
 };
 
 const workingDirectoryPath = createSelector(
-    deploymentRegionSelection.selectors.currentDeploymentRegion,
+    deploymentRegionManagement.selectors.currentDeploymentRegion,
     projectManagement.selectors.currentProject,
     projectManagement.selectors.currentProjectConfigs,
     userAuthentication.selectors.user,

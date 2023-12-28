@@ -77,7 +77,7 @@ export async function bootstrapCore(
                 }
 
                 try {
-                    return usecases.deploymentRegionSelection.selectors.currentDeploymentRegion(
+                    return usecases.deploymentRegionManagement.selectors.currentDeploymentRegion(
                         getState()
                     ).id;
                 } catch (error) {
@@ -148,19 +148,22 @@ export async function bootstrapCore(
 
     await dispatch(usecases.userAuthentication.protectedThunks.initialize());
 
-    await dispatch(usecases.deploymentRegionSelection.protectedThunks.initialize());
+    await dispatch(usecases.deploymentRegionManagement.protectedThunks.initialize());
 
     init_secrets_manager: {
         if (!oidc.isUserLoggedIn) {
             break init_secrets_manager;
         }
 
-        /* prettier-ignore */
-        const deploymentRegion = usecases.deploymentRegionSelection.selectors.currentDeploymentRegion(getState());
+        const deploymentRegion =
+            usecases.deploymentRegionManagement.selectors.currentDeploymentRegion(
+                getState()
+            );
 
         if (deploymentRegion.vault === undefined) {
-            /* prettier-ignore */
-            const { createSecretManager } = await import("core/adapters/secretManager/mock");
+            const { createSecretManager } = await import(
+                "core/adapters/secretManager/mock"
+            );
 
             context.secretsManager = createSecretManager();
             break init_secrets_manager;
@@ -211,7 +214,7 @@ export async function bootstrapCore(
         ]);
 
         const deploymentRegion =
-            usecases.deploymentRegionSelection.selectors.currentDeploymentRegion(
+            usecases.deploymentRegionManagement.selectors.currentDeploymentRegion(
                 getState()
             );
 
