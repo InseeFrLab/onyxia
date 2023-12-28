@@ -75,7 +75,7 @@
         "stream-http": "^3.2.0",
         "tsafe": "^1.6.5",
         "tss-react": "^4.9.3",
-        "type-route": "^0.6.0",
+        "type-route": "^1.1.0",
         "url-join-ts": "^1.0.5",
         "xterm": "^4.17.0",
         "xterm-addon-fit": "^0.5.0",
