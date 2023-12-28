@@ -102,7 +102,9 @@ export const thunks = {
                     .replace("$INSTANCE", helmReleaseName.replace(/^\//, ""));
             };
 
-            const { username } = await onyxiaApi.getUser();
+            const {
+                user: { username }
+            } = await onyxiaApi.getUserAndProjects();
 
             dispatch(
                 actions.updateCompleted({
@@ -152,15 +154,12 @@ export const thunks = {
                                     "urls": urls.sort(),
                                     "isStarting": !rest.isStarting
                                         ? false
-                                        : (rest.prStarted.then(
-                                              ({ isConfirmedJustStarted }) =>
-                                                  dispatch(
-                                                      actions.serviceStarted({
-                                                          helmReleaseName,
-                                                          "doOverwriteStaredAtToNow":
-                                                              isConfirmedJustStarted
-                                                      })
-                                                  )
+                                        : (rest.prStarted.then(() =>
+                                              dispatch(
+                                                  actions.serviceStarted({
+                                                      helmReleaseName
+                                                  })
+                                              )
                                           ),
                                           true),
                                     "hasPostInstallInstructions":

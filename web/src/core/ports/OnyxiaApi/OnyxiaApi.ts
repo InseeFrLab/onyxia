@@ -26,8 +26,8 @@ export type OnyxiaApi = {
         clear: () => void;
     };
 
-    getUserProjects: {
-        (): Promise<Project[]>;
+    getUserAndProjects: {
+        (): Promise<{ user: User; projects: Project[] }>;
         clear: () => void;
     };
 
@@ -64,6 +64,4 @@ export type OnyxiaApi = {
     helmUninstall: (params: { helmReleaseName: string }) => Promise<void>;
 
     onboard: () => Promise<void>;
-
-    getUser: () => Promise<User>;
 };

@@ -108,11 +108,10 @@ export const { reducer, actions } = createUsecaseActions({
             }: {
                 payload: {
                     helmReleaseName: string;
-                    doOverwriteStaredAtToNow: boolean;
                 };
             }
         ) => {
-            const { helmReleaseName, doOverwriteStaredAtToNow } = payload;
+            const { helmReleaseName } = payload;
 
             assert(state.stateDescription === "ready");
 
@@ -130,10 +129,8 @@ export const { reducer, actions } = createUsecaseActions({
 
             runningService.isStarting = false;
 
-            if (doOverwriteStaredAtToNow) {
-                //NOTE: Harmless hack to improve UI readability.
-                runningService.startedAt = Date.now();
-            }
+            //NOTE: Harmless hack to improve UI readability.
+            runningService.startedAt = Date.now();
         },
         "serviceStopped": (
             state,

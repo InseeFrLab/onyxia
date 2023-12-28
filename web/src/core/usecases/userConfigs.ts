@@ -181,7 +181,7 @@ const privateThunks = {
         async (...args): Promise<string> => {
             const [, , { onyxiaApi }] = args;
 
-            const userProject = (await onyxiaApi.getUserProjects()).find(
+            const userProject = (await onyxiaApi.getUserAndProjects()).projects.find(
                 project => project.group === undefined
             );
 

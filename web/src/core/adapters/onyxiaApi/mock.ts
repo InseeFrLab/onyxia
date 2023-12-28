@@ -5,20 +5,6 @@ import memoize from "memoizee";
 export const onyxiaApi: OnyxiaApi = {
     "getIp": memoize(() => Promise.resolve("0.0.0.0"), { "promise": true }),
     "onboard": () => Promise.resolve(),
-    "getUserProjects": memoize(
-        () =>
-            Promise.resolve([
-                {
-                    "id": "my-project",
-                    "name": "my project",
-                    "bucket": "my-project",
-                    "group": undefined,
-                    "namespace": "my-namespace",
-                    "vaultTopDir": "my-top-dir"
-                }
-            ]),
-        { "promise": true }
-    ),
     "getAvailableRegionsAndOidcParams": memoize(
         () =>
             Promise.resolve({
@@ -56,13 +42,25 @@ export const onyxiaApi: OnyxiaApi = {
             }),
         { "promise": true }
     ),
-    "getUser": memoize(
+    "getUserAndProjects": memoize(
         () =>
             Promise.resolve({
-                "username": "doej",
-                "email": "john.doe@insee.fr",
-                "familyName": "Doe",
-                "firstName": "John"
+                "user": {
+                    "username": "doej",
+                    "email": "john.doe@insee.fr",
+                    "familyName": "Doe",
+                    "firstName": "John"
+                },
+                "projects": [
+                    {
+                        "id": "my-project",
+                        "name": "my project",
+                        "bucket": "my-project",
+                        "group": undefined,
+                        "namespace": "my-namespace",
+                        "vaultTopDir": "my-top-dir"
+                    }
+                ]
             }),
         { "promise": true }
     ),

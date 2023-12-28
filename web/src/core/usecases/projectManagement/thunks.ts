@@ -18,7 +18,7 @@ export const thunks = {
 
             const { projectId } = params;
 
-            const projects = await onyxiaApi.getUserProjects();
+            const { projects } = await onyxiaApi.getUserAndProjects();
 
             const projectVaultTopDirPath = (() => {
                 const project = projects.find(({ id }) => id === projectId);
@@ -173,7 +173,7 @@ export const protectedThunks = {
         async (...args) => {
             const [dispatch, getState, { onyxiaApi }] = args;
 
-            const projects = await onyxiaApi.getUserProjects();
+            const { projects } = await onyxiaApi.getUserAndProjects();
 
             let { selectedProjectId } = userConfigs.selectors.userConfigs(getState());
 

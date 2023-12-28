@@ -40,7 +40,7 @@ export const protectedThunks = {
                         ? { "isUserLoggedIn": false }
                         : {
                               "isUserLoggedIn": true,
-                              "user": await onyxiaApi.getUser()
+                              "user": (await onyxiaApi.getUserAndProjects()).user
                           }
                 )
             );
