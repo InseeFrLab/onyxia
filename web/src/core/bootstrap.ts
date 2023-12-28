@@ -87,27 +87,20 @@ export async function bootstrapCore(
                     throw error;
                 }
             },
-            "getCurrentProjectIdAndGroup": () => {
+            "getCurrentProjectId": () => {
                 if (!isCoreCreated) {
                     return undefined;
                 }
 
-                let id: string;
-                let group: string | undefined;
-
                 try {
-                    const project = usecases.projectManagement.selectors.currentProject(
-                        getState()
-                    );
-                    id = project.id;
-                    group = project.group;
+                    return usecases.projectManagement.selectors.currentProject(getState())
+                        .id;
                 } catch (error) {
                     if (error instanceof AccessError) {
                         return undefined;
                     }
                     throw error;
                 }
-                return { id, group };
             }
         });
     })();

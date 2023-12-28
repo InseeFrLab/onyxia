@@ -22,47 +22,23 @@ export function createOnyxiaApi(params: {
     /** undefined if user not logged in */
     getOidcAccessToken: () => string | undefined;
     getCurrentRegionId: () => string | undefined;
-    getCurrentProjectIdAndGroup: () =>
-        | {
-              id: string;
-              group: string | undefined;
-          }
-        | undefined;
+    getCurrentProjectId: () => string | undefined;
 }): OnyxiaApi {
-    const { url, getOidcAccessToken, getCurrentRegionId, getCurrentProjectIdAndGroup } =
-        params;
+    const { url, getOidcAccessToken, getCurrentRegionId, getCurrentProjectId } = params;
 
     const { axiosInstance } = (() => {
         const axiosInstance = axios.create({ "baseURL": url, "timeout": 120_000 });
-
-        if (getOidcAccessToken !== undefined) {
-            axiosInstance.interceptors.request.use(config => ({
-                ...(config as any),
-                "headers": {
-                    ...config.headers,
-                    ...(() => {
-                        const accessToken = getOidcAccessToken();
-
-                        if (accessToken === undefined) {
-                            return {};
-                        }
-
-                        return {
-                            "Authorization": `Bearer ${accessToken}`
-                        };
-                    })()
-                },
-                "Content-Type": "application/json;charset=utf-8",
-                "Accept": "application/json;charset=utf-8"
-            }));
-        }
 
         axiosInstance.interceptors.request.use(config => ({
             ...config,
             "headers": {
                 ...config?.headers,
+                "Authorization": (accessToken =>
+                    accessToken === undefined ? undefined : `Bearer ${accessToken}`)(
+                    getOidcAccessToken()
+                ),
                 "ONYXIA-REGION": getCurrentRegionId(),
-                "ONYXIA-PROJECT": getCurrentProjectIdAndGroup()?.id
+                "ONYXIA-PROJECT": getCurrentProjectId()
             }
         }));
 
@@ -302,14 +278,9 @@ export function createOnyxiaApi(params: {
             },
             { "promise": true }
         ),
-        "onboard": async () => {
-            const projectIdAndGroup = getCurrentProjectIdAndGroup();
-            assert(projectIdAndGroup !== undefined);
-
+        "onboard": async ({ group }) => {
             try {
-                await axiosInstance.post("/onboarding", {
-                    "group": projectIdAndGroup.group
-                });
+                await axiosInstance.post("/onboarding", { group });
             } catch (error) {
                 assert(is<any>(error));
 

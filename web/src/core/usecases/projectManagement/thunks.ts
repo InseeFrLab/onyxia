@@ -20,12 +20,14 @@ export const thunks = {
 
             const { projects } = await onyxiaApi.getUserAndProjects();
 
-            const projectVaultTopDirPath = (() => {
+            const { projectVaultTopDirPath, group } = (() => {
                 const project = projects.find(({ id }) => id === projectId);
 
                 assert(project !== undefined);
 
-                return project.vaultTopDir;
+                const { vaultTopDir: projectVaultTopDirPath, group } = project;
+
+                return { projectVaultTopDirPath, group };
             })();
 
             await dispatch(privateThunks.__configMigration({ projectVaultTopDirPath }));
@@ -48,7 +50,7 @@ export const thunks = {
                     break onboarding;
                 }
 
-                await onyxiaApi.onboard();
+                await onyxiaApi.onboard({ group });
 
                 await secretsManager.put({
                     "path": pathJoin(
