@@ -5,13 +5,13 @@ import { assert, type Equals } from "tsafe/assert";
 import type { Thunks } from "core/bootstrap";
 import * as projectManagement from "core/usecases/projectManagement";
 import { Chart } from "core/ports/OnyxiaApi";
-import { actions, type State, type RestorableConfig } from "./state";
+import { actions, type State } from "./state";
 import { readFriendlyName, protectedSelectors } from "./selectors";
 
 export const protectedThunks = {
     "initialize":
         () =>
-        async (...args) => {
+        (...args) => {
             const [dispatch, , { onyxiaApi }] = args;
 
             // NOTE: We don't want to block the initialization
@@ -20,11 +20,11 @@ export const protectedThunks = {
                 const { catalogs, chartsByCatalogId } =
                     await onyxiaApi.getCatalogsAndCharts();
 
-                const chartIconUrlByChartNameAndCatalogId: State.ChartIconUrlByChartNameAndCatalogId =
+                const chartIconUrlByChartNameAndCatalogId: State["chartIconUrlByChartNameAndCatalogId"] =
                     {};
 
                 catalogs.forEach(({ id: catalogId }) => {
-                    const chartIconUrlByChartName: State.ChartIconUrlByChartNameAndCatalogId[string] =
+                    const chartIconUrlByChartName: State["chartIconUrlByChartNameAndCatalogId"][string] =
                         {};
 
                     chartsByCatalogId[catalogId].forEach(chart => {
@@ -39,13 +39,11 @@ export const protectedThunks = {
                         chartIconUrlByChartName;
                 });
 
-                dispatch(
-                    actions.chartIconsFetched({ chartIconUrlByChartNameAndCatalogId })
-                );
+                dispatch(actions.initialized({ chartIconUrlByChartNameAndCatalogId }));
             })();
         },
     "getIsRestorableConfigSaved":
-        (params: { restorableConfig: RestorableConfig }) =>
+        (params: { restorableConfig: projectManagement.State.RestorableConfig }) =>
         (...args): boolean => {
             const [, getState] = args;
 
@@ -63,7 +61,7 @@ export const protectedThunks = {
 
 export const thunks = {
     "saveRestorableConfig":
-        (params: { restorableConfig: RestorableConfig }) =>
+        (params: { restorableConfig: projectManagement.State.RestorableConfig }) =>
         async (...args) => {
             const [dispatch, getState] = args;
 
@@ -115,7 +113,7 @@ export const thunks = {
             );
         },
     "deleteRestorableConfig":
-        (params: { restorableConfig: RestorableConfig }) =>
+        (params: { restorableConfig: projectManagement.State.RestorableConfig }) =>
         async (...args) => {
             const [dispatch, getState] = args;
 
@@ -147,8 +145,8 @@ export const thunks = {
 } satisfies Thunks;
 
 export function getAreSameRestorableConfig(
-    restorableConfiguration1: RestorableConfig,
-    restorableConfiguration2: RestorableConfig
+    restorableConfiguration1: projectManagement.State.RestorableConfig,
+    restorableConfiguration2: projectManagement.State.RestorableConfig
 ): boolean {
     return [restorableConfiguration1, restorableConfiguration2]
         .map(

@@ -1,6 +1,6 @@
 import { createSelector } from "redux-clean-architecture";
 import type { State as RootState } from "core/bootstrap";
-import { name, type RestorableConfig } from "./state";
+import { name } from "./state";
 import { same } from "evt/tools/inDepth/same";
 import { assert } from "tsafe/assert";
 import { onyxiaFriendlyNameFormFieldPath } from "core/ports/OnyxiaApi";
@@ -16,7 +16,9 @@ const restorableConfigs = (rootState: RootState) => {
     return [...restorableConfigs].reverse();
 };
 
-export function readFriendlyName(restorableConfig: RestorableConfig): string {
+export function readFriendlyName(
+    restorableConfig: projectManagement.State.RestorableConfig
+): string {
     const userSetFriendlyName = restorableConfig.formFieldsValueDifferentFromDefault.find(
         ({ path }) => same(path, onyxiaFriendlyNameFormFieldPath.split("."))
     )?.value;

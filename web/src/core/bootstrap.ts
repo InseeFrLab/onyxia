@@ -315,7 +315,7 @@ export async function bootstrapCore(
     }
 
     if (oidc.isUserLoggedIn) {
-        await dispatch(usecases.restorableConfigManagement.protectedThunks.initialize());
+        dispatch(usecases.restorableConfigManagement.protectedThunks.initialize());
     }
 
     if (oidc.isUserLoggedIn) {

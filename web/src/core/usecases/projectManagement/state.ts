@@ -1,5 +1,5 @@
 import type { Project } from "core/ports/OnyxiaApi";
-import type { RestorableConfig } from "core/usecases/restorableConfigManagement";
+import type { FormFieldValue } from "core/usecases/launcher/FormField";
 import { assert, type Equals } from "tsafe/assert";
 import {
     createUsecaseActions,
@@ -22,6 +22,13 @@ export namespace State {
         secretAccessKey: string;
         sessionToken: string | undefined;
         pathStyleAccess: boolean;
+    };
+
+    export type RestorableConfig = {
+        catalogId: string;
+        chartName: string;
+        chartVersion: string;
+        formFieldsValueDifferentFromDefault: FormFieldValue[];
     };
 
     export type ProjectConfigs = {
