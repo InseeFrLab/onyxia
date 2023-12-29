@@ -239,7 +239,7 @@ export function createS3Client(params: ParamsOfCreateS3Client): S3Client {
                 )
             );
 
-            if (!doExist) {
+            if (doExist) {
                 hasBucketBeenCreated = true;
                 return;
             }
