@@ -191,7 +191,6 @@ export default function MyFiles(props: Props) {
                 onDeleteItem={onDeleteItem}
                 onCreateDirectory={onCreateDirectory}
                 onCopyPath={onCopyPath}
-                pathMinDepth={1}
                 scrollableDivRef={scrollableDivRef}
                 {...{
                     "isFileOpen": false as const,
