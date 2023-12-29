@@ -180,18 +180,20 @@ const workingDirectoryPath = createSelector(
 
         const { workingDirectory } = deploymentRegion.s3;
 
+        console.log({ workingDirectory });
+
         const workingDirectoryPath: string = (() => {
             switch (workingDirectory.bucketMode) {
                 case "multi":
                     return project.group === undefined
-                        ? `${workingDirectory.bucketNamePrefixGroup}${project.group}`
-                        : `${workingDirectory.bucketNamePrefix}${user.username}`;
+                        ? `${workingDirectory.bucketNamePrefix}${user.username}`
+                        : `${workingDirectory.bucketNamePrefixGroup}${project.group}`;
                 case "shared":
                     return [
                         workingDirectory.bucketName,
                         project.group === undefined
-                            ? `${workingDirectory.prefix}${project.group}`
-                            : `${workingDirectory.prefixGroup}${user.username}`
+                            ? `${workingDirectory.prefix}${user.username}`
+                            : `${workingDirectory.prefixGroup}${project.group}`
                     ].join("/");
             }
             assert<Equals<typeof workingDirectory, never>>(true);

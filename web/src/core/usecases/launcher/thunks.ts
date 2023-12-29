@@ -438,8 +438,8 @@ const privateThunks = {
                             switch (workingDirectory.bucketMode) {
                                 case "multi":
                                     return project.group === undefined
-                                        ? `${workingDirectory.bucketNamePrefixGroup}${project.group}`
-                                        : `${workingDirectory.bucketNamePrefix}${user.username}`;
+                                        ? `${workingDirectory.bucketNamePrefix}${user.username}`
+                                        : `${workingDirectory.bucketNamePrefixGroup}${project.group}`;
                                 case "shared":
                                     return workingDirectory.bucketName;
                             }
