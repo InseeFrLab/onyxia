@@ -180,8 +180,6 @@ const workingDirectoryPath = createSelector(
 
         const { workingDirectory } = deploymentRegion.s3;
 
-        console.log({ workingDirectory });
-
         const workingDirectoryPath: string = (() => {
             switch (workingDirectory.bucketMode) {
                 case "multi":
