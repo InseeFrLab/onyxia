@@ -299,7 +299,7 @@ export async function bootstrapCore(
 
                             return project.group === undefined
                                 ? `${workingDirectory.bucketNamePrefix}${username}`
-                                : `${workingDirectory.bucketNamePrefix}${project.group}`;
+                                : `${workingDirectory.bucketNamePrefixGroup}${project.group}`;
                         })()
                     })
                 ];
