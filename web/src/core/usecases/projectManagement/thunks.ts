@@ -148,6 +148,14 @@ export const privateThunks = {
             });
 
             restorableConfigsStr: {
+                const { files } = await secretsManager.list({
+                    "path": projectConfigVaultDirPath
+                });
+
+                if (!files.includes("restorableConfigsStr")) {
+                    break restorableConfigsStr;
+                }
+
                 const path = pathJoin(projectConfigVaultDirPath, "restorableConfigsStr");
 
                 const value = await secretsManager
