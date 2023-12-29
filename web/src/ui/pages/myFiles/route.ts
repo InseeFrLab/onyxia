@@ -1,10 +1,9 @@
 import { createRouter, defineRoute, createGroup, param, type Route } from "type-route";
-import { paramPathTrailingOptional } from "ui/tools/typeRouteParamPathTrailingOptional";
 
 export const routeDefs = {
     "myFiles": defineRoute(
         {
-            "path": paramPathTrailingOptional,
+            "path": param.path.trailing.optional.string,
             "openFile": param.query.optional.string
         },
         ({ path }) => `/my-files/${path}`
