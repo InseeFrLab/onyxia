@@ -5,9 +5,7 @@ import { generateRandomPassword } from "core/tools/generateRandomPassword";
 import { actions, type State, type ChangeConfigValueParams } from "./state";
 import type { Secret } from "core/ports/SecretsManager";
 import { selectors } from "./selectors";
-import { createUsecaseContextApi } from "redux-clean-architecture";
 import * as userConfigs from "core/usecases/userConfigs";
-import { Mutex } from "async-mutex";
 import { same } from "evt/tools/inDepth";
 
 export const thunks = {
@@ -32,34 +30,41 @@ export const thunks = {
 
             await dispatch(privateThunks.__configMigration({ projectVaultTopDirPath }));
 
-            const projectConfigs = Object.fromEntries(
+            const projectConfigVaultDirPath = getProjectConfigVaultDirPath({
+                projectVaultTopDirPath
+            });
+
+            //TODO: Test what happens if there is a trailing slash on the path when listing
+            const { files } = await secretsManager.list({
+                "path": projectConfigVaultDirPath
+            });
+
+            const projectConfigs: State.ProjectConfigs = Object.fromEntries(
                 await Promise.all(
-                    keys.map(key =>
-                        dispatch(
-                            privateThunks.getRemoteConfigValue({
-                                projectVaultTopDirPath,
-                                key
-                            })
-                        ).then(value => [key, value] as const)
-                    )
+                    keys.map(async key => {
+                        if (!files.includes(key)) {
+                            if (key === "onboardingTimestamp") {
+                                await onyxiaApi.onboard({ group });
+                            }
+
+                            const value = getDefaultConfig(key);
+
+                            await secretsManager.put({
+                                "path": pathJoin(projectConfigVaultDirPath, key),
+                                "secret": valueToSecret(value)
+                            });
+
+                            return [key, value] as const;
+                        }
+
+                        const { secret } = await secretsManager.get({
+                            "path": pathJoin(projectConfigVaultDirPath, key)
+                        });
+
+                        return [key, secretToValue(secret)] as const;
+                    })
                 )
-            ) as State.ProjectConfigs;
-
-            onboarding: {
-                if (projectConfigs.isOnboarded) {
-                    break onboarding;
-                }
-
-                await onyxiaApi.onboard({ group });
-
-                await secretsManager.put({
-                    "path": pathJoin(
-                        getProjectConfigVaultDirPath({ projectVaultTopDirPath }),
-                        "isOnboarded"
-                    ),
-                    "secret": valueToSecret(true)
-                });
-            }
+            ) as any;
 
             dispatch(
                 actions.projectChanged({
@@ -91,7 +96,7 @@ export const thunks = {
 
 const keys = [
     "servicePassword",
-    "isOnboarded",
+    "onboardingTimestamp",
     "restorableConfigs",
     "customS3Configs"
 ] as const;
@@ -99,43 +104,6 @@ const keys = [
 assert<Equals<(typeof keys)[number], keyof State.ProjectConfigs>>();
 
 export const privateThunks = {
-    "getRemoteConfigValue":
-        <K extends keyof State.ProjectConfigs>(params: {
-            projectVaultTopDirPath: string;
-            key: K;
-        }) =>
-        async (...args): Promise<State.ProjectConfigs[K]> => {
-            const { key, projectVaultTopDirPath } = params;
-
-            const [, , rootContext] = args;
-
-            const { secretsManager } = rootContext;
-
-            const path = pathJoin(
-                getProjectConfigVaultDirPath({ projectVaultTopDirPath }),
-                key
-            );
-
-            let value = await secretsManager
-                .get({ path })
-                .then(({ secret }) => secretToValue(secret) as State.ProjectConfigs[K])
-                .catch(cause => new Error(String(cause), { cause }));
-
-            if (value instanceof Error) {
-                value = getDefaultConfig(key);
-
-                const { mutexByKey } = getContext(rootContext);
-
-                await mutexByKey[key].runExclusive(async () =>
-                    secretsManager.put({
-                        path,
-                        "secret": valueToSecret(value)
-                    })
-                );
-            }
-
-            return value;
-        },
     "__configMigration":
         (params: { projectVaultTopDirPath: string }) =>
         async (...args) => {
@@ -205,39 +173,42 @@ export const protectedThunks = {
         async (...args) => {
             const [dispatch, getState, rootContext] = args;
 
-            const { mutexByKey } = getContext(rootContext);
-
             const { secretsManager } = rootContext;
 
             const { id: projectId } = selectors.currentProject(getState());
 
-            await mutexByKey[params.key].runExclusive(async () => {
-                if (selectors.currentProject(getState()).id !== projectId) {
-                    return;
-                }
+            if (selectors.currentProject(getState()).id !== projectId) {
+                return;
+            }
 
-                const currentLocalValue = selectors.currentProjectConfigs(getState())[
-                    params.key
-                ];
+            const currentLocalValue = selectors.currentProjectConfigs(getState())[
+                params.key
+            ];
 
-                if (same(currentLocalValue, params.value)) {
-                    return;
-                }
+            if (same(currentLocalValue, params.value)) {
+                return;
+            }
 
-                dispatch(actions.configValueUpdated(params));
+            dispatch(actions.configValueUpdated(params));
 
-                const projectVaultTopDirPath = selectors.currentProject(
-                    getState()
-                ).vaultTopDir;
+            const path = pathJoin(
+                getProjectConfigVaultDirPath({
+                    "projectVaultTopDirPath": selectors.currentProject(getState())
+                        .vaultTopDir
+                }),
+                params.key
+            );
 
-                const currentRemoteValue = await dispatch(
-                    privateThunks.getRemoteConfigValue({
-                        "key": params.key,
-                        projectVaultTopDirPath
+            {
+                const currentRemoteValue = await secretsManager
+                    .get({
+                        path
                     })
-                );
+                    .then(
+                        ({ secret }) => secretToValue(secret) as State.ProjectConfigs[K]
+                    );
 
-                if (!same(currentLocalValue, currentLocalValue)) {
+                if (!same(currentLocalValue, currentRemoteValue)) {
                     alert(
                         [
                             `Someone in the group has updated the value of ${params.key} to`,
@@ -247,24 +218,14 @@ export const protectedThunks = {
                     window.location.reload();
                     return;
                 }
+            }
 
-                await secretsManager.put({
-                    "path": pathJoin(
-                        getProjectConfigVaultDirPath({ projectVaultTopDirPath }),
-                        params.key
-                    ),
-                    "secret": valueToSecret(params.value)
-                });
+            await secretsManager.put({
+                path,
+                "secret": valueToSecret(params.value)
             });
         }
 } satisfies Thunks;
-
-const { getContext } = createUsecaseContextApi(() => ({
-    "mutexByKey": Object.fromEntries(keys.map(key => [key, new Mutex()])) as Record<
-        keyof State.ProjectConfigs,
-        Mutex
-    >
-}));
 
 function getDefaultConfig<K extends keyof State.ProjectConfigs>(
     key_: K
@@ -276,8 +237,8 @@ function getDefaultConfig<K extends keyof State.ProjectConfigs>(
             // @ts-expect-error
             return out;
         }
-        case "isOnboarded": {
-            const out: State.ProjectConfigs[typeof key] = false;
+        case "onboardingTimestamp": {
+            const out: State.ProjectConfigs[typeof key] = Date.now();
             // @ts-expect-error
             return out;
         }

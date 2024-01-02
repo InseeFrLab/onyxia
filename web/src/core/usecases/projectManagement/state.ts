@@ -32,8 +32,8 @@ export namespace State {
     };
 
     export type ProjectConfigs = {
+        onboardingTimestamp: number;
         servicePassword: string;
-        isOnboarded: boolean;
         restorableConfigs: RestorableConfig[];
         customS3Configs: {
             availableConfigs: State.CustomS3Config[];
