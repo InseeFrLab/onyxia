@@ -34,7 +34,6 @@ export const thunks = {
                 projectVaultTopDirPath
             });
 
-            //TODO: Test what happens if there is a trailing slash on the path when listing
             const { files } = await secretsManager.list({
                 "path": projectConfigVaultDirPath
             });
@@ -115,11 +114,11 @@ export const privateThunks = {
                 projectVaultTopDirPath
             });
 
-            restorableConfigsStr: {
-                const { files } = await secretsManager.list({
-                    "path": projectConfigVaultDirPath
-                });
+            const { files } = await secretsManager.list({
+                "path": projectConfigVaultDirPath
+            });
 
+            restorableConfigsStr: {
                 if (!files.includes("restorableConfigsStr")) {
                     break restorableConfigsStr;
                 }
@@ -128,7 +127,7 @@ export const privateThunks = {
 
                 const value = await secretsManager
                     .get({ path })
-                    .then(({ secret }) => secret.value as string)
+                    .then(({ secret }) => secret.value as string | null)
                     .catch(cause => new Error(String(cause), { cause }));
 
                 if (value instanceof Error) {
@@ -136,6 +135,10 @@ export const privateThunks = {
                 }
 
                 await secretsManager.delete({ path });
+
+                if (value === null) {
+                    break restorableConfigsStr;
+                }
 
                 await secretsManager.put({
                     "path": pathJoin(projectConfigVaultDirPath, "restorableConfigs"),
