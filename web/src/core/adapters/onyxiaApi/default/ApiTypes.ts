@@ -160,8 +160,8 @@ export type ApiTypes = {
                         description?: string;
                         version: string;
                         type: "library" | "application";
-                        icon?: string | undefined;
-                        home?: string | undefined;
+                        icon?: string;
+                        home?: string;
                     }[]
                 >;
             };
@@ -191,7 +191,7 @@ export type ApiTypes = {
             tasks: {
                 containers: { ready: boolean }[];
             }[];
-            postInstallInstructions: string | undefined;
+            postInstallInstructions?: string;
             chart: string;
             appVersion: string;
             revision: string;
