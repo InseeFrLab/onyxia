@@ -429,7 +429,7 @@ export function createOnyxiaApi(params: {
                     "appVersion": apiApp.appVersion,
                     "revision": apiApp.revision,
                     ...(() => {
-                        const [chartName] = apiApp.chart.split(/-[0-9]+\.[0-9]+\.[0-9]+/);
+                        const [chartName] = apiApp.chart.split(/-\d+\.\d+\.\d+/);
 
                         const [, chartVersion] = apiApp.chart.split(`${chartName}-`);
 
