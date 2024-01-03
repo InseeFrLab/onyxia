@@ -577,11 +577,15 @@ export function createOnyxiaApi(params: {
                                   `${config.method?.toUpperCase()} ${config.baseURL}${
                                       config.url
                                   }`,
-                                  response === undefined
-                                      ? error.message === "Network Error"
-                                          ? "Network Error"
-                                          : "No response"
-                                      : `Response: ${response.status} ${response.statusText}`
+                                  (() => {
+                                      if (response === undefined) {
+                                          return error.message === "Network Error"
+                                              ? "Network Error"
+                                              : "No response";
+                                      }
+
+                                      return `Response: ${response.status} ${response.statusText}`;
+                                  })()
                               ].join("\n");
 
                     alert(message);
