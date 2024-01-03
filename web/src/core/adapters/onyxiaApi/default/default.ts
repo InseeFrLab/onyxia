@@ -152,26 +152,26 @@ export function createOnyxiaApi(params: {
                             apiRegion.services.defaultConfiguration?.nodeSelector,
                         "startupProbe":
                             apiRegion.services.defaultConfiguration?.startupProbe,
-                        "vault": (() => {
-                            const { vault } = apiRegion;
-                            return vault === undefined
+                        "vault":
+                            apiRegion.vault === undefined
                                 ? undefined
                                 : {
-                                      "url": vault.URL,
-                                      "kvEngine": vault.kvEngine,
-                                      "role": vault.role,
-                                      "authPath": vault.authPath,
+                                      "url": apiRegion.vault.URL,
+                                      "kvEngine": apiRegion.vault.kvEngine,
+                                      "role": apiRegion.vault.role,
+                                      "authPath": apiRegion.vault.authPath,
                                       "oidcParams":
-                                          vault.oidcConfiguration === undefined
+                                          apiRegion.vault.oidcConfiguration === undefined
                                               ? undefined
                                               : {
                                                     "issuerUri":
-                                                        vault.oidcConfiguration.issuerURI,
+                                                        apiRegion.vault.oidcConfiguration
+                                                            .issuerURI,
                                                     "clientId":
-                                                        vault.oidcConfiguration.clientID
+                                                        apiRegion.vault.oidcConfiguration
+                                                            .clientID
                                                 }
-                                  };
-                        })(),
+                                  },
                         "proxyInjection": apiRegion.proxyInjection,
                         "packageRepositoryInjection":
                             apiRegion.packageRepositoryInjection,
@@ -179,23 +179,25 @@ export function createOnyxiaApi(params: {
                             apiRegion.certificateAuthorityInjection,
                         "kubernetes": (() => {
                             const { k8sPublicEndpoint } = apiRegion.services;
-                            return k8sPublicEndpoint?.URL === undefined
-                                ? undefined
-                                : {
-                                      "url": k8sPublicEndpoint.URL,
-                                      "oidcParams":
-                                          k8sPublicEndpoint.oidcConfiguration ===
-                                          undefined
-                                              ? undefined
-                                              : {
-                                                    "issuerUri":
-                                                        k8sPublicEndpoint
-                                                            .oidcConfiguration.issuerURI,
-                                                    "clientId":
-                                                        k8sPublicEndpoint
-                                                            .oidcConfiguration.clientID
-                                                }
-                                  };
+
+                            if (k8sPublicEndpoint?.URL === undefined) {
+                                return undefined;
+                            }
+
+                            return {
+                                "url": k8sPublicEndpoint.URL,
+                                "oidcParams":
+                                    k8sPublicEndpoint.oidcConfiguration === undefined
+                                        ? undefined
+                                        : {
+                                              "issuerUri":
+                                                  k8sPublicEndpoint.oidcConfiguration
+                                                      .issuerURI,
+                                              "clientId":
+                                                  k8sPublicEndpoint.oidcConfiguration
+                                                      .clientID
+                                          }
+                            };
                         })(),
                         "sliders": apiRegion.services.defaultConfiguration?.sliders ?? {},
                         "resources": apiRegion.services.defaultConfiguration?.resources
