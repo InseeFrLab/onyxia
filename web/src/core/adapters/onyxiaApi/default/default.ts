@@ -114,6 +114,7 @@ export function createOnyxiaApi(params: {
                                     S3.sts === undefined
                                         ? undefined
                                         : {
+                                              "url": S3.sts.URL,
                                               "durationSeconds": S3.sts.durationSeconds,
                                               "role": S3.sts.role,
                                               "oidcParams":

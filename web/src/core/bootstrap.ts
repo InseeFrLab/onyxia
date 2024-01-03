@@ -273,8 +273,9 @@ export async function bootstrapCore(
 
                 return [
                     id<ParamsOfCreateS3Client.Sts>({
-                        "isStsEnabled": true,
                         "url": deploymentRegion.s3.url,
+                        "isStsEnabled": true,
+                        "stsUrl": deploymentRegion.s3.sts.url,
                         "pathStyleAccess": deploymentRegion.s3.pathStyleAccess,
                         "region": deploymentRegion.s3.region,
                         "oidc": oidcForS3,

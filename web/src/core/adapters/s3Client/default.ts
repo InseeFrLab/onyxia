@@ -32,6 +32,7 @@ export namespace ParamsOfCreateS3Client {
 
     export type Sts = Common & {
         isStsEnabled: true;
+        stsUrl: string | undefined;
         region: string | undefined;
         oidc: Oidc.LoggedIn;
         durationSeconds: number | undefined;
@@ -81,7 +82,7 @@ export function createS3Client(params: ParamsOfCreateS3Client): S3Client {
 
                         const { data } = await axios
                             .create({
-                                "baseURL": params.url,
+                                "baseURL": params.stsUrl ?? params.url,
                                 "headers": {
                                     "Accept": "*/*"
                                 }

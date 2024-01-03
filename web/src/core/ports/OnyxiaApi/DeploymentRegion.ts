@@ -122,6 +122,7 @@ export namespace DeploymentRegion {
          */
         sts:
             | {
+                  url: string | undefined;
                   /**
                    * The duration for which the temporary credentials are valid.
                    * For AWS: maximum of 43200 seconds (12 hours).

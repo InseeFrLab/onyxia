@@ -86,6 +86,7 @@ export type ApiTypes = {
 
                     region?: string;
                     sts?: {
+                        URL?: string;
                         durationSeconds?: number;
                         role:
                             | {
