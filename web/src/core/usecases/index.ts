@@ -3,7 +3,6 @@ import * as deploymentRegionManagement from "./deploymentRegionManagement";
 import * as fileExplorer from "./fileExplorer";
 import * as secretExplorer from "./secretExplorer";
 import * as launcher from "./launcher";
-import * as publicIp from "./publicIp";
 import * as restorableConfigManagement from "./restorableConfigManagement";
 import * as serviceManagement from "./serviceManagement";
 import * as userAuthentication from "./userAuthentication";
@@ -23,7 +22,6 @@ export const usecases = {
     fileExplorer,
     secretExplorer,
     launcher,
-    publicIp,
     restorableConfigManagement,
     serviceManagement,
     userAuthentication,

@@ -3,7 +3,7 @@ import { createPropertyThatThrowIfAccessed } from "redux-clean-architecture/tool
 import memoize from "memoizee";
 
 export const onyxiaApi: OnyxiaApi = {
-    "getIp": memoize(() => Promise.resolve("0.0.0.0"), { "promise": true }),
+    "getIp": () => Promise.resolve("0.0.0.0"),
     "onboard": () => Promise.resolve(),
     "getAvailableRegionsAndOidcParams": memoize(
         () =>

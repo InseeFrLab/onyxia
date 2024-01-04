@@ -13,7 +13,6 @@ import {
     onyxiaFriendlyNameFormFieldPath,
     onyxiaIsSharedFormFieldPath
 } from "core/ports/OnyxiaApi";
-import * as publicIpUsecase from "../publicIp";
 import * as userAuthentication from "../userAuthentication";
 import * as deploymentRegionManagement from "core/usecases/deploymentRegionManagement";
 import * as projectManagement from "core/usecases/projectManagement";
@@ -276,9 +275,8 @@ const privateThunks = {
             const [
                 dispatch,
                 getState,
-                { paramsOfBootstrapCore, secretsManager, s3Client }
+                { paramsOfBootstrapCore, secretsManager, s3Client, onyxiaApi }
             ] = args;
-            const { publicIp } = await dispatch(publicIpUsecase.thunks.fetch());
 
             const user = userAuthentication.selectors.user(getState());
 
@@ -304,7 +302,7 @@ const privateThunks = {
                     "name": `${user.familyName} ${user.firstName}`,
                     "email": user.email,
                     "password": servicePassword,
-                    "ip": !doInjectPersonalInfos ? "0.0.0.0" : publicIp,
+                    "ip": !doInjectPersonalInfos ? "0.0.0.0" : await onyxiaApi.getIp(),
                     "darkMode": userConfigs.isDarkModeEnabled,
                     "lang": paramsOfBootstrapCore.getCurrentLang()
                 },

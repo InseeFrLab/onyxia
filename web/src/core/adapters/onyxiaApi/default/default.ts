@@ -46,13 +46,13 @@ export function createOnyxiaApi(params: {
     })();
 
     const onyxiaApi: OnyxiaApi = {
-        "getIp": memoize(async () => {
+        "getIp": async () => {
             const { data } = await axiosInstance.get<ApiTypes["/public/ip"]>(
                 "/public/ip"
             );
 
             return data.ip;
-        }),
+        },
         "getAvailableRegionsAndOidcParams": memoize(
             async () => {
                 const { data } = await axiosInstance.get<

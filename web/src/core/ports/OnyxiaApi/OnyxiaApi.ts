@@ -21,10 +21,7 @@ export type OnyxiaApi = {
         clear: () => void;
     };
 
-    getIp: {
-        (): Promise<string>;
-        clear: () => void;
-    };
+    getIp: () => Promise<string>;
 
     getUserAndProjects: {
         (): Promise<{ user: User; projects: Project[] }>;

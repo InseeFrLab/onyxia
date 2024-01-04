@@ -1,4 +1,4 @@
-import { useEffect, memo } from "react";
+import { memo } from "react";
 import { useTranslation } from "ui/i18n";
 import { SettingSectionHeader } from "ui/shared/SettingSectionHeader";
 import { SettingField } from "ui/shared/SettingField";
@@ -19,26 +19,16 @@ export const AccountInfoTab = memo((props: Props) => {
 
     const { t } = useTranslation({ AccountInfoTab });
 
-    const {
-        publicIp: { fetch: fetchPublicIp },
-        projectManagement,
-        userAccountManagement
-    } = useCore().functions;
+    const { projectManagement, userAccountManagement } = useCore().functions;
 
     const onRequestCopyFactory = useCallbackFactory(([textToCopy]: [string]) =>
         copyToClipboard(textToCopy)
     );
 
-    /* prettier-ignore */
-    const publicIp = useCoreState("publicIp", "main") ?? "Loading...";
-
     const { servicePassword } = useCoreState(
         "projectManagement",
         "currentProjectConfigs"
     );
-
-    /* prettier-ignore */
-    useEffect(() => { fetchPublicIp(); }, []);
 
     const user = useCoreState("userAuthentication", "user");
 
@@ -92,12 +82,6 @@ export const AccountInfoTab = memo((props: Props) => {
                 onRequestServicePasswordRenewal={() =>
                     projectManagement.renewServicePassword()
                 }
-            />
-            <SettingField
-                type="text"
-                title={t("ip address")}
-                text={publicIp}
-                onRequestCopy={onRequestCopyFactory(publicIp)}
             />
         </div>
     );
