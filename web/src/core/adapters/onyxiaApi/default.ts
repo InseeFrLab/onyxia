@@ -428,6 +428,10 @@ export function createOnyxiaApi(params: {
                                                         "projectHomepageUrl": home
                                                     })
                                                 )
+                                                .filter(
+                                                    ({ version }) =>
+                                                        !version.includes("-")
+                                                )
                                                 // Most recent version first
                                                 .sort((a, b) =>
                                                     compareVersions(b.version, a.version)
