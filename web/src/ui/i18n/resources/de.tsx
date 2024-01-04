@@ -2,6 +2,9 @@ import type { Translations } from "../types";
 import MuiLink from "@mui/material/Link";
 import { Markdown } from "ui/shared/Markdown";
 import { elementsToSentence } from "ui/tools/elementsToSentence";
+import { Icon } from "onyxia-ui/Icon";
+import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
+import { id } from "tsafe/id";
 
 export const translations: Translations<"de"> = {
     /* spell-checker: disable */
@@ -100,6 +103,45 @@ export const translations: Translations<"de"> = {
         ),
         "expires in": ({ howMuchTime }) => `Das Token läuft in ${howMuchTime} ab`
     },
+    "ProjectSettings": {
+        "page header title": "Projekteinstellungen",
+        "page header help title": ({ groupProjectName }) =>
+            groupProjectName === undefined
+                ? "Einstellungen Ihres persönlichen Projekts"
+                : `Einstellungen für "${groupProjectName}"`,
+        "page header help content": ({
+            groupProjectName,
+            doesUserBelongToSomeGroupProject
+        }) => (
+            <>
+                Diese Seite ermöglicht es Ihnen, die Einstellungen zu konfigurieren, die
+                auf
+                {groupProjectName === undefined
+                    ? " Ihr persönliches Projekt"
+                    : ` das ${groupProjectName}`}{" "}
+                angewendet werden.
+                <br />
+                {groupProjectName !== undefined && (
+                    <>
+                        Beachten Sie, dass {groupProjectName} ein Gruppenprojekt ist, das
+                        mit anderen Benutzern geteilt wird; die hier vorgenommenen
+                        Änderungen gelten für alle Mitglieder des Projekts.
+                        <br />
+                    </>
+                )}
+                {doesUserBelongToSomeGroupProject && (
+                    <>
+                        Sie können zwischen Ihren Projekten wechseln, indem Sie das
+                        Dropdown-Menü in der Kopfzeile verwenden.
+                        <br />
+                    </>
+                )}
+                Beachten Sie, dass nur Ihr Onyxia-Instanzadministrator neue Projekte
+                erstellen kann.
+            </>
+        ),
+        "security info": "Sicherheitsinformationen"
+    },
     "AccountUserInterfaceTab": {
         "title": "Konfiguration der Benutzeroberfläche",
         "enable dark mode": "Dunkelmodus aktivieren",
@@ -126,9 +168,31 @@ export const translations: Translations<"de"> = {
     "SettingField": {
         "copy tooltip": "In die Zwischenablage kopieren",
         "language": "Sprache ändern",
-        "service password": "Passwort für Ihre Dienste",
-        "service password helper text": `Dieses Passwort ist erforderlich, um sich bei allen Ihren Diensten anzumelden. 
-            Es wird automatisch generiert und regelmäßig erneuert.`,
+        "service password": "Standarddienstpasswort",
+        "service password helper text": ({ groupProjectName }) => (
+            <>
+                Dies ist das Standardpasswort, das verwendet wird, um Ihre laufenden
+                Dienste zu schützen. <br />
+                Wenn Sie einen Dienst starten, wird das Passwortfeld im Sicherheitstab
+                automatisch mit diesem Passwort ausgefüllt. <br />
+                Ein Klick auf das{" "}
+                <Icon
+                    size="extra small"
+                    icon={id<MuiIconComponentName>("Refresh")}
+                />{" "}
+                Symbol generiert ein neues zufälliges Passwort. Beachten Sie jedoch, dass
+                es das Passwort für bereits laufende Dienste nicht aktualisiert. <br />
+                Das Dienstpasswort ist das, was Onyxia Sie auffordert, in Ihre
+                Zwischenablage zu kopieren, bevor Sie auf einen laufenden Dienst
+                zugreifen. <br />
+                {groupProjectName !== undefined && (
+                    <>
+                        Bitte beachten Sie, dass dieses Passwort unter allen Mitgliedern
+                        des Projekts ({groupProjectName}) geteilt wird.
+                    </>
+                )}
+            </>
+        ),
         "not yet defined": "Noch nicht definiert",
         "reset helper dialogs": "Hilfsdialoge zurücksetzen",
         "reset": "Zurücksetzen",
@@ -305,6 +369,7 @@ export const translations: Translations<"de"> = {
         "reduce": "Reduzieren",
         "home": "Startseite",
         "account": "Mein Konto",
+        "projectSettings": "Projekteinstellungen",
         "catalog": "Servicekatalog",
         "myServices": "Meine Dienste",
         "mySecrets": "Meine Geheimnisse",

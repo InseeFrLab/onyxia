@@ -17,6 +17,7 @@ const className = css({ "width": 900 });
 export const ServicePassword = getStory(
     id<Props.ServicePassword>({
         className,
+        "groupProjectName": "projet-sspcloud-admin",
         "type": "service password",
         "servicePassword":
             "xiLdIdjNdiF39djKxiLdIdjNdiF39djKdxiLdIdjNdiF39djKxiLdIdjNdiF39djKd",

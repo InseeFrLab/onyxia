@@ -2,6 +2,9 @@ import type { Translations } from "../types";
 import MuiLink from "@mui/material/Link";
 import { Markdown } from "ui/shared/Markdown";
 import { elementsToSentence } from "ui/tools/elementsToSentence";
+import { Icon } from "onyxia-ui/Icon";
+import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
+import { id } from "tsafe/id";
 
 export const translations: Translations<"fr"> = {
     /* spell-checker: disable */
@@ -104,6 +107,44 @@ export const translations: Translations<"fr"> = {
         ),
         "expires in": ({ howMuchTime }) => `Le token expire in ${howMuchTime}`
     },
+    "ProjectSettings": {
+        "page header title": "Paramètres du projet",
+        "page header help title": ({ groupProjectName }) =>
+            groupProjectName === undefined
+                ? "Paramètres de votre projet personnel"
+                : `Paramètres pour "${groupProjectName}"`,
+        "page header help content": ({
+            groupProjectName,
+            doesUserBelongToSomeGroupProject
+        }) => (
+            <>
+                Cette page vous permet de configurer les paramètres qui s'appliquent à
+                {groupProjectName === undefined
+                    ? " votre projet personnel"
+                    : ` le ${groupProjectName}`}
+                .
+                <br />
+                {groupProjectName !== undefined && (
+                    <>
+                        Soyez conscient que {groupProjectName} est un projet de groupe
+                        partagé avec d'autres utilisateurs ; les modifications que vous
+                        effectuez ici s'appliqueront à tous les membres du projet.
+                        <br />
+                    </>
+                )}
+                {doesUserBelongToSomeGroupProject && (
+                    <>
+                        Vous pouvez passer d'un projet à l'autre en utilisant le menu
+                        déroulant dans l'en-tête.
+                        <br />
+                    </>
+                )}
+                Notez que seul l'administrateur de votre instance Onyxia peut créer de
+                nouveaux projets.
+            </>
+        ),
+        "security info": "Informations de sécurité"
+    },
     "AccountUserInterfaceTab": {
         "title": "Configurer le mode d'interface",
         "enable dark mode": "Activer le mode sombre",
@@ -129,9 +170,31 @@ export const translations: Translations<"fr"> = {
     "SettingField": {
         "copy tooltip": "Copier dans le presse-papier",
         "language": "Changer la langue",
-        "service password": "Mot de passe pour vos services",
-        "service password helper text": `Ce mot de passe est nécessaire pour vous connecter à tous vos services. 
-            Il est généré automatiquement et se renouvelle régulièrement.`,
+        "service password": "Mot de passe par défault des services",
+        "service password helper text": ({ groupProjectName }) => (
+            <>
+                Ceci est le mot de passe par défaut utilisé pour protéger vos services en
+                cours d'exécution. <br />
+                Lorsque vous lancez un service, le champ de mot de passe dans l'onglet
+                sécurité est pré-rempli avec ce mot de passe. <br />
+                Cliquer sur l'icône{" "}
+                <Icon
+                    size="extra small"
+                    icon={id<MuiIconComponentName>("Refresh")}
+                />{" "}
+                générera un nouveau mot de passe aléatoire. Cependant, soyez conscient que
+                cela ne mettra pas à jour le mot de passe pour les services qui sont déjà
+                en cours d'exécution. <br />
+                Le mot de passe du service est ce qu'Onyxia vous fait copier dans votre
+                presse-papiers avant d'accéder à un service en cours d'exécution. <br />
+                {groupProjectName !== undefined && (
+                    <>
+                        Veuillez noter que ce mot de passe est partagé parmi tous les
+                        membres du projet ({groupProjectName}).
+                    </>
+                )}
+            </>
+        ),
         "not yet defined": "Non définie",
         "reset helper dialogs": "Réinitialiser les fenêtres d'instructions",
         "reset": "Réinitialiser",
@@ -306,6 +369,7 @@ export const translations: Translations<"fr"> = {
         "reduce": "Réduire",
         "home": "Accueil",
         "account": "Mon compte",
+        "projectSettings": "Paramètres du projet",
         "catalog": "Catalogue de services",
         "myServices": "Mes services",
         "mySecrets": "Mes secrets",

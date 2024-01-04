@@ -2,6 +2,9 @@ import type { Translations } from "../types";
 import MuiLink from "@mui/material/Link";
 import { Markdown } from "ui/shared/Markdown";
 import { elementsToSentence } from "ui/tools/elementsToSentence";
+import { Icon } from "onyxia-ui/Icon";
+import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
+import { id } from "tsafe/id";
 
 export const translations: Translations<"zh-CN"> = {
     /* spell-checker: disable */
@@ -91,7 +94,41 @@ export const translations: Translations<"zh-CN"> = {
         ),
         "expires in": ({ howMuchTime }) => `该令牌有效期至 ${howMuchTime}`
     },
-
+    "ProjectSettings": {
+        "page header title": "项目设置",
+        "page header help title": ({ groupProjectName }) =>
+            groupProjectName === undefined
+                ? "您个人项目的设置"
+                : `“${groupProjectName}”的设置`,
+        "page header help content": ({
+            groupProjectName,
+            doesUserBelongToSomeGroupProject
+        }) => (
+            <>
+                本页面允许您配置适用于
+                {groupProjectName === undefined
+                    ? " 您的个人项目"
+                    : ` ${groupProjectName}项目`}{" "}
+                的设置。
+                <br />
+                {groupProjectName !== undefined && (
+                    <>
+                        请注意，${groupProjectName}是一个与其他用户共享的团队项目；
+                        您在此处所做的设置更改将适用于所有项目成员。
+                        <br />
+                    </>
+                )}
+                {doesUserBelongToSomeGroupProject && (
+                    <>
+                        您可以使用标题中的下拉菜单在您的项目之间切换。
+                        <br />
+                    </>
+                )}
+                请注意，只有您的Onyxia实例管理员可以创建新项目。
+            </>
+        ),
+        "security info": "安全信息"
+    },
     "AccountUserInterfaceTab": {
         "title": "配置界面模式",
         "enable dark mode": "开启深色模式",
@@ -113,9 +150,24 @@ export const translations: Translations<"zh-CN"> = {
     "SettingField": {
         "copy tooltip": "复制到剪贴板",
         "language": "更改语言",
-        "service password": "您的服务密码",
-        "service password helper text": `登录您的所有服务都需要此密码.
-            此密码自动生成并定期更新.`,
+        "service password": "默认服务密码",
+        "service password helper text": ({ groupProjectName }) => (
+            <>
+                这是用来保护您正在运行的服务的默认密码。 <br />
+                当您启动一个服务时，安全标签页中的密码字段将自动填充此密码。 <br />
+                点击{" "}
+                <Icon
+                    size="extra small"
+                    icon={id<MuiIconComponentName>("Refresh")}
+                />{" "}
+                图标将生成一个新的随机密码。
+                但是，请注意，它不会更新当前正在运行的服务的密码。 <br />
+                服务密码是Onyxia在您访问正在运行的服务之前让您复制到剪贴板的密码。 <br />
+                {groupProjectName !== undefined && (
+                    <>请注意，这个密码在项目({groupProjectName})的所有成员之间共享。</>
+                )}
+            </>
+        ),
         "not yet defined": "没有定义",
         "reset helper dialogs": "重置指令窗口",
         "reset": "重置",
@@ -284,6 +336,7 @@ export const translations: Translations<"zh-CN"> = {
         "reduce": "缩小",
         "home": "我的主页",
         "account": "我的账号",
+        "projectSettings": "项目设置",
         "catalog": "服务目录",
         "myServices": "我的服务",
         "mySecrets": "我的密钥",

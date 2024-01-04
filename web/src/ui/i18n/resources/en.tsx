@@ -2,6 +2,9 @@ import MuiLink from "@mui/material/Link";
 import { Markdown } from "ui/shared/Markdown";
 import type { Translations } from "../types";
 import { elementsToSentence } from "ui/tools/elementsToSentence";
+import { Icon } from "onyxia-ui/Icon";
+import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
+import { id } from "tsafe/id";
 
 export const translations: Translations<"en"> = {
     "Account": {
@@ -102,6 +105,43 @@ export const translations: Translations<"en"> = {
         ),
         "expires in": ({ howMuchTime }) => `The token expires in ${howMuchTime}`
     },
+    "ProjectSettings": {
+        "page header title": "Project Settings",
+        "page header help title": ({ groupProjectName }) =>
+            groupProjectName === undefined
+                ? "Settings of your personal project"
+                : `Settings for "${groupProjectName}"`,
+        "page header help content": ({
+            groupProjectName,
+            doesUserBelongToSomeGroupProject
+        }) => (
+            <>
+                This page allows you to configure the settings that apply to
+                {groupProjectName === undefined
+                    ? " your personal project"
+                    : ` the ${groupProjectName}`}
+                .
+                <br />
+                {groupProjectName !== undefined && (
+                    <>
+                        Be aware that {groupProjectName} is a group project shared with
+                        other users; the settings you change here will apply to all
+                        project members.
+                        <br />
+                    </>
+                )}
+                {doesUserBelongToSomeGroupProject && (
+                    <>
+                        You can switch between your projects using the dropdown menu in
+                        the header.
+                        <br />
+                    </>
+                )}
+                Note that only your Onyxia instance administrator can create new projects.
+            </>
+        ),
+        "security info": "Security Information"
+    },
     "AccountUserInterfaceTab": {
         "title": "Interface preferences",
         "enable dark mode": "Enable dark mode",
@@ -125,9 +165,29 @@ export const translations: Translations<"en"> = {
     "SettingField": {
         "copy tooltip": "Copy in clipboard",
         "language": "Change language",
-        "service password": "Password for your services",
-        "service password helper text": `This password is required to log in to all of your services. 
-            It is generated automatically and renews itself regularly.`,
+        "service password": "Default service password",
+        "service password helper text": ({ groupProjectName }) => (
+            <>
+                This is the default password used to protect your running services. <br />
+                When you launch a service, the security tab's password field is pre-filled
+                with this password. <br />
+                Clicking on the{" "}
+                <Icon
+                    size="extra small"
+                    icon={id<MuiIconComponentName>("Refresh")}
+                />{" "}
+                icon will generate a new random password. However, be aware that it will
+                not update the password for services that are currently running. <br />
+                The service password is what Onyxia makes you to copy to your clipboard
+                before accessing a running service. <br />
+                {groupProjectName !== undefined && (
+                    <>
+                        Please note that this password is shared among all members of the
+                        project ({groupProjectName}).
+                    </>
+                )}
+            </>
+        ),
         "not yet defined": "Not yet defined",
         "reset helper dialogs": "Reset instructions windows",
         "reset": "Reset",
@@ -305,6 +365,7 @@ export const translations: Translations<"en"> = {
         "reduce": "Reduce",
         "home": "Home",
         "account": "My account",
+        "projectSettings": "Project settings",
         "catalog": "Service catalog",
         "myServices": "My Services",
         "mySecrets": "My Secrets",

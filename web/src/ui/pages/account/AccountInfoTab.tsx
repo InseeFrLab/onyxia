@@ -19,15 +19,10 @@ export const AccountInfoTab = memo((props: Props) => {
 
     const { t } = useTranslation({ AccountInfoTab });
 
-    const { projectManagement, userAccountManagement } = useCore().functions;
+    const { userAccountManagement } = useCore().functions;
 
     const onRequestCopyFactory = useCallbackFactory(([textToCopy]: [string]) =>
         copyToClipboard(textToCopy)
-    );
-
-    const { servicePassword } = useCoreState(
-        "projectManagement",
-        "currentProjectConfigs"
     );
 
     const user = useCoreState("userAuthentication", "user");
@@ -74,14 +69,6 @@ export const AccountInfoTab = memo((props: Props) => {
             <SettingSectionHeader
                 title={t("auth information")}
                 helperText={t("auth information helper")}
-            />
-            <SettingField
-                type="service password"
-                servicePassword={servicePassword}
-                onRequestCopy={onRequestCopyFactory(servicePassword)}
-                onRequestServicePasswordRenewal={() =>
-                    projectManagement.renewServicePassword()
-                }
             />
         </div>
     );

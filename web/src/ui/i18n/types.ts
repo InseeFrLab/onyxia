@@ -38,6 +38,7 @@ export type ComponentKey =
     | typeof import("ui/pages/account/AccountKubernetesTab").i18n
     | typeof import("ui/pages/account/AccountUserInterfaceTab").i18n
     | typeof import("ui/pages/account/AccountVaultTab").i18n
+    | typeof import("ui/pages/projectSettings/ProjectSettings").i18n
     | typeof import("ui/App/Footer").i18n
     | typeof import("ui/pages/catalog/Catalog").i18n
     | typeof import("ui/pages/catalog/CatalogChartCard").i18n

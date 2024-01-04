@@ -2,6 +2,9 @@ import MuiLink from "@mui/material/Link";
 import type { Translations } from "../types";
 import { Markdown } from "ui/shared/Markdown";
 import { elementsToSentence } from "ui/tools/elementsToSentence";
+import { Icon } from "onyxia-ui/Icon";
+import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
+import { id } from "tsafe/id";
 
 export const translations: Translations<"fi"> = {
     "Account": {
@@ -99,6 +102,44 @@ export const translations: Translations<"fi"> = {
         ),
         "expires in": ({ howMuchTime }) => `Pääte vanhenee ${howMuchTime} kuluttua`
     },
+    "ProjectSettings": {
+        "page header title": "Projektiasetukset",
+        "page header help title": ({ groupProjectName }) =>
+            groupProjectName === undefined
+                ? "Henkilökohtaisen projektisi asetukset"
+                : `Asetukset "${groupProjectName}"`,
+        "page header help content": ({
+            groupProjectName,
+            doesUserBelongToSomeGroupProject
+        }) => (
+            <>
+                Tällä sivulla voit määrittää asetuksia, jotka koskevat
+                {groupProjectName === undefined
+                    ? " henkilökohtaista projektiasi"
+                    : ` ${groupProjectName} projektia`}
+                .
+                <br />
+                {groupProjectName !== undefined && (
+                    <>
+                        Huomaa, että {groupProjectName} on ryhmäprojekti, joka on jaettu
+                        muiden käyttäjien kanssa; tällä sivulla tekemäsi muutokset
+                        koskevat kaikkia projektin jäseniä.
+                        <br />
+                    </>
+                )}
+                {doesUserBelongToSomeGroupProject && (
+                    <>
+                        Voit vaihtaa projekteja käyttämällä pudotusvalikkoa
+                        otsikkopalkissa.
+                        <br />
+                    </>
+                )}
+                Huomaa, että vain Onyxia-instanssisi ylläpitäjä voi luoda uusia
+                projekteja.
+            </>
+        ),
+        "security info": "Turvallisuustiedot"
+    },
     "AccountUserInterfaceTab": {
         "title": "Käyttöliittymän asetukset",
         "enable dark mode": "Ota tumma tila käyttöön",
@@ -122,9 +163,30 @@ export const translations: Translations<"fi"> = {
     "SettingField": {
         "copy tooltip": "Kopioi leikepöydälle",
         "language": "Vaihda kieltä",
-        "service password": "Salasana palveluillesi",
-        "service password helper text": `Tämä salasana vaaditaan kirjautumiseen kaikkiin palveluihisi.
-            Se generoidaan automaattisesti ja uusiutuu säännöllisesti.`,
+        "service password": "Oletuspalvelusalasana",
+        "service password helper text": ({ groupProjectName }) => (
+            <>
+                Tämä on oletussalasana, jota käytetään suojaamaan käynnissä olevat
+                palvelusi. <br />
+                Kun käynnistät palvelun, turvallisuusvälilehden salasanakenttä täytetään
+                automaattisesti tällä salasanalla. <br />
+                Napsauttamalla{" "}
+                <Icon
+                    size="extra small"
+                    icon={id<MuiIconComponentName>("Refresh")}
+                />{" "}
+                -kuvaketta luodaan uusi satunnainen salasana. Huomaa kuitenkin, että se ei
+                päivitä salasanaa palveluille, jotka ovat parhaillaan käynnissä. <br />
+                Palvelusalasana on se, jonka Onyxia pyytää sinua kopioimaan
+                leikepöydällesi ennen käynnissä olevan palvelun käyttöä. <br />
+                {groupProjectName !== undefined && (
+                    <>
+                        Huomaa, että tämä salasana jaetaan kaikkien projektin (
+                        {groupProjectName}) jäsenten kesken.
+                    </>
+                )}
+            </>
+        ),
         "not yet defined": "Ei vielä määritelty",
         "reset helper dialogs": "Nollaa ohjeikkunat",
         "reset": "Nollaa",
@@ -298,6 +360,7 @@ export const translations: Translations<"fi"> = {
         "reduce": "Pienennä",
         "home": "Koti",
         "account": "Oma tili",
+        "projectSettings": "Projektin asetukset",
         "catalog": "Palvelukatalogi",
         "myServices": "Omat palvelut",
         "mySecrets": "Omat salaisuudet",

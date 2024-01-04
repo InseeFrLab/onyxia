@@ -55,7 +55,12 @@ export const LeftBar = memo((props: Props) => {
                 "account": {
                     "icon": customIcons.accountSvgUrl,
                     "label": t("account"),
-                    "link": routes.account().link,
+                    "link": routes.account().link
+                },
+                "projectSettings": {
+                    "icon": id<MuiIconComponentName>("DisplaySettings"),
+                    "label": t("projectSettings"),
+                    "link": routes.projectSettings().link,
                     "belowDivider": t("divider: services features")
                 },
                 "catalog": {
@@ -137,6 +142,8 @@ export const LeftBar = memo((props: Props) => {
                         return "home" as const;
                     case "account":
                         return "account";
+                    case "projectSettings":
+                        return "projectSettings";
                     case "catalog":
                         return "catalog";
                     case "launcher":
@@ -170,6 +177,7 @@ export const { i18n } = declareComponentKeys<
     | "reduce"
     | "home"
     | "account"
+    | "projectSettings"
     | "catalog"
     | "myServices"
     | "mySecrets"

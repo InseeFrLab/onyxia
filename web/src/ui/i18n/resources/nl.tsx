@@ -2,6 +2,9 @@ import type { Translations } from "../types";
 import MuiLink from "@mui/material/Link";
 import { Markdown } from "ui/shared/Markdown";
 import { elementsToSentence } from "ui/tools/elementsToSentence";
+import { Icon } from "onyxia-ui/Icon";
+import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
+import { id } from "tsafe/id";
 
 export const translations: Translations<"nl"> = {
     /* spell-checker: disable */
@@ -100,6 +103,45 @@ export const translations: Translations<"nl"> = {
         ),
         "expires in": ({ howMuchTime }) => `Het token vervalt in ${howMuchTime}`
     },
+    "ProjectSettings": {
+        "page header title": "Projectinstellingen",
+        "page header help title": ({ groupProjectName }) =>
+            groupProjectName === undefined
+                ? "Instellingen van uw persoonlijke project"
+                : `Instellingen voor "${groupProjectName}"`,
+        "page header help content": ({
+            groupProjectName,
+            doesUserBelongToSomeGroupProject
+        }) => (
+            <>
+                Deze pagina stelt u in staat de instellingen te configureren die van
+                toepassing zijn op
+                {groupProjectName === undefined
+                    ? " uw persoonlijke project"
+                    : ` het ${groupProjectName} project`}
+                .
+                <br />
+                {groupProjectName !== undefined && (
+                    <>
+                        Wees u ervan bewust dat {groupProjectName} een groepsproject is
+                        gedeeld met andere gebruikers; de wijzigingen die u hier
+                        aanbrengt, zijn van toepassing op alle leden van het project.
+                        <br />
+                    </>
+                )}
+                {doesUserBelongToSomeGroupProject && (
+                    <>
+                        U kunt tussen uw projecten wisselen via het dropdownmenu in de
+                        kop.
+                        <br />
+                    </>
+                )}
+                Let op: alleen de beheerder van uw Onyxia instantie kan nieuwe projecten
+                aanmaken.
+            </>
+        ),
+        "security info": "Veiligheidsinformatie"
+    },
     "AccountUserInterfaceTab": {
         "title": "De interfacemodus configureren",
         "enable dark mode": "Donkere modus activeren",
@@ -125,9 +167,31 @@ export const translations: Translations<"nl"> = {
     "SettingField": {
         "copy tooltip": "Kopiëren naar klembord",
         "language": "Taal wijzigen",
-        "service password": "Wachtwoord voor uw diensten",
-        "service password helper text": `Dit wachtwoord is nodig om in te loggen op al uw diensten.
-            Het wordt automatisch gegenereerd en regelmatig vernieuwd.`,
+        "service password": "Standaard service wachtwoord",
+        "service password helper text": ({ groupProjectName }) => (
+            <>
+                Dit is het standaardwachtwoord dat wordt gebruikt om uw draaiende diensten
+                te beschermen. <br />
+                Wanneer u een dienst start, wordt het wachtwoordveld in het
+                beveiligingstabblad automatisch ingevuld met dit wachtwoord. <br />
+                Door te klikken op het{" "}
+                <Icon
+                    size="extra small"
+                    icon={id<MuiIconComponentName>("Refresh")}
+                />{" "}
+                icoon wordt een nieuw willekeurig wachtwoord gegenereerd. Wees u er echter
+                van bewust dat het niet het wachtwoord voor diensten die al draaien zal
+                bijwerken. <br />
+                Het service wachtwoord is wat Onyxia u laat kopiëren naar uw klembord
+                voordat u toegang krijgt tot een draaiende dienst. <br />
+                {groupProjectName !== undefined && (
+                    <>
+                        Let op: dit wachtwoord wordt gedeeld met alle leden van het
+                        project ({groupProjectName}).
+                    </>
+                )}
+            </>
+        ),
         "not yet defined": "Niet gedefinieerd",
         "reset helper dialogs": "Instructievensters opnieuw initialiseren",
         "reset": "Opnieuw initialiseren",
@@ -302,6 +366,7 @@ export const translations: Translations<"nl"> = {
         "reduce": "Verkleinen",
         "home": "Onthaal",
         "account": "Mijn account",
+        "projectSettings": "Projectinstellingen",
         "catalog": "Catalogus van de diensten",
         "myServices": "Mijn diensten",
         "mySecrets": "Mijn geheimen",

@@ -40,6 +40,7 @@ export declare namespace Props {
 
     export type ServicePassword = Common & {
         type: "service password";
+        groupProjectName: string | undefined;
         servicePassword: string;
         onRequestServicePasswordRenewal: () => void;
     } & ICopyable;
@@ -296,7 +297,9 @@ export const SettingField = memo((props: Props): ReturnType<FunctionComponent> =
             case "toggle":
                 return props.helperText;
             case "service password":
-                return t("service password helper text");
+                return t("service password helper text", {
+                    "groupProjectName": props.groupProjectName
+                });
             case "reset helper dialogs":
                 return t("reset helper dialogs helper text");
             default:
@@ -482,7 +485,11 @@ export const SettingField = memo((props: Props): ReturnType<FunctionComponent> =
 export const { i18n } = declareComponentKeys<
     | Exclude<Props["type"], "text" | "editable text" | "toggle">
     | "copy tooltip"
-    | "service password helper text"
+    | {
+          K: "service password helper text";
+          P: { groupProjectName: string | undefined };
+          R: JSX.Element;
+      }
     | "not yet defined"
     | "reset helper dialogs helper text"
     | "reset"

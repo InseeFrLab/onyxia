@@ -2,6 +2,9 @@ import MuiLink from "@mui/material/Link";
 import type { Translations } from "../types";
 import { Markdown } from "ui/shared/Markdown";
 import { elementsToSentence } from "ui/tools/elementsToSentence";
+import { Icon } from "onyxia-ui/Icon";
+import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
+import { id } from "tsafe/id";
 
 export const translations: Translations<"no"> = {
     "Account": {
@@ -102,6 +105,44 @@ export const translations: Translations<"no"> = {
         ),
         "expires in": ({ howMuchTime }) => `Token går ut om ${howMuchTime}`
     },
+    "ProjectSettings": {
+        "page header title": "Prosjektinnstillinger",
+        "page header help title": ({ groupProjectName }) =>
+            groupProjectName === undefined
+                ? "Innstillinger for ditt personlige prosjekt"
+                : `Innstillinger for "${groupProjectName}"`,
+        "page header help content": ({
+            groupProjectName,
+            doesUserBelongToSomeGroupProject
+        }) => (
+            <>
+                Denne siden lar deg konfigurere innstillingene som gjelder for
+                {groupProjectName === undefined
+                    ? " ditt personlige prosjekt"
+                    : ` ${groupProjectName}-prosjektet`}
+                .
+                <br />
+                {groupProjectName !== undefined && (
+                    <>
+                        Vær oppmerksom på at {groupProjectName} er et gruppeprosjekt delt
+                        med andre brukere; endringene du gjør her vil gjelde for alle
+                        medlemmer av prosjektet.
+                        <br />
+                    </>
+                )}
+                {doesUserBelongToSomeGroupProject && (
+                    <>
+                        Du kan bytte mellom dine prosjekter ved å bruke rullegardinmenyen
+                        i overskriften.
+                        <br />
+                    </>
+                )}
+                Merk at bare administratoren for din Onyxia-instans kan opprette nye
+                prosjekter.
+            </>
+        ),
+        "security info": "Sikkerhetsinformasjon"
+    },
     "AccountUserInterfaceTab": {
         "title": "Grensesnittspreferanser",
         "enable dark mode": "Skru på mørk modus",
@@ -124,9 +165,31 @@ export const translations: Translations<"no"> = {
     "SettingField": {
         "copy tooltip": "Kopier til utklippstavlen",
         "language": "Bytt språk",
-        "service password": "Passord for tjenestene dine",
-        "service password helper text": `Dette passordet kreves for å logge på alle tjenestene dine.
-      Det genereres automatisk og fornyes jevnlig.`,
+        "service password": "Standard servicepassord",
+        "service password helper text": ({ groupProjectName }) => (
+            <>
+                Dette er standardpassordet som brukes for å beskytte dine kjørende
+                tjenester. <br />
+                Når du starter en tjeneste, blir passordfeltet i sikkerhetsfanen
+                forhåndsutfylt med dette passordet. <br />
+                Ved å klikke på{" "}
+                <Icon
+                    size="extra small"
+                    icon={id<MuiIconComponentName>("Refresh")}
+                />{" "}
+                ikonet vil generere et nytt tilfeldig passord. Vær imidlertid oppmerksom
+                på at det ikke vil oppdatere passordet for tjenester som allerede kjører.{" "}
+                <br />
+                Tjenestepassordet er det Onyxia får deg til å kopiere til utklippstavlen
+                din før du får tilgang til en kjørende tjeneste. <br />
+                {groupProjectName !== undefined && (
+                    <>
+                        Vær oppmerksom på at dette passordet deles blant alle medlemmer av
+                        prosjektet ({groupProjectName}).
+                    </>
+                )}
+            </>
+        ),
         "not yet defined": "Ikke definert ennå",
         "reset helper dialogs": "Tilbakestill instruksjonsvinduer",
         "reset": "Tilbakestill",
@@ -304,6 +367,7 @@ export const translations: Translations<"no"> = {
         "reduce": "Reduser",
         "home": "Hjem",
         "account": "Min konto",
+        "projectSettings": "Prosjektinnstillinger",
         "catalog": "Tjenestekatalog",
         "myServices": "Mine tjenester",
         "mySecrets": "Mine hemmeligheter",
