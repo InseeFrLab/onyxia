@@ -28,13 +28,13 @@ export default function Account(props: Props) {
 
     const { t } = useTranslation({ Account });
 
-    const { s3Credentials, k8sCredentials, vaultCredentials } = useCore().functions;
+    const { s3CodeSnippets, k8sCredentials, vaultCredentials } = useCore().functions;
 
     const tabs = useMemo(
         () =>
             accountTabIds
                 .filter(accountTabId =>
-                    accountTabId !== "storage" ? true : s3Credentials.isAvailable()
+                    accountTabId !== "storage" ? true : s3CodeSnippets.isAvailable()
                 )
                 .filter(accountTabId =>
                     accountTabId !== "k8sCredentials"

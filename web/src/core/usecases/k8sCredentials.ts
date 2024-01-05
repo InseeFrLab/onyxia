@@ -110,7 +110,7 @@ export const thunks = {
 
             const { oidc } = rootContext;
 
-            if (getState().s3Credentials.isRefreshing) {
+            if (getState().s3CodeSnippets.isRefreshing) {
                 return;
             }
 

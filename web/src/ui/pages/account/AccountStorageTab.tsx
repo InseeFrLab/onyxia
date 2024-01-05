@@ -16,7 +16,7 @@ import { useConstCallback } from "powerhooks/useConstCallback";
 import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
-import type { Technology } from "core/usecases/s3Credentials";
+import type { Technology } from "core/usecases/s3CodeSnippets";
 import type { SelectChangeEvent } from "@mui/material/Select";
 import type { Equals } from "tsafe";
 import { IconButton } from "onyxia-ui/IconButton";
@@ -51,23 +51,23 @@ export const AccountStorageTab = memo((props: Props) => {
 
     const { t } = useTranslation({ AccountStorageTab });
 
-    const { s3Credentials } = useCore().functions;
+    const { s3CodeSnippets } = useCore().functions;
 
     useEffect(() => {
-        s3Credentials.refresh({ "doForceRenewToken": false });
+        s3CodeSnippets.refresh({ "doForceRenewToken": false });
     }, []);
 
-    const isReady = useCoreState("s3Credentials", "isReady");
-    const credentials = useCoreState("s3Credentials", "credentials");
-    const expirationTime = useCoreState("s3Credentials", "expirationTime");
-    const initScript = useCoreState("s3Credentials", "initScript");
-    const selectedTechnology = useCoreState("s3Credentials", "selectedTechnology");
-    const isRefreshing = useCoreState("s3Credentials", "isRefreshing");
+    const isReady = useCoreState("s3CodeSnippets", "isReady");
+    const credentials = useCoreState("s3CodeSnippets", "credentials");
+    const expirationTime = useCoreState("s3CodeSnippets", "expirationTime");
+    const initScript = useCoreState("s3CodeSnippets", "initScript");
+    const selectedTechnology = useCoreState("s3CodeSnippets", "selectedTechnology");
+    const isRefreshing = useCoreState("s3CodeSnippets", "isRefreshing");
 
     const { fromNowText } = useFromNow({ "dateTime": expirationTime ?? 0 });
 
     const onSelectChangeTechnology = useConstCallback((e: SelectChangeEvent) =>
-        s3Credentials.changeTechnology({
+        s3CodeSnippets.changeTechnology({
             "technology": e.target.value as Technology
         })
     );
@@ -87,7 +87,7 @@ export const AccountStorageTab = memo((props: Props) => {
     });
 
     const onRefreshIconButtonClick = useConstCallback(() =>
-        s3Credentials.refresh({ "doForceRenewToken": true })
+        s3CodeSnippets.refresh({ "doForceRenewToken": true })
     );
 
     if (!isReady) {

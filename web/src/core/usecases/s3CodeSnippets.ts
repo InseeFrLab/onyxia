@@ -44,7 +44,7 @@ namespace State {
     };
 }
 
-export const name = "s3Credentials";
+export const name = "s3CodeSnippets";
 
 export const { reducer, actions } = createUsecaseActions({
     name,
@@ -119,7 +119,7 @@ export const thunks = {
 
             const { s3Client } = thunkExtraArguments;
 
-            if (getState().s3Credentials.isRefreshing) {
+            if (getState().s3CodeSnippets.isRefreshing) {
                 return;
             }
 
@@ -174,7 +174,7 @@ export const thunks = {
 
 export const selectors = (() => {
     const readyState = (rootState: RootState): State.Ready | undefined => {
-        const state = rootState.s3Credentials;
+        const state = rootState.s3CodeSnippets;
         switch (state.stateDescription) {
             case "ready":
                 return state;

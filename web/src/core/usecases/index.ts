@@ -9,7 +9,7 @@ import * as serviceManagement from "./serviceManagement";
 import * as userAuthentication from "./userAuthentication";
 import * as userConfigs from "./userConfigs";
 import * as secretsEditor from "./secretsEditor";
-import * as s3Credentials from "./s3Credentials";
+import * as s3CodeSnippets from "./s3CodeSnippets";
 import * as k8sCredentials from "./k8sCredentials";
 import * as vaultCredentials from "./vaultCredentials";
 import * as userAccountManagement from "./userAccountManagement";
@@ -29,7 +29,7 @@ export const usecases = {
     userAuthentication,
     userConfigs,
     secretsEditor,
-    s3Credentials,
+    s3CodeSnippets,
     k8sCredentials,
     vaultCredentials,
     userAccountManagement,
