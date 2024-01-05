@@ -140,7 +140,8 @@ export const translations: Translations<"en"> = {
                 Note that only your Onyxia instance administrator can create new projects.
             </>
         ),
-        "security info": "Security Information"
+        "security info": "Security Information",
+        "s3 configs": "S3 Configurations"
     },
     "AccountUserInterfaceTab": {
         "title": "Interface preferences",

@@ -1,6 +1,7 @@
 import { Tabs } from "onyxia-ui/Tabs";
 import { type TabId, tabIds } from "./tabIds";
 import { ProjectSettingsSecurityInfosTab } from "./ProjectSettingsSecurityInfosTab";
+import { ProjectSettingsS3ConfigTab } from "./ProjectSettingsS3ConfigTab";
 import { routes } from "ui/routes";
 import { useTranslation } from "ui/i18n";
 import { PageHeader } from "onyxia-ui/PageHeader";
@@ -57,6 +58,8 @@ export default function ProjectSettings(props: Props) {
                     switch (route.params.tabId) {
                         case "security info":
                             return <ProjectSettingsSecurityInfosTab />;
+                        case "s3 configs":
+                            return <ProjectSettingsS3ConfigTab />;
                     }
                     assert<Equals<typeof route.params.tabId, never>>(false);
                 })()}

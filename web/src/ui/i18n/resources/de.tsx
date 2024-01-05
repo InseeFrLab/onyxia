@@ -140,7 +140,8 @@ export const translations: Translations<"de"> = {
                 erstellen kann.
             </>
         ),
-        "security info": "Sicherheitsinformationen"
+        "security info": "Sicherheitsinformationen",
+        "s3 configs": "S3-Konfigurationen"
     },
     "AccountUserInterfaceTab": {
         "title": "Konfiguration der Benutzeroberfläche",

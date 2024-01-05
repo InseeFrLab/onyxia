@@ -59,10 +59,7 @@ export default function MyServices(props: Props) {
     const commandLogsEntries = useCoreState("serviceManagement", "commandLogsEntries");
 
     const { isCommandBarEnabled } = useCoreState("userConfigs", "userConfigs");
-    const { servicePassword } = useCoreState(
-        "projectManagement",
-        "currentProjectConfigs"
-    );
+    const servicePassword = useCoreState("projectManagement", "servicePassword");
 
     const onButtonBarClick = useConstCallback(async (buttonId: ButtonId) => {
         switch (buttonId) {

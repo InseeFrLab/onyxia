@@ -12,7 +12,7 @@ function state(rootState: RootState) {
 
 const restorableConfigs = (rootState: RootState) => {
     const { restorableConfigs } =
-        projectManagement.selectors.currentProjectConfigs(rootState);
+        projectManagement.protectedSelectors.currentProjectConfigs(rootState);
     return [...restorableConfigs].reverse();
 };
 

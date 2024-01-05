@@ -22,4 +22,11 @@ const availableProjects = createSelector(state, state =>
     state.projects.map(({ id, name }) => ({ id, name }))
 );
 
-export const selectors = { availableProjects, currentProject, currentProjectConfigs };
+const servicePassword = createSelector(
+    currentProjectConfigs,
+    currentProjectConfigs => currentProjectConfigs.servicePassword
+);
+
+export const protectedSelectors = { currentProjectConfigs };
+
+export const selectors = { availableProjects, currentProject, servicePassword };

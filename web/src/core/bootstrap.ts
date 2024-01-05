@@ -230,37 +230,25 @@ export async function bootstrapCore(
             )
             .toStateful()
             .pipe((): [ParamsOfCreateS3Client | undefined] => {
-                const { customS3Configs } =
-                    usecases.projectManagement.selectors.currentProjectConfigs(
-                        getState()
-                    );
-
                 init_with_project_params: {
-                    if (customS3Configs.indexForExplorer === undefined) {
+                    const customS3ConfigForExplorer =
+                        usecases.s3ConfigManagement.protectedSelectors.customS3ConfigForExplorer(
+                            getState()
+                        );
+
+                    if (customS3ConfigForExplorer === undefined) {
                         break init_with_project_params;
                     }
-
-                    const {
-                        url,
-                        region,
-                        accessKeyId,
-                        secretAccessKey,
-                        sessionToken,
-                        pathStyleAccess
-                    } =
-                        customS3Configs.availableConfigs[
-                            customS3Configs.indexForExplorer
-                        ];
 
                     return [
                         id<ParamsOfCreateS3Client.NoSts>({
                             "isStsEnabled": false,
-                            url,
-                            pathStyleAccess,
-                            region,
-                            accessKeyId,
-                            secretAccessKey,
-                            sessionToken
+                            "url": customS3ConfigForExplorer.url,
+                            "pathStyleAccess": customS3ConfigForExplorer.pathStyleAccess,
+                            "region": customS3ConfigForExplorer.region,
+                            "accessKeyId": customS3ConfigForExplorer.accessKeyId,
+                            "secretAccessKey": customS3ConfigForExplorer.secretAccessKey,
+                            "sessionToken": customS3ConfigForExplorer.sessionToken
                         })
                     ];
                 }

@@ -4,7 +4,7 @@ import { join as pathJoin } from "path";
 import { generateRandomPassword } from "core/tools/generateRandomPassword";
 import { actions, type State, type ChangeConfigValueParams } from "./state";
 import type { Secret } from "core/ports/SecretsManager";
-import { selectors } from "./selectors";
+import { selectors, protectedSelectors } from "./selectors";
 import * as userConfigs from "core/usecases/userConfigs";
 import { same } from "evt/tools/inDepth";
 
@@ -184,9 +184,9 @@ export const protectedThunks = {
                 return;
             }
 
-            const currentLocalValue = selectors.currentProjectConfigs(getState())[
-                params.key
-            ];
+            const currentLocalValue = protectedSelectors.currentProjectConfigs(
+                getState()
+            )[params.key];
 
             if (same(currentLocalValue, params.value)) {
                 return;

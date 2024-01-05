@@ -7,6 +7,7 @@ import * as deploymentRegionManagement from "core/usecases/deploymentRegionManag
 import * as userConfigs from "core/usecases/userConfigs";
 import * as userAuthentication from "core/usecases/userAuthentication";
 import * as projectManagement from "core/usecases/projectManagement";
+import * as s3ConfigManagement from "core/usecases/s3ConfigManagement";
 
 const state = (rootState: RootState): State => rootState[name];
 
@@ -152,16 +153,16 @@ const isFileExplorerEnabled = (rootState: RootState) => {
         return { "isFileExplorerEnabled": false };
     }
 
-    const { indexForExplorer } =
-        projectManagement.selectors.currentProjectConfigs(rootState).customS3Configs;
+    const customS3Config =
+        s3ConfigManagement.protectedSelectors.customS3ConfigForExplorer(rootState);
 
-    return { "isFileExplorerEnabled": indexForExplorer !== undefined };
+    return { "isFileExplorerEnabled": customS3Config !== undefined };
 };
 
 const workingDirectoryPath = createSelector(
     deploymentRegionManagement.selectors.currentDeploymentRegion,
     projectManagement.selectors.currentProject,
-    projectManagement.selectors.currentProjectConfigs,
+    projectManagement.protectedSelectors.currentProjectConfigs,
     userAuthentication.selectors.user,
     (deploymentRegion, project, currentProjectConfigs, user) => {
         from_project_configs: {

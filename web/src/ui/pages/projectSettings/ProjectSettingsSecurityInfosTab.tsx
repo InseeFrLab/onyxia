@@ -12,12 +12,8 @@ export const ProjectSettingsSecurityInfosTab = memo((props: Props) => {
 
     const { projectManagement } = useCore().functions;
 
+    const servicePassword = useCoreState("projectManagement", "servicePassword");
     const project = useCoreState("projectManagement", "currentProject");
-
-    const { servicePassword } = useCoreState(
-        "projectManagement",
-        "currentProjectConfigs"
-    );
 
     return (
         <div className={className}>

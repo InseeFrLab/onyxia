@@ -4,6 +4,7 @@ import * as fileExplorer from "./fileExplorer";
 import * as secretExplorer from "./secretExplorer";
 import * as launcher from "./launcher";
 import * as restorableConfigManagement from "./restorableConfigManagement";
+import * as s3ConfigManagement from "./s3ConfigManagement";
 import * as serviceManagement from "./serviceManagement";
 import * as userAuthentication from "./userAuthentication";
 import * as userConfigs from "./userConfigs";
@@ -23,6 +24,7 @@ export const usecases = {
     secretExplorer,
     launcher,
     restorableConfigManagement,
+    s3ConfigManagement,
     serviceManagement,
     userAuthentication,
     userConfigs,

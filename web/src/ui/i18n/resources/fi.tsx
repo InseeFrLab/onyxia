@@ -138,7 +138,8 @@ export const translations: Translations<"fi"> = {
                 projekteja.
             </>
         ),
-        "security info": "Turvallisuustiedot"
+        "security info": "Turvallisuustiedot",
+        "s3 configs": "S3-konfiguraatiot"
     },
     "AccountUserInterfaceTab": {
         "title": "Käyttöliittymän asetukset",

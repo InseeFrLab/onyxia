@@ -16,6 +16,7 @@ import {
 import * as userAuthentication from "../userAuthentication";
 import * as deploymentRegionManagement from "core/usecases/deploymentRegionManagement";
 import * as projectManagement from "core/usecases/projectManagement";
+import * as s3ConfigManagement from "core/usecases/s3ConfigManagement";
 import * as userConfigsUsecase from "core/usecases/userConfigs";
 import { bucketNameAndObjectNameFromS3Path } from "core/adapters/s3Client/utils/bucketNameAndObjectNameFromS3Path";
 import { parseUrl } from "core/tools/parseUrl";
@@ -286,7 +287,7 @@ const privateThunks = {
                 getState()
             );
 
-            const { servicePassword } = projectManagement.selectors.currentProjectConfigs(
+            const servicePassword = projectManagement.selectors.servicePassword(
                 getState()
             );
 
@@ -358,33 +359,28 @@ const privateThunks = {
                     : userConfigs.kaggleApiToken ?? undefined,
                 "s3": await (async () => {
                     inject_from_project_config: {
-                        const { customS3Configs } =
-                            projectManagement.selectors.currentProjectConfigs(getState());
+                        const customS3Config =
+                            s3ConfigManagement.protectedSelectors.customS3ConfigForXOnyxia(
+                                getState()
+                            );
 
-                        if (customS3Configs.indexForXOnyxia === undefined) {
+                        if (customS3Config === undefined) {
                             break inject_from_project_config;
                         }
 
-                        const dataSource =
-                            customS3Configs.availableConfigs[
-                                customS3Configs.indexForXOnyxia
-                            ];
-
-                        assert(dataSource !== undefined);
-
-                        const { host, port = 443 } = parseUrl(dataSource.url);
+                        const { host, port = 443 } = parseUrl(customS3Config.url);
 
                         return {
-                            "AWS_ACCESS_KEY_ID": dataSource.accessKeyId,
+                            "AWS_ACCESS_KEY_ID": customS3Config.accessKeyId,
                             "AWS_BUCKET_NAME": bucketNameAndObjectNameFromS3Path(
-                                dataSource.workingDirectoryPath
+                                customS3Config.workingDirectoryPath
                             ).bucketName,
-                            "AWS_SECRET_ACCESS_KEY": dataSource.secretAccessKey,
-                            "AWS_SESSION_TOKEN": dataSource.sessionToken ?? "",
-                            "AWS_DEFAULT_REGION": dataSource.region,
+                            "AWS_SECRET_ACCESS_KEY": customS3Config.secretAccessKey,
+                            "AWS_SESSION_TOKEN": customS3Config.sessionToken ?? "",
+                            "AWS_DEFAULT_REGION": customS3Config.region,
                             "AWS_S3_ENDPOINT": host,
                             port,
-                            "pathStyleAccess": dataSource.pathStyleAccess
+                            "pathStyleAccess": customS3Config.pathStyleAccess
                         };
                     }
 
