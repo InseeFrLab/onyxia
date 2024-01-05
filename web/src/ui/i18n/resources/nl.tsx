@@ -12,7 +12,7 @@ export const translations: Translations<"nl"> = {
         "infos": "Accountgegevens",
         "third-party-integration": "Externe diensten",
         "storage": "Verbinding met opslag",
-        "k8sCredentials": "Verbinding met Kubernetes",
+        "k8sCodeSnippets": "Verbinding met Kubernetes",
         "user-interface": "Interfacemodi",
         "text1": "Mijn account",
         "text2": "Toegang tot uw accountgegevens.",

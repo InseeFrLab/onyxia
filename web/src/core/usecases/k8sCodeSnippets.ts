@@ -35,7 +35,7 @@ namespace State {
     };
 }
 
-export const name = "k8sCredentials";
+export const name = "k8sCodeSnippets";
 
 export const { reducer, actions } = createUsecaseActions({
     name,

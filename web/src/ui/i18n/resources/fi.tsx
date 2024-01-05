@@ -11,7 +11,7 @@ export const translations: Translations<"fi"> = {
         "infos": "Tilin tiedot",
         "third-party-integration": "Kolmannen osapuolen integraatio",
         "storage": "Yhdistä tallennustilaan",
-        "k8sCredentials": "Kubernetes",
+        "k8sCodeSnippets": "Kubernetes",
         "user-interface": "Käyttöliittymän asetukset",
         "text1": "Oma tili",
         "text2": "Pääset käsiksi erilaisiin tilin tietoihin.",

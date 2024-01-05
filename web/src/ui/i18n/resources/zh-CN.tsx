@@ -13,7 +13,7 @@ export const translations: Translations<"zh-CN"> = {
         "third-party-integration": "外部服务",
         "storage": "链接到储存器",
         "user-interface": "变换显示模式",
-        "k8sCredentials": "Kubernetes",
+        "k8sCodeSnippets": "Kubernetes",
         "text1": "我的账号",
         "text2": "访问我的账号信息",
         "text3": "设置您的用户名, 电子邮件, 密码和访问令牌",

@@ -28,7 +28,7 @@ export default function Account(props: Props) {
 
     const { t } = useTranslation({ Account });
 
-    const { s3CodeSnippets, k8sCredentials, vaultCredentials } = useCore().functions;
+    const { s3CodeSnippets, k8sCodeSnippets, vaultCredentials } = useCore().functions;
 
     const tabs = useMemo(
         () =>
@@ -37,9 +37,9 @@ export default function Account(props: Props) {
                     accountTabId !== "storage" ? true : s3CodeSnippets.isAvailable()
                 )
                 .filter(accountTabId =>
-                    accountTabId !== "k8sCredentials"
+                    accountTabId !== "k8sCodeSnippets"
                         ? true
-                        : k8sCredentials.getIsAvailable()
+                        : k8sCodeSnippets.getIsAvailable()
                 )
                 .filter(accountTabId =>
                     accountTabId !== "vault" ? true : vaultCredentials.isAvailable()
@@ -81,7 +81,7 @@ export default function Account(props: Props) {
                             return <AccountStorageTab />;
                         case "user-interface":
                             return <AccountUserInterfaceTab />;
-                        case "k8sCredentials":
+                        case "k8sCodeSnippets":
                             return <AccountKubernetesTab />;
                         case "vault":
                             return <AccountVaultTab />;

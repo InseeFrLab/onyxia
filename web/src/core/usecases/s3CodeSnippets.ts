@@ -6,7 +6,7 @@ import { parseUrl } from "core/tools/parseUrl";
 import { assert } from "tsafe/assert";
 import { createUsecaseActions, createSelector } from "redux-clean-architecture";
 
-//TODO: Refactor, replicate the k8sCredentials usecase
+//TODO: Refactor, replicate the k8sCodeSnippets usecase
 
 export type Technology =
     | "R (aws.S3)"

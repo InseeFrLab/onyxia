@@ -11,7 +11,7 @@ export const translations: Translations<"no"> = {
         "infos": "Kontoinformasjon",
         "third-party-integration": "Eksterne tjenester",
         "storage": "Koble til lagring",
-        "k8sCredentials": "Kubernetes",
+        "k8sCodeSnippets": "Kubernetes",
         "user-interface": "Grensesnittspreferanser",
         "text1": "Min konto",
         "text2": "Få tilgang til ulik kontoinformasjon.",

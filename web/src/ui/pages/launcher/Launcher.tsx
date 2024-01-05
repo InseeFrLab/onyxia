@@ -84,7 +84,7 @@ export default function Launcher(props: Props) {
 
     const scrollableDivRef = useStateRef<HTMLDivElement>(null);
 
-    const { launcher, restorableConfigManagement, k8sCredentials } = useCore().functions;
+    const { launcher, restorableConfigManagement, k8sCodeSnippets } = useCore().functions;
 
     const { showSplashScreen, hideSplashScreen } = useSplashScreen();
 
@@ -317,10 +317,10 @@ export default function Launcher(props: Props) {
                                         <div className={classes.helpDialogBody}>
                                             {t("api logs help body", {
                                                 "k8CredentialsHref":
-                                                    !k8sCredentials.getIsAvailable()
+                                                    !k8sCodeSnippets.getIsAvailable()
                                                         ? undefined
                                                         : routes.account({
-                                                              "tabId": "k8sCredentials"
+                                                              "tabId": "k8sCodeSnippets"
                                                           }).href,
                                                 "myServicesHref":
                                                     routes.myServices().href,

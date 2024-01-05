@@ -29,7 +29,7 @@ export const AccountKubernetesTab = memo((props: Props) => {
 
     const { classes, theme } = useStyles();
 
-    const { k8sCredentials } = useCore().functions;
+    const { k8sCodeSnippets } = useCore().functions;
 
     const {
         isReady,
@@ -42,12 +42,12 @@ export const AccountKubernetesTab = memo((props: Props) => {
         expirationTime,
         isRefreshing,
         shellScript
-    } = useCoreState("k8sCredentials", "main");
+    } = useCoreState("k8sCodeSnippets", "main");
 
     const { fromNowText } = useFromNow({ "dateTime": expirationTime ?? 0 });
 
     useEffect(() => {
-        k8sCredentials.refresh();
+        k8sCodeSnippets.refresh();
     }, []);
 
     const { t } = useTranslation({ AccountKubernetesTab });
@@ -84,7 +84,7 @@ export const AccountKubernetesTab = memo((props: Props) => {
                         <IconButton
                             size="extra small"
                             icon={id<MuiIconComponentName>("Refresh")}
-                            onClick={() => k8sCredentials.refresh()}
+                            onClick={() => k8sCodeSnippets.refresh()}
                             disabled={isRefreshing}
                         />
                     </>
