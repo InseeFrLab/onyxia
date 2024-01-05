@@ -226,7 +226,7 @@ export async function bootstrapCore(
                     data.usecaseName === "projectManagement" &&
                     (data.actionName === "projectChanged" ||
                         (data.actionName === "configValueUpdated" &&
-                            data.payload.key === "customS3Configs"))
+                            data.payload.key === "s3"))
             )
             .toStateful()
             .pipe((): [ParamsOfCreateS3Client | undefined] => {

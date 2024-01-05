@@ -17,7 +17,7 @@ const restorableConfigs = (rootState: RootState) => {
 };
 
 export function readFriendlyName(
-    restorableConfig: projectManagement.State.RestorableConfig
+    restorableConfig: projectManagement.ProjectConfigs.RestorableServiceConfig
 ): string {
     const userSetFriendlyName = restorableConfig.formFieldsValueDifferentFromDefault.find(
         ({ path }) => same(path, onyxiaFriendlyNameFormFieldPath.split("."))

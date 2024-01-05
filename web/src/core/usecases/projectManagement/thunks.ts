@@ -2,7 +2,7 @@ import { assert, type Equals } from "tsafe/assert";
 import type { Thunks } from "core/bootstrap";
 import { join as pathJoin } from "path";
 import { generateRandomPassword } from "core/tools/generateRandomPassword";
-import { actions, type State, type ChangeConfigValueParams } from "./state";
+import { actions, type ProjectConfigs, type ChangeConfigValueParams } from "./state";
 import type { Secret } from "core/ports/SecretsManager";
 import { selectors, protectedSelectors } from "./selectors";
 import * as userConfigs from "core/usecases/userConfigs";
@@ -38,7 +38,7 @@ export const thunks = {
                 "path": projectConfigVaultDirPath
             });
 
-            const projectConfigs: State.ProjectConfigs = Object.fromEntries(
+            const projectConfigs: ProjectConfigs = Object.fromEntries(
                 await Promise.all(
                     keys.map(async key => {
                         if (!files.includes(key)) {
@@ -97,10 +97,10 @@ const keys = [
     "servicePassword",
     "onboardingTimestamp",
     "restorableConfigs",
-    "customS3Configs"
+    "s3"
 ] as const;
 
-assert<Equals<(typeof keys)[number], keyof State.ProjectConfigs>>();
+assert<Equals<(typeof keys)[number], keyof ProjectConfigs>>();
 
 export const privateThunks = {
     "__configMigration":
@@ -172,7 +172,7 @@ export const protectedThunks = {
             );
         },
     "updateConfigValue":
-        <K extends keyof State.ProjectConfigs>(params: ChangeConfigValueParams<K>) =>
+        <K extends keyof ProjectConfigs>(params: ChangeConfigValueParams<K>) =>
         async (...args) => {
             const [dispatch, getState, rootContext] = args;
 
@@ -207,9 +207,7 @@ export const protectedThunks = {
                     .get({
                         path
                     })
-                    .then(
-                        ({ secret }) => secretToValue(secret) as State.ProjectConfigs[K]
-                    );
+                    .then(({ secret }) => secretToValue(secret) as ProjectConfigs[K]);
 
                 if (!same(currentLocalValue, currentRemoteValue)) {
                     alert(
@@ -230,29 +228,27 @@ export const protectedThunks = {
         }
 } satisfies Thunks;
 
-function getDefaultConfig<K extends keyof State.ProjectConfigs>(
-    key_: K
-): State.ProjectConfigs[K] {
-    const key = key_ as keyof State.ProjectConfigs;
+function getDefaultConfig<K extends keyof ProjectConfigs>(key_: K): ProjectConfigs[K] {
+    const key = key_ as keyof ProjectConfigs;
     switch (key) {
         case "servicePassword": {
-            const out: State.ProjectConfigs[typeof key] = generateRandomPassword();
+            const out: ProjectConfigs[typeof key] = generateRandomPassword();
             // @ts-expect-error
             return out;
         }
         case "onboardingTimestamp": {
-            const out: State.ProjectConfigs[typeof key] = Date.now();
+            const out: ProjectConfigs[typeof key] = Date.now();
             // @ts-expect-error
             return out;
         }
         case "restorableConfigs": {
-            const out: State.ProjectConfigs[typeof key] = [];
+            const out: ProjectConfigs[typeof key] = [];
             // @ts-expect-error
             return out;
         }
-        case "customS3Configs": {
-            const out: State.ProjectConfigs[typeof key] = {
-                "availableConfigs": [],
+        case "s3": {
+            const out: ProjectConfigs[typeof key] = {
+                "customConfigs": [],
                 "indexForExplorer": undefined,
                 "indexForXOnyxia": undefined
             };

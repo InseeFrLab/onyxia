@@ -7,13 +7,24 @@ import {
 } from "redux-clean-architecture";
 import * as userConfigs from "core/usecases/userConfigs";
 
-export type State = {
+type State = {
     projects: Project[];
     selectedProjectId: string;
-    currentProjectConfigs: State.ProjectConfigs;
+    currentProjectConfigs: ProjectConfigs;
 };
 
-export namespace State {
+export type ProjectConfigs = {
+    onboardingTimestamp: number;
+    servicePassword: string;
+    restorableConfigs: ProjectConfigs.RestorableServiceConfig[];
+    s3: {
+        customConfigs: ProjectConfigs.CustomS3Config[];
+        indexForXOnyxia: number | undefined;
+        indexForExplorer: number | undefined;
+    };
+};
+
+export namespace ProjectConfigs {
     export type CustomS3Config = {
         url: string;
         region: string;
@@ -24,27 +35,16 @@ export namespace State {
         pathStyleAccess: boolean;
     };
 
-    export type RestorableConfig = {
+    export type RestorableServiceConfig = {
         catalogId: string;
         chartName: string;
         chartVersion: string;
         formFieldsValueDifferentFromDefault: FormFieldValue[];
     };
-
-    export type ProjectConfigs = {
-        onboardingTimestamp: number;
-        servicePassword: string;
-        restorableConfigs: RestorableConfig[];
-        customS3Configs: {
-            availableConfigs: State.CustomS3Config[];
-            indexForXOnyxia: number | undefined;
-            indexForExplorer: number | undefined;
-        };
-    };
 }
 
 // NOTE: Make sure there's no overlap between userConfigs and projectConfigs as they share the same vault dir.
-assert<Equals<keyof State.ProjectConfigs & keyof userConfigs.UserConfigs, never>>(true);
+assert<Equals<keyof ProjectConfigs & keyof userConfigs.UserConfigs, never>>(true);
 
 export const name = "projectManagement";
 
@@ -65,8 +65,8 @@ export const { reducer, actions } = createUsecaseActions({
 });
 
 export type ChangeConfigValueParams<
-    K extends keyof State.ProjectConfigs = keyof State.ProjectConfigs
+    K extends keyof ProjectConfigs = keyof ProjectConfigs
 > = {
     key: K;
-    value: State.ProjectConfigs[K];
+    value: ProjectConfigs[K];
 };

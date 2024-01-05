@@ -354,7 +354,7 @@ const restorableConfig = createSelector(
         chartVersion,
         formFields,
         pathOfFormFieldsWhoseValuesAreDifferentFromDefault
-    ): projectManagement.State.RestorableConfig | undefined => {
+    ): projectManagement.ProjectConfigs.RestorableServiceConfig | undefined => {
         if (!isReady) {
             return undefined;
         }

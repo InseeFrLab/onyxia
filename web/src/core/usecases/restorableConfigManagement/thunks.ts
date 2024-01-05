@@ -43,7 +43,9 @@ export const protectedThunks = {
             })();
         },
     "getIsRestorableConfigSaved":
-        (params: { restorableConfig: projectManagement.State.RestorableConfig }) =>
+        (params: {
+            restorableConfig: projectManagement.ProjectConfigs.RestorableServiceConfig;
+        }) =>
         (...args): boolean => {
             const [, getState] = args;
 
@@ -61,7 +63,9 @@ export const protectedThunks = {
 
 export const thunks = {
     "saveRestorableConfig":
-        (params: { restorableConfig: projectManagement.State.RestorableConfig }) =>
+        (params: {
+            restorableConfig: projectManagement.ProjectConfigs.RestorableServiceConfig;
+        }) =>
         async (...args) => {
             const [dispatch, getState] = args;
 
@@ -113,7 +117,9 @@ export const thunks = {
             );
         },
     "deleteRestorableConfig":
-        (params: { restorableConfig: projectManagement.State.RestorableConfig }) =>
+        (params: {
+            restorableConfig: projectManagement.ProjectConfigs.RestorableServiceConfig;
+        }) =>
         async (...args) => {
             const [dispatch, getState] = args;
 
@@ -145,8 +151,8 @@ export const thunks = {
 } satisfies Thunks;
 
 export function getAreSameRestorableConfig(
-    restorableConfiguration1: projectManagement.State.RestorableConfig,
-    restorableConfiguration2: projectManagement.State.RestorableConfig
+    restorableConfiguration1: projectManagement.ProjectConfigs.RestorableServiceConfig,
+    restorableConfiguration2: projectManagement.ProjectConfigs.RestorableServiceConfig
 ): boolean {
     return [restorableConfiguration1, restorableConfiguration2]
         .map(

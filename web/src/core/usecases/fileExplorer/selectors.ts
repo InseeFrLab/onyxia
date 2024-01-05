@@ -162,19 +162,15 @@ const isFileExplorerEnabled = (rootState: RootState) => {
 const workingDirectoryPath = createSelector(
     deploymentRegionManagement.selectors.currentDeploymentRegion,
     projectManagement.selectors.currentProject,
-    projectManagement.protectedSelectors.currentProjectConfigs,
+    s3ConfigManagement.protectedSelectors.customS3ConfigForExplorer,
     userAuthentication.selectors.user,
-    (deploymentRegion, project, currentProjectConfigs, user) => {
+    (deploymentRegion, project, customS3ConfigForExplorer, user) => {
         from_project_configs: {
-            const { customS3Configs } = currentProjectConfigs;
-
-            const { availableConfigs, indexForExplorer } = customS3Configs;
-
-            if (indexForExplorer === undefined) {
+            if (customS3ConfigForExplorer === undefined) {
                 break from_project_configs;
             }
 
-            return availableConfigs[indexForExplorer].workingDirectoryPath;
+            return customS3ConfigForExplorer.workingDirectoryPath;
         }
 
         assert(deploymentRegion.s3 !== undefined);
