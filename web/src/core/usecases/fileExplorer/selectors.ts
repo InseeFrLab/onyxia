@@ -2,11 +2,10 @@ import type { State as RootState } from "core/bootstrap";
 import memoize from "memoizee";
 import { type State, name } from "./state";
 import { createSelector } from "redux-clean-architecture";
-import { assert, type Equals } from "tsafe/assert";
+import { assert } from "tsafe/assert";
 import * as deploymentRegionManagement from "core/usecases/deploymentRegionManagement";
 import * as userConfigs from "core/usecases/userConfigs";
 import * as userAuthentication from "core/usecases/userAuthentication";
-import * as projectManagement from "core/usecases/projectManagement";
 import * as s3ConfigManagement from "core/usecases/s3ConfigManagement";
 
 const state = (rootState: RootState): State => rootState[name];
@@ -160,11 +159,9 @@ const isFileExplorerEnabled = (rootState: RootState) => {
 };
 
 const workingDirectoryPath = createSelector(
-    deploymentRegionManagement.selectors.currentDeploymentRegion,
-    projectManagement.selectors.currentProject,
     s3ConfigManagement.protectedSelectors.customS3ConfigForExplorer,
-    userAuthentication.selectors.user,
-    (deploymentRegion, project, customS3ConfigForExplorer, user) => {
+    s3ConfigManagement.protectedSelectors.stsS3Config,
+    (customS3ConfigForExplorer, stsS3Config) => {
         from_project_configs: {
             if (customS3ConfigForExplorer === undefined) {
                 break from_project_configs;
@@ -173,31 +170,9 @@ const workingDirectoryPath = createSelector(
             return customS3ConfigForExplorer.workingDirectoryPath;
         }
 
-        assert(deploymentRegion.s3 !== undefined);
+        assert(stsS3Config !== undefined);
 
-        const { workingDirectory } = deploymentRegion.s3;
-
-        const workingDirectoryPath: string = (() => {
-            switch (workingDirectory.bucketMode) {
-                case "multi":
-                    return project.group === undefined
-                        ? `${workingDirectory.bucketNamePrefix}${user.username}`
-                        : `${workingDirectory.bucketNamePrefixGroup}${project.group}`;
-                case "shared":
-                    return [
-                        workingDirectory.bucketName,
-                        project.group === undefined
-                            ? `${workingDirectory.prefix}${user.username}`
-                            : `${workingDirectory.prefixGroup}${project.group}`
-                    ].join("/");
-            }
-            assert<Equals<typeof workingDirectory, never>>(true);
-        })();
-
-        return workingDirectoryPath
-            .replace(/\/\//g, "/")
-            .replace(/^\//g, "")
-            .replace(/\/$/g, "/");
+        return stsS3Config.workingDirectoryPath;
     }
 );
 
