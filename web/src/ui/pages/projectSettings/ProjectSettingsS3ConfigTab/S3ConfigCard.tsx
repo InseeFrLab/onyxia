@@ -3,6 +3,7 @@ import Switch from "@mui/material/Switch";
 import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
 import { id } from "tsafe/id";
 import { Button } from "onyxia-ui/Button";
+import { tss } from "tss";
 
 type Props = {
     className?: string;
@@ -31,20 +32,18 @@ export function S3ConfigCard(props: Props) {
         doHideUsageSwitches
     } = props;
 
+    const { classes, cx } = useStyles();
+
     return (
-        <div className={className}>
+        <div className={cx(classes.root, className)}>
             <div style={{ "display": "flex" }}>
                 <Text typo="label 1">Data Source:</Text>
                 &nbsp;
-                <Text typo="body 1">{dataSource}</Text>
+                <Text typo="body 1">
+                    <code>{dataSource}</code>
+                    {region === "" ? null : <>&nbsp;-&nbsp;{region}</>}
+                </Text>
             </div>
-            {region !== "" && (
-                <div style={{ "display": "flex" }}>
-                    <Text typo="label 1">Region:</Text>
-                    &nbsp;
-                    <Text typo="body 1">{region}</Text>
-                </div>
-            )}
             {accountFriendlyName === undefined ? (
                 <div style={{ "display": "flex" }}>
                     <Text typo="label 1">Credentials:</Text>
@@ -99,3 +98,11 @@ export function S3ConfigCard(props: Props) {
         </div>
     );
 }
+
+const useStyles = tss.withName({ S3ConfigCard }).create(({ theme }) => ({
+    "root": {
+        "border": `1px solid ${theme.colors.useCases.surfaces.surface2}`,
+        "padding": theme.spacing(3),
+        "borderRadius": theme.spacing(2)
+    }
+}));

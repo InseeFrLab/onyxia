@@ -7,6 +7,7 @@ import { S3ConfigCard } from "./S3ConfigCard";
 import { Button } from "onyxia-ui/Button";
 import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
 import { id } from "tsafe/id";
+import { tss } from "tss";
 
 export type Props = {
     className?: string;
@@ -36,10 +37,13 @@ export const ProjectSettingsS3ConfigTab = memo((props: Props) => {
 
     const { s3ConfigManagement } = useCore().functions;
 
+    const { classes } = useStyles();
+
     return (
         <div className={className}>
             {s3Configs.map(s3Config => (
                 <S3ConfigCard
+                    className={classes.card}
                     key={s3Config.customConfigIndex ?? -1}
                     dataSource={s3Config.dataSource}
                     region={s3Config.region}
@@ -130,3 +134,9 @@ export const ProjectSettingsS3ConfigTab = memo((props: Props) => {
         </div>
     );
 });
+
+const useStyles = tss.withName({ ProjectSettingsS3ConfigTab }).create(({ theme }) => ({
+    "card": {
+        "marginBottom": theme.spacing(3)
+    }
+}));
