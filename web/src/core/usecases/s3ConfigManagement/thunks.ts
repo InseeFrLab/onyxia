@@ -54,11 +54,12 @@ export const thunks = {
 
             s3.customConfigs.push({
                 ...customS3Config,
-                "workingDirectoryPath": customS3Config.workingDirectoryPath
-                    .trim()
-                    .replace(/\/\//g, "/") // Remove double slashes if any
-                    .replace(/^\//g, "") // Ensure no leading slash
-                    .replace(/\/?$/g, "/") // Enforce trailing slash
+                "workingDirectoryPath":
+                    customS3Config.workingDirectoryPath
+                        .trim()
+                        .replace(/\/\//g, "/") // Remove double slashes if any
+                        .replace(/^\//g, "") // Ensure no leading slash
+                        .replace(/\/$/g, "") + "/" // Enforce trailing slash
             });
 
             {

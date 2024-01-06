@@ -59,28 +59,29 @@ const stsS3Config = createSelector(
         return {
             "url": deploymentRegion.s3.url,
             "region": deploymentRegion.s3.region ?? "",
-            "workingDirectoryPath": ((): string => {
-                const { workingDirectory } = deploymentRegion.s3;
+            "workingDirectoryPath":
+                ((): string => {
+                    const { workingDirectory } = deploymentRegion.s3;
 
-                switch (workingDirectory.bucketMode) {
-                    case "multi":
-                        return project.group === undefined
-                            ? `${workingDirectory.bucketNamePrefix}${user.username}`
-                            : `${workingDirectory.bucketNamePrefixGroup}${project.group}`;
-                    case "shared":
-                        return [
-                            workingDirectory.bucketName,
-                            project.group === undefined
-                                ? `${workingDirectory.prefix}${user.username}`
-                                : `${workingDirectory.prefixGroup}${project.group}`
-                        ].join("/");
-                }
-                assert<Equals<typeof workingDirectory, never>>(true);
-            })()
-                .trim()
-                .replace(/\/\//g, "/") // Remove double slashes if any
-                .replace(/^\//g, "") // Ensure no leading slash
-                .replace(/\/?$/g, "/"), // Enforce trailing slash
+                    switch (workingDirectory.bucketMode) {
+                        case "multi":
+                            return project.group === undefined
+                                ? `${workingDirectory.bucketNamePrefix}${user.username}`
+                                : `${workingDirectory.bucketNamePrefixGroup}${project.group}`;
+                        case "shared":
+                            return [
+                                workingDirectory.bucketName,
+                                project.group === undefined
+                                    ? `${workingDirectory.prefix}${user.username}`
+                                    : `${workingDirectory.prefixGroup}${project.group}`
+                            ].join("/");
+                    }
+                    assert<Equals<typeof workingDirectory, never>>(true);
+                })()
+                    .trim()
+                    .replace(/\/\//g, "/") // Remove double slashes if any
+                    .replace(/^\//g, "") // Ensure no leading slash
+                    .replace(/\/+$/g, "") + "/", // Enforce trailing slash
             "pathStyleAccess": deploymentRegion.s3.pathStyleAccess,
             "isUsedForXOnyxia": projectS3Config.indexForXOnyxia === undefined,
             "isUsedForExplorer": projectS3Config.indexForExplorer === undefined
