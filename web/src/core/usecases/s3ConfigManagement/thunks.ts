@@ -52,7 +52,14 @@ export const thunks = {
                 projectManagement.protectedSelectors.currentProjectConfigs(getState()).s3
             );
 
-            s3.customConfigs.push(customS3Config);
+            s3.customConfigs.push({
+                ...customS3Config,
+                "workingDirectoryPath": customS3Config.workingDirectoryPath
+                    .trim()
+                    .replace(/\/\//g, "/") // Remove double slashes if any
+                    .replace(/^\//g, "") // Ensure no leading slash
+                    .replace(/\/?$/g, "/") // Enforce trailing slash
+            });
 
             {
                 const newIndex = s3.customConfigs.length - 1;
@@ -73,10 +80,15 @@ export const thunks = {
                 })
             );
         },
-    "setCustomS3ConfigAsUsedForXOnyxiaOrExplorer":
-        (params: { customS3ConfigId: number; usedFor: "xOnyxia" | "explorer" }) =>
+    "setConfigUsage":
+        (params: {
+            /** Undefined for SES config */
+            customS3ConfigId: number | undefined;
+            usedFor: "xOnyxia" | "explorer";
+            isUsed: boolean;
+        }) =>
         async (...args) => {
-            const { customS3ConfigId: customS3ConfigIndex, usedFor } = params;
+            const { customS3ConfigId: customS3ConfigIndex, usedFor, isUsed } = params;
 
             const [dispatch, getState] = args;
 
@@ -84,18 +96,31 @@ export const thunks = {
                 projectManagement.protectedSelectors.currentProjectConfigs(getState()).s3
             );
 
-            assert(s3.customConfigs[customS3ConfigIndex] !== undefined);
+            if (customS3ConfigIndex === undefined) {
+                assert(isUsed, "The switch should be disabled");
 
-            s3[
-                (() => {
-                    switch (usedFor) {
-                        case "explorer":
-                            return "indexForExplorer";
-                        case "xOnyxia":
-                            return "indexForXOnyxia";
-                    }
-                })()
-            ] = customS3ConfigIndex;
+                switch (usedFor) {
+                    case "explorer":
+                        s3.indexForExplorer = undefined;
+                        break;
+                    case "xOnyxia":
+                        s3.indexForXOnyxia = undefined;
+                        break;
+                }
+            } else {
+                assert(s3.customConfigs[customS3ConfigIndex] !== undefined);
+
+                const index = isUsed ? customS3ConfigIndex : undefined;
+
+                switch (usedFor) {
+                    case "explorer":
+                        s3.indexForExplorer = index;
+                        break;
+                    case "xOnyxia":
+                        s3.indexForXOnyxia = index;
+                        break;
+                }
+            }
 
             await dispatch(
                 projectManagement.protectedThunks.updateConfigValue({

@@ -75,6 +75,7 @@ const stsS3Config = createSelector(
                 }
                 assert<Equals<typeof workingDirectory, never>>(true);
             })()
+                .trim()
                 .replace(/\/\//g, "/") // Remove double slashes if any
                 .replace(/^\//g, "") // Ensure no leading slash
                 .replace(/\/?$/g, "/"), // Enforce trailing slash
