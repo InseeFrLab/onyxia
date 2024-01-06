@@ -6,17 +6,9 @@ import { Button } from "onyxia-ui/Button";
 
 type Props = {
     className?: string;
-    url: string;
+    dataSource: string;
     region: string;
-    workingDirectoryPath: string;
-    credentials:
-        | {
-              accessKeyId: string;
-              secretAccessKey: string;
-              sessionToken: string | undefined;
-          }
-        | undefined;
-    pathStyleAccess: boolean;
+    accountFriendlyName: string | undefined;
     isUsedForExplorer: boolean;
     isUsedForXOnyxia: boolean;
     onDelete: (() => void) | undefined;
@@ -28,11 +20,9 @@ type Props = {
 export function S3ConfigCard(props: Props) {
     const {
         className,
-        url,
+        dataSource,
         region,
-        workingDirectoryPath,
-        credentials,
-        pathStyleAccess,
+        accountFriendlyName,
         isUsedForExplorer,
         isUsedForXOnyxia,
         onDelete,
@@ -44,50 +34,30 @@ export function S3ConfigCard(props: Props) {
     return (
         <div className={className}>
             <div style={{ "display": "flex" }}>
-                <Text typo="label 1">URL:</Text>
+                <Text typo="label 1">Data Source:</Text>
                 &nbsp;
-                <Text typo="body 1">{url}</Text>
+                <Text typo="body 1">{dataSource}</Text>
             </div>
-            <div style={{ "display": "flex" }}>
-                <Text typo="label 1">AWS Region:</Text>
-                &nbsp;
-                <Text typo="body 1">{region}</Text>
-            </div>
-            <div style={{ "display": "flex" }}>
-                <Text typo="label 1">Working directory:</Text>
-                &nbsp;
-                <Text typo="body 1">{workingDirectoryPath}</Text>
-            </div>
-            <div style={{ "display": "flex" }}>
-                <Text typo="label 1">Path style access:</Text>
-                &nbsp;
-                <Text typo="body 1">{pathStyleAccess ? "true" : "false"}</Text>
-            </div>
-            {credentials === undefined ? (
+            {region !== "" && (
+                <div style={{ "display": "flex" }}>
+                    <Text typo="label 1">Region:</Text>
+                    &nbsp;
+                    <Text typo="body 1">{region}</Text>
+                </div>
+            )}
+            {accountFriendlyName === undefined ? (
                 <div style={{ "display": "flex" }}>
                     <Text typo="label 1">Credentials:</Text>
                     &nbsp;
-                    <Text typo="body 1">STS</Text>
+                    <Text typo="body 1">Tokens automatically generated (STS)</Text>
                 </div>
             ) : (
                 <>
                     <div style={{ "display": "flex" }}>
-                        <Text typo="label 1">Access Key ID:</Text>
+                        <Text typo="label 1">Account:</Text>
                         &nbsp;
-                        <Text typo="body 1">{credentials.accessKeyId}</Text>
+                        <Text typo="body 1">{accountFriendlyName}</Text>
                     </div>
-                    <div style={{ "display": "flex" }}>
-                        <Text typo="label 1">Secret Access Key:</Text>
-                        &nbsp;
-                        <Text typo="body 1">{credentials.secretAccessKey}</Text>
-                    </div>
-                    {credentials.sessionToken !== undefined && (
-                        <div style={{ "display": "flex" }}>
-                            <Text typo="label 1">Session Token:</Text>
-                            &nbsp;
-                            <Text typo="body 1">{credentials.sessionToken}</Text>
-                        </div>
-                    )}
                 </>
             )}
             {!doHideUsageSwitches && (

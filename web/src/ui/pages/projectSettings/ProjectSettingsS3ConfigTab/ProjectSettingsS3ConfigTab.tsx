@@ -29,7 +29,7 @@ export const ProjectSettingsS3ConfigTab = memo((props: Props) => {
                 >()
         }));
 
-    const { stsS3Config, customS3Configs, newCustomConfigDefaultValues } = useCoreState(
+    const { s3Configs, newCustomConfigDefaultValues } = useCoreState(
         "s3ConfigManagement",
         "main"
     );
@@ -38,81 +38,68 @@ export const ProjectSettingsS3ConfigTab = memo((props: Props) => {
 
     return (
         <div className={className}>
-            {stsS3Config !== undefined && (
+            {s3Configs.map(s3Config => (
                 <S3ConfigCard
-                    url={stsS3Config.url}
-                    region={stsS3Config.region}
-                    workingDirectoryPath={stsS3Config.workingDirectoryPath}
-                    credentials={undefined}
-                    pathStyleAccess={stsS3Config.pathStyleAccess}
-                    isUsedForExplorer={stsS3Config.isUsedForExplorer}
-                    isUsedForXOnyxia={stsS3Config.isUsedForXOnyxia}
-                    onDelete={undefined}
-                    onIsUsedForExplorerValueChange={
-                        stsS3Config.isUsedForExplorer
-                            ? undefined
-                            : isUsed =>
-                                  s3ConfigManagement.setConfigUsage({
-                                      "customS3ConfigId": undefined,
-                                      "usedFor": "explorer",
-                                      isUsed
-                                  })
-                    }
-                    onIsUsedForXOnyxiaValueChange={
-                        stsS3Config.isUsedForXOnyxia
-                            ? undefined
-                            : isUsed =>
-                                  s3ConfigManagement.setConfigUsage({
-                                      "customS3ConfigId": undefined,
-                                      "usedFor": "xOnyxia",
-                                      isUsed
-                                  })
-                    }
-                    doHideUsageSwitches={customS3Configs.length === 0}
-                />
-            )}
-            {customS3Configs.map(customConfig => (
-                <S3ConfigCard
-                    key={customConfig.id}
-                    url={customConfig.url}
-                    region={customConfig.region}
-                    workingDirectoryPath={customConfig.workingDirectoryPath}
-                    pathStyleAccess={customConfig.pathStyleAccess}
-                    isUsedForExplorer={customConfig.isUsedForExplorer}
-                    isUsedForXOnyxia={customConfig.isUsedForXOnyxia}
-                    credentials={{
-                        "accessKeyId": customConfig.accessKeyId,
-                        "secretAccessKey": customConfig.secretAccessKey,
-                        "sessionToken": customConfig.sessionToken
-                    }}
-                    onDelete={() =>
-                        evtConfirmCustomS3ConfigDeletionDialogOpen.post({
-                            "resolveDoProceed": doProceed => {
-                                if (!doProceed) {
-                                    return;
-                                }
+                    key={s3Config.customConfigIndex ?? -1}
+                    dataSource={s3Config.dataSource}
+                    region={s3Config.region}
+                    isUsedForExplorer={s3Config.isUsedForExplorer}
+                    isUsedForXOnyxia={s3Config.isUsedForXOnyxia}
+                    accountFriendlyName={s3Config.accountFriendlyName}
+                    onDelete={(() => {
+                        const { customConfigIndex } = s3Config;
 
-                                s3ConfigManagement.deleteCustomS3Config({
-                                    "customS3ConfigId": customConfig.id
-                                });
-                            }
-                        })
+                        if (customConfigIndex === undefined) {
+                            return undefined;
+                        }
+
+                        return () =>
+                            evtConfirmCustomS3ConfigDeletionDialogOpen.post({
+                                "resolveDoProceed": doProceed => {
+                                    if (!doProceed) {
+                                        return;
+                                    }
+
+                                    s3ConfigManagement.deleteCustomS3Config({
+                                        customConfigIndex
+                                    });
+                                }
+                            });
+                    })()}
+                    onIsUsedForExplorerValueChange={(() => {
+                        if (
+                            s3Config.accountFriendlyName === undefined &&
+                            s3Config.isUsedForExplorer
+                        ) {
+                            return undefined;
+                        }
+
+                        return isUsed =>
+                            s3ConfigManagement.setConfigUsage({
+                                "customConfigIndex": s3Config.customConfigIndex,
+                                "usedFor": "explorer",
+                                isUsed
+                            });
+                    })()}
+                    onIsUsedForXOnyxiaValueChange={(() => {
+                        if (
+                            s3Config.accountFriendlyName === undefined &&
+                            s3Config.isUsedForXOnyxia
+                        ) {
+                            return undefined;
+                        }
+
+                        return isUsed =>
+                            s3ConfigManagement.setConfigUsage({
+                                "customConfigIndex": s3Config.customConfigIndex,
+                                "usedFor": "xOnyxia",
+                                isUsed
+                            });
+                    })()}
+                    doHideUsageSwitches={
+                        s3Config.accountFriendlyName === undefined &&
+                        s3Configs.length === 1
                     }
-                    onIsUsedForExplorerValueChange={isUsed =>
-                        s3ConfigManagement.setConfigUsage({
-                            "customS3ConfigId": customConfig.id,
-                            "usedFor": "explorer",
-                            isUsed
-                        })
-                    }
-                    onIsUsedForXOnyxiaValueChange={isUsed =>
-                        s3ConfigManagement.setConfigUsage({
-                            "customS3ConfigId": customConfig.id,
-                            "usedFor": "xOnyxia",
-                            isUsed
-                        })
-                    }
-                    doHideUsageSwitches={false}
                 />
             ))}
             <S3ConfigDialogs

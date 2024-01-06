@@ -29,10 +29,11 @@ export namespace ProjectConfigs {
         url: string;
         region: string;
         workingDirectoryPath: string;
+        pathStyleAccess: boolean;
+        accountFriendlyName: string;
         accessKeyId: string;
         secretAccessKey: string;
         sessionToken: string | undefined;
-        pathStyleAccess: boolean;
     };
 
     export type RestorableServiceConfig = {

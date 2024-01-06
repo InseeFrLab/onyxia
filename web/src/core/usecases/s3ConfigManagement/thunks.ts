@@ -5,9 +5,9 @@ import { assert } from "tsafe/assert";
 
 export const thunks = {
     "deleteCustomS3Config":
-        (params: { customS3ConfigId: number }) =>
+        (params: { customConfigIndex: number }) =>
         async (...args) => {
-            const { customS3ConfigId: customS3ConfigIndex } = params;
+            const { customConfigIndex } = params;
 
             const [dispatch, getState] = args;
 
@@ -15,17 +15,17 @@ export const thunks = {
                 projectManagement.protectedSelectors.currentProjectConfigs(getState()).s3
             );
 
-            assert(s3.customConfigs[customS3ConfigIndex] !== undefined);
+            assert(s3.customConfigs[customConfigIndex] !== undefined);
 
-            if (s3.indexForExplorer === customS3ConfigIndex) {
+            if (s3.indexForExplorer === customConfigIndex) {
                 s3.indexForExplorer = undefined;
             }
 
-            if (s3.indexForXOnyxia === customS3ConfigIndex) {
+            if (s3.indexForXOnyxia === customConfigIndex) {
                 s3.indexForXOnyxia = undefined;
             }
 
-            s3.customConfigs.splice(customS3ConfigIndex, 1);
+            s3.customConfigs.splice(customConfigIndex, 1);
 
             await dispatch(
                 projectManagement.protectedThunks.updateConfigValue({
@@ -82,13 +82,12 @@ export const thunks = {
         },
     "setConfigUsage":
         (params: {
-            /** Undefined for SES config */
-            customS3ConfigId: number | undefined;
+            customConfigIndex: number | undefined;
             usedFor: "xOnyxia" | "explorer";
             isUsed: boolean;
         }) =>
         async (...args) => {
-            const { customS3ConfigId: customS3ConfigIndex, usedFor, isUsed } = params;
+            const { customConfigIndex, usedFor, isUsed } = params;
 
             const [dispatch, getState] = args;
 
@@ -96,7 +95,7 @@ export const thunks = {
                 projectManagement.protectedSelectors.currentProjectConfigs(getState()).s3
             );
 
-            if (customS3ConfigIndex === undefined) {
+            if (customConfigIndex === undefined) {
                 assert(isUsed, "The switch should be disabled");
 
                 switch (usedFor) {
@@ -108,9 +107,9 @@ export const thunks = {
                         break;
                 }
             } else {
-                assert(s3.customConfigs[customS3ConfigIndex] !== undefined);
+                assert(s3.customConfigs[customConfigIndex] !== undefined);
 
-                const index = isUsed ? customS3ConfigIndex : undefined;
+                const index = isUsed ? customConfigIndex : undefined;
 
                 switch (usedFor) {
                     case "explorer":

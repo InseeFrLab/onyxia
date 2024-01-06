@@ -32,6 +32,7 @@ type NewCustomConfig = {
     url: string;
     region: string;
     workingDirectoryPath: string;
+    accountFriendlyName: string;
     accessKeyId: string;
     secretAccessKey: string;
     sessionToken: string | undefined;
@@ -60,6 +61,7 @@ export const AddCustomS3ConfigDialog = memo((props: Props) => {
                     resolveNewCustomConfig,
                     "evtNewCustomConfig": Evt.create<NewCustomConfig>({
                         ...defaultValues,
+                        "accountFriendlyName": "",
                         "accessKeyId": "",
                         "secretAccessKey": "",
                         "sessionToken": undefined,
@@ -171,6 +173,18 @@ const Body = memo((props: { evtNewCustomConfig: StatefulEvt<NewCustomConfig> }) 
                         "workingDirectoryPath": value
                     };
                 }}
+            />
+            <TextField
+                className={classes.textField}
+                label="Account friendly name"
+                helperText="This is just to help you identify the account"
+                defaultValue={evtNewCustomConfig.state.accountFriendlyName}
+                onValueBeingTypedChange={({ value }) =>
+                    (evtNewCustomConfig.state = {
+                        ...evtNewCustomConfig.state,
+                        "accountFriendlyName": value
+                    })
+                }
             />
             <TextField
                 className={classes.textField}
