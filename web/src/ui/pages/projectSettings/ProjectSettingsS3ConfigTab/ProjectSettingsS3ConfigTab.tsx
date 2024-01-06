@@ -68,6 +68,7 @@ export const ProjectSettingsS3ConfigTab = memo((props: Props) => {
                                       isUsed
                                   })
                     }
+                    doHideUsageSwitches={customS3Configs.length === 0}
                 />
             )}
             {customS3Configs.map(customConfig => (
@@ -111,6 +112,7 @@ export const ProjectSettingsS3ConfigTab = memo((props: Props) => {
                             isUsed
                         })
                     }
+                    doHideUsageSwitches={false}
                 />
             ))}
             <S3ConfigDialogs

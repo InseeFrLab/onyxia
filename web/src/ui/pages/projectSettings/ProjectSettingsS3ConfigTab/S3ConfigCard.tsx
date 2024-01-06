@@ -22,6 +22,7 @@ type Props = {
     onDelete: (() => void) | undefined;
     onIsUsedForExplorerValueChange: ((isUsed: boolean) => void) | undefined;
     onIsUsedForXOnyxiaValueChange: ((isUsed: boolean) => void) | undefined;
+    doHideUsageSwitches: boolean;
 };
 
 export function S3ConfigCard(props: Props) {
@@ -36,7 +37,8 @@ export function S3ConfigCard(props: Props) {
         isUsedForXOnyxia,
         onDelete,
         onIsUsedForExplorerValueChange,
-        onIsUsedForXOnyxiaValueChange
+        onIsUsedForXOnyxiaValueChange,
+        doHideUsageSwitches
     } = props;
 
     return (
@@ -88,30 +90,34 @@ export function S3ConfigCard(props: Props) {
                     )}
                 </>
             )}
-            <div style={{ "display": "flex" }}>
-                <Text typo="label 1">Use in services:</Text>
-                &nbsp;
-                <Switch
-                    checked={isUsedForXOnyxia}
-                    disabled={onIsUsedForXOnyxiaValueChange === undefined}
-                    onChange={event =>
-                        onIsUsedForXOnyxiaValueChange?.(event.target.checked)
-                    }
-                    inputProps={{ "aria-label": "controlled" }}
-                />
-            </div>
-            <div style={{ "display": "flex" }}>
-                <Text typo="label 1">Use for Onyxia explorer:</Text>
-                &nbsp;
-                <Switch
-                    checked={isUsedForExplorer}
-                    disabled={onIsUsedForExplorerValueChange === undefined}
-                    onChange={event =>
-                        onIsUsedForExplorerValueChange?.(event.target.checked)
-                    }
-                    inputProps={{ "aria-label": "controlled" }}
-                />
-            </div>
+            {!doHideUsageSwitches && (
+                <>
+                    <div style={{ "display": "flex" }}>
+                        <Text typo="label 1">Use in services:</Text>
+                        &nbsp;
+                        <Switch
+                            checked={isUsedForXOnyxia}
+                            disabled={onIsUsedForXOnyxiaValueChange === undefined}
+                            onChange={event =>
+                                onIsUsedForXOnyxiaValueChange?.(event.target.checked)
+                            }
+                            inputProps={{ "aria-label": "controlled" }}
+                        />
+                    </div>
+                    <div style={{ "display": "flex" }}>
+                        <Text typo="label 1">Use for Onyxia explorer:</Text>
+                        &nbsp;
+                        <Switch
+                            checked={isUsedForExplorer}
+                            disabled={onIsUsedForExplorerValueChange === undefined}
+                            onChange={event =>
+                                onIsUsedForExplorerValueChange?.(event.target.checked)
+                            }
+                            inputProps={{ "aria-label": "controlled" }}
+                        />
+                    </div>
+                </>
+            )}
             {onDelete !== undefined && (
                 <Button
                     startIcon={id<MuiIconComponentName>("Delete")}

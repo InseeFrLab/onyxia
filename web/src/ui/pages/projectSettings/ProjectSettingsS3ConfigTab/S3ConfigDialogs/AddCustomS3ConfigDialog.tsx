@@ -12,6 +12,7 @@ import RadioGroup from "@mui/material/RadioGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import FormControl from "@mui/material/FormControl";
 import FormLabel from "@mui/material/FormLabel";
+import { tss } from "tss";
 
 export type Props = {
     evtOpen: NonPostableEvt<{
@@ -83,7 +84,7 @@ export const AddCustomS3ConfigDialog = memo((props: Props) => {
 
     return (
         <Dialog
-            title="Add new config?l"
+            title="New custom S3 configuration"
             body={
                 state === undefined ? (
                     <></>
@@ -116,9 +117,12 @@ const Body = memo((props: { evtNewCustomConfig: StatefulEvt<NewCustomConfig> }) 
 
     useRerenderOnStateChange(evtNewCustomConfig);
 
+    const { classes } = useStyles();
+
     return (
-        <>
+        <div className={classes.root}>
             <TextField
+                className={classes.textField}
                 label="URL"
                 helperText="The URL of the S3 endpoint"
                 defaultValue={evtNewCustomConfig.state.url}
@@ -145,6 +149,7 @@ const Body = memo((props: { evtNewCustomConfig: StatefulEvt<NewCustomConfig> }) 
                 }
             />
             <TextField
+                className={classes.textField}
                 label="Region"
                 helperText="The region of the S3 endpoint"
                 defaultValue={evtNewCustomConfig.state.region}
@@ -156,6 +161,7 @@ const Body = memo((props: { evtNewCustomConfig: StatefulEvt<NewCustomConfig> }) 
                 }
             />
             <TextField
+                className={classes.textField}
                 label="Working directory path"
                 helperText="<bucket>/<object prefix> example: my-bucket/my-directory/"
                 defaultValue={evtNewCustomConfig.state.workingDirectoryPath}
@@ -167,6 +173,7 @@ const Body = memo((props: { evtNewCustomConfig: StatefulEvt<NewCustomConfig> }) 
                 }}
             />
             <TextField
+                className={classes.textField}
                 label="Access key ID"
                 defaultValue={evtNewCustomConfig.state.accessKeyId}
                 onValueBeingTypedChange={({ value }) =>
@@ -177,6 +184,7 @@ const Body = memo((props: { evtNewCustomConfig: StatefulEvt<NewCustomConfig> }) 
                 }
             />
             <TextField
+                className={classes.textField}
                 label="Secret access key"
                 defaultValue={evtNewCustomConfig.state.secretAccessKey}
                 onValueBeingTypedChange={({ value }) =>
@@ -187,6 +195,7 @@ const Body = memo((props: { evtNewCustomConfig: StatefulEvt<NewCustomConfig> }) 
                 }
             />
             <TextField
+                className={classes.textField}
                 label="Session token"
                 helperText="Optional"
                 defaultValue={evtNewCustomConfig.state.sessionToken ?? ""}
@@ -236,18 +245,18 @@ const Body = memo((props: { evtNewCustomConfig: StatefulEvt<NewCustomConfig> }) 
                     }}
                 >
                     <FormControlLabel
-                        value="Yes"
+                        value="yes"
                         control={<Radio />}
                         label={`Yes, use this configuration as default for services`}
                     />
-                    <FormControlLabel value="No" control={<Radio />} label={`No`} />
+                    <FormControlLabel value="no" control={<Radio />} label="No" />
                 </RadioGroup>
             </FormControl>
             <FormControl>
                 <FormLabel id="use-for-explorer">Use for the explorer</FormLabel>
                 <RadioGroup
                     aria-labelledby="use-for-explorer"
-                    value={evtNewCustomConfig.state.isUsedForXOnyxia ? "yes" : "no"}
+                    value={evtNewCustomConfig.state.isUsedForExplorer ? "yes" : "no"}
                     onChange={(_, value) => {
                         evtNewCustomConfig.state = {
                             ...evtNewCustomConfig.state,
@@ -255,10 +264,21 @@ const Body = memo((props: { evtNewCustomConfig: StatefulEvt<NewCustomConfig> }) 
                         };
                     }}
                 >
-                    <FormControlLabel value="Yes" control={<Radio />} label="Yes" />
-                    <FormControlLabel value="No" control={<Radio />} label="No" />
+                    <FormControlLabel value="yes" control={<Radio />} label="Yes" />
+                    <FormControlLabel value="no" control={<Radio />} label="No" />
                 </RadioGroup>
             </FormControl>
-        </>
+        </div>
     );
 });
+
+const useStyles = tss.withName({ AddCustomS3ConfigDialog }).create(({ theme }) => ({
+    "root": {
+        "display": "flex",
+        "flexDirection": "column",
+        "marginTop": theme.spacing(4)
+    },
+    "textField": {
+        "marginBottom": theme.spacing(6)
+    }
+}));
