@@ -36,7 +36,7 @@ export function S3ConfigCard(props: Props) {
 
     return (
         <div className={cx(classes.root, className)}>
-            <div style={{ "display": "flex" }}>
+            <div className={classes.line}>
                 <Text typo="label 1">Data Source:</Text>
                 &nbsp;
                 <Text typo="body 1">
@@ -44,24 +44,26 @@ export function S3ConfigCard(props: Props) {
                     {region === "" ? null : <>&nbsp;-&nbsp;{region}</>}
                 </Text>
             </div>
-            {accountFriendlyName === undefined ? (
-                <div style={{ "display": "flex" }}>
-                    <Text typo="label 1">Credentials:</Text>
-                    &nbsp;
-                    <Text typo="body 1">Tokens automatically generated (STS)</Text>
-                </div>
-            ) : (
-                <>
-                    <div style={{ "display": "flex" }}>
+            <div className={classes.line}>
+                {accountFriendlyName === undefined ? (
+                    <>
+                        <Text typo="label 1">Credentials:</Text>
+                        &nbsp;
+                        <Text typo="body 1">
+                            Tokens dynamically requested on your behalf by Onyxia (STS)
+                        </Text>
+                    </>
+                ) : (
+                    <>
                         <Text typo="label 1">Account:</Text>
                         &nbsp;
                         <Text typo="body 1">{accountFriendlyName}</Text>
-                    </div>
-                </>
-            )}
+                    </>
+                )}
+            </div>
             {!doHideUsageSwitches && (
                 <>
-                    <div style={{ "display": "flex" }}>
+                    <div className={classes.line}>
                         <Text typo="label 1">Use in services:</Text>
                         &nbsp;
                         <Switch
@@ -73,7 +75,7 @@ export function S3ConfigCard(props: Props) {
                             inputProps={{ "aria-label": "controlled" }}
                         />
                     </div>
-                    <div style={{ "display": "flex" }}>
+                    <div className={classes.line}>
                         <Text typo="label 1">Use for Onyxia explorer:</Text>
                         &nbsp;
                         <Switch
@@ -104,5 +106,10 @@ const useStyles = tss.withName({ S3ConfigCard }).create(({ theme }) => ({
         "border": `1px solid ${theme.colors.useCases.surfaces.surface2}`,
         "padding": theme.spacing(3),
         "borderRadius": theme.spacing(2)
+    },
+    "line": {
+        "marginBottom": theme.spacing(3),
+        "display": "flex",
+        "alignItems": "center"
     }
 }));
