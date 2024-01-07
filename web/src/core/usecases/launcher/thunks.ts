@@ -179,7 +179,7 @@ export const thunks = {
                     }
 
                     dispatch(
-                        thunks.useCustomS3Config({
+                        thunks.useSpecificS3Config({
                             "customS3ConfigIndex": indexOfCustomS3ConfigForXOnyxia
                         })
                     );
@@ -304,12 +304,24 @@ export const thunks = {
                 })
             );
         },
-    "useCustomS3Config":
-        (params: { customS3ConfigIndex: number }) =>
+    "useSpecificS3Config":
+        (params: {
+            /** undefined for restoring STS */
+            customS3ConfigIndex: number | undefined;
+        }) =>
         (...args) => {
             const { customS3ConfigIndex } = params;
 
             const [dispatch, getState] = args;
+
+            if (customS3ConfigIndex === undefined) {
+                dispatch(
+                    privateThunks.updateXOnyxiaContext({
+                        "partialXOnyxiaContext": {}
+                    })
+                );
+                return;
+            }
 
             const customS3Configs = s3ConfigManagement.protectedSelectors.customS3Configs(
                 getState()
