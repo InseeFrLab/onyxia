@@ -13,6 +13,7 @@ import FormControlLabel from "@mui/material/FormControlLabel";
 import FormControl from "@mui/material/FormControl";
 import FormLabel from "@mui/material/FormLabel";
 import { useWindowInnerSize } from "powerhooks/useWindowInnerSize";
+import FormGroup from "@mui/material/FormGroup";
 import { tss } from "tss";
 
 export type Props = {
@@ -201,52 +202,57 @@ const Body = memo(
                         };
                     }}
                 />
-                <TextField
-                    className={classes.textField}
-                    label="Account friendly name"
-                    helperText="This is just to help you identify the account"
-                    defaultValue={evtNewCustomConfig.state.accountFriendlyName}
-                    onValueBeingTypedChange={({ value }) =>
-                        (evtNewCustomConfig.state = {
-                            ...evtNewCustomConfig.state,
-                            "accountFriendlyName": value
-                        })
-                    }
-                />
-                <TextField
-                    className={classes.textField}
-                    label="Access key ID"
-                    defaultValue={evtNewCustomConfig.state.accessKeyId}
-                    onValueBeingTypedChange={({ value }) =>
-                        (evtNewCustomConfig.state = {
-                            ...evtNewCustomConfig.state,
-                            "accessKeyId": value
-                        })
-                    }
-                />
-                <TextField
-                    className={classes.textField}
-                    label="Secret access key"
-                    defaultValue={evtNewCustomConfig.state.secretAccessKey}
-                    onValueBeingTypedChange={({ value }) =>
-                        (evtNewCustomConfig.state = {
-                            ...evtNewCustomConfig.state,
-                            "secretAccessKey": value
-                        })
-                    }
-                />
-                <TextField
-                    className={classes.textField}
-                    label="Session token"
-                    helperText="Optional"
-                    defaultValue={evtNewCustomConfig.state.sessionToken ?? ""}
-                    onValueBeingTypedChange={({ value }) =>
-                        (evtNewCustomConfig.state = {
-                            ...evtNewCustomConfig.state,
-                            "sessionToken": value || undefined
-                        })
-                    }
-                />
+                <FormGroup className={classes.accountCredentialsFormGroup}>
+                    <FormLabel className={classes.accountCredentialsFormGroupLabel}>
+                        Account credentials
+                    </FormLabel>
+                    <TextField
+                        className={classes.textField}
+                        label="Account friendly name"
+                        helperText="This is just to help you identify the account"
+                        defaultValue={evtNewCustomConfig.state.accountFriendlyName}
+                        onValueBeingTypedChange={({ value }) =>
+                            (evtNewCustomConfig.state = {
+                                ...evtNewCustomConfig.state,
+                                "accountFriendlyName": value
+                            })
+                        }
+                    />
+                    <TextField
+                        className={classes.textField}
+                        label="Access key ID"
+                        defaultValue={evtNewCustomConfig.state.accessKeyId}
+                        onValueBeingTypedChange={({ value }) =>
+                            (evtNewCustomConfig.state = {
+                                ...evtNewCustomConfig.state,
+                                "accessKeyId": value
+                            })
+                        }
+                    />
+                    <TextField
+                        className={classes.textField}
+                        label="Secret access key"
+                        defaultValue={evtNewCustomConfig.state.secretAccessKey}
+                        onValueBeingTypedChange={({ value }) =>
+                            (evtNewCustomConfig.state = {
+                                ...evtNewCustomConfig.state,
+                                "secretAccessKey": value
+                            })
+                        }
+                    />
+                    <TextField
+                        className={classes.textField}
+                        label="Session token"
+                        helperText="Optional, only if you use temporary credentials"
+                        defaultValue={evtNewCustomConfig.state.sessionToken ?? ""}
+                        onValueBeingTypedChange={({ value }) =>
+                            (evtNewCustomConfig.state = {
+                                ...evtNewCustomConfig.state,
+                                "sessionToken": value || undefined
+                            })
+                        }
+                    />
+                </FormGroup>
                 <FormControl>
                     <FormLabel id="path-style">Url style</FormLabel>
                     <RadioGroup
@@ -322,9 +328,18 @@ const useBodyStyles = tss
         "root": {
             "display": "flex",
             "flexDirection": "column",
-            "marginTop": theme.spacing(4)
+            "marginTop": theme.spacing(4),
+            "paddingRight": theme.spacing(4)
         },
         "textField": {
             "marginBottom": theme.spacing(6)
+        },
+        "accountCredentialsFormGroup": {
+            "border": `1px solid ${theme.colors.useCases.typography.textDisabled}`,
+            "borderRadius": 5,
+            "padding": theme.spacing(2)
+        },
+        "accountCredentialsFormGroupLabel": {
+            "marginBottom": theme.spacing(2)
         }
     }));
