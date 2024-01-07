@@ -470,10 +470,28 @@ const privateThunks = {
                                 };
                             }
 
-                            const { accessKeyId, secretAccessKey, sessionToken } =
-                                await s3ClientSts.getToken({
+                            const tokens = await s3ClientSts
+                                .getToken({
                                     "doForceRenew": false
-                                });
+                                })
+                                .catch(error => error as Error);
+
+                            if (tokens instanceof Error) {
+                                console.warn(
+                                    [
+                                        "Failed to get temporary credentials for S3.",
+                                        "You will not be able to use S3.",
+                                        "Please contact support."
+                                    ].join("\n")
+                                );
+                                return {
+                                    "AWS_ACCESS_KEY_ID": "",
+                                    "AWS_SECRET_ACCESS_KEY": "",
+                                    "AWS_SESSION_TOKEN": ""
+                                };
+                            }
+
+                            const { accessKeyId, secretAccessKey, sessionToken } = tokens;
 
                             assert(sessionToken !== undefined);
 
