@@ -140,8 +140,8 @@ export const translations: Translations<"nl"> = {
                 aanmaken.
             </>
         ),
-        "security info": "Veiligheidsinformatie",
-        "s3 configs": "S3-configuraties"
+        "security-info": "Veiligheidsinformatie",
+        "s3-configs": "S3-configuraties"
     },
     "AccountUserInterfaceTab": {
         "title": "De interfacemodus configureren",

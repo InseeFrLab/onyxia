@@ -127,8 +127,8 @@ export const translations: Translations<"zh-CN"> = {
                 请注意，只有您的Onyxia实例管理员可以创建新项目。
             </>
         ),
-        "security info": "安全信息",
-        "s3 configs": "S3 配置"
+        "security-info": "安全信息",
+        "s3-configs": "S3 配置"
     },
     "AccountUserInterfaceTab": {
         "title": "配置界面模式",

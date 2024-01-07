@@ -139,8 +139,8 @@ export const translations: Translations<"it"> = {
                 progetti.
             </>
         ),
-        "security info": "Informazioni sulla Sicurezza",
-        "s3 configs": "Configurazioni S3"
+        "security-info": "Informazioni sulla Sicurezza",
+        "s3-configs": "Configurazioni S3"
     },
     "AccountUserInterfaceTab": {
         "title": "Configurare la modalità di interfaccia",

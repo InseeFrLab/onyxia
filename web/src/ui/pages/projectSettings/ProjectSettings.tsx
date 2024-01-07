@@ -56,9 +56,9 @@ export default function ProjectSettings(props: Props) {
             >
                 {(() => {
                     switch (route.params.tabId) {
-                        case "security info":
+                        case "security-info":
                             return <ProjectSettingsSecurityInfosTab />;
-                        case "s3 configs":
+                        case "s3-configs":
                             return <ProjectSettingsS3ConfigTab />;
                     }
                     assert<Equals<typeof route.params.tabId, never>>(false);

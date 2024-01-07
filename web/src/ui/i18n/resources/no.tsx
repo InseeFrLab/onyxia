@@ -141,8 +141,8 @@ export const translations: Translations<"no"> = {
                 prosjekter.
             </>
         ),
-        "security info": "Sikkerhetsinformasjon",
-        "s3 configs": "S3-konfigurasjoner"
+        "security-info": "Sikkerhetsinformasjon",
+        "s3-configs": "S3-konfigurasjoner"
     },
     "AccountUserInterfaceTab": {
         "title": "Grensesnittspreferanser",
