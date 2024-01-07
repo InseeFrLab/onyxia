@@ -212,9 +212,12 @@ export const { reducer, actions } = createUsecaseActions({
                     const { pathOfFormFieldsWhoseValuesAreDifferentFromDefault } = state;
 
                     if (
-                        state.defaultFormFieldsValue.find(formField =>
-                            same(formField.path, path)
-                        )!.value !== value
+                        !same(
+                            state.defaultFormFieldsValue.find(formField =>
+                                same(formField.path, path)
+                            )!.value,
+                            value
+                        )
                     ) {
                         if (
                             !pathOfFormFieldsWhoseValuesAreDifferentFromDefault.find(
