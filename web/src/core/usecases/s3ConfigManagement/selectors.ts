@@ -11,16 +11,10 @@ const projectS3Config = createSelector(
     currentProjectConfigs => currentProjectConfigs.s3
 );
 
-const customS3ConfigForXOnyxia = createSelector(projectS3Config, projectS3Config => {
-    if (projectS3Config.indexForXOnyxia === undefined) {
-        return undefined;
-    }
-    const customS3Config = projectS3Config.customConfigs[projectS3Config.indexForXOnyxia];
-
-    assert(customS3Config !== undefined);
-
-    return customS3Config;
-});
+const indexOfCustomS3ConfigForXOnyxia = createSelector(
+    projectS3Config,
+    projectS3Config => projectS3Config.indexForXOnyxia
+);
 
 const customS3ConfigForExplorer = createSelector(projectS3Config, projectS3Config => {
     if (projectS3Config.indexForExplorer === undefined) {
@@ -167,7 +161,8 @@ const main = createSelector(
 );
 
 export const protectedSelectors = {
-    customS3ConfigForXOnyxia,
+    indexOfCustomS3ConfigForXOnyxia,
+    customS3Configs,
     customS3ConfigForExplorer,
     stsS3Config
 };

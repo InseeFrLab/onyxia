@@ -30,6 +30,10 @@ import { generateRandomPassword } from "core/tools/generateRandomPassword";
 import * as restorableConfigManagement from "core/usecases/restorableConfigManagement";
 import { privateSelectors } from "./selectors";
 import { Evt } from "evt";
+import type { DeepPartial } from "core/tools/DeepPartial";
+import { createUsecaseContextApi } from "redux-clean-architecture";
+import { deepAssign } from "core/tools/deepAssign";
+import structuredClone from "@ungap/structured-clone";
 
 export const thunks = {
     "initialize":
@@ -47,7 +51,8 @@ export const thunks = {
                 formFieldsValueDifferentFromDefault
             } = params;
 
-            const [dispatch, getState, { onyxiaApi, evtAction }] = args;
+            const [dispatch, getState, rootContext] = args;
+            const { onyxiaApi, evtAction } = rootContext;
 
             assert(
                 getState()[name].stateDescription === "not initialized",
@@ -109,6 +114,11 @@ export const thunks = {
 
                 const valuesSchema = getChartValuesSchemaJson({ xOnyxiaContext });
 
+                setContext(rootContext, {
+                    xOnyxiaContext,
+                    getChartValuesSchemaJson
+                });
+
                 const {
                     formFields,
                     infosAboutWhenFieldsShouldBeHidden,
@@ -156,6 +166,23 @@ export const thunks = {
 
                 if (pinnedChartVersion === undefined) {
                     dispatch(actions.defaultChartVersionSelected());
+                }
+
+                use_custom_s3_config: {
+                    const indexOfCustomS3ConfigForXOnyxia =
+                        s3ConfigManagement.protectedSelectors.indexOfCustomS3ConfigForXOnyxia(
+                            getState()
+                        );
+
+                    if (indexOfCustomS3ConfigForXOnyxia === undefined) {
+                        break use_custom_s3_config;
+                    }
+
+                    dispatch(
+                        thunks.useCustomS3Config({
+                            "customS3ConfigIndex": indexOfCustomS3ConfigForXOnyxia
+                        })
+                    );
                 }
             })();
 
@@ -276,6 +303,42 @@ export const thunks = {
                     "value": params.isShared
                 })
             );
+        },
+    "useCustomS3Config":
+        (params: { customS3ConfigIndex: number }) =>
+        (...args) => {
+            const { customS3ConfigIndex } = params;
+
+            const [dispatch, getState] = args;
+
+            const customS3Configs = s3ConfigManagement.protectedSelectors.customS3Configs(
+                getState()
+            );
+
+            const customS3Config = customS3Configs[customS3ConfigIndex];
+
+            assert(customS3Config !== undefined);
+
+            const { host, port = 443 } = parseUrl(customS3Config.url);
+
+            dispatch(
+                privateThunks.updateXOnyxiaContext({
+                    "partialXOnyxiaContext": {
+                        "s3": {
+                            "AWS_ACCESS_KEY_ID": customS3Config.accessKeyId,
+                            "AWS_BUCKET_NAME": bucketNameAndObjectNameFromS3Path(
+                                customS3Config.workingDirectoryPath
+                            ).bucketName,
+                            "AWS_SECRET_ACCESS_KEY": customS3Config.secretAccessKey,
+                            "AWS_SESSION_TOKEN": customS3Config.sessionToken ?? "",
+                            "AWS_DEFAULT_REGION": customS3Config.region,
+                            "AWS_S3_ENDPOINT": host,
+                            port,
+                            "pathStyleAccess": customS3Config.pathStyleAccess
+                        }
+                    }
+                })
+            );
         }
 } satisfies Thunks;
 
@@ -286,7 +349,7 @@ const privateThunks = {
             const [
                 dispatch,
                 getState,
-                { paramsOfBootstrapCore, secretsManager, s3Client, onyxiaApi }
+                { paramsOfBootstrapCore, secretsManager, s3ClientSts, onyxiaApi }
             ] = args;
 
             const user = userAuthentication.selectors.user(getState());
@@ -368,33 +431,15 @@ const privateThunks = {
                     ? undefined
                     : userConfigs.kaggleApiToken ?? undefined,
                 "s3": await (async () => {
-                    inject_from_project_config: {
-                        const customS3Config =
-                            s3ConfigManagement.protectedSelectors.customS3ConfigForXOnyxia(
-                                getState()
-                            );
+                    const indexOfCustomS3ConfigForXOnyxia =
+                        s3ConfigManagement.protectedSelectors.indexOfCustomS3ConfigForXOnyxia(
+                            getState()
+                        );
 
-                        if (customS3Config === undefined) {
-                            break inject_from_project_config;
-                        }
-
-                        const { host, port = 443 } = parseUrl(customS3Config.url);
-
-                        return {
-                            "AWS_ACCESS_KEY_ID": customS3Config.accessKeyId,
-                            "AWS_BUCKET_NAME": bucketNameAndObjectNameFromS3Path(
-                                customS3Config.workingDirectoryPath
-                            ).bucketName,
-                            "AWS_SECRET_ACCESS_KEY": customS3Config.secretAccessKey,
-                            "AWS_SESSION_TOKEN": customS3Config.sessionToken ?? "",
-                            "AWS_DEFAULT_REGION": customS3Config.region,
-                            "AWS_S3_ENDPOINT": host,
-                            port,
-                            "pathStyleAccess": customS3Config.pathStyleAccess
-                        };
-                    }
-
-                    if (region.s3?.sts === undefined) {
+                    if (
+                        indexOfCustomS3ConfigForXOnyxia !== undefined ||
+                        region.s3?.sts === undefined
+                    ) {
                         return {
                             "AWS_ACCESS_KEY_ID": "",
                             "AWS_SECRET_ACCESS_KEY": "",
@@ -406,6 +451,8 @@ const privateThunks = {
                             "pathStyleAccess": true
                         };
                     }
+
+                    assert(s3ClientSts !== undefined);
 
                     const project = projectManagement.selectors.currentProject(
                         getState()
@@ -424,7 +471,7 @@ const privateThunks = {
                             }
 
                             const { accessKeyId, secretAccessKey, sessionToken } =
-                                await s3Client.getToken({
+                                await s3ClientSts.getToken({
                                     "doForceRenew": false
                                 });
 
@@ -543,8 +590,52 @@ const privateThunks = {
                 chartVersion,
                 "availableChartVersions": chart.versions.map(({ version }) => version)
             };
+        },
+    "updateXOnyxiaContext":
+        (params: { partialXOnyxiaContext: DeepPartial<XOnyxiaContext> }) =>
+        async (...args) => {
+            const { partialXOnyxiaContext } = params;
+
+            const [dispatch, , rootContext] = args;
+
+            const { xOnyxiaContext, getChartValuesSchemaJson } = getContext(rootContext);
+
+            const { newOnyxiaContext } = (() => {
+                const newOnyxiaContext = structuredClone(xOnyxiaContext);
+
+                deepAssign({
+                    "target": newOnyxiaContext,
+                    "source": partialXOnyxiaContext
+                });
+
+                return { newOnyxiaContext };
+            })();
+
+            const { formFields: formFieldsWithUpdatedOnyxiaContext } =
+                getInitialFormFields({
+                    "valuesSchema": getChartValuesSchemaJson({
+                        "xOnyxiaContext": newOnyxiaContext
+                    }),
+                    "formFieldsValueDifferentFromDefault": []
+                });
+
+            formFieldsWithUpdatedOnyxiaContext.forEach(({ path, value }) =>
+                dispatch(
+                    thunks.changeFormFieldValue({
+                        path,
+                        value
+                    })
+                )
+            );
         }
 } satisfies Thunks;
+
+const { getContext, setContext } = createUsecaseContextApi<{
+    xOnyxiaContext: XOnyxiaContext;
+    getChartValuesSchemaJson: (params: {
+        xOnyxiaContext: XOnyxiaContext;
+    }) => JSONSchemaObject;
+}>();
 
 function getInitialFormFields(params: {
     formFieldsValueDifferentFromDefault: FormFieldValue[];

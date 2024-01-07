@@ -102,12 +102,9 @@ export const thunks = {
     "isAvailable":
         () =>
         (...args): boolean => {
-            const [, getState] = args;
+            const [, , { s3ClientSts }] = args;
 
-            return (
-                deploymentRegionManagement.selectors.currentDeploymentRegion(getState())
-                    .s3?.sts !== undefined
-            );
+            return s3ClientSts !== undefined;
         },
     /** Refresh is expected to be called whenever the component that use this slice mounts */
     "refresh":
@@ -117,7 +114,9 @@ export const thunks = {
 
             const [dispatch, getState, thunkExtraArguments] = args;
 
-            const { s3Client } = thunkExtraArguments;
+            const { s3ClientSts } = thunkExtraArguments;
+
+            assert(s3ClientSts !== undefined);
 
             if (getState().s3CodeSnippets.isRefreshing) {
                 return;
@@ -141,7 +140,7 @@ export const thunks = {
             })();
 
             const { accessKeyId, secretAccessKey, sessionToken, expirationTime } =
-                await s3Client.getToken({ "doForceRenew": doForceRenewToken });
+                await s3ClientSts.getToken({ "doForceRenew": doForceRenewToken });
 
             assert(sessionToken !== undefined);
             assert(expirationTime !== undefined);

@@ -33,7 +33,8 @@ export type Context = {
     oidc: Oidc;
     onyxiaApi: OnyxiaApi;
     secretsManager: SecretsManager;
-    s3Client: S3Client;
+    s3ClientSts: S3Client | undefined;
+    s3ClientForExplorer: S3Client;
     sqlOlap: SqlOlap;
 };
 
@@ -128,7 +129,8 @@ export async function bootstrapCore(
         oidc,
         onyxiaApi,
         "secretsManager": createObjectThatThrowsIfAccessed<SecretsManager>(),
-        "s3Client": createObjectThatThrowsIfAccessed<S3Client>(),
+        "s3ClientSts": createObjectThatThrowsIfAccessed<S3Client>(),
+        "s3ClientForExplorer": createObjectThatThrowsIfAccessed<S3Client>(),
         "sqlOlap": createDuckDbSqlOlap()
     };
 
@@ -196,7 +198,8 @@ export async function bootstrapCore(
         if (isSandboxEnvironment) {
             const { s3client } = await import("core/adapters/s3Client/mock");
 
-            context.s3Client = s3client;
+            context.s3ClientForExplorer = s3client;
+            context.s3ClientSts = undefined;
 
             break init_s3_client;
         }
@@ -220,57 +223,36 @@ export async function bootstrapCore(
                       "fallbackOidc": oidc
                   });
 
-        evtAction
-            .pipe(
-                data =>
-                    data.usecaseName === "projectManagement" &&
-                    (data.actionName === "projectChanged" ||
-                        (data.actionName === "configValueUpdated" &&
-                            data.payload.key === "s3"))
-            )
-            .toStateful()
-            .pipe((): [ParamsOfCreateS3Client | undefined] => {
-                init_with_project_params: {
-                    const customS3ConfigForExplorer =
-                        usecases.s3ConfigManagement.protectedSelectors.customS3ConfigForExplorer(
-                            getState()
-                        );
+        init_sts_client: {
+            const deploymentRegionS3 = deploymentRegion.s3;
 
-                    if (customS3ConfigForExplorer === undefined) {
-                        break init_with_project_params;
-                    }
+            if (deploymentRegionS3?.sts === undefined) {
+                break init_sts_client;
+            }
 
-                    return [
-                        id<ParamsOfCreateS3Client.NoSts>({
-                            "isStsEnabled": false,
-                            "url": customS3ConfigForExplorer.url,
-                            "pathStyleAccess": customS3ConfigForExplorer.pathStyleAccess,
-                            "region": customS3ConfigForExplorer.region,
-                            "accessKeyId": customS3ConfigForExplorer.accessKeyId,
-                            "secretAccessKey": customS3ConfigForExplorer.secretAccessKey,
-                            "sessionToken": customS3ConfigForExplorer.sessionToken
-                        })
-                    ];
-                }
+            assert(oidcForS3 !== undefined);
 
-                if (deploymentRegion.s3?.sts === undefined) {
-                    return [undefined];
-                }
+            const deploymentRegionS3Sts = deploymentRegionS3.sts;
 
-                assert(oidcForS3 !== undefined);
-
-                return [
+            evtAction
+                .pipe(
+                    data =>
+                        data.usecaseName === "projectManagement" &&
+                        data.actionName === "projectChanged"
+                )
+                .toStateful()
+                .pipe(() => [
                     id<ParamsOfCreateS3Client.Sts>({
-                        "url": deploymentRegion.s3.url,
+                        "url": deploymentRegionS3.url,
                         "isStsEnabled": true,
-                        "stsUrl": deploymentRegion.s3.sts.url,
-                        "pathStyleAccess": deploymentRegion.s3.pathStyleAccess,
-                        "region": deploymentRegion.s3.region,
+                        "stsUrl": deploymentRegionS3Sts.url,
+                        "pathStyleAccess": deploymentRegionS3.pathStyleAccess,
+                        "region": deploymentRegionS3.region,
                         "oidc": oidcForS3,
-                        "durationSeconds": deploymentRegion.s3.sts.durationSeconds,
-                        "role": deploymentRegion.s3.sts.role,
+                        "durationSeconds": deploymentRegionS3Sts.durationSeconds,
+                        "role": deploymentRegionS3Sts.role,
                         "nameOfBucketToCreateIfNotExist": (() => {
-                            const { workingDirectory } = deploymentRegion.s3;
+                            const { workingDirectory } = deploymentRegionS3;
 
                             if (workingDirectory.bucketMode === "shared") {
                                 return undefined;
@@ -291,14 +273,55 @@ export async function bootstrapCore(
                                 : `${workingDirectory.bucketNamePrefixGroup}${project.group}`;
                         })()
                     })
+                ])
+                .pipe(onlyIfChanged())
+                .attach(
+                    paramsOfCreateS3Client =>
+                        (context.s3ClientSts =
+                            paramsOfCreateS3Client === undefined
+                                ? createObjectThatThrowsIfAccessed<S3Client>()
+                                : createS3Client(paramsOfCreateS3Client))
+                );
+        }
+
+        evtAction
+            .pipe(
+                data =>
+                    data.usecaseName === "projectManagement" &&
+                    (data.actionName === "projectChanged" ||
+                        (data.actionName === "configValueUpdated" &&
+                            data.payload.key === "s3"))
+            )
+            .toStateful()
+            .pipe((): [ParamsOfCreateS3Client.NoSts | undefined] => {
+                const customS3ConfigForExplorer =
+                    usecases.s3ConfigManagement.protectedSelectors.customS3ConfigForExplorer(
+                        getState()
+                    );
+
+                if (customS3ConfigForExplorer === undefined) {
+                    return [undefined];
+                }
+
+                return [
+                    id<ParamsOfCreateS3Client.NoSts>({
+                        "isStsEnabled": false,
+                        "url": customS3ConfigForExplorer.url,
+                        "pathStyleAccess": customS3ConfigForExplorer.pathStyleAccess,
+                        "region": customS3ConfigForExplorer.region,
+                        "accessKeyId": customS3ConfigForExplorer.accessKeyId,
+                        "secretAccessKey": customS3ConfigForExplorer.secretAccessKey,
+                        "sessionToken": customS3ConfigForExplorer.sessionToken
+                    })
                 ];
             })
             .pipe(onlyIfChanged())
             .attach(
                 paramsOfCreateS3Client =>
-                    (context.s3Client =
+                    (context.s3ClientForExplorer =
                         paramsOfCreateS3Client === undefined
-                            ? createObjectThatThrowsIfAccessed<S3Client>()
+                            ? context.s3ClientSts ??
+                              createObjectThatThrowsIfAccessed<S3Client>()
                             : createS3Client(paramsOfCreateS3Client))
             );
     }

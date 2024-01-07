@@ -69,7 +69,7 @@ const privateThunks = {
         async (...args) => {
             const { directoryPath, doListAgainIfSamePath } = params;
 
-            const [dispatch, getState, { evtAction, s3Client }] = args;
+            const [dispatch, getState, { evtAction, s3ClientForExplorer }] = args;
 
             if (
                 !doListAgainIfSamePath &&
@@ -107,7 +107,9 @@ const privateThunks = {
                 })
             );
 
-            const { directories, files } = await s3Client.list({ "path": directoryPath });
+            const { directories, files } = await s3ClientForExplorer.list({
+                "path": directoryPath
+            });
 
             if (ctx.completionStatus !== undefined) {
                 dispatch(actions.commandLogCancelled({ cmdId }));
@@ -177,7 +179,7 @@ export const thunks = {
     "create":
         (params: ExplorersCreateParams) =>
         async (...args) => {
-            const [dispatch, getState, { s3Client }] = args;
+            const [dispatch, getState, { s3ClientForExplorer }] = args;
 
             const state = getState()[name];
 
@@ -220,7 +222,7 @@ export const thunks = {
                     })
                 );
 
-                await s3Client.uploadFile({
+                await s3ClientForExplorer.uploadFile({
                     path,
                     blob,
                     "onUploadProgress": ({ uploadPercent }) => {
@@ -288,7 +290,7 @@ export const thunks = {
         async (...args) => {
             const { deleteWhat, basename } = params;
 
-            const [dispatch, getState, { s3Client }] = args;
+            const [dispatch, getState, { s3ClientForExplorer }] = args;
 
             const state = getState()[name];
 
@@ -322,7 +324,7 @@ export const thunks = {
                     })
                 );
 
-                await s3Client.deleteFile({ "path": filePath });
+                await s3ClientForExplorer.deleteFile({ "path": filePath });
 
                 dispatch(
                     actions.commandLogResponseReceived({
@@ -337,9 +339,10 @@ export const thunks = {
                     {
                         const { crawl } = crawlFactory({
                             "list": async ({ directoryPath }) => {
-                                const { directories, files } = await s3Client.list({
-                                    "path": directoryPath
-                                });
+                                const { directories, files } =
+                                    await s3ClientForExplorer.list({
+                                        "path": directoryPath
+                                    });
 
                                 return {
                                     "fileBasenames": files,
@@ -385,7 +388,7 @@ export const thunks = {
         async (...args): Promise<string> => {
             const { basename } = params;
 
-            const [dispatch, getState, { s3Client }] = args;
+            const [dispatch, getState, { s3ClientForExplorer }] = args;
 
             const state = getState()[name];
 
@@ -404,7 +407,7 @@ export const thunks = {
                 })
             );
 
-            const downloadUrl = await s3Client.getFileDownloadUrl({
+            const downloadUrl = await s3ClientForExplorer.getFileDownloadUrl({
                 path,
                 "validityDurationSecond": 3600
             });
