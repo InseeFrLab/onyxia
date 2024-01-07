@@ -113,14 +113,22 @@ export const thunks = {
                     formFields,
                     infosAboutWhenFieldsShouldBeHidden,
                     sensitiveConfigurations
-                } = dispatch(
-                    privateThunks.getInitialFormFields({
-                        catalogId,
-                        chartName,
-                        chartVersion,
-                        formFieldsValueDifferentFromDefault,
-                        valuesSchema
-                    })
+                } = getInitialFormFields({
+                    formFieldsValueDifferentFromDefault,
+                    valuesSchema
+                });
+
+                const isRestorableConfigSaved = dispatch(
+                    restorableConfigManagement.protectedThunks.getIsRestorableConfigSaved(
+                        {
+                            "restorableConfig": {
+                                catalogId,
+                                chartName,
+                                chartVersion,
+                                formFieldsValueDifferentFromDefault
+                            }
+                        }
+                    )
                 );
 
                 dispatch(
@@ -139,7 +147,9 @@ export const thunks = {
                         valuesSchema,
                         nonLibraryChartDependencies,
                         formFieldsValueDifferentFromDefault,
-                        "sensitiveConfigurations": sensitiveConfigurations ?? [],
+                        "sensitiveConfigurations": isRestorableConfigSaved
+                            ? sensitiveConfigurations
+                            : [],
                         "k8sRandomSubdomain": xOnyxiaContext.k8s.randomSubdomain
                     })
                 );
@@ -474,355 +484,6 @@ const privateThunks = {
 
             return xOnyxiaContext;
         },
-    "getInitialFormFields":
-        (params: {
-            catalogId: string;
-            chartName: string;
-            chartVersion: string;
-            formFieldsValueDifferentFromDefault: FormFieldValue[];
-            valuesSchema: JSONSchemaObject;
-        }) =>
-        (
-            ...args
-        ): {
-            formFields: FormField[];
-            infosAboutWhenFieldsShouldBeHidden: {
-                path: string[];
-                isHidden: boolean | FormFieldValue;
-            }[];
-            sensitiveConfigurations: FormFieldValue[] | undefined;
-        } => {
-            const {
-                catalogId,
-                chartName,
-                chartVersion,
-                formFieldsValueDifferentFromDefault,
-                valuesSchema
-            } = params;
-
-            const [dispatch] = args;
-
-            const formFields: State.Ready["formFields"] = [];
-            const infosAboutWhenFieldsShouldBeHidden: State.Ready["infosAboutWhenFieldsShouldBeHidden"] =
-                [];
-
-            const sensitiveConfigurations: FormFieldValue[] | undefined = (() => {
-                if (
-                    !dispatch(
-                        restorableConfigManagement.protectedThunks.getIsRestorableConfigSaved(
-                            {
-                                "restorableConfig": {
-                                    catalogId,
-                                    chartName,
-                                    chartVersion,
-                                    formFieldsValueDifferentFromDefault
-                                }
-                            }
-                        )
-                    )
-                ) {
-                    return undefined;
-                }
-
-                return [];
-            })();
-
-            (function callee(params: {
-                jsonSchemaObject: JSONSchemaObject;
-                currentPath: string[];
-            }): void {
-                const {
-                    jsonSchemaObject: { properties },
-                    currentPath
-                } = params;
-
-                Object.entries(properties).forEach(
-                    ([key, jsonSchemaObjectOrFormFieldDescription]) => {
-                        const newCurrentPath = [...currentPath, key];
-                        if (
-                            jsonSchemaObjectOrFormFieldDescription.type === "object" &&
-                            "properties" in jsonSchemaObjectOrFormFieldDescription
-                        ) {
-                            const jsonSchemaObject =
-                                jsonSchemaObjectOrFormFieldDescription;
-
-                            callee({
-                                "currentPath": newCurrentPath,
-                                jsonSchemaObject
-                            });
-                            return;
-                        }
-
-                        const jsonSchemaFormFieldDescription =
-                            jsonSchemaObjectOrFormFieldDescription;
-
-                        formFields.push(
-                            (() => {
-                                const common = {
-                                    "path": newCurrentPath,
-                                    "title":
-                                        jsonSchemaFormFieldDescription.title ??
-                                        newCurrentPath.slice(-1)[0],
-                                    "description":
-                                        jsonSchemaFormFieldDescription.description,
-                                    "isReadonly":
-                                        jsonSchemaFormFieldDescription["x-onyxia"]
-                                            ?.readonly ?? false
-                                };
-
-                                if (
-                                    "render" in jsonSchemaFormFieldDescription &&
-                                    ["slider", "textArea", "password", "list"].find(
-                                        render =>
-                                            render ===
-                                            jsonSchemaFormFieldDescription.render
-                                    ) === undefined
-                                ) {
-                                    console.warn(
-                                        `${common.path.join("/")} has render: "${
-                                            jsonSchemaFormFieldDescription.render
-                                        }" and it's not supported`
-                                    );
-                                }
-
-                                if (
-                                    "render" in jsonSchemaFormFieldDescription &&
-                                    jsonSchemaFormFieldDescription.render === "slider"
-                                ) {
-                                    const value = jsonSchemaFormFieldDescription.default!;
-
-                                    if (
-                                        "sliderExtremity" in
-                                        jsonSchemaFormFieldDescription
-                                    ) {
-                                        const scopCommon = {
-                                            ...common,
-                                            "type": "slider",
-                                            "sliderVariation": "range"
-                                        } as const;
-
-                                        switch (
-                                            jsonSchemaFormFieldDescription.sliderExtremity
-                                        ) {
-                                            case "down":
-                                                return id<FormField.Slider.Range.Down>({
-                                                    ...scopCommon,
-                                                    "sliderExtremitySemantic":
-                                                        jsonSchemaFormFieldDescription.sliderExtremitySemantic,
-                                                    "sliderRangeId":
-                                                        jsonSchemaFormFieldDescription.sliderRangeId,
-                                                    "sliderExtremity": "down",
-                                                    "sliderMin":
-                                                        jsonSchemaFormFieldDescription.sliderMin,
-                                                    "sliderUnit":
-                                                        jsonSchemaFormFieldDescription.sliderUnit,
-                                                    "sliderStep":
-                                                        jsonSchemaFormFieldDescription.sliderStep,
-                                                    value
-                                                });
-                                            case "up":
-                                                return id<FormField.Slider.Range.Up>({
-                                                    ...scopCommon,
-                                                    "sliderExtremitySemantic":
-                                                        jsonSchemaFormFieldDescription.sliderExtremitySemantic,
-                                                    "sliderRangeId":
-                                                        jsonSchemaFormFieldDescription.sliderRangeId,
-                                                    "sliderExtremity": "up",
-                                                    "sliderMax":
-                                                        jsonSchemaFormFieldDescription.sliderMax,
-                                                    value
-                                                });
-                                        }
-                                    }
-
-                                    return id<FormField.Slider.Simple>({
-                                        ...common,
-                                        "type": "slider",
-                                        "sliderVariation": "simple",
-                                        "sliderMin":
-                                            jsonSchemaFormFieldDescription.sliderMin,
-                                        "sliderUnit":
-                                            jsonSchemaFormFieldDescription.sliderUnit,
-                                        "sliderStep":
-                                            jsonSchemaFormFieldDescription.sliderStep,
-                                        "sliderMax":
-                                            jsonSchemaFormFieldDescription.sliderMax,
-                                        value
-                                    });
-                                }
-
-                                if (jsonSchemaFormFieldDescription.type === "boolean") {
-                                    return id<FormField.Boolean>({
-                                        ...common,
-                                        "value": jsonSchemaFormFieldDescription.default,
-                                        "type": "boolean"
-                                    });
-                                }
-
-                                if (
-                                    jsonSchemaFormFieldDescription.type === "object" ||
-                                    jsonSchemaFormFieldDescription.type === "array"
-                                ) {
-                                    const value = {
-                                        "type": "yaml" as const,
-                                        "yamlStr": yaml.stringify(
-                                            jsonSchemaFormFieldDescription.default
-                                        )
-                                    };
-
-                                    switch (jsonSchemaFormFieldDescription.type) {
-                                        case "array":
-                                            return id<FormField.Array>({
-                                                ...common,
-                                                value,
-                                                "defaultValue": value,
-                                                "type": jsonSchemaFormFieldDescription.type
-                                            });
-                                        case "object":
-                                            return id<FormField.Object>({
-                                                ...common,
-                                                value,
-                                                "defaultValue": value,
-                                                "type": jsonSchemaFormFieldDescription.type
-                                            });
-                                    }
-
-                                    assert<
-                                        Equals<
-                                            (typeof jsonSchemaFormFieldDescription)["type"],
-                                            never
-                                        >
-                                    >();
-                                }
-
-                                if (
-                                    typeGuard<JSONSchemaFormFieldDescription.Integer>(
-                                        jsonSchemaFormFieldDescription,
-                                        jsonSchemaFormFieldDescription.type ===
-                                            "integer" ||
-                                            jsonSchemaFormFieldDescription.type ===
-                                                "number"
-                                    )
-                                ) {
-                                    return id<FormField.Integer>({
-                                        ...common,
-                                        "value": jsonSchemaFormFieldDescription.default,
-                                        "minimum": jsonSchemaFormFieldDescription.minimum,
-                                        "type": "integer"
-                                    });
-                                }
-
-                                if (
-                                    "render" in jsonSchemaFormFieldDescription &&
-                                    jsonSchemaFormFieldDescription.render === "list"
-                                ) {
-                                    return id<FormField.Enum>({
-                                        ...common,
-                                        "value": jsonSchemaFormFieldDescription.default,
-                                        "enum": jsonSchemaFormFieldDescription.listEnum,
-                                        "type": "enum"
-                                    });
-                                }
-
-                                if ("enum" in jsonSchemaFormFieldDescription) {
-                                    return id<FormField.Enum>({
-                                        ...common,
-                                        "value": jsonSchemaFormFieldDescription.default,
-                                        "enum": jsonSchemaFormFieldDescription.enum,
-                                        "type": "enum"
-                                    });
-                                }
-
-                                security_warning: {
-                                    if (sensitiveConfigurations === undefined) {
-                                        break security_warning;
-                                    }
-
-                                    const { pattern } =
-                                        jsonSchemaFormFieldDescription["x-security"] ??
-                                        {};
-
-                                    if (pattern === undefined) {
-                                        break security_warning;
-                                    }
-
-                                    const value =
-                                        formFieldsValueDifferentFromDefault.find(
-                                            ({ path }) => same(path, common.path)
-                                        )?.value;
-
-                                    if (value === undefined) {
-                                        break security_warning;
-                                    }
-
-                                    if (new RegExp(pattern).test(`${value}`)) {
-                                        break security_warning;
-                                    }
-
-                                    sensitiveConfigurations.push({
-                                        "path": common.path,
-                                        value
-                                    });
-                                }
-
-                                return id<FormField.Text>({
-                                    ...common,
-                                    "pattern": jsonSchemaFormFieldDescription.pattern,
-                                    "value": jsonSchemaFormFieldDescription.default,
-                                    "type":
-                                        jsonSchemaFormFieldDescription.render ===
-                                        "password"
-                                            ? "password"
-                                            : "text",
-                                    "defaultValue":
-                                        jsonSchemaFormFieldDescription.default,
-                                    "doRenderAsTextArea":
-                                        jsonSchemaFormFieldDescription.render ===
-                                        "textArea"
-                                });
-                            })()
-                        );
-
-                        infosAboutWhenFieldsShouldBeHidden.push({
-                            "path": newCurrentPath,
-                            "isHidden": (() => {
-                                const { hidden } = jsonSchemaFormFieldDescription;
-
-                                if (hidden === undefined) {
-                                    const hidden =
-                                        jsonSchemaFormFieldDescription["x-onyxia"]
-                                            ?.hidden;
-
-                                    if (hidden !== undefined) {
-                                        return hidden;
-                                    }
-
-                                    return false;
-                                }
-
-                                if (typeof hidden === "boolean") {
-                                    return hidden;
-                                }
-
-                                return {
-                                    "path": hidden.path.split("/"),
-                                    "value": hidden.value
-                                };
-                            })()
-                        });
-                    }
-                );
-            })({
-                "currentPath": [],
-                "jsonSchemaObject": valuesSchema
-            });
-
-            return {
-                formFields,
-                infosAboutWhenFieldsShouldBeHidden,
-                sensitiveConfigurations
-            };
-        },
     "getChartInfos":
         (params: {
             catalogId: string;
@@ -884,3 +545,294 @@ const privateThunks = {
             };
         }
 } satisfies Thunks;
+
+function getInitialFormFields(params: {
+    formFieldsValueDifferentFromDefault: FormFieldValue[];
+    valuesSchema: JSONSchemaObject;
+}): {
+    formFields: FormField[];
+    infosAboutWhenFieldsShouldBeHidden: {
+        path: string[];
+        isHidden: boolean | FormFieldValue;
+    }[];
+    sensitiveConfigurations: FormFieldValue[];
+} {
+    const { formFieldsValueDifferentFromDefault, valuesSchema } = params;
+
+    const formFields: State.Ready["formFields"] = [];
+    const infosAboutWhenFieldsShouldBeHidden: State.Ready["infosAboutWhenFieldsShouldBeHidden"] =
+        [];
+
+    const sensitiveConfigurations: FormFieldValue[] = [];
+
+    (function callee(params: {
+        jsonSchemaObject: JSONSchemaObject;
+        currentPath: string[];
+    }): void {
+        const {
+            jsonSchemaObject: { properties },
+            currentPath
+        } = params;
+
+        Object.entries(properties).forEach(
+            ([key, jsonSchemaObjectOrFormFieldDescription]) => {
+                const newCurrentPath = [...currentPath, key];
+                if (
+                    jsonSchemaObjectOrFormFieldDescription.type === "object" &&
+                    "properties" in jsonSchemaObjectOrFormFieldDescription
+                ) {
+                    const jsonSchemaObject = jsonSchemaObjectOrFormFieldDescription;
+
+                    callee({
+                        "currentPath": newCurrentPath,
+                        jsonSchemaObject
+                    });
+                    return;
+                }
+
+                const jsonSchemaFormFieldDescription =
+                    jsonSchemaObjectOrFormFieldDescription;
+
+                formFields.push(
+                    (() => {
+                        const common = {
+                            "path": newCurrentPath,
+                            "title":
+                                jsonSchemaFormFieldDescription.title ??
+                                newCurrentPath.slice(-1)[0],
+                            "description": jsonSchemaFormFieldDescription.description,
+                            "isReadonly":
+                                jsonSchemaFormFieldDescription["x-onyxia"]?.readonly ??
+                                false
+                        };
+
+                        if (
+                            "render" in jsonSchemaFormFieldDescription &&
+                            ["slider", "textArea", "password", "list"].find(
+                                render => render === jsonSchemaFormFieldDescription.render
+                            ) === undefined
+                        ) {
+                            console.warn(
+                                `${common.path.join("/")} has render: "${
+                                    jsonSchemaFormFieldDescription.render
+                                }" and it's not supported`
+                            );
+                        }
+
+                        if (
+                            "render" in jsonSchemaFormFieldDescription &&
+                            jsonSchemaFormFieldDescription.render === "slider"
+                        ) {
+                            const value = jsonSchemaFormFieldDescription.default!;
+
+                            if ("sliderExtremity" in jsonSchemaFormFieldDescription) {
+                                const scopCommon = {
+                                    ...common,
+                                    "type": "slider",
+                                    "sliderVariation": "range"
+                                } as const;
+
+                                switch (jsonSchemaFormFieldDescription.sliderExtremity) {
+                                    case "down":
+                                        return id<FormField.Slider.Range.Down>({
+                                            ...scopCommon,
+                                            "sliderExtremitySemantic":
+                                                jsonSchemaFormFieldDescription.sliderExtremitySemantic,
+                                            "sliderRangeId":
+                                                jsonSchemaFormFieldDescription.sliderRangeId,
+                                            "sliderExtremity": "down",
+                                            "sliderMin":
+                                                jsonSchemaFormFieldDescription.sliderMin,
+                                            "sliderUnit":
+                                                jsonSchemaFormFieldDescription.sliderUnit,
+                                            "sliderStep":
+                                                jsonSchemaFormFieldDescription.sliderStep,
+                                            value
+                                        });
+                                    case "up":
+                                        return id<FormField.Slider.Range.Up>({
+                                            ...scopCommon,
+                                            "sliderExtremitySemantic":
+                                                jsonSchemaFormFieldDescription.sliderExtremitySemantic,
+                                            "sliderRangeId":
+                                                jsonSchemaFormFieldDescription.sliderRangeId,
+                                            "sliderExtremity": "up",
+                                            "sliderMax":
+                                                jsonSchemaFormFieldDescription.sliderMax,
+                                            value
+                                        });
+                                }
+                            }
+
+                            return id<FormField.Slider.Simple>({
+                                ...common,
+                                "type": "slider",
+                                "sliderVariation": "simple",
+                                "sliderMin": jsonSchemaFormFieldDescription.sliderMin,
+                                "sliderUnit": jsonSchemaFormFieldDescription.sliderUnit,
+                                "sliderStep": jsonSchemaFormFieldDescription.sliderStep,
+                                "sliderMax": jsonSchemaFormFieldDescription.sliderMax,
+                                value
+                            });
+                        }
+
+                        if (jsonSchemaFormFieldDescription.type === "boolean") {
+                            return id<FormField.Boolean>({
+                                ...common,
+                                "value": jsonSchemaFormFieldDescription.default,
+                                "type": "boolean"
+                            });
+                        }
+
+                        if (
+                            jsonSchemaFormFieldDescription.type === "object" ||
+                            jsonSchemaFormFieldDescription.type === "array"
+                        ) {
+                            const value = {
+                                "type": "yaml" as const,
+                                "yamlStr": yaml.stringify(
+                                    jsonSchemaFormFieldDescription.default
+                                )
+                            };
+
+                            switch (jsonSchemaFormFieldDescription.type) {
+                                case "array":
+                                    return id<FormField.Array>({
+                                        ...common,
+                                        value,
+                                        "defaultValue": value,
+                                        "type": jsonSchemaFormFieldDescription.type
+                                    });
+                                case "object":
+                                    return id<FormField.Object>({
+                                        ...common,
+                                        value,
+                                        "defaultValue": value,
+                                        "type": jsonSchemaFormFieldDescription.type
+                                    });
+                            }
+
+                            assert<
+                                Equals<
+                                    (typeof jsonSchemaFormFieldDescription)["type"],
+                                    never
+                                >
+                            >();
+                        }
+
+                        if (
+                            typeGuard<JSONSchemaFormFieldDescription.Integer>(
+                                jsonSchemaFormFieldDescription,
+                                jsonSchemaFormFieldDescription.type === "integer" ||
+                                    jsonSchemaFormFieldDescription.type === "number"
+                            )
+                        ) {
+                            return id<FormField.Integer>({
+                                ...common,
+                                "value": jsonSchemaFormFieldDescription.default,
+                                "minimum": jsonSchemaFormFieldDescription.minimum,
+                                "type": "integer"
+                            });
+                        }
+
+                        if (
+                            "render" in jsonSchemaFormFieldDescription &&
+                            jsonSchemaFormFieldDescription.render === "list"
+                        ) {
+                            return id<FormField.Enum>({
+                                ...common,
+                                "value": jsonSchemaFormFieldDescription.default,
+                                "enum": jsonSchemaFormFieldDescription.listEnum,
+                                "type": "enum"
+                            });
+                        }
+
+                        if ("enum" in jsonSchemaFormFieldDescription) {
+                            return id<FormField.Enum>({
+                                ...common,
+                                "value": jsonSchemaFormFieldDescription.default,
+                                "enum": jsonSchemaFormFieldDescription.enum,
+                                "type": "enum"
+                            });
+                        }
+
+                        security_warning: {
+                            const { pattern } =
+                                jsonSchemaFormFieldDescription["x-security"] ?? {};
+
+                            if (pattern === undefined) {
+                                break security_warning;
+                            }
+
+                            const value = formFieldsValueDifferentFromDefault.find(
+                                ({ path }) => same(path, common.path)
+                            )?.value;
+
+                            if (value === undefined) {
+                                break security_warning;
+                            }
+
+                            if (new RegExp(pattern).test(`${value}`)) {
+                                break security_warning;
+                            }
+
+                            sensitiveConfigurations.push({
+                                "path": common.path,
+                                value
+                            });
+                        }
+
+                        return id<FormField.Text>({
+                            ...common,
+                            "pattern": jsonSchemaFormFieldDescription.pattern,
+                            "value": jsonSchemaFormFieldDescription.default,
+                            "type":
+                                jsonSchemaFormFieldDescription.render === "password"
+                                    ? "password"
+                                    : "text",
+                            "defaultValue": jsonSchemaFormFieldDescription.default,
+                            "doRenderAsTextArea":
+                                jsonSchemaFormFieldDescription.render === "textArea"
+                        });
+                    })()
+                );
+
+                infosAboutWhenFieldsShouldBeHidden.push({
+                    "path": newCurrentPath,
+                    "isHidden": (() => {
+                        const { hidden } = jsonSchemaFormFieldDescription;
+
+                        if (hidden === undefined) {
+                            const hidden =
+                                jsonSchemaFormFieldDescription["x-onyxia"]?.hidden;
+
+                            if (hidden !== undefined) {
+                                return hidden;
+                            }
+
+                            return false;
+                        }
+
+                        if (typeof hidden === "boolean") {
+                            return hidden;
+                        }
+
+                        return {
+                            "path": hidden.path.split("/"),
+                            "value": hidden.value
+                        };
+                    })()
+                });
+            }
+        );
+    })({
+        "currentPath": [],
+        "jsonSchemaObject": valuesSchema
+    });
+
+    return {
+        formFields,
+        infosAboutWhenFieldsShouldBeHidden,
+        sensitiveConfigurations
+    };
+}
