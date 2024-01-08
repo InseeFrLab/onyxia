@@ -42,6 +42,7 @@ export declare namespace State {
         nonLibraryChartDependencies: string[];
         valuesSchema: JSONSchemaObject;
         k8sRandomSubdomain: string;
+        selectedCustomS3ConfigIndex: number | undefined;
     };
 }
 
@@ -129,7 +130,8 @@ export const { reducer, actions } = createUsecaseActions({
                         nonLibraryChartDependencies,
                         "pathOfFormFieldsWhoseValuesAreDifferentFromDefault": [],
                         valuesSchema,
-                        k8sRandomSubdomain
+                        k8sRandomSubdomain,
+                        "selectedCustomS3ConfigIndex": undefined
                     })
                 );
 
@@ -140,6 +142,46 @@ export const { reducer, actions } = createUsecaseActions({
                         "payload": { formFieldValue }
                     })
                 );
+            },
+            "s3ConfigChanged": (
+                state,
+                {
+                    payload
+                }: {
+                    payload:
+                        | {
+                              customS3ConfigIndex: number;
+                              formFieldsValue: FormFieldValue[];
+                          }
+                        | {
+                              customS3ConfigIndex: undefined;
+                              formFieldsValue?: never;
+                          };
+                }
+            ) => {
+                const { customS3ConfigIndex, formFieldsValue } = payload;
+
+                assert(state.stateDescription === "ready");
+
+                state.selectedCustomS3ConfigIndex = customS3ConfigIndex;
+
+                (formFieldsValue ?? state.defaultFormFieldsValue)
+                    .filter(
+                        ({ path }) =>
+                            state.pathOfFormFieldsAffectedByS3ConfigChange.find(
+                                ({ path: pathToCheck }) => same(path, pathToCheck)
+                            ) !== undefined
+                    )
+                    .forEach(({ path, value }) =>
+                        reducers.formFieldValueChanged(state, {
+                            "payload": {
+                                "formFieldValue": {
+                                    path,
+                                    value
+                                }
+                            }
+                        })
+                    );
             },
             "reset": () =>
                 id<State.NotInitialized>({

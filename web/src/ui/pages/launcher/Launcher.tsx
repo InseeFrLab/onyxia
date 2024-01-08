@@ -79,7 +79,9 @@ export default function Launcher(props: Props) {
         launchScript,
         commandLogsEntries,
         chartSourceUrls,
-        groupProjectName
+        groupProjectName,
+        availableS3configs,
+        selectedCustomS3ConfigIndex
     } = useCoreState("launcher", "main");
 
     const scrollableDivRef = useStateRef<HTMLDivElement>(null);
@@ -250,6 +252,13 @@ export default function Launcher(props: Props) {
         }
     });
 
+    const onChartVersionChange = useConstCallback((chartVersion: string) =>
+        routes[route.name]({
+            ...route.params,
+            "version": chartVersion
+        }).replace()
+    );
+
     const {
         domRect: { height: rootHeight }
     } = useDomRect({
@@ -345,12 +354,7 @@ export default function Launcher(props: Props) {
                                 isBookmarked={isRestorableConfigSaved}
                                 chartVersion={chartVersion}
                                 availableChartVersions={availableChartVersions}
-                                onChartVersionChange={chartVersion =>
-                                    routes[route.name]({
-                                        ...route.params,
-                                        "version": chartVersion
-                                    }).replace()
-                                }
+                                onChartVersionChange={onChartVersionChange}
                                 catalogName={catalogName}
                                 catalogRepositoryUrl={catalogRepositoryUrl}
                                 myServicesSavedConfigsExtendedLink={
@@ -383,6 +387,20 @@ export default function Launcher(props: Props) {
                                         : onRequestCopyLaunchUrl
                                 }
                                 isLaunchable={isLaunchable}
+                                s3ConfigsWrap={
+                                    availableS3configs === undefined
+                                        ? undefined
+                                        : {
+                                              "projectS3ConfigLink":
+                                                  routes.projectSettings({
+                                                      "tabId": "s3-configs"
+                                                  }).link,
+                                              selectedCustomS3ConfigIndex,
+                                              availableS3configs,
+                                              "onSelectedS3ConfigChange":
+                                                  launcher.useSpecificS3Config
+                                          }
+                                }
                             />
                             {Object.keys(indexedFormFields).map(
                                 dependencyNamePackageNameOrGlobal => (

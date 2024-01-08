@@ -14,6 +14,7 @@ import * as yaml from "yaml";
 import { name, type State } from "../state";
 import * as restorableConfigManagement from "core/usecases/restorableConfigManagement";
 import * as projectManagement from "core/usecases/projectManagement";
+import * as s3ConfigManagement from "core/usecases/s3ConfigManagement";
 import * as userConfigs from "core/usecases/userConfigs";
 import { exclude } from "tsafe/exclude";
 import { createSelector } from "redux-clean-architecture";
@@ -596,6 +597,34 @@ const isThereASavedConfigWithThisFriendlyName = createSelector(
     }
 );
 
+const availableS3configs = createSelector(
+    s3ConfigManagement.protectedSelectors.s3Configs,
+    readyState,
+    (s3Configs, state) => {
+        if (state === undefined) {
+            return undefined;
+        }
+
+        if (state.pathOfFormFieldsAffectedByS3ConfigChange.length === 0) {
+            return undefined;
+        }
+
+        return s3Configs.map(s3Config => ({
+            "customConfigIndex": s3Config.customConfigIndex,
+            "dataSource": s3Config.dataSource,
+            "accountFriendlyName": s3Config.accountFriendlyName
+        }));
+    }
+);
+
+const selectedCustomS3ConfigIndex = createSelector(readyState, state => {
+    if (state === undefined) {
+        return undefined;
+    }
+
+    return state.selectedCustomS3ConfigIndex;
+});
+
 const main = createSelector(
     isReady,
     friendlyName,
@@ -617,6 +646,8 @@ const main = createSelector(
     commandLogsEntries,
     chartSourceUrls,
     groupProjectName,
+    availableS3configs,
+    selectedCustomS3ConfigIndex,
     (
         isReady,
         friendlyName,
@@ -637,12 +668,13 @@ const main = createSelector(
         launchScript,
         commandLogsEntries,
         chartSourceUrls,
-        groupProjectName
+        groupProjectName,
+        availableS3configs,
+        selectedCustomS3ConfigIndex
     ) => {
         if (!isReady) {
             return {
-                "isReady": false as const,
-                groupProjectName
+                "isReady": false as const
             };
         }
 
@@ -682,7 +714,9 @@ const main = createSelector(
             launchScript,
             commandLogsEntries,
             chartSourceUrls,
-            groupProjectName
+            groupProjectName,
+            availableS3configs,
+            selectedCustomS3ConfigIndex
         };
     }
 );

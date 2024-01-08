@@ -215,12 +215,12 @@ export const thunks = {
                 }
 
                 use_custom_s3_config: {
-                    const indexOfCustomS3ConfigForXOnyxia =
+                    const customS3ConfigIndex =
                         s3ConfigManagement.protectedSelectors.indexOfCustomS3ConfigForXOnyxia(
                             getState()
                         );
 
-                    if (indexOfCustomS3ConfigForXOnyxia === undefined) {
+                    if (customS3ConfigIndex === undefined) {
                         break use_custom_s3_config;
                     }
 
@@ -237,7 +237,7 @@ export const thunks = {
 
                     dispatch(
                         thunks.useSpecificS3Config({
-                            "customS3ConfigIndex": indexOfCustomS3ConfigForXOnyxia
+                            customS3ConfigIndex
                         })
                     );
                 }
@@ -269,10 +269,7 @@ export const thunks = {
 
             dispatch(
                 thunks.useSpecificS3Config({
-                    "customS3ConfigIndex":
-                        s3ConfigManagement.protectedSelectors.indexOfCustomS3ConfigForXOnyxia(
-                            getState()
-                        )
+                    "customS3ConfigIndex": state.selectedCustomS3ConfigIndex
                 })
             );
         },
@@ -380,82 +377,58 @@ export const thunks = {
 
             const [dispatch, getState, rootContext] = args;
 
+            if (customS3ConfigIndex === undefined) {
+                dispatch(
+                    actions.s3ConfigChanged({
+                        "customS3ConfigIndex": undefined
+                    })
+                );
+
+                return;
+            }
+
             const { getChartValuesSchemaJson, xOnyxiaContext } = getContext(rootContext);
 
-            const state = getState()[name];
+            const xOnyxiaContextWithCustomS3Config: XOnyxiaContext = {
+                ...xOnyxiaContext,
+                "s3": (() => {
+                    const customS3Configs =
+                        s3ConfigManagement.protectedSelectors.customS3Configs(getState());
 
-            assert(state.stateDescription === "ready");
+                    const customS3Config = customS3Configs[customS3ConfigIndex];
 
-            const { pathOfFormFieldsAffectedByS3ConfigChange } = state;
+                    assert(customS3Config !== undefined);
 
-            const formFieldsValueToRestore = (() => {
-                if (customS3ConfigIndex === undefined) {
-                    const state = getState()[name];
+                    const { host, port = 443 } = parseUrl(customS3Config.url);
 
-                    assert(state.stateDescription === "ready");
+                    return {
+                        "AWS_ACCESS_KEY_ID": customS3Config.accessKeyId,
+                        "AWS_BUCKET_NAME": bucketNameAndObjectNameFromS3Path(
+                            customS3Config.workingDirectoryPath
+                        ).bucketName,
+                        "AWS_SECRET_ACCESS_KEY": customS3Config.secretAccessKey,
+                        "AWS_SESSION_TOKEN": customS3Config.sessionToken ?? "",
+                        "AWS_DEFAULT_REGION": customS3Config.region,
+                        "AWS_S3_ENDPOINT": host,
+                        port,
+                        "pathStyleAccess": customS3Config.pathStyleAccess
+                    };
+                })()
+            };
 
-                    const { defaultFormFieldsValue } = state;
+            const { formFields } = getInitialFormFields({
+                "valuesSchema": getChartValuesSchemaJson({
+                    "xOnyxiaContext": xOnyxiaContextWithCustomS3Config
+                }),
+                "formFieldsValueDifferentFromDefault": []
+            });
 
-                    return defaultFormFieldsValue;
-                }
-
-                const { formFields } = getInitialFormFields({
-                    "valuesSchema": getChartValuesSchemaJson({
-                        "xOnyxiaContext": {
-                            ...xOnyxiaContext,
-                            "s3": (() => {
-                                const customS3Configs =
-                                    s3ConfigManagement.protectedSelectors.customS3Configs(
-                                        getState()
-                                    );
-
-                                const customS3Config =
-                                    customS3Configs[customS3ConfigIndex];
-
-                                assert(customS3Config !== undefined);
-
-                                const { host, port = 443 } = parseUrl(customS3Config.url);
-
-                                return {
-                                    "AWS_ACCESS_KEY_ID": customS3Config.accessKeyId,
-                                    "AWS_BUCKET_NAME": bucketNameAndObjectNameFromS3Path(
-                                        customS3Config.workingDirectoryPath
-                                    ).bucketName,
-                                    "AWS_SECRET_ACCESS_KEY":
-                                        customS3Config.secretAccessKey,
-                                    "AWS_SESSION_TOKEN":
-                                        customS3Config.sessionToken ?? "",
-                                    "AWS_DEFAULT_REGION": customS3Config.region,
-                                    "AWS_S3_ENDPOINT": host,
-                                    port,
-                                    "pathStyleAccess": customS3Config.pathStyleAccess
-                                };
-                            })()
-                        }
-                    }),
-                    "formFieldsValueDifferentFromDefault": []
-                });
-
-                return formFields;
-            })();
-
-            formFieldsValueToRestore
-                .filter(
-                    ({ path }) =>
-                        pathOfFormFieldsAffectedByS3ConfigChange.find(
-                            ({ path: pathToCheck }) => same(path, pathToCheck)
-                        ) !== undefined
-                )
-                .forEach(({ path, value }) => {
-                    dispatch(
-                        actions.formFieldValueChanged({
-                            "formFieldValue": {
-                                path,
-                                value
-                            }
-                        })
-                    );
-                });
+            dispatch(
+                actions.s3ConfigChanged({
+                    customS3ConfigIndex,
+                    "formFieldsValue": formFields
+                })
+            );
         }
 } satisfies Thunks;
 
@@ -548,15 +521,7 @@ const privateThunks = {
                     ? undefined
                     : userConfigs.kaggleApiToken ?? undefined,
                 "s3": await (async () => {
-                    const indexOfCustomS3ConfigForXOnyxia =
-                        s3ConfigManagement.protectedSelectors.indexOfCustomS3ConfigForXOnyxia(
-                            getState()
-                        );
-
-                    if (
-                        indexOfCustomS3ConfigForXOnyxia !== undefined ||
-                        region.s3?.sts === undefined
-                    ) {
+                    if (region.s3?.sts === undefined) {
                         return {
                             "AWS_ACCESS_KEY_ID": "",
                             "AWS_SECRET_ACCESS_KEY": "",

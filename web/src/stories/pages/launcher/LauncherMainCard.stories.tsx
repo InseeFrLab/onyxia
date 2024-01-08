@@ -45,5 +45,6 @@ export const ViewDefault = getStory({
         "onRequestCopyLaunchUrl",
         "onRequestLaunch",
         "onRequestRestoreAllDefault"
-    ])
+    ]),
+    "s3ConfigsWrap": undefined
 });

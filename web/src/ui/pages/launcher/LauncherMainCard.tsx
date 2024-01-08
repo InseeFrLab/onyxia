@@ -25,6 +25,8 @@ import { assert } from "tsafe/assert";
 import { useResolveLocalizedString, type LocalizedString } from "ui/i18n";
 import { id } from "tsafe/id";
 import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
+import { same } from "evt/tools/inDepth/same";
+import MuiLink from "@mui/material/Link";
 
 export type Props = {
     className?: string;
@@ -63,6 +65,21 @@ export type Props = {
 
     //Undefined when the configuration is the default one
     onRequestCopyLaunchUrl: (() => void) | undefined;
+
+    s3ConfigsWrap:
+        | {
+              projectS3ConfigLink: Link;
+              selectedCustomS3ConfigIndex: number | undefined;
+              availableS3configs: {
+                  customConfigIndex: number | undefined;
+                  dataSource: string;
+                  accountFriendlyName: string | undefined;
+              }[];
+              onSelectedS3ConfigChange: (params: {
+                  customS3ConfigIndex: number | undefined;
+              }) => void;
+          }
+        | undefined;
 };
 
 export const LauncherMainCard = memo((props: Props) => {
@@ -88,7 +105,9 @@ export const LauncherMainCard = memo((props: Props) => {
         onRequestLaunch,
         onRequestCancel,
         onRequestCopyLaunchUrl,
-        onRequestRestoreAllDefault
+        onRequestRestoreAllDefault,
+
+        s3ConfigsWrap
     } = props;
 
     const { classes, cx } = useStyles();
@@ -104,6 +123,7 @@ export const LauncherMainCard = memo((props: Props) => {
     });
 
     const chartVersionInputLabelId = `chart-version-input-label-${useId()}`;
+    const s3ConfigInputLabelId = `s3Config-input-label-${useId()}`;
 
     const { isCopyFeedbackOn, triggerCopyFeedback } = (function useClosure() {
         const [isCopyFeedbackOn, setIsCopyFeedbackOn] = useState(false);
@@ -249,6 +269,71 @@ export const LauncherMainCard = memo((props: Props) => {
                             ))}
                         </Select>
                     </FormControl>
+
+                    {s3ConfigsWrap !== undefined && (
+                        <FormControl
+                            variant="standard"
+                            className={classes.versionSelectWrapper}
+                        >
+                            <InputLabel id={s3ConfigInputLabelId}>
+                                S3 Configuration&nbsp;
+                                <Tooltip
+                                    title={
+                                        <>
+                                            You can manage your S3 configurations
+                                            <MuiLink
+                                                {...s3ConfigsWrap.projectS3ConfigLink}
+                                            >
+                                                here
+                                            </MuiLink>
+                                        </>
+                                    }
+                                >
+                                    <Icon
+                                        className={classes.versionSelectHelpIcon}
+                                        icon={id<MuiIconComponentName>("Help")}
+                                        size="small"
+                                    />
+                                </Tooltip>
+                            </InputLabel>
+                            <Select
+                                labelId={s3ConfigInputLabelId}
+                                value={`${
+                                    s3ConfigsWrap.selectedCustomS3ConfigIndex ?? -1
+                                }`}
+                                onChange={event => {
+                                    const { value } = event.target;
+                                    assert(typeof value === "string");
+
+                                    const selectedCustomS3ConfigIndex =
+                                        value === "-1" ? undefined : parseInt(value);
+
+                                    s3ConfigsWrap.onSelectedS3ConfigChange({
+                                        "customS3ConfigIndex": selectedCustomS3ConfigIndex
+                                    });
+                                }}
+                            >
+                                {s3ConfigsWrap.availableS3configs.map(
+                                    ({
+                                        accountFriendlyName,
+                                        customConfigIndex,
+                                        dataSource
+                                    }) => (
+                                        <MenuItem
+                                            key={customConfigIndex ?? "_"}
+                                            value={`${customConfigIndex ?? -1}`}
+                                        >
+                                            {dataSource}
+                                            {accountFriendlyName !== undefined
+                                                ? ` - ${accountFriendlyName}`
+                                                : ""}
+                                        </MenuItem>
+                                    )
+                                )}
+                            </Select>
+                        </FormControl>
+                    )}
+
                     {isSharedWrap !== undefined && (
                         <FormControl className={classes.isSharedWrapper}>
                             <FormControlLabel
@@ -292,7 +377,7 @@ export const LauncherMainCard = memo((props: Props) => {
             </div>
         </div>
     );
-});
+}, same);
 
 LauncherMainCard.displayName = symToStr({ LauncherMainCard });
 

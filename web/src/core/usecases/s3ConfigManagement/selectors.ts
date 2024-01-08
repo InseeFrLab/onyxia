@@ -164,7 +164,8 @@ export const protectedSelectors = {
     indexOfCustomS3ConfigForXOnyxia,
     customS3Configs,
     customS3ConfigForExplorer,
-    stsS3Config
+    stsS3Config,
+    s3Configs
 };
 
 export const selectors = { main };
