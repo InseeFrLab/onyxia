@@ -8188,6 +8188,15 @@ evt@^2.5.3:
     run-exclusive "^2.2.19"
     tsafe "^1.6.5"
 
+evt@^2.5.5:
+  version "2.5.5"
+  resolved "https://registry.yarnpkg.com/evt/-/evt-2.5.5.tgz#b8ade62a1e7da6235efd270db0fd4b32011aec4b"
+  integrity sha512-/+M8uOHyk7iWykg4ssPmv96fUBWymq6OBjNTOVv03LXzdlpmxg+q48Nf6XUQY3tOYeigQcFV41tURLpO90bs0A==
+  dependencies:
+    minimal-polyfills "^2.2.3"
+    run-exclusive "^2.2.19"
+    tsafe "^1.6.5"
+
 exec-sh@^0.3.2:
   version "0.3.6"
   resolved "https://registry.yarnpkg.com/exec-sh/-/exec-sh-0.3.6.tgz#ff264f9e325519a60cb5e273692943483cca63bc"
