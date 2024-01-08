@@ -280,7 +280,7 @@ export const LauncherMainCard = memo((props: Props) => {
                                 <Tooltip
                                     title={
                                         <>
-                                            You can manage your S3 configurations
+                                            You can manage your S3 configurations&nbsp;
                                             <MuiLink
                                                 {...s3ConfigsWrap.projectS3ConfigLink}
                                             >
