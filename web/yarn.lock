@@ -13511,6 +13511,15 @@ powerhooks@^1.0.5:
     memoizee "^0.4.15"
     tsafe "^1.6.5"
 
+powerhooks@^1.0.6:
+  version "1.0.6"
+  resolved "https://registry.yarnpkg.com/powerhooks/-/powerhooks-1.0.6.tgz#c2e795274407cf85717e0c6b4540c89081a2b1ed"
+  integrity sha512-igPtnYo8ovsfp6+Ibd3yvM7Mbltr2+xF8TMGlpw5VTNA1RRxfPnHSGpC8ilwsAG23ZHjBE3+Uit4Kvzq51FRbA==
+  dependencies:
+    evt "^2.5.5"
+    memoizee "^0.4.15"
+    tsafe "^1.6.5"
+
 prelude-ls@^1.2.1:
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/prelude-ls/-/prelude-ls-1.2.1.tgz#debc6489d7a6e6b0e7611888cec880337d316396"
