@@ -30,6 +30,9 @@ export declare namespace State {
         pathOfFormFieldsWhoseValuesAreDifferentFromDefault: {
             path: string[];
         }[];
+        pathOfFormFieldsAffectedByS3ConfigChange: {
+            path: string[];
+        }[];
         formFields: FormField[];
         infosAboutWhenFieldsShouldBeHidden: {
             path: string[];
@@ -73,6 +76,7 @@ export const { reducer, actions } = createUsecaseActions({
                         availableChartVersions: string[];
                         chartIconUrl: string | undefined;
                         chartSourceUrls: string[];
+                        pathOfFormFieldsAffectedByS3ConfigChange: State.Ready["pathOfFormFieldsAffectedByS3ConfigChange"];
                         formFields: State.Ready["formFields"];
                         infosAboutWhenFieldsShouldBeHidden: State.Ready["infosAboutWhenFieldsShouldBeHidden"];
                         valuesSchema: State.Ready["valuesSchema"];
@@ -93,6 +97,7 @@ export const { reducer, actions } = createUsecaseActions({
                     availableChartVersions,
                     chartIconUrl,
                     chartSourceUrls,
+                    pathOfFormFieldsAffectedByS3ConfigChange,
                     formFields,
                     infosAboutWhenFieldsShouldBeHidden,
                     valuesSchema,
@@ -114,6 +119,7 @@ export const { reducer, actions } = createUsecaseActions({
                         availableChartVersions,
                         chartIconUrl,
                         chartSourceUrls,
+                        pathOfFormFieldsAffectedByS3ConfigChange,
                         formFields,
                         infosAboutWhenFieldsShouldBeHidden,
                         "defaultFormFieldsValue": formFields.map(({ path, value }) => ({

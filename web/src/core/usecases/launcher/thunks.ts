@@ -30,10 +30,7 @@ import { generateRandomPassword } from "core/tools/generateRandomPassword";
 import * as restorableConfigManagement from "core/usecases/restorableConfigManagement";
 import { privateSelectors } from "./selectors";
 import { Evt } from "evt";
-import type { DeepPartial } from "core/tools/DeepPartial";
 import { createUsecaseContextApi } from "redux-clean-architecture";
-import { deepAssign } from "core/tools/deepAssign";
-import structuredClone from "@ungap/structured-clone";
 
 export const thunks = {
     "initialize":
@@ -119,14 +116,53 @@ export const thunks = {
                     getChartValuesSchemaJson
                 });
 
-                const {
-                    formFields,
-                    infosAboutWhenFieldsShouldBeHidden,
-                    sensitiveConfigurations
-                } = getInitialFormFields({
-                    formFieldsValueDifferentFromDefault,
-                    valuesSchema
-                });
+                const { pathOfFormFieldsAffectedByS3ConfigChange } = (() => {
+                    const { formFields: formFields_ref } = getInitialFormFields({
+                        "valuesSchema": getChartValuesSchemaJson({
+                            xOnyxiaContext
+                        }),
+                        "formFieldsValueDifferentFromDefault": []
+                    });
+
+                    const { formFields: formFields_diff } = getInitialFormFields({
+                        "valuesSchema": getChartValuesSchemaJson({
+                            "xOnyxiaContext": {
+                                ...xOnyxiaContext,
+                                "s3": {
+                                    "AWS_ACCESS_KEY_ID":
+                                        xOnyxiaContext.s3.AWS_ACCESS_KEY_ID + "x",
+                                    "AWS_BUCKET_NAME":
+                                        xOnyxiaContext.s3.AWS_BUCKET_NAME + "x",
+                                    "AWS_SECRET_ACCESS_KEY":
+                                        xOnyxiaContext.s3.AWS_SECRET_ACCESS_KEY + "x",
+                                    "AWS_SESSION_TOKEN":
+                                        xOnyxiaContext.s3.AWS_SESSION_TOKEN + "x",
+                                    "AWS_DEFAULT_REGION":
+                                        xOnyxiaContext.s3.AWS_DEFAULT_REGION + "x",
+                                    "AWS_S3_ENDPOINT":
+                                        xOnyxiaContext.s3.AWS_S3_ENDPOINT + "x",
+                                    "port": xOnyxiaContext.s3.port + 1,
+                                    "pathStyleAccess": !xOnyxiaContext.s3.pathStyleAccess
+                                }
+                            }
+                        }),
+                        "formFieldsValueDifferentFromDefault": []
+                    });
+
+                    const pathOfFormFieldsAffectedByS3ConfigChange = formFields_ref
+                        .filter(({ path, value }) => {
+                            const formField_diff = formFields_diff.find(
+                                ({ path: pathDiff }) => same(path, pathDiff)
+                            );
+
+                            assert(formField_diff !== undefined);
+
+                            return !same(value, formField_diff.value);
+                        })
+                        .map(({ path }) => ({ path }));
+
+                    return { pathOfFormFieldsAffectedByS3ConfigChange };
+                })();
 
                 const isRestorableConfigSaved = dispatch(
                     restorableConfigManagement.protectedThunks.getIsRestorableConfigSaved(
@@ -141,6 +177,15 @@ export const thunks = {
                     )
                 );
 
+                const {
+                    formFields,
+                    infosAboutWhenFieldsShouldBeHidden,
+                    sensitiveConfigurations
+                } = getInitialFormFields({
+                    formFieldsValueDifferentFromDefault,
+                    valuesSchema
+                });
+
                 dispatch(
                     actions.initialized({
                         catalogId,
@@ -152,6 +197,7 @@ export const thunks = {
                         chartVersion,
                         availableChartVersions,
                         chartSourceUrls,
+                        pathOfFormFieldsAffectedByS3ConfigChange,
                         formFields,
                         infosAboutWhenFieldsShouldBeHidden,
                         valuesSchema,
@@ -175,6 +221,17 @@ export const thunks = {
                         );
 
                     if (indexOfCustomS3ConfigForXOnyxia === undefined) {
+                        break use_custom_s3_config;
+                    }
+
+                    if (
+                        formFieldsValueDifferentFromDefault.find(
+                            ({ path: path_differentFromDefault }) =>
+                                pathOfFormFieldsAffectedByS3ConfigChange.find(
+                                    ({ path }) => same(path, path_differentFromDefault)
+                                ) !== undefined
+                        ) !== undefined
+                    ) {
                         break use_custom_s3_config;
                     }
 
@@ -209,6 +266,15 @@ export const thunks = {
                     })
                 );
             });
+
+            dispatch(
+                thunks.useSpecificS3Config({
+                    "customS3ConfigIndex":
+                        s3ConfigManagement.protectedSelectors.indexOfCustomS3ConfigForXOnyxia(
+                            getState()
+                        )
+                })
+            );
         },
     "changeChartVersion":
         (params: { chartVersion: string }) =>
@@ -312,45 +378,84 @@ export const thunks = {
         (...args) => {
             const { customS3ConfigIndex } = params;
 
-            const [dispatch, getState] = args;
+            const [dispatch, getState, rootContext] = args;
 
-            if (customS3ConfigIndex === undefined) {
-                dispatch(
-                    privateThunks.updateXOnyxiaContext({
-                        "partialXOnyxiaContext": {}
-                    })
-                );
-                return;
-            }
+            const { getChartValuesSchemaJson, xOnyxiaContext } = getContext(rootContext);
 
-            const customS3Configs = s3ConfigManagement.protectedSelectors.customS3Configs(
-                getState()
-            );
+            const state = getState()[name];
 
-            const customS3Config = customS3Configs[customS3ConfigIndex];
+            assert(state.stateDescription === "ready");
 
-            assert(customS3Config !== undefined);
+            const { pathOfFormFieldsAffectedByS3ConfigChange } = state;
 
-            const { host, port = 443 } = parseUrl(customS3Config.url);
+            const formFieldsValueToRestore = (() => {
+                if (customS3ConfigIndex === undefined) {
+                    const state = getState()[name];
 
-            dispatch(
-                privateThunks.updateXOnyxiaContext({
-                    "partialXOnyxiaContext": {
-                        "s3": {
-                            "AWS_ACCESS_KEY_ID": customS3Config.accessKeyId,
-                            "AWS_BUCKET_NAME": bucketNameAndObjectNameFromS3Path(
-                                customS3Config.workingDirectoryPath
-                            ).bucketName,
-                            "AWS_SECRET_ACCESS_KEY": customS3Config.secretAccessKey,
-                            "AWS_SESSION_TOKEN": customS3Config.sessionToken ?? "",
-                            "AWS_DEFAULT_REGION": customS3Config.region,
-                            "AWS_S3_ENDPOINT": host,
-                            port,
-                            "pathStyleAccess": customS3Config.pathStyleAccess
+                    assert(state.stateDescription === "ready");
+
+                    const { defaultFormFieldsValue } = state;
+
+                    return defaultFormFieldsValue;
+                }
+
+                const { formFields } = getInitialFormFields({
+                    "valuesSchema": getChartValuesSchemaJson({
+                        "xOnyxiaContext": {
+                            ...xOnyxiaContext,
+                            "s3": (() => {
+                                const customS3Configs =
+                                    s3ConfigManagement.protectedSelectors.customS3Configs(
+                                        getState()
+                                    );
+
+                                const customS3Config =
+                                    customS3Configs[customS3ConfigIndex];
+
+                                assert(customS3Config !== undefined);
+
+                                const { host, port = 443 } = parseUrl(customS3Config.url);
+
+                                return {
+                                    "AWS_ACCESS_KEY_ID": customS3Config.accessKeyId,
+                                    "AWS_BUCKET_NAME": bucketNameAndObjectNameFromS3Path(
+                                        customS3Config.workingDirectoryPath
+                                    ).bucketName,
+                                    "AWS_SECRET_ACCESS_KEY":
+                                        customS3Config.secretAccessKey,
+                                    "AWS_SESSION_TOKEN":
+                                        customS3Config.sessionToken ?? "",
+                                    "AWS_DEFAULT_REGION": customS3Config.region,
+                                    "AWS_S3_ENDPOINT": host,
+                                    port,
+                                    "pathStyleAccess": customS3Config.pathStyleAccess
+                                };
+                            })()
                         }
-                    }
-                })
-            );
+                    }),
+                    "formFieldsValueDifferentFromDefault": []
+                });
+
+                return formFields;
+            })();
+
+            formFieldsValueToRestore
+                .filter(
+                    ({ path }) =>
+                        pathOfFormFieldsAffectedByS3ConfigChange.find(
+                            ({ path: pathToCheck }) => same(path, pathToCheck)
+                        ) !== undefined
+                )
+                .forEach(({ path, value }) => {
+                    dispatch(
+                        actions.formFieldValueChanged({
+                            "formFieldValue": {
+                                path,
+                                value
+                            }
+                        })
+                    );
+                });
         }
 } satisfies Thunks;
 
@@ -620,43 +725,6 @@ const privateThunks = {
                 chartVersion,
                 "availableChartVersions": chart.versions.map(({ version }) => version)
             };
-        },
-    "updateXOnyxiaContext":
-        (params: { partialXOnyxiaContext: DeepPartial<XOnyxiaContext> }) =>
-        async (...args) => {
-            const { partialXOnyxiaContext } = params;
-
-            const [dispatch, , rootContext] = args;
-
-            const { xOnyxiaContext, getChartValuesSchemaJson } = getContext(rootContext);
-
-            const { newOnyxiaContext } = (() => {
-                const newOnyxiaContext = structuredClone(xOnyxiaContext);
-
-                deepAssign({
-                    "target": newOnyxiaContext,
-                    "source": partialXOnyxiaContext
-                });
-
-                return { newOnyxiaContext };
-            })();
-
-            const { formFields: formFieldsWithUpdatedOnyxiaContext } =
-                getInitialFormFields({
-                    "valuesSchema": getChartValuesSchemaJson({
-                        "xOnyxiaContext": newOnyxiaContext
-                    }),
-                    "formFieldsValueDifferentFromDefault": []
-                });
-
-            formFieldsWithUpdatedOnyxiaContext.forEach(({ path, value }) =>
-                dispatch(
-                    thunks.changeFormFieldValue({
-                        path,
-                        value
-                    })
-                )
-            );
         }
 } satisfies Thunks;
 
