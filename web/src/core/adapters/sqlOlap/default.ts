@@ -56,7 +56,14 @@ export const createDuckDbSqlOlap = (): SqlOlap => {
 
             const res = await stmt.query();
 
-            const rows = JSON.parse(JSON.stringify(res.toArray()));
+            const rows = JSON.parse(
+                JSON.stringify(res.toArray(), (_key, value) => {
+                    if (typeof value === "bigint") {
+                        return value.toString();
+                    }
+                    return value;
+                })
+            );
 
             await conn.close();
 
