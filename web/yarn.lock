@@ -14184,10 +14184,10 @@ redent@^1.0.0:
     indent-string "^2.1.0"
     strip-indent "^1.0.1"
 
-redux-clean-architecture@^4.2.2:
-  version "4.2.2"
-  resolved "https://registry.yarnpkg.com/redux-clean-architecture/-/redux-clean-architecture-4.2.2.tgz#844051645d9bfae96282f4467cb2c7f022f40477"
-  integrity sha512-jb6LBh867OWlUJoh9oMcP2RDV1s/+OZvv86tpbC61qXTCZVbG3TSYhrK+1lBqjp1o6HPTwn0KB4c4oLpjfSfNg==
+redux-clean-architecture@^4.3.1:
+  version "4.3.1"
+  resolved "https://registry.yarnpkg.com/redux-clean-architecture/-/redux-clean-architecture-4.3.1.tgz#b3c0f661d3813a39f66bd0713d711974f83e1a33"
+  integrity sha512-WXbvO47tdoh4heJ26ZbfdLOKsXAz6SPCCig99ufTa5zEcm0R44+Xn/h7GYo3wBFTacHlcuv9KEbSap7TdDW1nA==
   dependencies:
     "@reduxjs/toolkit" "^1.9.6"
     minimal-polyfills "^2.2.3"
