@@ -96,6 +96,8 @@ export const AddCustomS3ConfigDialog = memo((props: Props) => {
         <Dialog
             title="New custom S3 configuration"
             className={classes.root}
+            maxWidth="md"
+            fullWidth={true}
             body={
                 state === undefined ? (
                     <></>
