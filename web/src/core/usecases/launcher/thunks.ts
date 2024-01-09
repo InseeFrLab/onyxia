@@ -60,7 +60,9 @@ export const thunks = {
 
             const ctx = Evt.newCtx();
 
-            ctx.evtDoneOrAborted.attachOnce(() => dispatch(actions.reset()));
+            ctx.evtDoneOrAborted.attachOnce(() =>
+                dispatch(actions.resetToNotInitialized())
+            );
 
             const cleanup = () => {
                 ctx.done();
@@ -215,6 +217,16 @@ export const thunks = {
                 }
 
                 use_custom_s3_config: {
+                    const selectedS3Config = privateSelectors.selectedS3Config(
+                        getState()
+                    );
+
+                    assert(selectedS3Config !== undefined);
+
+                    if (selectedS3Config.type === "manual form input") {
+                        return;
+                    }
+
                     const customS3ConfigIndex =
                         s3ConfigManagement.protectedSelectors.indexOfCustomS3ConfigForXOnyxia(
                             getState()
@@ -224,19 +236,9 @@ export const thunks = {
                         break use_custom_s3_config;
                     }
 
-                    if (
-                        formFieldsValueDifferentFromDefault.find(
-                            ({ path: path_differentFromDefault }) =>
-                                pathOfFormFieldsAffectedByS3ConfigChange.find(
-                                    ({ path }) => same(path, path_differentFromDefault)
-                                ) !== undefined
-                        ) !== undefined
-                    ) {
-                        break use_custom_s3_config;
-                    }
-
                     dispatch(
                         thunks.useSpecificS3Config({
+                            "type": "custom",
                             customS3ConfigIndex
                         })
                     );
@@ -252,13 +254,17 @@ export const thunks = {
 
             dispatch(actions.allDefaultRestored());
 
+            const customS3ConfigIndex =
+                s3ConfigManagement.protectedSelectors.indexOfCustomS3ConfigForXOnyxia(
+                    getState()
+                );
+
             dispatch(
-                thunks.useSpecificS3Config({
-                    "customS3ConfigIndex":
-                        s3ConfigManagement.protectedSelectors.indexOfCustomS3ConfigForXOnyxia(
-                            getState()
-                        )
-                })
+                thunks.useSpecificS3Config(
+                    customS3ConfigIndex === undefined
+                        ? { "type": "sts" }
+                        : { "type": "custom", customS3ConfigIndex }
+                )
             );
         },
     "changeChartVersion":
@@ -285,7 +291,7 @@ export const thunks = {
 
             assert(formFieldsValueDifferentFromDefault !== undefined);
 
-            dispatch(actions.reset());
+            dispatch(actions.resetToNotInitialized());
 
             dispatch(
                 thunks.initialize({
@@ -356,16 +362,23 @@ export const thunks = {
             );
         },
     "useSpecificS3Config":
-        (params: {
-            /** undefined for restoring STS */
-            customS3ConfigIndex: number | undefined;
-        }) =>
+        (
+            params:
+                | {
+                      type: "sts";
+                      customS3ConfigIndex?: never;
+                  }
+                | {
+                      type: "custom";
+                      customS3ConfigIndex: number;
+                  }
+        ) =>
         (...args) => {
-            const { customS3ConfigIndex } = params;
+            const { type, customS3ConfigIndex } = params;
 
             const [dispatch, getState, rootContext] = args;
 
-            if (customS3ConfigIndex === undefined) {
+            if (type === "sts") {
                 dispatch(
                     actions.s3ConfigChanged({
                         "customS3ConfigIndex": undefined
@@ -374,6 +387,8 @@ export const thunks = {
 
                 return;
             }
+
+            assert(type === "custom");
 
             const { getChartValuesSchemaJson, xOnyxiaContext } = getContext(rootContext);
 

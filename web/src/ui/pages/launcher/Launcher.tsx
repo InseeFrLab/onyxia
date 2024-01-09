@@ -81,7 +81,7 @@ export default function Launcher(props: Props) {
         chartSourceUrls,
         groupProjectName,
         availableS3configs,
-        selectedCustomS3ConfigIndex
+        selectedS3Config
     } = useCoreState("launcher", "main");
 
     const scrollableDivRef = useStateRef<HTMLDivElement>(null);
@@ -395,7 +395,7 @@ export default function Launcher(props: Props) {
                                                   routes.projectSettings({
                                                       "tabId": "s3-configs"
                                                   }).link,
-                                              selectedCustomS3ConfigIndex,
+                                              selectedS3Config,
                                               availableS3configs,
                                               "onSelectedS3ConfigChange":
                                                   launcher.useSpecificS3Config

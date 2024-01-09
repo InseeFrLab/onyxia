@@ -43,6 +43,7 @@ export declare namespace State {
         valuesSchema: JSONSchemaObject;
         k8sRandomSubdomain: string;
         selectedCustomS3ConfigIndex: number | undefined;
+        has3sConfigBeenManuallyChanged: boolean;
     };
 }
 
@@ -131,7 +132,8 @@ export const { reducer, actions } = createUsecaseActions({
                         "pathOfFormFieldsWhoseValuesAreDifferentFromDefault": [],
                         valuesSchema,
                         k8sRandomSubdomain,
-                        "selectedCustomS3ConfigIndex": undefined
+                        "selectedCustomS3ConfigIndex": undefined,
+                        "has3sConfigBeenManuallyChanged": false
                     })
                 );
 
@@ -196,15 +198,23 @@ export const { reducer, actions } = createUsecaseActions({
                             }
                         })
                     );
+
+                state.has3sConfigBeenManuallyChanged = false;
             },
-            "reset": () =>
+            "resetToNotInitialized": () =>
                 id<State.NotInitialized>({
                     "stateDescription": "not initialized",
                     "isInitializing": false
                 }),
             "formFieldValueChanged": (
                 state,
-                { payload }: { payload: { formFieldValue: FormFieldValue } }
+                {
+                    payload
+                }: {
+                    payload: {
+                        formFieldValue: FormFieldValue;
+                    };
+                }
             ) => {
                 assert(state.stateDescription === "ready");
 
@@ -268,6 +278,15 @@ export const { reducer, actions } = createUsecaseActions({
                     }
 
                     formField.value = value;
+                }
+
+                if (
+                    state.pathOfFormFieldsAffectedByS3ConfigChange.find(
+                        ({ path: pathAffectedByS3Config }) =>
+                            same(path, pathAffectedByS3Config)
+                    ) !== undefined
+                ) {
+                    state.has3sConfigBeenManuallyChanged = true;
                 }
 
                 {

@@ -17,7 +17,11 @@ import * as projectManagement from "core/usecases/projectManagement";
 import * as s3ConfigManagement from "core/usecases/s3ConfigManagement";
 import * as userConfigs from "core/usecases/userConfigs";
 import { exclude } from "tsafe/exclude";
-import { createSelector } from "redux-clean-architecture";
+import {
+    createSelector,
+    createObjectThatThrowsIfAccessed
+} from "redux-clean-architecture";
+import { id } from "tsafe/id";
 
 const readyState = (rootState: RootState): State.Ready | undefined => {
     const state = rootState[name];
@@ -621,13 +625,48 @@ const availableS3configs = createSelector(
     }
 );
 
-const selectedCustomS3ConfigIndex = createSelector(readyState, state => {
-    if (state === undefined) {
-        return undefined;
-    }
+const selectedS3Config = createSelector(
+    readyState,
+    availableS3configs,
+    (state, availableS3configs) => {
+        if (state === undefined) {
+            return undefined;
+        }
 
-    return state.selectedCustomS3ConfigIndex;
-});
+        type SelectedS3Config =
+            | {
+                  type: "sts";
+              }
+            | {
+                  type: "custom";
+                  customS3ConfigIndex: number;
+              }
+            | {
+                  type: "manual form input";
+              };
+
+        if (availableS3configs === undefined) {
+            return createObjectThatThrowsIfAccessed<SelectedS3Config>();
+        }
+
+        if (state.has3sConfigBeenManuallyChanged) {
+            return id<SelectedS3Config>({
+                "type": "manual form input"
+            });
+        }
+
+        if (state.selectedCustomS3ConfigIndex === undefined) {
+            return id<SelectedS3Config>({
+                "type": "sts"
+            });
+        }
+
+        return id<SelectedS3Config>({
+            "type": "custom",
+            "customS3ConfigIndex": state.selectedCustomS3ConfigIndex
+        });
+    }
+);
 
 const main = createSelector(
     isReady,
@@ -651,7 +690,7 @@ const main = createSelector(
     chartSourceUrls,
     groupProjectName,
     availableS3configs,
-    selectedCustomS3ConfigIndex,
+    selectedS3Config,
     (
         isReady,
         friendlyName,
@@ -674,7 +713,7 @@ const main = createSelector(
         chartSourceUrls,
         groupProjectName,
         availableS3configs,
-        selectedCustomS3ConfigIndex
+        selectedS3Config
     ) => {
         if (!isReady) {
             return {
@@ -697,6 +736,7 @@ const main = createSelector(
         assert(catalogRepositoryUrl !== undefined);
         assert(launchScript !== undefined);
         assert(chartSourceUrls !== undefined);
+        assert(selectedS3Config !== undefined);
 
         return {
             "isReady": true as const,
@@ -720,7 +760,7 @@ const main = createSelector(
             chartSourceUrls,
             groupProjectName,
             availableS3configs,
-            selectedCustomS3ConfigIndex
+            selectedS3Config
         };
     }
 );
@@ -744,5 +784,6 @@ const formFieldsValueDifferentFromDefault = createSelector(
 export const privateSelectors = {
     helmReleaseName,
     formFieldsValueDifferentFromDefault,
-    isShared
+    isShared,
+    selectedS3Config
 };

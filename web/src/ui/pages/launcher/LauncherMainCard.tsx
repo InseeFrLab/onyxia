@@ -69,15 +69,33 @@ export type Props = {
     s3ConfigsWrap:
         | {
               projectS3ConfigLink: Link;
-              selectedCustomS3ConfigIndex: number | undefined;
+              selectedS3Config:
+                  | {
+                        type: "sts";
+                    }
+                  | {
+                        type: "custom";
+                        customS3ConfigIndex: number;
+                    }
+                  | {
+                        type: "manual form input";
+                    };
               availableS3configs: {
                   customConfigIndex: number | undefined;
                   dataSource: string;
                   accountFriendlyName: string | undefined;
               }[];
-              onSelectedS3ConfigChange: (params: {
-                  customS3ConfigIndex: number | undefined;
-              }) => void;
+              onSelectedS3ConfigChange: (
+                  params:
+                      | {
+                            type: "sts";
+                            customS3ConfigIndex?: never;
+                        }
+                      | {
+                            type: "custom";
+                            customS3ConfigIndex: number;
+                        }
+              ) => void;
           }
         | undefined;
 };
@@ -298,21 +316,47 @@ export const LauncherMainCard = memo((props: Props) => {
                             </InputLabel>
                             <Select
                                 labelId={s3ConfigInputLabelId}
+                                /*
                                 value={`${
                                     s3ConfigsWrap.selectedCustomS3ConfigIndex ?? -1
                                 }`}
+                                */
+                                value={(() => {
+                                    switch (s3ConfigsWrap.selectedS3Config.type) {
+                                        case "custom":
+                                            return `${s3ConfigsWrap.selectedS3Config.customS3ConfigIndex}`;
+                                        case "sts":
+                                            return "sts";
+                                        case "manual form input":
+                                            return "manual form input";
+                                    }
+                                })()}
                                 onChange={event => {
                                     const { value } = event.target;
                                     assert(typeof value === "string");
 
-                                    const selectedCustomS3ConfigIndex =
-                                        value === "-1" ? undefined : parseInt(value);
+                                    if (value === "sts") {
+                                        s3ConfigsWrap.onSelectedS3ConfigChange({
+                                            "type": "sts"
+                                        });
+                                        return;
+                                    }
+
+                                    const customS3ConfigIndex = parseInt(value);
 
                                     s3ConfigsWrap.onSelectedS3ConfigChange({
-                                        "customS3ConfigIndex": selectedCustomS3ConfigIndex
+                                        "type": "custom",
+                                        customS3ConfigIndex
                                     });
                                 }}
                             >
+                                {s3ConfigsWrap.selectedS3Config.type ===
+                                    "manual form input" && (
+                                    <MenuItem disabled value="manual form input">
+                                        &nbsp;
+                                    </MenuItem>
+                                )}
+
                                 {s3ConfigsWrap.availableS3configs.map(
                                     ({
                                         accountFriendlyName,
@@ -321,7 +365,7 @@ export const LauncherMainCard = memo((props: Props) => {
                                     }) => (
                                         <MenuItem
                                             key={customConfigIndex ?? "_"}
-                                            value={`${customConfigIndex ?? -1}`}
+                                            value={`${customConfigIndex ?? "sts"}`}
                                         >
                                             {dataSource}
                                             {accountFriendlyName !== undefined
