@@ -143,6 +143,20 @@ export const { reducer, actions } = createUsecaseActions({
                     })
                 );
             },
+            "allDefaultRestored": state => {
+                assert(state.stateDescription === "ready");
+
+                state.defaultFormFieldsValue.forEach(({ path, value }) =>
+                    reducers.formFieldValueChanged(state, {
+                        "payload": {
+                            "formFieldValue": {
+                                path,
+                                value
+                            }
+                        }
+                    })
+                );
+            },
             "s3ConfigChanged": (
                 state,
                 {

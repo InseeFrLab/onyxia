@@ -250,26 +250,14 @@ export const thunks = {
         (...args) => {
             const [dispatch, getState] = args;
 
-            const state = getState()[name];
-
-            assert(state.stateDescription === "ready");
-
-            const { defaultFormFieldsValue } = state;
-
-            defaultFormFieldsValue.forEach(({ path, value }) => {
-                dispatch(
-                    actions.formFieldValueChanged({
-                        "formFieldValue": {
-                            path,
-                            value
-                        }
-                    })
-                );
-            });
+            dispatch(actions.allDefaultRestored());
 
             dispatch(
                 thunks.useSpecificS3Config({
-                    "customS3ConfigIndex": state.selectedCustomS3ConfigIndex
+                    "customS3ConfigIndex":
+                        s3ConfigManagement.protectedSelectors.indexOfCustomS3ConfigForXOnyxia(
+                            getState()
+                        )
                 })
             );
         },
