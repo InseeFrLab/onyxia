@@ -26,11 +26,7 @@ export const translations: Translations<"fi"> = {
         "user id": "Käyttäjätunnus (IDEP)",
         "full name": "Koko nimi",
         "email": "Sähköpostiosoite",
-        "change account info": "Muuta tilin tietoja (esim. salasanaa).",
-        "auth information": "Onyxia-autentikointitiedot",
-        "auth information helper": `Nämä tiedot mahdollistavat sinun tunnistautumisen
-            alustalla ja eri palveluissa.`,
-        "ip address": "IP-osoite"
+        "change account info": "Muuta tilin tietoja (esim. salasanaa)."
     },
     "AccountIntegrationsTab": {
         "git section title": "Git-konfiguraatio",

@@ -26,11 +26,7 @@ export const translations: Translations<"en"> = {
         "user id": "User id (IDEP)",
         "full name": "Full name",
         "email": "Email address",
-        "change account info": "Change account information (e.g., password).",
-        "auth information": "Onyxia authentication information",
-        "auth information helper": `Theses information allows you to identify yourself
-            within the platform and the various services.`,
-        "ip address": "IP Address"
+        "change account info": "Change account information (e.g., password)."
     },
     "AccountIntegrationsTab": {
         "git section title": "Git configuration",

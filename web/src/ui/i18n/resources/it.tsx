@@ -27,10 +27,7 @@ export const translations: Translations<"it"> = {
         "full name": "Nome completo",
         "email": "Indirizzo email",
         "change account info":
-            "Modifica le informazioni dell'account (ad esempio, la password)",
-        "auth information": "Informazioni di autenticazione Onyxia",
-        "auth information helper": `Queste informazioni ti permettono di identificarti all'interno della piattaforma e dei vari servizi.`,
-        "ip address": "Indirizzo IP"
+            "Modifica le informazioni dell'account (ad esempio, la password)"
     },
     "AccountIntegrationsTab": {
         "git section title": "Configurazioni Git",

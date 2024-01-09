@@ -5,7 +5,6 @@ import { SettingField } from "ui/shared/SettingField";
 import { useCore, useCoreState } from "core";
 import { useCallbackFactory } from "powerhooks/useCallbackFactory";
 import { copyToClipboard } from "ui/tools/copyToClipboard";
-import Divider from "@mui/material/Divider";
 import Link from "@mui/material/Link";
 import { tss } from "tss";
 import { declareComponentKeys } from "i18nifty";
@@ -65,30 +64,15 @@ export const AccountInfoTab = memo((props: Props) => {
                     {t("change account info")}
                 </Link>
             )}
-            <Divider className={classes.divider} variant="middle" />
-            <SettingSectionHeader
-                title={t("auth information")}
-                helperText={t("auth information helper")}
-            />
         </div>
     );
 });
 
 export const { i18n } = declareComponentKeys<
-    | "general information"
-    | "user id"
-    | "full name"
-    | "email"
-    | "change account info"
-    | "auth information"
-    | "auth information helper"
-    | "ip address"
+    "general information" | "user id" | "full name" | "email" | "change account info"
 >()({ AccountInfoTab });
 
 const useStyles = tss.withName({ AccountInfoTab }).create(({ theme }) => ({
-    "divider": {
-        ...theme.spacing.topBottom("margin", 4)
-    },
     "link": {
         "marginTop": theme.spacing(2),
         "display": "inline-block"

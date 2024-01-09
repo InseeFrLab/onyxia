@@ -26,10 +26,7 @@ export const translations: Translations<"de"> = {
         "user id": "User-ID",
         "full name": "Vollständiger Name",
         "email": "E-Mail-Adresse",
-        "change account info": "Kontoinformationen ändern (z.B. Ihr Passwort)",
-        "auth information": "Informationen zur Authentifizierung in Onyxia",
-        "auth information helper": `Diese Informationen ermöglichen es Ihnen, sich innerhalb der Plattform und der verschiedenen Dienste zu identifizieren.`,
-        "ip address": "IP-Adresse"
+        "change account info": "Kontoinformationen ändern (z.B. Ihr Passwort)"
     },
     "AccountIntegrationsTab": {
         "git section title": "Git-Konfiguration",

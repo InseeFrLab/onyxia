@@ -25,10 +25,7 @@ export const translations: Translations<"zh-CN"> = {
         "user id": "身分名 (IDEP)",
         "full name": "全名",
         "email": "邮件地址",
-        "change account info": "修改帐户信息（例如您的密码）",
-        "auth information": "Onyxia的认证信息",
-        "auth information helper": `此信息可让您在平台内和平台内的各种服务中认证自己.`,
-        "ip address": "IP地址"
+        "change account info": "修改帐户信息（例如您的密码）"
     },
     "AccountIntegrationsTab": {
         "git section title": "Git 配置",

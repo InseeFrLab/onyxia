@@ -26,11 +26,7 @@ export const translations: Translations<"nl"> = {
         "user id": "Gebruikersnaam (IDEP)",
         "full name": "Volledige naam",
         "email": "E-mailadres",
-        "change account info": "Accountgegevens (zoals uw wachtwoord) wijzigen",
-        "auth information": "Authenticatiegegevens Onyxia",
-        "auth information helper": `Met deze informatie kunt u zich identificeren  
-            binnen het platform en de verschillende diensten.`,
-        "ip address": "IP-adres"
+        "change account info": "Accountgegevens (zoals uw wachtwoord) wijzigen"
     },
     "AccountIntegrationsTab": {
         "git section title": "Git-configuraties",
