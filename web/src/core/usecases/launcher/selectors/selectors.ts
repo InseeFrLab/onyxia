@@ -605,6 +605,10 @@ const availableS3configs = createSelector(
             return undefined;
         }
 
+        if (s3Configs.length <= 1) {
+            return undefined;
+        }
+
         if (state.pathOfFormFieldsAffectedByS3ConfigChange.length === 0) {
             return undefined;
         }
