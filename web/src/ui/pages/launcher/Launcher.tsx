@@ -270,6 +270,16 @@ export default function Launcher(props: Props) {
         "isCommandBarEnabled": commandLogsEntries !== undefined
     });
 
+    const { myServicesSavedConfigsExtendedLink, projectS3ConfigLink } = useConst(() => ({
+        "myServicesSavedConfigsExtendedLink": routes.myServices({
+            "isSavedConfigsExtended": true
+        }).link,
+
+        "projectS3ConfigLink": routes.projectSettings({
+            "tabId": "s3-configs"
+        }).link
+    }));
+
     if (!isReady) {
         return null;
     }
@@ -358,9 +368,7 @@ export default function Launcher(props: Props) {
                                 catalogName={catalogName}
                                 catalogRepositoryUrl={catalogRepositoryUrl}
                                 myServicesSavedConfigsExtendedLink={
-                                    routes.myServices({
-                                        "isSavedConfigsExtended": true
-                                    }).link
+                                    myServicesSavedConfigsExtendedLink
                                 }
                                 onRequestToggleBookmark={onRequestToggleBookmark}
                                 friendlyName={friendlyName}
@@ -391,10 +399,7 @@ export default function Launcher(props: Props) {
                                     availableS3configs === undefined
                                         ? undefined
                                         : {
-                                              "projectS3ConfigLink":
-                                                  routes.projectSettings({
-                                                      "tabId": "s3-configs"
-                                                  }).link,
+                                              projectS3ConfigLink,
                                               selectedS3Config,
                                               availableS3configs,
                                               "onSelectedS3ConfigChange":
