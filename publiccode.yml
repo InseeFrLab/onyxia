@@ -4,7 +4,8 @@ name: Onyxia
 applicationSuite: Onyxia
 url: "https://github.com/InseeFrLab/onyxia"
 landingURL: "https://onyxia.sh"
-releaseDate: "2017-01-01"
+creationDate: "2017-01-01"
+releaseDate: "2020-03-22"
 logo: https://inseefrlab.github.io/onyxia/icon.svg
 
 platforms:
@@ -20,6 +21,10 @@ usedBy:
   - Mercator Ocean
   - Expertise France
   - Genes
+
+fundedBy:
+  - name: Insee
+    url: https://lannuaire.service-public.fr/gouvernement/278bf3d4-9cf3-4a36-a317-ec56fb0abc52
 
 roadmap: "https://docs.onyxia.sh/roadmap"
 
@@ -75,6 +80,10 @@ legal:
   license: MIT
   mainCopyrightOwner: INSEE
   repoOwner: INSEE
+
+authors:
+  distinctAuthorsCount: 0
+  distinctOrganizationsCount: 0
 
 maintenance:
   type: "internal"
