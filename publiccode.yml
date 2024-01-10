@@ -81,6 +81,10 @@ legal:
   mainCopyrightOwner: INSEE
   repoOwner: INSEE
 
+authors:
+  distinctAuthorsCount: 0
+  distinctOrganizationsCount: 0
+
 maintenance:
   type: "internal"
 
@@ -117,3 +121,12 @@ dependsOn:
   open:
    - name: Kubernetes
    - name: Helm
+
+metadataFiles:
+  readme: README.md
+  license: LICENSE
+  contributing: CONTRIBUTING.md
+  changelog: null
+  codeOfConduct: CODE_OF_CONDUCT.md
+  governance: GOVERNANCE.md
+  funding: null
