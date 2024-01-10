@@ -22,6 +22,10 @@ usedBy:
   - Expertise France
   - Genes
 
+fundedBy:
+  - name: Insee
+    url: https://lannuaire.service-public.fr/gouvernement/278bf3d4-9cf3-4a36-a317-ec56fb0abc52
+
 roadmap: "https://docs.onyxia.sh/roadmap"
 
 developmentStatus: development
