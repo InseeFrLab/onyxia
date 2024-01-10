@@ -4,7 +4,8 @@ name: Onyxia
 applicationSuite: Onyxia
 url: "https://github.com/InseeFrLab/onyxia"
 landingURL: "https://onyxia.sh"
-releaseDate: "2017-01-01"
+creationDate: "2017-01-01"
+releaseDate: "2020-03-22"
 logo: https://inseefrlab.github.io/onyxia/icon.svg
 
 platforms:
