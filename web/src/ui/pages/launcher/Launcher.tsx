@@ -266,7 +266,6 @@ export default function Launcher(props: Props) {
     });
 
     const { classes, cx, css } = useStyles({
-        rootHeight,
         "isCommandBarEnabled": commandLogsEntries !== undefined
     });
 
@@ -316,8 +315,7 @@ export default function Launcher(props: Props) {
                             <CommandBar
                                 classes={{
                                     "root": classes.commandBar,
-                                    "rootWhenExpended": classes.commandBarWhenExpended,
-                                    "helpDialog": classes.helpDialog
+                                    "rootWhenExpended": classes.commandBarWhenExpended
                                 }}
                                 maxHeight={rootHeight - 30}
                                 entries={commandLogsEntries}
@@ -332,25 +330,18 @@ export default function Launcher(props: Props) {
                                         )
                                 }}
                                 helpDialog={{
-                                    "body": (
-                                        <div className={classes.helpDialogBody}>
-                                            {t("api logs help body", {
-                                                "k8CredentialsHref":
-                                                    !k8sCodeSnippets.getIsAvailable()
-                                                        ? undefined
-                                                        : routes.account({
-                                                              "tabId": "k8sCodeSnippets"
-                                                          }).href,
-                                                "myServicesHref":
-                                                    routes.myServices().href,
-                                                "interfacePreferenceHref": routes.account(
-                                                    {
-                                                        "tabId": "user-interface"
-                                                    }
-                                                ).href
-                                            })}
-                                        </div>
-                                    )
+                                    "body": t("api logs help body", {
+                                        "k8CredentialsHref":
+                                            !k8sCodeSnippets.getIsAvailable()
+                                                ? undefined
+                                                : routes.account({
+                                                      "tabId": "k8sCodeSnippets"
+                                                  }).href,
+                                        "myServicesHref": routes.myServices().href,
+                                        "interfacePreferenceHref": routes.account({
+                                            "tabId": "user-interface"
+                                        }).href
+                                    })
                                 }}
                             />
                         )}
@@ -462,9 +453,9 @@ export const { i18n } = declareComponentKeys<
 >()({ Launcher });
 
 const useStyles = tss
-    .withParams<{ rootHeight: number; isCommandBarEnabled: boolean }>()
+    .withParams<{ isCommandBarEnabled: boolean }>()
     .withName({ Launcher })
-    .create(({ theme, rootHeight, isCommandBarEnabled }) => ({
+    .create(({ theme, isCommandBarEnabled }) => ({
         "root": {
             "height": "100%",
             "display": "flex",
@@ -501,12 +492,5 @@ const useStyles = tss
         "commandBarWhenExpended": {
             "width": "min(100%, 1450px)",
             "transition": "width 70ms linear"
-        },
-        "helpDialog": {
-            "maxWidth": 800
-        },
-        "helpDialogBody": {
-            "maxHeight": rootHeight,
-            "overflow": "auto"
         }
     }));

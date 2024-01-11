@@ -271,28 +271,22 @@ export default function MyServices(props: Props) {
                     <CommandBar
                         classes={{
                             "root": classes.commandBar,
-                            "rootWhenExpended": classes.commandBarWhenExpended,
-                            "helpDialog": classes.helpDialog
+                            "rootWhenExpended": classes.commandBarWhenExpended
                         }}
                         entries={commandLogsEntries}
                         maxHeight={commandBarMaxHeight}
                         helpDialog={{
-                            "body": (
-                                <div className={classes.helpDialogBody}>
-                                    {tCatalogLauncher("api logs help body", {
-                                        "k8CredentialsHref":
-                                            !k8sCodeSnippets.getIsAvailable()
-                                                ? undefined
-                                                : routes.account({
-                                                      "tabId": "k8sCodeSnippets"
-                                                  }).href,
-                                        "myServicesHref": routes.myServices().href,
-                                        "interfacePreferenceHref": routes.account({
-                                            "tabId": "user-interface"
-                                        }).href
-                                    })}
-                                </div>
-                            )
+                            "body": tCatalogLauncher("api logs help body", {
+                                "k8CredentialsHref": !k8sCodeSnippets.getIsAvailable()
+                                    ? undefined
+                                    : routes.account({
+                                          "tabId": "k8sCodeSnippets"
+                                      }).href,
+                                "myServicesHref": routes.myServices().href,
+                                "interfacePreferenceHref": routes.account({
+                                    "tabId": "user-interface"
+                                }).href
+                            })
                         }}
                     />
                 )}
@@ -368,71 +362,55 @@ const useStyles = tss
         isCommandBarEnabled: boolean;
         commandBarTop: number;
         isSavedConfigsExtended: boolean;
-        bellowHeaderHeight: number;
     }>()
-    .create(
-        ({
-            theme,
-            isCommandBarEnabled,
-            isSavedConfigsExtended,
-            commandBarTop,
-            bellowHeaderHeight
-        }) => ({
-            "root": {
-                "height": "100%",
-                "display": "flex",
-                "flexDirection": "column"
-            },
-            "belowHeader": {
-                "position": "relative",
-                "flex": 1,
-                "display": "flex",
-                "flexDirection": "column",
-                "overflow": "hidden"
-            },
-            "cardsAndSavedConfigs": {
-                "overflow": "hidden",
-                "flex": 1,
-                "display": "flex",
-                "& > *": {
-                    "height": "100%"
-                }
-            },
-            ...(() => {
-                const ratio = 0.65;
-
-                return {
-                    "cards": {
-                        "flex": ratio,
-                        "marginRight": theme.spacing(5)
-                    },
-                    "savedConfigs": {
-                        "flex": isSavedConfigsExtended ? 1 : 1 - ratio,
-                        "paddingRight": "2%",
-                        //NOTE: It's not great to have a fixed width here but measuring would needlessly complexity the code too much.
-                        "marginTop": isCommandBarEnabled ? 40 : undefined
-                    }
-                };
-            })(),
-            "commandBar": {
-                "position": "absolute",
-                "right": 0,
-                "top": commandBarTop,
-                "zIndex": 1,
-                "opacity": commandBarTop === 0 ? 0 : 1,
-                "transition": "opacity 750ms linear",
-                "width": "min(100%, 900px)"
-            },
-            "commandBarWhenExpended": {
-                "width": "min(100%, 1350px)",
-                "transition": "width 70ms linear"
-            },
-            "helpDialog": {
-                "maxWidth": 800
-            },
-            "helpDialogBody": {
-                "maxHeight": bellowHeaderHeight,
-                "overflow": "auto"
+    .create(({ theme, isCommandBarEnabled, isSavedConfigsExtended, commandBarTop }) => ({
+        "root": {
+            "height": "100%",
+            "display": "flex",
+            "flexDirection": "column"
+        },
+        "belowHeader": {
+            "position": "relative",
+            "flex": 1,
+            "display": "flex",
+            "flexDirection": "column",
+            "overflow": "hidden"
+        },
+        "cardsAndSavedConfigs": {
+            "overflow": "hidden",
+            "flex": 1,
+            "display": "flex",
+            "& > *": {
+                "height": "100%"
             }
-        })
-    );
+        },
+        ...(() => {
+            const ratio = 0.65;
+
+            return {
+                "cards": {
+                    "flex": ratio,
+                    "marginRight": theme.spacing(5)
+                },
+                "savedConfigs": {
+                    "flex": isSavedConfigsExtended ? 1 : 1 - ratio,
+                    "paddingRight": "2%",
+                    //NOTE: It's not great to have a fixed width here but measuring would needlessly complexity the code too much.
+                    "marginTop": isCommandBarEnabled ? 40 : undefined
+                }
+            };
+        })(),
+        "commandBar": {
+            "position": "absolute",
+            "right": 0,
+            "top": commandBarTop,
+            "zIndex": 1,
+            "opacity": commandBarTop === 0 ? 0 : 1,
+            "transition": "opacity 750ms linear",
+            "width": "min(100%, 900px)"
+        },
+        "commandBarWhenExpended": {
+            "width": "min(100%, 1350px)",
+            "transition": "width 70ms linear"
+        }
+    }));

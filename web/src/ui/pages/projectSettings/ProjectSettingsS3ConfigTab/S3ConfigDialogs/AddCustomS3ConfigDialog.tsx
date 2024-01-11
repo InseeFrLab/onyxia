@@ -12,7 +12,6 @@ import RadioGroup from "@mui/material/RadioGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import FormControl from "@mui/material/FormControl";
 import FormLabel from "@mui/material/FormLabel";
-import { useWindowInnerSize } from "powerhooks/useWindowInnerSize";
 import FormGroup from "@mui/material/FormGroup";
 import { tss } from "tss";
 
@@ -86,36 +85,23 @@ export const AddCustomS3ConfigDialog = memo((props: Props) => {
         setState(undefined);
     });
 
-    const { windowInnerHeight } = useWindowInnerSize();
-
-    const { classes } = useStyles({
-        windowInnerHeight
-    });
-
     return (
         <Dialog
             title="New custom S3 configuration"
-            className={classes.root}
+            subtitle="Specify a custom service account or connect to another S3 compatible service"
             maxWidth="md"
             fullWidth={true}
             body={
-                state === undefined ? (
-                    <></>
-                ) : (
-                    <Body
-                        className={classes.body}
-                        evtNewCustomConfig={state.evtNewCustomConfig}
-                    />
+                state !== undefined && (
+                    <Body evtNewCustomConfig={state.evtNewCustomConfig} />
                 )
             }
             buttons={
                 <>
-                    <Button onClick={onCloseFactory(false)} autoFocus variant="secondary">
+                    <Button onClick={onCloseFactory(false)} variant="secondary">
                         Cancel
                     </Button>
-                    <Button autoFocus onClick={onCloseFactory(true)}>
-                        Add config
-                    </Button>
+                    <Button onClick={onCloseFactory(true)}>Add config</Button>
                 </>
             }
             isOpen={state !== undefined}
@@ -127,21 +113,6 @@ export const AddCustomS3ConfigDialog = memo((props: Props) => {
 AddCustomS3ConfigDialog.displayName = symToStr({
     AddCustomS3ConfigDialog
 });
-
-const useStyles = tss
-    .withName({ AddCustomS3ConfigDialog })
-    .withParams<{ windowInnerHeight: number }>()
-    .create(({ theme, windowInnerHeight }) => ({
-        "root": {
-            "display": "flex",
-            "flexDirection": "column",
-            "maxHeight": windowInnerHeight - theme.spacing(4)
-        },
-        "body": {
-            "flex": 1,
-            "overflow": "auto"
-        }
-    }));
 
 const Body = memo(
     (props: { className?: string; evtNewCustomConfig: StatefulEvt<NewCustomConfig> }) => {
@@ -330,8 +301,7 @@ const useBodyStyles = tss
         "root": {
             "display": "flex",
             "flexDirection": "column",
-            "marginTop": theme.spacing(4),
-            "paddingRight": theme.spacing(4)
+            "overflow": "visible"
         },
         "textField": {
             "marginBottom": theme.spacing(6)

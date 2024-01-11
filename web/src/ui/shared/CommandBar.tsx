@@ -172,16 +172,13 @@ export const CommandBar = memo((props: CommandBarProps) => {
             </div>
             {helpDialog !== undefined && (
                 <Dialog
+                    maxWidth="md"
                     classes={{
                         "root": classes.helpDialog
                     }}
                     title={helpDialog.title}
                     body={helpDialog.body}
-                    buttons={
-                        <Button onClick={onHelpDialogClose} autoFocus>
-                            {t("ok")}
-                        </Button>
-                    }
+                    buttons={<Button onClick={onHelpDialogClose}>{t("ok")}</Button>}
                     isOpen={isHelpDialogOpen}
                     onClose={onHelpDialogClose}
                 />
