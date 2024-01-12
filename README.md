@@ -6,7 +6,7 @@
       <img src="https://github.com/inseefrlab/onyxia/workflows/ci/badge.svg?branch=main">
     </a>
     <a href="https://join.slack.com/t/3innovation/shared_invite/zt-1hnzukjcn-6biCSmVy4qvyDGwbNI~sWg">
-      <img src="https://camo.githubusercontent.com/552ad37eb845d5e54e1bef55f3ea7adb185f36c845a6b676eec85e97122b2fcd/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f736c61636b2d6a6f696e2d6f72616e67652e737667">
+      <img src="https://camo.githubusercontent.com/21134ce22db8dc96c8ffed33cbfe3912dd1a17cf81c747983fbcad9769ac6509/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f736c61636b2d6a6f696e2d6f72616e67652e737667">
     </a>
 </p>
 
