@@ -38,9 +38,9 @@ Onyxia is developed by the French National institute of statistics and economic 
     to their containers.
 -   Specify [a custom init script](https://user-images.githubusercontent.com/6702424/137819445-a9dfd053-a5f1-48da-a294-f20717512ef5.png) to be executed at launch.
 -   [Define environnement variables](https://user-images.githubusercontent.com/6702424/137819689-71e59823-a553-4c3c-8558-2576316e4709.png) to be made available in the containers.
--   [Save and restore your service service configurations](https://user-images.githubusercontent.com/6702424/137819972-b9974760-4647-43ff-b985-f3facfce99de.png)
+-   [Save and restore your service configurations](https://user-images.githubusercontent.com/6702424/137819972-b9974760-4647-43ff-b985-f3facfce99de.png).
 -   Deep integration with S3 for working with data (S3 as the open standard, not the AWS service) and with [Vault](https://www.vaultproject.io)
-    (for [secret management](https://user-images.githubusercontent.com/6702424/137820741-bed9ee77-124a-46f6-b686-8b8dff1615bd.png))
+    (for [secret management](https://user-images.githubusercontent.com/6702424/137820741-bed9ee77-124a-46f6-b686-8b8dff1615bd.png)).
 -   [Keycloak integration](https://user-images.githubusercontent.com/6702424/137821446-ed908862-69e3-464c-b347-bd8776a425cc.png).
 
 ## Media
@@ -106,4 +106,4 @@ Onyxia is developed by the French National institute of statistics and economic 
 If your are a new contributor, please refer to the [technical documentation](https://docs.onyxia.sh/contributing).
 
 📣 **Monthly Onyxia Community Calls!** 📣
-Starting November 2023, we're thrilled to introduce community calls on the last Friday of every month at 1pm Paris time. This is your chance to engage, pose questions, and stay updated on the newest Onyxia advancements. Don't forget to set a reminder! 📅🕐
+Starting November 2023, we're thrilled to introduce community calls on the last Friday of every month at 1pm Paris time. This is your chance to engage, ask questions, and stay updated on the newest Onyxia advancements. Don't forget to set a reminder! 📅🕐
