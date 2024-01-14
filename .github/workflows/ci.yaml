@@ -84,6 +84,7 @@ jobs:
           push: true
           context: .
           tags: ${{needs.prepare_release.outputs.new_web_docker_image_tags}}
+          platforms: linux/amd64,linux/arm64
   
   release:
     runs-on: ubuntu-latest
