@@ -33,7 +33,7 @@
         "@emotion/cache": "^11.11.0",
         "@emotion/react": "^11.11.1",
         "@emotion/styled": "^11.11.0",
-        "@mui/icons-material": "5.14.15",
+        "@mui/icons-material": "^5.15.4",
         "@mui/material": "^5.14.8",
         "@mui/x-data-grid": "^6.18.2",
         "@ungap/structured-clone": "^1.2.0",
