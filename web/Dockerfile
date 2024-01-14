@@ -1,5 +1,5 @@
 # build environment
-FROM node:18-alpine as build
+FROM node:21-alpine as build
 WORKDIR /app
 COPY package.json yarn.lock .env ./
 COPY public ./public
