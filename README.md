@@ -6,7 +6,7 @@
       <img src="https://github.com/inseefrlab/onyxia/workflows/ci/badge.svg?branch=main">
     </a>
     <a href="https://join.slack.com/t/3innovation/shared_invite/zt-1hnzukjcn-6biCSmVy4qvyDGwbNI~sWg">
-      <img src="https://camo.githubusercontent.com/552ad37eb845d5e54e1bef55f3ea7adb185f36c845a6b676eec85e97122b2fcd/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f736c61636b2d6a6f696e2d6f72616e67652e737667">
+      <img src="https://camo.githubusercontent.com/21134ce22db8dc96c8ffed33cbfe3912dd1a17cf81c747983fbcad9769ac6509/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f736c61636b2d6a6f696e2d6f72616e67652e737667">
     </a>
 </p>
 
@@ -21,7 +21,7 @@
 </p>
 
 Onyxia is a web app that aims at being the glue between multiple open source backend technologies to
-provide a state of art working environnement for data scientists.  
+provide a state of art working environment for data scientists.  
 Onyxia is developed by the French National institute of statistics and economic studies ([INSEE](https://insee.fr)) and supported by the Interministerial Digital Directorate (DINUM, [CodeGouvFr](https://twitter.com/codegouvfr)).
 
 <a href="https://youtu.be/FvpNfVrxBFM">
@@ -37,10 +37,10 @@ Onyxia is developed by the French National institute of statistics and economic 
 -   Users can define [the amount of RAM, CPU and **GPU** they would like to allocate](https://user-images.githubusercontent.com/6702424/137818454-3fdb3efb-1fbd-4e4d-85b1-64b00d8af03e.png)
     to their containers.
 -   Specify [a custom init script](https://user-images.githubusercontent.com/6702424/137819445-a9dfd053-a5f1-48da-a294-f20717512ef5.png) to be executed at launch.
--   [Define environnement variables](https://user-images.githubusercontent.com/6702424/137819689-71e59823-a553-4c3c-8558-2576316e4709.png) to be made available in the containers.
--   [Save and restore your service service configurations](https://user-images.githubusercontent.com/6702424/137819972-b9974760-4647-43ff-b985-f3facfce99de.png)
+-   [Define environment variables](https://user-images.githubusercontent.com/6702424/137819689-71e59823-a553-4c3c-8558-2576316e4709.png) to be made available in the containers.
+-   [Save and restore your service configurations](https://user-images.githubusercontent.com/6702424/137819972-b9974760-4647-43ff-b985-f3facfce99de.png).
 -   Deep integration with S3 for working with data (S3 as the open standard, not the AWS service) and with [Vault](https://www.vaultproject.io)
-    (for [secret management](https://user-images.githubusercontent.com/6702424/137820741-bed9ee77-124a-46f6-b686-8b8dff1615bd.png))
+    (for [secret management](https://user-images.githubusercontent.com/6702424/137820741-bed9ee77-124a-46f6-b686-8b8dff1615bd.png)).
 -   [Keycloak integration](https://user-images.githubusercontent.com/6702424/137821446-ed908862-69e3-464c-b347-bd8776a425cc.png).
 
 ## Media
@@ -106,4 +106,4 @@ Onyxia is developed by the French National institute of statistics and economic 
 If your are a new contributor, please refer to the [technical documentation](https://docs.onyxia.sh/contributing).
 
 📣 **Monthly Onyxia Community Calls!** 📣
-Starting November 2023, we're thrilled to introduce community calls on the last Friday of every month at 1pm Paris time. This is your chance to engage, pose questions, and stay updated on the newest Onyxia advancements. Don't forget to set a reminder! 📅🕐
+Starting November 2023, we're thrilled to introduce community calls on the last Friday of every month at 1pm Paris time. This is your chance to engage, ask questions, and stay updated on the newest Onyxia advancements. Don't forget to set a reminder! 📅🕐
