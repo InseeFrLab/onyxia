@@ -4,7 +4,7 @@ WORKDIR /app
 COPY package.json yarn.lock .env ./
 COPY public ./public
 COPY patches ./patches
-RUN yarn install --frozen-lockfile
+RUN yarn install --frozen-lockfile --network-timeout 1000000
 COPY config-overrides.js tsconfig.json ./
 COPY src ./src
 RUN yarn build
