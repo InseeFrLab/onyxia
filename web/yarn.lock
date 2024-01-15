@@ -9568,10 +9568,10 @@ husky@^4.3.8:
     slash "^3.0.0"
     which-pm-runs "^1.0.0"
 
-i18nifty@^3.1.2:
-  version "3.1.2"
-  resolved "https://registry.yarnpkg.com/i18nifty/-/i18nifty-3.1.2.tgz#f82bdb9b6b40a038997790d82492db7d4cc72b67"
-  integrity sha512-QsHrFzH0DEEW2WPXKLyVjFEnEaL3n1W+9P9Ul7jCiyrRxdY1tGaBxNjZSoOYCoaZOMP5t2a6KRCuYa50gNUI/A==
+i18nifty@^3.2.0:
+  version "3.2.0"
+  resolved "https://registry.yarnpkg.com/i18nifty/-/i18nifty-3.2.0.tgz#277676d20893b12fad9199e71aa5564f81b66f41"
+  integrity sha512-6+WgmW4oZOoUiQp9Hik4d+uDeO9LBeTrcEvOIuIYOkIo7W/s/BVKlDtpXn1JGaH3thy9iEtZ9sxx/fhxDo2aUQ==
   dependencies:
     powerhooks "^1.0.5"
     tsafe "^1.6.5"
