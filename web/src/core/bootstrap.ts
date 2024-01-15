@@ -129,7 +129,7 @@ export async function bootstrapCore(
         oidc,
         onyxiaApi,
         "secretsManager": createObjectThatThrowsIfAccessed<SecretsManager>(),
-        "s3ClientSts": createObjectThatThrowsIfAccessed<S3Client>(),
+        "s3ClientSts": undefined,
         "s3ClientForExplorer": createObjectThatThrowsIfAccessed<S3Client>(),
         "sqlOlap": createDuckDbSqlOlap()
     };
