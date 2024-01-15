@@ -41,10 +41,7 @@ export default function Home(props: Props) {
         "userAuthentication",
         "authenticationState"
     );
-    const { isFileExplorerEnabled } = useCoreState(
-        "fileExplorer",
-        "isFileExplorerEnabled"
-    );
+    const isFileExplorerEnabled = useCoreState("fileExplorer", "isFileExplorerEnabled");
 
     const { t } = useTranslation({ Home });
 

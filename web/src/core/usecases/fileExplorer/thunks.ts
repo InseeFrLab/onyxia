@@ -433,17 +433,17 @@ export const protectedThunks = {
         (...args) => {
             const [dispatch, getState, { evtAction }] = args;
 
-            const { isFileExplorerEnabled } = selectors.isFileExplorerEnabled(getState());
-
-            if (!isFileExplorerEnabled) {
-                return;
-            }
-
             evtAction
                 .toStateful()
-                .pipe(() => [protectedSelectors.workingDirectoryPath(getState())])
+                .pipe(() => [getState()])
+                .pipe(state => [
+                    !selectors.isFileExplorerEnabled(state)
+                        ? undefined
+                        : protectedSelectors.workingDirectoryPath(state)
+                ])
                 .pipe(onlyIfChanged())
                 .toStateless()
+                .pipe(workingDirectoryPath => workingDirectoryPath !== undefined)
                 .attach(() => dispatch(actions.workingDirectoryChanged()));
         }
 } satisfies Thunks;

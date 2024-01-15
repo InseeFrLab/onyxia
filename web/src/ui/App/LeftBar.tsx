@@ -24,10 +24,7 @@ export const LeftBar = memo((props: Props) => {
     const { secretExplorer } = useCore().functions;
 
     const { isDevModeEnabled } = useCoreState("userConfigs", "userConfigs");
-    const { isFileExplorerEnabled } = useCoreState(
-        "fileExplorer",
-        "isFileExplorerEnabled"
-    );
+    const isFileExplorerEnabled = useCoreState("fileExplorer", "isFileExplorerEnabled");
 
     const route = useRoute();
 

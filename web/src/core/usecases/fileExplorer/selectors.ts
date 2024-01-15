@@ -142,20 +142,20 @@ const isFileExplorerEnabled = (rootState: RootState) => {
         deploymentRegionManagement.selectors.currentDeploymentRegion(rootState);
 
     if (deploymentRegion.s3?.sts !== undefined) {
-        return { "isFileExplorerEnabled": true };
+        return true;
     }
 
     const { isUserLoggedIn } =
         userAuthentication.selectors.authenticationState(rootState);
 
     if (!isUserLoggedIn) {
-        return { "isFileExplorerEnabled": false };
+        return false;
     }
 
     const customS3Config =
         s3ConfigManagement.protectedSelectors.customS3ConfigForExplorer(rootState);
 
-    return { "isFileExplorerEnabled": customS3Config !== undefined };
+    return customS3Config !== undefined;
 };
 
 const workingDirectoryPath = createSelector(
