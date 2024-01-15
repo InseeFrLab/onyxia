@@ -2,7 +2,7 @@ import { assert } from "tsafe/assert";
 import { Evt } from "evt";
 import type { Thunks } from "core/bootstrap";
 import { name, actions } from "./state";
-import { protectedSelectors } from "./selectors";
+import { selectors, protectedSelectors } from "./selectors";
 import { onlyIfChanged } from "evt/operators/onlyIfChanged";
 import { join as pathJoin, basename as pathBasename } from "path";
 import { crawlFactory } from "core/tools/crawl";
@@ -431,9 +431,13 @@ export const protectedThunks = {
     "initialize":
         () =>
         (...args) => {
-            const [dispatch, getState, rootContext] = args;
+            const [dispatch, getState, { evtAction }] = args;
 
-            const { evtAction } = rootContext;
+            const { isFileExplorerEnabled } = selectors.isFileExplorerEnabled(getState());
+
+            if (!isFileExplorerEnabled) {
+                return;
+            }
 
             evtAction
                 .toStateful()
