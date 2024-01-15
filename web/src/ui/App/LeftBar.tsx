@@ -13,6 +13,12 @@ import { customIcons } from "ui/theme";
 import { symToStr } from "tsafe/symToStr";
 import { LocalizedMarkdown } from "ui/shared/Markdown";
 import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
+import { useConst } from "powerhooks/useConst";
+import { Evt } from "evt";
+import {
+    MyFilesDisabledDialog,
+    type MyFilesDisabledDialogProps
+} from "ui/pages/myFiles/MyFilesDisabledDialog";
 
 type Props = {
     className?: string;
@@ -32,139 +38,149 @@ export const LeftBar = memo((props: Props) => {
 
     const { t } = useTranslation({ LeftBar });
 
+    const evtMyFilesDisabledDialogOpen = useConst(() =>
+        Evt.create<MyFilesDisabledDialogProps["evtOpen"]>()
+    );
+
     return (
-        <OnyxiaUiLeftBar
-            className={className}
-            doPersistIsPanelOpen={true}
-            defaultIsPanelOpen={true}
-            collapsedWidth={logoContainerWidth}
-            reduceText={t("reduce")}
-            items={{
-                ...(env.DISABLE_HOMEPAGE
-                    ? ({} as never)
-                    : {
-                          "home": {
-                              "icon": customIcons.homeSvgUrl,
-                              "label": t("home"),
-                              "link": routes.home().link
-                          } as const
-                      }),
-                "account": {
-                    "icon": customIcons.accountSvgUrl,
-                    "label": t("account"),
-                    "link": routes.account().link
-                },
-                "projectSettings": {
-                    "icon": id<MuiIconComponentName>("DisplaySettings"),
-                    "label": t("projectSettings"),
-                    "link": routes.projectSettings().link,
-                    "belowDivider": t("divider: services features")
-                },
-                "catalog": {
-                    "icon": customIcons.catalogSvgUrl,
-                    "label": t("catalog"),
-                    "link": routes.catalog().link
-                },
-                "myServices": {
-                    "icon": customIcons.servicesSvgUrl,
-                    "label": t("myServices"),
-                    "link": routes.myServices().link,
-                    "belowDivider": t("divider: external services features")
-                },
-                ...(!secretExplorer.getIsEnabled()
-                    ? ({} as never)
-                    : {
-                          "mySecrets": {
-                              "icon": customIcons.secretsSvgUrl,
-                              "label": t("mySecrets"),
-                              "link": routes.mySecrets().link
-                          } as const
-                      }),
-                ...(!isFileExplorerEnabled
-                    ? ({} as never)
-                    : {
-                          "myFiles": {
-                              "icon": customIcons.filesSvgUrl,
-                              "label": t("myFiles"),
-                              "link": routes.myFiles().link
-                          } as const
-                      }),
-                ...(!isDevModeEnabled
-                    ? ({} as never)
-                    : {
-                          "sqlOlapShell": {
-                              "icon": "Terminal",
-                              "label": t("sqlOlapShell"),
-                              "link": routes.sqlOlapShell().link
-                          } as const
-                      }),
-                "dataExplorer": {
-                    "icon": id<MuiIconComponentName>("DocumentScanner"),
-                    "label": t("dataExplorer"),
-                    "link": routes.dataExplorer().link,
-                    "belowDivider":
-                        env.LEFTBAR_LINKS.length === 0
-                            ? true
-                            : t("divider: onyxia instance specific features")
-                } as const,
-                ...Object.fromEntries(
-                    env.LEFTBAR_LINKS.map(({ url, ...rest }) => ({
-                        "link": urlToLink(url),
-                        ...rest
-                    }))
-                        .map(({ icon, startIcon, ...rest }) => ({
-                            ...rest,
-                            "icon": icon ?? startIcon
+        <>
+            <OnyxiaUiLeftBar
+                className={className}
+                doPersistIsPanelOpen={true}
+                defaultIsPanelOpen={true}
+                collapsedWidth={logoContainerWidth}
+                reduceText={t("reduce")}
+                items={{
+                    ...(env.DISABLE_HOMEPAGE
+                        ? ({} as never)
+                        : {
+                              "home": {
+                                  "icon": customIcons.homeSvgUrl,
+                                  "label": t("home"),
+                                  "link": routes.home().link
+                              } as const
+                          }),
+                    "account": {
+                        "icon": customIcons.accountSvgUrl,
+                        "label": t("account"),
+                        "link": routes.account().link
+                    },
+                    "projectSettings": {
+                        "icon": id<MuiIconComponentName>("DisplaySettings"),
+                        "label": t("projectSettings"),
+                        "link": routes.projectSettings().link,
+                        "belowDivider": t("divider: services features")
+                    },
+                    "catalog": {
+                        "icon": customIcons.catalogSvgUrl,
+                        "label": t("catalog"),
+                        "link": routes.catalog().link
+                    },
+                    "myServices": {
+                        "icon": customIcons.servicesSvgUrl,
+                        "label": t("myServices"),
+                        "link": routes.myServices().link,
+                        "belowDivider": t("divider: external services features")
+                    },
+                    ...(!secretExplorer.getIsEnabled()
+                        ? ({} as never)
+                        : {
+                              "mySecrets": {
+                                  "icon": customIcons.secretsSvgUrl,
+                                  "label": t("mySecrets"),
+                                  "link": routes.mySecrets().link
+                              } as const
+                          }),
+                    "myFiles": {
+                        "icon": customIcons.filesSvgUrl,
+                        "label": t("myFiles"),
+                        "link": !isFileExplorerEnabled
+                            ? {
+                                  "onClick": () => evtMyFilesDisabledDialogOpen.post(),
+                                  "href": "#"
+                              }
+                            : routes.myFiles().link
+                    },
+                    ...(!isDevModeEnabled
+                        ? ({} as never)
+                        : {
+                              "sqlOlapShell": {
+                                  "icon": "Terminal",
+                                  "label": t("sqlOlapShell"),
+                                  "link": routes.sqlOlapShell().link
+                              } as const
+                          }),
+                    "dataExplorer": {
+                        "icon": id<MuiIconComponentName>("DocumentScanner"),
+                        "label": t("dataExplorer"),
+                        "link": routes.dataExplorer().link,
+                        "belowDivider":
+                            env.LEFTBAR_LINKS.length === 0
+                                ? true
+                                : t("divider: onyxia instance specific features")
+                    } as const,
+                    ...Object.fromEntries(
+                        env.LEFTBAR_LINKS.map(({ url, ...rest }) => ({
+                            "link": urlToLink(url),
+                            ...rest
                         }))
-                        .map(({ link, icon, label }, i) => [
-                            `extraItem${i}`,
-                            id<LeftBarProps.Item>({
-                                "icon":
-                                    (assert(
-                                        icon !== undefined,
-                                        "We should have validated that when parsing the env"
+                            .map(({ icon, startIcon, ...rest }) => ({
+                                ...rest,
+                                "icon": icon ?? startIcon
+                            }))
+                            .map(({ link, icon, label }, i) => [
+                                `extraItem${i}`,
+                                id<LeftBarProps.Item>({
+                                    "icon":
+                                        (assert(
+                                            icon !== undefined,
+                                            "We should have validated that when parsing the env"
+                                        ),
+                                        icon),
+                                    "label": (
+                                        <LocalizedMarkdown inline>
+                                            {label}
+                                        </LocalizedMarkdown>
                                     ),
-                                    icon),
-                                "label": (
-                                    <LocalizedMarkdown inline>{label}</LocalizedMarkdown>
-                                ),
-                                link
-                            })
-                        ])
-                )
-            }}
-            currentItemId={(() => {
-                switch (route.name) {
-                    case "home":
-                        return "home" as const;
-                    case "account":
-                        return "account";
-                    case "projectSettings":
-                        return "projectSettings";
-                    case "catalog":
-                        return "catalog";
-                    case "launcher":
-                        return "catalog";
-                    case "myServices":
-                        return "myServices";
-                    case "mySecrets":
-                        return "mySecrets";
-                    case "myFiles":
-                        return "myFiles";
-                    case "sqlOlapShell":
-                        return "sqlOlapShell";
-                    case "dataExplorer":
-                        return "dataExplorer";
-                    case "page404":
-                        return null;
-                    case "terms":
-                        return null;
-                    case false:
-                        return null;
-                }
-                assert<Equals<typeof route, never>>(false);
-            })()}
-        />
+                                    link
+                                })
+                            ])
+                    )
+                }}
+                currentItemId={(() => {
+                    switch (route.name) {
+                        case "home":
+                            return "home" as const;
+                        case "account":
+                            return "account";
+                        case "projectSettings":
+                            return "projectSettings";
+                        case "catalog":
+                            return "catalog";
+                        case "launcher":
+                            return "catalog";
+                        case "myServices":
+                            return "myServices";
+                        case "mySecrets":
+                            return "mySecrets";
+                        case "myFiles":
+                            return "myFiles";
+                        case "sqlOlapShell":
+                            return "sqlOlapShell";
+                        case "dataExplorer":
+                            return "dataExplorer";
+                        case "page404":
+                            return null;
+                        case "terms":
+                            return null;
+                        case false:
+                            return null;
+                    }
+                    assert<Equals<typeof route, never>>(false);
+                })()}
+            />
+            <MyFilesDisabledDialog evtOpen={evtMyFilesDisabledDialogOpen} />
+        </>
     );
 });
 

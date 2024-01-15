@@ -208,6 +208,13 @@ export const translations: Translations<"en"> = {
             </>
         )
     },
+    "MyFilesDisabledDialog": {
+        "dialog title": "No S3 server configured",
+        "dialog body":
+            "There's no S3 server configured for this instance. But you can add one manually for enabling the S3 file explorer.",
+        "cancel": "Cancel",
+        "go to settings": "Go to settings"
+    },
     "MySecrets": {
         "page title - my files": "My Files",
         "page title - my secrets": "My Secrets",

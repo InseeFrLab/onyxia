@@ -7,6 +7,7 @@ import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
 import { id } from "tsafe/id";
 
 export const translations: Translations<"no"> = {
+    /* spell-checker: disable */
     "Account": {
         "infos": "Kontoinformasjon",
         "third-party-integration": "Eksterne tjenester",
@@ -209,6 +210,13 @@ export const translations: Translations<"no"> = {
                 <MuiLink {...accountTabLink}>Konfigurer minio-klientene</MuiLink>.
             </>
         )
+    },
+    "MyFilesDisabledDialog": {
+        "dialog title": "Ingen S3-server konfigurert",
+        "dialog body":
+            "Det er ingen S3-server konfigurert for denne instansen. Men du kan legge til en manuelt for å aktivere S3-filutforskeren.",
+        "cancel": "Avbryt",
+        "go to settings": "Gå til innstillinger"
     },
     "MySecrets": {
         "page title - my files": "Mine filer",
@@ -799,4 +807,5 @@ Føl deg fri til å utforske og ta kontroll over dine Kubernetes-implementeringe
         "copied to clipboard": "Kopiert!",
         "copy to clipboard": "Kopier til utklippstavlen"
     }
+    /* spell-checker: enable */
 };

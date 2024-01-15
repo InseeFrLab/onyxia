@@ -208,6 +208,13 @@ export const translations: Translations<"fi"> = {
             </>
         )
     },
+    "MyFilesDisabledDialog": {
+        "dialog title": "S3-palvelinta ei ole määritetty",
+        "dialog body":
+            "Tälle instanssille ei ole määritetty S3-palvelinta. Voit kuitenkin lisätä sellaisen manuaalisesti ottaaksesi käyttöön S3-tiedostonhallinnan.",
+        "cancel": "Peruuta",
+        "go to settings": "Siirry asetuksiin"
+    },
     "MySecrets": {
         "page title - my files": "Omat tiedostot",
         "page title - my secrets": "Omat salaisuudet",

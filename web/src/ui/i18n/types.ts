@@ -18,6 +18,7 @@ export type ComponentKey =
     | typeof import("ui/pages/mySecrets/SecretsExplorer/SecretsExplorerItems/SecretsExplorerItem").i18n
     | typeof import("ui/pages/mySecrets/MySecretsEditor/MySecretsEditorRow").i18n
     | typeof import("ui/pages/myFiles/MyFiles").i18n
+    | typeof import("ui/pages/myFiles/MyFilesDisabledDialog").i18n
     | typeof import("ui/pages/myFiles/Explorer/Explorer").i18n
     | typeof import("ui/pages/myFiles/Explorer/ExplorerButtonBar").i18n
     | typeof import("ui/pages/myFiles/Explorer/ExplorerItems").i18n
