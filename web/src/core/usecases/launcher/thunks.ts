@@ -217,14 +217,8 @@ export const thunks = {
                 }
 
                 use_custom_s3_config: {
-                    const selectedS3Config = privateSelectors.selectedS3Config(
-                        getState()
-                    );
-
-                    assert(selectedS3Config !== undefined);
-
-                    if (selectedS3Config.type === "manual form input") {
-                        return;
+                    if (privateSelectors.has3sConfigBeenManuallyChanged(getState())) {
+                        break use_custom_s3_config;
                     }
 
                     const customS3ConfigIndex =
@@ -524,7 +518,11 @@ const privateThunks = {
                     ? undefined
                     : userConfigs.kaggleApiToken ?? undefined,
                 "s3": await (async () => {
-                    if (region.s3?.sts === undefined) {
+                    const stsS3Config = s3ConfigManagement.protectedSelectors.stsS3Config(
+                        getState()
+                    );
+
+                    if (stsS3Config === undefined) {
                         return {
                             "AWS_ACCESS_KEY_ID": "",
                             "AWS_SECRET_ACCESS_KEY": "",
@@ -539,11 +537,7 @@ const privateThunks = {
 
                     assert(s3ClientSts !== undefined);
 
-                    const project = projectManagement.selectors.currentProject(
-                        getState()
-                    );
-
-                    const { host, port = 443 } = parseUrl(region.s3.url);
+                    const { host, port = 443 } = parseUrl(stsS3Config.url);
 
                     return {
                         ...(await (async () => {
@@ -586,23 +580,13 @@ const privateThunks = {
                                 "AWS_SESSION_TOKEN": sessionToken
                             };
                         })()),
-                        "AWS_BUCKET_NAME": (() => {
-                            const { workingDirectory } = region.s3;
-
-                            switch (workingDirectory.bucketMode) {
-                                case "multi":
-                                    return project.group === undefined
-                                        ? `${workingDirectory.bucketNamePrefix}${user.username}`
-                                        : `${workingDirectory.bucketNamePrefixGroup}${project.group}`;
-                                case "shared":
-                                    return workingDirectory.bucketName;
-                            }
-                            assert<Equals<typeof workingDirectory, never>>(true);
-                        })(),
-                        "AWS_DEFAULT_REGION": region.s3.region ?? "",
+                        "AWS_BUCKET_NAME": bucketNameAndObjectNameFromS3Path(
+                            stsS3Config.workingDirectoryPath
+                        ).bucketName,
+                        "AWS_DEFAULT_REGION": stsS3Config.region,
                         "AWS_S3_ENDPOINT": host,
                         port,
-                        "pathStyleAccess": region.s3.pathStyleAccess
+                        "pathStyleAccess": stsS3Config.pathStyleAccess
                     };
                 })(),
                 "region": {

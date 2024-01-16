@@ -609,10 +609,12 @@ const availableS3configs = createSelector(
             return undefined;
         }
 
+        // We don't display the s3 config selector if there is no config or only one
         if (s3Configs.length <= 1) {
             return undefined;
         }
 
+        // If the chart at hand does not use s3, we don't display the s3 config selector
         if (state.pathOfFormFieldsAffectedByS3ConfigChange.length === 0) {
             return undefined;
         }
@@ -625,13 +627,36 @@ const availableS3configs = createSelector(
     }
 );
 
+const has3sConfigBeenManuallyChanged = createSelector(readyState, state => {
+    if (state === undefined) {
+        return undefined;
+    }
+    return state.has3sConfigBeenManuallyChanged;
+});
+
+const selectedCustomS3ConfigIndex = createSelector(readyState, state => {
+    if (state === undefined) {
+        return undefined;
+    }
+    return state.selectedCustomS3ConfigIndex;
+});
+
 const selectedS3Config = createSelector(
-    readyState,
+    isReady,
+    has3sConfigBeenManuallyChanged,
+    selectedCustomS3ConfigIndex,
     availableS3configs,
-    (state, availableS3configs) => {
-        if (state === undefined) {
+    (
+        isReady,
+        has3sConfigBeenManuallyChanged,
+        selectedCustomS3ConfigIndex,
+        availableS3configs
+    ) => {
+        if (!isReady) {
             return undefined;
         }
+
+        assert(has3sConfigBeenManuallyChanged !== undefined);
 
         type SelectedS3Config =
             | {
@@ -649,13 +674,13 @@ const selectedS3Config = createSelector(
             return createObjectThatThrowsIfAccessed<SelectedS3Config>();
         }
 
-        if (state.has3sConfigBeenManuallyChanged) {
+        if (has3sConfigBeenManuallyChanged) {
             return id<SelectedS3Config>({
                 "type": "manual form input"
             });
         }
 
-        if (state.selectedCustomS3ConfigIndex === undefined) {
+        if (selectedCustomS3ConfigIndex === undefined) {
             return id<SelectedS3Config>({
                 "type": "sts"
             });
@@ -663,7 +688,7 @@ const selectedS3Config = createSelector(
 
         return id<SelectedS3Config>({
             "type": "custom",
-            "customS3ConfigIndex": state.selectedCustomS3ConfigIndex
+            "customS3ConfigIndex": selectedCustomS3ConfigIndex
         });
     }
 );
@@ -785,5 +810,5 @@ export const privateSelectors = {
     helmReleaseName,
     formFieldsValueDifferentFromDefault,
     isShared,
-    selectedS3Config
+    has3sConfigBeenManuallyChanged
 };
