@@ -442,12 +442,24 @@ export function createOnyxiaApi(params: {
                     "isShared": apiApp.env["onyxia.share"] === "true",
                     ...(() => {
                         if (
-                            (apiApp.tasks.length !== 0 &&
-                                apiApp.tasks[0].containers.length !== 0 &&
-                                apiApp.tasks[0].containers.every(({ ready }) => ready)) ||
-                            Date.now() - apiApp.startedAt > 60 * 1000
+                            apiApp.tasks.length !== 0 &&
+                            apiApp.tasks[0].containers.length !== 0 &&
+                            apiApp.tasks[0].containers.every(({ ready }) => ready)
                         ) {
-                            return { "isStarting": false } as const;
+                            return {
+                                "isStarting": false
+                            } as const;
+                        }
+
+                        if (Date.now() - apiApp.startedAt > 10 * 60 * 1000) {
+                            return {
+                                "isStarting": true,
+                                // If the service is not yet started after 10 minutes, we consider
+                                // no need to periodically check if it's miraculously started.
+                                // At the moment Onyxia has no way of representing a failed start
+                                // so we just leave it in a state where it's starting forever.
+                                "prStarted": new Promise<never>(() => {})
+                            } as const;
                         }
 
                         const prStarted = (async function callee(): Promise<void> {
@@ -462,7 +474,8 @@ export function createOnyxiaApi(params: {
                             );
 
                             if (refreshedApiApp === undefined) {
-                                //Release uninstalled, we leave it pending.
+                                // Release uninstalled, we let it spin forever
+                                // See comment above
                                 return new Promise(() => {});
                             }
 
