@@ -357,6 +357,15 @@ export const translations: Translations<"zh-CN"> = {
     "PortraitModeUnsupported": {
         "instructions": "要在您的手机中使用此应用程序，请激活旋转传感器并转动您的手机"
     },
+    "MaybeAcknowledgeConfigVolatilityDialog": {
+        "dialog title": "请注意，配置是易变的",
+        "dialog body": `此Onyxia实例不实现用于存储配置的任何持久性机制。
+            所有配置都存储在浏览器的本地存储中。这意味着，如果您清除了浏览器的本地存储
+            或更换浏览器，您将丢失所有配置。`,
+        "do not show next time": "下次不再显示此消息",
+        "cancel": "取消",
+        "I understand": "我明白了"
+    },
     "Home": {
         "title authenticated": ({ userFirstname }) => `你好 ${userFirstname}!`,
         "title": "欢迎来到 datalab",

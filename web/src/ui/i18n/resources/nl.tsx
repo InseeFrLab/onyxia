@@ -390,6 +390,15 @@ export const translations: Translations<"nl"> = {
         "instructions":
             "Om deze applicatie op uw mobiele telefoon te gebruiken, activeert u de rotatiesensor en draait u uw telefoon."
     },
+    "MaybeAcknowledgeConfigVolatilityDialog": {
+        "dialog title": "Wees ervan bewust, configuraties zijn vluchtig",
+        "dialog body": `Deze Onyxia-instantie implementeert geen enkel persistentiemechanisme voor het opslaan van configuraties. 
+            Alle configuraties worden opgeslagen in de lokale opslag van de browser. Dit betekent dat als u de lokale opslag van uw browser wist 
+            of van browser wisselt, u al uw configuraties zult verliezen.`,
+        "do not show next time": "Toon dit bericht niet meer",
+        "cancel": "Annuleren",
+        "I understand": "Ik begrijp het"
+    },
     "Home": {
         "title authenticated": ({ userFirstname }) => `Welkom ${userFirstname}!`,
         "title": "Welkom in het datalab",

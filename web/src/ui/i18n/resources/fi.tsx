@@ -383,6 +383,15 @@ export const translations: Translations<"fi"> = {
         "instructions":
             "Voit käyttää tätä sovellusta puhelimellasi ottamalla käyttöön kääntöanturin ja kääntämällä puhelimesi."
     },
+    "MaybeAcknowledgeConfigVolatilityDialog": {
+        "dialog title": "Huomio, asetukset ovat epävakaita",
+        "dialog body": `Tämä Onyxia-instanssi ei toteuta mitään pysyvyyteen liittyvää mekanismia asetusten tallentamiseksi. 
+            Kaikki asetukset tallennetaan selaimen paikalliseen muistiin. Tämä tarkoittaa, että jos tyhjennät selaimesi paikallisen 
+            muistin tai vaihdat selainta, menetät kaikki asetuksesi.`,
+        "do not show next time": "Älä näytä tätä viestiä uudelleen",
+        "cancel": "Peruuta",
+        "I understand": "Ymmärrän"
+    },
     "Home": {
         "title authenticated": ({ userFirstname }) => `Tervetuloa, ${userFirstname}!`,
         "title": "Tervetuloa Onyxia datalabiin",

@@ -390,6 +390,15 @@ export const translations: Translations<"it"> = {
         "instructions":
             "Per utilizzare questa applicazione dal tuo cellulare, attiva il sensore di rotazione e ruota il tuo telefono."
     },
+    "MaybeAcknowledgeConfigVolatilityDialog": {
+        "dialog title": "Attenzione, le configurazioni sono volatili",
+        "dialog body": `Questa istanza di Onyxia non implementa alcun meccanismo di persistenza per salvare le configurazioni. 
+            Tutte le configurazioni sono memorizzate nel storage locale del browser. Questo significa che se cancelli lo 
+            storage locale del tuo browser o cambi browser, perderai tutte le tue configurazioni.`,
+        "do not show next time": "Non mostrare più questo messaggio",
+        "cancel": "Annulla",
+        "I understand": "Ho capito"
+    },
     "Home": {
         "title authenticated": ({ userFirstname }) => `Benvenuto ${userFirstname}!`,
         "title": "Benvenuto sul datalab",

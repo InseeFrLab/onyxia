@@ -391,6 +391,15 @@ export const translations: Translations<"no"> = {
         "instructions":
             "For å bruke denne appen på telefonen din, må du aktivere rotasjonssensoren og snu telefonen."
     },
+    "MaybeAcknowledgeConfigVolatilityDialog": {
+        "dialog title": "Vær oppmerksom, konfigurasjoner er flyktige",
+        "dialog body": `Denne Onyxia-instansen implementerer ikke noen persistensmekanisme for lagring av konfigurasjoner. 
+            Alle konfigurasjoner lagres i nettleserens lokale lagring. Dette betyr at hvis du tømmer nettleserens lokale 
+            lagring eller bytter nettleser, vil du miste alle dine konfigurasjoner.`,
+        "do not show next time": "Ikke vis denne meldingen igjen",
+        "cancel": "Avbryt",
+        "I understand": "Jeg forstår"
+    },
     "Home": {
         "title authenticated": ({ userFirstname }) => `Velkommen ${userFirstname}!`,
         "title": "Velkommen til Onyxia datalab",

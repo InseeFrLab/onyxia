@@ -11,6 +11,7 @@ import {
 import * as userAuthentication from "./userAuthentication";
 import { join as pathJoin } from "path";
 import { getIsDarkModeEnabledOsDefault } from "onyxia-ui/tools/getIsDarkModeEnabledOsDefault";
+import * as deploymentRegionManagement from "core/usecases/deploymentRegionManagement";
 
 /*
  * Values of the user profile that can be changed.
@@ -30,6 +31,7 @@ export type UserConfigs = Id<
         isDarkModeEnabled: boolean;
         githubPersonalAccessToken: string | null;
         doDisplayMySecretsUseInServiceDialog: boolean;
+        doDisplayAcknowledgeConfigVolatilityDialogIfNoVault: boolean;
         selectedProjectId: string | null;
         isCommandBarEnabled: boolean;
     }
@@ -117,6 +119,13 @@ export const thunks = {
                     "value": true
                 })
             );
+
+            dispatch(
+                thunks.changeValue({
+                    "key": "doDisplayAcknowledgeConfigVolatilityDialogIfNoVault",
+                    "value": true
+                })
+            );
         }
 } satisfies Thunks;
 
@@ -142,6 +151,7 @@ export const protectedThunks = {
                 "isDarkModeEnabled": getIsDarkModeEnabledOsDefault(),
                 "githubPersonalAccessToken": null,
                 "doDisplayMySecretsUseInServiceDialog": true,
+                "doDisplayAcknowledgeConfigVolatilityDialogIfNoVault": true,
                 "selectedProjectId": null,
                 "isCommandBarEnabled": paramsOfBootstrapCore.isCommandBarEnabledByDefault
             };
@@ -214,9 +224,15 @@ export const selectors = (() => {
         return userConfigs(rootState).isDarkModeEnabled;
     };
 
+    const isVaultEnabled = createSelector(
+        deploymentRegionManagement.selectors.currentDeploymentRegion,
+        deploymentRegion => deploymentRegion.vault !== undefined
+    );
+
     return {
         userConfigs,
         "userConfigsWithUpdateProgress": state,
-        isDarkModeEnabled
+        isDarkModeEnabled,
+        isVaultEnabled
     };
 })();

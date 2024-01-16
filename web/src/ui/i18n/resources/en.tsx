@@ -387,6 +387,15 @@ export const translations: Translations<"en"> = {
         "instructions":
             "To use this app on your phone please enable the rotation sensor and turn your phone."
     },
+    "MaybeAcknowledgeConfigVolatilityDialog": {
+        "dialog title": "Be aware, configurations are volatile",
+        "dialog body": `This Onyxia instance does not implement any persistence mechanism for storing configurations. 
+            All configurations are stored in the browser's local storage. This means that if you clear your browser's local 
+            storage or change your browser, you will lose all your configurations.`,
+        "do not show next time": "Don't show this message again",
+        "cancel": "Cancel",
+        "I understand": "I understand"
+    },
     "Home": {
         "title authenticated": ({ userFirstname }) => `Welcome ${userFirstname}!`,
         "title": "Welcome to the Onyxia datalab",

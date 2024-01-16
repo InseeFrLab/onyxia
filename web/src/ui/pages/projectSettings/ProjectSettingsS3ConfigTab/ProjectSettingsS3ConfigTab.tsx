@@ -8,6 +8,11 @@ import { Button } from "onyxia-ui/Button";
 import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
 import { id } from "tsafe/id";
 import { tss } from "tss";
+import {
+    MaybeAcknowledgeConfigVolatilityDialog,
+    type MaybeAcknowledgeConfigVolatilityDialogProps
+} from "ui/shared/MaybeAcknowledgeConfigVolatilityDialog";
+import { Deferred } from "evt/tools/Deferred";
 
 export type Props = {
     className?: string;
@@ -16,19 +21,24 @@ export type Props = {
 export const ProjectSettingsS3ConfigTab = memo((props: Props) => {
     const { className } = props;
 
-    const { evtConfirmCustomS3ConfigDeletionDialogOpen, evtAddCustomS3ConfigDialogOpen } =
-        useConst(() => ({
-            "evtConfirmCustomS3ConfigDeletionDialogOpen":
-                Evt.create<
-                    UnpackEvt<
-                        S3ConfigDialogsProps["evtConfirmCustomS3ConfigDeletionDialogOpen"]
-                    >
-                >(),
-            "evtAddCustomS3ConfigDialogOpen":
-                Evt.create<
-                    UnpackEvt<S3ConfigDialogsProps["evtAddCustomS3ConfigDialogOpen"]>
-                >()
-        }));
+    const {
+        evtConfirmCustomS3ConfigDeletionDialogOpen,
+        evtAddCustomS3ConfigDialogOpen,
+        evtMaybeAcknowledgeConfigVolatilityDialogOpen
+    } = useConst(() => ({
+        "evtConfirmCustomS3ConfigDeletionDialogOpen":
+            Evt.create<
+                UnpackEvt<
+                    S3ConfigDialogsProps["evtConfirmCustomS3ConfigDeletionDialogOpen"]
+                >
+            >(),
+        "evtAddCustomS3ConfigDialogOpen":
+            Evt.create<
+                UnpackEvt<S3ConfigDialogsProps["evtAddCustomS3ConfigDialogOpen"]>
+            >(),
+        "evtMaybeAcknowledgeConfigVolatilityDialogOpen":
+            Evt.create<MaybeAcknowledgeConfigVolatilityDialogProps["evtOpen"]>()
+    }));
 
     const { s3Configs, newCustomConfigDefaultValues } = useCoreState(
         "s3ConfigManagement",
@@ -40,98 +50,113 @@ export const ProjectSettingsS3ConfigTab = memo((props: Props) => {
     const { classes } = useStyles();
 
     return (
-        <div className={className}>
-            {s3Configs.map(s3Config => (
-                <S3ConfigCard
-                    className={classes.card}
-                    key={s3Config.customConfigIndex ?? -1}
-                    dataSource={s3Config.dataSource}
-                    region={s3Config.region}
-                    isUsedForExplorer={s3Config.isUsedForExplorer}
-                    isUsedForXOnyxia={s3Config.isUsedForXOnyxia}
-                    accountFriendlyName={s3Config.accountFriendlyName}
-                    onDelete={(() => {
-                        const { customConfigIndex } = s3Config;
+        <>
+            <div className={className}>
+                {s3Configs.map(s3Config => (
+                    <S3ConfigCard
+                        className={classes.card}
+                        key={s3Config.customConfigIndex ?? -1}
+                        dataSource={s3Config.dataSource}
+                        region={s3Config.region}
+                        isUsedForExplorer={s3Config.isUsedForExplorer}
+                        isUsedForXOnyxia={s3Config.isUsedForXOnyxia}
+                        accountFriendlyName={s3Config.accountFriendlyName}
+                        onDelete={(() => {
+                            const { customConfigIndex } = s3Config;
 
-                        if (customConfigIndex === undefined) {
-                            return undefined;
-                        }
-
-                        return () =>
-                            evtConfirmCustomS3ConfigDeletionDialogOpen.post({
-                                "resolveDoProceed": doProceed => {
-                                    if (!doProceed) {
-                                        return;
-                                    }
-
-                                    s3ConfigManagement.deleteCustomS3Config({
-                                        customConfigIndex
-                                    });
-                                }
-                            });
-                    })()}
-                    onIsUsedForExplorerValueChange={(() => {
-                        if (
-                            s3Config.accountFriendlyName === undefined &&
-                            s3Config.isUsedForExplorer
-                        ) {
-                            return undefined;
-                        }
-
-                        return isUsed =>
-                            s3ConfigManagement.setConfigUsage({
-                                "customConfigIndex": s3Config.customConfigIndex,
-                                "usedFor": "explorer",
-                                isUsed
-                            });
-                    })()}
-                    onIsUsedForXOnyxiaValueChange={(() => {
-                        if (
-                            s3Config.accountFriendlyName === undefined &&
-                            s3Config.isUsedForXOnyxia
-                        ) {
-                            return undefined;
-                        }
-
-                        return isUsed =>
-                            s3ConfigManagement.setConfigUsage({
-                                "customConfigIndex": s3Config.customConfigIndex,
-                                "usedFor": "xOnyxia",
-                                isUsed
-                            });
-                    })()}
-                    doHideUsageSwitches={
-                        s3Config.accountFriendlyName === undefined &&
-                        s3Configs.length === 1
-                    }
-                />
-            ))}
-            <S3ConfigDialogs
-                evtConfirmCustomS3ConfigDeletionDialogOpen={
-                    evtConfirmCustomS3ConfigDeletionDialogOpen
-                }
-                evtAddCustomS3ConfigDialogOpen={evtAddCustomS3ConfigDialogOpen}
-            />
-            <Button
-                startIcon={id<MuiIconComponentName>("Add")}
-                onClick={() =>
-                    evtAddCustomS3ConfigDialogOpen.post({
-                        "defaultValues": newCustomConfigDefaultValues,
-                        "resolveNewCustomConfig": ({ newCustomConfig }) => {
-                            if (newCustomConfig === undefined) {
-                                return;
+                            if (customConfigIndex === undefined) {
+                                return undefined;
                             }
 
-                            s3ConfigManagement.addCustomS3Config({
-                                "customS3Config": newCustomConfig
-                            });
+                            return () =>
+                                evtConfirmCustomS3ConfigDeletionDialogOpen.post({
+                                    "resolveDoProceed": doProceed => {
+                                        if (!doProceed) {
+                                            return;
+                                        }
+
+                                        s3ConfigManagement.deleteCustomS3Config({
+                                            customConfigIndex
+                                        });
+                                    }
+                                });
+                        })()}
+                        onIsUsedForExplorerValueChange={(() => {
+                            if (
+                                s3Config.accountFriendlyName === undefined &&
+                                s3Config.isUsedForExplorer
+                            ) {
+                                return undefined;
+                            }
+
+                            return isUsed =>
+                                s3ConfigManagement.setConfigUsage({
+                                    "customConfigIndex": s3Config.customConfigIndex,
+                                    "usedFor": "explorer",
+                                    isUsed
+                                });
+                        })()}
+                        onIsUsedForXOnyxiaValueChange={(() => {
+                            if (
+                                s3Config.accountFriendlyName === undefined &&
+                                s3Config.isUsedForXOnyxia
+                            ) {
+                                return undefined;
+                            }
+
+                            return isUsed =>
+                                s3ConfigManagement.setConfigUsage({
+                                    "customConfigIndex": s3Config.customConfigIndex,
+                                    "usedFor": "xOnyxia",
+                                    isUsed
+                                });
+                        })()}
+                        doHideUsageSwitches={
+                            s3Config.accountFriendlyName === undefined &&
+                            s3Configs.length === 1
                         }
-                    })
-                }
-            >
-                Add a custom S3 configuration
-            </Button>
-        </div>
+                    />
+                ))}
+                <S3ConfigDialogs
+                    evtConfirmCustomS3ConfigDeletionDialogOpen={
+                        evtConfirmCustomS3ConfigDeletionDialogOpen
+                    }
+                    evtAddCustomS3ConfigDialogOpen={evtAddCustomS3ConfigDialogOpen}
+                />
+                <Button
+                    startIcon={id<MuiIconComponentName>("Add")}
+                    onClick={async () => {
+                        const dDoProceed = new Deferred<boolean>();
+
+                        evtMaybeAcknowledgeConfigVolatilityDialogOpen.post({
+                            "resolve": ({ doProceed }) => dDoProceed.resolve(doProceed)
+                        });
+
+                        if (!(await dDoProceed.pr)) {
+                            return;
+                        }
+
+                        evtAddCustomS3ConfigDialogOpen.post({
+                            "defaultValues": newCustomConfigDefaultValues,
+                            "resolveNewCustomConfig": ({ newCustomConfig }) => {
+                                if (newCustomConfig === undefined) {
+                                    return;
+                                }
+
+                                s3ConfigManagement.addCustomS3Config({
+                                    "customS3Config": newCustomConfig
+                                });
+                            }
+                        });
+                    }}
+                >
+                    Add a custom S3 configuration
+                </Button>
+            </div>
+            <MaybeAcknowledgeConfigVolatilityDialog
+                evtOpen={evtMaybeAcknowledgeConfigVolatilityDialogOpen}
+            />
+        </>
     );
 });
 

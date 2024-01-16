@@ -9,9 +9,13 @@ export function createOidc(params: { isUserInitiallyLoggedIn: boolean }): Oidc {
             "name": urlParamName
         });
 
-        return result.wasPresent
-            ? result.value === "true"
-            : params.isUserInitiallyLoggedIn;
+        if (!result.wasPresent) {
+            return params.isUserInitiallyLoggedIn;
+        }
+
+        window.history.replaceState({}, "", result.newUrl);
+
+        return result.value === "true";
     })();
 
     const common: Oidc.Common = {

@@ -22,6 +22,10 @@ import { saveAs } from "file-saver";
 import { LauncherMainCard } from "./LauncherMainCard";
 import { LauncherConfigurationCard } from "./LauncherConfigurationCard";
 import { customIcons } from "ui/theme";
+import {
+    MaybeAcknowledgeConfigVolatilityDialog,
+    type MaybeAcknowledgeConfigVolatilityDialogProps
+} from "ui/shared/MaybeAcknowledgeConfigVolatilityDialog";
 
 export type Props = {
     route: PageRoute;
@@ -37,7 +41,8 @@ export default function Launcher(props: Props) {
         evtAcknowledgeSharingOfConfigConfirmDialogOpen,
         evtAutoLaunchDisabledDialogOpen,
         evtSensitiveConfigurationDialogOpen,
-        evtNoLongerBookmarkedDialogOpen
+        evtNoLongerBookmarkedDialogOpen,
+        evtMaybeAcknowledgeConfigVolatilityDialogOpen
     } = useConst(() => ({
         "evtAcknowledgeSharingOfConfigConfirmDialogOpen":
             Evt.create<
@@ -56,7 +61,9 @@ export default function Launcher(props: Props) {
         "evtNoLongerBookmarkedDialogOpen":
             Evt.create<
                 UnpackEvt<LauncherDialogsProps["evtNoLongerBookmarkedDialogOpen"]>
-            >()
+            >(),
+        "evtMaybeAcknowledgeConfigVolatilityDialogOpen":
+            Evt.create<MaybeAcknowledgeConfigVolatilityDialogProps["evtOpen"]>()
     }));
 
     const {
@@ -235,6 +242,18 @@ export default function Launcher(props: Props) {
         if (isRestorableConfigSaved) {
             restorableConfigManagement.deleteRestorableConfig({ restorableConfig });
         } else {
+            {
+                const dDoProceed = new Deferred<boolean>();
+
+                evtMaybeAcknowledgeConfigVolatilityDialogOpen.post({
+                    "resolve": ({ doProceed }) => dDoProceed.resolve(doProceed)
+                });
+
+                if (!(await dDoProceed.pr)) {
+                    return;
+                }
+            }
+
             if (groupProjectName !== undefined) {
                 const doProceed = new Deferred<boolean>();
 
@@ -424,6 +443,9 @@ export default function Launcher(props: Props) {
                 evtAutoLaunchDisabledDialogOpen={evtAutoLaunchDisabledDialogOpen}
                 evtSensitiveConfigurationDialogOpen={evtSensitiveConfigurationDialogOpen}
                 evtNoLongerBookmarkedDialogOpen={evtNoLongerBookmarkedDialogOpen}
+            />
+            <MaybeAcknowledgeConfigVolatilityDialog
+                evtOpen={evtMaybeAcknowledgeConfigVolatilityDialogOpen}
             />
         </>
     );

@@ -394,6 +394,15 @@ export const translations: Translations<"de"> = {
         "instructions":
             "Um diese App auf Ihrem Handy zu nutzen, aktivieren Sie bitte den Rotationssensor und drehen Sie Ihr Telefon."
     },
+    "MaybeAcknowledgeConfigVolatilityDialog": {
+        "dialog title": "Beachten Sie, dass Konfigurationen flüchtig sind",
+        "dialog body": `Diese Onyxia-Instanz implementiert keinen Persistenzmechanismus zum Speichern von Konfigurationen.
+            Alle Konfigurationen werden im lokalen Speicher des Browsers gespeichert. Das bedeutet, dass Sie alle Ihre Konfigurationen verlieren werden, 
+            wenn Sie den lokalen Speicher Ihres Browsers löschen oder Ihren Browser wechseln.`,
+        "do not show next time": "Diese Nachricht nicht mehr anzeigen",
+        "cancel": "Abbrechen",
+        "I understand": "Ich verstehe"
+    },
     "Home": {
         "title authenticated": ({ userFirstname }) => `Willkommen ${userFirstname}!`,
         "title": "Willkommen im Datalab",

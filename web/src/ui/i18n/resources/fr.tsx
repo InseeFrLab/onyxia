@@ -393,6 +393,15 @@ export const translations: Translations<"fr"> = {
         "instructions":
             "Pour utiliser cette application depuis votre mobile, veuillez activer le capteur de rotation et tourner votre téléphone."
     },
+    "MaybeAcknowledgeConfigVolatilityDialog": {
+        "dialog title": "Attention, les configurations sont volatiles",
+        "dialog body": `Cette instance Onyxia n'implémente aucun mécanisme de persistance pour stocker les configurations. 
+            Toutes les configurations sont stockées dans le stockage local du navigateur. Cela signifie que si vous effacez le 
+            stockage local de votre navigateur ou changez de navigateur, vous perdrez toutes vos configurations.`,
+        "do not show next time": "Ne plus afficher ce message",
+        "cancel": "Annuler",
+        "I understand": "Je comprends"
+    },
     "Home": {
         "title authenticated": ({ userFirstname }) => `Bienvenue ${userFirstname}!`,
         "title": "Bienvenue sur le datalab",
