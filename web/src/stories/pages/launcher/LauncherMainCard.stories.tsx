@@ -46,5 +46,5 @@ export const ViewDefault = getStory({
         "onRequestLaunch",
         "onRequestRestoreAllDefault"
     ]),
-    "s3ConfigsWrap": undefined
+    "s3ConfigsSelect": undefined
 });

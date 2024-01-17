@@ -87,8 +87,7 @@ export default function Launcher(props: Props) {
         commandLogsEntries,
         chartSourceUrls,
         groupProjectName,
-        availableS3configs,
-        selectedS3Config
+        s3ConfigSelect
     } = useCoreState("launcher", "main");
 
     const scrollableDivRef = useStateRef<HTMLDivElement>(null);
@@ -405,13 +404,14 @@ export default function Launcher(props: Props) {
                                         : onRequestCopyLaunchUrl
                                 }
                                 isLaunchable={isLaunchable}
-                                s3ConfigsWrap={
-                                    availableS3configs === undefined
+                                s3ConfigsSelect={
+                                    s3ConfigSelect === undefined
                                         ? undefined
                                         : {
                                               projectS3ConfigLink,
-                                              selectedS3Config,
-                                              availableS3configs,
+                                              "selectedOption":
+                                                  s3ConfigSelect.selectedOption,
+                                              "options": s3ConfigSelect.options,
                                               "onSelectedS3ConfigChange":
                                                   launcher.useSpecificS3Config
                                           }

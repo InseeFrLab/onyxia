@@ -17,10 +17,7 @@ import * as projectManagement from "core/usecases/projectManagement";
 import * as s3ConfigManagement from "core/usecases/s3ConfigManagement";
 import * as userConfigs from "core/usecases/userConfigs";
 import { exclude } from "tsafe/exclude";
-import {
-    createSelector,
-    createObjectThatThrowsIfAccessed
-} from "redux-clean-architecture";
+import { createSelector } from "redux-clean-architecture";
 import { id } from "tsafe/id";
 
 const readyState = (rootState: RootState): State.Ready | undefined => {
@@ -601,10 +598,10 @@ const isThereASavedConfigWithThisFriendlyName = createSelector(
     }
 );
 
-const availableS3configs = createSelector(
-    s3ConfigManagement.selectors.s3Configs,
+const s3ConfigSelect = createSelector(
     readyState,
-    (s3Configs, state) => {
+    s3ConfigManagement.selectors.s3Configs,
+    (state, s3Configs) => {
         if (state === undefined) {
             return undefined;
         }
@@ -619,46 +616,13 @@ const availableS3configs = createSelector(
             return undefined;
         }
 
-        return s3Configs.map(s3Config => ({
+        const options = s3Configs.map(s3Config => ({
             "customConfigIndex": s3Config.customConfigIndex,
             "dataSource": s3Config.dataSource,
             "accountFriendlyName": s3Config.accountFriendlyName
         }));
-    }
-);
 
-const has3sConfigBeenManuallyChanged = createSelector(readyState, state => {
-    if (state === undefined) {
-        return undefined;
-    }
-    return state.has3sConfigBeenManuallyChanged;
-});
-
-const selectedCustomS3ConfigIndex = createSelector(readyState, state => {
-    if (state === undefined) {
-        return undefined;
-    }
-    return state.selectedCustomS3ConfigIndex;
-});
-
-const selectedS3Config = createSelector(
-    isReady,
-    has3sConfigBeenManuallyChanged,
-    selectedCustomS3ConfigIndex,
-    availableS3configs,
-    (
-        isReady,
-        has3sConfigBeenManuallyChanged,
-        selectedCustomS3ConfigIndex,
-        availableS3configs
-    ) => {
-        if (!isReady) {
-            return undefined;
-        }
-
-        assert(has3sConfigBeenManuallyChanged !== undefined);
-
-        type SelectedS3Config =
+        type SelectedOption =
             | {
                   type: "sts";
               }
@@ -670,26 +634,26 @@ const selectedS3Config = createSelector(
                   type: "manual form input";
               };
 
-        if (availableS3configs === undefined) {
-            return createObjectThatThrowsIfAccessed<SelectedS3Config>();
-        }
+        const selectedOption: SelectedOption = (() => {
+            if (state.has3sConfigBeenManuallyChanged) {
+                return id<SelectedOption>({
+                    "type": "manual form input"
+                });
+            }
 
-        if (has3sConfigBeenManuallyChanged) {
-            return id<SelectedS3Config>({
-                "type": "manual form input"
+            if (state.selectedCustomS3ConfigIndex === undefined) {
+                return id<SelectedOption>({
+                    "type": "sts"
+                });
+            }
+
+            return id<SelectedOption>({
+                "type": "custom",
+                "customS3ConfigIndex": state.selectedCustomS3ConfigIndex
             });
-        }
+        })();
 
-        if (selectedCustomS3ConfigIndex === undefined) {
-            return id<SelectedS3Config>({
-                "type": "sts"
-            });
-        }
-
-        return id<SelectedS3Config>({
-            "type": "custom",
-            "customS3ConfigIndex": selectedCustomS3ConfigIndex
-        });
+        return { options, selectedOption };
     }
 );
 
@@ -714,8 +678,7 @@ const main = createSelector(
     commandLogsEntries,
     chartSourceUrls,
     groupProjectName,
-    availableS3configs,
-    selectedS3Config,
+    s3ConfigSelect,
     (
         isReady,
         friendlyName,
@@ -737,8 +700,7 @@ const main = createSelector(
         commandLogsEntries,
         chartSourceUrls,
         groupProjectName,
-        availableS3configs,
-        selectedS3Config
+        s3ConfigSelect
     ) => {
         if (!isReady) {
             return {
@@ -761,7 +723,7 @@ const main = createSelector(
         assert(catalogRepositoryUrl !== undefined);
         assert(launchScript !== undefined);
         assert(chartSourceUrls !== undefined);
-        assert(selectedS3Config !== undefined);
+        assert(s3ConfigSelect !== undefined);
 
         return {
             "isReady": true as const,
@@ -784,8 +746,7 @@ const main = createSelector(
             commandLogsEntries,
             chartSourceUrls,
             groupProjectName,
-            availableS3configs,
-            selectedS3Config
+            s3ConfigSelect
         };
     }
 );
@@ -805,6 +766,13 @@ const formFieldsValueDifferentFromDefault = createSelector(
         return restorableConfig.formFieldsValueDifferentFromDefault;
     }
 );
+
+const has3sConfigBeenManuallyChanged = createSelector(readyState, state => {
+    if (state === undefined) {
+        return undefined;
+    }
+    return state.has3sConfigBeenManuallyChanged;
+});
 
 export const privateSelectors = {
     helmReleaseName,

@@ -66,10 +66,10 @@ export type Props = {
     //Undefined when the configuration is the default one
     onRequestCopyLaunchUrl: (() => void) | undefined;
 
-    s3ConfigsWrap:
+    s3ConfigsSelect:
         | {
               projectS3ConfigLink: Link;
-              selectedS3Config:
+              selectedOption:
                   | {
                         type: "sts";
                     }
@@ -80,7 +80,7 @@ export type Props = {
                   | {
                         type: "manual form input";
                     };
-              availableS3configs: {
+              options: {
                   customConfigIndex: number | undefined;
                   dataSource: string;
                   accountFriendlyName: string | undefined;
@@ -125,7 +125,7 @@ export const LauncherMainCard = memo((props: Props) => {
         onRequestCopyLaunchUrl,
         onRequestRestoreAllDefault,
 
-        s3ConfigsWrap
+        s3ConfigsSelect
     } = props;
 
     const { classes, cx } = useStyles();
@@ -288,7 +288,7 @@ export const LauncherMainCard = memo((props: Props) => {
                         </Select>
                     </FormControl>
 
-                    {s3ConfigsWrap !== undefined && (
+                    {s3ConfigsSelect !== undefined && (
                         <FormControl
                             variant="standard"
                             className={classes.versionSelectWrapper}
@@ -300,7 +300,7 @@ export const LauncherMainCard = memo((props: Props) => {
                                         <>
                                             You can manage your S3 configurations&nbsp;
                                             <MuiLink
-                                                {...s3ConfigsWrap.projectS3ConfigLink}
+                                                {...s3ConfigsSelect.projectS3ConfigLink}
                                             >
                                                 here
                                             </MuiLink>
@@ -317,9 +317,9 @@ export const LauncherMainCard = memo((props: Props) => {
                             <Select
                                 labelId={s3ConfigInputLabelId}
                                 value={(() => {
-                                    switch (s3ConfigsWrap.selectedS3Config.type) {
+                                    switch (s3ConfigsSelect.selectedOption.type) {
                                         case "custom":
-                                            return `${s3ConfigsWrap.selectedS3Config.customS3ConfigIndex}`;
+                                            return `${s3ConfigsSelect.selectedOption.customS3ConfigIndex}`;
                                         case "sts":
                                             return "sts";
                                         case "manual form input":
@@ -331,7 +331,7 @@ export const LauncherMainCard = memo((props: Props) => {
                                     assert(typeof value === "string");
 
                                     if (value === "sts") {
-                                        s3ConfigsWrap.onSelectedS3ConfigChange({
+                                        s3ConfigsSelect.onSelectedS3ConfigChange({
                                             "type": "sts"
                                         });
                                         return;
@@ -339,20 +339,20 @@ export const LauncherMainCard = memo((props: Props) => {
 
                                     const customS3ConfigIndex = parseInt(value);
 
-                                    s3ConfigsWrap.onSelectedS3ConfigChange({
+                                    s3ConfigsSelect.onSelectedS3ConfigChange({
                                         "type": "custom",
                                         customS3ConfigIndex
                                     });
                                 }}
                             >
-                                {s3ConfigsWrap.selectedS3Config.type ===
+                                {s3ConfigsSelect.selectedOption.type ===
                                     "manual form input" && (
                                     <MenuItem disabled value="manual form input">
                                         &nbsp;
                                     </MenuItem>
                                 )}
 
-                                {s3ConfigsWrap.availableS3configs.map(
+                                {s3ConfigsSelect.options.map(
                                     ({
                                         accountFriendlyName,
                                         customConfigIndex,
