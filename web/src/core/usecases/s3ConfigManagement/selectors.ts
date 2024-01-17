@@ -11,35 +11,6 @@ const projectS3Config = createSelector(
     currentProjectConfigs => currentProjectConfigs.s3
 );
 
-const indexOfCustomS3ConfigForXOnyxia = createSelector(
-    projectS3Config,
-    projectS3Config => projectS3Config.indexForXOnyxia
-);
-
-const customS3ConfigForExplorer = createSelector(projectS3Config, projectS3Config => {
-    if (projectS3Config.indexForExplorer === undefined) {
-        return undefined;
-    }
-
-    const customS3Config =
-        projectS3Config.customConfigs[projectS3Config.indexForExplorer];
-
-    assert(customS3Config !== undefined);
-
-    return customS3Config;
-});
-
-const customS3Configs = createSelector(projectS3Config, projectS3Config =>
-    projectS3Config.customConfigs
-        .map((customS3Config, i) => ({
-            "index": i,
-            ...customS3Config,
-            "isUsedForXOnyxia": projectS3Config.indexForXOnyxia === i,
-            "isUsedForExplorer": projectS3Config.indexForExplorer === i
-        }))
-        .reverse()
-);
-
 const baseS3Config = createSelector(
     deploymentRegionManagement.selectors.currentDeploymentRegion,
     projectManagement.selectors.currentProject,
@@ -93,9 +64,9 @@ const baseS3Config = createSelector(
 
 const s3Configs = createSelector(
     baseS3Config,
-    customS3Configs,
+    projectS3Config,
     deploymentRegionManagement.selectors.currentDeploymentRegion,
-    (baseS3Config, customS3Configs, deploymentRegion) => {
+    (baseS3Config, projectS3Config, deploymentRegion) => {
         function getDataSource(params: {
             url: string;
             pathStyleAccess: boolean;
@@ -117,8 +88,8 @@ const s3Configs = createSelector(
             return out;
         }
 
-        const s3Configs = customS3Configs.map(customS3Config => ({
-            "customConfigIndex": id<number | undefined>(customS3Config.index),
+        const s3Configs = projectS3Config.customConfigs.map((customS3Config, index) => ({
+            "customConfigIndex": id<number | undefined>(index),
             "dataSource": getDataSource({
                 "url": customS3Config.url,
                 "pathStyleAccess": customS3Config.pathStyleAccess,
@@ -128,8 +99,8 @@ const s3Configs = createSelector(
             "accountFriendlyName": id<string | undefined>(
                 customS3Config.accountFriendlyName
             ),
-            "isUsedForXOnyxia": customS3Config.isUsedForXOnyxia,
-            "isUsedForExplorer": customS3Config.isUsedForExplorer
+            "isUsedForXOnyxia": projectS3Config.indexForXOnyxia === index,
+            "isUsedForExplorer": projectS3Config.indexForExplorer === index
         }));
 
         if (deploymentRegion.s3?.sts !== undefined) {
@@ -156,9 +127,7 @@ const s3Configs = createSelector(
 );
 
 export const protectedSelectors = {
-    indexOfCustomS3ConfigForXOnyxia,
-    customS3Configs,
-    customS3ConfigForExplorer,
+    projectS3Config,
     baseS3Config
 };
 

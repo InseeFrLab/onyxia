@@ -221,19 +221,17 @@ export const thunks = {
                         break use_custom_s3_config;
                     }
 
-                    const customS3ConfigIndex =
-                        s3ConfigManagement.protectedSelectors.indexOfCustomS3ConfigForXOnyxia(
-                            getState()
-                        );
+                    const { indexForXOnyxia } =
+                        s3ConfigManagement.protectedSelectors.projectS3Config(getState());
 
-                    if (customS3ConfigIndex === undefined) {
+                    if (indexForXOnyxia === undefined) {
                         break use_custom_s3_config;
                     }
 
                     dispatch(
                         thunks.useSpecificS3Config({
                             "type": "custom",
-                            customS3ConfigIndex
+                            "customS3ConfigIndex": indexForXOnyxia
                         })
                     );
                 }
@@ -248,16 +246,14 @@ export const thunks = {
 
             dispatch(actions.allDefaultRestored());
 
-            const customS3ConfigIndex =
-                s3ConfigManagement.protectedSelectors.indexOfCustomS3ConfigForXOnyxia(
-                    getState()
-                );
+            const { indexForXOnyxia } =
+                s3ConfigManagement.protectedSelectors.projectS3Config(getState());
 
             dispatch(
                 thunks.useSpecificS3Config(
-                    customS3ConfigIndex === undefined
-                        ? { "type": "sts" }
-                        : { "type": "custom", customS3ConfigIndex }
+                    indexForXOnyxia === undefined
+                        ? { "type": "default" }
+                        : { "type": "custom", "customS3ConfigIndex": indexForXOnyxia }
                 )
             );
         },
@@ -359,7 +355,7 @@ export const thunks = {
         (
             params:
                 | {
-                      type: "sts";
+                      type: "default";
                       customS3ConfigIndex?: never;
                   }
                 | {
@@ -372,7 +368,7 @@ export const thunks = {
 
             const [dispatch, getState, rootContext] = args;
 
-            if (type === "sts") {
+            if (type === "default") {
                 dispatch(
                     actions.s3ConfigChanged({
                         "customS3ConfigIndex": undefined
@@ -389,10 +385,9 @@ export const thunks = {
             const xOnyxiaContextWithCustomS3Config: XOnyxiaContext = {
                 ...xOnyxiaContext,
                 "s3": (() => {
-                    const customS3Configs =
-                        s3ConfigManagement.protectedSelectors.customS3Configs(getState());
-
-                    const customS3Config = customS3Configs[customS3ConfigIndex];
+                    const customS3Config =
+                        s3ConfigManagement.protectedSelectors.projectS3Config(getState())
+                            .customConfigs[customS3ConfigIndex];
 
                     assert(customS3Config !== undefined);
 

@@ -294,14 +294,16 @@ export async function bootstrapCore(
             )
             .toStateful()
             .pipe((): [ParamsOfCreateS3Client.NoSts | undefined] => {
-                const customS3ConfigForExplorer =
-                    usecases.s3ConfigManagement.protectedSelectors.customS3ConfigForExplorer(
+                const { indexForExplorer, customConfigs } =
+                    usecases.s3ConfigManagement.protectedSelectors.projectS3Config(
                         getState()
                     );
 
-                if (customS3ConfigForExplorer === undefined) {
+                if (indexForExplorer === undefined) {
                     return [undefined];
                 }
+
+                const customS3ConfigForExplorer = customConfigs[indexForExplorer];
 
                 return [
                     id<ParamsOfCreateS3Client.NoSts>({

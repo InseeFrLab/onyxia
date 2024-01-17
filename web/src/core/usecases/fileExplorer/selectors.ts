@@ -151,22 +151,24 @@ const isFileExplorerEnabled = (rootState: RootState) => {
         return false;
     }
 
-    const customS3Config =
-        s3ConfigManagement.protectedSelectors.customS3ConfigForExplorer(rootState);
+    const { indexForExplorer } =
+        s3ConfigManagement.protectedSelectors.projectS3Config(rootState);
 
-    return customS3Config !== undefined;
+    return indexForExplorer !== undefined;
 };
 
 const workingDirectoryPath = createSelector(
-    s3ConfigManagement.protectedSelectors.customS3ConfigForExplorer,
+    s3ConfigManagement.protectedSelectors.projectS3Config,
     s3ConfigManagement.protectedSelectors.baseS3Config,
-    (customS3ConfigForExplorer, baseS3Config) => {
+    (projectS3Config, baseS3Config) => {
         from_project_configs: {
-            if (customS3ConfigForExplorer === undefined) {
+            const { indexForExplorer, customConfigs } = projectS3Config;
+
+            if (indexForExplorer === undefined) {
                 break from_project_configs;
             }
 
-            return customS3ConfigForExplorer.workingDirectoryPath;
+            return customConfigs[indexForExplorer].workingDirectoryPath;
         }
         return baseS3Config.workingDirectoryPath;
     }

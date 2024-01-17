@@ -88,7 +88,7 @@ export type Props = {
               onSelectedS3ConfigChange: (
                   params:
                       | {
-                            type: "sts";
+                            type: "default";
                             customS3ConfigIndex?: never;
                         }
                       | {
@@ -332,7 +332,7 @@ export const LauncherMainCard = memo((props: Props) => {
 
                                     if (value === "sts") {
                                         s3ConfigsSelect.onSelectedS3ConfigChange({
-                                            "type": "sts"
+                                            "type": "default"
                                         });
                                         return;
                                     }
