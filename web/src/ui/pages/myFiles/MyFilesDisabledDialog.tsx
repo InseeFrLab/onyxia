@@ -1,30 +1,18 @@
-import { useState, memo } from "react";
+import { memo } from "react";
 import { Dialog } from "onyxia-ui/Dialog";
 import { Button } from "onyxia-ui/Button";
-import type { NonPostableEvt } from "evt";
-import { useEvt } from "evt/hooks";
 import { routes } from "ui/routes";
 import { declareComponentKeys, useTranslation } from "ui/i18n";
 
-export type MyFilesDisabledDialogProps = {
-    evtOpen: NonPostableEvt<void>;
-};
-
-export const MyFilesDisabledDialog = memo((props: MyFilesDisabledDialogProps) => {
-    const { evtOpen } = props;
-
-    const [isOpen, setIsOpen] = useState(false);
-
-    useEvt(ctx => evtOpen.attach(ctx, () => setIsOpen(true)), [evtOpen]);
-
-    const onClose = () => setIsOpen(false);
+export const MyFilesDisabledDialog = memo(() => {
+    const onClose = () => routes.home().push();
 
     const { t } = useTranslation({ MyFilesDisabledDialog });
 
     return (
         <Dialog
             title={t("dialog title")}
-            isOpen={isOpen}
+            isOpen={true}
             onClose={onClose}
             body={t("dialog body")}
             buttons={

@@ -13,12 +13,6 @@ import { customIcons } from "ui/theme";
 import { symToStr } from "tsafe/symToStr";
 import { LocalizedMarkdown } from "ui/shared/Markdown";
 import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
-import { useConst } from "powerhooks/useConst";
-import { Evt } from "evt";
-import {
-    MyFilesDisabledDialog,
-    type MyFilesDisabledDialogProps
-} from "ui/pages/myFiles/MyFilesDisabledDialog";
 
 type Props = {
     className?: string;
@@ -30,17 +24,12 @@ export const LeftBar = memo((props: Props) => {
     const { secretExplorer } = useCore().functions;
 
     const { isDevModeEnabled } = useCoreState("userConfigs", "userConfigs");
-    const isFileExplorerEnabled = useCoreState("fileExplorer", "isFileExplorerEnabled");
 
     const route = useRoute();
 
     const { logoContainerWidth } = useLogoContainerWidth();
 
     const { t } = useTranslation({ LeftBar });
-
-    const evtMyFilesDisabledDialogOpen = useConst(() =>
-        Evt.create<MyFilesDisabledDialogProps["evtOpen"]>()
-    );
 
     return (
         <>
@@ -94,12 +83,7 @@ export const LeftBar = memo((props: Props) => {
                     "myFiles": {
                         "icon": customIcons.filesSvgUrl,
                         "label": t("myFiles"),
-                        "link": !isFileExplorerEnabled
-                            ? {
-                                  "onClick": () => evtMyFilesDisabledDialogOpen.post(),
-                                  "href": "#"
-                              }
-                            : routes.myFiles().link
+                        "link": routes.myFiles().link
                     },
                     ...(!isDevModeEnabled
                         ? ({} as never)
@@ -179,7 +163,6 @@ export const LeftBar = memo((props: Props) => {
                     assert<Equals<typeof route, never>>(false);
                 })()}
             />
-            <MyFilesDisabledDialog evtOpen={evtMyFilesDisabledDialogOpen} />
         </>
     );
 });
