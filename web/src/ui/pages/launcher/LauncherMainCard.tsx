@@ -316,11 +316,6 @@ export const LauncherMainCard = memo((props: Props) => {
                             </InputLabel>
                             <Select
                                 labelId={s3ConfigInputLabelId}
-                                /*
-                                value={`${
-                                    s3ConfigsWrap.selectedCustomS3ConfigIndex ?? -1
-                                }`}
-                                */
                                 value={(() => {
                                     switch (s3ConfigsWrap.selectedS3Config.type) {
                                         case "custom":

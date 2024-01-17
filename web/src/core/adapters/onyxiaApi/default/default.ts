@@ -129,7 +129,18 @@ export function createOnyxiaApi(params: {
                                                                     .clientID
                                                         }
                                           },
-                                "workingDirectory": S3.workingDirectory
+                                "workingDirectory":
+                                    S3.workingDirectory ??
+                                    (assert(
+                                        S3.sts !== undefined,
+                                        "If region.data.S3.sts is not undefined workingDirectory must be specified"
+                                    ),
+                                    {
+                                        "bucketMode": "shared",
+                                        "bucketName": "",
+                                        "prefix": "",
+                                        "prefixGroup": ""
+                                    })
                             };
                         })(),
                         "allowedURIPatternForUserDefinedInitScript":

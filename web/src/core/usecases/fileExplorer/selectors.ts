@@ -2,7 +2,6 @@ import type { State as RootState } from "core/bootstrap";
 import memoize from "memoizee";
 import { type State, name } from "./state";
 import { createSelector } from "redux-clean-architecture";
-import { assert } from "tsafe/assert";
 import * as deploymentRegionManagement from "core/usecases/deploymentRegionManagement";
 import * as userConfigs from "core/usecases/userConfigs";
 import * as userAuthentication from "core/usecases/userAuthentication";
@@ -160,8 +159,8 @@ const isFileExplorerEnabled = (rootState: RootState) => {
 
 const workingDirectoryPath = createSelector(
     s3ConfigManagement.protectedSelectors.customS3ConfigForExplorer,
-    s3ConfigManagement.protectedSelectors.stsS3Config,
-    (customS3ConfigForExplorer, stsS3Config) => {
+    s3ConfigManagement.protectedSelectors.baseS3Config,
+    (customS3ConfigForExplorer, baseS3Config) => {
         from_project_configs: {
             if (customS3ConfigForExplorer === undefined) {
                 break from_project_configs;
@@ -169,10 +168,7 @@ const workingDirectoryPath = createSelector(
 
             return customS3ConfigForExplorer.workingDirectoryPath;
         }
-
-        assert(stsS3Config !== undefined);
-
-        return stsS3Config.workingDirectoryPath;
+        return baseS3Config.workingDirectoryPath;
     }
 );
 

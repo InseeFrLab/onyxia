@@ -602,7 +602,7 @@ const isThereASavedConfigWithThisFriendlyName = createSelector(
 );
 
 const availableS3configs = createSelector(
-    s3ConfigManagement.protectedSelectors.s3Configs,
+    s3ConfigManagement.selectors.s3Configs,
     readyState,
     (s3Configs, state) => {
         if (state === undefined) {

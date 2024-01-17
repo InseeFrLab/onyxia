@@ -34,53 +34,6 @@ export const thunks = {
                 })
             );
         },
-    "addCustomS3Config":
-        (params: {
-            customS3Config: projectManagement.ProjectConfigs.CustomS3Config & {
-                isUsedForXOnyxia: boolean;
-                isUsedForExplorer: boolean;
-            };
-        }) =>
-        async (...args) => {
-            const [dispatch, getState] = args;
-
-            const {
-                customS3Config: { isUsedForXOnyxia, isUsedForExplorer, ...customS3Config }
-            } = params;
-
-            const s3 = structuredClone(
-                projectManagement.protectedSelectors.currentProjectConfigs(getState()).s3
-            );
-
-            s3.customConfigs.push({
-                ...customS3Config,
-                "workingDirectoryPath":
-                    customS3Config.workingDirectoryPath
-                        .trim()
-                        .replace(/\/\//g, "/") // Remove double slashes if any
-                        .replace(/^\//g, "") // Ensure no leading slash
-                        .replace(/\/$/g, "") + "/" // Enforce trailing slash
-            });
-
-            {
-                const newIndex = s3.customConfigs.length - 1;
-
-                if (isUsedForXOnyxia) {
-                    s3.indexForXOnyxia = newIndex;
-                }
-
-                if (isUsedForExplorer) {
-                    s3.indexForExplorer = newIndex;
-                }
-            }
-
-            await dispatch(
-                projectManagement.protectedThunks.updateConfigValue({
-                    "key": "s3",
-                    "value": s3
-                })
-            );
-        },
     "setConfigUsage":
         (params: {
             customConfigIndex: number | undefined;
@@ -119,6 +72,56 @@ export const thunks = {
                     case "xOnyxia":
                         s3.indexForXOnyxia = index;
                         break;
+                }
+            }
+
+            await dispatch(
+                projectManagement.protectedThunks.updateConfigValue({
+                    "key": "s3",
+                    "value": s3
+                })
+            );
+        }
+} satisfies Thunks;
+
+export const protectedThunks = {
+    "addCustomS3Config":
+        (params: {
+            customS3Config: projectManagement.ProjectConfigs.CustomS3Config & {
+                isUsedForXOnyxia: boolean;
+                isUsedForExplorer: boolean;
+            };
+        }) =>
+        async (...args) => {
+            const [dispatch, getState] = args;
+
+            const {
+                customS3Config: { isUsedForXOnyxia, isUsedForExplorer, ...customS3Config }
+            } = params;
+
+            const s3 = structuredClone(
+                projectManagement.protectedSelectors.currentProjectConfigs(getState()).s3
+            );
+
+            s3.customConfigs.push({
+                ...customS3Config,
+                "workingDirectoryPath":
+                    customS3Config.workingDirectoryPath
+                        .trim()
+                        .replace(/\/\//g, "/") // Remove double slashes if any
+                        .replace(/^\//g, "") // Ensure no leading slash
+                        .replace(/\/$/g, "") + "/" // Enforce trailing slash
+            });
+
+            {
+                const newIndex = s3.customConfigs.length - 1;
+
+                if (isUsedForXOnyxia) {
+                    s3.indexForXOnyxia = newIndex;
+                }
+
+                if (isUsedForExplorer) {
+                    s3.indexForExplorer = newIndex;
                 }
             }
 

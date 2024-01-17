@@ -40,10 +40,7 @@ export const ProjectSettingsS3ConfigTab = memo((props: Props) => {
             Evt.create<MaybeAcknowledgeConfigVolatilityDialogProps["evtOpen"]>()
     }));
 
-    const { s3Configs, newCustomConfigDefaultValues } = useCoreState(
-        "s3ConfigManagement",
-        "main"
-    );
+    const s3Configs = useCoreState("s3ConfigManagement", "s3Configs");
 
     const { s3ConfigManagement } = useCore().functions;
 
@@ -137,15 +134,22 @@ export const ProjectSettingsS3ConfigTab = memo((props: Props) => {
                         }
 
                         evtAddCustomS3ConfigDialogOpen.post({
-                            "defaultValues": newCustomConfigDefaultValues,
+                            "defaultValues": {
+                                "pathStyleAccess": true,
+                                "region": "eu-west-3",
+                                "url": null,
+                                "workingDirectoryPath": ""
+                            },
                             "resolveNewCustomConfig": ({ newCustomConfig }) => {
                                 if (newCustomConfig === undefined) {
                                     return;
                                 }
 
+                                /*
                                 s3ConfigManagement.addCustomS3Config({
                                     "customS3Config": newCustomConfig
                                 });
+                                */
                             }
                         });
                     }}

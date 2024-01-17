@@ -518,76 +518,60 @@ const privateThunks = {
                     ? undefined
                     : userConfigs.kaggleApiToken ?? undefined,
                 "s3": await (async () => {
-                    const stsS3Config = s3ConfigManagement.protectedSelectors.stsS3Config(
-                        getState()
-                    );
+                    const baseS3Config =
+                        s3ConfigManagement.protectedSelectors.baseS3Config(getState());
 
-                    if (stsS3Config === undefined) {
-                        return {
-                            "AWS_ACCESS_KEY_ID": "",
-                            "AWS_SECRET_ACCESS_KEY": "",
-                            "AWS_SESSION_TOKEN": "",
-                            "AWS_BUCKET_NAME": "",
-                            "AWS_DEFAULT_REGION": "",
-                            "AWS_S3_ENDPOINT": "",
-                            "port": 0,
-                            "pathStyleAccess": true
-                        };
-                    }
+                    const { host, port = 443 } = parseUrl(baseS3Config.url);
 
-                    assert(s3ClientSts !== undefined);
-
-                    const { host, port = 443 } = parseUrl(stsS3Config.url);
-
-                    return {
-                        ...(await (async () => {
-                            if (!doInjectPersonalInfos) {
-                                return {
-                                    "AWS_ACCESS_KEY_ID": "",
-                                    "AWS_SECRET_ACCESS_KEY": "",
-                                    "AWS_SESSION_TOKEN": ""
-                                };
-                            }
-
-                            const tokens = await s3ClientSts
-                                .getToken({
-                                    "doForceRenew": false
-                                })
-                                .catch(error => error as Error);
-
-                            if (tokens instanceof Error) {
-                                console.warn(
-                                    [
-                                        "Failed to get temporary credentials for S3.",
-                                        "You will not be able to use S3.",
-                                        "Please contact support."
-                                    ].join("\n")
-                                );
-                                return {
-                                    "AWS_ACCESS_KEY_ID": "",
-                                    "AWS_SECRET_ACCESS_KEY": "",
-                                    "AWS_SESSION_TOKEN": ""
-                                };
-                            }
-
-                            const { accessKeyId, secretAccessKey, sessionToken } = tokens;
-
-                            assert(sessionToken !== undefined);
-
-                            return {
-                                "AWS_ACCESS_KEY_ID": accessKeyId,
-                                "AWS_SECRET_ACCESS_KEY": secretAccessKey,
-                                "AWS_SESSION_TOKEN": sessionToken
-                            };
-                        })()),
+                    const s3 = {
+                        "AWS_ACCESS_KEY_ID": "",
+                        "AWS_SECRET_ACCESS_KEY": "",
+                        "AWS_SESSION_TOKEN": "",
                         "AWS_BUCKET_NAME": bucketNameAndObjectNameFromS3Path(
-                            stsS3Config.workingDirectoryPath
+                            baseS3Config.workingDirectoryPath
                         ).bucketName,
-                        "AWS_DEFAULT_REGION": stsS3Config.region,
+                        "AWS_DEFAULT_REGION": baseS3Config.region,
                         "AWS_S3_ENDPOINT": host,
                         port,
-                        "pathStyleAccess": stsS3Config.pathStyleAccess
+                        "pathStyleAccess": baseS3Config.pathStyleAccess
                     };
+
+                    inject_tokens: {
+                        if (!doInjectPersonalInfos) {
+                            break inject_tokens;
+                        }
+
+                        if (s3ClientSts === undefined) {
+                            break inject_tokens;
+                        }
+
+                        const tokens = await s3ClientSts
+                            .getToken({
+                                "doForceRenew": false
+                            })
+                            .catch(error => error as Error);
+
+                        if (tokens instanceof Error) {
+                            console.warn(
+                                [
+                                    "Failed to get temporary credentials for S3.",
+                                    "You will not be able to use S3.",
+                                    "Please contact support."
+                                ].join("\n")
+                            );
+                            break inject_tokens;
+                        }
+
+                        const { accessKeyId, secretAccessKey, sessionToken } = tokens;
+
+                        assert(sessionToken !== undefined);
+
+                        s3.AWS_ACCESS_KEY_ID = accessKeyId;
+                        s3.AWS_SECRET_ACCESS_KEY = secretAccessKey;
+                        s3.AWS_SESSION_TOKEN = sessionToken;
+                    }
+
+                    return s3;
                 })(),
                 "region": {
                     "defaultIpProtection": region.defaultIpProtection,

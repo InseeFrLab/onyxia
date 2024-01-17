@@ -100,7 +100,8 @@ export type ApiTypes = {
                         };
                     };
 
-                    workingDirectory:
+                    /** Ok to be undefined only if sts is undefined */
+                    workingDirectory?:
                         | {
                               bucketMode: "shared";
                               bucketName: string;

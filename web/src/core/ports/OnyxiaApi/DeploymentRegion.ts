@@ -95,57 +95,21 @@ export type DeploymentRegion = {
         | undefined;
 };
 export namespace DeploymentRegion {
+    /** https://github.com/InseeFrLab/onyxia-api/blob/main/docs/region-configuration.md#s3 */
     export type S3 = {
-        /**
-         * The URL of the S3 server.
-         * Examples: "https://minio.sspcloud.fr" or "https://s3.amazonaws.com".
-         */
         url: string;
-
-        /**
-         * If the bucket is specified as a subdomain, set this to true.
-         * Example: "https://onyxia.amazonaws.com/user-foo/my-file.parquet" -> true
-         * If the bucket is specified as a path, set this to false.
-         * Example: "https://minio.lab.sspcloud.fr/onyxia/user-foo/my-file.parquet" -> false
-         */
         pathStyleAccess: boolean;
-
-        /**
-         * The region for the S3 service. Optional for MinIO as it's not relevant.
-         */
         region: string | undefined;
-
-        /**
-         * Configuration for obtaining temporary S3 credentials via OIDC.
-         * Users can also provide their own credentials (access key and secret key)
-         * via the user interface.
-         */
         sts:
             | {
                   url: string | undefined;
-                  /**
-                   * The duration for which the temporary credentials are valid.
-                   * For AWS: maximum of 43200 seconds (12 hours).
-                   * For MinIO: maximum of 604800 seconds (7 days).
-                   */
                   durationSeconds: number | undefined;
-
-                  /**
-                   * Role configuration, mandatory for AWS but optional for MinIO.
-                   * Example roleARN: "arn:aws:iam::123456789012:role/onyxia".
-                   * Example roleSessionName: "onyxia".
-                   */
                   role:
                       | {
                             roleARN: string;
                             roleSessionName: string;
                         }
                       | undefined;
-
-                  /**
-                   * OIDC configuration details. If not specified, the default Onyxia API authentication configuration is used.
-                   * Specify only a clientID to use the same issuerURI as the Onyxia API authentication.
-                   */
                   oidcParams:
                       | {
                             issuerUri?: string;
@@ -154,38 +118,6 @@ export namespace DeploymentRegion {
                       | undefined;
               }
             | undefined;
-
-        /**
-         * Configuration for the working directory in the S3 storage.
-         * There are two modes: single bucket and multi bucket.
-         *
-         * Single bucket mode:
-         * All users and projects share the same bucket. Commonly used with AWS.
-         * Example configuration for a user 'bob' in a project group 'exploration':
-         *    "workingDirectory": {
-         *        "bucketMode": "single",
-         *        "bucketName": "onyxia",
-         *        "prefix": "user-",
-         *        "prefixGroup": "project-",
-         *        "subPath": "",
-         *        "subPathGroup": "foo/bar/"
-         *    }
-         * Personal project directory: onyxia/user-bob/
-         * Group project directory: onyxia/project-exploration/foo/bar/
-         *
-         * Multi bucket mode:
-         * Each user and project has its own bucket. Recommended for MinIO.
-         * Example configuration for user 'bob' in the 'exploration' group:
-         *    "workingDirectory": {
-         *       "bucketMode": "multi",
-         *       "bucketNamePrefix": "user-",
-         *       "bucketNamePrefixGroup": "project-",
-         *       "usbPath": "",
-         *       "usbPathGroup": "foo/bar/"
-         *    }
-         * Personal project directory: user-bob/
-         * Group project directory: project-exploration/foo/bar/
-         */
         workingDirectory:
             | {
                   bucketMode: "shared";
