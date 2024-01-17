@@ -68,6 +68,16 @@ export type XOnyxiaContext = {
         AWS_BUCKET_NAME: string;
         port: number;
         pathStyleAccess: boolean;
+        /**
+         * The user is assumed to have read/write access on every
+         * object starting with this prefix on the bucket
+         **/
+        objectNamePrefix: string;
+        /**
+         * Only for making it easier for charts editors.
+         * <AWS_BUCKET_NAME>/<objectNamePrefix>
+         * */
+        workingDirectoryPath: string;
     };
     region: {
         defaultIpProtection: boolean | undefined;

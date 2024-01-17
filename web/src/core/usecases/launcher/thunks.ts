@@ -144,7 +144,11 @@ export const thunks = {
                                     "AWS_S3_ENDPOINT":
                                         xOnyxiaContext.s3.AWS_S3_ENDPOINT + "x",
                                     "port": xOnyxiaContext.s3.port + 1,
-                                    "pathStyleAccess": !xOnyxiaContext.s3.pathStyleAccess
+                                    "pathStyleAccess": !xOnyxiaContext.s3.pathStyleAccess,
+                                    "objectNamePrefix":
+                                        xOnyxiaContext.s3.objectNamePrefix + "x/",
+                                    "workingDirectoryPath":
+                                        xOnyxiaContext.s3.workingDirectoryPath + "x/"
                                 }
                             }
                         }),
@@ -393,17 +397,22 @@ export const thunks = {
 
                     const { host, port = 443 } = parseUrl(customS3Config.url);
 
+                    const { bucketName, objectName: objectNamePrefix } =
+                        bucketNameAndObjectNameFromS3Path(
+                            customS3Config.workingDirectoryPath
+                        );
+
                     return {
                         "AWS_ACCESS_KEY_ID": customS3Config.accessKeyId,
-                        "AWS_BUCKET_NAME": bucketNameAndObjectNameFromS3Path(
-                            customS3Config.workingDirectoryPath
-                        ).bucketName,
+                        "AWS_BUCKET_NAME": bucketName,
                         "AWS_SECRET_ACCESS_KEY": customS3Config.secretAccessKey,
                         "AWS_SESSION_TOKEN": customS3Config.sessionToken ?? "",
                         "AWS_DEFAULT_REGION": customS3Config.region,
                         "AWS_S3_ENDPOINT": host,
                         port,
-                        "pathStyleAccess": customS3Config.pathStyleAccess
+                        "pathStyleAccess": customS3Config.pathStyleAccess,
+                        objectNamePrefix,
+                        "workingDirectoryPath": customS3Config.workingDirectoryPath
                     };
                 })()
             };
@@ -517,18 +526,22 @@ const privateThunks = {
                         s3ConfigManagement.protectedSelectors.baseS3Config(getState());
 
                     const { host, port = 443 } = parseUrl(baseS3Config.url);
+                    const { bucketName, objectName: objectNamePrefix } =
+                        bucketNameAndObjectNameFromS3Path(
+                            baseS3Config.workingDirectoryPath
+                        );
 
                     const s3 = {
                         "AWS_ACCESS_KEY_ID": "",
                         "AWS_SECRET_ACCESS_KEY": "",
                         "AWS_SESSION_TOKEN": "",
-                        "AWS_BUCKET_NAME": bucketNameAndObjectNameFromS3Path(
-                            baseS3Config.workingDirectoryPath
-                        ).bucketName,
+                        "AWS_BUCKET_NAME": bucketName,
                         "AWS_DEFAULT_REGION": baseS3Config.region,
                         "AWS_S3_ENDPOINT": host,
                         port,
-                        "pathStyleAccess": baseS3Config.pathStyleAccess
+                        "pathStyleAccess": baseS3Config.pathStyleAccess,
+                        objectNamePrefix,
+                        "workingDirectoryPath": baseS3Config.workingDirectoryPath
                     };
 
                     inject_tokens: {
