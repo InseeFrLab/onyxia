@@ -525,7 +525,9 @@ const privateThunks = {
                     const baseS3Config =
                         s3ConfigManagement.protectedSelectors.baseS3Config(getState());
 
-                    const { host, port = 443 } = parseUrl(baseS3Config.url);
+                    const { host = "", port = 443 } =
+                        baseS3Config.url !== "" ? parseUrl(baseS3Config.url) : {};
+
                     const { bucketName, objectName: objectNamePrefix } =
                         bucketNameAndObjectNameFromS3Path(
                             baseS3Config.workingDirectoryPath

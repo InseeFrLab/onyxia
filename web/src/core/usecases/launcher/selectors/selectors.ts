@@ -723,7 +723,6 @@ const main = createSelector(
         assert(catalogRepositoryUrl !== undefined);
         assert(launchScript !== undefined);
         assert(chartSourceUrls !== undefined);
-        assert(s3ConfigSelect !== undefined);
 
         return {
             "isReady": true as const,

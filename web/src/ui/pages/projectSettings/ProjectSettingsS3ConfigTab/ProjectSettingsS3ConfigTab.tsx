@@ -137,7 +137,7 @@ export const ProjectSettingsS3ConfigTab = memo((props: Props) => {
                             "defaultValues": {
                                 "pathStyleAccess": true,
                                 "region": "eu-west-3",
-                                "url": null,
+                                "url": "",
                                 "workingDirectoryPath": ""
                             },
                             "resolveNewCustomConfig": ({ newCustomConfig }) => {
