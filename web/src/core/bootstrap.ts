@@ -190,9 +190,9 @@ export async function bootstrapCore(
         await dispatch(usecases.projectManagement.protectedThunks.initialize());
     }
 
-    init_s3_client: {
+    init_s3_clients: {
         if (!oidc.isUserLoggedIn) {
-            break init_s3_client;
+            break init_s3_clients;
         }
 
         if (isSandboxEnvironment) {
@@ -201,7 +201,7 @@ export async function bootstrapCore(
             context.s3ClientForExplorer = s3client;
             context.s3ClientSts = undefined;
 
-            break init_s3_client;
+            break init_s3_clients;
         }
 
         const [{ createS3Client }, { createOidcOrFallback }] = await Promise.all([
@@ -209,28 +209,21 @@ export async function bootstrapCore(
             import("core/adapters/oidc/utils/createOidcOrFallback")
         ]);
 
-        const deploymentRegion =
-            usecases.deploymentRegionManagement.selectors.currentDeploymentRegion(
-                getState()
-            );
-
-        const oidcForS3 =
-            deploymentRegion.s3?.sts === undefined
-                ? undefined
-                : await createOidcOrFallback({
-                      "oidcAdapterImplementationToUseIfNotFallingBack": "default",
-                      "oidcParams": deploymentRegion.s3.sts.oidcParams,
-                      "fallbackOidc": oidc
-                  });
-
-        init_sts_client: {
-            const deploymentRegionS3 = deploymentRegion.s3;
+        init_s3_client_sts: {
+            const { s3: deploymentRegionS3 } =
+                usecases.deploymentRegionManagement.selectors.currentDeploymentRegion(
+                    getState()
+                );
 
             if (deploymentRegionS3?.sts === undefined) {
-                break init_sts_client;
+                break init_s3_client_sts;
             }
 
-            assert(oidcForS3 !== undefined);
+            const oidcForS3 = await createOidcOrFallback({
+                "oidcAdapterImplementationToUseIfNotFallingBack": "default",
+                "oidcParams": deploymentRegionS3.sts.oidcParams,
+                "fallbackOidc": oidc
+            });
 
             const deploymentRegionS3Sts = deploymentRegionS3.sts;
 
@@ -284,6 +277,7 @@ export async function bootstrapCore(
                 );
         }
 
+        // Init s3ClientForExplorer
         evtAction
             .pipe(
                 data =>
