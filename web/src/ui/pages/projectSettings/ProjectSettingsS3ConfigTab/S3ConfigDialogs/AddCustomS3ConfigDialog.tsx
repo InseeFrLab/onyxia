@@ -189,7 +189,6 @@ const Body = memo(() => {
                         ? undefined
                         : t(formValuesErrors.url)
                 }
-                inputProps_aria-invalid={formValuesErrors.url !== undefined}
                 defaultValue={formValues.url}
                 doOnlyShowErrorAfterFirstFocusLost
                 onValueBeingTypedChange={({ value }) =>
@@ -208,7 +207,6 @@ const Body = memo(() => {
                         ? undefined
                         : t(formValuesErrors.region)
                 }
-                inputProps_aria-invalid={formValuesErrors.region !== undefined}
                 defaultValue={formValues.region}
                 doOnlyShowErrorAfterFirstFocusLost
                 onValueBeingTypedChange={({ value }) =>
@@ -226,9 +224,6 @@ const Body = memo(() => {
                     formValuesErrors.workingDirectoryPath === undefined
                         ? undefined
                         : t(formValuesErrors.workingDirectoryPath)
-                }
-                inputProps_aria-invalid={
-                    formValuesErrors.workingDirectoryPath !== undefined
                 }
                 defaultValue={formValues.workingDirectoryPath}
                 doOnlyShowErrorAfterFirstFocusLost
@@ -252,9 +247,6 @@ const Body = memo(() => {
                             ? undefined
                             : t(formValuesErrors.accountFriendlyName)
                     }
-                    inputProps_aria-invalid={
-                        formValuesErrors.accountFriendlyName !== undefined
-                    }
                     defaultValue={formValues.accountFriendlyName}
                     doOnlyShowErrorAfterFirstFocusLost
                     onValueBeingTypedChange={({ value }) =>
@@ -273,7 +265,6 @@ const Body = memo(() => {
                             ? undefined
                             : t(formValuesErrors.accessKeyId)
                     }
-                    inputProps_aria-invalid={formValuesErrors.accessKeyId !== undefined}
                     defaultValue={formValues.accessKeyId}
                     doOnlyShowErrorAfterFirstFocusLost
                     onValueBeingTypedChange={({ value }) =>
@@ -290,9 +281,6 @@ const Body = memo(() => {
                         formValuesErrors.secretAccessKey === undefined
                             ? undefined
                             : t(formValuesErrors.secretAccessKey)
-                    }
-                    inputProps_aria-invalid={
-                        formValuesErrors.secretAccessKey !== undefined
                     }
                     defaultValue={formValues.secretAccessKey}
                     doOnlyShowErrorAfterFirstFocusLost
@@ -312,7 +300,6 @@ const Body = memo(() => {
                             ? undefined
                             : t(formValuesErrors.sessionToken)
                     }
-                    inputProps_aria-invalid={formValuesErrors.sessionToken !== undefined}
                     defaultValue={formValues.sessionToken ?? ""}
                     doOnlyShowErrorAfterFirstFocusLost
                     onValueBeingTypedChange={({ value }) =>

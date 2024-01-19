@@ -448,8 +448,8 @@ const { TabContent } = (() => {
                                                     className={classes.textField}
                                                     label={label}
                                                     defaultValue={formField.value.yamlStr}
-                                                    inputProps_aria-invalid={hasError}
                                                     helperText={helperText}
+                                                    helperTextError={hasError}
                                                     disabled={formField.isReadonly}
                                                     selectAllTextOnFocus={false}
                                                     onValueBeingTypedChange={onYamlValueBeingChangeFactory(
@@ -527,8 +527,8 @@ const { TabContent } = (() => {
                                                     className={classes.textField}
                                                     label={label}
                                                     defaultValue={formField.value}
-                                                    inputProps_aria-invalid={hasError}
                                                     helperText={helperText}
+                                                    helperTextError={hasError}
                                                     disabled={formField.isReadonly}
                                                     onValueBeingTypedChange={onValueBeingChangeFactory(
                                                         JSON.stringify(formField.path)
