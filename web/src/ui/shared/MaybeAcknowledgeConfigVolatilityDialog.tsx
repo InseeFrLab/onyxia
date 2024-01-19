@@ -37,16 +37,10 @@ export const MaybeAcknowledgeConfigVolatilityDialog = memo(
         useEvt(
             ctx => {
                 evtOpen.attach(ctx, ({ resolve }) => {
-                    console.log({
-                        isVaultEnabled,
-                        doDisplayAcknowledgeConfigVolatilityDialogIfNoVault
-                    });
-
                     if (
                         isVaultEnabled ||
                         !doDisplayAcknowledgeConfigVolatilityDialogIfNoVault
                     ) {
-                        console.log("resolve here!");
                         resolve({ "doProceed": true });
                         return;
                     }
