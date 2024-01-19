@@ -11,7 +11,12 @@ export namespace State {
 
     export type Ready = {
         stateDescription: "ready";
-        formValues: {
+        formValues: Ready.FormValues;
+        connectionTestStatus: Ready.ConnectionTestStatus;
+    };
+
+    export namespace Ready {
+        export type FormValues = {
             url: string;
             region: string;
             workingDirectoryPath: string;
@@ -23,8 +28,7 @@ export namespace State {
             isUsedForXOnyxia: boolean;
             isUsedForExplorer: boolean;
         };
-        connectionTestStatus: Ready.ConnectionTestStatus;
-    };
+    }
 
     export namespace Ready {
         export type ConnectionTestStatus =
@@ -52,6 +56,13 @@ export namespace State {
         }
     }
 }
+
+export type ChangeValueParams<
+    K extends keyof State.Ready.FormValues = keyof State.Ready.FormValues
+> = {
+    key: K;
+    value: State.Ready.FormValues[K];
+};
 
 export const name = "s3ConfigCreation";
 
@@ -86,15 +97,12 @@ export const { reducer, actions } = createUsecaseActions({
                 )
             });
         },
-        "formValueUpdated": (
+        "formValueChanged": (
             state,
             {
                 payload
             }: {
-                payload: {
-                    key: keyof State.Ready["formValues"];
-                    value: State.Ready["formValues"][keyof State.Ready["formValues"]];
-                };
+                payload: ChangeValueParams;
             }
         ) => {
             assert(state.stateDescription === "ready");
@@ -111,12 +119,12 @@ export const { reducer, actions } = createUsecaseActions({
                     "itTestOngoing": false
                 });
         },
-        "validityTestStarted": state => {
+        "connectionTestStarted": state => {
             assert(state.stateDescription === "ready");
 
             state.connectionTestStatus.itTestOngoing = true;
         },
-        "validityTestSucceeded": state => {
+        "connectionTestSucceeded": state => {
             assert(state.stateDescription === "ready");
 
             state.connectionTestStatus = id<State.Ready.ConnectionTestStatus.Valid>({
@@ -124,7 +132,7 @@ export const { reducer, actions } = createUsecaseActions({
                 "itTestOngoing": false
             });
         },
-        "validityTestFailed": (
+        "connectionTestFailed": (
             state,
             { payload }: { payload: { errorMessage: string } }
         ) => {

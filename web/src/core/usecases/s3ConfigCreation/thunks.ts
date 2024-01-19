@@ -1,7 +1,7 @@
 import type { Thunks } from "core/bootstrap";
-import { actions } from "./state";
+import { actions, type State, ChangeValueParams } from "./state";
 import { assert } from "tsafe/assert";
-import { protectedSelectors } from "./selectors";
+import { privateSelectors } from "./selectors";
 import * as s3ConfigManagement from "core/usecases/s3ConfigManagement";
 
 export const thunks = {
@@ -10,60 +10,148 @@ export const thunks = {
         (...args) => {
             const [dispatch, getState] = args;
 
-            const stsS3Config = s3ConfigManagement.protectedSelectors.baseS3Config(
+            const baseS3Config = s3ConfigManagement.protectedSelectors.baseS3Config(
                 getState()
             );
 
             dispatch(
                 actions.initialized({
                     "initialFormValues": {
-                        // NO! This must be read from the region! We can have no STS and still want good defaults.
-                        "url": stsS3Config?.url ?? "",
-                        "region": stsS3Config?.region ?? "",
-                        "workingDirectoryPath": stsS3Config?.workingDirectoryPath ?? "",
-                        "pathStyleAccess": stsS3Config?.pathStyleAccess ?? false,
-                        "accountFriendlyName": "",
+                        "url": baseS3Config?.url ?? "",
+                        "region": baseS3Config?.region ?? "",
+                        "workingDirectoryPath": baseS3Config?.workingDirectoryPath ?? "",
+                        "pathStyleAccess": baseS3Config?.pathStyleAccess ?? false,
                         "accessKeyId": "",
                         "secretAccessKey": "",
+                        "accountFriendlyName": "",
                         "sessionToken": undefined,
                         "isUsedForExplorer": false,
                         "isUsedForXOnyxia": false
                     }
                 })
             );
+        },
+    "reset":
+        () =>
+        (...args) => {
+            const [dispatch] = args;
 
-            return {
-                "cleanup": () => {
-                    dispatch(actions.stateResetToNotInitialized());
-                }
-            };
+            dispatch(actions.stateResetToNotInitialized());
         },
     "submit":
         () =>
         async (...args) => {
             const [dispatch, getState] = args;
 
-            const formValues = protectedSelectors.formValues(getState());
+            const submittableFormValues = privateSelectors.submittableFormValues(
+                getState()
+            );
 
-            assert(formValues !== undefined);
+            assert(submittableFormValues !== undefined);
 
             await dispatch(
                 s3ConfigManagement.protectedThunks.addCustomS3Config({
                     "customS3Config": {
-                        "url": formValues.url,
-                        "region": formValues.region,
-                        "workingDirectoryPath": formValues.workingDirectoryPath,
-                        "pathStyleAccess": formValues.pathStyleAccess,
-                        "accountFriendlyName": formValues.accountFriendlyName,
-                        "accessKeyId": formValues.accessKeyId,
-                        "secretAccessKey": formValues.secretAccessKey,
-                        "sessionToken": formValues.sessionToken,
-                        "isUsedForExplorer": formValues.isUsedForExplorer,
-                        "isUsedForXOnyxia": formValues.isUsedForXOnyxia
+                        "url": submittableFormValues.url,
+                        "region": submittableFormValues.region,
+                        "workingDirectoryPath":
+                            submittableFormValues.workingDirectoryPath,
+                        "pathStyleAccess": submittableFormValues.pathStyleAccess,
+                        "accountFriendlyName": submittableFormValues.accountFriendlyName,
+                        "accessKeyId": submittableFormValues.accessKeyId,
+                        "secretAccessKey": submittableFormValues.secretAccessKey,
+                        "sessionToken": submittableFormValues.sessionToken,
+                        "isUsedForExplorer": submittableFormValues.isUsedForExplorer,
+                        "isUsedForXOnyxia": submittableFormValues.isUsedForXOnyxia
                     }
                 })
             );
 
             dispatch(actions.stateResetToNotInitialized());
+        },
+    "testConnection":
+        () =>
+        async (...args) => {
+            const [dispatch, getState] = args;
+
+            dispatch(actions.connectionTestStarted());
+
+            const submittableFormValues = privateSelectors.submittableFormValues(
+                getState()
+            );
+
+            assert(submittableFormValues !== undefined);
+
+            const result = await dispatch(
+                s3ConfigManagement.protectedThunks.testConnection({
+                    "customS3Config": {
+                        "url": submittableFormValues.url,
+                        "region": submittableFormValues.region,
+                        "workingDirectoryPath":
+                            submittableFormValues.workingDirectoryPath,
+                        "pathStyleAccess": submittableFormValues.pathStyleAccess,
+                        "accountFriendlyName": submittableFormValues.accountFriendlyName,
+                        "accessKeyId": submittableFormValues.accessKeyId,
+                        "secretAccessKey": submittableFormValues.secretAccessKey,
+                        "sessionToken": submittableFormValues.sessionToken
+                    }
+                })
+            );
+
+            if (result.isSuccess) {
+                dispatch(actions.connectionTestSucceeded());
+            } else {
+                dispatch(actions.connectionTestFailed({ "errorMessage": result.error }));
+            }
+        },
+    "changeValue":
+        <K extends keyof State.Ready.FormValues>(params: ChangeValueParams<K>) =>
+        async (...args) => {
+            const { key, value } = params;
+
+            const [dispatch, getState] = args;
+            dispatch(actions.formValueChanged({ key, value }));
+
+            preset_pathStyleAccess: {
+                if (key !== "url") {
+                    break preset_pathStyleAccess;
+                }
+
+                const formValuesErrors = privateSelectors.formValuesErrors(getState());
+
+                assert(formValuesErrors !== undefined);
+
+                if (formValuesErrors.url !== undefined) {
+                    break preset_pathStyleAccess;
+                }
+
+                const submittableFormValues = privateSelectors.submittableFormValues(
+                    getState()
+                );
+
+                assert(submittableFormValues !== undefined);
+
+                const { url } = submittableFormValues;
+
+                if (url.toLowerCase().includes("amazonaws.com")) {
+                    dispatch(
+                        actions.formValueChanged({
+                            "key": "pathStyleAccess",
+                            "value": false
+                        })
+                    );
+                    break preset_pathStyleAccess;
+                }
+
+                if (url.toLocaleLowerCase().includes("minio")) {
+                    dispatch(
+                        actions.formValueChanged({
+                            "key": "pathStyleAccess",
+                            "value": false
+                        })
+                    );
+                    break preset_pathStyleAccess;
+                }
+            }
         }
 } satisfies Thunks;

@@ -105,12 +105,7 @@ export const protectedThunks = {
 
             s3.customConfigs.push({
                 ...customS3Config,
-                "workingDirectoryPath":
-                    customS3Config.workingDirectoryPath
-                        .trim()
-                        .replace(/\/\//g, "/") // Remove double slashes if any
-                        .replace(/^\//g, "") // Ensure no leading slash
-                        .replace(/\/$/g, "") + "/" // Enforce trailing slash
+                "workingDirectoryPath": customS3Config.workingDirectoryPath
             });
 
             {
@@ -131,5 +126,45 @@ export const protectedThunks = {
                     "value": s3
                 })
             );
+        },
+    "testConnection":
+        (params: { customS3Config: projectManagement.ProjectConfigs.CustomS3Config }) =>
+        async (): Promise<
+            | {
+                  isSuccess: true;
+              }
+            | {
+                  isSuccess: false;
+                  error: string;
+              }
+        > => {
+            const { customS3Config } = params;
+
+            const { createS3Client } = await import("core/adapters/s3Client/default");
+
+            const s3Client = createS3Client({
+                "url": customS3Config.url,
+                "pathStyleAccess": customS3Config.pathStyleAccess,
+                "isStsEnabled": false,
+                "region": customS3Config.region,
+                "accessKeyId": customS3Config.accessKeyId,
+                "secretAccessKey": customS3Config.secretAccessKey,
+                "sessionToken": customS3Config.sessionToken
+            });
+
+            try {
+                await s3Client.list({
+                    "path": customS3Config.workingDirectoryPath
+                });
+            } catch (error) {
+                return {
+                    "isSuccess": false,
+                    "error": String(error)
+                };
+            }
+
+            return {
+                "isSuccess": true
+            };
         }
 } satisfies Thunks;

@@ -133,25 +133,7 @@ export const ProjectSettingsS3ConfigTab = memo((props: Props) => {
                             return;
                         }
 
-                        evtAddCustomS3ConfigDialogOpen.post({
-                            "defaultValues": {
-                                "pathStyleAccess": true,
-                                "region": "eu-west-3",
-                                "url": "",
-                                "workingDirectoryPath": ""
-                            },
-                            "resolveNewCustomConfig": ({ newCustomConfig }) => {
-                                if (newCustomConfig === undefined) {
-                                    return;
-                                }
-
-                                /*
-                                s3ConfigManagement.addCustomS3Config({
-                                    "customS3Config": newCustomConfig
-                                });
-                                */
-                            }
-                        });
+                        evtAddCustomS3ConfigDialogOpen.post();
                     }}
                 >
                     Add a custom S3 configuration

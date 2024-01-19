@@ -139,6 +139,58 @@ export const translations: Translations<"en"> = {
         "security-info": "Security Information",
         "s3-configs": "S3 Configurations"
     },
+    "AddCustomS3ConfigDialog": {
+        "dialog title": "New custom S3 configuration",
+        "dialog subtitle":
+            "Specify a custom service account or connect to another S3 compatible service",
+        "test connection": "Test connection",
+        "test connection failed": ({ errorMessage }) => (
+            <>
+                Test connection failed with error: <br />
+                {errorMessage}
+            </>
+        ),
+        "cancel": "Cancel",
+        "save config": "Save configuration",
+        "is required": "This field is required",
+        "must be an url": "Not a valid URL, must start with http:// or https://",
+        "not a valid access key id": "This doesn't look like a valid access key id",
+        "url textField label": "URL",
+        "url textField helper text": "URL of the S3 service",
+        "region textField label": "AWS S3 Region",
+        "region textField helper text": "Example: eu-west-1, if not sure, leave empty",
+        "workingDirectoryPath textField label": "Working directory path",
+        "workingDirectoryPath textField helper text": "Example: my-bucket/my-directory/",
+        "account credentials": "Account credentials",
+        "accountFriendlyName textField label": "Account friendly name",
+        "accountFriendlyName textField helper text":
+            "This is just to help you identify this account. Example: My personal account",
+        "accessKeyId textField label": "Access key ID",
+        "accessKeyId textField helper text": "Example: 1A2B3C4D5E6F7G8H9I0J",
+        "secretAccessKey textField label": "Secret access key",
+        "sessionToken textField label": "Session token",
+        "sessionToken textField helper text": "Optional, leave empty if not sure",
+        "url style": "URL style",
+        "path style label": ({ domain }) => (
+            <>
+                Path style:{" "}
+                <code>{domain || "s3-server.net"}/my-bucket/my-object-name</code>
+            </>
+        ),
+        "subdomain style label": ({ domain }) => (
+            <>
+                Subdomain style:{" "}
+                <code>my-bucket.{domain || "s3-server.net"}/my-object-name</code>
+            </>
+        ),
+        "use in services": "Use in services",
+        "yes use in services":
+            "Yes, use this S3 configuration by default when launching a service",
+        "no": "No",
+        "use for explorer": "Use for explorer",
+        "yes use for explorer":
+            "Yes, use this S3 configuration for the file and data explorers"
+    },
     "AccountUserInterfaceTab": {
         "title": "Interface preferences",
         "enable dark mode": "Enable dark mode",
