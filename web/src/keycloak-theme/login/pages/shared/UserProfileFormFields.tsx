@@ -179,10 +179,16 @@ export function UserProfileFormFields(props: UserProfileFormFieldsProps) {
                                 );
 
                                 if (displayableErrors.length !== 0) {
-                                    return displayableErrors.map(
-                                        ({ errorMessage }, i) => (
-                                            <span key={i}>{errorMessage}&nbsp;</span>
-                                        )
+                                    return (
+                                        <>
+                                            {displayableErrors.map(
+                                                ({ errorMessage }, i) => (
+                                                    <span key={i}>
+                                                        {errorMessage}&nbsp;
+                                                    </span>
+                                                )
+                                            )}
+                                        </>
                                     );
                                 }
 
