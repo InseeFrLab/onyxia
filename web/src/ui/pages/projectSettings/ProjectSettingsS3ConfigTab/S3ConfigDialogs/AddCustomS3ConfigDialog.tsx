@@ -313,7 +313,9 @@ const Body = memo(() => {
             </FormGroup>
             <FormControl>
                 <FormLabel id="path-style">{t("url style")}</FormLabel>
-                <Text typo="caption">{t("url style helper text")}</Text>
+                <Text typo="caption" color="secondary">
+                    {t("url style helper text")}
+                </Text>
                 <RadioGroup
                     aria-labelledby="path-style"
                     value={formValues.pathStyleAccess ? "path" : "virtual-hosted"}
