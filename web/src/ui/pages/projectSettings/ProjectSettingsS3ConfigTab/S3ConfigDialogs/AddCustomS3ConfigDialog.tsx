@@ -336,9 +336,13 @@ const Body = memo(() => {
                     }
                 >
                     {(() => {
-                        const domain = formValues.url
-                            .replace(/^https?:\/\//, "")
-                            .replace(/\/$/, "");
+                        const domain = (() => {
+                            try {
+                                return new URL(formValues.url).hostname;
+                            } catch {
+                                return "";
+                            }
+                        })();
 
                         return (
                             <>
