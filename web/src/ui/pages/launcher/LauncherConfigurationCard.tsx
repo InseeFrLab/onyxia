@@ -461,9 +461,6 @@ const { TabContent } = (() => {
                                                         JSON.stringify(formField.path),
                                                         formField.defaultValue
                                                     )}
-                                                    doOnlyValidateInputAfterFistFocusLost={
-                                                        false
-                                                    }
                                                 />
                                             );
 
@@ -543,9 +540,6 @@ const { TabContent } = (() => {
                                                         JSON.stringify(formField.path),
                                                         formField.defaultValue
                                                     )}
-                                                    doOnlyValidateInputAfterFistFocusLost={
-                                                        false
-                                                    }
                                                 />
                                             );
                                         case "integer":

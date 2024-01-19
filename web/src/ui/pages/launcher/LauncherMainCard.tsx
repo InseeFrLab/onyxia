@@ -246,7 +246,6 @@ export const LauncherMainCard = memo((props: Props) => {
                     <TextField
                         label={t("friendly name")}
                         defaultValue={friendlyName}
-                        doOnlyValidateInputAfterFistFocusLost={false}
                         selectAllTextOnFocus={true}
                         inputProps_spellCheck={false}
                         onValueBeingTypedChange={onValueBeingTypedChange}

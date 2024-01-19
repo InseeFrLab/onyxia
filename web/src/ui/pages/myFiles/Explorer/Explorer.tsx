@@ -708,7 +708,6 @@ const { CreateS3DirectoryDialog } = (() => {
                 defaultValue={suggestedBasename}
                 getIsValidValue={getIsValidValue}
                 onValueBeingTypedChange={onValueBeingTypedChange}
-                doOnlyValidateInputAfterFistFocusLost={false}
                 evtAction={evtAction}
                 onEnterKeyDown={onEnterKeyDown}
                 onSubmit={onSubmit}

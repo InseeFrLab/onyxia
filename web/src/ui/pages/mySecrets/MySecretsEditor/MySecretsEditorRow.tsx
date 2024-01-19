@@ -276,7 +276,6 @@ export const MySecretsEditorRow = memo((props: Props) => {
                         getIsValidValue={getIsValidValue_key}
                         onValueBeingTypedChange={onValueBeingTypedChange_key}
                         transformValueBeingTyped={toUpperCase}
-                        doOnlyValidateInputAfterFistFocusLost={false}
                     />
                 )}
             </TableCell>
@@ -305,7 +304,6 @@ export const MySecretsEditorRow = memo((props: Props) => {
                         onSubmit={onSubmitFactory("editedStrValue")}
                         getIsValidValue={getIsValidValue_strValue}
                         onValueBeingTypedChange={onValueBeingTypedChange_strValue}
-                        doOnlyValidateInputAfterFistFocusLost={false}
                     />
                 )}
             </TableCell>

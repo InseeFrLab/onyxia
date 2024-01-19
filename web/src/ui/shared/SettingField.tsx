@@ -380,7 +380,6 @@ export const SettingField = memo((props: Props): ReturnType<FunctionComponent> =
                                         onSubmit={onTextFieldSubmit}
                                         getIsValidValue={props.getIsValidValue}
                                         onValueBeingTypedChange={onValueBeingTypedChange}
-                                        doOnlyValidateInputAfterFistFocusLost={false}
                                         isSubmitAllowed={!props.isLocked}
                                         inputProps_autoFocus={true}
                                         selectAllTextOnFocus={true}

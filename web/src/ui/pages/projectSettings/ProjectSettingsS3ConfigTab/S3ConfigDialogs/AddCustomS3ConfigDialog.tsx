@@ -191,7 +191,7 @@ const Body = memo(() => {
                 }
                 inputProps_aria-invalid={formValuesErrors.url !== undefined}
                 defaultValue={formValues.url}
-                doOnlyValidateInputAfterFistFocusLost
+                doOnlyShowErrorAfterFirstFocusLost
                 onValueBeingTypedChange={({ value }) =>
                     s3ConfigCreation.changeValue({
                         "key": "url",
@@ -210,7 +210,7 @@ const Body = memo(() => {
                 }
                 inputProps_aria-invalid={formValuesErrors.region !== undefined}
                 defaultValue={formValues.region}
-                doOnlyValidateInputAfterFistFocusLost
+                doOnlyShowErrorAfterFirstFocusLost
                 onValueBeingTypedChange={({ value }) =>
                     s3ConfigCreation.changeValue({
                         "key": "region",
@@ -231,7 +231,7 @@ const Body = memo(() => {
                     formValuesErrors.workingDirectoryPath !== undefined
                 }
                 defaultValue={formValues.workingDirectoryPath}
-                doOnlyValidateInputAfterFistFocusLost
+                doOnlyShowErrorAfterFirstFocusLost
                 onValueBeingTypedChange={({ value }) =>
                     s3ConfigCreation.changeValue({
                         "key": "workingDirectoryPath",
@@ -256,7 +256,7 @@ const Body = memo(() => {
                         formValuesErrors.accountFriendlyName !== undefined
                     }
                     defaultValue={formValues.accountFriendlyName}
-                    doOnlyValidateInputAfterFistFocusLost
+                    doOnlyShowErrorAfterFirstFocusLost
                     onValueBeingTypedChange={({ value }) =>
                         s3ConfigCreation.changeValue({
                             "key": "accountFriendlyName",
@@ -275,7 +275,7 @@ const Body = memo(() => {
                     }
                     inputProps_aria-invalid={formValuesErrors.accessKeyId !== undefined}
                     defaultValue={formValues.accessKeyId}
-                    doOnlyValidateInputAfterFistFocusLost
+                    doOnlyShowErrorAfterFirstFocusLost
                     onValueBeingTypedChange={({ value }) =>
                         s3ConfigCreation.changeValue({
                             "key": "accessKeyId",
@@ -295,7 +295,7 @@ const Body = memo(() => {
                         formValuesErrors.secretAccessKey !== undefined
                     }
                     defaultValue={formValues.secretAccessKey}
-                    doOnlyValidateInputAfterFistFocusLost
+                    doOnlyShowErrorAfterFirstFocusLost
                     onValueBeingTypedChange={({ value }) =>
                         s3ConfigCreation.changeValue({
                             "key": "secretAccessKey",
@@ -314,7 +314,7 @@ const Body = memo(() => {
                     }
                     inputProps_aria-invalid={formValuesErrors.sessionToken !== undefined}
                     defaultValue={formValues.sessionToken ?? ""}
-                    doOnlyValidateInputAfterFistFocusLost
+                    doOnlyShowErrorAfterFirstFocusLost
                     onValueBeingTypedChange={({ value }) =>
                         s3ConfigCreation.changeValue({
                             "key": "sessionToken",
