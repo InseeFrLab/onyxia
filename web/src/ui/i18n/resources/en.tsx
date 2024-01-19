@@ -171,16 +171,27 @@ export const translations: Translations<"en"> = {
         "sessionToken textField label": "Session token",
         "sessionToken textField helper text": "Optional, leave empty if not sure",
         "url style": "URL style",
-        "path style label": ({ domain }) => (
+        "url style helper text": `Specify how your S3 server formats the URL for downloading files.`,
+        "path style label": ({ example }) => (
             <>
-                Path style:{" "}
-                <code>{domain || "s3-server.net"}/my-bucket/my-object-name</code>
+                Path style
+                {example !== undefined && (
+                    <>
+                        :&nbsp;
+                        <code>{example}my-dataset.parquet</code>
+                    </>
+                )}
             </>
         ),
-        "subdomain style label": ({ domain }) => (
+        "virtual-hosted style label": ({ example }) => (
             <>
-                Subdomain style:{" "}
-                <code>my-bucket.{domain || "s3-server.net"}/my-object-name</code>
+                Virtual-hosted style
+                {example !== undefined && (
+                    <>
+                        :&nbsp;
+                        <code>{example}my-dataset.parquet</code>
+                    </>
+                )}
             </>
         ),
         "use in services": "Use in services",

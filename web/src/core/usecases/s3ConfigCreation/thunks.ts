@@ -125,9 +125,13 @@ export const thunks = {
                     break preset_pathStyleAccess;
                 }
 
-                assert(typeof value === "string");
+                const submittableFormValues = privateSelectors.submittableFormValues(
+                    getState()
+                );
 
-                const url = value.trim();
+                assert(submittableFormValues !== undefined);
+
+                const { url } = submittableFormValues;
 
                 if (url.toLowerCase().includes("amazon.com")) {
                     dispatch(
@@ -143,7 +147,7 @@ export const thunks = {
                     dispatch(
                         actions.formValueChanged({
                             "key": "pathStyleAccess",
-                            "value": false
+                            "value": true
                         })
                     );
                     break preset_pathStyleAccess;

@@ -21,6 +21,7 @@ import { id } from "tsafe/id";
 import { assert, type Equals } from "tsafe/assert";
 import Tooltip from "@mui/material/Tooltip";
 import { declareComponentKeys, useTranslation } from "ui/i18n";
+import { Text } from "onyxia-ui/Text";
 
 export type Props = {
     evtOpen: NonPostableEvt<void>;
@@ -163,7 +164,7 @@ const useButtonsStyles = tss
     .create({});
 
 const Body = memo(() => {
-    const { isReady, formValues, formValuesErrors } = useCoreState(
+    const { isReady, formValues, formValuesErrors, urlStylesExamples } = useCoreState(
         "s3ConfigCreation",
         "main"
     );
@@ -312,9 +313,10 @@ const Body = memo(() => {
             </FormGroup>
             <FormControl>
                 <FormLabel id="path-style">{t("url style")}</FormLabel>
+                <Text typo="caption">{t("url style helper text")}</Text>
                 <RadioGroup
                     aria-labelledby="path-style"
-                    value={formValues.pathStyleAccess ? "path" : "subdomain"}
+                    value={formValues.pathStyleAccess ? "path" : "virtual-hosted"}
                     onChange={(_, value) =>
                         s3ConfigCreation.changeValue({
                             "key": "pathStyleAccess",
@@ -322,30 +324,20 @@ const Body = memo(() => {
                         })
                     }
                 >
-                    {(() => {
-                        const domain = (() => {
-                            try {
-                                return new URL(formValues.url).hostname;
-                            } catch {
-                                return "";
-                            }
-                        })();
-
-                        return (
-                            <>
-                                <FormControlLabel
-                                    value="path"
-                                    control={<Radio />}
-                                    label={t("path style label", { domain })}
-                                />
-                                <FormControlLabel
-                                    value="subdomain"
-                                    control={<Radio />}
-                                    label={t("subdomain style label", { domain })}
-                                />
-                            </>
-                        );
-                    })()}
+                    <FormControlLabel
+                        value="path"
+                        control={<Radio />}
+                        label={t("path style label", {
+                            "example": urlStylesExamples?.pathStyle
+                        })}
+                    />
+                    <FormControlLabel
+                        value="virtual-hosted"
+                        control={<Radio />}
+                        label={t("virtual-hosted style label", {
+                            "example": urlStylesExamples?.virtualHostedStyle
+                        })}
+                    />
                 </RadioGroup>
             </FormControl>
             <FormControl>
@@ -442,14 +434,15 @@ export const { i18n } = declareComponentKeys<
     | "sessionToken textField label"
     | "sessionToken textField helper text"
     | "url style"
+    | "url style helper text"
     | {
           K: "path style label";
-          P: { domain: string };
+          P: { example: string | undefined };
           R: JSX.Element;
       }
     | {
-          K: "subdomain style label";
-          P: { domain: string };
+          K: "virtual-hosted style label";
+          P: { example: string | undefined };
           R: JSX.Element;
       }
     | "use in services"

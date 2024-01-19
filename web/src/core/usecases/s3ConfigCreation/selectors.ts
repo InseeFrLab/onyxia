@@ -3,6 +3,7 @@ import { createSelector } from "redux-clean-architecture";
 import { name } from "./state";
 import { objectKeys } from "tsafe/objectKeys";
 import { assert } from "tsafe/assert";
+import { bucketNameAndObjectNameFromS3Path } from "core/adapters/s3Client/utils/bucketNameAndObjectNameFromS3Path";
 
 const readyState = (rootState: RootState) => {
     const state = rootState[name];
@@ -109,45 +110,15 @@ const isFormSubmittable = createSelector(
     }
 );
 
-const main = createSelector(
-    isReady,
-    formValues,
-    connectionTestStatus,
-    formValuesErrors,
-    isFormSubmittable,
-    (isReady, formValues, connectionTestStatus, formValuesErrors, isFormSubmittable) => {
-        if (!isReady) {
-            return {
-                "isReady": false as const
-            };
-        }
-
-        assert(formValues !== undefined);
-        assert(connectionTestStatus !== undefined);
-        assert(formValuesErrors !== undefined);
-        assert(isFormSubmittable !== undefined);
-
-        return {
-            "isReady": true,
-            formValues,
-            connectionTestStatus,
-            formValuesErrors,
-            isFormSubmittable
-        };
-    }
-);
-
 export const submittableFormValues = createSelector(
     isReady,
     formValues,
-    isFormSubmittable,
-    (isReady, formValues, isFormSubmittable) => {
+    (isReady, formValues) => {
         if (!isReady) {
             return undefined;
         }
 
         assert(formValues !== undefined);
-        assert(isFormSubmittable === true);
 
         return {
             "url": formValues.url.trim(),
@@ -165,6 +136,86 @@ export const submittableFormValues = createSelector(
             "sessionToken": formValues.sessionToken?.trim(),
             "isUsedForExplorer": formValues.isUsedForExplorer,
             "isUsedForXOnyxia": formValues.isUsedForXOnyxia
+        };
+    }
+);
+
+const urlStylesExamples = createSelector(
+    isReady,
+    submittableFormValues,
+    formValuesErrors,
+    (isReady, submittableFormValues, formValuesErrors) => {
+        if (!isReady) {
+            return undefined;
+        }
+
+        assert(submittableFormValues !== undefined);
+        assert(formValuesErrors !== undefined);
+
+        if (
+            formValuesErrors.url !== undefined ||
+            formValuesErrors.workingDirectoryPath !== undefined
+        ) {
+            return undefined;
+        }
+
+        const urlObject = new URL(submittableFormValues.url);
+
+        const { bucketName, objectName: objectNamePrefix } =
+            bucketNameAndObjectNameFromS3Path(submittableFormValues.workingDirectoryPath);
+
+        const domain = submittableFormValues.url
+            .split(urlObject.protocol)[1]
+            .split("//")[1]
+            .replace(/\/$/, "");
+
+        console.log({
+            "domain": domain,
+            "bucketName": bucketName,
+            "objectNamePrefix": objectNamePrefix,
+            "workingDirectoryPath": submittableFormValues.workingDirectoryPath
+        });
+
+        return {
+            "pathStyle": `${domain}/${bucketName}/${objectNamePrefix}`,
+            "virtualHostedStyle": `${bucketName}.${domain}/${objectNamePrefix}`
+        };
+    }
+);
+
+const main = createSelector(
+    isReady,
+    formValues,
+    connectionTestStatus,
+    formValuesErrors,
+    isFormSubmittable,
+    urlStylesExamples,
+    (
+        isReady,
+        formValues,
+        connectionTestStatus,
+        formValuesErrors,
+        isFormSubmittable,
+        urlStylesExamples
+    ) => {
+        if (!isReady) {
+            return {
+                "isReady": false as const
+            };
+        }
+
+        assert(formValues !== undefined);
+        assert(connectionTestStatus !== undefined);
+        assert(formValuesErrors !== undefined);
+        assert(isFormSubmittable !== undefined);
+
+        return {
+            "isReady": true,
+            formValues,
+            connectionTestStatus,
+            formValuesErrors,
+            isFormSubmittable,
+            urlStylesExamples
         };
     }
 );
