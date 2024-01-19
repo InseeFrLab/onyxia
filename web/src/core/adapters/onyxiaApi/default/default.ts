@@ -612,8 +612,6 @@ export function createOnyxiaApi(params: {
                                   })()
                               ].join("\n");
 
-                    alert(message);
-
                     if (isThisTheFirstRequest) {
                         alert(
                             [
@@ -624,6 +622,8 @@ export function createOnyxiaApi(params: {
                             ].join("\n")
                         );
                     }
+
+                    alert(message);
 
                     throw error;
                 }
