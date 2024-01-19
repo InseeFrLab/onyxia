@@ -166,12 +166,7 @@ export const translations: Translations<"nl"> = {
         "url style": undefined,
         "url style helper text": undefined,
         "path style label": undefined,
-        "virtual-hosted style label": undefined,
-        "use in services": undefined,
-        "yes use in services": undefined,
-        "no": undefined,
-        "use for explorer": undefined,
-        "yes use for explorer": undefined
+        "virtual-hosted style label": undefined
     },
     "AccountUserInterfaceTab": {
         "title": "De interfacemodus configureren",

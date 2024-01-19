@@ -24,9 +24,7 @@ export const thunks = {
                         "accessKeyId": "",
                         "secretAccessKey": "",
                         "accountFriendlyName": "",
-                        "sessionToken": undefined,
-                        "isUsedForExplorer": false,
-                        "isUsedForXOnyxia": false
+                        "sessionToken": undefined
                     }
                 })
             );
@@ -60,9 +58,7 @@ export const thunks = {
                         "accountFriendlyName": submittableFormValues.accountFriendlyName,
                         "accessKeyId": submittableFormValues.accessKeyId,
                         "secretAccessKey": submittableFormValues.secretAccessKey,
-                        "sessionToken": submittableFormValues.sessionToken,
-                        "isUsedForExplorer": submittableFormValues.isUsedForExplorer,
-                        "isUsedForXOnyxia": submittableFormValues.isUsedForXOnyxia
+                        "sessionToken": submittableFormValues.sessionToken
                     }
                 })
             );

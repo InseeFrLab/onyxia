@@ -133,9 +133,7 @@ export const submittableFormValues = createSelector(
             "accountFriendlyName": formValues.accountFriendlyName.trim(),
             "accessKeyId": formValues.accessKeyId.trim(),
             "secretAccessKey": formValues.secretAccessKey.trim(),
-            "sessionToken": formValues.sessionToken?.trim(),
-            "isUsedForExplorer": formValues.isUsedForExplorer,
-            "isUsedForXOnyxia": formValues.isUsedForXOnyxia
+            "sessionToken": formValues.sessionToken?.trim()
         };
     }
 );

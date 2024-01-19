@@ -1,5 +1,6 @@
 import type { Thunks } from "core/bootstrap";
 import * as projectManagement from "core/usecases/projectManagement";
+import * as deploymentRegionManagement from "core/usecases/deploymentRegionManagement";
 import structuredClone from "@ungap/structured-clone";
 import { assert } from "tsafe/assert";
 
@@ -86,18 +87,11 @@ export const thunks = {
 
 export const protectedThunks = {
     "addCustomS3Config":
-        (params: {
-            customS3Config: projectManagement.ProjectConfigs.CustomS3Config & {
-                isUsedForXOnyxia: boolean;
-                isUsedForExplorer: boolean;
-            };
-        }) =>
+        (params: { customS3Config: projectManagement.ProjectConfigs.CustomS3Config }) =>
         async (...args) => {
             const [dispatch, getState] = args;
 
-            const {
-                customS3Config: { isUsedForXOnyxia, isUsedForExplorer, ...customS3Config }
-            } = params;
+            const { customS3Config } = params;
 
             const s3 = structuredClone(
                 projectManagement.protectedSelectors.currentProjectConfigs(getState()).s3
@@ -109,13 +103,37 @@ export const protectedThunks = {
             });
 
             {
+                const {
+                    shouldNewConfigBeUsedForExplorer,
+                    shouldNewConfigBeUsedForXOnyxia
+                } = (() => {
+                    const isStsEnabled =
+                        deploymentRegionManagement.selectors.currentDeploymentRegion(
+                            getState()
+                        ).s3?.sts !== undefined;
+
+                    if (isStsEnabled) {
+                        return {
+                            "shouldNewConfigBeUsedForXOnyxia": false,
+                            "shouldNewConfigBeUsedForExplorer": false
+                        };
+                    }
+
+                    const { indexForExplorer, indexForXOnyxia } = s3;
+
+                    return {
+                        "shouldNewConfigBeUsedForXOnyxia": indexForXOnyxia === undefined,
+                        "shouldNewConfigBeUsedForExplorer": indexForExplorer === undefined
+                    };
+                })();
+
                 const newIndex = s3.customConfigs.length - 1;
 
-                if (isUsedForXOnyxia) {
+                if (shouldNewConfigBeUsedForXOnyxia) {
                     s3.indexForXOnyxia = newIndex;
                 }
 
-                if (isUsedForExplorer) {
+                if (shouldNewConfigBeUsedForExplorer) {
                     s3.indexForExplorer = newIndex;
                 }
             }

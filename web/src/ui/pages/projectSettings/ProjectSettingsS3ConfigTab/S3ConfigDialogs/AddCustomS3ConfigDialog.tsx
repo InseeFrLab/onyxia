@@ -340,46 +340,6 @@ const Body = memo(() => {
                     />
                 </RadioGroup>
             </FormControl>
-            <FormControl>
-                <FormLabel id="use-for-injection">{t("use in services")}</FormLabel>
-                <RadioGroup
-                    aria-labelledby="use-for-injection"
-                    value={formValues.isUsedForXOnyxia ? "yes" : "no"}
-                    onChange={(_, value) =>
-                        s3ConfigCreation.changeValue({
-                            "key": "isUsedForXOnyxia",
-                            "value": value === "yes"
-                        })
-                    }
-                >
-                    <FormControlLabel
-                        value="yes"
-                        control={<Radio />}
-                        label={t("yes use in services")}
-                    />
-                    <FormControlLabel value="no" control={<Radio />} label={t("no")} />
-                </RadioGroup>
-            </FormControl>
-            <FormControl>
-                <FormLabel id="use-for-explorer">{t("use for explorer")}</FormLabel>
-                <RadioGroup
-                    aria-labelledby="use-for-explorer"
-                    value={formValues.isUsedForExplorer ? "yes" : "no"}
-                    onChange={(_, value) => {
-                        s3ConfigCreation.changeValue({
-                            "key": "isUsedForExplorer",
-                            "value": value === "yes"
-                        });
-                    }}
-                >
-                    <FormControlLabel
-                        value="yes"
-                        control={<Radio />}
-                        label={t("yes use for explorer")}
-                    />
-                    <FormControlLabel value="no" control={<Radio />} label={t("no")} />
-                </RadioGroup>
-            </FormControl>
         </div>
     );
 });
@@ -424,7 +384,10 @@ export const { i18n } = declareComponentKeys<
     | "region textField label"
     | "region textField helper text"
     | "workingDirectoryPath textField label"
-    | "workingDirectoryPath textField helper text"
+    | {
+          K: "workingDirectoryPath textField helper text";
+          R: JSX.Element;
+      }
     | "account credentials"
     | "accountFriendlyName textField label"
     | "accountFriendlyName textField helper text"
@@ -445,9 +408,4 @@ export const { i18n } = declareComponentKeys<
           P: { example: string | undefined };
           R: JSX.Element;
       }
-    | "use in services"
-    | "yes use in services"
-    | "no"
-    | "use for explorer"
-    | "yes use for explorer"
 >()({ AddCustomS3ConfigDialog });

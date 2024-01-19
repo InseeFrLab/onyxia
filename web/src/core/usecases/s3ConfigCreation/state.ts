@@ -25,8 +25,6 @@ export namespace State {
             accessKeyId: string;
             secretAccessKey: string;
             sessionToken: string | undefined;
-            isUsedForXOnyxia: boolean;
-            isUsedForExplorer: boolean;
         };
     }
 

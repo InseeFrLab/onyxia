@@ -160,7 +160,14 @@ export const translations: Translations<"en"> = {
         "region textField label": "AWS S3 Region",
         "region textField helper text": "Example: eu-west-1, if not sure, leave empty",
         "workingDirectoryPath textField label": "Working directory path",
-        "workingDirectoryPath textField helper text": "Example: my-bucket/my-directory/",
+        "workingDirectoryPath textField helper text": (
+            <>
+                This let you specify the bucket and the S3 object prefix you own on the S3
+                service. <br />
+                Example: <code>my-bucket/my-prefix/</code> or <code>just my-bucket/</code>{" "}
+                if you own the whole bucket.
+            </>
+        ),
         "account credentials": "Account credentials",
         "accountFriendlyName textField label": "Account friendly name",
         "accountFriendlyName textField helper text":
@@ -193,14 +200,7 @@ export const translations: Translations<"en"> = {
                     </>
                 )}
             </>
-        ),
-        "use in services": "Use in services",
-        "yes use in services":
-            "Yes, use this S3 configuration by default when launching a service",
-        "no": "No",
-        "use for explorer": "Use for explorer",
-        "yes use for explorer":
-            "Yes, use this S3 configuration for the file and data explorers"
+        )
     },
     "AccountUserInterfaceTab": {
         "title": "Interface preferences",
