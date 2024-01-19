@@ -30,9 +30,9 @@ export const MyFilesDisabledDialog = memo(() => {
 
                             return {
                                 ...link,
-                                "onClick": () => {
+                                "onClick": e => {
                                     onClose();
-                                    return link.onClick();
+                                    return link.onClick(e);
                                 }
                             };
                         })()}
