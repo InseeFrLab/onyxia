@@ -153,7 +153,7 @@ export const translations: Translations<"en"> = {
         "cancel": "Cancel",
         "save config": "Save configuration",
         "is required": "This field is required",
-        "must be an url": "Not a valid URL, must start with http:// or https://",
+        "must be an url": "Not a valid URL",
         "not a valid access key id": "This doesn't look like a valid access key id",
         "url textField label": "URL",
         "url textField helper text": "URL of the S3 service",

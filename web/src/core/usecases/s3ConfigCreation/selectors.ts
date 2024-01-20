@@ -75,7 +75,7 @@ const formValuesErrors = createSelector(formValues, formValues => {
                 const value = formValues[key];
 
                 try {
-                    new URL(value);
+                    new URL(value.startsWith("http") ? value : `https://${value}`);
                 } catch {
                     return "must be an url";
                 }
@@ -121,7 +121,10 @@ export const submittableFormValues = createSelector(
         assert(formValues !== undefined);
 
         return {
-            "url": formValues.url.trim(),
+            "url": ((trimmedValue: string) =>
+                trimmedValue.startsWith("http")
+                    ? trimmedValue
+                    : `https://${trimmedValue}`)(formValues.url.trim()),
             "region": formValues.region.trim(),
             "workingDirectoryPath":
                 formValues.workingDirectoryPath
