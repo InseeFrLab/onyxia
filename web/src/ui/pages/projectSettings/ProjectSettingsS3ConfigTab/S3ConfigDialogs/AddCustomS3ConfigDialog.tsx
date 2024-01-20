@@ -276,7 +276,9 @@ const Body = memo(() => {
                     }
                 />
                 <TextField
+                    type="sensitive"
                     className={classes.textField}
+                    selectAllTextOnFocus
                     label={t("secretAccessKey textField label")}
                     helperTextError={
                         formValuesErrors.secretAccessKey === undefined
@@ -293,6 +295,8 @@ const Body = memo(() => {
                     }
                 />
                 <TextField
+                    type="sensitive"
+                    selectAllTextOnFocus
                     className={classes.textField}
                     label={t("sessionToken textField label")}
                     helperText={t("sessionToken textField helper text")}
