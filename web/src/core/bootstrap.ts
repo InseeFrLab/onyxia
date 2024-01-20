@@ -112,7 +112,7 @@ export async function bootstrapCore(
         if (oidcParams === undefined) {
             const { createOidc } = await import("core/adapters/oidc/mock");
 
-            return createOidc({ "isUserInitiallyLoggedIn": false });
+            return createOidc({ "isUserInitiallyLoggedIn": true });
         }
 
         const { createOidc } = await import("core/adapters/oidc/default");
