@@ -13,6 +13,8 @@ export namespace State {
         stateDescription: "ready";
         formValues: Ready.FormValues;
         connectionTestStatus: Ready.ConnectionTestStatus;
+        /** Provided if editing */
+        customConfigIndex: number | undefined;
     };
 
     export namespace Ready {
@@ -78,13 +80,15 @@ export const { reducer, actions } = createUsecaseActions({
                 payload
             }: {
                 payload: {
+                    customConfigIndex: number | undefined;
                     initialFormValues: State.Ready["formValues"];
                 };
             }
         ) => {
-            const { initialFormValues } = payload;
+            const { customConfigIndex, initialFormValues } = payload;
 
             return id<State.Ready>({
+                customConfigIndex,
                 "stateDescription": "ready",
                 "formValues": initialFormValues,
                 "connectionTestStatus": id<State.Ready.ConnectionTestStatus.NotTestedYet>(

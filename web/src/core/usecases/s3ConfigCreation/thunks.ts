@@ -6,9 +6,44 @@ import * as s3ConfigManagement from "core/usecases/s3ConfigManagement";
 
 export const thunks = {
     "initialize":
-        () =>
+        (params: { customConfigIndex: number | undefined }) =>
         (...args) => {
+            const { customConfigIndex } = params;
+
             const [dispatch, getState] = args;
+
+            update_existing_config: {
+                if (customConfigIndex === undefined) {
+                    break update_existing_config;
+                }
+
+                const projectS3Config =
+                    s3ConfigManagement.protectedSelectors.projectS3Config(getState());
+
+                assert(projectS3Config !== undefined);
+
+                const customS3Config = projectS3Config.customConfigs[customConfigIndex];
+
+                assert(customS3Config !== undefined);
+
+                dispatch(
+                    actions.initialized({
+                        customConfigIndex,
+                        "initialFormValues": {
+                            "url": customS3Config.url,
+                            "region": customS3Config.region,
+                            "workingDirectoryPath": customS3Config.workingDirectoryPath,
+                            "pathStyleAccess": customS3Config.pathStyleAccess,
+                            "accessKeyId": customS3Config.accessKeyId,
+                            "secretAccessKey": customS3Config.secretAccessKey,
+                            "accountFriendlyName": customS3Config.accountFriendlyName,
+                            "sessionToken": customS3Config.sessionToken
+                        }
+                    })
+                );
+
+                return;
+            }
 
             const baseS3Config = s3ConfigManagement.protectedSelectors.baseS3Config(
                 getState()
@@ -16,6 +51,7 @@ export const thunks = {
 
             dispatch(
                 actions.initialized({
+                    "customConfigIndex": undefined,
                     "initialFormValues": {
                         "url": baseS3Config?.url ?? "",
                         "region": baseS3Config?.region ?? "",
@@ -41,6 +77,8 @@ export const thunks = {
         async (...args) => {
             const [dispatch, getState] = args;
 
+            const customConfigIndex = privateSelectors.customConfigIndex(getState());
+
             const submittableFormValues = privateSelectors.submittableFormValues(
                 getState()
             );
@@ -48,7 +86,8 @@ export const thunks = {
             assert(submittableFormValues !== undefined);
 
             await dispatch(
-                s3ConfigManagement.protectedThunks.addCustomS3Config({
+                s3ConfigManagement.protectedThunks.addOrUpdateCustomS3Config({
+                    customConfigIndex,
                     "customS3Config": {
                         "url": submittableFormValues.url,
                         "region": submittableFormValues.region,

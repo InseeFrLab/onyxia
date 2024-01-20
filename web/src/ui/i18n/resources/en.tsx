@@ -152,6 +152,7 @@ export const translations: Translations<"en"> = {
         ),
         "cancel": "Cancel",
         "save config": "Save configuration",
+        "update config": "Update configuration",
         "is required": "This field is required",
         "must be an url": "Not a valid URL",
         "not a valid access key id": "This doesn't look like a valid access key id",

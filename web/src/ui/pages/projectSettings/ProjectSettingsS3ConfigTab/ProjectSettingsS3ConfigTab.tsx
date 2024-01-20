@@ -108,6 +108,18 @@ export const ProjectSettingsS3ConfigTab = memo((props: Props) => {
                                     isUsed
                                 });
                         })()}
+                        onEdit={(() => {
+                            const { customConfigIndex } = s3Config;
+
+                            if (customConfigIndex === undefined) {
+                                return undefined;
+                            }
+
+                            return () =>
+                                evtAddCustomS3ConfigDialogOpen.post({
+                                    customConfigIndex
+                                });
+                        })()}
                         doHideUsageSwitches={
                             s3Config.accountFriendlyName === undefined &&
                             s3Configs.length === 1
@@ -133,7 +145,9 @@ export const ProjectSettingsS3ConfigTab = memo((props: Props) => {
                             return;
                         }
 
-                        evtAddCustomS3ConfigDialogOpen.post();
+                        evtAddCustomS3ConfigDialogOpen.post({
+                            "customConfigIndex": undefined
+                        });
                     }}
                 >
                     Add a custom S3 configuration

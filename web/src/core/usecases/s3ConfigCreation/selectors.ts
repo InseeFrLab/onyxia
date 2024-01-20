@@ -184,6 +184,26 @@ const urlStylesExamples = createSelector(
     }
 );
 
+const customConfigIndex = createSelector(readyState, state => {
+    if (state === undefined) {
+        return undefined;
+    }
+
+    return state.customConfigIndex;
+});
+
+const isEditionOfAnExistingConfig = createSelector(
+    isReady,
+    customConfigIndex,
+    (isReady, customConfigIndex) => {
+        if (!isReady) {
+            return undefined;
+        }
+
+        return customConfigIndex !== undefined;
+    }
+);
+
 const main = createSelector(
     isReady,
     formValues,
@@ -191,13 +211,15 @@ const main = createSelector(
     formValuesErrors,
     isFormSubmittable,
     urlStylesExamples,
+    isEditionOfAnExistingConfig,
     (
         isReady,
         formValues,
         connectionTestStatus,
         formValuesErrors,
         isFormSubmittable,
-        urlStylesExamples
+        urlStylesExamples,
+        isEditionOfAnExistingConfig
     ) => {
         if (!isReady) {
             return {
@@ -209,6 +231,7 @@ const main = createSelector(
         assert(connectionTestStatus !== undefined);
         assert(formValuesErrors !== undefined);
         assert(isFormSubmittable !== undefined);
+        assert(isEditionOfAnExistingConfig !== undefined);
 
         return {
             "isReady": true,
@@ -216,14 +239,16 @@ const main = createSelector(
             connectionTestStatus,
             formValuesErrors,
             isFormSubmittable,
-            urlStylesExamples
+            urlStylesExamples,
+            isEditionOfAnExistingConfig
         };
     }
 );
 
 export const privateSelectors = {
     submittableFormValues,
-    formValuesErrors
+    formValuesErrors,
+    customConfigIndex
 };
 
 export const selectors = { main };

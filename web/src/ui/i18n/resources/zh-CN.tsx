@@ -134,6 +134,7 @@ export const translations: Translations<"zh-CN"> = {
         "test connection failed": undefined,
         "cancel": undefined,
         "save config": undefined,
+        "update config": undefined,
         "is required": undefined,
         "must be an url": undefined,
         "not a valid access key id": undefined,

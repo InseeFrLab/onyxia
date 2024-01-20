@@ -24,7 +24,9 @@ import { declareComponentKeys, useTranslation } from "ui/i18n";
 import { Text } from "onyxia-ui/Text";
 
 export type Props = {
-    evtOpen: NonPostableEvt<void>;
+    evtOpen: NonPostableEvt<{
+        customConfigIndex: number | undefined;
+    }>;
 };
 
 export const AddCustomS3ConfigDialog = memo((props: Props) => {
@@ -36,7 +38,13 @@ export const AddCustomS3ConfigDialog = memo((props: Props) => {
 
     const { isReady } = useCoreState("s3ConfigCreation", "main");
 
-    useEvt(ctx => evtOpen.attach(ctx, () => s3ConfigCreation.initialize()), [evtOpen]);
+    useEvt(
+        ctx =>
+            evtOpen.attach(ctx, ({ customConfigIndex }) =>
+                s3ConfigCreation.initialize({ customConfigIndex })
+            ),
+        [evtOpen]
+    );
 
     const onCloseFactory = useCallbackFactory(([isSubmit]: [boolean]) => {
         if (isSubmit) {
@@ -88,10 +96,12 @@ type ButtonsProps = {
 const Buttons = memo((props: ButtonsProps) => {
     const { onCloseCancel, onCloseSubmit } = props;
 
-    const { isReady, connectionTestStatus, isFormSubmittable } = useCoreState(
-        "s3ConfigCreation",
-        "main"
-    );
+    const {
+        isReady,
+        connectionTestStatus,
+        isFormSubmittable,
+        isEditionOfAnExistingConfig
+    } = useCoreState("s3ConfigCreation", "main");
 
     const { s3ConfigCreation } = useCore().functions;
 
@@ -153,7 +163,7 @@ const Buttons = memo((props: ButtonsProps) => {
                 {t("cancel")}
             </Button>
             <Button onClick={onCloseSubmit} disabled={!isFormSubmittable}>
-                {t("save config")}
+                {isEditionOfAnExistingConfig ? t("update config") : t("save config")}
             </Button>
         </>
     );
@@ -382,6 +392,7 @@ export const { i18n } = declareComponentKeys<
       }
     | "cancel"
     | "save config"
+    | "update config"
     | "is required"
     | "must be an url"
     | "not a valid access key id"

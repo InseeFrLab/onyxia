@@ -86,23 +86,31 @@ export const thunks = {
 } satisfies Thunks;
 
 export const protectedThunks = {
-    "addCustomS3Config":
-        (params: { customS3Config: projectManagement.ProjectConfigs.CustomS3Config }) =>
+    "addOrUpdateCustomS3Config":
+        (params: {
+            customS3Config: projectManagement.ProjectConfigs.CustomS3Config;
+            customConfigIndex: number | undefined;
+        }) =>
         async (...args) => {
             const [dispatch, getState] = args;
 
-            const { customS3Config } = params;
+            const { customS3Config, customConfigIndex } = params;
 
             const s3 = structuredClone(
                 projectManagement.protectedSelectors.currentProjectConfigs(getState()).s3
             );
 
-            s3.customConfigs.push({
-                ...customS3Config,
-                "workingDirectoryPath": customS3Config.workingDirectoryPath
-            });
+            if (customConfigIndex !== undefined) {
+                s3.customConfigs[customConfigIndex] = customS3Config;
+            } else {
+                s3.customConfigs.push(customS3Config);
+            }
 
-            {
+            enable_for_explorer_and_or_xOnyxia_if_pertinent_and_creation: {
+                if (customConfigIndex !== undefined) {
+                    break enable_for_explorer_and_or_xOnyxia_if_pertinent_and_creation;
+                }
+
                 const {
                     shouldNewConfigBeUsedForExplorer,
                     shouldNewConfigBeUsedForXOnyxia

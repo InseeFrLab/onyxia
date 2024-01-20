@@ -15,6 +15,7 @@ type Props = {
     onDelete: (() => void) | undefined;
     onIsUsedForExplorerValueChange: ((isUsed: boolean) => void) | undefined;
     onIsUsedForXOnyxiaValueChange: ((isUsed: boolean) => void) | undefined;
+    onEdit: (() => void) | undefined;
     doHideUsageSwitches: boolean;
 };
 
@@ -29,7 +30,8 @@ export function S3ConfigCard(props: Props) {
         onDelete,
         onIsUsedForExplorerValueChange,
         onIsUsedForXOnyxiaValueChange,
-        doHideUsageSwitches
+        doHideUsageSwitches,
+        onEdit
     } = props;
 
     const { classes, cx } = useStyles();
@@ -95,6 +97,14 @@ export function S3ConfigCard(props: Props) {
                     onClick={() => onDelete()}
                 >
                     Delete
+                </Button>
+            )}
+            {onEdit !== undefined && (
+                <Button
+                    startIcon={id<MuiIconComponentName>("Edit")}
+                    onClick={() => onEdit()}
+                >
+                    Edit
                 </Button>
             )}
         </div>
