@@ -323,6 +323,10 @@ export async function bootstrapCore(
     }
 
     if (oidc.isUserLoggedIn) {
+        dispatch(usecases.s3ConfigManagement.protectedThunks.initialize());
+    }
+
+    if (oidc.isUserLoggedIn) {
         dispatch(usecases.restorableConfigManagement.protectedThunks.initialize());
     }
 

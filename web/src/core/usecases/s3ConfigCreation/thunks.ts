@@ -3,6 +3,7 @@ import { actions, type State, ChangeValueParams } from "./state";
 import { assert } from "tsafe/assert";
 import { privateSelectors } from "./selectors";
 import * as s3ConfigManagement from "core/usecases/s3ConfigManagement";
+import { testS3CustomConfigConnection } from "core/usecases/s3ConfigManagement/utils/testS3CustomConfigConnection";
 
 export const thunks = {
     "initialize":
@@ -85,6 +86,12 @@ export const thunks = {
 
             assert(submittableFormValues !== undefined);
 
+            const connectionTestStatus = privateSelectors.connectionTestStatus(
+                getState()
+            );
+
+            assert(connectionTestStatus !== undefined);
+
             await dispatch(
                 s3ConfigManagement.protectedThunks.addOrUpdateCustomS3Config({
                     customConfigIndex,
@@ -98,7 +105,8 @@ export const thunks = {
                         "accessKeyId": submittableFormValues.accessKeyId,
                         "secretAccessKey": submittableFormValues.secretAccessKey,
                         "sessionToken": submittableFormValues.sessionToken
-                    }
+                    },
+                    connectionTestStatus
                 })
             );
 
@@ -117,21 +125,18 @@ export const thunks = {
 
             assert(submittableFormValues !== undefined);
 
-            const result = await dispatch(
-                s3ConfigManagement.protectedThunks.testConnection({
-                    "customS3Config": {
-                        "url": submittableFormValues.url,
-                        "region": submittableFormValues.region,
-                        "workingDirectoryPath":
-                            submittableFormValues.workingDirectoryPath,
-                        "pathStyleAccess": submittableFormValues.pathStyleAccess,
-                        "accountFriendlyName": submittableFormValues.accountFriendlyName,
-                        "accessKeyId": submittableFormValues.accessKeyId,
-                        "secretAccessKey": submittableFormValues.secretAccessKey,
-                        "sessionToken": submittableFormValues.sessionToken
-                    }
-                })
-            );
+            const result = await testS3CustomConfigConnection({
+                "customS3Config": {
+                    "url": submittableFormValues.url,
+                    "region": submittableFormValues.region,
+                    "workingDirectoryPath": submittableFormValues.workingDirectoryPath,
+                    "pathStyleAccess": submittableFormValues.pathStyleAccess,
+                    "accountFriendlyName": submittableFormValues.accountFriendlyName,
+                    "accessKeyId": submittableFormValues.accessKeyId,
+                    "secretAccessKey": submittableFormValues.secretAccessKey,
+                    "sessionToken": submittableFormValues.sessionToken
+                }
+            });
 
             if (result.isSuccess) {
                 dispatch(actions.connectionTestSucceeded());

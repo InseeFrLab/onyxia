@@ -3,6 +3,8 @@ import * as projectManagement from "core/usecases/projectManagement";
 import * as deploymentRegionManagement from "core/usecases/deploymentRegionManagement";
 import structuredClone from "@ungap/structured-clone";
 import { assert } from "tsafe/assert";
+import { actions, type ConnectionTestStatus } from "./state";
+import { testS3CustomConfigConnection } from "./utils/testS3CustomConfigConnection";
 
 export const thunks = {
     "deleteCustomS3Config":
@@ -32,6 +34,12 @@ export const thunks = {
                 projectManagement.protectedThunks.updateConfigValue({
                     "key": "s3",
                     "value": s3
+                })
+            );
+
+            dispatch(
+                actions.customConfigDeleted({
+                    customConfigIndex
                 })
             );
         },
@@ -82,27 +90,105 @@ export const thunks = {
                     "value": s3
                 })
             );
+        },
+    "testConnection":
+        (params: { customConfigIndex: number }) =>
+        async (...args) => {
+            const { customConfigIndex } = params;
+
+            const [dispatch, getState] = args;
+
+            dispatch(
+                actions.connectionTestStarted({
+                    customConfigIndex
+                })
+            );
+
+            const { customConfigs } =
+                projectManagement.protectedSelectors.currentProjectConfigs(getState()).s3;
+
+            const customS3Config = customConfigs[customConfigIndex];
+
+            assert(customS3Config !== undefined);
+
+            const result = await testS3CustomConfigConnection({
+                customS3Config
+            });
+
+            if (result.isSuccess) {
+                dispatch(
+                    actions.connectionTestSucceeded({
+                        customConfigIndex
+                    })
+                );
+            } else {
+                dispatch(
+                    actions.connectionTestFailed({
+                        customConfigIndex,
+                        "errorMessage": result.error
+                    })
+                );
+            }
         }
 } satisfies Thunks;
 
 export const protectedThunks = {
+    "initialize":
+        () =>
+        (...args) => {
+            const [dispatch, getState, { evtAction }] = args;
+
+            evtAction
+                .pipe(
+                    action =>
+                        action.usecaseName === "projectManagement" &&
+                        action.actionName === "projectChanged"
+                )
+                .toStateful()
+                .attach(() => {
+                    const { customConfigs } =
+                        projectManagement.protectedSelectors.currentProjectConfigs(
+                            getState()
+                        ).s3;
+
+                    dispatch(
+                        actions.initialized({
+                            "customConfigCount": customConfigs.length
+                        })
+                    );
+                });
+        },
     "addOrUpdateCustomS3Config":
         (params: {
             customS3Config: projectManagement.ProjectConfigs.CustomS3Config;
             customConfigIndex: number | undefined;
+            connectionTestStatus: ConnectionTestStatus;
         }) =>
         async (...args) => {
             const [dispatch, getState] = args;
 
-            const { customS3Config, customConfigIndex } = params;
+            const { customS3Config, customConfigIndex, connectionTestStatus } = params;
 
             const s3 = structuredClone(
                 projectManagement.protectedSelectors.currentProjectConfigs(getState()).s3
             );
 
             if (customConfigIndex !== undefined) {
+                dispatch(
+                    actions.customConfigUpdated({
+                        customConfigIndex,
+                        connectionTestStatus
+                    })
+                );
+
                 s3.customConfigs[customConfigIndex] = customS3Config;
             } else {
+                dispatch(
+                    actions.customConfigAdded({
+                        connectionTestStatus
+                    })
+                );
+
                 s3.customConfigs.push(customS3Config);
             }
 
@@ -152,45 +238,5 @@ export const protectedThunks = {
                     "value": s3
                 })
             );
-        },
-    "testConnection":
-        (params: { customS3Config: projectManagement.ProjectConfigs.CustomS3Config }) =>
-        async (): Promise<
-            | {
-                  isSuccess: true;
-              }
-            | {
-                  isSuccess: false;
-                  error: string;
-              }
-        > => {
-            const { customS3Config } = params;
-
-            const { createS3Client } = await import("core/adapters/s3Client/default");
-
-            const s3Client = createS3Client({
-                "url": customS3Config.url,
-                "pathStyleAccess": customS3Config.pathStyleAccess,
-                "isStsEnabled": false,
-                "region": customS3Config.region,
-                "accessKeyId": customS3Config.accessKeyId,
-                "secretAccessKey": customS3Config.secretAccessKey,
-                "sessionToken": customS3Config.sessionToken
-            });
-
-            try {
-                await s3Client.list({
-                    "path": customS3Config.workingDirectoryPath
-                });
-            } catch (error) {
-                return {
-                    "isSuccess": false,
-                    "error": String(error)
-                };
-            }
-
-            return {
-                "isSuccess": true
-            };
         }
 } satisfies Thunks;

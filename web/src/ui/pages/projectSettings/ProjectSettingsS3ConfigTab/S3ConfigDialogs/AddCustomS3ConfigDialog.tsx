@@ -124,7 +124,7 @@ const Buttons = memo((props: ButtonsProps) => {
                     {t("test connection")}
                 </Button>
                 {(() => {
-                    if (connectionTestStatus.itTestOngoing) {
+                    if (connectionTestStatus.isTestOngoing) {
                         return <CircularProgress />;
                     }
 

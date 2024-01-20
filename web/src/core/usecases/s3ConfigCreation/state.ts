@@ -1,6 +1,7 @@
 import { createUsecaseActions } from "redux-clean-architecture";
 import { id } from "tsafe/id";
 import { assert } from "tsafe/assert";
+import type { ConnectionTestStatus } from "core/usecases/s3ConfigManagement";
 
 export type State = State.NotInitialized | State.Ready;
 
@@ -12,7 +13,7 @@ export namespace State {
     export type Ready = {
         stateDescription: "ready";
         formValues: Ready.FormValues;
-        connectionTestStatus: Ready.ConnectionTestStatus;
+        connectionTestStatus: ConnectionTestStatus;
         /** Provided if editing */
         customConfigIndex: number | undefined;
     };
@@ -28,32 +29,6 @@ export namespace State {
             secretAccessKey: string;
             sessionToken: string | undefined;
         };
-    }
-
-    export namespace Ready {
-        export type ConnectionTestStatus =
-            | ConnectionTestStatus.NotTestedYet
-            | ConnectionTestStatus.Valid
-            | ConnectionTestStatus.Invalid;
-
-        export namespace ConnectionTestStatus {
-            type Common = {
-                itTestOngoing: boolean;
-            };
-
-            export type NotTestedYet = Common & {
-                stateDescription: "not tested yet";
-            };
-
-            export type Valid = Common & {
-                stateDescription: "valid";
-            };
-
-            export type Invalid = Common & {
-                stateDescription: "invalid";
-                errorMessage: string;
-            };
-        }
     }
 }
 
@@ -91,12 +66,10 @@ export const { reducer, actions } = createUsecaseActions({
                 customConfigIndex,
                 "stateDescription": "ready",
                 "formValues": initialFormValues,
-                "connectionTestStatus": id<State.Ready.ConnectionTestStatus.NotTestedYet>(
-                    {
-                        "stateDescription": "not tested yet",
-                        "itTestOngoing": false
-                    }
-                )
+                "connectionTestStatus": id<ConnectionTestStatus.NotTestedYet>({
+                    "stateDescription": "not tested yet",
+                    "isTestOngoing": false
+                })
             });
         },
         "formValueChanged": (
@@ -115,23 +88,22 @@ export const { reducer, actions } = createUsecaseActions({
 
             Object.assign(state.formValues, { [payload.key]: payload.value });
 
-            state.connectionTestStatus =
-                id<State.Ready.ConnectionTestStatus.NotTestedYet>({
-                    "stateDescription": "not tested yet",
-                    "itTestOngoing": false
-                });
+            state.connectionTestStatus = id<ConnectionTestStatus.NotTestedYet>({
+                "stateDescription": "not tested yet",
+                "isTestOngoing": false
+            });
         },
         "connectionTestStarted": state => {
             assert(state.stateDescription === "ready");
 
-            state.connectionTestStatus.itTestOngoing = true;
+            state.connectionTestStatus.isTestOngoing = true;
         },
         "connectionTestSucceeded": state => {
             assert(state.stateDescription === "ready");
 
-            state.connectionTestStatus = id<State.Ready.ConnectionTestStatus.Valid>({
+            state.connectionTestStatus = id<ConnectionTestStatus.Valid>({
                 "stateDescription": "valid",
-                "itTestOngoing": false
+                "isTestOngoing": false
             });
         },
         "connectionTestFailed": (
@@ -140,9 +112,9 @@ export const { reducer, actions } = createUsecaseActions({
         ) => {
             assert(state.stateDescription === "ready");
 
-            state.connectionTestStatus = id<State.Ready.ConnectionTestStatus.Invalid>({
+            state.connectionTestStatus = id<ConnectionTestStatus.Invalid>({
                 "stateDescription": "invalid",
-                "itTestOngoing": false,
+                "isTestOngoing": false,
                 "errorMessage": payload.errorMessage
             });
         },

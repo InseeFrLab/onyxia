@@ -100,7 +100,7 @@ const isFormSubmittable = createSelector(
         assert(formValuesErrors !== undefined);
         assert(connectionTestStatus !== undefined);
 
-        if (connectionTestStatus.itTestOngoing) {
+        if (connectionTestStatus.isTestOngoing) {
             return false;
         }
 
@@ -248,7 +248,8 @@ const main = createSelector(
 export const privateSelectors = {
     submittableFormValues,
     formValuesErrors,
-    customConfigIndex
+    customConfigIndex,
+    connectionTestStatus
 };
 
 export const selectors = { main };
