@@ -11,13 +11,14 @@ import { Text } from "onyxia-ui/Text";
 import { id } from "tsafe/id";
 import "onyxia-ui/assets/fonts/WorkSans/font.css";
 import { GlobalStyles } from "tss-react";
-import { createCoreProvider } from "core";
+//import { createCoreProvider } from "core";
 import { useLang, fallbackLanguage, languages, I18nFetchingSuspense } from "ui/i18n";
 import type { Language } from "ui/i18n";
-import type { ReactNode } from "react";
+//import type { ReactNode } from "react";
 import { Evt } from "evt";
 import { useRerenderOnStateChange } from "evt/hooks";
 import { createMockRouteFactory } from "ui/routes";
+import { useSplashScreen } from "onyxia-ui";
 
 export { css, cx };
 
@@ -26,6 +27,9 @@ const evtTriggerReRender = Evt.create(0);
 //NOTE: Storybook bug hotfix.
 const propsByTitle = new Map<string, any>();
 
+//TODO: We can't use components that requires the core in storybook yet
+// because there are missing required mock for initializing the core.
+/*
 const { CoreProvider } = createCoreProvider({
     "apiUrl": "",
     "getCurrentLang": () => "en",
@@ -33,6 +37,7 @@ const { CoreProvider } = createCoreProvider({
     "disablePersonalInfosInjectionInGroup": false,
     "isCommandBarEnabledByDefault": true
 });
+*/
 
 export const { createMockRoute } = createMockRouteFactory({
     "triggerReRender": () => {
@@ -52,7 +57,7 @@ export function getStoryFactory<Props extends Record<string, unknown>>(params: {
         sectionName,
         wrappedComponent,
         argTypes = {},
-        doNeedCore,
+        //doNeedCore,
         defaultContainerWidth
     } = params;
 
@@ -90,10 +95,12 @@ export function getStoryFactory<Props extends Record<string, unknown>>(params: {
         );
     }
 
+    /*
     const StoreProviderOrFragment: React.ComponentType<{ children: ReactNode }> =
         !doNeedCore
             ? ({ children }) => <>{children}</>
             : ({ children }) => <CoreProvider>{children}</CoreProvider>;
+    */
 
     const title = `${sectionName}/${symToStr(wrappedComponent)}`;
 
@@ -113,13 +120,13 @@ export function getStoryFactory<Props extends Record<string, unknown>>(params: {
         return (
             <I18nFetchingSuspense>
                 <OnyxiaUi darkMode={darkMode}>
-                    <StoreProviderOrFragment>
-                        <ContextualizedTemplate
-                            containerWidth={containerWidth}
-                            lang={lang}
-                            componentProps={componentProps}
-                        />
-                    </StoreProviderOrFragment>
+                    {/*<StoreProviderOrFragment>*/}
+                    <ContextualizedTemplate
+                        containerWidth={containerWidth}
+                        lang={lang}
+                        componentProps={componentProps}
+                    />
+                    {/*</StoreProviderOrFragment>*/}
                 </OnyxiaUi>
             </I18nFetchingSuspense>
         );
@@ -141,6 +148,14 @@ export function getStoryFactory<Props extends Record<string, unknown>>(params: {
         }, [lang]);
 
         const { theme } = useStyles();
+
+        {
+            const { hideRootSplashScreen } = useSplashScreen();
+
+            useEffect(() => {
+                hideRootSplashScreen();
+            }, []);
+        }
 
         return (
             <>

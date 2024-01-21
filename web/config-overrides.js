@@ -11,6 +11,10 @@ const { assert } = require("tsafe/assert");
 
 module.exports = function override(config) {
 
+    if( config.resolve === undefined ){
+      config.resolve = {};
+    }
+
     Object.assign(config.resolve.fallback ??= {}, {
         "crypto": require.resolve("crypto-browserify"),
         "stream": require.resolve("stream-browserify"),
@@ -36,13 +40,15 @@ module.exports = function override(config) {
             "process": "process",
         }),
         new DefinePlugin({
-            "process.env.WEB_VERSION": JSON.stringify(process.env.npm_package_version)
+            "process.env.WEB_VERSION": JSON.stringify(process.env.npm_package_version),
+            "window.FOO": JSON.stringify("bar"),
         })
     ]);
 
     {
 
-        const sourceMapLoaderRule = config.module.rules.find(({ loader }) => loader.includes("source-map-loader"));
+        const sourceMapLoaderRule = config.module.rules
+            .find(({ loader }) => typeof loader === "string" && loader.includes("source-map-loader"));
 
         assert(sourceMapLoaderRule !== undefined);
 
