@@ -14,7 +14,6 @@
         "format:check": "yarn _format --list-different",
         "emails-domain-accept-list-helper": "ts-node scripts/emails-domain-accept-list-helper.ts",
         "prepare": "cp -rf patches/fs node_modules/ && patch-package && generate-env-getter && copy-keycloak-resources-to-public && copy-material-icons-to-public",
-        "_comment2": "Sb not currently working REACT_APP_* not loaded",
         "storybook": "start-storybook -p 6006"
     },
     "keycloakify": {
@@ -85,7 +84,6 @@
         "zod": "^3.19.0"
     },
     "devDependencies": {
-        "@emotion/css": "^11.11.2",
         "@storybook/addon-actions": "^6.5.14",
         "@storybook/addon-essentials": "^6.5.14",
         "@storybook/addon-events": "^6.2.9",
@@ -111,6 +109,7 @@
         "@typescript-eslint/eslint-plugin": "^5.36.2",
         "@typescript-eslint/parser": "^5.36.2",
         "circular-dependency-plugin": "^5.2.2",
+        "dotenv": "^16.3.2",
         "eslint-config-prettier": "^8.5.0",
         "eslint-plugin-tss-unused-classes": "^1.0.2",
         "events": "^3.2.0",

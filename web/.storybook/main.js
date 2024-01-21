@@ -1,4 +1,8 @@
 const path = require("path");
+const fs = require("fs");
+const dotenv = require("dotenv");
+
+const craProjectRootDirPath = path.join(__dirname, "..");
 
 module.exports = {
   "staticDirs": [
@@ -32,5 +36,22 @@ module.exports = {
         ...config.resolve.fallback,
       }
     }
-  })
+  }),
+  "env": (config) => {
+
+    const loadEnvConfig = (envPath) => {
+      if (fs.existsSync(envPath)) {
+        const envConfig = dotenv.parse(fs.readFileSync(envPath));
+        return envConfig;
+      }
+      return {};
+    };
+
+    return {
+      ...config,
+      ...loadEnvConfig(path.join(craProjectRootDirPath, ".env")),
+      ...loadEnvConfig(path.join(craProjectRootDirPath, ".env.local")),
+    };
+
+  }
 };

@@ -1,9 +1,8 @@
-import { css } from "@emotion/css";
 import { useState, useCallback, useEffect } from "react";
 import { SecretsExplorerItems } from "ui/pages/mySecrets/SecretsExplorer/SecretsExplorerItems/SecretsExplorerItems";
 import type { SecretsExplorerItemsProps } from "ui/pages/mySecrets/SecretsExplorer/SecretsExplorerItems/SecretsExplorerItems";
 import { sectionName } from "./sectionName";
-import { getStoryFactory, logCallbacks } from "stories/getStory";
+import { getStoryFactory, logCallbacks, css } from "stories/getStory";
 import { symToStr } from "tsafe/symToStr";
 import { Evt } from "evt";
 import { id } from "tsafe/id";

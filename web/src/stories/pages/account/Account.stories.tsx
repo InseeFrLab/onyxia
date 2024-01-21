@@ -5,7 +5,7 @@ import { createMockRoute, getStoryFactory } from "stories/getStory";
 const { meta, getStory } = getStoryFactory({
     sectionName,
     "wrappedComponent": { Account },
-    "defaultContainerWidth": 0
+    "doNeedCore": true
 });
 
 export default meta;

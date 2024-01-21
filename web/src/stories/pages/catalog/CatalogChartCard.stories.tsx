@@ -1,8 +1,7 @@
 import { CatalogChartCard } from "ui/pages/catalog/CatalogChartCard";
 import { sectionName } from "./sectionName";
-import { getStoryFactory, logCallbacks } from "stories/getStory";
+import { getStoryFactory, logCallbacks, css } from "stories/getStory";
 import rstudioImgUrl from "stories/assets/img/rstudio.png";
-import { css } from "@emotion/css";
 
 const { meta, getStory } = getStoryFactory({
     sectionName,

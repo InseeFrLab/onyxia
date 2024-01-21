@@ -1,7 +1,6 @@
 import { SettingSectionHeader } from "ui/shared/SettingSectionHeader";
 import { sectionName } from "./sectionName";
-import { getStoryFactory } from "stories/getStory";
-import { css } from "@emotion/css";
+import { getStoryFactory, css } from "stories/getStory";
 
 const { meta, getStory } = getStoryFactory({
     sectionName,

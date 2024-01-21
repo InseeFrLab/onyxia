@@ -6,7 +6,7 @@ const { meta, getStory } = getStoryFactory({
     sectionName,
     "wrappedComponent": { Footer },
     "defaultContainerWidth": 1000,
-    "doNeedCore": true
+    "doNeedCore": false
 });
 
 export default meta;

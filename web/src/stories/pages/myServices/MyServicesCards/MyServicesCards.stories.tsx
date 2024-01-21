@@ -1,8 +1,7 @@
 import { MyServicesCards, Props } from "ui/pages/myServices/MyServicesCards";
 import { sectionName } from "./sectionName";
-import { getStoryFactory, logCallbacks } from "stories/getStory";
+import { getStoryFactory, logCallbacks, css } from "stories/getStory";
 import rstudioImgUrl from "stories/assets/img/rstudio.png";
-import { css } from "@emotion/css";
 import { Evt } from "evt";
 
 const { meta, getStory } = getStoryFactory({

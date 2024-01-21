@@ -1,5 +1,4 @@
-import { css } from "@emotion/css";
-import { getStoryFactory, createMockRoute } from "stories/getStory";
+import { getStoryFactory, createMockRoute, css } from "stories/getStory";
 import { sectionName } from "../sectionName";
 import MySecrets, { type Props } from "ui/pages/mySecrets/MySecrets";
 import { symToStr } from "tsafe/symToStr";
