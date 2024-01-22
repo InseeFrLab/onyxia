@@ -7,6 +7,7 @@ import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
 import { id } from "tsafe/id";
 
 export const translations: Translations<"fi"> = {
+    /* spell-checker: disable */
     "Account": {
         "infos": "Tilin tiedot",
         "third-party-integration": "Kolmannen osapuolen integraatio",
@@ -136,6 +137,21 @@ export const translations: Translations<"fi"> = {
         ),
         "security-info": "Turvallisuustiedot",
         "s3-configs": "S3-konfiguraatiot"
+    },
+    "S3ConfigCard": {
+        "data source": "Tietolähde",
+        "credentials": "Tunnistetiedot",
+        "sts credentials":
+            "Dynaamisesti pyydetyt tokenit puolestasi Onyxian toimesta (STS)",
+        "account": "Tili",
+        "use in services": "Käytä palveluissa",
+        "use in services helper": `Jos otettu käyttöön, tätä konfiguraatiota käytetään
+            oletusarvoisesti palveluissasi, jotka toteuttavat S3-integraation.`,
+        "use for onyxia explorers": "Käytä Onyxia-tutkijoille",
+        "use for onyxia explorers helper": `Jos otettu käyttöön, tätä konfiguraatiota käytetään
+            tiedostonhallintaohjelmassa ja data-analysaattorissa.`,
+        "edit": "Muokkaa",
+        "delete": "Poista"
     },
     "AddCustomS3ConfigDialog": {
         "dialog title": "Uusi mukautettu S3-kokoonpano",
@@ -875,4 +891,5 @@ Tutustu vapaasti ja ota hallintaan Kubernetes-julkaisusi!
         "copied to clipboard": "Kopioitu!",
         "copy to clipboard": "Kopioi leikepöydälle"
     }
+    /* spell-checker: enable */
 };

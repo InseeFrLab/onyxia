@@ -6,6 +6,9 @@ import { Button } from "onyxia-ui/Button";
 import { tss } from "tss";
 import type { ConnectionTestStatus } from "core/usecases/s3ConfigManagement";
 import { TestS3ConnectionButton } from "./TestS3ConnectionButton";
+import { Icon } from "onyxia-ui/Icon";
+import Tooltip from "@mui/material/Tooltip";
+import { declareComponentKeys, useTranslation } from "ui/i18n";
 
 type Props = {
     className?: string;
@@ -42,10 +45,12 @@ export function S3ConfigCard(props: Props) {
 
     const { classes, cx, css, theme } = useStyles();
 
+    const { t } = useTranslation({ S3ConfigCard });
+
     return (
         <div className={cx(classes.root, className)}>
             <div className={classes.line}>
-                <Text typo="label 1">Data Source:</Text>
+                <Text typo="label 1">{t("data source")}:</Text>
                 &nbsp; &nbsp;
                 <Text typo="body 1">
                     <code
@@ -61,15 +66,13 @@ export function S3ConfigCard(props: Props) {
             <div className={classes.line}>
                 {accountFriendlyName === undefined ? (
                     <>
-                        <Text typo="label 1">Credentials:</Text>
+                        <Text typo="label 1">{t("credentials")}:</Text>
                         &nbsp; &nbsp;
-                        <Text typo="body 1">
-                            Tokens dynamically requested on your behalf by Onyxia (STS)
-                        </Text>
+                        <Text typo="body 1">{t("sts credentials")}</Text>
                     </>
                 ) : (
                     <>
-                        <Text typo="label 1">Account:</Text>
+                        <Text typo="label 1">{t("account")}:</Text>
                         &nbsp; &nbsp;
                         <Text typo="body 1">{accountFriendlyName}</Text>
                     </>
@@ -78,7 +81,13 @@ export function S3ConfigCard(props: Props) {
             {!doHideUsageSwitches && (
                 <>
                     <div className={classes.line}>
-                        <Text typo="label 1">Use in services:</Text>
+                        <Text typo="label 1">{t("use in services")}</Text>
+                        <Tooltip title={t("use in services helper")}>
+                            <Icon
+                                className={classes.helpIcon}
+                                icon={id<MuiIconComponentName>("Help")}
+                            />
+                        </Tooltip>
                         &nbsp;
                         <Switch
                             checked={isUsedForXOnyxia}
@@ -90,7 +99,13 @@ export function S3ConfigCard(props: Props) {
                         />
                     </div>
                     <div className={classes.line}>
-                        <Text typo="label 1">Use for Onyxia explorer:</Text>
+                        <Text typo="label 1">{t("use for onyxia explorers")}</Text>
+                        <Tooltip title={t("use for onyxia explorers helper")}>
+                            <Icon
+                                className={classes.helpIcon}
+                                icon={id<MuiIconComponentName>("Help")}
+                            />
+                        </Tooltip>
                         &nbsp;
                         <Switch
                             checked={isUsedForExplorer}
@@ -129,7 +144,7 @@ export function S3ConfigCard(props: Props) {
                             startIcon={id<MuiIconComponentName>("Edit")}
                             onClick={() => onEdit()}
                         >
-                            Edit
+                            {t("edit")}
                         </Button>
                     )}
                     {onDelete !== undefined && (
@@ -138,7 +153,7 @@ export function S3ConfigCard(props: Props) {
                             startIcon={id<MuiIconComponentName>("Delete")}
                             onClick={() => onDelete()}
                         >
-                            Delete
+                            {t("delete")}
                         </Button>
                     )}
                 </div>
@@ -161,5 +176,26 @@ const useStyles = tss.withName({ S3ConfigCard }).create(({ theme }) => ({
         "marginBottom": theme.spacing(3),
         "display": "flex",
         "alignItems": "center"
+    },
+    "helpIcon": {
+        "marginLeft": theme.spacing(2),
+        "fontSize": "inherit",
+        ...(() => {
+            const factor = 1.1;
+            return { "width": `${factor}em`, "height": `${factor}em` };
+        })()
     }
 }));
+
+export const { i18n } = declareComponentKeys<
+    | "data source"
+    | "credentials"
+    | "sts credentials"
+    | "account"
+    | "use in services"
+    | "use in services helper"
+    | "use for onyxia explorers"
+    | "use for onyxia explorers helper"
+    | "edit"
+    | "delete"
+>()({ S3ConfigCard });

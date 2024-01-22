@@ -127,6 +127,18 @@ export const translations: Translations<"zh-CN"> = {
         "security-info": "安全信息",
         "s3-configs": "S3 配置"
     },
+    "S3ConfigCard": {
+        "data source": "数据源",
+        "credentials": "凭证",
+        "sts credentials": "由Onyxia代表您动态请求的令牌 (STS)",
+        "account": "账户",
+        "use in services": "在服务中使用",
+        "use in services helper": `如果启用，此配置将默认用于实现S3集成的服务中。`,
+        "use for onyxia explorers": "用于Onyxia探索器",
+        "use for onyxia explorers helper": `如果启用，此配置将被文件浏览器和数据浏览器使用。`,
+        "edit": "编辑",
+        "delete": "删除"
+    },
     "AddCustomS3ConfigDialog": {
         "dialog title": "新的自定义 S3 配置",
         "dialog subtitle": "指定自定义服务账户或连接到另一个兼容 S3 的服务",

@@ -40,6 +40,7 @@ export type ComponentKey =
     | typeof import("ui/pages/account/AccountUserInterfaceTab").i18n
     | typeof import("ui/pages/account/AccountVaultTab").i18n
     | typeof import("ui/pages/projectSettings/ProjectSettings").i18n
+    | typeof import("ui/pages/projectSettings/ProjectSettingsS3ConfigTab/S3ConfigCard").i18n
     | typeof import("ui/pages/projectSettings/ProjectSettingsS3ConfigTab/S3ConfigDialogs/AddCustomS3ConfigDialog").i18n
     | typeof import("ui/pages/projectSettings/ProjectSettingsS3ConfigTab/TestS3ConnectionButton").i18n
     | typeof import("ui/App/Footer").i18n

@@ -141,6 +141,20 @@ export const translations: Translations<"no"> = {
         "security-info": "Sikkerhetsinformasjon",
         "s3-configs": "S3-konfigurasjoner"
     },
+    "S3ConfigCard": {
+        "data source": "Datakilde",
+        "credentials": "Legitimasjon",
+        "sts credentials":
+            "Token som dynamisk etterspørres på dine vegne av Onyxia (STS)",
+        "account": "Konto",
+        "use in services": "Bruk i tjenester",
+        "use in services helper": `Hvis aktivert, vil denne konfigurasjonen brukes som standard i dine tjenester som implementerer en S3-integrasjon.`,
+        "use for onyxia explorers": "Bruk for Onyxia utforskere",
+        "use for onyxia explorers helper": `Hvis aktivert, vil denne konfigurasjonen brukes
+            av filutforskeren og datautforskeren.`,
+        "edit": "Rediger",
+        "delete": "Slett"
+    },
     "AddCustomS3ConfigDialog": {
         "dialog title": "Ny tilpasset S3-konfigurasjon",
         "dialog subtitle":

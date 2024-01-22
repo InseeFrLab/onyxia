@@ -139,6 +139,19 @@ export const translations: Translations<"nl"> = {
         "security-info": "Veiligheidsinformatie",
         "s3-configs": "S3-configuraties"
     },
+    "S3ConfigCard": {
+        "data source": "Gegevensbron",
+        "credentials": "Inloggegevens",
+        "sts credentials": "Dynamisch aangevraagde tokens namens u door Onyxia (STS)",
+        "account": "Account",
+        "use in services": "Gebruiken in diensten",
+        "use in services helper": `Indien ingeschakeld, zal deze configuratie standaard worden gebruikt in uw diensten die een S3-integratie implementeren.`,
+        "use for onyxia explorers": "Gebruiken voor Onyxia-verkenners",
+        "use for onyxia explorers helper": `Indien ingeschakeld zal deze configuratie worden gebruikt
+            door de bestandsverkenner en de gegevensverkenner.`,
+        "edit": "Bewerken",
+        "delete": "Verwijderen"
+    },
     "AddCustomS3ConfigDialog": {
         "dialog title": "Nieuwe aangepaste S3-configuratie",
         "dialog subtitle":
