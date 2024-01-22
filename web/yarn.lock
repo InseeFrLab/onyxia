@@ -8182,14 +8182,14 @@ evt@^2.5.3:
     run-exclusive "^2.2.19"
     tsafe "^1.6.5"
 
-evt@^2.5.6:
-  version "2.5.6"
-  resolved "https://registry.yarnpkg.com/evt/-/evt-2.5.6.tgz#292a99d00d81fa04f659f72d8e24ebe7818f1cdb"
-  integrity sha512-8wxqQ5HQWn+C2RghLL07Q4mPqOqixNnKl3lEajx7hRth+/OqyZ7wfr9smASgG3yB7UUOqcpTKYBCEXzBa/1hPw==
+evt@^2.5.7:
+  version "2.5.7"
+  resolved "https://registry.yarnpkg.com/evt/-/evt-2.5.7.tgz#55c5f8ff910f4b7531bfac91e963d4cb3231f253"
+  integrity sha512-dr7Wd16ry5F8WNU1xXLKpFpO3HsoAGg8zC48e08vDdzMzGWCP9/QFGt1PQptEEDh8SwYP3EL8M+d/Gb0kgUp6g==
   dependencies:
     minimal-polyfills "^2.2.3"
     run-exclusive "^2.2.19"
-    tsafe "^1.6.5"
+    tsafe "^1.6.6"
 
 evt@^2.5.7:
   version "2.5.7"
@@ -12343,6 +12343,7 @@ onyxia-ui@^5.0.5:
   version "5.0.5"
   resolved "https://registry.yarnpkg.com/onyxia-ui/-/onyxia-ui-5.0.5.tgz#ae7865f17cc17f2bd12d70b6321f4604d3a25959"
   integrity sha512-TMQlv0QQorQYUsdsAVdPBaI7e3jVoLnsvQx6SFXjb2sojQgosLvPqJsR3kN9Jt+3xP7sE4n6mrvb34xKP6pKOA==
+
   dependencies:
     "@mui/icons-material" "^5.14.18"
     color "3.1.3"
@@ -13514,14 +13515,14 @@ powerhooks@^1.0.5:
     memoizee "^0.4.15"
     tsafe "^1.6.5"
 
-powerhooks@^1.0.7:
-  version "1.0.7"
-  resolved "https://registry.yarnpkg.com/powerhooks/-/powerhooks-1.0.7.tgz#3b0b7045adb2f03160a91984d591d32832856318"
-  integrity sha512-FMd1G/5gf4NGPWwQcaYp0erG3+hrUY7gbxJn+GbRw1AjIzuO74+BDDDfyQiIKageuiufTQ9Ri5gwxkOLUrhK4g==
+powerhooks@^1.0.8:
+  version "1.0.8"
+  resolved "https://registry.yarnpkg.com/powerhooks/-/powerhooks-1.0.8.tgz#e64e10b7f9cb2f367a3e92da2be8d2373f3d2418"
+  integrity sha512-BJJIJ5G/aT65Pbu7zAoOgK1NsWcRmho0W4sRSbKen/pqemkxG+2YsX4d8c2j6cbE1ldnN0muf76YnV5k4RwURw==
   dependencies:
-    evt "^2.5.6"
+    evt "^2.5.7"
     memoizee "^0.4.15"
-    tsafe "^1.6.5"
+    tsafe "^1.6.6"
 
 prelude-ls@^1.2.1:
   version "1.2.1"
