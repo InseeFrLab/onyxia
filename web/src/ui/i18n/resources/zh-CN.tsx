@@ -473,12 +473,7 @@ export const translations: Translations<"zh-CN"> = {
                 </MuiLink>
             </>
         ),
-        "here": "此处",
-        "show more": "显示所有",
-        "no service found": "没有找到服务",
         "no result found": ({ forWhat }) => `没有找到关于 ${forWhat} 的结果`,
-        "check spelling": "检查服务名称是否拼写正确或尝试扩大您的搜索范围",
-        "go back": "返回主要服务",
         "search results": "搜索结果",
         "search": "收索服务"
     },

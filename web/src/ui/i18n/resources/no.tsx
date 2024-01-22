@@ -514,12 +514,7 @@ export const translations: Translations<"no"> = {
                 </MuiLink>
             </>
         ),
-        "here": "her",
-        "show more": "Vis mer",
-        "no service found": "Ingen tjeneste funnet",
         "no result found": ({ forWhat }) => `Ingen resultater funnet for ${forWhat}`,
-        "check spelling": "Vennligst kontroller stavemåten eller prøv å utvide søket.",
-        "go back": "Tilbake til hovedtjenester",
         "search results": "Søkeresultat",
         "search": "Søk"
     },

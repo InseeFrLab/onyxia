@@ -514,13 +514,7 @@ export const translations: Translations<"nl"> = {
                 </MuiLink>
             </>
         ),
-        "here": "hier",
-        "show more": "Alles weergeven",
-        "no service found": "Dienst niet gevonden",
         "no result found": ({ forWhat }) => `Geen resultaat gevonden voor ${forWhat}`,
-        "check spelling": `Controleer of de naam van de dienst correct is gespeld
-            of probeer uw zoekopdracht uit te breiden.`,
-        "go back": "Terug naar de voornaamste diensten",
         "search results": "Resultaten van de zoekopdracht",
         "search": "Zoeken"
     },

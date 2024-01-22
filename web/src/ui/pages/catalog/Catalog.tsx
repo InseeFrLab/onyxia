@@ -225,13 +225,8 @@ export const { i18n } = declareComponentKeys<
           };
           R: JSX.Element;
       }
-    | "here"
     | "search results"
-    | "show more"
-    | "no service found"
     | { K: "no result found"; P: { forWhat: string } }
-    | "check spelling"
-    | "go back"
     | "search"
 >()({ Catalog });
 

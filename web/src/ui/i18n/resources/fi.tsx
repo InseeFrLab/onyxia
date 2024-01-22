@@ -510,12 +510,7 @@ export const translations: Translations<"fi"> = {
                 </MuiLink>
             </>
         ),
-        "here": "täältä",
-        "show more": "Näytä enemmän",
-        "no service found": "Palvelua ei löytynyt",
         "no result found": ({ forWhat }) => `Tuloksia ei löytynyt haulle ${forWhat}`,
-        "check spelling": "Tarkista kirjoitus tai laajenna hakua.",
-        "go back": "Palaa pääpalveluihin",
         "search results": "Hakutulokset",
         "search": "Haku"
     },

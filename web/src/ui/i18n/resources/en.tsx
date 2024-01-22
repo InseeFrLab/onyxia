@@ -509,12 +509,7 @@ export const translations: Translations<"en"> = {
                 </MuiLink>
             </>
         ),
-        "here": "here",
-        "show more": "Show more",
-        "no service found": "No service found",
         "no result found": ({ forWhat }) => `No result found for ${forWhat}`,
-        "check spelling": "Please check your spelling or try widening your search.",
-        "go back": "Back to main services",
         "search results": "Search result",
         "search": "Search"
     },
