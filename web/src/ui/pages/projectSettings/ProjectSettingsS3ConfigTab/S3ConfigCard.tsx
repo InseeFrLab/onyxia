@@ -40,15 +40,21 @@ export function S3ConfigCard(props: Props) {
         onTestConnection
     } = props;
 
-    const { classes, cx } = useStyles();
+    const { classes, cx, css, theme } = useStyles();
 
     return (
         <div className={cx(classes.root, className)}>
             <div className={classes.line}>
                 <Text typo="label 1">Data Source:</Text>
-                &nbsp;
+                &nbsp; &nbsp;
                 <Text typo="body 1">
-                    <code>{dataSource}</code>
+                    <code
+                        className={css({
+                            "fontSize": "0.9rem"
+                        })}
+                    >
+                        {dataSource}
+                    </code>
                     {region === "" ? null : <>&nbsp;-&nbsp;{region}</>}
                 </Text>
             </div>
@@ -56,7 +62,7 @@ export function S3ConfigCard(props: Props) {
                 {accountFriendlyName === undefined ? (
                     <>
                         <Text typo="label 1">Credentials:</Text>
-                        &nbsp;
+                        &nbsp; &nbsp;
                         <Text typo="body 1">
                             Tokens dynamically requested on your behalf by Onyxia (STS)
                         </Text>
@@ -64,7 +70,7 @@ export function S3ConfigCard(props: Props) {
                 ) : (
                     <>
                         <Text typo="label 1">Account:</Text>
-                        &nbsp;
+                        &nbsp; &nbsp;
                         <Text typo="body 1">{accountFriendlyName}</Text>
                     </>
                 )}
@@ -97,37 +103,58 @@ export function S3ConfigCard(props: Props) {
                     </div>
                 </>
             )}
-            {onDelete !== undefined && (
-                <Button
-                    startIcon={id<MuiIconComponentName>("Delete")}
-                    onClick={() => onDelete()}
+            <div
+                className={css({
+                    "display": "flex"
+                })}
+            >
+                {connectionTestStatus !== undefined && (
+                    <TestS3ConnectionButton
+                        className={css({})}
+                        connectionTestStatus={connectionTestStatus}
+                        onTestConnection={onTestConnection}
+                    />
+                )}
+                <div className={css({ "flex": 1 })} />
+                <div
+                    className={css({
+                        "display": "flex",
+                        "gap": theme.spacing(2)
+                    })}
                 >
-                    Delete
-                </Button>
-            )}
-            {onEdit !== undefined && (
-                <Button
-                    startIcon={id<MuiIconComponentName>("Edit")}
-                    onClick={() => onEdit()}
-                >
-                    Edit
-                </Button>
-            )}
-            {connectionTestStatus !== undefined && (
-                <TestS3ConnectionButton
-                    connectionTestStatus={connectionTestStatus}
-                    onTestConnection={onTestConnection}
-                />
-            )}
+                    {onEdit !== undefined && (
+                        <Button
+                            variant="secondary"
+                            startIcon={id<MuiIconComponentName>("Edit")}
+                            onClick={() => onEdit()}
+                        >
+                            Edit
+                        </Button>
+                    )}
+                    {onDelete !== undefined && (
+                        <Button
+                            variant="secondary"
+                            startIcon={id<MuiIconComponentName>("Delete")}
+                            onClick={() => onDelete()}
+                        >
+                            Delete
+                        </Button>
+                    )}
+                </div>
+            </div>
         </div>
     );
 }
 
 const useStyles = tss.withName({ S3ConfigCard }).create(({ theme }) => ({
     "root": {
-        "border": `1px solid ${theme.colors.useCases.surfaces.surface2}`,
         "padding": theme.spacing(3),
-        "borderRadius": theme.spacing(2)
+        "borderRadius": theme.spacing(2),
+        "backgroundColor": theme.colors.useCases.surfaces.surface2,
+        "boxShadow": theme.shadows[1],
+        "&:hover": {
+            "boxShadow": theme.shadows[6]
+        }
     },
     "line": {
         "marginBottom": theme.spacing(3),

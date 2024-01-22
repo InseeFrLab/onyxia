@@ -18,15 +18,16 @@ export type Props = {
 export function TestS3ConnectionButton(props: Props) {
     const { className, connectionTestStatus, onTestConnection } = props;
 
-    const { cx, classes } = useStyles();
+    const { cx, classes, css, theme } = useStyles();
 
     const { t } = useTranslation({ TestS3ConnectionButton });
 
     return (
         <div className={cx(classes.root, className)}>
             <Button
-                variant="secondary"
+                variant="ternary"
                 onClick={onTestConnection}
+                startIcon={id<MuiIconComponentName>("SettingsEthernet")}
                 disabled={
                     onTestConnection === undefined || connectionTestStatus.isTestOngoing
                 }
@@ -35,26 +36,41 @@ export function TestS3ConnectionButton(props: Props) {
             </Button>
             {(() => {
                 if (connectionTestStatus.isTestOngoing) {
-                    return <CircularProgress />;
+                    return <CircularProgress size={theme.spacing(4)} />;
                 }
 
                 switch (connectionTestStatus.stateDescription) {
                     case "not tested yet":
                         return null;
                     case "success":
-                        return <Icon icon={id<MuiIconComponentName>("DoneOutline")} />;
+                        return (
+                            <Icon
+                                className={cx(
+                                    classes.icon,
+                                    css({
+                                        "color":
+                                            theme.colors.useCases.alertSeverity.success
+                                                .main
+                                    })
+                                )}
+                                icon={id<MuiIconComponentName>("DoneOutline")}
+                            />
+                        );
                     case "failed":
                         return (
                             <>
-                                <Icon icon={id<MuiIconComponentName>("ErrorOutline")} />
                                 <Tooltip
                                     title={t("test connection failed", {
                                         "errorMessage": connectionTestStatus.errorMessage
                                     })}
                                 >
                                     <Icon
-                                        icon={id<MuiIconComponentName>("Help")}
-                                        size="small"
+                                        className={css({
+                                            "color":
+                                                theme.colors.useCases.alertSeverity.error
+                                                    .main
+                                        })}
+                                        icon={id<MuiIconComponentName>("ErrorOutline")}
                                     />
                                 </Tooltip>
                             </>
@@ -66,9 +82,20 @@ export function TestS3ConnectionButton(props: Props) {
     );
 }
 
-export const useStyles = tss.withName({ TestS3ConnectionButton }).create({
-    "root": {}
-});
+export const useStyles = tss.withName({ TestS3ConnectionButton }).create(({ theme }) => ({
+    "root": {
+        "display": "flex",
+        "alignItems": "center",
+        "gap": theme.spacing(3)
+    },
+    "icon": {
+        "fontSize": "inherit",
+        ...(() => {
+            const factor = 1.6;
+            return { "width": `${factor}em`, "height": `${factor}em` };
+        })()
+    }
+}));
 
 export const { i18n } = declareComponentKeys<
     | "test connection"

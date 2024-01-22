@@ -49,94 +49,98 @@ export const ProjectSettingsS3ConfigTab = memo((props: Props) => {
     return (
         <>
             <div className={className}>
-                {s3Configs.map(s3Config => (
-                    <S3ConfigCard
-                        className={classes.card}
-                        key={s3Config.customConfigIndex ?? -1}
-                        dataSource={s3Config.dataSource}
-                        region={s3Config.region}
-                        isUsedForExplorer={s3Config.isUsedForExplorer}
-                        isUsedForXOnyxia={s3Config.isUsedForXOnyxia}
-                        accountFriendlyName={s3Config.accountFriendlyName}
-                        onDelete={(() => {
-                            const { customConfigIndex } = s3Config;
+                <div className={classes.cardsWrapper}>
+                    {s3Configs.map(s3Config => (
+                        <S3ConfigCard
+                            className={classes.card}
+                            key={s3Config.customConfigIndex ?? -1}
+                            dataSource={s3Config.dataSource}
+                            region={s3Config.region}
+                            isUsedForExplorer={s3Config.isUsedForExplorer}
+                            isUsedForXOnyxia={s3Config.isUsedForXOnyxia}
+                            accountFriendlyName={s3Config.accountFriendlyName}
+                            onDelete={(() => {
+                                const { customConfigIndex } = s3Config;
 
-                            if (customConfigIndex === undefined) {
-                                return undefined;
-                            }
+                                if (customConfigIndex === undefined) {
+                                    return undefined;
+                                }
 
-                            return () =>
-                                evtConfirmCustomS3ConfigDeletionDialogOpen.post({
-                                    "resolveDoProceed": doProceed => {
-                                        if (!doProceed) {
-                                            return;
+                                return () =>
+                                    evtConfirmCustomS3ConfigDeletionDialogOpen.post({
+                                        "resolveDoProceed": doProceed => {
+                                            if (!doProceed) {
+                                                return;
+                                            }
+
+                                            s3ConfigManagement.deleteCustomS3Config({
+                                                customConfigIndex
+                                            });
                                         }
+                                    });
+                            })()}
+                            onIsUsedForExplorerValueChange={(() => {
+                                if (
+                                    s3Config.accountFriendlyName === undefined &&
+                                    s3Config.isUsedForExplorer
+                                ) {
+                                    return undefined;
+                                }
 
-                                        s3ConfigManagement.deleteCustomS3Config({
-                                            customConfigIndex
-                                        });
-                                    }
-                                });
-                        })()}
-                        onIsUsedForExplorerValueChange={(() => {
-                            if (
+                                return isUsed =>
+                                    s3ConfigManagement.setConfigUsage({
+                                        "customConfigIndex": s3Config.customConfigIndex,
+                                        "usedFor": "explorer",
+                                        isUsed
+                                    });
+                            })()}
+                            onIsUsedForXOnyxiaValueChange={(() => {
+                                if (
+                                    s3Config.accountFriendlyName === undefined &&
+                                    s3Config.isUsedForXOnyxia
+                                ) {
+                                    return undefined;
+                                }
+
+                                return isUsed =>
+                                    s3ConfigManagement.setConfigUsage({
+                                        "customConfigIndex": s3Config.customConfigIndex,
+                                        "usedFor": "xOnyxia",
+                                        isUsed
+                                    });
+                            })()}
+                            onEdit={(() => {
+                                const { customConfigIndex } = s3Config;
+
+                                if (customConfigIndex === undefined) {
+                                    return undefined;
+                                }
+
+                                return () =>
+                                    evtAddCustomS3ConfigDialogOpen.post({
+                                        customConfigIndex
+                                    });
+                            })()}
+                            doHideUsageSwitches={
                                 s3Config.accountFriendlyName === undefined &&
-                                s3Config.isUsedForExplorer
-                            ) {
-                                return undefined;
+                                s3Configs.length === 1
                             }
+                            connectionTestStatus={s3Config.connectionTestStatus}
+                            onTestConnection={(() => {
+                                const { customConfigIndex } = s3Config;
 
-                            return isUsed =>
-                                s3ConfigManagement.setConfigUsage({
-                                    "customConfigIndex": s3Config.customConfigIndex,
-                                    "usedFor": "explorer",
-                                    isUsed
-                                });
-                        })()}
-                        onIsUsedForXOnyxiaValueChange={(() => {
-                            if (
-                                s3Config.accountFriendlyName === undefined &&
-                                s3Config.isUsedForXOnyxia
-                            ) {
-                                return undefined;
-                            }
+                                if (customConfigIndex === undefined) {
+                                    return undefined;
+                                }
 
-                            return isUsed =>
-                                s3ConfigManagement.setConfigUsage({
-                                    "customConfigIndex": s3Config.customConfigIndex,
-                                    "usedFor": "xOnyxia",
-                                    isUsed
-                                });
-                        })()}
-                        onEdit={(() => {
-                            const { customConfigIndex } = s3Config;
-
-                            if (customConfigIndex === undefined) {
-                                return undefined;
-                            }
-
-                            return () =>
-                                evtAddCustomS3ConfigDialogOpen.post({
-                                    customConfigIndex
-                                });
-                        })()}
-                        doHideUsageSwitches={
-                            s3Config.accountFriendlyName === undefined &&
-                            s3Configs.length === 1
-                        }
-                        connectionTestStatus={s3Config.connectionTestStatus}
-                        onTestConnection={(() => {
-                            const { customConfigIndex } = s3Config;
-
-                            if (customConfigIndex === undefined) {
-                                return undefined;
-                            }
-
-                            return () =>
-                                s3ConfigManagement.testConnection({ customConfigIndex });
-                        })()}
-                    />
-                ))}
+                                return () =>
+                                    s3ConfigManagement.testConnection({
+                                        customConfigIndex
+                                    });
+                            })()}
+                        />
+                    ))}
+                </div>
                 <S3ConfigDialogs
                     evtConfirmCustomS3ConfigDeletionDialogOpen={
                         evtConfirmCustomS3ConfigDeletionDialogOpen
@@ -172,7 +176,14 @@ export const ProjectSettingsS3ConfigTab = memo((props: Props) => {
 });
 
 const useStyles = tss.withName({ ProjectSettingsS3ConfigTab }).create(({ theme }) => ({
+    "cardsWrapper": {
+        "display": "flex",
+        "flexWrap": "wrap",
+        "gap": theme.spacing(3),
+        "marginBottom": theme.spacing(4),
+        ...theme.spacing.rightLeft("padding", 3)
+    },
     "card": {
-        "marginBottom": theme.spacing(3)
+        "flexBasis": `calc(50% - ${theme.spacing(3) / 2}px)`
     }
 }));
