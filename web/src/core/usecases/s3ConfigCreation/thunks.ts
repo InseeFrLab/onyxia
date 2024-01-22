@@ -173,7 +173,7 @@ export const thunks = {
 
                 const { url } = submittableFormValues;
 
-                if (url.toLowerCase().includes("amazon.com")) {
+                if (url.toLowerCase().includes("amazonaws.com")) {
                     dispatch(
                         actions.formValueChanged({
                             "key": "pathStyleAccess",
