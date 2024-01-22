@@ -1,5 +1,6 @@
 import type { Oidc } from "core/ports/Oidc";
 import { assert, type Equals } from "tsafe/assert";
+import { noUndefined } from "tsafe/noUndefined";
 
 export async function createOidcOrFallback(params: {
     oidcAdapterImplementationToUseIfNotFallingBack: "default";
@@ -17,7 +18,7 @@ export async function createOidcOrFallback(params: {
     const wrap = (() => {
         const { issuerUri, clientId } = {
             ...fallbackOidc?.params,
-            ...oidcParams
+            ...noUndefined(oidcParams ?? {})
         };
 
         assert(
