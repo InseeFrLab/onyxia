@@ -61,6 +61,13 @@ export const createDuckDbSqlOlap = (): SqlOlap => {
                     if (typeof value === "bigint") {
                         return value.toString();
                     }
+
+                    if (value instanceof Uint8Array) {
+                        return Array.from(value)
+                            .map(byte => byte.toString(16).padStart(2, "0"))
+                            .join("");
+                    }
+
                     return value;
                 })
             );
