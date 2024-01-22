@@ -139,7 +139,7 @@ const Body = memo(() => {
 
     const { s3ConfigCreation } = useCore().functions;
 
-    const { classes } = useBodyStyles();
+    const { classes, css, theme } = useBodyStyles();
 
     const { t } = useTranslation({ AddCustomS3ConfigDialog });
 
@@ -148,67 +148,119 @@ const Body = memo(() => {
     }
 
     return (
-        <div className={classes.root}>
-            <TextField
-                className={classes.textField}
-                label={t("url textField label")}
-                helperText={t("url textField helper text")}
-                helperTextError={
-                    formValuesErrors.url === undefined
-                        ? undefined
-                        : t(formValuesErrors.url)
-                }
-                defaultValue={formValues.url}
-                doOnlyShowErrorAfterFirstFocusLost
-                onValueBeingTypedChange={({ value }) =>
-                    s3ConfigCreation.changeValue({
-                        "key": "url",
-                        value
-                    })
-                }
-            />
-            <TextField
-                className={classes.textField}
-                label={t("region textField label")}
-                helperText={t("region textField helper text")}
-                helperTextError={
-                    formValuesErrors.region === undefined
-                        ? undefined
-                        : t(formValuesErrors.region)
-                }
-                defaultValue={formValues.region}
-                doOnlyShowErrorAfterFirstFocusLost
-                onValueBeingTypedChange={({ value }) =>
-                    s3ConfigCreation.changeValue({
-                        "key": "region",
-                        value
-                    })
-                }
-            />
-            <TextField
-                className={classes.textField}
-                label={t("workingDirectoryPath textField label")}
-                helperText={t("workingDirectoryPath textField helper text")}
-                helperTextError={
-                    formValuesErrors.workingDirectoryPath === undefined
-                        ? undefined
-                        : t(formValuesErrors.workingDirectoryPath)
-                }
-                defaultValue={formValues.workingDirectoryPath}
-                doOnlyShowErrorAfterFirstFocusLost
-                onValueBeingTypedChange={({ value }) =>
-                    s3ConfigCreation.changeValue({
-                        "key": "workingDirectoryPath",
-                        value
-                    })
-                }
-            />
+        <>
+            <FormGroup className={classes.serverConfigFormGroup}>
+                <TextField
+                    label={t("url textField label")}
+                    helperText={t("url textField helper text")}
+                    helperTextError={
+                        formValuesErrors.url === undefined
+                            ? undefined
+                            : t(formValuesErrors.url)
+                    }
+                    defaultValue={formValues.url}
+                    doOnlyShowErrorAfterFirstFocusLost
+                    onValueBeingTypedChange={({ value }) =>
+                        s3ConfigCreation.changeValue({
+                            "key": "url",
+                            value
+                        })
+                    }
+                />
+                <TextField
+                    label={t("region textField label")}
+                    helperText={t("region textField helper text")}
+                    helperTextError={
+                        formValuesErrors.region === undefined
+                            ? undefined
+                            : t(formValuesErrors.region)
+                    }
+                    defaultValue={formValues.region}
+                    doOnlyShowErrorAfterFirstFocusLost
+                    onValueBeingTypedChange={({ value }) =>
+                        s3ConfigCreation.changeValue({
+                            "key": "region",
+                            value
+                        })
+                    }
+                />
+                <TextField
+                    label={t("workingDirectoryPath textField label")}
+                    className={css({
+                        "marginBottom": theme.spacing(4)
+                    })}
+                    helperText={t("workingDirectoryPath textField helper text")}
+                    helperTextError={
+                        formValuesErrors.workingDirectoryPath === undefined
+                            ? undefined
+                            : t(formValuesErrors.workingDirectoryPath)
+                    }
+                    defaultValue={formValues.workingDirectoryPath}
+                    doOnlyShowErrorAfterFirstFocusLost
+                    onValueBeingTypedChange={({ value }) =>
+                        s3ConfigCreation.changeValue({
+                            "key": "workingDirectoryPath",
+                            value
+                        })
+                    }
+                />
+                <FormControl
+                    className={css({
+                        "& code": {
+                            "fontSize": "0.9rem",
+                            "color": theme.colors.useCases.typography.textSecondary
+                        }
+                    })}
+                >
+                    <FormLabel id="path-style">{t("url style")}</FormLabel>
+                    <Text
+                        typo="caption"
+                        color="secondary"
+                        className={css({
+                            "marginBottom": theme.spacing(2)
+                        })}
+                    >
+                        {t("url style helper text")}
+                    </Text>
+                    <RadioGroup
+                        aria-labelledby="path-style"
+                        value={formValues.pathStyleAccess ? "path" : "virtual-hosted"}
+                        onChange={(_, value) =>
+                            s3ConfigCreation.changeValue({
+                                "key": "pathStyleAccess",
+                                "value": value === "path"
+                            })
+                        }
+                    >
+                        <FormControlLabel
+                            value="path"
+                            control={<Radio />}
+                            label={t("path style label", {
+                                "example": urlStylesExamples?.pathStyle
+                            })}
+                        />
+                        <FormControlLabel
+                            value="virtual-hosted"
+                            control={<Radio />}
+                            label={t("virtual-hosted style label", {
+                                "example": urlStylesExamples?.virtualHostedStyle
+                            })}
+                        />
+                    </RadioGroup>
+                </FormControl>
+            </FormGroup>
             <FormGroup className={classes.accountCredentialsFormGroup}>
-                <FormLabel className={classes.accountCredentialsFormGroupLabel}>
+                <FormLabel
+                    className={css({
+                        "marginBottom": theme.spacing(3)
+                    })}
+                >
                     {t("account credentials")}
                 </FormLabel>
                 <TextField
-                    className={classes.textField}
+                    className={css({
+                        "marginBottom": theme.spacing(6)
+                    })}
                     label={t("accountFriendlyName textField label")}
                     helperText={t("accountFriendlyName textField helper text")}
                     helperTextError={
@@ -226,7 +278,9 @@ const Body = memo(() => {
                     }
                 />
                 <TextField
-                    className={classes.textField}
+                    className={css({
+                        "marginBottom": theme.spacing(6)
+                    })}
                     label={t("accessKeyId textField label")}
                     helperText={t("accessKeyId textField helper text")}
                     helperTextError={
@@ -244,8 +298,10 @@ const Body = memo(() => {
                     }
                 />
                 <TextField
+                    className={css({
+                        "marginBottom": theme.spacing(6)
+                    })}
                     type="sensitive"
-                    className={classes.textField}
                     selectAllTextOnFocus
                     label={t("secretAccessKey textField label")}
                     helperTextError={
@@ -263,9 +319,11 @@ const Body = memo(() => {
                     }
                 />
                 <TextField
+                    className={css({
+                        "marginBottom": theme.spacing(6)
+                    })}
                     type="sensitive"
                     selectAllTextOnFocus
-                    className={classes.textField}
                     label={t("sessionToken textField label")}
                     helperText={t("sessionToken textField helper text")}
                     helperTextError={
@@ -283,59 +341,28 @@ const Body = memo(() => {
                     }
                 />
             </FormGroup>
-            <FormControl>
-                <FormLabel id="path-style">{t("url style")}</FormLabel>
-                <Text typo="caption" color="secondary">
-                    {t("url style helper text")}
-                </Text>
-                <RadioGroup
-                    aria-labelledby="path-style"
-                    value={formValues.pathStyleAccess ? "path" : "virtual-hosted"}
-                    onChange={(_, value) =>
-                        s3ConfigCreation.changeValue({
-                            "key": "pathStyleAccess",
-                            "value": value === "path"
-                        })
-                    }
-                >
-                    <FormControlLabel
-                        value="path"
-                        control={<Radio />}
-                        label={t("path style label", {
-                            "example": urlStylesExamples?.pathStyle
-                        })}
-                    />
-                    <FormControlLabel
-                        value="virtual-hosted"
-                        control={<Radio />}
-                        label={t("virtual-hosted style label", {
-                            "example": urlStylesExamples?.virtualHostedStyle
-                        })}
-                    />
-                </RadioGroup>
-            </FormControl>
-        </div>
+        </>
     );
 });
 
 const useBodyStyles = tss
     .withName(`${symToStr({ AddCustomS3ConfigDialog })}${symToStr({ Body })}`)
     .create(({ theme }) => ({
-        "root": {
+        "serverConfigFormGroup": {
             "display": "flex",
             "flexDirection": "column",
-            "overflow": "visible"
-        },
-        "textField": {
-            "marginBottom": theme.spacing(6)
+            "overflow": "visible",
+            "gap": theme.spacing(6),
+            "marginBottom": theme.spacing(4)
         },
         "accountCredentialsFormGroup": {
-            "border": `1px solid ${theme.colors.useCases.typography.textDisabled}`,
             "borderRadius": 5,
-            "padding": theme.spacing(2)
-        },
-        "accountCredentialsFormGroupLabel": {
-            "marginBottom": theme.spacing(2)
+            "padding": theme.spacing(3),
+            "backgroundColor": theme.colors.useCases.surfaces.surface2,
+            "boxShadow": theme.shadows[1],
+            "&:hover": {
+                "boxShadow": theme.shadows[6]
+            }
         }
     }));
 

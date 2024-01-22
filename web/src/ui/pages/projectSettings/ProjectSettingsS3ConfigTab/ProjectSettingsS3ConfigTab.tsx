@@ -44,7 +44,7 @@ export const ProjectSettingsS3ConfigTab = memo((props: Props) => {
 
     const { s3ConfigManagement } = useCore().functions;
 
-    const { classes } = useStyles();
+    const { classes, css, theme } = useStyles();
 
     return (
         <>
@@ -141,13 +141,12 @@ export const ProjectSettingsS3ConfigTab = memo((props: Props) => {
                         />
                     ))}
                 </div>
-                <S3ConfigDialogs
-                    evtConfirmCustomS3ConfigDeletionDialogOpen={
-                        evtConfirmCustomS3ConfigDeletionDialogOpen
-                    }
-                    evtAddCustomS3ConfigDialogOpen={evtAddCustomS3ConfigDialogOpen}
-                />
                 <Button
+                    className={css({
+                        "float": "right",
+                        "marginRight": theme.spacing(3),
+                        "marginBottom": theme.spacing(4)
+                    })}
                     startIcon={id<MuiIconComponentName>("Add")}
                     onClick={async () => {
                         const dDoProceed = new Deferred<boolean>();
@@ -167,6 +166,12 @@ export const ProjectSettingsS3ConfigTab = memo((props: Props) => {
                 >
                     Add a custom S3 configuration
                 </Button>
+                <S3ConfigDialogs
+                    evtConfirmCustomS3ConfigDeletionDialogOpen={
+                        evtConfirmCustomS3ConfigDeletionDialogOpen
+                    }
+                    evtAddCustomS3ConfigDialogOpen={evtAddCustomS3ConfigDialogOpen}
+                />
             </div>
             <MaybeAcknowledgeConfigVolatilityDialog
                 evtOpen={evtMaybeAcknowledgeConfigVolatilityDialogOpen}

@@ -105,6 +105,7 @@ export function S3ConfigCard(props: Props) {
             )}
             <div
                 className={css({
+                    "marginTop": theme.spacing(4),
                     "display": "flex"
                 })}
             >
