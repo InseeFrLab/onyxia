@@ -40,8 +40,7 @@ module.exports = function override(config) {
             "process": "process",
         }),
         new DefinePlugin({
-            "process.env.WEB_VERSION": JSON.stringify(process.env.npm_package_version),
-            "window.FOO": JSON.stringify("bar"),
+            "process.env.WEB_VERSION": JSON.stringify(process.env.npm_package_version)
         })
     ]);
 

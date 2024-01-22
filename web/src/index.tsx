@@ -6,9 +6,6 @@ import { assert } from "tsafe/assert";
 {
     const version = process.env.WEB_VERSION;
 
-    //@ts-expect-error
-    console.log("xxxxxxooooo", window.FOO);
-
     console.log(
         [
             `inseefrlab/onyxia-web version: ${version}`,
