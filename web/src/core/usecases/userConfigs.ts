@@ -5,11 +5,13 @@ import { objectKeys } from "tsafe/objectKeys";
 import { assert } from "tsafe/assert";
 import {
     createUsecaseActions,
-    createObjectThatThrowsIfAccessed
+    createObjectThatThrowsIfAccessed,
+    createSelector
 } from "redux-clean-architecture";
 import * as userAuthentication from "./userAuthentication";
 import { join as pathJoin } from "path";
 import { getIsDarkModeEnabledOsDefault } from "onyxia-ui/tools/getIsDarkModeEnabledOsDefault";
+import * as deploymentRegionManagement from "core/usecases/deploymentRegionManagement";
 
 /*
  * Values of the user profile that can be changed.
@@ -29,6 +31,7 @@ export type UserConfigs = Id<
         isDarkModeEnabled: boolean;
         githubPersonalAccessToken: string | null;
         doDisplayMySecretsUseInServiceDialog: boolean;
+        doDisplayAcknowledgeConfigVolatilityDialogIfNoVault: boolean;
         selectedProjectId: string | null;
         isCommandBarEnabled: boolean;
     }
@@ -116,6 +119,13 @@ export const thunks = {
                     "value": true
                 })
             );
+
+            dispatch(
+                thunks.changeValue({
+                    "key": "doDisplayAcknowledgeConfigVolatilityDialogIfNoVault",
+                    "value": true
+                })
+            );
         }
 } satisfies Thunks;
 
@@ -124,11 +134,11 @@ export const protectedThunks = {
         () =>
         async (...args) => {
             /* prettier-ignore */
-            const [dispatch, , { secretsManager, oidc, paramsOfBootstrapCore }] = args;
+            const [dispatch, getState, { secretsManager, oidc, paramsOfBootstrapCore }] = args;
 
             assert(oidc.isUserLoggedIn);
 
-            const { username, email } = dispatch(userAuthentication.thunks.getUser());
+            const { username, email } = userAuthentication.selectors.user(getState());
 
             // NOTE: Default values
             const userConfigs: UserConfigs = {
@@ -141,6 +151,7 @@ export const protectedThunks = {
                 "isDarkModeEnabled": getIsDarkModeEnabledOsDefault(),
                 "githubPersonalAccessToken": null,
                 "doDisplayMySecretsUseInServiceDialog": true,
+                "doDisplayAcknowledgeConfigVolatilityDialogIfNoVault": true,
                 "selectedProjectId": null,
                 "isCommandBarEnabled": paramsOfBootstrapCore.isCommandBarEnabledByDefault
             };
@@ -180,7 +191,7 @@ const privateThunks = {
         async (...args): Promise<string> => {
             const [, , { onyxiaApi }] = args;
 
-            const userProject = (await onyxiaApi.getUserProjects()).find(
+            const userProject = (await onyxiaApi.getUserAndProjects()).projects.find(
                 project => project.group === undefined
             );
 
@@ -191,27 +202,37 @@ const privateThunks = {
 } satisfies Thunks;
 
 export const selectors = (() => {
-    /** Give the value directly (without isBeingChanged) */
-    const main = (rootState: RootState): UserConfigs => {
-        const userConfigs: any = {};
+    const state = (rootState: RootState): State => rootState[name];
 
-        const state = rootState[name];
+    const userConfigs = createSelector(state, state => {
+        const userConfigs: any = {};
 
         objectKeys(state).forEach(key => (userConfigs[key] = state[key].value));
 
-        return userConfigs;
-    };
-
-    const stateWithProgress = (rootState: RootState): State => rootState[name];
+        return userConfigs as UserConfigs;
+    });
 
     // NOTE: This will not crash even if the user is not logged in.
     const isDarkModeEnabled = (rootState: RootState): boolean | undefined => {
-        if (!rootState.userAuthentication.isUserLoggedIn) {
+        const { isUserLoggedIn } =
+            userAuthentication.selectors.authenticationState(rootState);
+
+        if (!isUserLoggedIn) {
             return undefined;
         }
 
-        return main(rootState).isDarkModeEnabled;
+        return userConfigs(rootState).isDarkModeEnabled;
     };
 
-    return { main, stateWithProgress, isDarkModeEnabled };
+    const isVaultEnabled = createSelector(
+        deploymentRegionManagement.selectors.currentDeploymentRegion,
+        deploymentRegion => deploymentRegion.vault !== undefined
+    );
+
+    return {
+        userConfigs,
+        "userConfigsWithUpdateProgress": state,
+        isDarkModeEnabled,
+        isVaultEnabled
+    };
 })();

@@ -12,10 +12,13 @@ import type { IndexedFormFields } from "../FormField";
 import { createGetIsFieldHidden } from "./getIsFieldHidden";
 import * as yaml from "yaml";
 import { name, type State } from "../state";
-import * as restorableConfigManager from "core/usecases/restorableConfigManager";
-import * as projectConfigs from "core/usecases/projectConfigs";
+import * as restorableConfigManagement from "core/usecases/restorableConfigManagement";
+import * as projectManagement from "core/usecases/projectManagement";
+import * as s3ConfigManagement from "core/usecases/s3ConfigManagement";
+import * as userConfigs from "core/usecases/userConfigs";
 import { exclude } from "tsafe/exclude";
 import { createSelector } from "redux-clean-architecture";
+import { id } from "tsafe/id";
 
 const readyState = (rootState: RootState): State.Ready | undefined => {
     const state = rootState[name];
@@ -353,7 +356,7 @@ const restorableConfig = createSelector(
         chartVersion,
         formFields,
         pathOfFormFieldsWhoseValuesAreDifferentFromDefault
-    ): restorableConfigManager.RestorableConfig | undefined => {
+    ): projectManagement.ProjectConfigs.RestorableServiceConfig | undefined => {
         if (!isReady) {
             return undefined;
         }
@@ -381,7 +384,7 @@ const restorableConfig = createSelector(
 const isRestorableConfigSaved = createSelector(
     isReady,
     restorableConfig,
-    restorableConfigManager.protectedSelectors.restorableConfigs,
+    restorableConfigManagement.protectedSelectors.restorableConfigs,
     (isReady, restorableConfig, restorableConfigs) => {
         if (!isReady) {
             return undefined;
@@ -391,7 +394,7 @@ const isRestorableConfigSaved = createSelector(
 
         return (
             restorableConfigs.find(restorableConfig_i =>
-                restorableConfigManager.getAreSameRestorableConfig(
+                restorableConfigManagement.getAreSameRestorableConfig(
                     restorableConfig_i,
                     restorableConfig
                 )
@@ -459,7 +462,7 @@ const launchCommands = createSelector(
     formFields,
     catalogRepositoryUrl,
     helmReleaseName,
-    projectConfigs.selectors.selectedProject,
+    projectManagement.selectors.currentProject,
     chartVersionDifferentFromDefault,
     (
         isReady,
@@ -468,7 +471,7 @@ const launchCommands = createSelector(
         formFields,
         catalogRepositoryUrl,
         helmReleaseName,
-        selectedProject,
+        project,
         chartVersionDifferentFromDefault
     ) => {
         if (!isReady) {
@@ -480,7 +483,6 @@ const launchCommands = createSelector(
         assert(formFields !== undefined);
         assert(catalogRepositoryUrl !== undefined);
         assert(helmReleaseName !== undefined);
-        assert(selectedProject !== undefined);
 
         return [
             `helm repo add ${catalogId} ${catalogRepositoryUrl}`,
@@ -491,9 +493,9 @@ const launchCommands = createSelector(
             ].join("\n"),
             [
                 `helm install ${helmReleaseName} ${catalogId}/${chartName}`,
-                selectedProject.group === undefined
+                project.group === undefined
                     ? undefined
-                    : `--namespace ${selectedProject.namespace}`,
+                    : `--namespace ${project.namespace}`,
                 chartVersionDifferentFromDefault === undefined
                     ? undefined
                     : `--version ${chartVersionDifferentFromDefault}`,
@@ -522,22 +524,30 @@ const launchScript = createSelector(
     }
 );
 
-const commandLogsEntries = createSelector(launchCommands, launchCommands => {
-    if (launchCommands === undefined) {
-        return undefined;
-    }
+const commandLogsEntries = createSelector(
+    launchCommands,
+    userConfigs.selectors.userConfigs,
+    (launchCommands, userConfigs) => {
+        if (launchCommands === undefined) {
+            return undefined;
+        }
 
-    return launchCommands.map((cmd, i) => ({
-        "cmdId": i,
-        cmd,
-        "resp": ""
-    }));
-});
+        if (!userConfigs.isCommandBarEnabled) {
+            return undefined;
+        }
+
+        return launchCommands.map((cmd, i) => ({
+            "cmdId": i,
+            cmd,
+            "resp": ""
+        }));
+    }
+);
 
 const chartSourceUrls = createSelector(readyState, state => state?.chartSourceUrls);
 
 const groupProjectName = createSelector(
-    projectConfigs.selectors.selectedProject,
+    projectManagement.selectors.currentProject,
     project => (project.group === undefined ? undefined : project.name)
 );
 
@@ -576,7 +586,7 @@ const catalogName = createSelector(readyState, state => state?.catalogName);
 const isThereASavedConfigWithThisFriendlyName = createSelector(
     isReady,
     friendlyName,
-    restorableConfigManager.protectedSelectors.savedConfigFriendlyNames,
+    restorableConfigManagement.protectedSelectors.savedConfigFriendlyNames,
     (isReady, friendlyName, savedConfigFriendlyNames) => {
         if (!isReady) {
             return undefined;
@@ -585,6 +595,65 @@ const isThereASavedConfigWithThisFriendlyName = createSelector(
         assert(friendlyName !== undefined);
 
         return savedConfigFriendlyNames.includes(friendlyName);
+    }
+);
+
+const s3ConfigSelect = createSelector(
+    readyState,
+    s3ConfigManagement.selectors.s3Configs,
+    (state, s3Configs) => {
+        if (state === undefined) {
+            return undefined;
+        }
+
+        // We don't display the s3 config selector if there is no config or only one
+        if (s3Configs.length <= 1) {
+            return undefined;
+        }
+
+        // If the chart at hand does not use s3, we don't display the s3 config selector
+        if (state.pathOfFormFieldsAffectedByS3ConfigChange.length === 0) {
+            return undefined;
+        }
+
+        const options = s3Configs.map(s3Config => ({
+            "customConfigIndex": s3Config.customConfigIndex,
+            "dataSource": s3Config.dataSource,
+            "accountFriendlyName": s3Config.accountFriendlyName
+        }));
+
+        type SelectedOption =
+            | {
+                  type: "sts";
+              }
+            | {
+                  type: "custom";
+                  customS3ConfigIndex: number;
+              }
+            | {
+                  type: "manual form input";
+              };
+
+        const selectedOption: SelectedOption = (() => {
+            if (state.has3sConfigBeenManuallyChanged) {
+                return id<SelectedOption>({
+                    "type": "manual form input"
+                });
+            }
+
+            if (state.selectedCustomS3ConfigIndex === undefined) {
+                return id<SelectedOption>({
+                    "type": "sts"
+                });
+            }
+
+            return id<SelectedOption>({
+                "type": "custom",
+                "customS3ConfigIndex": state.selectedCustomS3ConfigIndex
+            });
+        })();
+
+        return { options, selectedOption };
     }
 );
 
@@ -609,6 +678,7 @@ const main = createSelector(
     commandLogsEntries,
     chartSourceUrls,
     groupProjectName,
+    s3ConfigSelect,
     (
         isReady,
         friendlyName,
@@ -629,12 +699,12 @@ const main = createSelector(
         launchScript,
         commandLogsEntries,
         chartSourceUrls,
-        groupProjectName
+        groupProjectName,
+        s3ConfigSelect
     ) => {
         if (!isReady) {
             return {
-                "isReady": false as const,
-                groupProjectName
+                "isReady": false as const
             };
         }
 
@@ -644,7 +714,6 @@ const main = createSelector(
         assert(isRestorableConfigSaved !== undefined);
         assert(indexedFormFields !== undefined);
         assert(isLaunchable !== undefined);
-        // isShared can be undefined, even if isReady is true
         assert(formFieldsIsWellFormed !== undefined);
         assert(chartIconUrl !== undefined);
         assert(chartName !== undefined);
@@ -652,7 +721,6 @@ const main = createSelector(
         assert(availableChartVersions !== undefined);
         assert(catalogName !== undefined);
         assert(catalogRepositoryUrl !== undefined);
-        assert(commandLogsEntries !== undefined);
         assert(launchScript !== undefined);
         assert(chartSourceUrls !== undefined);
 
@@ -676,7 +744,8 @@ const main = createSelector(
             launchScript,
             commandLogsEntries,
             chartSourceUrls,
-            groupProjectName
+            groupProjectName,
+            s3ConfigSelect
         };
     }
 );
@@ -697,8 +766,16 @@ const formFieldsValueDifferentFromDefault = createSelector(
     }
 );
 
+const has3sConfigBeenManuallyChanged = createSelector(readyState, state => {
+    if (state === undefined) {
+        return undefined;
+    }
+    return state.has3sConfigBeenManuallyChanged;
+});
+
 export const privateSelectors = {
     helmReleaseName,
     formFieldsValueDifferentFromDefault,
-    isShared
+    isShared,
+    has3sConfigBeenManuallyChanged
 };

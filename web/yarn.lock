@@ -1456,17 +1456,6 @@
     "@emotion/utils" "0.11.3"
     babel-plugin-emotion "^10.0.27"
 
-"@emotion/css@^11.11.2":
-  version "11.11.2"
-  resolved "https://registry.yarnpkg.com/@emotion/css/-/css-11.11.2.tgz#e5fa081d0c6e335352e1bc2b05953b61832dca5a"
-  integrity sha512-VJxe1ucoMYMS7DkiMdC2T7PWNbrEI0a39YRiyDvK2qq4lXwjRbVP/z4lpG+odCsRzadlR+1ywwrTzhdm5HNdew==
-  dependencies:
-    "@emotion/babel-plugin" "^11.11.0"
-    "@emotion/cache" "^11.11.0"
-    "@emotion/serialize" "^1.1.2"
-    "@emotion/sheet" "^1.2.2"
-    "@emotion/utils" "^1.2.1"
-
 "@emotion/hash@0.8.0":
   version "0.8.0"
   resolved "https://registry.yarnpkg.com/@emotion/hash/-/hash-0.8.0.tgz#bbbff68978fefdbe68ccb533bc8cbe1d1afb5413"
@@ -2132,19 +2121,19 @@
   resolved "https://registry.yarnpkg.com/@mui/core-downloads-tracker/-/core-downloads-tracker-5.14.8.tgz#9117bd29e94e96dc376f93a28e024666a2456696"
   integrity sha512-8V7ZOC/lKkM03TRHqaThQFIq6bWPnj7L/ZWPh0ymldYFFyh8XdF0ywTgafsofDNYT4StlNknbaTjVHBma3SNjQ==
 
+"@mui/icons-material@5.14.15":
+  version "5.14.15"
+  resolved "https://registry.yarnpkg.com/@mui/icons-material/-/icons-material-5.14.15.tgz#206fc2aca5d03631722a35c0f9420c7b9efde4b3"
+  integrity sha512-Dqu21vN/mVNzebJ+ofnKG+CeJYIhHuDs5+0fMEpdpzRt6UojelzdrEkNv+XkO0e1JMclzeXIRx404FirK/CFRw==
+  dependencies:
+    "@babel/runtime" "^7.23.2"
+
 "@mui/icons-material@^5.14.18":
   version "5.14.18"
   resolved "https://registry.yarnpkg.com/@mui/icons-material/-/icons-material-5.14.18.tgz#9e92964cde8c7ba32cf50438a83403dc283f2328"
   integrity sha512-o2z49R1G4SdBaxZjbMmkn+2OdT1bKymLvAYaB6pH59obM1CYv/0vAVm6zO31IqhwtYwXv6A7sLIwCGYTaVkcdg==
   dependencies:
     "@babel/runtime" "^7.23.2"
-
-"@mui/icons-material@^5.14.8":
-  version "5.14.8"
-  resolved "https://registry.yarnpkg.com/@mui/icons-material/-/icons-material-5.14.8.tgz#e07418e792050eae611afd74f810ed1c234be687"
-  integrity sha512-YXcReLydTuNWb1/PxduAH5LgnHNH6spSQBaA0JOz9HD4J+vwst0IanAQgsXy9KKCJSjCsHywE3DB8X+w/b4eeQ==
-  dependencies:
-    "@babel/runtime" "^7.22.10"
 
 "@mui/material@^5.14.8":
   version "5.14.8"
@@ -7495,6 +7484,11 @@ dotenv@^10.0.0:
   resolved "https://registry.yarnpkg.com/dotenv/-/dotenv-10.0.0.tgz#3d4227b8fb95f81096cdd2b66653fb2c7085ba81"
   integrity sha512-rlBi9d8jpv9Sf1klPjNfFAuWDjKLwTIJJ/VxtoTwIR6hnZxcEOQCZg2oIL3MWBYw5GpUDKOEnND7LXTbIpQ03Q==
 
+dotenv@^16.3.2:
+  version "16.3.2"
+  resolved "https://registry.yarnpkg.com/dotenv/-/dotenv-16.3.2.tgz#3cb611ce5a63002dbabf7c281bc331f69d28f03f"
+  integrity sha512-HTlk5nmhkm8F6JcdXvHIzaorzCoziNQT9mGxLPVXW8wJF1TiGSL60ZGB4gHWabHOaMmWmhvk2/lPHfnBiT78AQ==
+
 dotenv@^8.0.0, dotenv@^8.2.0:
   version "8.6.0"
   resolved "https://registry.yarnpkg.com/dotenv/-/dotenv-8.6.0.tgz#061af664d19f7f4d8fc6e4ff9b584ce237adcb8b"
@@ -9301,7 +9295,7 @@ highlight.js@~9.15.0, highlight.js@~9.15.1:
   resolved "https://registry.yarnpkg.com/highlight.js/-/highlight.js-9.15.10.tgz#7b18ed75c90348c045eef9ed08ca1319a2219ad2"
   integrity sha512-RoV7OkQm0T3os3Dd2VHLNMoaoDVx77Wygln3n9l5YV172XonWG6rgQD3XnF/BuFFZw9A0TJgmMSO8FEWQgvcXw==
 
-history@^5.0.0:
+history@^5.3.0:
   version "5.3.0"
   resolved "https://registry.yarnpkg.com/history/-/history-5.3.0.tgz#1548abaa245ba47992f063a0783db91ef201c73b"
   integrity sha512-ZqaKwjjrAYUYfLG+htGaIIZ4nioX2L70ZUMIFysS3xvBsSG4x/n1V6TXV3N8ZYNuFGlDirFg32T7B6WOUPDYcQ==
@@ -12301,10 +12295,10 @@ oidc-client-ts@^2.3.0:
     crypto-js "^4.1.1"
     jwt-decode "^3.1.2"
 
-oidc-spa@2.2.2-rc.0:
-  version "2.2.2-rc.0"
-  resolved "https://registry.yarnpkg.com/oidc-spa/-/oidc-spa-2.2.2-rc.0.tgz#78c13b524e6617fcadbd5f79b0485581a26d5ef4"
-  integrity sha512-RtYTIuTSF5zZJ4X1aZlSFid8R6YR0l8iEkKfexKNwWm7yee/TkGbE6sDPV2Zy2HTibN23vYz/M6jjmBLpwEvWQ==
+oidc-spa@^3.0.3:
+  version "3.0.3"
+  resolved "https://registry.yarnpkg.com/oidc-spa/-/oidc-spa-3.0.3.tgz#01e524064e91615e3f2c6d6c906234fc13351787"
+  integrity sha512-yoAQHaTPw0Eb3AYLQ1ODuCfO0iboUv3agnz45QSm0LWG9o6+9mtN6g71XljrSIPR/G5g4rLria4Ke+Rq/LoJZg==
   dependencies:
     jwt-decode "^3.1.2"
     oidc-client-ts "^2.3.0"
@@ -12336,10 +12330,10 @@ onetime@^5.1.0, onetime@^5.1.2:
   dependencies:
     mimic-fn "^2.1.0"
 
-onyxia-ui@^4.9.0:
-  version "4.9.0"
-  resolved "https://registry.yarnpkg.com/onyxia-ui/-/onyxia-ui-4.9.0.tgz#54e979dd281625b8ec67e1d6748324413677f5ad"
-  integrity sha512-Zmdu1zuRblPSvH0oZt4mgo2JQEgd5CG65FXUauhDj/lcwYr7bMrG2V78tQolfbM47/xJbpZxkVamnCnD3t8/VQ==
+onyxia-ui@^5.0.5:
+  version "5.0.5"
+  resolved "https://registry.yarnpkg.com/onyxia-ui/-/onyxia-ui-5.0.5.tgz#ae7865f17cc17f2bd12d70b6321f4604d3a25959"
+  integrity sha512-TMQlv0QQorQYUsdsAVdPBaI7e3jVoLnsvQx6SFXjb2sojQgosLvPqJsR3kN9Jt+3xP7sE4n6mrvb34xKP6pKOA==
   dependencies:
     "@mui/icons-material" "^5.14.18"
     color "3.1.3"
@@ -13864,11 +13858,6 @@ react-app-rewired@^2.2.1:
   integrity sha512-uFQWTErXeLDrMzOJHKp0h8P1z0LV9HzPGsJ6adOtGlA/B9WfT6Shh4j2tLTTGlXOfiVx6w6iWpp7SOC5pvk+gA==
   dependencies:
     semver "^5.6.0"
-
-react-async-hook@^3.6.1:
-  version "3.6.2"
-  resolved "https://registry.yarnpkg.com/react-async-hook/-/react-async-hook-3.6.2.tgz#360018e5cd6ecc8841152a79875841b9e49dbdba"
-  integrity sha512-RkwHCJ8V7I6umKZLHneapuTRWf+eO4LOj0qUwUDsSn27jrAOcW6ClbV3x22Z4hVxH9bA0zb7y+ozDJDJ8PnZoA==
 
 react-code-blocks@^0.0.9-0:
   version "0.0.9-0"
@@ -16255,12 +16244,12 @@ type-is@~1.6.18:
     media-typer "0.3.0"
     mime-types "~2.1.24"
 
-type-route@^0.6.0:
-  version "0.6.0"
-  resolved "https://registry.yarnpkg.com/type-route/-/type-route-0.6.0.tgz#0762fde72c592f7fc9eea3451f7c538811b7439e"
-  integrity sha512-uh5bxHxHOKNDNTetGwBgtSP5ba3SUtnKcdj3d5AjbIALVbYBwaix4wwfpyxqrE9ia31LknXUc+359FChcC01jw==
+type-route@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/type-route/-/type-route-1.1.0.tgz#26c657e55a43590ff3c1568459998cbfc02fd6a7"
+  integrity sha512-MgM/N+R8wp2oMYZZvBerFvK1j8CloGnhnsgf2ZTarFJ9PUXiNwLTCR3SkN0Mj95IdNee00v9q2iBNlkB106I7w==
   dependencies:
-    history "^5.0.0"
+    history "^5.3.0"
 
 type@^1.0.1:
   version "1.2.0"

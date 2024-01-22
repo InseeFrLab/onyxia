@@ -14,6 +14,10 @@ import type { S3Client } from "core/ports/S3Client";
 import type { Language } from "core/ports/OnyxiaApi/Language";
 import { createDuckDbSqlOlap } from "core/adapters/sqlOlap/default";
 import { pluginSystemInitCore } from "pluginSystem";
+import { assert, type Equals } from "tsafe/assert";
+import { onlyIfChanged } from "evt/operators";
+import type { ParamsOfCreateS3Client } from "core/adapters/s3Client/default";
+import { id } from "tsafe/id";
 
 type ParamsOfBootstrapCore = {
     /** Empty string for using mock */
@@ -29,7 +33,8 @@ export type Context = {
     oidc: Oidc;
     onyxiaApi: OnyxiaApi;
     secretsManager: SecretsManager;
-    s3Client: S3Client;
+    s3ClientSts: S3Client | undefined;
+    s3ClientForExplorer: S3Client;
     sqlOlap: SqlOlap;
 };
 
@@ -40,12 +45,14 @@ export async function bootstrapCore(
 ): Promise<{ core: Core }> {
     const { apiUrl, transformUrlBeforeRedirectToLogin } = params;
 
+    const isSandboxEnvironment = apiUrl === "";
+
     let isCoreCreated = false;
 
     let oidc: Oidc | undefined = undefined;
 
     const onyxiaApi = await (async () => {
-        if (apiUrl === "") {
+        if (isSandboxEnvironment) {
             const { onyxiaApi } = await import("core/adapters/onyxiaApi/mock");
 
             return onyxiaApi;
@@ -53,7 +60,7 @@ export async function bootstrapCore(
 
         const { createOnyxiaApi } = await import("core/adapters/onyxiaApi/default");
 
-        const onyxiaApi = createOnyxiaApi({
+        return createOnyxiaApi({
             "url": apiUrl,
             "getOidcAccessToken": () => {
                 if (oidc === undefined) {
@@ -65,13 +72,13 @@ export async function bootstrapCore(
                 }
                 return oidc.getTokens().accessToken;
             },
-            "getRegionId": () => {
+            "getCurrentRegionId": () => {
                 if (!isCoreCreated) {
                     return undefined;
                 }
 
                 try {
-                    return usecases.deploymentRegion.selectors.selectedDeploymentRegion(
+                    return usecases.deploymentRegionManagement.selectors.currentDeploymentRegion(
                         getState()
                     ).id;
                 } catch (error) {
@@ -81,13 +88,14 @@ export async function bootstrapCore(
                     throw error;
                 }
             },
-            "getProject": () => {
+            "getCurrentProjectId": () => {
                 if (!isCoreCreated) {
                     return undefined;
                 }
 
                 try {
-                    return usecases.projectConfigs.selectors.selectedProject(getState());
+                    return usecases.projectManagement.selectors.currentProject(getState())
+                        .id;
                 } catch (error) {
                     if (error instanceof AccessError) {
                         return undefined;
@@ -96,19 +104,15 @@ export async function bootstrapCore(
                 }
             }
         });
-
-        return onyxiaApi;
     })();
 
-    let oidcParams: { issuerUri: string; clientId: string } | undefined = undefined;
-
     oidc = await (async () => {
-        oidcParams = (await onyxiaApi.getAvailableRegionsAndOidcParams()).oidcParams;
+        const { oidcParams } = await onyxiaApi.getAvailableRegionsAndOidcParams();
 
         if (oidcParams === undefined) {
             const { createOidc } = await import("core/adapters/oidc/mock");
 
-            return createOidc({ "isUserInitiallyLoggedIn": false });
+            return createOidc({ "isUserInitiallyLoggedIn": true });
         }
 
         const { createOidc } = await import("core/adapters/oidc/default");
@@ -124,18 +128,13 @@ export async function bootstrapCore(
         "paramsOfBootstrapCore": params,
         oidc,
         onyxiaApi,
-        /** prettier-ignore */
-        "secretsManager": createObjectThatThrowsIfAccessed<SecretsManager>({
-            "debugMessage": "secretsManager is not yet initialized"
-        }),
-        /** prettier-ignore */
-        "s3Client": createObjectThatThrowsIfAccessed<S3Client>({
-            "debugMessage": "s3 client is not yet initialized"
-        }),
+        "secretsManager": createObjectThatThrowsIfAccessed<SecretsManager>(),
+        "s3ClientSts": undefined,
+        "s3ClientForExplorer": createObjectThatThrowsIfAccessed<S3Client>(),
         "sqlOlap": createDuckDbSqlOlap()
     };
 
-    const { core, dispatch, getState } = createCore({
+    const { core, dispatch, getState, evtAction } = createCore({
         context,
         usecases
     });
@@ -144,73 +143,199 @@ export async function bootstrapCore(
 
     await dispatch(usecases.userAuthentication.protectedThunks.initialize());
 
-    await dispatch(usecases.deploymentRegion.protectedThunks.initialize());
+    await dispatch(usecases.deploymentRegionManagement.protectedThunks.initialize());
+
+    init_secrets_manager: {
+        if (!oidc.isUserLoggedIn) {
+            break init_secrets_manager;
+        }
+
+        const deploymentRegion =
+            usecases.deploymentRegionManagement.selectors.currentDeploymentRegion(
+                getState()
+            );
+
+        if (deploymentRegion.vault === undefined) {
+            const { createSecretManager } = await import(
+                "core/adapters/secretManager/mock"
+            );
+
+            context.secretsManager = createSecretManager();
+            break init_secrets_manager;
+        }
+
+        const [{ createSecretManager }, { createOidcOrFallback }] = await Promise.all([
+            import("core/adapters/secretManager/default"),
+            import("core/adapters/oidc/utils/createOidcOrFallback")
+        ]);
+
+        context.secretsManager = await createSecretManager({
+            "kvEngine": deploymentRegion.vault.kvEngine,
+            "role": deploymentRegion.vault.role,
+            "url": deploymentRegion.vault.url,
+            "authPath": deploymentRegion.vault.authPath,
+            "oidc": await createOidcOrFallback({
+                "oidcAdapterImplementationToUseIfNotFallingBack": "default",
+                "oidcParams": deploymentRegion.vault.oidcParams,
+                "fallbackOidc": oidc
+            })
+        });
+    }
 
     if (oidc.isUserLoggedIn) {
-        /* prettier-ignore */
-        const { s3: s3Params, vault: vaultParams } = usecases.deploymentRegion.selectors.selectedDeploymentRegion(getState());
-
-        /* prettier-ignore */
-        const nonMockOidc = oidcParams === undefined ? undefined : oidc;
-
-        /* prettier-ignore */
-        const { createOidcOrFallback } = await import("core/adapters/oidc/utils/createOidcOrFallback");
-
-        context.s3Client = await (async () => {
-            if (s3Params === undefined) {
-                const { s3client } = await import("core/adapters/s3Client/mock");
-
-                return s3client;
-            }
-
-            /** prettier-ignore */
-            const { createS3Client, getCreateS3ClientParams } = await import(
-                "core/adapters/s3Client/default"
-            );
-
-            return createS3Client({
-                ...getCreateS3ClientParams({ s3Params }),
-                "createAwsBucket": onyxiaApi.createAwsBucket,
-                "oidc": await createOidcOrFallback({
-                    "oidcAdapterImplementationToUseIfNotFallingBack": "default",
-                    "oidcParams": s3Params.oidcParams,
-                    "fallbackOidc": nonMockOidc
-                })
-            });
-        })();
-
-        context.secretsManager = await (async () => {
-            if (vaultParams === undefined) {
-                /* prettier-ignore */
-                const { createSecretManager } = await import("core/adapters/secretManager/mock");
-
-                return createSecretManager();
-            }
-
-            const { createSecretManager } = await import(
-                "core/adapters/secretManager/default"
-            );
-
-            return createSecretManager({
-                "kvEngine": vaultParams.kvEngine,
-                "role": vaultParams.role,
-                "url": vaultParams.url,
-                "authPath": vaultParams.authPath,
-                "oidc": await createOidcOrFallback({
-                    "oidcAdapterImplementationToUseIfNotFallingBack": "default",
-                    "oidcParams": vaultParams.oidcParams,
-                    "fallbackOidc": nonMockOidc
-                })
-            });
-        })();
-
         await dispatch(usecases.userConfigs.protectedThunks.initialize());
+    }
 
-        await dispatch(usecases.projectConfigs.protectedThunks.initialize());
+    if (oidc.isUserLoggedIn) {
+        await dispatch(usecases.projectManagement.protectedThunks.initialize());
+    }
 
-        await dispatch(usecases.restorableConfigManager.protectedThunks.initialize());
+    init_s3_clients: {
+        if (!oidc.isUserLoggedIn) {
+            break init_s3_clients;
+        }
 
+        if (isSandboxEnvironment) {
+            const { s3client } = await import("core/adapters/s3Client/mock");
+
+            context.s3ClientForExplorer = s3client;
+            context.s3ClientSts = undefined;
+
+            break init_s3_clients;
+        }
+
+        const [{ createS3Client }, { createOidcOrFallback }] = await Promise.all([
+            import("core/adapters/s3Client/default"),
+            import("core/adapters/oidc/utils/createOidcOrFallback")
+        ]);
+
+        init_s3_client_sts: {
+            const { s3: deploymentRegionS3 } =
+                usecases.deploymentRegionManagement.selectors.currentDeploymentRegion(
+                    getState()
+                );
+
+            if (deploymentRegionS3?.sts === undefined) {
+                break init_s3_client_sts;
+            }
+
+            const oidcForS3 = await createOidcOrFallback({
+                "oidcAdapterImplementationToUseIfNotFallingBack": "default",
+                "oidcParams": deploymentRegionS3.sts.oidcParams,
+                "fallbackOidc": oidc
+            });
+
+            const deploymentRegionS3Sts = deploymentRegionS3.sts;
+
+            evtAction
+                .pipe(
+                    data =>
+                        data.usecaseName === "projectManagement" &&
+                        data.actionName === "projectChanged"
+                )
+                .toStateful()
+                .pipe(() => [
+                    id<ParamsOfCreateS3Client.Sts>({
+                        "url": deploymentRegionS3.url,
+                        "isStsEnabled": true,
+                        "stsUrl": deploymentRegionS3Sts.url,
+                        "pathStyleAccess": deploymentRegionS3.pathStyleAccess,
+                        "region": deploymentRegionS3.region,
+                        "oidc": oidcForS3,
+                        "durationSeconds": deploymentRegionS3Sts.durationSeconds,
+                        "role": deploymentRegionS3Sts.role,
+                        "nameOfBucketToCreateIfNotExist": (() => {
+                            const { workingDirectory } = deploymentRegionS3;
+
+                            if (workingDirectory.bucketMode === "shared") {
+                                return undefined;
+                            }
+
+                            assert<Equals<typeof workingDirectory.bucketMode, "multi">>();
+
+                            const project =
+                                usecases.projectManagement.selectors.currentProject(
+                                    getState()
+                                );
+
+                            const { username } =
+                                usecases.userAuthentication.selectors.user(getState());
+
+                            return project.group === undefined
+                                ? `${workingDirectory.bucketNamePrefix}${username}`
+                                : `${workingDirectory.bucketNamePrefixGroup}${project.group}`;
+                        })()
+                    })
+                ])
+                .pipe(onlyIfChanged())
+                .attach(
+                    paramsOfCreateS3Client =>
+                        (context.s3ClientSts =
+                            paramsOfCreateS3Client === undefined
+                                ? createObjectThatThrowsIfAccessed<S3Client>()
+                                : createS3Client(paramsOfCreateS3Client))
+                );
+        }
+
+        // Init s3ClientForExplorer
+        evtAction
+            .pipe(
+                data =>
+                    data.usecaseName === "projectManagement" &&
+                    (data.actionName === "projectChanged" ||
+                        (data.actionName === "configValueUpdated" &&
+                            data.payload.key === "s3"))
+            )
+            .toStateful()
+            .pipe((): [ParamsOfCreateS3Client.NoSts | undefined] => {
+                const { indexForExplorer, customConfigs } =
+                    usecases.s3ConfigManagement.protectedSelectors.projectS3Config(
+                        getState()
+                    );
+
+                if (indexForExplorer === undefined) {
+                    return [undefined];
+                }
+
+                const customS3ConfigForExplorer = customConfigs[indexForExplorer];
+
+                return [
+                    id<ParamsOfCreateS3Client.NoSts>({
+                        "isStsEnabled": false,
+                        "url": customS3ConfigForExplorer.url,
+                        "pathStyleAccess": customS3ConfigForExplorer.pathStyleAccess,
+                        "region": customS3ConfigForExplorer.region,
+                        "accessKeyId": customS3ConfigForExplorer.accessKeyId,
+                        "secretAccessKey": customS3ConfigForExplorer.secretAccessKey,
+                        "sessionToken": customS3ConfigForExplorer.sessionToken
+                    })
+                ];
+            })
+            .pipe(onlyIfChanged())
+            .attach(
+                paramsOfCreateS3Client =>
+                    (context.s3ClientForExplorer =
+                        paramsOfCreateS3Client === undefined
+                            ? context.s3ClientSts ??
+                              createObjectThatThrowsIfAccessed<S3Client>()
+                            : createS3Client(paramsOfCreateS3Client))
+            );
+    }
+
+    if (oidc.isUserLoggedIn) {
+        dispatch(usecases.s3ConfigManagement.protectedThunks.initialize());
+    }
+
+    if (oidc.isUserLoggedIn) {
+        dispatch(usecases.restorableConfigManagement.protectedThunks.initialize());
+    }
+
+    if (oidc.isUserLoggedIn) {
         await dispatch(usecases.userAccountManagement.protectedThunks.initialize());
+    }
+
+    if (oidc.isUserLoggedIn) {
+        dispatch(usecases.fileExplorer.protectedThunks.initialize());
     }
 
     pluginSystemInitCore({ core, context });

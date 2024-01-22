@@ -2,6 +2,9 @@ import type { Translations } from "../types";
 import MuiLink from "@mui/material/Link";
 import { Markdown } from "ui/shared/Markdown";
 import { elementsToSentence } from "ui/tools/elementsToSentence";
+import { Icon } from "onyxia-ui/Icon";
+import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
+import { id } from "tsafe/id";
 
 export const translations: Translations<"nl"> = {
     /* spell-checker: disable */
@@ -9,7 +12,7 @@ export const translations: Translations<"nl"> = {
         "infos": "Accountgegevens",
         "third-party-integration": "Externe diensten",
         "storage": "Verbinding met opslag",
-        "k8sCredentials": "Verbinding met Kubernetes",
+        "k8sCodeSnippets": "Verbinding met Kubernetes",
         "user-interface": "Interfacemodi",
         "text1": "Mijn account",
         "text2": "Toegang tot uw accountgegevens.",
@@ -23,11 +26,7 @@ export const translations: Translations<"nl"> = {
         "user id": "Gebruikersnaam (IDEP)",
         "full name": "Volledige naam",
         "email": "E-mailadres",
-        "change account info": "Accountgegevens (zoals uw wachtwoord) wijzigen",
-        "auth information": "Authenticatiegegevens Onyxia",
-        "auth information helper": `Met deze informatie kunt u zich identificeren  
-            binnen het platform en de verschillende diensten.`,
-        "ip address": "IP-adres"
+        "change account info": "Accountgegevens (zoals uw wachtwoord) wijzigen"
     },
     "AccountIntegrationsTab": {
         "git section title": "Git-configuraties",
@@ -100,6 +99,112 @@ export const translations: Translations<"nl"> = {
         ),
         "expires in": ({ howMuchTime }) => `Het token vervalt in ${howMuchTime}`
     },
+    "ProjectSettings": {
+        "page header title": "Projectinstellingen",
+        "page header help title": ({ groupProjectName }) =>
+            groupProjectName === undefined
+                ? "Instellingen van uw persoonlijke project"
+                : `Instellingen voor "${groupProjectName}"`,
+        "page header help content": ({
+            groupProjectName,
+            doesUserBelongToSomeGroupProject
+        }) => (
+            <>
+                Deze pagina stelt u in staat de instellingen te configureren die van
+                toepassing zijn op
+                {groupProjectName === undefined
+                    ? " uw persoonlijke project"
+                    : ` het ${groupProjectName} project`}
+                .
+                <br />
+                {groupProjectName !== undefined && (
+                    <>
+                        Wees u ervan bewust dat {groupProjectName} een groepsproject is
+                        gedeeld met andere gebruikers; de wijzigingen die u hier
+                        aanbrengt, zijn van toepassing op alle leden van het project.
+                        <br />
+                    </>
+                )}
+                {doesUserBelongToSomeGroupProject && (
+                    <>
+                        U kunt tussen uw projecten wisselen via het dropdownmenu in de
+                        kop.
+                        <br />
+                    </>
+                )}
+                Let op: alleen de beheerder van uw Onyxia instantie kan nieuwe projecten
+                aanmaken.
+            </>
+        ),
+        "security-info": "Veiligheidsinformatie",
+        "s3-configs": "S3-configuraties"
+    },
+    "AddCustomS3ConfigDialog": {
+        "dialog title": "Nieuwe aangepaste S3-configuratie",
+        "dialog subtitle":
+            "Specificeer een aangepast serviceaccount of verbind met een andere S3-compatibele service",
+        "test connection": "Verbinding testen",
+        "test connection failed": ({ errorMessage }) => (
+            <>
+                Verbindingstest mislukt met fout: <br />
+                {errorMessage}
+            </>
+        ),
+        "cancel": "Annuleren",
+        "save config": "Configuratie opslaan",
+        "update config": "Configuratie bijwerken",
+        "is required": "Dit veld is verplicht",
+        "must be an url": "Geen geldige URL",
+        "not a valid access key id": "Dit lijkt geen geldige toegangssleutel-ID te zijn",
+        "url textField label": "URL",
+        "url textField helper text": "URL van de S3-service",
+        "region textField label": "AWS S3 Regio",
+        "region textField helper text":
+            "Voorbeeld: eu-west-1, laat leeg indien niet zeker",
+        "workingDirectoryPath textField label": "Pad van werkdirectory",
+        "workingDirectoryPath textField helper text": (
+            <>
+                Hiermee kunt u de bucket en het S3-objectprefix specificeren dat u bezit
+                op de S3-service. <br />
+                Voorbeeld: <code>mijn-bucket/mijn-prefix/</code> of{" "}
+                <code>alleen mijn-bucket/</code> als u de hele bucket bezit.
+            </>
+        ),
+        "account credentials": "Accountgegevens",
+        "accountFriendlyName textField label": "Vriendelijke naam van het account",
+        "accountFriendlyName textField helper text":
+            "Dit is slechts om u te helpen dit account te identificeren. Voorbeeld: Mijn persoonlijke account",
+        "accessKeyId textField label": "Toegangssleutel-ID",
+        "accessKeyId textField helper text": "Voorbeeld: 1A2B3C4D5E6F7G8H9I0J",
+        "secretAccessKey textField label": "Geheime toegangssleutel",
+        "sessionToken textField label": "Sessietoken",
+        "sessionToken textField helper text":
+            "Optioneel, laat leeg als u het niet zeker weet",
+        "url style": "URL-stijl",
+        "url style helper text": `Specificeer hoe uw S3-server de URL formatteert voor het downloaden van bestanden.`,
+        "path style label": ({ example }) => (
+            <>
+                Padstijl
+                {example !== undefined && (
+                    <>
+                        :&nbsp;
+                        <code>{example}mijn-dataset.parquet</code>
+                    </>
+                )}
+            </>
+        ),
+        "virtual-hosted style label": ({ example }) => (
+            <>
+                Virtueel-gehoste stijl
+                {example !== undefined && (
+                    <>
+                        :&nbsp;
+                        <code>{example}mijn-dataset.parquet</code>
+                    </>
+                )}
+            </>
+        )
+    },
     "AccountUserInterfaceTab": {
         "title": "De interfacemodus configureren",
         "enable dark mode": "Donkere modus activeren",
@@ -122,12 +227,34 @@ export const translations: Translations<"nl"> = {
             </>
         )
     },
-    "AccountField": {
+    "SettingField": {
         "copy tooltip": "Kopiëren naar klembord",
         "language": "Taal wijzigen",
-        "service password": "Wachtwoord voor uw diensten",
-        "service password helper text": `Dit wachtwoord is nodig om in te loggen op al uw diensten.
-            Het wordt automatisch gegenereerd en regelmatig vernieuwd.`,
+        "service password": "Standaard service wachtwoord",
+        "service password helper text": ({ groupProjectName }) => (
+            <>
+                Dit is het standaardwachtwoord dat wordt gebruikt om uw draaiende diensten
+                te beschermen. <br />
+                Wanneer u een dienst start, wordt het wachtwoordveld in het
+                beveiligingstabblad automatisch ingevuld met dit wachtwoord. <br />
+                Door te klikken op het{" "}
+                <Icon
+                    size="extra small"
+                    icon={id<MuiIconComponentName>("Refresh")}
+                />{" "}
+                icoon wordt een nieuw willekeurig wachtwoord gegenereerd. Wees u er echter
+                van bewust dat het niet het wachtwoord voor diensten die al draaien zal
+                bijwerken. <br />
+                Het service wachtwoord is wat Onyxia u laat kopiëren naar uw klembord
+                voordat u toegang krijgt tot een draaiende dienst. <br />
+                {groupProjectName !== undefined && (
+                    <>
+                        Let op: dit wachtwoord wordt gedeeld met alle leden van het
+                        project ({groupProjectName}).
+                    </>
+                )}
+            </>
+        ),
         "not yet defined": "Niet gedefinieerd",
         "reset helper dialogs": "Instructievensters opnieuw initialiseren",
         "reset": "Opnieuw initialiseren",
@@ -150,6 +277,13 @@ export const translations: Translations<"nl"> = {
                 <MuiLink {...accountTabLink}>Minio-clients instellen</MuiLink>.
             </>
         )
+    },
+    "MyFilesDisabledDialog": {
+        "dialog title": "Geen S3-server geconfigureerd",
+        "dialog body":
+            "Er is geen S3-server geconfigureerd voor deze instantie. Je kunt er echter handmatig een toevoegen om de S3-bestandsverkenner in te schakelen.",
+        "cancel": "Annuleren",
+        "go to settings": "Ga naar instellingen"
     },
     "MySecrets": {
         "page title - my files": "Mijn bestanden",
@@ -302,6 +436,7 @@ export const translations: Translations<"nl"> = {
         "reduce": "Verkleinen",
         "home": "Onthaal",
         "account": "Mijn account",
+        "projectSettings": "Projectinstellingen",
         "catalog": "Catalogus van de diensten",
         "myServices": "Mijn diensten",
         "mySecrets": "Mijn geheimen",
@@ -320,6 +455,15 @@ export const translations: Translations<"nl"> = {
     "PortraitModeUnsupported": {
         "instructions":
             "Om deze applicatie op uw mobiele telefoon te gebruiken, activeert u de rotatiesensor en draait u uw telefoon."
+    },
+    "MaybeAcknowledgeConfigVolatilityDialog": {
+        "dialog title": "Wees ervan bewust, configuraties zijn vluchtig",
+        "dialog body": `Deze Onyxia-instantie implementeert geen enkel persistentiemechanisme voor het opslaan van configuraties. 
+            Alle configuraties worden opgeslagen in de lokale opslag van de browser. Dit betekent dat als u de lokale opslag van uw browser wist 
+            of van browser wisselt, u al uw configuraties zult verliezen.`,
+        "do not show next time": "Toon dit bericht niet meer",
+        "cancel": "Annuleren",
+        "I understand": "Ik begrijp het"
     },
     "Home": {
         "title authenticated": ({ userFirstname }) => `Welkom ${userFirstname}!`,
@@ -594,9 +738,6 @@ Voel je vrij om te verkennen en de controle over je Kubernetes-implementaties te
         "open": "openen",
         "readme": "readme",
         "shared by you": "gedeeld door u",
-        "which token expire when": ({ which, howMuchTime }) =>
-            `Het token ${which} vervalt ${howMuchTime}.`,
-        "which token expired": ({ which }) => `Het token ${which} is vervallen.`,
         "reminder to delete services":
             "Vergeet niet uw diensten te verwijderen na gebruik.",
         "this is a shared service": "Deze dienst wordt gedeeld binnen het project"

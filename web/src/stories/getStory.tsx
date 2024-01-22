@@ -3,27 +3,33 @@ import type { Meta, Story } from "@storybook/react";
 import type { ArgType } from "@storybook/addons";
 import { useEffect, useMemo } from "react";
 import { symToStr } from "tsafe/symToStr";
-import { useDarkMode, breakpointsValues } from "onyxia-ui";
+import { breakpointsValues } from "onyxia-ui";
 import { useWindowInnerSize } from "powerhooks/useWindowInnerSize";
-import { OnyxiaUi } from "ui/theme";
+import { OnyxiaUi, css, cx } from "ui/theme";
 import { useStyles } from "tss";
 import { Text } from "onyxia-ui/Text";
 import { id } from "tsafe/id";
 import "onyxia-ui/assets/fonts/WorkSans/font.css";
 import { GlobalStyles } from "tss-react";
-import { createCoreProvider } from "core";
-import { RouteProvider } from "ui/routes";
-import { useLang, fallbackLanguage, languages } from "ui/i18n";
+//import { createCoreProvider } from "core";
+import { useLang, fallbackLanguage, languages, I18nFetchingSuspense } from "ui/i18n";
 import type { Language } from "ui/i18n";
-import type { ReactNode } from "react";
+//import type { ReactNode } from "react";
 import { Evt } from "evt";
+import { useRerenderOnStateChange } from "evt/hooks";
 import { createMockRouteFactory } from "ui/routes";
+import { useSplashScreen } from "onyxia-ui";
+
+export { css, cx };
 
 const evtTriggerReRender = Evt.create(0);
 
 //NOTE: Storybook bug hotfix.
 const propsByTitle = new Map<string, any>();
 
+//TODO: We can't use components that requires the core in storybook yet
+// because there are missing required mock for initializing the core.
+/*
 const { CoreProvider } = createCoreProvider({
     "apiUrl": "",
     "getCurrentLang": () => "en",
@@ -31,6 +37,7 @@ const { CoreProvider } = createCoreProvider({
     "disablePersonalInfosInjectionInGroup": false,
     "isCommandBarEnabledByDefault": true
 });
+*/
 
 export const { createMockRoute } = createMockRouteFactory({
     "triggerReRender": () => {
@@ -38,7 +45,7 @@ export const { createMockRoute } = createMockRouteFactory({
     }
 });
 
-export function getStoryFactory<Props>(params: {
+export function getStoryFactory<Props extends Record<string, unknown>>(params: {
     sectionName: string;
     wrappedComponent: Record<string, (props: Props) => ReturnType<React.FC>>;
     doNeedCore?: boolean;
@@ -50,12 +57,12 @@ export function getStoryFactory<Props>(params: {
         sectionName,
         wrappedComponent,
         argTypes = {},
-        doNeedCore,
+        //doNeedCore,
         defaultContainerWidth
     } = params;
 
     const Component: React.ComponentType<Props> = Object.entries(wrappedComponent).map(
-        ([, component]) => component
+        ([, Component]) => Component
     )[0];
 
     function ScreenSize() {
@@ -88,32 +95,51 @@ export function getStoryFactory<Props>(params: {
         );
     }
 
+    /*
     const StoreProviderOrFragment: React.ComponentType<{ children: ReactNode }> =
         !doNeedCore
             ? ({ children }) => <>{children}</>
             : ({ children }) => <CoreProvider>{children}</CoreProvider>;
+    */
 
     const title = `${sectionName}/${symToStr(wrappedComponent)}`;
 
-    const Template: Story<
-        Props & {
-            darkMode: boolean;
-            containerWidth: number;
-            lang: Language;
-        }
-    > = templateProps => {
+    const Template: Story<{
+        darkMode: boolean;
+        containerWidth: number;
+        lang: Language;
+        componentProps: Props;
+    }> = props => {
         //NOTE: We fix a bug of Storybook that override all props when we reload.
         //If storybook worked as expected we would just deconstruct from templateProps
-        const { darkMode, containerWidth, lang, ...props } = Object.assign(
+        const { darkMode, containerWidth, lang, componentProps } = Object.assign(
             propsByTitle.get(title)!,
-            templateProps
-        ) as typeof templateProps;
+            props
+        ) as typeof props;
 
-        const { setIsDarkModeEnabled } = useDarkMode();
+        return (
+            <I18nFetchingSuspense>
+                <OnyxiaUi darkMode={darkMode}>
+                    {/*<StoreProviderOrFragment>*/}
+                    <ContextualizedTemplate
+                        containerWidth={containerWidth}
+                        lang={lang}
+                        componentProps={componentProps}
+                    />
+                    {/*</StoreProviderOrFragment>*/}
+                </OnyxiaUi>
+            </I18nFetchingSuspense>
+        );
+    };
 
-        useEffect(() => {
-            setIsDarkModeEnabled(darkMode);
-        }, [darkMode]);
+    const ContextualizedTemplate = (props: {
+        containerWidth: number;
+        lang: Language;
+        componentProps: Props;
+    }) => {
+        const { containerWidth, lang, componentProps } = props;
+
+        useRerenderOnStateChange(evtTriggerReRender);
 
         const { setLang } = useLang();
 
@@ -123,38 +149,37 @@ export function getStoryFactory<Props>(params: {
 
         const { theme } = useStyles();
 
+        {
+            const { hideRootSplashScreen } = useSplashScreen();
+
+            useEffect(() => {
+                hideRootSplashScreen();
+            }, []);
+        }
+
         return (
             <>
-                {
-                    <GlobalStyles
-                        styles={{
-                            "html": {
-                                "fontSize": "100% !important"
-                            },
-                            "body": {
-                                "padding": `0 !important`,
-                                "backgroundColor": `${theme.colors.useCases.surfaces.surface1} !important`
-                            }
-                        }}
-                    />
-                }
-                <OnyxiaUi>
-                    <ScreenSize />
-                    <div
-                        style={{
-                            "marginLeft": 50,
-                            "width": containerWidth || undefined,
-                            "border": "1px dotted grey",
-                            "display": "inline-block"
-                        }}
-                    >
-                        <StoreProviderOrFragment>
-                            <RouteProvider>
-                                <Component {...(props as any)} />
-                            </RouteProvider>
-                        </StoreProviderOrFragment>
-                    </div>
-                </OnyxiaUi>
+                <GlobalStyles
+                    styles={{
+                        "html": {
+                            "fontSize": "100% !important",
+                            "backgroundColor": `${theme.colors.useCases.surfaces.surface1} !important`
+                        },
+                        ".MuiScopedCssBaseline-root": {
+                            "padding": theme.spacing(4)
+                        }
+                    }}
+                />
+                <ScreenSize />
+                <div
+                    style={{
+                        "width": containerWidth || undefined,
+                        "border": `1px dashed ${theme.colors.useCases.typography.textTertiary}`,
+                        "display": "inline-block"
+                    }}
+                >
+                    <Component {...componentProps} />
+                </div>
             </>
         );
     };
@@ -165,10 +190,8 @@ export function getStoryFactory<Props>(params: {
         out.args = {
             "darkMode": false,
             "containerWidth": defaultContainerWidth ?? 0,
-            "targetWindowInnerWidth": 0,
-            "chromeFontSize": "Medium (Recommended)",
             "lang": fallbackLanguage,
-            ...props
+            "componentProps": props
         };
 
         propsByTitle.set(title, out.args);

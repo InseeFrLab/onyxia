@@ -1,15 +1,14 @@
 import { Tabs } from "onyxia-ui/Tabs";
-import { AccountInfoTab } from "./tabs/AccountInfoTab";
-import { AccountIntegrationsTab } from "./tabs/AccountIntegrationsTab";
-import { AccountKubernetesTab } from "./tabs/AccountKubernetesTab";
-import { AccountVaultTab } from "./tabs/AccountVaultTab";
+import { type AccountTabId, accountTabIds } from "./accountTabIds";
+import { AccountInfoTab } from "./AccountInfoTab";
+import { AccountIntegrationsTab } from "./AccountIntegrationsTab";
+import { AccountKubernetesTab } from "./AccountKubernetesTab";
+import { AccountVaultTab } from "./AccountVaultTab";
+import { AccountStorageTab } from "./AccountStorageTab";
+import { AccountUserInterfaceTab } from "./AccountUserInterfaceTab";
 import { useMemo } from "react";
 import { routes } from "ui/routes";
-import { accountTabIds } from "./accountTabIds";
-import type { AccountTabId } from "./accountTabIds";
 import { useTranslation } from "ui/i18n";
-import { AccountStorageTab } from "./tabs/AccountStorageTab";
-import { AccountUserInterfaceTab } from "./tabs/AccountUserInterfaceTab";
 import { PageHeader } from "onyxia-ui/PageHeader";
 import { useConstCallback } from "powerhooks/useConstCallback";
 import { tss } from "tss";
@@ -29,18 +28,18 @@ export default function Account(props: Props) {
 
     const { t } = useTranslation({ Account });
 
-    const { s3Credentials, k8sCredentials, vaultCredentials } = useCore().functions;
+    const { s3CodeSnippets, k8sCodeSnippets, vaultCredentials } = useCore().functions;
 
     const tabs = useMemo(
         () =>
             accountTabIds
                 .filter(accountTabId =>
-                    accountTabId !== "storage" ? true : s3Credentials.isAvailable()
+                    accountTabId !== "storage" ? true : s3CodeSnippets.isAvailable()
                 )
                 .filter(accountTabId =>
-                    accountTabId !== "k8sCredentials"
+                    accountTabId !== "k8sCodeSnippets"
                         ? true
-                        : k8sCredentials.getIsAvailable()
+                        : k8sCodeSnippets.getIsAvailable()
                 )
                 .filter(accountTabId =>
                     accountTabId !== "vault" ? true : vaultCredentials.isAvailable()
@@ -82,7 +81,7 @@ export default function Account(props: Props) {
                             return <AccountStorageTab />;
                         case "user-interface":
                             return <AccountUserInterfaceTab />;
-                        case "k8sCredentials":
+                        case "k8sCodeSnippets":
                             return <AccountKubernetesTab />;
                         case "vault":
                             return <AccountVaultTab />;

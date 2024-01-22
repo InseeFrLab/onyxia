@@ -1,7 +1,6 @@
 import type { GenericTranslations } from "i18nifty";
 import type { Language } from "core";
 import { languages } from "./z";
-
 export type { Language };
 export { languages };
 
@@ -18,6 +17,7 @@ export type ComponentKey =
     | typeof import("ui/pages/mySecrets/SecretsExplorer/SecretsExplorerItems/SecretsExplorerItem").i18n
     | typeof import("ui/pages/mySecrets/MySecretsEditor/MySecretsEditorRow").i18n
     | typeof import("ui/pages/myFiles/MyFiles").i18n
+    | typeof import("ui/pages/myFiles/MyFilesDisabledDialog").i18n
     | typeof import("ui/pages/myFiles/Explorer/Explorer").i18n
     | typeof import("ui/pages/myFiles/Explorer/ExplorerButtonBar").i18n
     | typeof import("ui/pages/myFiles/Explorer/ExplorerItems").i18n
@@ -29,15 +29,18 @@ export type ComponentKey =
     | typeof import("ui/App/LeftBar").i18n
     | typeof import("ui/pages/page404/Page404").i18n
     | typeof import("ui/shared/PortraitModeUnsupported").i18n
+    | typeof import("ui/shared/MaybeAcknowledgeConfigVolatilityDialog").i18n
     | typeof import("ui/pages/home/Home").i18n
-    | typeof import("ui/pages/account/AccountField").i18n
+    | typeof import("ui/shared/SettingField").i18n
     | typeof import("ui/pages/account/Account").i18n
-    | typeof import("ui/pages/account/tabs/AccountInfoTab").i18n
-    | typeof import("ui/pages/account/tabs/AccountIntegrationsTab").i18n
-    | typeof import("ui/pages/account/tabs/AccountStorageTab").i18n
-    | typeof import("ui/pages/account/tabs/AccountKubernetesTab").i18n
-    | typeof import("ui/pages/account/tabs/AccountUserInterfaceTab").i18n
-    | typeof import("ui/pages/account/tabs/AccountVaultTab").i18n
+    | typeof import("ui/pages/account/AccountInfoTab").i18n
+    | typeof import("ui/pages/account/AccountIntegrationsTab").i18n
+    | typeof import("ui/pages/account/AccountStorageTab").i18n
+    | typeof import("ui/pages/account/AccountKubernetesTab").i18n
+    | typeof import("ui/pages/account/AccountUserInterfaceTab").i18n
+    | typeof import("ui/pages/account/AccountVaultTab").i18n
+    | typeof import("ui/pages/projectSettings/ProjectSettings").i18n
+    | typeof import("ui/pages/projectSettings/ProjectSettingsS3ConfigTab/S3ConfigDialogs/AddCustomS3ConfigDialog").i18n
     | typeof import("ui/App/Footer").i18n
     | typeof import("ui/pages/catalog/Catalog").i18n
     | typeof import("ui/pages/catalog/CatalogChartCard").i18n

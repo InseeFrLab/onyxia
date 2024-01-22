@@ -2,6 +2,9 @@ import type { Translations } from "../types";
 import MuiLink from "@mui/material/Link";
 import { Markdown } from "ui/shared/Markdown";
 import { elementsToSentence } from "ui/tools/elementsToSentence";
+import { Icon } from "onyxia-ui/Icon";
+import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
+import { id } from "tsafe/id";
 
 export const translations: Translations<"zh-CN"> = {
     /* spell-checker: disable */
@@ -10,7 +13,7 @@ export const translations: Translations<"zh-CN"> = {
         "third-party-integration": "外部服务",
         "storage": "链接到储存器",
         "user-interface": "变换显示模式",
-        "k8sCredentials": "Kubernetes",
+        "k8sCodeSnippets": "Kubernetes",
         "text1": "我的账号",
         "text2": "访问我的账号信息",
         "text3": "设置您的用户名, 电子邮件, 密码和访问令牌",
@@ -22,10 +25,7 @@ export const translations: Translations<"zh-CN"> = {
         "user id": "身分名 (IDEP)",
         "full name": "全名",
         "email": "邮件地址",
-        "change account info": "修改帐户信息（例如您的密码）",
-        "auth information": "Onyxia的认证信息",
-        "auth information helper": `此信息可让您在平台内和平台内的各种服务中认证自己.`,
-        "ip address": "IP地址"
+        "change account info": "修改帐户信息（例如您的密码）"
     },
     "AccountIntegrationsTab": {
         "git section title": "Git 配置",
@@ -91,7 +91,104 @@ export const translations: Translations<"zh-CN"> = {
         ),
         "expires in": ({ howMuchTime }) => `该令牌有效期至 ${howMuchTime}`
     },
-
+    "ProjectSettings": {
+        "page header title": "项目设置",
+        "page header help title": ({ groupProjectName }) =>
+            groupProjectName === undefined
+                ? "您个人项目的设置"
+                : `“${groupProjectName}”的设置`,
+        "page header help content": ({
+            groupProjectName,
+            doesUserBelongToSomeGroupProject
+        }) => (
+            <>
+                本页面允许您配置适用于
+                {groupProjectName === undefined
+                    ? " 您的个人项目"
+                    : ` ${groupProjectName}项目`}{" "}
+                的设置。
+                <br />
+                {groupProjectName !== undefined && (
+                    <>
+                        请注意，${groupProjectName}是一个与其他用户共享的团队项目；
+                        您在此处所做的设置更改将适用于所有项目成员。
+                        <br />
+                    </>
+                )}
+                {doesUserBelongToSomeGroupProject && (
+                    <>
+                        您可以使用标题中的下拉菜单在您的项目之间切换。
+                        <br />
+                    </>
+                )}
+                请注意，只有您的Onyxia实例管理员可以创建新项目。
+            </>
+        ),
+        "security-info": "安全信息",
+        "s3-configs": "S3 配置"
+    },
+    "AddCustomS3ConfigDialog": {
+        "dialog title": "新的自定义 S3 配置",
+        "dialog subtitle": "指定自定义服务账户或连接到另一个兼容 S3 的服务",
+        "test connection": "测试连接",
+        "test connection failed": ({ errorMessage }) => (
+            <>
+                测试连接失败，错误信息： <br />
+                {errorMessage}
+            </>
+        ),
+        "cancel": "取消",
+        "save config": "保存配置",
+        "update config": "更新配置",
+        "is required": "此字段为必填项",
+        "must be an url": "不是有效的 URL",
+        "not a valid access key id": "这不像是一个有效的访问密钥 ID",
+        "url textField label": "URL",
+        "url textField helper text": "S3 服务的 URL",
+        "region textField label": "AWS S3 区域",
+        "region textField helper text": "例如：eu-west-1，如果不确定，请留空",
+        "workingDirectoryPath textField label": "工作目录路径",
+        "workingDirectoryPath textField helper text": (
+            <>
+                这可以让你指定在 S3 服务上你拥有的桶和 S3 对象前缀。 <br />
+                例如：<code>我的桶/我的前缀/</code> 或 <code>仅我的桶/</code>{" "}
+                如果你拥有整个桶。
+            </>
+        ),
+        "account credentials": "账户凭证",
+        "accountFriendlyName textField label": "账户友好名称",
+        "accountFriendlyName textField helper text":
+            "这只是为了帮助你识别这个账户。例如：我的个人账户",
+        "accessKeyId textField label": "访问密钥 ID",
+        "accessKeyId textField helper text": "例如：1A2B3C4D5E6F7G8H9I0J",
+        "secretAccessKey textField label": "秘密访问密钥",
+        "sessionToken textField label": "会话令牌",
+        "sessionToken textField helper text": "可选的，如果不确定请留空",
+        "url style": "URL 样式",
+        "url style helper text": `指定您的 S3 服务器如何格式化下载文件的 URL。`,
+        "path style label": ({ example }) => (
+            <>
+                路径样式
+                {example !== undefined && (
+                    <>
+                        :&nbsp;
+                        <code>{example}我的数据集.parquet</code>
+                    </>
+                )}
+            </>
+        ),
+        "virtual-hosted style label": ({ example }) => (
+            <>
+                虚拟托管样式
+                {example !== undefined && (
+                    <>
+                        :&nbsp;
+                        <code>{example}我的数据集.parquet</code>
+                    </>
+                )}
+            </>
+        )
+    },
     "AccountUserInterfaceTab": {
         "title": "配置界面模式",
         "enable dark mode": "开启深色模式",
@@ -110,12 +207,27 @@ export const translations: Translations<"zh-CN"> = {
             </>
         )
     },
-    "AccountField": {
+    "SettingField": {
         "copy tooltip": "复制到剪贴板",
         "language": "更改语言",
-        "service password": "您的服务密码",
-        "service password helper text": `登录您的所有服务都需要此密码.
-            此密码自动生成并定期更新.`,
+        "service password": "默认服务密码",
+        "service password helper text": ({ groupProjectName }) => (
+            <>
+                这是用来保护您正在运行的服务的默认密码。 <br />
+                当您启动一个服务时，安全标签页中的密码字段将自动填充此密码。 <br />
+                点击{" "}
+                <Icon
+                    size="extra small"
+                    icon={id<MuiIconComponentName>("Refresh")}
+                />{" "}
+                图标将生成一个新的随机密码。
+                但是，请注意，它不会更新当前正在运行的服务的密码。 <br />
+                服务密码是Onyxia在您访问正在运行的服务之前让您复制到剪贴板的密码。 <br />
+                {groupProjectName !== undefined && (
+                    <>请注意，这个密码在项目({groupProjectName})的所有成员之间共享。</>
+                )}
+            </>
+        ),
         "not yet defined": "没有定义",
         "reset helper dialogs": "重置指令窗口",
         "reset": "重置",
@@ -137,6 +249,12 @@ export const translations: Translations<"zh-CN"> = {
                 <MuiLink {...accountTabLink}>配置 Minio 客户端</MuiLink>。
             </>
         )
+    },
+    "MyFilesDisabledDialog": {
+        "dialog title": "未配置S3服务器",
+        "dialog body": "此实例未配置S3服务器。但您可以手动添加一个，以启用S3文件浏览器。",
+        "cancel": "取消",
+        "go to settings": "前往设置"
     },
     "MySecrets": {
         "page title - my files": "我的文件",
@@ -284,6 +402,7 @@ export const translations: Translations<"zh-CN"> = {
         "reduce": "缩小",
         "home": "我的主页",
         "account": "我的账号",
+        "projectSettings": "项目设置",
         "catalog": "服务目录",
         "myServices": "我的服务",
         "mySecrets": "我的密钥",
@@ -299,6 +418,15 @@ export const translations: Translations<"zh-CN"> = {
     },
     "PortraitModeUnsupported": {
         "instructions": "要在您的手机中使用此应用程序，请激活旋转传感器并转动您的手机"
+    },
+    "MaybeAcknowledgeConfigVolatilityDialog": {
+        "dialog title": "请注意，配置是易变的",
+        "dialog body": `此Onyxia实例不实现用于存储配置的任何持久性机制。
+            所有配置都存储在浏览器的本地存储中。这意味着，如果您清除了浏览器的本地存储
+            或更换浏览器，您将丢失所有配置。`,
+        "do not show next time": "下次不再显示此消息",
+        "cancel": "取消",
+        "I understand": "我明白了"
     },
     "Home": {
         "title authenticated": ({ userFirstname }) => `你好 ${userFirstname}!`,
@@ -551,9 +679,6 @@ ${
         "open": "打开",
         "readme": "自述文件",
         "shared by you": "你分享的",
-        "which token expire when": ({ which, howMuchTime }) =>
-            `令牌 ${which} 在 ${howMuchTime} 后过期.`,
-        "which token expired": ({ which }) => `令牌 ${which} 已经过期.`,
         "reminder to delete services": "请在使用后删除您的服务。",
         "this is a shared service": "该服务在项目内共享"
     },

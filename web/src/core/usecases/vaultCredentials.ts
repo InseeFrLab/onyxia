@@ -2,7 +2,7 @@ import "minimal-polyfills/Object.fromEntries";
 import { createUsecaseActions, createSelector } from "redux-clean-architecture";
 import { id } from "tsafe/id";
 import type { State as RootState, Thunks } from "core/bootstrap";
-import * as deploymentRegion from "./deploymentRegion";
+import * as deploymentRegionManagement from "core/usecases/deploymentRegionManagement";
 import { assert } from "tsafe/assert";
 
 type State = State.NotRefreshed | State.Ready;
@@ -69,7 +69,7 @@ export const thunks = {
         (...args): boolean => {
             const [, getState] = args;
 
-            const region = deploymentRegion.selectors.selectedDeploymentRegion(
+            const region = deploymentRegionManagement.selectors.currentDeploymentRegion(
                 getState()
             );
 
@@ -116,7 +116,7 @@ export const selectors = (() => {
     const isReady = createSelector(readyState, readyState => readyState !== undefined);
 
     const vaultUrl = createSelector(
-        deploymentRegion.selectors.selectedDeploymentRegion,
+        deploymentRegionManagement.selectors.currentDeploymentRegion,
         region => {
             const { vault } = region;
             assert(

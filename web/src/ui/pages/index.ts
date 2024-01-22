@@ -6,6 +6,7 @@ import * as myFiles from "./myFiles";
 import * as mySecrets from "./mySecrets";
 import * as myServices from "./myServices";
 import * as page404 from "./page404";
+import * as projectSettings from "./projectSettings";
 import * as terms from "./terms";
 import * as sqlOlapShell from "./sqlOlapShell";
 import * as dataExplorer from "./dataExplorer";
@@ -23,6 +24,7 @@ export const pages = {
     mySecrets,
     myServices,
     page404,
+    projectSettings,
     terms,
     sqlOlapShell,
     dataExplorer

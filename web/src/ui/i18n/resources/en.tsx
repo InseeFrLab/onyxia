@@ -2,13 +2,16 @@ import MuiLink from "@mui/material/Link";
 import { Markdown } from "ui/shared/Markdown";
 import type { Translations } from "../types";
 import { elementsToSentence } from "ui/tools/elementsToSentence";
+import { Icon } from "onyxia-ui/Icon";
+import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
+import { id } from "tsafe/id";
 
 export const translations: Translations<"en"> = {
     "Account": {
         "infos": "Account infos",
         "third-party-integration": "External services",
         "storage": "Connect to storage",
-        "k8sCredentials": "Kubernetes",
+        "k8sCodeSnippets": "Kubernetes",
         "user-interface": "Interface preferences",
         "text1": "My account",
         "text2": "Access your different account information.",
@@ -23,11 +26,7 @@ export const translations: Translations<"en"> = {
         "user id": "User id (IDEP)",
         "full name": "Full name",
         "email": "Email address",
-        "change account info": "Change account information (e.g., password).",
-        "auth information": "Onyxia authentication information",
-        "auth information helper": `Theses information allows you to identify yourself
-            within the platform and the various services.`,
-        "ip address": "IP Address"
+        "change account info": "Change account information (e.g., password)."
     },
     "AccountIntegrationsTab": {
         "git section title": "Git configuration",
@@ -102,6 +101,108 @@ export const translations: Translations<"en"> = {
         ),
         "expires in": ({ howMuchTime }) => `The token expires in ${howMuchTime}`
     },
+    "ProjectSettings": {
+        "page header title": "Project Settings",
+        "page header help title": ({ groupProjectName }) =>
+            groupProjectName === undefined
+                ? "Settings of your personal project"
+                : `Settings for "${groupProjectName}"`,
+        "page header help content": ({
+            groupProjectName,
+            doesUserBelongToSomeGroupProject
+        }) => (
+            <>
+                This page allows you to configure the settings that apply to
+                {groupProjectName === undefined
+                    ? " your personal project"
+                    : ` the ${groupProjectName}`}
+                .
+                <br />
+                {groupProjectName !== undefined && (
+                    <>
+                        Be aware that {groupProjectName} is a group project shared with
+                        other users; the settings you change here will apply to all
+                        project members.
+                        <br />
+                    </>
+                )}
+                {doesUserBelongToSomeGroupProject && (
+                    <>
+                        You can switch between your projects using the dropdown menu in
+                        the header.
+                        <br />
+                    </>
+                )}
+                Note that only your Onyxia instance administrator can create new projects.
+            </>
+        ),
+        "security-info": "Security Information",
+        "s3-configs": "S3 Configurations"
+    },
+    "AddCustomS3ConfigDialog": {
+        "dialog title": "New custom S3 configuration",
+        "dialog subtitle":
+            "Specify a custom service account or connect to another S3 compatible service",
+        "test connection": "Test connection",
+        "test connection failed": ({ errorMessage }) => (
+            <>
+                Test connection failed with error: <br />
+                {errorMessage}
+            </>
+        ),
+        "cancel": "Cancel",
+        "save config": "Save configuration",
+        "update config": "Update configuration",
+        "is required": "This field is required",
+        "must be an url": "Not a valid URL",
+        "not a valid access key id": "This doesn't look like a valid access key id",
+        "url textField label": "URL",
+        "url textField helper text": "URL of the S3 service",
+        "region textField label": "AWS S3 Region",
+        "region textField helper text": "Example: eu-west-1, if not sure, leave empty",
+        "workingDirectoryPath textField label": "Working directory path",
+        "workingDirectoryPath textField helper text": (
+            <>
+                This let you specify the bucket and the S3 object prefix you own on the S3
+                service. <br />
+                Example: <code>my-bucket/my-prefix/</code> or <code>just my-bucket/</code>{" "}
+                if you own the whole bucket.
+            </>
+        ),
+        "account credentials": "Account credentials",
+        "accountFriendlyName textField label": "Account friendly name",
+        "accountFriendlyName textField helper text":
+            "This is just to help you identify this account. Example: My personal account",
+        "accessKeyId textField label": "Access key ID",
+        "accessKeyId textField helper text": "Example: 1A2B3C4D5E6F7G8H9I0J",
+        "secretAccessKey textField label": "Secret access key",
+        "sessionToken textField label": "Session token",
+        "sessionToken textField helper text": "Optional, leave empty if not sure",
+        "url style": "URL style",
+        "url style helper text": `Specify how your S3 server formats the URL for downloading files.`,
+        "path style label": ({ example }) => (
+            <>
+                Path style
+                {example !== undefined && (
+                    <>
+                        :&nbsp;
+                        <code>{example}my-dataset.parquet</code>
+                    </>
+                )}
+            </>
+        ),
+        "virtual-hosted style label": ({ example }) => (
+            <>
+                Virtual-hosted style
+                {example !== undefined && (
+                    <>
+                        :&nbsp;
+                        <code>{example}my-dataset.parquet</code>
+                    </>
+                )}
+            </>
+        )
+    },
     "AccountUserInterfaceTab": {
         "title": "Interface preferences",
         "enable dark mode": "Enable dark mode",
@@ -122,12 +223,32 @@ export const translations: Translations<"en"> = {
             </>
         )
     },
-    "AccountField": {
+    "SettingField": {
         "copy tooltip": "Copy in clipboard",
         "language": "Change language",
-        "service password": "Password for your services",
-        "service password helper text": `This password is required to log in to all of your services. 
-            It is generated automatically and renews itself regularly.`,
+        "service password": "Default service password",
+        "service password helper text": ({ groupProjectName }) => (
+            <>
+                This is the default password used to protect your running services. <br />
+                When you launch a service, the security tab's password field is pre-filled
+                with this password. <br />
+                Clicking on the{" "}
+                <Icon
+                    size="extra small"
+                    icon={id<MuiIconComponentName>("Refresh")}
+                />{" "}
+                icon will generate a new random password. However, be aware that it will
+                not update the password for services that are currently running. <br />
+                The service password is what Onyxia makes you to copy to your clipboard
+                before accessing a running service. <br />
+                {groupProjectName !== undefined && (
+                    <>
+                        Please note that this password is shared among all members of the
+                        project ({groupProjectName}).
+                    </>
+                )}
+            </>
+        ),
         "not yet defined": "Not yet defined",
         "reset helper dialogs": "Reset instructions windows",
         "reset": "Reset",
@@ -150,6 +271,13 @@ export const translations: Translations<"en"> = {
                 <MuiLink {...accountTabLink}>Configure the minio clients</MuiLink>.
             </>
         )
+    },
+    "MyFilesDisabledDialog": {
+        "dialog title": "No S3 server configured",
+        "dialog body":
+            "There's no S3 server configured for this instance. But you can add one manually for enabling the S3 file explorer.",
+        "cancel": "Cancel",
+        "go to settings": "Go to settings"
     },
     "MySecrets": {
         "page title - my files": "My Files",
@@ -305,6 +433,7 @@ export const translations: Translations<"en"> = {
         "reduce": "Reduce",
         "home": "Home",
         "account": "My account",
+        "projectSettings": "Project settings",
         "catalog": "Service catalog",
         "myServices": "My Services",
         "mySecrets": "My Secrets",
@@ -321,6 +450,15 @@ export const translations: Translations<"en"> = {
     "PortraitModeUnsupported": {
         "instructions":
             "To use this app on your phone please enable the rotation sensor and turn your phone."
+    },
+    "MaybeAcknowledgeConfigVolatilityDialog": {
+        "dialog title": "Be aware, configurations are volatile",
+        "dialog body": `This Onyxia instance does not implement any persistence mechanism for storing configurations. 
+            All configurations are stored in the browser's local storage. This means that if you clear your browser's local 
+            storage or change your browser, you will lose all your configurations.`,
+        "do not show next time": "Don't show this message again",
+        "cancel": "Cancel",
+        "I understand": "I understand"
     },
     "Home": {
         "title authenticated": ({ userFirstname }) => `Welcome ${userFirstname}!`,
@@ -584,9 +722,6 @@ Feel free to explore and take charge of your Kubernetes deployments!
         "open": "Open",
         "readme": "readme",
         "shared by you": "Shared by you",
-        "which token expire when": ({ which, howMuchTime }) =>
-            `The ${which} token expires ${howMuchTime}.`,
-        "which token expired": ({ which }) => `The ${which} token is expired.`,
         "reminder to delete services": "Remember to delete your services.",
         "this is a shared service": "This service is shared among project's member"
     },

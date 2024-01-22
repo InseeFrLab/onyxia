@@ -79,11 +79,12 @@ jobs:
         with:
           username: ${{secrets.DOCKERHUB_USERNAME}}
           password: ${{secrets.DOCKERHUB_TOKEN}}
-      - uses: docker/build-push-action@v5.0.0
+      - uses: docker/build-push-action@v5.1.0
         with:
           push: true
           context: .
           tags: ${{needs.prepare_release.outputs.new_web_docker_image_tags}}
+          platforms: linux/amd64,linux/arm64
   
   release:
     runs-on: ubuntu-latest

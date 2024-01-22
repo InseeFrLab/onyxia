@@ -140,7 +140,6 @@ export const ExplorerItem = memo((props: ExplorerItemProps) => {
                         defaultValue={basename}
                         inputProps_aria-label={t("description")}
                         inputProps_autoFocus={true}
-                        doOnlyValidateInputAfterFistFocusLost={false}
                         disabled={isCircularProgressShown}
                         isCircularProgressShown={isCircularProgressShown}
                         selectAllTextOnFocus={true}

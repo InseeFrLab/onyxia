@@ -2,6 +2,9 @@ import type { Translations } from "../types";
 import MuiLink from "@mui/material/Link";
 import { Markdown } from "ui/shared/Markdown";
 import { elementsToSentence } from "ui/tools/elementsToSentence";
+import { Icon } from "onyxia-ui/Icon";
+import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
+import { id } from "tsafe/id";
 
 export const translations: Translations<"de"> = {
     /* spell-checker: disable */
@@ -9,7 +12,7 @@ export const translations: Translations<"de"> = {
         "infos": "Kontoinformationen",
         "third-party-integration": "Externe Dienstleistungen",
         "storage": "Verbindung zum Speicher",
-        "k8sCredentials": "Verbindung zu Kubernetes",
+        "k8sCodeSnippets": "Verbindung zu Kubernetes",
         "user-interface": "Konfiguration der Benutzeroberfläche",
         "text1": "Mein Konto",
         "text2": "Greifen Sie auf Ihre verschiedenen Kontoinformationen zu.",
@@ -23,10 +26,7 @@ export const translations: Translations<"de"> = {
         "user id": "User-ID",
         "full name": "Vollständiger Name",
         "email": "E-Mail-Adresse",
-        "change account info": "Kontoinformationen ändern (z.B. Ihr Passwort)",
-        "auth information": "Informationen zur Authentifizierung in Onyxia",
-        "auth information helper": `Diese Informationen ermöglichen es Ihnen, sich innerhalb der Plattform und der verschiedenen Dienste zu identifizieren.`,
-        "ip address": "IP-Adresse"
+        "change account info": "Kontoinformationen ändern (z.B. Ihr Passwort)"
     },
     "AccountIntegrationsTab": {
         "git section title": "Git-Konfiguration",
@@ -100,6 +100,111 @@ export const translations: Translations<"de"> = {
         ),
         "expires in": ({ howMuchTime }) => `Das Token läuft in ${howMuchTime} ab`
     },
+    "ProjectSettings": {
+        "page header title": "Projekteinstellungen",
+        "page header help title": ({ groupProjectName }) =>
+            groupProjectName === undefined
+                ? "Einstellungen Ihres persönlichen Projekts"
+                : `Einstellungen für "${groupProjectName}"`,
+        "page header help content": ({
+            groupProjectName,
+            doesUserBelongToSomeGroupProject
+        }) => (
+            <>
+                Diese Seite ermöglicht es Ihnen, die Einstellungen zu konfigurieren, die
+                auf
+                {groupProjectName === undefined
+                    ? " Ihr persönliches Projekt"
+                    : ` das ${groupProjectName}`}{" "}
+                angewendet werden.
+                <br />
+                {groupProjectName !== undefined && (
+                    <>
+                        Beachten Sie, dass {groupProjectName} ein Gruppenprojekt ist, das
+                        mit anderen Benutzern geteilt wird; die hier vorgenommenen
+                        Änderungen gelten für alle Mitglieder des Projekts.
+                        <br />
+                    </>
+                )}
+                {doesUserBelongToSomeGroupProject && (
+                    <>
+                        Sie können zwischen Ihren Projekten wechseln, indem Sie das
+                        Dropdown-Menü in der Kopfzeile verwenden.
+                        <br />
+                    </>
+                )}
+                Beachten Sie, dass nur Ihr Onyxia-Instanzadministrator neue Projekte
+                erstellen kann.
+            </>
+        ),
+        "security-info": "Sicherheitsinformationen",
+        "s3-configs": "S3-Konfigurationen"
+    },
+    "AddCustomS3ConfigDialog": {
+        "dialog title": "Neue benutzerdefinierte S3-Konfiguration",
+        "dialog subtitle":
+            "Geben Sie ein benutzerdefiniertes Dienstkonto an oder verbinden Sie sich mit einem anderen S3-kompatiblen Dienst",
+        "test connection": "Verbindung testen",
+        "test connection failed": ({ errorMessage }) => (
+            <>
+                Verbindungstest fehlgeschlagen mit Fehler: <br />
+                {errorMessage}
+            </>
+        ),
+        "cancel": "Abbrechen",
+        "save config": "Konfiguration speichern",
+        "update config": "Konfiguration aktualisieren",
+        "is required": "Dieses Feld ist erforderlich",
+        "must be an url": "Keine gültige URL",
+        "not a valid access key id":
+            "Das sieht nicht nach einer gültigen Zugangsschlüssel-ID aus",
+        "url textField label": "URL",
+        "url textField helper text": "URL des S3-Dienstes",
+        "region textField label": "AWS S3-Region",
+        "region textField helper text": "Beispiel: eu-west-1, wenn unsicher, leer lassen",
+        "workingDirectoryPath textField label": "Arbeitsverzeichnispfad",
+        "workingDirectoryPath textField helper text": (
+            <>
+                Hiermit können Sie den Bucket und das S3-Objektprefix angeben, das Sie im
+                S3-Dienst besitzen. <br />
+                Beispiel: <code>mein-bucket/mein-präfix/</code> oder{" "}
+                <code>nur mein-bucket/</code> wenn Sie den ganzen Bucket besitzen.
+            </>
+        ),
+        "account credentials": "Kontozugangsdaten",
+        "accountFriendlyName textField label": "Benutzerfreundlicher Kontoname",
+        "accountFriendlyName textField helper text":
+            "Dient nur zur Identifikation dieses Kontos. Beispiel: Mein persönliches Konto",
+        "accessKeyId textField label": "Zugangsschlüssel-ID",
+        "accessKeyId textField helper text": "Beispiel: 1A2B3C4D5E6F7G8H9I0J",
+        "secretAccessKey textField label": "Geheimer Zugangsschlüssel",
+        "sessionToken textField label": "Sitzungstoken",
+        "sessionToken textField helper text": "Optional, leer lassen, wenn unsicher",
+        "url style": "URL-Stil",
+        "url style helper text": `Geben Sie an, wie Ihr S3-Server die URL für das Herunterladen von Dateien formatiert.`,
+        "path style label": ({ example }) => (
+            <>
+                Pfadstil
+                {example !== undefined && (
+                    <>
+                        :&nbsp;
+                        <code>{example}meine-daten.parquet</code>
+                    </>
+                )}
+            </>
+        ),
+        "virtual-hosted style label": ({ example }) => (
+            <>
+                Virtual-hosted-Stil
+                {example !== undefined && (
+                    <>
+                        :&nbsp;
+                        <code>{example}meine-daten.parquet</code>
+                    </>
+                )}
+            </>
+        )
+    },
     "AccountUserInterfaceTab": {
         "title": "Konfiguration der Benutzeroberfläche",
         "enable dark mode": "Dunkelmodus aktivieren",
@@ -123,12 +228,34 @@ export const translations: Translations<"de"> = {
             </>
         )
     },
-    "AccountField": {
+    "SettingField": {
         "copy tooltip": "In die Zwischenablage kopieren",
         "language": "Sprache ändern",
-        "service password": "Passwort für Ihre Dienste",
-        "service password helper text": `Dieses Passwort ist erforderlich, um sich bei allen Ihren Diensten anzumelden. 
-            Es wird automatisch generiert und regelmäßig erneuert.`,
+        "service password": "Standarddienstpasswort",
+        "service password helper text": ({ groupProjectName }) => (
+            <>
+                Dies ist das Standardpasswort, das verwendet wird, um Ihre laufenden
+                Dienste zu schützen. <br />
+                Wenn Sie einen Dienst starten, wird das Passwortfeld im Sicherheitstab
+                automatisch mit diesem Passwort ausgefüllt. <br />
+                Ein Klick auf das{" "}
+                <Icon
+                    size="extra small"
+                    icon={id<MuiIconComponentName>("Refresh")}
+                />{" "}
+                Symbol generiert ein neues zufälliges Passwort. Beachten Sie jedoch, dass
+                es das Passwort für bereits laufende Dienste nicht aktualisiert. <br />
+                Das Dienstpasswort ist das, was Onyxia Sie auffordert, in Ihre
+                Zwischenablage zu kopieren, bevor Sie auf einen laufenden Dienst
+                zugreifen. <br />
+                {groupProjectName !== undefined && (
+                    <>
+                        Bitte beachten Sie, dass dieses Passwort unter allen Mitgliedern
+                        des Projekts ({groupProjectName}) geteilt wird.
+                    </>
+                )}
+            </>
+        ),
         "not yet defined": "Noch nicht definiert",
         "reset helper dialogs": "Hilfsdialoge zurücksetzen",
         "reset": "Zurücksetzen",
@@ -151,6 +278,13 @@ export const translations: Translations<"de"> = {
                 <MuiLink {...accountTabLink}>MinIO-Clients konfigurieren</MuiLink>.
             </>
         )
+    },
+    "MyFilesDisabledDialog": {
+        "dialog title": "Kein S3-Server konfiguriert",
+        "dialog body":
+            "Für diese Instanz ist kein S3-Server konfiguriert. Sie können jedoch manuell einen hinzufügen, um den S3-Dateiexplorer zu aktivieren.",
+        "cancel": "Abbrechen",
+        "go to settings": "Zu den Einstellungen gehen"
     },
     "MySecrets": {
         "page title - my files": "Meine Dateien",
@@ -305,6 +439,7 @@ export const translations: Translations<"de"> = {
         "reduce": "Reduzieren",
         "home": "Startseite",
         "account": "Mein Konto",
+        "projectSettings": "Projekteinstellungen",
         "catalog": "Servicekatalog",
         "myServices": "Meine Dienste",
         "mySecrets": "Meine Geheimnisse",
@@ -323,6 +458,15 @@ export const translations: Translations<"de"> = {
     "PortraitModeUnsupported": {
         "instructions":
             "Um diese App auf Ihrem Handy zu nutzen, aktivieren Sie bitte den Rotationssensor und drehen Sie Ihr Telefon."
+    },
+    "MaybeAcknowledgeConfigVolatilityDialog": {
+        "dialog title": "Beachten Sie, dass Konfigurationen flüchtig sind",
+        "dialog body": `Diese Onyxia-Instanz implementiert keinen Persistenzmechanismus zum Speichern von Konfigurationen.
+            Alle Konfigurationen werden im lokalen Speicher des Browsers gespeichert. Das bedeutet, dass Sie alle Ihre Konfigurationen verlieren werden, 
+            wenn Sie den lokalen Speicher Ihres Browsers löschen oder Ihren Browser wechseln.`,
+        "do not show next time": "Diese Nachricht nicht mehr anzeigen",
+        "cancel": "Abbrechen",
+        "I understand": "Ich verstehe"
     },
     "Home": {
         "title authenticated": ({ userFirstname }) => `Willkommen ${userFirstname}!`,
@@ -596,9 +740,6 @@ Fühlen Sie sich frei, Ihre Kubernetes-Bereitstellungen zu erkunden und die Kont
         "open": "öffnen",
         "readme": "readme",
         "shared by you": "von Ihnen geteilt",
-        "which token expire when": ({ which, howMuchTime }) =>
-            `Das Token ${which} läuft in ${howMuchTime} ab.`,
-        "which token expired": ({ which }) => `Das Token ${which} ist abgelaufen.`,
         "reminder to delete services":
             "Denken Sie daran, Ihre Dienste nach Gebrauch zu löschen.",
         "this is a shared service": "Dieser Dienst wird im Projekt geteilt"

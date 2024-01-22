@@ -1,276 +1,286 @@
 import axios from "axios";
+import type * as Minio from "minio";
 import type { ReturnType } from "tsafe";
 import { S3Client } from "core/ports/S3Client";
 import { getNewlyRequestedOrCachedTokenFactory } from "core/tools/getNewlyRequestedOrCachedToken";
-import { id } from "tsafe/id";
 import { assert } from "tsafe/assert";
 import { Deferred } from "evt/tools/Deferred";
-import * as Minio from "minio";
 import { parseUrl } from "core/tools/parseUrl";
-import memoize from "memoizee";
-import type { DeploymentRegion } from "core/ports/OnyxiaApi";
 import fileReaderStream from "filereader-stream";
 import type { Oidc } from "core/ports/Oidc";
 import { addParamToUrl } from "powerhooks/tools/urlSearchParams";
-import { getS3UrlAndRegion } from "./utils/getS3UrlAndRegion";
-import { Buffer } from "buffer";
-(window as any).Buffer = Buffer;
+import { bucketNameAndObjectNameFromS3Path } from "./utils/bucketNameAndObjectNameFromS3Path";
+import { exclude } from "tsafe/exclude";
 
-export type Params = {
-    url: string;
-    region: string;
-    oidc: Oidc.LoggedIn;
-    durationSeconds: number;
-    amazon:
-        | undefined
-        | {
-              roleARN: string;
-              roleSessionName: string;
-          };
-    createAwsBucket: (params: {
-        awsRegion: string;
-        accessKey: string;
-        secretKey: string;
-        sessionToken: string;
-        bucketName: string;
-    }) => Promise<void>;
-};
+export type ParamsOfCreateS3Client =
+    | ParamsOfCreateS3Client.NoSts
+    | ParamsOfCreateS3Client.Sts;
 
-export async function createS3Client(params: Params): Promise<S3Client> {
-    const { url, region, amazon, oidc, durationSeconds, createAwsBucket } = params;
+export namespace ParamsOfCreateS3Client {
+    export type Common = {
+        url: string;
+        pathStyleAccess: boolean;
+    };
 
-    const { host, port = 443 } = parseUrl(params.url);
+    export type NoSts = Common & {
+        isStsEnabled: false;
+        region: string;
+        accessKeyId: string;
+        secretAccessKey: string;
+        sessionToken: string | undefined;
+    };
 
-    const { getNewlyRequestedOrCachedToken, clearCachedToken } =
-        getNewlyRequestedOrCachedTokenFactory({
-            "requestNewToken": async (restrictToBucketName: string | undefined) => {
-                // NOTE: We renew the OIDC access token because it's expiration time
-                // cap the duration of the token we will request to minio so we want it
-                // as fresh as possible.
-                await oidc.renewTokens();
+    export type Sts = Common & {
+        isStsEnabled: true;
+        stsUrl: string | undefined;
+        region: string | undefined;
+        oidc: Oidc.LoggedIn;
+        durationSeconds: number | undefined;
+        role:
+            | {
+                  roleARN: string;
+                  roleSessionName: string;
+              }
+            | undefined;
+        nameOfBucketToCreateIfNotExist: string | undefined;
+    };
+}
 
-                const now = Date.now();
-
-                const { data } = await axios
-                    .create({
-                        "baseURL":
-                            amazon !== undefined ? "https://sts.amazonaws.com" : url,
-                        "headers": {
-                            "Accept": "*/*"
-                        }
-                    })
-                    .post<string>(
-                        "/?" +
-                            Object.entries({
-                                "Action": "AssumeRoleWithWebIdentity",
-                                "WebIdentityToken": oidc.getTokens().accessToken,
-                                //Desired TTL of the token, depending of the configuration
-                                //and version of minio we could get less than that but never more.
-                                "DurationSeconds": durationSeconds,
-                                "Version": "2011-06-15",
-                                ...(restrictToBucketName === undefined
-                                    ? {}
-                                    : {
-                                          "Policy": encodeURI(
-                                              JSON.stringify({
-                                                  "Version": "2012-10-17",
-                                                  "Statement": [
-                                                      {
-                                                          "Effect": "Allow",
-                                                          "Action": ["s3:*"],
-                                                          "Resource": [
-                                                              `arn:aws:s3:::${restrictToBucketName}`,
-                                                              `arn:aws:s3:::${restrictToBucketName}/*`
-                                                          ]
-                                                      },
-                                                      {
-                                                          "Effect": "Allow",
-                                                          "Action": ["s3:ListBucket"],
-                                                          "Resource": ["arn:aws:s3:::*"],
-                                                          "Condition": {
-                                                              "StringLike": {
-                                                                  "s3:prefix":
-                                                                      "diffusion/*"
-                                                              }
-                                                          }
-                                                      },
-                                                      {
-                                                          "Effect": "Allow",
-                                                          "Action": ["s3:GetObject"],
-                                                          "Resource": [
-                                                              "arn:aws:s3:::*/diffusion/*"
-                                                          ]
-                                                      }
-                                                  ]
-                                              })
-                                          )
-                                      }),
-                                ...(amazon === undefined
-                                    ? {}
-                                    : {
-                                          "RoleSessionName": amazon.roleSessionName,
-                                          "RoleArn": amazon.roleARN
-                                      })
-                            })
-                                .map(([key, value]) => `${key}=${value}`)
-                                .join("&")
-                    );
-
-                const parser = new DOMParser();
-                const xmlDoc = parser.parseFromString(data, "text/xml");
-                const root = xmlDoc.getElementsByTagName(
-                    "AssumeRoleWithWebIdentityResponse"
-                )[0];
-
-                const credentials = root.getElementsByTagName("Credentials")[0];
-                const accessKeyId =
-                    credentials.getElementsByTagName("AccessKeyId")[0].childNodes[0]
-                        .nodeValue;
-                const secretAccessKey =
-                    credentials.getElementsByTagName("SecretAccessKey")[0].childNodes[0]
-                        .nodeValue;
-                const sessionToken =
-                    credentials.getElementsByTagName("SessionToken")[0].childNodes[0]
-                        .nodeValue;
-                const expiration =
-                    credentials.getElementsByTagName("Expiration")[0].childNodes[0]
-                        .nodeValue;
-
-                assert(
-                    accessKeyId !== null &&
-                        secretAccessKey !== null &&
-                        sessionToken !== null &&
-                        expiration !== null,
-                    "Error parsing minio response"
-                );
-
-                return id<ReturnType<S3Client["getToken"]>>({
-                    accessKeyId,
-                    "expirationTime": new Date(expiration).getTime(),
-                    secretAccessKey,
-                    sessionToken,
-                    "acquisitionTime": now
-                });
-            },
-            "returnCachedTokenIfStillValidForXPercentOfItsTTL": "90%"
-        });
-
-    const { getMinioClient } = (() => {
-        const minioClientByTokenObj = new WeakMap<
-            ReturnType<S3Client["getToken"]>,
-            {
-                minioClient: Minio.Client;
-                createAwsBucket: (params: { bucketName: string }) => Promise<void>;
-            }
-        >();
-
-        async function getMinioClient(params: {
-            restrictToBucketName: string | undefined;
-        }) {
-            const { restrictToBucketName } = params;
-
-            const tokenObj = await getNewlyRequestedOrCachedToken(restrictToBucketName);
-
-            let wrap = minioClientByTokenObj.get(tokenObj);
-
-            if (wrap === undefined) {
-                wrap = {
-                    "minioClient": new Minio.Client({
-                        "endPoint": host,
-                        "port": port,
-                        "useSSL": port !== 80,
-                        "accessKey": tokenObj.accessKeyId,
-                        "secretKey": tokenObj.secretAccessKey,
-                        "sessionToken": tokenObj.sessionToken,
-                        region
-                    }),
-                    "createAwsBucket": ({ bucketName }) =>
-                        createAwsBucket({
-                            "accessKey": tokenObj.accessKeyId,
-                            "secretKey": tokenObj.secretAccessKey,
-                            "sessionToken": tokenObj.sessionToken,
-                            "awsRegion": region,
-                            bucketName
-                        })
+export function createS3Client(params: ParamsOfCreateS3Client): S3Client {
+    const { getNewlyRequestedOrCachedToken, clearCachedToken, getMinioClient } = (() => {
+        const { getNewlyRequestedOrCachedToken, clearCachedToken } = (() => {
+            if (!params.isStsEnabled) {
+                const tokens = {
+                    "accessKeyId": params.accessKeyId,
+                    "secretAccessKey": params.secretAccessKey,
+                    "sessionToken": params.sessionToken,
+                    "expirationTime": undefined,
+                    "acquisitionTime": undefined
                 };
 
-                minioClientByTokenObj.set(tokenObj, wrap);
+                return {
+                    "getNewlyRequestedOrCachedToken": () => Promise.resolve(tokens),
+                    "clearCachedToken": () => {
+                        throw new Error(
+                            "Can't renew token when using non volatile account"
+                        );
+                    }
+                };
             }
 
-            return { ...wrap, tokenObj };
+            const { oidc } = params;
+
+            const { getNewlyRequestedOrCachedToken, clearCachedToken } =
+                getNewlyRequestedOrCachedTokenFactory({
+                    "requestNewToken": async () => {
+                        // NOTE: We renew the OIDC access token because it's expiration time
+                        // cap the duration of the token we will request to minio so we want it
+                        // as fresh as possible.
+                        await oidc.renewTokens();
+
+                        const now = Date.now();
+
+                        const { data } = await axios
+                            .create({
+                                "baseURL": params.stsUrl ?? params.url,
+                                "headers": {
+                                    "Accept": "*/*"
+                                }
+                            })
+                            .post<string>(
+                                "/?" +
+                                    Object.entries({
+                                        "Action": "AssumeRoleWithWebIdentity",
+                                        "WebIdentityToken": oidc.getTokens().accessToken,
+                                        "DurationSeconds":
+                                            params.durationSeconds ?? 7 * 24 * 3600,
+                                        "Version": "2011-06-15",
+                                        ...(params.role === undefined
+                                            ? {}
+                                            : {
+                                                  "RoleSessionName":
+                                                      params.role.roleSessionName,
+                                                  "RoleArn": params.role.roleARN
+                                              })
+                                    })
+                                        .map(([key, value]) =>
+                                            value === undefined
+                                                ? undefined
+                                                : `${key}=${value}`
+                                        )
+                                        .filter(exclude(undefined))
+                                        .join("&")
+                            );
+
+                        const parser = new DOMParser();
+                        const xmlDoc = parser.parseFromString(data, "text/xml");
+                        const root = xmlDoc.getElementsByTagName(
+                            "AssumeRoleWithWebIdentityResponse"
+                        )[0];
+
+                        const credentials = root.getElementsByTagName("Credentials")[0];
+                        const accessKeyId =
+                            credentials.getElementsByTagName("AccessKeyId")[0]
+                                .childNodes[0].nodeValue;
+                        const secretAccessKey =
+                            credentials.getElementsByTagName("SecretAccessKey")[0]
+                                .childNodes[0].nodeValue;
+                        const sessionToken =
+                            credentials.getElementsByTagName("SessionToken")[0]
+                                .childNodes[0].nodeValue;
+                        const expiration =
+                            credentials.getElementsByTagName("Expiration")[0]
+                                .childNodes[0].nodeValue;
+
+                        assert(
+                            accessKeyId !== null &&
+                                secretAccessKey !== null &&
+                                sessionToken !== null &&
+                                expiration !== null,
+                            "Error parsing minio response"
+                        );
+
+                        return {
+                            accessKeyId,
+                            "expirationTime": new Date(expiration).getTime(),
+                            secretAccessKey,
+                            sessionToken,
+                            "acquisitionTime": now
+                        } satisfies ReturnType<S3Client["getToken"]>;
+                    },
+                    "returnCachedTokenIfStillValidForXPercentOfItsTTL": "90%"
+                });
+
+            return { getNewlyRequestedOrCachedToken, clearCachedToken };
+        })();
+
+        const { getMinioClient } = (() => {
+            const minioClientByTokens = new WeakMap<
+                { accessKeyId: string },
+                Minio.Client
+            >();
+
+            let hasBufferBeenPolyfilled = false;
+
+            async function getMinioClient() {
+                const tokens = await getNewlyRequestedOrCachedToken();
+
+                const cachedMinioClient = minioClientByTokens.get(tokens);
+
+                if (cachedMinioClient !== undefined) {
+                    return {
+                        "minioClient": cachedMinioClient,
+                        tokens
+                    };
+                }
+
+                const { host, port = 443 } = parseUrl(params.url);
+
+                import_nodejs_buffer_polyfill: {
+                    if (hasBufferBeenPolyfilled) {
+                        break import_nodejs_buffer_polyfill;
+                    }
+
+                    const { Buffer } = await import("buffer");
+
+                    Object.assign(window, { Buffer });
+
+                    hasBufferBeenPolyfilled = true;
+                }
+
+                const Minio = await import("minio");
+
+                const minioClient = new Minio.Client({
+                    "endPoint": host,
+                    "port": port,
+                    "useSSL": port !== 80,
+                    "accessKey": tokens.accessKeyId,
+                    "secretKey": tokens.secretAccessKey,
+                    "sessionToken": tokens.sessionToken,
+                    "region": params.region
+                });
+
+                minioClientByTokens.set(tokens, minioClient);
+
+                return { minioClient, tokens };
+            }
+
+            return { getMinioClient };
+        })();
+
+        let hasBucketBeenCreated = false;
+
+        async function createBucketIfApplicableAndNotExist() {
+            if (!params.isStsEnabled) {
+                return;
+            }
+
+            const { nameOfBucketToCreateIfNotExist } = params;
+
+            if (nameOfBucketToCreateIfNotExist === undefined) {
+                return;
+            }
+
+            if (hasBucketBeenCreated) {
+                return;
+            }
+
+            const { minioClient } = await getMinioClient();
+
+            const doExist = await new Promise<boolean>((resolve, reject) =>
+                minioClient.bucketExists(
+                    nameOfBucketToCreateIfNotExist,
+                    (error, doExist) => {
+                        if (error !== null) {
+                            reject(error);
+                            return;
+                        }
+                        resolve(doExist);
+                    }
+                )
+            );
+
+            if (doExist) {
+                hasBucketBeenCreated = true;
+                return;
+            }
+
+            await new Promise<void>((resolve, reject) =>
+                minioClient.makeBucket(nameOfBucketToCreateIfNotExist, error =>
+                    error !== null ? reject(error) : resolve()
+                )
+            );
+
+            hasBucketBeenCreated = true;
         }
 
-        return { getMinioClient };
+        return {
+            "getNewlyRequestedOrCachedToken": async () => {
+                await createBucketIfApplicableAndNotExist();
+
+                return getNewlyRequestedOrCachedToken();
+            },
+            clearCachedToken,
+            "getMinioClient": async () => {
+                await createBucketIfApplicableAndNotExist();
+
+                return getMinioClient();
+            }
+        };
     })();
 
-    function bucketNameAndObjectNameFromPath(params: { path: string }) {
-        const { path } = params;
-
-        const [bucketName, ...rest] = path.replace(/^\/+/, "").split("/");
-
-        return {
-            bucketName,
-            "objectName": rest.join("/")
-        };
-    }
-
     const s3Client: S3Client = {
-        "getToken": async ({ restrictToBucketName, doForceRenew }) => {
+        "getToken": async ({ doForceRenew }) => {
             if (doForceRenew) {
                 clearCachedToken();
             }
 
-            return getNewlyRequestedOrCachedToken(restrictToBucketName);
+            return getNewlyRequestedOrCachedToken();
         },
-        "createBucketIfNotExist": memoize(
-            async bucketName => {
-                const { minioClient, createAwsBucket } = await getMinioClient({
-                    "restrictToBucketName": bucketName
-                });
-
-                let doExist: boolean;
-
-                try {
-                    doExist = await new Promise<boolean>((resolve, reject) =>
-                        minioClient.bucketExists(bucketName, (error, doExist) => {
-                            if (error !== null) {
-                                reject(error);
-                                return;
-                            }
-                            resolve(doExist);
-                        })
-                    );
-                } catch (error) {
-                    if (amazon === undefined) {
-                        throw error;
-                    }
-
-                    console.log("CORS error was expected here");
-
-                    doExist = false;
-                }
-
-                if (doExist) {
-                    return;
-                }
-
-                if (amazon !== undefined) {
-                    await createAwsBucket({ bucketName });
-                } else {
-                    await new Promise<void>((resolve, reject) =>
-                        minioClient.makeBucket(bucketName, region, error =>
-                            error !== null ? reject(error) : resolve()
-                        )
-                    );
-                }
-            },
-            { "promise": true }
-        ),
         "list": async ({ path }) => {
             const { bucketName, prefix } = (() => {
-                const { bucketName, objectName } = bucketNameAndObjectNameFromPath({
-                    path
-                });
+                const { bucketName, objectName } =
+                    bucketNameAndObjectNameFromS3Path(path);
 
                 return {
                     bucketName,
@@ -278,11 +288,7 @@ export async function createS3Client(params: Params): Promise<S3Client> {
                 };
             })();
 
-            await s3Client.createBucketIfNotExist(bucketName);
-
-            const { minioClient } = await getMinioClient({
-                "restrictToBucketName": bucketName
-            });
+            const { minioClient } = await getMinioClient();
 
             const stream = minioClient.listObjects(
                 bucketName,
@@ -329,11 +335,9 @@ export async function createS3Client(params: Params): Promise<S3Client> {
                 });
             }
 
-            const { bucketName, objectName } = bucketNameAndObjectNameFromPath({ path });
+            const { bucketName, objectName } = bucketNameAndObjectNameFromS3Path(path);
 
-            const { minioClient } = await getMinioClient({
-                "restrictToBucketName": bucketName
-            });
+            const { minioClient } = await getMinioClient();
 
             const dOut = new Deferred<void>();
 
@@ -349,13 +353,9 @@ export async function createS3Client(params: Params): Promise<S3Client> {
             return dOut.pr;
         },
         "deleteFile": async ({ path }) => {
-            const { bucketName, objectName } = bucketNameAndObjectNameFromPath({ path });
+            const { bucketName, objectName } = bucketNameAndObjectNameFromS3Path(path);
 
-            await s3Client.createBucketIfNotExist(bucketName);
-
-            const { minioClient } = await getMinioClient({
-                "restrictToBucketName": bucketName
-            });
+            const { minioClient } = await getMinioClient();
 
             await new Promise((resolve, reject) =>
                 minioClient.removeObject(bucketName, objectName, err => {
@@ -367,76 +367,49 @@ export async function createS3Client(params: Params): Promise<S3Client> {
                 })
             );
         },
-        "getFileDownloadUrl": async ({ path }) => {
-            const { bucketName, objectName } = bucketNameAndObjectNameFromPath({ path });
+        "getFileDownloadUrl": async ({ path, validityDurationSecond }) => {
+            const { bucketName, objectName } = bucketNameAndObjectNameFromS3Path(path);
 
-            const { minioClient, tokenObj } = await getMinioClient({
-                "restrictToBucketName": bucketName
-            });
+            const { minioClient, tokens } = await getMinioClient();
 
-            const downloadUrlWithoutToken = await new Promise<string>(
-                (resolve, reject) => {
-                    minioClient.presignedGetObject(
-                        bucketName,
-                        objectName,
-                        3600, //One hour
-                        (err, url: string) => {
-                            if (err) {
-                                reject(err);
-                                return;
-                            }
-                            resolve(url);
+            let downloadUrl = await new Promise<string>((resolve, reject) => {
+                minioClient.presignedGetObject(
+                    bucketName,
+                    objectName,
+                    validityDurationSecond,
+                    (err, url: string) => {
+                        if (err) {
+                            reject(err);
+                            return;
                         }
-                    );
-                }
-            );
-
-            const { newUrl: downloadUrl } = addParamToUrl({
-                "url": downloadUrlWithoutToken,
-                "name": "X-Amz-Security-Token",
-                "value": tokenObj.sessionToken
+                        resolve(url);
+                    }
+                );
             });
+
+            if (params.pathStyleAccess) {
+                downloadUrl = (() => {
+                    const urlObj = new URL(downloadUrl);
+                    const subdomain = urlObj.pathname.split("/")[1];
+
+                    urlObj.hostname = `${subdomain}.${urlObj.hostname}`;
+                    urlObj.pathname = urlObj.pathname.replace(`/${subdomain}`, "");
+
+                    return urlObj.toString();
+                })();
+            }
+
+            if (tokens.sessionToken !== undefined) {
+                downloadUrl = addParamToUrl({
+                    "url": downloadUrl,
+                    "name": "X-Amz-Security-Token",
+                    "value": tokens.sessionToken
+                }).newUrl;
+            }
 
             return downloadUrl;
         }
     };
 
-    dS3Client.resolve(s3Client);
-
     return s3Client;
-}
-
-const dS3Client = new Deferred<S3Client>();
-
-/** @deprecated */
-export const { pr: prS3Client } = dS3Client;
-
-export function getCreateS3ClientParams(params: {
-    s3Params: DeploymentRegion.S3;
-}): Omit<Params, "createAwsBucket" | "oidc"> {
-    const { s3Params } = params;
-
-    const { url, region } = getS3UrlAndRegion(s3Params);
-
-    return (() => {
-        switch (s3Params.type) {
-            case "minio":
-                return {
-                    url,
-                    region,
-                    "amazon": undefined,
-                    "durationSeconds": s3Params.defaultDurationSeconds ?? 7 * 24 * 3600
-                };
-            case "amazon":
-                return {
-                    url,
-                    region,
-                    "amazon": {
-                        "roleARN": s3Params.roleARN,
-                        "roleSessionName": s3Params.roleSessionName
-                    },
-                    "durationSeconds": s3Params.defaultDurationSeconds ?? 12 * 3600
-                };
-        }
-    })();
 }

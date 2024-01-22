@@ -56,7 +56,7 @@ export const thunks = {
 
             const [dispatch, getState, rootContext] = args;
 
-            const { sqlOlap, s3Client, oidc } = rootContext;
+            const { sqlOlap, s3ClientForExplorer, oidc } = rootContext;
 
             // NOTE: Preload for minimizing load time when querying.
             sqlOlap.getDb();
@@ -101,7 +101,10 @@ export const thunks = {
                     await new Promise(() => {});
                 }
 
-                return s3Client.getFileDownloadUrl({ "path": s3path });
+                return s3ClientForExplorer.getFileDownloadUrl({
+                    "path": s3path,
+                    "validityDurationSecond": 3600 * 6
+                });
             })();
 
             const rowCountOrErrorMessage = await sqlOlap

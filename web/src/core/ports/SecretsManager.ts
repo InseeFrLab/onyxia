@@ -1,6 +1,6 @@
-export declare type Secret = { [key: string]: Secret.Value };
+export type Secret = { [key: string]: Secret.Value };
 
-export declare namespace Secret {
+export namespace Secret {
     export type Value =
         | string
         | boolean

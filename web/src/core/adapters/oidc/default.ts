@@ -11,7 +11,6 @@ export async function createOidc(params: {
     return createOidcSpa({
         issuerUri,
         clientId,
-        transformUrlBeforeRedirect,
-        "log": console.log
+        transformUrlBeforeRedirect
     });
 }

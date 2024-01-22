@@ -52,7 +52,7 @@ export type ExplorerProps = {
 
     directoryPath: string;
     isNavigating: boolean;
-    commandLogsEntries: CommandBarProps.Entry[];
+    commandLogsEntries: CommandBarProps.Entry[] | undefined;
     evtAction: NonPostableEvt<"TRIGGER COPY PATH">;
     files: string[];
     directories: string[];
@@ -63,11 +63,7 @@ export type ExplorerProps = {
     onDeleteItem: (params: { kind: "file" | "directory"; basename: string }) => void;
     onCreateDirectory: (params: { basename: string }) => void;
     onCopyPath: (params: { path: string }) => void;
-    //Defines how hight users should be allowed to browse up in the path
-    pathMinDepth: number;
-    //TODO: Find a better way
     scrollableDivRef: RefObject<any>;
-    isCommandBarEnabled: boolean;
 } & (
     | {
           isFileOpen: true;
@@ -103,10 +99,8 @@ export const Explorer = memo((props: ExplorerProps) => {
         onCreateDirectory,
         onCopyPath,
         scrollableDivRef,
-        pathMinDepth,
         onFileSelected,
-        filesBeingUploaded,
-        isCommandBarEnabled
+        filesBeingUploaded
     } = props;
 
     const [files, directories, directoriesBeingCreated, filesBeingCreated] = useMemo(
@@ -344,7 +338,7 @@ export const Explorer = memo((props: ExplorerProps) => {
                         callback={buttonBarCallback}
                     />
                 </div>
-                {isCommandBarEnabled && (
+                {commandLogsEntries !== undefined && (
                     <CommandBar
                         className={classes.commandBar}
                         entries={commandLogsEntries}
@@ -352,13 +346,29 @@ export const Explorer = memo((props: ExplorerProps) => {
                     />
                 )}
                 {(() => {
-                    const title = props.isFileOpen
-                        ? props.openFileBasename
-                        : directoryPath.split("/").length - 1 === pathMinDepth
-                        ? undefined
-                        : pathBasename(directoryPath);
+                    const title = (() => {
+                        if (props.isFileOpen) {
+                            return props.openFileBasename;
+                        }
 
-                    return title === undefined ? null : (
+                        const split = directoryPath
+                            .split("/")
+                            .filter(part => part !== "");
+
+                        assert(split.length !== 0, "We assume there is always a bucket");
+
+                        if (split.length === 1) {
+                            return undefined;
+                        }
+
+                        return pathBasename(directoryPath);
+                    })();
+
+                    if (title === undefined) {
+                        return null;
+                    }
+
+                    return (
                         <DirectoryHeader
                             title={title}
                             onGoBack={onGoBack}
@@ -376,9 +386,9 @@ export const Explorer = memo((props: ExplorerProps) => {
 
                 <div className={classes.breadcrumpWrapper}>
                     <Breadcrumb
-                        minDepth={pathMinDepth}
+                        minDepth={0}
                         path={[
-                            ...directoryPath.split("/"),
+                            ...directoryPath.split("/").filter(part => part !== ""),
                             ...(props.isFileOpen ? [props.openFileBasename] : [])
                         ]}
                         isNavigationDisabled={isNavigating}
@@ -698,7 +708,6 @@ const { CreateS3DirectoryDialog } = (() => {
                 defaultValue={suggestedBasename}
                 getIsValidValue={getIsValidValue}
                 onValueBeingTypedChange={onValueBeingTypedChange}
-                doOnlyValidateInputAfterFistFocusLost={false}
                 evtAction={evtAction}
                 onEnterKeyDown={onEnterKeyDown}
                 onSubmit={onSubmit}

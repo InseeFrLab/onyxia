@@ -19,60 +19,69 @@ import type { Link } from "type-route";
 import type { PageRoute } from "./route";
 import { useEvt } from "evt/hooks";
 import { customIcons } from "ui/theme";
+import { MyFilesDisabledDialog } from "./MyFilesDisabledDialog";
 
 export type Props = {
     route: PageRoute;
     className?: string;
 };
 
-export default function MyFiles(props: Props) {
+export default function MyFilesMaybeDisabled(props: Props) {
+    const isFileExplorerEnabled = useCoreState("fileExplorer", "isFileExplorerEnabled");
+
+    if (!isFileExplorerEnabled) {
+        return <MyFilesDisabledDialog />;
+    }
+
+    return <MyFiles {...props} />;
+}
+
+function MyFiles(props: Props) {
     const { className, route } = props;
 
     const { t } = useTranslation({ MyFiles });
 
-    const currentWorkingDirectoryView = useCoreState(
-        "fileExplorer",
-        "currentWorkingDirectoryView"
-    );
-
-    const commandLogsEntries = useCoreState("fileExplorer", "commandLogsEntries");
-
-    const { isCommandBarEnabled } = useCoreState("userConfigs", "main");
+    const {
+        isCurrentWorkingDirectoryLoaded,
+        commandLogsEntries,
+        isNavigationOngoing,
+        uploadProgress,
+        currentWorkingDirectoryView
+    } = useCoreState("fileExplorer", "main");
 
     const { fileExplorer } = useCore().functions;
 
-    const { evtProjectConfigs } = useCore().evts;
+    const { evtFileExplorer } = useCore().evts;
+
+    useEffect(() => {
+        fileExplorer.setCurrentDirectory({ "directoryPath": route.params.path });
+    }, [route.params.path]);
 
     useEvt(
         ctx => {
-            evtProjectConfigs.attach(
-                action => action.actionName === "projectChanged",
+            evtFileExplorer.$attach(
+                data =>
+                    data.action !== "set directory path" ? null : [data.directoryPath],
                 ctx,
-                () => routes[route.name]({ "path": undefined }).replace()
+                directoryPath =>
+                    routes[route.name]({
+                        ...route.params,
+                        "path": directoryPath
+                    }).replace()
             );
         },
-        [evtProjectConfigs]
+        [evtFileExplorer]
     );
-
-    useEffect(() => {
-        if (route.params.path === undefined) {
-            routes[route.name]({
-                "path": fileExplorer.getProjectHomeOrPreviousPath()
-            }).replace();
-            return;
-        }
-
-        fileExplorer.navigate({
-            "directoryPath": route.params.path
-        });
-    }, [route.params.path]);
 
     const onNavigate = useConstCallback(
         ({ directoryPath }: Param0<ExplorerProps["onNavigate"]>) =>
-            routes[route.name]({ "path": directoryPath }).push()
+            routes[route.name]({
+                ...route.params,
+                "path": directoryPath
+            }).push()
     );
 
-    const onRefresh = useConstCallback(() => fileExplorer.refresh());
+    const onRefresh = useConstCallback(() => fileExplorer.refreshCurrentDirectory());
 
     const onCreateDirectory = useConstCallback(
         ({ basename }: Param0<ExplorerProps["onCreateDirectory"]>) =>
@@ -154,9 +163,7 @@ export default function MyFiles(props: Props) {
             )
     );
 
-    const uploadProgress = useCoreState("fileExplorer", "uploadProgress");
-
-    if (currentWorkingDirectoryView === undefined) {
+    if (!isCurrentWorkingDirectoryLoaded) {
         return null;
     }
 
@@ -181,7 +188,7 @@ export default function MyFiles(props: Props) {
                 className={classes.explorer}
                 doShowHidden={false}
                 directoryPath={currentWorkingDirectoryView.directoryPath}
-                isNavigating={currentWorkingDirectoryView.isNavigationOngoing}
+                isNavigating={isNavigationOngoing}
                 commandLogsEntries={commandLogsEntries}
                 evtAction={evtExplorerAction}
                 files={currentWorkingDirectoryView.files}
@@ -195,13 +202,11 @@ export default function MyFiles(props: Props) {
                 onDeleteItem={onDeleteItem}
                 onCreateDirectory={onCreateDirectory}
                 onCopyPath={onCopyPath}
-                pathMinDepth={1}
                 scrollableDivRef={scrollableDivRef}
                 {...{
                     "isFileOpen": false as const,
                     onOpenFile
                 }}
-                isCommandBarEnabled={isCommandBarEnabled}
             />
         </div>
     );

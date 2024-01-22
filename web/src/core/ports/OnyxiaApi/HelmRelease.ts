@@ -22,6 +22,6 @@ export declare namespace HelmRelease {
 
     export type Starting = Common & {
         isStarting: true;
-        prStarted: Promise<{ isConfirmedJustStarted: boolean }>;
+        prStarted: Promise<void>;
     };
 }

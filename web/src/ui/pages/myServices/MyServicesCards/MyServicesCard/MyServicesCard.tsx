@@ -10,9 +10,6 @@ import { MyServicesRoundLogo } from "./MyServicesRoundLogo";
 import { MyServicesRunningTime } from "./MyServicesRunningTime";
 import { Tag } from "onyxia-ui/Tag";
 import { Tooltip } from "onyxia-ui/Tooltip";
-import { exclude } from "tsafe/exclude";
-import { objectKeys } from "tsafe/objectKeys";
-import { fromNow } from "ui/shared/useMoment";
 import { declareComponentKeys } from "i18nifty";
 import { ReadmeAndEnvDialog } from "./ReadmeAndEnvDialog";
 import { Evt, NonPostableEvt } from "evt";
@@ -38,7 +35,7 @@ export type Props = {
     onRequestDelete: (() => void) | undefined;
     getPoseInstallInstructions: (() => string) | undefined;
     getEnv: () => Record<string, string>;
-    getProjectServicePassword: () => Promise<string>;
+    projectServicePassword: string;
     openUrl: string | undefined;
     monitoringUrl: string | undefined;
     /** undefined when the service is not yey launched */
@@ -47,8 +44,6 @@ export type Props = {
     isOwned: boolean;
     /** undefined when isOwned === true*/
     ownerUsername: string | undefined;
-    vaultTokenExpirationTime: number | undefined;
-    s3TokenExpirationTime: number | undefined;
 };
 
 export const MyServicesCard = memo((props: Props) => {
@@ -61,138 +56,30 @@ export const MyServicesCard = memo((props: Props) => {
         onRequestDelete,
         getEnv,
         getPoseInstallInstructions,
-        getProjectServicePassword,
+        projectServicePassword,
         monitoringUrl,
         openUrl,
         startTime,
         isShared,
         isOwned,
-        ownerUsername,
-        vaultTokenExpirationTime,
-        s3TokenExpirationTime
+        ownerUsername
     } = props;
 
     const { t } = useTranslation({ MyServicesCard });
-
-    const tokensStatus = useMemo(() => {
-        const getTokenStatus = (expirationTime: number) =>
-            ({
-                "status": (() => {
-                    const remainingMs = expirationTime - Date.now();
-
-                    if (remainingMs < 0) {
-                        return "expired";
-                    }
-
-                    if (remainingMs < 6 * 3600 * 1000) {
-                        return "expires soon";
-                    }
-
-                    return "valid";
-                })(),
-                expirationTime
-            } as const);
-
-        return {
-            "s3":
-                s3TokenExpirationTime === undefined
-                    ? undefined
-                    : getTokenStatus(s3TokenExpirationTime),
-            "vault":
-                vaultTokenExpirationTime === undefined
-                    ? undefined
-                    : getTokenStatus(vaultTokenExpirationTime)
-        };
-    }, [vaultTokenExpirationTime, s3TokenExpirationTime]);
 
     const severity = useMemo(
         () =>
             startTime === undefined
                 ? "pending"
-                : (() => {
-                      const statues = Object.entries(tokensStatus)
-                          .map(([, value]) => value)
-                          .filter(exclude(undefined))
-                          .map(({ status }) => status);
-
-                      if (statues.includes("expired")) {
-                          return "error";
-                      }
-
-                      if (
-                          statues.includes("expires soon") ||
-                          getDoesHaveBeenRunningForTooLong({ startTime })
-                      ) {
-                          return "warning";
-                      }
-
-                      return "success";
-                  })(),
-        [startTime, tokensStatus]
+                : getDoesHaveBeenRunningForTooLong({ startTime })
+                ? "warning"
+                : "success",
+        [startTime]
     );
 
     const { classes, cx } = useStyles({
-        "severity": (() => {
-            switch (severity) {
-                case "success":
-                case "pending":
-                    return undefined;
-                default:
-                    return severity;
-            }
-        })()
+        "hasBeenRunningForTooLong": severity === "warning"
     });
-
-    const tooltipTitle = useMemo(
-        () => (
-            <>
-                {[
-                    ...objectKeys(tokensStatus)
-                        // eslint-disable-next-line array-callback-return
-                        .map(tokenType => {
-                            const wrap = tokensStatus[tokenType];
-
-                            if (wrap === undefined) {
-                                return undefined;
-                            }
-
-                            const { status, expirationTime } = wrap;
-
-                            switch (status) {
-                                case "valid":
-                                    return undefined;
-                                case "expires soon":
-                                    return (
-                                        <Fragment key={tokenType}>
-                                            {t("which token expire when", {
-                                                "which": tokenType,
-                                                "howMuchTime": fromNow({
-                                                    "dateTime": expirationTime
-                                                })
-                                            })}
-                                            <br />
-                                        </Fragment>
-                                    );
-                                case "expired":
-                                    return (
-                                        <Fragment key={tokenType}>
-                                            {t("which token expired", {
-                                                "which": tokenType
-                                            })}
-                                            <br />
-                                        </Fragment>
-                                    );
-                            }
-                        })
-                        .filter(exclude(undefined)),
-                    <Fragment key={"reminder"}>
-                        {t("reminder to delete services")}
-                    </Fragment>
-                ]}
-            </>
-        ),
-        [tokensStatus, t]
-    );
 
     const evtReadmeAndEnvDialogAction = useConst(() =>
         Evt.create<"SHOW ENV" | "SHOW POST INSTALL INSTRUCTIONS">()
@@ -227,7 +114,13 @@ export const MyServicesCard = memo((props: Props) => {
                         <Icon icon={id<MuiIconComponentName>("People")} />
                     </Tooltip>
                 )}
-                <Tooltip title={tooltipTitle}>
+                <Tooltip
+                    title={
+                        <Fragment key={"reminder"}>
+                            {t("reminder to delete services")}
+                        </Fragment>
+                    }
+                >
                     <Icon
                         icon={id<MuiIconComponentName>("ErrorOutline")}
                         className={classes.errorOutlineIcon}
@@ -308,7 +201,7 @@ export const MyServicesCard = memo((props: Props) => {
                 evtAction={evtReadmeAndEnvDialogAction}
                 getEnv={getEnv}
                 getPostInstallInstructions={getPoseInstallInstructions}
-                getProjectServicePassword={getProjectServicePassword}
+                projectServicePassword={projectServicePassword}
                 openUrl={openUrl}
                 startTime={startTime}
             />
@@ -322,18 +215,16 @@ export const { i18n } = declareComponentKeys<
     | "open"
     | "readme"
     | "shared by you"
-    | { K: "which token expire when"; P: { which: "vault" | "s3"; howMuchTime: string } }
-    | { K: "which token expired"; P: { which: "vault" | "s3" } }
     | "reminder to delete services"
     | "this is a shared service"
 >()({ MyServicesCard });
 
 const useStyles = tss
     .withParams<{
-        severity: "error" | "warning" | undefined;
+        hasBeenRunningForTooLong: boolean;
     }>()
     .withName({ MyServicesCard })
-    .create(({ theme, severity }) => ({
+    .create(({ theme, hasBeenRunningForTooLong }) => ({
         "root": {
             "borderRadius": 8,
             "boxShadow": theme.shadows[1],
@@ -354,13 +245,12 @@ const useStyles = tss
         "title": {
             "marginLeft": theme.spacing(3)
         },
-        "errorOutlineIcon":
-            severity === undefined
-                ? { "display": "none" }
-                : {
-                      "marginLeft": theme.spacing(3),
-                      "color": theme.colors.useCases.alertSeverity[severity].main
-                  },
+        "errorOutlineIcon": !hasBeenRunningForTooLong
+            ? { "display": "none" }
+            : {
+                  "marginLeft": theme.spacing(3),
+                  "color": theme.colors.useCases.alertSeverity.warning.main
+              },
         "belowDivider": {
             "padding": theme.spacing(4),
             "paddingTop": theme.spacing(3),

@@ -4,7 +4,6 @@ import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
-import { useRoute } from "ui/routes";
 import { useCoreState, useCore } from "core";
 import { assert } from "tsafe/assert";
 
@@ -16,23 +15,21 @@ type Props = {
 export function RegionSelect(props: Props) {
     const { className, tRegion } = props;
 
-    const { deploymentRegion } = useCore().functions;
+    const { deploymentRegionManagement } = useCore().functions;
     const availableDeploymentRegionIds = useCoreState(
-        "deploymentRegion",
+        "deploymentRegionManagement",
         "availableDeploymentRegionIds"
     );
-    const { id: selectedDeploymentRegionId } = useCoreState(
-        "deploymentRegion",
-        "selectedDeploymentRegion"
+    const { id: currentDeploymentRegionId } = useCoreState(
+        "deploymentRegionManagement",
+        "currentDeploymentRegion"
     );
-
-    const route = useRoute();
 
     const onDeploymentRegionChange = useConstCallback(
         async (props: { deploymentRegionId: string }) => {
             const { deploymentRegionId } = props;
 
-            deploymentRegion.changeDeploymentRegion({
+            deploymentRegionManagement.changeDeploymentRegion({
                 deploymentRegionId,
                 "reload": () => {
                     window.location.reload();
@@ -54,25 +51,12 @@ export function RegionSelect(props: Props) {
         return null;
     }
 
-    switch (route.name) {
-        case "launcher":
-            break;
-        case "myFiles":
-            break;
-        case "mySecrets":
-            break;
-        case "myServices":
-            break;
-        default:
-            return null;
-    }
-
     return (
         <FormControl className={className}>
             <InputLabel id={labelId}>{tRegion}</InputLabel>
             <Select
                 labelId={labelId}
-                value={selectedDeploymentRegionId}
+                value={currentDeploymentRegionId}
                 label={tRegion}
                 onChange={onChange}
             >

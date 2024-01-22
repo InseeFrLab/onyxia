@@ -30,6 +30,9 @@ export declare namespace State {
         pathOfFormFieldsWhoseValuesAreDifferentFromDefault: {
             path: string[];
         }[];
+        pathOfFormFieldsAffectedByS3ConfigChange: {
+            path: string[];
+        }[];
         formFields: FormField[];
         infosAboutWhenFieldsShouldBeHidden: {
             path: string[];
@@ -39,6 +42,8 @@ export declare namespace State {
         nonLibraryChartDependencies: string[];
         valuesSchema: JSONSchemaObject;
         k8sRandomSubdomain: string;
+        selectedCustomS3ConfigIndex: number | undefined;
+        has3sConfigBeenManuallyChanged: boolean;
     };
 }
 
@@ -73,6 +78,7 @@ export const { reducer, actions } = createUsecaseActions({
                         availableChartVersions: string[];
                         chartIconUrl: string | undefined;
                         chartSourceUrls: string[];
+                        pathOfFormFieldsAffectedByS3ConfigChange: State.Ready["pathOfFormFieldsAffectedByS3ConfigChange"];
                         formFields: State.Ready["formFields"];
                         infosAboutWhenFieldsShouldBeHidden: State.Ready["infosAboutWhenFieldsShouldBeHidden"];
                         valuesSchema: State.Ready["valuesSchema"];
@@ -93,6 +99,7 @@ export const { reducer, actions } = createUsecaseActions({
                     availableChartVersions,
                     chartIconUrl,
                     chartSourceUrls,
+                    pathOfFormFieldsAffectedByS3ConfigChange,
                     formFields,
                     infosAboutWhenFieldsShouldBeHidden,
                     valuesSchema,
@@ -114,6 +121,7 @@ export const { reducer, actions } = createUsecaseActions({
                         availableChartVersions,
                         chartIconUrl,
                         chartSourceUrls,
+                        pathOfFormFieldsAffectedByS3ConfigChange,
                         formFields,
                         infosAboutWhenFieldsShouldBeHidden,
                         "defaultFormFieldsValue": formFields.map(({ path, value }) => ({
@@ -123,7 +131,9 @@ export const { reducer, actions } = createUsecaseActions({
                         nonLibraryChartDependencies,
                         "pathOfFormFieldsWhoseValuesAreDifferentFromDefault": [],
                         valuesSchema,
-                        k8sRandomSubdomain
+                        k8sRandomSubdomain,
+                        "selectedCustomS3ConfigIndex": undefined,
+                        "has3sConfigBeenManuallyChanged": false
                     })
                 );
 
@@ -135,14 +145,76 @@ export const { reducer, actions } = createUsecaseActions({
                     })
                 );
             },
-            "reset": () =>
+            "allDefaultRestored": state => {
+                assert(state.stateDescription === "ready");
+
+                state.defaultFormFieldsValue.forEach(({ path, value }) =>
+                    reducers.formFieldValueChanged(state, {
+                        "payload": {
+                            "formFieldValue": {
+                                path,
+                                value
+                            }
+                        }
+                    })
+                );
+            },
+            "s3ConfigChanged": (
+                state,
+                {
+                    payload
+                }: {
+                    payload:
+                        | {
+                              customS3ConfigIndex: number;
+                              formFieldsValue: FormFieldValue[];
+                          }
+                        | {
+                              customS3ConfigIndex: undefined;
+                              formFieldsValue?: never;
+                          };
+                }
+            ) => {
+                const { customS3ConfigIndex, formFieldsValue } = payload;
+
+                assert(state.stateDescription === "ready");
+
+                state.selectedCustomS3ConfigIndex = customS3ConfigIndex;
+
+                (formFieldsValue ?? state.defaultFormFieldsValue)
+                    .filter(
+                        ({ path }) =>
+                            state.pathOfFormFieldsAffectedByS3ConfigChange.find(
+                                ({ path: pathToCheck }) => same(path, pathToCheck)
+                            ) !== undefined
+                    )
+                    .forEach(({ path, value }) =>
+                        reducers.formFieldValueChanged(state, {
+                            "payload": {
+                                "formFieldValue": {
+                                    path,
+                                    value
+                                }
+                            }
+                        })
+                    );
+
+                state.has3sConfigBeenManuallyChanged = false;
+            },
+            "resetToNotInitialized": () =>
                 id<State.NotInitialized>({
                     "stateDescription": "not initialized",
                     "isInitializing": false
                 }),
             "formFieldValueChanged": (
                 state,
-                { payload }: { payload: { formFieldValue: FormFieldValue } }
+                {
+                    payload
+                }: {
+                    payload: {
+                        formFieldValue: FormFieldValue;
+                    };
+                }
             ) => {
                 assert(state.stateDescription === "ready");
 
@@ -208,13 +280,25 @@ export const { reducer, actions } = createUsecaseActions({
                     formField.value = value;
                 }
 
+                if (
+                    state.pathOfFormFieldsAffectedByS3ConfigChange.find(
+                        ({ path: pathAffectedByS3Config }) =>
+                            same(path, pathAffectedByS3Config)
+                    ) !== undefined
+                ) {
+                    state.has3sConfigBeenManuallyChanged = true;
+                }
+
                 {
                     const { pathOfFormFieldsWhoseValuesAreDifferentFromDefault } = state;
 
                     if (
-                        state.defaultFormFieldsValue.find(formField =>
-                            same(formField.path, path)
-                        )!.value !== value
+                        !same(
+                            state.defaultFormFieldsValue.find(formField =>
+                                same(formField.path, path)
+                            )!.value,
+                            value
+                        )
                     ) {
                         if (
                             !pathOfFormFieldsWhoseValuesAreDifferentFromDefault.find(

@@ -8,7 +8,7 @@ import { env, injectTransferableEnvsInQueryParams } from "env-parsed";
 import { RouteProvider } from "ui/routes";
 import { createCoreProvider, useCoreState, useCore } from "core";
 import { injectGlobalStatesInSearchParams } from "powerhooks/useGlobalState";
-import { evtLang } from "ui/i18n";
+import { evtLang, I18nFetchingSuspense } from "ui/i18n";
 import { getEnv } from "env";
 import {
     OnyxiaUi,
@@ -17,7 +17,6 @@ import {
     injectCustomFontFaceIfNotAlreadyDone
 } from "ui/theme";
 import { PortraitModeUnsupported } from "ui/shared/PortraitModeUnsupported";
-import { useIsI18nFetching } from "ui/i18n";
 import { addParamToUrl } from "powerhooks/tools/urlSearchParams";
 import { LeftBar } from "./LeftBar";
 import { GlobalAlert } from "./GlobalAlert";
@@ -47,22 +46,20 @@ const { CoreProvider } = createCoreProvider({
 });
 
 export default function App() {
-    if (useIsI18nFetching()) {
-        return null;
-    }
-
     return (
-        <OnyxiaUi>
-            <ScreenScalerOutOfRangeFallbackProvider
-                fallback={<ScreenScalerOutOfRangeFallback />}
-            >
-                <RouteProvider>
-                    <CoreProvider>
-                        <ContextualizedApp />
-                    </CoreProvider>
-                </RouteProvider>
-            </ScreenScalerOutOfRangeFallbackProvider>
-        </OnyxiaUi>
+        <RouteProvider>
+            <I18nFetchingSuspense>
+                <OnyxiaUi>
+                    <ScreenScalerOutOfRangeFallbackProvider
+                        fallback={<ScreenScalerOutOfRangeFallback />}
+                    >
+                        <CoreProvider>
+                            <ContextualizedApp />
+                        </CoreProvider>
+                    </ScreenScalerOutOfRangeFallbackProvider>
+                </OnyxiaUi>
+            </I18nFetchingSuspense>
+        </RouteProvider>
     );
 }
 
@@ -158,9 +155,9 @@ const useStyles = tss.withName({ App }).create(({ theme }) => {
  * user configs.
  */
 function useSyncDarkModeWithValueInProfile() {
-    const { userAuthentication, userConfigs } = useCore().functions;
+    const { userConfigs } = useCore().functions;
 
-    const isUserLoggedIn = userAuthentication.getIsUserLoggedIn();
+    const { isUserLoggedIn } = useCoreState("userAuthentication", "authenticationState");
 
     const { isDarkModeEnabled, setIsDarkModeEnabled } = useDarkMode();
 

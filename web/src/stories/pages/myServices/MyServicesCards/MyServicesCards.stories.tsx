@@ -1,8 +1,7 @@
 import { MyServicesCards, Props } from "ui/pages/myServices/MyServicesCards";
 import { sectionName } from "./sectionName";
-import { getStoryFactory, logCallbacks } from "stories/getStory";
+import { getStoryFactory, logCallbacks, css } from "stories/getStory";
 import rstudioImgUrl from "stories/assets/img/rstudio.png";
-import { css } from "@emotion/css";
 import { Evt } from "evt";
 
 const { meta, getStory } = getStoryFactory({
@@ -43,7 +42,7 @@ const props: Props = {
     })),
     "catalogExplorerLink": { "href": url, "onClick": () => {} },
     "evtAction": new Evt(),
-    "getProjectServicePassword": () => Promise.resolve("xyz"),
+    "projectServicePassword": "abc",
     "getEnv": () => ({
         "foo": "foo value",
         "bar": "bar value",

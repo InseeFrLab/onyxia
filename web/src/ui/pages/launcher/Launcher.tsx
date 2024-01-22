@@ -22,6 +22,10 @@ import { saveAs } from "file-saver";
 import { LauncherMainCard } from "./LauncherMainCard";
 import { LauncherConfigurationCard } from "./LauncherConfigurationCard";
 import { customIcons } from "ui/theme";
+import {
+    MaybeAcknowledgeConfigVolatilityDialog,
+    type MaybeAcknowledgeConfigVolatilityDialogProps
+} from "ui/shared/MaybeAcknowledgeConfigVolatilityDialog";
 
 export type Props = {
     route: PageRoute;
@@ -37,7 +41,8 @@ export default function Launcher(props: Props) {
         evtAcknowledgeSharingOfConfigConfirmDialogOpen,
         evtAutoLaunchDisabledDialogOpen,
         evtSensitiveConfigurationDialogOpen,
-        evtNoLongerBookmarkedDialogOpen
+        evtNoLongerBookmarkedDialogOpen,
+        evtMaybeAcknowledgeConfigVolatilityDialogOpen
     } = useConst(() => ({
         "evtAcknowledgeSharingOfConfigConfirmDialogOpen":
             Evt.create<
@@ -56,7 +61,9 @@ export default function Launcher(props: Props) {
         "evtNoLongerBookmarkedDialogOpen":
             Evt.create<
                 UnpackEvt<LauncherDialogsProps["evtNoLongerBookmarkedDialogOpen"]>
-            >()
+            >(),
+        "evtMaybeAcknowledgeConfigVolatilityDialogOpen":
+            Evt.create<MaybeAcknowledgeConfigVolatilityDialogProps["evtOpen"]>()
     }));
 
     const {
@@ -79,12 +86,13 @@ export default function Launcher(props: Props) {
         launchScript,
         commandLogsEntries,
         chartSourceUrls,
-        groupProjectName
+        groupProjectName,
+        s3ConfigSelect
     } = useCoreState("launcher", "main");
 
     const scrollableDivRef = useStateRef<HTMLDivElement>(null);
 
-    const { launcher, restorableConfigManager, k8sCredentials } = useCore().functions;
+    const { launcher, restorableConfigManagement, k8sCodeSnippets } = useCore().functions;
 
     const { showSplashScreen, hideSplashScreen } = useSplashScreen();
 
@@ -98,14 +106,14 @@ export default function Launcher(props: Props) {
 
         showSplashScreen({ "enableTransparency": true });
 
-        launcher.initialize({
+        const { cleanup } = launcher.initialize({
             catalogId,
             chartName,
             chartVersion,
             formFieldsValueDifferentFromDefault
         });
 
-        return () => launcher.reset();
+        return cleanup;
     }, []);
 
     useEffect(() => {
@@ -197,8 +205,6 @@ export default function Launcher(props: Props) {
         [evtLauncher, route.params]
     );
 
-    const { isCommandBarEnabled } = useCoreState("userConfigs", "main");
-
     useEffect(() => {
         if (restorableConfig === undefined) {
             return;
@@ -233,8 +239,20 @@ export default function Launcher(props: Props) {
         assert(restorableConfig !== undefined);
 
         if (isRestorableConfigSaved) {
-            restorableConfigManager.deleteRestorableConfig({ restorableConfig });
+            restorableConfigManagement.deleteRestorableConfig({ restorableConfig });
         } else {
+            {
+                const dDoProceed = new Deferred<boolean>();
+
+                evtMaybeAcknowledgeConfigVolatilityDialogOpen.post({
+                    "resolve": ({ doProceed }) => dDoProceed.resolve(doProceed)
+                });
+
+                if (!(await dDoProceed.pr)) {
+                    return;
+                }
+            }
+
             if (groupProjectName !== undefined) {
                 const doProceed = new Deferred<boolean>();
 
@@ -248,9 +266,16 @@ export default function Launcher(props: Props) {
                 }
             }
 
-            restorableConfigManager.saveRestorableConfig({ restorableConfig });
+            restorableConfigManagement.saveRestorableConfig({ restorableConfig });
         }
     });
+
+    const onChartVersionChange = useConstCallback((chartVersion: string) =>
+        routes[route.name]({
+            ...route.params,
+            "version": chartVersion
+        }).replace()
+    );
 
     const {
         domRect: { height: rootHeight }
@@ -259,9 +284,18 @@ export default function Launcher(props: Props) {
     });
 
     const { classes, cx, css } = useStyles({
-        rootHeight,
-        isCommandBarEnabled
+        "isCommandBarEnabled": commandLogsEntries !== undefined
     });
+
+    const { myServicesSavedConfigsExtendedLink, projectS3ConfigLink } = useConst(() => ({
+        "myServicesSavedConfigsExtendedLink": routes.myServices({
+            "isSavedConfigsExtended": true
+        }).link,
+
+        "projectS3ConfigLink": routes.projectSettings({
+            "tabId": "s3-configs"
+        }).link
+    }));
 
     if (!isReady) {
         return null;
@@ -295,12 +329,11 @@ export default function Launcher(props: Props) {
                 />
                 <div className={classes.bodyWrapper}>
                     <div className={classes.body} ref={scrollableDivRef}>
-                        {isCommandBarEnabled && (
+                        {commandLogsEntries !== undefined && (
                             <CommandBar
                                 classes={{
                                     "root": classes.commandBar,
-                                    "rootWhenExpended": classes.commandBarWhenExpended,
-                                    "helpDialog": classes.helpDialog
+                                    "rootWhenExpended": classes.commandBarWhenExpended
                                 }}
                                 maxHeight={rootHeight - 30}
                                 entries={commandLogsEntries}
@@ -315,25 +348,18 @@ export default function Launcher(props: Props) {
                                         )
                                 }}
                                 helpDialog={{
-                                    "body": (
-                                        <div className={classes.helpDialogBody}>
-                                            {t("api logs help body", {
-                                                "k8CredentialsHref":
-                                                    !k8sCredentials.getIsAvailable()
-                                                        ? undefined
-                                                        : routes.account({
-                                                              "tabId": "k8sCredentials"
-                                                          }).href,
-                                                "myServicesHref":
-                                                    routes.myServices().href,
-                                                "interfacePreferenceHref": routes.account(
-                                                    {
-                                                        "tabId": "user-interface"
-                                                    }
-                                                ).href
-                                            })}
-                                        </div>
-                                    )
+                                    "body": t("api logs help body", {
+                                        "k8CredentialsHref":
+                                            !k8sCodeSnippets.getIsAvailable()
+                                                ? undefined
+                                                : routes.account({
+                                                      "tabId": "k8sCodeSnippets"
+                                                  }).href,
+                                        "myServicesHref": routes.myServices().href,
+                                        "interfacePreferenceHref": routes.account({
+                                            "tabId": "user-interface"
+                                        }).href
+                                    })
                                 }}
                             />
                         )}
@@ -347,18 +373,11 @@ export default function Launcher(props: Props) {
                                 isBookmarked={isRestorableConfigSaved}
                                 chartVersion={chartVersion}
                                 availableChartVersions={availableChartVersions}
-                                onChartVersionChange={chartVersion =>
-                                    routes[route.name]({
-                                        ...route.params,
-                                        "version": chartVersion
-                                    }).replace()
-                                }
+                                onChartVersionChange={onChartVersionChange}
                                 catalogName={catalogName}
                                 catalogRepositoryUrl={catalogRepositoryUrl}
                                 myServicesSavedConfigsExtendedLink={
-                                    routes.myServices({
-                                        "isSavedConfigsExtended": true
-                                    }).link
+                                    myServicesSavedConfigsExtendedLink
                                 }
                                 onRequestToggleBookmark={onRequestToggleBookmark}
                                 friendlyName={friendlyName}
@@ -385,6 +404,18 @@ export default function Launcher(props: Props) {
                                         : onRequestCopyLaunchUrl
                                 }
                                 isLaunchable={isLaunchable}
+                                s3ConfigsSelect={
+                                    s3ConfigSelect === undefined
+                                        ? undefined
+                                        : {
+                                              projectS3ConfigLink,
+                                              "selectedOption":
+                                                  s3ConfigSelect.selectedOption,
+                                              "options": s3ConfigSelect.options,
+                                              "onSelectedS3ConfigChange":
+                                                  launcher.useSpecificS3Config
+                                          }
+                                }
                             />
                             {Object.keys(indexedFormFields).map(
                                 dependencyNamePackageNameOrGlobal => (
@@ -412,6 +443,9 @@ export default function Launcher(props: Props) {
                 evtAutoLaunchDisabledDialogOpen={evtAutoLaunchDisabledDialogOpen}
                 evtSensitiveConfigurationDialogOpen={evtSensitiveConfigurationDialogOpen}
                 evtNoLongerBookmarkedDialogOpen={evtNoLongerBookmarkedDialogOpen}
+            />
+            <MaybeAcknowledgeConfigVolatilityDialog
+                evtOpen={evtMaybeAcknowledgeConfigVolatilityDialogOpen}
             />
         </>
     );
@@ -441,9 +475,9 @@ export const { i18n } = declareComponentKeys<
 >()({ Launcher });
 
 const useStyles = tss
-    .withParams<{ rootHeight: number; isCommandBarEnabled: boolean }>()
+    .withParams<{ isCommandBarEnabled: boolean }>()
     .withName({ Launcher })
-    .create(({ theme, rootHeight, isCommandBarEnabled }) => ({
+    .create(({ theme, isCommandBarEnabled }) => ({
         "root": {
             "height": "100%",
             "display": "flex",
@@ -480,12 +514,5 @@ const useStyles = tss
         "commandBarWhenExpended": {
             "width": "min(100%, 1450px)",
             "transition": "width 70ms linear"
-        },
-        "helpDialog": {
-            "maxWidth": 800
-        },
-        "helpDialogBody": {
-            "maxHeight": rootHeight,
-            "overflow": "auto"
         }
     }));

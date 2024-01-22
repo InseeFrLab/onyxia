@@ -1,12 +1,9 @@
-import { useId, useEffect } from "react";
-import { useConstCallback } from "powerhooks/useConstCallback";
+import { useId } from "react";
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
-import Select, { SelectChangeEvent } from "@mui/material/Select";
-import { useRoute } from "ui/routes";
+import Select from "@mui/material/Select";
 import { useCoreState, useCore } from "core";
-import { useSplashScreen } from "onyxia-ui";
 
 type ProjectSelectProps = {
     className?: string;
@@ -16,76 +13,15 @@ type ProjectSelectProps = {
 export function ProjectSelect(props: ProjectSelectProps) {
     const { className, tProject } = props;
 
-    const onChange = useConstCallback(async (event: SelectChangeEvent<string>) => {
-        onSelectedProjectChange({
-            "projectId": event.target.value
-        });
-    });
-
     const labelId = useId();
 
-    const { projectConfigs } = useCore().functions;
+    const { projectManagement } = useCore().functions;
 
-    const projectsState = useCoreState("projectConfigs", "main");
+    const availableProjects = useCoreState("projectManagement", "availableProjects");
 
-    const route = useRoute();
+    const { id: currentProjectId } = useCoreState("projectManagement", "currentProject");
 
-    {
-        const { isOnboarding } = projectsState ?? {};
-
-        const { showSplashScreen, hideSplashScreen } = useSplashScreen({
-            "minimumDisplayDuration": 200
-        });
-
-        useEffect(() => {
-            if (isOnboarding === undefined) {
-                return;
-            }
-
-            if (isOnboarding) {
-                showSplashScreen({
-                    "enableTransparency": true
-                });
-            } else {
-                hideSplashScreen();
-            }
-        }, [isOnboarding]);
-    }
-
-    const onSelectedProjectChange = useConstCallback(
-        async (props: { projectId: string }) => {
-            const { projectId } = props;
-
-            //TODO: This should be handled by the core
-            const reload = (() => {
-                switch (route.name) {
-                    case "home":
-                    case "account":
-                    case "myServices":
-                    case "myFiles":
-                    case "mySecrets":
-                        return undefined;
-                    default:
-                        return () => window.location.reload();
-                }
-            })();
-
-            await projectConfigs.changeProject({
-                projectId,
-                "doPreventDispatch": reload !== undefined
-            });
-
-            reload?.();
-        }
-    );
-
-    if (projectsState === undefined) {
-        return null;
-    }
-
-    const { projects, selectedProjectId } = projectsState;
-
-    if (projects.length === 1) {
+    if (availableProjects.length === 1) {
         return null;
     }
 
@@ -94,11 +30,15 @@ export function ProjectSelect(props: ProjectSelectProps) {
             <InputLabel id={labelId}>{tProject}</InputLabel>
             <Select
                 labelId={labelId}
-                value={selectedProjectId}
+                value={currentProjectId}
                 label="Project"
-                onChange={onChange}
+                onChange={event =>
+                    projectManagement.changeProject({
+                        "projectId": event.target.value
+                    })
+                }
             >
-                {projects.map(({ id, name }) => (
+                {availableProjects.map(({ id, name }) => (
                     <MenuItem key={id} value={id}>
                         {name}
                     </MenuItem>

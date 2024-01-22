@@ -65,6 +65,7 @@ export type DeploymentRegion = {
     kubernetes:
         | {
               url: string;
+              usernamePrefix?: string;
               oidcParams:
                   | {
                         issuerUri?: string;
@@ -94,30 +95,40 @@ export type DeploymentRegion = {
         | undefined;
 };
 export namespace DeploymentRegion {
-    export type S3 = S3.Minio | S3.Amazon;
-    export namespace S3 {
-        export type Common = {
-            defaultDurationSeconds: number | undefined;
-            monitoringUrlPattern: string | undefined;
-            oidcParams:
-                | {
-                      issuerUri?: string;
-                      clientId: string;
-                  }
-                | undefined;
-        };
-
-        export type Minio = Common & {
-            type: "minio";
-            url: string; //"https://minio.sspcloud.fr",
-            region: string | undefined; // default "us-east-1"
-        };
-
-        export type Amazon = Common & {
-            type: "amazon";
-            region: string; //"us-east-1"
-            roleARN: string; //"arn:aws:iam::873875581780:role/test";
-            roleSessionName: string; //"onyxia";
-        };
-    }
+    /** https://github.com/InseeFrLab/onyxia-api/blob/main/docs/region-configuration.md#s3 */
+    export type S3 = {
+        url: string;
+        pathStyleAccess: boolean;
+        region: string | undefined;
+        sts:
+            | {
+                  url: string | undefined;
+                  durationSeconds: number | undefined;
+                  role:
+                      | {
+                            roleARN: string;
+                            roleSessionName: string;
+                        }
+                      | undefined;
+                  oidcParams:
+                      | {
+                            issuerUri?: string;
+                            clientId: string;
+                        }
+                      | undefined;
+              }
+            | undefined;
+        workingDirectory:
+            | {
+                  bucketMode: "shared";
+                  bucketName: string;
+                  prefix: string;
+                  prefixGroup: string;
+              }
+            | {
+                  bucketMode: "multi";
+                  bucketNamePrefix: string;
+                  bucketNamePrefixGroup: string;
+              };
+    };
 }

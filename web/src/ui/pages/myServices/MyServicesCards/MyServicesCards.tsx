@@ -29,8 +29,6 @@ export type Props = {
               isOwned: boolean;
               /** undefined when isOwned === true*/
               ownerUsername: string | undefined;
-              vaultTokenExpirationTime: number | undefined;
-              s3TokenExpirationTime: number | undefined;
               hasPostInstallInstructions: boolean;
           }[]
         | undefined;
@@ -42,7 +40,7 @@ export type Props = {
         action: "TRIGGER SHOW POST INSTALL INSTRUCTIONS";
         helmReleaseName: string;
     }>;
-    getProjectServicePassword: () => Promise<string>;
+    projectServicePassword: string;
 };
 
 export const MyServicesCards = memo((props: Props) => {
@@ -53,9 +51,9 @@ export const MyServicesCards = memo((props: Props) => {
         isUpdating,
         onRequestDelete,
         getEnv,
-        getProjectServicePassword,
         getPostInstallInstructions,
-        evtAction
+        evtAction,
+        projectServicePassword
     } = props;
 
     const { classes, cx } = useStyles({
@@ -133,7 +131,7 @@ export const MyServicesCards = memo((props: Props) => {
                                         ? undefined
                                         : getPoseInstallInstructions
                                 }
-                                getProjectServicePassword={getProjectServicePassword}
+                                projectServicePassword={projectServicePassword}
                                 onRequestDelete={onRequestDelete}
                                 getEnv={getEnv}
                                 {...card}

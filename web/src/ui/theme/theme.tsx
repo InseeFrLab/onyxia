@@ -60,16 +60,21 @@ const emotionCache = createCache({
     "key": "tss"
 });
 
+export const { css, cx } = createCssAndCx({ "cache": emotionCache });
+
 pluginSystemInitTheme({
     "evtTheme": Evt.loosenType(evtTheme),
-    ...createCssAndCx({ "cache": emotionCache })
+    css,
+    cx
 });
 
-export function OnyxiaUi(props: { children: React.ReactNode }) {
-    const { children } = props;
+export function OnyxiaUi(props: { darkMode?: boolean; children: React.ReactNode }) {
+    const { darkMode, children } = props;
     return (
         <CacheProvider value={emotionCache}>
-            <OnyxiaUiWithoutEmotionCache>{children}</OnyxiaUiWithoutEmotionCache>
+            <OnyxiaUiWithoutEmotionCache darkMode={darkMode}>
+                {children}
+            </OnyxiaUiWithoutEmotionCache>
         </CacheProvider>
     );
 }

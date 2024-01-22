@@ -39,28 +39,27 @@ export default function MyServices(props: Props) {
     const { t: tCatalogLauncher } = useTranslation("Launcher");
 
     /* prettier-ignore */
-    const { serviceManager, restorableConfigManager, k8sCredentials, projectConfigs } = useCore().functions;
+    const { serviceManagement, restorableConfigManagement, k8sCodeSnippets } = useCore().functions;
     /* prettier-ignore */
-    const { restorableConfigs, chartIconAndFriendlyNameByRestorableConfigIndex } = useCoreState(
-        "restorableConfigManager", "main"
-    );
-    const isUpdating = useCoreState("serviceManager", "isUpdating");
-    const runningServices = useCoreState("serviceManager", "runningServices");
+    const { restorableConfigs, chartIconAndFriendlyNameByRestorableConfigIndex } = useCoreState("restorableConfigManagement", "main");
+    const isUpdating = useCoreState("serviceManagement", "isUpdating");
+    const runningServices = useCoreState("serviceManagement", "runningServices");
     const deletableRunningServiceHelmReleaseNames = useCoreState(
-        "serviceManager",
+        "serviceManagement",
         "deletableRunningServiceHelmReleaseNames"
     );
     const isThereOwnedSharedServices = useCoreState(
-        "serviceManager",
+        "serviceManagement",
         "isThereOwnedSharedServices"
     );
     const isThereNonOwnedServices = useCoreState(
-        "serviceManager",
+        "serviceManagement",
         "isThereNonOwnedServices"
     );
-    const commandLogsEntries = useCoreState("serviceManager", "commandLogsEntries");
+    const commandLogsEntries = useCoreState("serviceManagement", "commandLogsEntries");
 
-    const { isCommandBarEnabled } = useCoreState("userConfigs", "main");
+    const { isCommandBarEnabled } = useCoreState("userConfigs", "userConfigs");
+    const servicePassword = useCoreState("projectManagement", "servicePassword");
 
     const onButtonBarClick = useConstCallback(async (buttonId: ButtonId) => {
         switch (buttonId) {
@@ -68,7 +67,7 @@ export default function MyServices(props: Props) {
                 routes.catalog().push();
                 return;
             case "refresh":
-                serviceManager.update();
+                serviceManagement.update();
                 return;
             case "trash":
                 const dDoProceed = new Deferred<boolean>();
@@ -83,7 +82,7 @@ export default function MyServices(props: Props) {
                 }
 
                 deletableRunningServiceHelmReleaseNames.map(helmReleaseName =>
-                    serviceManager.stopService({ helmReleaseName })
+                    serviceManagement.stopService({ helmReleaseName })
                 );
 
                 return;
@@ -91,7 +90,7 @@ export default function MyServices(props: Props) {
     });
 
     useEffect(() => {
-        const { setInactive } = serviceManager.setActive();
+        const { setInactive } = serviceManagement.setActive();
         return () => setInactive();
     }, []);
 
@@ -126,7 +125,7 @@ export default function MyServices(props: Props) {
     const onRequestDeleteRestorableConfig = useConstCallback<
         MyServicesRestorableConfigsProps["onRequestDelete"]
     >(({ restorableConfigIndex }) => {
-        restorableConfigManager.deleteRestorableConfig({
+        restorableConfigManagement.deleteRestorableConfig({
             "restorableConfig": restorableConfigs[restorableConfigIndex]
         });
     });
@@ -172,8 +171,6 @@ export default function MyServices(props: Props) {
                     startedAt,
                     monitoringUrl,
                     isStarting,
-                    vaultTokenExpirationTime,
-                    s3TokenExpirationTime,
                     hasPostInstallInstructions,
                     ...rest
                 }) => ({
@@ -187,9 +184,7 @@ export default function MyServices(props: Props) {
                     hasPostInstallInstructions,
                     "isShared": rest.isShared,
                     "isOwned": rest.isOwned,
-                    "ownerUsername": rest.isOwned ? undefined : rest.ownerUsername,
-                    vaultTokenExpirationTime,
-                    s3TokenExpirationTime
+                    "ownerUsername": rest.isOwned ? undefined : rest.ownerUsername
                 })
             ),
         [runningServices]
@@ -249,7 +244,7 @@ export default function MyServices(props: Props) {
                 return;
             }
 
-            serviceManager.stopService({ helmReleaseName });
+            serviceManagement.stopService({ helmReleaseName });
         }
     );
 
@@ -276,28 +271,22 @@ export default function MyServices(props: Props) {
                     <CommandBar
                         classes={{
                             "root": classes.commandBar,
-                            "rootWhenExpended": classes.commandBarWhenExpended,
-                            "helpDialog": classes.helpDialog
+                            "rootWhenExpended": classes.commandBarWhenExpended
                         }}
                         entries={commandLogsEntries}
                         maxHeight={commandBarMaxHeight}
                         helpDialog={{
-                            "body": (
-                                <div className={classes.helpDialogBody}>
-                                    {tCatalogLauncher("api logs help body", {
-                                        "k8CredentialsHref":
-                                            !k8sCredentials.getIsAvailable()
-                                                ? undefined
-                                                : routes.account({
-                                                      "tabId": "k8sCredentials"
-                                                  }).href,
-                                        "myServicesHref": routes.myServices().href,
-                                        "interfacePreferenceHref": routes.account({
-                                            "tabId": "user-interface"
-                                        }).href
-                                    })}
-                                </div>
-                            )
+                            "body": tCatalogLauncher("api logs help body", {
+                                "k8CredentialsHref": !k8sCodeSnippets.getIsAvailable()
+                                    ? undefined
+                                    : routes.account({
+                                          "tabId": "k8sCodeSnippets"
+                                      }).href,
+                                "myServicesHref": routes.myServices().href,
+                                "interfacePreferenceHref": routes.account({
+                                    "tabId": "user-interface"
+                                }).href
+                            })
                         }}
                     />
                 )}
@@ -311,12 +300,10 @@ export default function MyServices(props: Props) {
                                 onRequestDelete={onRequestDelete}
                                 catalogExplorerLink={catalogExplorerLink}
                                 evtAction={evtMyServiceCardsAction}
-                                getProjectServicePassword={
-                                    projectConfigs.getServicesPassword
-                                }
-                                getEnv={serviceManager.getEnv}
+                                projectServicePassword={servicePassword}
+                                getEnv={serviceManagement.getEnv}
                                 getPostInstallInstructions={
-                                    serviceManager.getPostInstallInstructions
+                                    serviceManagement.getPostInstallInstructions
                                 }
                             />
                         )}
@@ -375,71 +362,55 @@ const useStyles = tss
         isCommandBarEnabled: boolean;
         commandBarTop: number;
         isSavedConfigsExtended: boolean;
-        bellowHeaderHeight: number;
     }>()
-    .create(
-        ({
-            theme,
-            isCommandBarEnabled,
-            isSavedConfigsExtended,
-            commandBarTop,
-            bellowHeaderHeight
-        }) => ({
-            "root": {
-                "height": "100%",
-                "display": "flex",
-                "flexDirection": "column"
-            },
-            "belowHeader": {
-                "position": "relative",
-                "flex": 1,
-                "display": "flex",
-                "flexDirection": "column",
-                "overflow": "hidden"
-            },
-            "cardsAndSavedConfigs": {
-                "overflow": "hidden",
-                "flex": 1,
-                "display": "flex",
-                "& > *": {
-                    "height": "100%"
-                }
-            },
-            ...(() => {
-                const ratio = 0.65;
-
-                return {
-                    "cards": {
-                        "flex": ratio,
-                        "marginRight": theme.spacing(5)
-                    },
-                    "savedConfigs": {
-                        "flex": isSavedConfigsExtended ? 1 : 1 - ratio,
-                        "paddingRight": "2%",
-                        //NOTE: It's not great to have a fixed width here but measuring would needlessly complexity the code too much.
-                        "marginTop": isCommandBarEnabled ? 40 : undefined
-                    }
-                };
-            })(),
-            "commandBar": {
-                "position": "absolute",
-                "right": 0,
-                "top": commandBarTop,
-                "zIndex": 1,
-                "opacity": commandBarTop === 0 ? 0 : 1,
-                "transition": "opacity 750ms linear",
-                "width": "min(100%, 900px)"
-            },
-            "commandBarWhenExpended": {
-                "width": "min(100%, 1350px)",
-                "transition": "width 70ms linear"
-            },
-            "helpDialog": {
-                "maxWidth": 800
-            },
-            "helpDialogBody": {
-                "maxHeight": bellowHeaderHeight,
-                "overflow": "auto"
+    .create(({ theme, isCommandBarEnabled, isSavedConfigsExtended, commandBarTop }) => ({
+        "root": {
+            "height": "100%",
+            "display": "flex",
+            "flexDirection": "column"
+        },
+        "belowHeader": {
+            "position": "relative",
+            "flex": 1,
+            "display": "flex",
+            "flexDirection": "column",
+            "overflow": "hidden"
+        },
+        "cardsAndSavedConfigs": {
+            "overflow": "hidden",
+            "flex": 1,
+            "display": "flex",
+            "& > *": {
+                "height": "100%"
             }
-        })
-    );
+        },
+        ...(() => {
+            const ratio = 0.65;
+
+            return {
+                "cards": {
+                    "flex": ratio,
+                    "marginRight": theme.spacing(5)
+                },
+                "savedConfigs": {
+                    "flex": isSavedConfigsExtended ? 1 : 1 - ratio,
+                    "paddingRight": "2%",
+                    //NOTE: It's not great to have a fixed width here but measuring would needlessly complexity the code too much.
+                    "marginTop": isCommandBarEnabled ? 40 : undefined
+                }
+            };
+        })(),
+        "commandBar": {
+            "position": "absolute",
+            "right": 0,
+            "top": commandBarTop,
+            "zIndex": 1,
+            "opacity": commandBarTop === 0 ? 0 : 1,
+            "transition": "opacity 750ms linear",
+            "width": "min(100%, 900px)"
+        },
+        "commandBarWhenExpended": {
+            "width": "min(100%, 1350px)",
+            "transition": "width 70ms linear"
+        }
+    }));

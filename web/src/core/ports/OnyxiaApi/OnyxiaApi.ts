@@ -21,13 +21,10 @@ export type OnyxiaApi = {
         clear: () => void;
     };
 
-    getIp: {
-        (): Promise<string>;
-        clear: () => void;
-    };
+    getIp: () => Promise<string>;
 
-    getUserProjects: {
-        (): Promise<Project[]>;
+    getUserAndProjects: {
+        (): Promise<{ user: User; projects: Project[] }>;
         clear: () => void;
     };
 
@@ -63,15 +60,5 @@ export type OnyxiaApi = {
 
     helmUninstall: (params: { helmReleaseName: string }) => Promise<void>;
 
-    createAwsBucket: (params: {
-        awsRegion: string;
-        accessKey: string;
-        secretKey: string;
-        sessionToken: string;
-        bucketName: string;
-    }) => Promise<void>;
-
-    onboard: () => Promise<void>;
-
-    getUser: () => Promise<User>;
+    onboard: (params: { group: string | undefined }) => Promise<void>;
 };

@@ -1087,6 +1087,8 @@ function createParsedEnvs<Parser extends Entry<EnvName>>(
     } & { PUBLIC_URL: string };
     injectTransferableEnvsInQueryParams: (url: string) => string;
 } {
+    assert("putin stp dis moi qu'on est là");
+
     const parsedValueOrGetterByEnvName: Record<string, any> = {};
 
     const injectFunctions: ((url: string) => string)[] = [];
@@ -1099,10 +1101,18 @@ function createParsedEnvs<Parser extends Entry<EnvName>>(
         return undefined;
     })();
 
-    const PUBLIC_URL =
-        kcContext === undefined || process.env.NODE_ENV === "development"
-            ? process.env.PUBLIC_URL
-            : `${kcContext.url.resourcesPath}/build`;
+    const PUBLIC_URL = (() => {
+        if (kcContext !== undefined && process.env.NODE_ENV !== "development") {
+            return `${kcContext.url.resourcesPath}/build`;
+        }
+
+        if (process.env.PUBLIC_URL === ".") {
+            //NOTE: This is the case in Storybook, it's not consistent with CRA
+            return "";
+        }
+
+        return process.env.PUBLIC_URL;
+    })();
 
     const env: any = new Proxy(
         {},

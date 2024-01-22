@@ -3,7 +3,6 @@ import { routes } from "ui/routes";
 import { tss, useStyles as useClasslessStyles } from "tss";
 import { Text } from "onyxia-ui/Text";
 import { Button } from "onyxia-ui/Button";
-import { useCore } from "core";
 import { useTranslation } from "ui/i18n";
 import { Card as OnyxiaUiCard } from "onyxia-ui/Card";
 import { env } from "env-parsed";
@@ -15,6 +14,7 @@ import { LocalizedMarkdown } from "ui/shared/Markdown";
 import { LinkFromConfigButton } from "./LinkFromConfigButton";
 import { id } from "tsafe/id";
 import { useThemedImageUrl } from "onyxia-ui/ThemedImage";
+import { useCoreState } from "core";
 
 type Props = {
     route: PageRoute;
@@ -37,15 +37,17 @@ export default function Home(props: Props) {
         "hasLogo": env.HOMEPAGE_LOGO !== undefined
     });
 
-    const { userAuthentication, fileExplorer } = useCore().functions;
-
-    const isUserLoggedIn = userAuthentication.getIsUserLoggedIn();
+    const { isUserLoggedIn, user } = useCoreState(
+        "userAuthentication",
+        "authenticationState"
+    );
+    const isFileExplorerEnabled = useCoreState("fileExplorer", "isFileExplorerEnabled");
 
     const { t } = useTranslation({ Home });
 
     const title = useMemo(() => {
         if (isUserLoggedIn) {
-            const userFirstname = userAuthentication.getUser().firstName ?? "";
+            const userFirstname = user.firstName ?? "";
 
             if (env.HOMEPAGE_HERO_TEXT_AUTHENTICATED === undefined) {
                 return t("title authenticated", { userFirstname });
@@ -72,7 +74,7 @@ export default function Home(props: Props) {
                 return defaultNode;
             }
 
-            const userFirstname = userAuthentication.getUser().firstName ?? "";
+            const userFirstname = user.firstName ?? "";
 
             return (
                 <LocalizedMarkdown inline>
@@ -151,7 +153,7 @@ export default function Home(props: Props) {
                         "url": "https://join.slack.com/t/3innovation/shared_invite/zt-1hnzukjcn-6biCSmVy4qvyDGwbNI~sWg"
                     }
                 },
-                ...(!fileExplorer.getIsEnabled()
+                ...(!isFileExplorerEnabled
                     ? []
                     : [
                           {
@@ -168,7 +170,7 @@ export default function Home(props: Props) {
         }
 
         return env.HOMEPAGE_CARDS;
-    }, [t]);
+    }, [t, isFileExplorerEnabled]);
 
     return (
         <div className={cx(classes.root, className)}>

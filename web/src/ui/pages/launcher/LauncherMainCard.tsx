@@ -25,6 +25,8 @@ import { assert } from "tsafe/assert";
 import { useResolveLocalizedString, type LocalizedString } from "ui/i18n";
 import { id } from "tsafe/id";
 import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
+import { same } from "evt/tools/inDepth/same";
+import MuiLink from "@mui/material/Link";
 
 export type Props = {
     className?: string;
@@ -63,6 +65,39 @@ export type Props = {
 
     //Undefined when the configuration is the default one
     onRequestCopyLaunchUrl: (() => void) | undefined;
+
+    s3ConfigsSelect:
+        | {
+              projectS3ConfigLink: Link;
+              selectedOption:
+                  | {
+                        type: "sts";
+                    }
+                  | {
+                        type: "custom";
+                        customS3ConfigIndex: number;
+                    }
+                  | {
+                        type: "manual form input";
+                    };
+              options: {
+                  customConfigIndex: number | undefined;
+                  dataSource: string;
+                  accountFriendlyName: string | undefined;
+              }[];
+              onSelectedS3ConfigChange: (
+                  params:
+                      | {
+                            type: "default";
+                            customS3ConfigIndex?: never;
+                        }
+                      | {
+                            type: "custom";
+                            customS3ConfigIndex: number;
+                        }
+              ) => void;
+          }
+        | undefined;
 };
 
 export const LauncherMainCard = memo((props: Props) => {
@@ -88,7 +123,9 @@ export const LauncherMainCard = memo((props: Props) => {
         onRequestLaunch,
         onRequestCancel,
         onRequestCopyLaunchUrl,
-        onRequestRestoreAllDefault
+        onRequestRestoreAllDefault,
+
+        s3ConfigsSelect
     } = props;
 
     const { classes, cx } = useStyles();
@@ -104,6 +141,7 @@ export const LauncherMainCard = memo((props: Props) => {
     });
 
     const chartVersionInputLabelId = `chart-version-input-label-${useId()}`;
+    const s3ConfigInputLabelId = `s3Config-input-label-${useId()}`;
 
     const { isCopyFeedbackOn, triggerCopyFeedback } = (function useClosure() {
         const [isCopyFeedbackOn, setIsCopyFeedbackOn] = useState(false);
@@ -208,7 +246,6 @@ export const LauncherMainCard = memo((props: Props) => {
                     <TextField
                         label={t("friendly name")}
                         defaultValue={friendlyName}
-                        doOnlyValidateInputAfterFistFocusLost={false}
                         selectAllTextOnFocus={true}
                         inputProps_spellCheck={false}
                         onValueBeingTypedChange={onValueBeingTypedChange}
@@ -249,6 +286,92 @@ export const LauncherMainCard = memo((props: Props) => {
                             ))}
                         </Select>
                     </FormControl>
+
+                    {s3ConfigsSelect !== undefined && (
+                        <FormControl
+                            variant="standard"
+                            className={classes.versionSelectWrapper}
+                        >
+                            <InputLabel id={s3ConfigInputLabelId}>
+                                S3 Configuration&nbsp;
+                                <Tooltip
+                                    title={
+                                        <>
+                                            You can manage your S3 configurations&nbsp;
+                                            <MuiLink
+                                                {...s3ConfigsSelect.projectS3ConfigLink}
+                                            >
+                                                here
+                                            </MuiLink>
+                                        </>
+                                    }
+                                >
+                                    <Icon
+                                        className={classes.versionSelectHelpIcon}
+                                        icon={id<MuiIconComponentName>("Help")}
+                                        size="small"
+                                    />
+                                </Tooltip>
+                            </InputLabel>
+                            <Select
+                                labelId={s3ConfigInputLabelId}
+                                value={(() => {
+                                    switch (s3ConfigsSelect.selectedOption.type) {
+                                        case "custom":
+                                            return `${s3ConfigsSelect.selectedOption.customS3ConfigIndex}`;
+                                        case "sts":
+                                            return "sts";
+                                        case "manual form input":
+                                            return "manual form input";
+                                    }
+                                })()}
+                                onChange={event => {
+                                    const { value } = event.target;
+                                    assert(typeof value === "string");
+
+                                    if (value === "sts") {
+                                        s3ConfigsSelect.onSelectedS3ConfigChange({
+                                            "type": "default"
+                                        });
+                                        return;
+                                    }
+
+                                    const customS3ConfigIndex = parseInt(value);
+
+                                    s3ConfigsSelect.onSelectedS3ConfigChange({
+                                        "type": "custom",
+                                        customS3ConfigIndex
+                                    });
+                                }}
+                            >
+                                {s3ConfigsSelect.selectedOption.type ===
+                                    "manual form input" && (
+                                    <MenuItem disabled value="manual form input">
+                                        &nbsp;
+                                    </MenuItem>
+                                )}
+
+                                {s3ConfigsSelect.options.map(
+                                    ({
+                                        accountFriendlyName,
+                                        customConfigIndex,
+                                        dataSource
+                                    }) => (
+                                        <MenuItem
+                                            key={customConfigIndex ?? "_"}
+                                            value={`${customConfigIndex ?? "sts"}`}
+                                        >
+                                            {dataSource}
+                                            {accountFriendlyName !== undefined
+                                                ? ` - ${accountFriendlyName}`
+                                                : ""}
+                                        </MenuItem>
+                                    )
+                                )}
+                            </Select>
+                        </FormControl>
+                    )}
+
                     {isSharedWrap !== undefined && (
                         <FormControl className={classes.isSharedWrapper}>
                             <FormControlLabel
@@ -292,7 +415,7 @@ export const LauncherMainCard = memo((props: Props) => {
             </div>
         </div>
     );
-});
+}, same);
 
 LauncherMainCard.displayName = symToStr({ LauncherMainCard });
 

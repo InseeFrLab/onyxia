@@ -2,13 +2,16 @@ import MuiLink from "@mui/material/Link";
 import type { Translations } from "../types";
 import { Markdown } from "ui/shared/Markdown";
 import { elementsToSentence } from "ui/tools/elementsToSentence";
+import { Icon } from "onyxia-ui/Icon";
+import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
+import { id } from "tsafe/id";
 
 export const translations: Translations<"fi"> = {
     "Account": {
         "infos": "Tilin tiedot",
         "third-party-integration": "Kolmannen osapuolen integraatio",
         "storage": "Yhdistä tallennustilaan",
-        "k8sCredentials": "Kubernetes",
+        "k8sCodeSnippets": "Kubernetes",
         "user-interface": "Käyttöliittymän asetukset",
         "text1": "Oma tili",
         "text2": "Pääset käsiksi erilaisiin tilin tietoihin.",
@@ -23,11 +26,7 @@ export const translations: Translations<"fi"> = {
         "user id": "Käyttäjätunnus (IDEP)",
         "full name": "Koko nimi",
         "email": "Sähköpostiosoite",
-        "change account info": "Muuta tilin tietoja (esim. salasanaa).",
-        "auth information": "Onyxia-autentikointitiedot",
-        "auth information helper": `Nämä tiedot mahdollistavat sinun tunnistautumisen
-            alustalla ja eri palveluissa.`,
-        "ip address": "IP-osoite"
+        "change account info": "Muuta tilin tietoja (esim. salasanaa)."
     },
     "AccountIntegrationsTab": {
         "git section title": "Git-konfiguraatio",
@@ -99,6 +98,111 @@ export const translations: Translations<"fi"> = {
         ),
         "expires in": ({ howMuchTime }) => `Pääte vanhenee ${howMuchTime} kuluttua`
     },
+    "ProjectSettings": {
+        "page header title": "Projektiasetukset",
+        "page header help title": ({ groupProjectName }) =>
+            groupProjectName === undefined
+                ? "Henkilökohtaisen projektisi asetukset"
+                : `Asetukset "${groupProjectName}"`,
+        "page header help content": ({
+            groupProjectName,
+            doesUserBelongToSomeGroupProject
+        }) => (
+            <>
+                Tällä sivulla voit määrittää asetuksia, jotka koskevat
+                {groupProjectName === undefined
+                    ? " henkilökohtaista projektiasi"
+                    : ` ${groupProjectName} projektia`}
+                .
+                <br />
+                {groupProjectName !== undefined && (
+                    <>
+                        Huomaa, että {groupProjectName} on ryhmäprojekti, joka on jaettu
+                        muiden käyttäjien kanssa; tällä sivulla tekemäsi muutokset
+                        koskevat kaikkia projektin jäseniä.
+                        <br />
+                    </>
+                )}
+                {doesUserBelongToSomeGroupProject && (
+                    <>
+                        Voit vaihtaa projekteja käyttämällä pudotusvalikkoa
+                        otsikkopalkissa.
+                        <br />
+                    </>
+                )}
+                Huomaa, että vain Onyxia-instanssisi ylläpitäjä voi luoda uusia
+                projekteja.
+            </>
+        ),
+        "security-info": "Turvallisuustiedot",
+        "s3-configs": "S3-konfiguraatiot"
+    },
+    "AddCustomS3ConfigDialog": {
+        "dialog title": "Uusi mukautettu S3-kokoonpano",
+        "dialog subtitle":
+            "Määritä mukautettu palvelutili tai yhdistä toiseen S3-yhteensopivaan palveluun",
+        "test connection": "Testaa yhteys",
+        "test connection failed": ({ errorMessage }) => (
+            <>
+                Yhteystestaus epäonnistui virheellä: <br />
+                {errorMessage}
+            </>
+        ),
+        "cancel": "Peruuta",
+        "save config": "Tallenna kokoonpano",
+        "update config": "Päivitä kokoonpano",
+        "is required": "Tämä kenttä on pakollinen",
+        "must be an url": "Ei ole kelvollinen URL-osoite",
+        "not a valid access key id": "Tämä ei näytä kelvolliselta pääsyavain-ID:ltä",
+        "url textField label": "URL",
+        "url textField helper text": "S3-palvelun URL-osoite",
+        "region textField label": "AWS S3-alue",
+        "region textField helper text":
+            "Esimerkki: eu-west-1, jos epävarma, jätä tyhjäksi",
+        "workingDirectoryPath textField label": "Työkansion polku",
+        "workingDirectoryPath textField helper text": (
+            <>
+                Tämän avulla voit määrittää ämpärin ja S3-objektin etuliitteen, joka
+                sinulla on S3-palvelussa. <br />
+                Esimerkki: <code>minun-ämpäri/etuliitteeni/</code> tai{" "}
+                <code>vain minun-ämpäri/</code> jos omistat koko ämpärin.
+            </>
+        ),
+        "account credentials": "Tilin tunnistetiedot",
+        "accountFriendlyName textField label": "Tilin ystävällinen nimi",
+        "accountFriendlyName textField helper text":
+            "Tämä on vain avuksi tilin tunnistamisessa. Esimerkki: Oma henkilökohtainen tili",
+        "accessKeyId textField label": "Pääsyavaimen tunnus",
+        "accessKeyId textField helper text": "Esimerkki: 1A2B3C4D5E6F7G8H9I0J",
+        "secretAccessKey textField label": "Salainen pääsyavain",
+        "sessionToken textField label": "Istuntotunnus",
+        "sessionToken textField helper text": "Valinnainen, jätä tyhjäksi, jos epävarma",
+        "url style": "URL-tyyli",
+        "url style helper text": `Määritä, miten S3-palvelimesi muotoilee tiedostojen lataamisen URL-osoitteita.`,
+        "path style label": ({ example }) => (
+            <>
+                Polkutyyli
+                {example !== undefined && (
+                    <>
+                        :&nbsp;
+                        <code>{example}tietoaineisto.parquet</code>
+                    </>
+                )}
+            </>
+        ),
+        "virtual-hosted style label": ({ example }) => (
+            <>
+                Virtual-hosted tyyli
+                {example !== undefined && (
+                    <>
+                        :&nbsp;
+                        <code>{example}tietoaineisto.parquet</code>
+                    </>
+                )}
+            </>
+        )
+    },
+
     "AccountUserInterfaceTab": {
         "title": "Käyttöliittymän asetukset",
         "enable dark mode": "Ota tumma tila käyttöön",
@@ -119,12 +223,33 @@ export const translations: Translations<"fi"> = {
             </>
         )
     },
-    "AccountField": {
+    "SettingField": {
         "copy tooltip": "Kopioi leikepöydälle",
         "language": "Vaihda kieltä",
-        "service password": "Salasana palveluillesi",
-        "service password helper text": `Tämä salasana vaaditaan kirjautumiseen kaikkiin palveluihisi.
-            Se generoidaan automaattisesti ja uusiutuu säännöllisesti.`,
+        "service password": "Oletuspalvelusalasana",
+        "service password helper text": ({ groupProjectName }) => (
+            <>
+                Tämä on oletussalasana, jota käytetään suojaamaan käynnissä olevat
+                palvelusi. <br />
+                Kun käynnistät palvelun, turvallisuusvälilehden salasanakenttä täytetään
+                automaattisesti tällä salasanalla. <br />
+                Napsauttamalla{" "}
+                <Icon
+                    size="extra small"
+                    icon={id<MuiIconComponentName>("Refresh")}
+                />{" "}
+                -kuvaketta luodaan uusi satunnainen salasana. Huomaa kuitenkin, että se ei
+                päivitä salasanaa palveluille, jotka ovat parhaillaan käynnissä. <br />
+                Palvelusalasana on se, jonka Onyxia pyytää sinua kopioimaan
+                leikepöydällesi ennen käynnissä olevan palvelun käyttöä. <br />
+                {groupProjectName !== undefined && (
+                    <>
+                        Huomaa, että tämä salasana jaetaan kaikkien projektin (
+                        {groupProjectName}) jäsenten kesken.
+                    </>
+                )}
+            </>
+        ),
         "not yet defined": "Ei vielä määritelty",
         "reset helper dialogs": "Nollaa ohjeikkunat",
         "reset": "Nollaa",
@@ -148,6 +273,13 @@ export const translations: Translations<"fi"> = {
                 <MuiLink {...accountTabLink}>Määritä Minio-asiakkaat</MuiLink>.
             </>
         )
+    },
+    "MyFilesDisabledDialog": {
+        "dialog title": "S3-palvelinta ei ole määritetty",
+        "dialog body":
+            "Tälle instanssille ei ole määritetty S3-palvelinta. Voit kuitenkin lisätä sellaisen manuaalisesti ottaaksesi käyttöön S3-tiedostonhallinnan.",
+        "cancel": "Peruuta",
+        "go to settings": "Siirry asetuksiin"
     },
     "MySecrets": {
         "page title - my files": "Omat tiedostot",
@@ -298,6 +430,7 @@ export const translations: Translations<"fi"> = {
         "reduce": "Pienennä",
         "home": "Koti",
         "account": "Oma tili",
+        "projectSettings": "Projektin asetukset",
         "catalog": "Palvelukatalogi",
         "myServices": "Omat palvelut",
         "mySecrets": "Omat salaisuudet",
@@ -315,6 +448,15 @@ export const translations: Translations<"fi"> = {
     "PortraitModeUnsupported": {
         "instructions":
             "Voit käyttää tätä sovellusta puhelimellasi ottamalla käyttöön kääntöanturin ja kääntämällä puhelimesi."
+    },
+    "MaybeAcknowledgeConfigVolatilityDialog": {
+        "dialog title": "Huomio, asetukset ovat epävakaita",
+        "dialog body": `Tämä Onyxia-instanssi ei toteuta mitään pysyvyyteen liittyvää mekanismia asetusten tallentamiseksi. 
+            Kaikki asetukset tallennetaan selaimen paikalliseen muistiin. Tämä tarkoittaa, että jos tyhjennät selaimesi paikallisen 
+            muistin tai vaihdat selainta, menetät kaikki asetuksesi.`,
+        "do not show next time": "Älä näytä tätä viestiä uudelleen",
+        "cancel": "Peruuta",
+        "I understand": "Ymmärrän"
     },
     "Home": {
         "title authenticated": ({ userFirstname }) => `Tervetuloa, ${userFirstname}!`,
@@ -581,9 +723,6 @@ Tutustu vapaasti ja ota hallintaan Kubernetes-julkaisusi!
         "open": "avata",
         "readme": "lueminut",
         "shared by you": "Jaettu sinun kanssasi",
-        "which token expire when": ({ which, howMuchTime }) =>
-            `The ${which} token expires ${howMuchTime}.`,
-        "which token expired": ({ which }) => `The ${which} token is expired.`,
         "reminder to delete services": "Muista poistaa palvelusi.",
         "this is a shared service": "Tämä palvelu on jaettu projektin jäsenten kesken"
     },
