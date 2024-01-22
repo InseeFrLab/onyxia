@@ -143,13 +143,6 @@ export const translations: Translations<"en"> = {
         "dialog title": "New custom S3 configuration",
         "dialog subtitle":
             "Specify a custom service account or connect to another S3 compatible service",
-        "test connection": "Test connection",
-        "test connection failed": ({ errorMessage }) => (
-            <>
-                Test connection failed with error: <br />
-                {errorMessage}
-            </>
-        ),
         "cancel": "Cancel",
         "save config": "Save configuration",
         "update config": "Update configuration",
@@ -200,6 +193,15 @@ export const translations: Translations<"en"> = {
                         <code>{example}my-dataset.parquet</code>
                     </>
                 )}
+            </>
+        )
+    },
+    "TestS3ConnectionButton": {
+        "test connection": "Test connection",
+        "test connection failed": ({ errorMessage }) => (
+            <>
+                Test connection failed with error: <br />
+                {errorMessage}
             </>
         )
     },

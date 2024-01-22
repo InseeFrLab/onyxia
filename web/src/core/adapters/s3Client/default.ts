@@ -311,6 +311,7 @@ export function createS3Client(params: ParamsOfCreateS3Client): S3Client {
                     out.files.push(bucketItem.name.replace(prefix, ""));
                 }
             });
+            stream.once("error", error => dOut.reject(new Error(String(error))));
 
             const dOut = new Deferred<typeof out>();
 

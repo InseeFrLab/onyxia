@@ -145,13 +145,6 @@ export const translations: Translations<"no"> = {
         "dialog title": "Ny tilpasset S3-konfigurasjon",
         "dialog subtitle":
             "Angi en tilpasset tjenestekonto eller koble til en annen S3-kompatibel tjeneste",
-        "test connection": "Test forbindelse",
-        "test connection failed": ({ errorMessage }) => (
-            <>
-                Test av forbindelse feilet med feil: <br />
-                {errorMessage}
-            </>
-        ),
         "cancel": "Avbryt",
         "save config": "Lagre konfigurasjon",
         "update config": "Oppdater konfigurasjon",
@@ -202,6 +195,15 @@ export const translations: Translations<"no"> = {
                         <code>{example}mitt-datasett.parquet</code>
                     </>
                 )}
+            </>
+        )
+    },
+    "TestS3ConnectionButton": {
+        "test connection": "Test forbindelse",
+        "test connection failed": ({ errorMessage }) => (
+            <>
+                Test av forbindelse feilet med feil: <br />
+                {errorMessage}
             </>
         )
     },

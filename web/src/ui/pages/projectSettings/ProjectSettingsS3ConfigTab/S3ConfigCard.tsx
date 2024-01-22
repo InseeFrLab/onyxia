@@ -4,6 +4,8 @@ import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
 import { id } from "tsafe/id";
 import { Button } from "onyxia-ui/Button";
 import { tss } from "tss";
+import type { ConnectionTestStatus } from "core/usecases/s3ConfigManagement";
+import { TestS3ConnectionButton } from "./TestS3ConnectionButton";
 
 type Props = {
     className?: string;
@@ -17,6 +19,8 @@ type Props = {
     onIsUsedForXOnyxiaValueChange: ((isUsed: boolean) => void) | undefined;
     onEdit: (() => void) | undefined;
     doHideUsageSwitches: boolean;
+    connectionTestStatus: ConnectionTestStatus | undefined;
+    onTestConnection: (() => void) | undefined;
 };
 
 export function S3ConfigCard(props: Props) {
@@ -31,7 +35,9 @@ export function S3ConfigCard(props: Props) {
         onIsUsedForExplorerValueChange,
         onIsUsedForXOnyxiaValueChange,
         doHideUsageSwitches,
-        onEdit
+        onEdit,
+        connectionTestStatus,
+        onTestConnection
     } = props;
 
     const { classes, cx } = useStyles();
@@ -106,6 +112,12 @@ export function S3ConfigCard(props: Props) {
                 >
                     Edit
                 </Button>
+            )}
+            {connectionTestStatus !== undefined && (
+                <TestS3ConnectionButton
+                    connectionTestStatus={connectionTestStatus}
+                    onTestConnection={onTestConnection}
+                />
             )}
         </div>
     );

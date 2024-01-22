@@ -130,13 +130,6 @@ export const translations: Translations<"zh-CN"> = {
     "AddCustomS3ConfigDialog": {
         "dialog title": "新的自定义 S3 配置",
         "dialog subtitle": "指定自定义服务账户或连接到另一个兼容 S3 的服务",
-        "test connection": "测试连接",
-        "test connection failed": ({ errorMessage }) => (
-            <>
-                测试连接失败，错误信息： <br />
-                {errorMessage}
-            </>
-        ),
         "cancel": "取消",
         "save config": "保存配置",
         "update config": "更新配置",
@@ -186,6 +179,15 @@ export const translations: Translations<"zh-CN"> = {
                         <code>{example}我的数据集.parquet</code>
                     </>
                 )}
+            </>
+        )
+    },
+    "TestS3ConnectionButton": {
+        "test connection": "测试连接",
+        "test connection failed": ({ errorMessage }) => (
+            <>
+                测试连接失败，错误信息： <br />
+                {errorMessage}
             </>
         )
     },

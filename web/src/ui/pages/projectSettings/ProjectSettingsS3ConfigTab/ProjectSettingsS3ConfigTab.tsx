@@ -124,6 +124,17 @@ export const ProjectSettingsS3ConfigTab = memo((props: Props) => {
                             s3Config.accountFriendlyName === undefined &&
                             s3Configs.length === 1
                         }
+                        connectionTestStatus={s3Config.connectionTestStatus}
+                        onTestConnection={(() => {
+                            const { customConfigIndex } = s3Config;
+
+                            if (customConfigIndex === undefined) {
+                                return undefined;
+                            }
+
+                            return () =>
+                                s3ConfigManagement.testConnection({ customConfigIndex });
+                        })()}
                     />
                 ))}
                 <S3ConfigDialogs

@@ -143,13 +143,6 @@ export const translations: Translations<"nl"> = {
         "dialog title": "Nieuwe aangepaste S3-configuratie",
         "dialog subtitle":
             "Specificeer een aangepast serviceaccount of verbind met een andere S3-compatibele service",
-        "test connection": "Verbinding testen",
-        "test connection failed": ({ errorMessage }) => (
-            <>
-                Verbindingstest mislukt met fout: <br />
-                {errorMessage}
-            </>
-        ),
         "cancel": "Annuleren",
         "save config": "Configuratie opslaan",
         "update config": "Configuratie bijwerken",
@@ -202,6 +195,15 @@ export const translations: Translations<"nl"> = {
                         <code>{example}mijn-dataset.parquet</code>
                     </>
                 )}
+            </>
+        )
+    },
+    "TestS3ConnectionButton": {
+        "test connection": "Verbinding testen",
+        "test connection failed": ({ errorMessage }) => (
+            <>
+                Verbindingstest mislukt met fout: <br />
+                {errorMessage}
             </>
         )
     },

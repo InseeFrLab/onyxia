@@ -101,8 +101,8 @@ export const { reducer, actions } = createUsecaseActions({
         "connectionTestSucceeded": state => {
             assert(state.stateDescription === "ready");
 
-            state.connectionTestStatus = id<ConnectionTestStatus.Valid>({
-                "stateDescription": "valid",
+            state.connectionTestStatus = id<ConnectionTestStatus.Success>({
+                "stateDescription": "success",
                 "isTestOngoing": false
             });
         },
@@ -112,8 +112,8 @@ export const { reducer, actions } = createUsecaseActions({
         ) => {
             assert(state.stateDescription === "ready");
 
-            state.connectionTestStatus = id<ConnectionTestStatus.Invalid>({
-                "stateDescription": "invalid",
+            state.connectionTestStatus = id<ConnectionTestStatus.Failed>({
+                "stateDescription": "failed",
                 "isTestOngoing": false,
                 "errorMessage": payload.errorMessage
             });

@@ -141,13 +141,6 @@ export const translations: Translations<"fi"> = {
         "dialog title": "Uusi mukautettu S3-kokoonpano",
         "dialog subtitle":
             "Määritä mukautettu palvelutili tai yhdistä toiseen S3-yhteensopivaan palveluun",
-        "test connection": "Testaa yhteys",
-        "test connection failed": ({ errorMessage }) => (
-            <>
-                Yhteystestaus epäonnistui virheellä: <br />
-                {errorMessage}
-            </>
-        ),
         "cancel": "Peruuta",
         "save config": "Tallenna kokoonpano",
         "update config": "Päivitä kokoonpano",
@@ -202,7 +195,15 @@ export const translations: Translations<"fi"> = {
             </>
         )
     },
-
+    "TestS3ConnectionButton": {
+        "test connection": "Testaa yhteys",
+        "test connection failed": ({ errorMessage }) => (
+            <>
+                Yhteystestaus epäonnistui virheellä: <br />
+                {errorMessage}
+            </>
+        )
+    },
     "AccountUserInterfaceTab": {
         "title": "Käyttöliittymän asetukset",
         "enable dark mode": "Ota tumma tila käyttöön",

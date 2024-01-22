@@ -146,13 +146,6 @@ export const translations: Translations<"fr"> = {
         "dialog title": "Nouvelle configuration S3 personnalisée",
         "dialog subtitle":
             "Spécifiez un compte de service personnalisé ou connectez-vous à un autre service compatible S3",
-        "test connection": "Tester la connexion",
-        "test connection failed": ({ errorMessage }) => (
-            <>
-                Échec du test de connexion avec l'erreur : <br />
-                {errorMessage}
-            </>
-        ),
         "cancel": "Annuler",
         "save config": "Enregistrer la configuration",
         "update config": "Mettre à jour la configuration",
@@ -209,7 +202,15 @@ export const translations: Translations<"fr"> = {
             </>
         )
     },
-
+    "TestS3ConnectionButton": {
+        "test connection": "Tester la connexion",
+        "test connection failed": ({ errorMessage }) => (
+            <>
+                Échec du test de connexion avec l'erreur : <br />
+                {errorMessage}
+            </>
+        )
+    },
     "AccountUserInterfaceTab": {
         "title": "Configurer le mode d'interface",
         "enable dark mode": "Activer le mode sombre",

@@ -14,14 +14,9 @@ import FormLabel from "@mui/material/FormLabel";
 import FormGroup from "@mui/material/FormGroup";
 import { tss } from "tss";
 import { useCore, useCoreState } from "core";
-import { CircularProgress } from "onyxia-ui/CircularProgress";
-import { Icon } from "onyxia-ui/Icon";
-import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
-import { id } from "tsafe/id";
-import { assert, type Equals } from "tsafe/assert";
-import Tooltip from "@mui/material/Tooltip";
 import { declareComponentKeys, useTranslation } from "ui/i18n";
 import { Text } from "onyxia-ui/Text";
+import { TestS3ConnectionButton } from "../TestS3ConnectionButton";
 
 export type Props = {
     evtOpen: NonPostableEvt<{
@@ -115,49 +110,12 @@ const Buttons = memo((props: ButtonsProps) => {
 
     return (
         <>
-            <div>
-                <Button
-                    variant="secondary"
-                    onClick={() => s3ConfigCreation.testConnection()}
-                    disabled={!isFormSubmittable}
-                >
-                    {t("test connection")}
-                </Button>
-                {(() => {
-                    if (connectionTestStatus.isTestOngoing) {
-                        return <CircularProgress />;
-                    }
-
-                    switch (connectionTestStatus.stateDescription) {
-                        case "not tested yet":
-                            return null;
-                        case "valid":
-                            return (
-                                <Icon icon={id<MuiIconComponentName>("DoneOutline")} />
-                            );
-                        case "invalid":
-                            return (
-                                <>
-                                    <Icon
-                                        icon={id<MuiIconComponentName>("ErrorOutline")}
-                                    />
-                                    <Tooltip
-                                        title={t("test connection failed", {
-                                            "errorMessage":
-                                                connectionTestStatus.errorMessage
-                                        })}
-                                    >
-                                        <Icon
-                                            icon={id<MuiIconComponentName>("Help")}
-                                            size="small"
-                                        />
-                                    </Tooltip>
-                                </>
-                            );
-                    }
-                    assert<Equals<typeof connectionTestStatus, never>>(false);
-                })()}
-            </div>
+            <TestS3ConnectionButton
+                connectionTestStatus={connectionTestStatus}
+                onTestConnection={
+                    !isFormSubmittable ? undefined : s3ConfigCreation.testConnection
+                }
+            />
             <div className={css({ "flex": 1 })} />
             <Button onClick={onCloseCancel} variant="secondary">
                 {t("cancel")}
@@ -384,12 +342,6 @@ const useBodyStyles = tss
 export const { i18n } = declareComponentKeys<
     | "dialog title"
     | "dialog subtitle"
-    | "test connection"
-    | {
-          K: "test connection failed";
-          P: { errorMessage: string };
-          R: JSX.Element;
-      }
     | "cancel"
     | "save config"
     | "update config"

@@ -144,13 +144,6 @@ export const translations: Translations<"de"> = {
         "dialog title": "Neue benutzerdefinierte S3-Konfiguration",
         "dialog subtitle":
             "Geben Sie ein benutzerdefiniertes Dienstkonto an oder verbinden Sie sich mit einem anderen S3-kompatiblen Dienst",
-        "test connection": "Verbindung testen",
-        "test connection failed": ({ errorMessage }) => (
-            <>
-                Verbindungstest fehlgeschlagen mit Fehler: <br />
-                {errorMessage}
-            </>
-        ),
         "cancel": "Abbrechen",
         "save config": "Konfiguration speichern",
         "update config": "Konfiguration aktualisieren",
@@ -202,6 +195,15 @@ export const translations: Translations<"de"> = {
                         <code>{example}meine-daten.parquet</code>
                     </>
                 )}
+            </>
+        )
+    },
+    "TestS3ConnectionButton": {
+        "test connection": "Verbindung testen",
+        "test connection failed": ({ errorMessage }) => (
+            <>
+                Verbindungstest fehlgeschlagen mit Fehler: <br />
+                {errorMessage}
             </>
         )
     },

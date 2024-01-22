@@ -1,3 +1,4 @@
+import type { State as RootState } from "core/bootstrap";
 import { createSelector } from "redux-clean-architecture";
 import * as projectManagement from "core/usecases/projectManagement";
 import * as deploymentRegionManagement from "core/usecases/deploymentRegionManagement";
@@ -5,6 +6,9 @@ import * as userAuthentication from "core/usecases/userAuthentication";
 import { assert, type Equals } from "tsafe/assert";
 import { bucketNameAndObjectNameFromS3Path } from "core/adapters/s3Client/utils/bucketNameAndObjectNameFromS3Path";
 import { id } from "tsafe/id";
+import { name, type ConnectionTestStatus } from "./state";
+
+const state = (rootState: RootState) => rootState[name];
 
 const projectS3Config = createSelector(
     projectManagement.protectedSelectors.currentProjectConfigs,
@@ -66,7 +70,8 @@ const s3Configs = createSelector(
     baseS3Config,
     projectS3Config,
     deploymentRegionManagement.selectors.currentDeploymentRegion,
-    (baseS3Config, projectS3Config, deploymentRegion) => {
+    state,
+    (baseS3Config, projectS3Config, deploymentRegion, state) => {
         function getDataSource(params: {
             url: string;
             pathStyleAccess: boolean;
@@ -100,7 +105,10 @@ const s3Configs = createSelector(
                 customS3Config.accountFriendlyName
             ),
             "isUsedForXOnyxia": projectS3Config.indexForXOnyxia === index,
-            "isUsedForExplorer": projectS3Config.indexForExplorer === index
+            "isUsedForExplorer": projectS3Config.indexForExplorer === index,
+            "connectionTestStatus": id<ConnectionTestStatus | undefined>(
+                state.connectionTestStatuses[index]
+            )
         }));
 
         if (deploymentRegion.s3?.sts !== undefined) {
@@ -118,7 +126,8 @@ const s3Configs = createSelector(
                     undefined,
                 "isUsedForExplorer":
                     s3Configs.find(({ isUsedForExplorer }) => isUsedForExplorer) ===
-                    undefined
+                    undefined,
+                "connectionTestStatus": undefined
             });
         }
 

@@ -11,8 +11,8 @@ type State = {
 
 export type ConnectionTestStatus =
     | ConnectionTestStatus.NotTestedYet
-    | ConnectionTestStatus.Valid
-    | ConnectionTestStatus.Invalid;
+    | ConnectionTestStatus.Success
+    | ConnectionTestStatus.Failed;
 
 export namespace ConnectionTestStatus {
     type Common = {
@@ -23,12 +23,12 @@ export namespace ConnectionTestStatus {
         stateDescription: "not tested yet";
     };
 
-    export type Valid = Common & {
-        stateDescription: "valid";
+    export type Success = Common & {
+        stateDescription: "success";
     };
 
-    export type Invalid = Common & {
-        stateDescription: "invalid";
+    export type Failed = Common & {
+        stateDescription: "failed";
         errorMessage: string;
     };
 }
@@ -134,9 +134,9 @@ export const { actions, reducer } = createUsecaseActions({
             const { customConfigIndex } = payload;
 
             state.connectionTestStatuses[customConfigIndex] =
-                id<ConnectionTestStatus.Valid>({
+                id<ConnectionTestStatus.Success>({
                     "isTestOngoing": false,
-                    "stateDescription": "valid"
+                    "stateDescription": "success"
                 });
         },
         "connectionTestFailed": (
@@ -153,9 +153,9 @@ export const { actions, reducer } = createUsecaseActions({
             const { customConfigIndex, errorMessage } = payload;
 
             state.connectionTestStatuses[customConfigIndex] =
-                id<ConnectionTestStatus.Invalid>({
+                id<ConnectionTestStatus.Failed>({
                     "isTestOngoing": false,
-                    "stateDescription": "invalid",
+                    "stateDescription": "failed",
                     errorMessage
                 });
         }
