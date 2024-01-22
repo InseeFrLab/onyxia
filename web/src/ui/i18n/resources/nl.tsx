@@ -139,6 +139,9 @@ export const translations: Translations<"nl"> = {
         "security-info": "Veiligheidsinformatie",
         "s3-configs": "S3-configuraties"
     },
+    "ProjectSettingsS3ConfigTab": {
+        "add custom config": "Voeg een aangepaste S3-configuratie toe"
+    },
     "S3ConfigCard": {
         "data source": "Gegevensbron",
         "credentials": "Inloggegevens",

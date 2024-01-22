@@ -141,6 +141,9 @@ export const translations: Translations<"no"> = {
         "security-info": "Sikkerhetsinformasjon",
         "s3-configs": "S3-konfigurasjoner"
     },
+    "ProjectSettingsS3ConfigTab": {
+        "add custom config": "Legg til en tilpasset S3-konfigurasjon"
+    },
     "S3ConfigCard": {
         "data source": "Datakilde",
         "credentials": "Legitimasjon",

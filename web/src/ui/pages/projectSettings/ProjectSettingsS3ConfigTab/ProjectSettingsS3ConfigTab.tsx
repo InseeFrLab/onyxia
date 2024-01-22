@@ -13,6 +13,7 @@ import {
     type MaybeAcknowledgeConfigVolatilityDialogProps
 } from "ui/shared/MaybeAcknowledgeConfigVolatilityDialog";
 import { Deferred } from "evt/tools/Deferred";
+import { declareComponentKeys, useTranslation } from "ui/i18n";
 
 export type Props = {
     className?: string;
@@ -45,6 +46,8 @@ export const ProjectSettingsS3ConfigTab = memo((props: Props) => {
     const { s3ConfigManagement } = useCore().functions;
 
     const { classes, css, theme } = useStyles();
+
+    const { t } = useTranslation({ ProjectSettingsS3ConfigTab });
 
     return (
         <>
@@ -164,7 +167,7 @@ export const ProjectSettingsS3ConfigTab = memo((props: Props) => {
                         });
                     }}
                 >
-                    Add a custom S3 configuration
+                    {t("add custom config")}
                 </Button>
                 <S3ConfigDialogs
                     evtConfirmCustomS3ConfigDeletionDialogOpen={
@@ -192,3 +195,7 @@ const useStyles = tss.withName({ ProjectSettingsS3ConfigTab }).create(({ theme }
         "flexBasis": `calc(50% - ${theme.spacing(3) / 2}px)`
     }
 }));
+
+export const { i18n } = declareComponentKeys<"add custom config">()({
+    ProjectSettingsS3ConfigTab
+});

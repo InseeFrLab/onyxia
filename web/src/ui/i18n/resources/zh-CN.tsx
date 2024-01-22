@@ -127,6 +127,9 @@ export const translations: Translations<"zh-CN"> = {
         "security-info": "安全信息",
         "s3-configs": "S3 配置"
     },
+    "ProjectSettingsS3ConfigTab": {
+        "add custom config": "添加自定义S3配置"
+    },
     "S3ConfigCard": {
         "data source": "数据源",
         "credentials": "凭证",

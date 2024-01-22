@@ -138,6 +138,9 @@ export const translations: Translations<"fi"> = {
         "security-info": "Turvallisuustiedot",
         "s3-configs": "S3-konfiguraatiot"
     },
+    "ProjectSettingsS3ConfigTab": {
+        "add custom config": "Lisää mukautettu S3-kokoonpano"
+    },
     "S3ConfigCard": {
         "data source": "Tietolähde",
         "credentials": "Tunnistetiedot",
