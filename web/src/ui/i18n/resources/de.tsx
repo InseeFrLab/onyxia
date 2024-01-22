@@ -141,34 +141,69 @@ export const translations: Translations<"de"> = {
         "s3-configs": "S3-Konfigurationen"
     },
     "AddCustomS3ConfigDialog": {
-        "dialog title": undefined,
-        "dialog subtitle": undefined,
-        "test connection": undefined,
-        "test connection failed": undefined,
-        "cancel": undefined,
-        "save config": undefined,
-        "update config": undefined,
-        "is required": undefined,
-        "must be an url": undefined,
-        "not a valid access key id": undefined,
-        "url textField label": undefined,
-        "url textField helper text": undefined,
-        "region textField label": undefined,
-        "region textField helper text": undefined,
-        "workingDirectoryPath textField label": undefined,
-        "workingDirectoryPath textField helper text": undefined,
-        "account credentials": undefined,
-        "accountFriendlyName textField label": undefined,
-        "accountFriendlyName textField helper text": undefined,
-        "accessKeyId textField label": undefined,
-        "accessKeyId textField helper text": undefined,
-        "secretAccessKey textField label": undefined,
-        "sessionToken textField label": undefined,
-        "sessionToken textField helper text": undefined,
-        "url style": undefined,
-        "url style helper text": undefined,
-        "path style label": undefined,
-        "virtual-hosted style label": undefined
+        "dialog title": "Neue benutzerdefinierte S3-Konfiguration",
+        "dialog subtitle":
+            "Geben Sie ein benutzerdefiniertes Dienstkonto an oder verbinden Sie sich mit einem anderen S3-kompatiblen Dienst",
+        "test connection": "Verbindung testen",
+        "test connection failed": ({ errorMessage }) => (
+            <>
+                Verbindungstest fehlgeschlagen mit Fehler: <br />
+                {errorMessage}
+            </>
+        ),
+        "cancel": "Abbrechen",
+        "save config": "Konfiguration speichern",
+        "update config": "Konfiguration aktualisieren",
+        "is required": "Dieses Feld ist erforderlich",
+        "must be an url": "Keine gültige URL",
+        "not a valid access key id":
+            "Das sieht nicht nach einer gültigen Zugangsschlüssel-ID aus",
+        "url textField label": "URL",
+        "url textField helper text": "URL des S3-Dienstes",
+        "region textField label": "AWS S3-Region",
+        "region textField helper text": "Beispiel: eu-west-1, wenn unsicher, leer lassen",
+        "workingDirectoryPath textField label": "Arbeitsverzeichnispfad",
+        "workingDirectoryPath textField helper text": (
+            <>
+                Hiermit können Sie den Bucket und das S3-Objektprefix angeben, das Sie im
+                S3-Dienst besitzen. <br />
+                Beispiel: <code>mein-bucket/mein-präfix/</code> oder{" "}
+                <code>nur mein-bucket/</code> wenn Sie den ganzen Bucket besitzen.
+            </>
+        ),
+        "account credentials": "Kontozugangsdaten",
+        "accountFriendlyName textField label": "Benutzerfreundlicher Kontoname",
+        "accountFriendlyName textField helper text":
+            "Dient nur zur Identifikation dieses Kontos. Beispiel: Mein persönliches Konto",
+        "accessKeyId textField label": "Zugangsschlüssel-ID",
+        "accessKeyId textField helper text": "Beispiel: 1A2B3C4D5E6F7G8H9I0J",
+        "secretAccessKey textField label": "Geheimer Zugangsschlüssel",
+        "sessionToken textField label": "Sitzungstoken",
+        "sessionToken textField helper text": "Optional, leer lassen, wenn unsicher",
+        "url style": "URL-Stil",
+        "url style helper text": `Geben Sie an, wie Ihr S3-Server die URL für das Herunterladen von Dateien formatiert.`,
+        "path style label": ({ example }) => (
+            <>
+                Pfadstil
+                {example !== undefined && (
+                    <>
+                        :&nbsp;
+                        <code>{example}meine-daten.parquet</code>
+                    </>
+                )}
+            </>
+        ),
+        "virtual-hosted style label": ({ example }) => (
+            <>
+                Virtual-hosted-Stil
+                {example !== undefined && (
+                    <>
+                        :&nbsp;
+                        <code>{example}meine-daten.parquet</code>
+                    </>
+                )}
+            </>
+        )
     },
     "AccountUserInterfaceTab": {
         "title": "Konfiguration der Benutzeroberfläche",

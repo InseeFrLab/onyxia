@@ -140,34 +140,70 @@ export const translations: Translations<"nl"> = {
         "s3-configs": "S3-configuraties"
     },
     "AddCustomS3ConfigDialog": {
-        "dialog title": undefined,
-        "dialog subtitle": undefined,
-        "test connection": undefined,
-        "test connection failed": undefined,
-        "cancel": undefined,
-        "save config": undefined,
-        "update config": undefined,
-        "is required": undefined,
-        "must be an url": undefined,
-        "not a valid access key id": undefined,
-        "url textField label": undefined,
-        "url textField helper text": undefined,
-        "region textField label": undefined,
-        "region textField helper text": undefined,
-        "workingDirectoryPath textField label": undefined,
-        "workingDirectoryPath textField helper text": undefined,
-        "account credentials": undefined,
-        "accountFriendlyName textField label": undefined,
-        "accountFriendlyName textField helper text": undefined,
-        "accessKeyId textField label": undefined,
-        "accessKeyId textField helper text": undefined,
-        "secretAccessKey textField label": undefined,
-        "sessionToken textField label": undefined,
-        "sessionToken textField helper text": undefined,
-        "url style": undefined,
-        "url style helper text": undefined,
-        "path style label": undefined,
-        "virtual-hosted style label": undefined
+        "dialog title": "Nieuwe aangepaste S3-configuratie",
+        "dialog subtitle":
+            "Specificeer een aangepast serviceaccount of verbind met een andere S3-compatibele service",
+        "test connection": "Verbinding testen",
+        "test connection failed": ({ errorMessage }) => (
+            <>
+                Verbindingstest mislukt met fout: <br />
+                {errorMessage}
+            </>
+        ),
+        "cancel": "Annuleren",
+        "save config": "Configuratie opslaan",
+        "update config": "Configuratie bijwerken",
+        "is required": "Dit veld is verplicht",
+        "must be an url": "Geen geldige URL",
+        "not a valid access key id": "Dit lijkt geen geldige toegangssleutel-ID te zijn",
+        "url textField label": "URL",
+        "url textField helper text": "URL van de S3-service",
+        "region textField label": "AWS S3 Regio",
+        "region textField helper text":
+            "Voorbeeld: eu-west-1, laat leeg indien niet zeker",
+        "workingDirectoryPath textField label": "Pad van werkdirectory",
+        "workingDirectoryPath textField helper text": (
+            <>
+                Hiermee kunt u de bucket en het S3-objectprefix specificeren dat u bezit
+                op de S3-service. <br />
+                Voorbeeld: <code>mijn-bucket/mijn-prefix/</code> of{" "}
+                <code>alleen mijn-bucket/</code> als u de hele bucket bezit.
+            </>
+        ),
+        "account credentials": "Accountgegevens",
+        "accountFriendlyName textField label": "Vriendelijke naam van het account",
+        "accountFriendlyName textField helper text":
+            "Dit is slechts om u te helpen dit account te identificeren. Voorbeeld: Mijn persoonlijke account",
+        "accessKeyId textField label": "Toegangssleutel-ID",
+        "accessKeyId textField helper text": "Voorbeeld: 1A2B3C4D5E6F7G8H9I0J",
+        "secretAccessKey textField label": "Geheime toegangssleutel",
+        "sessionToken textField label": "Sessietoken",
+        "sessionToken textField helper text":
+            "Optioneel, laat leeg als u het niet zeker weet",
+        "url style": "URL-stijl",
+        "url style helper text": `Specificeer hoe uw S3-server de URL formatteert voor het downloaden van bestanden.`,
+        "path style label": ({ example }) => (
+            <>
+                Padstijl
+                {example !== undefined && (
+                    <>
+                        :&nbsp;
+                        <code>{example}mijn-dataset.parquet</code>
+                    </>
+                )}
+            </>
+        ),
+        "virtual-hosted style label": ({ example }) => (
+            <>
+                Virtueel-gehoste stijl
+                {example !== undefined && (
+                    <>
+                        :&nbsp;
+                        <code>{example}mijn-dataset.parquet</code>
+                    </>
+                )}
+            </>
+        )
     },
     "AccountUserInterfaceTab": {
         "title": "De interfacemodus configureren",

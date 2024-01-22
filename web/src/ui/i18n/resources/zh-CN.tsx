@@ -128,34 +128,66 @@ export const translations: Translations<"zh-CN"> = {
         "s3-configs": "S3 配置"
     },
     "AddCustomS3ConfigDialog": {
-        "dialog title": undefined,
-        "dialog subtitle": undefined,
-        "test connection": undefined,
-        "test connection failed": undefined,
-        "cancel": undefined,
-        "save config": undefined,
-        "update config": undefined,
-        "is required": undefined,
-        "must be an url": undefined,
-        "not a valid access key id": undefined,
-        "url textField label": undefined,
-        "url textField helper text": undefined,
-        "region textField label": undefined,
-        "region textField helper text": undefined,
-        "workingDirectoryPath textField label": undefined,
-        "workingDirectoryPath textField helper text": undefined,
-        "account credentials": undefined,
-        "accountFriendlyName textField label": undefined,
-        "accountFriendlyName textField helper text": undefined,
-        "accessKeyId textField label": undefined,
-        "accessKeyId textField helper text": undefined,
-        "secretAccessKey textField label": undefined,
-        "sessionToken textField label": undefined,
-        "sessionToken textField helper text": undefined,
-        "url style": undefined,
-        "url style helper text": undefined,
-        "path style label": undefined,
-        "virtual-hosted style label": undefined
+        "dialog title": "新的自定义 S3 配置",
+        "dialog subtitle": "指定自定义服务账户或连接到另一个兼容 S3 的服务",
+        "test connection": "测试连接",
+        "test connection failed": ({ errorMessage }) => (
+            <>
+                测试连接失败，错误信息： <br />
+                {errorMessage}
+            </>
+        ),
+        "cancel": "取消",
+        "save config": "保存配置",
+        "update config": "更新配置",
+        "is required": "此字段为必填项",
+        "must be an url": "不是有效的 URL",
+        "not a valid access key id": "这不像是一个有效的访问密钥 ID",
+        "url textField label": "URL",
+        "url textField helper text": "S3 服务的 URL",
+        "region textField label": "AWS S3 区域",
+        "region textField helper text": "例如：eu-west-1，如果不确定，请留空",
+        "workingDirectoryPath textField label": "工作目录路径",
+        "workingDirectoryPath textField helper text": (
+            <>
+                这可以让你指定在 S3 服务上你拥有的桶和 S3 对象前缀。 <br />
+                例如：<code>我的桶/我的前缀/</code> 或 <code>仅我的桶/</code>{" "}
+                如果你拥有整个桶。
+            </>
+        ),
+        "account credentials": "账户凭证",
+        "accountFriendlyName textField label": "账户友好名称",
+        "accountFriendlyName textField helper text":
+            "这只是为了帮助你识别这个账户。例如：我的个人账户",
+        "accessKeyId textField label": "访问密钥 ID",
+        "accessKeyId textField helper text": "例如：1A2B3C4D5E6F7G8H9I0J",
+        "secretAccessKey textField label": "秘密访问密钥",
+        "sessionToken textField label": "会话令牌",
+        "sessionToken textField helper text": "可选的，如果不确定请留空",
+        "url style": "URL 样式",
+        "url style helper text": `指定您的 S3 服务器如何格式化下载文件的 URL。`,
+        "path style label": ({ example }) => (
+            <>
+                路径样式
+                {example !== undefined && (
+                    <>
+                        :&nbsp;
+                        <code>{example}我的数据集.parquet</code>
+                    </>
+                )}
+            </>
+        ),
+        "virtual-hosted style label": ({ example }) => (
+            <>
+                虚拟托管样式
+                {example !== undefined && (
+                    <>
+                        :&nbsp;
+                        <code>{example}我的数据集.parquet</code>
+                    </>
+                )}
+            </>
+        )
     },
     "AccountUserInterfaceTab": {
         "title": "配置界面模式",

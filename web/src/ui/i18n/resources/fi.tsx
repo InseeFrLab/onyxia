@@ -138,35 +138,71 @@ export const translations: Translations<"fi"> = {
         "s3-configs": "S3-konfiguraatiot"
     },
     "AddCustomS3ConfigDialog": {
-        "dialog title": undefined,
-        "dialog subtitle": undefined,
-        "test connection": undefined,
-        "test connection failed": undefined,
-        "cancel": undefined,
-        "save config": undefined,
-        "update config": undefined,
-        "is required": undefined,
-        "must be an url": undefined,
-        "not a valid access key id": undefined,
-        "url textField label": undefined,
-        "url textField helper text": undefined,
-        "region textField label": undefined,
-        "region textField helper text": undefined,
-        "workingDirectoryPath textField label": undefined,
-        "workingDirectoryPath textField helper text": undefined,
-        "account credentials": undefined,
-        "accountFriendlyName textField label": undefined,
-        "accountFriendlyName textField helper text": undefined,
-        "accessKeyId textField label": undefined,
-        "accessKeyId textField helper text": undefined,
-        "secretAccessKey textField label": undefined,
-        "sessionToken textField label": undefined,
-        "sessionToken textField helper text": undefined,
-        "url style": undefined,
-        "url style helper text": undefined,
-        "path style label": undefined,
-        "virtual-hosted style label": undefined
+        "dialog title": "Uusi mukautettu S3-kokoonpano",
+        "dialog subtitle":
+            "Määritä mukautettu palvelutili tai yhdistä toiseen S3-yhteensopivaan palveluun",
+        "test connection": "Testaa yhteys",
+        "test connection failed": ({ errorMessage }) => (
+            <>
+                Yhteystestaus epäonnistui virheellä: <br />
+                {errorMessage}
+            </>
+        ),
+        "cancel": "Peruuta",
+        "save config": "Tallenna kokoonpano",
+        "update config": "Päivitä kokoonpano",
+        "is required": "Tämä kenttä on pakollinen",
+        "must be an url": "Ei ole kelvollinen URL-osoite",
+        "not a valid access key id": "Tämä ei näytä kelvolliselta pääsyavain-ID:ltä",
+        "url textField label": "URL",
+        "url textField helper text": "S3-palvelun URL-osoite",
+        "region textField label": "AWS S3-alue",
+        "region textField helper text":
+            "Esimerkki: eu-west-1, jos epävarma, jätä tyhjäksi",
+        "workingDirectoryPath textField label": "Työkansion polku",
+        "workingDirectoryPath textField helper text": (
+            <>
+                Tämän avulla voit määrittää ämpärin ja S3-objektin etuliitteen, joka
+                sinulla on S3-palvelussa. <br />
+                Esimerkki: <code>minun-ämpäri/etuliitteeni/</code> tai{" "}
+                <code>vain minun-ämpäri/</code> jos omistat koko ämpärin.
+            </>
+        ),
+        "account credentials": "Tilin tunnistetiedot",
+        "accountFriendlyName textField label": "Tilin ystävällinen nimi",
+        "accountFriendlyName textField helper text":
+            "Tämä on vain avuksi tilin tunnistamisessa. Esimerkki: Oma henkilökohtainen tili",
+        "accessKeyId textField label": "Pääsyavaimen tunnus",
+        "accessKeyId textField helper text": "Esimerkki: 1A2B3C4D5E6F7G8H9I0J",
+        "secretAccessKey textField label": "Salainen pääsyavain",
+        "sessionToken textField label": "Istuntotunnus",
+        "sessionToken textField helper text": "Valinnainen, jätä tyhjäksi, jos epävarma",
+        "url style": "URL-tyyli",
+        "url style helper text": `Määritä, miten S3-palvelimesi muotoilee tiedostojen lataamisen URL-osoitteita.`,
+        "path style label": ({ example }) => (
+            <>
+                Polkutyyli
+                {example !== undefined && (
+                    <>
+                        :&nbsp;
+                        <code>{example}tietoaineisto.parquet</code>
+                    </>
+                )}
+            </>
+        ),
+        "virtual-hosted style label": ({ example }) => (
+            <>
+                Virtual-hosted tyyli
+                {example !== undefined && (
+                    <>
+                        :&nbsp;
+                        <code>{example}tietoaineisto.parquet</code>
+                    </>
+                )}
+            </>
+        )
     },
+
     "AccountUserInterfaceTab": {
         "title": "Käyttöliittymän asetukset",
         "enable dark mode": "Ota tumma tila käyttöön",

@@ -142,34 +142,68 @@ export const translations: Translations<"no"> = {
         "s3-configs": "S3-konfigurasjoner"
     },
     "AddCustomS3ConfigDialog": {
-        "dialog title": undefined,
-        "dialog subtitle": undefined,
-        "test connection": undefined,
-        "test connection failed": undefined,
-        "cancel": undefined,
-        "save config": undefined,
-        "update config": undefined,
-        "is required": undefined,
-        "must be an url": undefined,
-        "not a valid access key id": undefined,
-        "url textField label": undefined,
-        "url textField helper text": undefined,
-        "region textField label": undefined,
-        "region textField helper text": undefined,
-        "workingDirectoryPath textField label": undefined,
-        "workingDirectoryPath textField helper text": undefined,
-        "account credentials": undefined,
-        "accountFriendlyName textField label": undefined,
-        "accountFriendlyName textField helper text": undefined,
-        "accessKeyId textField label": undefined,
-        "accessKeyId textField helper text": undefined,
-        "secretAccessKey textField label": undefined,
-        "sessionToken textField label": undefined,
-        "sessionToken textField helper text": undefined,
-        "url style": undefined,
-        "url style helper text": undefined,
-        "path style label": undefined,
-        "virtual-hosted style label": undefined
+        "dialog title": "Ny tilpasset S3-konfigurasjon",
+        "dialog subtitle":
+            "Angi en tilpasset tjenestekonto eller koble til en annen S3-kompatibel tjeneste",
+        "test connection": "Test forbindelse",
+        "test connection failed": ({ errorMessage }) => (
+            <>
+                Test av forbindelse feilet med feil: <br />
+                {errorMessage}
+            </>
+        ),
+        "cancel": "Avbryt",
+        "save config": "Lagre konfigurasjon",
+        "update config": "Oppdater konfigurasjon",
+        "is required": "Dette feltet er påkrevd",
+        "must be an url": "Ikke en gyldig URL",
+        "not a valid access key id": "Dette ser ikke ut som en gyldig tilgangsnøkkel-ID",
+        "url textField label": "URL",
+        "url textField helper text": "URL til S3-tjenesten",
+        "region textField label": "AWS S3-region",
+        "region textField helper text": "Eksempel: eu-west-1, hvis usikker, la være tom",
+        "workingDirectoryPath textField label": "Arbeidsmappesti",
+        "workingDirectoryPath textField helper text": (
+            <>
+                Dette lar deg spesifisere bøtten og S3-objektprefikset du eier på
+                S3-tjenesten. <br />
+                Eksempel: <code>min-bøtte/mitt-prefiks/</code> eller{" "}
+                <code>kun min-bøtte/</code> hvis du eier hele bøtten.
+            </>
+        ),
+        "account credentials": "Kontokredensialer",
+        "accountFriendlyName textField label": "Brukervennlig kontonavn",
+        "accountFriendlyName textField helper text":
+            "Dette er bare for å hjelpe deg med å identifisere denne kontoen. Eksempel: Min personlige konto",
+        "accessKeyId textField label": "Tilgangsnøkkel-ID",
+        "accessKeyId textField helper text": "Eksempel: 1A2B3C4D5E6F7G8H9I0J",
+        "secretAccessKey textField label": "Hemmelig tilgangsnøkkel",
+        "sessionToken textField label": "Sesjonstoken",
+        "sessionToken textField helper text": "Valgfritt, la være tom hvis usikker",
+        "url style": "URL-stil",
+        "url style helper text": `Spesifiser hvordan din S3-server formaterer URL-en for nedlasting av filer.`,
+        "path style label": ({ example }) => (
+            <>
+                Sti-stil
+                {example !== undefined && (
+                    <>
+                        :&nbsp;
+                        <code>{example}mitt-datasett.parquet</code>
+                    </>
+                )}
+            </>
+        ),
+        "virtual-hosted style label": ({ example }) => (
+            <>
+                Virtuelt-vertsbasert stil
+                {example !== undefined && (
+                    <>
+                        :&nbsp;
+                        <code>{example}mitt-datasett.parquet</code>
+                    </>
+                )}
+            </>
+        )
     },
     "AccountUserInterfaceTab": {
         "title": "Grensesnittspreferanser",

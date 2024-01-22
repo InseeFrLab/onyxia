@@ -140,34 +140,69 @@ export const translations: Translations<"it"> = {
         "s3-configs": "Configurazioni S3"
     },
     "AddCustomS3ConfigDialog": {
-        "dialog title": undefined,
-        "dialog subtitle": undefined,
-        "test connection": undefined,
-        "test connection failed": undefined,
-        "cancel": undefined,
-        "save config": undefined,
-        "update config": undefined,
-        "is required": undefined,
-        "must be an url": undefined,
-        "not a valid access key id": undefined,
-        "url textField label": undefined,
-        "url textField helper text": undefined,
-        "region textField label": undefined,
-        "region textField helper text": undefined,
-        "workingDirectoryPath textField label": undefined,
-        "workingDirectoryPath textField helper text": undefined,
-        "account credentials": undefined,
-        "accountFriendlyName textField label": undefined,
-        "accountFriendlyName textField helper text": undefined,
-        "accessKeyId textField label": undefined,
-        "accessKeyId textField helper text": undefined,
-        "secretAccessKey textField label": undefined,
-        "sessionToken textField label": undefined,
-        "sessionToken textField helper text": undefined,
-        "url style": undefined,
-        "url style helper text": undefined,
-        "path style label": undefined,
-        "virtual-hosted style label": undefined
+        "dialog title": "Nuova configurazione S3 personalizzata",
+        "dialog subtitle":
+            "Specifica un account di servizio personalizzato o connettiti ad un altro servizio compatibile con S3",
+        "test connection": "Testa la connessione",
+        "test connection failed": ({ errorMessage }) => (
+            <>
+                Test della connessione fallito con errore: <br />
+                {errorMessage}
+            </>
+        ),
+        "cancel": "Annulla",
+        "save config": "Salva configurazione",
+        "update config": "Aggiorna configurazione",
+        "is required": "Questo campo è richiesto",
+        "must be an url": "URL non valido",
+        "not a valid access key id": "Non sembra un ID chiave di accesso valido",
+        "url textField label": "URL",
+        "url textField helper text": "URL del servizio S3",
+        "region textField label": "Regione AWS S3",
+        "region textField helper text":
+            "Esempio: eu-west-1, se non sei sicuro, lascia vuoto",
+        "workingDirectoryPath textField label": "Percorso della directory di lavoro",
+        "workingDirectoryPath textField helper text": (
+            <>
+                Questo ti permette di specificare il bucket e il prefisso dell'oggetto S3
+                che possiedi sul servizio S3. <br />
+                Esempio: <code>il-mio-bucket/il-mio-prefisso/</code> o{" "}
+                <code>solo il-mio-bucket/</code> se possiedi l'intero bucket.
+            </>
+        ),
+        "account credentials": "Credenziali dell'account",
+        "accountFriendlyName textField label": "Nome amichevole dell'account",
+        "accountFriendlyName textField helper text":
+            "Questo serve solo per aiutarti a identificare questo account. Esempio: Il mio account personale",
+        "accessKeyId textField label": "ID chiave di accesso",
+        "accessKeyId textField helper text": "Esempio: 1A2B3C4D5E6F7G8H9I0J",
+        "secretAccessKey textField label": "Chiave di accesso segreta",
+        "sessionToken textField label": "Token di sessione",
+        "sessionToken textField helper text": "Opzionale, lascia vuoto se non sei sicuro",
+        "url style": "Stile URL",
+        "url style helper text": `Specifica come il tuo server S3 formatta l'URL per il download dei file.`,
+        "path style label": ({ example }) => (
+            <>
+                Stile del percorso
+                {example !== undefined && (
+                    <>
+                        :&nbsp;
+                        <code>{example}il-mio-dataset.parquet</code>
+                    </>
+                )}
+            </>
+        ),
+        "virtual-hosted style label": ({ example }) => (
+            <>
+                Stile virtual-hosted
+                {example !== undefined && (
+                    <>
+                        :&nbsp;
+                        <code>{example}il-mio-dataset.parquet</code>
+                    </>
+                )}
+            </>
+        )
     },
     "AccountUserInterfaceTab": {
         "title": "Configurare la modalità di interfaccia",
