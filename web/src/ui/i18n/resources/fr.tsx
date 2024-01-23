@@ -12,7 +12,7 @@ export const translations: Translations<"fr"> = {
         "infos": "Information du compte",
         "third-party-integration": "Services externes",
         "storage": "Connexion au stockage",
-        "k8sCodeSnippets": "Connexion a Kubernetes",
+        "k8sCodeSnippets": "Connexion à Kubernetes",
         "user-interface": "Modes d'interface",
         "text1": "Mon compte",
         "text2": "Accédez à vos différentes informations de compte.",
@@ -31,14 +31,12 @@ export const translations: Translations<"fr"> = {
     },
     "AccountIntegrationsTab": {
         "git section title": "Configurations Git",
-        "git section helper": `Pour vous assurer que vous apparaissez depuis vos
-            services comme l'auteur des contributions Git`,
+        "git section helper": "Pour vous assurer que vous apparaissez depuis vos services comme l'auteur des contributions Git",
         "gitName": "Nom d'utilisateur pour Git",
         "gitEmail": "Email pour Git",
         "third party tokens section title":
             "Connecter vos comptes Gitlab, Github et Kaggle",
-        "third party tokens section helper": `Connectez vos services à des comptes extérieurs à l'aide
-            de jetons d'accès personnel et de variables d'environnement.`,
+        "third party tokens section helper": "Connectez vos services à des comptes extérieurs à l'aide de jetons d'accès personnel et de variables d'environnement.",
         "personal token": ({ serviceName }) => `Jeton d'accès personnel ${serviceName}`,
         "link for token creation": ({ serviceName }) =>
             `Créer votre jeton ${serviceName}.`,
@@ -53,7 +51,7 @@ export const translations: Translations<"fr"> = {
             "Accessible au sein de vos services en tant que la variable d'environnement",
         "init script section title":
             "Pour accéder au stockage en dehors des services du datalab",
-        "init script section helper": `Téléchargez ou copiez le script d'initialisation dans le langage de programmation de votre choix.`,
+        "init script section helper": "Téléchargez ou copiez le script d'initialisation dans le langage de programmation de votre choix.",
         "expires in": ({ howMuchTime }) => `Expire dans ${howMuchTime}`
     },
     "AccountKubernetesTab": {
@@ -101,7 +99,7 @@ export const translations: Translations<"fr"> = {
                 local.
             </>
         ),
-        "expires in": ({ howMuchTime }) => `Le token expire in ${howMuchTime}`
+        "expires in": ({ howMuchTime }) => `Le token expire dans ${howMuchTime}`
     },
     "ProjectSettings": {
         "page header title": "Paramètres du projet",
