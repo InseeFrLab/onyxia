@@ -57,7 +57,7 @@
         "moment": "^2.29.1",
         "mustache": "^4.2.0",
         "oidc-spa": "^3.0.3",
-        "onyxia-ui": "^5.0.6",
+        "onyxia-ui": "^5.1.0",
         "path": "^0.12.7",
         "path-browserify": "^1.0.1",
         "powerhooks": "^1.0.8",
