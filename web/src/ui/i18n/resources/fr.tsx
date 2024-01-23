@@ -114,10 +114,10 @@ export const translations: Translations<"fr"> = {
             doesUserBelongToSomeGroupProject
         }) => (
             <>
-                Cette page vous permet de configurer les paramètres qui s'appliquent à
+                Cette page vous permet de configurer les paramètres qui s'appliquent
                 {groupProjectName === undefined
-                    ? " votre projet personnel"
-                    : ` le ${groupProjectName}`}
+                    ? " à votre projet personnel"
+                    : ` au ${groupProjectName}`}
                 .
                 <br />
                 {groupProjectName !== undefined && (
