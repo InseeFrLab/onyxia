@@ -6238,6 +6238,15 @@ class-utils@^0.3.5:
     isobject "^3.0.0"
     static-extend "^0.1.1"
 
+clean-architecture@^4.3.1:
+  version "4.3.3"
+  resolved "https://registry.yarnpkg.com/clean-architecture/-/clean-architecture-4.3.3.tgz#3c0bfe64ca3412d289167cd8a69c40f0c174ebd3"
+  integrity sha512-0QqXphwpAxOO9kJMRdu82vDwMDiVqt5P81FxGuBWqze7HCloAGxdtsUghStTpFAZIIZGSIU7rXdfvOzFB4j/Lg==
+  dependencies:
+    "@reduxjs/toolkit" "^1.9.6"
+    minimal-polyfills "^2.2.3"
+    tsafe "^1.6.5"
+
 clean-css@^4.2.3:
   version "4.2.4"
   resolved "https://registry.yarnpkg.com/clean-css/-/clean-css-4.2.4.tgz#733bf46eba4e607c6891ea57c24a989356831178"
@@ -14190,15 +14199,6 @@ redent@^1.0.0:
   dependencies:
     indent-string "^2.1.0"
     strip-indent "^1.0.1"
-
-redux-clean-architecture@^4.3.1:
-  version "4.3.1"
-  resolved "https://registry.yarnpkg.com/redux-clean-architecture/-/redux-clean-architecture-4.3.1.tgz#b3c0f661d3813a39f66bd0713d711974f83e1a33"
-  integrity sha512-WXbvO47tdoh4heJ26ZbfdLOKsXAz6SPCCig99ufTa5zEcm0R44+Xn/h7GYo3wBFTacHlcuv9KEbSap7TdDW1nA==
-  dependencies:
-    "@reduxjs/toolkit" "^1.9.6"
-    minimal-polyfills "^2.2.3"
-    tsafe "^1.6.5"
 
 redux-thunk@^2.4.2:
   version "2.4.2"

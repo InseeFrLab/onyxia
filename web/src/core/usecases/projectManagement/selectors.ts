@@ -1,7 +1,7 @@
 import type { State as RootState } from "core/bootstrap";
 import type { Project } from "core/ports/OnyxiaApi";
 import { name } from "./state";
-import { createSelector } from "redux-clean-architecture";
+import { createSelector } from "clean-architecture";
 import { assert } from "tsafe/assert";
 
 const state = (rootState: RootState) => rootState[name];

@@ -1,5 +1,5 @@
 import type { State as RootState } from "core/bootstrap";
-import { createSelector } from "redux-clean-architecture";
+import { createSelector } from "clean-architecture";
 import * as projectManagement from "core/usecases/projectManagement";
 import * as deploymentRegionManagement from "core/usecases/deploymentRegionManagement";
 import * as userAuthentication from "core/usecases/userAuthentication";

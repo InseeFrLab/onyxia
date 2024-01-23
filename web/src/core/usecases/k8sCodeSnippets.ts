@@ -10,7 +10,7 @@ import {
     createUsecaseActions,
     createUsecaseContextApi,
     createSelector
-} from "redux-clean-architecture";
+} from "clean-architecture";
 import type { Oidc } from "core/ports/Oidc";
 
 type State = State.NotRefreshed | State.Ready;

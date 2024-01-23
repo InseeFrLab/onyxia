@@ -4,7 +4,7 @@ import type { State as RootState, Thunks } from "core/bootstrap";
 import * as deploymentRegionManagement from "core/usecases/deploymentRegionManagement";
 import { parseUrl } from "core/tools/parseUrl";
 import { assert } from "tsafe/assert";
-import { createUsecaseActions, createSelector } from "redux-clean-architecture";
+import { createUsecaseActions, createSelector } from "clean-architecture";
 
 //TODO: Refactor, replicate the k8sCodeSnippets usecase
 

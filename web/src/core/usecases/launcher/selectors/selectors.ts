@@ -17,7 +17,7 @@ import * as projectManagement from "core/usecases/projectManagement";
 import * as s3ConfigManagement from "core/usecases/s3ConfigManagement";
 import * as userConfigs from "core/usecases/userConfigs";
 import { exclude } from "tsafe/exclude";
-import { createSelector } from "redux-clean-architecture";
+import { createSelector } from "clean-architecture";
 import { id } from "tsafe/id";
 
 const readyState = (rootState: RootState): State.Ready | undefined => {

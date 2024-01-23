@@ -30,7 +30,7 @@ import { generateRandomPassword } from "core/tools/generateRandomPassword";
 import * as restorableConfigManagement from "core/usecases/restorableConfigManagement";
 import { privateSelectors } from "./selectors";
 import { Evt } from "evt";
-import { createUsecaseContextApi } from "redux-clean-architecture";
+import { createUsecaseContextApi } from "clean-architecture";
 
 export const thunks = {
     "initialize":

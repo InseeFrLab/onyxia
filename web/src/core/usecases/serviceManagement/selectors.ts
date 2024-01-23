@@ -1,5 +1,5 @@
 import type { State as RootState } from "core/bootstrap";
-import { createSelector } from "redux-clean-architecture";
+import { createSelector } from "clean-architecture";
 import { name, type RunningService } from "./state";
 
 const state = (rootState: RootState) => rootState[name];

@@ -2,7 +2,7 @@ import { id } from "tsafe/id";
 import { relative as pathRelative } from "path";
 import { assert } from "tsafe/assert";
 import type { WritableDraft } from "immer/dist/types/types-external";
-import { createUsecaseActions } from "redux-clean-architecture";
+import { createUsecaseActions } from "clean-architecture";
 
 //All explorer path are expected to be absolute (start with /)
 

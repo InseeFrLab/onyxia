@@ -2,7 +2,7 @@ import {
     createUsecaseActions,
     createSelector,
     createUsecaseContextApi
-} from "redux-clean-architecture";
+} from "clean-architecture";
 import { id } from "tsafe/id";
 import type { State as RootState, Thunks } from "core/bootstrap";
 import { assert } from "tsafe/assert";

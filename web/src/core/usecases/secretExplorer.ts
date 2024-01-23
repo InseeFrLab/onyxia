@@ -18,7 +18,7 @@ import * as deploymentRegionManagement from "core/usecases/deploymentRegionManag
 import { createExtendedFsApi } from "core/tools/extendedFsApi";
 import type { ExtendedFsApi } from "core/tools/extendedFsApi";
 import { getVaultCommandLogger } from "core/adapters/secretManager/utils/vaultCommandLogger";
-import { createUsecaseActions, createUsecaseContextApi } from "redux-clean-architecture";
+import { createUsecaseActions, createUsecaseContextApi } from "clean-architecture";
 // NOTE: Polyfill of a browser feature.
 import structuredClone from "@ungap/structured-clone";
 

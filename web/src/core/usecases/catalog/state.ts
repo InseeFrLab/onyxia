@@ -1,7 +1,7 @@
 import type { Catalog } from "core/ports/OnyxiaApi";
 import { id } from "tsafe/id";
 import { assert } from "tsafe/assert";
-import { createUsecaseActions } from "redux-clean-architecture";
+import { createUsecaseActions } from "clean-architecture";
 
 export type State = State.NotFetched | State.Ready;
 

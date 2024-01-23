@@ -1,5 +1,5 @@
 import "minimal-polyfills/Object.fromEntries";
-import { createUsecaseActions, createSelector } from "redux-clean-architecture";
+import { createUsecaseActions, createSelector } from "clean-architecture";
 import { id } from "tsafe/id";
 import type { State as RootState, Thunks } from "core/bootstrap";
 import * as deploymentRegionManagement from "core/usecases/deploymentRegionManagement";

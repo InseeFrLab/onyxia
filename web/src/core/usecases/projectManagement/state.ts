@@ -4,7 +4,7 @@ import { assert, type Equals } from "tsafe/assert";
 import {
     createUsecaseActions,
     createObjectThatThrowsIfAccessed
-} from "redux-clean-architecture";
+} from "clean-architecture";
 import * as userConfigs from "core/usecases/userConfigs";
 
 type State = {

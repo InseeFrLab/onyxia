@@ -1,6 +1,6 @@
 import { assert } from "tsafe/assert";
 import type { State as RootState } from "core/bootstrap";
-import { createSelector } from "redux-clean-architecture";
+import { createSelector } from "clean-architecture";
 import { name, type State } from "./state";
 import type { LocalizedString } from "core/ports/OnyxiaApi";
 
