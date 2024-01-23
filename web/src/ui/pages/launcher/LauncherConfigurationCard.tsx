@@ -520,7 +520,11 @@ const { TabContent } = (() => {
                                         case "text":
                                             return (
                                                 <TextField
-                                                    type={formField.type}
+                                                    type={
+                                                        formField.type === "password"
+                                                            ? "sensitive"
+                                                            : formField.type
+                                                    }
                                                     doRenderAsTextArea={
                                                         formField.doRenderAsTextArea
                                                     }
