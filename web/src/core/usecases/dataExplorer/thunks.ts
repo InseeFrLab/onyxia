@@ -1,7 +1,7 @@
 import type { Thunks } from "core/bootstrap";
 import { name, actions } from "./state";
 import { same } from "evt/tools/inDepth/same";
-import { createUsecaseContextApi } from "redux-clean-architecture";
+import { createUsecaseContextApi } from "clean-architecture";
 import { waitForDebounceFactory } from "core/tools/waitForDebounce";
 import { assert } from "tsafe/assert";
 

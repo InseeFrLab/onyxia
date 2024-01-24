@@ -4,7 +4,7 @@ import {
     createObjectThatThrowsIfAccessed,
     AccessError,
     type GenericCore
-} from "redux-clean-architecture";
+} from "clean-architecture";
 import type { OnyxiaApi } from "core/ports/OnyxiaApi";
 import type { SqlOlap } from "core/ports/SqlOlap";
 import { usecases } from "./usecases";

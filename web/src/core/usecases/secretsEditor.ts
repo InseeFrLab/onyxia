@@ -1,4 +1,4 @@
-import { createUsecaseActions } from "redux-clean-architecture";
+import { createUsecaseActions } from "clean-architecture";
 import { id } from "tsafe/id";
 import type { Thunks, State as RootState } from "core/bootstrap";
 import type { SecretWithMetadata } from "core/ports/SecretsManager";

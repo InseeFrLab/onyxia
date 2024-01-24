@@ -6238,6 +6238,15 @@ class-utils@^0.3.5:
     isobject "^3.0.0"
     static-extend "^0.1.1"
 
+clean-architecture@^4.3.1:
+  version "4.3.3"
+  resolved "https://registry.yarnpkg.com/clean-architecture/-/clean-architecture-4.3.3.tgz#3c0bfe64ca3412d289167cd8a69c40f0c174ebd3"
+  integrity sha512-0QqXphwpAxOO9kJMRdu82vDwMDiVqt5P81FxGuBWqze7HCloAGxdtsUghStTpFAZIIZGSIU7rXdfvOzFB4j/Lg==
+  dependencies:
+    "@reduxjs/toolkit" "^1.9.6"
+    minimal-polyfills "^2.2.3"
+    tsafe "^1.6.5"
+
 clean-css@^4.2.3:
   version "4.2.4"
   resolved "https://registry.yarnpkg.com/clean-css/-/clean-css-4.2.4.tgz#733bf46eba4e607c6891ea57c24a989356831178"
@@ -12330,10 +12339,10 @@ onetime@^5.1.0, onetime@^5.1.2:
   dependencies:
     mimic-fn "^2.1.0"
 
-onyxia-ui@^5.0.6:
-  version "5.0.6"
-  resolved "https://registry.yarnpkg.com/onyxia-ui/-/onyxia-ui-5.0.6.tgz#a33050ddbebf2059fc7981e9b50ca28400c99660"
-  integrity sha512-DyiKspIAY3I2cpQIQnWIXKFL/NkoeKtA3jjSRIeb2Q5k9T/XOA8HcA49Org8UdpsIOnwVN1tKi/Gr91Y8D8BeA==
+onyxia-ui@^5.1.0:
+  version "5.1.0"
+  resolved "https://registry.yarnpkg.com/onyxia-ui/-/onyxia-ui-5.1.0.tgz#d44d9a1d434a944e471c84b4b5d51e31da79e5e0"
+  integrity sha512-5fSNZXsdghGSNFd0Ut/NcJqfizhwD/gZC32x3dGk088Z6KFxX1MDhyM+AUSc/dX6dgK1G1dRjuat0cweN7B1xg==
   dependencies:
     "@mui/icons-material" "^5.14.18"
     color "3.1.3"
@@ -14190,15 +14199,6 @@ redent@^1.0.0:
   dependencies:
     indent-string "^2.1.0"
     strip-indent "^1.0.1"
-
-redux-clean-architecture@^4.3.1:
-  version "4.3.1"
-  resolved "https://registry.yarnpkg.com/redux-clean-architecture/-/redux-clean-architecture-4.3.1.tgz#b3c0f661d3813a39f66bd0713d711974f83e1a33"
-  integrity sha512-WXbvO47tdoh4heJ26ZbfdLOKsXAz6SPCCig99ufTa5zEcm0R44+Xn/h7GYo3wBFTacHlcuv9KEbSap7TdDW1nA==
-  dependencies:
-    "@reduxjs/toolkit" "^1.9.6"
-    minimal-polyfills "^2.2.3"
-    tsafe "^1.6.5"
 
 redux-thunk@^2.4.2:
   version "2.4.2"

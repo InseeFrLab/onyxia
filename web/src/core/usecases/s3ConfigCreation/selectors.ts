@@ -1,5 +1,5 @@
 import type { State as RootState } from "core/bootstrap";
-import { createSelector } from "redux-clean-architecture";
+import { createSelector } from "clean-architecture";
 import { name } from "./state";
 import { objectKeys } from "tsafe/objectKeys";
 import { assert } from "tsafe/assert";

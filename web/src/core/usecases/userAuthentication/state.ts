@@ -2,7 +2,7 @@ import type { User } from "core/ports/OnyxiaApi";
 import {
     createUsecaseActions,
     createObjectThatThrowsIfAccessed
-} from "redux-clean-architecture";
+} from "clean-architecture";
 
 export const name = "userAuthentication";
 

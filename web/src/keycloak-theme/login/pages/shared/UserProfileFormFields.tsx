@@ -108,7 +108,7 @@ export function UserProfileFormFields(props: UserProfileFormFieldsProps) {
                             id={attribute.name}
                             name={attribute.name}
                             defaultValue={value}
-                            className={getClassName("kcInputClass")}
+                            inputProps_className={getClassName("kcInputClass")}
                             aria-invalid={displayableErrors.length !== 0}
                             disabled={attribute.readOnly}
                             autoComplete={attribute.autocomplete}
@@ -150,24 +150,6 @@ export function UserProfileFormFields(props: UserProfileFormFieldsProps) {
                                 </>
                             }
                             helperText={(() => {
-                                switch (attribute.name) {
-                                    case "email":
-                                        return msg("allowed email domains");
-                                    case "password": {
-                                        // prettier-ignore
-                                        const { min } = attribute.validators.length ?? {};
-                                        if (min === undefined) {
-                                            break;
-                                        }
-
-                                        // prettier-ignore
-                                        return msg("minimum length", `${parseInt(min)}`);
-                                    }
-                                }
-
-                                return undefined;
-                            })()}
-                            helperTextError={(() => {
                                 const displayableErrors = fieldStateByAttributeName[
                                     attribute.name
                                 ].displayableErrors.filter(
@@ -179,16 +161,10 @@ export function UserProfileFormFields(props: UserProfileFormFieldsProps) {
                                 );
 
                                 if (displayableErrors.length !== 0) {
-                                    return (
-                                        <>
-                                            {displayableErrors.map(
-                                                ({ errorMessage }, i) => (
-                                                    <span key={i}>
-                                                        {errorMessage}&nbsp;
-                                                    </span>
-                                                )
-                                            )}
-                                        </>
+                                    return displayableErrors.map(
+                                        ({ errorMessage }, i) => (
+                                            <span key={i}>{errorMessage}&nbsp;</span>
+                                        )
                                     );
                                 }
 
@@ -245,6 +221,8 @@ export function UserProfileFormFields(props: UserProfileFormFieldsProps) {
                                             pattern :
                                             undefined;
                             })()}
+                            // prettier-ignore
+                            isErrored={fieldStateByAttributeName[attribute.name].displayableErrors.length !== 0}
                         />
                     </Fragment>
                 );

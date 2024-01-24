@@ -1,6 +1,6 @@
 import type { Thunks } from "core/bootstrap";
 import { addParamToUrl } from "powerhooks/tools/urlSearchParams";
-import { createUsecaseContextApi } from "redux-clean-architecture";
+import { createUsecaseContextApi } from "clean-architecture";
 
 export const name = "userAccountManagement";
 

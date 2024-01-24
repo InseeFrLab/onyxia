@@ -1,7 +1,7 @@
 import type { State as RootState } from "core/bootstrap";
 import memoize from "memoizee";
 import { type State, name } from "./state";
-import { createSelector } from "redux-clean-architecture";
+import { createSelector } from "clean-architecture";
 import * as deploymentRegionManagement from "core/usecases/deploymentRegionManagement";
 import * as userConfigs from "core/usecases/userConfigs";
 import * as userAuthentication from "core/usecases/userAuthentication";

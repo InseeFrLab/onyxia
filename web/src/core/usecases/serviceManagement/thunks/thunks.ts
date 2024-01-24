@@ -3,7 +3,7 @@ import * as deploymentRegionManagement from "core/usecases/deploymentRegionManag
 import * as projectManagement from "core/usecases/projectManagement";
 import type { Thunks } from "core/bootstrap";
 import { exclude } from "tsafe/exclude";
-import { createUsecaseContextApi } from "redux-clean-architecture";
+import { createUsecaseContextApi } from "clean-architecture";
 import { assert } from "tsafe/assert";
 import { Evt } from "evt";
 import { name, actions } from "../state";

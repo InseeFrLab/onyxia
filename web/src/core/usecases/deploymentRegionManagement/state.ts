@@ -2,7 +2,7 @@ import type { DeploymentRegion } from "core/ports/OnyxiaApi";
 import {
     createUsecaseActions,
     createObjectThatThrowsIfAccessed
-} from "redux-clean-architecture";
+} from "clean-architecture";
 
 type State = {
     availableDeploymentRegions: DeploymentRegion[];

@@ -5,7 +5,7 @@ import { type FormFieldValue } from "./FormField";
 import { type JSONSchemaObject } from "core/ports/OnyxiaApi";
 import type { FormField } from "./FormField";
 import { type LocalizedString } from "core/ports/OnyxiaApi";
-import { createUsecaseActions } from "redux-clean-architecture";
+import { createUsecaseActions } from "clean-architecture";
 
 type State = State.NotInitialized | State.Ready;
 

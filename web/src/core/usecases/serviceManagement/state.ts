@@ -1,5 +1,5 @@
 import { assert } from "tsafe/assert";
-import { createUsecaseActions } from "redux-clean-architecture";
+import { createUsecaseActions } from "clean-architecture";
 import { id } from "tsafe/id";
 import { nestObject } from "core/tools/nestObject";
 import * as yaml from "yaml";

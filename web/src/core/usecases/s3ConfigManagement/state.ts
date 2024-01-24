@@ -1,7 +1,7 @@
 import {
     createUsecaseActions,
     createObjectThatThrowsIfAccessed
-} from "redux-clean-architecture";
+} from "clean-architecture";
 import { id } from "tsafe/id";
 import { assert } from "tsafe/assert";
 

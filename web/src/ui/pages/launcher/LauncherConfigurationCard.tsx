@@ -449,7 +449,7 @@ const { TabContent } = (() => {
                                                     label={label}
                                                     defaultValue={formField.value.yamlStr}
                                                     helperText={helperText}
-                                                    helperTextError={hasError}
+                                                    isErrored={hasError}
                                                     disabled={formField.isReadonly}
                                                     selectAllTextOnFocus={false}
                                                     onValueBeingTypedChange={onYamlValueBeingChangeFactory(
@@ -520,7 +520,11 @@ const { TabContent } = (() => {
                                         case "text":
                                             return (
                                                 <TextField
-                                                    type={formField.type}
+                                                    type={
+                                                        formField.type === "password"
+                                                            ? "sensitive"
+                                                            : formField.type
+                                                    }
                                                     doRenderAsTextArea={
                                                         formField.doRenderAsTextArea
                                                     }
@@ -528,7 +532,7 @@ const { TabContent } = (() => {
                                                     label={label}
                                                     defaultValue={formField.value}
                                                     helperText={helperText}
-                                                    helperTextError={hasError}
+                                                    isErrored={hasError}
                                                     disabled={formField.isReadonly}
                                                     onValueBeingTypedChange={onValueBeingChangeFactory(
                                                         JSON.stringify(formField.path)

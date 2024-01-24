@@ -1,4 +1,4 @@
-import { createSelector } from "redux-clean-architecture";
+import { createSelector } from "clean-architecture";
 import { State as RootState } from "core/bootstrap";
 import { name } from "./state";
 import { assert } from "tsafe/assert";

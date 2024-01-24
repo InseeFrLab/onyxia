@@ -7,7 +7,7 @@ import {
     createUsecaseActions,
     createObjectThatThrowsIfAccessed,
     createSelector
-} from "redux-clean-architecture";
+} from "clean-architecture";
 import * as userAuthentication from "./userAuthentication";
 import { join as pathJoin } from "path";
 import { getIsDarkModeEnabledOsDefault } from "onyxia-ui/tools/getIsDarkModeEnabledOsDefault";

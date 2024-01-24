@@ -6,7 +6,7 @@ If we where to change our UI framework we would only update this file to
 export an API more adapted to our new front. (But we don't plan to leave React)
 */
 
-import { createReactApi } from "redux-clean-architecture/react";
+import { createReactApi } from "clean-architecture/react";
 import { bootstrapCore } from "./bootstrap";
 export type { Language } from "./ports/OnyxiaApi";
 
