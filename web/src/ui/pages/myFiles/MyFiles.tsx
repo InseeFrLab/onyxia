@@ -143,7 +143,7 @@ function MyFiles(props: Props) {
         if (basename.endsWith(".parquet") || basename.endsWith(".csv")) {
             routes
                 .dataExplorer({
-                    "source": `s3:/${route.params.path}/${basename}`
+                    "source": `s3://${route.params.path}${basename}`
                 })
                 .push();
             return;

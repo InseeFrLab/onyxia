@@ -388,7 +388,7 @@ export function createS3Client(params: ParamsOfCreateS3Client): S3Client {
                 );
             });
 
-            if (params.pathStyleAccess) {
+            if (!params.pathStyleAccess) {
                 downloadUrl = (() => {
                     const urlObj = new URL(downloadUrl);
                     const subdomain = urlObj.pathname.split("/")[1];
