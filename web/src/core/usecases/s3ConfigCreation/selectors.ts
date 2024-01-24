@@ -131,7 +131,7 @@ export const submittableFormValues = createSelector(
                     .trim()
                     .replace(/\/\//g, "/") // Remove double slashes if any
                     .replace(/^\//g, "") // Ensure no leading slash
-                    .replace(/\/$/g, "") + "/", // Enforce trailing slash
+                    .replace(/\/*$/g, "") + "/", // Enforce trailing slash
             "pathStyleAccess": formValues.pathStyleAccess,
             "accountFriendlyName": formValues.accountFriendlyName.trim(),
             "accessKeyId": formValues.accessKeyId.trim(),

@@ -20,6 +20,7 @@ import type { PageRoute } from "./route";
 import { useEvt } from "evt/hooks";
 import { customIcons } from "ui/theme";
 import { MyFilesDisabledDialog } from "./MyFilesDisabledDialog";
+import { assert } from "tsafe/assert";
 
 export type Props = {
     route: PageRoute;
@@ -141,9 +142,13 @@ function MyFiles(props: Props) {
         Extract<ExplorerProps, { isFileOpen: false }>["onOpenFile"]
     >(({ basename }) => {
         if (basename.endsWith(".parquet") || basename.endsWith(".csv")) {
+            const { path } = route.params;
+
+            assert(path !== undefined);
+
             routes
                 .dataExplorer({
-                    "source": `s3://${route.params.path}${basename}`
+                    "source": `s3://${path.replace(/\/*$/g, "")}/${basename}`
                 })
                 .push();
             return;
