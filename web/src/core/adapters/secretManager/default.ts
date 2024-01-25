@@ -50,7 +50,8 @@ export async function createSecretManager(params: Params): Promise<SecretsManage
                     "acquisitionTime": now
                 });
             },
-            "returnCachedTokenIfStillValidForXPercentOfItsTTL": "90%"
+            "returnCachedTokenIfStillValidForXPercentOfItsTTL": "90%",
+            "persistance": undefined
         });
 
     const { axiosInstance } = (() => {

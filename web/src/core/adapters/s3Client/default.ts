@@ -2,7 +2,10 @@ import axios from "axios";
 import type * as Minio from "minio";
 import type { ReturnType } from "tsafe";
 import { S3Client } from "core/ports/S3Client";
-import { getNewlyRequestedOrCachedTokenFactory } from "core/tools/getNewlyRequestedOrCachedToken";
+import {
+    getNewlyRequestedOrCachedTokenFactory,
+    type TokenPersistance
+} from "core/tools/getNewlyRequestedOrCachedToken";
 import { assert } from "tsafe/assert";
 import { Deferred } from "evt/tools/Deferred";
 import { parseUrl } from "core/tools/parseUrl";
@@ -43,6 +46,13 @@ export namespace ParamsOfCreateS3Client {
               }
             | undefined;
         nameOfBucketToCreateIfNotExist: string | undefined;
+        persistance: TokenPersistance<{
+            accessKeyId: string;
+            expirationTime: number;
+            secretAccessKey: string;
+            sessionToken: string;
+            acquisitionTime: number;
+        }>;
     };
 }
 
@@ -68,7 +78,7 @@ export function createS3Client(params: ParamsOfCreateS3Client): S3Client {
                 };
             }
 
-            const { oidc } = params;
+            const { oidc, persistance } = params;
 
             const { getNewlyRequestedOrCachedToken, clearCachedToken } =
                 getNewlyRequestedOrCachedTokenFactory({
@@ -148,7 +158,8 @@ export function createS3Client(params: ParamsOfCreateS3Client): S3Client {
                             "acquisitionTime": now
                         } satisfies ReturnType<S3Client["getToken"]>;
                     },
-                    "returnCachedTokenIfStillValidForXPercentOfItsTTL": "90%"
+                    "returnCachedTokenIfStillValidForXPercentOfItsTTL": "90%",
+                    persistance
                 });
 
             return { getNewlyRequestedOrCachedToken, clearCachedToken };

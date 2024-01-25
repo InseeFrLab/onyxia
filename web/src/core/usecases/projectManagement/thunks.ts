@@ -97,7 +97,8 @@ const keys = [
     "servicePassword",
     "onboardingTimestamp",
     "restorableConfigs",
-    "s3"
+    "s3",
+    "s3StsToken"
 ] as const;
 
 assert<Equals<(typeof keys)[number], keyof ProjectConfigs>>();
@@ -255,6 +256,11 @@ function getDefaultConfig<K extends keyof ProjectConfigs>(key_: K): ProjectConfi
             // @ts-expect-error
             return out;
         }
+        case "s3StsToken": {
+            const out: ProjectConfigs[typeof key] = undefined;
+            // @ts-expect-error
+            return out;
+        }
     }
     assert<Equals<typeof key, never>>(false);
 }
@@ -280,8 +286,8 @@ function secretToValue(secret: Secret): unknown {
     const [key, ...otherKeys] = Object.keys(secret);
 
     assert(
-        (key === undefined || key === "value" || key === "valueAsJson") &&
-            otherKeys.length === 0,
+        key === undefined ||
+            ((key === "value" || key === "valueAsJson") && otherKeys.length === 0),
         `project config secret should have only one key, either "value" or "valueAsJson", got ${JSON.stringify(
             secret
         )}`

@@ -22,6 +22,18 @@ export type ProjectConfigs = {
         indexForXOnyxia: number | undefined;
         indexForExplorer: number | undefined;
     };
+    s3StsToken:
+        | {
+              token: {
+                  accessKeyId: string;
+                  expirationTime: number;
+                  secretAccessKey: string;
+                  sessionToken: string;
+                  acquisitionTime: number;
+              };
+              ttl: number;
+          }
+        | undefined;
 };
 
 export namespace ProjectConfigs {

@@ -234,47 +234,62 @@ export async function bootstrapCore(
                         data.actionName === "projectChanged"
                 )
                 .toStateful()
-                .pipe(() => [
-                    id<ParamsOfCreateS3Client.Sts>({
-                        "url": deploymentRegionS3.url,
-                        "isStsEnabled": true,
-                        "stsUrl": deploymentRegionS3Sts.url,
-                        "pathStyleAccess": deploymentRegionS3.pathStyleAccess,
-                        "region": deploymentRegionS3.region,
-                        "oidc": oidcForS3,
-                        "durationSeconds": deploymentRegionS3Sts.durationSeconds,
-                        "role": deploymentRegionS3Sts.role,
-                        "nameOfBucketToCreateIfNotExist": (() => {
-                            const { workingDirectory } = deploymentRegionS3;
+                .attach(() => {
+                    context.s3ClientSts = createS3Client(
+                        id<ParamsOfCreateS3Client.Sts>({
+                            "url": deploymentRegionS3.url,
+                            "isStsEnabled": true,
+                            "stsUrl": deploymentRegionS3Sts.url,
+                            "pathStyleAccess": deploymentRegionS3.pathStyleAccess,
+                            "region": deploymentRegionS3.region,
+                            "oidc": oidcForS3,
+                            "durationSeconds": deploymentRegionS3Sts.durationSeconds,
+                            "role": deploymentRegionS3Sts.role,
+                            "nameOfBucketToCreateIfNotExist": (() => {
+                                const { workingDirectory } = deploymentRegionS3;
 
-                            if (workingDirectory.bucketMode === "shared") {
-                                return undefined;
+                                if (workingDirectory.bucketMode === "shared") {
+                                    return undefined;
+                                }
+
+                                assert<
+                                    Equals<typeof workingDirectory.bucketMode, "multi">
+                                >();
+
+                                const project =
+                                    usecases.projectManagement.selectors.currentProject(
+                                        getState()
+                                    );
+
+                                const { username } =
+                                    usecases.userAuthentication.selectors.user(
+                                        getState()
+                                    );
+
+                                return project.group === undefined
+                                    ? `${workingDirectory.bucketNamePrefix}${username}`
+                                    : `${workingDirectory.bucketNamePrefixGroup}${project.group}`;
+                            })(),
+                            "persistance": {
+                                "get": () =>
+                                    Promise.resolve(
+                                        usecases.projectManagement.protectedSelectors.currentProjectConfigs(
+                                            getState()
+                                        ).s3StsToken
+                                    ),
+                                "set": ({ token, ttl }) =>
+                                    dispatch(
+                                        usecases.projectManagement.protectedThunks.updateConfigValue(
+                                            {
+                                                "key": "s3StsToken",
+                                                "value": { token, ttl }
+                                            }
+                                        )
+                                    )
                             }
-
-                            assert<Equals<typeof workingDirectory.bucketMode, "multi">>();
-
-                            const project =
-                                usecases.projectManagement.selectors.currentProject(
-                                    getState()
-                                );
-
-                            const { username } =
-                                usecases.userAuthentication.selectors.user(getState());
-
-                            return project.group === undefined
-                                ? `${workingDirectory.bucketNamePrefix}${username}`
-                                : `${workingDirectory.bucketNamePrefixGroup}${project.group}`;
-                        })()
-                    })
-                ])
-                .pipe(onlyIfChanged())
-                .attach(
-                    paramsOfCreateS3Client =>
-                        (context.s3ClientSts =
-                            paramsOfCreateS3Client === undefined
-                                ? createObjectThatThrowsIfAccessed<S3Client>()
-                                : createS3Client(paramsOfCreateS3Client))
-                );
+                        })
+                    );
+                });
         }
 
         // Init s3ClientForExplorer

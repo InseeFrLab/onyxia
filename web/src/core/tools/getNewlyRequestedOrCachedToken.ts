@@ -1,43 +1,63 @@
 import * as runExclusive from "run-exclusive";
 import memoize from "memoizee";
 
+export type TokenPersistance<T> = {
+    get: () => Promise<{ token: T; ttl: number } | undefined>;
+    set: (cache: { token: T; ttl: number }) => Promise<void>;
+};
+
 function getNewlyRequestedOrCachedTokenWithoutParamsFactory<
     T extends { expirationTime: number }
 >(params: {
     requestNewToken: () => Promise<T>;
     returnCachedTokenIfStillValidForXPercentOfItsTTL: "99%" | "90%" | "80%" | "50%";
+    persistance: TokenPersistance<T> | undefined;
 }) {
-    const { requestNewToken, returnCachedTokenIfStillValidForXPercentOfItsTTL } = params;
+    const {
+        requestNewToken,
+        returnCachedTokenIfStillValidForXPercentOfItsTTL,
+        persistance
+    } = params;
 
-    let cache:
-        | (T & {
-              ttl: number;
-          })
-        | undefined = undefined;
+    let cache: { token: T; ttl: number } | undefined = undefined;
+
+    let hasCacheBeenRestoredFromPersistance = false;
 
     const getNewlyRequestedOrCachedTokenWithoutParams = runExclusive.build<
         () => Promise<T>
     >(async () => {
+        if (!hasCacheBeenRestoredFromPersistance && persistance !== undefined) {
+            hasCacheBeenRestoredFromPersistance = true;
+
+            const cacheFromPersistance = await persistance.get();
+
+            if (cacheFromPersistance !== undefined) {
+                cache = cacheFromPersistance;
+            }
+        }
+
         if (
             cache !== undefined &&
-            cache.expirationTime - Date.now() >
+            cache.token.expirationTime - Date.now() >
                 (parseFloat(
                     returnCachedTokenIfStillValidForXPercentOfItsTTL.split("%")[0]
                 ) /
                     100) *
                     cache.ttl
         ) {
-            return cache;
+            return cache.token;
         }
 
         const token = await requestNewToken();
 
         cache = {
-            ...token,
+            token,
             "ttl": token.expirationTime - Date.now()
         };
 
-        return cache;
+        await persistance?.set(cache);
+
+        return token;
     });
 
     return { getNewlyRequestedOrCachedTokenWithoutParams };
@@ -49,14 +69,20 @@ export function getNewlyRequestedOrCachedTokenFactory<
 >(params: {
     requestNewToken: (...args: Args) => Promise<T>;
     returnCachedTokenIfStillValidForXPercentOfItsTTL: "99%" | "90%" | "80%" | "50%";
+    persistance: TokenPersistance<T> | undefined;
 }) {
-    const { requestNewToken, returnCachedTokenIfStillValidForXPercentOfItsTTL } = params;
+    const {
+        requestNewToken,
+        returnCachedTokenIfStillValidForXPercentOfItsTTL,
+        persistance
+    } = params;
 
     const getNewlyRequestedOrCachedTokenFactory_memo = memoize(
         (...args: Args) =>
             getNewlyRequestedOrCachedTokenWithoutParamsFactory({
                 "requestNewToken": () => requestNewToken(...args),
-                returnCachedTokenIfStillValidForXPercentOfItsTTL
+                returnCachedTokenIfStillValidForXPercentOfItsTTL,
+                persistance
             }),
         { "length": requestNewToken.length }
     );
