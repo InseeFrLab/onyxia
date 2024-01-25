@@ -261,7 +261,8 @@ export const { reducer, actions } = createUsecaseActions({
                                 >();
                                 return (
                                     formFieldValue.value instanceof Object &&
-                                    "yaml" in formFieldValue.value
+                                    "type" in formFieldValue.value &&
+                                    formFieldValue.value.type === "yaml"
                                 );
                         }
 
