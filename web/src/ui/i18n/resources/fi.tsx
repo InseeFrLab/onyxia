@@ -278,11 +278,8 @@ export const translations: Translations<"fi"> = {
     },
     "MyFiles": {
         "page title - my files": "Omat tiedostot",
-        "page title - my secrets": "Omat salaisuudet",
         "what this page is used for - my files":
             "Täällä voit selata S3 Bucket -tiedostojasi.",
-        "what this page is used for - my secrets":
-            "Täällä voit määrittää muuttujia, jotka ovat käytettävissä palveluissasi ympäristömuuttujina.",
         "help content": ({ accountTabLink, docHref }) => (
             <>
                 Lue{" "}
@@ -302,10 +299,7 @@ export const translations: Translations<"fi"> = {
         "go to settings": "Siirry asetuksiin"
     },
     "MySecrets": {
-        "page title - my files": "Omat tiedostot",
         "page title - my secrets": "Omat salaisuudet",
-        "what this page is used for - my files":
-            "Täällä voit selata S3 Bucket -tiedostojasi.",
         "what this page is used for - my secrets":
             "Täällä voit määrittää muuttujia, jotka ovat käytettävissä palveluissasi ympäristömuuttujina.",
         "learn more - my files": "Jos haluat lisätietoja tiedostonhallinnasta,",
@@ -327,12 +321,10 @@ export const translations: Translations<"fi"> = {
         "description": "kuvaus"
     },
     "SecretsExplorerButtonBar": {
-        "file": "tiedosto",
         "secret": "salaisuus",
         "rename": "nimeä uudelleen",
         "delete": "poista",
         "create secret": "Luo salaisuus",
-        "upload file": "Lataa tiedosto",
         "copy path": "Käytä palvelussa",
         "create directory": "Luo hakemisto",
         "refresh": "päivitä",
@@ -341,9 +333,7 @@ export const translations: Translations<"fi"> = {
     },
     "ExplorerButtonBar": {
         "file": "tiedosto",
-        "secret": "salaisuus",
         "delete": "poista",
-        "create secret": "Luo salaisuus",
         "upload file": "Lataa tiedosto",
         "copy path": "Kopioi S3-objektin nimi",
         "create directory": "Luo hakemisto",

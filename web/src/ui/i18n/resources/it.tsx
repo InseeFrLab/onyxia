@@ -281,10 +281,7 @@ export const translations: Translations<"it"> = {
     },
     "MyFiles": {
         "page title - my files": "I miei file",
-        "page title - my secrets": "I miei segreti",
         "what this page is used for - my files": "Archivia qui i tuoi file di dati.",
-        "what this page is used for - my secrets":
-            "Archivia qui i segreti che saranno accessibili come variabili d'ambiente nei tuoi servizi.",
         "help content": ({ accountTabLink, docHref }) => (
             <>
                 Leggere{" "}
@@ -304,9 +301,7 @@ export const translations: Translations<"it"> = {
         "go to settings": "Vai alle impostazioni"
     },
     "MySecrets": {
-        "page title - my files": "I miei file",
         "page title - my secrets": "I miei segreti",
-        "what this page is used for - my files": "Archivia qui i tuoi file di dati.",
         "what this page is used for - my secrets":
             "Archivia qui i segreti che saranno accessibili come variabili d'ambiente nei tuoi servizi.",
         "learn more - my files": "Per saperne di più sull'utilizzo dello storage S3,",
@@ -330,9 +325,7 @@ export const translations: Translations<"it"> = {
     },
     "ExplorerButtonBar": {
         "file": "file",
-        "secret": "segreto",
         "delete": "eliminare",
-        "create secret": "Nuovo segreto",
         "upload file": "Caricare un file",
         "copy path": "Copia il nome dell'oggetto S3",
         "create directory": "Nuova cartella",
@@ -341,13 +334,10 @@ export const translations: Translations<"it"> = {
         "new": "Nuovo"
     },
     "SecretsExplorerButtonBar": {
-        "file": "file",
         "secret": "segreto",
         "rename": "rinominare",
         "delete": "eliminare",
-
         "create secret": "Nuovo segreto",
-        "upload file": "Caricare un file",
         "copy path": "Utilizzare nel servizio",
         "create directory": "Nuova cartella",
         "refresh": "aggiornare",

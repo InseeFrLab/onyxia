@@ -252,10 +252,7 @@ export const translations: Translations<"zh-CN"> = {
     },
     "MyFiles": {
         "page title - my files": "我的文件",
-        "page title - my secrets": "我的密钥",
         "what this page is used for - my files": "在此处存储您的数据.",
-        "what this page is used for - my secrets":
-            "在此处存储可作为服务中的环境变量访问的密钥.",
         "help content": ({ accountTabLink, docHref }) => (
             <>
                 阅读{" "}
@@ -274,9 +271,7 @@ export const translations: Translations<"zh-CN"> = {
         "go to settings": "前往设置"
     },
     "MySecrets": {
-        "page title - my files": "我的文件",
         "page title - my secrets": "我的密钥",
-        "what this page is used for - my files": "在此处存储您的数据.",
         "what this page is used for - my secrets":
             "在此处存储可作为服务中的环境变量访问的密钥.",
         "learn more - my files": "了解有关使用 S3 存储的更多信息,",
@@ -299,9 +294,7 @@ export const translations: Translations<"zh-CN"> = {
     },
     "ExplorerButtonBar": {
         "file": "文件",
-        "secret": "密钥",
         "delete": "删除",
-        "create secret": "创建密钥",
         "upload file": "上传文件",
         "copy path": "复制 S3 对象名称",
         "create directory": "创建目录",
@@ -310,12 +303,10 @@ export const translations: Translations<"zh-CN"> = {
         "new": "新建"
     },
     "SecretsExplorerButtonBar": {
-        "file": "文档",
         "secret": "密码",
         "rename": "重命名",
         "delete": "删除",
         "create secret": "新的密钥",
-        "upload file": "上传文件",
         "copy path": "在服务中使用",
         "create directory": "新建文件夹",
         "refresh": "刷新",

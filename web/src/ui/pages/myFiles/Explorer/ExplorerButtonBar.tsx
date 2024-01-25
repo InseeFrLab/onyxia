@@ -66,9 +66,7 @@ export const ExplorerButtonBar = memo((props: Props) => {
 
 export const { i18n } = declareComponentKeys<
     | ButtonId
-    | "create secret"
     | "upload file"
-    | "secret"
     | "file"
     //TODO: Remove
     | { K: "create what"; P: { what: string } }

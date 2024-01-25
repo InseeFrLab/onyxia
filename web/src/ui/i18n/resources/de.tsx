@@ -282,10 +282,7 @@ export const translations: Translations<"de"> = {
     },
     "MyFiles": {
         "page title - my files": "Meine Dateien",
-        "page title - my secrets": "Meine Geheimnisse",
         "what this page is used for - my files": "Speichern Sie hier Ihre Dateien.",
-        "what this page is used for - my secrets":
-            "Speichern Sie hier Geheimnisse, die in Form von Umgebungsvariablen in Ihren Diensten verfügbar sein werden.",
         "help content": ({ accountTabLink, docHref }) => (
             <>
                 Lesen Sie
@@ -305,9 +302,7 @@ export const translations: Translations<"de"> = {
         "go to settings": "Zu den Einstellungen gehen"
     },
     "MySecrets": {
-        "page title - my files": "Meine Dateien",
         "page title - my secrets": "Meine Geheimnisse",
-        "what this page is used for - my files": "Speichern Sie hier Ihre Dateien.",
         "what this page is used for - my secrets":
             "Speichern Sie hier Geheimnisse, die in Form von Umgebungsvariablen in Ihren Diensten verfügbar sein werden.",
         "learn more - my files":
@@ -334,9 +329,7 @@ export const translations: Translations<"de"> = {
     },
     "ExplorerButtonBar": {
         "file": "Datei",
-        "secret": "Geheimnis",
         "delete": "löschen",
-        "create secret": "Neues Geheimnis",
         "upload file": "Datei hochladen",
         "copy path": "Den S3-Objektnamen kopieren",
         "create directory": "Neues Verzeichnis",
@@ -345,12 +338,10 @@ export const translations: Translations<"de"> = {
         "new": "Neu"
     },
     "SecretsExplorerButtonBar": {
-        "file": "Datei",
         "secret": "Geheimnis",
         "rename": "umbenennen",
         "delete": "löschen",
         "create secret": "Neues Geheimnis",
-        "upload file": "Datei hochladen",
         "copy path": "Im Dienst verwenden",
         "create directory": "Neues Verzeichnis",
         "refresh": "aktualisieren",

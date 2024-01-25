@@ -311,9 +311,7 @@ export default function MySecrets(props: Props) {
 }
 
 export const { i18n } = declareComponentKeys<
-    | "page title - my files"
     | "page title - my secrets"
-    | "what this page is used for - my files"
     | "what this page is used for - my secrets"
     | "learn more - my files"
     | {
