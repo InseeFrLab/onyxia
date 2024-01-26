@@ -107,9 +107,9 @@ jobs:
           XDG_CACHE_HOME: "/home/runner/.cache/yarn"
           KEYCLOAKIFY_THEME_VERSION: ${{needs.prepare_release.outputs.new_chart_version}}
       - run: mv build_keycloak/target/retrocompat-*.jar keycloak-theme.jar
-        # Delay 15 minute because wait-for-jobs has a limit of 15 minutes and the build of the docker image takes ~27 minutes
+        # Delay 25 minute because wait-for-jobs has a limit of 15 minutes and the build of the docker image takes ~27 minutes
       - name: Delay
-        run: sleep 900 
+        run: sleep 1500
       - uses: yogeshlonkar/wait-for-jobs@v0.1.8
         with:
           ignore-skipped: true
