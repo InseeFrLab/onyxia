@@ -26,8 +26,8 @@ export const translations: Translations<"fr"> = {
         "user id": "Identifiant (IDEP)",
         "full name": "Nom complet",
         "email": "Adresse mail",
-        "change account info":
-            "Modifier les informations du compte (comme, par exemple, votre mot de passe)"
+        "instructions about how to change password":
+            'Pour changer votre mot de passe, déconnectez-vous simplement, puis cliquez sur le lien "mot de passe oublié".'
     },
     "AccountIntegrationsTab": {
         "git section title": "Configurations Git",

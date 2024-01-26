@@ -26,7 +26,8 @@ export const translations: Translations<"de"> = {
         "user id": "User-ID",
         "full name": "Vollständiger Name",
         "email": "E-Mail-Adresse",
-        "change account info": "Kontoinformationen ändern (z.B. Ihr Passwort)"
+        "instructions about how to change password":
+            'Um Ihr Passwort zu ändern, loggen Sie sich einfach aus und klicken Sie auf den Link "Passwort vergessen".'
     },
     "AccountIntegrationsTab": {
         "git section title": "Git-Konfiguration",

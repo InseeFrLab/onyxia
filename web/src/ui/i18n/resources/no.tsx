@@ -27,7 +27,8 @@ export const translations: Translations<"no"> = {
         "user id": "Bruker-ID (IDEP)",
         "full name": "Fullt navn",
         "email": "E-postadresse",
-        "change account info": "Endre kontoinformasjon (f.eks. passord)."
+        "instructions about how to change password":
+            'For å endre passordet ditt, bare logg ut og klikk på "glemt passord"-lenken.'
     },
     "AccountIntegrationsTab": {
         "git section title": "Git-konfigurasjon",

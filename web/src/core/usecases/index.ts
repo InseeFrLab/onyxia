@@ -13,7 +13,6 @@ import * as secretsEditor from "./secretsEditor";
 import * as s3CodeSnippets from "./s3CodeSnippets";
 import * as k8sCodeSnippets from "./k8sCodeSnippets";
 import * as vaultCredentials from "./vaultCredentials";
-import * as userAccountManagement from "./userAccountManagement";
 import * as sqlOlapShell from "./sqlOlapShell";
 import * as dataExplorer from "./dataExplorer";
 import * as projectManagement from "./projectManagement";
@@ -34,7 +33,6 @@ export const usecases = {
     s3CodeSnippets,
     k8sCodeSnippets,
     vaultCredentials,
-    userAccountManagement,
     sqlOlapShell,
     dataExplorer,
     projectManagement

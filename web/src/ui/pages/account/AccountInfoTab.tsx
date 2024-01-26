@@ -2,12 +2,15 @@ import { memo } from "react";
 import { useTranslation } from "ui/i18n";
 import { SettingSectionHeader } from "ui/shared/SettingSectionHeader";
 import { SettingField } from "ui/shared/SettingField";
-import { useCore, useCoreState } from "core";
+import { useCoreState } from "core";
 import { useCallbackFactory } from "powerhooks/useCallbackFactory";
 import { copyToClipboard } from "ui/tools/copyToClipboard";
-import Link from "@mui/material/Link";
 import { tss } from "tss";
 import { declareComponentKeys } from "i18nifty";
+import { Text } from "onyxia-ui/Text";
+import { Icon } from "onyxia-ui/Icon";
+import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
+import { id } from "tsafe/id";
 
 export type Props = {
     className?: string;
@@ -18,8 +21,6 @@ export const AccountInfoTab = memo((props: Props) => {
 
     const { t } = useTranslation({ AccountInfoTab });
 
-    const { userAccountManagement } = useCore().functions;
-
     const onRequestCopyFactory = useCallbackFactory(([textToCopy]: [string]) =>
         copyToClipboard(textToCopy)
     );
@@ -27,9 +28,6 @@ export const AccountInfoTab = memo((props: Props) => {
     const user = useCoreState("userAuthentication", "user");
 
     const fullName = `${user.firstName} ${user.familyName}`;
-
-    /* prettier-ignore */
-    const keycloakAccountConfigurationUrl = userAccountManagement.getPasswordResetUrl();
 
     const { classes } = useStyles();
 
@@ -54,27 +52,27 @@ export const AccountInfoTab = memo((props: Props) => {
                 text={user.email}
                 onRequestCopy={onRequestCopyFactory(user.email)}
             />
-            {keycloakAccountConfigurationUrl !== undefined && (
-                <Link
-                    className={classes.link}
-                    href={keycloakAccountConfigurationUrl}
-                    target="_blank"
-                    underline="hover"
-                >
-                    {t("change account info")}
-                </Link>
-            )}
+            <Text typo="body 2" className={classes.howToChangePasswordInfo}>
+                <Icon icon={id<MuiIconComponentName>("Info")} />
+                &nbsp;
+                {t("instructions about how to change password")}
+            </Text>
         </div>
     );
 });
 
 export const { i18n } = declareComponentKeys<
-    "general information" | "user id" | "full name" | "email" | "change account info"
+    | "general information"
+    | "user id"
+    | "full name"
+    | "email"
+    | "instructions about how to change password"
 >()({ AccountInfoTab });
 
 const useStyles = tss.withName({ AccountInfoTab }).create(({ theme }) => ({
-    "link": {
-        "marginTop": theme.spacing(2),
-        "display": "inline-block"
+    "howToChangePasswordInfo": {
+        "marginTop": theme.spacing(4),
+        "display": "flex",
+        "alignItems": "center"
     }
 }));

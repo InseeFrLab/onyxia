@@ -27,7 +27,8 @@ export const translations: Translations<"fi"> = {
         "user id": "Käyttäjätunnus (IDEP)",
         "full name": "Koko nimi",
         "email": "Sähköpostiosoite",
-        "change account info": "Muuta tilin tietoja (esim. salasanaa)."
+        "instructions about how to change password":
+            'Vaihtaaksesi salasanasi, kirjaudu vain ulos ja klikkaa "unohdin salasanani" -linkkiä.'
     },
     "AccountIntegrationsTab": {
         "git section title": "Git-konfiguraatio",

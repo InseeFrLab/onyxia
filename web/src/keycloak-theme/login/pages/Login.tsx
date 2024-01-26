@@ -49,27 +49,25 @@ export default function Login(
         <Template
             {...{ kcContext, i18n, doUseDefaultCss }}
             classes={classes_props}
-            displayInfo={social.displayInfo}
+            displayInfo={
+                realm.password && realm.registrationAllowed && !registrationDisabled
+            }
             displayWide={realm.password && social.providers !== undefined}
             headerNode={msg("doLogIn")}
             i18n={i18n}
             infoNode={
-                realm.password &&
-                realm.registrationAllowed &&
-                !registrationDisabled && (
-                    <div className={classes.linkToRegisterWrapper}>
-                        <Text typo="body 2" color="secondary">
-                            {msg("noAccount")!}
-                        </Text>
-                        <Link
-                            href={url.registrationUrl}
-                            className={classes.registerLink}
-                            underline="hover"
-                        >
-                            {msg("doRegister")}
-                        </Link>
-                    </div>
-                )
+                <div className={classes.linkToRegisterWrapper}>
+                    <Text typo="body 2" color="secondary">
+                        {msg("noAccount")!}
+                    </Text>
+                    <Link
+                        href={url.registrationUrl}
+                        className={classes.registerLink}
+                        underline="hover"
+                    >
+                        {msg("doRegister")}
+                    </Link>
+                </div>
             }
         >
             <div className={classes.root}>

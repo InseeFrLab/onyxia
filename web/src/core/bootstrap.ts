@@ -346,10 +346,6 @@ export async function bootstrapCore(
     }
 
     if (oidc.isUserLoggedIn) {
-        await dispatch(usecases.userAccountManagement.protectedThunks.initialize());
-    }
-
-    if (oidc.isUserLoggedIn) {
         dispatch(usecases.fileExplorer.protectedThunks.initialize());
     }
 

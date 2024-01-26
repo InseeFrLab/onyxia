@@ -25,7 +25,8 @@ export const translations: Translations<"zh-CN"> = {
         "user id": "身分名 (IDEP)",
         "full name": "全名",
         "email": "邮件地址",
-        "change account info": "修改帐户信息（例如您的密码）"
+        "instructions about how to change password":
+            "要更改密码，只需登出，然后点击“忘记密码”链接。"
     },
     "AccountIntegrationsTab": {
         "git section title": "Git 配置",

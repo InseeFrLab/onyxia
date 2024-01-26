@@ -26,7 +26,8 @@ export const translations: Translations<"nl"> = {
         "user id": "Gebruikersnaam (IDEP)",
         "full name": "Volledige naam",
         "email": "E-mailadres",
-        "change account info": "Accountgegevens (zoals uw wachtwoord) wijzigen"
+        "instructions about how to change password":
+            'Om uw wachtwoord te wijzigen, logt u simpelweg uit en klikt u op de link "wachtwoord vergeten".'
     },
     "AccountIntegrationsTab": {
         "git section title": "Git-configuraties",
