@@ -83,9 +83,9 @@ export const thunks = {
 
             const getIsActive = () => same(getState()[name].queryParams, queryParams);
 
-            const httpsUrl = await (async () => {
-                const { sourceUrl } = queryParams;
+            const { sourceUrl } = queryParams;
 
+            const httpsUrl = await (async () => {
                 if (sourceUrl.startsWith("https://")) {
                     return sourceUrl;
                 }
@@ -108,7 +108,7 @@ export const thunks = {
             })();
 
             const rowCountOrErrorMessage = await sqlOlap
-                .getRowCount(httpsUrl)
+                .getRowCount(sourceUrl)
                 .catch(error => String(error));
 
             if (!getIsActive()) {
@@ -128,7 +128,7 @@ export const thunks = {
 
             const rowsOrErrorMessage = await sqlOlap
                 .getRows({
-                    "sourceUrl": httpsUrl,
+                    sourceUrl,
                     "rowsPerPage": queryParams.rowsPerPage,
                     "page": queryParams.page
                 })

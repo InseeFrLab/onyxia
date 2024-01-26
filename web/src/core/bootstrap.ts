@@ -131,7 +131,24 @@ export async function bootstrapCore(
         "secretsManager": createObjectThatThrowsIfAccessed<SecretsManager>(),
         "s3ClientSts": undefined,
         "s3ClientForExplorer": createObjectThatThrowsIfAccessed<S3Client>(),
-        "sqlOlap": createDuckDbSqlOlap()
+        "sqlOlap": createDuckDbSqlOlap({
+            "getS3Config": async () => {
+                const { s3ClientForExplorer } = context;
+
+                const { accessKeyId, secretAccessKey, sessionToken } =
+                    await s3ClientForExplorer.getToken({
+                        "doForceRenew": false
+                    });
+
+                return {
+                    "s3_endpoint": s3ClientForExplorer.url,
+                    "s3_access_key_id": accessKeyId,
+                    "s3_secret_access_key": secretAccessKey,
+                    "s3_session_token": sessionToken,
+                    "s3_url_style": s3ClientForExplorer.pathStyleAccess ? "path" : "vhost"
+                };
+            }
+        })
     };
 
     const { core, dispatch, getState, evtAction } = createCore({
