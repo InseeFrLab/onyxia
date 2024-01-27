@@ -19,53 +19,41 @@ export const createDuckDbSqlOlap = (params: {
         s3_url_style: "path" | "vhost";
     }>;
 }): SqlOlap => {
-    let dDb: Deferred<AsyncDuckDB> | undefined = undefined;
-
     const { getS3Config } = params;
 
-    const { configureS3 } = (() => {
-        let cache: ReturnType<typeof getS3Config> | undefined = undefined;
+    let currentS3Config: ReturnType<typeof getS3Config> | undefined = undefined;
 
-        async function configureS3(conn: AsyncDuckDBConnection) {
-            const newConfig = await getS3Config();
+    async function configureS3(conn: AsyncDuckDBConnection) {
+        const s3Config = await getS3Config();
 
-            if (same(newConfig, cache)) {
-                return;
-            }
-
-            cache = newConfig;
-
-            const {
-                s3_endpoint,
-                s3_access_key_id,
-                s3_secret_access_key,
-                s3_session_token
-                //s3_url_style
-            } = newConfig;
-
-            await conn.query(
-                [
-                    `SET s3_endpoint = '${s3_endpoint}';`,
-                    `SET s3_access_key_id = '${s3_access_key_id}';`,
-                    `SET s3_secret_access_key = '${s3_secret_access_key}';`,
-                    ...(s3_session_token === undefined
-                        ? []
-                        : [`SET s3_session_token = '${s3_session_token}';`])
-                    //`SET s3_url_style = '${s3_url_style}';`
-                ].join("\n")
-            );
+        if (same(s3Config, currentS3Config)) {
+            return;
         }
 
-        return { configureS3 };
-    })();
+        currentS3Config = s3Config;
 
-    const formatS3OrHttpUrl = (sourceUrl: string) => {
-        if (sourceUrl.startsWith("s3://")) {
-            return `read_parquet('${sourceUrl}')`;
-        }
+        const {
+            s3_endpoint,
+            s3_access_key_id,
+            s3_secret_access_key,
+            s3_session_token
+            //s3_url_style
+        } = s3Config;
 
-        return `"${sourceUrl}"`;
-    };
+        await conn.query(
+            [
+                `SET s3_endpoint = '${s3_endpoint}';`,
+                `SET s3_access_key_id = '${s3_access_key_id}';`,
+                `SET s3_secret_access_key = '${s3_secret_access_key}';`,
+                ...(s3_session_token === undefined
+                    ? []
+                    : [`SET s3_session_token = '${s3_session_token}';`])
+                //`SET s3_url_style = '${s3_url_style}';`
+            ].join("\n")
+        );
+    }
+
+    let dDb: Deferred<AsyncDuckDB> | undefined = undefined;
 
     const sqlOlap: SqlOlap = {
         "getDb": async () => {
@@ -104,7 +92,9 @@ export const createDuckDbSqlOlap = (params: {
 
             const conn = await db.connect();
 
-            await configureS3(conn);
+            if (sourceUrl.startsWith("s3://")) {
+                await configureS3(conn);
+            }
 
             const stmt = await conn.prepare(
                 `SELECT * FROM ${formatS3OrHttpUrl(
@@ -144,7 +134,9 @@ export const createDuckDbSqlOlap = (params: {
 
                 const conn = await db.connect();
 
-                await configureS3(conn);
+                if (sourceUrl.startsWith("s3://")) {
+                    await configureS3(conn);
+                }
 
                 const stmt = await conn.prepare(
                     `SELECT count(*)::INTEGER as v FROM ${formatS3OrHttpUrl(sourceUrl)};`
@@ -161,4 +153,12 @@ export const createDuckDbSqlOlap = (params: {
     };
 
     return sqlOlap;
+};
+
+const formatS3OrHttpUrl = (sourceUrl: string) => {
+    if (sourceUrl.startsWith("s3://")) {
+        return `read_parquet('${sourceUrl}')`;
+    }
+
+    return `"${sourceUrl}"`;
 };

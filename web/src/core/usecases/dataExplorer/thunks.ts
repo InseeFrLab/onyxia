@@ -85,7 +85,7 @@ export const thunks = {
 
             const { sourceUrl } = queryParams;
 
-            const httpsUrl = await (async () => {
+            const fileDownloadUrl = await (async () => {
                 if (sourceUrl.startsWith("https://")) {
                     return sourceUrl;
                 }
@@ -153,7 +153,7 @@ export const thunks = {
                 actions.querySucceeded({
                     "rows": rowsOrErrorMessage,
                     "rowCount": rowCountOrErrorMessage ?? 99999999,
-                    "fileDownloadUrl": httpsUrl
+                    fileDownloadUrl
                 })
             );
         }

@@ -319,14 +319,14 @@ export async function bootstrapCore(
                             data.payload.key === "s3"))
             )
             .toStateful()
-            .pipe((): [ParamsOfCreateS3Client.NoSts | undefined] => {
+            .pipe((): [ParamsOfCreateS3Client.NoSts | number] => {
                 const { indexForExplorer, customConfigs } =
                     usecases.s3ConfigManagement.protectedSelectors.projectS3Config(
                         getState()
                     );
 
                 if (indexForExplorer === undefined) {
-                    return [undefined];
+                    return [Date.now() + Math.random()];
                 }
 
                 const customS3ConfigForExplorer = customConfigs[indexForExplorer];
@@ -344,14 +344,17 @@ export async function bootstrapCore(
                 ];
             })
             .pipe(onlyIfChanged())
-            .attach(
-                paramsOfCreateS3Client =>
-                    (context.s3ClientForExplorer =
-                        paramsOfCreateS3Client === undefined
-                            ? context.s3ClientSts ??
-                              createObjectThatThrowsIfAccessed<S3Client>()
-                            : createS3Client(paramsOfCreateS3Client))
-            );
+            .pipe(data => [typeof data === "number" ? undefined : data])
+            .attach(paramsOfCreateS3ClientNoSts => {
+                if (paramsOfCreateS3ClientNoSts === undefined) {
+                    context.s3ClientForExplorer =
+                        context.s3ClientSts ??
+                        createObjectThatThrowsIfAccessed<S3Client>();
+                    return;
+                }
+
+                context.s3ClientForExplorer = createS3Client(paramsOfCreateS3ClientNoSts);
+            });
     }
 
     if (oidc.isUserLoggedIn) {
