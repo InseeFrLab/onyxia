@@ -12,31 +12,14 @@ function getNewlyRequestedOrCachedTokenWithoutParamsFactory<
 >(params: {
     requestNewToken: () => Promise<T>;
     returnCachedTokenIfStillValidForXPercentOfItsTTL: "99%" | "90%" | "80%" | "50%";
-    persistance: TokenPersistance<T> | undefined;
 }) {
-    const {
-        requestNewToken,
-        returnCachedTokenIfStillValidForXPercentOfItsTTL,
-        persistance
-    } = params;
+    const { requestNewToken, returnCachedTokenIfStillValidForXPercentOfItsTTL } = params;
 
     let cache: { token: T; ttl: number } | undefined = undefined;
-
-    let hasCacheBeenRestoredFromPersistance = false;
 
     const getNewlyRequestedOrCachedTokenWithoutParams = runExclusive.build<
         () => Promise<T>
     >(async () => {
-        if (!hasCacheBeenRestoredFromPersistance && persistance !== undefined) {
-            hasCacheBeenRestoredFromPersistance = true;
-
-            const cacheFromPersistance = await persistance.get();
-
-            if (cacheFromPersistance !== undefined) {
-                cache = cacheFromPersistance;
-            }
-        }
-
         if (
             cache !== undefined &&
             cache.token.expirationTime - Date.now() >
@@ -56,8 +39,6 @@ function getNewlyRequestedOrCachedTokenWithoutParamsFactory<
             "ttl": token.expirationTime - Date.now()
         };
 
-        await persistance?.set(cache);
-
         return token;
     });
 
@@ -70,20 +51,14 @@ export function getNewlyRequestedOrCachedTokenFactory<
 >(params: {
     requestNewToken: (...args: Args) => Promise<T>;
     returnCachedTokenIfStillValidForXPercentOfItsTTL: "99%" | "90%" | "80%" | "50%";
-    persistance: TokenPersistance<T> | undefined;
 }) {
-    const {
-        requestNewToken,
-        returnCachedTokenIfStillValidForXPercentOfItsTTL,
-        persistance
-    } = params;
+    const { requestNewToken, returnCachedTokenIfStillValidForXPercentOfItsTTL } = params;
 
     const getNewlyRequestedOrCachedTokenFactory_memo = memoize(
         (...args: Args) =>
             getNewlyRequestedOrCachedTokenWithoutParamsFactory({
                 "requestNewToken": () => requestNewToken(...args),
-                returnCachedTokenIfStillValidForXPercentOfItsTTL,
-                persistance
+                returnCachedTokenIfStillValidForXPercentOfItsTTL
             }),
         { "length": requestNewToken.length }
     );
@@ -95,8 +70,7 @@ export function getNewlyRequestedOrCachedTokenFactory<
         return getNewlyRequestedOrCachedTokenWithoutParams();
     }
 
-    async function clearCachedToken() {
-        await persistance?.clear();
+    function clearCachedToken() {
         getNewlyRequestedOrCachedTokenFactory_memo.clear();
     }
 

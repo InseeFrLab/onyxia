@@ -97,8 +97,7 @@ const keys = [
     "servicePassword",
     "onboardingTimestamp",
     "restorableConfigs",
-    "s3",
-    "s3StsToken"
+    "s3"
 ] as const;
 
 assert<Equals<(typeof keys)[number], keyof ProjectConfigs>>();
@@ -253,11 +252,6 @@ function getDefaultConfig<K extends keyof ProjectConfigs>(key_: K): ProjectConfi
                 "indexForExplorer": undefined,
                 "indexForXOnyxia": undefined
             };
-            // @ts-expect-error
-            return out;
-        }
-        case "s3StsToken": {
-            const out: ProjectConfigs[typeof key] = undefined;
             // @ts-expect-error
             return out;
         }

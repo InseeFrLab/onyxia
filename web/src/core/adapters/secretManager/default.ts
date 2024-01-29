@@ -50,8 +50,7 @@ export async function createSecretManager(params: Params): Promise<SecretsManage
                     "acquisitionTime": now
                 });
             },
-            "returnCachedTokenIfStillValidForXPercentOfItsTTL": "90%",
-            "persistance": undefined
+            "returnCachedTokenIfStillValidForXPercentOfItsTTL": "90%"
         });
 
     const { axiosInstance } = (() => {
@@ -113,7 +112,7 @@ export async function createSecretManager(params: Params): Promise<SecretsManage
             const { doForceRefresh } = params ?? {};
 
             if (doForceRefresh) {
-                await clearCachedToken();
+                clearCachedToken();
             }
 
             return getNewlyRequestedOrCachedToken();

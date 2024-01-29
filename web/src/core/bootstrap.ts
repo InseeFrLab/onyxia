@@ -286,33 +286,7 @@ export async function bootstrapCore(
                                 return project.group === undefined
                                     ? `${workingDirectory.bucketNamePrefix}${username}`
                                     : `${workingDirectory.bucketNamePrefixGroup}${project.group}`;
-                            })(),
-                            "persistance": {
-                                "get": () =>
-                                    Promise.resolve(
-                                        usecases.projectManagement.protectedSelectors.currentProjectConfigs(
-                                            getState()
-                                        ).s3StsToken
-                                    ),
-                                "set": ({ token, ttl }) =>
-                                    dispatch(
-                                        usecases.projectManagement.protectedThunks.updateConfigValue(
-                                            {
-                                                "key": "s3StsToken",
-                                                "value": { token, ttl }
-                                            }
-                                        )
-                                    ),
-                                "clear": () =>
-                                    dispatch(
-                                        usecases.projectManagement.protectedThunks.updateConfigValue(
-                                            {
-                                                "key": "s3StsToken",
-                                                "value": undefined
-                                            }
-                                        )
-                                    )
-                            }
+                            })()
                         })
                     );
                 });
