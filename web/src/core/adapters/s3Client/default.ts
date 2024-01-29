@@ -285,7 +285,7 @@ export function createS3Client(params: ParamsOfCreateS3Client): S3Client {
         "pathStyleAccess": params.pathStyleAccess,
         "getToken": async ({ doForceRenew }) => {
             if (doForceRenew) {
-                clearCachedToken();
+                await clearCachedToken();
             }
 
             return getNewlyRequestedOrCachedToken();

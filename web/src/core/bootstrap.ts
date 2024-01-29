@@ -302,6 +302,15 @@ export async function bootstrapCore(
                                                 "value": { token, ttl }
                                             }
                                         )
+                                    ),
+                                "clear": () =>
+                                    dispatch(
+                                        usecases.projectManagement.protectedThunks.updateConfigValue(
+                                            {
+                                                "key": "s3StsToken",
+                                                "value": undefined
+                                            }
+                                        )
                                     )
                             }
                         })

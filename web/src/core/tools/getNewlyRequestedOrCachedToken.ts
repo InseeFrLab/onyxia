@@ -4,6 +4,7 @@ import memoize from "memoizee";
 export type TokenPersistance<T> = {
     get: () => Promise<{ token: T; ttl: number } | undefined>;
     set: (cache: { token: T; ttl: number }) => Promise<void>;
+    clear: () => Promise<void>;
 };
 
 function getNewlyRequestedOrCachedTokenWithoutParamsFactory<
@@ -94,7 +95,8 @@ export function getNewlyRequestedOrCachedTokenFactory<
         return getNewlyRequestedOrCachedTokenWithoutParams();
     }
 
-    function clearCachedToken() {
+    async function clearCachedToken() {
+        await persistance?.clear();
         getNewlyRequestedOrCachedTokenFactory_memo.clear();
     }
 

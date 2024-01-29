@@ -109,11 +109,11 @@ export async function createSecretManager(params: Params): Promise<SecretsManage
         "delete": async ({ path }) => {
             await axiosInstance.delete(ctxPathJoin("metadata", path));
         },
-        "getToken": params => {
+        "getToken": async params => {
             const { doForceRefresh } = params ?? {};
 
             if (doForceRefresh) {
-                clearCachedToken();
+                await clearCachedToken();
             }
 
             return getNewlyRequestedOrCachedToken();
