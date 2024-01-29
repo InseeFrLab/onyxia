@@ -7,9 +7,12 @@ import type {
     SecretsManager
 } from "core/ports/SecretsManager";
 import type { ReturnType } from "tsafe";
-import { getNewlyRequestedOrCachedTokenFactory } from "core/tools/getNewlyRequestedOrCachedToken";
-import { id } from "tsafe/id";
+import {
+    getNewlyRequestedOrCachedTokenFactory,
+    createSessionStorageTokenPersistance
+} from "core/tools/getNewlyRequestedOrCachedToken";
 import type { Oidc } from "core/ports/Oidc";
+import { fnv1aHashToHex } from "core/tools/fnv1aHashToHex";
 
 const version = "v1";
 
@@ -32,6 +35,15 @@ export async function createSecretManager(params: Params): Promise<SecretsManage
 
     const { getNewlyRequestedOrCachedToken, clearCachedToken } =
         getNewlyRequestedOrCachedTokenFactory({
+            "persistance": createSessionStorageTokenPersistance<ReturnType<SecretsManager["getToken"]>>({
+                "sessionStorageKey": "vaultToken_" + fnv1aHashToHex((()=>{
+
+                    const { url, authPath, role } = params;
+
+                    return JSON.stringify({ url, authPath, role, version });
+
+                })())
+            }),
             "requestNewToken": async () => {
                 const now = Date.now();
 
@@ -44,11 +56,11 @@ export async function createSecretManager(params: Params): Promise<SecretsManage
                     "jwt": oidc.getTokens().accessToken
                 });
 
-                return id<ReturnType<SecretsManager["getToken"]>>({
+                return {
                     "token": auth.client_token,
                     "expirationTime": now + auth.lease_duration * 1000,
                     "acquisitionTime": now
-                });
+                };
             },
             "returnCachedTokenIfStillValidForXPercentOfItsTTL": "90%"
         });
@@ -112,7 +124,7 @@ export async function createSecretManager(params: Params): Promise<SecretsManage
             const { doForceRefresh } = params ?? {};
 
             if (doForceRefresh) {
-                clearCachedToken();
+                await clearCachedToken();
             }
 
             return getNewlyRequestedOrCachedToken();
