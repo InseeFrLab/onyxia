@@ -51,7 +51,8 @@ const {
     palette,
     "splashScreenParams": {
         "assetUrl": env.SPLASHSCREEN_LOGO,
-        "assetScaleFactor": env.SPLASHSCREEN_LOGO_SCALE_FACTOR
+        "assetScaleFactor": env.SPLASHSCREEN_LOGO_SCALE_FACTOR,
+        "minimumDisplayDuration": 0
     },
     "BASE_URL": env.PUBLIC_URL
 });
