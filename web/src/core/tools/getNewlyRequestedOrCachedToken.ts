@@ -1,12 +1,6 @@
 import * as runExclusive from "run-exclusive";
 import memoize from "memoizee";
 
-export type TokenPersistance<T> = {
-    get: () => Promise<{ token: T; ttl: number } | undefined>;
-    set: (cache: { token: T; ttl: number }) => Promise<void>;
-    clear: () => Promise<void>;
-};
-
 function getNewlyRequestedOrCachedTokenWithoutParamsFactory<
     T extends { expirationTime: number }
 >(params: {
