@@ -97,9 +97,9 @@ export const createDuckDbSqlOlap = (params: {
             }
 
             const stmt = await conn.prepare(
-                `SELECT * FROM ${formatS3OrHttpUrl(
-                    sourceUrl
-                )} LIMIT ${rowsPerPage} OFFSET ${rowsPerPage * (page - 1)}`
+                `SELECT * FROM "${sourceUrl}" LIMIT ${rowsPerPage} OFFSET ${
+                    rowsPerPage * (page - 1)
+                }`
             );
 
             const res = await stmt.query();
@@ -139,7 +139,7 @@ export const createDuckDbSqlOlap = (params: {
                 }
 
                 const stmt = await conn.prepare(
-                    `SELECT count(*)::INTEGER as v FROM ${formatS3OrHttpUrl(sourceUrl)};`
+                    `SELECT count(*)::INTEGER as v FROM "${sourceUrl}";`
                 );
 
                 const res = await stmt.query();
@@ -153,12 +153,4 @@ export const createDuckDbSqlOlap = (params: {
     };
 
     return sqlOlap;
-};
-
-const formatS3OrHttpUrl = (sourceUrl: string) => {
-    if (sourceUrl.startsWith("s3://")) {
-        return `read_parquet('${sourceUrl}')`;
-    }
-
-    return `"${sourceUrl}"`;
 };
