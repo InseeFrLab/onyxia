@@ -354,10 +354,10 @@ export const LauncherMainCard = memo((props: Props) => {
                                             key={customConfigIndex ?? "_"}
                                             value={`${customConfigIndex ?? "sts"}`}
                                         >
-                                            {dataSource}
                                             {accountFriendlyName !== undefined
-                                                ? ` - ${accountFriendlyName}`
+                                                ? `${accountFriendlyName} - `
                                                 : ""}
+                                            {dataSource}
                                         </MenuItem>
                                     )
                                 )}
