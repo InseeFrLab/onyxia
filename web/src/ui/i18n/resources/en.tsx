@@ -681,7 +681,14 @@ Feel free to explore and take charge of your Kubernetes deployments!
             </>
         ),
         "save changes": "Save changes",
-        "copied to clipboard": "Copied to clipboard!"
+        "copied to clipboard": "Copied to clipboard!",
+        "s3 configuration": "S3 configuration",
+        "s3 configuration - explain": ({ projectS3ConfigLink }) => (
+            <>
+                S3 configuration to use for this service.{" "}
+                <MuiLink {...projectS3ConfigLink}>S3 Configuration</MuiLink>.
+            </>
+        )
     },
     "LauncherConfigurationCard": {
         "global config": "Global configuration",

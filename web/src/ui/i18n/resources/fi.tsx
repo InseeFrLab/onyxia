@@ -681,7 +681,14 @@ Tutustu vapaasti ja ota hallintaan Kubernetes-julkaisusi!
             </>
         ),
         "save changes": "Tallenna muutokset",
-        "copied to clipboard": "Kopioitu leikepöydälle!"
+        "copied to clipboard": "Kopioitu leikepöydälle!",
+        "s3 configuration": "S3-konfiguraatio",
+        "s3 configuration - explain": ({ projectS3ConfigLink }) => (
+            <>
+                S3-konfiguraatio, jota käytetään tässä palvelussa.{" "}
+                <MuiLink {...projectS3ConfigLink}>S3-konfiguraatio</MuiLink>.
+            </>
+        )
     },
     "LauncherConfigurationCard": {
         "global config": "Yleinen konfiguraatio",

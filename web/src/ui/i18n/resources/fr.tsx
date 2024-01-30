@@ -697,7 +697,14 @@ N'hésitez pas à explorer et à prendre en main vos déploiements Kubernetes !
             </>
         ),
         "save changes": "Enregistrer les modifications",
-        "copied to clipboard": "Copié dans le presse-papiers !"
+        "copied to clipboard": "Copié dans le presse-papiers !",
+        "s3 configuration": "Configuration S3",
+        "s3 configuration - explain": ({ projectS3ConfigLink }) => (
+            <>
+                Configuration S3 à utiliser pour ce service.{" "}
+                <MuiLink {...projectS3ConfigLink}>Configuration S3</MuiLink>.
+            </>
+        )
     },
     "LauncherConfigurationCard": {
         "global config": "Configurations globales",

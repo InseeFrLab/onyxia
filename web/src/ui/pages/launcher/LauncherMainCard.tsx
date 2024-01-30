@@ -26,7 +26,6 @@ import { useResolveLocalizedString, type LocalizedString } from "ui/i18n";
 import { id } from "tsafe/id";
 import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
 import { same } from "evt/tools/inDepth/same";
-import MuiLink from "@mui/material/Link";
 
 export type Props = {
     className?: string;
@@ -293,18 +292,12 @@ export const LauncherMainCard = memo((props: Props) => {
                             className={classes.versionSelectWrapper}
                         >
                             <InputLabel id={s3ConfigInputLabelId}>
-                                S3 Configuration&nbsp;
+                                {t("s3 configuration")}&nbsp;
                                 <Tooltip
-                                    title={
-                                        <>
-                                            You can manage your S3 configurations&nbsp;
-                                            <MuiLink
-                                                {...s3ConfigsSelect.projectS3ConfigLink}
-                                            >
-                                                here
-                                            </MuiLink>
-                                        </>
-                                    }
+                                    title={t("s3 configuration - explain", {
+                                        "projectS3ConfigLink":
+                                            s3ConfigsSelect.projectS3ConfigLink
+                                    })}
                                 >
                                     <Icon
                                         className={classes.versionSelectHelpIcon}
@@ -460,6 +453,12 @@ export const { i18n } = declareComponentKeys<
       }
     | "save changes"
     | "copied to clipboard"
+    | "s3 configuration"
+    | {
+          K: "s3 configuration - explain";
+          P: { projectS3ConfigLink: Link };
+          R: JSX.Element;
+      }
 >()({ LauncherMainCard });
 
 const useStyles = tss.withName({ LauncherMainCard }).create(({ theme }) => ({

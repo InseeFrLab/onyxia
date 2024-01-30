@@ -693,7 +693,14 @@ Voel je vrij om te verkennen en de controle over je Kubernetes-implementaties te
             </>
         ),
         "save changes": "Wijzigingen opslaan",
-        "copied to clipboard": "Gekopieerd naar klembord!"
+        "copied to clipboard": "Gekopieerd naar klembord!",
+        "s3 configuration": "S3-configuratie",
+        "s3 configuration - explain": ({ projectS3ConfigLink }) => (
+            <>
+                S3-configuratie die voor deze dienst gebruikt wordt.{" "}
+                <MuiLink {...projectS3ConfigLink}>S3-configuratie</MuiLink>.
+            </>
+        )
     },
     "LauncherConfigurationCard": {
         "global config": "Globale configuraties",

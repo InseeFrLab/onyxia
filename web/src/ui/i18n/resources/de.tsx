@@ -698,7 +698,14 @@ Fühlen Sie sich frei, Ihre Kubernetes-Bereitstellungen zu erkunden und die Kont
             </>
         ),
         "save changes": "Änderungen speichern",
-        "copied to clipboard": "In die Zwischenablage kopiert!"
+        "copied to clipboard": "In die Zwischenablage kopiert!",
+        "s3 configuration": "S3-Konfiguration",
+        "s3 configuration - explain": ({ projectS3ConfigLink }) => (
+            <>
+                S3-Konfiguration, die für diesen Dienst verwendet werden soll.{" "}
+                <MuiLink {...projectS3ConfigLink}>S3-Konfiguration</MuiLink>.
+            </>
+        )
     },
     "LauncherConfigurationCard": {
         "global config": "Globale Konfigurationen",

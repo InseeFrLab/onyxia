@@ -688,7 +688,14 @@ Føl deg fri til å utforske og ta kontroll over dine Kubernetes-implementeringe
             </>
         ),
         "save changes": "Lagre endringer",
-        "copied to clipboard": "Kopiert til utklippstavlen!"
+        "copied to clipboard": "Kopiert til utklippstavlen!",
+        "s3 configuration": "S3-konfigurasjon",
+        "s3 configuration - explain": ({ projectS3ConfigLink }) => (
+            <>
+                S3-konfigurasjon som skal brukes for denne tjenesten.{" "}
+                <MuiLink {...projectS3ConfigLink}>S3-konfigurasjon</MuiLink>.
+            </>
+        )
     },
     "LauncherConfigurationCard": {
         "global config": "Global konfigurasjon",

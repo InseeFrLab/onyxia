@@ -638,7 +638,14 @@ ${
             </>
         ),
         "save changes": "保存更改",
-        "copied to clipboard": "已复制到剪贴板！"
+        "copied to clipboard": "已复制到剪贴板！",
+        "s3 configuration": "S3 配置",
+        "s3 configuration - explain": ({ projectS3ConfigLink }) => (
+            <>
+                用于此服务的 S3 配置。 <MuiLink {...projectS3ConfigLink}>S3 配置</MuiLink>
+                。
+            </>
+        )
     },
     "LauncherConfigurationCard": {
         "global config": "全局配置",

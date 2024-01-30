@@ -689,7 +689,14 @@ Sentiti libero di esplorare e prendere il controllo dei tuoi deployment Kubernet
             </>
         ),
         "save changes": "Salva modifiche",
-        "copied to clipboard": "Copiato negli appunti!"
+        "copied to clipboard": "Copiato negli appunti!",
+        "s3 configuration": "Configurazione S3",
+        "s3 configuration - explain": ({ projectS3ConfigLink }) => (
+            <>
+                Configurazione S3 da utilizzare per questo servizio.{" "}
+                <MuiLink {...projectS3ConfigLink}>Configurazione S3</MuiLink>.
+            </>
+        )
     },
     "LauncherConfigurationCard": {
         "global config": "Configurazioni globali",
