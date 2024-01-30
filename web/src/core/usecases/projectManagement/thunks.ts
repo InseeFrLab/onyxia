@@ -7,6 +7,7 @@ import type { Secret } from "core/ports/SecretsManager";
 import { selectors, protectedSelectors } from "./selectors";
 import * as userConfigs from "core/usecases/userConfigs";
 import { same } from "evt/tools/inDepth";
+import { id } from "tsafe/id";
 
 export const thunks = {
     "changeProject":
@@ -34,9 +35,14 @@ export const thunks = {
                 projectVaultTopDirPath
             });
 
-            const { files } = await secretsManager.list({
-                "path": projectConfigVaultDirPath
-            });
+            const { files } = await secretsManager
+                .list({
+                    "path": projectConfigVaultDirPath
+                })
+                .catch(() => {
+                    console.log("The above 404 is fine");
+                    return { "files": id<string[]>([]) };
+                });
 
             const projectConfigs: ProjectConfigs = Object.fromEntries(
                 await Promise.all(
@@ -114,9 +120,18 @@ export const privateThunks = {
                 projectVaultTopDirPath
             });
 
-            const { files } = await secretsManager.list({
-                "path": projectConfigVaultDirPath
-            });
+            let files: string[];
+
+            try {
+                files = (
+                    await secretsManager.list({
+                        "path": projectConfigVaultDirPath
+                    })
+                ).files;
+            } catch {
+                console.log("The above 404 is fine");
+                return;
+            }
 
             restorableConfigsStr: {
                 if (!files.includes("restorableConfigsStr")) {
