@@ -5,16 +5,15 @@
     "license": "MIT",
     "scripts": {
         "_comment": "Yes... We're still using CRA. We'll migrate to Vite as soon as Keycloakify gets support for it",
-        "start": "ts-node scripts/unyamlify-env-local.ts && react-app-rewired start",
-        "build": "react-app-rewired build",
+        "start": "generate-env-getter && copy-keycloak-resources-to-public && ts-node scripts/unyamlify-env-local.ts && react-app-rewired start",
+        "build": "react-app-rewired build && rm -rf build/keycloak-resources",
         "build-keycloak-theme": "yarn build && keycloakify",
-        "prestart": "generate-env-getter",
         "_format": "prettier '**/*.{ts,tsx,json,md}'",
         "format": "yarn _format --write",
         "format:check": "yarn _format --list-different",
         "emails-domain-accept-list-helper": "ts-node scripts/emails-domain-accept-list-helper.ts",
-        "prepare": "cp -rf patches/fs node_modules/ && patch-package && generate-env-getter && copy-keycloak-resources-to-public && copy-material-icons-to-public",
-        "storybook": "start-storybook -p 6006"
+        "prepare": "cp -rf patches/fs node_modules/ && patch-package && generate-env-getter && copy-material-icons-to-public",
+        "storybook": "copy-keycloak-resources-to-public && start-storybook -p 6006"
     },
     "keycloakify": {
         "themeName": "onyxia",
