@@ -257,7 +257,6 @@ export default function MySecrets(props: Props) {
                 onDeleteItem={onDeleteItem}
                 onNewItem={onNewItem}
                 onCopyPath={onCopyPath}
-                pathMinDepth={1}
                 scrollableDivRef={scrollableDivRef}
                 isCommandBarEnabled={isCommandBarEnabled}
                 {...(() => {

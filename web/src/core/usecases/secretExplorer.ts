@@ -410,9 +410,7 @@ export const protectedThunks = {
         (...args) => {
             const [, getState] = args;
 
-            return `/${
-                projectManagement.selectors.currentProject(getState()).vaultTopDir
-            }`;
+            return projectManagement.selectors.currentProject(getState()).vaultTopDir;
         }
 } satisfies Thunks;
 

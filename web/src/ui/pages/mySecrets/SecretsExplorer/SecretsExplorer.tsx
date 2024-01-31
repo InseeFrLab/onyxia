@@ -71,8 +71,6 @@ export type ExplorerProps = {
         suggestedBasename: string;
     }) => void;
     onCopyPath: (params: { path: string }) => void;
-    //Defines how hight users should be allowed to browse up in the path
-    pathMinDepth: number;
     //TODO: Find a better way
     scrollableDivRef: RefObject<any>;
     isCommandBarEnabled: boolean;
@@ -110,7 +108,6 @@ export const SecretsExplorer = memo((props: ExplorerProps) => {
         onNewItem,
         onCopyPath,
         scrollableDivRef,
-        pathMinDepth,
         isCommandBarEnabled
     } = props;
 
@@ -392,13 +389,32 @@ export const SecretsExplorer = memo((props: ExplorerProps) => {
                     />
                 )}
                 {(() => {
-                    const title = props.isFileOpen
-                        ? props.openFileBasename
-                        : directoryPath.split("/").length - 1 === pathMinDepth
-                        ? undefined
-                        : pathBasename(directoryPath);
+                    const title = (() => {
+                        if (props.isFileOpen) {
+                            return props.openFileBasename;
+                        }
 
-                    return title === undefined ? null : (
+                        const split = directoryPath
+                            .split("/")
+                            .filter(part => part !== "");
+
+                        assert(
+                            split.length !== 0,
+                            "We assume there is always a directory for the user (or project)"
+                        );
+
+                        if (split.length === 1) {
+                            return undefined;
+                        }
+
+                        return pathBasename(directoryPath);
+                    })();
+
+                    if (title === undefined) {
+                        return null;
+                    }
+
+                    return (
                         <DirectoryHeader
                             title={title}
                             onGoBack={onGoBack}
@@ -406,7 +422,7 @@ export const SecretsExplorer = memo((props: ExplorerProps) => {
                             image={
                                 <ExplorerIcon
                                     className={classes.fileOrDirectoryIcon}
-                                    iconId={!props.isFileOpen ? "directory" : "secret"}
+                                    iconId={!props.isFileOpen ? "directory" : "data"}
                                     hasShadow={true}
                                 />
                             }
@@ -415,7 +431,6 @@ export const SecretsExplorer = memo((props: ExplorerProps) => {
                 })()}
                 <div className={classes.breadcrumpWrapper}>
                     <Breadcrumb
-                        minDepth={pathMinDepth}
                         path={[
                             ...directoryPath.split("/"),
                             ...(props.isFileOpen ? [props.openFileBasename] : [])
