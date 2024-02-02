@@ -6786,11 +6786,6 @@ crypto-browserify@^3.11.0, crypto-browserify@^3.12.0:
     randombytes "^2.0.0"
     randomfill "^1.0.3"
 
-crypto-js@^4.1.1:
-  version "4.1.1"
-  resolved "https://registry.yarnpkg.com/crypto-js/-/crypto-js-4.1.1.tgz#9e485bcf03521041bd85844786b83fb7619736cf"
-  integrity sha512-o2JlM7ydqd3Qk9CA0L4NL6mTzU2sdx96a+oOfPu8Mkl/PK51vSyoi8/rQ8NknZtk44vq15lmhAj9CIAGwgeWKw==
-
 crypto-random-string@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/crypto-random-string/-/crypto-random-string-2.0.0.tgz#ef2a7a966ec11083388369baa02ebead229b30d5"
@@ -11014,6 +11009,11 @@ jwt-decode@^3.1.2:
   resolved "https://registry.yarnpkg.com/jwt-decode/-/jwt-decode-3.1.2.tgz#3fb319f3675a2df0c2895c8f5e9fa4b67b04ed59"
   integrity sha512-UfpWE/VZn0iP50d8cz9NrZLM9lSWhcJ+0Gt/nm4by88UL+J1SiKN8/5dkjMmbEzwL2CAe+67GsegCbIKtbp75A==
 
+jwt-decode@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/jwt-decode/-/jwt-decode-4.0.0.tgz#2270352425fd413785b2faf11f6e755c5151bd4b"
+  integrity sha512-+KJGIyHgkGuIq3IEBNftfhW/LfWhXUIY6OmyVWjliu5KH1y0fw7VQ8YndE2O4qZdMSd9SqbnC8GOcZEy0Om7sA==
+
 keycloakify@^9.2.0:
   version "9.2.0"
   resolved "https://registry.yarnpkg.com/keycloakify/-/keycloakify-9.2.0.tgz#236edadcc35f4ab039529577b26fc28c117bd55b"
@@ -12296,21 +12296,20 @@ obuf@^1.0.0, obuf@^1.1.2:
   resolved "https://registry.yarnpkg.com/obuf/-/obuf-1.1.2.tgz#09bea3343d41859ebd446292d11c9d4db619084e"
   integrity sha512-PX1wu0AmAdPqOL1mWhqmlOd8kOIZQwGZw6rh7uby9fTc5lhaOWFLX3I6R1hrF9k3zUY40e6igsLGkDXK92LJNg==
 
-oidc-client-ts@^2.3.0:
-  version "2.3.0"
-  resolved "https://registry.yarnpkg.com/oidc-client-ts/-/oidc-client-ts-2.3.0.tgz#43c90f1f0cc3be2e4ede38b8c68642ba00bfa8f6"
-  integrity sha512-7RUKU+TJFQo+4X9R50IGJAIDF18uRBaFXyZn4VVCfwmwbSUhKcdDnw4zgeut3uEXkiD3NqURq+d88sDPxjf1FA==
+oidc-client-ts@3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/oidc-client-ts/-/oidc-client-ts-3.0.0.tgz#910b27193b54730dbabd93709ca000f8b1e5bdf2"
+  integrity sha512-YUcel/+C4AmXXhM/geNWc1jBsBVYzd+xhvSl1NMkxKpzZXqhLKmtj1ttSdxtDYm3P2YelnAr4zS4c96+p02iFQ==
   dependencies:
-    crypto-js "^4.1.1"
-    jwt-decode "^3.1.2"
+    jwt-decode "^4.0.0"
 
-oidc-spa@^4.0.0:
-  version "4.0.0"
-  resolved "https://registry.yarnpkg.com/oidc-spa/-/oidc-spa-4.0.0.tgz#7cec1683686cd6f2b9c85547107b19b6b54ffd39"
-  integrity sha512-Zy386BfS/LbkUopNTA1xFCWYIMc7fFrQ1Iyc58vt+2dAezTAt15F6YTrYGXGCa4P0q8SpO6Avu8/OmHyO67d9w==
+oidc-spa@^4.2.0:
+  version "4.2.0"
+  resolved "https://registry.yarnpkg.com/oidc-spa/-/oidc-spa-4.2.0.tgz#12ebe47af2b624916b69104f47eb64392c77dda5"
+  integrity sha512-OQtIdVKdRlCBW+tDDgHT5IaPu6PBKkY+augGdTRnhUjvBpQBzIdMA7GENH1nXzbSCEJ0zWwMW+rsR35OOTtONw==
   dependencies:
     jwt-decode "^3.1.2"
-    oidc-client-ts "^2.3.0"
+    oidc-client-ts "3.0.0"
     tsafe "^1.6.5"
 
 on-finished@2.4.1:
