@@ -97,7 +97,6 @@ web:
     successThreshold: 1
     timeoutSeconds: 1
 
-
 api:
   name: api
   replicaCount: 1

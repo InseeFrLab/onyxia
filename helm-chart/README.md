@@ -22,7 +22,7 @@ ingress:
     - host: datalab.my-domain.net
 EOF
 
-helm install onyxia onyxia/onyxia --version "8.1.12" -f onyxia-values.yaml
+helm install onyxia onyxia/onyxia --version "8.2.0" -f onyxia-values.yaml
 ```
 
 ### Using the Keycloak Theme (Optional)
@@ -44,7 +44,7 @@ extraInitContainers: |
     args:
       - -c
       - |
-        curl -L -f -S -o /extensions/onyxia.jar https://github.com/InseeFrLab/onyxia/releases/download/v8.1.12/keycloak-theme.jar
+        curl -L -f -S -o /extensions/onyxia.jar https://github.com/InseeFrLab/onyxia/releases/download/v8.2.0/keycloak-theme.jar
     volumeMounts:
       - name: extensions
         mountPath: /extensions
