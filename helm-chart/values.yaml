@@ -82,7 +82,7 @@ web:
     periodSeconds: 10
     successThreshold: 1
     timeoutSeconds: 1
-  readynessProbe:
+  readinessProbe:
     enabled: true
     path: /
     failureThreshold: 3
@@ -170,7 +170,7 @@ api:
     periodSeconds: 10
     successThreshold: 1
     timeoutSeconds: 1
-  readynessProbe:
+  readinessProbe:
     enabled: true
     path: /public/healthcheck
     failureThreshold: 3
