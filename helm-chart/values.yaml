@@ -75,6 +75,27 @@ web:
     # The name of the service account to use.
     # If not set and create is true, a name is generated using the fullname template
     name:
+  livenessProbe:
+    enabled: true
+    path: /
+    failureThreshold: 3
+    periodSeconds: 10
+    successThreshold: 1
+    timeoutSeconds: 1
+  readynessProbe:
+    enabled: true
+    path: /
+    failureThreshold: 3
+    periodSeconds: 10
+    successThreshold: 1
+    timeoutSeconds: 1
+  startupProbe:
+    enabled: false
+    path: /
+    failureThreshold: 3
+    periodSeconds: 10
+    successThreshold: 1
+    timeoutSeconds: 1
 
 
 api:
