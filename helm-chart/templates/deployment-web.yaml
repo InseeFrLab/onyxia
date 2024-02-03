@@ -45,14 +45,36 @@ spec:
             - name: http
               containerPort: {{ .Values.web.containerPort }}
               protocol: TCP
+          {{- if .Values.web.livenessProbe.enabled }}
           livenessProbe:
             httpGet:
-              path: /
+              path: {{ .Values.web.livenessProbe.path }}
               port: http
+            failureThreshold: {{ .Values.web.livenessProbe.failureThreshold }}
+            periodSeconds: {{ .Values.web.livenessProbe.periodSeconds }}
+            successThreshold: {{ .Values.web.livenessProbe.successThreshold }}
+            timeoutSeconds: {{ .Values.web.livenessProbe.timeoutSeconds }}
+        {{- end }}
+        {{- if .Values.web.readinessProbe.enabled }}
           readinessProbe:
             httpGet:
-              path: /
+              path: {{ .Values.web.readinessProbe.path }}
               port: http
+            failureThreshold: {{ .Values.web.readinessProbe.failureThreshold }}
+            periodSeconds: {{ .Values.web.readinessProbe.periodSeconds }}
+            successThreshold: {{ .Values.web.readinessProbe.successThreshold }}
+            timeoutSeconds: {{ .Values.web.readinessProbe.timeoutSeconds }}
+        {{- end }}
+        {{- if .Values.web.startupProbe.enabled }}
+          startupProbe:
+            httpGet:
+              path: {{ .Values.web.startupProbe.path }}
+              port: http
+            failureThreshold: {{ .Values.web.startupProbe.failureThreshold }}
+            periodSeconds: {{ .Values.web.startupProbe.periodSeconds }}
+            successThreshold: {{ .Values.web.startupProbe.successThreshold }}
+            timeoutSeconds: {{ .Values.web.startupProbe.timeoutSeconds }}
+        {{- end }}
           resources:
             {{- toYaml .Values.web.resources | nindent 12 }}
           {{- if .Values.web.extraVolumeMounts }}

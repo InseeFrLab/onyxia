@@ -43,14 +43,36 @@ spec:
             - name: http
               containerPort: {{ .Values.api.containerPort }}
               protocol: TCP
+        {{- if .Values.api.livenessProbe.enabled }}
           livenessProbe:
             httpGet:
-              path: {{ .Values.api.contextPath }}/public/healthcheck
+              path: {{ .Values.api.contextPath }}{{ .Values.api.livenessProbe.path }}
               port: http
+            failureThreshold: {{ .Values.api.livenessProbe.failureThreshold }}
+            periodSeconds: {{ .Values.api.livenessProbe.periodSeconds }}
+            successThreshold: {{ .Values.api.livenessProbe.successThreshold }}
+            timeoutSeconds: {{ .Values.api.livenessProbe.timeoutSeconds }}
+        {{- end }}
+        {{- if .Values.api.readinessProbe.enabled }}
           readinessProbe:
             httpGet:
-              path: {{ .Values.api.contextPath }}/public/healthcheck
+              path: {{ .Values.api.contextPath }}{{ .Values.api.readinessProbe.path }}
               port: http
+            failureThreshold: {{ .Values.api.readinessProbe.failureThreshold }}
+            periodSeconds: {{ .Values.api.readinessProbe.periodSeconds }}
+            successThreshold: {{ .Values.api.readinessProbe.successThreshold }}
+            timeoutSeconds: {{ .Values.api.readinessProbe.timeoutSeconds }}
+        {{- end }}
+        {{- if .Values.api.startupProbe.enabled }}
+          startupProbe:
+            httpGet:
+              path: {{ .Values.api.contextPath }}{{ .Values.api.startupProbe.path }}
+              port: http
+            failureThreshold: {{ .Values.api.startupProbe.failureThreshold }}
+            periodSeconds: {{ .Values.api.startupProbe.periodSeconds }}
+            successThreshold: {{ .Values.api.startupProbe.successThreshold }}
+            timeoutSeconds: {{ .Values.api.startupProbe.timeoutSeconds }}
+        {{- end }}
           resources:
             {{- toYaml .Values.api.resources | nindent 12 }}
           {{- if .Values.api.extraVolumeMounts }}
