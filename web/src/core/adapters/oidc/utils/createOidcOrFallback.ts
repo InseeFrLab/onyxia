@@ -8,6 +8,7 @@ export async function createOidcOrFallback(params: {
         | {
               issuerUri?: string;
               clientId: string;
+              extraParams?: Record<string, string>;
           }
         | undefined;
     fallbackOidc: Oidc.LoggedIn | undefined;
@@ -16,7 +17,7 @@ export async function createOidcOrFallback(params: {
         params;
 
     const wrap = (() => {
-        const { issuerUri, clientId } = {
+        const { issuerUri, clientId, extraParams } = {
             ...fallbackOidc?.params,
             ...noUndefined(oidcParams ?? {})
         };
@@ -39,7 +40,7 @@ export async function createOidcOrFallback(params: {
 
         return {
             "type": "oidc params",
-            "oidcParams": { issuerUri, clientId }
+            "oidcParams": { issuerUri, clientId, extraParams }
         } as const;
     })();
 
@@ -56,7 +57,8 @@ export async function createOidcOrFallback(params: {
             const oidc = await createOidc({
                 "issuerUri": wrap.oidcParams.issuerUri,
                 "clientId": wrap.oidcParams.clientId,
-                "transformUrlBeforeRedirect": url => url
+                "transformUrlBeforeRedirect": url => url,
+                "extraQueryParams": wrap.oidcParams.extraParams
             });
 
             if (!oidc.isUserLoggedIn) {

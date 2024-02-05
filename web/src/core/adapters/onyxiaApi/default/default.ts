@@ -80,7 +80,8 @@ export function createOnyxiaApi(params: {
                         ? undefined
                         : {
                               "issuerUri": data.oidcConfiguration.issuerURI,
-                              "clientId": data.oidcConfiguration.clientID
+                              "clientId": data.oidcConfiguration.clientID,
+                              "extraParams": data.oidcConfiguration.extraParams
                           };
 
                 const regions = data.regions.map(
