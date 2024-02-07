@@ -11014,10 +11014,10 @@ jwt-decode@^4.0.0:
   resolved "https://registry.yarnpkg.com/jwt-decode/-/jwt-decode-4.0.0.tgz#2270352425fd413785b2faf11f6e755c5151bd4b"
   integrity sha512-+KJGIyHgkGuIq3IEBNftfhW/LfWhXUIY6OmyVWjliu5KH1y0fw7VQ8YndE2O4qZdMSd9SqbnC8GOcZEy0Om7sA==
 
-keycloakify@^9.2.0:
-  version "9.2.0"
-  resolved "https://registry.yarnpkg.com/keycloakify/-/keycloakify-9.2.0.tgz#236edadcc35f4ab039529577b26fc28c117bd55b"
-  integrity sha512-VbQ5EL7hvsEuoEr9pXd+2KDhVcNd4YOJuKG6+/pH0RfNeO6sow63WD8C+XiGY6HoEIKb22S2NNKR3mjclRaCrA==
+keycloakify@^9.3.1:
+  version "9.3.1"
+  resolved "https://registry.yarnpkg.com/keycloakify/-/keycloakify-9.3.1.tgz#45777e15ee9540fd277dc1aecb9cc78981fd4085"
+  integrity sha512-DKOpGCQb0gbxMDUvSaR3S+SOVgXEnQm/QWC6WvhbtA0spLrvg2DnnmwXOGh8dE8pd5ayJrji75AhFDbzqSdS7Q==
   dependencies:
     "@babel/generator" "^7.22.9"
     "@babel/parser" "^7.22.7"
@@ -12338,10 +12338,10 @@ onetime@^5.1.0, onetime@^5.1.2:
   dependencies:
     mimic-fn "^2.1.0"
 
-onyxia-ui@^5.1.1:
-  version "5.1.1"
-  resolved "https://registry.yarnpkg.com/onyxia-ui/-/onyxia-ui-5.1.1.tgz#67d952868c7bf052694ae73b4e8ae0a954a2a290"
-  integrity sha512-UjOnNiiM++mJ9kTPw+OV9MFITigtBy812PDC6h2ghY95RI2O7gubft6ynWWWWbdUSOMwWSwzIgK2YxvbFkyhEg==
+onyxia-ui@^5.1.3:
+  version "5.1.3"
+  resolved "https://registry.yarnpkg.com/onyxia-ui/-/onyxia-ui-5.1.3.tgz#7d6261d91835cfeaa7a254c52aa36910394e79d8"
+  integrity sha512-NpCdW29O2hV9sdMFwLajoSx6omS9+6wTr193o8qQREXjz0uZtbwnozQbgHkGKpnaxAeK2UycEg0xlM66fyKsPA==
   dependencies:
     "@mui/icons-material" "^5.14.18"
     color "3.1.3"
@@ -16174,6 +16174,15 @@ tss-react@^4.9.3:
   version "4.9.3"
   resolved "https://registry.yarnpkg.com/tss-react/-/tss-react-4.9.3.tgz#69ce18bcf83fe96d99d35f44a036c7b507f66eff"
   integrity sha512-TqI0kBFmgW0f5YIOD2PMdHu6FnqSxVDUf5uJ7+gVkhemtMfwdlFpvXpddgSesktizr9PU9hY2nZ+kNnf0KQb9A==
+  dependencies:
+    "@emotion/cache" "*"
+    "@emotion/serialize" "*"
+    "@emotion/utils" "*"
+
+tss-react@^4.9.4:
+  version "4.9.4"
+  resolved "https://registry.yarnpkg.com/tss-react/-/tss-react-4.9.4.tgz#037603ed2f8765c2f208ac1c75e9293753aa18cd"
+  integrity sha512-4o+XFdaTcraNEIsCRxKiEX7g6xhcsdSxfHRjos3Kg9GbYIpzfK4M2MHMETTuXT54nUrldtnkipNC003v/q5KVg==
   dependencies:
     "@emotion/cache" "*"
     "@emotion/serialize" "*"
