@@ -70,7 +70,6 @@ export type DeploymentRegion = {
                   | {
                         issuerUri?: string;
                         clientId: string;
-                        extraParams?: Record<string, string>;
                     }
                   | undefined;
           }

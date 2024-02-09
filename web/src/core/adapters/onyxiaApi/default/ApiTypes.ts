@@ -145,7 +145,7 @@ export type ApiTypes = {
         oidcConfiguration?: {
             issuerURI: string;
             clientID: string;
-            extraParams: Record<string, string>;
+            extraQueryParams?: string;
         };
     };
     "/public/catalogs": {

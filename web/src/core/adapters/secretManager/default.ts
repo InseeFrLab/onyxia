@@ -35,14 +35,18 @@ export async function createSecretManager(params: Params): Promise<SecretsManage
 
     const { getNewlyRequestedOrCachedToken, clearCachedToken } =
         getNewlyRequestedOrCachedTokenFactory({
-            "persistance": createSessionStorageTokenPersistance<ReturnType<SecretsManager["getToken"]>>({
-                "sessionStorageKey": "vaultToken_" + fnv1aHashToHex((()=>{
+            "persistance": createSessionStorageTokenPersistance<
+                ReturnType<SecretsManager["getToken"]>
+            >({
+                "sessionStorageKey":
+                    "vaultToken_" +
+                    fnv1aHashToHex(
+                        (() => {
+                            const { url, authPath, role } = params;
 
-                    const { url, authPath, role } = params;
-
-                    return JSON.stringify({ url, authPath, role, version });
-
-                })())
+                            return JSON.stringify({ url, authPath, role, version });
+                        })()
+                    )
             }),
             "requestNewToken": async () => {
                 const now = Date.now();

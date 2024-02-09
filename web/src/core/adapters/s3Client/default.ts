@@ -4,7 +4,7 @@ import type { ReturnType } from "tsafe";
 import { S3Client } from "core/ports/S3Client";
 import {
     getNewlyRequestedOrCachedTokenFactory,
-    createSessionStorageTokenPersistance,
+    createSessionStorageTokenPersistance
 } from "core/tools/getNewlyRequestedOrCachedToken";
 import { assert } from "tsafe/assert";
 import { Deferred } from "evt/tools/Deferred";
@@ -41,11 +41,11 @@ export namespace ParamsOfCreateS3Client {
         oidc: Oidc.LoggedIn;
         durationSeconds: number | undefined;
         role:
-        | {
-            roleARN: string;
-            roleSessionName: string;
-        }
-        | undefined;
+            | {
+                  roleARN: string;
+                  roleSessionName: string;
+              }
+            | undefined;
         nameOfBucketToCreateIfNotExist: string | undefined;
     };
 }
@@ -77,7 +77,7 @@ export function createS3Client(params: ParamsOfCreateS3Client): S3Client {
             const { getNewlyRequestedOrCachedToken, clearCachedToken } =
                 getNewlyRequestedOrCachedTokenFactory({
                     "persistance": createSessionStorageTokenPersistance<{
-                        // NOTE: StsToken are like ReturnType<S3Client["getToken"]> but we know that 
+                        // NOTE: StsToken are like ReturnType<S3Client["getToken"]> but we know that
                         // session token expiration time and acquisition time are defined.
                         accessKeyId: string;
                         secretAccessKey: string;
@@ -85,13 +85,20 @@ export function createS3Client(params: ParamsOfCreateS3Client): S3Client {
                         expirationTime: number;
                         acquisitionTime: number;
                     }>({
-                        "sessionStorageKey": "s3ClientToken_" + fnv1aHashToHex((() => {
+                        "sessionStorageKey":
+                            "s3ClientToken_" +
+                            fnv1aHashToHex(
+                                (() => {
+                                    const { durationSeconds, url, stsUrl, role } = params;
 
-                            const { durationSeconds, url, stsUrl, role } = params;
-
-                            return JSON.stringify({ durationSeconds, url, stsUrl, role });
-
-                        })())
+                                    return JSON.stringify({
+                                        durationSeconds,
+                                        url,
+                                        stsUrl,
+                                        role
+                                    });
+                                })()
+                            )
                     }),
                     "requestNewToken": async () => {
                         // NOTE: We renew the OIDC access token because it's expiration time
@@ -110,27 +117,27 @@ export function createS3Client(params: ParamsOfCreateS3Client): S3Client {
                             })
                             .post<string>(
                                 "/?" +
-                                Object.entries({
-                                    "Action": "AssumeRoleWithWebIdentity",
-                                    "WebIdentityToken": oidc.getTokens().accessToken,
-                                    "DurationSeconds":
-                                        params.durationSeconds ?? 7 * 24 * 3600,
-                                    "Version": "2011-06-15",
-                                    ...(params.role === undefined
-                                        ? {}
-                                        : {
-                                            "RoleSessionName":
-                                                params.role.roleSessionName,
-                                            "RoleArn": params.role.roleARN
-                                        })
-                                })
-                                    .map(([key, value]) =>
-                                        value === undefined
-                                            ? undefined
-                                            : `${key}=${value}`
-                                    )
-                                    .filter(exclude(undefined))
-                                    .join("&")
+                                    Object.entries({
+                                        "Action": "AssumeRoleWithWebIdentity",
+                                        "WebIdentityToken": oidc.getTokens().accessToken,
+                                        "DurationSeconds":
+                                            params.durationSeconds ?? 7 * 24 * 3600,
+                                        "Version": "2011-06-15",
+                                        ...(params.role === undefined
+                                            ? {}
+                                            : {
+                                                  "RoleSessionName":
+                                                      params.role.roleSessionName,
+                                                  "RoleArn": params.role.roleARN
+                                              })
+                                    })
+                                        .map(([key, value]) =>
+                                            value === undefined
+                                                ? undefined
+                                                : `${key}=${value}`
+                                        )
+                                        .filter(exclude(undefined))
+                                        .join("&")
                             );
 
                         const parser = new DOMParser();
@@ -155,9 +162,9 @@ export function createS3Client(params: ParamsOfCreateS3Client): S3Client {
 
                         assert(
                             accessKeyId !== null &&
-                            secretAccessKey !== null &&
-                            sessionToken !== null &&
-                            expiration !== null,
+                                secretAccessKey !== null &&
+                                sessionToken !== null &&
+                                expiration !== null,
                             "Error parsing minio response"
                         );
 

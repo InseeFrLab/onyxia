@@ -120,8 +120,17 @@ export async function bootstrapCore(
         return createOidc({
             "issuerUri": oidcParams.issuerUri,
             "clientId": oidcParams.clientId,
-            "transformUrlBeforeRedirect": transformUrlBeforeRedirectToLogin,
-            "extraQueryParams": oidcParams.extraParams
+            "transformUrlBeforeRedirect": url => {
+                let transformedUrl = url;
+
+                if (oidcParams.serializedExtraQueryParams !== undefined) {
+                    transformedUrl += `&${oidcParams.serializedExtraQueryParams}`;
+                }
+
+                transformedUrl = transformUrlBeforeRedirectToLogin(transformedUrl);
+
+                return transformedUrl;
+            }
         });
     })();
 
