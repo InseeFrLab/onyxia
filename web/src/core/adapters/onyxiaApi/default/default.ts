@@ -224,7 +224,9 @@ export function createOnyxiaApi(params: {
         "getCatalogsAndCharts": memoize(
             async () => {
                 const { data } = await axiosInstance.get<ApiTypes["/public/catalogs"]>(
-                    "/public/catalogs"
+                    getOidcAccessToken() === undefined
+                        ? "/public/catalogs"
+                        : "/my-lab/catalogs"
                 );
 
                 return {
