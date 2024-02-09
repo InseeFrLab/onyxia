@@ -364,17 +364,11 @@ export const translations: Translations<"zh-CN"> = {
 
         "key column name": "变量名",
         "value column name": "变量值",
-        "resolved value column name": "求解值",
-        "what's a resolved value": `一个环境变量可以引用另一个，例如，如果你有
-            定义变量 PRENOM=Louis 你可以定义变量 NAME_COMPLET="$PRENOM"-Dupon
-            NAME_COMPLET的解析值将是"Louis-Dupon"
-            `,
         "unavailable key": "已被使用",
         "invalid key empty string": "名字是必需的",
         "invalid key _ not valid": "不可以只有 _",
         "invalid key start with digit": "不能以数字开头",
         "invalid key invalid character": "无效字符",
-        "invalid value cannot eval": "无效的shell表达式",
         "use this secret": "在服务中使用",
 
         "use secret dialog title": "在服务中使用",

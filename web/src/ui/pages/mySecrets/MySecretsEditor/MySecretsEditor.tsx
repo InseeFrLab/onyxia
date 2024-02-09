@@ -17,7 +17,6 @@ import {
     generateUniqDefaultName,
     buildNameFactory
 } from "ui/tools/generateUniqDefaultName";
-import { Tooltip } from "onyxia-ui/Tooltip";
 import type { Id } from "tsafe/id";
 import TableRow from "@mui/material/TableRow";
 import TableCell from "@mui/material/TableCell";
@@ -178,7 +177,7 @@ export const MySecretsEditor = memo((props: Props) => {
         })
     );
 
-    const { classes, css } = useStyles(props);
+    const { classes } = useStyles(props);
 
     const [isDialogOpen, setIsDialogOpen] = useState(false);
 
@@ -226,20 +225,6 @@ export const MySecretsEditor = memo((props: Props) => {
 
                             <TableCell>
                                 <Text typo="body 1">{t("value column name")}</Text>
-                            </TableCell>
-
-                            <TableCell>
-                                <Tooltip title={t("what's a resolved value")}>
-                                    <Text
-                                        typo="body 1"
-                                        className={css({
-                                            //So that the tooltip is well positioned
-                                            "display": "inline-block"
-                                        })}
-                                    >
-                                        {t("resolved value column name")}
-                                    </Text>
-                                </Tooltip>
                             </TableCell>
                         </TableRow>
                     </TableHead>
@@ -300,14 +285,11 @@ export const { i18n } = declareComponentKeys<
     | "table of secret"
     | "key column name"
     | "value column name"
-    | "resolved value column name"
-    | "what's a resolved value"
     | "unavailable key"
     | "invalid key empty string"
     | "invalid key _ not valid"
     | "invalid key start with digit"
     | "invalid key invalid character"
-    | "invalid value cannot eval"
     | "use this secret"
     | "use secret dialog title"
     | "use secret dialog subtitle"

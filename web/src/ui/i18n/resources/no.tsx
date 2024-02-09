@@ -397,18 +397,11 @@ export const translations: Translations<"no"> = {
 
         "key column name": "Variabelnavn",
         "value column name": "Verdi",
-        "resolved value column name": "Løst verdi",
-        "what's a resolved value": `
-      En miljøvariabel kan referere til en annen. Hvis du for eksempel har definert
-      FIRST_NAME=John kan du sette FULL_NAME="$FIRST_NAME"-Doe, og den løste verdien av
-      FILL_NAME vil være «John-Doe»
-    `,
         "unavailable key": "Allerede i bruk",
         "invalid key empty string": "Navn påkrevd",
         "invalid key _ not valid": "Kan ikke være bare _",
         "invalid key start with digit": "Kan ikke starte med et tall",
         "invalid key invalid character": "Ugyldig tegn",
-        "invalid value cannot eval": "Ugyldig shell-uttrykk",
         "use this secret": `Bruk i tjenester`,
         "use secret dialog title": "Bruk i en tjeneste",
         "use secret dialog subtitle": "Stien til hemmeligheten er kopiert",

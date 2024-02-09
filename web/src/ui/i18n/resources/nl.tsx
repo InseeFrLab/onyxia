@@ -395,18 +395,11 @@ export const translations: Translations<"nl"> = {
 
         "key column name": "Naam van de variabele",
         "value column name": "Waarde",
-        "resolved value column name": "Opgeloste waarde",
-        "what's a resolved value": `
-            Een omgevingsvariabele kan naar een andere verwijzen, dus als je bijvoorbeeld
-            de variabele FIRSTNAME=Louis hebt gedefinieerd, kun je de variabele LASTNAME_COMPLET="$FIRSTNAME"-Dupon definiëren
-            die als de opgeloste waarde «Louis-Dupon» zal hebben
-            `,
         "unavailable key": "Reeds gebruikt",
         "invalid key empty string": "Een naam is vereist",
         "invalid key _ not valid": "Kan niet juist zijn _",
         "invalid key start with digit": "Mag niet beginnen met een getal",
         "invalid key invalid character": "Ongeldig teken",
-        "invalid value cannot eval": "Uitdrukking shell niet geldig",
         "use this secret": "Gebruiken binnen een dienst",
 
         "use secret dialog title": "Gebruiken binnen een dienst",

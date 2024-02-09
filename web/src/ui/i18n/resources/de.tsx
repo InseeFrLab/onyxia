@@ -400,18 +400,11 @@ export const translations: Translations<"de"> = {
         "table of secret": "Geheimliste",
         "key column name": "Variablenname",
         "value column name": "Variablenwert",
-        "resolved value column name": "Aufgelöster Variablenwert",
-        "what's a resolved value": `
-            Eine Umgebungsvariable kann eine andere referenzieren, zum Beispiel wenn Sie
-            die Variable VORNAME=Louis definiert haben, können Sie die Variable VOLLNAME="$VORNAME"-Dupon definieren,
-            die den aufgelösten Wert "Louis-Dupon" haben wird.
-            `,
         "unavailable key": "Bereits vergeben",
         "invalid key empty string": "Ein Name ist erforderlich",
         "invalid key _ not valid": "Darf nicht nur _ sein",
         "invalid key start with digit": "Darf nicht mit einer Zahl beginnen",
         "invalid key invalid character": "Ungültiges Zeichen",
-        "invalid value cannot eval": "Ungültiger Shell-Ausdruck",
         "use this secret": "In einem Service verwenden",
         "use secret dialog title": "In einem Service verwenden",
         "use secret dialog subtitle": "Der Pfad des Geheimnisses wurde kopiert.",

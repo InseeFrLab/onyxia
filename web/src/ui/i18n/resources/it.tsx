@@ -395,18 +395,11 @@ export const translations: Translations<"it"> = {
 
         "key column name": "Nome della variabile",
         "value column name": "Valore",
-        "resolved value column name": "Valore risolto",
-        "what's a resolved value": `
-        Una variabile di ambiente può fare riferimento a un'altra,
-        ad esempio se hai definito la variabile NOME=Louis,
-        puoi definire la variabile NOME_COMPLETO="$NOME"-Dupon che avrà come valore risolto "Louis-Dupon".
-            `,
         "unavailable key": "Già utilizzato",
         "invalid key empty string": "È richiesto un nome",
         "invalid key _ not valid": "Non può essere semplicemente _",
         "invalid key start with digit": "Non deve iniziare con un numero",
         "invalid key invalid character": "Caractère non valide",
-        "invalid value cannot eval": "Carattere non valido",
         "use this secret": "Utilizzare in un servizio",
 
         "use secret dialog title": "Utilizzare in un servizio",

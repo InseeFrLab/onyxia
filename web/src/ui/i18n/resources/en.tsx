@@ -393,18 +393,11 @@ export const translations: Translations<"en"> = {
 
         "key column name": "Variable name",
         "value column name": "Value",
-        "resolved value column name": "Resolved Value",
-        "what's a resolved value": `
-            An environnement variable can reference another one. If for example you have defined 
-            FIRST_NAME=John you can set FULL_NAME="$FIRST_NAME"-Doe, the resolved value of 
-            FILL_NAME will be «John-Doe»
-            `,
         "unavailable key": "Already used",
         "invalid key empty string": "Name required",
         "invalid key _ not valid": "Can't be just _",
         "invalid key start with digit": "Can't start with a digit",
         "invalid key invalid character": "Invalid character",
-        "invalid value cannot eval": "Invalid shell expression",
         "use this secret": `Use in services`,
         "use secret dialog title": "Use in a service",
         "use secret dialog subtitle": "The path of the secret have been copied",

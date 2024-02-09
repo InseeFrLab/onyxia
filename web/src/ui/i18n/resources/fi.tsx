@@ -390,18 +390,11 @@ export const translations: Translations<"fi"> = {
 
         "key column name": "Muuttujan nimi",
         "value column name": "Arvo",
-        "resolved value column name": "Ratkaisun arvo",
-        "what's a resolved value": `
-            Ympäristömuuttuja voi viitata toiseen muuttujaan. Jos olet määritellyt 
-            FIRST_NAME=John, voit asettaa FULL_NAME="$FIRST_NAME"-Doe. Tällöin 
-            FILL_NAME:n ratkaistu arvo on "John-Doe"
-            `,
         "unavailable key": "On jo käytössä",
         "invalid key empty string": "Nimi vaaditaan",
         "invalid key _ not valid": "Ei voi olla pelkästään _",
         "invalid key start with digit": "Ei voi alkaa numerolla",
         "invalid key invalid character": "Virheellinen merkki",
-        "invalid value cannot eval": "Virheellinen komentorivin lauseke",
         "use this secret": `Käytä palveluissa`,
         "use secret dialog title": "Käytä palvelussa",
         "use secret dialog subtitle": "Salaisuuden polku on kopioitu",
