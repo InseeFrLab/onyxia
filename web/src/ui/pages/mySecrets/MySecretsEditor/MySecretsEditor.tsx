@@ -338,10 +338,9 @@ const useStyles = tss
             }
         },
         "buttonWrapper": {
-            "& > *": {
-                "marginTop": theme.spacing(4),
-                "marginRight": theme.spacing(2)
-            }
+            "marginTop": theme.spacing(4),
+            "display": "inline-flex",
+            "gap": theme.spacing(2)
         },
         "tableContainerRoot": {
             "overflow": "visible"
