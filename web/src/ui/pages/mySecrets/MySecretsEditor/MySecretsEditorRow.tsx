@@ -62,6 +62,8 @@ export const MySecretsEditorRow = memo((props: Props) => {
 
     const [isInEditingState, setIsInEditingState] = useState(false);
 
+    const [isTextHidden, setIsTextHidden] = useState(true);
+
     useEffect(() => {
         if (!isInEditingState) {
             return;
@@ -250,7 +252,7 @@ export const MySecretsEditorRow = memo((props: Props) => {
             >
                 {!isInEditingState ? (
                     <SmartTrim className={classes.valueAndResolvedValue}>
-                        {strValue}
+                        {isTextHidden ? "•••••••••" : strValue}
                     </SmartTrim>
                 ) : (
                     <TextField
@@ -282,6 +284,14 @@ export const MySecretsEditorRow = memo((props: Props) => {
                         icon={id<MuiIconComponentName>("Delete")}
                         onClick={onDelete}
                         size="small"
+                    />
+                    <IconButton
+                        icon={
+                            isTextHidden
+                                ? id<MuiIconComponentName>("Visibility")
+                                : id<MuiIconComponentName>("VisibilityOff")
+                        }
+                        onClick={() => setIsTextHidden(!isTextHidden)}
                     />
                 </div>
             </TableCell>
