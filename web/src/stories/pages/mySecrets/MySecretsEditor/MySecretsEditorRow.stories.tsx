@@ -15,10 +15,6 @@ const baseParams: Parameters<typeof getStory>[0] = {
     "isLocked": false,
     "keyOfSecret": "FOO_BAR",
     "strValue": "hello world",
-    "getResolvedValue": ({ strValue }) => ({
-        "isResolvedSuccessfully": true,
-        "resolvedValue": `$(${strValue})`
-    }),
     "getIsValidAndAvailableKey": ({ key }) => {
         const r = getIsValidKey({ key });
 

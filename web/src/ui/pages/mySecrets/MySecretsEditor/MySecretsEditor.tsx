@@ -18,9 +18,7 @@ import {
     buildNameFactory
 } from "ui/tools/generateUniqDefaultName";
 import { Tooltip } from "onyxia-ui/Tooltip";
-import { id } from "tsafe/id";
 import type { Id } from "tsafe/id";
-import { evaluateShellExpression } from "ui/tools/evaluateShellExpression";
 import TableRow from "@mui/material/TableRow";
 import TableCell from "@mui/material/TableCell";
 import Table from "@mui/material/Table";
@@ -166,49 +164,6 @@ export const MySecretsEditor = memo((props: Props) => {
         [secret, t]
     );
 
-    const getResolvedValueFactory = useMemo(() => {
-        const secretKeys = Object.keys(secret);
-
-        /** Can throw */
-        const getResolvedValue = memoize(
-            (key: string, strValue: string): undefined | string => {
-                const indexOfKey = secretKeys.indexOf(key);
-
-                return evaluateShellExpression({
-                    "expression": strValue,
-                    "getEnvValue": ({ envName: keyBis }) => {
-                        const indexOfKeyBis = secretKeys.indexOf(keyBis);
-
-                        if (indexOfKeyBis === -1 || !(indexOfKeyBis < indexOfKey)) {
-                            return undefined;
-                        }
-
-                        return getResolvedValue(keyBis, stringifyValue(secret[keyBis]));
-                    }
-                });
-            }
-        );
-
-        return memoize((key: string) =>
-            id<RowProps["getResolvedValue"]>(({ strValue }) => {
-                const resolvedValue = getResolvedValue(key, strValue);
-
-                return resolvedValue === undefined
-                    ? ({
-                          "isResolvedSuccessfully": false,
-                          "message": t("invalid value cannot eval")
-                      } as const)
-                    : ({
-                          "isResolvedSuccessfully": true,
-                          "resolvedValue":
-                              resolvedValue === strValue.replace(/ +$/, "")
-                                  ? ""
-                                  : resolvedValue
-                      } as const);
-            })
-        );
-    }, [secret, t]);
-
     const onClick = useConstCallback(() =>
         onEdit({
             "action": "addOrOverwriteKeyValue",
@@ -297,7 +252,6 @@ export const MySecretsEditor = memo((props: Props) => {
                                 isLocked={isBeingUpdated}
                                 onEdit={onEditFactory(key)}
                                 onDelete={onDeleteFactory(key)}
-                                getResolvedValue={getResolvedValueFactory(key)}
                                 getIsValidAndAvailableKey={getIsValidAndAvailableKeyFactory(
                                     key
                                 )}

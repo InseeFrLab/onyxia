@@ -12,7 +12,6 @@ type State = {
     basename: string;
     /** undefined when is being opened */
     secretWithMetadata: SecretWithMetadata | undefined;
-    hiddenKeys: string[];
     isBeingUpdated: boolean;
 };
 
@@ -35,15 +34,7 @@ export type EditSecretParams = {
     | {
           action: "removeKeyValue";
       }
-    | {
-          action: "hideOrRevealKey";
-          type: "hide" | "reveal";
-          key: string;
-      }
 );
-
-const extraKey = ".onyxia";
-type ExtraValue = { hiddenKeys: string[]; keysOrdering: string[] };
 
 export const name = "secretsEditor";
 
@@ -68,7 +59,6 @@ export const { reducer, actions } = createUsecaseActions({
                 directoryPath,
                 basename,
                 "secretWithMetadata": undefined,
-                "hiddenKeys": [],
                 "isBeingUpdated": true
             });
         },
@@ -79,18 +69,16 @@ export const { reducer, actions } = createUsecaseActions({
             }: {
                 payload: {
                     secretWithMetadata: SecretWithMetadata;
-                    hiddenKeys: string[];
                 };
             }
         ) => {
-            const { secretWithMetadata, hiddenKeys } = payload;
+            const { secretWithMetadata } = payload;
 
             assert(state !== null);
 
             //NOTE: we use unwrapWritableDraft because otherwise the type
             //instantiation is too deep. But unwrapWritableDraft is the id function
             unwrapWritableDraft(state).secretWithMetadata = secretWithMetadata;
-            state.hiddenKeys = hiddenKeys;
             state.isBeingUpdated = false;
         },
         "editSecretStarted": (state, { payload }: { payload: EditSecretParams }) => {
@@ -146,22 +134,6 @@ export const { reducer, actions } = createUsecaseActions({
                         renameKey({ newKey });
                     }
                     break;
-                case "hideOrRevealKey":
-                    {
-                        const { key, type } = payload;
-
-                        switch (type) {
-                            case "hide":
-                                state.hiddenKeys.push(key);
-                                break;
-                            case "reveal":
-                                state.hiddenKeys = state.hiddenKeys.filter(
-                                    key_i => key_i !== key
-                                );
-                                break;
-                        }
-                    }
-                    break;
             }
 
             state.isBeingUpdated = true;
@@ -206,46 +178,9 @@ export const thunks = {
 
             const secretWithMetadata = await loggedSecretClient.get({ path });
 
-            const { secret } = secretWithMetadata;
-
-            const { hiddenKeys, keysOrdering } = (() => {
-                try {
-                    const { hiddenKeys, keysOrdering } = secret[extraKey] as ExtraValue;
-
-                    for (const arr of [hiddenKeys, keysOrdering]) {
-                        assert(
-                            arr instanceof Array &&
-                                arr.every(key => typeof key === "string")
-                        );
-                    }
-
-                    return {
-                        hiddenKeys,
-                        "keysOrdering": keysOrdering.filter(key => key in secret)
-                    };
-                } catch {
-                    return {
-                        "hiddenKeys": id<string[]>([]),
-                        "keysOrdering": Object.keys(secret)
-                    };
-                }
-            })();
-
-            const orderedSecret = { ...secret };
-
-            delete orderedSecret[extraKey];
-
-            keysOrdering.forEach(key => delete orderedSecret[key]);
-
-            keysOrdering.forEach(key => (orderedSecret[key] = secret[key]));
-
             dispatch(
                 actions.openCompleted({
-                    "secretWithMetadata": {
-                        "metadata": secretWithMetadata.metadata,
-                        "secret": orderedSecret
-                    },
-                    hiddenKeys
+                    secretWithMetadata
                 })
             );
         },
@@ -264,81 +199,22 @@ export const thunks = {
                 secretExplorer.protectedThunks.getLoggedSecretsApis()
             );
 
-            const getSecretCurrentPathAndHiddenKeys = () => {
-                const [, getState] = args;
-
-                const state = getState().secretsEditor;
-
-                assert(state !== null);
-
-                const { secretWithMetadata, hiddenKeys } = state;
-
-                assert(secretWithMetadata !== undefined);
-
-                return {
-                    "path": pathJoin(state.directoryPath, state.basename),
-                    hiddenKeys,
-                    "secret": secretWithMetadata.secret
-                };
-            };
-
-            //Optimizations
-            {
-                const { key } = params;
-                const { secret } = getSecretCurrentPathAndHiddenKeys();
-
-                switch (params.action) {
-                    case "addOrOverwriteKeyValue":
-                        {
-                            const { value } = params;
-                            if (secret[key] === value) {
-                                return;
-                            }
-                        }
-                        break;
-                    case "renameKey":
-                        {
-                            const { newKey } = params;
-                            if (key === newKey) {
-                                return;
-                            }
-                        }
-                        break;
-                    case "renameKeyAndUpdateValue":
-                        {
-                            const { newKey, newValue } = params;
-                            if (key === newKey && secret[key] === newValue) {
-                                return;
-                            }
-                        }
-                        break;
-                    case "removeKeyValue":
-                        if (!(key in secret)) {
-                            return;
-                        }
-                        break;
-                }
-            }
+            const [, getState] = args;
 
             dispatch(actions.editSecretStarted(params));
 
-            await loggedSecretClient.put(
-                (() => {
-                    const { path, secret, hiddenKeys } =
-                        getSecretCurrentPathAndHiddenKeys();
+            const state = getState()[name];
 
-                    return {
-                        path,
-                        "secret": {
-                            ...secret,
-                            [extraKey]: id<ExtraValue>({
-                                hiddenKeys,
-                                "keysOrdering": Object.keys(secret)
-                            })
-                        }
-                    };
-                })()
-            );
+            assert(state !== null);
+
+            assert(state.secretWithMetadata !== undefined);
+
+            const { secret } = state.secretWithMetadata;
+
+            await loggedSecretClient.put({
+                "path": pathJoin(state.directoryPath, state.basename),
+                secret
+            });
 
             dispatch(actions.editSecretCompleted());
         }

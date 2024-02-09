@@ -31,15 +31,6 @@ export type Props = {
         editedStrValue: string | undefined;
     }) => void;
     onDelete: () => void;
-    getResolvedValue: (params: { strValue: string }) =>
-        | {
-              isResolvedSuccessfully: true;
-              resolvedValue: string;
-          }
-        | {
-              isResolvedSuccessfully: false;
-              message: string;
-          };
     getIsValidAndAvailableKey: (params: { key: string }) =>
         | {
               isValidAndAvailableKey: true;
@@ -64,7 +55,6 @@ export const MySecretsEditorRow = memo((props: Props) => {
         strValue,
         onEdit,
         onDelete,
-        getResolvedValue,
         getIsValidAndAvailableKey,
         onStartEdit,
         evtAction
@@ -140,9 +130,8 @@ export const MySecretsEditorRow = memo((props: Props) => {
     );
 
     const [isValidKey, setIsValidKey] = useState(false);
-    const [isValidStrValue, setIsValidStrValue] = useState(false);
 
-    const isSubmitButtonDisabled = isLocked || !isValidKey || !isValidStrValue;
+    const isSubmitButtonDisabled = isLocked || !isValidKey;
 
     const onSubmitButtonClick = useConstCallback(() => {
         evtInputAction.post("TRIGGER SUBMIT");
@@ -155,8 +144,6 @@ export const MySecretsEditorRow = memo((props: Props) => {
 
     const onEnterKeyDown = isSubmitButtonDisabled ? undefined : onSubmitButtonClick;
 
-    const [strValueBeingTyped, setStrValueBeingTyped] = useState("");
-
     const onValueBeingTypedChange_key = useConstCallback(
         ({
             isValidValue
@@ -164,23 +151,7 @@ export const MySecretsEditorRow = memo((props: Props) => {
             setIsValidKey(isValidValue)
     );
 
-    const onValueBeingTypedChange_strValue = useConstCallback(
-        ({
-            isValidValue,
-            value
-        }: Parameters<NonNullable<TextFieldProps["onValueBeingTypedChange"]>>[0]) => {
-            setIsValidStrValue(isValidValue);
-
-            setStrValueBeingTyped(value);
-        }
-    );
-
     const onEditButtonClick = useConstCallback(() => setIsInEditingState(true));
-
-    //NOTE: We don't want to use useMemo here because the resolved values depends on other keys.
-    const resolveValueResult = getResolvedValue({
-        "strValue": isInEditingState ? strValueBeingTyped : strValue
-    });
 
     const getIsValidValue_key = useConstCallback(
         (value: Parameters<NonNullable<TextFieldProps["getIsValidValue"]>>[0]) => {
@@ -191,19 +162,6 @@ export const MySecretsEditorRow = memo((props: Props) => {
                 : ({
                       "isValidValue": false,
                       "message": result.message
-                  } as const);
-        }
-    );
-
-    const getIsValidValue_strValue = useConstCallback(
-        (value: Parameters<TextFieldProps["getIsValidValue"]>[0]) => {
-            const resolveValueResult = getResolvedValue({ "strValue": value });
-
-            return resolveValueResult.isResolvedSuccessfully
-                ? ({ "isValidValue": true } as const)
-                : ({
-                      "isValidValue": false,
-                      "message": resolveValueResult.message
                   } as const);
         }
     );
@@ -302,23 +260,7 @@ export const MySecretsEditorRow = memo((props: Props) => {
                         onEnterKeyDown={onEnterKeyDown}
                         evtAction={evtInputAction}
                         onSubmit={onSubmitFactory("editedStrValue")}
-                        getIsValidValue={getIsValidValue_strValue}
-                        onValueBeingTypedChange={onValueBeingTypedChange_strValue}
                     />
-                )}
-            </TableCell>
-            <TableCell>
-                {!resolveValueResult.isResolvedSuccessfully ? null : (
-                    <SmartTrim
-                        className={cx(
-                            classes.valueAndResolvedValue,
-                            css({
-                                "color": theme.colors.palette.light.greyVariant3
-                            })
-                        )}
-                    >
-                        {resolveValueResult.resolvedValue}
-                    </SmartTrim>
                 )}
             </TableCell>
             <TableCell align="right">
