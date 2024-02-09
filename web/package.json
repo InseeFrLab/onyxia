@@ -1,7 +1,7 @@
 {
     "homepage": "https://onyxia.sh",
     "name": "onyxia-web",
-    "version": "4.14.13",
+    "version": "4.15.0",
     "license": "MIT",
     "scripts": {
         "_comment": "Yes... We're still using CRA. We'll migrate to Vite as soon as Keycloakify gets support for it",
