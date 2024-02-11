@@ -29,6 +29,7 @@ import onyxiaNeumorphismLightModeUrl from "ui/assets/svg/OnyxiaNeumorphismLightM
 import { getIsJSON5ObjectOrArray } from "ui/tools/getIsJSON5ObjectOrArray";
 import JSON5 from "json5";
 import { ensureUrlIsSafe } from "ui/shared/ensureUrlIsSafe";
+import { PUBLIC_URL } from "keycloakify/PUBLIC_URL";
 
 export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
     {
@@ -1099,14 +1100,6 @@ function createParsedEnvs<Parser extends Entry<EnvName>>(
         }
 
         return undefined;
-    })();
-
-    const PUBLIC_URL = (() => {
-        if (kcContext !== undefined && process.env.NODE_ENV !== "development") {
-            return `${kcContext.url.resourcesPath}/build`;
-        }
-
-        return process.env.PUBLIC_URL;
     })();
 
     const env: any = new Proxy(
