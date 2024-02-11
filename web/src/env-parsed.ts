@@ -1106,11 +1106,6 @@ function createParsedEnvs<Parser extends Entry<EnvName>>(
             return `${kcContext.url.resourcesPath}/build`;
         }
 
-        if (process.env.PUBLIC_URL === ".") {
-            //NOTE: This is the case in Storybook, it's not consistent with CRA
-            return "";
-        }
-
         return process.env.PUBLIC_URL;
     })();
 

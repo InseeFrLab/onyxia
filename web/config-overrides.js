@@ -21,7 +21,8 @@ module.exports = function override(config) {
         "http": require.resolve("stream-http"),
         "https": require.resolve("https-browserify"),
         "timers": require.resolve("timers-browserify"),
-        "path": require.resolve("path-browserify")
+        "path": require.resolve("path-browserify"),
+        "url": require.resolve("url/"),
     });
 
     (config.plugins ??= []).push(...[
