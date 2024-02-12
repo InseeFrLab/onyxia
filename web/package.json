@@ -6,7 +6,7 @@
     "scripts": {
         "_comment": "Yes... We're still using CRA. We'll migrate to Vite as soon as Keycloakify gets support for it",
         "start": "generate-env-getter && copy-keycloak-resources-to-public && ts-node scripts/unyamlify-env-local.ts && react-app-rewired start",
-        "build": "react-app-rewired build && rm -rf build/keycloak-resources",
+        "build": "react-app-rewired build && rimraf build/keycloak-resources",
         "build-keycloak-theme": "yarn build && keycloakify",
         "_format": "prettier '**/*.{ts,tsx,json,md}'",
         "format": "yarn _format --write",
@@ -48,7 +48,7 @@
         "https-browserify": "^1.0.0",
         "i18nifty": "^3.2.0",
         "json5": "^2.2.3",
-        "keycloakify": "9.4.0-rc.9",
+        "keycloakify": "9.4.0-rc.15",
         "memoizee": "^0.4.14",
         "minimal-polyfills": "^2.2.3",
         "minio": "^7.1.1",
@@ -80,7 +80,8 @@
         "yaml": "^2.0.1",
         "zod": "^3.19.0",
         "timers-browserify": "^2.0.12",
-        "url": "^0.11.3"
+        "url": "^0.11.3",
+        "rimraf": "^5.0.5"
     },
     "devDependencies": {
         "@types/color": "^3.0.3",
