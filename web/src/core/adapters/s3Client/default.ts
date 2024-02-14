@@ -331,6 +331,8 @@ export function createS3Client(params: ParamsOfCreateS3Client): S3Client {
                 "files": []
             };
 
+            const dOut = new Deferred<typeof out>();
+
             stream.once("end", () => dOut.resolve(out));
             stream.on("data", bucketItem => {
                 if (bucketItem.prefix) {
@@ -342,8 +344,6 @@ export function createS3Client(params: ParamsOfCreateS3Client): S3Client {
                 }
             });
             stream.once("error", error => dOut.reject(new Error(String(error))));
-
-            const dOut = new Deferred<typeof out>();
 
             return dOut.pr;
         },
