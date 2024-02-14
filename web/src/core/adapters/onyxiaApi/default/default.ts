@@ -316,11 +316,6 @@ export function createOnyxiaApi(params: {
                     return;
                 }
 
-                if (error.response?.status === 500) {
-                    //This happens when OIDC is enabled but ther's no S3 nor Vault
-                    return;
-                }
-
                 throw error;
             }
         },
