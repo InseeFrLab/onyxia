@@ -1,20 +1,18 @@
 import axios from "axios";
-import type * as Minio from "minio";
-import type { ReturnType } from "tsafe";
-import { S3Client } from "core/ports/S3Client";
+import type { S3Client } from "core/ports/S3Client";
 import {
     getNewlyRequestedOrCachedTokenFactory,
     createSessionStorageTokenPersistance
 } from "core/tools/getNewlyRequestedOrCachedToken";
 import { assert } from "tsafe/assert";
-import { Deferred } from "evt/tools/Deferred";
-import { parseUrl } from "core/tools/parseUrl";
-import fileReaderStream from "filereader-stream";
+import { is } from "tsafe/is";
 import type { Oidc } from "core/ports/Oidc";
-import { addParamToUrl } from "powerhooks/tools/urlSearchParams";
 import { bucketNameAndObjectNameFromS3Path } from "./utils/bucketNameAndObjectNameFromS3Path";
 import { exclude } from "tsafe/exclude";
 import { fnv1aHashToHex } from "core/tools/fnv1aHashToHex";
+import * as ns_aws_sdk_client_s3 from "@aws-sdk/client-s3";
+import * as ns_aws_sdk_lib_storage from "@aws-sdk/lib-storage";
+import * as ns_aws_sdk_s3_request_presigner from "@aws-sdk/s3-request-presigner";
 
 export type ParamsOfCreateS3Client =
     | ParamsOfCreateS3Client.NoSts
@@ -51,7 +49,7 @@ export namespace ParamsOfCreateS3Client {
 }
 
 export function createS3Client(params: ParamsOfCreateS3Client): S3Client {
-    const { getNewlyRequestedOrCachedToken, clearCachedToken, getMinioClient } = (() => {
+    const { getNewlyRequestedOrCachedToken, clearCachedToken, getAwsS3Client } = (() => {
         const { getNewlyRequestedOrCachedToken, clearCachedToken } = (() => {
             if (!params.isStsEnabled) {
                 const tokens = {
@@ -182,58 +180,40 @@ export function createS3Client(params: ParamsOfCreateS3Client): S3Client {
             return { getNewlyRequestedOrCachedToken, clearCachedToken };
         })();
 
-        const { getMinioClient } = (() => {
-            const minioClientByTokens = new WeakMap<
+        const { getAwsS3Client } = (() => {
+            const awsS3ClientByTokens = new WeakMap<
                 { accessKeyId: string },
-                Minio.Client
+                ns_aws_sdk_client_s3.S3Client
             >();
 
-            let hasBufferBeenPolyfilled = false;
-
-            async function getMinioClient() {
+            async function getAwsS3Client() {
                 const tokens = await getNewlyRequestedOrCachedToken();
 
-                const cachedMinioClient = minioClientByTokens.get(tokens);
+                const cachedAwsS3Client = awsS3ClientByTokens.get(tokens);
 
-                if (cachedMinioClient !== undefined) {
+                if (cachedAwsS3Client !== undefined) {
                     return {
-                        "minioClient": cachedMinioClient,
-                        tokens
+                        "awsS3Client": cachedAwsS3Client
                     };
                 }
 
-                const { host, port = 443 } = parseUrl(params.url);
-
-                import_nodejs_buffer_polyfill: {
-                    if (hasBufferBeenPolyfilled) {
-                        break import_nodejs_buffer_polyfill;
-                    }
-
-                    const { Buffer } = await import("buffer");
-
-                    Object.assign(window, { Buffer });
-
-                    hasBufferBeenPolyfilled = true;
-                }
-
-                const Minio = await import("minio");
-
-                const minioClient = new Minio.Client({
-                    "endPoint": host,
-                    "port": port,
-                    "useSSL": port !== 80,
-                    "accessKey": tokens.accessKeyId,
-                    "secretKey": tokens.secretAccessKey,
-                    "sessionToken": tokens.sessionToken,
-                    "region": params.region
+                const awsS3Client = new ns_aws_sdk_client_s3.S3Client({
+                    "region": params.region,
+                    "credentials": {
+                        "accessKeyId": tokens.accessKeyId,
+                        "secretAccessKey": tokens.secretAccessKey,
+                        "sessionToken": tokens.sessionToken
+                    },
+                    "endpoint": params.url,
+                    "forcePathStyle": true
                 });
 
-                minioClientByTokens.set(tokens, minioClient);
+                awsS3ClientByTokens.set(tokens, awsS3Client);
 
-                return { minioClient, tokens };
+                return { awsS3Client };
             }
 
-            return { getMinioClient };
+            return { getAwsS3Client };
         })();
 
         let hasBucketBeenCreated = false;
@@ -253,31 +233,31 @@ export function createS3Client(params: ParamsOfCreateS3Client): S3Client {
                 return;
             }
 
-            const { minioClient } = await getMinioClient();
+            const { awsS3Client } = await getAwsS3Client();
 
-            const doExist = await new Promise<boolean>((resolve, reject) =>
-                minioClient.bucketExists(
-                    nameOfBucketToCreateIfNotExist,
-                    (error, doExist) => {
-                        if (error !== null) {
-                            reject(error);
-                            return;
-                        }
-                        resolve(doExist);
-                    }
-                )
-            );
+            try {
+                await awsS3Client.send(
+                    new ns_aws_sdk_client_s3.CreateBucketCommand({
+                        "Bucket": nameOfBucketToCreateIfNotExist
+                    })
+                );
+            } catch (error) {
+                assert(is<Error>(error));
 
-            if (doExist) {
-                hasBucketBeenCreated = true;
-                return;
+                if (
+                    !(error instanceof ns_aws_sdk_client_s3.BucketAlreadyExists) &&
+                    !(error instanceof ns_aws_sdk_client_s3.BucketAlreadyOwnedByYou)
+                ) {
+                    throw error;
+                }
+
+                console.log(
+                    [
+                        `The above network error is expected we tried creating the `,
+                        `bucket ${nameOfBucketToCreateIfNotExist} in case it didn't exist but it did.`
+                    ].join(" ")
+                );
             }
-
-            await new Promise<void>((resolve, reject) =>
-                minioClient.makeBucket(nameOfBucketToCreateIfNotExist, error =>
-                    error !== null ? reject(error) : resolve()
-                )
-            );
 
             hasBucketBeenCreated = true;
         }
@@ -289,10 +269,10 @@ export function createS3Client(params: ParamsOfCreateS3Client): S3Client {
                 return getNewlyRequestedOrCachedToken();
             },
             clearCachedToken,
-            "getMinioClient": async () => {
+            "getAwsS3Client": async () => {
                 await createBucketIfApplicableAndNotExist();
 
-                return getMinioClient();
+                return getAwsS3Client();
             }
         };
     })();
@@ -312,111 +292,95 @@ export function createS3Client(params: ParamsOfCreateS3Client): S3Client {
                 const { bucketName, objectName } =
                     bucketNameAndObjectNameFromS3Path(path);
 
+                const prefix =
+                    objectName === ""
+                        ? ""
+                        : objectName.endsWith("/")
+                        ? objectName
+                        : `${objectName}/`;
+
                 return {
                     bucketName,
-                    "prefix": [objectName].map(s => (s.endsWith("/") ? s : `${s}/`))[0]
+                    prefix
                 };
             })();
 
-            const { minioClient } = await getMinioClient();
+            const { awsS3Client } = await getAwsS3Client();
 
-            const stream = minioClient.listObjects(
-                bucketName,
-                prefix === "/" ? "" : prefix,
-                false
+            const { Contents, CommonPrefixes } = await awsS3Client.send(
+                new ns_aws_sdk_client_s3.ListObjectsV2Command({
+                    "Bucket": bucketName,
+                    "Prefix": prefix,
+                    "Delimiter": "/"
+                })
             );
 
-            const out: ReturnType<S3Client["list"]> = {
-                "directories": [],
-                "files": []
+            return {
+                "directories": (CommonPrefixes ?? [])
+                    .map(({ Prefix }) => Prefix)
+                    .filter(exclude(undefined))
+                    .map(directoryWithTrailingSlash =>
+                        directoryWithTrailingSlash.slice(0, -1)
+                    )
+                    .filter(exclude(undefined)),
+                "files": (Contents ?? []).map(({ Key }) => Key).filter(exclude(undefined))
             };
-
-            const dOut = new Deferred<typeof out>();
-
-            stream.once("end", () => dOut.resolve(out));
-            stream.on("data", bucketItem => {
-                if (bucketItem.prefix) {
-                    out.directories.push(
-                        bucketItem.prefix.replace(/\/+$/, "").replace(prefix, "")
-                    );
-                } else {
-                    out.files.push(bucketItem.name.replace(prefix, ""));
-                }
-            });
-            stream.once("error", error => dOut.reject(new Error(String(error))));
-
-            return dOut.pr;
         },
         "uploadFile": async ({ blob, path, onUploadProgress }) => {
-            const stream = fileReaderStream(blob);
-
-            {
-                let chunkLengthSum = 0;
-
-                stream.on("data", (chunk: any) => {
-                    chunkLengthSum += chunk.length;
-
-                    const uploadPercent = ~~((chunkLengthSum / blob.size) * 100);
-
-                    if (uploadPercent === 100) {
-                        return;
-                    }
-
-                    onUploadProgress?.({ uploadPercent });
-                });
-            }
+            const { awsS3Client } = await getAwsS3Client();
 
             const { bucketName, objectName } = bucketNameAndObjectNameFromS3Path(path);
 
-            const { minioClient } = await getMinioClient();
-
-            const dOut = new Deferred<void>();
-
-            minioClient.putObject(bucketName, objectName, stream, blob.size, {}, err => {
-                if (!!err) {
-                    throw err;
-                }
-                onUploadProgress?.({ "uploadPercent": 100 });
-
-                dOut.resolve();
+            const upload = new ns_aws_sdk_lib_storage.Upload({
+                "client": awsS3Client,
+                "params": {
+                    "Bucket": bucketName,
+                    "Key": objectName,
+                    "Body": blob
+                },
+                "partSize": 5 * 1024 * 1024, // optional size of each part
+                "leavePartsOnError": false // optional manually handle dropped parts
             });
 
-            return dOut.pr;
+            upload.on("httpUploadProgress", ({ total, loaded }) => {
+                if (total === undefined || loaded === undefined) {
+                    return;
+                }
+
+                const uploadPercent = Math.floor((loaded / total) * 100);
+
+                onUploadProgress?.({ uploadPercent });
+            });
+
+            await upload.done();
         },
         "deleteFile": async ({ path }) => {
             const { bucketName, objectName } = bucketNameAndObjectNameFromS3Path(path);
 
-            const { minioClient } = await getMinioClient();
+            const { awsS3Client } = await getAwsS3Client();
 
-            await new Promise((resolve, reject) =>
-                minioClient.removeObject(bucketName, objectName, err => {
-                    if (!!err) {
-                        reject(err);
-                        return;
-                    }
-                    resolve(true);
+            await awsS3Client.send(
+                new ns_aws_sdk_client_s3.DeleteObjectCommand({
+                    "Bucket": bucketName,
+                    "Key": objectName
                 })
             );
         },
         "getFileDownloadUrl": async ({ path, validityDurationSecond }) => {
             const { bucketName, objectName } = bucketNameAndObjectNameFromS3Path(path);
 
-            const { minioClient, tokens } = await getMinioClient();
+            const { awsS3Client } = await getAwsS3Client();
 
-            let downloadUrl = await new Promise<string>((resolve, reject) => {
-                minioClient.presignedGetObject(
-                    bucketName,
-                    objectName,
-                    validityDurationSecond,
-                    (err, url: string) => {
-                        if (err) {
-                            reject(err);
-                            return;
-                        }
-                        resolve(url);
-                    }
-                );
-            });
+            let downloadUrl = await ns_aws_sdk_s3_request_presigner.getSignedUrl(
+                awsS3Client,
+                new ns_aws_sdk_client_s3.GetObjectCommand({
+                    "Bucket": bucketName,
+                    "Key": objectName
+                }),
+                {
+                    "expiresIn": validityDurationSecond
+                }
+            );
 
             if (!params.pathStyleAccess) {
                 downloadUrl = (() => {
@@ -428,14 +392,6 @@ export function createS3Client(params: ParamsOfCreateS3Client): S3Client {
 
                     return urlObj.toString();
                 })();
-            }
-
-            if (tokens.sessionToken !== undefined) {
-                downloadUrl = addParamToUrl({
-                    "url": downloadUrl,
-                    "name": "X-Amz-Security-Token",
-                    "value": tokens.sessionToken
-                }).newUrl;
             }
 
             return downloadUrl;

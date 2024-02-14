@@ -173,7 +173,7 @@ export const thunks = {
             assert(directoryPath !== undefined);
 
             await dispatch(
-                privateThunks.navigate({ directoryPath, "doListAgainIfSamePath": false })
+                privateThunks.navigate({ directoryPath, "doListAgainIfSamePath": true })
             );
         },
     "create":

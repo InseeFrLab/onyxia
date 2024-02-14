@@ -16,13 +16,7 @@ module.exports = function override(config) {
     }
 
     Object.assign(config.resolve.fallback ??= {}, {
-        "crypto": require.resolve("crypto-browserify"),
-        "stream": require.resolve("stream-browserify"),
-        "http": require.resolve("stream-http"),
-        "https": require.resolve("https-browserify"),
-        "timers": require.resolve("timers-browserify"),
         "path": require.resolve("path-browserify"),
-        "url": require.resolve("url/"),
     });
 
     (config.plugins ??= []).push(...[
