@@ -67,7 +67,10 @@ const privateThunks = {
     "navigate":
         (params: { directoryPath: string; doListAgainIfSamePath: boolean }) =>
         async (...args) => {
-            const { directoryPath, doListAgainIfSamePath } = params;
+            const { doListAgainIfSamePath } = params;
+
+            // Ensure trailing slash for consistency.
+            const directoryPath = params.directoryPath.replace(/\/+$/, "") + "/";
 
             const [dispatch, getState, { evtAction, s3ClientForExplorer }] = args;
 

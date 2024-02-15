@@ -1,4 +1,3 @@
-import type { ReactNode } from "react";
 import { tss } from "tss";
 import { Button } from "onyxia-ui/Button";
 import { useState, useEffect, useMemo, memo } from "react";
@@ -9,7 +8,7 @@ import { Breadcrumb } from "onyxia-ui/Breadcrumb";
 import type { BreadcrumbProps } from "onyxia-ui/Breadcrumb";
 import { Props as ButtonBarProps } from "./ExplorerButtonBar";
 import { Evt } from "evt";
-import { join as pathJoin, basename as pathBasename } from "path";
+import { join as pathJoin } from "path";
 import { useTranslation } from "ui/i18n";
 import { CommandBar, type CommandBarProps } from "ui/shared/CommandBar";
 import {
@@ -26,14 +25,11 @@ import { ExplorerButtonBar } from "./ExplorerButtonBar";
 import { DirectoryHeader } from "onyxia-ui/DirectoryHeader";
 import { useDomRect } from "powerhooks/useDomRect";
 import { ExplorerIcon } from "./ExplorerIcon";
-import { getFormattedDate } from "ui/shared/useMoment";
 import { Dialog } from "onyxia-ui/Dialog";
 import { useCallbackFactory } from "powerhooks/useCallbackFactory";
 import { Deferred } from "evt/tools/Deferred";
 import { useConst } from "powerhooks/useConst";
 import type { Param0 } from "tsafe";
-import { useLang } from "ui/i18n";
-import { Card } from "onyxia-ui/Card";
 import { TextField } from "onyxia-ui/TextField";
 import type { TextFieldProps } from "onyxia-ui/TextField";
 import { useRerenderOnStateChange } from "evt/hooks/useRerenderOnStateChange";
@@ -64,26 +60,11 @@ export type ExplorerProps = {
     onCreateDirectory: (params: { basename: string }) => void;
     onCopyPath: (params: { path: string }) => void;
     scrollableDivRef: RefObject<any>;
-} & (
-    | {
-          isFileOpen: true;
-          openFileBasename: string;
-          /** Undefined when file is loading
-           * TODO: Add a new state when file is opening, onClose and onRefresh should
-           * not be clickable.
-           */
-          openFileTime: number | undefined;
-          openFileNode: ReactNode;
-          onCloseFile: () => void;
-          onRefreshOpenFile: () => void;
-      }
-    | {
-          isFileOpen: false;
-          onOpenFile: (params: { basename: string }) => void;
-      }
-) &
-    //NOTE: TODO only defined when explorer type is s3
-    Pick<ExplorerUploadModalProps, "onFileSelected" | "filesBeingUploaded">;
+
+    pathMinDepth: number;
+    onOpenFile: (params: { basename: string }) => void;
+} & //NOTE: TODO only defined when explorer type is s3
+Pick<ExplorerUploadModalProps, "onFileSelected" | "filesBeingUploaded">;
 
 export const Explorer = memo((props: ExplorerProps) => {
     const {
@@ -100,7 +81,8 @@ export const Explorer = memo((props: ExplorerProps) => {
         onCopyPath,
         scrollableDivRef,
         onFileSelected,
-        filesBeingUploaded
+        filesBeingUploaded,
+        pathMinDepth
     } = props;
 
     const [files, directories, directoriesBeingCreated, filesBeingCreated] = useMemo(
@@ -140,10 +122,7 @@ export const Explorer = memo((props: ExplorerProps) => {
     const onBreadcrumbNavigate = useConstCallback(
         ({ upCount }: Param0<BreadcrumbProps["onNavigate"]>) => {
             onNavigate({
-                "directoryPath": pathJoin(
-                    directoryPath,
-                    ...new Array(upCount - (props.isFileOpen ? 1 : 0)).fill("..")
-                )
+                "directoryPath": pathJoin(directoryPath, ...new Array(upCount).fill(".."))
             });
         }
     );
@@ -157,8 +136,6 @@ export const Explorer = memo((props: ExplorerProps) => {
 
     const onItemsOpenFile = useConstCallback(
         ({ basename }: Param0<ItemsProps["onOpenFile"]>) => {
-            assert(!props.isFileOpen);
-
             props.onOpenFile({ basename });
         }
     );
@@ -179,11 +156,7 @@ export const Explorer = memo((props: ExplorerProps) => {
     );
 
     const onGoBack = useConstCallback(() => {
-        if (props.isFileOpen) {
-            props.onCloseFile();
-        } else {
-            onNavigate({ "directoryPath": pathJoin(directoryPath, "..") });
-        }
+        onNavigate({ "directoryPath": pathJoin(directoryPath, "..") });
     });
 
     const { evtItemsAction } = useConst(() => ({
@@ -193,25 +166,13 @@ export const Explorer = memo((props: ExplorerProps) => {
     const buttonBarCallback = useConstCallback<ButtonBarProps["callback"]>(buttonId => {
         switch (buttonId) {
             case "refresh":
-                if (props.isFileOpen) {
-                    props.onRefreshOpenFile();
-                } else {
-                    onRefresh();
-                }
+                onRefresh();
                 break;
             case "delete":
                 evtItemsAction.post("DELETE SELECTED ITEM");
                 break;
             case "copy path":
-                if (props.isFileOpen) {
-                    evtBreadcrumbAction.post({ "action": "DISPLAY COPY FEEDBACK" });
-
-                    onCopyPath({
-                        "path": pathJoin(directoryPath, props.openFileBasename)
-                    });
-                } else {
-                    evtItemsAction.post("COPY SELECTED ITEM PATH");
-                }
+                evtItemsAction.post("COPY SELECTED ITEM PATH");
                 break;
             case "create directory":
                 setCreateS3DirectoryDialogState({
@@ -242,23 +203,8 @@ export const Explorer = memo((props: ExplorerProps) => {
 
     const { classes, cx, css, theme } = useStyles({
         ...props,
-        commandBarTop,
-        "isOpenFileNodeNull": !props.isFileOpen ? true : props.openFileNode === null
+        commandBarTop
     });
-
-    const { formattedDate } = (function useClosure() {
-        // NOTE: This is to get a refresh if the lang is changed
-        useLang();
-
-        const formattedDate = !props.isFileOpen ? undefined : props.openFileTime ===
-          undefined ? (
-            <>&nbsp;</>
-        ) : (
-            getFormattedDate({ "time": props.openFileTime })
-        );
-
-        return { formattedDate };
-    })();
 
     const [doShowDeletionDialogNextTime, setDoShowDeletionDialogNextTime] =
         useState(true);
@@ -347,21 +293,19 @@ export const Explorer = memo((props: ExplorerProps) => {
                 )}
                 {(() => {
                     const title = (() => {
-                        if (props.isFileOpen) {
-                            return props.openFileBasename;
-                        }
+                        let split = directoryPath.split("/");
 
-                        const split = directoryPath
-                            .split("/")
-                            .filter(part => part !== "");
+                        // remove the last element
+                        split.pop();
 
-                        assert(split.length !== 0, "We assume there is always a bucket");
+                        // remove path min depth elements at the beginning
+                        split = split.slice(pathMinDepth + 1);
 
-                        if (split.length === 1) {
+                        if (split.length === 0) {
                             return undefined;
                         }
 
-                        return pathBasename(directoryPath);
+                        return split[split.length - 1];
                     })();
 
                     if (title === undefined) {
@@ -372,11 +316,11 @@ export const Explorer = memo((props: ExplorerProps) => {
                         <DirectoryHeader
                             title={title}
                             onGoBack={onGoBack}
-                            subtitle={formattedDate}
+                            subtitle={undefined}
                             image={
                                 <ExplorerIcon
                                     className={classes.fileOrDirectoryIcon}
-                                    iconId={!props.isFileOpen ? "directory" : "data"}
+                                    iconId="directory"
                                     hasShadow={true}
                                 />
                             }
@@ -386,11 +330,8 @@ export const Explorer = memo((props: ExplorerProps) => {
 
                 <div className={classes.breadcrumpWrapper}>
                     <Breadcrumb
-                        minDepth={0}
-                        path={[
-                            ...directoryPath.split("/").filter(part => part !== ""),
-                            ...(props.isFileOpen ? [props.openFileBasename] : [])
-                        ]}
+                        minDepth={pathMinDepth}
+                        path={directoryPath.split("/").filter(part => part !== "")}
                         isNavigationDisabled={isNavigating}
                         onNavigate={onBreadcrumbNavigate}
                         evtAction={evtBreadcrumbAction}
@@ -413,23 +354,19 @@ export const Explorer = memo((props: ExplorerProps) => {
                         })
                     )}
                 >
-                    {props.isFileOpen ? (
-                        <Card className={classes.openFile}>{props.openFileNode}</Card>
-                    ) : (
-                        <ExplorerItems
-                            isNavigating={isNavigating}
-                            files={files}
-                            directories={directories}
-                            directoriesBeingCreated={directoriesBeingCreated}
-                            filesBeingCreated={filesBeingCreated}
-                            onNavigate={onItemsNavigate}
-                            onOpenFile={onItemsOpenFile}
-                            onSelectedItemKindValueChange={onSelectedItemKindValueChange}
-                            onCopyPath={itemsOnCopyPath}
-                            onDeleteItem={itemsOnDeleteItem}
-                            evtAction={evtItemsAction}
-                        />
-                    )}
+                    <ExplorerItems
+                        isNavigating={isNavigating}
+                        files={files}
+                        directories={directories}
+                        directoriesBeingCreated={directoriesBeingCreated}
+                        filesBeingCreated={filesBeingCreated}
+                        onNavigate={onItemsNavigate}
+                        onOpenFile={onItemsOpenFile}
+                        onSelectedItemKindValueChange={onSelectedItemKindValueChange}
+                        onCopyPath={itemsOnCopyPath}
+                        onDeleteItem={itemsOnDeleteItem}
+                        evtAction={evtItemsAction}
+                    />
                 </div>
             </div>
             <CreateS3DirectoryDialog
@@ -499,10 +436,9 @@ export const { i18n } = declareComponentKeys<
 const useStyles = tss
     .withParams<{
         commandBarTop: number;
-        isOpenFileNodeNull: boolean;
     }>()
     .withName({ Explorer })
-    .create(({ theme, commandBarTop, isOpenFileNodeNull }) => ({
+    .create(({ theme, commandBarTop }) => ({
         "root": {
             "position": "relative",
             "display": "flex",
@@ -517,14 +453,6 @@ const useStyles = tss
             "opacity": commandBarTop === 0 ? 0 : 1,
             "transition": "opacity 750ms linear"
         },
-        "openFile": (() => {
-            const opacity = isOpenFileNodeNull ? 0 : 1;
-
-            return {
-                opacity,
-                "transition": opacity === 0 ? undefined : "opacity 500ms linear"
-            };
-        })(),
         "breadcrumpWrapper": {
             "marginTop": theme.spacing(3),
             "marginBottom": theme.spacing(4),

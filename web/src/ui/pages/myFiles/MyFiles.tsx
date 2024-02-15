@@ -47,7 +47,8 @@ function MyFiles(props: Props) {
         commandLogsEntries,
         isNavigationOngoing,
         uploadProgress,
-        currentWorkingDirectoryView
+        currentWorkingDirectoryView,
+        pathMinDepth
     } = useCoreState("fileExplorer", "main");
 
     const { fileExplorer } = useCore().functions;
@@ -138,9 +139,7 @@ function MyFiles(props: Props) {
         []
     );
 
-    const onOpenFile = useConstCallback<
-        Extract<ExplorerProps, { isFileOpen: false }>["onOpenFile"]
-    >(({ basename }) => {
+    const onOpenFile = useConstCallback<ExplorerProps["onOpenFile"]>(({ basename }) => {
         if (basename.endsWith(".parquet") || basename.endsWith(".csv")) {
             const { path } = route.params;
 
@@ -208,10 +207,8 @@ function MyFiles(props: Props) {
                 onCreateDirectory={onCreateDirectory}
                 onCopyPath={onCopyPath}
                 scrollableDivRef={scrollableDivRef}
-                {...{
-                    "isFileOpen": false as const,
-                    onOpenFile
-                }}
+                pathMinDepth={pathMinDepth}
+                onOpenFile={onOpenFile}
             />
         </div>
     );
