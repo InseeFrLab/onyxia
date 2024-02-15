@@ -205,7 +205,7 @@ export function createS3Client(params: ParamsOfCreateS3Client): S3Client {
                         "sessionToken": tokens.sessionToken
                     },
                     "endpoint": params.url,
-                    "forcePathStyle": true
+                    "forcePathStyle": params.pathStyleAccess
                 });
 
                 awsS3ClientByTokens.set(tokens, awsS3Client);
@@ -319,11 +319,17 @@ export function createS3Client(params: ParamsOfCreateS3Client): S3Client {
                 "directories": (CommonPrefixes ?? [])
                     .map(({ Prefix }) => Prefix)
                     .filter(exclude(undefined))
-                    .map(directoryWithTrailingSlash =>
-                        directoryWithTrailingSlash.slice(0, -1)
-                    )
-                    .filter(exclude(undefined)),
-                "files": (Contents ?? []).map(({ Key }) => Key).filter(exclude(undefined))
+                    .map(directoryPath => {
+                        const split = directoryPath.split("/");
+                        return split[split.length - 2];
+                    }),
+                "files": (Contents ?? [])
+                    .map(({ Key }) => Key)
+                    .filter(exclude(undefined))
+                    .map(filePath => {
+                        const split = filePath.split("/");
+                        return split[split.length - 1];
+                    })
             };
         },
         "uploadFile": async ({ blob, path, onUploadProgress }) => {
@@ -371,7 +377,7 @@ export function createS3Client(params: ParamsOfCreateS3Client): S3Client {
 
             const { awsS3Client } = await getAwsS3Client();
 
-            let downloadUrl = await ns_aws_sdk_s3_request_presigner.getSignedUrl(
+            const downloadUrl = await ns_aws_sdk_s3_request_presigner.getSignedUrl(
                 awsS3Client,
                 new ns_aws_sdk_client_s3.GetObjectCommand({
                     "Bucket": bucketName,
@@ -381,18 +387,6 @@ export function createS3Client(params: ParamsOfCreateS3Client): S3Client {
                     "expiresIn": validityDurationSecond
                 }
             );
-
-            if (!params.pathStyleAccess) {
-                downloadUrl = (() => {
-                    const urlObj = new URL(downloadUrl);
-                    const subdomain = urlObj.pathname.split("/")[1];
-
-                    urlObj.hostname = `${subdomain}.${urlObj.hostname}`;
-                    urlObj.pathname = urlObj.pathname.replace(`/${subdomain}`, "");
-
-                    return urlObj.toString();
-                })();
-            }
 
             return downloadUrl;
         }
