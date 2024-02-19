@@ -340,7 +340,13 @@ const pathOfFormFieldsWhoseValuesAreDifferentFromDefault = createSelector(
 
 const catalogId = createSelector(readyState, state => state?.catalogId);
 
-const chartVersion = createSelector(readyState, state => state?.chartVersion);
+const chartVersion = createSelector(readyState, state => {
+    if (state === undefined) {
+        return undefined;
+    }
+
+    return state.chartVersion;
+});
 
 const restorableConfig = createSelector(
     isReady,
@@ -544,7 +550,12 @@ const commandLogsEntries = createSelector(
     }
 );
 
-const chartSourceUrls = createSelector(readyState, state => state?.chartSourceUrls);
+const chartSourceUrls = createSelector(readyState, state => {
+    if (state === undefined) {
+        return undefined;
+    }
+    return state.chartSourceUrls;
+});
 
 const groupProjectName = createSelector(
     projectManagement.selectors.currentProject,
@@ -576,10 +587,12 @@ const isShared = createSelector(
     }
 );
 
-const availableChartVersions = createSelector(
-    readyState,
-    state => state?.availableChartVersions
-);
+const availableChartVersions = createSelector(readyState, state => {
+    if (state === undefined) {
+        return undefined;
+    }
+    return state.availableChartVersions;
+});
 
 const catalogName = createSelector(readyState, state => state?.catalogName);
 
@@ -715,7 +728,6 @@ const main = createSelector(
         assert(indexedFormFields !== undefined);
         assert(isLaunchable !== undefined);
         assert(formFieldsIsWellFormed !== undefined);
-        assert(chartIconUrl !== undefined);
         assert(chartName !== undefined);
         assert(chartVersion !== undefined);
         assert(availableChartVersions !== undefined);
