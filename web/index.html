@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="keycloakify-ignore-start">
+	<link rel="icon" type="image/svg+xml" href="<%= import.meta.env.FAVICON || import.meta.env.HEADER_LOGO %>" />
+
+	<title>%TAB_TITLE%</title>
+
+	<!-- Primary Meta Tags -->
+	<meta name="title" content="%SOCIAL_MEDIA_TITLE%">
+	<meta name="description" content="%SOCIAL_MEDIA_DESCRIPTION%">
+
+	<!-- Open Graph / Facebook -->
+	<meta property="og:type" content="website">
+	<meta property="og:title" content="%SOCIAL_MEDIA_TITLE%">
+	<meta property="og:description" content="%SOCIAL_MEDIA_DESCRIPTION%">
+	<meta property="og:image" content="<%= import.meta.env.SOCIAL_MEDIA_IMAGE %>">
+
+	<!-- Twitter -->
+	<meta property="twitter:card" content="summary_large_image">
+	<meta property="twitter:title" content="%SOCIAL_MEDIA_TITLE%">
+	<meta property="twitter:description" content="%SOCIAL_MEDIA_DESCRIPTION%">
+	<meta property="twitter:image" content="<%= import.meta.env.SOCIAL_MEDIA_IMAGE %>">
+    <meta name="keycloakify-ignore-end">
+
+	<%
+    const FONT = JSON5.parse(import.meta.env.FONT);
+    const { fontFamily, dirUrl } = FONT;
+    const fontWeights = [400, 500, 600, 700];
+    let fontFaceRules = '';
+    let preloadLinks = '';
+
+    fontWeights.forEach(weight => {
+        const normalFontFileBasename = FONT[weight];
+        const italicFontFileBasename = FONT[`${weight}-italic`];
+
+        ['normal', 'italic'].forEach(fontStyle => {
+            let fontFileBasename;
+            switch (fontStyle) {
+                case 'normal':
+                    fontFileBasename = normalFontFileBasename;
+                    break;
+                case 'italic':
+                    fontFileBasename = italicFontFileBasename;
+                    break;
+            }
+
+            if(fontFileBasename === undefined){
+                return;
+            }
+
+            const url = `${dirUrl}/${fontFileBasename}`;
+            
+            const format = fontFileBasename.split('.').pop();
+            fontFaceRules += [
+                ``,
+                `@font-face {`,
+                `    font-family: '${fontFamily}';`,
+                `    font-style: ${fontStyle};`,
+                `    font-weight: ${weight};`,
+                `    font-display: swap;`,
+                `    src: url('${url}') format('${format}');`,
+                `}\n`
+            ].join("\n");
+
+            if( fontStyle === 'normal' ){
+                preloadLinks += `    <link rel="preload" href="${url}" as="font" type="font/${format}" crossorigin="anonymous">\n`;
+            }
+
+        });
+    });
+    %>
+    <meta name="onyxia-font" content="<%= fontFamily %>">
+    <meta name="keycloakify-ignore-start">
+    <%= preloadLinks %>
+    <meta name="keycloakify-ignore-end">
+    <style><%= fontFaceRules %></style>
+
+    <script data-script-purpose="set background color early">
+        /*
+        This is a way to get the correct background color as soon as possible,
+        even before the JavaScript bundle is evaluated.
+        It is to prevent a white flash when the user has dark mode enabled.
+        It is very implementation dependent and can easily break...
+        if it does no big deal.
+        */
+        (function () {
+        
+            var isDarkModeEnabled = /true/.test((function () {
+            
+                var key = "powerhooks_useGlobalState_isDarkModeEnabled";
+                var value = null;
+            
+                try {
+                    value = (new URLSearchParams(location.search)).get(key);
+                } catch (_) { }
+            
+                if (value !== null) {
+                    return value;
+                }
+            
+                try {
+                    value = localStorage.getItem(key);
+                } catch (_) { }
+            
+                if (value !== null) {
+                    return value;
+                }
+            
+                try {
+                    value = window.matchMedia("(prefers-color-scheme: dark)").matches ? "true" : "false";
+                } catch (_) { }
+            
+                if (value !== null) {
+                    return value;
+                }
+            
+                return "false";
+            
+            })());
+
+            <%
+                const PALETTE_OVERRIDE = import.meta.env.PALETTE_OVERRIDE;
+
+                const palette = PALETTE_OVERRIDE === "" ? {}: JSON5.parse(PALETTE_OVERRIDE);
+
+                const [backgroundColorWhenLightMode, backgroundColorWhenDarkMode] = [false, true].map(isDarkModeEnabled=> {
+
+                    custom: {
+
+                        const wrap= palette[isDarkModeEnabled ? "dark" : "light"];
+
+                        if(wrap === undefined){
+                            break custom;
+                        }
+
+                        const backgroundColor = wrap.main;
+
+                        if( backgroundColor === undefined ){
+                            break custom;
+                        }
+
+                        return backgroundColor;
+
+                    }
+
+                    return isDarkModeEnabled ? "#2C323F" : "#F1F0EB";
+
+                });
+            %>
+
+            var backgroundColor = isDarkModeEnabled ? "<%= backgroundColorWhenDarkMode %>" : "<%= backgroundColorWhenLightMode %>";
+            
+            document.documentElement.style.backgroundColor = backgroundColor;
+            
+            while (true) {
+            
+                var element = document.querySelector("meta[name=theme-color]");
+            
+                if (element === null) {
+                	break;
+                }
+            
+                element.remove();
+            
+            }
+            
+            document.head.insertAdjacentHTML(
+                "beforeend",
+                '<meta name="theme-color" content="' + backgroundColor + '">',
+            );
+        
+        })();
+    </script>
+
+    <%= import.meta.env.CUSTOM_HTML_HEAD %>
+
+</head>
+
+<body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+</body>
+
+</html>

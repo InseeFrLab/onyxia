@@ -1,7 +1,7 @@
 import { createOnyxiaUi, defaultGetTypographyDesc } from "onyxia-ui";
 import { palette } from "./palette";
 import { targetWindowInnerWidth } from "./targetWindowInnerWidth";
-import { env } from "env-parsed";
+import { env } from "env";
 import { loadThemedFavicon as loadThemedFavicon_base } from "./loadThemedFavicon";
 import { Evt } from "evt";
 import { CacheProvider } from "@emotion/react";

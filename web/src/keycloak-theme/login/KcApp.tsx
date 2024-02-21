@@ -4,7 +4,7 @@ import type { KcContext } from "./kcContext";
 import { useI18n } from "./i18n";
 import { loadThemedFavicon } from "keycloak-theme/login/theme";
 import { tss } from "tss";
-import { env } from "env-parsed";
+import { env } from "env";
 import onyxiaNeumorphismDarkModeUrl from "ui/assets/svg/OnyxiaNeumorphismDarkMode.svg";
 import onyxiaNeumorphismLightModeUrl from "ui/assets/svg/OnyxiaNeumorphismLightMode.svg";
 import { OnyxiaUi } from "keycloak-theme/login/theme";

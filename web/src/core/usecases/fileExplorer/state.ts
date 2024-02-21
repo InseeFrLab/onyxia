@@ -1,5 +1,5 @@
 import { id } from "tsafe/id";
-import { relative as pathRelative } from "path";
+import { relative as pathRelative } from "path-browserify";
 import { assert } from "tsafe/assert";
 import type { WritableDraft } from "immer/dist/types/types-external";
 import { createUsecaseActions } from "clean-architecture";

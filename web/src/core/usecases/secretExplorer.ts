@@ -5,7 +5,7 @@ import {
     join as pathJoin,
     relative as pathRelative,
     basename as pathBasename
-} from "path";
+} from "path-browserify";
 import { logApi } from "core/tools/commandLogger";
 import { assert } from "tsafe/assert";
 import * as projectManagement from "./projectManagement";

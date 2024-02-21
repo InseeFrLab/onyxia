@@ -7,7 +7,7 @@
 /coverage
 
 # production
-/build
+/dist
 
 # bundle analysis
 /bundle-report
@@ -29,8 +29,7 @@ android
 package-lock.json
 .eslintcache
 
-/build_keycloak
-/src/env.ts
+/dist_keycloak
 /.yarn_home
 
 # Jetbrains

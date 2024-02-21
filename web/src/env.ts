@@ -1,6 +1,6 @@
 /* In keycloak-theme, this should be evaluated early */
 
-import { getEnv, type EnvName } from "env";
+//import { getEnv, type EnvName } from "env";
 import { kcContext as kcLoginThemeContext } from "keycloak-theme/login/kcContext";
 import {
     retrieveParamFromUrl,
@@ -29,7 +29,6 @@ import onyxiaNeumorphismLightModeUrl from "ui/assets/svg/OnyxiaNeumorphismLightM
 import { getIsJSON5ObjectOrArray } from "ui/tools/getIsJSON5ObjectOrArray";
 import JSON5 from "json5";
 import { ensureUrlIsSafe } from "ui/shared/ensureUrlIsSafe";
-import { PUBLIC_URL } from "keycloakify/PUBLIC_URL";
 
 export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
     {
@@ -1032,7 +1031,7 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
                     });
             } catch (error) {
                 throw new Error(
-                    JSON.stringify(process.env.NODE_ENV) + " " + String(error)
+                    JSON.stringify(import.meta.env.MODE) + " " + String(error)
                 );
             }
         }
@@ -1068,6 +1067,8 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
     }
 ]);
 
+type EnvName = Exclude<keyof ImportMetaEnv, "DEV" | "PROD" | "BASE_URL" | "MODE">;
+
 type Entry<N extends EnvName> = {
     envName: N;
     validateAndParseOrGetDefault: (params: {
@@ -1088,7 +1089,6 @@ function createParsedEnvs<Parser extends Entry<EnvName>>(
     } & { PUBLIC_URL: string };
     injectTransferableEnvsInQueryParams: (url: string) => string;
 } {
-    assert("putin stp dis moi qu'on est là");
 
     const parsedValueOrGetterByEnvName: Record<string, any> = {};
 
@@ -1101,6 +1101,13 @@ function createParsedEnvs<Parser extends Entry<EnvName>>(
 
         return undefined;
     })();
+
+    //NOTE: Initially we where in CRA so we used PUBLIC_URL,
+    // in Vite BASE_URL is the equivalent but it's not exactly formatted the same way.  
+    // CRA: "" <=> Vite: "/"
+    // CRA: "/foo" <=> Vite: "/foo/"
+    // So we convert the Vite format to the CRA format for retro compatibility.
+    const PUBLIC_URL= import.meta.env.BASE_URL === "/" ? "" : import.meta.env.BASE_URL.replace(/\/$/, "")
 
     const env: any = new Proxy(
         {},
@@ -1164,7 +1171,7 @@ function createParsedEnvs<Parser extends Entry<EnvName>>(
         }
 
         const isProductionKeycloak =
-            process.env.NODE_ENV === "production" && kcContext !== undefined;
+            import.meta.env.MODE === "production" && kcContext !== undefined;
 
         const getEnvValue = () => {
             if (!isUsedInKeycloakTheme && kcLoginThemeContext !== undefined) {
@@ -1178,7 +1185,7 @@ function createParsedEnvs<Parser extends Entry<EnvName>>(
             look_in_url: {
                 if (
                     kcContext === undefined &&
-                    (getEnv().ALLOW_THEME_TESTING_VIA_URL !== "true" ||
+                    (import.meta.env.ALLOW_THEME_TESTING_VIA_URL !== "true" ||
                         !id<EnvName[]>(["FONT", "PALETTE_OVERRIDE"]).includes(envName))
                 ) {
                     break look_in_url;
@@ -1216,7 +1223,7 @@ function createParsedEnvs<Parser extends Entry<EnvName>>(
                     break read_what_have_been_injected_by_cra_envs;
                 }
 
-                return getEnv()[envName];
+                return import.meta.env[envName];
             }
 
             restore_from_local_storage: {
@@ -1234,13 +1241,16 @@ function createParsedEnvs<Parser extends Entry<EnvName>>(
             }
 
             // NOTE: Here we are in production Keycloak
-            // We get the default that was injected at build time. (cra-envs do not work with keycloak)
+            // We get the default that was injected at build time. (vite-envs is not enabled in Keycloak)
             // This can happen when the user has never navigated to the login page via onyxia.
-            return getEnv()[envName];
+            return import.meta.env[envName];
         };
 
         const replacePUBLIC_URL = (envValue: string) =>
-            envValue.replace(/%PUBLIC_URL%/g, PUBLIC_URL);
+            envValue.replace(
+                /%PUBLIC_URL%/g, 
+                PUBLIC_URL
+            );
 
         if (isUsedInKeycloakTheme) {
             const envValue = getEnvValue();
@@ -1253,7 +1263,7 @@ function createParsedEnvs<Parser extends Entry<EnvName>>(
                             "name": envName,
                             "value": envValue.replace(
                                 /%PUBLIC_URL%\/custom-resources/g,
-                                `${window.location.origin}${process.env.PUBLIC_URL}/custom-resources`
+                                `${window.location.origin}${PUBLIC_URL}/custom-resources`
                             )
                         }).newUrl
                 );

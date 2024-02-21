@@ -12,7 +12,7 @@ import type { PageRoute } from "./route";
 import { useSplashScreen } from "onyxia-ui";
 import { useEvt } from "evt/hooks";
 import { routes, getPreviousRouteName } from "ui/routes";
-import { env } from "env-parsed";
+import { env } from "env";
 import { assert } from "tsafe/assert";
 import { Deferred } from "evt/tools/Deferred";
 import { Evt, type UnpackEvt } from "evt";

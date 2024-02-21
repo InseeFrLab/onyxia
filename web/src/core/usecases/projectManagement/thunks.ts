@@ -1,6 +1,6 @@
 import { assert, type Equals } from "tsafe/assert";
 import type { Thunks } from "core/bootstrap";
-import { join as pathJoin } from "path";
+import { join as pathJoin } from "path-browserify";
 import { generateRandomPassword } from "core/tools/generateRandomPassword";
 import { actions, type ProjectConfigs, type ChangeConfigValueParams } from "./state";
 import type { Secret } from "core/ports/SecretsManager";

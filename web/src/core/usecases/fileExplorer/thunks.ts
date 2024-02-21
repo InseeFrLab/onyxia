@@ -4,7 +4,7 @@ import type { Thunks } from "core/bootstrap";
 import { name, actions } from "./state";
 import { selectors, protectedSelectors } from "./selectors";
 import { onlyIfChanged } from "evt/operators/onlyIfChanged";
-import { join as pathJoin, basename as pathBasename } from "path";
+import { join as pathJoin, basename as pathBasename } from "path-browserify";
 import { crawlFactory } from "core/tools/crawl";
 
 export type ExplorersCreateParams =

@@ -4,7 +4,7 @@ import { Footer } from "./Footer";
 import { Header } from "./Header";
 import { useEffectOnValueChange } from "powerhooks/useEffectOnValueChange";
 import { useSplashScreen, useDarkMode } from "onyxia-ui";
-import { env, injectTransferableEnvsInQueryParams } from "env-parsed";
+import { env, injectTransferableEnvsInQueryParams } from "env";
 import { RouteProvider } from "ui/routes";
 import { createCoreProvider, useCoreState, useCore } from "core";
 import { injectGlobalStatesInSearchParams } from "powerhooks/useGlobalState";

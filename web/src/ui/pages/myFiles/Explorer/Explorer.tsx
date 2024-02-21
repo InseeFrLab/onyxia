@@ -8,7 +8,7 @@ import { Breadcrumb } from "onyxia-ui/Breadcrumb";
 import type { BreadcrumbProps } from "onyxia-ui/Breadcrumb";
 import { Props as ButtonBarProps } from "./ExplorerButtonBar";
 import { Evt } from "evt";
-import { join as pathJoin } from "path";
+import { join as pathJoin } from "path-browserify";
 import { useTranslation } from "ui/i18n";
 import { CommandBar, type CommandBarProps } from "ui/shared/CommandBar";
 import {
@@ -63,8 +63,7 @@ export type ExplorerProps = {
 
     pathMinDepth: number;
     onOpenFile: (params: { basename: string }) => void;
-} & //NOTE: TODO only defined when explorer type is s3
-Pick<ExplorerUploadModalProps, "onFileSelected" | "filesBeingUploaded">;
+} & Pick<ExplorerUploadModalProps, "onFileSelected" | "filesBeingUploaded">; //NOTE: TODO only defined when explorer type is s3
 
 export const Explorer = memo((props: ExplorerProps) => {
     const {

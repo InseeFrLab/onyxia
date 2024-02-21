@@ -6,7 +6,7 @@ import {
 import { fallbackLanguage, type Language } from "./types";
 import { ComponentKey } from "./types";
 import { statefulObservableToStatefulEvt } from "powerhooks/tools/StatefulObservable/statefulObservableToStatefulEvt";
-import { env } from "env-parsed";
+import { env } from "env";
 import { objectEntries } from "tsafe/objectEntries";
 import { objectFromEntries } from "tsafe/objectFromEntries";
 import { pluginSystemInitI18n } from "pluginSystem";

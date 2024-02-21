@@ -1,8 +1,13 @@
+import { fileURLToPath } from "url";
 import * as yaml from "yaml";
-import { join as pathJoin, basename as pathBasename } from "path";
+import { join as pathJoin, basename as pathBasename, dirname as pathDirname } from "path";
 import * as fs from "fs";
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = pathDirname(__filename);
+
 const projectRootPath = pathJoin(__dirname, "..");
+// Convert import.meta.url to a file path
 
 const envLocalYamlFilePath = pathJoin(projectRootPath, ".env.local.yaml");
 
@@ -54,7 +59,7 @@ fs.writeFileSync(
             `# Do not edit it manually!`,
             "",
             ...Object.entries(parsedEnvLocalYaml.onyxia.web.env).map(
-                ([key, value]) => `REACT_APP_${key}="${value.replace(/\n/g, "\\n")}"`
+                ([key, value]) => `${key}="${value.replace(/\n/g, "\\n")}"`
             )
         ].join("\n"),
         "utf8"

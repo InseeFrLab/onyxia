@@ -19,7 +19,7 @@ import { symToStr } from "tsafe/symToStr";
 import { BrandHeaderSection } from "ui/shared/BrandHeaderSection";
 import { getReferrerUrl } from "keycloak-theme/login/tools/getReferrerUrl";
 import { useConst } from "powerhooks/useConst";
-import { env } from "env-parsed";
+import { env } from "env";
 import { useThemedImageUrl } from "onyxia-ui/ThemedImage";
 
 type TemplateProps = GenericTemplateProps<KcContext, I18n>;

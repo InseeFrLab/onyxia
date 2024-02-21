@@ -8,7 +8,7 @@ import { ReactComponent as GitHubSvg } from "ui/assets/svg/GitHub.svg";
 import { useLang } from "ui/i18n";
 import { DarkModeSwitch } from "onyxia-ui/DarkModeSwitch";
 import { declareComponentKeys } from "i18nifty";
-import { env } from "env-parsed";
+import { env } from "env";
 import { routes } from "ui/routes";
 
 export type Props = {

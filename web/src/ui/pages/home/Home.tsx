@@ -5,7 +5,7 @@ import { Text } from "onyxia-ui/Text";
 import { Button } from "onyxia-ui/Button";
 import { useTranslation } from "ui/i18n";
 import { Card as OnyxiaUiCard } from "onyxia-ui/Card";
-import { env } from "env-parsed";
+import { env } from "env";
 import { useConst } from "powerhooks/useConst";
 import { declareComponentKeys } from "i18nifty";
 import type { PageRoute } from "./route";

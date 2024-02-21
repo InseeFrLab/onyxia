@@ -6,7 +6,7 @@ import type { KcContext } from "../kcContext";
 import type { I18n } from "../i18n";
 import { useDownloadTerms } from "keycloakify/login";
 import { createResolveLocalizedStringFactory } from "i18nifty/LocalizedString/LocalizedString";
-import { env } from "env-parsed";
+import { env } from "env";
 import { tss } from "tss";
 import { Button } from "onyxia-ui/Button";
 import { useConst } from "powerhooks/useConst";

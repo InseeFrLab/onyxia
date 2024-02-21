@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { env } from "env-parsed";
+import { env } from "env";
 import { Text } from "onyxia-ui/Text";
 import type { Link } from "type-route";
 import { tss } from "tss";
