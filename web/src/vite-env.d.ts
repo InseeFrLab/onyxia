@@ -7,6 +7,7 @@ type ImportMetaEnv = {
   DEV: boolean
   PROD: boolean
   WEB_VERSION: string
+  PUBLIC_URL: string
   HEADER_LOGO: string
   HEADER_HIDE_ONYXIA: string
   HEADER_TEXT_BOLD: string

@@ -5731,10 +5731,10 @@ vfile@^4.0.0:
     unist-util-stringify-position "^2.0.0"
     vfile-message "^2.0.0"
 
-vite-envs@^3.5.6:
-  version "3.5.6"
-  resolved "https://registry.yarnpkg.com/vite-envs/-/vite-envs-3.5.6.tgz#a1cf5da907fc23165506df2b23eaec9aa7075f3b"
-  integrity sha512-YDviCWcpE7U8VwkMmlVnXmRyUNvTt58fDRUYhqJgWr7pXbQB0ztOwejAwZcJijuIc2YGPlLbRyDDMqsUBz6f8g==
+vite-envs@^3.6.3:
+  version "3.6.3"
+  resolved "https://registry.yarnpkg.com/vite-envs/-/vite-envs-3.6.3.tgz#c6e4194ca2deaf1360482b265db9059d824d40b1"
+  integrity sha512-yvX/z6P2B/LfFVaZWwL9qzgj+2TYiWzLldYFrxR5pVsnAPv7WD0WdvC8xGZMkote/xplswpCd/iGcpTBZF+G6A==
   dependencies:
     cheerio "^1.0.0-rc.12"
     dotenv "^16.4.4"
