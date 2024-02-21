@@ -199,9 +199,8 @@ export const protectedThunks = {
                 return;
             }
 
-            const currentLocalValue = protectedSelectors.currentProjectConfigs(
-                getState()
-            )[params.key];
+            const currentLocalValue =
+                protectedSelectors.currentProjectConfigs(getState())[params.key];
 
             if (same(currentLocalValue, params.value)) {
                 return;
@@ -211,8 +210,8 @@ export const protectedThunks = {
 
             const path = pathJoin(
                 getProjectConfigVaultDirPath({
-                    "projectVaultTopDirPath": selectors.currentProject(getState())
-                        .vaultTopDir
+                    "projectVaultTopDirPath":
+                        selectors.currentProject(getState()).vaultTopDir
                 }),
                 params.key
             );

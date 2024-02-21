@@ -72,8 +72,8 @@ export const MyServicesCard = memo((props: Props) => {
             startTime === undefined
                 ? "pending"
                 : getDoesHaveBeenRunningForTooLong({ startTime })
-                ? "warning"
-                : "success",
+                  ? "warning"
+                  : "success",
         [startTime]
     );
 

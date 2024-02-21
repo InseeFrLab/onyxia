@@ -26,7 +26,7 @@ const columns = createSelector(state, state => {
             ({
                 "field": propertyName,
                 "sortable": false
-            } satisfies GridColDef)
+            }) satisfies GridColDef
     );
 });
 

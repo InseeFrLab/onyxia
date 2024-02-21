@@ -47,9 +47,8 @@ export function createOnyxiaApi(params: {
 
     const onyxiaApi: OnyxiaApi = {
         "getIp": async () => {
-            const { data } = await axiosInstance.get<ApiTypes["/public/ip"]>(
-                "/public/ip"
-            );
+            const { data } =
+                await axiosInstance.get<ApiTypes["/public/ip"]>("/public/ip");
 
             return data.ip;
         },
@@ -428,9 +427,8 @@ export function createOnyxiaApi(params: {
             }
         },
         "listHelmReleases": async () => {
-            const { data } = await axiosInstance.get<ApiTypes["/my-lab/services"]>(
-                "/my-lab/services"
-            );
+            const { data } =
+                await axiosInstance.get<ApiTypes["/my-lab/services"]>("/my-lab/services");
 
             return data.apps.map(
                 (apiApp): HelmRelease => ({
@@ -480,9 +478,10 @@ export function createOnyxiaApi(params: {
                         const prStarted = (async function callee(): Promise<void> {
                             await new Promise(resolve => setTimeout(resolve, 2000));
 
-                            const { data } = await axiosInstance.get<
-                                ApiTypes["/my-lab/services"]
-                            >("/my-lab/services");
+                            const { data } =
+                                await axiosInstance.get<ApiTypes["/my-lab/services"]>(
+                                    "/my-lab/services"
+                                );
 
                             const refreshedApiApp = data.apps.find(
                                 ({ id }) => id === apiApp.id
@@ -533,9 +532,8 @@ export function createOnyxiaApi(params: {
         },
         "getUserAndProjects": memoize(
             async () => {
-                const { data } = await axiosInstance.get<ApiTypes["/user/info"]>(
-                    "/user/info"
-                );
+                const { data } =
+                    await axiosInstance.get<ApiTypes["/user/info"]>("/user/info");
 
                 const projects = data.projects.map(
                     (apiProject): Project => ({

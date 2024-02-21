@@ -46,9 +46,8 @@ export const thunks = {
                 return;
             }
 
-            const baseS3Config = s3ConfigManagement.protectedSelectors.baseS3Config(
-                getState()
-            );
+            const baseS3Config =
+                s3ConfigManagement.protectedSelectors.baseS3Config(getState());
 
             dispatch(
                 actions.initialized({
@@ -80,15 +79,13 @@ export const thunks = {
 
             const customConfigIndex = privateSelectors.customConfigIndex(getState());
 
-            const submittableFormValues = privateSelectors.submittableFormValues(
-                getState()
-            );
+            const submittableFormValues =
+                privateSelectors.submittableFormValues(getState());
 
             assert(submittableFormValues !== undefined);
 
-            const connectionTestStatus = privateSelectors.connectionTestStatus(
-                getState()
-            );
+            const connectionTestStatus =
+                privateSelectors.connectionTestStatus(getState());
 
             assert(connectionTestStatus !== undefined);
 
@@ -119,9 +116,8 @@ export const thunks = {
 
             dispatch(actions.connectionTestStarted());
 
-            const submittableFormValues = privateSelectors.submittableFormValues(
-                getState()
-            );
+            const submittableFormValues =
+                privateSelectors.submittableFormValues(getState());
 
             assert(submittableFormValues !== undefined);
 
@@ -165,9 +161,8 @@ export const thunks = {
                     break preset_pathStyleAccess;
                 }
 
-                const submittableFormValues = privateSelectors.submittableFormValues(
-                    getState()
-                );
+                const submittableFormValues =
+                    privateSelectors.submittableFormValues(getState());
 
                 assert(submittableFormValues !== undefined);
 

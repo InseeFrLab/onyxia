@@ -655,9 +655,8 @@ export const thunks = {
         (...args) => {
             const [, getState] = args;
 
-            const region = deploymentRegionManagement.selectors.currentDeploymentRegion(
-                getState()
-            );
+            const region =
+                deploymentRegionManagement.selectors.currentDeploymentRegion(getState());
 
             return region.vault !== undefined;
         }

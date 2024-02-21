@@ -109,8 +109,8 @@ export default function Login(
                                         !realm.loginWithEmailAllowed
                                             ? msg("username")
                                             : !realm.registrationEmailAsUsername
-                                            ? msg("usernameOrEmail")
-                                            : msg("email")
+                                              ? msg("usernameOrEmail")
+                                              : msg("email")
                                     }
                                     autoComplete="off"
                                 />
@@ -249,8 +249,8 @@ const { AgentConnectButton } = (() => {
                 ? AgentconnectBtnAlternatifHover
                 : AgentconnectBtnAlternatif
             : isMouseHover
-            ? AgentconnectBtnPrincipalHover
-            : AgentconnectBtnPrincipal;
+              ? AgentconnectBtnPrincipalHover
+              : AgentconnectBtnPrincipal;
 
         return (
             <div className={cx(classes.root, className)}>
