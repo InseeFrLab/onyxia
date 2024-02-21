@@ -1,4 +1,9 @@
-<!DOCTYPE html>
+
+<%
+const { ENABLED_LANGUAGES } = import.meta.env;
+const lang = ENABLED_LANGUAGES === "" ? "en" : ENABLED_LANGUAGES.split(",")[0].trim();
+%>
+<!DOCTYPE html lang="<%= lang %>">
 <html>
 <head>
 
