@@ -6,4 +6,5 @@ node_modules/
 /src/env.ts
 /build_keycloak/
 /helm-chart/
+/src/vite-env.d.ts
 

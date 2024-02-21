@@ -6,7 +6,7 @@ import { useCoreState, useCore } from "core";
 import type { PageRoute } from "./route";
 import { CircularProgress } from "onyxia-ui/CircularProgress";
 import * as duckdbWasmShell from "@duckdb/duckdb-wasm-shell";
-import shellBgWasmUrl from "@duckdb/duckdb-wasm-shell/dist/shell_bg.wasm";
+import shellBgWasmUrl from "@duckdb/duckdb-wasm-shell/dist/shell_bg.wasm?url";
 
 type Props = {
     route: PageRoute;

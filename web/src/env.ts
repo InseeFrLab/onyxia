@@ -1,6 +1,5 @@
 /* In keycloak-theme, this should be evaluated early */
 
-//import { getEnv, type EnvName } from "env";
 import { kcContext as kcLoginThemeContext } from "keycloak-theme/login/kcContext";
 import {
     retrieveParamFromUrl,
@@ -1218,9 +1217,9 @@ function createParsedEnvs<Parser extends Entry<EnvName>>(
                 return envValue;
             }
 
-            read_what_have_been_injected_by_cra_envs: {
+            read_what_have_been_injected_by_vite_env: {
                 if (isProductionKeycloak) {
-                    break read_what_have_been_injected_by_cra_envs;
+                    break read_what_have_been_injected_by_vite_env;
                 }
 
                 return import.meta.env[envName];
@@ -1311,7 +1310,7 @@ function createParsedEnvs<Parser extends Entry<EnvName>>(
             "HEADER_TEXT_FOCUS"
         ])) {
 
-            const envValue = getEnv()[envName];
+            const envValue = import.meta.env[envName];
 
             url = addParamToUrl({ url, "name": envName, "value": envValue }).newUrl;
 
