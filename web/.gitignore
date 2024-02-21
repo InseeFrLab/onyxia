@@ -31,6 +31,7 @@ package-lock.json
 
 /dist_keycloak
 /.yarn_home
+/.husky/_
 
 # Jetbrains
 .idea/
