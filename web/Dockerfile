@@ -8,11 +8,10 @@ RUN yarn build
 FROM nginx:1.25-alpine
 RUN apk add --update nodejs npm
 RUN apk add --update wget unzip
+RUN npm i -g vite-envs@`node -e 'console.log(require("./.vite-envs.json").version)'`
 COPY --from=build /app/nginx.conf /etc/nginx/conf.d/default.conf    
 WORKDIR /usr/share/nginx/html
 COPY --from=build /app/dist .
-RUN npm i -g vite-envs@`node -e 'console.log(require("./.vite-envs.json").version)'`
-ENTRYPOINT sh -c "npx vite-envs && nginx -g 'daemon off;'"
 # Generating /entrypoint.sh  
 # Be mindfull that the entrypoint is generated a build time but the 
 # bash code is executed at container startup.
