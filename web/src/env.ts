@@ -353,6 +353,8 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
                 type Got = ReturnType<(typeof zParsedValue)["parse"]>;
                 type Expected = ParsedValue;
 
+                // NOTE: Here the assert<Equals<>> type assertion is too strict so we 
+                // test double inclusion // to ensure that the types are the same.
                 assert<Got extends Expected ? true : false>();
                 assert<Expected extends Got ? true : false>();
             }
