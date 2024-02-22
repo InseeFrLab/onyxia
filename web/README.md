@@ -13,7 +13,7 @@ This repository contains the source code for the Docker image [inseefrlab/onyxia
 
 ## Architecture
 
-`onyxia-web` is a Single Page Application (SPA) that runs entirely in the user's browser and is delivered as static files.
+`onyxia-web` is a Vite Single Page Application (SPA) that runs entirely in the user's browser and is delivered as static files.
 
 ## Project Structure
 
