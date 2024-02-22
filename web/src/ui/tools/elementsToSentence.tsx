@@ -31,8 +31,8 @@ export function elementsToSentence(params: {
                     {i === elements.length - 1
                         ? ""
                         : i === elements.length - 2
-                        ? ` ${separatorWord} `
-                        : ", "}
+                          ? ` ${separatorWord} `
+                          : ", "}
                 </span>
             ))}
         </>

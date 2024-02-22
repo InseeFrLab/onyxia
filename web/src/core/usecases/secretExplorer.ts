@@ -5,7 +5,7 @@ import {
     join as pathJoin,
     relative as pathRelative,
     basename as pathBasename
-} from "path";
+} from "pathe";
 import { logApi } from "core/tools/commandLogger";
 import { assert } from "tsafe/assert";
 import * as projectManagement from "./projectManagement";
@@ -13,7 +13,6 @@ import { Evt } from "evt";
 import type { Ctx } from "evt";
 import type { State as RootState, Thunks, CreateEvt } from "core/bootstrap";
 import memoize from "memoizee";
-import type { WritableDraft } from "immer/dist/types/types-external";
 import * as deploymentRegionManagement from "core/usecases/deploymentRegionManagement";
 import { createExtendedFsApi } from "core/tools/extendedFsApi";
 import type { ExtendedFsApi } from "core/tools/extendedFsApi";
@@ -21,6 +20,7 @@ import { getVaultCommandLogger } from "core/adapters/secretManager/utils/vaultCo
 import { createUsecaseActions, createUsecaseContextApi } from "clean-architecture";
 // NOTE: Polyfill of a browser feature.
 import structuredClone from "@ungap/structured-clone";
+import type { WritableDraft } from "clean-architecture/immer";
 
 // All explorer path are expected to be absolute (start with /)
 
@@ -655,9 +655,8 @@ export const thunks = {
         (...args) => {
             const [, getState] = args;
 
-            const region = deploymentRegionManagement.selectors.currentDeploymentRegion(
-                getState()
-            );
+            const region =
+                deploymentRegionManagement.selectors.currentDeploymentRegion(getState());
 
             return region.vault !== undefined;
         }

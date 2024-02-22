@@ -30,7 +30,7 @@ Onyxia is developed by the French National institute of statistics and economic 
 
 **Core feature set**:
 
--   [An interface for launching docker images](https://datalab.sspcloud.fr/catalog/inseefrlab-helm-charts-datascience)
+-   [An interface for helm charts](https://datalab.sspcloud.fr/catalog/inseefrlab-helm-charts-datascience)
     (e.g: [Jupyter](https://jupyter.org), [RStudio](https://www.rstudio.com)) on demand on a [Kubernetes](https://kubernetes.io) cluster.  
     The catalog of available images is not part of the app, you can create your own.
     ([here](https://github.com/inseefrlab/helm-charts-datascience) is the catalog we build for the institute's needs.)

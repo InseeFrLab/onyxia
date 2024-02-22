@@ -5,7 +5,7 @@ import { useTranslation } from "ui/i18n";
 import { useLogoContainerWidth } from "ui/shared/BrandHeaderSection";
 import { useRoute, routes, urlToLink } from "ui/routes";
 import { id } from "tsafe/id";
-import { env } from "env-parsed";
+import { env } from "env";
 import { declareComponentKeys } from "i18nifty";
 import { useCore, useCoreState } from "core";
 import { assert, type Equals } from "tsafe/assert";

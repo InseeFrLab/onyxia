@@ -96,9 +96,8 @@ export const thunks = {
         (...args): boolean => {
             const [, getState] = args;
 
-            const region = deploymentRegionManagement.selectors.currentDeploymentRegion(
-                getState()
-            );
+            const region =
+                deploymentRegionManagement.selectors.currentDeploymentRegion(getState());
 
             return region.kubernetes !== undefined;
         },
@@ -116,9 +115,8 @@ export const thunks = {
 
             dispatch(actions.refreshStarted());
 
-            const region = deploymentRegionManagement.selectors.currentDeploymentRegion(
-                getState()
-            );
+            const region =
+                deploymentRegionManagement.selectors.currentDeploymentRegion(getState());
 
             assert(region.kubernetes !== undefined);
 

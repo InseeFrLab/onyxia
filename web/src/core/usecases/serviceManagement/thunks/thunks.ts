@@ -262,9 +262,8 @@ const privateThunks = {
             context.loggedOnyxiaApi = {
                 ...onyxiaApi,
                 "listHelmReleases": async () => {
-                    const { namespace } = projectManagement.selectors.currentProject(
-                        getState()
-                    );
+                    const { namespace } =
+                        projectManagement.selectors.currentProject(getState());
 
                     const cmdId = Date.now();
 

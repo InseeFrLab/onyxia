@@ -1,6 +1,6 @@
 import type { CommandLogger } from "core/tools/commandLogger";
 import type { SecretsManager } from "core/ports/SecretsManager";
-import { join as pathJoin } from "path";
+import { join as pathJoin } from "pathe";
 
 export function getVaultCommandLogger(params: {
     clientType: "CLI";
@@ -61,17 +61,17 @@ export function getVaultCommandLogger(params: {
                                             typeof value === "string"
                                                 ? `"${value.replace(/"/g, '\\"')}"`
                                                 : typeof value === "number" ||
-                                                  typeof value === "boolean"
-                                                ? value
-                                                : [
-                                                      "-<<EOF",
-                                                      `heredoc > ${JSON.stringify(
-                                                          value,
-                                                          null,
-                                                          2
-                                                      )}`,
-                                                      "heredoc> EOF"
-                                                  ].join("\n")
+                                                    typeof value === "boolean"
+                                                  ? value
+                                                  : [
+                                                        "-<<EOF",
+                                                        `heredoc > ${JSON.stringify(
+                                                            value,
+                                                            null,
+                                                            2
+                                                        )}`,
+                                                        "heredoc> EOF"
+                                                    ].join("\n")
                                         }`
                                 )
                             ].join(" \\\n"),

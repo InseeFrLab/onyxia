@@ -2,7 +2,8 @@ import { tss } from "tss";
 import { Text } from "onyxia-ui/Text";
 import { useTranslation } from "ui/i18n";
 import { declareComponentKeys } from "i18nifty";
-import { ReactComponent as ServiceNotFoundSvg } from "ui/assets/svg/ServiceNotFound.svg";
+import serviceNotFoundSvgUrl from "ui/assets/svg/ServiceNotFound.svg";
+import { ThemedImage } from "onyxia-ui/ThemedImage";
 import MuiLink from "@mui/material/Link";
 
 type Props = {
@@ -20,7 +21,7 @@ export function CatalogNoSearchMatches(props: Props) {
     return (
         <div className={classes.root}>
             <div className={classes.innerDiv}>
-                <ServiceNotFoundSvg className={classes.svg} />
+                <ThemedImage className={classes.svg} url={serviceNotFoundSvgUrl} />
                 <Text typo="page heading" className={classes.h2}>
                     {t("no service found")}
                 </Text>

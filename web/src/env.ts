@@ -1,6 +1,5 @@
 /* In keycloak-theme, this should be evaluated early */
 
-import { getEnv, type EnvName } from "env";
 import { kcContext as kcLoginThemeContext } from "keycloak-theme/login/kcContext";
 import {
     retrieveParamFromUrl,
@@ -29,7 +28,6 @@ import onyxiaNeumorphismLightModeUrl from "ui/assets/svg/OnyxiaNeumorphismLightM
 import { getIsJSON5ObjectOrArray } from "ui/tools/getIsJSON5ObjectOrArray";
 import JSON5 from "json5";
 import { ensureUrlIsSafe } from "ui/shared/ensureUrlIsSafe";
-import { PUBLIC_URL } from "keycloakify/PUBLIC_URL";
 
 export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
     {
@@ -355,6 +353,8 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
                 type Got = ReturnType<(typeof zParsedValue)["parse"]>;
                 type Expected = ParsedValue;
 
+                // NOTE: Here the assert<Equals<>> type assertion is too strict so we 
+                // test double inclusion // to ensure that the types are the same.
                 assert<Got extends Expected ? true : false>();
                 assert<Expected extends Got ? true : false>();
             }
@@ -1032,7 +1032,7 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
                     });
             } catch (error) {
                 throw new Error(
-                    JSON.stringify(process.env.NODE_ENV) + " " + String(error)
+                    JSON.stringify(import.meta.env.MODE) + " " + String(error)
                 );
             }
         }
@@ -1068,6 +1068,8 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
     }
 ]);
 
+type EnvName = Exclude<keyof ImportMetaEnv,  "MODE" | "DEV" | "PROD" | "BASE_URL" | "PUBLIC_URL">;
+
 type Entry<N extends EnvName> = {
     envName: N;
     validateAndParseOrGetDefault: (params: {
@@ -1088,7 +1090,6 @@ function createParsedEnvs<Parser extends Entry<EnvName>>(
     } & { PUBLIC_URL: string };
     injectTransferableEnvsInQueryParams: (url: string) => string;
 } {
-    assert("putin stp dis moi qu'on est là");
 
     const parsedValueOrGetterByEnvName: Record<string, any> = {};
 
@@ -1109,7 +1110,7 @@ function createParsedEnvs<Parser extends Entry<EnvName>>(
                 assert(typeof envName === "string");
 
                 if (envName === "PUBLIC_URL") {
-                    return PUBLIC_URL;
+                    return import.meta.env.PUBLIC_URL;
                 }
 
                 assert(envName in parsedValueOrGetterByEnvName);
@@ -1164,7 +1165,7 @@ function createParsedEnvs<Parser extends Entry<EnvName>>(
         }
 
         const isProductionKeycloak =
-            process.env.NODE_ENV === "production" && kcContext !== undefined;
+            import.meta.env.MODE === "production" && kcContext !== undefined;
 
         const getEnvValue = () => {
             if (!isUsedInKeycloakTheme && kcLoginThemeContext !== undefined) {
@@ -1178,7 +1179,7 @@ function createParsedEnvs<Parser extends Entry<EnvName>>(
             look_in_url: {
                 if (
                     kcContext === undefined &&
-                    (getEnv().ALLOW_THEME_TESTING_VIA_URL !== "true" ||
+                    (import.meta.env.ALLOW_THEME_TESTING_VIA_URL !== "true" ||
                         !id<EnvName[]>(["FONT", "PALETTE_OVERRIDE"]).includes(envName))
                 ) {
                     break look_in_url;
@@ -1211,12 +1212,12 @@ function createParsedEnvs<Parser extends Entry<EnvName>>(
                 return envValue;
             }
 
-            read_what_have_been_injected_by_cra_envs: {
+            read_what_have_been_injected_by_vite_env: {
                 if (isProductionKeycloak) {
-                    break read_what_have_been_injected_by_cra_envs;
+                    break read_what_have_been_injected_by_vite_env;
                 }
 
-                return getEnv()[envName];
+                return import.meta.env[envName];
             }
 
             restore_from_local_storage: {
@@ -1234,13 +1235,16 @@ function createParsedEnvs<Parser extends Entry<EnvName>>(
             }
 
             // NOTE: Here we are in production Keycloak
-            // We get the default that was injected at build time. (cra-envs do not work with keycloak)
+            // We get the default that was injected at build time. (vite-envs is not enabled in Keycloak)
             // This can happen when the user has never navigated to the login page via onyxia.
-            return getEnv()[envName];
+            return import.meta.env[envName];
         };
 
         const replacePUBLIC_URL = (envValue: string) =>
-            envValue.replace(/%PUBLIC_URL%/g, PUBLIC_URL);
+            envValue.replace(
+                /%PUBLIC_URL%/g, 
+                import.meta.env.PUBLIC_URL
+            );
 
         if (isUsedInKeycloakTheme) {
             const envValue = getEnvValue();
@@ -1253,7 +1257,7 @@ function createParsedEnvs<Parser extends Entry<EnvName>>(
                             "name": envName,
                             "value": envValue.replace(
                                 /%PUBLIC_URL%\/custom-resources/g,
-                                `${window.location.origin}${process.env.PUBLIC_URL}/custom-resources`
+                                `${window.location.origin}${import.meta.env.PUBLIC_URL}/custom-resources`
                             )
                         }).newUrl
                 );
@@ -1301,7 +1305,7 @@ function createParsedEnvs<Parser extends Entry<EnvName>>(
             "HEADER_TEXT_FOCUS"
         ])) {
 
-            const envValue = getEnv()[envName];
+            const envValue = import.meta.env[envName];
 
             url = addParamToUrl({ url, "name": envName, "value": envValue }).newUrl;
 

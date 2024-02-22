@@ -1,5 +1,9 @@
 import "minimal-polyfills/Object.fromEntries";
-import { join as pathJoin, dirname as pathDirname, relative as pathRelative } from "path";
+import {
+    join as pathJoin,
+    dirname as pathDirname,
+    relative as pathRelative
+} from "pathe";
 import { crawlFactory } from "core/tools/crawl";
 
 export type BaseFsApi<File> = {

@@ -447,13 +447,11 @@ const privateThunks = {
 
             const userConfigs = userConfigsUsecase.selectors.userConfigs(getState());
 
-            const region = deploymentRegionManagement.selectors.currentDeploymentRegion(
-                getState()
-            );
+            const region =
+                deploymentRegionManagement.selectors.currentDeploymentRegion(getState());
 
-            const servicePassword = projectManagement.selectors.servicePassword(
-                getState()
-            );
+            const servicePassword =
+                projectManagement.selectors.servicePassword(getState());
 
             const project = projectManagement.selectors.currentProject(getState());
 

@@ -26,9 +26,8 @@ export const createEvt = (({ evtAction, getState }) => {
                 return;
             }
 
-            const workingDirectoryPath = protectedSelectors.workingDirectoryPath(
-                getState()
-            );
+            const workingDirectoryPath =
+                protectedSelectors.workingDirectoryPath(getState());
 
             evt.post({
                 "action": "set directory path",

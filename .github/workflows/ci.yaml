@@ -24,12 +24,8 @@ jobs:
           sub_directory: web
       - uses: actions/setup-node@v3.8.1
       - uses: bahmutov/npm-install@v1.8.35
-        env:
-          XDG_CACHE_HOME: "/home/runner/.cache/yarn"
       - run: yarn build
       - run: npx keycloakify
-        env:
-          XDG_CACHE_HOME: "/home/runner/.cache/yarn"
 
   test_helm-chart:
     runs-on: ubuntu-latest
@@ -98,15 +94,12 @@ jobs:
           sha: ${{needs.prepare_release.outputs.target_commit}}
       - uses: actions/setup-node@v3.8.1
       - uses: bahmutov/npm-install@v1.8.35
-        env:
-          XDG_CACHE_HOME: "/home/runner/.cache/yarn"
       - run: rm -r public/material-icons
       - run: yarn build
       - run: npx keycloakify
         env:
-          XDG_CACHE_HOME: "/home/runner/.cache/yarn"
           KEYCLOAKIFY_THEME_VERSION: ${{needs.prepare_release.outputs.new_chart_version}}
-      - run: mv build_keycloak/target/retrocompat-*.jar keycloak-theme.jar
+      - run: mv dist_keycloak/target/retrocompat-*.jar keycloak-theme.jar
         # Delay 25 minute because wait-for-jobs has a limit of 15 minutes and the build of the docker image takes ~27 minutes
       - name: Delay
         run: sleep 1500

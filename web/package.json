@@ -1,18 +1,19 @@
 {
-    "homepage": "https://onyxia.sh",
     "name": "onyxia-web",
+    "homepage": "https://onyxia.sh",
+    "type": "module",
     "version": "4.15.9",
     "license": "MIT",
     "scripts": {
-        "_comment": "Yes... We're still using CRA. We'll migrate to Vite as soon as Keycloakify gets support for it",
-        "start": "generate-env-getter && copy-keycloak-resources-to-public && ts-node scripts/unyamlify-env-local.ts && react-app-rewired start",
-        "build": "react-app-rewired build && rimraf build/keycloak-resources",
+        "prepare": "yarn install-git-hooks && vite-envs update-types && copy-material-icons-to-public",
+        "install-git-hooks": "cd .. && husky web/.husky",
+        "dev": "tsx scripts/unyamlify-env-local.ts && vite",
+        "build": "tsc && vite build",
         "build-keycloak-theme": "yarn build && keycloakify",
         "_format": "prettier '**/*.{ts,tsx,json,md}'",
         "format": "yarn _format --write",
         "format:check": "yarn _format --list-different",
-        "emails-domain-accept-list-helper": "ts-node scripts/emails-domain-accept-list-helper.ts",
-        "prepare": "generate-env-getter && copy-material-icons-to-public"
+        "emails-domain-accept-list-helper": "tsx scripts/emails-domain-accept-list-helper.ts"
     },
     "keycloakify": {
         "themeName": "onyxia",
@@ -31,38 +32,35 @@
         "@duckdb/duckdb-wasm": "^1.13.1-dev230.0",
         "@duckdb/duckdb-wasm-shell": "^1.13.1-dev230.0",
         "@emotion/cache": "^11.11.0",
-        "@emotion/react": "^11.11.1",
+        "@emotion/react": "^11.11.3",
         "@emotion/styled": "^11.11.0",
         "@mui/icons-material": "5.14.15",
-        "@mui/material": "^5.14.8",
-        "@mui/x-data-grid": "^6.18.2",
+        "@mui/material": "^5.15.10",
+        "@mui/system": "^5.15.9",
+        "@mui/x-data-grid": "^6.19.4",
         "@ungap/structured-clone": "^1.2.0",
         "async-mutex": "^0.4.0",
         "axios": "^0.26.0",
-        "clean-architecture": "^4.3.1",
+        "clean-architecture": "^4.3.7",
         "color": "^4.2.3",
         "compare-versions": "^5.0.1",
-        "cra-envs": "^2.1.2",
         "evt": "^2.5.7",
         "file-saver": "^2.0.2",
         "flexsearch": "0.7.21",
         "i18nifty": "^3.2.0",
         "json5": "^2.2.3",
-        "keycloakify": "^9.4.1",
-        "memoizee": "^0.4.14",
+        "keycloakify": "^9.4.4",
+        "memoizee": "^0.4.15",
         "minimal-polyfills": "^2.2.3",
         "moment": "^2.29.1",
         "mustache": "^4.2.0",
         "oidc-spa": "^4.2.0",
         "onyxia-ui": "^5.1.3",
-        "path-browserify": "^1.0.1",
-        "path": "0.12.7",
+        "pathe": "^1.1.2",
         "powerhooks": "^1.0.8",
         "react": "^18.2.0",
         "react-code-blocks": "^0.0.9-0",
         "react-dom": "^18.2.0",
-        "react-scripts": "5.0.1",
-        "rimraf": "^5.0.5",
         "run-exclusive": "^2.2.19",
         "screen-scaler": "^1.2.7",
         "tsafe": "^1.6.6",
@@ -73,8 +71,7 @@
         "xterm-addon-web-links": "^0.5.1",
         "xterm-addon-webgl": "^0.11.4",
         "yaml": "^2.0.1",
-        "zod": "^3.19.0",
-        "process": "^0.11.10"
+        "zod": "^3.22.4"
     },
     "devDependencies": {
         "@types/color": "^3.0.3",
@@ -83,61 +80,29 @@
         "@types/memoizee": "^0.4.4",
         "@types/mustache": "^4.2.2",
         "@types/node": "^14.0.13",
-        "@types/react": "^18.0.19",
-        "@types/react-dom": "^18.0.6",
+        "@types/path-browserify": "^1.0.2",
+        "@types/react": "^18.2.43",
+        "@types/react-dom": "^18.2.17",
         "@types/ungap__structured-clone": "0.3.0",
-        "@typescript-eslint/eslint-plugin": "^5.36.2",
-        "@typescript-eslint/parser": "^5.36.2",
-        "circular-dependency-plugin": "^5.2.2",
-        "eslint-config-prettier": "^8.5.0",
+        "@typescript-eslint/eslint-plugin": "^6.14.0",
+        "@typescript-eslint/parser": "^6.14.0",
+        "@vitejs/plugin-react": "^4.2.1",
+        "eslint": "^8.56.0",
+        "eslint-config-prettier": "^9.1.0",
         "eslint-plugin-tss-unused-classes": "^1.0.2",
-        "husky": "^4.3.8",
-        "lint-staged": "^11.0.0",
-        "prettier": "^2.3.0",
-        "react-app-rewired": "^2.2.1",
-        "ts-node": "^10.2.1",
-        "typescript": "^4.8.3"
-    },
-    "eslintConfig": {
-        "plugins": [
-            "tss-unused-classes"
-        ],
-        "extends": [
-            "react-app",
-            "prettier"
-        ],
-        "rules": {
-            "@typescript-eslint/no-redeclare": "off",
-            "import/no-anonymous-default-export": "off",
-            "react-hooks/rules-of-hooks": "warn",
-            "react-hooks/exhaustive-deps": "off",
-            "no-labels": "off",
-            "prefer-const": "off",
-            "no-sequences": "off",
-            "tss-unused-classes/unused-classes": "warn",
-            "no-lone-blocks": "off"
-        }
-    },
-    "husky": {
-        "hooks": {
-            "pre-commit": "lint-staged -v"
-        }
+        "husky": "^9.0.11",
+        "lint-staged": "^15.2.2",
+        "prettier": "^3.2.5",
+        "tsx": "^4.7.1",
+        "typescript": "^5.2.2",
+        "vite": "^5.0.8",
+        "vite-envs": "^3.6.3",
+        "vite-plugin-commonjs": "^0.10.1",
+        "vite-tsconfig-paths": "^4.3.1"
     },
     "lint-staged": {
         "*.{ts,tsx,json,md}": [
             "prettier --write"
-        ]
-    },
-    "browserslist": {
-        "production": [
-            ">0.2%",
-            "not dead",
-            "not op_mini all"
-        ],
-        "development": [
-            "last 1 chrome version",
-            "last 1 firefox version",
-            "last 1 safari version"
         ]
     }
 }

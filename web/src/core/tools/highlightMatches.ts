@@ -1,8 +1,10 @@
+import { replaceAll } from "./String.prototype.replaceAll";
+
 export function getMatchPositions(params: { text: string; search: string }) {
     const { text, search } = params;
 
     const escapedSearch = search.trim().replace(/[|\\{}()[\]^$+*?.]/g, "\\$&");
-    const regexp = RegExp("(" + escapedSearch.replaceAll(" ", "|") + ")", "ig");
+    const regexp = RegExp("(" + replaceAll(escapedSearch, " ", "|") + ")", "ig");
     let result;
     const matchPositions: number[] = [];
 

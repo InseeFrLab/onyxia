@@ -1,6 +1,8 @@
 {
     "compilerOptions": {
-        "types": ["node"]
+        "types": ["node"],
+        "module": "ES2020",
+        "moduleResolution": "bundler"
     },
     "include": ["./*"]
 }

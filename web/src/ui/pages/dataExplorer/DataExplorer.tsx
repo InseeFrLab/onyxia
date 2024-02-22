@@ -24,7 +24,7 @@ import { createUseDebounce } from "powerhooks/useDebounce";
 import { useOnOpenBrowserSearch } from "ui/tools/useOnOpenBrowserSearch";
 import { ButtonBar } from "onyxia-ui/ButtonBar";
 import { useApplyClassNameToParent } from "ui/tools/useApplyClassNameToParent";
-import { env } from "env-parsed";
+import { env } from "env";
 
 export type Props = {
     route: PageRoute;

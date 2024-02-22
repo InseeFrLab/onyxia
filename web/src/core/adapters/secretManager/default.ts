@@ -1,5 +1,5 @@
 import axios from "axios";
-import { join as pathJoin } from "path";
+import { join as pathJoin } from "pathe";
 import { partition } from "evt/tools/reducers";
 import type {
     Secret,

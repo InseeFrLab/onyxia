@@ -1,5 +1,5 @@
 import { defaultPalette } from "onyxia-ui";
-import { env } from "env-parsed";
+import { env } from "env";
 import { mergeDeep } from "ui/tools/mergeDeep";
 
 export const palette = mergeDeep(

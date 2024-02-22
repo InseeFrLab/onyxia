@@ -162,17 +162,16 @@ export const SettingField = memo((props: Props): ReturnType<FunctionComponent> =
         })();
 
     const IconButtonCopyToClipboard = useGuaranteedMemo(
-        () => (props: { onClick(): void; disabled?: boolean }) =>
-            (
-                <Tooltip title={t("copy tooltip")}>
-                    <IconButton
-                        icon={id<MuiIconComponentName>("FilterNone")}
-                        onClick={props.onClick}
-                        size="small"
-                        disabled={props.disabled ?? false}
-                    />
-                </Tooltip>
-            ),
+        () => (props: { onClick(): void; disabled?: boolean }) => (
+            <Tooltip title={t("copy tooltip")}>
+                <IconButton
+                    icon={id<MuiIconComponentName>("FilterNone")}
+                    onClick={props.onClick}
+                    size="small"
+                    disabled={props.disabled ?? false}
+                />
+            </Tooltip>
+        ),
         []
     );
 

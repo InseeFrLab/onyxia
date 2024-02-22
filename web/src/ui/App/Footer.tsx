@@ -4,12 +4,13 @@ import { Text } from "onyxia-ui/Text";
 import { LanguageSelect } from "onyxia-ui/LanguageSelect";
 import { languagesPrettyPrint } from "ui/i18n";
 import { useTranslation } from "ui/i18n";
-import { ReactComponent as GitHubSvg } from "ui/assets/svg/GitHub.svg";
+import githubSvgUrl from "ui/assets/svg/GitHub.svg";
 import { useLang } from "ui/i18n";
 import { DarkModeSwitch } from "onyxia-ui/DarkModeSwitch";
 import { declareComponentKeys } from "i18nifty";
-import { env } from "env-parsed";
+import { env } from "env";
 import { routes } from "ui/routes";
+import { ThemedImage } from "onyxia-ui/ThemedImage";
 
 export type Props = {
     className?: string;
@@ -36,7 +37,7 @@ export const Footer = memo((props: Props) => {
                 target="_blank"
                 rel="noreferrer"
             >
-                <GitHubSvg className={classes.icon} />
+                <ThemedImage className={classes.icon} url={githubSvgUrl} />
                 &nbsp;
                 <Text typo="body 2">{t("contribute")}</Text>
             </a>

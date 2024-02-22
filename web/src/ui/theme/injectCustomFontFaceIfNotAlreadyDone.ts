@@ -1,4 +1,4 @@
-import { env } from "env-parsed";
+import { env } from "env";
 import { assert, type Equals } from "tsafe/assert";
 import { exclude } from "tsafe/exclude";
 import { typeGuard } from "tsafe/typeGuard";

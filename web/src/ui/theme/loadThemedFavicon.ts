@@ -1,5 +1,5 @@
 import { getThemedSvgAsBlobUrl } from "onyxia-ui/ThemedSvg";
-import { env } from "env-parsed";
+import { env } from "env";
 import { resolveThemedAssetUrl } from "onyxia-ui/lib/ThemedAssetUrl";
 import { assert } from "tsafe/assert";
 import type { StatefulReadonlyEvt } from "evt";

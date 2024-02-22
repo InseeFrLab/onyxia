@@ -62,7 +62,7 @@ export const CopyOpenButton = memo((props: Props) => {
                 "href": isReadyToOpen ? openUrl : undefined,
                 "doOpenNewTabIfHref": true,
                 "onClick": isReadyToOpen ? onDialogClose : copyPasswordToClipBoard
-            } as const),
+            }) as const,
         [isReadyToOpen]
     );
 

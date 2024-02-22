@@ -2,7 +2,7 @@ import { Button } from "onyxia-ui/Button";
 import { ButtonBarButton } from "onyxia-ui/ButtonBarButton";
 import { useTranslation } from "ui/i18n";
 import { tss } from "tss";
-import { env } from "env-parsed";
+import { env } from "env";
 import { declareComponentKeys } from "i18nifty";
 import { BrandHeaderSection } from "ui/shared/BrandHeaderSection";
 import { routes } from "ui/routes";

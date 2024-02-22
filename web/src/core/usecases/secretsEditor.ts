@@ -3,8 +3,7 @@ import { id } from "tsafe/id";
 import type { Thunks, State as RootState } from "core/bootstrap";
 import type { SecretWithMetadata } from "core/ports/SecretsManager";
 import { assert } from "tsafe/assert";
-import { join as pathJoin } from "path";
-import { unwrapWritableDraft } from "core/tools/unwrapWritableDraft";
+import { join as pathJoin } from "pathe";
 import * as secretExplorer from "./secretExplorer";
 
 type State = {
@@ -76,19 +75,21 @@ export const { reducer, actions } = createUsecaseActions({
 
             assert(state !== null);
 
-            //NOTE: we use unwrapWritableDraft because otherwise the type
-            //instantiation is too deep. But unwrapWritableDraft is the id function
-            unwrapWritableDraft(state).secretWithMetadata = secretWithMetadata;
+            // Here we need to do as State otherwise the type instantiation is too deep
+            // because of immer's WritableDraft.
+            (state as State).secretWithMetadata = secretWithMetadata;
             state.isBeingUpdated = false;
         },
-        "editSecretStarted": (state, { payload }: { payload: EditSecretParams }) => {
+        "editSecretStarted": (state_, { payload }: { payload: EditSecretParams }) => {
             const { key } = payload;
 
-            assert(state !== null);
+            assert(state_ !== null);
+
+            const state = state_ as State;
 
             //NOTE: we use unwrapWritableDraft because otherwise the type
             //instantiation is too deep. But unwrapWritableDraft is the id function
-            const { secretWithMetadata } = unwrapWritableDraft(state);
+            const { secretWithMetadata } = state;
 
             assert(secretWithMetadata !== undefined);
 
@@ -141,7 +142,7 @@ export const { reducer, actions } = createUsecaseActions({
         "editSecretCompleted": state => {
             assert(state !== null);
 
-            const { secretWithMetadata } = unwrapWritableDraft(state);
+            const { secretWithMetadata } = state;
 
             assert(secretWithMetadata !== undefined);
 

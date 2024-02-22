@@ -296,8 +296,8 @@ export function createS3Client(params: ParamsOfCreateS3Client): S3Client {
                     objectName === ""
                         ? ""
                         : objectName.endsWith("/")
-                        ? objectName
-                        : `${objectName}/`;
+                          ? objectName
+                          : `${objectName}/`;
 
                 return {
                     bucketName,

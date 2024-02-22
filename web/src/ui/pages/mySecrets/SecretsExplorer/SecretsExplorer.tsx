@@ -9,7 +9,7 @@ import { Breadcrumb } from "onyxia-ui/Breadcrumb";
 import type { BreadcrumbProps } from "onyxia-ui/Breadcrumb";
 import { Props as ButtonBarProps } from "./SecretsExplorerButtonBar";
 import { Evt } from "evt";
-import { join as pathJoin, basename as pathBasename } from "path";
+import { join as pathJoin, basename as pathBasename } from "pathe";
 import { useTranslation } from "ui/i18n";
 import { CommandBar, type CommandBarProps } from "ui/shared/CommandBar";
 import {
@@ -422,7 +422,7 @@ export const SecretsExplorer = memo((props: ExplorerProps) => {
                             image={
                                 <ExplorerIcon
                                     className={classes.fileOrDirectoryIcon}
-                                    iconId={!props.isFileOpen ? "directory" : "data"}
+                                    iconId={!props.isFileOpen ? "directory" : "secret"}
                                     hasShadow={true}
                                 />
                             }

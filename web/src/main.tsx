@@ -4,7 +4,7 @@ import { kcContext as kcLoginThemeContext } from "keycloak-theme/login/kcContext
 import { assert } from "tsafe/assert";
 
 {
-    const version = process.env.WEB_VERSION;
+    const version = import.meta.env.WEB_VERSION;
 
     console.log(
         [

@@ -1,6 +1,6 @@
 import { assert, type Equals } from "tsafe/assert";
 import type { Thunks } from "core/bootstrap";
-import { join as pathJoin } from "path";
+import { join as pathJoin } from "pathe";
 import { generateRandomPassword } from "core/tools/generateRandomPassword";
 import { actions, type ProjectConfigs, type ChangeConfigValueParams } from "./state";
 import type { Secret } from "core/ports/SecretsManager";
@@ -199,9 +199,8 @@ export const protectedThunks = {
                 return;
             }
 
-            const currentLocalValue = protectedSelectors.currentProjectConfigs(
-                getState()
-            )[params.key];
+            const currentLocalValue =
+                protectedSelectors.currentProjectConfigs(getState())[params.key];
 
             if (same(currentLocalValue, params.value)) {
                 return;
@@ -211,8 +210,8 @@ export const protectedThunks = {
 
             const path = pathJoin(
                 getProjectConfigVaultDirPath({
-                    "projectVaultTopDirPath": selectors.currentProject(getState())
-                        .vaultTopDir
+                    "projectVaultTopDirPath":
+                        selectors.currentProject(getState()).vaultTopDir
                 }),
                 params.key
             );
