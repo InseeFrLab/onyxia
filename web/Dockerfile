@@ -23,12 +23,14 @@ fi                                                                              
 npx vite-envs                                                                                                  \n\
 exec nginx -g "daemon off;"                                                                                    \n\
 ' > /entrypoint.sh && chmod +x /entrypoint.sh
+
 # Run nginx as non-root
 RUN sed -i.orig -e '/user[[:space:]]\+nginx/d' -e 's@pid[[:space:]]\+.*@pid /tmp/nginx.pid;@' /etc/nginx/nginx.conf && \
     diff -u /etc/nginx/nginx.conf.orig /etc/nginx/nginx.conf ||: && \
-    chown nginx html/index.html && \
-    chown -Rc nginx html/custom-resources && \
+    chown nginx ./index.html && \
+    chown -Rc nginx ./custom-resources && \
     chown -Rc nginx /var/cache/nginx
 # Equivalent to 'USER nginx', see: https://github.com/inseefrlab/onyxia/pull/279
 USER 101
+
 ENTRYPOINT ["/entrypoint.sh"]
