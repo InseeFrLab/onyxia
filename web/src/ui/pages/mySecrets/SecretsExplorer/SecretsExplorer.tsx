@@ -422,7 +422,7 @@ export const SecretsExplorer = memo((props: ExplorerProps) => {
                             image={
                                 <ExplorerIcon
                                     className={classes.fileOrDirectoryIcon}
-                                    iconId={!props.isFileOpen ? "directory" : "data"}
+                                    iconId={!props.isFileOpen ? "directory" : "secret"}
                                     hasShadow={true}
                                 />
                             }

@@ -2,7 +2,8 @@ import { memo } from "react";
 import { tss } from "tss";
 import { Text } from "onyxia-ui/Text";
 import { useTranslation } from "ui/i18n";
-import { ReactComponent as ServiceNotFoundSvg } from "ui/assets/svg/ServiceNotFound.svg";
+import serviceNotFoundSvgUrl from "ui/assets/svg/ServiceNotFound.svg";
+import { ThemedImage } from "onyxia-ui/ThemedImage";
 import MuiLink from "@mui/material/Link";
 import type { Link } from "type-route";
 import { declareComponentKeys } from "i18nifty";
@@ -22,7 +23,7 @@ export const NoRunningService = memo((props: Props) => {
     return (
         <div className={cx(classes.root, className)}>
             <div className={classes.innerDiv}>
-                <ServiceNotFoundSvg className={classes.svg} />
+                <ThemedImage className={classes.svg} url={serviceNotFoundSvgUrl} />
                 <Text typo="page heading" className={classes.h2}>
                     {t("no services running")}
                 </Text>

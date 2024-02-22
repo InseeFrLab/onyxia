@@ -2668,9 +2668,9 @@ camelize@^1.0.0:
   integrity sha512-dU+Tx2fsypxTgtLoE36npi3UqcjSSMNYfkqgmoEhtZrraP5VWq0K7FkWVTYa8eMPtnU/G2txVsfdCJTn9uzpuQ==
 
 caniuse-lite@^1.0.30001587:
-  version "1.0.30001588"
-  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001588.tgz#07f16b65a7f95dba82377096923947fb25bce6e3"
-  integrity sha512-+hVY9jE44uKLkH0SrUTqxjxqNTOWHsbnQDIKjwkZ3lNTzUUVdBLBGXtj/q5Mp5u98r3droaZAewQuEDzjQdZlQ==
+  version "1.0.30001589"
+  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001589.tgz#7ad6dba4c9bf6561aec8291976402339dc157dfb"
+  integrity sha512-vNQWS6kI+q6sBlHbh71IIeC+sRwK2N3EDySc/updIGhIee2x5z00J4c1242/5/d6EpEMdOnk/m+6tuk4/tcsqg==
 
 chalk-template@^0.4.0:
   version "0.4.0"
@@ -2746,10 +2746,10 @@ chownr@^2.0.0:
   resolved "https://registry.yarnpkg.com/chownr/-/chownr-2.0.0.tgz#15bfbe53d2eab4cf70f18a8cd68ebe5b3cb1dece"
   integrity sha512-bIomtDF5KGpdogkLd9VspvFzk9KfpyyGlS8YFVZl7TGPBHL5snIOnxeshwVgPteQ9b4Eydl+pVbIyE1DcvCWgQ==
 
-clean-architecture@^4.3.3:
-  version "4.3.3"
-  resolved "https://registry.yarnpkg.com/clean-architecture/-/clean-architecture-4.3.3.tgz#3c0bfe64ca3412d289167cd8a69c40f0c174ebd3"
-  integrity sha512-0QqXphwpAxOO9kJMRdu82vDwMDiVqt5P81FxGuBWqze7HCloAGxdtsUghStTpFAZIIZGSIU7rXdfvOzFB4j/Lg==
+clean-architecture@^4.3.7:
+  version "4.3.7"
+  resolved "https://registry.yarnpkg.com/clean-architecture/-/clean-architecture-4.3.7.tgz#3dc9622b1dd86ee49de6af045647dedc5f78d519"
+  integrity sha512-6RQ7aix9HVq9CW6MPjFlOeBCCffEDAAnjPqH5124u3jmPmUMy5jNE8N3QQ+XsBj88mDLxDt/f1DNBnbmdZaxhg==
   dependencies:
     "@reduxjs/toolkit" "^1.9.6"
     minimal-polyfills "^2.2.3"
@@ -3077,9 +3077,9 @@ ejs@^3.1.9:
     jake "^10.8.5"
 
 electron-to-chromium@^1.4.668:
-  version "1.4.677"
-  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.677.tgz#49ee77713516740bdde32ac2d1443c444f0dafe7"
-  integrity sha512-erDa3CaDzwJOpyvfKhOiJjBVNnMM0qxHq47RheVVwsSQrgBA9ZSGV9kdaOfZDPXcHzhG7lBxhj6A7KvfLJBd6Q==
+  version "1.4.679"
+  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.679.tgz#480f497874ce2be162c0ac271eec91918bf96247"
+  integrity sha512-NhQMsz5k0d6m9z3qAxnsOR/ebal4NAGsrNVRwcDo4Kc/zQ7KdsTKZUxZoygHcVRb0QDW3waEDIcE3isZ79RP6g==
 
 emoji-regex@^10.3.0:
   version "10.3.0"
@@ -3491,9 +3491,9 @@ flatbuffers@23.5.26:
   integrity sha512-vE+SI9vrJDwi1oETtTIFldC/o9GsVKRM+s6EL0nQgxXlYV1Vc4Tk30hj4xGICftInKQKj1F3up2n8UbIVobISQ==
 
 flatted@^3.2.9:
-  version "3.3.0"
-  resolved "https://registry.yarnpkg.com/flatted/-/flatted-3.3.0.tgz#5fdca2b5e671cd38d1537427a10e02a2caa8257e"
-  integrity sha512-noqGuLw158+DuD9UPRKHpJ2hGxpFyDlYYrfM0mWt4XhT4n0lwzTLh70Tkdyy4kyTmyTT9Bv7bWAJqw7cgkEXDg==
+  version "3.3.1"
+  resolved "https://registry.yarnpkg.com/flatted/-/flatted-3.3.1.tgz#21db470729a6734d4997002f439cb308987f567a"
+  integrity sha512-X8cqMLLie7KsNUDSdzeN8FYK9rEt4Dt67OsG/DNGnYTSDBG4uFAJFBnUeiV+zCVAvwFy56IjM9sH51jVaEhNxw==
 
 flexsearch@0.7.21:
   version "0.7.21"
@@ -4126,9 +4126,9 @@ jwt-decode@^3.1.2:
   integrity sha512-UfpWE/VZn0iP50d8cz9NrZLM9lSWhcJ+0Gt/nm4by88UL+J1SiKN8/5dkjMmbEzwL2CAe+67GsegCbIKtbp75A==
 
 keycloakify@^9.4.3:
-  version "9.4.3"
-  resolved "https://registry.yarnpkg.com/keycloakify/-/keycloakify-9.4.3.tgz#aaadfc5b1d484a748e2b18a286b7e868a8da5c92"
-  integrity sha512-DVkN19upOkLzLkUv6p75VWWBsq2jxz8gWD0Q58IJIQFvnESGIAhRiZXMcjmcEQIY0urCB002oHgITttttOfcnQ==
+  version "9.4.4"
+  resolved "https://registry.yarnpkg.com/keycloakify/-/keycloakify-9.4.4.tgz#0d602fe9568cac1c3ce9b6a0bc216c9a85a5b2e3"
+  integrity sha512-Qd0zQCwnCu3fO+vMIl1iNXNVX5lvLXCckhq/q0zVuGIgzGRP9zXx8tiC08rLQMbRrLdck9h+BKxg7B/16Vacfg==
   dependencies:
     "@babel/generator" "^7.22.9"
     "@babel/parser" "^7.22.7"
@@ -5773,9 +5773,9 @@ vite-tsconfig-paths@^4.3.1:
     tsconfck "^3.0.1"
 
 vite@^5.0.8:
-  version "5.1.3"
-  resolved "https://registry.yarnpkg.com/vite/-/vite-5.1.3.tgz#dd072653a80225702265550a4700561740dfde55"
-  integrity sha512-UfmUD36DKkqhi/F75RrxvPpry+9+tTkrXfMNZD+SboZqBCMsxKtO52XeGzzuh7ioz+Eo/SYDBbdb0Z7vgcDJew==
+  version "5.1.4"
+  resolved "https://registry.yarnpkg.com/vite/-/vite-5.1.4.tgz#14e9d3e7a6e488f36284ef13cebe149f060bcfb6"
+  integrity sha512-n+MPqzq+d9nMVTKyewqw6kSt+R3CkvF9QAKY8obiQn8g1fwTscKxyfaYnC632HtBXAQGc1Yjomphwn1dtwGAHg==
   dependencies:
     esbuild "^0.19.3"
     postcss "^8.4.35"

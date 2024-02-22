@@ -1,6 +1,7 @@
 import { memo } from "react";
 import Avatar from "@mui/material/Avatar";
-import { ReactComponent as FallbackSvg } from "ui/assets/svg/singlePackage.svg";
+import fallbackSvgUrl from "ui/assets/svg/singlePackage.svg";
+import { ThemedImage } from "onyxia-ui/ThemedImage";
 import { tss } from "tss";
 import type { IconSizeName } from "onyxia-ui";
 
@@ -17,7 +18,7 @@ export const RoundLogo = memo((props: RoundLogoProps) => {
 
     return (
         <Avatar src={url} className={cx(classes.root, className)}>
-            <FallbackSvg className={classes.fallback} />
+            <ThemedImage className={classes.fallback} url={fallbackSvgUrl} />
         </Avatar>
     );
 });

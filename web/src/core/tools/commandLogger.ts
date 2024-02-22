@@ -67,7 +67,8 @@ export function logApi<Api extends Record<string, unknown>>(params2: {
                     const methodProxy = async (
                         ...inputs: Parameters<Api[MethodName]>
                     ) => {
-                        const runMethod = () => (api[methodName] as any)(...inputs);
+                        const runMethod = () =>
+                            (api[methodName] as any)(...(inputs as any));
 
                         const cmdId = getCounter();
 

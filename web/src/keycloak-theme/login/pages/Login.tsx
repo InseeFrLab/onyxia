@@ -10,10 +10,11 @@ import { TextField } from "onyxia-ui/TextField";
 import { Button } from "onyxia-ui/Button";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import { Checkbox } from "onyxia-ui/Checkbox";
-import { ReactComponent as AgentconnectBtnPrincipal } from "ui/assets/svg/agentconnect-btn-principal.svg";
-import { ReactComponent as AgentconnectBtnPrincipalHover } from "ui/assets/svg/agentconnect-btn-principal-hover.svg";
-import { ReactComponent as AgentconnectBtnAlternatif } from "ui/assets/svg/agentconnect-btn-alternatif.svg";
-import { ReactComponent as AgentconnectBtnAlternatifHover } from "ui/assets/svg/agentconnect-btn-alternatif-hover.svg";
+import { ThemedImage } from "onyxia-ui/ThemedImage";
+import agentconnectBtnPrincipalSvgUrl from "ui/assets/svg/agentconnect-btn-principal.svg";
+import agentconnectBtnPrincipalHoverSvgUrl from "ui/assets/svg/agentconnect-btn-principal-hover.svg";
+import agentconnectBtnAlternatifSvgUrl from "ui/assets/svg/agentconnect-btn-alternatif.svg";
+import agentconnectBtnAlternatifHoverSvgUrl from "ui/assets/svg/agentconnect-btn-alternatif-hover.svg";
 
 export default function Login(
     props: PageProps<Extract<KcContext, { pageId: "login.ftl" }>, I18n>
@@ -244,14 +245,6 @@ const { AgentConnectButton } = (() => {
 
         const { classes, cx, theme } = useStyles();
 
-        const AgentConnectSvg = theme.isDarkModeEnabled
-            ? isMouseHover
-                ? AgentconnectBtnAlternatifHover
-                : AgentconnectBtnAlternatif
-            : isMouseHover
-              ? AgentconnectBtnPrincipalHover
-              : AgentconnectBtnPrincipal;
-
         return (
             <div className={cx(classes.root, className)}>
                 <a
@@ -260,7 +253,17 @@ const { AgentConnectButton } = (() => {
                     onMouseEnter={() => setIsMouseHover(true)}
                     onMouseLeave={() => setIsMouseHover(false)}
                 >
-                    <AgentConnectSvg />
+                    <ThemedImage
+                        url={
+                            theme.isDarkModeEnabled
+                                ? isMouseHover
+                                    ? agentconnectBtnAlternatifHoverSvgUrl
+                                    : agentconnectBtnAlternatifSvgUrl
+                                : isMouseHover
+                                  ? agentconnectBtnPrincipalHoverSvgUrl
+                                  : agentconnectBtnPrincipalSvgUrl
+                        }
+                    />
                 </a>
                 <Link
                     className={classes.docLink}

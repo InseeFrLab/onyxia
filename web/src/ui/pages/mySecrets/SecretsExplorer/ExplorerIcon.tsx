@@ -1,14 +1,14 @@
 import { tss } from "tss";
-import { useMemo, memo } from "react";
-import { ReactComponent as SvgData } from "ui/assets/svg/explorer/data.svg";
-import { ReactComponent as SvgSecret } from "ui/assets/svg/explorer/secret.svg";
-import { ReactComponent as SvgDirectory } from "ui/assets/svg/explorer/directory.svg";
+import { memo } from "react";
+import secretSvgUrl from "ui/assets/svg/explorer/secret.svg";
+import directorySvgUrl from "ui/assets/svg/explorer/directory.svg";
+import { ThemedImage } from "onyxia-ui/ThemedImage";
 
 //Figma -> Inkscape -> https://svg2jsx.com/
 
 export type Props = {
     className?: string;
-    iconId: "data" | "secret" | "directory";
+    iconId: "secret" | "directory";
     hasShadow: boolean;
 };
 
@@ -17,18 +17,19 @@ export const ExplorerIcon = memo((props: Props) => {
 
     const { cx, classes } = useStyles({ hasShadow, iconId });
 
-    const SvgReactComponent = useMemo(() => {
-        switch (iconId) {
-            case "data":
-                return SvgData;
-            case "secret":
-                return SvgSecret;
-            case "directory":
-                return SvgDirectory;
-        }
-    }, [iconId, hasShadow]);
-
-    return <SvgReactComponent className={cx(classes.root, className)} />;
+    return (
+        <ThemedImage
+            className={cx(classes.root, className)}
+            url={(() => {
+                switch (iconId) {
+                    case "secret":
+                        return secretSvgUrl;
+                    case "directory":
+                        return directorySvgUrl;
+                }
+            })()}
+        />
+    );
 });
 
 const useStyles = tss
