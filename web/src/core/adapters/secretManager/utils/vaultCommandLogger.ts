@@ -1,6 +1,6 @@
 import type { CommandLogger } from "core/tools/commandLogger";
 import type { SecretsManager } from "core/ports/SecretsManager";
-import { join as pathJoin } from "path-browserify";
+import { join as pathJoin } from "pathe";
 
 export function getVaultCommandLogger(params: {
     clientType: "CLI";

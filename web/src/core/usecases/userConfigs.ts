@@ -9,7 +9,7 @@ import {
     createSelector
 } from "clean-architecture";
 import * as userAuthentication from "./userAuthentication";
-import { join as pathJoin } from "path-browserify";
+import { join as pathJoin } from "pathe";
 import { getIsDarkModeEnabledOsDefault } from "onyxia-ui/tools/getIsDarkModeEnabledOsDefault";
 import * as deploymentRegionManagement from "core/usecases/deploymentRegionManagement";
 

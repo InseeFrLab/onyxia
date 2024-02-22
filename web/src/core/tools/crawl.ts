@@ -1,4 +1,4 @@
-import { join as pathJoin, relative as pathRelative } from "path-browserify";
+import { join as pathJoin, relative as pathRelative } from "pathe";
 
 export function crawlFactory(params: {
     list(params: { directoryPath: string }): Promise<{

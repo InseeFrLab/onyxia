@@ -3,7 +3,7 @@ import {
     join as pathJoin,
     dirname as pathDirname,
     relative as pathRelative
-} from "path-browserify";
+} from "pathe";
 import { crawlFactory } from "core/tools/crawl";
 
 export type BaseFsApi<File> = {

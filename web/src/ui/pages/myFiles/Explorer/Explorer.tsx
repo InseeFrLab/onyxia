@@ -8,7 +8,7 @@ import { Breadcrumb } from "onyxia-ui/Breadcrumb";
 import type { BreadcrumbProps } from "onyxia-ui/Breadcrumb";
 import { Props as ButtonBarProps } from "./ExplorerButtonBar";
 import { Evt } from "evt";
-import { join as pathJoin } from "path-browserify";
+import { join as pathJoin } from "pathe";
 import { useTranslation } from "ui/i18n";
 import { CommandBar, type CommandBarProps } from "ui/shared/CommandBar";
 import {

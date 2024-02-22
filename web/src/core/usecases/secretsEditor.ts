@@ -3,7 +3,7 @@ import { id } from "tsafe/id";
 import type { Thunks, State as RootState } from "core/bootstrap";
 import type { SecretWithMetadata } from "core/ports/SecretsManager";
 import { assert } from "tsafe/assert";
-import { join as pathJoin } from "path-browserify";
+import { join as pathJoin } from "pathe";
 import * as secretExplorer from "./secretExplorer";
 
 type State = {

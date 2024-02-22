@@ -4,13 +4,13 @@ import secretSvgUrl from "ui/assets/svg/explorer/secret.svg";
 import directorySvgUrl from "ui/assets/svg/explorer/directory.svg";
 import { ThemedImage } from "onyxia-ui/ThemedImage";
 
-//Figma -> Inkscape -> https://svg2jsx.com/
-
 export type Props = {
     className?: string;
     iconId: "secret" | "directory";
     hasShadow: boolean;
 };
+
+console.log(secretSvgUrl);
 
 export const ExplorerIcon = memo((props: Props) => {
     const { className, iconId, hasShadow } = props;

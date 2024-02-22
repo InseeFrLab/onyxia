@@ -4,8 +4,6 @@ import dataSvgUrl from "ui/assets/svg/explorer/data.svg";
 import directorySvgUrl from "ui/assets/svg/explorer/directory.svg";
 import { ThemedImage } from "onyxia-ui/ThemedImage";
 
-//Figma -> Inkscape -> https://svg2jsx.com/
-
 export type Props = {
     className?: string;
     iconId: "data" | "directory";
