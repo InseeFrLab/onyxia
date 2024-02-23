@@ -17,9 +17,18 @@ export default defineConfig({
         react(),
         tsconfigPaths(),
         commonjs(),
-        keycloakify(),
+        keycloakify({
+            "themeName": "onyxia",
+            "extraThemeProperties": [
+                "RESOURCES_ALLOWED_ORIGINS=${env.ONYXIA_RESOURCES_ALLOWED_ORIGINS:*}",
+                "HEADER_TEXT_BOLD=${env.ONYXIA_HEADER_TEXT_BOLD:}",
+                "HEADER_TEXT_FOCUS=${env.ONYXIA_HEADER_TEXT_FOCUS:}",
+                "PALETTE_OVERRIDE=${env.ONYXIA_PALETTE_OVERRIDE:}",
+                "TAB_TITLE=${env.ONYXIA_TAB_TITLE:}"
+            ]
+        }),
         viteEnvs({
-            computedEnv: ({ resolvedConfig }) => ({
+            "computedEnv": ({ resolvedConfig }) => ({
                 "WEB_VERSION": JSON.parse(
                     fs.readFileSync(pathJoin(__dirname, "package.json")).toString("utf8")
                 ).version,
