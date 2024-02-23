@@ -5,7 +5,7 @@ RUN yarn install --frozen-lockfile --network-timeout 1000000
 RUN yarn build
 
 
-FROM nginx:1.25-alpine
+FROM nginx:stable-alpine
 RUN apk add --update nodejs npm
 RUN apk add --update wget unzip
 RUN npm i -g vite-envs@`node -e 'console.log(require("./.vite-envs.json").version)'`

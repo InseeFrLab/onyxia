@@ -33,3 +33,5 @@ kubernetes
 /.vscode
 /docs
 
+/.env.local
+/.env.local.yaml
