@@ -96,7 +96,7 @@
         "tsx": "^4.7.1",
         "typescript": "^5.2.2",
         "vite": "^5.0.8",
-        "vite-envs": "^3.6.3",
+        "vite-envs": "^3.6.4",
         "vite-plugin-commonjs": "^0.10.1",
         "vite-tsconfig-paths": "^4.3.1"
     },
