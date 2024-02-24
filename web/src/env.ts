@@ -1103,6 +1103,17 @@ function createParsedEnvs<Parser extends Entry<EnvName>>(
         return undefined;
     })();
 
+    //NOTE: Initially we where in CRA so we used PUBLIC_URL,
+    // in Vite BASE_URL is the equivalent but it's not exactly formatted the same way.
+    // CRA: "" <=> Vite: "/"
+    // CRA: "/foo" <=> Vite: "/foo/"
+    // So we convert the Vite format to the CRA format for retro compatibility.
+    const PUBLIC_URL = (() => {
+        const BASE_URL= import.meta.env.BASE_URL;
+
+        return BASE_URL === "/" ? "" : BASE_URL.replace(/\/$/, "");
+    })()
+
     const env: any = new Proxy(
         {},
         {
@@ -1110,7 +1121,7 @@ function createParsedEnvs<Parser extends Entry<EnvName>>(
                 assert(typeof envName === "string");
 
                 if (envName === "PUBLIC_URL") {
-                    return import.meta.env.PUBLIC_URL;
+                    return PUBLIC_URL;
                 }
 
                 assert(envName in parsedValueOrGetterByEnvName);
@@ -1243,7 +1254,7 @@ function createParsedEnvs<Parser extends Entry<EnvName>>(
         const replacePUBLIC_URL = (envValue: string) =>
             envValue.replace(
                 /%PUBLIC_URL%/g, 
-                import.meta.env.PUBLIC_URL
+                PUBLIC_URL
             );
 
         if (isUsedInKeycloakTheme) {
@@ -1257,7 +1268,7 @@ function createParsedEnvs<Parser extends Entry<EnvName>>(
                             "name": envName,
                             "value": envValue.replace(
                                 /%PUBLIC_URL%\/custom-resources/g,
-                                `${window.location.origin}${import.meta.env.PUBLIC_URL}/custom-resources`
+                                `${window.location.origin}${PUBLIC_URL}/custom-resources`
                             )
                         }).newUrl
                 );

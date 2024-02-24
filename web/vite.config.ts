@@ -32,11 +32,8 @@ export default defineConfig({
                 "WEB_VERSION": JSON.parse(
                     fs.readFileSync(pathJoin(__dirname, "package.json")).toString("utf8")
                 ).version,
-                //NOTE: Initially we where in CRA so we used PUBLIC_URL,
-                // in Vite BASE_URL is the equivalent but it's not exactly formatted the same way.
-                // CRA: "" <=> Vite: "/"
-                // CRA: "/foo" <=> Vite: "/foo/"
-                // So we convert the Vite format to the CRA format for retro compatibility.
+                // Only so that html substitution can work (after rendering of the EJS).
+                // Do not use in the TS code.
                 "PUBLIC_URL": (() => {
                     const { BASE_URL } = resolvedConfig.env;
 
