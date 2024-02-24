@@ -48,12 +48,6 @@ export const thunks = {
                 formFieldsValueDifferentFromDefault
             } = params;
 
-            if (Date.now() > 0) {
-                throw new Error(
-                    "This is a test error to check if sourcemap works correctly."
-                );
-            }
-
             const [dispatch, getState, rootContext] = args;
             const { onyxiaApi, evtAction } = rootContext;
 
