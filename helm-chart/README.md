@@ -71,7 +71,7 @@ After that, you should be able to select *onyxia* as *Login Theme*.
 Documentation reference for the available configuration parameter of the Onyxia Helm Chart.
 
 -   [The REST API (`api`)](https://github.com/InseeFrLab/onyxia-api/blob/v2.2.1/README.md#configuration)
--   [The Web Application (`web`)](https://github.com/InseeFrLab/onyxia/blob/web-v4.16.9/web/.env)
+-   [The Web Application (`web`)](https://github.com/InseeFrLab/onyxia/blob/web-v4.16.10/web/.env)
 
 Below is a sample `onyxia-values.yaml` file that illustrates where to specify the `api` and `web` configuration parameters.
 
@@ -107,4 +107,4 @@ Below is a sample `onyxia-values.yaml` file that illustrates where to specify th
 If you are building your own service catalog for Onyxia ([learn how](https://docs.onyxia.sh/catalog-of-services)).  
 Here are defined the onyxia reserved parameter and the structure of the dynamic context:
 
-[`values.schema.json` `"x-onyxia"` specifications](https://github.com/InseeFrLab/onyxia/blob/web-v4.16.9/web/src/core/ports/OnyxiaApi/XOnyxia.ts)
+[`values.schema.json` `"x-onyxia"` specifications](https://github.com/InseeFrLab/onyxia/blob/web-v4.16.10/web/src/core/ports/OnyxiaApi/XOnyxia.ts)
