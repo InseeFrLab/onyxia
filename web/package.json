@@ -39,7 +39,7 @@
         "flexsearch": "0.7.21",
         "i18nifty": "^3.2.0",
         "json5": "^2.2.3",
-        "keycloakify": "^9.5.1",
+        "keycloakify": "^9.5.2",
         "memoizee": "^0.4.15",
         "minimal-polyfills": "^2.2.3",
         "moment": "^2.29.1",
