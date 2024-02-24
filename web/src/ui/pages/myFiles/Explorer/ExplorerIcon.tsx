@@ -21,10 +21,8 @@ export const ExplorerIcon = memo((props: Props) => {
             url={(() => {
                 switch (iconId) {
                     case "data":
-                        console.log("dataSvgUrl", dataSvgUrl);
                         return dataSvgUrl;
                     case "directory":
-                        console.log("directorySvgUrl", directorySvgUrl);
                         return directorySvgUrl;
                 }
             })()}
