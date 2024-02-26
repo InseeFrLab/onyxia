@@ -4115,7 +4115,7 @@ json-stable-stringify-without-jsonify@^1.0.1:
   resolved "https://registry.yarnpkg.com/json-stable-stringify-without-jsonify/-/json-stable-stringify-without-jsonify-1.0.1.tgz#9db7b59496ad3f3cfef30a75142d2d930ad72651"
   integrity sha512-Bdboy+l7tA3OGW6FjyFHWkP5LuByj1Tk33Ljyq0axyzdk9//JSi2u3fP1QSmd1KNwq6VOKYGlAu87CisVir6Pw==
 
-json5@^2.2.3:
+json5@2.2.3, json5@^2.2.3:
   version "2.2.3"
   resolved "https://registry.yarnpkg.com/json5/-/json5-2.2.3.tgz#78cd6f1a19bdc12b73db5ad0c61efd66c1e29283"
   integrity sha512-XmOWe7eyHYH14cLdVPoyg+GOH3rYX++KpzrylJwSW98t3Nk+U8XOl8FWKOgwtzdb8lXGf6zYwDUzeHMWfxasyg==
@@ -5732,18 +5732,16 @@ vfile@^4.0.0:
     unist-util-stringify-position "^2.0.0"
     vfile-message "^2.0.0"
 
-vite-envs@^3.7.1:
-  version "3.7.1"
-  resolved "https://registry.yarnpkg.com/vite-envs/-/vite-envs-3.7.1.tgz#7f577ff78db32c6156568a96b8168022711b3acd"
-  integrity sha512-QCBc38IWZ61lO3aOwu++4qrw0ePDjC+mnDcxO6yK4V2BCeRLRRr/jMqjAGJGzavajrxYy16zZ7r+DezyhNAs1g==
+vite-envs@^4.0.7:
+  version "4.0.7"
+  resolved "https://registry.yarnpkg.com/vite-envs/-/vite-envs-4.0.7.tgz#e5630521a0a06cfdd69514a6a3037a42aa4af373"
+  integrity sha512-oLrFNNf1U5UP5BqeKlfZcOgooiHImlkHNCVBLdfMpU4bbyUUWTBzxc8zCmJOThOyFOEhu+6/YTUlL7oHL4y6yQ==
   dependencies:
     cheerio "^1.0.0-rc.12"
     dotenv "^16.4.4"
     ejs "^3.1.9"
-    json5 "^2.2.3"
     magic-string "^0.30.7"
     tsafe "^1.6.6"
-    yaml "^2.3.4"
 
 vite-plugin-commonjs@^0.10.1:
   version "0.10.1"
@@ -5908,7 +5906,7 @@ yallist@^4.0.0:
   resolved "https://registry.yarnpkg.com/yallist/-/yallist-4.0.0.tgz#9bb92790d9c0effec63be73519e11a35019a3a72"
   integrity sha512-3wdGidZyq5PB084XLES5TpOSRA3wjXAlIWMhum2kRcv/41Sn2emQ0dycQW4uZXLejwKvg6EsvbdlVL+FYEct7A==
 
-yaml@2.3.4, yaml@^2.0.1, yaml@^2.3.4:
+yaml@2.3.4, yaml@^2.0.1:
   version "2.3.4"
   resolved "https://registry.yarnpkg.com/yaml/-/yaml-2.3.4.tgz#53fc1d514be80aabf386dc6001eb29bf3b7523b2"
   integrity sha512-8aAvwVUSHpfEqTQ4w/KMlf3HcRdt50E5ODIQJBw1fQ5RL34xabzxtUlzTXVqc4rkZsPbvrXKWnABCD7kWSmocA==

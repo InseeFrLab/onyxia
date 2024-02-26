@@ -39,7 +39,8 @@ export default defineConfig({
 
                     return BASE_URL === "/" ? "" : BASE_URL.replace(/\/$/, "");
                 })()
-            })
+            }),
+            "indexAsEjs": true
         })
     ],
     "build": {

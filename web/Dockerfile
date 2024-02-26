@@ -8,6 +8,7 @@ RUN yarn build
 FROM nginx:stable-alpine
 RUN apk add --update nodejs npm
 RUN apk add --update wget unzip
+RUN npm i -g json5@2.2.3
 RUN npm i -g vite-envs@`node -e 'console.log(require("./.vite-envs.json").version)'`
 COPY --from=build /app/nginx.conf /etc/nginx/conf.d/default.conf    
 WORKDIR /usr/share/nginx/html
