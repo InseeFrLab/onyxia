@@ -198,7 +198,7 @@ export function createS3Client(params: ParamsOfCreateS3Client): S3Client {
                 }
 
                 const awsS3Client = new ns_aws_sdk_client_s3.S3Client({
-                    "region": params.region,
+                    "region": params.region ?? "us-east-1",
                     "credentials": {
                         "accessKeyId": tokens.accessKeyId,
                         "secretAccessKey": tokens.secretAccessKey,
