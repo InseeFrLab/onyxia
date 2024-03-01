@@ -446,6 +446,7 @@ export const translations: Translations<"fr"> = {
         "projectSettings": "Paramètres du projet",
         "catalog": "Catalogue de services",
         "myServices": "Mes services",
+        "myServices2": "Mes services 2",
         "mySecrets": "Mes secrets",
         "myFiles": "Mes fichiers",
         "divider: services features": "Fonctionnalités relative aux services",
@@ -722,6 +723,10 @@ N'hésitez pas à explorer et à prendre en main vos déploiements Kubernetes !
         "text3":
             "Il est recommandé de supprimer vos services après chaque session de travail.",
         "running services": "Services en cours"
+    },
+    "MyServices2": {
+        "stop": "Arrêter",
+        "greetings": ({ foo }) => `Bonjour monde ${foo}!`
     },
     "MyServicesConfirmDeleteDialog": {
         "confirm delete title": "Êtes-vous sûr?",

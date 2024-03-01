@@ -445,6 +445,7 @@ export const translations: Translations<"de"> = {
         "projectSettings": "Projekteinstellungen",
         "catalog": "Servicekatalog",
         "myServices": "Meine Dienste",
+        "myServices2": undefined,
         "mySecrets": "Meine Geheimnisse",
         "myFiles": "Meine Dateien",
         "divider: services features": "Funktionen im Zusammenhang mit Diensten",

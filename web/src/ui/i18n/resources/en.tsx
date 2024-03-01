@@ -440,6 +440,7 @@ export const translations: Translations<"en"> = {
         "projectSettings": "Project settings",
         "catalog": "Service catalog",
         "myServices": "My Services",
+        "myServices2": "My Services2",
         "mySecrets": "My Secrets",
         "myFiles": "My Files",
         "divider: services features": "Services features",
@@ -705,6 +706,10 @@ Feel free to explore and take charge of your Kubernetes deployments!
         "text3":
             "Services are supposed to be shut down as soon as you stop using them actively.",
         "running services": "Running services"
+    },
+    "MyServices2": {
+        "stop": "Stop",
+        "greetings": ({ foo }) => `Hello world ${foo}!`
     },
     "MyServicesConfirmDeleteDialog": {
         "confirm delete title": "Are you sure?",

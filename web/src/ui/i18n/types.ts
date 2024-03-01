@@ -56,12 +56,13 @@ export type ComponentKey =
     | typeof import("ui/pages/launcher/LauncherDialogs/NoLongerBookmarkedDialog").i18n
     | typeof import("ui/pages/launcher/LauncherDialogs/SensitiveConfigurationDialog").i18n
     | typeof import("ui/pages/myServices/MyServices").i18n
+    | typeof import("ui/pages/myServices2/MyServices2").i18n
     | typeof import("ui/pages/myServices/MyServicesConfirmDeleteDialog").i18n
     | typeof import("ui/pages/myServices/MyServicesButtonBar").i18n
-    | typeof import("ui/pages/myServices/MyServicesCards/MyServicesCard/MyServicesCard").i18n
-    | typeof import("ui/pages/myServices/MyServicesCards/MyServicesCard/MyServicesRunningTime").i18n
-    | typeof import("ui/pages/myServices/MyServicesCards/MyServicesCard/ReadmeAndEnvDialog/ReadmeAndEnvDialog").i18n
-    | typeof import("ui/pages/myServices/MyServicesCards/MyServicesCard/ReadmeAndEnvDialog/CopyOpenButton").i18n
+    | typeof import("ui/shared/MyServicesCard/MyServicesCard").i18n
+    | typeof import("ui/shared/MyServicesCard/MyServicesRunningTime").i18n
+    | typeof import("ui/shared/MyServicesCard/ReadmeAndEnvDialog/ReadmeAndEnvDialog").i18n
+    | typeof import("ui/shared/MyServicesCard/ReadmeAndEnvDialog/CopyOpenButton").i18n
     | typeof import("ui/pages/myServices/MyServicesRestorableConfigs/MyServicesRestorableConfig/MyServicesRestorableConfigOptions").i18n
     | typeof import("ui/pages/myServices/MyServicesRestorableConfigs/MyServicesRestorableConfig").i18n
     | typeof import("ui/pages/myServices/MyServicesRestorableConfigs").i18n

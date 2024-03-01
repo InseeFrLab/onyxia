@@ -7,6 +7,7 @@ window.addEventListener("onyxiaready", () => {
 
     const onyxia: Onyxia = (window as any).onyxia;
 
+
     onyxia.addEventListener(eventName => {
         switch (eventName) {
             case "theme updated":

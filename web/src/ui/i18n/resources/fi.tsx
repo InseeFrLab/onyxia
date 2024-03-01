@@ -438,6 +438,7 @@ export const translations: Translations<"fi"> = {
         "catalog": "Palvelukatalogi",
         "myServices": "Omat palvelut",
         "mySecrets": "Omat salaisuudet",
+        "myServices2": undefined,
         "myFiles": "Omat tiedostot",
         "divider: services features": "Palvelun ominaisuudet",
         "divider: external services features": "Ulkoisten palveluiden ominaisuudet",
