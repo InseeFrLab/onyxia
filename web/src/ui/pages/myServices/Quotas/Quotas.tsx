@@ -55,6 +55,7 @@ export function Quotas(props: Props) {
                 return (
                     <>
                         <CollapsibleSectionHeader
+                            className={classes.header}
                             isCollapsed={isCollapsed}
                             title={"Resource usage quotas"}
                             showAllStr={"Show all"}
@@ -66,16 +67,21 @@ export function Quotas(props: Props) {
                                 return <div>You are using very few resources</div>;
                             }
 
-                            return (isCollapsed ? nonNegligibleQuotas : quotas).map(
-                                ({ name, used, total, usagePercentage }, i) => (
-                                    <CircularUsage
-                                        key={i}
-                                        name={name}
-                                        used={used}
-                                        total={total}
-                                        usagePercentage={usagePercentage}
-                                    />
-                                )
+                            return (
+                                <div className={classes.circularUsagesWrapper}>
+                                    {(isCollapsed ? nonNegligibleQuotas : quotas).map(
+                                        ({ name, used, total, usagePercentage }, i) => (
+                                            <CircularUsage
+                                                className={classes.circularUsage}
+                                                key={i}
+                                                name={name}
+                                                used={used}
+                                                total={total}
+                                                usagePercentage={usagePercentage}
+                                            />
+                                        )
+                                    )}
+                                </div>
                             );
                         })()}
                     </>
@@ -87,10 +93,22 @@ export function Quotas(props: Props) {
 
 const useStyles = tss.withName({ Quotas }).create(({ theme }) => ({
     "root": {},
+    "header": {
+        ...theme.spacing.topBottom("margin", 2)
+    },
     "loading": {
         "display": "flex",
         "justifyContent": "center",
         "alignItems": "center",
-        "height": theme.typography.rootFontSizePx * 30
+        "height": theme.typography.rootFontSizePx * 10
+    },
+    "circularUsagesWrapper": {
+        "display": "flex",
+        "flexWrap": "wrap",
+        "justifyContent": "space-between",
+        "gap": theme.spacing(3)
+    },
+    "circularUsage": {
+        "flexBasis": `calc(50% - ${theme.spacing(3) / 2}px)`
     }
 }));

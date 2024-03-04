@@ -1,6 +1,7 @@
 import CircularProgress from "@mui/material/CircularProgress";
-import Typography from "@mui/material/Typography";
 import { tss } from "tss";
+import { Text } from "onyxia-ui/Text";
+import { capitalize } from "tsafe/capitalize";
 
 type Props = {
     className?: string;
@@ -11,40 +12,130 @@ type Props = {
 };
 
 export function CircularUsage(props: Props) {
-    const { className, name, used, total, usagePercentage } = props;
+    let { className, name, used, total, usagePercentage } = props;
 
-    const { cx, classes } = useStyles();
+    /*
+    if( Date.now() > 0 ){
+        usagePercentage = 80;
+    }
+    */
+
+    const { cx, classes } = useStyles({
+        "usageSeverity": (() => {
+            if (usagePercentage < 25) {
+                return "success";
+            }
+
+            if (usagePercentage < 50) {
+                return "info";
+            }
+
+            if (usagePercentage < 75) {
+                return "warning";
+            }
+
+            return "error";
+        })()
+    });
+
+    const circularProgressSize = 60;
 
     return (
         <div className={cx(classes.root, className)}>
-            {name} {used} / {total}
-            <CircularProgress variant="determinate" value={usagePercentage} />
-            <div className={classes.typographyWrapper}>
-                <Typography
-                    variant="caption"
-                    component="div"
-                    color="text.secondary"
-                >{`${usagePercentage}%`}</Typography>
+            <Text typo="label 1">{capitalize(name)}</Text>
+            <div className={classes.circularProgressWrapper}>
+                <div className={classes.circularProgressInnerWrapper}>
+                    <CircularProgress
+                        size={circularProgressSize}
+                        className={classes.circularProgress}
+                        variant="determinate"
+                        value={usagePercentage}
+                    />
+                    <div className={classes.percentageWrapper}>
+                        <Text typo="body 1">
+                            {(() => {
+                                if (usagePercentage === 0) {
+                                    return 0;
+                                }
+
+                                if (usagePercentage < 1) {
+                                    return "<1";
+                                }
+
+                                return Math.round(usagePercentage);
+                            })()}
+                            %
+                        </Text>
+                    </div>
+                    <div className={classes.backLayerCircularProgressWrapper}>
+                        <CircularProgress
+                            size={circularProgressSize}
+                            className={classes.backLayerCircularProgress}
+                            variant="determinate"
+                            value={100}
+                        />
+                    </div>
+                </div>
+            </div>
+            <div className={classes.metricsWrapper}>
+                <Text typo="label 1">Used:</Text>&nbsp;<Text typo="body 1">{used}</Text>
+                <div style={{ "flex": 1 }} />
+                <Text typo="label 1">Max:</Text>&nbsp;<Text typo="body 1">{total}</Text>
             </div>
         </div>
     );
 }
 
-const useStyles = tss.withName({ CircularUsage }).create(() => ({
-    "root": {
-        //"position": "relative",
-        //"display": "inline-flex",
-    },
-    "typographyWrapper": {
-        /*
+const useStyles = tss
+    .withName({ CircularUsage })
+    .withParams<{
+        usageSeverity: "success" | "info" | "warning" | "error";
+    }>()
+    .create(({ theme, usageSeverity }) => ({
+        "root": {
+            "backgroundColor": theme.colors.useCases.surfaces.surface1,
+            "borderRadius": theme.spacing(2),
+            "padding": theme.spacing(3),
+            "boxShadow": theme.shadows[1],
+            "&:hover": {
+                "boxShadow": theme.shadows[6]
+            }
+        },
+        "circularProgressWrapper": {
+            "display": "flex",
+            "justifyContent": "center",
+            ...theme.spacing.topBottom("margin", 2)
+        },
+        "circularProgressInnerWrapper": {
+            "position": "relative"
+        },
+        "circularProgress": {
+            "verticalAlign": "top",
+            "color": theme.colors.useCases.alertSeverity[usageSeverity].main
+        },
+        "backLayerCircularProgress": {
+            "verticalAlign": "top",
+            "color": theme.colors.useCases.alertSeverity[usageSeverity].background
+        },
+        "percentageWrapper": {
+            "position": "absolute",
             "top": 0,
             "left": 0,
             "bottom": 0,
             "right": 0,
-            "position": "absolute",
             "display": "flex",
             "alignItems": "center",
             "justifyContent": "center"
-            */
-    }
-}));
+        },
+        "backLayerCircularProgressWrapper": {
+            "position": "absolute",
+            "top": 0,
+            "left": 0,
+            "bottom": 0,
+            "right": 0
+        },
+        "metricsWrapper": {
+            "display": "flex"
+            //...theme.spacing.rightLeft("padding", 2)
+        }
+    }));

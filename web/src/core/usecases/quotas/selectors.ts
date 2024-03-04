@@ -120,10 +120,10 @@ const quotas = createSelector(readyState, state => {
             }
 
             return id<QuotaEntry>({
-                name,
+                "name": name.replace(/^requests\./, ""),
                 "used": `${usage}`,
                 "total": `${spec}`,
-                "usagePercentage": Math.round(ratio * 100)
+                "usagePercentage": ratio * 100
             });
         })
         .filter(exclude(undefined));
