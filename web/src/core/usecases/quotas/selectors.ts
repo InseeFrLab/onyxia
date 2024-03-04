@@ -129,20 +129,36 @@ const quotas = createSelector(readyState, state => {
         .filter(exclude(undefined));
 });
 
-const main = createSelector(isReady, quotas, (isReady, quotas) => {
+const nonNegligibleQuotas = createSelector(isReady, quotas, (isReady, quotas) => {
     if (!isReady) {
-        return {
-            "isReady": false as const
-        };
+        return undefined;
     }
-
     assert(quotas !== undefined);
 
-    return {
-        "isReady": true as const,
-        quotas
-    };
+    return quotas.filter(quota => quota.usagePercentage > 10);
 });
+
+const main = createSelector(
+    isReady,
+    quotas,
+    nonNegligibleQuotas,
+    (isReady, quotas, nonNegligibleQuotas) => {
+        if (!isReady) {
+            return {
+                "isReady": false as const
+            };
+        }
+
+        assert(quotas !== undefined);
+        assert(nonNegligibleQuotas !== undefined);
+
+        return {
+            "isReady": true as const,
+            quotas,
+            nonNegligibleQuotas
+        };
+    }
+);
 
 export const selectors = {
     main

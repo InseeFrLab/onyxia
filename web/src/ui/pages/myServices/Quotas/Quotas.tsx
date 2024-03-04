@@ -1,10 +1,11 @@
 import { useCoreState, useCore } from "core";
-import { useEffect } from "react";
+import { useEffect, useReducer } from "react";
 import { CircularProgress } from "onyxia-ui/CircularProgress";
 import { tss } from "tss";
 import type { NonPostableEvt } from "evt";
 import { useEvt } from "evt/hooks";
 import { CircularUsage } from "./CircularUsage";
+import { CollapsibleSectionHeader } from "onyxia-ui/CollapsibleSectionHeader";
 
 type Props = {
     className?: string;
@@ -14,11 +15,16 @@ type Props = {
 export function Quotas(props: Props) {
     const { className, evtActionUpdate } = props;
 
-    const { isReady, quotas } = useCoreState("quotas", "main");
+    const { isReady, quotas, nonNegligibleQuotas } = useCoreState("quotas", "main");
 
     const { cx, classes } = useStyles();
 
     const { quotas: quotas_f } = useCore().functions;
+
+    const [isCollapsed, toggleIsCollapsed] = useReducer(
+        isCollapsed => !isCollapsed,
+        true
+    );
 
     useEffect(() => {
         const { setInactive } = quotas_f.setActive();
@@ -46,15 +52,34 @@ export function Quotas(props: Props) {
                     );
                 }
 
-                return quotas.map(({ name, used, total, usagePercentage }, i) => (
-                    <CircularUsage
-                        key={i}
-                        name={name}
-                        used={used}
-                        total={total}
-                        usagePercentage={usagePercentage}
-                    />
-                ));
+                return (
+                    <>
+                        <CollapsibleSectionHeader
+                            isCollapsed={isCollapsed}
+                            title={"Resource usage quotas"}
+                            showAllStr={"Show all"}
+                            total={quotas.length}
+                            onToggleIsCollapsed={toggleIsCollapsed}
+                        />
+                        {(() => {
+                            if (isCollapsed && nonNegligibleQuotas.length === 0) {
+                                return <div>You are using very few resources</div>;
+                            }
+
+                            return (isCollapsed ? nonNegligibleQuotas : quotas).map(
+                                ({ name, used, total, usagePercentage }, i) => (
+                                    <CircularUsage
+                                        key={i}
+                                        name={name}
+                                        used={used}
+                                        total={total}
+                                        usagePercentage={usagePercentage}
+                                    />
+                                )
+                            );
+                        })()}
+                    </>
+                );
             })()}
         </div>
     );
