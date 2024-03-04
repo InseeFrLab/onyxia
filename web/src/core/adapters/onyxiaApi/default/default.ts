@@ -570,10 +570,22 @@ export function createOnyxiaApi(params: {
             { "promise": true }
         ),
         "getQuotas": async () => {
-            const { data } =
-                await axiosInstance.get<ApiTypes["/my-lab/quota"]>("/my-lab/quota");
+            let resp;
 
-            console.log(data);
+            try {
+                resp =
+                    await axiosInstance.get<ApiTypes["/my-lab/quota"]>("/my-lab/quota");
+            } catch (error) {
+                assert(is<any>(error));
+
+                if (error.response?.status === 403) {
+                    return {};
+                }
+
+                throw error;
+            }
+
+            const { data } = resp;
 
             const { spec, usage } = data;
 
@@ -581,17 +593,6 @@ export function createOnyxiaApi(params: {
                 Object.entries(spec)
                     .map(([key, value]) => {
                         const usageValue = usage[key];
-                        if (usageValue === undefined) {
-                            console.log(`The usage of ${key} is not defined`);
-                            return undefined;
-                        }
-
-                        if (typeof value !== typeof usageValue) {
-                            console.log(
-                                `Usage and spec of ${key} are not of the same type`
-                            );
-                            return undefined;
-                        }
 
                         return [key, { "spec": value, "usage": usageValue }];
                     })
