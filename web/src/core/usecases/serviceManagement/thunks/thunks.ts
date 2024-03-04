@@ -102,15 +102,9 @@ export const thunks = {
                     .replace("$INSTANCE", helmReleaseName.replace(/^\//, ""));
             };
 
-            const [
-                {
-                    user: { username }
-                },
-                quotas
-            ] = await Promise.all([
-                onyxiaApi.getUserAndProjects(),
-                onyxiaApi.getQuotas()
-            ]);
+            const {
+                user: { username }
+            } = await onyxiaApi.getUserAndProjects();
 
             dispatch(
                 actions.updateCompleted({
@@ -194,8 +188,7 @@ export const thunks = {
                                 });
                             }
                         )
-                        .filter(exclude(undefined)),
-                    quotas
+                        .filter(exclude(undefined))
                 })
             );
         },
