@@ -5,6 +5,7 @@ import { elementsToSentence } from "ui/tools/elementsToSentence";
 import { Icon } from "onyxia-ui/Icon";
 import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
 import { id } from "tsafe/id";
+import { capitalize } from "tsafe/capitalize";
 
 export const translations: Translations<"fi"> = {
     /* spell-checker: disable */
@@ -762,6 +763,30 @@ Tutustu vapaasti ja ota hallintaan Kubernetes-julkaisusi!
     "NoRunningService": {
         "launch one": "Käynnistä palvelu",
         "no services running": "Sinulla ei ole käynnissä olevia palveluita"
+    },
+    "CircularUsage": {
+        "max": "Maksimi",
+        "used": "Käytetty",
+        "quota card title": ({ what, isLimit }) => {
+            const whatTranslated = (() => {
+                switch (what) {
+                    case "memory":
+                        return "RAM";
+                    case "cpu":
+                        return "CPU";
+                    case "storage":
+                        return "Tallennustila";
+                    case "count/pod":
+                        return "Kubernetes-podit";
+                    case "nvidia.com/gpu":
+                        return "Nvidia-GPU:t";
+                    default:
+                        return capitalize(what);
+                }
+            })();
+
+            return `${whatTranslated} - ${isLimit ? "Raja" : "Pyydetty"}`;
+        }
     },
     "DataExplorer": {
         "page header title": "Data Explorer",

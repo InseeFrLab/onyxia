@@ -5,6 +5,7 @@ import { elementsToSentence } from "ui/tools/elementsToSentence";
 import { Icon } from "onyxia-ui/Icon";
 import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
 import { id } from "tsafe/id";
+import { capitalize } from "tsafe/capitalize";
 
 export const translations: Translations<"nl"> = {
     /* spell-checker: disable */
@@ -775,6 +776,30 @@ Voel je vrij om te verkennen en de controle over je Kubernetes-implementaties te
     "NoRunningService": {
         "launch one": "Klik hier om er een te starten",
         "no services running": "You don't have any service running"
+    },
+    "CircularUsage": {
+        "max": "Max",
+        "used": "Gebruikt",
+        "quota card title": ({ what, isLimit }) => {
+            const whatTranslated = (() => {
+                switch (what) {
+                    case "memory":
+                        return "RAM";
+                    case "cpu":
+                        return "CPU";
+                    case "storage":
+                        return "Opslag";
+                    case "count/pod":
+                        return "Kubernetes pods";
+                    case "nvidia.com/gpu":
+                        return "Nvidia GPU's";
+                    default:
+                        return capitalize(what);
+                }
+            })();
+
+            return `${whatTranslated} - ${isLimit ? "Limiet" : "Aangevraagd"}`;
+        }
     },
     "DataExplorer": {
         "page header title": "Data Verkenner",

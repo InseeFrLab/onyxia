@@ -5,6 +5,7 @@ import { elementsToSentence } from "ui/tools/elementsToSentence";
 import { Icon } from "onyxia-ui/Icon";
 import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
 import { id } from "tsafe/id";
+import { capitalize } from "tsafe/capitalize";
 
 export const translations: Translations<"zh-CN"> = {
     /* spell-checker: disable */
@@ -717,6 +718,30 @@ ${
     "NoRunningService": {
         "launch one": "点击来启动此服务",
         "no services running": "You don't have any service running"
+    },
+    "CircularUsage": {
+        "max": "最大",
+        "used": "已用",
+        "quota card title": ({ what, isLimit }) => {
+            const whatTranslated = (() => {
+                switch (what) {
+                    case "memory":
+                        return "RAM";
+                    case "cpu":
+                        return "CPU";
+                    case "storage":
+                        return "存储";
+                    case "count/pod":
+                        return "Kubernetes 容器";
+                    case "nvidia.com/gpu":
+                        return "Nvidia GPU";
+                    default:
+                        return capitalize(what);
+                }
+            })();
+
+            return `${whatTranslated} - ${isLimit ? "限额" : "请求"}`;
+        }
     },
     "DataExplorer": {
         "page header title": "数据浏览器",

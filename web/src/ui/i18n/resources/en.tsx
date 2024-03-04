@@ -5,6 +5,7 @@ import { elementsToSentence } from "ui/tools/elementsToSentence";
 import { Icon } from "onyxia-ui/Icon";
 import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
 import { id } from "tsafe/id";
+import { capitalize } from "tsafe/capitalize";
 
 export const translations: Translations<"en"> = {
     "Account": {
@@ -761,6 +762,30 @@ Feel free to explore and take charge of your Kubernetes deployments!
     "NoRunningService": {
         "launch one": "Click here to launch one",
         "no services running": "You don't have any service running"
+    },
+    "CircularUsage": {
+        "max": "Max",
+        "used": "Used",
+        "quota card title": ({ what, isLimit }) => {
+            const whatTranslated = (() => {
+                switch (what) {
+                    case "memory":
+                        return "RAM";
+                    case "cpu":
+                        return "CPU";
+                    case "storage":
+                        return "Storage";
+                    case "count/pod":
+                        return "Kubernetes pods";
+                    case "nvidia.com/gpu":
+                        return "Nvidia GPUs";
+                    default:
+                        return capitalize(what);
+                }
+            })();
+
+            return `${whatTranslated} - ${isLimit ? "Limit" : "Requested"}`;
+        }
     },
     "DataExplorer": {
         "page header title": "Data Explorer",

@@ -67,6 +67,7 @@ export type ComponentKey =
     | typeof import("ui/pages/myServices/MyServicesRestorableConfigs").i18n
     | typeof import("ui/pages/myServices/MyServicesCards").i18n
     | typeof import("ui/pages/myServices/MyServicesCards/NoRunningService").i18n
+    | typeof import("ui/pages/myServices/Quotas/CircularUsage").i18n
     | typeof import("ui/pages/dataExplorer/DataExplorer").i18n
     | typeof import("ui/pages/dataExplorer/UrlInput").i18n
     | typeof import("ui/shared/CommandBar").i18n

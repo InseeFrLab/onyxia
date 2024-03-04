@@ -5,6 +5,7 @@ import { elementsToSentence } from "ui/tools/elementsToSentence";
 import { Icon } from "onyxia-ui/Icon";
 import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
 import { id } from "tsafe/id";
+import { capitalize } from "tsafe/capitalize";
 
 export const translations: Translations<"no"> = {
     /* spell-checker: disable */
@@ -768,6 +769,30 @@ Føl deg fri til å utforske og ta kontroll over dine Kubernetes-implementeringe
     "NoRunningService": {
         "launch one": "Klikk her for å starte en",
         "no services running": "Du har ingen kjørende tjenester"
+    },
+    "CircularUsage": {
+        "max": "Maks",
+        "used": "Brukt",
+        "quota card title": ({ what, isLimit }) => {
+            const whatTranslated = (() => {
+                switch (what) {
+                    case "memory":
+                        return "RAM";
+                    case "cpu":
+                        return "CPU";
+                    case "storage":
+                        return "Lagring";
+                    case "count/pod":
+                        return "Kubernetes-pods";
+                    case "nvidia.com/gpu":
+                        return "Nvidia GPU-er";
+                    default:
+                        return capitalize(what);
+                }
+            })();
+
+            return `${whatTranslated} - ${isLimit ? "Grense" : "Anmodet"}`;
+        }
     },
     "DataExplorer": {
         "page header title": "Datautforsker",

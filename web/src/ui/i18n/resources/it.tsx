@@ -5,6 +5,7 @@ import { elementsToSentence } from "ui/tools/elementsToSentence";
 import { Icon } from "onyxia-ui/Icon";
 import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
 import { id } from "tsafe/id";
+import { capitalize } from "tsafe/capitalize";
 
 export const translations: Translations<"it"> = {
     /* spell-checker: disable */
@@ -771,6 +772,30 @@ Sentiti libero di esplorare e prendere il controllo dei tuoi deployment Kubernet
     "NoRunningService": {
         "launch one": "Clicca qui per avviarne uno",
         "no services running": "You don't have any service running"
+    },
+    "CircularUsage": {
+        "max": "Massimo",
+        "used": "Usato",
+        "quota card title": ({ what, isLimit }) => {
+            const whatTranslated = (() => {
+                switch (what) {
+                    case "memory":
+                        return "RAM";
+                    case "cpu":
+                        return "CPU";
+                    case "storage":
+                        return "Archiviazione";
+                    case "count/pod":
+                        return "Pod Kubernetes";
+                    case "nvidia.com/gpu":
+                        return "GPU Nvidia";
+                    default:
+                        return capitalize(what);
+                }
+            })();
+
+            return `${whatTranslated} - ${isLimit ? "Limite" : "Richiesto"}`;
+        }
     },
     "DataExplorer": {
         "page header title": "Esploratore di Dati",

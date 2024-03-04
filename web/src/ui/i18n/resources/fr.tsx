@@ -5,6 +5,7 @@ import { elementsToSentence } from "ui/tools/elementsToSentence";
 import { Icon } from "onyxia-ui/Icon";
 import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
 import { id } from "tsafe/id";
+import { capitalize } from "tsafe/capitalize";
 
 export const translations: Translations<"fr"> = {
     /* spell-checker: disable */
@@ -781,6 +782,30 @@ N'hésitez pas à explorer et à prendre en main vos déploiements Kubernetes !
         "launch one": "Clickez ici pour en lancer un",
         "no services running":
             "Vous n'avez actuellement aucun service en cours d'exécution"
+    },
+    "CircularUsage": {
+        "max": "Max",
+        "used": "Utilisé",
+        "quota card title": ({ what, isLimit }) => {
+            const whatTranslated = (() => {
+                switch (what) {
+                    case "memory":
+                        return "RAM";
+                    case "cpu":
+                        return "CPU";
+                    case "storage":
+                        return "Stockage";
+                    case "count/pod":
+                        return "Pods Kubernetes";
+                    case "nvidia.com/gpu":
+                        return "GPUs Nvidia";
+                    default:
+                        return capitalize(what);
+                }
+            })();
+
+            return `${whatTranslated} - ${isLimit ? "Limite" : "Demandé"}`;
+        }
     },
     "DataExplorer": {
         "page header title": "Explorateur de Données",

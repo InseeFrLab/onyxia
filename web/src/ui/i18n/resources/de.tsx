@@ -5,6 +5,7 @@ import { elementsToSentence } from "ui/tools/elementsToSentence";
 import { Icon } from "onyxia-ui/Icon";
 import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
 import { id } from "tsafe/id";
+import { capitalize } from "tsafe/capitalize";
 
 export const translations: Translations<"de"> = {
     /* spell-checker: disable */
@@ -779,6 +780,30 @@ Fühlen Sie sich frei, Ihre Kubernetes-Bereitstellungen zu erkunden und die Kont
     "NoRunningService": {
         "launch one": "Klicken Sie hier, um einen zu starten",
         "no services running": "Sie haben derzeit keine laufenden Dienste"
+    },
+    "CircularUsage": {
+        "max": "Max",
+        "used": "Verwendet",
+        "quota card title": ({ what, isLimit }) => {
+            const whatTranslated = (() => {
+                switch (what) {
+                    case "memory":
+                        return "RAM";
+                    case "cpu":
+                        return "CPU";
+                    case "storage":
+                        return "Speicher";
+                    case "count/pod":
+                        return "Kubernetes-Pods";
+                    case "nvidia.com/gpu":
+                        return "Nvidia-GPUs";
+                    default:
+                        return capitalize(what);
+                }
+            })();
+
+            return `${whatTranslated} - ${isLimit ? "Limit" : "Angefordert"}`;
+        }
     },
     "DataExplorer": {
         "page header title": "Daten-Explorer",

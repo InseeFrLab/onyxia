@@ -1,7 +1,7 @@
 import CircularProgress from "@mui/material/CircularProgress";
 import { tss } from "tss";
 import { Text } from "onyxia-ui/Text";
-import { capitalize } from "tsafe/capitalize";
+import { declareComponentKeys, useTranslation } from "ui/i18n";
 
 type Props = {
     className?: string;
@@ -15,11 +15,7 @@ type Props = {
 export function CircularUsage(props: Props) {
     const { className, name, used, total, usagePercentage, severity } = props;
 
-    /*
-    if( Date.now() > 0 ){
-        usagePercentage = 80;
-    }
-    */
+    const { t } = useTranslation({ CircularUsage });
 
     const { cx, classes } = useStyles({
         severity
@@ -29,7 +25,12 @@ export function CircularUsage(props: Props) {
 
     return (
         <div className={cx(classes.root, className)}>
-            <Text typo="label 1">{capitalize(name)}</Text>
+            <Text typo="label 1">
+                {t("quota card title", {
+                    "what": name.replace(/^limits\./, "").replace(/^requests\./, ""),
+                    "isLimit": name.startsWith("limits")
+                })}
+            </Text>
             <div className={classes.circularProgressWrapper}>
                 <div className={classes.circularProgressInnerWrapper}>
                     <CircularProgress
@@ -65,13 +66,24 @@ export function CircularUsage(props: Props) {
                 </div>
             </div>
             <div className={classes.metricsWrapper}>
-                <Text typo="label 1">Used:</Text>&nbsp;<Text typo="body 1">{used}</Text>
+                <Text typo="label 1">{t("used")}:</Text>&nbsp;
+                <Text typo="body 1">{used}</Text>
                 <div style={{ "flex": 1 }} />
-                <Text typo="label 1">Max:</Text>&nbsp;<Text typo="body 1">{total}</Text>
+                <Text typo="label 1">{t("max")}:</Text>&nbsp;
+                <Text typo="body 1">{total}</Text>
             </div>
         </div>
     );
 }
+
+export const { i18n } = declareComponentKeys<
+    | "used"
+    | "max"
+    | {
+          K: "quota card title";
+          P: { what: string; isLimit: boolean };
+      }
+>()({ CircularUsage });
 
 const useStyles = tss
     .withName({ CircularUsage })
