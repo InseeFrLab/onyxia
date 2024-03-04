@@ -10,8 +10,6 @@ export type Props = {
     hasShadow: boolean;
 };
 
-console.log(secretSvgUrl);
-
 export const ExplorerIcon = memo((props: Props) => {
     const { className, iconId, hasShadow } = props;
 
