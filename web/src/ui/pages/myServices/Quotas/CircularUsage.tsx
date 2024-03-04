@@ -33,6 +33,14 @@ export function CircularUsage(props: Props) {
             </Text>
             <div className={classes.circularProgressWrapper}>
                 <div className={classes.circularProgressInnerWrapper}>
+                    <div className={classes.backLayerCircularProgressWrapper}>
+                        <CircularProgress
+                            size={circularProgressSize}
+                            className={classes.backLayerCircularProgress}
+                            variant="determinate"
+                            value={100}
+                        />
+                    </div>
                     <CircularProgress
                         size={circularProgressSize}
                         className={classes.circularProgress}
@@ -54,14 +62,6 @@ export function CircularUsage(props: Props) {
                             })()}
                             %
                         </Text>
-                    </div>
-                    <div className={classes.backLayerCircularProgressWrapper}>
-                        <CircularProgress
-                            size={circularProgressSize}
-                            className={classes.backLayerCircularProgress}
-                            variant="determinate"
-                            value={100}
-                        />
                     </div>
                 </div>
             </div>
@@ -102,8 +102,7 @@ const useStyles = tss
         "circularProgress": {
             "verticalAlign": "top",
             "color": theme.colors.useCases.alertSeverity[severity].main,
-            "position": "relative",
-            "zIndex": 1
+            "position": "relative"
         },
         "backLayerCircularProgress": {
             "verticalAlign": "top",
