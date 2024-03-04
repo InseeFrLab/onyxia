@@ -6,6 +6,9 @@ import type { NonPostableEvt } from "evt";
 import { useEvt } from "evt/hooks";
 import { CircularUsage } from "./CircularUsage";
 import { CollapsibleSectionHeader } from "onyxia-ui/CollapsibleSectionHeader";
+import { Icon } from "onyxia-ui/Icon";
+import { Text } from "onyxia-ui/Text";
+import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
 
 type Props = {
     className?: string;
@@ -64,7 +67,17 @@ export function Quotas(props: Props) {
                         />
                         {(() => {
                             if (isCollapsed && nonNegligibleQuotas.length === 0) {
-                                return <div>You are using very few resources</div>;
+                                return (
+                                    <Text typo="body 1">
+                                        <Icon
+                                            className={classes.checkIcon}
+                                            icon={
+                                                "CheckCircle" satisfies MuiIconComponentName
+                                            }
+                                        />
+                                        &nbsp; Your current resource usage is low.
+                                    </Text>
+                                );
                             }
 
                             return (
@@ -95,6 +108,9 @@ const useStyles = tss.withName({ Quotas }).create(({ theme }) => ({
     "root": {},
     "header": {
         ...theme.spacing.topBottom("margin", 2)
+    },
+    "checkIcon": {
+        "color": theme.colors.useCases.alertSeverity.success.main
     },
     "loading": {
         "display": "flex",
