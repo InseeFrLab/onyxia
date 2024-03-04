@@ -100,6 +100,7 @@ type QuotaEntry = {
     used: string;
     total: string;
     usagePercentage: number;
+    severity: "success" | "info" | "warning" | "error";
 };
 
 const quotas = createSelector(readyState, state => {
@@ -119,11 +120,28 @@ const quotas = createSelector(readyState, state => {
                 return undefined;
             }
 
+            const usagePercentage = ratio * 100;
+
             return id<QuotaEntry>({
                 "name": name.replace(/^requests\./, ""),
                 "used": `${usage}`,
                 "total": `${spec}`,
-                "usagePercentage": ratio * 100
+                usagePercentage,
+                "severity": (() => {
+                    if (usagePercentage < 25) {
+                        return "success" as const;
+                    }
+
+                    if (usagePercentage < 50) {
+                        return "info" as const;
+                    }
+
+                    if (usagePercentage < 75) {
+                        return "warning" as const;
+                    }
+
+                    return "error" as const;
+                })()
             });
         })
         .filter(exclude(undefined));
@@ -135,7 +153,7 @@ const nonNegligibleQuotas = createSelector(isReady, quotas, (isReady, quotas) =>
     }
     assert(quotas !== undefined);
 
-    return quotas.filter(quota => quota.usagePercentage > 10);
+    return quotas.filter(quota => quota.severity !== "success");
 });
 
 const main = createSelector(

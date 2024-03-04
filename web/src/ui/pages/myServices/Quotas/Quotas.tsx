@@ -61,7 +61,7 @@ export function Quotas(props: Props) {
                             className={classes.header}
                             isCollapsed={isCollapsed}
                             title={"Resource usage quotas"}
-                            showAllStr={"Show all"}
+                            showAllStr={"View details"}
                             total={quotas.length}
                             onToggleIsCollapsed={toggleIsCollapsed}
                         />
@@ -83,7 +83,16 @@ export function Quotas(props: Props) {
                             return (
                                 <div className={classes.circularUsagesWrapper}>
                                     {(isCollapsed ? nonNegligibleQuotas : quotas).map(
-                                        ({ name, used, total, usagePercentage }, i) => (
+                                        (
+                                            {
+                                                name,
+                                                used,
+                                                total,
+                                                usagePercentage,
+                                                severity
+                                            },
+                                            i
+                                        ) => (
                                             <CircularUsage
                                                 className={classes.circularUsage}
                                                 key={i}
@@ -91,6 +100,7 @@ export function Quotas(props: Props) {
                                                 used={used}
                                                 total={total}
                                                 usagePercentage={usagePercentage}
+                                                severity={severity}
                                             />
                                         )
                                     )}

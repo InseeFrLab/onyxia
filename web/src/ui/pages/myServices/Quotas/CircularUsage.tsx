@@ -9,10 +9,11 @@ type Props = {
     used: string;
     total: string;
     usagePercentage: number;
+    severity: "success" | "info" | "warning" | "error";
 };
 
 export function CircularUsage(props: Props) {
-    let { className, name, used, total, usagePercentage } = props;
+    const { className, name, used, total, usagePercentage, severity } = props;
 
     /*
     if( Date.now() > 0 ){
@@ -21,21 +22,7 @@ export function CircularUsage(props: Props) {
     */
 
     const { cx, classes } = useStyles({
-        "usageSeverity": (() => {
-            if (usagePercentage < 25) {
-                return "success";
-            }
-
-            if (usagePercentage < 50) {
-                return "info";
-            }
-
-            if (usagePercentage < 75) {
-                return "warning";
-            }
-
-            return "error";
-        })()
+        severity
     });
 
     const circularProgressSize = 60;
@@ -89,9 +76,9 @@ export function CircularUsage(props: Props) {
 const useStyles = tss
     .withName({ CircularUsage })
     .withParams<{
-        usageSeverity: "success" | "info" | "warning" | "error";
+        severity: "success" | "info" | "warning" | "error";
     }>()
-    .create(({ theme, usageSeverity }) => ({
+    .create(({ theme, severity }) => ({
         "root": {
             "backgroundColor": theme.colors.useCases.surfaces.surface1,
             "borderRadius": theme.spacing(2),
@@ -111,11 +98,11 @@ const useStyles = tss
         },
         "circularProgress": {
             "verticalAlign": "top",
-            "color": theme.colors.useCases.alertSeverity[usageSeverity].main
+            "color": theme.colors.useCases.alertSeverity[severity].main
         },
         "backLayerCircularProgress": {
             "verticalAlign": "top",
-            "color": theme.colors.useCases.alertSeverity[usageSeverity].background
+            "color": theme.colors.useCases.alertSeverity[severity].background
         },
         "percentageWrapper": {
             "position": "absolute",
