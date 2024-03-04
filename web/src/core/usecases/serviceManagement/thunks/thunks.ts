@@ -15,7 +15,7 @@ export const thunks = {
     "setActive":
         () =>
         (...args) => {
-            const [dispatch, , { evtAction, onyxiaApi }] = args;
+            const [dispatch, , { evtAction }] = args;
 
             const ctx = Evt.newCtx();
 
@@ -28,8 +28,6 @@ export const thunks = {
                 )
                 .toStateful()
                 .attach(() => dispatch(thunks.update()));
-
-            onyxiaApi.getQuotas().then(data => console.log(data));
 
             function setInactive() {
                 ctx.done();
