@@ -19,7 +19,7 @@ export namespace State {
         quotas: Record<string, Record<"spec" | "usage", string | number>>;
         projectId: string;
         isOngoingPodDeletion: boolean;
-        isCollapsed: boolean;
+        isOnlyNonNegligibleQuotas: boolean;
     };
 }
 
@@ -69,14 +69,14 @@ export const { reducer, actions } = createUsecaseActions({
                     return same([quotas, projectId], [state.quotas, state.projectId]);
                 })(),
 
-                "isCollapsed": (() => {
+                "isOnlyNonNegligibleQuotas": (() => {
                     if (state.stateDescription === "not initialized") {
                         return true;
                     }
 
                     assert(state.stateDescription === "ready");
 
-                    return state.isCollapsed;
+                    return state.isOnlyNonNegligibleQuotas;
                 })()
             });
         },
@@ -84,9 +84,9 @@ export const { reducer, actions } = createUsecaseActions({
             assert(state.stateDescription === "ready");
             state.isOngoingPodDeletion = true;
         },
-        "collapseToggled": state => {
+        "isOnlyNonNegligibleQuotasToggled": state => {
             assert(state.stateDescription === "ready");
-            state.isCollapsed = !state.isCollapsed;
+            state.isOnlyNonNegligibleQuotas = !state.isOnlyNonNegligibleQuotas;
         }
     }
 });

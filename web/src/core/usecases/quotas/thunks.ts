@@ -84,11 +84,11 @@ export const thunks = {
                 })
             );
         },
-    "toggleCollapse":
+    "toggleIsOnlyNonNegligibleQuotas":
         () =>
         (...args) => {
             const [dispatch] = args;
 
-            dispatch(actions.collapseToggled());
+            dispatch(actions.isOnlyNonNegligibleQuotasToggled());
         }
 } satisfies Thunks;

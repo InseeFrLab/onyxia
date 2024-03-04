@@ -70,27 +70,27 @@ const allQuotas = createSelector(readyState, state => {
         .filter(exclude(undefined));
 });
 
-const isCollapsed = createSelector(readyState, state => {
+const isOnlyNonNegligibleQuotas = createSelector(readyState, state => {
     if (state === undefined) {
         return undefined;
     }
 
-    return state.isCollapsed;
+    return state.isOnlyNonNegligibleQuotas;
 });
 
 const quotas = createSelector(
     isReady,
     allQuotas,
-    isCollapsed,
-    (isReady, allQuotas, isCollapsed) => {
+    isOnlyNonNegligibleQuotas,
+    (isReady, allQuotas, isOnlyNonNegligibleQuotas) => {
         if (!isReady) {
             return undefined;
         }
 
         assert(allQuotas !== undefined);
-        assert(isCollapsed !== undefined);
+        assert(isOnlyNonNegligibleQuotas !== undefined);
 
-        return !isCollapsed
+        return !isOnlyNonNegligibleQuotas
             ? allQuotas
             : allQuotas.filter(quota => quota.severity !== "success");
     }
@@ -116,9 +116,15 @@ const main = createSelector(
     isReady,
     quotas,
     isOngoingPodDeletion,
-    isCollapsed,
+    isOnlyNonNegligibleQuotas,
     totalQuotasCount,
-    (isReady, quotas, isOngoingPodDeletion, isCollapsed, totalQuotasCount) => {
+    (
+        isReady,
+        quotas,
+        isOngoingPodDeletion,
+        isOnlyNonNegligibleQuotas,
+        totalQuotasCount
+    ) => {
         if (!isReady) {
             return {
                 "isReady": false as const
@@ -127,14 +133,14 @@ const main = createSelector(
 
         assert(quotas !== undefined);
         assert(isOngoingPodDeletion !== undefined);
-        assert(isCollapsed !== undefined);
+        assert(isOnlyNonNegligibleQuotas !== undefined);
         assert(totalQuotasCount !== undefined);
 
         return {
             "isReady": true as const,
             quotas,
             isOngoingPodDeletion,
-            isCollapsed,
+            isOnlyNonNegligibleQuotas,
             totalQuotasCount
         };
     }

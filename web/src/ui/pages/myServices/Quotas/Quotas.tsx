@@ -18,8 +18,13 @@ type Props = {
 export function Quotas(props: Props) {
     const { className, evtActionUpdate } = props;
 
-    const { isReady, quotas, isOngoingPodDeletion, isCollapsed, totalQuotasCount } =
-        useCoreState("quotas", "main");
+    const {
+        isReady,
+        quotas,
+        isOngoingPodDeletion,
+        isOnlyNonNegligibleQuotas,
+        totalQuotasCount
+    } = useCoreState("quotas", "main");
 
     const { cx, classes, theme } = useStyles();
 
@@ -59,7 +64,7 @@ export function Quotas(props: Props) {
                     <>
                         <CollapsibleSectionHeader
                             className={classes.header}
-                            isCollapsed={isCollapsed}
+                            isCollapsed={isOnlyNonNegligibleQuotas}
                             title={
                                 <>
                                     Resource usage quotas
@@ -82,11 +87,11 @@ export function Quotas(props: Props) {
                             }
                             showAllStr={"View details"}
                             total={totalQuotasCount}
-                            onToggleIsCollapsed={quotas_f.toggleCollapse}
+                            onToggleIsCollapsed={quotas_f.toggleIsOnlyNonNegligibleQuotas}
                         />
 
                         {(() => {
-                            if (isCollapsed && quotas.length === 0) {
+                            if (isOnlyNonNegligibleQuotas && quotas.length === 0) {
                                 return (
                                     <Text typo="body 1">
                                         <Icon
