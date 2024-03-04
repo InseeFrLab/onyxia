@@ -83,5 +83,12 @@ export const thunks = {
                     "projectId": projectManagement.selectors.currentProject(getState()).id
                 })
             );
+        },
+    "toggleCollapse":
+        () =>
+        (...args) => {
+            const [dispatch] = args;
+
+            dispatch(actions.collapseToggled());
         }
 } satisfies Thunks;

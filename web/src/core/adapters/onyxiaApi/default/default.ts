@@ -573,6 +573,8 @@ export function createOnyxiaApi(params: {
             const { data } =
                 await axiosInstance.get<ApiTypes["/my-lab/quota"]>("/my-lab/quota");
 
+            console.log(data);
+
             const { spec, usage } = data;
 
             return Object.fromEntries(

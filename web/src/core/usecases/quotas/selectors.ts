@@ -26,7 +26,7 @@ type QuotaEntry = {
     severity: "success" | "info" | "warning" | "error";
 };
 
-const quotas = createSelector(readyState, state => {
+const allQuotas = createSelector(readyState, state => {
     if (state === undefined) {
         return undefined;
     }
@@ -46,7 +46,7 @@ const quotas = createSelector(readyState, state => {
             const usagePercentage = ratio * 100;
 
             return id<QuotaEntry>({
-                "name": name.replace(/^requests\./, ""),
+                "name": name,
                 "used": `${usage}`,
                 "total": `${spec}`,
                 usagePercentage,
@@ -70,13 +70,39 @@ const quotas = createSelector(readyState, state => {
         .filter(exclude(undefined));
 });
 
-const nonNegligibleQuotas = createSelector(isReady, quotas, (isReady, quotas) => {
+const isCollapsed = createSelector(readyState, state => {
+    if (state === undefined) {
+        return undefined;
+    }
+
+    return state.isCollapsed;
+});
+
+const quotas = createSelector(
+    isReady,
+    allQuotas,
+    isCollapsed,
+    (isReady, allQuotas, isCollapsed) => {
+        if (!isReady) {
+            return undefined;
+        }
+
+        assert(allQuotas !== undefined);
+        assert(isCollapsed !== undefined);
+
+        return !isCollapsed
+            ? allQuotas
+            : allQuotas.filter(quota => quota.severity !== "success");
+    }
+);
+
+const totalQuotasCount = createSelector(isReady, allQuotas, (isReady, allQuotas) => {
     if (!isReady) {
         return undefined;
     }
-    assert(quotas !== undefined);
+    assert(allQuotas !== undefined);
 
-    return quotas.filter(quota => quota.severity !== "success");
+    return allQuotas.length;
 });
 
 const isOngoingPodDeletion = createSelector(readyState, state => {
@@ -89,9 +115,10 @@ const isOngoingPodDeletion = createSelector(readyState, state => {
 const main = createSelector(
     isReady,
     quotas,
-    nonNegligibleQuotas,
     isOngoingPodDeletion,
-    (isReady, quotas, nonNegligibleQuotas, isOngoingPodDeletion) => {
+    isCollapsed,
+    totalQuotasCount,
+    (isReady, quotas, isOngoingPodDeletion, isCollapsed, totalQuotasCount) => {
         if (!isReady) {
             return {
                 "isReady": false as const
@@ -99,14 +126,16 @@ const main = createSelector(
         }
 
         assert(quotas !== undefined);
-        assert(nonNegligibleQuotas !== undefined);
         assert(isOngoingPodDeletion !== undefined);
+        assert(isCollapsed !== undefined);
+        assert(totalQuotasCount !== undefined);
 
         return {
             "isReady": true as const,
             quotas,
-            nonNegligibleQuotas,
-            isOngoingPodDeletion
+            isOngoingPodDeletion,
+            isCollapsed,
+            totalQuotasCount
         };
     }
 );

@@ -19,6 +19,7 @@ export namespace State {
         quotas: Record<string, Record<"spec" | "usage", string | number>>;
         projectId: string;
         isOngoingPodDeletion: boolean;
+        isCollapsed: boolean;
     };
 }
 
@@ -66,12 +67,26 @@ export const { reducer, actions } = createUsecaseActions({
                     }
 
                     return same([quotas, projectId], [state.quotas, state.projectId]);
+                })(),
+
+                "isCollapsed": (() => {
+                    if (state.stateDescription === "not initialized") {
+                        return true;
+                    }
+
+                    assert(state.stateDescription === "ready");
+
+                    return state.isCollapsed;
                 })()
             });
         },
         "podDeletionStarted": state => {
             assert(state.stateDescription === "ready");
             state.isOngoingPodDeletion = true;
+        },
+        "collapseToggled": state => {
+            assert(state.stateDescription === "ready");
+            state.isCollapsed = !state.isCollapsed;
         }
     }
 });

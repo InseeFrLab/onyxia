@@ -1,5 +1,5 @@
 import { useCoreState, useCore } from "core";
-import { useEffect, useReducer } from "react";
+import { useEffect } from "react";
 import { CircularProgress } from "onyxia-ui/CircularProgress";
 import { tss } from "tss";
 import type { NonPostableEvt } from "evt";
@@ -18,19 +18,12 @@ type Props = {
 export function Quotas(props: Props) {
     const { className, evtActionUpdate } = props;
 
-    const { isReady, quotas, nonNegligibleQuotas, isOngoingPodDeletion } = useCoreState(
-        "quotas",
-        "main"
-    );
+    const { isReady, quotas, isOngoingPodDeletion, isCollapsed, totalQuotasCount } =
+        useCoreState("quotas", "main");
 
     const { cx, classes, theme } = useStyles();
 
     const { quotas: quotas_f } = useCore().functions;
-
-    const [isCollapsed, toggleIsCollapsed] = useReducer(
-        isCollapsed => !isCollapsed,
-        true
-    );
 
     useEffect(() => {
         const { setInactive } = quotas_f.setActive();
@@ -46,6 +39,10 @@ export function Quotas(props: Props) {
         },
         [evtActionUpdate]
     );
+
+    if (isReady && totalQuotasCount === 0) {
+        return null;
+    }
 
     return (
         <div className={cx(className, classes.root)}>
@@ -84,12 +81,12 @@ export function Quotas(props: Props) {
                                 </>
                             }
                             showAllStr={"View details"}
-                            total={quotas.length}
-                            onToggleIsCollapsed={toggleIsCollapsed}
+                            total={totalQuotasCount}
+                            onToggleIsCollapsed={quotas_f.toggleCollapse}
                         />
 
                         {(() => {
-                            if (isCollapsed && nonNegligibleQuotas.length === 0) {
+                            if (isCollapsed && quotas.length === 0) {
                                 return (
                                     <Text typo="body 1">
                                         <Icon
@@ -105,7 +102,7 @@ export function Quotas(props: Props) {
 
                             return (
                                 <div className={classes.circularUsagesWrapper}>
-                                    {(isCollapsed ? nonNegligibleQuotas : quotas).map(
+                                    {quotas.map(
                                         (
                                             {
                                                 name,
