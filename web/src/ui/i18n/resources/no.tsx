@@ -794,6 +794,10 @@ Føl deg fri til å utforske og ta kontroll over dine Kubernetes-implementeringe
             return `${whatTranslated} - ${isLimit ? "Grense" : "Anmodet"}`;
         }
     },
+    "Quotas": {
+        "resource usage quotas": "Kvoter for ressursbruk",
+        "current resource usage is low": "Ditt nåværende ressursbruk er lavt."
+    },
     "DataExplorer": {
         "page header title": "Datautforsker",
         "page header help title":

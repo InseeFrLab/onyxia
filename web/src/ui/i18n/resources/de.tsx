@@ -805,6 +805,10 @@ Fühlen Sie sich frei, Ihre Kubernetes-Bereitstellungen zu erkunden und die Kont
             return `${whatTranslated} - ${isLimit ? "Limit" : "Angefordert"}`;
         }
     },
+    "Quotas": {
+        "resource usage quotas": "Ressourcennutzungsquoten",
+        "current resource usage is low": "Ihre aktuelle Ressourcennutzung ist gering."
+    },
     "DataExplorer": {
         "page header title": "Daten-Explorer",
         "page header help title":

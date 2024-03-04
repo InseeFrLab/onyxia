@@ -76,15 +76,6 @@ export function CircularUsage(props: Props) {
     );
 }
 
-export const { i18n } = declareComponentKeys<
-    | "used"
-    | "max"
-    | {
-          K: "quota card title";
-          P: { what: string; isLimit: boolean };
-      }
->()({ CircularUsage });
-
 const useStyles = tss
     .withName({ CircularUsage })
     .withParams<{
@@ -138,3 +129,12 @@ const useStyles = tss
             //...theme.spacing.rightLeft("padding", 2)
         }
     }));
+
+export const { i18n } = declareComponentKeys<
+    | "used"
+    | "max"
+    | {
+          K: "quota card title";
+          P: { what: string; isLimit: boolean };
+      }
+>()({ CircularUsage });

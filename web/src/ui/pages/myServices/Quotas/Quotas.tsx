@@ -9,6 +9,7 @@ import { CollapsibleSectionHeader } from "onyxia-ui/CollapsibleSectionHeader";
 import { Icon } from "onyxia-ui/Icon";
 import { Text } from "onyxia-ui/Text";
 import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
+import { declareComponentKeys, useTranslation } from "ui/i18n";
 
 type Props = {
     className?: string;
@@ -45,6 +46,8 @@ export function Quotas(props: Props) {
         [evtActionUpdate]
     );
 
+    const { t } = useTranslation({ Quotas });
+
     if (isReady && totalQuotasCount === 0) {
         return null;
     }
@@ -67,7 +70,7 @@ export function Quotas(props: Props) {
                             isCollapsed={isOnlyNonNegligibleQuotas}
                             title={
                                 <>
-                                    Resource usage quotas
+                                    {t("resource usage quotas")}
                                     {isOngoingPodDeletion && (
                                         <>
                                             &nbsp; &nbsp;
@@ -102,7 +105,7 @@ export function Quotas(props: Props) {
                                                 "CheckCircle" satisfies MuiIconComponentName
                                             }
                                         />
-                                        &nbsp; Your current resource usage is low.
+                                        &nbsp;{t("current resource usage is low")}
                                     </Text>
                                 );
                             }
@@ -170,3 +173,7 @@ const useStyles = tss.withName({ Quotas }).create(({ theme }) => ({
         "flexBasis": `calc(50% - ${theme.spacing(3) / 2}px)`
     }
 }));
+
+export const { i18n } = declareComponentKeys<
+    "resource usage quotas" | "current resource usage is low"
+>()({ Quotas });

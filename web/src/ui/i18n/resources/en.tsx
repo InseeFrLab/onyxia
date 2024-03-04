@@ -787,6 +787,10 @@ Feel free to explore and take charge of your Kubernetes deployments!
             return `${whatTranslated} - ${isLimit ? "Limit" : "Requested"}`;
         }
     },
+    "Quotas": {
+        "resource usage quotas": "Resource usage quotas",
+        "current resource usage is low": "Your current resource usage is low."
+    },
     "DataExplorer": {
         "page header title": "Data Explorer",
         "page header help title":

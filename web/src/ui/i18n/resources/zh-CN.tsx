@@ -743,6 +743,10 @@ ${
             return `${whatTranslated} - ${isLimit ? "限额" : "请求"}`;
         }
     },
+    "Quotas": {
+        "resource usage quotas": "资源使用配额",
+        "current resource usage is low": "您当前的资源使用率低。"
+    },
     "DataExplorer": {
         "page header title": "数据浏览器",
         "page header help title": "直接在您的浏览器中预览您的 Parquet 和 CSV 文件！",

@@ -797,6 +797,10 @@ Sentiti libero di esplorare e prendere il controllo dei tuoi deployment Kubernet
             return `${whatTranslated} - ${isLimit ? "Limite" : "Richiesto"}`;
         }
     },
+    "Quotas": {
+        "resource usage quotas": "Quote di utilizzo delle risorse",
+        "current resource usage is low": "Il tuo attuale utilizzo delle risorse è basso."
+    },
     "DataExplorer": {
         "page header title": "Esploratore di Dati",
         "page header help title":

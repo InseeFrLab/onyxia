@@ -801,6 +801,10 @@ Voel je vrij om te verkennen en de controle over je Kubernetes-implementaties te
             return `${whatTranslated} - ${isLimit ? "Limiet" : "Aangevraagd"}`;
         }
     },
+    "Quotas": {
+        "resource usage quotas": "Quota's voor het gebruik van middelen",
+        "current resource usage is low": "Uw huidig gebruik van middelen is laag."
+    },
     "DataExplorer": {
         "page header title": "Data Verkenner",
         "page header help title":

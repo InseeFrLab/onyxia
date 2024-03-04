@@ -807,6 +807,11 @@ N'hésitez pas à explorer et à prendre en main vos déploiements Kubernetes !
             return `${whatTranslated} - ${isLimit ? "Limite" : "Demandé"}`;
         }
     },
+    "Quotas": {
+        "resource usage quotas": "Quotas d'utilisation des ressources",
+        "current resource usage is low":
+            "Votre utilisation actuelle des ressources est faible."
+    },
     "DataExplorer": {
         "page header title": "Explorateur de Données",
         "page header help title":

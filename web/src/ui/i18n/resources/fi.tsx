@@ -788,6 +788,10 @@ Tutustu vapaasti ja ota hallintaan Kubernetes-julkaisusi!
             return `${whatTranslated} - ${isLimit ? "Raja" : "Pyydetty"}`;
         }
     },
+    "Quotas": {
+        "resource usage quotas": "Resurssien käyttökiintiöt",
+        "current resource usage is low": "Nykyinen resurssien käyttösi on vähäistä."
+    },
     "DataExplorer": {
         "page header title": "Data Explorer",
         "page header help title":
