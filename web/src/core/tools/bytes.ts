@@ -4,6 +4,10 @@ export function toBytes(str: string) {
     const validBytesInput = (() => {
         const s = str.trim().toLowerCase();
 
+        if (s === "0") {
+            return "0b";
+        }
+
         if (s.endsWith("b")) {
             //return s.slice(0, -1) + ;
             return s;

@@ -1,12 +1,14 @@
 import type { Thunks } from "core/bootstrap";
 import { Evt } from "evt";
 import { name, actions } from "./state";
+import { privateSelectors } from "./selectors";
+import * as projectManagement from "core/usecases/projectManagement";
 
 export const thunks = {
     "setActive":
         () =>
         (...args) => {
-            const [dispatch, , { evtAction }] = args;
+            const [dispatch, getState, { evtAction }] = args;
 
             const ctx = Evt.newCtx();
 
@@ -18,20 +20,46 @@ export const thunks = {
                         action.actionName === "projectChanged"
                 )
                 .toStateful()
-                .attach(() => dispatch(privateThunks.update()));
+                .attach(() => {
+                    dispatch(thunks.update());
+                });
 
-            const timer = setInterval(() => dispatch(privateThunks.update()), 20_000);
+            evtAction.attach(
+                action =>
+                    action.usecaseName === "serviceManagement" &&
+                    action.actionName === "serviceStopped",
+                ctx,
+                () => {
+                    dispatch(actions.podDeletionStarted());
+                }
+            );
+
+            (async () => {
+                while (true) {
+                    if (ctx.completionStatus !== undefined) {
+                        return;
+                    }
+
+                    const isOngoingPodDeletion =
+                        privateSelectors.isOngoingPodDeletion(getState());
+
+                    await new Promise<void>(resolve =>
+                        setTimeout(
+                            resolve,
+                            isOngoingPodDeletion === true ? 4_000 : 30_000
+                        )
+                    );
+
+                    await dispatch(thunks.update());
+                }
+            })();
 
             function setInactive() {
                 ctx.done();
-                clearInterval(timer);
             }
 
             return { setInactive };
-        }
-} satisfies Thunks;
-
-export const privateThunks = {
+        },
     "update":
         () =>
         async (...args) => {
@@ -51,7 +79,8 @@ export const privateThunks = {
 
             dispatch(
                 actions.updateCompleted({
-                    quotas
+                    quotas,
+                    "projectId": projectManagement.selectors.currentProject(getState()).id
                 })
             );
         }

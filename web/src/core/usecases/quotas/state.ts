@@ -1,5 +1,7 @@
 import { createUsecaseActions } from "clean-architecture";
 import { id } from "tsafe/id";
+import { assert } from "tsafe/assert";
+import { same } from "evt/tools/inDepth/same";
 
 export type State = State.NotInitialized | State.Ready;
 
@@ -15,6 +17,8 @@ export namespace State {
     export type Ready = Common & {
         stateDescription: "ready";
         quotas: Record<string, Record<"spec" | "usage", string | number>>;
+        projectId: string;
+        isOngoingPodDeletion: boolean;
     };
 }
 
@@ -33,22 +37,41 @@ export const { reducer, actions } = createUsecaseActions({
             state.isUpdating = true;
         },
         "updateCompleted": (
-            _state,
+            state,
             {
                 payload
             }: {
                 payload: {
                     quotas: Record<string, Record<"spec" | "usage", string | number>>;
+                    projectId: string;
                 };
             }
         ) => {
-            const { quotas } = payload;
+            const { quotas, projectId } = payload;
 
             return id<State.Ready>({
                 "stateDescription": "ready",
                 "isUpdating": false,
-                quotas
+                quotas,
+                projectId,
+                "isOngoingPodDeletion": (() => {
+                    if (state.stateDescription === "not initialized") {
+                        return false;
+                    }
+
+                    assert(state.stateDescription === "ready");
+
+                    if (!state.isOngoingPodDeletion) {
+                        return false;
+                    }
+
+                    return same([quotas, projectId], [state.quotas, state.projectId]);
+                })()
             });
+        },
+        "podDeletionStarted": state => {
+            assert(state.stateDescription === "ready");
+            state.isOngoingPodDeletion = true;
         }
     }
 });

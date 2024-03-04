@@ -18,9 +18,12 @@ type Props = {
 export function Quotas(props: Props) {
     const { className, evtActionUpdate } = props;
 
-    const { isReady, quotas, nonNegligibleQuotas } = useCoreState("quotas", "main");
+    const { isReady, quotas, nonNegligibleQuotas, isOngoingPodDeletion } = useCoreState(
+        "quotas",
+        "main"
+    );
 
-    const { cx, classes } = useStyles();
+    const { cx, classes, theme } = useStyles();
 
     const { quotas: quotas_f } = useCore().functions;
 
@@ -60,11 +63,31 @@ export function Quotas(props: Props) {
                         <CollapsibleSectionHeader
                             className={classes.header}
                             isCollapsed={isCollapsed}
-                            title={"Resource usage quotas"}
+                            title={
+                                <>
+                                    Resource usage quotas
+                                    {isOngoingPodDeletion && (
+                                        <>
+                                            &nbsp; &nbsp;
+                                            <CircularProgress
+                                                className={
+                                                    classes.podDeletingCircularProgress
+                                                }
+                                                size={
+                                                    theme.typography.variants[
+                                                        "section heading"
+                                                    ].style.fontSize
+                                                }
+                                            />
+                                        </>
+                                    )}
+                                </>
+                            }
                             showAllStr={"View details"}
                             total={quotas.length}
                             onToggleIsCollapsed={toggleIsCollapsed}
                         />
+
                         {(() => {
                             if (isCollapsed && nonNegligibleQuotas.length === 0) {
                                 return (
@@ -127,6 +150,11 @@ const useStyles = tss.withName({ Quotas }).create(({ theme }) => ({
         "justifyContent": "center",
         "alignItems": "center",
         "height": theme.typography.rootFontSizePx * 10
+    },
+    "podDeletingCircularProgress": {
+        "position": "relative",
+        "top": 5,
+        "color": theme.colors.useCases.typography.textPrimary
     },
     "circularUsagesWrapper": {
         "display": "flex",

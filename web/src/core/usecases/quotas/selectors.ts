@@ -4,86 +4,9 @@ import { assert } from "tsafe/assert";
 import { name } from "./state";
 import { id } from "tsafe/id";
 import { exclude } from "tsafe/exclude";
-import { toBytes } from "core/tools/bytes";
+import { computeQuotaUsageRatio } from "./utils/computeQuotaUsageRatio";
 
 const state = (rootState: RootState) => rootState[name];
-
-function computeQuotaUsageRatio(params: {
-    used: string | number;
-    total: string | number;
-}): number | undefined {
-    const { used, total } = params;
-
-    if (typeof used !== typeof total) {
-        console.warn(`Mismatched types: used=${used} total=${total}`);
-        return undefined;
-    }
-
-    cpu_resource_unit: {
-        if (typeof used !== "string") {
-            break cpu_resource_unit;
-        }
-
-        assert(typeof total === "string");
-
-        const cpuResourceUnit = /^(\d+)(m?)$/;
-
-        if (!cpuResourceUnit.test(used)) {
-            break cpu_resource_unit;
-        }
-
-        if (!cpuResourceUnit.test(total)) {
-            console.warn(`Invalid total: ${total} for used: ${used}`);
-            return undefined;
-        }
-
-        const parseCpuResourceUnit = (value: string) => {
-            const match = value.match(cpuResourceUnit)!;
-
-            const n = Number(match[1]);
-
-            return match[2] === "m" ? n / 1000 : n;
-        };
-
-        return parseCpuResourceUnit(used) / parseCpuResourceUnit(total);
-    }
-
-    bytes: {
-        if (typeof used !== "string") {
-            break bytes;
-        }
-
-        assert(typeof total === "string");
-
-        let usedBytes: number;
-        let totalBytes: number;
-
-        try {
-            usedBytes = toBytes(used);
-            totalBytes = toBytes(total);
-        } catch (error) {
-            console.warn(String(error));
-
-            return undefined;
-        }
-
-        return usedBytes / totalBytes;
-    }
-
-    absolute_number: {
-        if (typeof used !== "number") {
-            break absolute_number;
-        }
-
-        assert(typeof total === "number");
-
-        return used / total;
-    }
-
-    console.warn(`Unsupported quota unit: used=${used} total=${total}`);
-
-    return undefined;
-}
 
 const readyState = createSelector(state, state => {
     if (state.stateDescription !== "ready") {
@@ -156,11 +79,19 @@ const nonNegligibleQuotas = createSelector(isReady, quotas, (isReady, quotas) =>
     return quotas.filter(quota => quota.severity !== "success");
 });
 
+const isOngoingPodDeletion = createSelector(readyState, state => {
+    if (state === undefined) {
+        return undefined;
+    }
+    return state.isOngoingPodDeletion;
+});
+
 const main = createSelector(
     isReady,
     quotas,
     nonNegligibleQuotas,
-    (isReady, quotas, nonNegligibleQuotas) => {
+    isOngoingPodDeletion,
+    (isReady, quotas, nonNegligibleQuotas, isOngoingPodDeletion) => {
         if (!isReady) {
             return {
                 "isReady": false as const
@@ -169,15 +100,21 @@ const main = createSelector(
 
         assert(quotas !== undefined);
         assert(nonNegligibleQuotas !== undefined);
+        assert(isOngoingPodDeletion !== undefined);
 
         return {
             "isReady": true as const,
             quotas,
-            nonNegligibleQuotas
+            nonNegligibleQuotas,
+            isOngoingPodDeletion
         };
     }
 );
 
 export const selectors = {
     main
+};
+
+export const privateSelectors = {
+    isOngoingPodDeletion
 };
