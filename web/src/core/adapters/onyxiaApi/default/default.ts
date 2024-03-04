@@ -1,4 +1,5 @@
 /* eslint-disable no-template-curly-in-string */
+import "minimal-polyfills/Object.fromEntries";
 import {
     type OnyxiaApi,
     type DeploymentRegion,
@@ -15,6 +16,7 @@ import { assert } from "tsafe/assert";
 import { is } from "tsafe/is";
 import { compareVersions } from "compare-versions";
 import { injectXOnyxiaContextInValuesSchemaJson } from "./injectXOnyxiaContextInValuesSchemaJson";
+import { exclude } from "tsafe/exclude";
 import type { ApiTypes } from "./ApiTypes";
 
 export function createOnyxiaApi(params: {
@@ -566,7 +568,34 @@ export function createOnyxiaApi(params: {
                 return { user, projects };
             },
             { "promise": true }
-        )
+        ),
+        "getQuotas": async () => {
+            const { data } =
+                await axiosInstance.get<ApiTypes["/my-lab/quota"]>("/my-lab/quota");
+
+            const { spec, usage } = data;
+
+            return Object.fromEntries(
+                Object.entries(spec)
+                    .map(([key, value]) => {
+                        const usageValue = usage[key];
+                        if (usageValue === undefined) {
+                            console.log(`The usage of ${key} is not defined`);
+                            return undefined;
+                        }
+
+                        if (typeof value !== typeof usageValue) {
+                            console.log(
+                                `Usage and spec of ${key} are not of the same type`
+                            );
+                            return undefined;
+                        }
+
+                        return [key, { "spec": value, "usage": usageValue }];
+                    })
+                    .filter(exclude(undefined))
+            );
+        }
     };
 
     let isFirstRequestMade = false;

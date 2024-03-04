@@ -15,7 +15,7 @@ export const thunks = {
     "setActive":
         () =>
         (...args) => {
-            const [dispatch, , { evtAction }] = args;
+            const [dispatch, , { evtAction, onyxiaApi }] = args;
 
             const ctx = Evt.newCtx();
 
@@ -28,6 +28,8 @@ export const thunks = {
                 )
                 .toStateful()
                 .attach(() => dispatch(thunks.update()));
+
+            onyxiaApi.getQuotas().then(data => console.log(data));
 
             function setInactive() {
                 ctx.done();
@@ -102,9 +104,15 @@ export const thunks = {
                     .replace("$INSTANCE", helmReleaseName.replace(/^\//, ""));
             };
 
-            const {
-                user: { username }
-            } = await onyxiaApi.getUserAndProjects();
+            const [
+                {
+                    user: { username }
+                },
+                quotas
+            ] = await Promise.all([
+                onyxiaApi.getUserAndProjects(),
+                onyxiaApi.getQuotas()
+            ]);
 
             dispatch(
                 actions.updateCompleted({
@@ -188,7 +196,8 @@ export const thunks = {
                                 });
                             }
                         )
-                        .filter(exclude(undefined))
+                        .filter(exclude(undefined)),
+                    quotas
                 })
             );
         },

@@ -62,4 +62,6 @@ export type OnyxiaApi = {
     helmUninstall: (params: { helmReleaseName: string }) => Promise<void>;
 
     onboard: (params: { group: string | undefined }) => Promise<void>;
+
+    getQuotas: () => Promise<Record<string, Record<"spec" | "usage", string | number>>>;
 };

@@ -212,4 +212,8 @@ export type ApiTypes = {
             vaultTopDir: string;
         }[];
     };
+    "/my-lab/quota": {
+        spec: Record<string, number | string>;
+        usage: Record<string, number | string>;
+    };
 };

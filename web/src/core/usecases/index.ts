@@ -16,6 +16,7 @@ import * as vaultCredentials from "./vaultCredentials";
 import * as sqlOlapShell from "./sqlOlapShell";
 import * as dataExplorer from "./dataExplorer";
 import * as projectManagement from "./projectManagement";
+import * as quotas from "./quotas";
 
 export const usecases = {
     catalog,
@@ -35,5 +36,6 @@ export const usecases = {
     vaultCredentials,
     sqlOlapShell,
     dataExplorer,
-    projectManagement
+    projectManagement,
+    quotas
 };
