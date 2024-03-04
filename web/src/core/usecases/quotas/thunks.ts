@@ -18,14 +18,20 @@ export const thunks = {
                         action.actionName === "projectChanged"
                 )
                 .toStateful()
-                .attach(() => dispatch(thunks.update()));
+                .attach(() => dispatch(privateThunks.update()));
+
+            const timer = setInterval(() => dispatch(privateThunks.update()), 20_000);
 
             function setInactive() {
                 ctx.done();
+                clearInterval(timer);
             }
 
             return { setInactive };
-        },
+        }
+} satisfies Thunks;
+
+export const privateThunks = {
     "update":
         () =>
         async (...args) => {
