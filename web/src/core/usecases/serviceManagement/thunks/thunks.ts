@@ -10,12 +10,13 @@ import { name, actions } from "../state";
 import type { RunningService } from "../state";
 import type { OnyxiaApi } from "core/ports/OnyxiaApi";
 import { formatHelmLsResp } from "./formatHelmCommands";
+import * as viewQuotas from "core/usecases/viewQuotas";
 
 export const thunks = {
     "setActive":
         () =>
         (...args) => {
-            const [dispatch, , { evtAction }] = args;
+            const [dispatch, getState, { evtAction }] = args;
 
             const ctx = Evt.newCtx();
 
@@ -28,6 +29,24 @@ export const thunks = {
                 )
                 .toStateful()
                 .attach(() => dispatch(thunks.update()));
+
+            evtAction.attach(
+                action =>
+                    action.usecaseName === "viewQuotas" &&
+                    action.actionName === "isOnlyNonNegligibleQuotasToggled" &&
+                    viewQuotas.protectedSelectors.isOnlyNonNegligibleQuotas(
+                        getState()
+                    ) === false,
+                ctx,
+                () => {
+                    const commandLogsEntry =
+                        viewQuotas.protectedSelectors.commandLogsEntry(getState());
+
+                    assert(commandLogsEntry !== undefined);
+
+                    dispatch(actions.commandLogsEntryAdded({ commandLogsEntry }));
+                }
+            );
 
             function setInactive() {
                 ctx.done();

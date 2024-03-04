@@ -23,7 +23,7 @@ export namespace State {
     };
 }
 
-export const name = "quotas";
+export const name = "viewQuotas";
 
 export const { reducer, actions } = createUsecaseActions({
     name,

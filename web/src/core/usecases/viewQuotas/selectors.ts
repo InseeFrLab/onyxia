@@ -5,6 +5,7 @@ import { name } from "./state";
 import { id } from "tsafe/id";
 import { exclude } from "tsafe/exclude";
 import { computeQuotaUsageRatio } from "./utils/computeQuotaUsageRatio";
+import { arrPartition } from "evt/tools/reducers/partition";
 
 const state = (rootState: RootState) => rootState[name];
 
@@ -146,10 +147,61 @@ const main = createSelector(
     }
 );
 
+const commandLogsEntry = createSelector(isReady, allQuotas, (isReady, quotas) => {
+    if (!isReady) {
+        return undefined;
+    }
+
+    assert(quotas !== undefined);
+
+    const [limits, requests] = arrPartition(quotas, quota =>
+        quota.name.startsWith("limits")
+    )
+        .map((quotas, i) =>
+            i === 0
+                ? quotas
+                : [...quotas].sort((a, b) => {
+                      const [aStartsWithRequests, bStartsWithRequests] = [a, b].map(
+                          quota => quota.name.startsWith("requests.")
+                      );
+
+                      if (aStartsWithRequests && !bStartsWithRequests) {
+                          return 1;
+                      } else if (!aStartsWithRequests && bStartsWithRequests) {
+                          return -1;
+                      } else {
+                          return 0;
+                      }
+                  })
+        )
+        .map(quotas =>
+            quotas.map(({ name, used, total }) => `${name}: ${used}/${total}`).join(", ")
+        );
+
+    const requestWord = "REQUEST";
+
+    return {
+        "cmdId": Date.now(),
+        "cmd": "kubectl get quota",
+        "resp":
+            limits.length + requests.length > 130
+                ? [requestWord, requests, "", "LIMIT", limits].join("\n")
+                : [
+                      `${requestWord}${new Array(requests.length - requestWord.length + 2).fill(" ").join("")}LIMIT`,
+                      `${requests}  ${limits}`
+                  ].join("\n")
+    };
+});
+
 export const selectors = {
     main
 };
 
 export const privateSelectors = {
     isOngoingPodDeletion
+};
+
+export const protectedSelectors = {
+    isOnlyNonNegligibleQuotas,
+    commandLogsEntry
 };

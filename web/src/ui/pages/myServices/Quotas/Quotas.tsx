@@ -24,14 +24,14 @@ export function Quotas(props: Props) {
         isOngoingPodDeletion,
         isOnlyNonNegligibleQuotas,
         totalQuotasCount
-    } = useCoreState("quotas", "main");
+    } = useCoreState("viewQuotas", "main");
 
     const { cx, classes, theme } = useStyles();
 
-    const { quotas: quotas_f } = useCore().functions;
+    const { viewQuotas } = useCore().functions;
 
     useEffect(() => {
-        const { setInactive } = quotas_f.setActive();
+        const { setInactive } = viewQuotas.setActive();
 
         return () => {
             setInactive();
@@ -40,7 +40,7 @@ export function Quotas(props: Props) {
 
     useEvt(
         ctx => {
-            evtActionUpdate.attach(ctx, () => quotas_f.update());
+            evtActionUpdate.attach(ctx, () => viewQuotas.update());
         },
         [evtActionUpdate]
     );
@@ -87,7 +87,9 @@ export function Quotas(props: Props) {
                             }
                             showAllStr={"View details"}
                             total={totalQuotasCount}
-                            onToggleIsCollapsed={quotas_f.toggleIsOnlyNonNegligibleQuotas}
+                            onToggleIsCollapsed={
+                                viewQuotas.toggleIsOnlyNonNegligibleQuotas
+                            }
                         />
 
                         {(() => {
