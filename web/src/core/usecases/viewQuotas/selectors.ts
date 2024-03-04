@@ -24,7 +24,7 @@ type QuotaEntry = {
     used: string;
     total: string;
     usagePercentage: number;
-    severity: "success" | "info" | "warning" | "error";
+    severity: "success" | "warning" | "error";
 };
 
 const allQuotas = createSelector(readyState, state => {
@@ -52,12 +52,8 @@ const allQuotas = createSelector(readyState, state => {
                 "total": `${spec}`,
                 usagePercentage,
                 "severity": (() => {
-                    if (usagePercentage < 25) {
-                        return "success" as const;
-                    }
-
                     if (usagePercentage < 50) {
-                        return "info" as const;
+                        return "success" as const;
                     }
 
                     if (usagePercentage < 75) {

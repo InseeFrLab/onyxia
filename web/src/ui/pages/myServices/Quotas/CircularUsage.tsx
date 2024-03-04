@@ -9,7 +9,7 @@ type Props = {
     used: string;
     total: string;
     usagePercentage: number;
-    severity: "success" | "info" | "warning" | "error";
+    severity: "success" | "warning" | "error";
 };
 
 export function CircularUsage(props: Props) {
