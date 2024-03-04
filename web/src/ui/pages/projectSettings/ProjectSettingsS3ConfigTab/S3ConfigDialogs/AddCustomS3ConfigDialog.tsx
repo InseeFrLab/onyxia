@@ -358,8 +358,9 @@ const useBodyStyles = tss
         "accountCredentialsFormGroup": {
             "borderRadius": 5,
             "padding": theme.spacing(3),
-            "backgroundColor": theme.colors.useCases.surfaces.surface2,
-            "boxShadow": theme.shadows[1],
+
+            "backgroundColor": theme.colors.useCases.surfaces.surface1,
+            "boxShadow": theme.shadows[3],
             "&:hover": {
                 "boxShadow": theme.shadows[6]
             }
