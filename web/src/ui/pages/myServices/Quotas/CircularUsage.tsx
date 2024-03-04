@@ -127,7 +127,6 @@ const useStyles = tss
         },
         "metricsWrapper": {
             "display": "flex"
-            //...theme.spacing.rightLeft("padding", 2)
         }
     }));
 
