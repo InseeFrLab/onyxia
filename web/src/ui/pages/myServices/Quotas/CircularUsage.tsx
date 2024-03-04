@@ -101,7 +101,9 @@ const useStyles = tss
         },
         "circularProgress": {
             "verticalAlign": "top",
-            "color": theme.colors.useCases.alertSeverity[severity].main
+            "color": theme.colors.useCases.alertSeverity[severity].main,
+            "position": "relative",
+            "zIndex": 1
         },
         "backLayerCircularProgress": {
             "verticalAlign": "top",
