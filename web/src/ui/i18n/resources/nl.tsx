@@ -802,6 +802,7 @@ Voel je vrij om te verkennen en de controle over je Kubernetes-implementaties te
         }
     },
     "Quotas": {
+        "show more": "Meer tonen",
         "resource usage quotas": "Quota's voor het gebruik van middelen",
         "current resource usage is reasonable":
             "Uw huidig gebruik van middelen is redelijk."

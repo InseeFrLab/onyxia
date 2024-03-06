@@ -806,6 +806,7 @@ Fühlen Sie sich frei, Ihre Kubernetes-Bereitstellungen zu erkunden und die Kont
         }
     },
     "Quotas": {
+        "show more": "Mehr anzeigen",
         "resource usage quotas": "Ressourcennutzungsquoten",
         "current resource usage is reasonable":
             "Ihre aktuelle Ressourcennutzung ist angemessen."

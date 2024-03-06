@@ -789,6 +789,7 @@ Tutustu vapaasti ja ota hallintaan Kubernetes-julkaisusi!
         }
     },
     "Quotas": {
+        "show more": "Näytä lisää",
         "resource usage quotas": "Resurssien käyttökiintiöt",
         "current resource usage is reasonable":
             "Nykyinen resurssien käyttösi on kohtuullista."

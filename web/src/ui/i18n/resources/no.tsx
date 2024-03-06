@@ -795,6 +795,7 @@ Føl deg fri til å utforske og ta kontroll over dine Kubernetes-implementeringe
         }
     },
     "Quotas": {
+        "show more": "Vis mer",
         "resource usage quotas": "Kvoter for ressursbruk",
         "current resource usage is reasonable": "Ditt nåværende ressursbruk er rimelig."
     },

@@ -788,6 +788,7 @@ Feel free to explore and take charge of your Kubernetes deployments!
         }
     },
     "Quotas": {
+        "show more": "Show more",
         "resource usage quotas": "Resource usage quotas",
         "current resource usage is reasonable":
             "Your current resource usage is reasonable."

@@ -798,6 +798,7 @@ Sentiti libero di esplorare e prendere il controllo dei tuoi deployment Kubernet
         }
     },
     "Quotas": {
+        "show more": "Mostra di più",
         "resource usage quotas": "Quote di utilizzo delle risorse",
         "current resource usage is reasonable":
             "Il tuo attuale utilizzo delle risorse è ragionevole."

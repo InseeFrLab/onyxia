@@ -808,6 +808,7 @@ N'hésitez pas à explorer et à prendre en main vos déploiements Kubernetes !
         }
     },
     "Quotas": {
+        "show more": "Afficher plus",
         "resource usage quotas": "Quotas d'utilisation des ressources",
         "current resource usage is reasonable":
             "Votre utilisation actuelle des ressources est raisonnable."
