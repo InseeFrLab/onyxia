@@ -745,7 +745,7 @@ ${
     },
     "Quotas": {
         "resource usage quotas": "资源使用配额",
-        "current resource usage is low": "您当前的资源使用率低。"
+        "current resource usage is reasonable": "您当前的资源使用是合理的。"
     },
     "DataExplorer": {
         "page header title": "数据浏览器",

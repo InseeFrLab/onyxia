@@ -809,8 +809,8 @@ N'hésitez pas à explorer et à prendre en main vos déploiements Kubernetes !
     },
     "Quotas": {
         "resource usage quotas": "Quotas d'utilisation des ressources",
-        "current resource usage is low":
-            "Votre utilisation actuelle des ressources est faible."
+        "current resource usage is reasonable":
+            "Votre utilisation actuelle des ressources est raisonnable."
     },
     "DataExplorer": {
         "page header title": "Explorateur de Données",

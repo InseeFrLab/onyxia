@@ -789,7 +789,8 @@ Feel free to explore and take charge of your Kubernetes deployments!
     },
     "Quotas": {
         "resource usage quotas": "Resource usage quotas",
-        "current resource usage is low": "Your current resource usage is low."
+        "current resource usage is reasonable":
+            "Your current resource usage is reasonable."
     },
     "DataExplorer": {
         "page header title": "Data Explorer",

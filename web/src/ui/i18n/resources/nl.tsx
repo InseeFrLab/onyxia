@@ -803,7 +803,8 @@ Voel je vrij om te verkennen en de controle over je Kubernetes-implementaties te
     },
     "Quotas": {
         "resource usage quotas": "Quota's voor het gebruik van middelen",
-        "current resource usage is low": "Uw huidig gebruik van middelen is laag."
+        "current resource usage is reasonable":
+            "Uw huidig gebruik van middelen is redelijk."
     },
     "DataExplorer": {
         "page header title": "Data Verkenner",

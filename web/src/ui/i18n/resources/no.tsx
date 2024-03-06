@@ -796,7 +796,7 @@ Føl deg fri til å utforske og ta kontroll over dine Kubernetes-implementeringe
     },
     "Quotas": {
         "resource usage quotas": "Kvoter for ressursbruk",
-        "current resource usage is low": "Ditt nåværende ressursbruk er lavt."
+        "current resource usage is reasonable": "Ditt nåværende ressursbruk er rimelig."
     },
     "DataExplorer": {
         "page header title": "Datautforsker",

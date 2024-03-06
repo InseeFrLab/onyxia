@@ -61,7 +61,7 @@ export const thunks = {
     "update":
         () =>
         async (...args) => {
-            const [dispatch, getState, { onyxiaApi }] = args;
+            const [dispatch, getState, { onyxiaApi, paramsOfBootstrapCore }] = args;
 
             {
                 const state = getState()[name];
@@ -78,7 +78,10 @@ export const thunks = {
             dispatch(
                 actions.updateCompleted({
                     quotas,
-                    "projectId": projectManagement.selectors.currentProject(getState()).id
+                    "projectId":
+                        projectManagement.selectors.currentProject(getState()).id,
+                    "quotaWarningThresholdPercent":
+                        paramsOfBootstrapCore.quotaWarningThresholdPercent
                 })
             );
         },

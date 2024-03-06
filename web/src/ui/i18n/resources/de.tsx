@@ -807,7 +807,8 @@ Fühlen Sie sich frei, Ihre Kubernetes-Bereitstellungen zu erkunden und die Kont
     },
     "Quotas": {
         "resource usage quotas": "Ressourcennutzungsquoten",
-        "current resource usage is low": "Ihre aktuelle Ressourcennutzung ist gering."
+        "current resource usage is reasonable":
+            "Ihre aktuelle Ressourcennutzung ist angemessen."
     },
     "DataExplorer": {
         "page header title": "Daten-Explorer",

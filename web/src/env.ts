@@ -1065,7 +1065,28 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
             assert(envValue !== "", "Should have default in .env");
             return envValue;
         }
-    }
+    },
+    {
+        "envName": "QUOTA_WARNING_THRESHOLD",
+        "isUsedInKeycloakTheme": false,
+        "validateAndParseOrGetDefault": ({ envValue, envName }) => {
+
+            const n= Number.parseFloat(envValue.trim().replace(/%$/, ""));
+
+            if (isNaN(n)) {
+                throw new Error(`${envName} is not well formatted it should be "75%" or "75" or "0.75"`);
+            }
+
+            if (n <= 1 ){
+                return n;
+            }
+
+            assert(n <= 100, `${envName} ${envValue} is not a valid percentage`);
+
+            return n / 100;
+
+        }
+    },
 ]);
 
 type EnvName = Exclude<keyof ImportMetaEnv,  "MODE" | "DEV" | "PROD" | "BASE_URL" | "PUBLIC_URL">;

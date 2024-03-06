@@ -105,7 +105,7 @@ export function Quotas(props: Props) {
                                                 "CheckCircle" satisfies MuiIconComponentName
                                             }
                                         />
-                                        &nbsp;{t("current resource usage is low")}
+                                        &nbsp;{t("current resource usage is reasonable")}
                                     </Text>
                                 );
                             }
@@ -175,5 +175,5 @@ const useStyles = tss.withName({ Quotas }).create(({ theme }) => ({
 }));
 
 export const { i18n } = declareComponentKeys<
-    "resource usage quotas" | "current resource usage is low"
+    "resource usage quotas" | "current resource usage is reasonable"
 >()({ Quotas });

@@ -26,6 +26,7 @@ type ParamsOfBootstrapCore = {
     getCurrentLang: () => Language;
     disablePersonalInfosInjectionInGroup: boolean;
     isCommandBarEnabledByDefault: boolean;
+    quotaWarningThresholdPercent: number;
 };
 
 export type Context = {
