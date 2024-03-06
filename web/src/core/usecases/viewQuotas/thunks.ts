@@ -36,19 +36,17 @@ export const thunks = {
 
             (async () => {
                 while (true) {
-                    if (ctx.completionStatus !== undefined) {
-                        return;
-                    }
-
                     const isOngoingPodDeletion =
                         privateSelectors.isOngoingPodDeletion(getState());
 
-                    await new Promise<void>(resolve =>
-                        setTimeout(
+                    await new Promise<void>(resolve => {
+                        const timer = setTimeout(
                             resolve,
                             isOngoingPodDeletion === true ? 4_000 : 30_000
-                        )
-                    );
+                        );
+
+                        ctx.evtDoneOrAborted.attachOnce(() => clearTimeout(timer));
+                    });
 
                     await dispatch(thunks.update());
                 }
