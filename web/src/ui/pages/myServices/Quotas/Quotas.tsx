@@ -88,7 +88,7 @@ export function Quotas(props: Props) {
                                     )}
                                 </>
                             }
-                            showAllStr={"View details"}
+                            showAllStr={t("show more")}
                             total={totalQuotasCount}
                             onToggleIsCollapsed={
                                 viewQuotas.toggleIsOnlyNonNegligibleQuotas
