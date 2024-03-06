@@ -753,7 +753,7 @@ Føl deg fri til å utforske og ta kontroll over dine Kubernetes-implementeringe
     },
     "MyServicesRestorableConfigs": {
         "saved": "Lagret",
-        "show all": "Vis alle"
+        "expand": "Utvid"
     },
     "ReadmeAndEnvDialog": {
         "ok": "ok",

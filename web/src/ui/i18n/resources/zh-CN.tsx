@@ -702,7 +702,7 @@ ${
     },
     "MyServicesRestorableConfigs": {
         "saved": "已经保存",
-        "show all": "显示所有"
+        "expand": "展开"
     },
     "ReadmeAndEnvDialog": {
         "ok": "是",

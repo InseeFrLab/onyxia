@@ -756,7 +756,7 @@ Sentiti libero di esplorare e prendere il controllo dei tuoi deployment Kubernet
     },
     "MyServicesRestorableConfigs": {
         "saved": "Salvati",
-        "show all": "Mostrare tutti"
+        "expand": "Espandi"
     },
     "ReadmeAndEnvDialog": {
         "ok": "ok",

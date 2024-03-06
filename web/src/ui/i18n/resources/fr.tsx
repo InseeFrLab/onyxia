@@ -765,7 +765,7 @@ N'hésitez pas à explorer et à prendre en main vos déploiements Kubernetes !
     },
     "MyServicesRestorableConfigs": {
         "saved": "Enregistrés",
-        "show all": "Afficher tous"
+        "expand": "Développer"
     },
     "ReadmeAndEnvDialog": {
         "ok": "ok",

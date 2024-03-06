@@ -747,7 +747,7 @@ Tutustu vapaasti ja ota hallintaan Kubernetes-julkaisusi!
     },
     "MyServicesRestorableConfigs": {
         "saved": "Tallennettu",
-        "show all": "Näytä kaikki"
+        "expand": "Laajenna"
     },
     "ReadmeAndEnvDialog": {
         "ok": "ok",

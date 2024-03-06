@@ -47,7 +47,7 @@ export const MyServicesRestorableConfigs = memo((props: Props) => {
                     className={classes.header}
                     isCollapsed={isShortVariant}
                     title={t("saved")}
-                    showAllStr={t("show all")}
+                    showAllStr={t("expand")}
                     total={entries.length}
                     onToggleIsCollapsed={onRequestToggleIsShortVariant}
                 />
@@ -82,7 +82,7 @@ export const MyServicesRestorableConfigs = memo((props: Props) => {
 
 MyServicesRestorableConfigs.displayName = symToStr({ MyServicesRestorableConfigs });
 
-export const { i18n } = declareComponentKeys<"saved" | "show all">()({
+export const { i18n } = declareComponentKeys<"saved" | "expand">()({
     MyServicesRestorableConfigs
 });
 

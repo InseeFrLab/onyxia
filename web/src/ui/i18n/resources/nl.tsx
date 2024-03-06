@@ -760,7 +760,7 @@ Voel je vrij om te verkennen en de controle over je Kubernetes-implementaties te
     },
     "MyServicesRestorableConfigs": {
         "saved": "Opgeslagen",
-        "show all": "Alles weergeven"
+        "expand": "Uitbreiden"
     },
     "ReadmeAndEnvDialog": {
         "ok": "ok",

@@ -764,7 +764,7 @@ Fühlen Sie sich frei, Ihre Kubernetes-Bereitstellungen zu erkunden und die Kont
     },
     "MyServicesRestorableConfigs": {
         "saved": "Gespeichert",
-        "show all": "Alle anzeigen"
+        "expand": "Erweitern"
     },
     "ReadmeAndEnvDialog": {
         "ok": "Ok",

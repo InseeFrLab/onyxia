@@ -746,7 +746,7 @@ Feel free to explore and take charge of your Kubernetes deployments!
     },
     "MyServicesRestorableConfigs": {
         "saved": "Saved",
-        "show all": "Show all"
+        "expand": "Expand"
     },
     "ReadmeAndEnvDialog": {
         "ok": "ok",
