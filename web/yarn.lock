@@ -4632,10 +4632,10 @@ oidc-client-ts@2.4.0:
     crypto-js "^4.2.0"
     jwt-decode "^3.1.2"
 
-oidc-spa@^4.2.0:
-  version "4.2.1"
-  resolved "https://registry.yarnpkg.com/oidc-spa/-/oidc-spa-4.2.1.tgz#1b33214fd4b657f7a09aae70058df76ce7275a8e"
-  integrity sha512-2Vm3Ohrh+F6Xd+HfybBs20ahQmJf3w852G20hnOl80O7G8wQ2IBKuivVEU/gb2hg4O3X9h4uQr4fuhIMO0/dFA==
+oidc-spa@^4.4.0:
+  version "4.4.0"
+  resolved "https://registry.yarnpkg.com/oidc-spa/-/oidc-spa-4.4.0.tgz#140e85b752680b9de20c454dab4fc1864bb5a190"
+  integrity sha512-bRHMaXYScCRzCI+a/kfg4mR3nO5pMbMEH1oNR2ZyblTLgvmyFZfjpB0rM2PCqU+C3TqmBKrwr0rtg6DcAR5qjA==
   dependencies:
     jwt-decode "^3.1.2"
     oidc-client-ts "2.4.0"

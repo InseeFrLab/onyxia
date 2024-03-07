@@ -18,6 +18,10 @@ export declare namespace Oidc {
         renewTokens(): Promise<void>;
         getTokens: () => Tokens;
         logout: (params: { redirectTo: "home" | "current page" }) => Promise<never>;
+        loginScenario:
+            | "backFromLoginPages"
+            | "sessionStorageRestoration"
+            | "silentSignin";
     };
 
     export type Tokens = {
