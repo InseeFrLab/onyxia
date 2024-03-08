@@ -32,9 +32,7 @@ const allQuotas = createSelector(readyState, state => {
         return undefined;
     }
 
-    const { quotas, quotaWarningThresholdPercent } = state;
-
-    const { quotas, quotaCriticalThresholdPercent } = state;
+    const { quotas, quotaWarningThresholdPercent, quotaCriticalThresholdPercent } = state;
 
     return Object.keys(quotas)
         .map(name => {
