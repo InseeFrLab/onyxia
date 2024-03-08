@@ -52,9 +52,7 @@ export const { reducer, actions } = createUsecaseActions({
                 };
             }
         ) => {
-            const { quotas, quotaWarningThresholdPercent, projectId } = payload;
-
-            const { quotas, quotaCriticalThresholdPercent, projectId } = payload;
+            const { quotas, quotaWarningThresholdPercent, quotaCriticalThresholdPercent, projectId } = payload;
 
             return id<State.Ready>({
                 "stateDescription": "ready",
