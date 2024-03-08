@@ -587,6 +587,10 @@ export function createOnyxiaApi(params: {
 
             const { data } = resp;
 
+            if (data === undefined) {
+                return {};
+            }
+
             const { spec, usage } = data;
 
             return Object.fromEntries(
