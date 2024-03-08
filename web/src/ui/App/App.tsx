@@ -42,7 +42,8 @@ const { CoreProvider } = createCoreProvider({
             )[0],
     "disablePersonalInfosInjectionInGroup": env.DISABLE_PERSONAL_INFOS_INJECTION_IN_GROUP,
     "isCommandBarEnabledByDefault": !env.DISABLE_COMMAND_BAR,
-    "quotaWarningThresholdPercent": env.QUOTA_WARNING_THRESHOLD * 100
+    "quotaWarningThresholdPercent": env.QUOTA_WARNING_THRESHOLD * 100,
+    "quotaCriticalThresholdPercent": env.QUOTA_CRITICAL_THRESHOLD * 100
 });
 
 export default function App() {

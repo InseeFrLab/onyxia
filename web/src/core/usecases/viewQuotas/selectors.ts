@@ -34,6 +34,8 @@ const allQuotas = createSelector(readyState, state => {
 
     const { quotas, quotaWarningThresholdPercent } = state;
 
+    const { quotas, quotaCriticalThresholdPercent } = state;
+
     return Object.keys(quotas)
         .map(name => {
             const { spec, usage } = quotas[name];
@@ -56,7 +58,7 @@ const allQuotas = createSelector(readyState, state => {
                         return "success" as const;
                     }
 
-                    if (usagePercentage < 95) {
+                    if (usagePercentage < quotaCriticalThresholdPercent) {
                         return "warning" as const;
                     }
 

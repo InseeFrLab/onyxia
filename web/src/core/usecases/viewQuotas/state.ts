@@ -21,6 +21,7 @@ export namespace State {
         isOngoingPodDeletion: boolean;
         isOnlyNonNegligibleQuotas: boolean;
         quotaWarningThresholdPercent: number;
+        quotaCriticalThresholdPercent: number;
     };
 }
 
@@ -46,11 +47,14 @@ export const { reducer, actions } = createUsecaseActions({
                 payload: {
                     quotas: Record<string, Record<"spec" | "usage", string | number>>;
                     quotaWarningThresholdPercent: number;
+                    quotaCriticalThresholdPercent: number;
                     projectId: string;
                 };
             }
         ) => {
             const { quotas, quotaWarningThresholdPercent, projectId } = payload;
+
+            const { quotas, quotaCriticalThresholdPercent, projectId } = payload;
 
             return id<State.Ready>({
                 "stateDescription": "ready",
@@ -79,7 +83,8 @@ export const { reducer, actions } = createUsecaseActions({
 
                     return state.isOnlyNonNegligibleQuotas;
                 })(),
-                quotaWarningThresholdPercent
+                quotaWarningThresholdPercent,
+                quotaCriticalThresholdPercent
             });
         },
         "podDeletionStarted": state => {

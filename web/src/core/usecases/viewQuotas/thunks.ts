@@ -81,7 +81,9 @@ export const thunks = {
                     "projectId":
                         projectManagement.selectors.currentProject(getState()).id,
                     "quotaWarningThresholdPercent":
-                        paramsOfBootstrapCore.quotaWarningThresholdPercent
+                        paramsOfBootstrapCore.quotaWarningThresholdPercent,
+                    "quotaCriticalThresholdPercent":
+                        paramsOfBootstrapCore.quotaCriticalThresholdPercent
                 })
             );
         },
