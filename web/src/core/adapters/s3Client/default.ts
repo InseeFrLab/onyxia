@@ -102,8 +102,7 @@ export function createS3Client(params: ParamsOfCreateS3Client): S3Client {
                         // NOTE: We renew the OIDC access token because it's expiration time
                         // cap the duration of the token we will request to minio so we want it
                         // as fresh as possible.
-                        // TODO: Restore
-                        // await oidc.renewTokens();
+                        await oidc.renewTokens();
 
                         const now = Date.now();
 

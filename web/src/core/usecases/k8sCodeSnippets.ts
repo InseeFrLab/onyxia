@@ -136,8 +136,7 @@ export const thunks = {
                 context.kubernetesOidcClient = kubernetesOidcClient;
             }
 
-            // TODO: Restore
-            // await kubernetesOidcClient.renewTokens();
+            await kubernetesOidcClient.renewTokens();
 
             const oidcTokens = kubernetesOidcClient.getTokens();
 
