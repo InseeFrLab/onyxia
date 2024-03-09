@@ -1,3 +1,4 @@
+import * as autoLogoutCountdown from "./autoLogoutCountdown";
 import * as catalog from "./catalog";
 import * as deploymentRegionManagement from "./deploymentRegionManagement";
 import * as fileExplorer from "./fileExplorer";
@@ -19,6 +20,7 @@ import * as projectManagement from "./projectManagement";
 import * as viewQuotas from "./viewQuotas";
 
 export const usecases = {
+    autoLogoutCountdown,
     catalog,
     deploymentRegionManagement,
     fileExplorer,
