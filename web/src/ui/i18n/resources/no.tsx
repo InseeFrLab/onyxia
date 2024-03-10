@@ -453,6 +453,11 @@ export const translations: Translations<"no"> = {
         "dataExplorer": "Datautforsker",
         "sqlOlapShell": "SQL OLAP-Skall"
     },
+    "AutoLogoutCountdown": {
+        "are you still there": "Er du fortsatt der?",
+        "you'll soon be automatically logged out":
+            "Du vil snart bli logget ut automatisk."
+    },
     "Page404": {
         "not found": "Side ikke funnet"
     },

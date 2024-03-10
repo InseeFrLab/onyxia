@@ -8,10 +8,12 @@ export async function createOidc(params: {
 }): Promise<Oidc> {
     const { issuerUri, clientId, transformUrlBeforeRedirect } = params;
 
-    return createOidcSpa({
+    const oidc = await createOidcSpa({
         issuerUri,
         clientId,
         transformUrlBeforeRedirect,
         "publicUrl": import.meta.env.BASE_URL
     });
+
+    return oidc;
 }

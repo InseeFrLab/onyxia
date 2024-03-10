@@ -27,6 +27,7 @@ export type ComponentKey =
     | typeof import("ui/pages/myFiles/Explorer/ExplorerUploadModal/ExplorerUploadModal").i18n
     | typeof import("ui/App/Header/Header").i18n
     | typeof import("ui/App/LeftBar").i18n
+    | typeof import("ui/App/AutoLogoutCountdown").i18n
     | typeof import("ui/pages/page404/Page404").i18n
     | typeof import("ui/shared/PortraitModeUnsupported").i18n
     | typeof import("ui/shared/MaybeAcknowledgeConfigVolatilityDialog").i18n

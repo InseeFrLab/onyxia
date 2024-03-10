@@ -451,6 +451,11 @@ export const translations: Translations<"it"> = {
         "dataExplorer": "Esploratore di Dati",
         "sqlOlapShell": "Guscio SQL OLAP"
     },
+    "AutoLogoutCountdown": {
+        "are you still there": "Sei ancora lì?",
+        "you'll soon be automatically logged out":
+            "Verrai presto disconnesso automaticamente."
+    },
     "Page404": {
         "not found": "Pagina non trovata"
     },

@@ -449,6 +449,11 @@ export const translations: Translations<"en"> = {
         "dataExplorer": "Data Explorer",
         "sqlOlapShell": "SQL Olap Shell"
     },
+    "AutoLogoutCountdown": {
+        "are you still there": "Are you still there?",
+        "you'll soon be automatically logged out":
+            "You'll soon be automatically logged out."
+    },
     "Page404": {
         "not found": "Page not found"
     },

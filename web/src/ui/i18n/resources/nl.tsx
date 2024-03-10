@@ -452,6 +452,11 @@ export const translations: Translations<"nl"> = {
         "dataExplorer": "Data Verkenner",
         "sqlOlapShell": "SQL OLAP Shell"
     },
+    "AutoLogoutCountdown": {
+        "are you still there": "Ben je er nog?",
+        "you'll soon be automatically logged out":
+            "Je wordt binnenkort automatisch uitgelogd."
+    },
     "Page404": {
         "not found": "Pagina niet gevonden"
     },

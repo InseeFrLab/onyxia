@@ -417,6 +417,10 @@ export const translations: Translations<"zh-CN"> = {
         "dataExplorer": "数据浏览器",
         "sqlOlapShell": "SQL OLAP 外壳"
     },
+    "AutoLogoutCountdown": {
+        "are you still there": "你还在吗？",
+        "you'll soon be automatically logged out": "你将很快被自动登出。"
+    },
     "Page404": {
         "not found": "网页未找到"
     },
