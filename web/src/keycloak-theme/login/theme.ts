@@ -4,6 +4,7 @@ import { targetWindowInnerWidth } from "ui/theme/targetWindowInnerWidth";
 import { env } from "env";
 import { loadThemedFavicon as loadThemedFavicon_base } from "ui/theme/loadThemedFavicon";
 import { Evt } from "evt";
+import { getOnyxiaInstancePublicUrl } from "./onyxiaInstancePublicUrl";
 
 const { OnyxiaUi, evtTheme } = createOnyxiaUi({
     "getTypographyDesc": params => ({
@@ -16,8 +17,7 @@ const { OnyxiaUi, evtTheme } = createOnyxiaUi({
     }),
     palette,
     "splashScreenParams": undefined,
-    // NOTE: Equivalent to join(env.CUSTOM_RESOURCES_URL, "..")
-    "BASE_URL": env.CUSTOM_RESOURCES_URL.replace(/\/[^/]*\/?$/, "")
+    "BASE_URL": getOnyxiaInstancePublicUrl()
 });
 
 export { OnyxiaUi };

@@ -49,7 +49,6 @@ type ImportMetaEnv = {
   ONYXIA_VERSION: string
   ONYXIA_VERSION_URL: string
   ONYXIA_API_URL: string
-  CUSTOM_RESOURCES_URL: string
   ALLOW_THEME_TESTING_VIA_URL: string
   // @user-defined-start
     /*
