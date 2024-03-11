@@ -455,70 +455,11 @@ export function createOnyxiaApi(params: {
                     })(),
                     "ownerUsername": apiApp.env["onyxia.owner"],
                     "isShared": apiApp.env["onyxia.share"] === "true",
-                    ...(() => {
-                        if (
-                            apiApp.tasks.length !== 0 &&
-                            apiApp.tasks[0].containers.length !== 0 &&
-                            apiApp.tasks[0].containers.every(({ ready }) => ready)
-                        ) {
-                            return {
-                                "isStarting": false
-                            } as const;
-                        }
-
-                        if (Date.now() - apiApp.startedAt > 10 * 60 * 1000) {
-                            return {
-                                "isStarting": true,
-                                // If the service is not yet started after 10 minutes, we consider
-                                // no need to periodically check if it's miraculously started.
-                                // At the moment Onyxia has no way of representing a failed start
-                                // so we just leave it in a state where it's starting forever.
-                                "prStarted": new Promise<never>(() => {})
-                            } as const;
-                        }
-
-                        const prStarted = (async function callee(): Promise<void> {
-                            await new Promise(resolve => setTimeout(resolve, 2000));
-
-                            const { data } =
-                                await axiosInstance.get<ApiTypes["/my-lab/services"]>(
-                                    "/my-lab/services"
-                                );
-
-                            const refreshedApiApp = data.apps.find(
-                                ({ id }) => id === apiApp.id
-                            );
-
-                            if (refreshedApiApp === undefined) {
-                                // Release uninstalled, we let it spin forever
-                                // See comment above
-                                return new Promise(() => {});
-                            }
-
-                            const [task] = refreshedApiApp.tasks;
-
-                            if (task === undefined) {
-                                console.warn(
-                                    `Couldn't get the service status from tasks for ${apiApp.id}`
-                                );
-                                return;
-                            }
-
-                            if (
-                                task.containers.length !== 0 &&
-                                task.containers.every(({ ready }) => ready)
-                            ) {
-                                return;
-                            }
-
-                            await callee();
-                        })();
-
-                        return {
-                            "isStarting": true,
-                            prStarted
-                        };
-                    })()
+                    "areAllTasksReady":
+                        apiApp.tasks.length !== 0 &&
+                        apiApp.tasks[0].containers.length !== 0 &&
+                        apiApp.tasks[0].containers.every(({ ready }) => ready),
+                    "status": apiApp.status
                 })
             );
         },

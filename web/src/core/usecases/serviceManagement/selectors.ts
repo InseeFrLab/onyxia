@@ -28,10 +28,10 @@ const runningServices = createSelector(
     }
 );
 
-const isUpdating = (rootState: RootState): boolean => {
-    const { isUpdating } = rootState[name];
+const isUpdating = createSelector(state, state => {
+    const { isUpdating } = state;
     return isUpdating;
-};
+});
 
 const deletableRunningServiceHelmReleaseNames = createSelector(
     isReady,
@@ -128,4 +128,21 @@ const main = createSelector(
 
 export const selectors = {
     main
+};
+
+const startingRunningServiceHelmReleaseNames = createSelector(
+    runningServices,
+    runningServices => {
+        if (runningServices === undefined) {
+            return undefined;
+        }
+
+        return runningServices
+            .filter(({ isStarting }) => isStarting)
+            .map(({ helmReleaseName }) => helmReleaseName);
+    }
+);
+
+export const protectedSelectors = {
+    startingRunningServiceHelmReleaseNames
 };
