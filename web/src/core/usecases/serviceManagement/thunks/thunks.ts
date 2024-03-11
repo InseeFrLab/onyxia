@@ -115,7 +115,14 @@ export const thunks = {
                                     helmRelease.status === "deployed" &&
                                     helmRelease.areAllTasksReady
                                 ) {
-                                    dispatch(actions.serviceStarted({ helmReleaseName }));
+                                    dispatch(
+                                        actions.statusUpdated({
+                                            helmReleaseName,
+                                            "status": helmRelease.status,
+                                            "areAllTasksReady":
+                                                helmRelease.areAllTasksReady
+                                        })
+                                    );
 
                                     return;
                                 }
@@ -239,7 +246,8 @@ export const thunks = {
                             }),
                             startedAt,
                             "urls": urls.sort(),
-                            "isStarting": status !== "deployed" || !areAllTasksReady,
+                            status,
+                            areAllTasksReady,
                             "hasPostInstallInstructions":
                                 postInstallInstructions !== undefined
                         };

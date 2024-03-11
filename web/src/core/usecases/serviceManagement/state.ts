@@ -38,10 +38,11 @@ export declare namespace RunningService {
         friendlyName: string;
         chartIconUrl: string | undefined;
         monitoringUrl: string | undefined;
-        isStarting: boolean;
         startedAt: number;
         urls: string[];
         hasPostInstallInstructions: boolean;
+        status: "deployed" | "pending" | "failed";
+        areAllTasksReady: boolean;
     };
 
     export type Owned = Common & {
@@ -101,17 +102,19 @@ export const { reducer, actions } = createUsecaseActions({
                 "commandLogsEntries": state.commandLogsEntries
             });
         },
-        "serviceStarted": (
+        "statusUpdated": (
             state,
             {
                 payload
             }: {
                 payload: {
                     helmReleaseName: string;
+                    status: "deployed" | "pending" | "failed";
+                    areAllTasksReady: boolean;
                 };
             }
         ) => {
-            const { helmReleaseName } = payload;
+            const { helmReleaseName, status, areAllTasksReady } = payload;
 
             assert(state.stateDescription === "ready");
 
@@ -127,10 +130,13 @@ export const { reducer, actions } = createUsecaseActions({
                 return;
             }
 
-            runningService.isStarting = false;
+            runningService.status = status;
+            runningService.areAllTasksReady = areAllTasksReady;
 
             //NOTE: Harmless hack to improve UI readability.
-            runningService.startedAt = Date.now();
+            if (status === "deployed" && areAllTasksReady) {
+                runningService.startedAt = Date.now();
+            }
         },
         "serviceStopped": (
             state,
