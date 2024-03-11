@@ -457,6 +457,11 @@ export const translations: Translations<"fr"> = {
         "dataExplorer": "Explorateur de Données",
         "sqlOlapShell": "Coquille SQL OLAP"
     },
+    "AutoLogoutCountdown": {
+        "are you still there": "Êtes-vous toujours là ?",
+        "you'll soon be automatically logged out":
+            "Vous serez bientôt déconnecté automatiquement."
+    },
     "Page404": {
         "not found": "Page non trouvée"
     },

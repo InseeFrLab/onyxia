@@ -447,6 +447,11 @@ export const translations: Translations<"fi"> = {
         "dataExplorer": "Data Explorer",
         "sqlOlapShell": "SQL OLAP-kuori"
     },
+    "AutoLogoutCountdown": {
+        "are you still there": "Oletko vielä siellä?",
+        "you'll soon be automatically logged out":
+            "Sinut kirjataan pian automaattisesti ulos."
+    },
     "Page404": {
         "not found": "Sivua ei löydy"
     },

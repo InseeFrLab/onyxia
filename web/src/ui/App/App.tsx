@@ -20,6 +20,7 @@ import { addParamToUrl } from "powerhooks/tools/urlSearchParams";
 import { LeftBar } from "./LeftBar";
 import { GlobalAlert } from "./GlobalAlert";
 import { Main } from "./Main";
+import { AutoLogoutCountdown } from "./AutoLogoutCountdown";
 
 loadThemedFavicon();
 // NOTE: We do that only to showcase the app with an other font with the URL.
@@ -78,23 +79,27 @@ function ContextualizedApp() {
     useSyncDarkModeWithValueInProfile();
 
     const { classes } = useStyles();
+    const { isUserLoggedIn } = useCoreState("userAuthentication", "authenticationState");
 
     return (
-        <div className={classes.root}>
-            {env.GLOBAL_ALERT !== undefined && (
-                <GlobalAlert
-                    className={classes.globalAlert}
-                    severity={env.GLOBAL_ALERT.severity}
-                    message={env.GLOBAL_ALERT.message}
-                />
-            )}
-            <Header className={classes.header} />
-            <section className={classes.betweenHeaderAndFooter}>
-                <LeftBar className={classes.leftBar} />
-                <Main className={classes.main} />
-            </section>
-            <Footer className={classes.footer} />
-        </div>
+        <>
+            <div className={classes.root}>
+                {env.GLOBAL_ALERT !== undefined && (
+                    <GlobalAlert
+                        className={classes.globalAlert}
+                        severity={env.GLOBAL_ALERT.severity}
+                        message={env.GLOBAL_ALERT.message}
+                    />
+                )}
+                <Header className={classes.header} />
+                <section className={classes.betweenHeaderAndFooter}>
+                    <LeftBar className={classes.leftBar} />
+                    <Main className={classes.main} />
+                </section>
+                <Footer className={classes.footer} />
+            </div>
+            {isUserLoggedIn && <AutoLogoutCountdown />}
+        </>
     );
 }
 

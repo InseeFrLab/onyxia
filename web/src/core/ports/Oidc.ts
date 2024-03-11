@@ -22,6 +22,9 @@ export declare namespace Oidc {
             | "backFromLoginPages"
             | "sessionStorageRestoration"
             | "silentSignin";
+        subscribeToAutoLogoutCountdown: (
+            tickCallback: (params: { secondsLeft: number | undefined }) => void
+        ) => { unsubscribeFromAutoLogoutCountdown: () => void };
     };
 
     export type Tokens = {
