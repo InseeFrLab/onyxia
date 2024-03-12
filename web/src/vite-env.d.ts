@@ -46,6 +46,7 @@ type ImportMetaEnv = {
   DISABLE_AUTO_LAUNCH: string
   SAMPLE_DATASET_URL: string
   QUOTA_WARNING_THRESHOLD: string
+  QUOTA_CRITICAL_THRESHOLD: string
   ONYXIA_VERSION: string
   ONYXIA_VERSION_URL: string
   ONYXIA_API_URL: string
