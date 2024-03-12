@@ -404,13 +404,14 @@ const privateThunks = {
                                         revision,
                                         chartName,
                                         chartVersion,
-                                        appVersion
+                                        appVersion,
+                                        status
                                     }) => ({
                                         "name": helmReleaseName,
                                         namespace,
                                         revision,
                                         "updatedTime": startedAt,
-                                        "status": "deployed",
+                                        "status": status,
                                         "chart": `${chartName}-${chartVersion}`,
                                         appVersion
                                     })
