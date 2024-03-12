@@ -179,7 +179,7 @@ function MyFiles(props: Props) {
                 helpTitle={t("what this page is used for - my files")}
                 helpContent={t("help content", {
                     "docHref":
-                        "https://docs.sspcloud.fr/onyxia-guide/utiliser-des-variables-denvironnement",
+                        "https://docs.sspcloud.fr/onyxia-guide/stockage-de-donnees",
                     "accountTabLink": routes.account({ "tabId": "storage" }).link
                 })}
                 helpIcon="sentimentSatisfied"
