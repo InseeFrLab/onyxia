@@ -27,6 +27,7 @@ type ParamsOfBootstrapCore = {
     disablePersonalInfosInjectionInGroup: boolean;
     isCommandBarEnabledByDefault: boolean;
     quotaWarningThresholdPercent: number;
+    quotaCriticalThresholdPercent: number;
 };
 
 export type Context = {
