@@ -736,7 +736,9 @@ Tutustu vapaasti ja ota hallintaan Kubernetes-julkaisusi!
         "readme": "lueminut",
         "shared by you": "Jaettu sinun kanssasi",
         "reminder to delete services": "Muista poistaa palvelusi.",
-        "this is a shared service": "Tämä palvelu on jaettu projektin jäsenten kesken"
+        "this is a shared service": "Tämä palvelu on jaettu projektin jäsenten kesken",
+        "container starting": "Säiliön käynnistyminen",
+        "helm release status": "Helm release -tila"
     },
     "MyServicesRestorableConfigOptions": {
         "edit": "Muokkaa",

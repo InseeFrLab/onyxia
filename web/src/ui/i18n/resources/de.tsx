@@ -753,7 +753,9 @@ Fühlen Sie sich frei, Ihre Kubernetes-Bereitstellungen zu erkunden und die Kont
         "shared by you": "von Ihnen geteilt",
         "reminder to delete services":
             "Denken Sie daran, Ihre Dienste nach Gebrauch zu löschen.",
-        "this is a shared service": "Dieser Dienst wird im Projekt geteilt"
+        "this is a shared service": "Dieser Dienst wird im Projekt geteilt",
+        "container starting": "Container startet",
+        "helm release status": "Helm Release Status"
     },
     "MyServicesRestorableConfigOptions": {
         "edit": "Bearbeiten",

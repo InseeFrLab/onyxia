@@ -754,7 +754,9 @@ N'hésitez pas à explorer et à prendre en main vos déploiements Kubernetes !
         "shared by you": "partagé par vous",
         "reminder to delete services":
             "Rappelez-vous de supprimer vos services après utilisation.",
-        "this is a shared service": "Ce service est partagé au sein du projet"
+        "this is a shared service": "Ce service est partagé au sein du projet",
+        "container starting": "Démarrage du conteneur",
+        "helm release status": "Statut du Helm release"
     },
     "MyServicesRestorableConfigOptions": {
         "edit": "Modifier",

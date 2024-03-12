@@ -5,7 +5,7 @@ import type { Thunks } from "core/bootstrap";
 import { exclude } from "tsafe/exclude";
 import { createUsecaseContextApi } from "clean-architecture";
 import { assert } from "tsafe/assert";
-import { Evt } from "evt";
+import { Evt, type Ctx } from "evt";
 import { name, actions } from "../state";
 import type { RunningService } from "../state";
 import type { OnyxiaApi } from "core/ports/OnyxiaApi";
@@ -49,6 +49,8 @@ export const thunks = {
                 }
             );
 
+            let ctxInner_prev: Ctx<void> | undefined = undefined;
+
             evtAction
                 .pipe(
                     ctx,
@@ -58,7 +60,13 @@ export const thunks = {
                 )
                 .toStateful()
                 .attach(async () => {
+                    if (ctxInner_prev !== undefined) {
+                        ctxInner_prev.done();
+                    }
+
                     const ctxInner = Evt.newCtx();
+
+                    ctxInner_prev = ctxInner;
 
                     ctx.evtDoneOrAborted.attachOnce(ctxInner, () => ctxInner.done());
 
@@ -115,7 +123,6 @@ export const thunks = {
                                     helmRelease.status === "deployed" &&
                                     helmRelease.areAllTasksReady
                                 ) {
-                                    console.log("ici wesh");
                                     dispatch(
                                         actions.statusUpdated({
                                             helmReleaseName,

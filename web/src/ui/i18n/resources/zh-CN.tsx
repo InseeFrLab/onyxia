@@ -690,7 +690,9 @@ ${
         "readme": "自述文件",
         "shared by you": "你分享的",
         "reminder to delete services": "请在使用后删除您的服务。",
-        "this is a shared service": "该服务在项目内共享"
+        "this is a shared service": "该服务在项目内共享",
+        "container starting": "容器启动中",
+        "helm release status": "Helm release 状态"
     },
     "MyServicesRestorableConfigOptions": {
         "edit": "编辑服务",

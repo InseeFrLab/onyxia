@@ -17,6 +17,7 @@ import { useConst } from "powerhooks/useConst";
 import { useEvt } from "evt/hooks";
 import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
 import { id } from "tsafe/id";
+import { CircularProgress } from "onyxia-ui/CircularProgress";
 
 const runningTimeThreshold = 7 * 24 * 3600 * 1000;
 
@@ -48,7 +49,7 @@ export type Props = {
 };
 
 export const MyServicesCard = memo((props: Props) => {
-    const {
+    let {
         className,
         evtAction,
         chartIconUrl,
@@ -68,6 +69,8 @@ export const MyServicesCard = memo((props: Props) => {
         ownerUsername
     } = props;
 
+    //status = "pending";
+
     const { t } = useTranslation({ MyServicesCard });
 
     const severity = useMemo(() => {
@@ -82,7 +85,7 @@ export const MyServicesCard = memo((props: Props) => {
         return getDoesHaveBeenRunningForTooLong({ startTime }) ? "warning" : "success";
     }, [status, areAllTasksReady, startTime]);
 
-    const { classes, cx } = useStyles({
+    const { classes, cx, theme } = useStyles({
         "hasBeenRunningForTooLong": severity === "warning"
     });
 
@@ -149,36 +152,50 @@ export const MyServicesCard = memo((props: Props) => {
                         </div>
                     </div>
                     <div className={classes.timeAndStatusContainer}>
+                        <Text typo="caption" className={classes.captions}>
+                            {status === "deployed" && areAllTasksReady
+                                ? t("running since")
+                                : t("helm release status")}
+                        </Text>
                         {(() => {
                             switch (status) {
                                 case "pending":
-                                    return <>Pending</>;
+                                    return (
+                                        <Text typo="label 1">
+                                            <code>Pending</code>
+                                        </Text>
+                                    );
                                 case "failed":
-                                    return <>Failed</>;
+                                    return (
+                                        <Text typo="label 1">
+                                            <code>Failed</code>
+                                        </Text>
+                                    );
                                 case "deployed":
                                     if (!areAllTasksReady) {
                                         return (
-                                            <>
-                                                Deployed, waiting for container to
-                                                start...
-                                            </>
+                                            <Text typo="label 1">
+                                                <code>deployed</code>{" "}
+                                                {t("container starting")}
+                                                &nbsp;
+                                                <CircularProgress
+                                                    className={classes.circularProgress}
+                                                    size={
+                                                        theme.typography.variants[
+                                                            "label 1"
+                                                        ].style.fontSize
+                                                    }
+                                                />
+                                            </Text>
                                         );
                                     }
                                     return (
-                                        <>
-                                            <Text
-                                                typo="caption"
-                                                className={classes.captions}
-                                            >
-                                                {t("running since")}
-                                            </Text>
-                                            <MyServicesRunningTime
-                                                doesHaveBeenRunningForTooLong={getDoesHaveBeenRunningForTooLong(
-                                                    { startTime }
-                                                )}
-                                                startTime={startTime}
-                                            />
-                                        </>
+                                        <MyServicesRunningTime
+                                            doesHaveBeenRunningForTooLong={getDoesHaveBeenRunningForTooLong(
+                                                { startTime }
+                                            )}
+                                            startTime={startTime}
+                                        />
                                     );
                             }
                         })()}
@@ -202,23 +219,25 @@ export const MyServicesCard = memo((props: Props) => {
                         />
                     )}
                     <div style={{ "flex": 1 }} />
-                    {(openUrl !== undefined ||
-                        getPoseInstallInstructions !== undefined) && (
-                        <Button
-                            onClick={() =>
-                                evtReadmeAndEnvDialogAction.post(
-                                    "SHOW POST INSTALL INSTRUCTIONS"
-                                )
-                            }
-                            variant={openUrl === undefined ? "ternary" : "secondary"}
-                        >
-                            <span>
-                                {openUrl !== undefined
-                                    ? capitalize(t("open"))
-                                    : t("readme").toUpperCase()}
-                            </span>
-                        </Button>
-                    )}
+                    {status === "deployed" &&
+                        areAllTasksReady &&
+                        (openUrl !== undefined ||
+                            getPoseInstallInstructions !== undefined) && (
+                            <Button
+                                onClick={() =>
+                                    evtReadmeAndEnvDialogAction.post(
+                                        "SHOW POST INSTALL INSTRUCTIONS"
+                                    )
+                                }
+                                variant={openUrl === undefined ? "ternary" : "secondary"}
+                            >
+                                <span>
+                                    {openUrl !== undefined
+                                        ? capitalize(t("open"))
+                                        : t("readme").toUpperCase()}
+                                </span>
+                            </Button>
+                        )}
                 </div>
             </div>
             <ReadmeAndEnvDialog
@@ -241,6 +260,8 @@ export const { i18n } = declareComponentKeys<
     | "shared by you"
     | "reminder to delete services"
     | "this is a shared service"
+    | "helm release status"
+    | "container starting"
 >()({ MyServicesCard });
 
 const useStyles = tss
@@ -281,7 +302,14 @@ const useStyles = tss
             "flex": 1
         },
         "timeAndStatusContainer": {
-            "marginLeft": theme.spacing(6)
+            "flex": 1,
+            "paddingLeft": theme.spacing(6)
+        },
+        "circularProgress": {
+            "color": "inherit",
+            "position": "relative",
+            "top": 3,
+            "left": theme.spacing(2)
         },
         "belowDividerTop": {
             "display": "flex",
