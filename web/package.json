@@ -50,7 +50,7 @@
         "pathe": "^1.1.2",
         "powerhooks": "^1.0.8",
         "react": "^18.2.0",
-        "react-code-blocks": "^0.0.9-0",
+        "react-code-blocks": "^0.1.6",
         "react-dom": "^18.2.0",
         "run-exclusive": "^2.2.19",
         "screen-scaler": "^1.2.7",
