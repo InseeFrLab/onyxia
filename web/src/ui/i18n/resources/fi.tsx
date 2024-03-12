@@ -738,9 +738,6 @@ Tutustu vapaasti ja ota hallintaan Kubernetes-julkaisusi!
         "reminder to delete services": "Muista poistaa palvelusi.",
         "this is a shared service": "Tämä palvelu on jaettu projektin jäsenten kesken"
     },
-    "MyServicesRunningTime": {
-        "launching": "Käynnistetään..."
-    },
     "MyServicesRestorableConfigOptions": {
         "edit": "Muokkaa",
         "copy link": "Kopioi URL-osoite",

@@ -138,10 +138,16 @@ const startingRunningServiceHelmReleaseNames = createSelector(
         }
 
         return runningServices
-            .filter(
-                ({ status, areAllTasksReady }) =>
-                    status === "deployed" && areAllTasksReady
-            )
+            .filter(({ status, areAllTasksReady }) => {
+                switch (status) {
+                    case "deployed":
+                        return !areAllTasksReady;
+                    case "failed":
+                        return false;
+                    case "pending":
+                        return true;
+                }
+            })
             .map(({ helmReleaseName }) => helmReleaseName);
     }
 );

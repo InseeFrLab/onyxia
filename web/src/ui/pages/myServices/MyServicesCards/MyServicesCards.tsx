@@ -24,7 +24,9 @@ export type Props = {
               friendlyName: string;
               openUrl: string | undefined;
               monitoringUrl: string | undefined;
-              startTime: number | undefined;
+              startTime: number;
+              status: "deployed" | "pending" | "failed";
+              areAllTasksReady: boolean;
               isShared: boolean;
               isOwned: boolean;
               /** undefined when isOwned === true*/

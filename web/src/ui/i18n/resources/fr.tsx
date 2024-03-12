@@ -756,9 +756,6 @@ N'hésitez pas à explorer et à prendre en main vos déploiements Kubernetes !
             "Rappelez-vous de supprimer vos services après utilisation.",
         "this is a shared service": "Ce service est partagé au sein du projet"
     },
-    "MyServicesRunningTime": {
-        "launching": "En cours..."
-    },
     "MyServicesRestorableConfigOptions": {
         "edit": "Modifier",
         "copy link": "Copier l'URL",

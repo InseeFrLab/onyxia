@@ -751,9 +751,6 @@ Voel je vrij om te verkennen en de controle over je Kubernetes-implementaties te
             "Vergeet niet uw diensten te verwijderen na gebruik.",
         "this is a shared service": "Deze dienst wordt gedeeld binnen het project"
     },
-    "MyServicesRunningTime": {
-        "launching": "In uitvoering..."
-    },
     "MyServicesRestorableConfigOptions": {
         "edit": "Wijzigen",
         "copy link": "URL kopiëren",

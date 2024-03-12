@@ -737,9 +737,6 @@ Feel free to explore and take charge of your Kubernetes deployments!
         "reminder to delete services": "Remember to delete your services.",
         "this is a shared service": "This service is shared among project's member"
     },
-    "MyServicesRunningTime": {
-        "launching": "Launching..."
-    },
     "MyServicesRestorableConfigOptions": {
         "edit": "Edit",
         "copy link": "Copy URL link",

@@ -747,9 +747,6 @@ Sentiti libero di esplorare e prendere il controllo dei tuoi deployment Kubernet
             "Ricordati di eliminare i tuoi servizi dopo l'utilizzo.",
         "this is a shared service": "Questo servizio è condiviso all'interno del progetto"
     },
-    "MyServicesRunningTime": {
-        "launching": "In corso..."
-    },
     "MyServicesRestorableConfigOptions": {
         "edit": "Modificare",
         "copy link": "Copiare l'URL",

@@ -755,9 +755,6 @@ Fühlen Sie sich frei, Ihre Kubernetes-Bereitstellungen zu erkunden und die Kont
             "Denken Sie daran, Ihre Dienste nach Gebrauch zu löschen.",
         "this is a shared service": "Dieser Dienst wird im Projekt geteilt"
     },
-    "MyServicesRunningTime": {
-        "launching": "In Arbeit..."
-    },
     "MyServicesRestorableConfigOptions": {
         "edit": "Bearbeiten",
         "copy link": "URL kopieren",

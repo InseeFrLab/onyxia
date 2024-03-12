@@ -115,6 +115,7 @@ export const thunks = {
                                     helmRelease.status === "deployed" &&
                                     helmRelease.areAllTasksReady
                                 ) {
+                                    console.log("ici wesh");
                                     dispatch(
                                         actions.statusUpdated({
                                             helmReleaseName,

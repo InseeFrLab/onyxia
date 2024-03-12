@@ -692,9 +692,6 @@ ${
         "reminder to delete services": "请在使用后删除您的服务。",
         "this is a shared service": "该服务在项目内共享"
     },
-    "MyServicesRunningTime": {
-        "launching": "启动中"
-    },
     "MyServicesRestorableConfigOptions": {
         "edit": "编辑服务",
         "copy link": "复制链接",

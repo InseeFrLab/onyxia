@@ -167,8 +167,10 @@ export default function MyServices(props: Props) {
                     urls,
                     startedAt,
                     monitoringUrl,
-                    isStarting,
+                    status,
+                    areAllTasksReady,
                     hasPostInstallInstructions,
+
                     ...rest
                 }) => ({
                     helmReleaseName,
@@ -177,7 +179,9 @@ export default function MyServices(props: Props) {
                     chartName,
                     "openUrl": urls[0],
                     monitoringUrl,
-                    "startTime": isStarting ? undefined : startedAt,
+                    "startTime": startedAt,
+                    status,
+                    areAllTasksReady,
                     hasPostInstallInstructions,
                     "isShared": rest.isShared,
                     "isOwned": rest.isOwned,

@@ -38,8 +38,9 @@ export type Props = {
     projectServicePassword: string;
     openUrl: string | undefined;
     monitoringUrl: string | undefined;
-    /** undefined when the service is not yey launched */
-    startTime: number | undefined;
+    startTime: number;
+    status: "deployed" | "pending" | "failed";
+    areAllTasksReady: boolean;
     isShared: boolean;
     isOwned: boolean;
     /** undefined when isOwned === true*/
@@ -60,6 +61,8 @@ export const MyServicesCard = memo((props: Props) => {
         monitoringUrl,
         openUrl,
         startTime,
+        status,
+        areAllTasksReady,
         isShared,
         isOwned,
         ownerUsername
@@ -67,15 +70,17 @@ export const MyServicesCard = memo((props: Props) => {
 
     const { t } = useTranslation({ MyServicesCard });
 
-    const severity = useMemo(
-        () =>
-            startTime === undefined
-                ? "pending"
-                : getDoesHaveBeenRunningForTooLong({ startTime })
-                  ? "warning"
-                  : "success",
-        [startTime]
-    );
+    const severity = useMemo(() => {
+        if (status === "failed") {
+            return "error";
+        }
+
+        if (status === "pending" || !areAllTasksReady) {
+            return "pending";
+        }
+
+        return getDoesHaveBeenRunningForTooLong({ startTime }) ? "warning" : "success";
+    }, [status, areAllTasksReady, startTime]);
 
     const { classes, cx } = useStyles({
         "hasBeenRunningForTooLong": severity === "warning"
@@ -143,21 +148,40 @@ export const MyServicesCard = memo((props: Props) => {
                             )}
                         </div>
                     </div>
-                    <div className={classes.timeContainer}>
-                        <Text typo="caption" className={classes.captions}>
-                            {t("running since")}
-                        </Text>
-                        {startTime === undefined ? (
-                            <MyServicesRunningTime isRunning={false} />
-                        ) : (
-                            <MyServicesRunningTime
-                                isRunning={true}
-                                doesHaveBeenRunningForTooLong={getDoesHaveBeenRunningForTooLong(
-                                    { startTime }
-                                )}
-                                startTime={startTime}
-                            />
-                        )}
+                    <div className={classes.timeAndStatusContainer}>
+                        {(() => {
+                            switch (status) {
+                                case "pending":
+                                    return <>Pending</>;
+                                case "failed":
+                                    return <>Failed</>;
+                                case "deployed":
+                                    if (!areAllTasksReady) {
+                                        return (
+                                            <>
+                                                Deployed, waiting for container to
+                                                start...
+                                            </>
+                                        );
+                                    }
+                                    return (
+                                        <>
+                                            <Text
+                                                typo="caption"
+                                                className={classes.captions}
+                                            >
+                                                {t("running since")}
+                                            </Text>
+                                            <MyServicesRunningTime
+                                                doesHaveBeenRunningForTooLong={getDoesHaveBeenRunningForTooLong(
+                                                    { startTime }
+                                                )}
+                                                startTime={startTime}
+                                            />
+                                        </>
+                                    );
+                            }
+                        })()}
                     </div>
                 </div>
                 <div className={classes.belowDividerBottom}>
@@ -256,7 +280,7 @@ const useStyles = tss
             "paddingTop": theme.spacing(3),
             "flex": 1
         },
-        "timeContainer": {
+        "timeAndStatusContainer": {
             "marginLeft": theme.spacing(6)
         },
         "belowDividerTop": {
