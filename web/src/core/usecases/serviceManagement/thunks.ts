@@ -6,12 +6,12 @@ import { exclude } from "tsafe/exclude";
 import { createUsecaseContextApi } from "clean-architecture";
 import { assert } from "tsafe/assert";
 import { Evt, type Ctx } from "evt";
-import { name, actions } from "../state";
-import type { RunningService } from "../state";
+import { name, actions } from "./state";
+import type { RunningService } from "./state";
 import type { OnyxiaApi } from "core/ports/OnyxiaApi";
-import { formatHelmLsResp } from "./formatHelmCommands";
+import { formatHelmLsResp } from "./utils/formatHelmCommands";
 import * as viewQuotas from "core/usecases/viewQuotas";
-import { protectedSelectors } from "../selectors";
+import { protectedSelectors } from "./selectors";
 
 export const thunks = {
     "setActive":
