@@ -155,27 +155,18 @@ export const MyServicesCard = memo((props: Props) => {
                         <Text typo="caption" className={classes.captions}>
                             {status === "deployed" && areAllTasksReady
                                 ? t("running since")
-                                : t("helm release status")}
+                                : t("status")}
                         </Text>
                         {(() => {
                             switch (status) {
                                 case "pending":
-                                    return (
-                                        <Text typo="label 1">
-                                            <code>Pending</code>
-                                        </Text>
-                                    );
+                                    return <Text typo="label 1">{t("pending")}</Text>;
                                 case "failed":
-                                    return (
-                                        <Text typo="label 1">
-                                            <code>Failed</code>
-                                        </Text>
-                                    );
+                                    return <Text typo="label 1">{t("failed")}</Text>;
                                 case "deployed":
                                     if (!areAllTasksReady) {
                                         return (
                                             <Text typo="label 1">
-                                                <code>deployed</code>{" "}
                                                 {t("container starting")}
                                                 &nbsp;
                                                 <CircularProgress
@@ -260,8 +251,10 @@ export const { i18n } = declareComponentKeys<
     | "shared by you"
     | "reminder to delete services"
     | "this is a shared service"
-    | "helm release status"
+    | "status"
     | "container starting"
+    | "pending"
+    | "failed"
 >()({ MyServicesCard });
 
 const useStyles = tss

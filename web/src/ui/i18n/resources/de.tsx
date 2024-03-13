@@ -754,8 +754,10 @@ Fühlen Sie sich frei, Ihre Kubernetes-Bereitstellungen zu erkunden und die Kont
         "reminder to delete services":
             "Denken Sie daran, Ihre Dienste nach Gebrauch zu löschen.",
         "this is a shared service": "Dieser Dienst wird im Projekt geteilt",
-        "container starting": "Container startet",
-        "helm release status": "Helm Release Status"
+        "status": "Status",
+        "container starting": "Container wird gestartet",
+        "pending": "Ausstehend",
+        "failed": "Fehlgeschlagen"
     },
     "MyServicesRestorableConfigOptions": {
         "edit": "Bearbeiten",

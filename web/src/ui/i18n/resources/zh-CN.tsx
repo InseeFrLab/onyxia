@@ -691,8 +691,10 @@ ${
         "shared by you": "你分享的",
         "reminder to delete services": "请在使用后删除您的服务。",
         "this is a shared service": "该服务在项目内共享",
+        "status": "状态",
         "container starting": "容器启动中",
-        "helm release status": "Helm release 状态"
+        "pending": "待定",
+        "failed": "失败"
     },
     "MyServicesRestorableConfigOptions": {
         "edit": "编辑服务",

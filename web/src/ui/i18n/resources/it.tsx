@@ -747,8 +747,10 @@ Sentiti libero di esplorare e prendere il controllo dei tuoi deployment Kubernet
             "Ricordati di eliminare i tuoi servizi dopo l'utilizzo.",
         "this is a shared service":
             "Questo servizio è condiviso all'interno del progetto",
-        "container starting": "Avvio del container",
-        "helm release status": "Stato del helm release"
+        "status": "Stato",
+        "container starting": "Avvio del contenitore",
+        "pending": "In attesa",
+        "failed": "Fallito"
     },
     "MyServicesRestorableConfigOptions": {
         "edit": "Modificare",

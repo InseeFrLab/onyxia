@@ -750,8 +750,10 @@ Voel je vrij om te verkennen en de controle over je Kubernetes-implementaties te
         "reminder to delete services":
             "Vergeet niet uw diensten te verwijderen na gebruik.",
         "this is a shared service": "Deze dienst wordt gedeeld binnen het project",
-        "container starting": "Container wordt gestart",
-        "helm release status": "Helm release status"
+        "status": "Status",
+        "container starting": "Container start",
+        "pending": "In afwachting",
+        "failed": "Mislukt"
     },
     "MyServicesRestorableConfigOptions": {
         "edit": "Wijzigen",

@@ -736,8 +736,10 @@ Feel free to explore and take charge of your Kubernetes deployments!
         "shared by you": "Shared by you",
         "reminder to delete services": "Remember to delete your services.",
         "this is a shared service": "This service is shared among project's member",
+        "status": "Status",
         "container starting": "Container starting",
-        "helm release status": "Helm release status"
+        "pending": "Pending",
+        "failed": "Failed"
     },
     "MyServicesRestorableConfigOptions": {
         "edit": "Edit",
