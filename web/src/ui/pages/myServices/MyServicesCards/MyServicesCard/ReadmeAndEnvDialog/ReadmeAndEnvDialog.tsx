@@ -14,7 +14,7 @@ import { CopyOpenButton } from "./CopyOpenButton";
 
 type Props = {
     evtAction: NonPostableEvt<"SHOW ENV" | "SHOW POST INSTALL INSTRUCTIONS">;
-    startTime: number | undefined;
+    isReady: boolean;
     openUrl: string | undefined;
     projectServicePassword: string;
     getPostInstallInstructions: (() => string) | undefined;
@@ -24,7 +24,7 @@ type Props = {
 export function ReadmeAndEnvDialog(props: Props) {
     const {
         evtAction,
-        startTime,
+        isReady,
         openUrl,
         projectServicePassword,
         getPostInstallInstructions,
@@ -106,7 +106,7 @@ export function ReadmeAndEnvDialog(props: Props) {
                             <Button variant="secondary" onClick={onDialogClose}>
                                 {t("return")}
                             </Button>
-                            {startTime === undefined ? (
+                            {!isReady ? (
                                 <CircularProgress
                                     className={classes.circularProgress}
                                     color="textPrimary"
@@ -140,7 +140,7 @@ export function ReadmeAndEnvDialog(props: Props) {
         })();
 
         return { dialogBody, dialogButtons };
-    }, [dialogDesc, startTime, openUrl, t]);
+    }, [dialogDesc, isReady, openUrl, t]);
 
     return (
         <Dialog

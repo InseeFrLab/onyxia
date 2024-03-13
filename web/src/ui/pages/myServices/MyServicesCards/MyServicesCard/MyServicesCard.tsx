@@ -246,7 +246,7 @@ export const MyServicesCard = memo((props: Props) => {
                 getPostInstallInstructions={getPoseInstallInstructions}
                 projectServicePassword={projectServicePassword}
                 openUrl={openUrl}
-                startTime={startTime}
+                isReady={status === "deployed" && areAllTasksReady}
             />
         </div>
     );
