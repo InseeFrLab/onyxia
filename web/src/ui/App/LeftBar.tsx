@@ -144,6 +144,7 @@ export const LeftBar = memo((props: Props) => {
                         case "launcher":
                             return "catalog";
                         case "myServices":
+                        case "myService":
                             return "myServices";
                         case "mySecrets":
                             return "mySecrets";

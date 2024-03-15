@@ -18,6 +18,7 @@ import { useEvt } from "evt/hooks";
 import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
 import { id } from "tsafe/id";
 import { CircularProgress } from "onyxia-ui/CircularProgress";
+import type { Link } from "type-route";
 
 const runningTimeThreshold = 7 * 24 * 3600 * 1000;
 
@@ -46,6 +47,7 @@ export type Props = {
     isOwned: boolean;
     /** undefined when isOwned === true*/
     ownerUsername: string | undefined;
+    myServiceLink: Link | undefined;
 };
 
 export const MyServicesCard = memo((props: Props) => {
@@ -66,10 +68,9 @@ export const MyServicesCard = memo((props: Props) => {
         areAllTasksReady,
         isShared,
         isOwned,
-        ownerUsername
+        ownerUsername,
+        myServiceLink
     } = props;
-
-    //status = "pending";
 
     const { t } = useTranslation({ MyServicesCard });
 
@@ -111,7 +112,7 @@ export const MyServicesCard = memo((props: Props) => {
 
     return (
         <div className={cx(classes.root, className)}>
-            <div className={classes.aboveDivider}>
+            <a className={classes.aboveDivider} {...myServiceLink}>
                 <MyServicesRoundLogo url={chartIconUrl} severity={severity} />
                 <Text className={classes.title} typo="object heading">
                     {capitalize(friendlyName)}
@@ -134,7 +135,7 @@ export const MyServicesCard = memo((props: Props) => {
                         className={classes.errorOutlineIcon}
                     />
                 </Tooltip>
-            </div>
+            </a>
             <div className={classes.belowDivider}>
                 <div className={classes.belowDividerTop}>
                     <div>
@@ -278,7 +279,9 @@ const useStyles = tss
             "borderBottom": `1px solid ${theme.colors.useCases.typography.textTertiary}`,
             "boxSizing": "border-box",
             "display": "flex",
-            "alignItems": "center"
+            "alignItems": "center",
+            "color": "inherit",
+            "textDecoration": "none"
         },
         "title": {
             "marginLeft": theme.spacing(3)

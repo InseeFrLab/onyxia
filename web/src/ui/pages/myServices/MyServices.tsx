@@ -52,7 +52,10 @@ export default function MyServices(props: Props) {
         commandLogsEntries
     } = useCoreState("serviceManagement", "main");
 
-    const { isCommandBarEnabled } = useCoreState("userConfigs", "userConfigs");
+    const { isCommandBarEnabled, isDevModeEnabled } = useCoreState(
+        "userConfigs",
+        "userConfigs"
+    );
     const servicePassword = useCoreState("projectManagement", "servicePassword");
 
     const evtQuotasActionUpdate = useConst(() => Evt.create());
@@ -170,7 +173,6 @@ export default function MyServices(props: Props) {
                     status,
                     areAllTasksReady,
                     hasPostInstallInstructions,
-
                     ...rest
                 }) => ({
                     helmReleaseName,
@@ -185,6 +187,9 @@ export default function MyServices(props: Props) {
                     hasPostInstallInstructions,
                     "isShared": rest.isShared,
                     "isOwned": rest.isOwned,
+                    "myServiceLink": !isDevModeEnabled
+                        ? undefined
+                        : routes.myService({ helmReleaseName }).link,
                     "ownerUsername": rest.isOwned ? undefined : rest.ownerUsername
                 })
             ),

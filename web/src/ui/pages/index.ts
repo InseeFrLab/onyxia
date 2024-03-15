@@ -4,6 +4,7 @@ import * as launcher from "./launcher";
 import * as home from "./home";
 import * as myFiles from "./myFiles";
 import * as mySecrets from "./mySecrets";
+import * as myService from "./myService";
 import * as myServices from "./myServices";
 import * as page404 from "./page404";
 import * as projectSettings from "./projectSettings";
@@ -22,6 +23,7 @@ export const pages = {
     home,
     myFiles,
     mySecrets,
+    myService,
     myServices,
     page404,
     projectSettings,

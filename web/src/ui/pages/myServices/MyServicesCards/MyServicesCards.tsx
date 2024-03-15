@@ -32,6 +32,7 @@ export type Props = {
               /** undefined when isOwned === true*/
               ownerUsername: string | undefined;
               hasPostInstallInstructions: boolean;
+              myServiceLink: Link | undefined;
           }[]
         | undefined;
     catalogExplorerLink: Link;
