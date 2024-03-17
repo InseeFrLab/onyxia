@@ -64,4 +64,6 @@ export type OnyxiaApi = {
     onboard: (params: { group: string | undefined }) => Promise<void>;
 
     getQuotas: () => Promise<Record<string, Record<"spec" | "usage", string | number>>>;
+
+    getTaskLogs: (params: { helmReleaseName: string; taskId: string }) => Promise<string>;
 };

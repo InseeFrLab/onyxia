@@ -543,6 +543,16 @@ export function createOnyxiaApi(params: {
                     })
                     .filter(exclude(undefined))
             );
+        },
+        "getTaskLogs": async ({ helmReleaseName, taskId }) => {
+            const { data } = await axiosInstance.get<string>("/my-lab/app/logs", {
+                "params": {
+                    "serviceId": helmReleaseName,
+                    "taskId": taskId
+                }
+            });
+
+            return data;
         }
     };
 
