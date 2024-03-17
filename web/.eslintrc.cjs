@@ -26,7 +26,9 @@ module.exports = {
         "prefer-const": "off",
         "no-sequences": "off",
         "tss-unused-classes/unused-classes": "warn",
-        "no-lone-blocks": "off"
+        "no-lone-blocks": "off",
+        "@typescript-eslint/no-explicit-any": "off",
+        "no-constant-condition": "off"
     },
     "overrides": [
         {
