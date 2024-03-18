@@ -14,4 +14,8 @@ export type HelmRelease = {
     areAllTasksReady: boolean;
     status: "deployed" | "pending" | "failed";
     taskIds: string[];
+    events: {
+        message: string;
+        time: number;
+    }[];
 };

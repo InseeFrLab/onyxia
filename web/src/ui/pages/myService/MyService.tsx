@@ -9,8 +9,10 @@ import { Tabs } from "onyxia-ui/Tabs";
 import { tabIds } from "./tabIds";
 import { capitalize } from "tsafe/capitalize";
 import { useCore, useCoreState } from "core";
-import { TasksTab } from "./TasksTab";
+import { LogsTab } from "./LogsTab";
+import { EventTabs } from "./EventsTab";
 import { CircularProgress } from "onyxia-ui/CircularProgress";
+import { EnvTab } from "./EnvTab";
 
 export type Props = {
     route: PageRoute;
@@ -83,12 +85,12 @@ export default function MyService(props: Props) {
                     >
                         {(() => {
                             switch (route.params.tabId) {
-                                case "tasks":
-                                    return <TasksTab />;
+                                case "logs":
+                                    return <LogsTab />;
                                 case "events":
-                                    return "Events";
-                                case "values":
-                                    return "Metrics";
+                                    return <EventTabs />;
+                                case "env":
+                                    return <EnvTab />;
                             }
                         })()}
                     </Tabs>

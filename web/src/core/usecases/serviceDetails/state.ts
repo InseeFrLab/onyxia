@@ -31,6 +31,11 @@ export namespace State {
             taskId: string;
             logs: string;
         }[];
+        events: {
+            message: string;
+            time: number;
+        }[];
+        env: Record<string, string>;
     };
 }
 
@@ -82,10 +87,15 @@ export const { reducer, actions } = createUsecaseActions({
                         taskId: string;
                         logs: string;
                     }[];
+                    events: {
+                        message: string;
+                        time: number;
+                    }[];
+                    env: Record<string, string>;
                 };
             }
         ) => {
-            const { helmReleaseFriendlyName, tasks } = payload;
+            const { helmReleaseFriendlyName, tasks, events, env } = payload;
 
             assert(
                 state.stateDescription !== "not initialized" || state.isFetching === true
@@ -98,7 +108,9 @@ export const { reducer, actions } = createUsecaseActions({
                 "isFetching": false,
                 helmReleaseName,
                 helmReleaseFriendlyName,
-                tasks
+                tasks,
+                events,
+                env
             });
         },
         "notifyHelmReleaseNoLongerExists": () => {}

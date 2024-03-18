@@ -72,7 +72,9 @@ const privateThunks = {
                 actions.updateCompleted({
                     "helmReleaseFriendlyName":
                         helmRelease.friendlyName ?? helmRelease.helmReleaseName,
-                    tasks
+                    tasks,
+                    "events": helmRelease.events,
+                    "env": helmRelease.env
                 })
             );
         }
