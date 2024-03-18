@@ -13,4 +13,5 @@ export type HelmRelease = {
     chartVersion: string;
     areAllTasksReady: boolean;
     status: "deployed" | "pending" | "failed";
+    taskIds: string[];
 };

@@ -459,7 +459,8 @@ export function createOnyxiaApi(params: {
                         apiApp.tasks.length !== 0 &&
                         apiApp.tasks[0].containers.length !== 0 &&
                         apiApp.tasks[0].containers.every(({ ready }) => ready),
-                    "status": apiApp.status
+                    "status": apiApp.status,
+                    "taskIds": apiApp.tasks.map(({ id }) => id)
                 })
             );
         },

@@ -192,6 +192,7 @@ export type ApiTypes = {
             };
             startedAt: number;
             tasks: {
+                id: string;
                 containers: { ready: boolean }[];
             }[];
             postInstallInstructions?: string;

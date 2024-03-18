@@ -7,6 +7,7 @@ import * as launcher from "./launcher";
 import * as restorableConfigManagement from "./restorableConfigManagement";
 import * as s3ConfigCreation from "./s3ConfigCreation";
 import * as s3ConfigManagement from "./s3ConfigManagement";
+import * as serviceDetails from "./serviceDetails";
 import * as serviceManagement from "./serviceManagement";
 import * as userAuthentication from "./userAuthentication";
 import * as userConfigs from "./userConfigs";
@@ -29,6 +30,7 @@ export const usecases = {
     restorableConfigManagement,
     s3ConfigCreation,
     s3ConfigManagement,
+    serviceDetails,
     serviceManagement,
     userAuthentication,
     userConfigs,

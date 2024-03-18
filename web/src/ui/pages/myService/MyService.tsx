@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { tss } from "tss";
 import { PageHeader } from "onyxia-ui/PageHeader";
 import type { PageRoute } from "./route";
@@ -7,6 +8,9 @@ import { MyServiceButtonBar } from "./MyServiceButtonBar";
 import { Tabs } from "onyxia-ui/Tabs";
 import { tabIds } from "./tabIds";
 import { capitalize } from "tsafe/capitalize";
+import { useCore, useCoreState } from "core";
+import { TasksTab } from "./TasksTab";
+import { CircularProgress } from "onyxia-ui/CircularProgress";
 
 export type Props = {
     route: PageRoute;
@@ -16,50 +20,80 @@ export type Props = {
 export default function MyService(props: Props) {
     const { className, route } = props;
 
-    console.log(route);
-
     const { cx, classes } = useStyles();
+
+    const { serviceDetails } = useCore().functions;
+
+    const { isReady, helmReleaseFriendlyName } = useCoreState("serviceDetails", "main");
+
+    useEffect(() => {
+        const { setInactive } = serviceDetails.setActive({
+            "helmReleaseName": route.params.helmReleaseName
+        });
+
+        return () => setInactive();
+    }, [route.params.helmReleaseName]);
 
     return (
         <div className={cx(classes.root, className)}>
             <PageHeader
                 mainIcon={customIcons.servicesSvgUrl}
-                title={route.params.helmReleaseName}
+                title={helmReleaseFriendlyName ?? route.params.helmReleaseName}
                 helpTitle={"Monitoring your service"}
                 helpContent={
                     "Here you can monitor your service and see its logs, metrics, and other details."
                 }
                 helpIcon="sentimentSatisfied"
             />
-            <div className={classes.belowHeader}>
-                <MyServiceButtonBar
-                    onClick={buttonId => {
-                        console.log(`Button id click ${buttonId}`);
-                        if (buttonId === "back") {
-                            routes.myServices().push();
-                        }
-                    }}
-                />
-                <Tabs
-                    className={classes.tabs}
-                    tabs={tabIds.map(tabId => ({
-                        "id": tabId,
-                        "title": capitalize(tabId)
-                    }))}
-                    activeTabId={route.params.tabId}
-                    maxTabCount={3}
-                    onRequestChangeActiveTab={tabId =>
-                        routes
-                            .myService({
-                                ...route.params,
-                                tabId
-                            })
-                            .replace()
+            <MyServiceButtonBar
+                onClick={buttonId => {
+                    console.log(`Button id click ${buttonId}`);
+                    if (buttonId === "back") {
+                        routes.myServices().push();
                     }
-                >
-                    {route.params.tabId}
-                </Tabs>
-            </div>
+                }}
+            />
+
+            {(() => {
+                if (!isReady) {
+                    return (
+                        <div className={classes.circularProgressWrapper}>
+                            <CircularProgress />
+                        </div>
+                    );
+                }
+
+                return (
+                    <Tabs
+                        className={classes.tabs}
+                        tabs={tabIds.map(tabId => ({
+                            "id": tabId,
+                            "title": capitalize(tabId)
+                        }))}
+                        activeTabId={route.params.tabId}
+                        maxTabCount={3}
+                        onRequestChangeActiveTab={tabId =>
+                            routes
+                                .myService({
+                                    ...route.params,
+                                    tabId
+                                })
+                                .replace()
+                        }
+                    >
+                        {(() => {
+                            switch (route.params.tabId) {
+                                case "tasks":
+                                    return <TasksTab />;
+                                case "events":
+                                    return "Events";
+                                case "values":
+                                    return "Metrics";
+                            }
+                        })()}
+                    </Tabs>
+                );
+            })()}
         </div>
     );
 }
@@ -67,15 +101,14 @@ export default function MyService(props: Props) {
 const useStyles = tss.withName({ MyService }).create(({ theme }) => ({
     "root": {
         "height": "100%",
-        "display": "flex",
-        "flexDirection": "column"
+        "overflow": "auto",
+        "paddingRight": theme.spacing(2)
     },
-    "belowHeader": {
-        "position": "relative",
-        "flex": 1,
+    "circularProgressWrapper": {
         "display": "flex",
-        "flexDirection": "column",
-        "overflow": "hidden"
+        "justifyContent": "center",
+        "alignItems": "center",
+        "height": theme.typography.rootFontSizePx * 20
     },
     "tabs": {
         "marginTop": theme.spacing(4)
