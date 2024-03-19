@@ -16,9 +16,13 @@ export const thunks = {
                     return;
                 }
 
-                await dispatch(privateThunks.update({ helmReleaseName }));
+                try {
+                    await dispatch(privateThunks.update({ helmReleaseName }));
+                } catch {
+                    console.log("Pulling events and logs failed");
+                }
 
-                setTimeout(periodicalRefresh, 3_000);
+                setTimeout(periodicalRefresh, 5_000);
             })();
 
             function setInactive() {

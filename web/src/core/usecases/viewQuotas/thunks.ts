@@ -20,8 +20,12 @@ export const thunks = {
                         action.actionName === "projectChanged"
                 )
                 .toStateful()
-                .attach(() => {
-                    dispatch(thunks.update());
+                .attach(async () => {
+                    try {
+                        await dispatch(thunks.update());
+                    } catch {
+                        console.log("Initial fetching of quotas failed");
+                    }
                 });
 
             evtAction.attach(
@@ -48,7 +52,11 @@ export const thunks = {
                         ctx.evtDoneOrAborted.attachOnce(() => clearTimeout(timer));
                     });
 
-                    await dispatch(thunks.update());
+                    try {
+                        await dispatch(thunks.update());
+                    } catch {
+                        console.log("Fetching of quotas failed");
+                    }
                 }
             })();
 

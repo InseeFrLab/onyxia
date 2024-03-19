@@ -586,7 +586,17 @@ export function createOnyxiaApi(params: {
                     );
 
                     const { response, config } = error;
-                    const message =
+
+                    const message = [
+                        isThisTheFirstRequest
+                            ? [
+                                  "The first request to the Onyxia API failed.",
+                                  "This usually means that the Onyxia API is not configured correctly.",
+                                  `Please make sure that onyxia-api is running at:`,
+                                  url,
+                                  ""
+                              ].join("\n")
+                            : undefined,
                         config === undefined
                             ? String(error)
                             : [
@@ -604,20 +614,14 @@ export function createOnyxiaApi(params: {
 
                                       return `Response: ${response.status} ${response.statusText}`;
                                   })()
-                              ].join("\n");
+                              ].join("\n")
+                    ]
+                        .filter(exclude(undefined))
+                        .join("\n");
 
-                    if (isThisTheFirstRequest) {
-                        alert(
-                            [
-                                "The first request to the Onyxia API failed.",
-                                "This usually means that the Onyxia API is not configured correctly.",
-                                `Please make sure that onyxia-api is running at:`,
-                                url
-                            ].join("\n")
-                        );
-                    }
-
-                    alert(message);
+                    (error as any).onUnhandledOnyxiaApiError = () => {
+                        alert(message);
+                    };
 
                     throw error;
                 }
@@ -627,5 +631,39 @@ export function createOnyxiaApi(params: {
         ])
     ) as OnyxiaApi;
 
+    const handleUnhandledError = (error: any) => {
+        if (error === undefined) {
+            return;
+        }
+
+        if (!(error instanceof Error)) {
+            return;
+        }
+
+        const { onUnhandledOnyxiaApiError } = error as any;
+
+        if (onUnhandledOnyxiaApiError === undefined) {
+            return;
+        }
+
+        onUnhandledOnyxiaApiError();
+    };
+
+    window.onunhandledrejection = event => {
+        handleUnhandledError(event.reason);
+        return originalOnunhandledrejection?.call(window, event);
+    };
+
+    window.onerror = function (...args) {
+        const [, , , , error] = args;
+
+        handleUnhandledError(error);
+
+        return originalOnerror?.call(window, ...args);
+    };
+
     return onyxiaApiWithErrorLogging;
 }
+
+const originalOnunhandledrejection = window.onunhandledrejection;
+const originalOnerror = window.onerror;
