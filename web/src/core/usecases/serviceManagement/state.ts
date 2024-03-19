@@ -41,7 +41,7 @@ export declare namespace RunningService {
         startedAt: number;
         urls: string[];
         hasPostInstallInstructions: boolean;
-        status: "deployed" | "pending" | "failed";
+        status: "deployed" | "pending-install" | "failed";
         areAllTasksReady: boolean;
     };
 
@@ -109,7 +109,7 @@ export const { reducer, actions } = createUsecaseActions({
             }: {
                 payload: {
                     helmReleaseName: string;
-                    status: "deployed" | "pending" | "failed";
+                    status: "deployed" | "pending-install" | "failed";
                     areAllTasksReady: boolean;
                 };
             }

@@ -182,7 +182,7 @@ export type ApiTypes = {
     "/my-lab/services": {
         apps: {
             id: string;
-            status: "deployed" | "pending" | "failed";
+            status: "deployed" | "pending-install" | "failed";
             urls: string[];
             env: {
                 [onyxiaIsSharedFormFieldPath]: "true" | "false";

@@ -12,7 +12,7 @@ export type HelmRelease = {
     chartName: string;
     chartVersion: string;
     areAllTasksReady: boolean;
-    status: "deployed" | "pending" | "failed";
+    status: "deployed" | "pending-install" | "failed";
     taskIds: string[];
     events: {
         message: string;

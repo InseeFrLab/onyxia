@@ -144,7 +144,7 @@ const startingRunningServiceHelmReleaseNames = createSelector(
                         return !areAllTasksReady;
                     case "failed":
                         return false;
-                    case "pending":
+                    case "pending-install":
                         return true;
                 }
             })
