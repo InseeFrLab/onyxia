@@ -25,7 +25,7 @@ export type Props = {
               openUrl: string | undefined;
               monitoringUrl: string | undefined;
               startTime: number;
-              status: "deployed" | "pending" | "failed";
+              status: "deployed" | "pending-install" | "failed";
               areAllTasksReady: boolean;
               isShared: boolean;
               isOwned: boolean;
@@ -66,6 +66,7 @@ export const MyServicesCards = memo((props: Props) => {
     const { t } = useTranslation({ MyServicesCards });
 
     const getEvtMyServicesCardAction = useConst(() =>
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         memoize((_helmReleaseName: string) =>
             Evt.create<"SHOW POST INSTALL INSTRUCTIONS">()
         )

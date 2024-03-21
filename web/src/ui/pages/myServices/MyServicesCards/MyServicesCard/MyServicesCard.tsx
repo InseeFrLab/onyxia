@@ -41,7 +41,7 @@ export type Props = {
     openUrl: string | undefined;
     monitoringUrl: string | undefined;
     startTime: number;
-    status: "deployed" | "pending" | "failed";
+    status: "deployed" | "pending-install" | "failed";
     areAllTasksReady: boolean;
     isShared: boolean;
     isOwned: boolean;
@@ -79,7 +79,7 @@ export const MyServicesCard = memo((props: Props) => {
             return "error";
         }
 
-        if (status === "pending" || !areAllTasksReady) {
+        if (status === "pending-install" || !areAllTasksReady) {
             return "pending";
         }
 
@@ -160,7 +160,7 @@ export const MyServicesCard = memo((props: Props) => {
                         </Text>
                         {(() => {
                             switch (status) {
-                                case "pending":
+                                case "pending-install":
                                     return <Text typo="label 1">{t("pending")}</Text>;
                                 case "failed":
                                     return <Text typo="label 1">{t("failed")}</Text>;
