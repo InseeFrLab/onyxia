@@ -30,7 +30,8 @@ module.exports = {
         "@typescript-eslint/no-explicit-any": "off",
         "no-constant-condition": "off",
         "@typescript-eslint/no-namespace": "off",
-        "no-empty": "off"
+        "no-empty": "off",
+        "@typescript-eslint/no-unused-vars": "off"
     },
     "overrides": [
         {

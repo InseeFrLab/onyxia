@@ -149,6 +149,8 @@ export const thunks = {
                     ctxInner.done();
                 });
 
+            console.log("getting events now");
+
             function setInactive() {
                 ctx.done();
             }

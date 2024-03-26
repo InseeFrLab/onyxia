@@ -28,6 +28,42 @@ export function createOnyxiaApi(params: {
 }): OnyxiaApi {
     const { url, getOidcAccessToken, getCurrentRegionId, getCurrentProjectId } = params;
 
+    const getHeaders = () => {
+        const headers: Record<string, string> = {};
+
+        add_bearer_token: {
+            const accessToken = getOidcAccessToken();
+
+            if (accessToken === undefined) {
+                break add_bearer_token;
+            }
+
+            headers["Authorization"] = `Bearer ${accessToken}`;
+        }
+
+        add_region: {
+            const regionId = getCurrentRegionId();
+
+            if (regionId === undefined) {
+                break add_region;
+            }
+
+            headers["ONYXIA-REGION"] = regionId;
+        }
+
+        add_project: {
+            const projectId = getCurrentProjectId();
+
+            if (projectId === undefined) {
+                break add_project;
+            }
+
+            headers["ONYXIA-PROJECT"] = projectId;
+        }
+
+        return headers;
+    };
+
     const { axiosInstance } = (() => {
         const axiosInstance = axios.create({ "baseURL": url, "timeout": 120_000 });
 
@@ -35,12 +71,7 @@ export function createOnyxiaApi(params: {
             ...config,
             "headers": {
                 ...config?.headers,
-                "Authorization": (accessToken =>
-                    accessToken === undefined ? undefined : `Bearer ${accessToken}`)(
-                    getOidcAccessToken()
-                ),
-                "ONYXIA-REGION": getCurrentRegionId(),
-                "ONYXIA-PROJECT": getCurrentProjectId()
+                ...getHeaders()
             }
         }));
 
@@ -558,6 +589,78 @@ export function createOnyxiaApi(params: {
             });
 
             return data;
+        },
+        "subscribeToClusterEvents": async ({ onNewEvent, evtUnsubscribe }) => {
+            const response = await fetch(`${url}/my-lab/events`, {
+                "headers": getHeaders()
+            });
+
+            if (evtUnsubscribe.postCount !== 0) {
+                return;
+            }
+
+            assert(response.body !== null);
+
+            const reader = response.body.getReader();
+
+            evtUnsubscribe.attachOnce(() => {
+                reader.cancel();
+            });
+
+            let rest = "";
+
+            while (true) {
+                let result;
+
+                try {
+                    result = await reader.read();
+                } catch (error) {
+                    break;
+                }
+
+                if (evtUnsubscribe.postCount !== 0) {
+                    break;
+                }
+
+                const { done, value } = result;
+
+                if (done) {
+                    break;
+                }
+                // Convert Uint8Array to string assuming UTF-8 encoding
+                const chunk = new TextDecoder("utf-8").decode(value);
+
+                `${rest}${chunk}`.split("\n\n").forEach((part, index, parts) => {
+                    if (index === parts.length - 1) {
+                        rest = part;
+                        return;
+                    }
+
+                    const event: ApiTypes["/my-lab/events"] = JSON.parse(
+                        part.slice("data:".length)
+                    );
+
+                    onNewEvent({
+                        "message": event.message,
+                        "timestamp": new Date(event.firstTimestamp).getTime(),
+                        "severity": (() => {
+                            switch (event.type) {
+                                case "Normal":
+                                    return "info";
+                                case "Warning":
+                                    return "warning";
+                                case "Error":
+                                    return "error";
+                                default:
+                                    return "info";
+                            }
+                        })(),
+                        "originalEvent": event
+                    });
+                });
+            }
+
+            reader.releaseLock();
         }
     };
 

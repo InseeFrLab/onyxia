@@ -18,6 +18,7 @@ import { assert, type Equals } from "tsafe/assert";
 import { onlyIfChanged } from "evt/operators";
 import type { ParamsOfCreateS3Client } from "core/adapters/s3Client/default";
 import { id } from "tsafe/id";
+import { Evt } from "evt";
 
 type ParamsOfBootstrapCore = {
     /** Empty string for using mock */
@@ -362,6 +363,16 @@ export async function bootstrapCore(
 
     if (oidc.isUserLoggedIn) {
         dispatch(usecases.fileExplorer.protectedThunks.initialize());
+    }
+
+    if (oidc.isUserLoggedIn) {
+        console.log("start listening to cluster events");
+        context.onyxiaApi.subscribeToClusterEvents({
+            "evtUnsubscribe": Evt.create<void>(),
+            "onNewEvent": event => {
+                console.log("new event", event);
+            }
+        });
     }
 
     pluginSystemInitCore({ core, context });
