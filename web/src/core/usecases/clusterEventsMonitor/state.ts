@@ -17,7 +17,7 @@ export type State = {
     >;
 };
 
-export const name = "custerEvents";
+export const name = "clusterEventsMonitor";
 
 export const { reducer, actions } = createUsecaseActions({
     name,
