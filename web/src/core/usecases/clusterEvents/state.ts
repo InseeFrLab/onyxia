@@ -1,4 +1,5 @@
 import { createUsecaseActions } from "clean-architecture";
+import { exclude } from "tsafe/exclude";
 
 export type State = {
     clusterEventsByProjectId: Record<
@@ -10,7 +11,7 @@ export type State = {
                   severity: "info" | "warning" | "error";
                   originalEvent: Record<string, unknown>;
               }[];
-              notificationCount: number;
+              notificationCheckoutTime: number;
           }
         | undefined
     >;
@@ -43,7 +44,7 @@ export const { reducer, actions } = createUsecaseActions({
 
             const scopedState = (state.clusterEventsByProjectId[projectId] ??= {
                 "clusterEvents": [],
-                "notificationCount": 0
+                "notificationCheckoutTime": 0
             });
 
             const existingEvent = scopedState.clusterEvents.find(
@@ -54,22 +55,17 @@ export const { reducer, actions } = createUsecaseActions({
                 return;
             }
 
+            scopedState.clusterEvents.push(clusterEvent);
+
+            scopedState.clusterEvents.sort((a, b) => a.timestamp - b.timestamp);
+
             if (scopedState.clusterEvents.length > 100) {
                 scopedState.clusterEvents.shift();
             }
 
-            scopedState.clusterEvents.push(clusterEvent);
-
-            if (
-                clusterEvent.severity === "warning" ||
-                clusterEvent.severity === "error"
-            ) {
-                scopedState.notificationCount++;
-            }
-
             saveToLocalStorage(state);
         },
-        "notificationCountReset": (
+        "notificationCheckedOut": (
             state,
             { payload }: { payload: { projectId: string } }
         ) => {
@@ -81,7 +77,7 @@ export const { reducer, actions } = createUsecaseActions({
                 return;
             }
 
-            scopedState.notificationCount = 0;
+            scopedState.notificationCheckoutTime = Date.now();
 
             saveToLocalStorage(state);
         }
@@ -102,7 +98,24 @@ const { loadFromLocalStorage, saveToLocalStorage } = (() => {
             return undefined;
         }
 
-        return JSON.parse(localStorageItem);
+        const state: State = JSON.parse(localStorageItem);
+
+        const now = Date.now();
+
+        Object.values(state.clusterEventsByProjectId)
+            .filter(exclude(undefined))
+            .forEach(({ clusterEvents }) =>
+                clusterEvents
+                    .filter(({ timestamp }) => now - timestamp > 3_600_000)
+                    .map(olderEvent => clusterEvents.indexOf(olderEvent))
+                    .forEach(indexOfOlderEvent =>
+                        clusterEvents.splice(indexOfOlderEvent, 1)
+                    )
+            );
+
+        saveToLocalStorage(state);
+
+        return state;
     }
 
     return { saveToLocalStorage, loadFromLocalStorage };

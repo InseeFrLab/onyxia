@@ -69,7 +69,7 @@ export const thunks = {
             const [dispatch, getState] = args;
 
             dispatch(
-                actions.notificationCountReset({
+                actions.notificationCheckedOut({
                     "projectId": projectManagement.selectors.currentProject(getState()).id
                 })
             );
