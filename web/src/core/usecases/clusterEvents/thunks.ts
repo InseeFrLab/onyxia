@@ -53,9 +53,12 @@ export const thunks = {
                 });
 
             function setInactive() {
+                // NOTE: We do that because react in safe mode will call the effect multiple times
+                // on top of that, we would like to avoid making another request to the server if the user
+                // quickly navigate to another page then come back.
                 context.inactiveTimer = setTimeout(() => {
                     ctx.done();
-                }, 3_000);
+                }, 5_000);
             }
 
             return { setInactive };
