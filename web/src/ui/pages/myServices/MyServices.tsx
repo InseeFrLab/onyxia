@@ -69,7 +69,7 @@ export default function MyServices(props: Props) {
                 serviceManagement.update();
                 evtQuotasActionUpdate.post();
                 return;
-            case "trash":
+            case "trash": {
                 const dDoProceed = new Deferred<boolean>();
 
                 evtConfirmDeleteDialogOpen.post({
@@ -86,6 +86,7 @@ export default function MyServices(props: Props) {
                 );
 
                 return;
+            }
         }
     });
 
