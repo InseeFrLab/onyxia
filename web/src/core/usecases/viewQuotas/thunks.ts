@@ -44,12 +44,19 @@ export const thunks = {
                         privateSelectors.isOngoingPodDeletion(getState());
 
                     await new Promise<void>(resolve => {
+                        const ctxInner = Evt.newCtx();
+
                         const timer = setTimeout(
-                            resolve,
+                            () => {
+                                ctxInner.done();
+                                resolve();
+                            },
                             isOngoingPodDeletion === true ? 4_000 : 30_000
                         );
 
-                        ctx.evtDoneOrAborted.attachOnce(() => clearTimeout(timer));
+                        ctx.evtDoneOrAborted.attachOnce(ctxInner, () =>
+                            clearTimeout(timer)
+                        );
                     });
 
                     try {
