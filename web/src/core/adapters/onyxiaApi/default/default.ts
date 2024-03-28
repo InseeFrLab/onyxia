@@ -590,7 +590,10 @@ export function createOnyxiaApi(params: {
 
             return data;
         },
-        "subscribeToClusterEvents": async ({ onNewEvent, evtUnsubscribe }) => {
+        "subscribeToClusterEvents": async params => {
+            const { onNewEvent } = params;
+            const evtUnsubscribe = params.evtUnsubscribe.pipe();
+
             const response = await fetch(`${url}/my-lab/events`, {
                 "headers": getHeaders()
             });
