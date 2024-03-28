@@ -4,6 +4,7 @@ import { Evt } from "evt";
 import * as projectManagement from "core/usecases/projectManagement";
 import { createUsecaseContextApi } from "clean-architecture";
 import { id } from "tsafe/id";
+import { assert } from "tsafe/assert";
 
 export const thunks = {
     "setActive":
@@ -15,9 +16,10 @@ export const thunks = {
 
             const context = getContext(rootContext);
 
-            if (context.inactiveTimer !== undefined) {
-                clearTimeout(context.inactiveTimer);
-                return;
+            if (context.restoreResentConnection !== undefined) {
+                const { setInactive } = context.restoreResentConnection();
+
+                return { setInactive };
             }
 
             const ctx = Evt.newCtx();
@@ -52,14 +54,28 @@ export const thunks = {
                     });
                 });
 
+            let timer: ReturnType<typeof setTimeout> | undefined = undefined;
+
             function setInactive() {
                 // NOTE: We do that because react in safe mode will call the effect multiple times
                 // on top of that, we would like to avoid making another request to the server if the user
                 // quickly navigate to another page then come back.
-                context.inactiveTimer = setTimeout(() => {
+                timer = setTimeout(() => {
+                    context.restoreResentConnection = undefined;
                     ctx.done();
                 }, 5_000);
             }
+
+            context.restoreResentConnection = () => {
+                assert(
+                    timer !== undefined,
+                    "Should call setInactive before calling setActive again"
+                );
+
+                clearTimeout(timer);
+
+                return { setInactive };
+            };
 
             return { setInactive };
         },
@@ -77,5 +93,7 @@ export const thunks = {
 } satisfies Thunks;
 
 const { getContext } = createUsecaseContextApi(() => ({
-    "inactiveTimer": id<ReturnType<typeof setTimeout> | undefined>(undefined)
+    "restoreResentConnection": id<(() => { setInactive: () => void }) | undefined>(
+        undefined
+    )
 }));

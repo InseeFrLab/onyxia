@@ -27,6 +27,7 @@ import {
 import { Deferred } from "evt/tools/Deferred";
 import { customIcons } from "ui/theme";
 import { Quotas } from "./Quotas";
+import { assert, type Equals } from "tsafe/assert";
 
 export type Props = {
     route: PageRoute;
@@ -40,7 +41,7 @@ export default function MyServices(props: Props) {
     const { t: tCatalogLauncher } = useTranslation("Launcher");
 
     /* prettier-ignore */
-    const { serviceManagement, restorableConfigManagement, k8sCodeSnippets } = useCore().functions;
+    const { serviceManagement, restorableConfigManagement, k8sCodeSnippets, clusterEventsMonitor } = useCore().functions;
     /* prettier-ignore */
     const { restorableConfigs, chartIconAndFriendlyNameByRestorableConfigIndex } = useCoreState("restorableConfigManagement", "main");
     const {
@@ -59,6 +60,11 @@ export default function MyServices(props: Props) {
     const servicePassword = useCoreState("projectManagement", "servicePassword");
 
     const evtQuotasActionUpdate = useConst(() => Evt.create());
+
+    const eventsNotificationCount = useCoreState(
+        "clusterEventsMonitor",
+        "notificationsCount"
+    );
 
     const onButtonBarClick = useConstCallback(async (buttonId: ButtonId) => {
         switch (buttonId) {
@@ -87,11 +93,20 @@ export default function MyServices(props: Props) {
 
                 return;
             }
+            case "events":
+                clusterEventsMonitor.resetNotificationCount();
+                return;
         }
+        assert<Equals<typeof buttonId, never>>(false);
     });
 
     useEffect(() => {
         const { setInactive } = serviceManagement.setActive();
+        return () => setInactive();
+    }, []);
+
+    useEffect(() => {
+        const { setInactive } = clusterEventsMonitor.setActive();
         return () => setInactive();
     }, []);
 
@@ -272,6 +287,7 @@ export default function MyServices(props: Props) {
                         isThereDeletableServices={
                             deletableRunningServiceHelmReleaseNames.length !== 0
                         }
+                        eventsNotificationCount={eventsNotificationCount}
                     />
                 </div>
                 {isCommandBarEnabled && (

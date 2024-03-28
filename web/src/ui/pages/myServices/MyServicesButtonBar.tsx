@@ -4,8 +4,9 @@ import { ButtonBar, type ButtonBarProps } from "onyxia-ui/ButtonBar";
 import { declareComponentKeys } from "i18nifty";
 import { id } from "tsafe/id";
 import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
+import { Badge } from "@mui/material";
 
-const buttonIds = ["refresh", "launch", "trash"] as const;
+const buttonIds = ["refresh", "launch", "trash", "events"] as const;
 
 export type ButtonId = (typeof buttonIds)[number];
 
@@ -13,12 +14,18 @@ export type Props = {
     className?: string;
     isThereNonOwnedServicesShown: boolean;
     isThereDeletableServices: boolean;
+    eventsNotificationCount: number;
     onClick: (buttonId: ButtonId) => void;
 };
 
 export const MyServicesButtonBar = memo((props: Props) => {
-    const { className, isThereNonOwnedServicesShown, isThereDeletableServices, onClick } =
-        props;
+    const {
+        className,
+        isThereNonOwnedServicesShown,
+        isThereDeletableServices,
+        eventsNotificationCount,
+        onClick
+    } = props;
 
     const { t } = useTranslation({ MyServicesButtonBar });
 
@@ -34,21 +41,36 @@ export const MyServicesButtonBar = memo((props: Props) => {
                             return id<MuiIconComponentName>("Add");
                         case "trash":
                             return id<MuiIconComponentName>("Delete");
+                        case "events":
+                            return id<MuiIconComponentName>("Notifications");
                     }
                 })(),
                 "isDisabled": buttonId === "trash" && !isThereDeletableServices,
-                "label": t(
-                    (() => {
-                        switch (buttonId) {
-                            case "trash":
-                                return isThereNonOwnedServicesShown
-                                    ? "trash my own"
-                                    : "trash";
-                            default:
-                                return buttonId;
-                        }
-                    })()
-                )
+                "label": (() => {
+                    if (buttonId === "events") {
+                        return (
+                            <Badge
+                                badgeContent={eventsNotificationCount}
+                                color="primary"
+                                sx={{
+                                    ".MuiBadge-badge": {
+                                        "transform": "translate(20px, -50%)"
+                                    }
+                                }}
+                            >
+                                Events
+                            </Badge>
+                        );
+                    }
+
+                    if (buttonId === "trash") {
+                        return isThereNonOwnedServicesShown
+                            ? t("trash my own")
+                            : t("trash");
+                    }
+
+                    return t(buttonId);
+                })()
             })),
         [t, isThereNonOwnedServicesShown, isThereDeletableServices]
     );
