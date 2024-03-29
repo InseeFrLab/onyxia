@@ -2,6 +2,7 @@ import { createUsecaseActions } from "clean-architecture";
 import { exclude } from "tsafe/exclude";
 
 export type State = {
+    isActive: boolean;
     clusterEventsByProjectId: Record<
         string,
         | {
@@ -21,9 +22,17 @@ export const name = "clusterEventsMonitor";
 
 export const { reducer, actions } = createUsecaseActions({
     name,
-    "initialState": (): State =>
-        loadFromLocalStorage() ?? { "clusterEventsByProjectId": {} },
+    "initialState": (): State => ({
+        "clusterEventsByProjectId": loadFromLocalStorage() ?? {},
+        "isActive": false
+    }),
     "reducers": {
+        "enteredActiveState": state => {
+            state.isActive = true;
+        },
+        "exitedActiveState": state => {
+            state.isActive = false;
+        },
         "clusterEventReceived": (
             state,
             {
@@ -63,7 +72,7 @@ export const { reducer, actions } = createUsecaseActions({
                 scopedState.clusterEvents.shift();
             }
 
-            saveToLocalStorage(state);
+            saveToLocalStorage(state.clusterEventsByProjectId);
         },
         "notificationCheckedOut": (
             state,
@@ -79,30 +88,33 @@ export const { reducer, actions } = createUsecaseActions({
 
             scopedState.notificationCheckoutTime = Date.now();
 
-            saveToLocalStorage(state);
+            saveToLocalStorage(state.clusterEventsByProjectId);
         }
     }
 });
 
 const { loadFromLocalStorage, saveToLocalStorage } = (() => {
-    const localStorageKey = `${name} usecase state`;
+    const localStorageKey = `${name} usecase clusterEventsByProjectId state`;
 
-    function saveToLocalStorage(state: State) {
-        localStorage.setItem(localStorageKey, JSON.stringify(state));
+    function saveToLocalStorage(
+        clusterEventsByProjectId: State["clusterEventsByProjectId"]
+    ) {
+        localStorage.setItem(localStorageKey, JSON.stringify(clusterEventsByProjectId));
     }
 
-    function loadFromLocalStorage(): State | undefined {
+    function loadFromLocalStorage(): State["clusterEventsByProjectId"] | undefined {
         const localStorageItem = localStorage.getItem(localStorageKey);
 
         if (localStorageItem === null) {
             return undefined;
         }
 
-        const state: State = JSON.parse(localStorageItem);
+        const clusterEventsByProjectId: State["clusterEventsByProjectId"] =
+            JSON.parse(localStorageItem);
 
         const now = Date.now();
 
-        Object.values(state.clusterEventsByProjectId)
+        Object.values(clusterEventsByProjectId)
             .filter(exclude(undefined))
             .forEach(({ clusterEvents }) =>
                 clusterEvents
@@ -113,9 +125,9 @@ const { loadFromLocalStorage, saveToLocalStorage } = (() => {
                     )
             );
 
-        saveToLocalStorage(state);
+        saveToLocalStorage(clusterEventsByProjectId);
 
-        return state;
+        return clusterEventsByProjectId;
     }
 
     return { saveToLocalStorage, loadFromLocalStorage };

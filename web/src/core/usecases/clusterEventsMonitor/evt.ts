@@ -1,7 +1,8 @@
 import type { CreateEvt } from "core/bootstrap";
 import { Evt } from "evt";
+import { protectedSelectors } from "./selectors";
 
-export const createEvt = (({ evtAction }) => {
+export const createEvt = (({ evtAction, getState }) => {
     const evtOut = Evt.create<{
         actionName: "display notification";
         severity: "warning" | "error";
@@ -14,9 +15,26 @@ export const createEvt = (({ evtAction }) => {
             action.actionName === "clusterEventReceived"
                 ? [action.payload]
                 : null,
-        ({ clusterEvent }) => {
-            if (clusterEvent.severity === "info") {
+        async ({ clusterEvent }) => {
+            if (
+                clusterEvent.severity === "info" ||
+                Date.now() - clusterEvent.timestamp > 2_000
+            ) {
                 return;
+            }
+
+            if (!protectedSelectors.isActive(getState())) {
+                try {
+                    await evtAction.waitFor(
+                        action =>
+                            action.usecaseName === "clusterEventsMonitor" &&
+                            action.actionName === "enteredActiveState",
+                        15_000
+                    );
+                } catch {
+                    // Timeout
+                    return;
+                }
             }
 
             evtOut.post({

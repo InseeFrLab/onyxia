@@ -12,6 +12,8 @@ export const thunks = {
         (...args) => {
             const [dispatch, getState, rootContext] = args;
 
+            dispatch(actions.enteredActiveState());
+
             const { evtAction, onyxiaApi } = rootContext;
 
             const context = getContext(rootContext);
@@ -57,6 +59,8 @@ export const thunks = {
             let timer: ReturnType<typeof setTimeout> | undefined = undefined;
 
             function setInactive() {
+                dispatch(actions.enteredActiveState());
+
                 // NOTE: We do that because react in safe mode will call the effect multiple times
                 // on top of that, we would like to avoid making another request to the server if the user
                 // quickly navigate to another page then come back.

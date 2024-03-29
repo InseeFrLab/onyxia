@@ -28,6 +28,7 @@ import { Deferred } from "evt/tools/Deferred";
 import { customIcons } from "ui/theme";
 import { Quotas } from "./Quotas";
 import { assert, type Equals } from "tsafe/assert";
+import { useEvt } from "evt/hooks";
 
 export type Props = {
     route: PageRoute;
@@ -109,6 +110,22 @@ export default function MyServices(props: Props) {
         const { setInactive } = clusterEventsMonitor.setActive();
         return () => setInactive();
     }, []);
+
+    const { evtClusterEventsMonitor } = useCore().evts;
+
+    useEvt(
+        ctx => {
+            evtClusterEventsMonitor.$attach(
+                action =>
+                    action.actionName === "display notification" ? [action] : null,
+                ctx,
+                (/*{ message, severity }*/) => {
+                    console.log("stacked notification!");
+                }
+            );
+        },
+        [evtClusterEventsMonitor]
+    );
 
     const { isSavedConfigsExtended } = route.params;
 

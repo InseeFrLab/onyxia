@@ -39,7 +39,13 @@ const notificationsCount = createSelector(
         clusterEvents.filter(clusterEvent => clusterEvent.isHighlighted).length
 );
 
+const isActive = createSelector(state, state => state.isActive);
+
 export const selectors = {
     clusterEvents,
     notificationsCount
+};
+
+export const protectedSelectors = {
+    isActive
 };
