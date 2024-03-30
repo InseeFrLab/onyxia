@@ -29,6 +29,10 @@ import { customIcons } from "ui/theme";
 import { Quotas } from "./Quotas";
 import { assert, type Equals } from "tsafe/assert";
 import { useEvt } from "evt/hooks";
+import {
+    ClusterEventsSnackbar,
+    type ClusterEventsSnackbarProps
+} from "./ClusterEventsSnackbar";
 
 export type Props = {
     route: PageRoute;
@@ -113,14 +117,22 @@ export default function MyServices(props: Props) {
 
     const { evtClusterEventsMonitor } = useCore().evts;
 
+    const evtClusterEventsSnackbarAction = useConst(() =>
+        Evt.create<UnpackEvt<ClusterEventsSnackbarProps["evtAction"]>>()
+    );
+
     useEvt(
         ctx => {
             evtClusterEventsMonitor.$attach(
                 action =>
                     action.actionName === "display notification" ? [action] : null,
                 ctx,
-                (/*{ message, severity }*/) => {
-                    console.log("stacked notification!");
+                ({ message, severity }) => {
+                    evtClusterEventsSnackbarAction.post({
+                        "action": "show notification",
+                        message,
+                        severity
+                    });
                 }
             );
         },
@@ -288,83 +300,86 @@ export default function MyServices(props: Props) {
     );
 
     return (
-        <div className={cx(classes.root, className)}>
-            <PageHeader
-                mainIcon={customIcons.servicesSvgUrl}
-                title={t("text1")}
-                helpTitle={t("text2")}
-                helpContent={t("text3")}
-                helpIcon="sentimentSatisfied"
-            />
-            <div className={classes.belowHeader} ref={belowHeaderRef}>
-                <div ref={buttonBarRef}>
-                    <MyServicesButtonBar
-                        onClick={onButtonBarClick}
-                        isThereNonOwnedServicesShown={isThereNonOwnedServices}
-                        isThereDeletableServices={
-                            deletableRunningServiceHelmReleaseNames.length !== 0
-                        }
-                        eventsNotificationCount={eventsNotificationCount}
-                    />
-                </div>
-                {isCommandBarEnabled && (
-                    <CommandBar
-                        classes={{
-                            "root": classes.commandBar,
-                            "rootWhenExpended": classes.commandBarWhenExpended
-                        }}
-                        entries={commandLogsEntries}
-                        maxHeight={commandBarMaxHeight}
-                        helpDialog={{
-                            "body": tCatalogLauncher("api logs help body", {
-                                "k8CredentialsHref": !k8sCodeSnippets.getIsAvailable()
-                                    ? undefined
-                                    : routes.account({
-                                          "tabId": "k8sCodeSnippets"
-                                      }).href,
-                                "myServicesHref": routes.myServices().href,
-                                "interfacePreferenceHref": routes.account({
-                                    "tabId": "user-interface"
-                                }).href
-                            })
-                        }}
-                    />
-                )}
-                <div className={classes.cardsAndSavedConfigs}>
-                    <>
-                        {!isSavedConfigsExtended && (
-                            <MyServicesCards
-                                isUpdating={isUpdating}
-                                className={classes.cards}
-                                cards={cards}
-                                onRequestDelete={onRequestDelete}
-                                catalogExplorerLink={catalogExplorerLink}
-                                evtAction={evtMyServiceCardsAction}
-                                projectServicePassword={servicePassword}
-                                getEnv={serviceManagement.getEnv}
-                                getPostInstallInstructions={
-                                    serviceManagement.getPostInstallInstructions
-                                }
-                            />
-                        )}
-                        <div className={classes.rightPanel}>
+        <>
+            <div className={cx(classes.root, className)}>
+                <PageHeader
+                    mainIcon={customIcons.servicesSvgUrl}
+                    title={t("text1")}
+                    helpTitle={t("text2")}
+                    helpContent={t("text3")}
+                    helpIcon="sentimentSatisfied"
+                />
+                <div className={classes.belowHeader} ref={belowHeaderRef}>
+                    <div ref={buttonBarRef}>
+                        <MyServicesButtonBar
+                            onClick={onButtonBarClick}
+                            isThereNonOwnedServicesShown={isThereNonOwnedServices}
+                            isThereDeletableServices={
+                                deletableRunningServiceHelmReleaseNames.length !== 0
+                            }
+                            eventsNotificationCount={eventsNotificationCount}
+                        />
+                    </div>
+                    {isCommandBarEnabled && (
+                        <CommandBar
+                            classes={{
+                                "root": classes.commandBar,
+                                "rootWhenExpended": classes.commandBarWhenExpended
+                            }}
+                            entries={commandLogsEntries}
+                            maxHeight={commandBarMaxHeight}
+                            helpDialog={{
+                                "body": tCatalogLauncher("api logs help body", {
+                                    "k8CredentialsHref": !k8sCodeSnippets.getIsAvailable()
+                                        ? undefined
+                                        : routes.account({
+                                              "tabId": "k8sCodeSnippets"
+                                          }).href,
+                                    "myServicesHref": routes.myServices().href,
+                                    "interfacePreferenceHref": routes.account({
+                                        "tabId": "user-interface"
+                                    }).href
+                                })
+                            }}
+                        />
+                    )}
+                    <div className={classes.cardsAndSavedConfigs}>
+                        <>
                             {!isSavedConfigsExtended && (
-                                <Quotas evtActionUpdate={evtQuotasActionUpdate} />
+                                <MyServicesCards
+                                    isUpdating={isUpdating}
+                                    className={classes.cards}
+                                    cards={cards}
+                                    onRequestDelete={onRequestDelete}
+                                    catalogExplorerLink={catalogExplorerLink}
+                                    evtAction={evtMyServiceCardsAction}
+                                    projectServicePassword={servicePassword}
+                                    getEnv={serviceManagement.getEnv}
+                                    getPostInstallInstructions={
+                                        serviceManagement.getPostInstallInstructions
+                                    }
+                                />
                             )}
-                            <MyServicesRestorableConfigs
-                                isShortVariant={!isSavedConfigsExtended}
-                                entries={restorableConfigEntires}
-                                onRequestDelete={onRequestDeleteRestorableConfig}
-                                onRequestToggleIsShortVariant={
-                                    onRequestToggleIsShortVariant
-                                }
-                            />
-                        </div>
-                    </>
+                            <div className={classes.rightPanel}>
+                                {!isSavedConfigsExtended && (
+                                    <Quotas evtActionUpdate={evtQuotasActionUpdate} />
+                                )}
+                                <MyServicesRestorableConfigs
+                                    isShortVariant={!isSavedConfigsExtended}
+                                    entries={restorableConfigEntires}
+                                    onRequestDelete={onRequestDeleteRestorableConfig}
+                                    onRequestToggleIsShortVariant={
+                                        onRequestToggleIsShortVariant
+                                    }
+                                />
+                            </div>
+                        </>
+                    </div>
+                    <MyServicesConfirmDeleteDialog evtOpen={evtConfirmDeleteDialogOpen} />
                 </div>
-                <MyServicesConfirmDeleteDialog evtOpen={evtConfirmDeleteDialogOpen} />
             </div>
-        </div>
+            <ClusterEventsSnackbar evtAction={evtClusterEventsSnackbarAction} />
+        </>
     );
 }
 
