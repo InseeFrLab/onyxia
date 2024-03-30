@@ -4,6 +4,9 @@ import { Alert } from "onyxia-ui/Alert";
 import { NonPostableEvt } from "evt";
 import { useEvt } from "evt/hooks";
 import { tss } from "tss";
+import { IconButton } from "onyxia-ui/IconButton";
+import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
+import { id } from "tsafe/id";
 
 export type ClusterEventsSnackbarProps = {
     evtAction: NonPostableEvt<{
@@ -48,9 +51,7 @@ export const ClusterEventsSnackbar = memo((props: ClusterEventsSnackbarProps) =>
         <Snackbar
             className={classes.root}
             open={openState !== undefined}
-            onMouseDown={e => e.stopPropagation()}
-            onMouseUp={e => e.stopPropagation()}
-            autoHideDuration={7_000_000}
+            autoHideDuration={10_000}
             onClose={(...[, reason]) => {
                 if (reason === "clickaway") {
                     return;
@@ -61,7 +62,13 @@ export const ClusterEventsSnackbar = memo((props: ClusterEventsSnackbarProps) =>
             anchorOrigin={{ "vertical": "bottom", "horizontal": "center" }}
         >
             <Alert severity={openState?.severity ?? "warning"} doDisplayCross>
-                {openState?.message ?? ""}
+                <div className={classes.alertContent}>
+                    {openState?.message ?? ""}
+                    <IconButton
+                        onClick={() => console.log("show more")}
+                        icon={id<MuiIconComponentName>("ManageSearch")}
+                    />
+                </div>
             </Alert>
         </Snackbar>
     );
@@ -73,5 +80,10 @@ const useStyles = tss
     .create(({ isOpen }) => ({
         "root": {
             "visibility": !isOpen ? "hidden" : undefined
+        },
+        "alertContent": {
+            "display": "flex",
+            "justifyContent": "center",
+            "alignItems": "center"
         }
     }));
