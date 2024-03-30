@@ -13,7 +13,7 @@ import { useEvt } from "evt/hooks";
 import { CopyOpenButton } from "./CopyOpenButton";
 
 type Props = {
-    evtAction: NonPostableEvt<"SHOW ENV" | "SHOW POST INSTALL INSTRUCTIONS">;
+    evtAction: NonPostableEvt<"SHOW ENV" | "SHOW POST INSTALL INSTRUCTIONS" | "CLOSE">;
     isReady: boolean;
     openUrl: string | undefined;
     projectServicePassword: string;
@@ -63,6 +63,12 @@ export function ReadmeAndEnvDialog(props: Props) {
                         "postInstallInstructions": getPostInstallInstructions?.() ?? ""
                     });
                 }
+            );
+
+            evtAction.attach(
+                action => action === "CLOSE",
+                ctx,
+                () => setDialogDesc(undefined)
             );
         },
         [evtAction, projectServicePassword]
