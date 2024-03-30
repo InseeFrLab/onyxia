@@ -36,7 +36,13 @@ export const ClusterEventsSnackbar = memo((props: ClusterEventsSnackbarProps) =>
                 action => action.action === "show notification",
                 ctx,
                 ({ message, severity }) => {
-                    setOpenState({ message, severity });
+                    setOpenState(openState => {
+                        if (severity === "warning" && openState?.severity === "error") {
+                            return openState;
+                        }
+
+                        return { message, severity };
+                    });
                 }
             );
         },
