@@ -382,7 +382,10 @@ export default function MyServices(props: Props) {
                     <MyServicesConfirmDeleteDialog evtOpen={evtConfirmDeleteDialogOpen} />
                 </div>
             </div>
-            <ClusterEventsSnackbar evtAction={evtClusterEventsSnackbarAction} />
+            <ClusterEventsSnackbar
+                evtAction={evtClusterEventsSnackbarAction}
+                onOpenDetails={() => console.log("TODO: Open details")}
+            />
         </>
     );
 }
