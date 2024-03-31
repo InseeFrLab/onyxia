@@ -7,6 +7,7 @@ export type State = {
         string,
         | {
               clusterEvents: {
+                  eventId: string;
                   message: string;
                   timestamp: number;
                   severity: "info" | "warning" | "error";
@@ -41,6 +42,7 @@ export const { reducer, actions } = createUsecaseActions({
                 payload: {
                     projectId: string;
                     clusterEvent: {
+                        eventId: string;
                         message: string;
                         timestamp: number;
                         severity: "info" | "warning" | "error";
@@ -57,7 +59,7 @@ export const { reducer, actions } = createUsecaseActions({
             });
 
             const existingEvent = scopedState.clusterEvents.find(
-                ({ timestamp }) => clusterEvent.timestamp === timestamp
+                ({ eventId }) => clusterEvent.eventId === eventId
             );
 
             if (existingEvent !== undefined) {

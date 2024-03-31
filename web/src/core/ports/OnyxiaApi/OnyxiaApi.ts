@@ -70,6 +70,7 @@ export type OnyxiaApi = {
 
     subscribeToClusterEvents: (params: {
         onNewEvent: (event: {
+            eventId: string;
             message: string;
             timestamp: number;
             severity: "info" | "warning" | "error";

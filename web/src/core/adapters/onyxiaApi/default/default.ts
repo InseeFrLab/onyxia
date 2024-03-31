@@ -646,8 +646,9 @@ export function createOnyxiaApi(params: {
                     );
 
                     onNewEvent({
+                        "eventId": event.metadata.uid,
                         "message": event.message,
-                        "timestamp": new Date(event.firstTimestamp).getTime(),
+                        "timestamp": new Date(event.metadata.creationTimestamp).getTime(),
                         "severity": (() => {
                             switch (event.type) {
                                 case "Normal":
