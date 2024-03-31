@@ -18,6 +18,7 @@ import { compareVersions } from "compare-versions";
 import { injectXOnyxiaContextInValuesSchemaJson } from "./injectXOnyxiaContextInValuesSchemaJson";
 import { exclude } from "tsafe/exclude";
 import type { ApiTypes } from "./ApiTypes";
+import { Evt } from "evt";
 
 export function createOnyxiaApi(params: {
     url: string;
@@ -592,7 +593,8 @@ export function createOnyxiaApi(params: {
         },
         "subscribeToClusterEvents": async params => {
             const { onNewEvent } = params;
-            const evtUnsubscribe = params.evtUnsubscribe.pipe();
+            const ctxUnsubscribe = Evt.newCtx();
+            const evtUnsubscribe = params.evtUnsubscribe.pipe(ctxUnsubscribe);
 
             const response = await fetch(`${url}/my-lab/events`, {
                 "headers": getHeaders()
@@ -662,6 +664,8 @@ export function createOnyxiaApi(params: {
                     });
                 });
             }
+
+            ctxUnsubscribe.done();
 
             reader.releaseLock();
         }
