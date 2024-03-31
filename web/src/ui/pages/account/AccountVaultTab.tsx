@@ -135,7 +135,7 @@ export const AccountVaultTab = memo((props: Props) => {
     );
 });
 
-export const { i18n } = declareComponentKeys<
+const { i18n } = declareComponentKeys<
     | "credentials section title"
     | {
           K: "credentials section helper";
@@ -146,6 +146,7 @@ export const { i18n } = declareComponentKeys<
     | { K: "init script section helper"; P: { vaultCliDocLink: string }; R: JSX.Element }
     | { K: "expires in"; P: { howMuchTime: string } }
 >()({ AccountVaultTab });
+export type I18n = typeof i18n;
 
 const useStyles = tss.withName({ AccountVaultTab }).create(({ theme }) => ({
     "divider": {

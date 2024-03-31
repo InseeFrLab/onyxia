@@ -74,7 +74,7 @@ const useStyles = tss.withName({ CircularUsage }).create(({ theme }) => ({
     }
 }));
 
-export const { i18n } = declareComponentKeys<
+const { i18n } = declareComponentKeys<
     | "used"
     | "max"
     | {
@@ -82,3 +82,4 @@ export const { i18n } = declareComponentKeys<
           P: { what: string; isLimit: boolean };
       }
 >()({ CircularUsage });
+export type I18n = typeof i18n;

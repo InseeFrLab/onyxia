@@ -62,7 +62,7 @@ MyServicesConfirmDeleteDialog.displayName = symToStr({
     MyServicesConfirmDeleteDialog
 });
 
-export const { i18n } = declareComponentKeys<
+const { i18n } = declareComponentKeys<
     | "confirm delete title"
     | "confirm delete subtitle"
     | "confirm delete body"
@@ -70,3 +70,4 @@ export const { i18n } = declareComponentKeys<
     | "cancel"
     | "confirm"
 >()({ MyServicesConfirmDeleteDialog });
+export type I18n = typeof i18n;

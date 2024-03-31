@@ -451,7 +451,7 @@ export default function Launcher(props: Props) {
     );
 }
 
-export const { i18n } = declareComponentKeys<
+const { i18n } = declareComponentKeys<
     | "header text1"
     | "header text2"
     | {
@@ -473,6 +473,7 @@ export const { i18n } = declareComponentKeys<
           R: JSX.Element;
       }
 >()({ Launcher });
+export type I18n = typeof i18n;
 
 const useStyles = tss
     .withParams<{ isCommandBarEnabled: boolean }>()

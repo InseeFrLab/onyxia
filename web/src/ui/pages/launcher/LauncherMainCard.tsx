@@ -412,7 +412,7 @@ export const LauncherMainCard = memo((props: Props) => {
 
 LauncherMainCard.displayName = symToStr({ LauncherMainCard });
 
-export const { i18n } = declareComponentKeys<
+const { i18n } = declareComponentKeys<
     | "card title"
     | "cancel"
     | "launch"
@@ -460,6 +460,7 @@ export const { i18n } = declareComponentKeys<
           R: JSX.Element;
       }
 >()({ LauncherMainCard });
+export type I18n = typeof i18n;
 
 const useStyles = tss.withName({ LauncherMainCard }).create(({ theme }) => ({
     "root": {

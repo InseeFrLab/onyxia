@@ -9,71 +9,71 @@ export { languages };
 export const fallbackLanguage = "en";
 
 export type ComponentKey =
-    | typeof import("ui/pages/mySecrets/MySecrets").i18n
-    | typeof import("ui/pages/mySecrets/SecretsExplorer").i18n
-    | typeof import("ui/pages/mySecrets/MySecretsEditor").i18n
-    | typeof import("ui/pages/mySecrets/SecretsExplorer/SecretsExplorerButtonBar").i18n
-    | typeof import("ui/pages/mySecrets/SecretsExplorer/SecretsExplorerItems").i18n
-    | typeof import("ui/pages/mySecrets/SecretsExplorer/SecretsExplorerItems/SecretsExplorerItem").i18n
-    | typeof import("ui/pages/mySecrets/MySecretsEditor/MySecretsEditorRow").i18n
-    | typeof import("ui/pages/myFiles/MyFiles").i18n
-    | typeof import("ui/pages/myFiles/MyFilesDisabledDialog").i18n
-    | typeof import("ui/pages/myFiles/Explorer/Explorer").i18n
-    | typeof import("ui/pages/myFiles/Explorer/ExplorerButtonBar").i18n
-    | typeof import("ui/pages/myFiles/Explorer/ExplorerItems").i18n
-    | typeof import("ui/pages/myFiles/Explorer/ExplorerItems/ExplorerItem").i18n
-    | typeof import("ui/pages/myFiles/Explorer/ExplorerUploadModal/ExplorerUploadModalDropArea").i18n
-    | typeof import("ui/pages/myFiles/Explorer/ExplorerUploadModal/ExplorerUploadProgress").i18n
-    | typeof import("ui/pages/myFiles/Explorer/ExplorerUploadModal/ExplorerUploadModal").i18n
-    | typeof import("ui/App/Header/Header").i18n
-    | typeof import("ui/App/LeftBar").i18n
-    | typeof import("ui/App/AutoLogoutCountdown").i18n
-    | typeof import("ui/pages/page404/Page404").i18n
-    | typeof import("ui/shared/PortraitModeUnsupported").i18n
-    | typeof import("ui/shared/MaybeAcknowledgeConfigVolatilityDialog").i18n
-    | typeof import("ui/pages/home/Home").i18n
-    | typeof import("ui/shared/SettingField").i18n
-    | typeof import("ui/pages/account/Account").i18n
-    | typeof import("ui/pages/account/AccountInfoTab").i18n
-    | typeof import("ui/pages/account/AccountIntegrationsTab").i18n
-    | typeof import("ui/pages/account/AccountStorageTab").i18n
-    | typeof import("ui/pages/account/AccountKubernetesTab").i18n
-    | typeof import("ui/pages/account/AccountUserInterfaceTab").i18n
-    | typeof import("ui/pages/account/AccountVaultTab").i18n
-    | typeof import("ui/pages/projectSettings/ProjectSettings").i18n
-    | typeof import("ui/pages/projectSettings/ProjectSettingsS3ConfigTab/ProjectSettingsS3ConfigTab").i18n
-    | typeof import("ui/pages/projectSettings/ProjectSettingsS3ConfigTab/S3ConfigCard").i18n
-    | typeof import("ui/pages/projectSettings/ProjectSettingsS3ConfigTab/S3ConfigDialogs/AddCustomS3ConfigDialog").i18n
-    | typeof import("ui/pages/projectSettings/ProjectSettingsS3ConfigTab/TestS3ConnectionButton").i18n
-    | typeof import("ui/App/Footer").i18n
-    | typeof import("ui/pages/catalog/Catalog").i18n
-    | typeof import("ui/pages/catalog/CatalogChartCard").i18n
-    | typeof import("ui/pages/catalog/CatalogNoSearchMatches").i18n
-    | typeof import("ui/pages/launcher/Launcher").i18n
-    | typeof import("ui/pages/launcher/LauncherMainCard").i18n
-    | typeof import("ui/pages/launcher/LauncherConfigurationCard").i18n
-    | typeof import("ui/pages/launcher/LauncherDialogs/AcknowledgeSharingOfConfigConfirmDialog").i18n
-    | typeof import("ui/pages/launcher/LauncherDialogs/AutoLaunchDisabledDialog").i18n
-    | typeof import("ui/pages/launcher/LauncherDialogs/NoLongerBookmarkedDialog").i18n
-    | typeof import("ui/pages/launcher/LauncherDialogs/SensitiveConfigurationDialog").i18n
-    | typeof import("ui/pages/myServices/MyServices").i18n
-    | typeof import("ui/pages/myServices/MyServicesConfirmDeleteDialog").i18n
-    | typeof import("ui/pages/myServices/MyServicesButtonBar").i18n
-    | typeof import("ui/pages/myServices/MyServicesCards/MyServicesCard/MyServicesCard").i18n
-    | typeof import("ui/pages/myServices/MyServicesCards/MyServicesCard/ReadmeAndEnvDialog/ReadmeAndEnvDialog").i18n
-    | typeof import("ui/pages/myServices/MyServicesCards/MyServicesCard/ReadmeAndEnvDialog/CopyOpenButton").i18n
-    | typeof import("ui/pages/myServices/MyServicesRestorableConfigs/MyServicesRestorableConfig/MyServicesRestorableConfigOptions").i18n
-    | typeof import("ui/pages/myServices/MyServicesRestorableConfigs/MyServicesRestorableConfig").i18n
-    | typeof import("ui/pages/myServices/MyServicesRestorableConfigs").i18n
-    | typeof import("ui/pages/myServices/MyServicesCards").i18n
-    | typeof import("ui/pages/myServices/MyServicesCards/NoRunningService").i18n
-    | typeof import("ui/pages/myServices/Quotas/CircularUsage").i18n
-    | typeof import("ui/pages/myServices/Quotas/Quotas").i18n
-    | typeof import("ui/pages/dataExplorer/DataExplorer").i18n
-    | typeof import("ui/pages/dataExplorer/UrlInput").i18n
-    | typeof import("ui/shared/CommandBar").i18n
-    | typeof import("ui/shared/useMoment").i18n
-    | typeof import("ui/shared/CopyToClipboardIconButton").i18n;
+    | import("ui/pages/mySecrets/MySecrets").I18n
+    | import("ui/pages/mySecrets/SecretsExplorer").I18n
+    | import("ui/pages/mySecrets/MySecretsEditor").I18n
+    | import("ui/pages/mySecrets/SecretsExplorer/SecretsExplorerButtonBar").I18n
+    | import("ui/pages/mySecrets/SecretsExplorer/SecretsExplorerItems").I18n
+    | import("ui/pages/mySecrets/SecretsExplorer/SecretsExplorerItems/SecretsExplorerItem").I18n
+    | import("ui/pages/mySecrets/MySecretsEditor/MySecretsEditorRow").I18n
+    | import("ui/pages/myFiles/MyFiles").I18n
+    | import("ui/pages/myFiles/MyFilesDisabledDialog").I18n
+    | import("ui/pages/myFiles/Explorer/Explorer").I18n
+    | import("ui/pages/myFiles/Explorer/ExplorerButtonBar").I18n
+    | import("ui/pages/myFiles/Explorer/ExplorerItems").I18n
+    | import("ui/pages/myFiles/Explorer/ExplorerItems/ExplorerItem").I18n
+    | import("ui/pages/myFiles/Explorer/ExplorerUploadModal/ExplorerUploadModalDropArea").I18n
+    | import("ui/pages/myFiles/Explorer/ExplorerUploadModal/ExplorerUploadProgress").I18n
+    | import("ui/pages/myFiles/Explorer/ExplorerUploadModal/ExplorerUploadModal").I18n
+    | import("ui/App/Header/Header").I18n
+    | import("ui/App/LeftBar").I18n
+    | import("ui/App/AutoLogoutCountdown").I18n
+    | import("ui/pages/page404/Page404").I18n
+    | import("ui/shared/PortraitModeUnsupported").I18n
+    | import("ui/shared/MaybeAcknowledgeConfigVolatilityDialog").I18n
+    | import("ui/pages/home/Home").I18n
+    | import("ui/shared/SettingField").I18n
+    | import("ui/pages/account/Account").I18n
+    | import("ui/pages/account/AccountInfoTab").I18n
+    | import("ui/pages/account/AccountIntegrationsTab").I18n
+    | import("ui/pages/account/AccountStorageTab").I18n
+    | import("ui/pages/account/AccountKubernetesTab").I18n
+    | import("ui/pages/account/AccountUserInterfaceTab").I18n
+    | import("ui/pages/account/AccountVaultTab").I18n
+    | import("ui/pages/projectSettings/ProjectSettings").I18n
+    | import("ui/pages/projectSettings/ProjectSettingsS3ConfigTab/ProjectSettingsS3ConfigTab").I18n
+    | import("ui/pages/projectSettings/ProjectSettingsS3ConfigTab/S3ConfigCard").I18n
+    | import("ui/pages/projectSettings/ProjectSettingsS3ConfigTab/S3ConfigDialogs/AddCustomS3ConfigDialog").I18n
+    | import("ui/pages/projectSettings/ProjectSettingsS3ConfigTab/TestS3ConnectionButton").I18n
+    | import("ui/App/Footer").I18n
+    | import("ui/pages/catalog/Catalog").I18n
+    | import("ui/pages/catalog/CatalogChartCard").I18n
+    | import("ui/pages/catalog/CatalogNoSearchMatches").I18n
+    | import("ui/pages/launcher/Launcher").I18n
+    | import("ui/pages/launcher/LauncherMainCard").I18n
+    | import("ui/pages/launcher/LauncherConfigurationCard").I18n
+    | import("ui/pages/launcher/LauncherDialogs/AcknowledgeSharingOfConfigConfirmDialog").I18n
+    | import("ui/pages/launcher/LauncherDialogs/AutoLaunchDisabledDialog").I18n
+    | import("ui/pages/launcher/LauncherDialogs/NoLongerBookmarkedDialog").I18n
+    | import("ui/pages/launcher/LauncherDialogs/SensitiveConfigurationDialog").I18n
+    | import("ui/pages/myServices/MyServices").I18n
+    | import("ui/pages/myServices/MyServicesConfirmDeleteDialog").I18n
+    | import("ui/pages/myServices/MyServicesButtonBar").I18n
+    | import("ui/pages/myServices/MyServicesCards/MyServicesCard/MyServicesCard").I18n
+    | import("ui/pages/myServices/MyServicesCards/MyServicesCard/ReadmeAndEnvDialog/ReadmeAndEnvDialog").I18n
+    | import("ui/pages/myServices/MyServicesCards/MyServicesCard/ReadmeAndEnvDialog/CopyOpenButton").I18n
+    | import("ui/pages/myServices/MyServicesRestorableConfigs/MyServicesRestorableConfig/MyServicesRestorableConfigOptions").I18n
+    | import("ui/pages/myServices/MyServicesRestorableConfigs/MyServicesRestorableConfig").I18n
+    | import("ui/pages/myServices/MyServicesRestorableConfigs").I18n
+    | import("ui/pages/myServices/MyServicesCards").I18n
+    | import("ui/pages/myServices/MyServicesCards/NoRunningService").I18n
+    | import("ui/pages/myServices/Quotas/CircularUsage").I18n
+    | import("ui/pages/myServices/Quotas/Quotas").I18n
+    | import("ui/pages/dataExplorer/DataExplorer").I18n
+    | import("ui/pages/dataExplorer/UrlInput").I18n
+    | import("ui/shared/CommandBar").I18n
+    | import("ui/shared/useMoment").I18n
+    | import("ui/shared/CopyToClipboardIconButton").I18n;
 
 export type Translations<L extends Language> = GenericTranslations<
     ComponentKey,

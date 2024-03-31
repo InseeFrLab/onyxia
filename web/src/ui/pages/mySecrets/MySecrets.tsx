@@ -309,7 +309,7 @@ export default function MySecrets(props: Props) {
     );
 }
 
-export const { i18n } = declareComponentKeys<
+const { i18n } = declareComponentKeys<
     | "page title - my secrets"
     | "what this page is used for - my secrets"
     | "learn more - my files"
@@ -322,6 +322,7 @@ export const { i18n } = declareComponentKeys<
           R: JSX.Element;
       }
 >()({ MySecrets: MySecrets });
+export type I18n = typeof i18n;
 
 const useStyles = tss.withName({ MySecrets }).create({
     "root": {

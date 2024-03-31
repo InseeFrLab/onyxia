@@ -250,7 +250,7 @@ export const MyServicesCard = memo((props: Props) => {
     );
 });
 
-export const { i18n } = declareComponentKeys<
+const { i18n } = declareComponentKeys<
     | "service"
     | "running since"
     | "open"
@@ -263,6 +263,7 @@ export const { i18n } = declareComponentKeys<
     | "pending"
     | "failed"
 >()({ MyServicesCard });
+export type I18n = typeof i18n;
 
 const useStyles = tss
     .withParams<{

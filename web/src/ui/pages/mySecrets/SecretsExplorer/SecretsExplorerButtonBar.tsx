@@ -69,13 +69,14 @@ export const SecretsExplorerButtonBar = memo((props: Props) => {
     return <ButtonBar buttons={buttons} onClick={onClick} />;
 });
 
-export const { i18n } = declareComponentKeys<
+const { i18n } = declareComponentKeys<
     | ButtonId
     | "create secret"
     | "secret"
     //TODO: Remove
     | { K: "create what"; P: { what: string } }
 >()({ SecretsExplorerButtonBar });
+export type I18n = typeof i18n;
 
 const buttonIds = [
     "refresh",

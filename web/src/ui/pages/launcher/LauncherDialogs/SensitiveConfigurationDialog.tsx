@@ -65,6 +65,7 @@ export const SensitiveConfigurationDialog = memo((props: Props) => {
 
 SensitiveConfigurationDialog.displayName = symToStr({ SensitiveConfigurationDialog });
 
-export const { i18n } = declareComponentKeys<
+const { i18n } = declareComponentKeys<
     "sensitive configuration dialog title" | "cancel" | "proceed to launch"
 >()({ SensitiveConfigurationDialog });
+export type I18n = typeof i18n;

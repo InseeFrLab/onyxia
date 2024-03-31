@@ -82,7 +82,7 @@ export function TestS3ConnectionButton(props: Props) {
     );
 }
 
-export const useStyles = tss.withName({ TestS3ConnectionButton }).create(({ theme }) => ({
+const useStyles = tss.withName({ TestS3ConnectionButton }).create(({ theme }) => ({
     "root": {
         "display": "flex",
         "alignItems": "center",
@@ -97,7 +97,7 @@ export const useStyles = tss.withName({ TestS3ConnectionButton }).create(({ them
     }
 }));
 
-export const { i18n } = declareComponentKeys<
+const { i18n } = declareComponentKeys<
     | "test connection"
     | {
           K: "test connection failed";
@@ -105,3 +105,4 @@ export const { i18n } = declareComponentKeys<
           R: JSX.Element;
       }
 >()({ TestS3ConnectionButton });
+export type I18n = typeof i18n;

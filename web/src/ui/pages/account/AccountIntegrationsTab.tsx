@@ -152,7 +152,7 @@ export const AccountIntegrationsTab = memo((props: Props) => {
     );
 });
 
-export const { i18n } = declareComponentKeys<
+const { i18n } = declareComponentKeys<
     | "git section title"
     | "git section helper"
     | "gitName"
@@ -163,6 +163,7 @@ export const { i18n } = declareComponentKeys<
     | { K: "link for token creation"; P: { serviceName: string } }
     | "accessible as env"
 >()({ AccountIntegrationsTab });
+export type I18n = typeof i18n;
 
 const useStyles = tss.withName({ AccountIntegrationsTab }).create(({ theme }) => ({
     "divider": {

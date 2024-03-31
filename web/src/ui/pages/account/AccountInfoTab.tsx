@@ -61,13 +61,14 @@ export const AccountInfoTab = memo((props: Props) => {
     );
 });
 
-export const { i18n } = declareComponentKeys<
+const { i18n } = declareComponentKeys<
     | "general information"
     | "user id"
     | "full name"
     | "email"
     | "instructions about how to change password"
 >()({ AccountInfoTab });
+export type I18n = typeof i18n;
 
 const useStyles = tss.withName({ AccountInfoTab }).create(({ theme }) => ({
     "howToChangePasswordInfo": {

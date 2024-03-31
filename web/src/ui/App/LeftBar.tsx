@@ -170,7 +170,7 @@ export const LeftBar = memo((props: Props) => {
 
 LeftBar.displayName = symToStr({ LeftBar });
 
-export const { i18n } = declareComponentKeys<
+const { i18n } = declareComponentKeys<
     | "reduce"
     | "home"
     | "account"
@@ -185,3 +185,4 @@ export const { i18n } = declareComponentKeys<
     | "divider: external services features"
     | "divider: onyxia instance specific features"
 >()({ LeftBar });
+export type I18n = typeof i18n;

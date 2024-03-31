@@ -78,8 +78,7 @@ export const MyServicesButtonBar = memo((props: Props) => {
     return <ButtonBar className={className} buttons={buttons} onClick={onClick} />;
 });
 
-export const { i18n } = declareComponentKeys<
-    "refresh" | "launch" | "trash" | "trash my own"
->()({
+const { i18n } = declareComponentKeys<"refresh" | "launch" | "trash" | "trash my own">()({
     MyServicesButtonBar
 });
+export type I18n = typeof i18n;

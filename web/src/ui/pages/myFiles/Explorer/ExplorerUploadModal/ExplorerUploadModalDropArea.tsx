@@ -99,9 +99,10 @@ export const ExplorerUploadModalDropArea = memo((props: Props) => {
     );
 });
 
-export const { i18n } = declareComponentKeys<"drag and drop or" | "browse files">()({
+const { i18n } = declareComponentKeys<"drag and drop or" | "browse files">()({
     ExplorerUploadModalDropArea
 });
+export type I18n = typeof i18n;
 
 const useStyles = tss
     .withName({ ExplorerUploadModalDropArea })

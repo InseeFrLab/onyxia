@@ -108,7 +108,7 @@ export const AccountUserInterfaceTab = memo((props: Props) => {
     );
 });
 
-export const { i18n } = declareComponentKeys<
+const { i18n } = declareComponentKeys<
     | "title"
     | "enable dark mode"
     | "enable beta"
@@ -125,3 +125,4 @@ export const { i18n } = declareComponentKeys<
           R: JSX.Element;
       }
 >()({ AccountUserInterfaceTab });
+export type I18n = typeof i18n;

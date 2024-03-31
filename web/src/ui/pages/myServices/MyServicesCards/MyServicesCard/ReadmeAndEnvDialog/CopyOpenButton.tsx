@@ -109,6 +109,7 @@ const useStyles = tss
         }
     }));
 
-export const { i18n } = declareComponentKeys<
-    "first copy the password" | "open the service"
->()({ CopyOpenButton });
+const { i18n } = declareComponentKeys<"first copy the password" | "open the service">()({
+    CopyOpenButton
+});
+export type I18n = typeof i18n;

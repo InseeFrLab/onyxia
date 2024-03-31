@@ -76,11 +76,10 @@ export function Header(props: Props) {
     );
 }
 
-export const { i18n } = declareComponentKeys<"logout" | "login" | "project" | "region">()(
-    {
-        Header
-    }
-);
+const { i18n } = declareComponentKeys<"logout" | "login" | "project" | "region">()({
+    Header
+});
+export type I18n = typeof i18n;
 
 const useStyles = tss.withName({ Header }).create(({ theme }) => ({
     "root": {

@@ -93,11 +93,12 @@ export default function Account(props: Props) {
     );
 }
 
-export const { i18n } = declareComponentKeys<
+const { i18n } = declareComponentKeys<
     AccountTabId | "text1" | "text2" | "text3" | "personal tokens tooltip"
 >()({
     Account
 });
+export type I18n = typeof i18n;
 
 const useStyles = tss.withName({ Account }).create(({ theme }) => ({
     "root": {

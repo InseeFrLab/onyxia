@@ -187,7 +187,7 @@ const useStyles = tss.withName({ S3ConfigCard }).create(({ theme }) => ({
     }
 }));
 
-export const { i18n } = declareComponentKeys<
+const { i18n } = declareComponentKeys<
     | "data source"
     | "credentials"
     | "sts credentials"
@@ -199,3 +199,4 @@ export const { i18n } = declareComponentKeys<
     | "edit"
     | "delete"
 >()({ S3ConfigCard });
+export type I18n = typeof i18n;

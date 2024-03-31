@@ -127,7 +127,7 @@ LauncherConfigurationCard.displayName = symToStr({
     LauncherConfigurationCard
 });
 
-export const { i18n } = declareComponentKeys<
+const { i18n } = declareComponentKeys<
     | "global config"
     | { K: "configuration"; P: { packageName: string } }
     | { K: "dependency"; P: { dependencyName: string } }
@@ -136,6 +136,7 @@ export const { i18n } = declareComponentKeys<
     | "Invalid YAML Object"
     | "Invalid YAML Array"
 >()({ LauncherConfigurationCard });
+export type I18n = typeof i18n;
 
 const { Header } = (() => {
     type Props = {

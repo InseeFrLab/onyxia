@@ -72,9 +72,10 @@ export const Footer = memo((props: Props) => {
     );
 });
 
-export const { i18n } = declareComponentKeys<
+const { i18n } = declareComponentKeys<
     "contribute" | "terms of service" | "change language" | "dark mode switch"
 >()({ Footer });
+export type I18n = typeof i18n;
 
 const useStyles = tss
     .withParams<Props>()

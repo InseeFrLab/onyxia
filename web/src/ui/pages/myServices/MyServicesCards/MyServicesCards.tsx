@@ -163,7 +163,8 @@ export const MyServicesCards = memo((props: Props) => {
     );
 });
 
-export const { i18n } = declareComponentKeys<"running services">()({ MyServicesCards });
+const { i18n } = declareComponentKeys<"running services">()({ MyServicesCards });
+export type I18n = typeof i18n;
 
 const useStyles = tss
     .withParams<{ isThereServicesRunning: boolean }>()

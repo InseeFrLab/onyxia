@@ -158,7 +158,8 @@ export const ExplorerItem = memo((props: ExplorerItemProps) => {
     );
 });
 
-export const { i18n } = declareComponentKeys<"description">()({ ExplorerItem });
+const { i18n } = declareComponentKeys<"description">()({ ExplorerItem });
+export type I18n = typeof i18n;
 
 const useStyles = tss
     .withName({ ExplorerItem })

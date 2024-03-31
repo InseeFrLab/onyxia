@@ -187,7 +187,8 @@ export const CommandBar = memo((props: CommandBarProps) => {
     );
 });
 
-export const { i18n } = declareComponentKeys<"ok">()({ CommandBar });
+const { i18n } = declareComponentKeys<"ok">()({ CommandBar });
+export type I18n = typeof i18n;
 
 const useStyles = tss
     .withParams<{

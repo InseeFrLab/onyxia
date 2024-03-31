@@ -114,9 +114,10 @@ MyServicesRestorableConfigOptions.displayName = symToStr({
     MyServicesRestorableConfigOptions
 });
 
-export const { i18n } = declareComponentKeys<"edit" | "remove bookmark" | "copy link">()({
+const { i18n } = declareComponentKeys<"edit" | "remove bookmark" | "copy link">()({
     MyServicesRestorableConfigOptions
 });
+export type I18n = typeof i18n;
 
 const useStyles = tss
     .withName({ MyServicesRestorableConfigOptions })

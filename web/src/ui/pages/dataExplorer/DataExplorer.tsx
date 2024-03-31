@@ -410,7 +410,7 @@ const useStyles = tss.withName({ DataExplorer }).create(({ theme }) => ({
     }
 }));
 
-export const { i18n } = declareComponentKeys<
+const { i18n } = declareComponentKeys<
     | "page header title"
     | "page header help title"
     | {
@@ -422,3 +422,4 @@ export const { i18n } = declareComponentKeys<
     | "density"
     | "download file"
 >()({ DataExplorer });
+export type I18n = typeof i18n;

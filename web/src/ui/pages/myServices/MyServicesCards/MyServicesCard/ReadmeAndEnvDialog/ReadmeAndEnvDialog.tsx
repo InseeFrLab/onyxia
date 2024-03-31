@@ -195,4 +195,5 @@ const useStyles = tss.withName({ ReadmeAndEnvDialog }).create(({ theme }) => ({
     }
 }));
 
-export const { i18n } = declareComponentKeys<"ok" | "return">()({ ReadmeAndEnvDialog });
+const { i18n } = declareComponentKeys<"ok" | "return">()({ ReadmeAndEnvDialog });
+export type I18n = typeof i18n;

@@ -214,7 +214,7 @@ function MyFiles(props: Props) {
     );
 }
 
-export const { i18n } = declareComponentKeys<
+const { i18n } = declareComponentKeys<
     | "page title - my files"
     | "what this page is used for - my files"
     | {
@@ -226,6 +226,7 @@ export const { i18n } = declareComponentKeys<
           R: JSX.Element;
       }
 >()({ MyFiles });
+export type I18n = typeof i18n;
 
 const useStyles = tss.withName({ MyFiles }).create({
     "root": {

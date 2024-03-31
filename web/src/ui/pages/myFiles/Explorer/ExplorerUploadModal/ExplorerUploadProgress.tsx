@@ -109,9 +109,10 @@ export const ExplorerUploadProgress = memo((props: Props) => {
     );
 });
 
-export const { i18n } = declareComponentKeys<"over" | "importing">()({
+const { i18n } = declareComponentKeys<"over" | "importing">()({
     ExplorerUploadProgress
 });
+export type I18n = typeof i18n;
 
 const useStyles = tss
     .withParams<Pick<Props, "percentUploaded"> & { progressBarWidth: number }>()

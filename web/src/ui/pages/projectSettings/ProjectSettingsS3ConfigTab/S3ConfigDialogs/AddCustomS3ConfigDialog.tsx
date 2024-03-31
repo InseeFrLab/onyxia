@@ -367,7 +367,7 @@ const useBodyStyles = tss
         }
     }));
 
-export const { i18n } = declareComponentKeys<
+const { i18n } = declareComponentKeys<
     | "dialog title"
     | "dialog subtitle"
     | "cancel"
@@ -406,3 +406,4 @@ export const { i18n } = declareComponentKeys<
           R: JSX.Element;
       }
 >()({ AddCustomS3ConfigDialog });
+export type I18n = typeof i18n;

@@ -77,4 +77,5 @@ const useStyles = tss
         }
     }));
 
-export const { i18n } = declareComponentKeys<"load">()({ UrlInput });
+const { i18n } = declareComponentKeys<"load">()({ UrlInput });
+export type I18n = typeof i18n;

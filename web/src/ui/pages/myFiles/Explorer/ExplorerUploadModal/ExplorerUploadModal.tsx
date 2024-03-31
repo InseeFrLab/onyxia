@@ -130,6 +130,7 @@ const { ExplorerUploadModalBody } = (() => {
     return { ExplorerUploadModalBody };
 })();
 
-export const { i18n } = declareComponentKeys<"import files" | "cancel" | "minimize">()({
+const { i18n } = declareComponentKeys<"import files" | "cancel" | "minimize">()({
     ExplorerUploadModal
 });
+export type I18n = typeof i18n;

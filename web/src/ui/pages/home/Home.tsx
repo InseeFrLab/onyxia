@@ -203,7 +203,7 @@ export default function Home(props: Props) {
     );
 }
 
-export const { i18n } = declareComponentKeys<
+const { i18n } = declareComponentKeys<
     | "login"
     | "new user"
     | "title"
@@ -219,6 +219,7 @@ export const { i18n } = declareComponentKeys<
     | "cardButton2"
     | "cardButton3"
 >()({ Home });
+export type I18n = typeof i18n;
 
 const useStyles = tss
     .withName({ Home })

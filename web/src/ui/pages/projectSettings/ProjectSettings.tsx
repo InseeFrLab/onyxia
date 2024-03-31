@@ -68,7 +68,7 @@ export default function ProjectSettings(props: Props) {
     );
 }
 
-export const { i18n } = declareComponentKeys<
+const { i18n } = declareComponentKeys<
     | TabId
     | "page header title"
     | {
@@ -88,6 +88,7 @@ export const { i18n } = declareComponentKeys<
 >()({
     ProjectSettings
 });
+export type I18n = typeof i18n;
 
 const useStyles = tss.withName({ ProjectSettings }).create(({ theme }) => ({
     "root": {

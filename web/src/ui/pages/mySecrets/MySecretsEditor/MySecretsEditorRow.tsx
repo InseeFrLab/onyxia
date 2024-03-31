@@ -299,9 +299,10 @@ export const MySecretsEditorRow = memo((props: Props) => {
     );
 });
 
-export const { i18n } = declareComponentKeys<"key input desc" | "value input desc">()({
+const { i18n } = declareComponentKeys<"key input desc" | "value input desc">()({
     MySecretsEditorRow
 });
+export type I18n = typeof i18n;
 
 const useStyles = tss
     .withParams<Props & { isInEditingState: boolean }>()

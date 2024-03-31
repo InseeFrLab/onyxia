@@ -279,7 +279,7 @@ export const MySecretsEditor = memo((props: Props) => {
     );
 });
 
-export const { i18n } = declareComponentKeys<
+const { i18n } = declareComponentKeys<
     | "add an entry"
     | "environnement variable default name"
     | "table of secret"
@@ -297,6 +297,7 @@ export const { i18n } = declareComponentKeys<
     | "use secret dialog ok"
     | "do not display again"
 >()({ MySecretsEditor });
+export type I18n = typeof i18n;
 
 const useStyles = tss
     .withParams<Props>()

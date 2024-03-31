@@ -420,9 +420,10 @@ function useCommandBarPositioning() {
     };
 }
 
-export const { i18n } = declareComponentKeys<
-    "text1" | "text2" | "text3" | "running services"
->()({ MyServices });
+const { i18n } = declareComponentKeys<"text1" | "text2" | "text3" | "running services">()(
+    { MyServices }
+);
+export type I18n = typeof i18n;
 
 const useStyles = tss
     .withName({ MyServices })

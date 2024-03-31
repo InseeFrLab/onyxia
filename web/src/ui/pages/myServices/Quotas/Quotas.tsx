@@ -174,6 +174,7 @@ const useStyles = tss.withName({ Quotas }).create(({ theme }) => ({
     }
 }));
 
-export const { i18n } = declareComponentKeys<
+const { i18n } = declareComponentKeys<
     "show more" | "resource usage quotas" | "current resource usage is reasonable"
 >()({ Quotas });
+export type I18n = typeof i18n;
