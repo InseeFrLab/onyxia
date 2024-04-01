@@ -11,8 +11,7 @@ import { useConstCallback } from "powerhooks/useConstCallback";
 import type { NonPostableEvt } from "evt";
 import { useEvt } from "evt/hooks";
 import { CopyOpenButton } from "./CopyOpenButton";
-import { useCore } from "core";
-import { Text } from "onyxia-ui/Text";
+import LinearProgress from "@mui/material/LinearProgress";
 
 type Props = {
     evtAction: NonPostableEvt<"SHOW ENV" | "SHOW POST INSTALL INSTRUCTIONS" | "CLOSE">;
@@ -21,6 +20,10 @@ type Props = {
     projectServicePassword: string;
     getPostInstallInstructions: (() => string) | undefined;
     getEnv: () => Record<string, string>;
+    lastClusterEvent:
+        | { message: string; severity: "error" | "info" | "warning" }
+        | undefined;
+    onOpenClusterEvent: () => void;
 };
 
 export function ReadmeAndEnvDialog(props: Props) {
@@ -30,7 +33,9 @@ export function ReadmeAndEnvDialog(props: Props) {
         openUrl,
         projectServicePassword,
         getPostInstallInstructions,
-        getEnv
+        getEnv,
+        lastClusterEvent,
+        onOpenClusterEvent
     } = props;
 
     const [dialogDesc, setDialogDesc] = useState<
@@ -78,7 +83,9 @@ export function ReadmeAndEnvDialog(props: Props) {
 
     const onDialogClose = useConstCallback(() => setDialogDesc(undefined));
 
-    const { classes, css } = useStyles();
+    const { classes } = useStyles({
+        "lastClusterEventSeverity": lastClusterEvent?.severity ?? "info"
+    });
 
     const { t } = useTranslation({ ReadmeAndEnvDialog });
 
@@ -150,60 +157,23 @@ export function ReadmeAndEnvDialog(props: Props) {
         return { dialogBody, dialogButtons };
     }, [dialogDesc, isReady, openUrl, t]);
 
-    const { evtClusterEventsMonitor } = useCore().evts;
-
-    const [clusterEvent, setClusterEvent] = useState<
-        | {
-              severity: "warning" | "error" | "info";
-              message: string;
-          }
-        | undefined
-    >(undefined);
-
-    useEvt(
-        ctx => {
-            if (isReady) {
-                setClusterEvent(undefined);
-                return;
-            }
-
-            evtClusterEventsMonitor.$attach(
-                action =>
-                    action.actionName === "display notification" ? [action] : null,
-                ctx,
-                ({ severity, message }) => {
-                    setClusterEvent({ severity, message });
-                }
-            );
-        },
-        [evtClusterEventsMonitor, isReady]
-    );
-
     return (
         <Dialog
             body={
                 dialogBody && (
                     <div className={classes.dialogBody}>
                         <Markdown>{dialogBody}</Markdown>
-                        {clusterEvent !== undefined && (
-                            <div>
-                                <Text
-                                    typo="body 1"
-                                    className={css({
-                                        "color": (() => {
-                                            switch (clusterEvent.severity) {
-                                                case "error":
-                                                    return "red";
-                                                case "info":
-                                                    return undefined;
-                                                case "warning":
-                                                    return "orange";
-                                            }
-                                        })()
-                                    })}
-                                >
-                                    {clusterEvent.message}
-                                </Text>
+                        {!isReady && (
+                            <div className={classes.clusterEventWrapper}>
+                                <LinearProgress />
+                                {lastClusterEvent !== undefined && (
+                                    <code
+                                        className={classes.clusterEvent}
+                                        onClick={onOpenClusterEvent}
+                                    >
+                                        {lastClusterEvent.message}
+                                    </code>
+                                )}
                             </div>
                         )}
                     </div>
@@ -237,15 +207,40 @@ function extractServicePasswordFromPostInstallInstructions(params: {
     return match[1];
 }
 
-const useStyles = tss.withName({ ReadmeAndEnvDialog }).create(({ theme }) => ({
-    "dialogBody": {
-        "maxHeight": 450,
-        "overflow": "auto"
-    },
-    "circularProgress": {
-        ...theme.spacing.rightLeft("margin", 3)
-    }
-}));
+const useStyles = tss
+    .withName({ ReadmeAndEnvDialog })
+    .withParams<{ lastClusterEventSeverity: "info" | "warning" | "error" | undefined }>()
+    .create(({ theme, lastClusterEventSeverity }) => ({
+        "dialogBody": {
+            "maxHeight": 450,
+            "overflow": "auto"
+        },
+        "circularProgress": {
+            ...theme.spacing.rightLeft("margin", 3)
+        },
+        "clusterEventWrapper": {
+            "marginTop": theme.spacing(5)
+        },
+        "clusterEvent": {
+            "display": "block",
+            "marginTop": theme.spacing(2),
+            "fontSize": theme.typography.rootFontSizePx * 0.9,
+            "color": (() => {
+                switch (lastClusterEventSeverity) {
+                    case "error":
+                        return theme.colors.useCases.alertSeverity.error.main;
+                    case "warning":
+                        return theme.colors.useCases.alertSeverity.warning.main;
+                    case "info":
+                    case undefined:
+                        return undefined;
+                }
+            })(),
+            "height": theme.typography.rootFontSizePx * 5,
+            "overflow": "auto",
+            "cursor": "pointer"
+        }
+    }));
 
 const { i18n } = declareComponentKeys<"ok" | "return">()({ ReadmeAndEnvDialog });
 export type I18n = typeof i18n;

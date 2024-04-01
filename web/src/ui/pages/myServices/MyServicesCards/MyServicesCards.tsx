@@ -44,6 +44,10 @@ export type Props = {
         helmReleaseName: string;
     }>;
     projectServicePassword: string;
+    lastClusterEvent:
+        | { message: string; severity: "error" | "info" | "warning" }
+        | undefined;
+    onOpenClusterEvent: () => void;
 };
 
 export const MyServicesCards = memo((props: Props) => {
@@ -56,7 +60,9 @@ export const MyServicesCards = memo((props: Props) => {
         getEnv,
         getPostInstallInstructions,
         evtAction,
-        projectServicePassword
+        projectServicePassword,
+        lastClusterEvent,
+        onOpenClusterEvent
     } = props;
 
     const { classes, cx } = useStyles({
@@ -139,6 +145,8 @@ export const MyServicesCards = memo((props: Props) => {
                                 onRequestDelete={onRequestDelete}
                                 getEnv={getEnv}
                                 {...card}
+                                lastClusterEvent={lastClusterEvent}
+                                onOpenClusterEvent={onOpenClusterEvent}
                             />
                         );
                     });

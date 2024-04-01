@@ -27,9 +27,20 @@ const notificationsCount = createSelector(
 
 const isActive = createSelector(state, state => state.isActive);
 
+const lastClusterEvent = createSelector(clusterEvents, clusterEvents => {
+    if (clusterEvents.length === 0) {
+        return undefined;
+    }
+
+    const { message, severity } = clusterEvents[clusterEvents.length - 1];
+
+    return { message, severity };
+});
+
 export const selectors = {
     clusterEvents,
-    notificationsCount
+    notificationsCount,
+    lastClusterEvent
 };
 
 export const protectedSelectors = {

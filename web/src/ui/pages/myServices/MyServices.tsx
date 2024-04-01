@@ -28,11 +28,6 @@ import { Deferred } from "evt/tools/Deferred";
 import { customIcons } from "ui/theme";
 import { Quotas } from "./Quotas";
 import { assert, type Equals } from "tsafe/assert";
-import { useEvt } from "evt/hooks";
-import {
-    ClusterEventsSnackbar,
-    type ClusterEventsSnackbarProps
-} from "./ClusterEventsSnackbar";
 import { ClusterEventsDialog } from "./ClusterEventsDialog";
 
 export type Props = {
@@ -71,6 +66,8 @@ export default function MyServices(props: Props) {
         "clusterEventsMonitor",
         "notificationsCount"
     );
+
+    const lastClusterEvent = useCoreState("clusterEventsMonitor", "lastClusterEvent");
 
     const evtClusterEventsDialogOpen = useConst(() => Evt.create<void>());
 
@@ -117,30 +114,6 @@ export default function MyServices(props: Props) {
         const { setInactive } = clusterEventsMonitor.setActive();
         return () => setInactive();
     }, []);
-
-    const { evtClusterEventsMonitor } = useCore().evts;
-
-    const evtClusterEventsSnackbarAction = useConst(() =>
-        Evt.create<UnpackEvt<ClusterEventsSnackbarProps["evtAction"]>>()
-    );
-
-    useEvt(
-        ctx => {
-            evtClusterEventsMonitor.$attach(
-                action =>
-                    action.actionName === "display notification" ? [action] : null,
-                ctx,
-                ({ message, severity }) => {
-                    evtClusterEventsSnackbarAction.post({
-                        "action": "show notification",
-                        message,
-                        severity
-                    });
-                }
-            );
-        },
-        [evtClusterEventsMonitor]
-    );
 
     const { isSavedConfigsExtended } = route.params;
 
@@ -302,6 +275,10 @@ export default function MyServices(props: Props) {
         }
     );
 
+    const onRequestOpenClusterEvent = useConstCallback(() => {
+        evtClusterEventsDialogOpen.post();
+    });
+
     return (
         <>
             <div className={cx(classes.root, className)}>
@@ -361,6 +338,8 @@ export default function MyServices(props: Props) {
                                     getPostInstallInstructions={
                                         serviceManagement.getPostInstallInstructions
                                     }
+                                    lastClusterEvent={lastClusterEvent}
+                                    onOpenClusterEvent={onRequestOpenClusterEvent}
                                 />
                             )}
                             <div className={classes.rightPanel}>
@@ -381,10 +360,6 @@ export default function MyServices(props: Props) {
                     <MyServicesConfirmDeleteDialog evtOpen={evtConfirmDeleteDialogOpen} />
                 </div>
             </div>
-            <ClusterEventsSnackbar
-                evtAction={evtClusterEventsSnackbarAction}
-                onOpenDetails={() => evtClusterEventsDialogOpen.post()}
-            />
             <ClusterEventsDialog evtOpen={evtClusterEventsDialogOpen} />
         </>
     );

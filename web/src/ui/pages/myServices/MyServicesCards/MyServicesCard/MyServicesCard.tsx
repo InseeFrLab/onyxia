@@ -48,6 +48,10 @@ export type Props = {
     /** undefined when isOwned === true*/
     ownerUsername: string | undefined;
     myServiceLink: Link | undefined;
+    lastClusterEvent:
+        | { message: string; severity: "error" | "info" | "warning" }
+        | undefined;
+    onOpenClusterEvent: () => void;
 };
 
 export const MyServicesCard = memo((props: Props) => {
@@ -69,7 +73,9 @@ export const MyServicesCard = memo((props: Props) => {
         isShared,
         isOwned,
         ownerUsername,
-        myServiceLink
+        myServiceLink,
+        lastClusterEvent,
+        onOpenClusterEvent
     } = props;
 
     const { t } = useTranslation({ MyServicesCard });
@@ -239,6 +245,8 @@ export const MyServicesCard = memo((props: Props) => {
                 projectServicePassword={projectServicePassword}
                 openUrl={openUrl}
                 isReady={status === "deployed" && areAllTasksReady}
+                lastClusterEvent={lastClusterEvent}
+                onOpenClusterEvent={onOpenClusterEvent}
             />
         </div>
     );
