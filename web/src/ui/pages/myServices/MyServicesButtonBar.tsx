@@ -72,7 +72,12 @@ export const MyServicesButtonBar = memo((props: Props) => {
                     return t(buttonId);
                 })()
             })),
-        [t, isThereNonOwnedServicesShown, isThereDeletableServices]
+        [
+            t,
+            isThereNonOwnedServicesShown,
+            isThereDeletableServices,
+            eventsNotificationCount
+        ]
     );
 
     return <ButtonBar className={className} buttons={buttons} onClick={onClick} />;
