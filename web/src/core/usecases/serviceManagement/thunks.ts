@@ -100,7 +100,13 @@ export const thunks = {
                             return;
                         }
 
-                        const helmReleases = await onyxiaApi.listHelmReleases();
+                        const helmReleases = await onyxiaApi
+                            .listHelmReleases()
+                            .catch(() => undefined);
+
+                        if (helmReleases === undefined) {
+                            return monitorServicesStartupStatus();
+                        }
 
                         if (ctxInner.completionStatus) {
                             return;
