@@ -42,7 +42,7 @@ export const MyServicesButtonBar = memo((props: Props) => {
                         case "trash":
                             return id<MuiIconComponentName>("Delete");
                         case "events":
-                            return id<MuiIconComponentName>("Notifications");
+                            return id<MuiIconComponentName>("ManageSearch");
                     }
                 })(),
                 "isDisabled": buttonId === "trash" && !isThereDeletableServices,
