@@ -5,7 +5,7 @@ import { protectedSelectors } from "./selectors";
 export const createEvt = (({ evtAction, getState }) => {
     const evtOut = Evt.create<{
         actionName: "display notification";
-        severity: "warning" | "error";
+        severity: "warning" | "error" | "info";
         message: string;
     }>();
 
@@ -16,10 +16,7 @@ export const createEvt = (({ evtAction, getState }) => {
                 ? [action.payload]
                 : null,
         async ({ clusterEvent }) => {
-            if (
-                clusterEvent.severity === "info" ||
-                Date.now() - clusterEvent.timestamp > 2_000
-            ) {
+            if (Date.now() - clusterEvent.timestamp > 2_000) {
                 return;
             }
 

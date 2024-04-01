@@ -11,6 +11,8 @@ import { useConstCallback } from "powerhooks/useConstCallback";
 import type { NonPostableEvt } from "evt";
 import { useEvt } from "evt/hooks";
 import { CopyOpenButton } from "./CopyOpenButton";
+import { useCore } from "core";
+import { Text } from "onyxia-ui/Text";
 
 type Props = {
     evtAction: NonPostableEvt<"SHOW ENV" | "SHOW POST INSTALL INSTRUCTIONS" | "CLOSE">;
@@ -76,7 +78,7 @@ export function ReadmeAndEnvDialog(props: Props) {
 
     const onDialogClose = useConstCallback(() => setDialogDesc(undefined));
 
-    const { classes } = useStyles();
+    const { classes, css } = useStyles();
 
     const { t } = useTranslation({ ReadmeAndEnvDialog });
 
@@ -148,12 +150,62 @@ export function ReadmeAndEnvDialog(props: Props) {
         return { dialogBody, dialogButtons };
     }, [dialogDesc, isReady, openUrl, t]);
 
+    const { evtClusterEventsMonitor } = useCore().evts;
+
+    const [clusterEvent, setClusterEvent] = useState<
+        | {
+              severity: "warning" | "error" | "info";
+              message: string;
+          }
+        | undefined
+    >(undefined);
+
+    useEvt(
+        ctx => {
+            if (isReady) {
+                setClusterEvent(undefined);
+                return;
+            }
+
+            evtClusterEventsMonitor.$attach(
+                action =>
+                    action.actionName === "display notification" ? [action] : null,
+                ctx,
+                ({ severity, message }) => {
+                    setClusterEvent({ severity, message });
+                }
+            );
+        },
+        [evtClusterEventsMonitor, isReady]
+    );
+
     return (
         <Dialog
             body={
                 dialogBody && (
                     <div className={classes.dialogBody}>
                         <Markdown>{dialogBody}</Markdown>
+                        {clusterEvent !== undefined && (
+                            <div>
+                                <Text
+                                    typo="body 1"
+                                    className={css({
+                                        "color": (() => {
+                                            switch (clusterEvent.severity) {
+                                                case "error":
+                                                    return "red";
+                                                case "info":
+                                                    return undefined;
+                                                case "warning":
+                                                    return "orange";
+                                            }
+                                        })()
+                                    })}
+                                >
+                                    {clusterEvent.message}
+                                </Text>
+                            </div>
+                        )}
                     </div>
                 )
             }
