@@ -33,6 +33,7 @@ import {
     ClusterEventsSnackbar,
     type ClusterEventsSnackbarProps
 } from "./ClusterEventsSnackbar";
+import { ClusterEventsDialog } from "./ClusterEventsDialog";
 
 export type Props = {
     route: PageRoute;
@@ -71,6 +72,8 @@ export default function MyServices(props: Props) {
         "notificationsCount"
     );
 
+    const evtClusterEventsDialogOpen = useConst(() => Evt.create<void>());
+
     const onButtonBarClick = useConstCallback(async (buttonId: ButtonId) => {
         switch (buttonId) {
             case "launch":
@@ -99,7 +102,7 @@ export default function MyServices(props: Props) {
                 return;
             }
             case "events":
-                clusterEventsMonitor.resetNotificationCount();
+                evtClusterEventsDialogOpen.post();
                 return;
         }
         assert<Equals<typeof buttonId, never>>(false);
@@ -384,8 +387,9 @@ export default function MyServices(props: Props) {
             </div>
             <ClusterEventsSnackbar
                 evtAction={evtClusterEventsSnackbarAction}
-                onOpenDetails={() => console.log("TODO: Open details")}
+                onOpenDetails={() => evtClusterEventsDialogOpen.post()}
             />
+            <ClusterEventsDialog evtOpen={evtClusterEventsDialogOpen} />
         </>
     );
 }
