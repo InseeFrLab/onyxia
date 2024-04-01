@@ -54,7 +54,8 @@ export const ClusterEventsDialog = memo((props: ClusterEventsDialogProps) => {
                             {fromNow({
                                 "dateTime": clusterEvent.timestamp
                             })}
-                            {clusterEvent.message.substring(0, 60)}
+                            &nbsp; &nbsp;
+                            {clusterEvent.message}
                         </pre>
                     ))}
                 </>

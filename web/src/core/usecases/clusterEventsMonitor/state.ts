@@ -50,7 +50,15 @@ export const { reducer, actions } = createUsecaseActions({
 
             const clusterEvents = (state.clusterEventsByProjectId[projectId] ??= []);
 
-            clusterEvents.push(clusterEvent);
+            const index = clusterEvents.findIndex(
+                ({ timestamp }) => timestamp > clusterEvent.timestamp
+            );
+
+            if (index === -1) {
+                clusterEvents.push(clusterEvent);
+            } else {
+                clusterEvents.splice(index, 0, clusterEvent);
+            }
         }
     }
 });
