@@ -26,10 +26,7 @@ export const ClusterEventsSnackbar = memo((props: ClusterEventsSnackbarProps) =>
               severity: "error" | "warning";
           }
         | undefined
-    >({
-        "message": "Foo bar baz",
-        "severity": "warning"
-    });
+    >(undefined);
 
     useEvt(
         ctx => {
