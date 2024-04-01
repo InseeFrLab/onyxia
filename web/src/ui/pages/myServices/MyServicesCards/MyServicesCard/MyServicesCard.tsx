@@ -30,7 +30,7 @@ function getDoesHaveBeenRunningForTooLong(params: { startTime: number }): boolea
 
 export type Props = {
     className?: string;
-    evtAction: NonPostableEvt<"SHOW POST INSTALL INSTRUCTIONS" | "CLOSE DIALOG">;
+    evtAction: NonPostableEvt<"SHOW POST INSTALL INSTRUCTIONS">;
     chartIconUrl: string | undefined;
     friendlyName: string;
     chartName: string;
@@ -105,12 +105,6 @@ export const MyServicesCard = memo((props: Props) => {
                     }
                     evtReadmeAndEnvDialogAction.post("SHOW POST INSTALL INSTRUCTIONS");
                 }
-            );
-
-            evtAction.attach(
-                action => action === "CLOSE DIALOG",
-                ctx,
-                () => evtReadmeAndEnvDialogAction.post("CLOSE")
             );
         },
         [evtAction]

@@ -131,10 +131,6 @@ export default function MyServices(props: Props) {
                     action.actionName === "display notification" ? [action] : null,
                 ctx,
                 ({ message, severity }) => {
-                    evtMyServiceCardsAction.post({
-                        "action": "CLOSE DIALOG"
-                    });
-
                     evtClusterEventsSnackbarAction.post({
                         "action": "show notification",
                         message,

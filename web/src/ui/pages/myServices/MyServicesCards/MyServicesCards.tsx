@@ -39,15 +39,10 @@ export type Props = {
     onRequestDelete(params: { helmReleaseName: string }): void;
     getEnv: (params: { helmReleaseName: string }) => Record<string, string>;
     getPostInstallInstructions: (params: { helmReleaseName: string }) => string;
-    evtAction: NonPostableEvt<
-        | {
-              action: "TRIGGER SHOW POST INSTALL INSTRUCTIONS";
-              helmReleaseName: string;
-          }
-        | {
-              action: "CLOSE DIALOG";
-          }
-    >;
+    evtAction: NonPostableEvt<{
+        action: "TRIGGER SHOW POST INSTALL INSTRUCTIONS";
+        helmReleaseName: string;
+    }>;
     projectServicePassword: string;
 };
 
@@ -73,7 +68,7 @@ export const MyServicesCards = memo((props: Props) => {
     const getEvtMyServicesCardAction = useConst(() =>
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         memoize((_helmReleaseName: string) =>
-            Evt.create<"SHOW POST INSTALL INSTRUCTIONS" | "CLOSE DIALOG">()
+            Evt.create<"SHOW POST INSTALL INSTRUCTIONS">()
         )
     );
 
@@ -89,16 +84,6 @@ export const MyServicesCards = memo((props: Props) => {
                     getEvtMyServicesCardAction(helmReleaseName).post(
                         "SHOW POST INSTALL INSTRUCTIONS"
                     )
-            );
-
-            evtAction.attach(
-                action => action.action === "CLOSE DIALOG",
-                ctx,
-                () => {
-                    cards?.forEach(({ helmReleaseName }) =>
-                        getEvtMyServicesCardAction(helmReleaseName).post("CLOSE DIALOG")
-                    );
-                }
             );
         },
         [evtAction, cards]
