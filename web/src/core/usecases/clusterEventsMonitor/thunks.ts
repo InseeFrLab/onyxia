@@ -5,6 +5,7 @@ import * as projectManagement from "core/usecases/projectManagement";
 import { createUsecaseContextApi } from "clean-architecture";
 import { id } from "tsafe/id";
 import { assert } from "tsafe/assert";
+import { selectors } from "./selectors";
 
 export const thunks = {
     "setActive":
@@ -43,16 +44,27 @@ export const thunks = {
 
                     onyxiaApi.subscribeToClusterEvents({
                         evtUnsubscribe,
-                        "onNewEvent": clusterEvent =>
+                        "onNewEvent": clusterEvent => {
+                            if (
+                                selectors
+                                    .clusterEvents(getState())
+                                    .find(
+                                        ({ eventId }) => clusterEvent.eventId === eventId
+                                    ) !== undefined
+                            ) {
+                                return;
+                            }
+
                             dispatch(
-                                actions.clusterEventReceived({
+                                actions.newClusterEventReceived({
                                     "clusterEvent": clusterEvent,
                                     "projectId":
                                         projectManagement.selectors.currentProject(
                                             getState()
                                         ).id
                                 })
-                            )
+                            );
+                        }
                     });
                 });
 
@@ -85,12 +97,13 @@ export const thunks = {
         },
     "resetNotificationCount":
         () =>
-        (...args) => {
-            const [dispatch, getState] = args;
+        async (...args) => {
+            const [dispatch] = args;
 
-            dispatch(
-                actions.notificationCheckedOut({
-                    "projectId": projectManagement.selectors.currentProject(getState()).id
+            await dispatch(
+                projectManagement.protectedThunks.updateConfigValue({
+                    "key": "clusterNotificationCheckoutTime",
+                    "value": Date.now()
                 })
             );
         }

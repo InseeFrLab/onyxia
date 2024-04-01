@@ -22,6 +22,7 @@ export type ProjectConfigs = {
         indexForXOnyxia: number | undefined;
         indexForExplorer: number | undefined;
     };
+    clusterNotificationCheckoutTime: number;
 };
 
 export namespace ProjectConfigs {

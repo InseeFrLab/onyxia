@@ -103,7 +103,8 @@ const keys = [
     "servicePassword",
     "onboardingTimestamp",
     "restorableConfigs",
-    "s3"
+    "s3",
+    "clusterNotificationCheckoutTime"
 ] as const;
 
 assert<Equals<(typeof keys)[number], keyof ProjectConfigs>>();
@@ -266,6 +267,11 @@ function getDefaultConfig<K extends keyof ProjectConfigs>(key_: K): ProjectConfi
                 "indexForExplorer": undefined,
                 "indexForXOnyxia": undefined
             };
+            // @ts-expect-error
+            return out;
+        }
+        case "clusterNotificationCheckoutTime": {
+            const out: ProjectConfigs[typeof key] = 0;
             // @ts-expect-error
             return out;
         }

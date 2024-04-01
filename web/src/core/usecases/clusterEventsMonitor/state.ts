@@ -1,21 +1,16 @@
 import { createUsecaseActions } from "clean-architecture";
-import { exclude } from "tsafe/exclude";
 
 export type State = {
     isActive: boolean;
     clusterEventsByProjectId: Record<
         string,
-        | {
-              clusterEvents: {
-                  eventId: string;
-                  message: string;
-                  timestamp: number;
-                  severity: "info" | "warning" | "error";
-                  originalEvent: Record<string, unknown>;
-              }[];
-              notificationCheckoutTime: number;
-          }
-        | undefined
+        {
+            eventId: string;
+            message: string;
+            timestamp: number;
+            severity: "info" | "warning" | "error";
+            originalEvent: Record<string, unknown>;
+        }[]
     >;
 };
 
@@ -24,7 +19,7 @@ export const name = "clusterEventsMonitor";
 export const { reducer, actions } = createUsecaseActions({
     name,
     "initialState": (): State => ({
-        "clusterEventsByProjectId": loadFromLocalStorage() ?? {},
+        "clusterEventsByProjectId": {},
         "isActive": false
     }),
     "reducers": {
@@ -34,7 +29,7 @@ export const { reducer, actions } = createUsecaseActions({
         "exitedActiveState": state => {
             state.isActive = false;
         },
-        "clusterEventReceived": (
+        "newClusterEventReceived": (
             state,
             {
                 payload
@@ -53,84 +48,9 @@ export const { reducer, actions } = createUsecaseActions({
         ) => {
             const { projectId, clusterEvent } = payload;
 
-            const scopedState = (state.clusterEventsByProjectId[projectId] ??= {
-                "clusterEvents": [],
-                "notificationCheckoutTime": 0
-            });
+            const clusterEvents = (state.clusterEventsByProjectId[projectId] ??= []);
 
-            const existingEvent = scopedState.clusterEvents.find(
-                ({ eventId }) => clusterEvent.eventId === eventId
-            );
-
-            if (existingEvent !== undefined) {
-                return;
-            }
-
-            scopedState.clusterEvents.push(clusterEvent);
-
-            scopedState.clusterEvents.sort((a, b) => a.timestamp - b.timestamp);
-
-            if (scopedState.clusterEvents.length > 100) {
-                scopedState.clusterEvents.shift();
-            }
-
-            saveToLocalStorage(state.clusterEventsByProjectId);
-        },
-        "notificationCheckedOut": (
-            state,
-            { payload }: { payload: { projectId: string } }
-        ) => {
-            const { projectId } = payload;
-
-            const scopedState = state.clusterEventsByProjectId[projectId];
-
-            if (scopedState === undefined) {
-                return;
-            }
-
-            scopedState.notificationCheckoutTime = Date.now();
-
-            saveToLocalStorage(state.clusterEventsByProjectId);
+            clusterEvents.push(clusterEvent);
         }
     }
 });
-
-const { loadFromLocalStorage, saveToLocalStorage } = (() => {
-    const localStorageKey = `${name} usecase clusterEventsByProjectId state`;
-
-    function saveToLocalStorage(
-        clusterEventsByProjectId: State["clusterEventsByProjectId"]
-    ) {
-        localStorage.setItem(localStorageKey, JSON.stringify(clusterEventsByProjectId));
-    }
-
-    function loadFromLocalStorage(): State["clusterEventsByProjectId"] | undefined {
-        const localStorageItem = localStorage.getItem(localStorageKey);
-
-        if (localStorageItem === null) {
-            return undefined;
-        }
-
-        const clusterEventsByProjectId: State["clusterEventsByProjectId"] =
-            JSON.parse(localStorageItem);
-
-        const now = Date.now();
-
-        Object.values(clusterEventsByProjectId)
-            .filter(exclude(undefined))
-            .forEach(({ clusterEvents }) =>
-                clusterEvents
-                    .filter(({ timestamp }) => now - timestamp > 3_600_000)
-                    .map(olderEvent => clusterEvents.indexOf(olderEvent))
-                    .forEach(indexOfOlderEvent =>
-                        clusterEvents.splice(indexOfOlderEvent, 1)
-                    )
-            );
-
-        saveToLocalStorage(clusterEventsByProjectId);
-
-        return clusterEventsByProjectId;
-    }
-
-    return { saveToLocalStorage, loadFromLocalStorage };
-})();

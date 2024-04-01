@@ -12,7 +12,7 @@ export const createEvt = (({ evtAction, getState }) => {
     evtAction.$attach(
         action =>
             action.usecaseName === "clusterEventsMonitor" &&
-            action.actionName === "clusterEventReceived"
+            action.actionName === "newClusterEventReceived"
                 ? [action.payload]
                 : null,
         async ({ clusterEvent }) => {
