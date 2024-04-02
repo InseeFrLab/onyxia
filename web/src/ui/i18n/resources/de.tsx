@@ -728,6 +728,15 @@ Fühlen Sie sich frei, Ihre Kubernetes-Bereitstellungen zu erkunden und die Kont
         "text3": "Es wird empfohlen, Ihre Dienste nach jeder Arbeitssitzung zu löschen.",
         "running services": "Laufende Dienste"
     },
+    "ClusterEventsDialog": {
+        "title": "Cluster-Ereignisse",
+        "subtitle": (
+            <>
+                Ereignisse des Kubernetes-Namespace, es ist ein Echtzeit-Feed von{" "}
+                <code>kubectl get events</code>
+            </>
+        )
+    },
     "MyServicesConfirmDeleteDialog": {
         "confirm delete title": "Sind Sie sicher?",
         "confirm delete subtitle":

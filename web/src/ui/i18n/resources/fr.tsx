@@ -729,6 +729,15 @@ N'hésitez pas à explorer et à prendre en main vos déploiements Kubernetes !
             "Il est recommandé de supprimer vos services après chaque session de travail.",
         "running services": "Services en cours"
     },
+    "ClusterEventsDialog": {
+        "title": "Événements du cluster",
+        "subtitle": (
+            <>
+                Événements du namespace Kubernetes, c'est un flux en temps réel de{" "}
+                <code>kubectl get events</code>
+            </>
+        )
+    },
     "MyServicesConfirmDeleteDialog": {
         "confirm delete title": "Êtes-vous sûr?",
         "confirm delete subtitle":

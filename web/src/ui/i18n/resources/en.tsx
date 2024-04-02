@@ -712,6 +712,15 @@ Feel free to explore and take charge of your Kubernetes deployments!
             "Services are supposed to be shut down as soon as you stop using them actively.",
         "running services": "Running services"
     },
+    "ClusterEventsDialog": {
+        "title": "Cluster events",
+        "subtitle": (
+            <>
+                Kubernetes namespace's events, it's a real-time feed of{" "}
+                <code>kubectl get events</code>
+            </>
+        )
+    },
     "MyServicesConfirmDeleteDialog": {
         "confirm delete title": "Are you sure?",
         "confirm delete subtitle": "Make sure your service are ready to be deleted",

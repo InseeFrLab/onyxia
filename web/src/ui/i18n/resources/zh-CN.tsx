@@ -668,6 +668,15 @@ ${
         "text3": "建议您在每次工作会话后删除您的服务.",
         "running services": "正在运行的服务"
     },
+    "ClusterEventsDialog": {
+        "title": "集群事件",
+        "subtitle": (
+            <>
+                Kubernetes 命名空间的事件，这是一个 <code>kubectl get events</code>{" "}
+                的实时数据流
+            </>
+        )
+    },
     "MyServicesConfirmDeleteDialog": {
         "confirm delete title": "您确定?",
         "confirm delete subtitle": "确保您的服务不包括未保存的工作。",

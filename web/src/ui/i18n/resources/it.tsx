@@ -720,6 +720,15 @@ Sentiti libero di esplorare e prendere il controllo dei tuoi deployment Kubernet
         "text3": "Si consiglia di eliminare i servizi dopo ogni sessione di lavoro.",
         "running services": "Servizi in corso"
     },
+    "ClusterEventsDialog": {
+        "title": "Eventi del cluster",
+        "subtitle": (
+            <>
+                Eventi del namespace Kubernetes, è un flusso in tempo reale di{" "}
+                <code>kubectl get events</code>
+            </>
+        )
+    },
     "MyServicesConfirmDeleteDialog": {
         "confirm delete title": "Sei sicuro?",
         "confirm delete subtitle":

@@ -712,6 +712,15 @@ Tutustu vapaasti ja ota hallintaan Kubernetes-julkaisusi!
             "Palveluiden odotetaan olevan sammutettuina, kun et enää käytä niitä aktiivisesti.",
         "running services": "Käynnissä olevat palvelut"
     },
+    "ClusterEventsDialog": {
+        "title": "Klusteritapahtumat",
+        "subtitle": (
+            <>
+                Kubernetes-nimiavaruuden tapahtumat, se on reaaliaikainen syöte komennosta{" "}
+                <code>kubectl get events</code>
+            </>
+        )
+    },
     "MyServicesConfirmDeleteDialog": {
         "confirm delete title": "Oletko varma?",
         "confirm delete subtitle":

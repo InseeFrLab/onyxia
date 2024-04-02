@@ -724,6 +724,15 @@ Voel je vrij om te verkennen en de controle over je Kubernetes-implementaties te
         "text3": "We raden u aan uw diensten te verwijderen na elke werksessie.",
         "running services": "Diensten in uitvoering"
     },
+    "ClusterEventsDialog": {
+        "title": "Cluster-evenementen",
+        "subtitle": (
+            <>
+                Evenementen van de Kubernetes namespace, het is een real-time feed van{" "}
+                <code>kubectl get events</code>
+            </>
+        )
+    },
     "MyServicesConfirmDeleteDialog": {
         "confirm delete title": "Bent u zeker?",
         "confirm delete subtitle":

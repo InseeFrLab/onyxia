@@ -718,6 +718,15 @@ Føl deg fri til å utforske og ta kontroll over dine Kubernetes-implementeringe
         "text3": "Tjenestene skal avsluttes så snart du slutter å bruke dem aktivt.",
         "running services": "Kjørende tjenester"
     },
+    "ClusterEventsDialog": {
+        "title": "Klusterhendelser",
+        "subtitle": (
+            <>
+                Hendelser i Kubernetes-namespace, det er en sanntidsstrøm av{" "}
+                <code>kubectl get events</code>
+            </>
+        )
+    },
     "MyServicesConfirmDeleteDialog": {
         "confirm delete title": "Er du sikker?",
         "confirm delete subtitle":
