@@ -170,6 +170,12 @@ export function ReadmeAndEnvDialog(props: Props) {
                                     <code
                                         className={classes.clusterEvent}
                                         onClick={onOpenClusterEvent}
+                                        // NOTE: Only to please SonarCloud
+                                        onKeyDown={event => {
+                                            if (event.key === "Enter") {
+                                                onOpenClusterEvent();
+                                            }
+                                        }}
                                     >
                                         {lastClusterEvent.message}
                                     </code>
