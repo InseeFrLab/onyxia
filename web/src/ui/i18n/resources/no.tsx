@@ -719,10 +719,10 @@ Føl deg fri til å utforske og ta kontroll over dine Kubernetes-implementeringe
         "running services": "Kjørende tjenester"
     },
     "ClusterEventsDialog": {
-        "title": "Klusterhendelser",
+        "title": "Hendelser",
         "subtitle": (
             <>
-                Hendelser i Kubernetes-namespace, det er en sanntidsstrøm av{" "}
+                Hendelser i Kubernetes navneområde, det er en sanntidsstrøm av{" "}
                 <code>kubectl get events</code>
             </>
         )

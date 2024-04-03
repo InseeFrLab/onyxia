@@ -721,10 +721,10 @@ Sentiti libero di esplorare e prendere il controllo dei tuoi deployment Kubernet
         "running services": "Servizi in corso"
     },
     "ClusterEventsDialog": {
-        "title": "Eventi del cluster",
+        "title": "Eventi",
         "subtitle": (
             <>
-                Eventi del namespace Kubernetes, è un flusso in tempo reale di{" "}
+                Eventi dello spazio dei nomi di Kubernetes, è un flusso in tempo reale di{" "}
                 <code>kubectl get events</code>
             </>
         )

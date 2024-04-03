@@ -713,7 +713,7 @@ Feel free to explore and take charge of your Kubernetes deployments!
         "running services": "Running services"
     },
     "ClusterEventsDialog": {
-        "title": "Cluster events",
+        "title": "Events",
         "subtitle": (
             <>
                 Kubernetes namespace's events, it's a real-time feed of{" "}

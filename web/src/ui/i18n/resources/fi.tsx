@@ -713,7 +713,7 @@ Tutustu vapaasti ja ota hallintaan Kubernetes-julkaisusi!
         "running services": "Käynnissä olevat palvelut"
     },
     "ClusterEventsDialog": {
-        "title": "Klusteritapahtumat",
+        "title": "Tapahtumat",
         "subtitle": (
             <>
                 Kubernetes-nimiavaruuden tapahtumat, se on reaaliaikainen syöte komennosta{" "}

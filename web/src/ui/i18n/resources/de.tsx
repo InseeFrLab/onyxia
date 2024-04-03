@@ -729,7 +729,7 @@ Fühlen Sie sich frei, Ihre Kubernetes-Bereitstellungen zu erkunden und die Kont
         "running services": "Laufende Dienste"
     },
     "ClusterEventsDialog": {
-        "title": "Cluster-Ereignisse",
+        "title": "Ereignisse",
         "subtitle": (
             <>
                 Ereignisse des Kubernetes-Namespace, es ist ein Echtzeit-Feed von{" "}

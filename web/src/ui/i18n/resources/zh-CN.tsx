@@ -669,11 +669,11 @@ ${
         "running services": "正在运行的服务"
     },
     "ClusterEventsDialog": {
-        "title": "集群事件",
+        "title": "事件",
         "subtitle": (
             <>
-                Kubernetes 命名空间的事件，这是一个 <code>kubectl get events</code>{" "}
-                的实时数据流
+                Kubernetes 命名空间的事件，这是一个来自 <code>kubectl get events</code>
+                的实时流
             </>
         )
     },

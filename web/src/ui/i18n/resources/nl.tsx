@@ -725,10 +725,10 @@ Voel je vrij om te verkennen en de controle over je Kubernetes-implementaties te
         "running services": "Diensten in uitvoering"
     },
     "ClusterEventsDialog": {
-        "title": "Cluster-evenementen",
+        "title": "Evenementen",
         "subtitle": (
             <>
-                Evenementen van de Kubernetes namespace, het is een real-time feed van{" "}
+                Evenementen van de Kubernetes namespace, het is een realtime feed van{" "}
                 <code>kubectl get events</code>
             </>
         )
