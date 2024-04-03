@@ -29,6 +29,11 @@ import { customIcons } from "ui/theme";
 import { Quotas } from "./Quotas";
 import { assert, type Equals } from "tsafe/assert";
 import { ClusterEventsDialog } from "./ClusterEventsDialog";
+import {
+    ClusterEventsSnackbar,
+    type ClusterEventsSnackbarProps
+} from "./ClusterEventsSnackbar";
+import { useEvt } from "evt/hooks";
 
 export type Props = {
     route: PageRoute;
@@ -279,6 +284,30 @@ export default function MyServices(props: Props) {
         evtClusterEventsDialogOpen.post();
     });
 
+    const { evtClusterEventsMonitor } = useCore().evts;
+
+    const evtClusterEventsSnackbarAction = useConst(() =>
+        Evt.create<UnpackEvt<ClusterEventsSnackbarProps["evtAction"]>>()
+    );
+
+    useEvt(
+        ctx => {
+            evtClusterEventsMonitor.$attach(
+                action =>
+                    action.actionName === "display notification" ? [action] : null,
+                ctx,
+                ({ message, severity }) => {
+                    evtClusterEventsSnackbarAction.post({
+                        "action": "show notification",
+                        message,
+                        severity
+                    });
+                }
+            );
+        },
+        [evtClusterEventsMonitor]
+    );
+
     return (
         <>
             <div className={cx(classes.root, className)}>
@@ -361,6 +390,10 @@ export default function MyServices(props: Props) {
                 </div>
             </div>
             <ClusterEventsDialog evtOpen={evtClusterEventsDialogOpen} />
+            <ClusterEventsSnackbar
+                evtAction={evtClusterEventsSnackbarAction}
+                onOpenDetails={onRequestOpenClusterEvent}
+            />
         </>
     );
 }
