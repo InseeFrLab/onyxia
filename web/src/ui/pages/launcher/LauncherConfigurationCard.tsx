@@ -38,6 +38,7 @@ import { symToStr } from "tsafe/symToStr";
 import type { FormFieldValidity } from "core/usecases/launcher/selectors";
 import { id } from "tsafe/id";
 import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
+import { env } from "env";
 
 export type LauncherConfigurationCardProps = {
     className?: string;
@@ -60,7 +61,9 @@ export const LauncherConfigurationCard = memo((props: LauncherConfigurationCardP
 
     const { classes, cx } = useStyles();
 
-    const [isCollapsed, setIsCollapsed] = useState(true);
+    const [isCollapsed, setIsCollapsed] = useState(
+        !env.SERVICE_CONFIGURATION_EXPANDED_BY_DEFAULT
+    );
 
     const tabs = useMemo(
         () =>

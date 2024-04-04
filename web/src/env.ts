@@ -995,12 +995,12 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
     {
         "envName": "DISABLE_COMMAND_BAR",
         "isUsedInKeycloakTheme": false,
-        "validateAndParseOrGetDefault": ({ envValue }) => {
+        "validateAndParseOrGetDefault": ({ envValue, envName }) => {
             const possibleValues = ["true", "false"];
 
             assert(
                 possibleValues.indexOf(envValue) >= 0,
-                `DISABLE_COMMAND_BAR should either be ${possibleValues.join(" or ")}`
+                `${envName} should either be ${possibleValues.join(" or ")}`
             );
 
             return envValue === "true";
@@ -1099,9 +1099,25 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
 
         }
     },
+    {
+        "envName": "SERVICE_CONFIGURATION_EXPANDED_BY_DEFAULT",
+        "isUsedInKeycloakTheme": false,
+        "validateAndParseOrGetDefault": ({ envValue, envName }) => {
+
+            const possibleValues = ["true", "false"];
+
+            assert(
+                possibleValues.indexOf(envValue) >= 0,
+                `${envName} should either be ${possibleValues.join(" or ")}`
+            );
+
+            return envValue === "true";
+
+        }
+    }
 ]);
 
-type EnvName = Exclude<keyof ImportMetaEnv,  "MODE" | "DEV" | "PROD" | "BASE_URL" | "PUBLIC_URL">;
+type EnvName = Exclude<keyof ImportMetaEnv, "MODE" | "DEV" | "PROD" | "BASE_URL" | "PUBLIC_URL">;
 
 type Entry<N extends EnvName> = {
     envName: N;
@@ -1142,7 +1158,7 @@ function createParsedEnvs<Parser extends Entry<EnvName>>(
     // CRA: "/foo" <=> Vite: "/foo/"
     // So we convert the Vite format to the CRA format for retro compatibility.
     const PUBLIC_URL = (() => {
-        const BASE_URL= import.meta.env.BASE_URL;
+        const BASE_URL = import.meta.env.BASE_URL;
 
         return BASE_URL === "/" ? "" : BASE_URL.replace(/\/$/, "");
     })()
@@ -1286,7 +1302,7 @@ function createParsedEnvs<Parser extends Entry<EnvName>>(
 
         const replacePUBLIC_URL = (envValue: string) =>
             envValue.replace(
-                /%PUBLIC_URL%/g, 
+                /%PUBLIC_URL%/g,
                 PUBLIC_URL
             );
 
