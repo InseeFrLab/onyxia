@@ -114,6 +114,9 @@ export const LauncherConfigurationCard = memo((props: LauncherConfigurationCardP
                     onRequestChangeActiveTab={setActiveTabId}
                     size="small"
                     maxTabCount={4}
+                    classes={{
+                        "content": classes.tabContent
+                    }}
                 >
                     <TabContent
                         {...formFieldsByTabName[activeTabId]}
@@ -681,5 +684,8 @@ const useStyles = tss.withName({ LauncherConfigurationCard }).create(({ theme })
         "transition": "transform 150ms cubic-bezier(0.4, 0, 0.2, 1)",
         "transform": "scaleY(1)",
         "transformOrigin": "top"
+    },
+    "tabContent": {
+        "paddingBottom": theme.spacing(6)
     }
 }));
