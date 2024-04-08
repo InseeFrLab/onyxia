@@ -733,7 +733,7 @@ N'hésitez pas à explorer et à prendre en main vos déploiements Kubernetes !
         "title": "Événements",
         "subtitle": (
             <>
-                Les événements de l'espace de noms Kubernetes, c'est un flux en temps réel
+                Les événements du namespace Kubernetes, il s'agit d'un flux en temps réel
                 de <code>kubectl get events</code>
             </>
         )
