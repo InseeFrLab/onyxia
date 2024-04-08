@@ -227,7 +227,7 @@ export default function MySecrets(props: Props) {
                 helpTitle={t("what this page is used for - my secrets")}
                 helpContent={t("help content", {
                     "docHref":
-                        "https://docs.sspcloud.fr/onyxia-guide/utiliser-des-variables-denvironnement",
+                        "https://inseefrlab.github.io/docs.sspcloud.fr/docs/fr/secrets.html",
                     "accountTabLink": routes.account({ "tabId": "vault" }).link
                 })}
                 helpIcon="sentimentSatisfied"
