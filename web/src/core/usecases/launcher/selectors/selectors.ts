@@ -596,18 +596,39 @@ const availableChartVersions = createSelector(readyState, state => {
 
 const catalogName = createSelector(readyState, state => state?.catalogName);
 
-const isThereASavedConfigWithThisFriendlyName = createSelector(
+const willOverwriteExistingConfigOnSave = createSelector(
     isReady,
+    chartName,
+    catalogId,
     friendlyName,
-    restorableConfigManagement.protectedSelectors.savedConfigFriendlyNames,
-    (isReady, friendlyName, savedConfigFriendlyNames) => {
+    restorableConfigManagement.protectedSelectors.restorableConfigs,
+    restorableConfigManagement.protectedSelectors
+        .chartIconAndFriendlyNameByRestorableConfigIndex,
+    (
+        isReady,
+        chartName,
+        catalogId,
+        friendlyName,
+        restorableConfigs,
+        chartIconAndFriendlyNameByRestorableConfigIndex
+    ) => {
         if (!isReady) {
             return undefined;
         }
 
         assert(friendlyName !== undefined);
+        assert(chartName !== undefined);
+        assert(catalogId !== undefined);
 
-        return savedConfigFriendlyNames.includes(friendlyName);
+        return (
+            restorableConfigs.find(
+                (restorableConfig, i) =>
+                    restorableConfig.catalogId === catalogId &&
+                    restorableConfig.chartName === chartName &&
+                    chartIconAndFriendlyNameByRestorableConfigIndex[i].friendlyName ===
+                        friendlyName
+            ) !== undefined
+        );
     }
 );
 
@@ -673,7 +694,7 @@ const s3ConfigSelect = createSelector(
 const main = createSelector(
     isReady,
     friendlyName,
-    isThereASavedConfigWithThisFriendlyName,
+    willOverwriteExistingConfigOnSave,
     isShared,
     indexedFormFields,
     isLaunchable,
@@ -695,7 +716,7 @@ const main = createSelector(
     (
         isReady,
         friendlyName,
-        isThereASavedConfigWithThisFriendlyName,
+        willOverwriteExistingConfigOnSave,
         isShared,
         indexedFormFields,
         isLaunchable,
@@ -722,7 +743,7 @@ const main = createSelector(
         }
 
         assert(friendlyName !== undefined);
-        assert(isThereASavedConfigWithThisFriendlyName !== undefined);
+        assert(willOverwriteExistingConfigOnSave !== undefined);
         assert(restorableConfig !== undefined);
         assert(isRestorableConfigSaved !== undefined);
         assert(indexedFormFields !== undefined);
@@ -739,7 +760,7 @@ const main = createSelector(
         return {
             "isReady": true as const,
             friendlyName,
-            isThereASavedConfigWithThisFriendlyName,
+            willOverwriteExistingConfigOnSave,
             isShared,
             indexedFormFields,
             isLaunchable,

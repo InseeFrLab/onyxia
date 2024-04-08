@@ -69,7 +69,7 @@ export default function Launcher(props: Props) {
     const {
         isReady,
         friendlyName,
-        isThereASavedConfigWithThisFriendlyName,
+        willOverwriteExistingConfigOnSave,
         isShared,
         indexedFormFields,
         isLaunchable,
@@ -367,8 +367,8 @@ export default function Launcher(props: Props) {
                             <LauncherMainCard
                                 chartName={chartName}
                                 chartIconUrl={chartIconUrl}
-                                isThereASavedConfigWithThisFriendlyName={
-                                    isThereASavedConfigWithThisFriendlyName
+                                willOverwriteExistingConfigOnSave={
+                                    willOverwriteExistingConfigOnSave
                                 }
                                 isBookmarked={isRestorableConfigSaved}
                                 chartVersion={chartVersion}

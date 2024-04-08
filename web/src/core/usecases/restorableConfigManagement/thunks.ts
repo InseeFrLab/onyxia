@@ -73,11 +73,13 @@ export const thunks = {
 
             const restorableConfigs = protectedSelectors.restorableConfigs(getState());
 
-            const restorableConfigWithSameFriendlyName = (() => {
+            const restorableConfigWithSameFriendlyNameAndSameService = (() => {
                 const results = restorableConfigs.filter(
                     restorableConfig_i =>
                         readFriendlyName(restorableConfig_i) ===
-                        readFriendlyName(restorableConfig)
+                            readFriendlyName(restorableConfig) &&
+                        restorableConfig_i.catalogId === restorableConfig.catalogId &&
+                        restorableConfig_i.chartName === restorableConfig.chartName
                 );
 
                 if (results.length === 0) {
@@ -91,20 +93,21 @@ export const thunks = {
 
             // NOTE: In case of double call, as we don't provide a "loading state"
             if (
-                restorableConfigWithSameFriendlyName !== undefined &&
+                restorableConfigWithSameFriendlyNameAndSameService !== undefined &&
                 getAreSameRestorableConfig(
                     restorableConfig,
-                    restorableConfigWithSameFriendlyName
+                    restorableConfigWithSameFriendlyNameAndSameService
                 )
             ) {
                 return;
             }
 
             const newRestorableConfigs =
-                restorableConfigWithSameFriendlyName === undefined
+                restorableConfigWithSameFriendlyNameAndSameService === undefined
                     ? [...restorableConfigs, restorableConfig]
                     : restorableConfigs.map(restorableConfig_i =>
-                          restorableConfig_i === restorableConfigWithSameFriendlyName
+                          restorableConfig_i ===
+                          restorableConfigWithSameFriendlyNameAndSameService
                               ? restorableConfig
                               : restorableConfig_i
                       );

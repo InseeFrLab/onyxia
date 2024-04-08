@@ -32,7 +32,7 @@ export type Props = {
     chartName: string;
     chartIconUrl: string | undefined;
     isBookmarked: boolean;
-    isThereASavedConfigWithThisFriendlyName: boolean;
+    willOverwriteExistingConfigOnSave: boolean;
 
     chartVersion: string;
 
@@ -105,7 +105,7 @@ export const LauncherMainCard = memo((props: Props) => {
         chartName,
         chartIconUrl,
         isBookmarked,
-        isThereASavedConfigWithThisFriendlyName,
+        willOverwriteExistingConfigOnSave,
 
         chartVersion,
         availableChartVersions,
@@ -211,7 +211,7 @@ export const LauncherMainCard = memo((props: Props) => {
                             }
                             onClick={onRequestToggleBookmark}
                         />
-                    ) : isThereASavedConfigWithThisFriendlyName && !isBookmarked ? (
+                    ) : willOverwriteExistingConfigOnSave && !isBookmarked ? (
                         <Button
                             className={classes.saveButton}
                             variant="ternary"
