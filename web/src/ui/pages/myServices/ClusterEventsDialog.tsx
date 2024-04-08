@@ -1,4 +1,4 @@
-import { useState, useEffect, memo } from "react";
+import { useState, useEffect, useMemo, memo } from "react";
 import type { NonPostableEvt } from "evt";
 import { useEvt } from "evt/hooks";
 import { Dialog } from "onyxia-ui/Dialog";
@@ -9,7 +9,7 @@ import { tss } from "tss";
 import { useWindowInnerSize } from "powerhooks/useWindowInnerSize";
 import { assert } from "tsafe/assert";
 import { capitalize } from "tsafe/capitalize";
-import { declareComponentKeys, useTranslation } from "ui/i18n";
+import { declareComponentKeys, useTranslation, useLang } from "ui/i18n";
 
 type ClusterEventsDialogProps = {
     evtOpen: NonPostableEvt<void>;
@@ -40,7 +40,22 @@ export const ClusterEventsDialog = memo((props: ClusterEventsDialogProps) => {
 
     const { windowInnerHeight } = useWindowInnerSize();
 
-    const { classes, cx } = useStyles({ windowInnerHeight });
+    const { lang } = useLang();
+
+    const fromNowArr = useMemo(
+        () =>
+            clusterEvents.map(clusterEvent =>
+                fromNow({ "dateTime": clusterEvent.timestamp })
+            ),
+        [clusterEvents, lang]
+    );
+
+    const messageDateMaxCharCount = useMemo(
+        () => Math.max(...fromNowArr.map(str => str.length)),
+        [fromNowArr]
+    );
+
+    const { classes, cx } = useStyles({ windowInnerHeight, messageDateMaxCharCount });
 
     const [innerBodyElement, setInnerBodyElement] = useState<HTMLDivElement | null>(null);
 
@@ -79,11 +94,7 @@ export const ClusterEventsDialog = memo((props: ClusterEventsDialogProps) => {
                                     clusterEvent.isHighlighted && classes.messageDateNew
                                 )}
                             >
-                                {capitalize(
-                                    fromNow({
-                                        "dateTime": clusterEvent.timestamp
-                                    })
-                                )}
+                                {capitalize(fromNowArr[index])}
                             </span>
                             &nbsp;-&nbsp;
                             <span
@@ -124,8 +135,8 @@ export type I18n = typeof i18n;
 
 const useStyles = tss
     .withName({ ClusterEventsDialog })
-    .withParams<{ windowInnerHeight: number }>()
-    .create(({ windowInnerHeight, theme }) => ({
+    .withParams<{ windowInnerHeight: number; messageDateMaxCharCount: number }>()
+    .create(({ windowInnerHeight, messageDateMaxCharCount, theme }) => ({
         "body": {
             "height": windowInnerHeight - 200,
             "overflowY": "auto",
@@ -137,7 +148,7 @@ const useStyles = tss
         },
         "messageDate": {
             "display": "inline-flex",
-            "width": 155,
+            "width": messageDateMaxCharCount * theme.typography.rootFontSizePx * 0.67,
             "color": theme.colors.useCases.typography.textSecondary,
             "&::before": {
                 "content": "'• '",
