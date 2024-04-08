@@ -18,7 +18,7 @@ export const createEvt = (({ evtAction, getState }) => {
         async ({ clusterEvent }) => {
             if (
                 clusterEvent.severity === "info" ||
-                Date.now() - clusterEvent.timestamp > 2_000
+                Date.now() - clusterEvent.timestamp > 7_000
             ) {
                 return;
             }
