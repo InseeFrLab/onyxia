@@ -55,6 +55,10 @@ export const thunks = {
                                 return;
                             }
 
+                            if (clusterEvent.message.includes("probe failed:")) {
+                                clusterEvent.severity = "info";
+                            }
+
                             dispatch(
                                 actions.newClusterEventReceived({
                                     "clusterEvent": clusterEvent,
