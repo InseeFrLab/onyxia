@@ -459,7 +459,7 @@ const useStyles = tss
             "display": "flex"
         },
         ...(() => {
-            const ratio = 0.65;
+            const ratio = 0.6;
 
             return {
                 "cards": {
