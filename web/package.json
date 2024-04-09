@@ -48,7 +48,7 @@
         "oidc-spa": "^4.4.1",
         "onyxia-ui": "^5.1.10",
         "pathe": "^1.1.2",
-        "powerhooks": "^1.0.9",
+        "powerhooks": "^1.0.10",
         "react": "^18.2.0",
         "react-code-blocks": "^0.1.6",
         "react-dom": "^18.2.0",
