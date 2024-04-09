@@ -21,6 +21,7 @@ import type { Link } from "type-route";
 import type { PageRoute } from "./route";
 import { useEvt } from "evt/hooks";
 import { customIcons } from "ui/theme";
+import { env } from "env";
 
 export type Props = {
     route: PageRoute;
@@ -226,8 +227,7 @@ export default function MySecrets(props: Props) {
                 title={t("page title - my secrets")}
                 helpTitle={t("what this page is used for - my secrets")}
                 helpContent={t("help content", {
-                    "docHref":
-                        "https://inseefrlab.github.io/docs.sspcloud.fr/docs/fr/secrets.html",
+                    "docHref": env.VAULT_DOCUMENTATION_LINK,
                     "accountTabLink": routes.account({ "tabId": "vault" }).link
                 })}
                 helpIcon="sentimentSatisfied"

@@ -21,6 +21,7 @@ import { useEvt } from "evt/hooks";
 import { customIcons } from "ui/theme";
 import { MyFilesDisabledDialog } from "./MyFilesDisabledDialog";
 import { assert } from "tsafe/assert";
+import { env } from "env";
 
 export type Props = {
     route: PageRoute;
@@ -178,8 +179,7 @@ function MyFiles(props: Props) {
                 title={t("page title - my files")}
                 helpTitle={t("what this page is used for - my files")}
                 helpContent={t("help content", {
-                    "docHref":
-                        "https://inseefrlab.github.io/docs.sspcloud.fr/docs/fr/storage.html",
+                    "docHref": env.S3_DOCUMENTATION_LINK,
                     "accountTabLink": routes.account({ "tabId": "storage" }).link
                 })}
                 helpIcon="sentimentSatisfied"

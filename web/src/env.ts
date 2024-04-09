@@ -1114,6 +1114,22 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
             return envValue === "true";
 
         }
+    },
+    {
+        "envName": "S3_DOCUMENTATION_LINK",
+        "isUsedInKeycloakTheme": false,
+        "validateAndParseOrGetDefault": ({ envValue }) => {
+            assert(envValue !== "", "Should have default in .env");
+            return envValue;
+        }
+    },
+    {
+        "envName": "VAULT_DOCUMENTATION_LINK",
+        "isUsedInKeycloakTheme": false,
+        "validateAndParseOrGetDefault": ({ envValue }) => {
+            assert(envValue !== "", "Should have default in .env");
+            return envValue;
+        }
     }
 ]);
 
