@@ -203,10 +203,6 @@ export type ApiTypes = {
             chart: string;
             appVersion: string;
             revision: string;
-            events: {
-                message: string;
-                timestamp: number;
-            }[];
         }[];
     };
     "/user/info": {

@@ -18,7 +18,7 @@ export const thunks = {
 
                 try {
                     await dispatch(privateThunks.update({ helmReleaseName }));
-                } catch {
+                } catch (e) {
                     console.log("Pulling events and logs failed");
                 }
 
@@ -77,7 +77,6 @@ const privateThunks = {
                     "helmReleaseFriendlyName":
                         helmRelease.friendlyName ?? helmRelease.helmReleaseName,
                     tasks,
-                    "events": helmRelease.events,
                     "env": helmRelease.env
                 })
             );

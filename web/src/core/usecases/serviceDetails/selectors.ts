@@ -43,16 +43,6 @@ const tasks = createSelector(readyState, state => {
     return state.tasks;
 });
 
-const events = createSelector(readyState, state => {
-    if (state === undefined) {
-        return undefined;
-    }
-
-    const { events } = state;
-
-    return events;
-});
-
 const env = createSelector(readyState, state => {
     if (state === undefined) {
         return undefined;
@@ -68,9 +58,8 @@ const main = createSelector(
     helmReleaseName,
     helmReleaseFriendlyName,
     tasks,
-    events,
     env,
-    (isReady, helmReleaseName, helmReleaseFriendlyName, tasks, events, env) => {
+    (isReady, helmReleaseName, helmReleaseFriendlyName, tasks, env) => {
         if (!isReady) {
             return {
                 "isReady": false as const,
@@ -81,7 +70,6 @@ const main = createSelector(
         assert(helmReleaseName !== undefined);
         assert(helmReleaseFriendlyName !== undefined);
         assert(tasks !== undefined);
-        assert(events !== undefined);
         assert(env !== undefined);
 
         return {
@@ -89,7 +77,6 @@ const main = createSelector(
             helmReleaseName,
             helmReleaseFriendlyName,
             tasks,
-            events,
             env
         };
     }
