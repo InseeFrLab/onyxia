@@ -40,7 +40,10 @@ const tasks = createSelector(readyState, state => {
         return [];
     }
 
-    return state.tasks;
+    return state.tasks.map(({ taskId, logs }) => ({
+        taskId,
+        "logs": logs.split("\n").slice(0, 80).join("\n")
+    }));
 });
 
 const env = createSelector(readyState, state => {
