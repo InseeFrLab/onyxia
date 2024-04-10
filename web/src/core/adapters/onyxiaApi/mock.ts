@@ -35,7 +35,11 @@ export const onyxiaApi: OnyxiaApi = {
                         "certificateAuthorityInjection": undefined,
                         "kubernetes": undefined,
                         "sliders": {},
-                        "resources": undefined
+                        "resources": undefined,
+                        "certManager": {
+                            "useCertManager": false,
+                            "certManagerClusterIssuer": undefined
+                        }
                     }
                 ],
                 "oidcParams": undefined

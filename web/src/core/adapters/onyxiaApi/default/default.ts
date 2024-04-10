@@ -246,7 +246,15 @@ export function createOnyxiaApi(params: {
                             };
                         })(),
                         "sliders": apiRegion.services.defaultConfiguration?.sliders ?? {},
-                        "resources": apiRegion.services.defaultConfiguration?.resources
+                        "resources": apiRegion.services.defaultConfiguration?.resources,
+                        "certManager": {
+                            "useCertManager":
+                                apiRegion.services.expose.certManager?.useCertManager ??
+                                false,
+                            "certManagerClusterIssuer":
+                                apiRegion.services.expose.certManager
+                                    ?.certManagerClusterIssuer
+                        }
                     })
                 );
 

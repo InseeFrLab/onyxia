@@ -127,6 +127,8 @@ export type XOnyxiaContext = {
             | undefined;
         randomSubdomain: string;
         initScriptUrl: string;
+        useCertManager: boolean;
+        certManagerClusterIssuer: string | undefined;
     };
     proxyInjection:
         | {

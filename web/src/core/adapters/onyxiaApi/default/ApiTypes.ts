@@ -28,6 +28,10 @@ export type ApiTypes = {
                         enabled: boolean;
                         gateways: string[];
                     };
+                    certManager?: {
+                        useCertManager: boolean;
+                        certManagerClusterIssuer?: string;
+                    };
                 };
                 defaultConfiguration?: {
                     ipprotection?: boolean;

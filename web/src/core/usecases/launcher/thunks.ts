@@ -601,7 +601,10 @@ const privateThunks = {
                     "route": region.route,
                     "istio": region.istio,
                     "randomSubdomain": `${Math.floor(Math.random() * 1000000)}`,
-                    "initScriptUrl": region.initScriptUrl
+                    "initScriptUrl": region.initScriptUrl,
+                    "useCertManager": region.certManager?.useCertManager,
+                    "certManagerClusterIssuer":
+                        region.certManager?.certManagerClusterIssuer
                 },
                 "proxyInjection": region.proxyInjection,
                 "packageRepositoryInjection": region.packageRepositoryInjection,
