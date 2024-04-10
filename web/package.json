@@ -2,7 +2,7 @@
     "name": "onyxia-web",
     "homepage": "https://onyxia.sh",
     "type": "module",
-    "version": "4.22.6",
+    "version": "4.22.7",
     "license": "MIT",
     "scripts": {
         "prepare": "yarn install-git-hooks && vite-envs update-types && copy-material-icons-to-public",
