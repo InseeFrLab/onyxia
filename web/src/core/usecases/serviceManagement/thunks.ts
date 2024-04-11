@@ -199,6 +199,11 @@ export const thunks = {
                                 )?.iconUrl;
 
                                 if (iconUrl === undefined) {
+                                    const { iconUrl } = chart.versions[0] ?? {};
+                                    if (iconUrl !== undefined) {
+                                        return iconUrl;
+                                    }
+
                                     continue catalog;
                                 }
 
