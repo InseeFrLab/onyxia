@@ -44,7 +44,7 @@ const deletableRunningServiceHelmReleaseNames = createSelector(
         assert(runningServices !== undefined);
 
         return runningServices
-            .filter(({ isOwned }) => isOwned)
+            .filter(({ ownership }) => ownership.isOwned)
             .map(({ helmReleaseName }) => helmReleaseName);
     }
 );
@@ -59,7 +59,7 @@ const isThereNonOwnedServices = createSelector(
 
         assert(runningServices !== undefined);
 
-        return runningServices.find(({ isOwned }) => !isOwned) !== undefined;
+        return runningServices.find(({ ownership }) => !ownership.isOwned) !== undefined;
     }
 );
 
@@ -74,8 +74,9 @@ const isThereOwnedSharedServices = createSelector(
         assert(runningServices !== undefined);
 
         return (
-            runningServices.find(({ isOwned, isShared }) => isOwned && isShared) !==
-            undefined
+            runningServices.find(
+                ({ ownership }) => ownership.isOwned && ownership.isShared
+            ) !== undefined
         );
     }
 );

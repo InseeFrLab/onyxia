@@ -1,4 +1,4 @@
-import { memo } from "react";
+import { useMemo, memo } from "react";
 import { MyServicesCard } from "./MyServicesCard";
 import { tss } from "tss";
 import { Text } from "onyxia-ui/Text";
@@ -8,54 +8,36 @@ import { NonPostableEvt } from "evt";
 import { useEvt } from "evt/hooks";
 import { CircularProgress } from "onyxia-ui/CircularProgress";
 import { declareComponentKeys } from "i18nifty";
-import { useConst } from "powerhooks/useConst";
 import memoize from "memoizee";
 import { Evt } from "evt";
 import { NoRunningService } from "./NoRunningService";
+import type { RunningService } from "core/usecases/serviceManagement/state";
 
 export type Props = {
     className?: string;
     isUpdating: boolean;
-    cards:
-        | {
-              helmReleaseName: string;
-              chartIconUrl: string | undefined;
-              chartName: string;
-              friendlyName: string;
-              openUrl: string | undefined;
-              monitoringUrl: string | undefined;
-              startTime: number;
-              status: "deployed" | "pending-install" | "failed";
-              areAllTasksReady: boolean;
-              isShared: boolean;
-              isOwned: boolean;
-              /** undefined when isOwned === true*/
-              ownerUsername: string | undefined;
-              hasPostInstallInstructions: boolean;
-              myServiceLink: Link | undefined;
-              isPausable: boolean;
-              isPaused: boolean;
-          }[]
-        | undefined;
+    runningServices: RunningService[] | undefined;
+    getMyServiceLink: (params: { helmReleaseName: string }) => Link;
     catalogExplorerLink: Link;
     onRequestDelete(params: { helmReleaseName: string }): void;
     onRequestPauseOrResume: (params: { helmReleaseName: string }) => void;
     getPostInstallInstructions: (params: { helmReleaseName: string }) => string;
     evtAction: NonPostableEvt<{
-        action: "TRIGGER SHOW POST INSTALL INSTRUCTIONS";
+        action: "open readme dialog";
         helmReleaseName: string;
     }>;
     projectServicePassword: string;
     lastClusterEvent:
         | { message: string; severity: "error" | "info" | "warning" }
         | undefined;
-    onOpenClusterEvent: () => void;
+    onOpenClusterEventsDialog: () => void;
 };
 
 export const MyServicesCards = memo((props: Props) => {
     const {
         className,
-        cards,
+        runningServices,
+        getMyServiceLink,
         catalogExplorerLink,
         isUpdating,
         onRequestDelete,
@@ -64,46 +46,50 @@ export const MyServicesCards = memo((props: Props) => {
         evtAction,
         projectServicePassword,
         lastClusterEvent,
-        onOpenClusterEvent
+        onOpenClusterEventsDialog
     } = props;
 
     const { classes, cx } = useStyles({
-        "isThereServicesRunning": (cards ?? []).length !== 0
+        "isThereServicesRunning":
+            runningServices !== undefined && runningServices.length !== 0
     });
 
     const { t } = useTranslation({ MyServicesCards });
-
-    const getEvtMyServicesCardAction = useConst(() =>
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        memoize((_helmReleaseName: string) =>
-            Evt.create<"SHOW POST INSTALL INSTRUCTIONS">()
-        )
-    );
 
     useEvt(
         ctx => {
             evtAction.$attach(
                 action =>
-                    action.action !== "TRIGGER SHOW POST INSTALL INSTRUCTIONS"
+                    action.action !== "open readme dialog"
                         ? null
                         : [action.helmReleaseName],
                 ctx,
                 helmReleaseName =>
-                    getEvtMyServicesCardAction(helmReleaseName).post(
-                        "SHOW POST INSTALL INSTRUCTIONS"
+                    getMyServicesFunctionProps(helmReleaseName).evtAction.post(
+                        "open readme dialog"
                     )
             );
         },
-        [evtAction, cards]
+        [evtAction, runningServices]
     );
 
-    const getMyServicesFunctionProps = useConst(() =>
-        memoize((helmReleaseName: string) => ({
-            "getPoseInstallInstructions": () =>
-                getPostInstallInstructions({ helmReleaseName }),
-            "onRequestDelete": () => onRequestDelete({ helmReleaseName }),
-            "onRequestPauseOrResume": () => onRequestPauseOrResume({ helmReleaseName })
-        }))
+    const getMyServicesFunctionProps = useMemo(
+        () =>
+            memoize((helmReleaseName: string) => ({
+                "getPoseInstallInstructions": () =>
+                    getPostInstallInstructions({ helmReleaseName }),
+                "onRequestDelete": () => onRequestDelete({ helmReleaseName }),
+                "onRequestPauseOrResume": () =>
+                    onRequestPauseOrResume({ helmReleaseName }),
+                "myServiceLink": getMyServiceLink({ helmReleaseName }),
+                "evtAction": Evt.create<"open readme dialog">()
+            })),
+        [
+            getPostInstallInstructions,
+            onRequestDelete,
+            onRequestPauseOrResume,
+            getMyServiceLink
+        ]
     );
 
     return (
@@ -115,11 +101,11 @@ export const MyServicesCards = memo((props: Props) => {
             </Text>
             <div className={classes.wrapper}>
                 {(() => {
-                    if (cards === undefined) {
+                    if (runningServices === undefined) {
                         return null;
                     }
 
-                    if (cards.length === 0) {
+                    if (runningServices.length === 0) {
                         return (
                             <NoRunningService
                                 className={classes.noRunningServices}
@@ -128,32 +114,27 @@ export const MyServicesCards = memo((props: Props) => {
                         );
                     }
 
-                    return cards.map(({ isPausable, ...card }) => {
+                    return runningServices.map(runningService => {
                         const {
                             getPoseInstallInstructions,
                             onRequestDelete,
-                            onRequestPauseOrResume
-                        } = getMyServicesFunctionProps(card.helmReleaseName);
+                            onRequestPauseOrResume,
+                            myServiceLink,
+                            evtAction
+                        } = getMyServicesFunctionProps(runningService.helmReleaseName);
 
                         return (
                             <MyServicesCard
-                                key={card.helmReleaseName}
-                                evtAction={getEvtMyServicesCardAction(
-                                    card.helmReleaseName
-                                )}
-                                getPoseInstallInstructions={
-                                    !card.hasPostInstallInstructions
-                                        ? undefined
-                                        : getPoseInstallInstructions
-                                }
-                                projectServicePassword={projectServicePassword}
+                                key={runningService.helmReleaseName}
+                                evtAction={evtAction}
+                                getPoseInstallInstructions={getPoseInstallInstructions}
                                 onRequestDelete={onRequestDelete}
                                 lastClusterEvent={lastClusterEvent}
-                                onOpenClusterEvent={onOpenClusterEvent}
-                                onRequestPauseOrResume={
-                                    isPausable ? onRequestPauseOrResume : undefined
-                                }
-                                {...card}
+                                onOpenClusterEventsDialog={onOpenClusterEventsDialog}
+                                onRequestPauseOrResume={onRequestPauseOrResume}
+                                myServiceLink={myServiceLink}
+                                projectServicePassword={projectServicePassword}
+                                runningService={runningService}
                             />
                         );
                     });

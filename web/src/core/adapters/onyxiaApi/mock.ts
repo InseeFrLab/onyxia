@@ -75,5 +75,6 @@ export const onyxiaApi: OnyxiaApi = {
     ...createPropertyThatThrowIfAccessed("listHelmReleases", "Not mocked"),
     ...createPropertyThatThrowIfAccessed("helmUninstall", "Not mocked"),
     ...createPropertyThatThrowIfAccessed("getTaskLogs", "Not mocked"),
-    ...createPropertyThatThrowIfAccessed("subscribeToClusterEvents", "Not mocked")
+    ...createPropertyThatThrowIfAccessed("subscribeToClusterEvents", "Not mocked"),
+    ...createPropertyThatThrowIfAccessed("helmUpgradeGlobalSuspend", "Not mocked")
 };

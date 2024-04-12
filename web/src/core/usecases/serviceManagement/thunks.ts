@@ -254,7 +254,13 @@ export const thunks = {
                         isPausable,
                         isPaused
                     }) => {
-                        const common: RunningService.Common = {
+                        const isOwned = ownerUsername === username;
+
+                        if (!isOwned && !isShared) {
+                            return undefined;
+                        }
+
+                        return id<RunningService>({
                             helmReleaseName,
                             chartName,
                             "friendlyName": friendlyName ?? helmReleaseName,
@@ -271,29 +277,25 @@ export const thunks = {
                             areAllTasksReady,
                             "hasPostInstallInstructions":
                                 postInstallInstructions !== undefined,
-                            isPausable,
-                            isPaused
-                        };
-
-                        const isOwned = ownerUsername === username;
-
-                        if (!isOwned) {
-                            if (!isShared) {
-                                return undefined;
-                            }
-
-                            return id<RunningService.NotOwned>({
-                                ...common,
-                                isShared,
-                                isOwned,
-                                ownerUsername
-                            });
-                        }
-
-                        return id<RunningService.Owned>({
-                            ...common,
-                            isShared,
-                            isOwned
+                            "ownership": isOwned
+                                ? {
+                                      "isOwned": true,
+                                      isShared
+                                  }
+                                : {
+                                      "isOwned": false,
+                                      "isShared": true,
+                                      ownerUsername
+                                  },
+                            "pause": !isPausable
+                                ? {
+                                      "isPausable": false
+                                  }
+                                : {
+                                      "isPausable": true,
+                                      isPaused,
+                                      "isTransitioning": false
+                                  }
                         });
                     }
                 )

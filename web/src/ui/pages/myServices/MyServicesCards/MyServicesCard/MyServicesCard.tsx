@@ -19,6 +19,7 @@ import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
 import { id } from "tsafe/id";
 import { CircularProgress } from "onyxia-ui/CircularProgress";
 import type { Link } from "type-route";
+import type { RunningService } from "core/usecases/serviceManagement/state";
 
 const runningTimeThreshold = 7 * 24 * 3600 * 1000;
 
@@ -30,69 +31,51 @@ function getDoesHaveBeenRunningForTooLong(params: { startTime: number }): boolea
 
 export type Props = {
     className?: string;
-    evtAction: NonPostableEvt<"SHOW POST INSTALL INSTRUCTIONS">;
-    chartIconUrl: string | undefined;
-    friendlyName: string;
-    chartName: string;
-    onRequestDelete: (() => void) | undefined;
-    onRequestPauseOrResume: (() => void) | undefined;
-    getPoseInstallInstructions: (() => string) | undefined;
-    projectServicePassword: string;
-    openUrl: string | undefined;
-    monitoringUrl: string | undefined;
-    startTime: number;
-    status: "deployed" | "pending-install" | "failed";
-    areAllTasksReady: boolean;
-    isShared: boolean;
-    isOwned: boolean;
-    /** undefined when isOwned === true*/
-    ownerUsername: string | undefined;
-    myServiceLink: Link | undefined;
+    evtAction: NonPostableEvt<"open readme dialog">;
+    onRequestDelete: () => void;
+    onRequestPauseOrResume: () => void;
+    getPoseInstallInstructions: () => string;
+    myServiceLink: Link;
     lastClusterEvent:
         | { message: string; severity: "error" | "info" | "warning" }
         | undefined;
-    onOpenClusterEvent: () => void;
-    isPaused: boolean;
+    onOpenClusterEventsDialog: () => void;
+    projectServicePassword: string;
+    runningService: RunningService;
 };
 
 export const MyServicesCard = memo((props: Props) => {
-    let {
+    const {
         className,
         evtAction,
-        chartIconUrl,
-        friendlyName,
-        chartName,
         onRequestDelete,
         onRequestPauseOrResume,
         getPoseInstallInstructions,
-        projectServicePassword,
-        monitoringUrl,
-        openUrl,
-        startTime,
-        status,
-        areAllTasksReady,
-        isShared,
-        isOwned,
-        ownerUsername,
         myServiceLink,
         lastClusterEvent,
-        onOpenClusterEvent,
-        isPaused
+        onOpenClusterEventsDialog,
+        projectServicePassword,
+        runningService
     } = props;
 
     const { t } = useTranslation({ MyServicesCard });
 
     const severity = useMemo(() => {
-        if (status === "failed") {
+        if (runningService.status === "failed") {
             return "error";
         }
 
-        if (status === "pending-install" || !areAllTasksReady) {
+        if (
+            runningService.status === "pending-install" ||
+            !runningService.areAllTasksReady
+        ) {
             return "pending";
         }
 
-        return getDoesHaveBeenRunningForTooLong({ startTime }) ? "warning" : "success";
-    }, [status, areAllTasksReady, startTime]);
+        return getDoesHaveBeenRunningForTooLong({ "startTime": runningService.startedAt })
+            ? "warning"
+            : "success";
+    }, [runningService]);
 
     const { classes, cx, theme } = useStyles({
         "hasBeenRunningForTooLong": severity === "warning"
@@ -103,10 +86,10 @@ export const MyServicesCard = memo((props: Props) => {
     useEvt(
         ctx => {
             evtAction.attach(
-                action => action === "SHOW POST INSTALL INSTRUCTIONS",
+                action => action === "open readme dialog",
                 ctx,
                 async () => {
-                    if (getPoseInstallInstructions === undefined) {
+                    if (!runningService.hasPostInstallInstructions) {
                         return;
                     }
                     evtOpenReadmeDialog.post();
@@ -119,14 +102,18 @@ export const MyServicesCard = memo((props: Props) => {
     return (
         <div className={cx(classes.root, className)}>
             <a className={classes.aboveDivider} {...myServiceLink}>
-                <MyServicesRoundLogo url={chartIconUrl} severity={severity} />
+                <MyServicesRoundLogo
+                    url={runningService.chartIconUrl}
+                    severity={severity}
+                />
                 <Text className={classes.title} typo="object heading">
-                    {capitalize(friendlyName)}
+                    {capitalize(runningService.friendlyName)}
                 </Text>
                 <div style={{ "flex": 1 }} />
-                {onRequestPauseOrResume !== undefined && !isPaused && (
+                {runningService.pause.isPausable && !runningService.pause.isPaused && (
                     <Tooltip title={"Click to pause the service and release resources"}>
                         <IconButton
+                            disabled={runningService.pause.isTransitioning}
                             icon={id<MuiIconComponentName>("Pause")}
                             onClick={event => {
                                 onRequestPauseOrResume();
@@ -136,7 +123,7 @@ export const MyServicesCard = memo((props: Props) => {
                         />
                     </Tooltip>
                 )}
-                {isShared && (
+                {runningService.ownership.isShared && (
                     <Tooltip title={t("this is a shared service")}>
                         <Icon icon={id<MuiIconComponentName>("People")} />
                     </Tooltip>
@@ -161,18 +148,25 @@ export const MyServicesCard = memo((props: Props) => {
                             {t("service")}
                         </Text>
                         <div className={classes.packageNameWrapper}>
-                            <Text typo="label 1">{capitalize(chartName)}</Text>
-                            {isShared && (
+                            <Text typo="label 1">
+                                {capitalize(runningService.chartName)}
+                            </Text>
+                            {runningService.ownership.isShared && (
                                 <Tag
                                     className={classes.sharedTag}
-                                    text={isOwned ? t("shared by you") : ownerUsername!}
+                                    text={
+                                        runningService.ownership.isOwned
+                                            ? t("shared by you")
+                                            : runningService.ownership.ownerUsername!
+                                    }
                                 />
                             )}
                         </div>
                     </div>
                     <div className={classes.timeAndStatusContainer}>
                         <Text typo="caption" className={classes.captions}>
-                            {status === "deployed" && areAllTasksReady
+                            {runningService.status === "deployed" &&
+                            runningService.areAllTasksReady
                                 ? t("running since")
                                 : t("status")}
                         </Text>
@@ -183,7 +177,7 @@ export const MyServicesCard = memo((props: Props) => {
                                 case "failed":
                                     return <Text typo="label 1">{t("failed")}</Text>;
                                 case "deployed":
-                                    if (!areAllTasksReady) {
+                                    if (!runningService.areAllTasksReady) {
                                         return (
                                             <Text typo="label 1">
                                                 {t("container starting")}
@@ -202,9 +196,9 @@ export const MyServicesCard = memo((props: Props) => {
                                     return (
                                         <MyServicesRunningTime
                                             doesHaveBeenRunningForTooLong={getDoesHaveBeenRunningForTooLong(
-                                                { startTime }
+                                                { "startTime": runningService.startedAt }
                                             )}
-                                            startTime={startTime}
+                                            startTime={runningService.startedAt}
                                         />
                                     );
                             }
@@ -218,34 +212,32 @@ export const MyServicesCard = memo((props: Props) => {
                             onClick={onRequestDelete}
                         />
                     )}
-                    {monitoringUrl !== undefined && (
-                        <IconButton
-                            icon={id<MuiIconComponentName>("Equalizer")}
-                            href={monitoringUrl}
-                        />
-                    )}
                     <div style={{ "flex": 1 }} />
 
-                    {onRequestPauseOrResume !== undefined && isPaused && (
+                    {runningService.pause.isPausable && runningService.pause.isPaused && (
                         <Tooltip title={"Click to resume the service"}>
                             <IconButton
+                                disabled={runningService.pause.isTransitioning}
                                 icon={id<MuiIconComponentName>("PlayArrow")}
                                 onClick={onRequestPauseOrResume}
                             />
                         </Tooltip>
                     )}
 
-                    {!isPaused &&
-                        status === "deployed" &&
-                        areAllTasksReady &&
-                        (openUrl !== undefined ||
-                            getPoseInstallInstructions !== undefined) && (
+                    {runningService.status === "deployed" &&
+                        runningService.areAllTasksReady &&
+                        (runningService.urls[0] !== undefined ||
+                            runningService.hasPostInstallInstructions) && (
                             <Button
                                 onClick={() => evtOpenReadmeDialog.post()}
-                                variant={openUrl === undefined ? "ternary" : "secondary"}
+                                variant={
+                                    runningService.urls[0] === undefined
+                                        ? "ternary"
+                                        : "secondary"
+                                }
                             >
                                 <span>
-                                    {openUrl !== undefined
+                                    {runningService.urls[0] !== undefined
                                         ? capitalize(t("open"))
                                         : t("readme").toUpperCase()}
                                 </span>
@@ -255,12 +247,19 @@ export const MyServicesCard = memo((props: Props) => {
             </div>
             <ReadmeDialog
                 evtOpen={evtOpenReadmeDialog}
-                getPostInstallInstructions={getPoseInstallInstructions}
+                getPostInstallInstructions={
+                    runningService.hasPostInstallInstructions
+                        ? getPoseInstallInstructions
+                        : undefined
+                }
                 projectServicePassword={projectServicePassword}
-                openUrl={openUrl}
-                isReady={status === "deployed" && areAllTasksReady}
+                openUrl={runningService.urls[0]}
+                isReady={
+                    runningService.status === "deployed" &&
+                    runningService.areAllTasksReady
+                }
                 lastClusterEvent={lastClusterEvent}
-                onOpenClusterEvent={onOpenClusterEvent}
+                onOpenClusterEventsDialog={onOpenClusterEventsDialog}
             />
         </div>
     );

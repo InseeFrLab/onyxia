@@ -14,11 +14,11 @@ export type ClusterEventsSnackbarProps = {
         message: string;
         severity: "error" | "warning";
     }>;
-    onOpenDetails: () => void;
+    onOpenClusterEventsDialog: () => void;
 };
 
 export const ClusterEventsSnackbar = memo((props: ClusterEventsSnackbarProps) => {
-    const { evtAction, onOpenDetails } = props;
+    const { evtAction, onOpenClusterEventsDialog } = props;
 
     const [openState, setOpenState] = useState<
         | {
@@ -71,7 +71,7 @@ export const ClusterEventsSnackbar = memo((props: ClusterEventsSnackbarProps) =>
                     <IconButton
                         onClick={() => {
                             setOpenState(undefined);
-                            onOpenDetails();
+                            onOpenClusterEventsDialog();
                         }}
                         icon={id<MuiIconComponentName>("ManageSearch")}
                     />

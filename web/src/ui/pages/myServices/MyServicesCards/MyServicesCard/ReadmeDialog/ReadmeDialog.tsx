@@ -21,7 +21,7 @@ type Props = {
     lastClusterEvent:
         | { message: string; severity: "error" | "info" | "warning" }
         | undefined;
-    onOpenClusterEvent: () => void;
+    onOpenClusterEventsDialog: () => void;
 };
 
 export function ReadmeDialog(props: Props) {
@@ -32,7 +32,7 @@ export function ReadmeDialog(props: Props) {
         projectServicePassword,
         getPostInstallInstructions,
         lastClusterEvent,
-        onOpenClusterEvent
+        onOpenClusterEventsDialog
     } = props;
 
     const [openState, setOpenState] = useState<
@@ -75,11 +75,11 @@ export function ReadmeDialog(props: Props) {
                                 {lastClusterEvent !== undefined && (
                                     <code
                                         className={classes.clusterEvent}
-                                        onClick={onOpenClusterEvent}
+                                        onClick={onOpenClusterEventsDialog}
                                         // NOTE: Only to please SonarCloud
                                         onKeyDown={event => {
                                             if (event.key === "Enter") {
-                                                onOpenClusterEvent();
+                                                onOpenClusterEventsDialog();
                                             }
                                         }}
                                     >

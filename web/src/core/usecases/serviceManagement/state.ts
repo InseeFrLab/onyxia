@@ -26,35 +26,37 @@ export namespace State {
     };
 }
 
-export type RunningService = RunningService.Owned | RunningService.NotOwned;
-
-export declare namespace RunningService {
-    export type Common = {
-        helmReleaseName: string;
-        chartName: string;
-        friendlyName: string;
-        chartIconUrl: string | undefined;
-        monitoringUrl: string | undefined;
-        startedAt: number;
-        urls: string[];
-        hasPostInstallInstructions: boolean;
-        status: "deployed" | "pending-install" | "failed";
-        areAllTasksReady: boolean;
-        isPausable: boolean;
-        isPaused: boolean;
-    };
-
-    export type Owned = Common & {
-        isShared: boolean;
-        isOwned: true;
-    };
-
-    export type NotOwned = Common & {
-        isShared: true;
-        isOwned: false;
-        ownerUsername: string;
-    };
-}
+export type RunningService = {
+    helmReleaseName: string;
+    chartName: string;
+    friendlyName: string;
+    chartIconUrl: string | undefined;
+    monitoringUrl: string | undefined;
+    startedAt: number;
+    urls: string[];
+    hasPostInstallInstructions: boolean;
+    status: "deployed" | "pending-install" | "failed";
+    areAllTasksReady: boolean;
+    pause:
+        | {
+              isPausable: false;
+          }
+        | {
+              isPausable: true;
+              isPaused: boolean;
+              isTransitioning: boolean;
+          };
+    ownership:
+        | {
+              isOwned: true;
+              isShared: boolean;
+          }
+        | {
+              isShared: true;
+              isOwned: false;
+              ownerUsername: string;
+          };
+};
 
 export const name = "serviceManagement";
 
@@ -130,9 +132,11 @@ export const { reducer, actions } = createUsecaseActions({
             runningService.areAllTasksReady = areAllTasksReady;
 
             //NOTE: Harmless hack to improve UI readability.
+            /*
             if (status === "deployed" && areAllTasksReady) {
                 runningService.startedAt = Date.now();
             }
+            */
         },
         "serviceStopped": (
             state,
@@ -168,8 +172,9 @@ export const { reducer, actions } = createUsecaseActions({
             );
 
             assert(runningService !== undefined);
+            assert(runningService.pause.isPausable);
 
-            runningService.isPausable = false;
+            runningService.pause.isTransitioning = true;
         },
         "servicePausedOrResumed": (
             state,
@@ -187,9 +192,10 @@ export const { reducer, actions } = createUsecaseActions({
             );
 
             assert(runningService !== undefined);
+            assert(runningService.pause.isPausable);
 
-            runningService.isPaused = isPaused;
-            runningService.isPausable = true;
+            runningService.pause.isPaused = isPaused;
+            runningService.pause.isTransitioning = false;
         },
         "postInstallInstructionsRequested": (
             state,

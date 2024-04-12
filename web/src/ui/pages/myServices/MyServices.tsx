@@ -59,10 +59,7 @@ export default function MyServices(props: Props) {
         commandLogsEntries
     } = useCoreState("serviceManagement", "main");
 
-    const { isCommandBarEnabled, isDevModeEnabled } = useCoreState(
-        "userConfigs",
-        "userConfigs"
-    );
+    const { isCommandBarEnabled } = useCoreState("userConfigs", "userConfigs");
     const servicePassword = useCoreState("projectManagement", "servicePassword");
 
     const evtQuotasActionUpdate = useConst(() => Evt.create());
@@ -185,45 +182,8 @@ export default function MyServices(props: Props) {
         [restorableConfigs, chartIconAndFriendlyNameByRestorableConfigIndex]
     );
 
-    const cards = useMemo(
-        (): MyServicesCardsProps["cards"] | undefined =>
-            runningServices?.map(
-                ({
-                    helmReleaseName,
-                    chartIconUrl,
-                    friendlyName,
-                    chartName,
-                    urls,
-                    startedAt,
-                    monitoringUrl,
-                    status,
-                    areAllTasksReady,
-                    hasPostInstallInstructions,
-                    isPausable,
-                    isPaused,
-                    ...rest
-                }) => ({
-                    helmReleaseName,
-                    chartIconUrl,
-                    friendlyName,
-                    chartName,
-                    "openUrl": urls[0],
-                    monitoringUrl,
-                    "startTime": startedAt,
-                    status,
-                    areAllTasksReady,
-                    hasPostInstallInstructions,
-                    "isShared": rest.isShared,
-                    "isOwned": rest.isOwned,
-                    "myServiceLink": !isDevModeEnabled
-                        ? undefined
-                        : routes.myService({ helmReleaseName }).link,
-                    "ownerUsername": rest.isOwned ? undefined : rest.ownerUsername,
-                    isPausable,
-                    isPaused
-                })
-            ),
-        [runningServices]
+    const getMyServiceLink = useConstCallback<MyServicesCardsProps["getMyServiceLink"]>(
+        ({ helmReleaseName }) => routes.myService({ helmReleaseName }).link
     );
 
     const evtMyServiceCardsAction = useConst(() =>
@@ -256,7 +216,7 @@ export default function MyServices(props: Props) {
             .replace();
 
         evtMyServiceCardsAction.post({
-            "action": "TRIGGER SHOW POST INSTALL INSTRUCTIONS",
+            "action": "open readme dialog",
             "helmReleaseName": runningService.helmReleaseName
         });
     }, [route.params.autoOpenHelmReleaseName, runningServices]);
@@ -292,14 +252,15 @@ export default function MyServices(props: Props) {
         );
 
         assert(runningService !== undefined);
+        assert(runningService.pause.isPausable);
 
         serviceManagement.pauseOrResumeService({
             "helmReleaseName": helmReleaseName,
-            "action": runningService.isPaused ? "resume" : "pause"
+            "action": runningService.pause.isPaused ? "resume" : "pause"
         });
     });
 
-    const onRequestOpenClusterEvent = useConstCallback(() => {
+    const onOpenClusterEventsDialog = useConstCallback(() => {
         evtClusterEventsDialogOpen.post();
     });
 
@@ -377,7 +338,8 @@ export default function MyServices(props: Props) {
                                 <MyServicesCards
                                     isUpdating={isUpdating}
                                     className={classes.cards}
-                                    cards={cards}
+                                    runningServices={runningServices}
+                                    getMyServiceLink={getMyServiceLink}
                                     onRequestDelete={onRequestDelete}
                                     catalogExplorerLink={catalogExplorerLink}
                                     evtAction={evtMyServiceCardsAction}
@@ -386,7 +348,7 @@ export default function MyServices(props: Props) {
                                         serviceManagement.getPostInstallInstructions
                                     }
                                     lastClusterEvent={lastClusterEvent}
-                                    onOpenClusterEvent={onRequestOpenClusterEvent}
+                                    onOpenClusterEventsDialog={onOpenClusterEventsDialog}
                                     onRequestPauseOrResume={onRequestPauseOrResume}
                                 />
                             )}
@@ -411,7 +373,7 @@ export default function MyServices(props: Props) {
             <ClusterEventsDialog evtOpen={evtClusterEventsDialogOpen} />
             <ClusterEventsSnackbar
                 evtAction={evtClusterEventsSnackbarAction}
-                onOpenDetails={onRequestOpenClusterEvent}
+                onOpenClusterEventsDialog={onOpenClusterEventsDialog}
             />
         </>
     );
