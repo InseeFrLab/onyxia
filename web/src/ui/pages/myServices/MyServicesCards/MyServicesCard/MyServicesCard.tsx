@@ -35,6 +35,7 @@ export type Props = {
     friendlyName: string;
     chartName: string;
     onRequestDelete: (() => void) | undefined;
+    onRequestPauseOrResume: (() => void) | undefined;
     getPoseInstallInstructions: (() => string) | undefined;
     getEnv: () => Record<string, string>;
     projectServicePassword: string;
@@ -52,6 +53,7 @@ export type Props = {
         | { message: string; severity: "error" | "info" | "warning" }
         | undefined;
     onOpenClusterEvent: () => void;
+    isPaused: boolean;
 };
 
 export const MyServicesCard = memo((props: Props) => {
@@ -62,6 +64,7 @@ export const MyServicesCard = memo((props: Props) => {
         friendlyName,
         chartName,
         onRequestDelete,
+        onRequestPauseOrResume,
         getEnv,
         getPoseInstallInstructions,
         projectServicePassword,
@@ -75,7 +78,8 @@ export const MyServicesCard = memo((props: Props) => {
         ownerUsername,
         myServiceLink,
         lastClusterEvent,
-        onOpenClusterEvent
+        onOpenClusterEvent,
+        isPaused
     } = props;
 
     const { t } = useTranslation({ MyServicesCard });
@@ -124,6 +128,18 @@ export const MyServicesCard = memo((props: Props) => {
                     {capitalize(friendlyName)}
                 </Text>
                 <div style={{ "flex": 1 }} />
+                {onRequestPauseOrResume !== undefined && !isPaused && (
+                    <Tooltip title={"Click to pause the service and release resources"}>
+                        <IconButton
+                            icon={id<MuiIconComponentName>("Pause")}
+                            onClick={event => {
+                                onRequestPauseOrResume();
+                                event.stopPropagation();
+                                event.preventDefault();
+                            }}
+                        />
+                    </Tooltip>
+                )}
                 {isShared && (
                     <Tooltip title={t("this is a shared service")}>
                         <Icon icon={id<MuiIconComponentName>("People")} />
@@ -217,7 +233,18 @@ export const MyServicesCard = memo((props: Props) => {
                         />
                     )}
                     <div style={{ "flex": 1 }} />
-                    {status === "deployed" &&
+
+                    {onRequestPauseOrResume !== undefined && isPaused && (
+                        <Tooltip title={"Click to resume the service"}>
+                            <IconButton
+                                icon={id<MuiIconComponentName>("PlayArrow")}
+                                onClick={onRequestPauseOrResume}
+                            />
+                        </Tooltip>
+                    )}
+
+                    {!isPaused &&
+                        status === "deployed" &&
                         areAllTasksReady &&
                         (openUrl !== undefined ||
                             getPoseInstallInstructions !== undefined) && (

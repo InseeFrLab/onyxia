@@ -43,6 +43,8 @@ export declare namespace RunningService {
         hasPostInstallInstructions: boolean;
         status: "deployed" | "pending-install" | "failed";
         areAllTasksReady: boolean;
+        isPausable: boolean;
+        isPaused: boolean;
     };
 
     export type Owned = Common & {
@@ -155,6 +157,45 @@ export const { reducer, actions } = createUsecaseActions({
                 ),
                 1
             );
+        },
+        "startPausingOrResumingService": (
+            state,
+            { payload }: { payload: { helmReleaseName: string } }
+        ) => {
+            const { helmReleaseName } = payload;
+
+            assert(state.stateDescription === "ready");
+
+            const { runningServices } = state;
+            assert(runningServices !== undefined);
+
+            const runningService = runningServices.find(
+                runningService => runningService.helmReleaseName === helmReleaseName
+            );
+
+            assert(runningService !== undefined);
+
+            runningService.isPausable = false;
+        },
+        "servicePausedOrResumed": (
+            state,
+            { payload }: { payload: { helmReleaseName: string; isPaused: boolean } }
+        ) => {
+            const { helmReleaseName, isPaused } = payload;
+
+            assert(state.stateDescription === "ready");
+
+            const { runningServices } = state;
+            assert(runningServices !== undefined);
+
+            const runningService = runningServices.find(
+                runningService => runningService.helmReleaseName === helmReleaseName
+            );
+
+            assert(runningService !== undefined);
+
+            runningService.isPaused = isPaused;
+            runningService.isPausable = true;
         },
         "postInstallInstructionsRequested": (
             state,

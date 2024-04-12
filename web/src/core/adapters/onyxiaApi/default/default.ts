@@ -500,7 +500,9 @@ export function createOnyxiaApi(params: {
                         apiApp.tasks[0].containers.length !== 0 &&
                         apiApp.tasks[0].containers.every(({ ready }) => ready),
                     "status": apiApp.status,
-                    "taskIds": apiApp.tasks.map(({ id }) => id)
+                    "taskIds": apiApp.tasks.map(({ id }) => id),
+                    "isPausable": apiApp.pausable,
+                    "isPaused": apiApp.paused
                 })
             );
         },
@@ -600,9 +602,21 @@ export function createOnyxiaApi(params: {
             const ctxUnsubscribe = Evt.newCtx();
             const evtUnsubscribe = params.evtUnsubscribe.pipe(ctxUnsubscribe);
 
+            console.log("before");
+
             const response = await fetch(`${url}/my-lab/events`, {
                 "headers": getHeaders()
+            }).catch(error => {
+                console.log("============>", error);
+
+                return undefined;
             });
+
+            console.log("after");
+
+            if (response === undefined) {
+                return;
+            }
 
             if (evtUnsubscribe.postCount !== 0) {
                 return;
@@ -673,6 +687,17 @@ export function createOnyxiaApi(params: {
             ctxUnsubscribe.done();
 
             reader.releaseLock();
+        },
+        "helmUpgradeGlobalSuspend": async ({ helmReleaseName, value }) => {
+            if (value === true) {
+                await axiosInstance.post(
+                    `/my-lab/app/pause?serviceId=${helmReleaseName}`
+                );
+            } else {
+                await axiosInstance.post(
+                    `/my-lab/app/resume?serviceId=${helmReleaseName}`
+                );
+            }
         }
     };
 

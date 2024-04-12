@@ -199,6 +199,8 @@ export default function MyServices(props: Props) {
                     status,
                     areAllTasksReady,
                     hasPostInstallInstructions,
+                    isPausable,
+                    isPaused,
                     ...rest
                 }) => ({
                     helmReleaseName,
@@ -216,7 +218,9 @@ export default function MyServices(props: Props) {
                     "myServiceLink": !isDevModeEnabled
                         ? undefined
                         : routes.myService({ helmReleaseName }).link,
-                    "ownerUsername": rest.isOwned ? undefined : rest.ownerUsername
+                    "ownerUsername": rest.isOwned ? undefined : rest.ownerUsername,
+                    isPausable,
+                    isPaused
                 })
             ),
         [runningServices]
@@ -279,6 +283,21 @@ export default function MyServices(props: Props) {
             serviceManagement.stopService({ helmReleaseName });
         }
     );
+
+    const onRequestPauseOrResume = useConstCallback<
+        MyServicesCardsProps["onRequestPauseOrResume"]
+    >(async ({ helmReleaseName }) => {
+        const runningService = runningServices.find(
+            runningService => runningService.helmReleaseName === helmReleaseName
+        );
+
+        assert(runningService !== undefined);
+
+        serviceManagement.pauseOrResumeService({
+            "helmReleaseName": helmReleaseName,
+            "action": runningService.isPaused ? "resume" : "pause"
+        });
+    });
 
     const onRequestOpenClusterEvent = useConstCallback(() => {
         evtClusterEventsDialogOpen.post();
@@ -369,6 +388,7 @@ export default function MyServices(props: Props) {
                                     }
                                     lastClusterEvent={lastClusterEvent}
                                     onOpenClusterEvent={onRequestOpenClusterEvent}
+                                    onRequestPauseOrResume={onRequestPauseOrResume}
                                 />
                             )}
                             <div className={classes.rightPanel}>

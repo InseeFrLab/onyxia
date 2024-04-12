@@ -33,10 +33,13 @@ export type Props = {
               ownerUsername: string | undefined;
               hasPostInstallInstructions: boolean;
               myServiceLink: Link | undefined;
+              isPausable: boolean;
+              isPaused: boolean;
           }[]
         | undefined;
     catalogExplorerLink: Link;
     onRequestDelete(params: { helmReleaseName: string }): void;
+    onRequestPauseOrResume: (params: { helmReleaseName: string }) => void;
     getEnv: (params: { helmReleaseName: string }) => Record<string, string>;
     getPostInstallInstructions: (params: { helmReleaseName: string }) => string;
     evtAction: NonPostableEvt<{
@@ -57,6 +60,7 @@ export const MyServicesCards = memo((props: Props) => {
         catalogExplorerLink,
         isUpdating,
         onRequestDelete,
+        onRequestPauseOrResume,
         getEnv,
         getPostInstallInstructions,
         evtAction,
@@ -100,6 +104,7 @@ export const MyServicesCards = memo((props: Props) => {
             "getPoseInstallInstructions": () =>
                 getPostInstallInstructions({ helmReleaseName }),
             "onRequestDelete": () => onRequestDelete({ helmReleaseName }),
+            "onRequestPauseOrResume": () => onRequestPauseOrResume({ helmReleaseName }),
             "getEnv": () => getEnv({ helmReleaseName })
         }))
     );
@@ -126,9 +131,13 @@ export const MyServicesCards = memo((props: Props) => {
                         );
                     }
 
-                    return cards.map(card => {
-                        const { getEnv, getPoseInstallInstructions, onRequestDelete } =
-                            getMyServicesFunctionProps(card.helmReleaseName);
+                    return cards.map(({ isPausable, ...card }) => {
+                        const {
+                            getEnv,
+                            getPoseInstallInstructions,
+                            onRequestDelete,
+                            onRequestPauseOrResume
+                        } = getMyServicesFunctionProps(card.helmReleaseName);
 
                         return (
                             <MyServicesCard
@@ -144,9 +153,12 @@ export const MyServicesCards = memo((props: Props) => {
                                 projectServicePassword={projectServicePassword}
                                 onRequestDelete={onRequestDelete}
                                 getEnv={getEnv}
-                                {...card}
                                 lastClusterEvent={lastClusterEvent}
                                 onOpenClusterEvent={onOpenClusterEvent}
+                                onRequestPauseOrResume={
+                                    isPausable ? onRequestPauseOrResume : undefined
+                                }
+                                {...card}
                             />
                         );
                     });

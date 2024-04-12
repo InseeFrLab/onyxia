@@ -4,7 +4,7 @@ import * as projectManagement from "core/usecases/projectManagement";
 import type { Thunks } from "core/bootstrap";
 import { exclude } from "tsafe/exclude";
 import { createUsecaseContextApi } from "clean-architecture";
-import { assert } from "tsafe/assert";
+import { assert, type Equals } from "tsafe/assert";
 import { Evt, type Ctx } from "evt";
 import { name, actions } from "./state";
 import type { RunningService } from "./state";
@@ -250,7 +250,9 @@ export const thunks = {
                         chartName,
                         chartVersion,
                         areAllTasksReady,
-                        status
+                        status,
+                        isPausable,
+                        isPaused
                     }) => {
                         const common: RunningService.Common = {
                             helmReleaseName,
@@ -268,7 +270,9 @@ export const thunks = {
                             status,
                             areAllTasksReady,
                             "hasPostInstallInstructions":
-                                postInstallInstructions !== undefined
+                                postInstallInstructions !== undefined,
+                            isPausable,
+                            isPaused
                         };
 
                         const isOwned = ownerUsername === username;
@@ -329,6 +333,34 @@ export const thunks = {
             dispatch(actions.serviceStopped({ helmReleaseName }));
 
             await onyxiaApi.helmUninstall({ helmReleaseName });
+        },
+    "pauseOrResumeService":
+        (params: { helmReleaseName: string; action: "pause" | "resume" }) =>
+        async (...args) => {
+            const { helmReleaseName, action } = params;
+
+            const [dispatch, , { onyxiaApi }] = args;
+
+            const isSuspend = (() => {
+                switch (action) {
+                    case "pause":
+                        return true;
+                    case "resume":
+                        return false;
+                }
+                assert<Equals<typeof action, never>>(false);
+            })();
+
+            dispatch(actions.startPausingOrResumingService({ helmReleaseName }));
+
+            await onyxiaApi.helmUpgradeGlobalSuspend({
+                helmReleaseName,
+                "value": isSuspend
+            });
+
+            dispatch(
+                actions.servicePausedOrResumed({ helmReleaseName, "isPaused": isSuspend })
+            );
         },
     "getPostInstallInstructions":
         (params: { helmReleaseName: string }) =>
