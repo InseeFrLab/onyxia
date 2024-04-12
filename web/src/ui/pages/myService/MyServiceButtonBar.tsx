@@ -2,18 +2,20 @@ import { memo } from "react";
 import { ButtonBar } from "onyxia-ui/ButtonBar";
 import { id } from "tsafe/id";
 import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
+import { Icon } from "onyxia-ui/Icon";
 
-const buttonIds = ["back", "open", "delete", "monitoring"] as const;
+const buttonIds = ["back", "monitoring"] as const;
 
 export type ButtonId = (typeof buttonIds)[number];
 
 export type Props = {
     className?: string;
     onClick: (buttonId: ButtonId) => void;
+    isMonitoringDisabled: boolean;
 };
 
 export const MyServiceButtonBar = memo((props: Props) => {
-    const { className, onClick } = props;
+    const { className, onClick, isMonitoringDisabled } = props;
 
     return (
         <ButtonBar
@@ -24,25 +26,32 @@ export const MyServiceButtonBar = memo((props: Props) => {
                     switch (buttonId) {
                         case "back":
                             return id<MuiIconComponentName>("ArrowBack");
-                        case "open":
-                            return id<MuiIconComponentName>("OpenInNew");
-                        case "delete":
-                            return id<MuiIconComponentName>("Delete");
                         case "monitoring":
                             return id<MuiIconComponentName>("Equalizer");
                     }
                 })(),
-                "isDisabled": false,
+                "isDisabled": (() => {
+                    switch (buttonId) {
+                        case "monitoring":
+                            return isMonitoringDisabled;
+                        default:
+                            return false;
+                    }
+                })(),
                 "label": (() => {
                     switch (buttonId) {
                         case "back":
                             return "Back";
-                        case "open":
-                            return "Open";
-                        case "delete":
-                            return "Delete";
                         case "monitoring":
-                            return "Monitoring";
+                            return (
+                                <span>
+                                    Monitoring&nbsp;
+                                    <Icon
+                                        size="extra small"
+                                        icon={id<MuiIconComponentName>("OpenInNew")}
+                                    />{" "}
+                                </span>
+                            );
                     }
                 })()
             }))}

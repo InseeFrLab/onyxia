@@ -31,7 +31,6 @@ export type RunningService = {
     chartName: string;
     friendlyName: string;
     chartIconUrl: string | undefined;
-    monitoringUrl: string | undefined;
     startedAt: number;
     urls: string[];
     hasPostInstallInstructions: boolean;

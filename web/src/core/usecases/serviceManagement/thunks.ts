@@ -1,5 +1,4 @@
 import { id } from "tsafe/id";
-import * as deploymentRegionManagement from "core/usecases/deploymentRegionManagement";
 import * as projectManagement from "core/usecases/projectManagement";
 import type { Thunks } from "core/bootstrap";
 import { exclude } from "tsafe/exclude";
@@ -220,19 +219,6 @@ export const thunks = {
             const { namespace: kubernetesNamespace } =
                 projectManagement.selectors.currentProject(getState());
 
-            const getMonitoringUrl = (params: { helmReleaseName: string }) => {
-                const { helmReleaseName } = params;
-
-                const region =
-                    deploymentRegionManagement.selectors.currentDeploymentRegion(
-                        getState()
-                    );
-
-                return region.servicesMonitoringUrlPattern
-                    ?.replace("$NAMESPACE", kubernetesNamespace)
-                    .replace("$INSTANCE", helmReleaseName.replace(/^\//, ""));
-            };
-
             const {
                 user: { username }
             } = await onyxiaApi.getUserAndProjects();
@@ -267,9 +253,6 @@ export const thunks = {
                             "chartIconUrl": getLogoUrl({
                                 chartName,
                                 chartVersion
-                            }),
-                            "monitoringUrl": getMonitoringUrl({
-                                helmReleaseName
                             }),
                             startedAt,
                             "urls": urls.sort(),

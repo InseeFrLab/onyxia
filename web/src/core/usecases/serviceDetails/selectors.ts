@@ -56,13 +56,24 @@ const env = createSelector(readyState, state => {
     return env;
 });
 
+const monitoringUrl = createSelector(readyState, state => {
+    if (state === undefined) {
+        return undefined;
+    }
+
+    const { monitoringUrl } = state;
+
+    return monitoringUrl;
+});
+
 const main = createSelector(
     isReady,
     helmReleaseName,
     helmReleaseFriendlyName,
     tasks,
     env,
-    (isReady, helmReleaseName, helmReleaseFriendlyName, tasks, env) => {
+    monitoringUrl,
+    (isReady, helmReleaseName, helmReleaseFriendlyName, tasks, env, monitoringUrl) => {
         if (!isReady) {
             return {
                 "isReady": false as const,
@@ -80,7 +91,8 @@ const main = createSelector(
             helmReleaseName,
             helmReleaseFriendlyName,
             tasks,
-            env
+            env,
+            monitoringUrl
         };
     }
 );

@@ -25,7 +25,10 @@ export default function MyService(props: Props) {
 
     const { serviceDetails } = useCore().functions;
 
-    const { isReady, helmReleaseFriendlyName } = useCoreState("serviceDetails", "main");
+    const { isReady, helmReleaseFriendlyName, monitoringUrl } = useCoreState(
+        "serviceDetails",
+        "main"
+    );
 
     useEffect(() => {
         const { setInactive } = serviceDetails.setActive({
@@ -48,11 +51,16 @@ export default function MyService(props: Props) {
             />
             <MyServiceButtonBar
                 onClick={buttonId => {
-                    console.log(`Button id click ${buttonId}`);
-                    if (buttonId === "back") {
-                        routes.myServices().push();
+                    switch (buttonId) {
+                        case "back":
+                            routes.myServices().push();
+                            break;
+                        case "monitoring":
+                            window.open(monitoringUrl);
+                            break;
                     }
                 }}
+                isMonitoringDisabled={monitoringUrl === undefined}
             />
 
             {(() => {

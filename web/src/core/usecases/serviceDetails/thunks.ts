@@ -1,5 +1,7 @@
 import type { Thunks } from "core/bootstrap";
 import { name, actions } from "./state";
+import * as deploymentRegionManagement from "core/usecases/deploymentRegionManagement";
+import * as projectManagement from "core/usecases/projectManagement";
 
 export const thunks = {
     "setActive":
@@ -72,12 +74,27 @@ const privateThunks = {
                 }))
             );
 
+            const { namespace: kubernetesNamespace } =
+                projectManagement.selectors.currentProject(getState());
+
             dispatch(
                 actions.updateCompleted({
                     "helmReleaseFriendlyName":
                         helmRelease.friendlyName ?? helmRelease.helmReleaseName,
                     tasks,
-                    "env": helmRelease.env
+                    "env": helmRelease.env,
+                    "monitoringUrl": (() => {
+                        const { helmReleaseName } = params;
+
+                        const region =
+                            deploymentRegionManagement.selectors.currentDeploymentRegion(
+                                getState()
+                            );
+
+                        return region.servicesMonitoringUrlPattern
+                            ?.replace("$NAMESPACE", kubernetesNamespace)
+                            .replace("$INSTANCE", helmReleaseName.replace(/^\//, ""));
+                    })()
                 })
             );
         }
