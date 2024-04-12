@@ -11,7 +11,7 @@ import { MyServicesRunningTime } from "./MyServicesRunningTime";
 import { Tag } from "onyxia-ui/Tag";
 import { Tooltip } from "onyxia-ui/Tooltip";
 import { declareComponentKeys } from "i18nifty";
-import { ReadmeAndEnvDialog } from "./ReadmeAndEnvDialog";
+import { ReadmeDialog } from "./ReadmeDialog";
 import { Evt, NonPostableEvt } from "evt";
 import { useConst } from "powerhooks/useConst";
 import { useEvt } from "evt/hooks";
@@ -37,7 +37,6 @@ export type Props = {
     onRequestDelete: (() => void) | undefined;
     onRequestPauseOrResume: (() => void) | undefined;
     getPoseInstallInstructions: (() => string) | undefined;
-    getEnv: () => Record<string, string>;
     projectServicePassword: string;
     openUrl: string | undefined;
     monitoringUrl: string | undefined;
@@ -65,7 +64,6 @@ export const MyServicesCard = memo((props: Props) => {
         chartName,
         onRequestDelete,
         onRequestPauseOrResume,
-        getEnv,
         getPoseInstallInstructions,
         projectServicePassword,
         monitoringUrl,
@@ -100,9 +98,7 @@ export const MyServicesCard = memo((props: Props) => {
         "hasBeenRunningForTooLong": severity === "warning"
     });
 
-    const evtReadmeAndEnvDialogAction = useConst(() =>
-        Evt.create<"SHOW ENV" | "SHOW POST INSTALL INSTRUCTIONS" | "CLOSE">()
-    );
+    const evtOpenReadmeDialog = useConst(() => Evt.create());
 
     useEvt(
         ctx => {
@@ -113,7 +109,7 @@ export const MyServicesCard = memo((props: Props) => {
                     if (getPoseInstallInstructions === undefined) {
                         return;
                     }
-                    evtReadmeAndEnvDialogAction.post("SHOW POST INSTALL INSTRUCTIONS");
+                    evtOpenReadmeDialog.post();
                 }
             );
         },
@@ -216,10 +212,6 @@ export const MyServicesCard = memo((props: Props) => {
                     </div>
                 </div>
                 <div className={classes.belowDividerBottom}>
-                    <IconButton
-                        icon={id<MuiIconComponentName>("InfoOutlined")}
-                        onClick={() => evtReadmeAndEnvDialogAction.post("SHOW ENV")}
-                    />
                     {onRequestDelete !== undefined && (
                         <IconButton
                             icon={id<MuiIconComponentName>("Delete")}
@@ -249,11 +241,7 @@ export const MyServicesCard = memo((props: Props) => {
                         (openUrl !== undefined ||
                             getPoseInstallInstructions !== undefined) && (
                             <Button
-                                onClick={() =>
-                                    evtReadmeAndEnvDialogAction.post(
-                                        "SHOW POST INSTALL INSTRUCTIONS"
-                                    )
-                                }
+                                onClick={() => evtOpenReadmeDialog.post()}
                                 variant={openUrl === undefined ? "ternary" : "secondary"}
                             >
                                 <span>
@@ -265,9 +253,8 @@ export const MyServicesCard = memo((props: Props) => {
                         )}
                 </div>
             </div>
-            <ReadmeAndEnvDialog
-                evtAction={evtReadmeAndEnvDialogAction}
-                getEnv={getEnv}
+            <ReadmeDialog
+                evtOpen={evtOpenReadmeDialog}
                 getPostInstallInstructions={getPoseInstallInstructions}
                 projectServicePassword={projectServicePassword}
                 openUrl={openUrl}

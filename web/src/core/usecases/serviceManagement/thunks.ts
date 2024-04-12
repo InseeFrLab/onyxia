@@ -302,12 +302,6 @@ export const thunks = {
             dispatch(
                 actions.updateCompleted({
                     kubernetesNamespace,
-                    "envByHelmReleaseName": Object.fromEntries(
-                        helmReleases.map(({ helmReleaseName, env }) => [
-                            helmReleaseName,
-                            env
-                        ])
-                    ),
                     "postInstallInstructionsByHelmReleaseName": Object.fromEntries(
                         helmReleases
                             .map(({ helmReleaseName, postInstallInstructions }) =>
@@ -381,21 +375,6 @@ export const thunks = {
             dispatch(actions.postInstallInstructionsRequested({ helmReleaseName }));
 
             return postInstallInstructions;
-        },
-    "getEnv":
-        (params: { helmReleaseName: string }) =>
-        (...args): Record<string, string> => {
-            const { helmReleaseName } = params;
-
-            const [dispatch, getState] = args;
-
-            dispatch(actions.envRequested({ helmReleaseName }));
-
-            const state = getState()[name];
-
-            assert(state.stateDescription === "ready");
-
-            return state.envByHelmReleaseName[helmReleaseName];
         }
 } satisfies Thunks;
 

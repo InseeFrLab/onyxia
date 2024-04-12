@@ -61,8 +61,8 @@ export type ComponentKey =
     | import("ui/pages/myServices/MyServicesConfirmDeleteDialog").I18n
     | import("ui/pages/myServices/MyServicesButtonBar").I18n
     | import("ui/pages/myServices/MyServicesCards/MyServicesCard/MyServicesCard").I18n
-    | import("ui/pages/myServices/MyServicesCards/MyServicesCard/ReadmeAndEnvDialog/ReadmeAndEnvDialog").I18n
-    | import("ui/pages/myServices/MyServicesCards/MyServicesCard/ReadmeAndEnvDialog/CopyOpenButton").I18n
+    | import("ui/pages/myServices/MyServicesCards/MyServicesCard/ReadmeDialog/ReadmeDialog").I18n
+    | import("ui/pages/myServices/MyServicesCards/MyServicesCard/ReadmeDialog/CopyOpenButton").I18n
     | import("ui/pages/myServices/MyServicesRestorableConfigs/MyServicesRestorableConfig/MyServicesRestorableConfigOptions").I18n
     | import("ui/pages/myServices/MyServicesRestorableConfigs/MyServicesRestorableConfig").I18n
     | import("ui/pages/myServices/MyServicesRestorableConfigs").I18n

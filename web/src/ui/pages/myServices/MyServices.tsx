@@ -382,7 +382,6 @@ export default function MyServices(props: Props) {
                                     catalogExplorerLink={catalogExplorerLink}
                                     evtAction={evtMyServiceCardsAction}
                                     projectServicePassword={servicePassword}
-                                    getEnv={serviceManagement.getEnv}
                                     getPostInstallInstructions={
                                         serviceManagement.getPostInstallInstructions
                                     }

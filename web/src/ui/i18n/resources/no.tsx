@@ -770,7 +770,7 @@ Føl deg fri til å utforske og ta kontroll over dine Kubernetes-implementeringe
         "saved": "Lagret",
         "expand": "Utvid"
     },
-    "ReadmeAndEnvDialog": {
+    "ReadmeDialog": {
         "ok": "ok",
         "return": "Gå tilbake"
     },

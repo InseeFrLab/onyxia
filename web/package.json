@@ -89,7 +89,7 @@
         "lint-staged": "^15.2.2",
         "prettier": "^3.2.5",
         "tsx": "^4.7.1",
-        "typescript": "^5.2.2",
+        "typescript": "^5.4.5",
         "vite": "^5.0.8",
         "vite-envs": "^4.0.8",
         "vite-plugin-commonjs": "^0.10.1",

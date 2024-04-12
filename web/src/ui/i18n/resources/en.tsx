@@ -763,7 +763,7 @@ Feel free to explore and take charge of your Kubernetes deployments!
         "saved": "Saved",
         "expand": "Expand"
     },
-    "ReadmeAndEnvDialog": {
+    "ReadmeDialog": {
         "ok": "ok",
         "return": "Return"
     },

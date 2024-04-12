@@ -718,7 +718,7 @@ ${
         "saved": "已经保存",
         "expand": "展开"
     },
-    "ReadmeAndEnvDialog": {
+    "ReadmeDialog": {
         "ok": "是",
         "return": "返回"
     },

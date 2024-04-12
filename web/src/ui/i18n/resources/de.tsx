@@ -781,7 +781,7 @@ Fühlen Sie sich frei, Ihre Kubernetes-Bereitstellungen zu erkunden und die Kont
         "saved": "Gespeichert",
         "expand": "Erweitern"
     },
-    "ReadmeAndEnvDialog": {
+    "ReadmeDialog": {
         "ok": "Ok",
         "return": "Zurück"
     },

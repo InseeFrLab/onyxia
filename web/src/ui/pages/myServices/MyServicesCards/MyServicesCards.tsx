@@ -40,7 +40,6 @@ export type Props = {
     catalogExplorerLink: Link;
     onRequestDelete(params: { helmReleaseName: string }): void;
     onRequestPauseOrResume: (params: { helmReleaseName: string }) => void;
-    getEnv: (params: { helmReleaseName: string }) => Record<string, string>;
     getPostInstallInstructions: (params: { helmReleaseName: string }) => string;
     evtAction: NonPostableEvt<{
         action: "TRIGGER SHOW POST INSTALL INSTRUCTIONS";
@@ -61,7 +60,6 @@ export const MyServicesCards = memo((props: Props) => {
         isUpdating,
         onRequestDelete,
         onRequestPauseOrResume,
-        getEnv,
         getPostInstallInstructions,
         evtAction,
         projectServicePassword,
@@ -104,8 +102,7 @@ export const MyServicesCards = memo((props: Props) => {
             "getPoseInstallInstructions": () =>
                 getPostInstallInstructions({ helmReleaseName }),
             "onRequestDelete": () => onRequestDelete({ helmReleaseName }),
-            "onRequestPauseOrResume": () => onRequestPauseOrResume({ helmReleaseName }),
-            "getEnv": () => getEnv({ helmReleaseName })
+            "onRequestPauseOrResume": () => onRequestPauseOrResume({ helmReleaseName })
         }))
     );
 
@@ -133,7 +130,6 @@ export const MyServicesCards = memo((props: Props) => {
 
                     return cards.map(({ isPausable, ...card }) => {
                         const {
-                            getEnv,
                             getPoseInstallInstructions,
                             onRequestDelete,
                             onRequestPauseOrResume
@@ -152,7 +148,6 @@ export const MyServicesCards = memo((props: Props) => {
                                 }
                                 projectServicePassword={projectServicePassword}
                                 onRequestDelete={onRequestDelete}
-                                getEnv={getEnv}
                                 lastClusterEvent={lastClusterEvent}
                                 onOpenClusterEvent={onOpenClusterEvent}
                                 onRequestPauseOrResume={

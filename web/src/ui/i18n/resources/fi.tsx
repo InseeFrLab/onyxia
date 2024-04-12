@@ -764,7 +764,7 @@ Tutustu vapaasti ja ota hallintaan Kubernetes-julkaisusi!
         "saved": "Tallennettu",
         "expand": "Laajenna"
     },
-    "ReadmeAndEnvDialog": {
+    "ReadmeDialog": {
         "ok": "ok",
         "return": "Palaa"
     },

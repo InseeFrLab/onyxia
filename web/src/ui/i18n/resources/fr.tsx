@@ -782,7 +782,7 @@ N'hésitez pas à explorer et à prendre en main vos déploiements Kubernetes !
         "saved": "Enregistrés",
         "expand": "Développer"
     },
-    "ReadmeAndEnvDialog": {
+    "ReadmeDialog": {
         "ok": "ok",
         "return": "Retour"
     },

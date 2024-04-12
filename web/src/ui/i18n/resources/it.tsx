@@ -774,7 +774,7 @@ Sentiti libero di esplorare e prendere il controllo dei tuoi deployment Kubernet
         "saved": "Salvati",
         "expand": "Espandi"
     },
-    "ReadmeAndEnvDialog": {
+    "ReadmeDialog": {
         "ok": "ok",
         "return": "Ritorno"
     },

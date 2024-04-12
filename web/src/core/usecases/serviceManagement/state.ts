@@ -1,8 +1,6 @@
 import { assert } from "tsafe/assert";
 import { createUsecaseActions } from "clean-architecture";
 import { id } from "tsafe/id";
-import { nestObject } from "core/tools/nestObject";
-import * as yaml from "yaml";
 
 export type State = State.NotInitialized | State.Ready;
 
@@ -23,7 +21,6 @@ export namespace State {
     export type Ready = Common & {
         stateDescription: "ready";
         runningServices: RunningService[];
-        envByHelmReleaseName: Record<string, Record<string, string>>;
         postInstallInstructionsByHelmReleaseName: Record<string, string>;
         kubernetesNamespace: string;
     };
@@ -81,7 +78,6 @@ export const { reducer, actions } = createUsecaseActions({
             }: {
                 payload: {
                     runningServices: RunningService[];
-                    envByHelmReleaseName: Record<string, Record<string, string>>;
                     postInstallInstructionsByHelmReleaseName: Record<string, string>;
                     kubernetesNamespace: string;
                 };
@@ -89,7 +85,6 @@ export const { reducer, actions } = createUsecaseActions({
         ) => {
             const {
                 runningServices,
-                envByHelmReleaseName,
                 postInstallInstructionsByHelmReleaseName,
                 kubernetesNamespace
             } = payload;
@@ -98,7 +93,6 @@ export const { reducer, actions } = createUsecaseActions({
                 "stateDescription": "ready",
                 "isUpdating": false,
                 runningServices,
-                envByHelmReleaseName,
                 postInstallInstructionsByHelmReleaseName,
                 kubernetesNamespace,
                 "commandLogsEntries": state.commandLogsEntries
@@ -214,24 +208,6 @@ export const { reducer, actions } = createUsecaseActions({
                 "cmdId": Date.now(),
                 "cmd": `helm get notes ${helmReleaseName} --namespace ${state.kubernetesNamespace}`,
                 "resp": postInstallInstructions
-            });
-        },
-        "envRequested": (
-            state,
-            { payload }: { payload: { helmReleaseName: string } }
-        ) => {
-            const { helmReleaseName } = payload;
-
-            assert(state.stateDescription === "ready");
-
-            const env = state.envByHelmReleaseName[helmReleaseName];
-
-            state.commandLogsEntries.push({
-                "cmdId": Date.now(),
-                "cmd": `helm get values ${helmReleaseName} --namespace ${state.kubernetesNamespace}`,
-                "resp": ["USER-SUPPLIED VALUES:", yaml.stringify(nestObject(env))].join(
-                    "\n"
-                )
             });
         },
         "commandLogsEntryAdded": (

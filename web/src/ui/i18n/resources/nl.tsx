@@ -777,7 +777,7 @@ Voel je vrij om te verkennen en de controle over je Kubernetes-implementaties te
         "saved": "Opgeslagen",
         "expand": "Uitbreiden"
     },
-    "ReadmeAndEnvDialog": {
+    "ReadmeDialog": {
         "ok": "ok",
         "return": "Terug"
     },
