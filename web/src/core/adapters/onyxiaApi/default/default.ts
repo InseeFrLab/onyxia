@@ -500,7 +500,7 @@ export function createOnyxiaApi(params: {
                         apiApp.tasks[0].containers.length !== 0 &&
                         apiApp.tasks[0].containers.every(({ ready }) => ready),
                     "status": apiApp.status,
-                    "taskIds": apiApp.tasks.map(({ id }) => id),
+                    "podNames": apiApp.tasks.map(({ id }) => id),
                     "isPausable": apiApp.pausable,
                     "isPaused": apiApp.paused
                 })
@@ -587,11 +587,11 @@ export function createOnyxiaApi(params: {
                     .filter(exclude(undefined))
             );
         },
-        "getTaskLogs": async ({ helmReleaseName, taskId }) => {
+        "kubectlLogs": async ({ helmReleaseName, podName }) => {
             const { data } = await axiosInstance.get<string>("/my-lab/app/logs", {
                 "params": {
                     "serviceId": helmReleaseName,
-                    "taskId": taskId
+                    "taskId": podName
                 }
             });
 

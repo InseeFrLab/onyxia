@@ -35,15 +35,38 @@ const helmReleaseFriendlyName = createSelector(readyState, state => {
     return helmReleaseFriendlyName;
 });
 
-const tasks = createSelector(readyState, state => {
+const paginatedLogsByPodName = createSelector(readyState, state => {
     if (state === undefined) {
-        return [];
+        return undefined;
     }
 
-    return state.tasks.map(({ taskId, logs }) => ({
-        taskId,
-        "logs": logs.split("\n").slice(0, 80).join("\n")
-    }));
+    return Object.fromEntries(
+        Object.entries(state.logsByPodName).map(([podName, logs]) => [
+            podName,
+            (() => {
+                const lines = logs
+                    .split("\n")
+                    .map(line => line.trim())
+                    .filter(line => line !== "");
+
+                const paginatedLogs: string[] = [];
+
+                for (let i = 0; i < lines.length; i += 50) {
+                    paginatedLogs.push(lines.slice(i, i + 50).join("\n"));
+                }
+
+                return paginatedLogs;
+            })()
+        ])
+    );
+});
+
+const podNames = createSelector(paginatedLogsByPodName, paginatedLogsByPodName => {
+    if (paginatedLogsByPodName === undefined) {
+        return undefined;
+    }
+
+    return Object.keys(paginatedLogsByPodName);
 });
 
 const env = createSelector(readyState, state => {
@@ -70,10 +93,19 @@ const main = createSelector(
     isReady,
     helmReleaseName,
     helmReleaseFriendlyName,
-    tasks,
+    podNames,
+    paginatedLogsByPodName,
     env,
     monitoringUrl,
-    (isReady, helmReleaseName, helmReleaseFriendlyName, tasks, env, monitoringUrl) => {
+    (
+        isReady,
+        helmReleaseName,
+        helmReleaseFriendlyName,
+        podNames,
+        paginatedLogsByPodName,
+        env,
+        monitoringUrl
+    ) => {
         if (!isReady) {
             return {
                 "isReady": false as const,
@@ -83,14 +115,16 @@ const main = createSelector(
 
         assert(helmReleaseName !== undefined);
         assert(helmReleaseFriendlyName !== undefined);
-        assert(tasks !== undefined);
+        assert(paginatedLogsByPodName !== undefined);
         assert(env !== undefined);
+        assert(podNames !== undefined);
 
         return {
             "isReady": true,
             helmReleaseName,
             helmReleaseFriendlyName,
-            tasks,
+            podNames,
+            paginatedLogsByPodName,
             env,
             monitoringUrl
         };

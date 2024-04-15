@@ -13,7 +13,7 @@ export type HelmRelease = {
     chartVersion: string;
     areAllTasksReady: boolean;
     status: "deployed" | "pending-install" | "failed";
-    taskIds: string[];
+    podNames: string[];
     isPausable: boolean;
     isPaused: boolean;
 };

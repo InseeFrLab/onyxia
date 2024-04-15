@@ -27,10 +27,7 @@ export namespace State {
         isFetching: boolean;
         helmReleaseName: string;
         helmReleaseFriendlyName: string;
-        tasks: {
-            taskId: string;
-            logs: string;
-        }[];
+        logsByPodName: Record<string, string>;
         env: Record<string, string>;
         monitoringUrl: string | undefined;
     };
@@ -80,16 +77,14 @@ export const { reducer, actions } = createUsecaseActions({
             }: {
                 payload: {
                     helmReleaseFriendlyName: string;
-                    tasks: {
-                        taskId: string;
-                        logs: string;
-                    }[];
+                    logsByPodName: Record<string, string>;
                     env: Record<string, string>;
                     monitoringUrl: string | undefined;
                 };
             }
         ) => {
-            const { helmReleaseFriendlyName, tasks, env, monitoringUrl } = payload;
+            const { helmReleaseFriendlyName, logsByPodName, env, monitoringUrl } =
+                payload;
 
             assert(
                 state.stateDescription !== "not initialized" || state.isFetching === true
@@ -102,7 +97,7 @@ export const { reducer, actions } = createUsecaseActions({
                 "isFetching": false,
                 helmReleaseName,
                 helmReleaseFriendlyName,
-                tasks,
+                logsByPodName,
                 env,
                 monitoringUrl
             });

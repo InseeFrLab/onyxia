@@ -64,14 +64,19 @@ const privateThunks = {
                 return;
             }
 
-            const tasks = await Promise.all(
-                helmRelease.taskIds.map(async taskId => ({
-                    taskId,
-                    "logs": await onyxiaApi.getTaskLogs({
-                        helmReleaseName,
-                        taskId
-                    })
-                }))
+            const logsByPodName = Object.fromEntries(
+                await Promise.all(
+                    helmRelease.podNames.map(
+                        async podName =>
+                            [
+                                podName,
+                                await onyxiaApi.kubectlLogs({
+                                    helmReleaseName,
+                                    podName
+                                })
+                            ] as const
+                    )
+                )
             );
 
             const { namespace: kubernetesNamespace } =
@@ -81,7 +86,7 @@ const privateThunks = {
                 actions.updateCompleted({
                     "helmReleaseFriendlyName":
                         helmRelease.friendlyName ?? helmRelease.helmReleaseName,
-                    tasks,
+                    logsByPodName,
                     "env": helmRelease.env,
                     "monitoringUrl": (() => {
                         const { helmReleaseName } = params;

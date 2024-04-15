@@ -24,7 +24,8 @@ export const routeDefs = {
                         "stringify": value => value
                     })
                 )
-                .default(tabIds[0])
+                .default(tabIds[0]),
+            "pod": param.query.optional.string
         },
         ({ tabId, helmReleaseName }) => `/my-service/${helmReleaseName}/${tabId}`
     )

@@ -6,12 +6,11 @@ import { customIcons } from "ui/theme";
 import { routes } from "ui/routes";
 import { MyServiceButtonBar } from "./MyServiceButtonBar";
 import { Tabs } from "onyxia-ui/Tabs";
-import { tabIds } from "./tabIds";
-import { capitalize } from "tsafe/capitalize";
 import { useCore, useCoreState } from "core";
-import { LogsTab } from "./LogsTab";
+import { PodLogsTab } from "./PodLogsTab";
 import { CircularProgress } from "onyxia-ui/CircularProgress";
 import { EnvTab } from "./EnvTab";
+import { assert, type Equals } from "tsafe/assert";
 
 export type Props = {
     route: PageRoute;
@@ -25,10 +24,13 @@ export default function MyService(props: Props) {
 
     const { serviceDetails } = useCore().functions;
 
-    const { isReady, helmReleaseFriendlyName, monitoringUrl } = useCoreState(
-        "serviceDetails",
-        "main"
-    );
+    const {
+        isReady,
+        helmReleaseFriendlyName,
+        monitoringUrl,
+        podNames,
+        paginatedLogsByPodName
+    } = useCoreState("serviceDetails", "main");
 
     useEffect(() => {
         const { setInactive } = serviceDetails.setActive({
@@ -75,28 +77,68 @@ export default function MyService(props: Props) {
                 return (
                     <Tabs
                         className={classes.tabs}
-                        tabs={tabIds.map(tabId => ({
-                            "id": tabId,
-                            "title": capitalize(tabId)
-                        }))}
-                        activeTabId={route.params.tabId}
-                        maxTabCount={3}
-                        onRequestChangeActiveTab={tabId =>
-                            routes
-                                .myService({
-                                    ...route.params,
-                                    tabId
-                                })
-                                .replace()
-                        }
+                        tabs={[
+                            ...podNames.map(podName => ({
+                                "id": `logs:${podName}`,
+                                "title": `${podName} Pod Logs`
+                            })),
+                            {
+                                "id": "values",
+                                "title": "Helm Release configuration"
+                            }
+                        ]}
+                        activeTabId={(() => {
+                            switch (route.params.tabId) {
+                                case "values":
+                                    return "values";
+                                case "logs":
+                                    return `logs:${route.params.pod ?? podNames[0]}`;
+                            }
+                            assert<Equals<typeof route.params.tabId, never>>(false);
+                        })()}
+                        maxTabCount={4}
+                        onRequestChangeActiveTab={tabId => {
+                            if (tabId === "values") {
+                                routes
+                                    .myService({
+                                        ...route.params,
+                                        tabId
+                                    })
+                                    .replace();
+                                return;
+                            }
+
+                            if (tabId.startsWith("logs:")) {
+                                routes
+                                    .myService({
+                                        ...route.params,
+                                        "tabId": "logs",
+                                        "pod": tabId.slice("logs:".length)
+                                    })
+                                    .replace();
+                                return;
+                            }
+
+                            assert(false);
+                        }}
                     >
                         {(() => {
                             switch (route.params.tabId) {
-                                case "logs":
-                                    return <LogsTab />;
-                                case "env":
+                                case "values":
                                     return <EnvTab />;
+                                case "logs": {
+                                    const podName = route.params.pod ?? podNames[0];
+                                    return (
+                                        <PodLogsTab
+                                            paginatedLogs={
+                                                paginatedLogsByPodName[podName]
+                                            }
+                                        />
+                                    );
+                                }
                             }
+
+                            assert<Equals<typeof route.params.tabId, never>>(false);
                         })()}
                     </Tabs>
                 );

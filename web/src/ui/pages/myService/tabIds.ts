@@ -1,3 +1,3 @@
-export const tabIds = ["logs", "env"] as const;
+export const tabIds = ["logs", "values"] as const;
 
 export type TabIds = (typeof tabIds)[number];
