@@ -87,7 +87,7 @@ const privateThunks = {
                     "helmReleaseFriendlyName":
                         helmRelease.friendlyName ?? helmRelease.helmReleaseName,
                     logsByPodName,
-                    "env": helmRelease.env,
+                    "helmValues": helmRelease.values,
                     "monitoringUrl": (() => {
                         const { helmReleaseName } = params;
 

@@ -28,7 +28,7 @@ export namespace State {
         helmReleaseName: string;
         helmReleaseFriendlyName: string;
         logsByPodName: Record<string, string>;
-        env: Record<string, string>;
+        helmValues: Record<string, string>;
         monitoringUrl: string | undefined;
     };
 }
@@ -78,12 +78,12 @@ export const { reducer, actions } = createUsecaseActions({
                 payload: {
                     helmReleaseFriendlyName: string;
                     logsByPodName: Record<string, string>;
-                    env: Record<string, string>;
+                    helmValues: Record<string, string>;
                     monitoringUrl: string | undefined;
                 };
             }
         ) => {
-            const { helmReleaseFriendlyName, logsByPodName, env, monitoringUrl } =
+            const { helmReleaseFriendlyName, logsByPodName, helmValues, monitoringUrl } =
                 payload;
 
             assert(
@@ -98,7 +98,7 @@ export const { reducer, actions } = createUsecaseActions({
                 helmReleaseName,
                 helmReleaseFriendlyName,
                 logsByPodName,
-                env,
+                helmValues,
                 monitoringUrl
             });
         },

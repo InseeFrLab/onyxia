@@ -5,7 +5,7 @@ export type HelmRelease = {
     startedAt: number;
     postInstallInstructions: string | undefined;
     isShared: boolean;
-    env: Record<string, string>;
+    values: Record<string, string>;
     ownerUsername: string;
     appVersion: string;
     revision: string;

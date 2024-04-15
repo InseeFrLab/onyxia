@@ -9,7 +9,7 @@ import { Tabs } from "onyxia-ui/Tabs";
 import { useCore, useCoreState } from "core";
 import { PodLogsTab } from "./PodLogsTab";
 import { CircularProgress } from "onyxia-ui/CircularProgress";
-import { EnvTab } from "./EnvTab";
+import { HelmValuesTab } from "./HelmValuesTab";
 import { assert, type Equals } from "tsafe/assert";
 
 export type Props = {
@@ -29,7 +29,8 @@ export default function MyService(props: Props) {
         helmReleaseFriendlyName,
         monitoringUrl,
         podNames,
-        paginatedLogsByPodName
+        paginatedLogsByPodName,
+        formattedHelmValues
     } = useCoreState("serviceDetails", "main");
 
     useEffect(() => {
@@ -84,7 +85,7 @@ export default function MyService(props: Props) {
                             })),
                             {
                                 "id": "values",
-                                "title": "Helm Release configuration"
+                                "title": "Helm Values"
                             }
                         ]}
                         activeTabId={(() => {
@@ -125,7 +126,11 @@ export default function MyService(props: Props) {
                         {(() => {
                             switch (route.params.tabId) {
                                 case "values":
-                                    return <EnvTab />;
+                                    return (
+                                        <HelmValuesTab
+                                            formattedHelmValues={formattedHelmValues}
+                                        />
+                                    );
                                 case "logs": {
                                     const podName = route.params.pod ?? podNames[0];
                                     return (

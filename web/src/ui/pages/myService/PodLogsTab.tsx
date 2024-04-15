@@ -85,6 +85,7 @@ const useStyles = tss.withName({ PodLogsTab }).create(({ theme }) => ({
     "pre": {
         "padding": theme.spacing(5),
         "backgroundColor": theme.colors.useCases.surfaces.background,
+        "borderRadius": theme.spacing(2),
         "position": "relative"
     }
 }));

@@ -2,6 +2,8 @@ import type { State as RootState } from "core/bootstrap";
 import { createSelector } from "clean-architecture";
 import { assert } from "tsafe/assert";
 import { name } from "./state";
+import { nestObject } from "core/tools/nestObject";
+import YAML from "yaml";
 
 const state = (rootState: RootState) => rootState[name];
 
@@ -69,14 +71,32 @@ const podNames = createSelector(paginatedLogsByPodName, paginatedLogsByPodName =
     return Object.keys(paginatedLogsByPodName);
 });
 
-const env = createSelector(readyState, state => {
+const formattedHelmValues = createSelector(readyState, state => {
     if (state === undefined) {
         return undefined;
     }
 
-    const { env } = state;
+    const { helmValues } = state;
 
-    return env;
+    return YAML.stringify(
+        nestObject(
+            Object.fromEntries(
+                Object.entries(helmValues).map(([key, value]) => [
+                    key,
+                    (() => {
+                        switch (value) {
+                            case "true":
+                                return true;
+                            case "false":
+                                return false;
+                            default:
+                                return value;
+                        }
+                    })()
+                ])
+            )
+        )
+    );
 });
 
 const monitoringUrl = createSelector(readyState, state => {
@@ -95,7 +115,7 @@ const main = createSelector(
     helmReleaseFriendlyName,
     podNames,
     paginatedLogsByPodName,
-    env,
+    formattedHelmValues,
     monitoringUrl,
     (
         isReady,
@@ -103,7 +123,7 @@ const main = createSelector(
         helmReleaseFriendlyName,
         podNames,
         paginatedLogsByPodName,
-        env,
+        formattedHelmValues,
         monitoringUrl
     ) => {
         if (!isReady) {
@@ -116,7 +136,7 @@ const main = createSelector(
         assert(helmReleaseName !== undefined);
         assert(helmReleaseFriendlyName !== undefined);
         assert(paginatedLogsByPodName !== undefined);
-        assert(env !== undefined);
+        assert(formattedHelmValues !== undefined);
         assert(podNames !== undefined);
 
         return {
@@ -125,7 +145,7 @@ const main = createSelector(
             helmReleaseFriendlyName,
             podNames,
             paginatedLogsByPodName,
-            env,
+            formattedHelmValues,
             monitoringUrl
         };
     }

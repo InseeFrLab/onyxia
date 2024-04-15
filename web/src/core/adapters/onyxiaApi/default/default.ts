@@ -480,7 +480,7 @@ export function createOnyxiaApi(params: {
                     "postInstallInstructions": apiApp.postInstallInstructions,
                     "urls": apiApp.urls,
                     "startedAt": apiApp.startedAt,
-                    "env": apiApp.env,
+                    "values": apiApp.env,
                     "appVersion": apiApp.appVersion,
                     "revision": apiApp.revision,
                     ...(() => {
