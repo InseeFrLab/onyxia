@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 import Pagination from "@mui/material/Pagination";
 import { tss } from "tss";
 import { Text } from "onyxia-ui/Text";
-import { CircularProgress } from "onyxia-ui/CircularProgress";
 import { assert } from "tsafe/assert";
+import { LoadingDots } from "ui/shared/LoadingDots";
 
 type Props = {
     className?: string;
@@ -90,16 +90,6 @@ export function PodLogsTab(props: Props) {
                     setDoFollow(isScrolledToBottom);
                 }}
             >
-                {currentPage === paginatedLogs.length && (
-                    <Text typo="body 1" className={classes.pageAnnotation}>
-                        <CircularProgress
-                            className={classes.circularProgress}
-                            size={18}
-                        />
-                        &nbsp;&nbsp;Realtime stream{" "}
-                    </Text>
-                )}
-
                 {currentPage === 1 && (
                     <Text typo="body 1" className={classes.pageAnnotation}>
                         This is not necessarily the first logs, older logs might have been
@@ -108,6 +98,11 @@ export function PodLogsTab(props: Props) {
                 )}
 
                 {paginatedLogs[currentPage - 1]}
+                {currentPage === paginatedLogs.length && (
+                    <Text typo="body 1" className={classes.newLogsText}>
+                        New logs are displayed in realtime <LoadingDots />
+                    </Text>
+                )}
             </pre>
         </div>
     );
@@ -129,9 +124,10 @@ const useStyles = tss.withName({ PodLogsTab }).create(({ theme }) => ({
         "right": theme.spacing(2),
         "fontStyle": "italic"
     },
-    "circularProgress": {
-        "position": "relative",
-        "top": 3
+    "newLogsText": {
+        "marginTop": theme.spacing(4),
+        "fontStyle": "italic",
+        "color": theme.colors.useCases.typography.textSecondary
     },
     "pre": {
         "padding": theme.spacing(5),
