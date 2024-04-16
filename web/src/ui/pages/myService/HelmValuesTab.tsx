@@ -18,7 +18,6 @@ export function HelmValuesTab(props: Props) {
                 theme={theme.isDarkModeEnabled ? atomOneDark : atomOneLight}
                 text={formattedHelmValues}
                 customStyle={{
-                    "paddingTop": `${theme.spacing(5)}px`,
                     "borderRadius": `${theme.spacing(2)}px`
                 }}
             />
@@ -27,5 +26,8 @@ export function HelmValuesTab(props: Props) {
 }
 
 const useStyles = tss.withName({ HelmValuesTab }).create(() => ({
-    "root": {}
+    "root": {
+        "height": "100%",
+        "overflow": "auto"
+    }
 }));

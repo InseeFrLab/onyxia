@@ -13,7 +13,7 @@ type Props = {
 export function PodLogsTab(props: Props) {
     const { className, paginatedLogs } = props;
 
-    const { classes } = useStyles();
+    const { classes, cx } = useStyles();
 
     const [currentPage, setCurrentPage] = useState(paginatedLogs.length);
 
@@ -28,9 +28,8 @@ export function PodLogsTab(props: Props) {
     }, [paginatedLogs.length]);
 
     return (
-        <div className={className}>
+        <div className={cx(className, classes.root)}>
             <Pagination
-                className={classes.pagination}
                 classes={{ "ul": classes.paginationUl }}
                 showFirstButton
                 showLastButton
@@ -66,8 +65,11 @@ export function PodLogsTab(props: Props) {
 }
 
 const useStyles = tss.withName({ PodLogsTab }).create(({ theme }) => ({
-    "pagination": {
-        ...theme.spacing.topBottom("margin", 4)
+    "root": {
+        "height": "100%",
+        "overflow": "hidden",
+        "display": "flex",
+        "flexDirection": "column"
     },
     "paginationUl": {
         "justifyContent": "end"
@@ -86,6 +88,8 @@ const useStyles = tss.withName({ PodLogsTab }).create(({ theme }) => ({
         "padding": theme.spacing(5),
         "backgroundColor": theme.colors.useCases.surfaces.background,
         "borderRadius": theme.spacing(2),
-        "position": "relative"
+        "position": "relative",
+        "flex": 1,
+        "overflow": "auto"
     }
 }));
