@@ -13,6 +13,7 @@ import { HelmValuesTab } from "./HelmValuesTab";
 import { assert, type Equals } from "tsafe/assert";
 import { CommandBar } from "ui/shared/CommandBar";
 import { useWindowInnerSize } from "powerhooks/useWindowInnerSize";
+import { useEvt } from "evt/hooks";
 
 export type Props = {
     route: PageRoute;
@@ -27,6 +28,21 @@ export default function MyService(props: Props) {
     const { cx, classes } = useStyles({ isCommandBarEnabled });
 
     const { serviceDetails } = useCore().functions;
+
+    const { evtServiceDetails } = useCore().evts;
+
+    useEvt(
+        ctx => {
+            evtServiceDetails.attach(
+                ({ actionName }) => actionName === "redirect away",
+                ctx,
+                () => {
+                    routes.myServices().replace();
+                }
+            );
+        },
+        [evtServiceDetails]
+    );
 
     const {
         isReady,
