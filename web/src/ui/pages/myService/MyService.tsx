@@ -61,17 +61,8 @@ export default function MyService(props: Props) {
                     helpContent=""
                 />
                 <MyServiceButtonBar
-                    onClick={buttonId => {
-                        switch (buttonId) {
-                            case "back":
-                                routes.myServices().push();
-                                break;
-                            case "monitoring":
-                                window.open(monitoringUrl);
-                                break;
-                        }
-                    }}
-                    isMonitoringDisabled={monitoringUrl === undefined}
+                    onClickBack={() => routes.myServices().push()}
+                    monitoringUrl={monitoringUrl}
                 />
             </div>
 

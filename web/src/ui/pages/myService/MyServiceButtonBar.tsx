@@ -3,59 +3,58 @@ import { ButtonBar } from "onyxia-ui/ButtonBar";
 import { id } from "tsafe/id";
 import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
 import { Icon } from "onyxia-ui/Icon";
-
-const buttonIds = ["back", "monitoring"] as const;
-
-export type ButtonId = (typeof buttonIds)[number];
+import { assert } from "tsafe/assert";
 
 export type Props = {
     className?: string;
-    onClick: (buttonId: ButtonId) => void;
-    isMonitoringDisabled: boolean;
+    onClickBack: () => void;
+    monitoringUrl: string | undefined;
 };
 
 export const MyServiceButtonBar = memo((props: Props) => {
-    const { className, onClick, isMonitoringDisabled } = props;
+    const { className, onClickBack, monitoringUrl } = props;
 
     return (
         <ButtonBar
             className={className}
-            buttons={buttonIds.map(buttonId => ({
-                buttonId,
-                "icon": (() => {
-                    switch (buttonId) {
-                        case "back":
-                            return id<MuiIconComponentName>("ArrowBack");
-                        case "monitoring":
-                            return id<MuiIconComponentName>("Equalizer");
-                    }
-                })(),
-                "isDisabled": (() => {
-                    switch (buttonId) {
-                        case "monitoring":
-                            return isMonitoringDisabled;
-                        default:
-                            return false;
-                    }
-                })(),
-                "label": (() => {
-                    switch (buttonId) {
-                        case "back":
-                            return "Back";
-                        case "monitoring":
-                            return (
-                                <span>
-                                    Monitoring&nbsp;
-                                    <Icon
-                                        size="extra small"
-                                        icon={id<MuiIconComponentName>("OpenInNew")}
-                                    />{" "}
-                                </span>
-                            );
-                    }
-                })()
-            }))}
-            onClick={onClick}
+            buttons={[
+                {
+                    "buttonId": "back",
+                    "icon": id<MuiIconComponentName>("ArrowBack"),
+                    "label": "Back"
+                },
+                ...(monitoringUrl === undefined
+                    ? []
+                    : [
+                          {
+                              "buttonId": "monitoring",
+                              "icon": id<MuiIconComponentName>("Equalizer"),
+                              "label": (
+                                  <span>
+                                      {monitoringUrl.toLowerCase().includes("grafana")
+                                          ? "Grafana"
+                                          : "External"}{" "}
+                                      monitoring&nbsp;
+                                      <Icon
+                                          size="extra small"
+                                          icon={id<MuiIconComponentName>("OpenInNew")}
+                                      />{" "}
+                                  </span>
+                              )
+                          }
+                      ])
+            ]}
+            onClick={buttonId => {
+                switch (buttonId) {
+                    case "back":
+                        onClickBack();
+                        break;
+                    case "monitoring":
+                        assert(monitoringUrl !== undefined);
+                        window.open(monitoringUrl!);
+                        break;
+                }
+            }}
         />
     );
 });

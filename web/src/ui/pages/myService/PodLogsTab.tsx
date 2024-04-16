@@ -1,9 +1,9 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Pagination from "@mui/material/Pagination";
-import { useState } from "react";
 import { tss } from "tss";
 import { Text } from "onyxia-ui/Text";
 import { CircularProgress } from "onyxia-ui/CircularProgress";
+import { assert } from "tsafe/assert";
 
 type Props = {
     className?: string;
@@ -17,7 +17,15 @@ export function PodLogsTab(props: Props) {
 
     const [currentPage, setCurrentPage] = useState(paginatedLogs.length);
 
+    const [preElement, setPreElement] = useState<HTMLPreElement | null>(null);
+
+    const [doFollow, setDoFollow] = useState(true);
+
     useEffect(() => {
+        if (!doFollow) {
+            return;
+        }
+
         setCurrentPage(currentPage => {
             if (currentPage !== paginatedLogs.length - 1) {
                 return currentPage;
@@ -25,7 +33,29 @@ export function PodLogsTab(props: Props) {
 
             return paginatedLogs.length;
         });
-    }, [paginatedLogs.length]);
+    }, [paginatedLogs.length, doFollow]);
+
+    useEffect(() => {
+        if (!doFollow) {
+            return;
+        }
+
+        if (preElement === null) {
+            return;
+        }
+
+        if (currentPage !== paginatedLogs.length) {
+            return;
+        }
+
+        // Scroll to bottom
+        preElement.scrollTop = preElement.scrollHeight;
+    }, [
+        preElement,
+        currentPage,
+        paginatedLogs[paginatedLogs.length - 1].length,
+        doFollow
+    ]);
 
     return (
         <div className={cx(className, classes.root)}>
@@ -40,7 +70,26 @@ export function PodLogsTab(props: Props) {
                 onChange={(_, page) => setCurrentPage(page)}
             />
 
-            <pre className={classes.pre}>
+            <pre
+                ref={setPreElement}
+                className={classes.pre}
+                onScroll={() => {
+                    if (currentPage !== paginatedLogs.length) {
+                        setDoFollow(false);
+                        return;
+                    }
+
+                    assert(preElement !== null);
+
+                    const isScrolledToBottom = (() => {
+                        const scrollPosition =
+                            preElement.scrollTop + preElement.clientHeight;
+                        return scrollPosition >= preElement.scrollHeight - 1;
+                    })();
+
+                    setDoFollow(isScrolledToBottom);
+                }}
+            >
                 {currentPage === paginatedLogs.length && (
                     <Text typo="body 1" className={classes.pageAnnotation}>
                         <CircularProgress
@@ -90,6 +139,7 @@ const useStyles = tss.withName({ PodLogsTab }).create(({ theme }) => ({
         "borderRadius": theme.spacing(2),
         "position": "relative",
         "flex": 1,
-        "overflow": "auto"
+        "overflow": "auto",
+        "scrollBehavior": "smooth"
     }
 }));
