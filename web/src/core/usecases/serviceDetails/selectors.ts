@@ -68,7 +68,7 @@ const podNames = createSelector(paginatedLogsByPodName, paginatedLogsByPodName =
         return undefined;
     }
 
-    return Object.keys(paginatedLogsByPodName);
+    return Object.keys(paginatedLogsByPodName).sort();
 });
 
 const formattedHelmValues = createSelector(readyState, state => {
@@ -99,6 +99,14 @@ const formattedHelmValues = createSelector(readyState, state => {
     );
 });
 
+const commandLogsEntries = createSelector(readyState, state => {
+    if (state === undefined) {
+        return undefined;
+    }
+
+    return state.commandLogsEntries;
+});
+
 const monitoringUrl = createSelector(readyState, state => {
     if (state === undefined) {
         return undefined;
@@ -111,20 +119,20 @@ const monitoringUrl = createSelector(readyState, state => {
 
 const main = createSelector(
     isReady,
-    helmReleaseName,
     helmReleaseFriendlyName,
     podNames,
     paginatedLogsByPodName,
     formattedHelmValues,
     monitoringUrl,
+    commandLogsEntries,
     (
         isReady,
-        helmReleaseName,
         helmReleaseFriendlyName,
         podNames,
         paginatedLogsByPodName,
         formattedHelmValues,
-        monitoringUrl
+        monitoringUrl,
+        commandLogsEntries
     ) => {
         if (!isReady) {
             return {
@@ -133,24 +141,28 @@ const main = createSelector(
             };
         }
 
-        assert(helmReleaseName !== undefined);
         assert(helmReleaseFriendlyName !== undefined);
         assert(paginatedLogsByPodName !== undefined);
         assert(formattedHelmValues !== undefined);
         assert(podNames !== undefined);
+        assert(commandLogsEntries !== undefined);
 
         return {
             "isReady": true,
-            helmReleaseName,
             helmReleaseFriendlyName,
             podNames,
             paginatedLogsByPodName,
             formattedHelmValues,
-            monitoringUrl
+            monitoringUrl,
+            commandLogsEntries
         };
     }
 );
 
 export const selectors = {
     main
+};
+
+export const protectedSelectors = {
+    helmReleaseName
 };

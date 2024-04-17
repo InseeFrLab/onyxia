@@ -12,7 +12,6 @@ import { CircularProgress } from "onyxia-ui/CircularProgress";
 import { HelmValuesTab } from "./HelmValuesTab";
 import { assert, type Equals } from "tsafe/assert";
 import { CommandBar } from "ui/shared/CommandBar";
-import { useWindowInnerSize } from "powerhooks/useWindowInnerSize";
 import { useEvt } from "evt/hooks";
 
 export type Props = {
@@ -50,10 +49,9 @@ export default function MyService(props: Props) {
         monitoringUrl,
         podNames,
         paginatedLogsByPodName,
-        formattedHelmValues
+        formattedHelmValues,
+        commandLogsEntries
     } = useCoreState("serviceDetails", "main");
-
-    const { windowInnerHeight } = useWindowInnerSize();
 
     useEffect(() => {
         const { setInactive } = serviceDetails.setActive({
@@ -62,6 +60,24 @@ export default function MyService(props: Props) {
 
         return () => setInactive();
     }, [route.params.helmReleaseName]);
+
+    useEffect(() => {
+        if (!isReady) {
+            return;
+        }
+
+        switch (route.params.tabId) {
+            case "logs":
+                assert(route.params.pod !== undefined);
+                serviceDetails.logKubectlLogsCommand({
+                    "podName": route.params.pod
+                });
+                return;
+            case "values":
+                serviceDetails.logHelmGetValuesCommand();
+                return;
+        }
+    }, [route.params.tabId, route.params.pod, isReady]);
 
     return (
         <div className={cx(classes.root, className)}>
@@ -97,16 +113,10 @@ export default function MyService(props: Props) {
                             <CommandBar
                                 classes={{
                                     "root": classes.commandBar,
-                                    "rootWhenExpended": classes.commandBarWhenExpended
+                                    "expandIconButton": classes.commandBarExpendIconButton
                                 }}
-                                entries={[
-                                    {
-                                        "cmdId": 1,
-                                        "cmd": "kubectl get pods",
-                                        "resp": "List of pods"
-                                    }
-                                ]}
-                                maxHeight={windowInnerHeight - 200}
+                                entries={commandLogsEntries}
+                                maxHeight={Infinity}
                             />
                         )}
                         <Tabs
@@ -115,25 +125,26 @@ export default function MyService(props: Props) {
                                 "content": classes.tabsContent
                             }}
                             tabs={[
-                                ...podNames.map(podName => ({
-                                    "id": `logs:${podName}`,
-                                    "title": `${podName} Pod Logs`
-                                })),
                                 {
                                     "id": "values",
                                     "title": "Helm Values"
-                                }
+                                },
+                                ...podNames.map(podName => ({
+                                    "id": `logs:${podName}`,
+                                    "title": `Pod: ${podName}`
+                                }))
                             ]}
                             activeTabId={(() => {
                                 switch (route.params.tabId) {
                                     case "values":
                                         return "values";
                                     case "logs":
-                                        return `logs:${route.params.pod ?? podNames[0]}`;
+                                        assert(route.params.pod !== undefined);
+                                        return `logs:${route.params.pod}`;
                                 }
                                 assert<Equals<typeof route.params.tabId, never>>(false);
                             })()}
-                            maxTabCount={4}
+                            maxTabCount={3}
                             onRequestChangeActiveTab={tabId => {
                                 if (tabId === "values") {
                                     routes
@@ -168,7 +179,9 @@ export default function MyService(props: Props) {
                                             />
                                         );
                                     case "logs": {
-                                        const podName = route.params.pod ?? podNames[0];
+                                        const podName = route.params.pod;
+
+                                        assert(podName !== undefined);
                                         return (
                                             <PodLogsTab
                                                 podName={podName}
@@ -216,11 +229,10 @@ const useStyles = tss
             "top": 0,
             "zIndex": 1,
             "transition": "opacity 750ms linear",
-            "width": "min(100%, 900px)"
+            "width": "min(100%, 600px)"
         },
-        "commandBarWhenExpended": {
-            "width": "min(100%, 1350px)",
-            "transition": "width 70ms linear"
+        "commandBarExpendIconButton": {
+            "visibility": "hidden"
         },
         "circularProgressWrapper": {
             "display": "flex",

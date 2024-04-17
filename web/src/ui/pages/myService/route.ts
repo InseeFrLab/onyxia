@@ -8,7 +8,10 @@ import {
 } from "type-route";
 import type { ValueSerializer } from "type-route";
 import { id } from "tsafe/id";
-import { tabIds, type TabIds } from "./tabIds";
+
+const tabIds = ["values", "logs"] as const;
+
+type TabIds = (typeof tabIds)[number];
 
 export const routeDefs = {
     "myService": defineRoute(

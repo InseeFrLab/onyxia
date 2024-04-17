@@ -32,6 +32,30 @@ export const thunks = {
             }
 
             return { setInactive };
+        },
+    "logHelmGetValuesCommand":
+        () =>
+        (...args) => {
+            const [dispatch] = args;
+
+            dispatch(
+                actions.commandLogsEntryAdded({
+                    "cmd": "helm get values"
+                })
+            );
+        },
+    "logKubectlLogsCommand":
+        (params: { podName: string }) =>
+        (...args) => {
+            const { podName } = params;
+
+            const [dispatch] = args;
+
+            dispatch(
+                actions.commandLogsEntryAdded({
+                    "cmd": `kubectl logs ${podName}`
+                })
+            );
         }
 } satisfies Thunks;
 

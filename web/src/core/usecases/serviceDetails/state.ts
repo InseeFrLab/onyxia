@@ -30,6 +30,11 @@ export namespace State {
         logsByPodName: Record<string, string>;
         helmValues: Record<string, string>;
         monitoringUrl: string | undefined;
+        commandLogsEntries: {
+            cmdId: number;
+            cmd: string;
+            resp: "";
+        }[];
     };
 }
 
@@ -99,9 +104,31 @@ export const { reducer, actions } = createUsecaseActions({
                 helmReleaseFriendlyName,
                 logsByPodName,
                 helmValues,
-                monitoringUrl
+                monitoringUrl,
+                "commandLogsEntries":
+                    state.stateDescription === "ready" ? state.commandLogsEntries : []
             });
         },
-        "notifyHelmReleaseNoLongerExists": () => {}
+        "notifyHelmReleaseNoLongerExists": () => {},
+        "commandLogsEntryAdded": (
+            state,
+            {
+                payload
+            }: {
+                payload: {
+                    cmd: string;
+                };
+            }
+        ) => {
+            const { cmd } = payload;
+
+            assert(state.stateDescription === "ready");
+
+            state.commandLogsEntries.push({
+                "cmdId": Date.now(),
+                cmd,
+                "resp": ""
+            });
+        }
     }
 });
