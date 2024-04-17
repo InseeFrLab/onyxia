@@ -7,19 +7,24 @@ import { LoadingDots } from "ui/shared/LoadingDots";
 
 type Props = {
     className?: string;
+    podName: string;
     paginatedLogs: string[];
 };
 
 export function PodLogsTab(props: Props) {
-    const { className, paginatedLogs } = props;
+    const { className, paginatedLogs, podName } = props;
 
     const { classes, cx } = useStyles();
 
     const [currentPage, setCurrentPage] = useState(paginatedLogs.length);
+    const [doFollow, setDoFollow] = useState(true);
+
+    useEffect(() => {
+        setCurrentPage(paginatedLogs.length);
+        setDoFollow(true);
+    }, [podName]);
 
     const [preElement, setPreElement] = useState<HTMLPreElement | null>(null);
-
-    const [doFollow, setDoFollow] = useState(true);
 
     useEffect(() => {
         if (!doFollow) {
@@ -90,7 +95,7 @@ export function PodLogsTab(props: Props) {
                     setDoFollow(isScrolledToBottom);
                 }}
             >
-                {currentPage === 1 && (
+                {currentPage === 1 && paginatedLogs.length > 5 && (
                     <Text typo="body 1" className={classes.pageAnnotation}>
                         This is not necessarily the first logs, older logs might have been
                         flushed&nbsp;

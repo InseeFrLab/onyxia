@@ -171,6 +171,7 @@ export default function MyService(props: Props) {
                                         const podName = route.params.pod ?? podNames[0];
                                         return (
                                             <PodLogsTab
+                                                podName={podName}
                                                 paginatedLogs={
                                                     paginatedLogsByPodName[podName]
                                                 }
