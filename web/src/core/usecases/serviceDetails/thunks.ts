@@ -2,6 +2,8 @@ import type { Thunks } from "core/bootstrap";
 import { name, actions } from "./state";
 import * as deploymentRegionManagement from "core/usecases/deploymentRegionManagement";
 import * as projectManagement from "core/usecases/projectManagement";
+import { protectedSelectors } from "./selectors";
+import { assert } from "tsafe/assert";
 
 export const thunks = {
     "setActive":
@@ -24,7 +26,7 @@ export const thunks = {
                     console.log("Pulling events and logs failed");
                 }
 
-                setTimeout(periodicalRefresh, 5_000);
+                setTimeout(periodicalRefresh, 10_000);
             })();
 
             function setInactive() {
@@ -33,29 +35,37 @@ export const thunks = {
 
             return { setInactive };
         },
-    "logHelmGetValuesCommand":
-        () =>
-        (...args) => {
-            const [dispatch] = args;
-
-            dispatch(
-                actions.commandLogsEntryAdded({
-                    "cmd": "helm get values"
-                })
-            );
-        },
-    "logKubectlLogsCommand":
+    "changeSelectedPod":
         (params: { podName: string }) =>
         (...args) => {
             const { podName } = params;
 
             const [dispatch] = args;
 
+            dispatch(actions.selectedPodChanged({ podName }));
+        },
+    "showHelmValues":
+        () =>
+        (...args) => {
+            const [dispatch, getState] = args;
+
+            const formattedHelmValues =
+                protectedSelectors.formattedHelmValues(getState());
+
+            assert(formattedHelmValues !== undefined);
+
             dispatch(
-                actions.commandLogsEntryAdded({
-                    "cmd": `kubectl logs ${podName}`
+                actions.helmGetValueShown({
+                    "cmdResp": formattedHelmValues
                 })
             );
+        },
+    "collapseCommandBar":
+        () =>
+        (...args) => {
+            const [dispatch] = args;
+
+            dispatch(actions.commandBarCollapsed());
         }
 } satisfies Thunks;
 
@@ -88,21 +98,6 @@ const privateThunks = {
                 return;
             }
 
-            const logsByPodName = Object.fromEntries(
-                await Promise.all(
-                    helmRelease.podNames.map(
-                        async podName =>
-                            [
-                                podName,
-                                await onyxiaApi.kubectlLogs({
-                                    helmReleaseName,
-                                    podName
-                                })
-                            ] as const
-                    )
-                )
-            );
-
             const { namespace: kubernetesNamespace } =
                 projectManagement.selectors.currentProject(getState());
 
@@ -110,7 +105,7 @@ const privateThunks = {
                 actions.updateCompleted({
                     "helmReleaseFriendlyName":
                         helmRelease.friendlyName ?? helmRelease.helmReleaseName,
-                    logsByPodName,
+                    "podNames": helmRelease.podNames,
                     "helmValues": helmRelease.values,
                     "monitoringUrl": (() => {
                         const { helmReleaseName } = params;

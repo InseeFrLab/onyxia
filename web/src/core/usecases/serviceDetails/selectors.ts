@@ -37,38 +37,12 @@ const helmReleaseFriendlyName = createSelector(readyState, state => {
     return helmReleaseFriendlyName;
 });
 
-const paginatedLogsByPodName = createSelector(readyState, state => {
-    if (state === undefined) {
+const podNames = createSelector(readyState, readyState => {
+    if (readyState === undefined) {
         return undefined;
     }
 
-    return Object.fromEntries(
-        Object.entries(state.logsByPodName).map(([podName, logs]) => [
-            podName,
-            (() => {
-                const lines = logs
-                    .split("\n")
-                    .map(line => line.trim())
-                    .filter(line => line !== "");
-
-                const paginatedLogs: string[] = [];
-
-                for (let i = 0; i < lines.length; i += 50) {
-                    paginatedLogs.push(lines.slice(i, i + 50).join("\n"));
-                }
-
-                return paginatedLogs;
-            })()
-        ])
-    );
-});
-
-const podNames = createSelector(paginatedLogsByPodName, paginatedLogsByPodName => {
-    if (paginatedLogsByPodName === undefined) {
-        return undefined;
-    }
-
-    return Object.keys(paginatedLogsByPodName).sort();
+    return readyState.podNames;
 });
 
 const formattedHelmValues = createSelector(readyState, state => {
@@ -104,7 +78,7 @@ const commandLogsEntries = createSelector(readyState, state => {
         return undefined;
     }
 
-    return state.commandLogsEntries;
+    return [state.commandLogsEntry];
 });
 
 const monitoringUrl = createSelector(readyState, state => {
@@ -117,20 +91,26 @@ const monitoringUrl = createSelector(readyState, state => {
     return monitoringUrl;
 });
 
+const selectedPodName = createSelector(readyState, state => {
+    if (state === undefined) {
+        return undefined;
+    }
+
+    return state.selectedPodName;
+});
+
 const main = createSelector(
     isReady,
     helmReleaseFriendlyName,
     podNames,
-    paginatedLogsByPodName,
-    formattedHelmValues,
+    selectedPodName,
     monitoringUrl,
     commandLogsEntries,
     (
         isReady,
         helmReleaseFriendlyName,
         podNames,
-        paginatedLogsByPodName,
-        formattedHelmValues,
+        selectedPodName,
         monitoringUrl,
         commandLogsEntries
     ) => {
@@ -142,17 +122,16 @@ const main = createSelector(
         }
 
         assert(helmReleaseFriendlyName !== undefined);
-        assert(paginatedLogsByPodName !== undefined);
-        assert(formattedHelmValues !== undefined);
         assert(podNames !== undefined);
+        assert(selectedPodName !== undefined);
+        assert(monitoringUrl !== undefined);
         assert(commandLogsEntries !== undefined);
 
         return {
             "isReady": true,
             helmReleaseFriendlyName,
             podNames,
-            paginatedLogsByPodName,
-            formattedHelmValues,
+            selectedPodName,
             monitoringUrl,
             commandLogsEntries
         };
@@ -164,5 +143,5 @@ export const selectors = {
 };
 
 export const protectedSelectors = {
-    helmReleaseName
+    formattedHelmValues
 };

@@ -9,8 +9,6 @@ import { Tabs } from "onyxia-ui/Tabs";
 import { useCore, useCoreState } from "core";
 import { PodLogsTab } from "./PodLogsTab";
 import { CircularProgress } from "onyxia-ui/CircularProgress";
-import { HelmValuesTab } from "./HelmValuesTab";
-import { assert, type Equals } from "tsafe/assert";
 import { CommandBar } from "ui/shared/CommandBar";
 import { useEvt } from "evt/hooks";
 
@@ -27,6 +25,14 @@ export default function MyService(props: Props) {
     const { cx, classes } = useStyles({ isCommandBarEnabled });
 
     const { serviceDetails } = useCore().functions;
+
+    useEffect(() => {
+        const { setInactive } = serviceDetails.setActive({
+            "helmReleaseName": route.params.helmReleaseName
+        });
+
+        return () => setInactive();
+    }, [route.params.helmReleaseName]);
 
     const { evtServiceDetails } = useCore().evts;
 
@@ -46,37 +52,11 @@ export default function MyService(props: Props) {
     const {
         isReady,
         helmReleaseFriendlyName,
-        monitoringUrl,
         podNames,
-        formattedHelmValues,
+        selectedPodName,
+        monitoringUrl,
         commandLogsEntries
     } = useCoreState("serviceDetails", "main");
-
-    useEffect(() => {
-        const { setInactive } = serviceDetails.setActive({
-            "helmReleaseName": route.params.helmReleaseName
-        });
-
-        return () => setInactive();
-    }, [route.params.helmReleaseName]);
-
-    useEffect(() => {
-        if (!isReady) {
-            return;
-        }
-
-        switch (route.params.tabId) {
-            case "logs":
-                assert(route.params.pod !== undefined);
-                serviceDetails.logKubectlLogsCommand({
-                    "podName": route.params.pod
-                });
-                return;
-            case "values":
-                serviceDetails.logHelmGetValuesCommand();
-                return;
-        }
-    }, [route.params.tabId, route.params.pod, isReady]);
 
     return (
         <div className={cx(classes.root, className)}>
@@ -123,77 +103,20 @@ export default function MyService(props: Props) {
                             classes={{
                                 "content": classes.tabsContent
                             }}
-                            tabs={[
-                                {
-                                    "id": "values",
-                                    "title": "Helm Values"
-                                },
-                                ...podNames.map(podName => ({
-                                    "id": `logs:${podName}`,
-                                    "title": `Pod: ${podName}`
-                                }))
-                            ]}
-                            activeTabId={(() => {
-                                switch (route.params.tabId) {
-                                    case "values":
-                                        return "values";
-                                    case "logs":
-                                        assert(route.params.pod !== undefined);
-                                        return `logs:${route.params.pod}`;
-                                }
-                                assert<Equals<typeof route.params.tabId, never>>(false);
-                            })()}
+                            tabs={podNames.map(podName => ({
+                                "id": podName,
+                                "title": `Pod: ${podName}`
+                            }))}
+                            activeTabId={selectedPodName}
                             maxTabCount={3}
-                            onRequestChangeActiveTab={tabId => {
-                                if (tabId === "values") {
-                                    routes
-                                        .myService({
-                                            ...route.params,
-                                            tabId
-                                        })
-                                        .replace();
-                                    return;
-                                }
-
-                                if (tabId.startsWith("logs:")) {
-                                    routes
-                                        .myService({
-                                            ...route.params,
-                                            "tabId": "logs",
-                                            "pod": tabId.slice("logs:".length)
-                                        })
-                                        .replace();
-                                    return;
-                                }
-
-                                assert(false);
-                            }}
+                            onRequestChangeActiveTab={podName =>
+                                serviceDetails.changeSelectedPod({ podName })
+                            }
                         >
-                            {(() => {
-                                switch (route.params.tabId) {
-                                    case "values":
-                                        return (
-                                            <HelmValuesTab
-                                                formattedHelmValues={formattedHelmValues}
-                                            />
-                                        );
-                                    case "logs": {
-                                        const podName = route.params.pod;
-
-                                        assert(podName !== undefined);
-                                        return (
-                                            <PodLogsTab
-                                                helmReleaseName={
-                                                    route.params.helmReleaseName
-                                                }
-                                                podName={podName}
-                                            />
-                                        );
-                                    }
-                                }
-
-                                assert<Equals<typeof route.params.tabId, never>>(false);
-                            })()}
+                            <PodLogsTab
+                                helmReleaseName={route.params.helmReleaseName}
+                                podName={selectedPodName}
+                            />
                         </Tabs>
                     </div>
                 );

@@ -1,5 +1,8 @@
 import { assert } from "tsafe/assert";
-import { createUsecaseActions } from "clean-architecture";
+import {
+    createUsecaseActions,
+    createObjectThatThrowsIfAccessed
+} from "clean-architecture";
 import { id } from "tsafe/id";
 
 export type State = State.NotInitialized | State.Ready;
@@ -25,16 +28,18 @@ export namespace State {
     export type Ready = {
         stateDescription: "ready";
         isFetching: boolean;
+        podNames: string[];
+        selectedPodName: string;
         helmReleaseName: string;
         helmReleaseFriendlyName: string;
-        logsByPodName: Record<string, string>;
         helmValues: Record<string, string>;
         monitoringUrl: string | undefined;
-        commandLogsEntries: {
+        isCommandBarExpanded: boolean;
+        commandLogsEntry: {
             cmdId: number;
             cmd: string;
-            resp: "";
-        }[];
+            resp: string;
+        };
     };
 }
 
@@ -48,87 +53,140 @@ export const { reducer, actions } = createUsecaseActions({
             "isFetching": false
         })
     ),
-    "reducers": {
-        "updateStarted": (
-            state,
-            {
-                payload
-            }: {
-                payload: {
-                    helmReleaseName: string;
+    "reducers": (() => {
+        const reducers = {
+            "updateStarted": (
+                state,
+                {
+                    payload
+                }: {
+                    payload: {
+                        helmReleaseName: string;
+                    };
+                }
+            ) => {
+                const { helmReleaseName } = payload;
+
+                if (
+                    state.stateDescription === "ready" &&
+                    state.helmReleaseName === helmReleaseName
+                ) {
+                    state.isFetching = true;
+                    return;
+                }
+
+                return id<State.NotInitialized.Fetching>({
+                    "stateDescription": "not initialized",
+                    "isFetching": true,
+                    helmReleaseName
+                });
+            },
+            "updateCompleted": (
+                state,
+                {
+                    payload
+                }: {
+                    payload: {
+                        helmReleaseFriendlyName: string;
+                        podNames: string[];
+                        helmValues: Record<string, string>;
+                        monitoringUrl: string | undefined;
+                    };
+                }
+            ) => {
+                const { helmReleaseFriendlyName, podNames, helmValues, monitoringUrl } =
+                    payload;
+
+                assert(
+                    state.stateDescription !== "not initialized" ||
+                        state.isFetching === true
+                );
+
+                const newState = id<State.Ready>({
+                    "stateDescription": "ready",
+                    "isFetching": false,
+                    "helmReleaseName": state.helmReleaseName,
+                    helmReleaseFriendlyName,
+                    podNames,
+                    "selectedPodName":
+                        state.stateDescription === "ready"
+                            ? podNames.includes(state.selectedPodName)
+                                ? state.selectedPodName
+                                : ""
+                            : "",
+                    helmValues,
+                    monitoringUrl,
+                    "isCommandBarExpanded":
+                        state.stateDescription === "ready"
+                            ? state.isCommandBarExpanded
+                            : false,
+                    "commandLogsEntry":
+                        state.stateDescription === "ready"
+                            ? state.commandLogsEntry
+                            : createObjectThatThrowsIfAccessed<
+                                  State.Ready["commandLogsEntry"]
+                              >()
+                });
+
+                if (state.stateDescription !== "ready") {
+                    reducers.selectedPodChanged(newState, {
+                        "payload": { "podName": podNames[0] }
+                    });
+                }
+
+                return newState;
+            },
+            "selectedPodChanged": (
+                state,
+                {
+                    payload
+                }: {
+                    payload: {
+                        podName: string;
+                    };
+                }
+            ) => {
+                const { podName } = payload;
+
+                assert(state.stateDescription === "ready");
+
+                state.selectedPodName = podName;
+
+                state.commandLogsEntry = {
+                    "cmdId": Date.now(),
+                    "cmd": `kubectl logs ${podName}`,
+                    "resp": ""
                 };
-            }
-        ) => {
-            const { helmReleaseName } = payload;
+            },
+            "helmGetValueShown": (
+                state,
+                {
+                    payload
+                }: {
+                    payload: {
+                        cmdResp: string;
+                    };
+                }
+            ) => {
+                const { cmdResp } = payload;
 
-            if (
-                state.stateDescription === "ready" &&
-                state.helmReleaseName === helmReleaseName
-            ) {
-                state.isFetching = true;
-                return;
-            }
+                assert(state.stateDescription === "ready");
 
-            return id<State.NotInitialized.Fetching>({
-                "stateDescription": "not initialized",
-                "isFetching": true,
-                helmReleaseName
-            });
-        },
-        "updateCompleted": (
-            state,
-            {
-                payload
-            }: {
-                payload: {
-                    helmReleaseFriendlyName: string;
-                    logsByPodName: Record<string, string>;
-                    helmValues: Record<string, string>;
-                    monitoringUrl: string | undefined;
+                state.commandLogsEntry = {
+                    "cmdId": Date.now(),
+                    "cmd": "helm get values",
+                    "resp": cmdResp
                 };
+
+                state.isCommandBarExpanded = true;
+            },
+            "notifyHelmReleaseNoLongerExists": () => {},
+            "commandBarCollapsed": state => {
+                assert(state.stateDescription === "ready");
+                state.isCommandBarExpanded = false;
             }
-        ) => {
-            const { helmReleaseFriendlyName, logsByPodName, helmValues, monitoringUrl } =
-                payload;
+        } satisfies Record<string, (state: State, ...rest: any[]) => State | void>;
 
-            assert(
-                state.stateDescription !== "not initialized" || state.isFetching === true
-            );
-
-            const { helmReleaseName } = state;
-
-            return id<State.Ready>({
-                "stateDescription": "ready",
-                "isFetching": false,
-                helmReleaseName,
-                helmReleaseFriendlyName,
-                logsByPodName,
-                helmValues,
-                monitoringUrl,
-                "commandLogsEntries":
-                    state.stateDescription === "ready" ? state.commandLogsEntries : []
-            });
-        },
-        "notifyHelmReleaseNoLongerExists": () => {},
-        "commandLogsEntryAdded": (
-            state,
-            {
-                payload
-            }: {
-                payload: {
-                    cmd: string;
-                };
-            }
-        ) => {
-            const { cmd } = payload;
-
-            assert(state.stateDescription === "ready");
-
-            state.commandLogsEntries.push({
-                "cmdId": Date.now(),
-                cmd,
-                "resp": ""
-            });
-        }
-    }
+        return reducers;
+    })()
 });
