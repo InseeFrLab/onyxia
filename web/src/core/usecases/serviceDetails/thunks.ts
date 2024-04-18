@@ -44,10 +44,22 @@ export const thunks = {
 
             dispatch(actions.selectedPodChanged({ podName }));
         },
-    "showHelmValues":
+    "toggleHelmValues":
         () =>
         (...args) => {
             const [dispatch, getState] = args;
+
+            {
+                const isCommandBarExpanded =
+                    protectedSelectors.isCommandBarExpanded(getState());
+
+                assert(isCommandBarExpanded !== undefined);
+
+                if (isCommandBarExpanded) {
+                    dispatch(thunks.collapseCommandBar());
+                    return;
+                }
+            }
 
             const formattedHelmValues =
                 protectedSelectors.formattedHelmValues(getState());

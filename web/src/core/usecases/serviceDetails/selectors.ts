@@ -99,6 +99,14 @@ const selectedPodName = createSelector(readyState, state => {
     return state.selectedPodName;
 });
 
+const isCommandBarExpanded = createSelector(readyState, state => {
+    if (state === undefined) {
+        return false;
+    }
+
+    return state.isCommandBarExpanded;
+});
+
 const main = createSelector(
     isReady,
     helmReleaseFriendlyName,
@@ -106,13 +114,15 @@ const main = createSelector(
     selectedPodName,
     monitoringUrl,
     commandLogsEntries,
+    isCommandBarExpanded,
     (
         isReady,
         helmReleaseFriendlyName,
         podNames,
         selectedPodName,
         monitoringUrl,
-        commandLogsEntries
+        commandLogsEntries,
+        isCommandBarExpanded
     ) => {
         if (!isReady) {
             return {
@@ -126,6 +136,7 @@ const main = createSelector(
         assert(selectedPodName !== undefined);
         assert(monitoringUrl !== undefined);
         assert(commandLogsEntries !== undefined);
+        assert(isCommandBarExpanded !== undefined);
 
         return {
             "isReady": true,
@@ -133,7 +144,8 @@ const main = createSelector(
             podNames,
             selectedPodName,
             monitoringUrl,
-            commandLogsEntries
+            commandLogsEntries,
+            isCommandBarExpanded
         };
     }
 );
@@ -143,5 +155,6 @@ export const selectors = {
 };
 
 export const protectedSelectors = {
-    formattedHelmValues
+    formattedHelmValues,
+    isCommandBarExpanded
 };

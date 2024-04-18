@@ -20,10 +20,6 @@ export type Props = {
 export default function MyService(props: Props) {
     const { className, route } = props;
 
-    const { isCommandBarEnabled } = useCoreState("userConfigs", "userConfigs");
-
-    const { cx, classes } = useStyles({ isCommandBarEnabled });
-
     const { serviceDetails } = useCore().functions;
 
     useEffect(() => {
@@ -55,8 +51,17 @@ export default function MyService(props: Props) {
         podNames,
         selectedPodName,
         monitoringUrl,
-        commandLogsEntries
+        commandLogsEntries,
+        isCommandBarExpanded
     } = useCoreState("serviceDetails", "main");
+
+    const isCommandBarEnabled = (function useClosure() {
+        const { isCommandBarEnabled } = useCoreState("userConfigs", "userConfigs");
+
+        return isCommandBarExpanded ? true : isCommandBarEnabled;
+    })();
+
+    const { cx, classes } = useStyles({ isCommandBarEnabled });
 
     return (
         <div className={cx(classes.root, className)}>
@@ -73,6 +78,7 @@ export default function MyService(props: Props) {
                 />
                 <MyServiceButtonBar
                     onClickBack={() => routes.myServices().push()}
+                    onClickShowHelmValues={() => serviceDetails.toggleHelmValues()}
                     monitoringUrl={monitoringUrl}
                 />
             </div>
@@ -92,10 +98,17 @@ export default function MyService(props: Props) {
                             <CommandBar
                                 classes={{
                                     "root": classes.commandBar,
+                                    "rootWhenExpended": classes.commandBarWhenExpanded,
                                     "expandIconButton": classes.commandBarExpendIconButton
                                 }}
                                 entries={commandLogsEntries}
                                 maxHeight={Infinity}
+                                isExpended={isCommandBarExpanded}
+                                onIsExpendedChange={isExpended => {
+                                    if (!isExpended) {
+                                        serviceDetails.collapseCommandBar();
+                                    }
+                                }}
                             />
                         )}
                         <Tabs
@@ -127,8 +140,9 @@ export default function MyService(props: Props) {
 
 const useStyles = tss
     .withName({ MyService })
+    .withNestedSelectors<"commandBarExpendIconButton">()
     .withParams<{ isCommandBarEnabled: boolean }>()
-    .create(({ theme, isCommandBarEnabled }) => ({
+    .create(({ theme, isCommandBarEnabled, classes }) => ({
         "root": {
             "height": "100%",
             "paddingRight": theme.spacing(2),
@@ -152,6 +166,12 @@ const useStyles = tss
             "zIndex": 1,
             "transition": "opacity 750ms linear",
             "width": "min(100%, 600px)"
+        },
+        "commandBarWhenExpanded": {
+            "width": "min(100%, 1100px)",
+            [`& .${classes.commandBarExpendIconButton}`]: {
+                "visibility": "unset"
+            }
         },
         "commandBarExpendIconButton": {
             "visibility": "hidden"

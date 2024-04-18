@@ -7,12 +7,13 @@ import { assert } from "tsafe/assert";
 
 export type Props = {
     className?: string;
-    onClickBack: () => void;
     monitoringUrl: string | undefined;
+    onClickBack: () => void;
+    onClickShowHelmValues: () => void;
 };
 
 export const MyServiceButtonBar = memo((props: Props) => {
-    const { className, onClickBack, monitoringUrl } = props;
+    const { className, monitoringUrl, onClickBack, onClickShowHelmValues } = props;
 
     return (
         <ButtonBar
@@ -42,7 +43,12 @@ export const MyServiceButtonBar = memo((props: Props) => {
                                   </span>
                               )
                           }
-                      ])
+                      ]),
+                {
+                    "buttonId": "showHelmValues",
+                    "icon": id<MuiIconComponentName>("Code"),
+                    "label": "Helm values"
+                }
             ]}
             onClick={buttonId => {
                 switch (buttonId) {
@@ -52,6 +58,9 @@ export const MyServiceButtonBar = memo((props: Props) => {
                     case "monitoring":
                         assert(monitoringUrl !== undefined);
                         window.open(monitoringUrl!);
+                        break;
+                    case "showHelmValues":
+                        onClickShowHelmValues();
                         break;
                 }
             }}
