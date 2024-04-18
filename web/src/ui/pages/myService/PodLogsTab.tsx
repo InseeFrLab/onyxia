@@ -4,17 +4,44 @@ import { tss } from "tss";
 import { Text } from "onyxia-ui/Text";
 import { assert } from "tsafe/assert";
 import { LoadingDots } from "ui/shared/LoadingDots";
+import { useCoreState, useCore } from "core";
 
 type Props = {
     className?: string;
+    helmReleaseName: string;
     podName: string;
-    paginatedLogs: string[];
 };
 
 export function PodLogsTab(props: Props) {
-    const { className, paginatedLogs, podName } = props;
+    const { className, helmReleaseName, podName } = props;
 
     const { classes, cx } = useStyles();
+
+    const { podLogs } = useCore().functions;
+
+    useEffect(() => {
+        const { setInactive } = podLogs.setActive({ helmReleaseName, podName });
+
+        return setInactive;
+    }, [helmReleaseName, podName]);
+
+    const { isReady, paginatedLogs } = useCoreState("podLogs", "main");
+
+    return (
+        <div className={cx(className, classes.root)}>
+            {!isReady ? (
+                <LoadingDots />
+            ) : (
+                <ActualLogs paginatedLogs={paginatedLogs} podName={podName} />
+            )}
+        </div>
+    );
+}
+
+function ActualLogs(props: { paginatedLogs: string[]; podName: string }) {
+    const { paginatedLogs, podName } = props;
+
+    const { classes } = useStyles();
 
     const [currentPage, setCurrentPage] = useState(paginatedLogs.length);
     const [doFollow, setDoFollow] = useState(true);
@@ -63,7 +90,7 @@ export function PodLogsTab(props: Props) {
     ]);
 
     return (
-        <div className={cx(className, classes.root)}>
+        <>
             <Pagination
                 classes={{ "ul": classes.paginationUl }}
                 showFirstButton
@@ -109,7 +136,7 @@ export function PodLogsTab(props: Props) {
                     </Text>
                 )}
             </pre>
-        </div>
+        </>
     );
 }
 

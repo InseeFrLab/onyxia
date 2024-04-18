@@ -5,6 +5,7 @@ import * as deploymentRegionManagement from "./deploymentRegionManagement";
 import * as fileExplorer from "./fileExplorer";
 import * as secretExplorer from "./secretExplorer";
 import * as launcher from "./launcher";
+import * as podLogs from "./podLogs";
 import * as restorableConfigManagement from "./restorableConfigManagement";
 import * as s3ConfigCreation from "./s3ConfigCreation";
 import * as s3ConfigManagement from "./s3ConfigManagement";
@@ -29,6 +30,7 @@ export const usecases = {
     fileExplorer,
     secretExplorer,
     launcher,
+    podLogs,
     restorableConfigManagement,
     s3ConfigCreation,
     s3ConfigManagement,

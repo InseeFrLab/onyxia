@@ -48,7 +48,6 @@ export default function MyService(props: Props) {
         helmReleaseFriendlyName,
         monitoringUrl,
         podNames,
-        paginatedLogsByPodName,
         formattedHelmValues,
         commandLogsEntries
     } = useCoreState("serviceDetails", "main");
@@ -184,10 +183,10 @@ export default function MyService(props: Props) {
                                         assert(podName !== undefined);
                                         return (
                                             <PodLogsTab
-                                                podName={podName}
-                                                paginatedLogs={
-                                                    paginatedLogsByPodName[podName]
+                                                helmReleaseName={
+                                                    route.params.helmReleaseName
                                                 }
+                                                podName={podName}
                                             />
                                         );
                                     }
