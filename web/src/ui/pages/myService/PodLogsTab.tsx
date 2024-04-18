@@ -5,6 +5,7 @@ import { Text } from "onyxia-ui/Text";
 import { assert } from "tsafe/assert";
 import { LoadingDots } from "ui/shared/LoadingDots";
 import { useCoreState, useCore } from "core";
+import { CircularProgress } from "onyxia-ui/CircularProgress";
 
 type Props = {
     className?: string;
@@ -33,7 +34,9 @@ export function PodLogsTab(props: Props) {
     return (
         <div className={cx(className, classes.root)}>
             {!isReady ? (
-                <LoadingDots />
+                <div className={classes.circularProgressWrapper}>
+                    <CircularProgress size={50} />
+                </div>
             ) : (
                 <ActualLogs paginatedLogs={paginatedLogs} podName={podName} />
             )}
@@ -52,23 +55,20 @@ function ActualLogs(props: { paginatedLogs: string[]; podName: string }) {
     useEffect(() => {
         setCurrentPage(paginatedLogs.length);
         setDoFollow(true);
-    }, [podName]);
+    }, [podName, paginatedLogs.length]);
 
     const [preElement, setPreElement] = useState<HTMLPreElement | null>(null);
 
+    /*
     useEffect(() => {
         if (!doFollow) {
             return;
         }
 
-        setCurrentPage(currentPage => {
-            if (currentPage !== paginatedLogs.length - 1) {
-                return currentPage;
-            }
+        //setCurrentPage(paginatedLogs.length);
 
-            return paginatedLogs.length;
-        });
     }, [paginatedLogs.length, doFollow]);
+    */
 
     useEffect(() => {
         if (!doFollow) {
@@ -102,7 +102,13 @@ function ActualLogs(props: { paginatedLogs: string[]; podName: string }) {
                 count={paginatedLogs.length}
                 color="primary"
                 page={currentPage}
-                onChange={(_, page) => setCurrentPage(page)}
+                onChange={(_, page) => {
+                    if (page < currentPage) {
+                        setDoFollow(false);
+                    }
+
+                    setCurrentPage(page);
+                }}
             />
 
             <pre
@@ -149,6 +155,12 @@ const useStyles = tss.withName({ PodLogsTab }).create(({ theme }) => ({
         "overflow": "hidden",
         "display": "flex",
         "flexDirection": "column"
+    },
+    "circularProgressWrapper": {
+        "flex": 1,
+        "display": "flex",
+        "justifyContent": "center",
+        "alignItems": "center"
     },
     "paginationUl": {
         "justifyContent": "end"

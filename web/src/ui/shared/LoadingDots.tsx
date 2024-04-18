@@ -1,4 +1,3 @@
-import Box from "@mui/material/Box";
 import { tss } from "tss";
 import { keyframes } from "tss-react";
 
@@ -11,11 +10,11 @@ export function LoadingDots(props: LoadingDotsProps) {
 
     const { classes, cx } = useStyles();
     return (
-        <Box className={cx(classes.root, className)}>
-            <div className={classes.dot} />
-            <div className={classes.dot} />
-            <div className={classes.dot} />
-        </Box>
+        <span className={cx(classes.root, className)}>
+            <span className={classes.dot} />
+            <span className={classes.dot} />
+            <span className={classes.dot} />
+        </span>
     );
 }
 
@@ -24,6 +23,7 @@ const useStyles = tss.withName({ LoadingDots }).create(({ theme }) => ({
         "display": "inline-flex"
     },
     "dot": {
+        "display": "block",
         "width": 5,
         "height": 5,
         "backgroundColor": "transparent",
