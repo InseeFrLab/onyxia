@@ -32,6 +32,16 @@ const isReady = createSelector(logs, logs => {
     return true;
 });
 
+const podName = createSelector(isReady, state, (isReady, state) => {
+    if (!isReady) {
+        return undefined;
+    }
+
+    assert(state.currentPod !== undefined);
+
+    return state.currentPod.podName;
+});
+
 const paginatedLogs = createSelector(isReady, logs, (isReady, logs) => {
     if (!isReady) {
         return undefined;
@@ -53,20 +63,27 @@ const paginatedLogs = createSelector(isReady, logs, (isReady, logs) => {
     return paginatedLogs;
 });
 
-const main = createSelector(isReady, paginatedLogs, (isReady, paginatedLogs) => {
-    if (!isReady) {
+const main = createSelector(
+    isReady,
+    podName,
+    paginatedLogs,
+    (isReady, podName, paginatedLogs) => {
+        if (!isReady) {
+            return {
+                "isReady": false as const
+            };
+        }
+
+        assert(paginatedLogs !== undefined);
+        assert(podName !== undefined);
+
         return {
-            "isReady": false as const
+            "isReady": true,
+            podName,
+            paginatedLogs
         };
     }
-
-    assert(paginatedLogs !== undefined);
-
-    return {
-        "isReady": true,
-        paginatedLogs
-    };
-});
+);
 
 export const selectors = {
     main

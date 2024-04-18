@@ -13,19 +13,22 @@ type Props = {
 };
 
 export function PodLogsTab(props: Props) {
-    const { className, helmReleaseName, podName } = props;
+    const { className, helmReleaseName, podName: prodName_props } = props;
 
     const { classes, cx } = useStyles();
 
     const { podLogs } = useCore().functions;
 
     useEffect(() => {
-        const { setInactive } = podLogs.setActive({ helmReleaseName, podName });
+        const { setInactive } = podLogs.setActive({
+            helmReleaseName,
+            "podName": prodName_props
+        });
 
         return setInactive;
-    }, [helmReleaseName, podName]);
+    }, [helmReleaseName, prodName_props]);
 
-    const { isReady, paginatedLogs } = useCoreState("podLogs", "main");
+    const { isReady, paginatedLogs, podName } = useCoreState("podLogs", "main");
 
     return (
         <div className={cx(className, classes.root)}>

@@ -1,6 +1,7 @@
 import type { Thunks } from "core/bootstrap";
 import { name, actions } from "./state";
 import { same } from "evt/tools/inDepth/same";
+import * as projectManagement from "core/usecases/projectManagement";
 
 export const thunks = {
     "setActive":
@@ -23,7 +24,7 @@ export const thunks = {
                     console.log("Pulling events and logs failed");
                 }
 
-                setTimeout(periodicalRefresh, 5_000);
+                //setTimeout(periodicalRefresh, 5_000);
             })();
 
             function setInactive() {
@@ -42,18 +43,20 @@ const privateThunks = {
 
             const [dispatch, getState, { onyxiaApi }] = args;
 
+            const projectId = projectManagement.selectors.currentProject(getState()).id;
+
             {
                 const state = getState()[name];
 
                 if (
                     state.isFetching &&
-                    same(state.currentPod, { helmReleaseName, podName })
+                    same(state.currentPod, { projectId, helmReleaseName, podName })
                 ) {
                     return;
                 }
             }
 
-            dispatch(actions.updateStarted({ helmReleaseName, podName }));
+            dispatch(actions.updateStarted({ projectId, helmReleaseName, podName }));
 
             const logs = await onyxiaApi.kubectlLogs({
                 helmReleaseName,
@@ -62,6 +65,7 @@ const privateThunks = {
 
             dispatch(
                 actions.updateCompleted({
+                    projectId,
                     helmReleaseName,
                     podName,
                     logs
