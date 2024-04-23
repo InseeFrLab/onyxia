@@ -131,11 +131,9 @@ export const { reducer, actions } = createUsecaseActions({
             runningService.areAllTasksReady = areAllTasksReady;
 
             //NOTE: Harmless hack to improve UI readability.
-            /*
             if (status === "deployed" && areAllTasksReady) {
                 runningService.startedAt = Date.now();
             }
-            */
         },
         "serviceStopped": (
             state,
@@ -195,6 +193,7 @@ export const { reducer, actions } = createUsecaseActions({
 
             runningService.suspendState.isSuspended = isSuspended;
             runningService.suspendState.isTransitioning = false;
+            runningService.areAllTasksReady = false;
         },
         "postInstallInstructionsRequested": (
             state,

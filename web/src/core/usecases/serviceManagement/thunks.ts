@@ -58,101 +58,101 @@ export const thunks = {
                         action.actionName === "updateCompleted"
                 )
                 .toStateful()
-                .attach(async () => {
-                    if (ctxInner_prev !== undefined) {
-                        ctxInner_prev.done();
-                    }
-
-                    const ctxInner = Evt.newCtx();
-
-                    ctxInner_prev = ctxInner;
-
-                    ctx.evtDoneOrAborted.attachOnce(ctxInner, () => ctxInner.done());
-
-                    evtAction.attachOnce(
-                        action =>
-                            action.usecaseName === name &&
-                            action.actionName === "updateStarted",
-                        ctxInner,
-                        () => {
-                            ctxInner.done();
-                        }
-                    );
-
-                    await (async function monitorServicesStartupStatus() {
-                        const startingRunningServiceHelmReleaseNames =
-                            protectedSelectors.startingRunningServiceHelmReleaseNames(
-                                getState()
-                            );
-
-                        if (startingRunningServiceHelmReleaseNames === undefined) {
-                            return;
+                .attach(
+                    () => protectedSelectors.isReady(getState()),
+                    async () => {
+                        if (ctxInner_prev !== undefined) {
+                            ctxInner_prev.done();
                         }
 
-                        if (startingRunningServiceHelmReleaseNames.length === 0) {
-                            return;
-                        }
+                        const ctxInner = Evt.newCtx();
 
-                        await new Promise(resolve => setTimeout(resolve, 3_000));
+                        ctxInner_prev = ctxInner;
 
-                        if (ctxInner.completionStatus) {
-                            return;
-                        }
+                        ctx.evtDoneOrAborted.attachOnce(ctxInner, () => ctxInner.done());
 
-                        const helmReleases = await onyxiaApi
-                            .listHelmReleases()
-                            .catch(() => undefined);
-
-                        if (helmReleases === undefined) {
-                            return monitorServicesStartupStatus();
-                        }
-
-                        if (ctxInner.completionStatus) {
-                            return;
-                        }
-
-                        let hasNonStartedHelmRelease = false;
-
-                        startingRunningServiceHelmReleaseNames.forEach(
-                            helmReleaseName => {
-                                const helmRelease = helmReleases.find(
-                                    helmRelease =>
-                                        helmRelease.helmReleaseName === helmReleaseName
-                                );
-
-                                if (helmRelease === undefined) {
-                                    return;
-                                }
-
-                                if (
-                                    helmRelease.status === "deployed" &&
-                                    helmRelease.areAllTasksReady
-                                ) {
-                                    dispatch(
-                                        actions.statusUpdated({
-                                            helmReleaseName,
-                                            "status": helmRelease.status,
-                                            "areAllTasksReady":
-                                                helmRelease.areAllTasksReady
-                                        })
-                                    );
-
-                                    return;
-                                }
-
-                                hasNonStartedHelmRelease = true;
+                        evtAction.attachOnce(
+                            action =>
+                                action.usecaseName === name &&
+                                action.actionName === "updateStarted",
+                            ctxInner,
+                            () => {
+                                ctxInner.done();
                             }
                         );
 
-                        if (!hasNonStartedHelmRelease) {
-                            return;
-                        }
+                        await (async function monitorServicesStartupStatus() {
+                            const startingRunningServiceHelmReleaseNames =
+                                protectedSelectors.startingRunningServiceHelmReleaseNames(
+                                    getState()
+                                );
 
-                        return monitorServicesStartupStatus();
-                    })();
+                            if (startingRunningServiceHelmReleaseNames.length === 0) {
+                                return;
+                            }
 
-                    ctxInner.done();
-                });
+                            await new Promise(resolve => setTimeout(resolve, 3_000));
+
+                            if (ctxInner.completionStatus) {
+                                return;
+                            }
+
+                            const helmReleases = await onyxiaApi
+                                .listHelmReleases()
+                                .catch(() => undefined);
+
+                            if (helmReleases === undefined) {
+                                return monitorServicesStartupStatus();
+                            }
+
+                            if (ctxInner.completionStatus) {
+                                return;
+                            }
+
+                            let hasNonStartedHelmRelease = false;
+
+                            startingRunningServiceHelmReleaseNames.forEach(
+                                helmReleaseName => {
+                                    const helmRelease = helmReleases.find(
+                                        helmRelease =>
+                                            helmRelease.helmReleaseName ===
+                                            helmReleaseName
+                                    );
+
+                                    if (helmRelease === undefined) {
+                                        return;
+                                    }
+
+                                    if (
+                                        helmRelease.status === "deployed" &&
+                                        helmRelease.areAllTasksReady
+                                    ) {
+                                        dispatch(
+                                            actions.statusUpdated({
+                                                helmReleaseName,
+                                                "status": helmRelease.status,
+                                                "areAllTasksReady":
+                                                    helmRelease.areAllTasksReady
+                                            })
+                                        );
+
+                                        return;
+                                    }
+
+                                    hasNonStartedHelmRelease = true;
+                                }
+                            );
+
+                            if (!hasNonStartedHelmRelease) {
+                                return;
+                            }
+
+                            return monitorServicesStartupStatus();
+                        })();
+
+                        ctxInner.done();
+                    }
+                );
 
             function setInactive() {
                 ctx.done();
@@ -343,6 +343,8 @@ export const thunks = {
                     "isSuspended": isSuspendAction
                 })
             );
+
+            dispatch(thunks.update());
         },
     "getPostInstallInstructions":
         (params: { helmReleaseName: string }) =>

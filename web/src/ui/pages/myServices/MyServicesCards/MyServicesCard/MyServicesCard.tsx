@@ -66,6 +66,8 @@ export const MyServicesCard = memo((props: Props) => {
         }
 
         if (
+            (runningService.suspendState.canBeSuspended &&
+                runningService.suspendState.isSuspended) ||
             runningService.status === "pending-install" ||
             !runningService.areAllTasksReady
         ) {
@@ -180,6 +182,13 @@ export const MyServicesCard = memo((props: Props) => {
                                 case "failed":
                                     return <Text typo="label 1">{t("failed")}</Text>;
                                 case "deployed":
+                                    if (
+                                        runningService.suspendState.canBeSuspended &&
+                                        runningService.suspendState.isSuspended
+                                    ) {
+                                        return <Text typo="label 1">{"Paused"}</Text>;
+                                    }
+
                                     if (!runningService.areAllTasksReady) {
                                         return (
                                             <Text typo="label 1">

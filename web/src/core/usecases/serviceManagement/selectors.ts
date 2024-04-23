@@ -134,12 +134,14 @@ export const selectors = {
 const startingRunningServiceHelmReleaseNames = createSelector(
     runningServices,
     runningServices => {
-        if (runningServices === undefined) {
-            return undefined;
-        }
+        assert(runningServices !== undefined);
 
         return runningServices
-            .filter(({ status, areAllTasksReady }) => {
+            .filter(({ status, areAllTasksReady, suspendState }) => {
+                if (suspendState.canBeSuspended && suspendState.isSuspended) {
+                    return false;
+                }
+
                 switch (status) {
                     case "deployed":
                         return !areAllTasksReady;
@@ -154,5 +156,6 @@ const startingRunningServiceHelmReleaseNames = createSelector(
 );
 
 export const protectedSelectors = {
+    isReady,
     startingRunningServiceHelmReleaseNames
 };
