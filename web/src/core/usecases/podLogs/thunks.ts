@@ -24,7 +24,7 @@ export const thunks = {
                     console.log("Pulling events and logs failed");
                 }
 
-                setTimeout(periodicalRefresh, 5_000);
+                setTimeout(periodicalRefresh, 2_000);
             })();
 
             function setInactive() {
