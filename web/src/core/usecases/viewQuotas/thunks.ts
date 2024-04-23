@@ -31,7 +31,9 @@ export const thunks = {
             evtAction.attach(
                 action =>
                     action.usecaseName === "serviceManagement" &&
-                    action.actionName === "serviceStopped",
+                    (action.actionName === "serviceStopped" ||
+                        (action.actionName === "suspendOrResumeServiceCompleted" &&
+                            action.payload.isSuspended)),
                 ctx,
                 () => {
                     dispatch(actions.podDeletionStarted());
