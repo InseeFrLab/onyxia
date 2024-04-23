@@ -690,13 +690,13 @@ export function createOnyxiaApi(params: {
         },
         "helmUpgradeGlobalSuspend": async ({ helmReleaseName, value }) => {
             if (value === true) {
-                await axiosInstance.post(
-                    `/my-lab/app/pause?serviceId=${helmReleaseName}`
-                );
+                await axiosInstance.post("/my-lab/app/suspend", {
+                    "serviceId": helmReleaseName
+                });
             } else {
-                await axiosInstance.post(
-                    `/my-lab/app/resume?serviceId=${helmReleaseName}`
-                );
+                await axiosInstance.post("/my-lab/app/resume", {
+                    "serviceId": helmReleaseName
+                });
             }
         }
     };
