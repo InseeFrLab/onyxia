@@ -63,6 +63,8 @@ export const { reducer, actions } = createUsecaseActions({
             ((state.logsByPodNameByHelmReleaseNameByProjectId[projectId] ??= {})[
                 helmReleaseName
             ] ??= {})[podName] = logs;
+
+            state.isFetching = false;
         }
     }
 });
