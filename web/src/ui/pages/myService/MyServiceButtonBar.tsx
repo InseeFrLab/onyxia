@@ -9,11 +9,18 @@ export type Props = {
     className?: string;
     monitoringUrl: string | undefined;
     onClickBack: () => void;
-    onClickShowHelmValues: () => void;
+    areHelmValuesShown: boolean;
+    onClickHelmValues: () => void;
 };
 
 export const MyServiceButtonBar = memo((props: Props) => {
-    const { className, monitoringUrl, onClickBack, onClickShowHelmValues } = props;
+    const {
+        className,
+        monitoringUrl,
+        onClickBack,
+        areHelmValuesShown,
+        onClickHelmValues
+    } = props;
 
     return (
         <ButtonBar
@@ -45,9 +52,9 @@ export const MyServiceButtonBar = memo((props: Props) => {
                           }
                       ]),
                 {
-                    "buttonId": "showHelmValues",
+                    "buttonId": "helmValues",
                     "icon": id<MuiIconComponentName>("Code"),
-                    "label": "Helm values"
+                    "label": areHelmValuesShown ? "Reduce" : "Helm Values"
                 }
             ]}
             onClick={buttonId => {
@@ -59,8 +66,8 @@ export const MyServiceButtonBar = memo((props: Props) => {
                         assert(monitoringUrl !== undefined);
                         window.open(monitoringUrl!);
                         break;
-                    case "showHelmValues":
-                        onClickShowHelmValues();
+                    case "helmValues":
+                        onClickHelmValues();
                         break;
                 }
             }}

@@ -84,7 +84,8 @@ export default function MyService(props: Props) {
                 />
                 <MyServiceButtonBar
                     onClickBack={() => routes.myServices().push()}
-                    onClickShowHelmValues={() => serviceDetails.toggleHelmValues()}
+                    onClickHelmValues={() => serviceDetails.toggleHelmValues()}
+                    areHelmValuesShown={isCommandBarExpanded ?? false}
                     monitoringUrl={monitoringUrl}
                 />
             </div>
