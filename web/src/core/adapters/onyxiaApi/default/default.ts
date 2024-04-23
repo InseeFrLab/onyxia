@@ -472,7 +472,7 @@ export function createOnyxiaApi(params: {
             const { data } =
                 await axiosInstance.get<ApiTypes["/my-lab/services"]>("/my-lab/services");
 
-            return data.apps.map(
+            const helmReleases = data.apps.map(
                 (apiApp): HelmRelease => ({
                     "helmReleaseName": apiApp.id,
                     //TODO: Here also get the catalogId
@@ -505,6 +505,8 @@ export function createOnyxiaApi(params: {
                     "isSuspended": apiApp.suspended
                 })
             );
+
+            return helmReleases;
         },
         "helmUninstall": async ({ helmReleaseName }) => {
             const { data } = await axiosInstance.delete<{ success: boolean }>(
@@ -691,11 +693,11 @@ export function createOnyxiaApi(params: {
         "helmUpgradeGlobalSuspend": async ({ helmReleaseName, value }) => {
             if (value === true) {
                 await axiosInstance.post("/my-lab/app/suspend", {
-                    "serviceId": helmReleaseName
+                    "serviceID": helmReleaseName
                 });
             } else {
                 await axiosInstance.post("/my-lab/app/resume", {
-                    "serviceId": helmReleaseName
+                    "serviceID": helmReleaseName
                 });
             }
         }
