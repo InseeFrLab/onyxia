@@ -2,10 +2,11 @@ import { useEffect, useState } from "react";
 import Pagination from "@mui/material/Pagination";
 import { tss } from "tss";
 import { Text } from "onyxia-ui/Text";
-import { assert } from "tsafe/assert";
 import { LoadingDots } from "ui/shared/LoadingDots";
 import { useCoreState, useCore } from "core";
 import { CircularProgress } from "onyxia-ui/CircularProgress";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import Switch from "@mui/material/Switch";
 
 type Props = {
     className?: string;
@@ -14,7 +15,12 @@ type Props = {
 };
 
 export function PodLogsTab(props: Props) {
-    const { className, helmReleaseName, podName: prodName_props } = props;
+    // Enforce that the actual component is fully reset when the podName changes
+    return <ActualPodLogsTab key={props.podName} {...props} />;
+}
+
+function ActualPodLogsTab(props: Props) {
+    const { className, helmReleaseName, podName } = props;
 
     const { classes, cx } = useStyles();
 
@@ -23,13 +29,13 @@ export function PodLogsTab(props: Props) {
     useEffect(() => {
         const { setInactive } = podLogs.setActive({
             helmReleaseName,
-            "podName": prodName_props
+            podName
         });
 
         return setInactive;
-    }, [helmReleaseName, prodName_props]);
+    }, [helmReleaseName, podName]);
 
-    const { isReady, paginatedLogs, podName } = useCoreState("podLogs", "main");
+    const { isReady, paginatedLogs } = useCoreState("podLogs", "main");
 
     return (
         <div className={cx(className, classes.root)}>
@@ -38,14 +44,14 @@ export function PodLogsTab(props: Props) {
                     <CircularProgress size={50} />
                 </div>
             ) : (
-                <ActualLogs paginatedLogs={paginatedLogs} podName={podName} />
+                <ActualLogs paginatedLogs={paginatedLogs} />
             )}
         </div>
     );
 }
 
-function ActualLogs(props: { paginatedLogs: string[]; podName: string }) {
-    const { paginatedLogs, podName } = props;
+function ActualLogs(props: { paginatedLogs: string[] }) {
+    const { paginatedLogs } = props;
 
     const { classes } = useStyles();
 
@@ -53,22 +59,14 @@ function ActualLogs(props: { paginatedLogs: string[]; podName: string }) {
     const [doFollow, setDoFollow] = useState(true);
 
     useEffect(() => {
-        setCurrentPage(paginatedLogs.length);
-        setDoFollow(true);
-    }, [podName, paginatedLogs.length]);
-
-    const [preElement, setPreElement] = useState<HTMLPreElement | null>(null);
-
-    /*
-    useEffect(() => {
         if (!doFollow) {
             return;
         }
 
-        //setCurrentPage(paginatedLogs.length);
+        setCurrentPage(paginatedLogs.length);
+    }, [doFollow, paginatedLogs.length]);
 
-    }, [paginatedLogs.length, doFollow]);
-    */
+    const [preElement, setPreElement] = useState<HTMLPreElement | null>(null);
 
     useEffect(() => {
         if (!doFollow) {
@@ -94,43 +92,31 @@ function ActualLogs(props: { paginatedLogs: string[]; podName: string }) {
 
     return (
         <>
-            <Pagination
-                classes={{ "ul": classes.paginationUl }}
-                showFirstButton
-                showLastButton
-                size="medium"
-                count={paginatedLogs.length}
-                color="primary"
-                page={currentPage}
-                onChange={(_, page) => {
-                    if (page < currentPage) {
-                        setDoFollow(false);
+            <div className={classes.controlsWrapper}>
+                <FormControlLabel
+                    control={
+                        <Switch
+                            checked={doFollow}
+                            onChange={event => {
+                                setDoFollow(event.target.checked);
+                            }}
+                        />
                     }
+                    label="Follow"
+                />
 
-                    setCurrentPage(page);
-                }}
-            />
+                <Pagination
+                    showFirstButton
+                    showLastButton
+                    size="medium"
+                    count={paginatedLogs.length}
+                    color="primary"
+                    page={currentPage}
+                    onChange={(_, page) => setCurrentPage(page)}
+                />
+            </div>
 
-            <pre
-                ref={setPreElement}
-                className={classes.pre}
-                onScroll={() => {
-                    if (currentPage !== paginatedLogs.length) {
-                        setDoFollow(false);
-                        return;
-                    }
-
-                    assert(preElement !== null);
-
-                    const isScrolledToBottom = (() => {
-                        const scrollPosition =
-                            preElement.scrollTop + preElement.clientHeight;
-                        return scrollPosition >= preElement.scrollHeight - 1;
-                    })();
-
-                    setDoFollow(isScrolledToBottom);
-                }}
-            >
+            <pre ref={setPreElement} className={classes.pre}>
                 {currentPage === 1 && paginatedLogs.length > 5 && (
                     <Text typo="body 1" className={classes.pageAnnotation}>
                         This is not necessarily the first logs, older logs might have been
@@ -152,7 +138,7 @@ function ActualLogs(props: { paginatedLogs: string[]; podName: string }) {
 const useStyles = tss.withName({ PodLogsTab }).create(({ theme }) => ({
     "root": {
         "height": "100%",
-        "overflow": "hidden",
+        "overflow": "visible",
         "display": "flex",
         "flexDirection": "column"
     },
@@ -162,8 +148,10 @@ const useStyles = tss.withName({ PodLogsTab }).create(({ theme }) => ({
         "justifyContent": "center",
         "alignItems": "center"
     },
-    "paginationUl": {
-        "justifyContent": "end"
+    "controlsWrapper": {
+        "display": "flex",
+        "justifyContent": "space-between",
+        "paddingLeft": theme.spacing(1)
     },
     "pageAnnotation": {
         "position": "absolute",
