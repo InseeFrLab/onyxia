@@ -110,19 +110,22 @@ export const MyServicesCard = memo((props: Props) => {
                     {capitalize(runningService.friendlyName)}
                 </Text>
                 <div style={{ "flex": 1 }} />
-                {runningService.pause.isPausable && !runningService.pause.isPaused && (
-                    <Tooltip title={"Click to pause the service and release resources"}>
-                        <IconButton
-                            disabled={runningService.pause.isTransitioning}
-                            icon={id<MuiIconComponentName>("Pause")}
-                            onClick={event => {
-                                onRequestPauseOrResume();
-                                event.stopPropagation();
-                                event.preventDefault();
-                            }}
-                        />
-                    </Tooltip>
-                )}
+                {runningService.suspendState.canBeSuspended &&
+                    !runningService.suspendState.isSuspended && (
+                        <Tooltip
+                            title={"Click to pause the service and release resources"}
+                        >
+                            <IconButton
+                                disabled={runningService.suspendState.isTransitioning}
+                                icon={id<MuiIconComponentName>("Pause")}
+                                onClick={event => {
+                                    onRequestPauseOrResume();
+                                    event.stopPropagation();
+                                    event.preventDefault();
+                                }}
+                            />
+                        </Tooltip>
+                    )}
                 {runningService.ownership.isShared && (
                     <Tooltip title={t("this is a shared service")}>
                         <Icon icon={id<MuiIconComponentName>("People")} />
@@ -171,7 +174,7 @@ export const MyServicesCard = memo((props: Props) => {
                                 : t("status")}
                         </Text>
                         {(() => {
-                            switch (status) {
+                            switch (runningService.status) {
                                 case "pending-install":
                                     return <Text typo="label 1">{t("pending")}</Text>;
                                 case "failed":
@@ -214,15 +217,16 @@ export const MyServicesCard = memo((props: Props) => {
                     )}
                     <div style={{ "flex": 1 }} />
 
-                    {runningService.pause.isPausable && runningService.pause.isPaused && (
-                        <Tooltip title={"Click to resume the service"}>
-                            <IconButton
-                                disabled={runningService.pause.isTransitioning}
-                                icon={id<MuiIconComponentName>("PlayArrow")}
-                                onClick={onRequestPauseOrResume}
-                            />
-                        </Tooltip>
-                    )}
+                    {runningService.suspendState.canBeSuspended &&
+                        runningService.suspendState.isSuspended && (
+                            <Tooltip title={"Click to resume the service"}>
+                                <IconButton
+                                    disabled={runningService.suspendState.isTransitioning}
+                                    icon={id<MuiIconComponentName>("PlayArrow")}
+                                    onClick={onRequestPauseOrResume}
+                                />
+                            </Tooltip>
+                        )}
 
                     {runningService.status === "deployed" &&
                         runningService.areAllTasksReady &&

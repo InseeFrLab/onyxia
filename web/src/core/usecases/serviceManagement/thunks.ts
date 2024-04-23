@@ -237,8 +237,8 @@ export const thunks = {
                         chartVersion,
                         areAllTasksReady,
                         status,
-                        isPausable,
-                        isPaused
+                        canBeSuspended,
+                        isSuspended
                     }) => {
                         const isOwned = ownerUsername === username;
 
@@ -270,13 +270,13 @@ export const thunks = {
                                       "isShared": true,
                                       ownerUsername
                                   },
-                            "pause": !isPausable
+                            "suspendState": !canBeSuspended
                                 ? {
-                                      "isPausable": false
+                                      "canBeSuspended": false
                                   }
                                 : {
-                                      "isPausable": true,
-                                      isPaused,
+                                      "canBeSuspended": true,
+                                      isSuspended,
                                       "isTransitioning": false
                                   }
                         });
@@ -313,16 +313,16 @@ export const thunks = {
 
             await onyxiaApi.helmUninstall({ helmReleaseName });
         },
-    "pauseOrResumeService":
-        (params: { helmReleaseName: string; action: "pause" | "resume" }) =>
+    "suspendOrResumeService":
+        (params: { helmReleaseName: string; action: "suspend" | "resume" }) =>
         async (...args) => {
             const { helmReleaseName, action } = params;
 
             const [dispatch, , { onyxiaApi }] = args;
 
-            const isSuspend = (() => {
+            const isSuspendAction = (() => {
                 switch (action) {
-                    case "pause":
+                    case "suspend":
                         return true;
                     case "resume":
                         return false;
@@ -330,15 +330,18 @@ export const thunks = {
                 assert<Equals<typeof action, never>>(false);
             })();
 
-            dispatch(actions.startPausingOrResumingService({ helmReleaseName }));
+            dispatch(actions.suspendOrResumeServiceStarted({ helmReleaseName }));
 
             await onyxiaApi.helmUpgradeGlobalSuspend({
                 helmReleaseName,
-                "value": isSuspend
+                "value": isSuspendAction
             });
 
             dispatch(
-                actions.servicePausedOrResumed({ helmReleaseName, "isPaused": isSuspend })
+                actions.suspendOrResumeServiceCompleted({
+                    helmReleaseName,
+                    "isSuspended": isSuspendAction
+                })
             );
         },
     "getPostInstallInstructions":

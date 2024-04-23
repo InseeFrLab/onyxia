@@ -36,13 +36,13 @@ export type RunningService = {
     hasPostInstallInstructions: boolean;
     status: "deployed" | "pending-install" | "failed";
     areAllTasksReady: boolean;
-    pause:
+    suspendState:
         | {
-              isPausable: false;
+              canBeSuspended: false;
           }
         | {
-              isPausable: true;
-              isPaused: boolean;
+              canBeSuspended: true;
+              isSuspended: boolean;
               isTransitioning: boolean;
           };
     ownership:
@@ -155,7 +155,7 @@ export const { reducer, actions } = createUsecaseActions({
                 1
             );
         },
-        "startPausingOrResumingService": (
+        "suspendOrResumeServiceStarted": (
             state,
             { payload }: { payload: { helmReleaseName: string } }
         ) => {
@@ -171,15 +171,15 @@ export const { reducer, actions } = createUsecaseActions({
             );
 
             assert(runningService !== undefined);
-            assert(runningService.pause.isPausable);
+            assert(runningService.suspendState.canBeSuspended);
 
-            runningService.pause.isTransitioning = true;
+            runningService.suspendState.isTransitioning = true;
         },
-        "servicePausedOrResumed": (
+        "suspendOrResumeServiceCompleted": (
             state,
-            { payload }: { payload: { helmReleaseName: string; isPaused: boolean } }
+            { payload }: { payload: { helmReleaseName: string; isSuspended: boolean } }
         ) => {
-            const { helmReleaseName, isPaused } = payload;
+            const { helmReleaseName, isSuspended } = payload;
 
             assert(state.stateDescription === "ready");
 
@@ -191,10 +191,10 @@ export const { reducer, actions } = createUsecaseActions({
             );
 
             assert(runningService !== undefined);
-            assert(runningService.pause.isPausable);
+            assert(runningService.suspendState.canBeSuspended);
 
-            runningService.pause.isPaused = isPaused;
-            runningService.pause.isTransitioning = false;
+            runningService.suspendState.isSuspended = isSuspended;
+            runningService.suspendState.isTransitioning = false;
         },
         "postInstallInstructionsRequested": (
             state,

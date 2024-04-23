@@ -501,8 +501,8 @@ export function createOnyxiaApi(params: {
                         apiApp.tasks[0].containers.every(({ ready }) => ready),
                     "status": apiApp.status,
                     "podNames": apiApp.tasks.map(({ id }) => id),
-                    "isPausable": apiApp.pausable,
-                    "isPaused": apiApp.paused
+                    "canBeSuspended": apiApp.suspendable,
+                    "isSuspended": apiApp.suspended
                 })
             );
         },

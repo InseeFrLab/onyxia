@@ -14,6 +14,6 @@ export type HelmRelease = {
     areAllTasksReady: boolean;
     status: "deployed" | "pending-install" | "failed";
     podNames: string[];
-    isPausable: boolean;
-    isPaused: boolean;
+    canBeSuspended: boolean;
+    isSuspended: boolean;
 };

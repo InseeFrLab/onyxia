@@ -203,8 +203,8 @@ export type ApiTypes = {
             chart: string;
             appVersion: string;
             revision: string;
-            pausable: boolean;
-            paused: boolean;
+            suspendable: boolean;
+            suspended: boolean;
         }[];
     };
     "/user/info": {

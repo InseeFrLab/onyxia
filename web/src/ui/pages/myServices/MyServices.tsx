@@ -252,11 +252,11 @@ export default function MyServices(props: Props) {
         );
 
         assert(runningService !== undefined);
-        assert(runningService.pause.isPausable);
+        assert(runningService.suspendState.canBeSuspended);
 
-        serviceManagement.pauseOrResumeService({
+        serviceManagement.suspendOrResumeService({
             "helmReleaseName": helmReleaseName,
-            "action": runningService.pause.isPaused ? "resume" : "pause"
+            "action": runningService.suspendState.isSuspended ? "resume" : "suspend"
         });
     });
 
