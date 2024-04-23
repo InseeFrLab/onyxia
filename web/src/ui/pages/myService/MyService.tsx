@@ -11,6 +11,7 @@ import { PodLogsTab } from "./PodLogsTab";
 import { CircularProgress } from "onyxia-ui/CircularProgress";
 import { CommandBar } from "ui/shared/CommandBar";
 import { useEvt } from "evt/hooks";
+import { useDomRect } from "powerhooks/useDomRect";
 
 export type Props = {
     route: PageRoute;
@@ -61,7 +62,12 @@ export default function MyService(props: Props) {
         return isCommandBarExpanded ? true : isCommandBarEnabled;
     })();
 
-    const { cx, classes } = useStyles({ isCommandBarEnabled });
+    const { cx, classes, theme } = useStyles({ isCommandBarEnabled });
+
+    const {
+        ref: contentWrapperRef,
+        domRect: { height: contentWrapperHeight }
+    } = useDomRect();
 
     return (
         <div className={cx(classes.root, className)}>
@@ -93,7 +99,7 @@ export default function MyService(props: Props) {
                 }
 
                 return (
-                    <div className={classes.contentWrapper}>
+                    <div ref={contentWrapperRef} className={classes.contentWrapper}>
                         {isCommandBarEnabled && (
                             <CommandBar
                                 classes={{
@@ -102,7 +108,7 @@ export default function MyService(props: Props) {
                                     "expandIconButton": classes.commandBarExpendIconButton
                                 }}
                                 entries={commandLogsEntries}
-                                maxHeight={Infinity}
+                                maxHeight={contentWrapperHeight - theme.spacing(4)}
                                 isExpended={isCommandBarExpanded}
                                 onIsExpendedChange={isExpended => {
                                     if (!isExpended) {
