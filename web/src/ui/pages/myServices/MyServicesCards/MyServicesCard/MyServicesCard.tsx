@@ -19,7 +19,8 @@ import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
 import { id } from "tsafe/id";
 import { CircularProgress } from "onyxia-ui/CircularProgress";
 import type { Link } from "type-route";
-import type { RunningService } from "core/usecases/serviceManagement/state";
+import type { Service } from "core/usecases/serviceManagement";
+import { assert, type Equals } from "tsafe/assert";
 
 const runningTimeThreshold = 7 * 24 * 3600 * 1000;
 
@@ -34,14 +35,14 @@ export type Props = {
     evtAction: NonPostableEvt<"open readme dialog">;
     onRequestDelete: () => void;
     onRequestPauseOrResume: () => void;
-    getPoseInstallInstructions: () => string;
+    onRequestLogHelmGetNotes: () => void;
     myServiceLink: Link;
     lastClusterEvent:
         | { message: string; severity: "error" | "info" | "warning" }
         | undefined;
     onOpenClusterEventsDialog: () => void;
     projectServicePassword: string;
-    runningService: RunningService;
+    service: Service;
 };
 
 export const MyServicesCard = memo((props: Props) => {
@@ -50,34 +51,34 @@ export const MyServicesCard = memo((props: Props) => {
         evtAction,
         onRequestDelete,
         onRequestPauseOrResume,
-        getPoseInstallInstructions,
+        onRequestLogHelmGetNotes,
         myServiceLink,
         lastClusterEvent,
         onOpenClusterEventsDialog,
         projectServicePassword,
-        runningService
+        service
     } = props;
 
     const { t } = useTranslation({ MyServicesCard });
 
     const severity = useMemo(() => {
-        if (runningService.status === "failed") {
-            return "error";
+        switch (service.state) {
+            case "failed":
+                return "error";
+            case "starting":
+            case "suspending":
+            case "suspended":
+                return "pending";
+            case "running":
+                return getDoesHaveBeenRunningForTooLong({
+                    "startTime": service.startedAt
+                })
+                    ? "warning"
+                    : "success";
         }
 
-        if (
-            (runningService.suspendState.canBeSuspended &&
-                runningService.suspendState.isSuspended) ||
-            runningService.status === "pending-install" ||
-            !runningService.areAllTasksReady
-        ) {
-            return "pending";
-        }
-
-        return getDoesHaveBeenRunningForTooLong({ "startTime": runningService.startedAt })
-            ? "warning"
-            : "success";
-    }, [runningService]);
+        assert<Equals<typeof service.state, never>>(false);
+    }, [service]);
 
     const { classes, cx, theme } = useStyles({
         "hasBeenRunningForTooLong": severity === "warning"
@@ -91,7 +92,7 @@ export const MyServicesCard = memo((props: Props) => {
                 action => action === "open readme dialog",
                 ctx,
                 async () => {
-                    if (!runningService.hasPostInstallInstructions) {
+                    if (!service.postInstallInstructions !== undefined) {
                         return;
                     }
                     evtOpenReadmeDialog.post();
@@ -104,31 +105,25 @@ export const MyServicesCard = memo((props: Props) => {
     return (
         <div className={cx(classes.root, className)}>
             <a className={classes.aboveDivider} {...myServiceLink}>
-                <MyServicesRoundLogo
-                    url={runningService.chartIconUrl}
-                    severity={severity}
-                />
+                <MyServicesRoundLogo url={service.iconUrl} severity={severity} />
                 <Text className={classes.title} typo="object heading">
-                    {capitalize(runningService.friendlyName)}
+                    {capitalize(service.friendlyName)}
                 </Text>
                 <div style={{ "flex": 1 }} />
-                {runningService.suspendState.canBeSuspended &&
-                    !runningService.suspendState.isSuspended && (
-                        <Tooltip
-                            title={"Click to pause the service and release resources"}
-                        >
-                            <IconButton
-                                disabled={runningService.suspendState.isTransitioning}
-                                icon={id<MuiIconComponentName>("Pause")}
-                                onClick={event => {
-                                    onRequestPauseOrResume();
-                                    event.stopPropagation();
-                                    event.preventDefault();
-                                }}
-                            />
-                        </Tooltip>
-                    )}
-                {runningService.ownership.isShared && (
+                {service.doesSupportSuspend && service.state === "running" && (
+                    <Tooltip title={"Click to suspend the service and release resources"}>
+                        <IconButton
+                            disabled={service.areInteractionLocked}
+                            icon={id<MuiIconComponentName>("Pause")}
+                            onClick={event => {
+                                onRequestPauseOrResume();
+                                event.stopPropagation();
+                                event.preventDefault();
+                            }}
+                        />
+                    </Tooltip>
+                )}
+                {service.ownership.isShared && (
                     <Tooltip title={t("this is a shared service")}>
                         <Icon icon={id<MuiIconComponentName>("People")} />
                     </Tooltip>
@@ -153,16 +148,14 @@ export const MyServicesCard = memo((props: Props) => {
                             {t("service")}
                         </Text>
                         <div className={classes.packageNameWrapper}>
-                            <Text typo="label 1">
-                                {capitalize(runningService.chartName)}
-                            </Text>
-                            {runningService.ownership.isShared && (
+                            <Text typo="label 1">{capitalize(service.chartName)}</Text>
+                            {service.ownership.isShared && (
                                 <Tag
                                     className={classes.sharedTag}
                                     text={
-                                        runningService.ownership.isOwned
+                                        service.ownership.isOwned
                                             ? t("shared by you")
-                                            : runningService.ownership.ownerUsername!
+                                            : service.ownership.ownerUsername
                                     }
                                 />
                             )}
@@ -170,87 +163,79 @@ export const MyServicesCard = memo((props: Props) => {
                     </div>
                     <div className={classes.timeAndStatusContainer}>
                         <Text typo="caption" className={classes.captions}>
-                            {runningService.status === "deployed" &&
-                            runningService.areAllTasksReady
+                            {service.state === "running"
                                 ? t("running since")
                                 : t("status")}
                         </Text>
                         {(() => {
-                            switch (runningService.status) {
-                                case "pending-install":
-                                    return <Text typo="label 1">{t("pending")}</Text>;
+                            switch (service.state) {
                                 case "failed":
                                     return <Text typo="label 1">{t("failed")}</Text>;
-                                case "deployed":
-                                    if (
-                                        runningService.suspendState.canBeSuspended &&
-                                        runningService.suspendState.isSuspended
-                                    ) {
-                                        return <Text typo="label 1">{"Paused"}</Text>;
-                                    }
-
-                                    if (!runningService.areAllTasksReady) {
-                                        return (
-                                            <Text typo="label 1">
-                                                {t("container starting")}
-                                                &nbsp;
-                                                <CircularProgress
-                                                    className={classes.circularProgress}
-                                                    size={
-                                                        theme.typography.variants[
-                                                            "label 1"
-                                                        ].style.fontSize
-                                                    }
-                                                />
-                                            </Text>
-                                        );
-                                    }
+                                case "suspended":
+                                    return <Text typo="label 1">{"Suspended"}</Text>;
+                                case "suspending":
+                                    return <Text typo="label 1">{"Suspending..."}</Text>;
+                                case "starting":
+                                    return (
+                                        <Text typo="label 1">
+                                            {t("container starting")}
+                                            &nbsp;
+                                            <CircularProgress
+                                                className={classes.circularProgress}
+                                                size={
+                                                    theme.typography.variants["label 1"]
+                                                        .style.fontSize
+                                                }
+                                            />
+                                        </Text>
+                                    );
+                                case "running":
                                     return (
                                         <MyServicesRunningTime
                                             doesHaveBeenRunningForTooLong={getDoesHaveBeenRunningForTooLong(
-                                                { "startTime": runningService.startedAt }
+                                                { "startTime": service.startedAt }
                                             )}
-                                            startTime={runningService.startedAt}
+                                            startTime={service.startedAt}
                                         />
                                     );
                             }
+                            assert<Equals<typeof service.state, never>>(false);
                         })()}
                     </div>
                 </div>
                 <div className={classes.belowDividerBottom}>
                     {onRequestDelete !== undefined && (
                         <IconButton
+                            disabled={service.areInteractionLocked}
                             icon={id<MuiIconComponentName>("Delete")}
                             onClick={onRequestDelete}
                         />
                     )}
                     <div style={{ "flex": 1 }} />
 
-                    {runningService.suspendState.canBeSuspended &&
-                        runningService.suspendState.isSuspended && (
-                            <Tooltip title={"Click to resume the service"}>
-                                <IconButton
-                                    disabled={runningService.suspendState.isTransitioning}
-                                    icon={id<MuiIconComponentName>("PlayArrow")}
-                                    onClick={onRequestPauseOrResume}
-                                />
-                            </Tooltip>
-                        )}
+                    {service.state === "suspended" && (
+                        <Tooltip title={"Click to resume the service"}>
+                            <IconButton
+                                disabled={service.areInteractionLocked}
+                                icon={id<MuiIconComponentName>("PlayArrow")}
+                                onClick={onRequestPauseOrResume}
+                            />
+                        </Tooltip>
+                    )}
 
-                    {runningService.status === "deployed" &&
-                        runningService.areAllTasksReady &&
-                        (runningService.urls[0] !== undefined ||
-                            runningService.hasPostInstallInstructions) && (
+                    {(service.state === "running" || service.state === "starting") &&
+                        (service.openUrl !== undefined ||
+                            service.postInstallInstructions !== undefined) && (
                             <Button
                                 onClick={() => evtOpenReadmeDialog.post()}
                                 variant={
-                                    runningService.urls[0] === undefined
+                                    service.openUrl === undefined
                                         ? "ternary"
                                         : "secondary"
                                 }
                             >
                                 <span>
-                                    {runningService.urls[0] !== undefined
+                                    {service.openUrl !== undefined
                                         ? capitalize(t("open"))
                                         : t("readme").toUpperCase()}
                                 </span>
@@ -260,17 +245,11 @@ export const MyServicesCard = memo((props: Props) => {
             </div>
             <ReadmeDialog
                 evtOpen={evtOpenReadmeDialog}
-                getPostInstallInstructions={
-                    runningService.hasPostInstallInstructions
-                        ? getPoseInstallInstructions
-                        : undefined
-                }
+                isReady={service.state === "running"}
+                openUrl={service.openUrl}
                 projectServicePassword={projectServicePassword}
-                openUrl={runningService.urls[0]}
-                isReady={
-                    runningService.status === "deployed" &&
-                    runningService.areAllTasksReady
-                }
+                postInstallInstructions={service.postInstallInstructions}
+                onRequestLogHelmGetNotes={onRequestLogHelmGetNotes}
                 lastClusterEvent={lastClusterEvent}
                 onOpenClusterEventsDialog={onOpenClusterEventsDialog}
             />
@@ -288,7 +267,7 @@ const { i18n } = declareComponentKeys<
     | "this is a shared service"
     | "status"
     | "container starting"
-    | "pending"
+    | "pending" //TODO: Remove
     | "failed"
 >()({ MyServicesCard });
 export type I18n = typeof i18n;

@@ -1,6 +1,7 @@
 import { assert } from "tsafe/assert";
 import { createUsecaseActions } from "clean-architecture";
 import { id } from "tsafe/id";
+import type { HelmRelease } from "core/ports/OnyxiaApi/HelmRelease";
 
 export type State = State.NotInitialized | State.Ready;
 
@@ -20,43 +21,13 @@ export namespace State {
 
     export type Ready = Common & {
         stateDescription: "ready";
-        runningServices: RunningService[];
-        postInstallInstructionsByHelmReleaseName: Record<string, string>;
+        username: string;
         kubernetesNamespace: string;
+        helmReleases: HelmRelease[];
+        lockedHelmReleaseNames: string[];
+        logoUrlByReleaseName: Record<string, string | undefined>;
     };
 }
-
-export type RunningService = {
-    helmReleaseName: string;
-    chartName: string;
-    friendlyName: string;
-    chartIconUrl: string | undefined;
-    startedAt: number;
-    urls: string[];
-    hasPostInstallInstructions: boolean;
-    status: "deployed" | "pending-install" | "failed";
-    areAllTasksReady: boolean;
-    hasPods: boolean;
-    suspendState:
-        | {
-              canBeSuspended: false;
-          }
-        | {
-              canBeSuspended: true;
-              isSuspended: boolean;
-              isTransitioning: boolean;
-          };
-    ownership:
-        | {
-              isOwned: true;
-              isShared: boolean;
-          }
-        | {
-              isShared: true;
-              isOwned: false;
-              ownerUsername: string;
-          };
-};
 
 export const name = "serviceManagement";
 
@@ -79,34 +50,38 @@ export const { reducer, actions } = createUsecaseActions({
                 payload
             }: {
                 payload: {
-                    runningServices: RunningService[];
-                    postInstallInstructionsByHelmReleaseName: Record<string, string>;
+                    helmReleases: HelmRelease[];
                     kubernetesNamespace: string;
+                    logoUrlByReleaseName: Record<string, string | undefined>;
+                    username: string;
                 };
             }
         ) => {
-            const {
-                runningServices,
-                postInstallInstructionsByHelmReleaseName,
-                kubernetesNamespace
-            } = payload;
+            const { helmReleases, kubernetesNamespace, logoUrlByReleaseName, username } =
+                payload;
 
             return id<State.Ready>({
                 "stateDescription": "ready",
                 "isUpdating": false,
-                runningServices,
-                postInstallInstructionsByHelmReleaseName,
+                helmReleases,
                 kubernetesNamespace,
-                "commandLogsEntries": state.commandLogsEntries
+                "commandLogsEntries": state.commandLogsEntries,
+                "lockedHelmReleaseNames":
+                    state.stateDescription === "ready"
+                        ? state.lockedHelmReleaseNames
+                        : [],
+                logoUrlByReleaseName,
+                username
             });
         },
-        "serviceReady": (
+        "helmReleaseLocked": (
             state,
             {
                 payload
             }: {
                 payload: {
                     helmReleaseName: string;
+                    reason: "delete" | "suspend" | "other";
                 };
             }
         ) => {
@@ -114,52 +89,9 @@ export const { reducer, actions } = createUsecaseActions({
 
             assert(state.stateDescription === "ready");
 
-            const { runningServices } = state;
-
-            assert(runningServices !== undefined);
-
-            const runningService = runningServices.find(
-                runningService => runningService.helmReleaseName === helmReleaseName
-            );
-
-            if (runningService === undefined) {
-                return;
-            }
-
-            runningService.status = "deployed";
-            runningService.areAllTasksReady = true;
-            runningService.hasPods = true;
-            runningService.startedAt = Date.now();
+            state.lockedHelmReleaseNames.push(helmReleaseName);
         },
-        "suspendedServiceHasShutdownItsPods": (
-            state,
-            {
-                payload
-            }: {
-                payload: {
-                    helmReleaseName: string;
-                };
-            }
-        ) => {
-            const { helmReleaseName } = payload;
-
-            assert(state.stateDescription === "ready");
-
-            const { runningServices } = state;
-
-            assert(runningServices !== undefined);
-
-            const runningService = runningServices.find(
-                runningService => runningService.helmReleaseName === helmReleaseName
-            );
-
-            if (runningService === undefined) {
-                return;
-            }
-
-            runningService.hasPods = false;
-        },
-        "serviceStopped": (
+        "helmReleaseUnlocked": (
             state,
             { payload }: { payload: { helmReleaseName: string } }
         ) => {
@@ -167,76 +99,9 @@ export const { reducer, actions } = createUsecaseActions({
 
             assert(state.stateDescription === "ready");
 
-            const { runningServices } = state;
-            assert(runningServices !== undefined);
-
-            runningServices.splice(
-                runningServices.findIndex(
-                    runningServices => runningServices.helmReleaseName === helmReleaseName
-                ),
-                1
+            state.lockedHelmReleaseNames = state.lockedHelmReleaseNames.filter(
+                lockedHelmReleaseName => lockedHelmReleaseName !== helmReleaseName
             );
-        },
-        "suspendOrResumeServiceStarted": (
-            state,
-            { payload }: { payload: { helmReleaseName: string } }
-        ) => {
-            const { helmReleaseName } = payload;
-
-            assert(state.stateDescription === "ready");
-
-            const { runningServices } = state;
-            assert(runningServices !== undefined);
-
-            const runningService = runningServices.find(
-                runningService => runningService.helmReleaseName === helmReleaseName
-            );
-
-            assert(runningService !== undefined);
-            assert(runningService.suspendState.canBeSuspended);
-
-            runningService.suspendState.isTransitioning = true;
-        },
-        "suspendOrResumeServiceCompleted": (
-            state,
-            { payload }: { payload: { helmReleaseName: string; isSuspended: boolean } }
-        ) => {
-            const { helmReleaseName, isSuspended } = payload;
-
-            assert(state.stateDescription === "ready");
-
-            const { runningServices } = state;
-            assert(runningServices !== undefined);
-
-            const runningService = runningServices.find(
-                runningService => runningService.helmReleaseName === helmReleaseName
-            );
-
-            assert(runningService !== undefined);
-            assert(runningService.suspendState.canBeSuspended);
-
-            runningService.suspendState.isSuspended = isSuspended;
-            runningService.suspendState.isTransitioning = false;
-            runningService.areAllTasksReady = false;
-        },
-        "postInstallInstructionsRequested": (
-            state,
-            { payload }: { payload: { helmReleaseName: string } }
-        ) => {
-            const { helmReleaseName } = payload;
-
-            assert(state.stateDescription === "ready");
-
-            const postInstallInstructions =
-                state.postInstallInstructionsByHelmReleaseName[helmReleaseName];
-
-            assert(postInstallInstructions !== undefined);
-
-            state.commandLogsEntries.push({
-                "cmdId": Date.now(),
-                "cmd": `helm get notes ${helmReleaseName} --namespace ${state.kubernetesNamespace}`,
-                "resp": postInstallInstructions
-            });
         },
         "commandLogsEntryAdded": (
             state,

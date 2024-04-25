@@ -52,11 +52,11 @@ export default function MyServices(props: Props) {
     const { restorableConfigs, chartIconAndFriendlyNameByRestorableConfigIndex } = useCoreState("restorableConfigManagement", "main");
     const {
         isUpdating,
-        runningServices,
-        deletableRunningServiceHelmReleaseNames,
-        isThereNonOwnedServices,
+        services,
         isThereOwnedSharedServices,
-        commandLogsEntries
+        commandLogsEntries,
+        isThereNonOwnedServices,
+        isThereDeletableServices
     } = useCoreState("serviceManagement", "main");
 
     const { isCommandBarEnabled } = useCoreState("userConfigs", "userConfigs");
@@ -94,9 +94,7 @@ export default function MyServices(props: Props) {
                     return;
                 }
 
-                deletableRunningServiceHelmReleaseNames.map(helmReleaseName =>
-                    serviceManagement.stopService({ helmReleaseName })
-                );
+                serviceManagement.deleteAllServices();
 
                 return;
             }
@@ -197,29 +195,30 @@ export default function MyServices(props: Props) {
             return;
         }
 
-        const runningService = (runningServices ?? []).find(
+        if (services === undefined) {
+            return;
+        }
+
+        const service = services.find(
             ({ helmReleaseName }) => helmReleaseName === autoOpenHelmReleaseName
         );
 
-        if (runningService === undefined) {
+        if (service === undefined) {
             return;
         }
 
         routes
             .myServices({
                 ...route.params,
-                "isSavedConfigsExtended": route.params.isSavedConfigsExtended
-                    ? true
-                    : undefined,
                 "autoOpenHelmReleaseName": undefined
             })
             .replace();
 
         evtMyServiceCardsAction.post({
             "action": "open readme dialog",
-            "helmReleaseName": runningService.helmReleaseName
+            "helmReleaseName": service.helmReleaseName
         });
-    }, [route.params.autoOpenHelmReleaseName, runningServices]);
+    }, [route.params.autoOpenHelmReleaseName, services]);
 
     const catalogExplorerLink = useMemo(() => routes.catalog().link, []);
 
@@ -240,25 +239,15 @@ export default function MyServices(props: Props) {
                 return;
             }
 
-            serviceManagement.stopService({ helmReleaseName });
+            serviceManagement.deleteService({ helmReleaseName });
         }
     );
 
     const onRequestPauseOrResume = useConstCallback<
         MyServicesCardsProps["onRequestPauseOrResume"]
-    >(async ({ helmReleaseName }) => {
-        const runningService = runningServices.find(
-            runningService => runningService.helmReleaseName === helmReleaseName
-        );
-
-        assert(runningService !== undefined);
-        assert(runningService.suspendState.canBeSuspended);
-
-        serviceManagement.suspendOrResumeService({
-            "helmReleaseName": helmReleaseName,
-            "action": runningService.suspendState.isSuspended ? "resume" : "suspend"
-        });
-    });
+    >(async ({ helmReleaseName }) =>
+        serviceManagement.suspendOrResumeService({ "helmReleaseName": helmReleaseName })
+    );
 
     const onOpenClusterEventsDialog = useConstCallback(() => {
         evtClusterEventsDialogOpen.post();
@@ -303,9 +292,7 @@ export default function MyServices(props: Props) {
                         <MyServicesButtonBar
                             onClick={onButtonBarClick}
                             isThereNonOwnedServicesShown={isThereNonOwnedServices}
-                            isThereDeletableServices={
-                                deletableRunningServiceHelmReleaseNames.length !== 0
-                            }
+                            isThereDeletableServices={isThereDeletableServices}
                             eventsNotificationCount={eventsNotificationCount}
                         />
                     </div>
@@ -336,20 +323,20 @@ export default function MyServices(props: Props) {
                         <>
                             {!isSavedConfigsExtended && (
                                 <MyServicesCards
-                                    isUpdating={isUpdating}
                                     className={classes.cards}
-                                    runningServices={runningServices}
+                                    isUpdating={isUpdating}
+                                    services={services}
                                     getMyServiceLink={getMyServiceLink}
-                                    onRequestDelete={onRequestDelete}
                                     catalogExplorerLink={catalogExplorerLink}
+                                    onRequestDelete={onRequestDelete}
+                                    onRequestPauseOrResume={onRequestPauseOrResume}
+                                    onRequestLogHelmGetNotes={
+                                        serviceManagement.logHelmGetNotes
+                                    }
                                     evtAction={evtMyServiceCardsAction}
                                     projectServicePassword={servicePassword}
-                                    getPostInstallInstructions={
-                                        serviceManagement.getPostInstallInstructions
-                                    }
                                     lastClusterEvent={lastClusterEvent}
                                     onOpenClusterEventsDialog={onOpenClusterEventsDialog}
-                                    onRequestPauseOrResume={onRequestPauseOrResume}
                                 />
                             )}
                             <div className={classes.rightPanel}>

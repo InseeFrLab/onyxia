@@ -501,7 +501,7 @@ export function createOnyxiaApi(params: {
                         apiApp.tasks[0].containers.every(({ ready }) => ready),
                     "status": apiApp.status,
                     "podNames": apiApp.tasks.map(({ id }) => id),
-                    "canBeSuspended": apiApp.suspendable,
+                    "doesSupportSuspend": apiApp.suspendable,
                     "isSuspended": apiApp.suspended
                 })
             );

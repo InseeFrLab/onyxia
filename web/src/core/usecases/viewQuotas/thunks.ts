@@ -28,12 +28,13 @@ export const thunks = {
                     }
                 });
 
+            // TODO: Update, it isn't smart.
             evtAction.attach(
                 action =>
                     action.usecaseName === "serviceManagement" &&
-                    (action.actionName === "serviceStopped" ||
-                        (action.actionName === "suspendOrResumeServiceCompleted" &&
-                            action.payload.isSuspended)),
+                    action.actionName === "helmReleaseLocked" &&
+                    (action.payload.reason === "delete" ||
+                        action.payload.reason === "suspend"),
                 ctx,
                 () => {
                     dispatch(actions.podDeletionStarted());
@@ -62,7 +63,6 @@ export const thunks = {
                     });
 
                     try {
-                        console.log("Fetching quotas");
                         await dispatch(thunks.update());
                     } catch {
                         console.log("Fetching of quotas failed");

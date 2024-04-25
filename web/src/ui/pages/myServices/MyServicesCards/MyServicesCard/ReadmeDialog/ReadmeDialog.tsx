@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, memo } from "react";
 import { tss } from "tss";
 import { Button } from "onyxia-ui/Button";
 import { useTranslation } from "ui/i18n";
@@ -17,45 +17,40 @@ type Props = {
     isReady: boolean;
     openUrl: string | undefined;
     projectServicePassword: string;
-    getPostInstallInstructions: (() => string) | undefined;
+    postInstallInstructions: string | undefined;
+    onRequestLogHelmGetNotes: () => void;
     lastClusterEvent:
         | { message: string; severity: "error" | "info" | "warning" }
         | undefined;
     onOpenClusterEventsDialog: () => void;
 };
 
-export function ReadmeDialog(props: Props) {
+export const ReadmeDialog = memo((props: Props) => {
     const {
         evtOpen,
         isReady,
         openUrl,
         projectServicePassword,
-        getPostInstallInstructions,
+        postInstallInstructions = "",
+        onRequestLogHelmGetNotes,
         lastClusterEvent,
         onOpenClusterEventsDialog
     } = props;
 
-    const [openState, setOpenState] = useState<
-        | {
-              projectServicePassword: string;
-              postInstallInstructions: string;
-          }
-        | undefined
-    >(undefined);
+    const [isOpen, setIsOpen] = useState(false);
 
     useEvt(
         ctx => {
             evtOpen.attach(ctx, () => {
-                setOpenState({
-                    projectServicePassword,
-                    "postInstallInstructions": getPostInstallInstructions?.() ?? ""
-                });
+                onRequestLogHelmGetNotes();
+
+                setIsOpen(true);
             });
         },
-        [evtOpen, projectServicePassword]
+        [evtOpen, onRequestLogHelmGetNotes]
     );
 
-    const onDialogClose = useConstCallback(() => setOpenState(undefined));
+    const onDialogClose = useConstCallback(() => setIsOpen(false));
 
     const { classes } = useStyles({
         "lastClusterEventSeverity": lastClusterEvent?.severity ?? "info"
@@ -66,9 +61,9 @@ export function ReadmeDialog(props: Props) {
     return (
         <Dialog
             body={
-                openState !== undefined && (
+                isOpen && (
                     <div className={classes.dialogBody}>
-                        <Markdown>{openState.postInstallInstructions}</Markdown>
+                        <Markdown>{postInstallInstructions}</Markdown>
                         {!isReady && (
                             <div className={classes.clusterEventWrapper}>
                                 <LinearProgress />
@@ -91,10 +86,10 @@ export function ReadmeDialog(props: Props) {
                     </div>
                 )
             }
-            isOpen={openState !== undefined}
+            isOpen={isOpen}
             onClose={onDialogClose}
             buttons={
-                openState !== undefined && (
+                isOpen && (
                     <>
                         <Button variant="secondary" onClick={onDialogClose}>
                             {t("return")}
@@ -111,10 +106,8 @@ export function ReadmeDialog(props: Props) {
                                     openUrl={openUrl}
                                     servicePassword={extractServicePasswordFromPostInstallInstructions(
                                         {
-                                            "postInstallInstructions":
-                                                openState.postInstallInstructions,
-                                            "projectServicePassword":
-                                                openState.projectServicePassword
+                                            postInstallInstructions,
+                                            projectServicePassword
                                         }
                                     )}
                                     onDialogClose={onDialogClose}
@@ -126,7 +119,7 @@ export function ReadmeDialog(props: Props) {
             }
         />
     );
-}
+});
 
 function extractServicePasswordFromPostInstallInstructions(params: {
     postInstallInstructions: string;
