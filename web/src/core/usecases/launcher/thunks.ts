@@ -646,7 +646,7 @@ const privateThunks = {
                             ({ version }) => version === pinnedChartVersion
                         ) === undefined
                     ) {
-                        alert(
+                        console.log(
                             [
                                 `No ${pinnedChartVersion} version found for ${chartName} in ${catalog.repositoryUrl}.`,
                                 `Falling back to default version ${defaultChartVersion}`
