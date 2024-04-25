@@ -271,7 +271,15 @@ minio$list_buckets()
                         case "Python (s3fs)":
                             return `
 import s3fs
-fs = s3fs.S3FileSystem(client_kwargs={'endpoint_url': 'https://'+'${credentials.AWS_S3_ENDPOINT}'},key ='${credentials.AWS_ACCESS_KEY_ID}', secret = '${credentials.AWS_SECRET_ACCESS_KEY}', token = '${credentials.AWS_SESSION_TOKEN}')
+os.environ["AWS_ACCESS_KEY_ID"] = '${credentials.AWS_ACCESS_KEY_ID}'
+os.environ["AWS_SECRET_ACCESS_KEY"] = '${credentials.AWS_SECRET_ACCESS_KEY}'
+os.environ["AWS_SESSION_TOKEN"] = '${credentials.AWS_SESSION_TOKEN}'
+os.environ["AWS_DEFAULT_REGION"] = '${credentials.AWS_DEFAULT_REGION}'
+fs = s3fs.S3FileSystem(
+    client_kwargs={'endpoint_url': 'https://'+'${credentials.AWS_S3_ENDPOINT}'},
+    key = os.environ["AWS_ACCESS_KEY_ID"], 
+    secret = os.environ["AWS_SECRET_ACCESS_KEY"], 
+    token = os.environ["AWS_SESSION_TOKEN"])
 						`;
                         case "Python (boto3)":
                             return `
