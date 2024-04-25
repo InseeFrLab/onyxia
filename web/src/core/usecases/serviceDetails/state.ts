@@ -174,7 +174,7 @@ export const { reducer, actions } = createUsecaseActions({
 
                 state.commandLogsEntry = {
                     "cmdId": Date.now(),
-                    "cmd": "helm get values",
+                    "cmd": `helm get values ${state.helmReleaseName}`,
                     "resp": cmdResp
                 };
 
