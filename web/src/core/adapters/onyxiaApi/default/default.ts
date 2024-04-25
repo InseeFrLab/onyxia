@@ -604,17 +604,11 @@ export function createOnyxiaApi(params: {
             const ctxUnsubscribe = Evt.newCtx();
             const evtUnsubscribe = params.evtUnsubscribe.pipe(ctxUnsubscribe);
 
-            console.log("before");
-
             const response = await fetch(`${url}/my-lab/events`, {
                 "headers": getHeaders()
-            }).catch(error => {
-                console.log("============>", error);
-
-                return undefined;
-            });
-
-            console.log("after");
+            })
+                // NOTE: This happens when there's no data to read.
+                .catch(() => undefined);
 
             if (response === undefined) {
                 return;
@@ -689,6 +683,8 @@ export function createOnyxiaApi(params: {
             ctxUnsubscribe.done();
 
             reader.releaseLock();
+
+            console.log("done");
         },
         "helmUpgradeGlobalSuspend": async ({ helmReleaseName, value }) => {
             if (value === true) {
