@@ -87,7 +87,13 @@ export const thunks = {
                                     getState()
                                 );
 
-                            if (startingRunningServiceHelmReleaseNames.length === 0) {
+                            const suspendedStillShutingDowPodsHelmReleaseNames: string[] =
+                                [];
+
+                            if (
+                                startingRunningServiceHelmReleaseNames.length === 0 &&
+                                suspendedStillShutingDowPodsHelmReleaseNames.length === 0
+                            ) {
                                 return;
                             }
 
@@ -101,12 +107,12 @@ export const thunks = {
                                 .listHelmReleases()
                                 .catch(() => undefined);
 
-                            if (helmReleases === undefined) {
-                                return monitorServicesStartupStatus();
-                            }
-
                             if (ctxInner.completionStatus) {
                                 return;
+                            }
+
+                            if (helmReleases === undefined) {
+                                return monitorServicesStartupStatus();
                             }
 
                             let hasNonStartedHelmRelease = false;
@@ -128,14 +134,8 @@ export const thunks = {
                                         helmRelease.areAllTasksReady
                                     ) {
                                         dispatch(
-                                            actions.statusUpdated({
-                                                helmReleaseName,
-                                                "status": helmRelease.status,
-                                                "areAllTasksReady":
-                                                    helmRelease.areAllTasksReady
-                                            })
+                                            actions.serviceReady({ helmReleaseName })
                                         );
-
                                         return;
                                     }
 
@@ -143,7 +143,39 @@ export const thunks = {
                                 }
                             );
 
-                            if (!hasNonStartedHelmRelease) {
+                            let hasSuspendedStillKillingPodsHelmRelease = false;
+
+                            suspendedStillShutingDowPodsHelmReleaseNames.forEach(
+                                helmReleaseName => {
+                                    const helmRelease = helmReleases.find(
+                                        helmRelease =>
+                                            helmRelease.helmReleaseName ===
+                                            helmReleaseName
+                                    );
+
+                                    if (helmRelease === undefined) {
+                                        return;
+                                    }
+
+                                    if (
+                                        helmRelease.isSuspended &&
+                                        helmRelease.podNames.length === 0
+                                    ) {
+                                        dispatch(
+                                            actions.suspendedServiceHasShutdownItsPods({
+                                                helmReleaseName
+                                            })
+                                        );
+                                    }
+
+                                    hasNonStartedHelmRelease = true;
+                                }
+                            );
+
+                            if (
+                                !hasNonStartedHelmRelease &&
+                                !hasSuspendedStillKillingPodsHelmRelease
+                            ) {
                                 return;
                             }
 
@@ -236,6 +268,7 @@ export const thunks = {
                         chartName,
                         chartVersion,
                         areAllTasksReady,
+                        podNames,
                         status,
                         canBeSuspended,
                         isSuspended
@@ -258,6 +291,7 @@ export const thunks = {
                             "urls": urls.sort(),
                             status,
                             areAllTasksReady,
+                            "hasPods": podNames.length !== 0,
                             "hasPostInstallInstructions":
                                 postInstallInstructions !== undefined,
                             "ownership": isOwned

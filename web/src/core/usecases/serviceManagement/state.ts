@@ -36,6 +36,7 @@ export type RunningService = {
     hasPostInstallInstructions: boolean;
     status: "deployed" | "pending-install" | "failed";
     areAllTasksReady: boolean;
+    hasPods: boolean;
     suspendState:
         | {
               canBeSuspended: false;
@@ -99,19 +100,17 @@ export const { reducer, actions } = createUsecaseActions({
                 "commandLogsEntries": state.commandLogsEntries
             });
         },
-        "statusUpdated": (
+        "serviceReady": (
             state,
             {
                 payload
             }: {
                 payload: {
                     helmReleaseName: string;
-                    status: "deployed" | "pending-install" | "failed";
-                    areAllTasksReady: boolean;
                 };
             }
         ) => {
-            const { helmReleaseName, status, areAllTasksReady } = payload;
+            const { helmReleaseName } = payload;
 
             assert(state.stateDescription === "ready");
 
@@ -127,13 +126,38 @@ export const { reducer, actions } = createUsecaseActions({
                 return;
             }
 
-            runningService.status = status;
-            runningService.areAllTasksReady = areAllTasksReady;
-
-            //NOTE: Harmless hack to improve UI readability.
-            if (status === "deployed" && areAllTasksReady) {
-                runningService.startedAt = Date.now();
+            runningService.status = "deployed";
+            runningService.areAllTasksReady = true;
+            runningService.hasPods = true;
+            runningService.startedAt = Date.now();
+        },
+        "suspendedServiceHasShutdownItsPods": (
+            state,
+            {
+                payload
+            }: {
+                payload: {
+                    helmReleaseName: string;
+                };
             }
+        ) => {
+            const { helmReleaseName } = payload;
+
+            assert(state.stateDescription === "ready");
+
+            const { runningServices } = state;
+
+            assert(runningServices !== undefined);
+
+            const runningService = runningServices.find(
+                runningService => runningService.helmReleaseName === helmReleaseName
+            );
+
+            if (runningService === undefined) {
+                return;
+            }
+
+            runningService.hasPods = false;
         },
         "serviceStopped": (
             state,

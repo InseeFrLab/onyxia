@@ -24,7 +24,31 @@ const runningServices = createSelector(
 
         const { runningServices } = state;
 
-        return [...runningServices].sort((a, b) => b.startedAt - a.startedAt);
+        return [...runningServices]
+            .sort((a, b) => b.startedAt - a.startedAt)
+            .map(runningService => {
+                const { suspendState } = runningService;
+
+                if (
+                    suspendState.canBeSuspended &&
+                    suspendState.isSuspended &&
+                    !suspendState.isTransitioning &&
+                    runningService.hasPods
+                ) {
+                    return {
+                        ...runningService,
+                        "suspendState": {
+                            "canBeSuspended": true,
+                            // Here this is a hack to enforce that we won't be able to
+                            // resume a service that is still being shut down.
+                            "isSuspended": false,
+                            "isTransitioning": true
+                        }
+                    };
+                }
+
+                return runningService;
+            });
     }
 );
 
@@ -155,7 +179,22 @@ const startingRunningServiceHelmReleaseNames = createSelector(
     }
 );
 
+const suspendedStillShutingDowPodsHelmReleaseNames = createSelector(readyState, state => {
+    assert(state !== undefined);
+
+    return state.runningServices
+        .filter(
+            ({ suspendState, hasPods }) =>
+                suspendState.canBeSuspended &&
+                suspendState.isSuspended &&
+                !suspendState.isTransitioning &&
+                hasPods
+        )
+        .map(({ helmReleaseName }) => helmReleaseName);
+});
+
 export const protectedSelectors = {
     isReady,
-    startingRunningServiceHelmReleaseNames
+    startingRunningServiceHelmReleaseNames,
+    suspendedStillShutingDowPodsHelmReleaseNames
 };

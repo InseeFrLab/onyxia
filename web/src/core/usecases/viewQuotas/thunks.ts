@@ -62,6 +62,7 @@ export const thunks = {
                     });
 
                     try {
+                        console.log("Fetching quotas");
                         await dispatch(thunks.update());
                     } catch {
                         console.log("Fetching of quotas failed");
