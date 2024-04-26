@@ -14,6 +14,7 @@ export type Technology =
     | "R (paws)"
     | "Python (s3fs)"
     | "Python (boto3)"
+    | "Python (polars)"
     | "shell environment variables"
     | "MC client"
     | "s3cmd"
@@ -220,6 +221,7 @@ export const selectors = (() => {
                             return "credentials.R";
                         case "Python (s3fs)":
                         case "Python (boto3)":
+                        case "Python (polars)":
                             return "credentials.py";
                         case "shell environment variables":
                         case "MC client":
@@ -288,6 +290,28 @@ s3 = boto3.client("s3",endpoint_url = 'https://'+'${credentials.AWS_S3_ENDPOINT}
                   aws_access_key_id= '${credentials.AWS_ACCESS_KEY_ID}', 
                   aws_secret_access_key= '${credentials.AWS_SECRET_ACCESS_KEY}', 
                   aws_session_token = '${credentials.AWS_SESSION_TOKEN}')
+						`;
+                        case "Python (polars)":
+                            return `
+import polars as pl
+storage_options = {
+    "aws_endpoint":  'https://'+'${credentials.AWS_S3_ENDPOINT}',
+    "aws_access_key_id": os.environ["AWS_ACCESS_KEY_ID"],
+    "aws_secret_access_key": os.environ["AWS_SECRET_ACCESS_KEY"],
+    "aws_region": os.environ["AWS_DEFAULT_REGION"],
+    "aws_token": os.environ["AWS_SESSION_TOKEN"]
+  }
+  # or hard-coded :
+  storage_options = {
+    "aws_endpoint":  'https://'+'${credentials.AWS_S3_ENDPOINT}',
+    "aws_access_key_id": '${credentials.AWS_ACCESS_KEY_ID}', 
+    "aws_secret_access_key": '${credentials.AWS_SECRET_ACCESS_KEY}', 
+    "aws_region": '${credentials.AWS_DEFAULT_REGION}'
+    "aws_token": '${credentials.AWS_SESSION_TOKEN}'
+  }
+  df = pl.scan_parquet(source = "s3://bucket/*.parquet", storage_options=storage_options)
+  print(df)
+
 						`;
                         case "shell environment variables":
                             return `
@@ -402,6 +426,7 @@ session_token = ${credentials.AWS_SESSION_TOKEN}
                             return "r";
                         case "Python (s3fs)":
                         case "Python (boto3)":
+                        case "Python (polars)":
                             return "python";
                         case "shell environment variables":
                         case "MC client":
