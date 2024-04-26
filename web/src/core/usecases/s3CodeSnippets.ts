@@ -14,6 +14,7 @@ export type Technology =
     | "R (paws)"
     | "Python (s3fs)"
     | "Python (boto3)"
+    | "Python (polars)"
     | "shell environment variables"
     | "MC client"
     | "s3cmd"
@@ -101,74 +102,74 @@ export const thunks = {
      */
     "isAvailable":
         () =>
-        (...args): boolean => {
-            const [, , { s3ClientSts }] = args;
+            (...args): boolean => {
+                const [, , { s3ClientSts }] = args;
 
-            return s3ClientSts !== undefined;
-        },
+                return s3ClientSts !== undefined;
+            },
     /** Refresh is expected to be called whenever the component that use this slice mounts */
     "refresh":
         (params: { doForceRenewToken: boolean }) =>
-        async (...args) => {
-            const { doForceRenewToken } = params;
+            async (...args) => {
+                const { doForceRenewToken } = params;
 
-            const [dispatch, getState, thunkExtraArguments] = args;
+                const [dispatch, getState, thunkExtraArguments] = args;
 
-            const { s3ClientSts } = thunkExtraArguments;
+                const { s3ClientSts } = thunkExtraArguments;
 
-            assert(s3ClientSts !== undefined);
+                assert(s3ClientSts !== undefined);
 
-            if (getState().s3CodeSnippets.isRefreshing) {
-                return;
-            }
+                if (getState().s3CodeSnippets.isRefreshing) {
+                    return;
+                }
 
-            dispatch(actions.refreshStarted());
+                dispatch(actions.refreshStarted());
 
-            const { region, host, port } = (() => {
-                const { s3 } =
-                    deploymentRegionManagement.selectors.currentDeploymentRegion(
-                        getState()
-                    );
+                const { region, host, port } = (() => {
+                    const { s3 } =
+                        deploymentRegionManagement.selectors.currentDeploymentRegion(
+                            getState()
+                        );
 
-                assert(s3 !== undefined);
+                    assert(s3 !== undefined);
 
-                const { host, port = 443 } = parseUrl(s3.url);
+                    const { host, port = 443 } = parseUrl(s3.url);
 
-                const region = s3.region;
+                    const region = s3.region;
 
-                return { region, host, port };
-            })();
+                    return { region, host, port };
+                })();
 
-            const { accessKeyId, secretAccessKey, sessionToken, expirationTime } =
-                await s3ClientSts.getToken({ "doForceRenew": doForceRenewToken });
+                const { accessKeyId, secretAccessKey, sessionToken, expirationTime } =
+                    await s3ClientSts.getToken({ "doForceRenew": doForceRenewToken });
 
-            assert(sessionToken !== undefined);
-            assert(expirationTime !== undefined);
+                assert(sessionToken !== undefined);
+                assert(expirationTime !== undefined);
 
-            dispatch(
-                actions.refreshed({
-                    "credentials": {
-                        "AWS_ACCESS_KEY_ID": accessKeyId,
-                        "AWS_SECRET_ACCESS_KEY": secretAccessKey,
-                        "AWS_DEFAULT_REGION": region ?? "",
-                        "AWS_SESSION_TOKEN": sessionToken,
-                        "AWS_S3_ENDPOINT": `${
-                            host === "s3.amazonaws.com"
-                                ? `s3.${region}.amazonaws.com`
-                                : host
-                        }${port === 443 ? "" : `:${port}`}`
-                    },
-                    expirationTime
-                })
-            );
-        },
+                dispatch(
+                    actions.refreshed({
+                        "credentials": {
+                            "AWS_ACCESS_KEY_ID": accessKeyId,
+                            "AWS_SECRET_ACCESS_KEY": secretAccessKey,
+                            "AWS_DEFAULT_REGION": region ?? "",
+                            "AWS_SESSION_TOKEN": sessionToken,
+                            "AWS_S3_ENDPOINT": `${
+                                host === "s3.amazonaws.com"
+                                    ? `s3.${region}.amazonaws.com`
+                                    : host
+                                }${port === 443 ? "" : `:${port}`}`
+                        },
+                        expirationTime
+                    })
+                );
+            },
     "changeTechnology":
         (params: { technology: Technology }) =>
-        (...args) => {
-            const { technology } = params;
-            const [dispatch] = args;
-            dispatch(actions.technologyChanged({ technology }));
-        }
+            (...args) => {
+                const { technology } = params;
+                const [dispatch] = args;
+                dispatch(actions.technologyChanged({ technology }));
+            }
 } satisfies Thunks;
 
 export const selectors = (() => {
@@ -289,6 +290,20 @@ s3 = boto3.client("s3",endpoint_url = 'https://'+'${credentials.AWS_S3_ENDPOINT}
                   aws_secret_access_key= '${credentials.AWS_SECRET_ACCESS_KEY}', 
                   aws_session_token = '${credentials.AWS_SESSION_TOKEN}')
 						`;
+                        case "Python (polars)":
+                            return `
+import boto3
+storage_options = {
+    "aws_endpoint":  'https://'+'${credentials.AWS_S3_ENDPOINT}',
+    "aws_access_key_id": os.environ["AWS_ACCESS_KEY_ID"],
+    "aws_secret_access_key": os.environ["AWS_SECRET_ACCESS_KEY"],
+    "aws_region": os.environ["AWS_DEFAULT_REGION"],
+    "aws_token": os.environ["AWS_SESSION_TOKEN"]
+  }
+  df = pl.scan_parquet(source = "s3://bucket/*.parquet", storage_options=storage_options)
+  print(df)
+
+						`;
                         case "shell environment variables":
                             return `
 export AWS_ACCESS_KEY_ID=${credentials.AWS_ACCESS_KEY_ID}
@@ -402,6 +417,7 @@ session_token = ${credentials.AWS_SESSION_TOKEN}
                             return "r";
                         case "Python (s3fs)":
                         case "Python (boto3)":
+                        case "Python (polars)":
                             return "python";
                         case "shell environment variables":
                         case "MC client":
