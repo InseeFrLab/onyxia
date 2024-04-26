@@ -221,6 +221,7 @@ export const selectors = (() => {
                             return "credentials.R";
                         case "Python (s3fs)":
                         case "Python (boto3)":
+                        case "Python (polars)":
                             return "credentials.py";
                         case "shell environment variables":
                         case "MC client":
