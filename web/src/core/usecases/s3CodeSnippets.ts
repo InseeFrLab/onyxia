@@ -300,6 +300,14 @@ storage_options = {
     "aws_region": os.environ["AWS_DEFAULT_REGION"],
     "aws_token": os.environ["AWS_SESSION_TOKEN"]
   }
+  # or hard-coded :
+  storage_options = {
+    "aws_endpoint":  'https://'+'${credentials.AWS_S3_ENDPOINT}',
+    "aws_access_key_id": '${credentials.AWS_ACCESS_KEY_ID}', 
+    "aws_secret_access_key": '${credentials.AWS_SECRET_ACCESS_KEY}', 
+    "aws_region": '${credentials.AWS_DEFAULT_REGION}'
+    "aws_token": '${credentials.AWS_SESSION_TOKEN}'
+  }
   df = pl.scan_parquet(source = "s3://bucket/*.parquet", storage_options=storage_options)
   print(df)
 
