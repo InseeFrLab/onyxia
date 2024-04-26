@@ -74,7 +74,7 @@ const services = createSelector(readyState, state => {
                 "friendlyName": helmRelease.friendlyName ?? helmRelease.chartName,
                 "iconUrl": logoUrlByReleaseName[helmRelease.helmReleaseName],
                 "startedAt": helmRelease.startedAt,
-                "openUrl": helmRelease.urls[0],
+                "openUrl": [...helmRelease.urls].sort()[0],
                 "postInstallInstructions": helmRelease.postInstallInstructions,
                 "areInteractionLocked": lockedHelmReleaseNames.includes(
                     helmRelease.helmReleaseName
