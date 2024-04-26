@@ -15,7 +15,8 @@
             "packagePatterns": ["*"],
             "excludePackagePatterns": [
                 "minimal-polyfills",
-                "cra-envs",
+                "vite-envs",
+                "oidc-spa",
                 "evt",
                 "i18nifty",
                 "keycloakify",
