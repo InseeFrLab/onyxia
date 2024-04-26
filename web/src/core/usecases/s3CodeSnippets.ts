@@ -292,7 +292,7 @@ s3 = boto3.client("s3",endpoint_url = 'https://'+'${credentials.AWS_S3_ENDPOINT}
 						`;
                         case "Python (polars)":
                             return `
-import boto3
+import polars as pl
 storage_options = {
     "aws_endpoint":  'https://'+'${credentials.AWS_S3_ENDPOINT}',
     "aws_access_key_id": os.environ["AWS_ACCESS_KEY_ID"],
