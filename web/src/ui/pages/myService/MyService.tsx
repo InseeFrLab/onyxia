@@ -12,7 +12,7 @@ import { CircularProgress } from "onyxia-ui/CircularProgress";
 import { CommandBar } from "ui/shared/CommandBar";
 import { useEvt } from "evt/hooks";
 import { useDomRect } from "powerhooks/useDomRect";
-import { declareComponentKeys } from "ui/i18n";
+import { declareComponentKeys, useTranslation } from "ui/i18n";
 
 export type Props = {
     route: PageRoute;
@@ -21,6 +21,8 @@ export type Props = {
 
 export default function MyService(props: Props) {
     const { className, route } = props;
+
+    const { t } = useTranslation({ MyService });
 
     const { serviceDetails } = useCore().functions;
 
@@ -75,7 +77,10 @@ export default function MyService(props: Props) {
             <div className={classes.headerWrapper}>
                 <PageHeader
                     mainIcon={customIcons.servicesSvgUrl}
-                    title={`${helmReleaseFriendlyName ?? route.params.helmReleaseName} Monitoring`}
+                    title={t("page title", {
+                        "helmReleaseFriendlyName":
+                            helmReleaseFriendlyName ?? route.params.helmReleaseName
+                    })}
                     helpCollapseParams={{
                         "behavior": "controlled",
                         "isCollapsed": true
