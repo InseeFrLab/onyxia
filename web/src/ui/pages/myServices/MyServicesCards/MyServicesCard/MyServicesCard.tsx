@@ -218,15 +218,17 @@ export const MyServicesCard = memo((props: Props) => {
                         <Tooltip
                             title={"Click to suspend the service and release resources"}
                         >
-                            <IconButton
-                                disabled={service.areInteractionLocked}
-                                icon={id<MuiIconComponentName>("Pause")}
-                                onClick={event => {
-                                    onRequestPauseOrResume();
-                                    event.stopPropagation();
-                                    event.preventDefault();
-                                }}
-                            />
+                            <span>
+                                <IconButton
+                                    disabled={service.areInteractionLocked}
+                                    icon={id<MuiIconComponentName>("Pause")}
+                                    onClick={event => {
+                                        onRequestPauseOrResume();
+                                        event.stopPropagation();
+                                        event.preventDefault();
+                                    }}
+                                />
+                            </span>
                         </Tooltip>
                     )}
 
@@ -234,11 +236,13 @@ export const MyServicesCard = memo((props: Props) => {
 
                     {service.state === "suspended" && (
                         <Tooltip title={"Click to resume the service"}>
-                            <IconButton
-                                disabled={service.areInteractionLocked}
-                                icon={id<MuiIconComponentName>("PlayArrow")}
-                                onClick={onRequestPauseOrResume}
-                            />
+                            <span>
+                                <IconButton
+                                    disabled={service.areInteractionLocked}
+                                    icon={id<MuiIconComponentName>("PlayArrow")}
+                                    onClick={onRequestPauseOrResume}
+                                />
+                            </span>
                         </Tooltip>
                     )}
 
