@@ -277,7 +277,8 @@ const useStyles = tss
         hasBeenRunningForTooLong: boolean;
     }>()
     .withName({ MyServicesCard })
-    .create(({ theme, hasBeenRunningForTooLong }) => ({
+    .withNestedSelectors<"title">()
+    .create(({ theme, hasBeenRunningForTooLong, classes }) => ({
         "root": {
             "borderRadius": 8,
             "boxShadow": theme.shadows[1],
@@ -295,7 +296,10 @@ const useStyles = tss
             "display": "flex",
             "alignItems": "center",
             "color": "inherit",
-            "textDecoration": "none"
+            "textDecoration": "none",
+            [`&:hover .${classes.title}`]: {
+                "color": theme.colors.useCases.typography.textFocus
+            }
         },
         "title": {
             "marginLeft": theme.spacing(3)
