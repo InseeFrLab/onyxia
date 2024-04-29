@@ -668,6 +668,12 @@ Fühlen Sie sich frei, Ihre Kubernetes-Bereitstellungen zu erkunden und die Kont
         "new logs are displayed in realtime":
             "Neue Protokolle werden in Echtzeit angezeigt"
     },
+    "MyServiceButtonBar": {
+        "back": "Zurück",
+        "external monitoring": "Externes Monitoring",
+        "helm values": "Helm-Werte",
+        "reduce": "Reduzieren"
+    },
     "LauncherMainCard": {
         "card title": "Erstellen Sie Ihren eigenen Dienst",
         "friendly name": "Personalisierter Name",

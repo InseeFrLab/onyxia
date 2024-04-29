@@ -669,6 +669,12 @@ N'hésitez pas à explorer et à prendre en main vos déploiements Kubernetes !
         "new logs are displayed in realtime":
             "Les nouveaux journaux sont affichés en temps réel"
     },
+    "MyServiceButtonBar": {
+        "back": "Retour",
+        "external monitoring": "Surveillance externe",
+        "helm values": "Valeurs de Helm",
+        "reduce": "Réduire"
+    },
     "LauncherMainCard": {
         "card title": "Créer votre propre service",
         "friendly name": "Nom personnalisé",

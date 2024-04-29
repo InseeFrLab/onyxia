@@ -659,6 +659,12 @@ Sentiti libero di esplorare e prendere il controllo dei tuoi deployment Kubernet
         "new logs are displayed in realtime":
             "I nuovi log vengono visualizzati in tempo reale"
     },
+    "MyServiceButtonBar": {
+        "back": "Indietro",
+        "external monitoring": "Monitoraggio esterno",
+        "helm values": "Valori Helm",
+        "reduce": "Riduci"
+    },
     "LauncherMainCard": {
         "card title": "Crea il tuo proprio servizio",
         "friendly name": "Nome personalizzato",

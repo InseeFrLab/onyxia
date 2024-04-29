@@ -662,6 +662,12 @@ Voel je vrij om te verkennen en de controle over je Kubernetes-implementaties te
             "Dit zijn niet noodzakelijkerwijs de eerste logs, oudere logs kunnen zijn verwijderd",
         "new logs are displayed in realtime": "Nieuwe logs worden in realtime weergegeven"
     },
+    "MyServiceButtonBar": {
+        "back": "Terug",
+        "external monitoring": "Externe monitoring",
+        "helm values": "Helm waarden",
+        "reduce": "Verminderen"
+    },
     "LauncherMainCard": {
         "card title": "Uw eigen dienst aanmaken",
         "friendly name": "Gepersonaliseerde naam",

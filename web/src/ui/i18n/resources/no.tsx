@@ -660,6 +660,12 @@ Føl deg fri til å utforske og ta kontroll over dine Kubernetes-implementeringe
             "Dette er ikke nødvendigvis de første loggene, eldre logger kan ha blitt fjernet",
         "new logs are displayed in realtime": "Nye logger vises i sanntid"
     },
+    "MyServiceButtonBar": {
+        "back": "Tilbake",
+        "external monitoring": "Ekstern overvåkning",
+        "helm values": "Helm-verdier",
+        "reduce": "Reduser"
+    },
     "LauncherMainCard": {
         "card title": "Opprett dine personlige tjenester",
         "friendly name": "Vennlig navn",

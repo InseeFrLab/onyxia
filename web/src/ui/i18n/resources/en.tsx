@@ -651,6 +651,12 @@ Feel free to explore and take charge of your Kubernetes deployments!
             "This is not necessarily the first logs, older logs might have been flushed",
         "new logs are displayed in realtime": "New logs are displayed in realtime"
     },
+    "MyServiceButtonBar": {
+        "back": "Back",
+        "external monitoring": "External monitoring",
+        "helm values": "Helm Values",
+        "reduce": "Reduce"
+    },
     "LauncherMainCard": {
         "card title": "Create your personal services",
         "friendly name": "Friendly name",

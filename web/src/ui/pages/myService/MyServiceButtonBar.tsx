@@ -4,6 +4,7 @@ import { id } from "tsafe/id";
 import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
 import { Icon } from "onyxia-ui/Icon";
 import { assert } from "tsafe/assert";
+import { declareComponentKeys, useTranslation } from "ui/i18n";
 
 export type Props = {
     className?: string;
@@ -22,6 +23,8 @@ export const MyServiceButtonBar = memo((props: Props) => {
         onClickHelmValues
     } = props;
 
+    const { t } = useTranslation({ MyServiceButtonBar });
+
     return (
         <ButtonBar
             className={className}
@@ -29,7 +32,7 @@ export const MyServiceButtonBar = memo((props: Props) => {
                 {
                     "buttonId": "back",
                     "icon": id<MuiIconComponentName>("ArrowBack"),
-                    "label": "Back"
+                    "label": t("back")
                 },
                 ...(monitoringUrl === undefined
                     ? []
@@ -39,10 +42,7 @@ export const MyServiceButtonBar = memo((props: Props) => {
                               "icon": id<MuiIconComponentName>("Equalizer"),
                               "label": (
                                   <span>
-                                      {monitoringUrl.toLowerCase().includes("grafana")
-                                          ? "Grafana"
-                                          : "External"}{" "}
-                                      monitoring&nbsp;
+                                      {t("external monitoring")}&nbsp;
                                       <Icon
                                           size="extra small"
                                           icon={id<MuiIconComponentName>("OpenInNew")}
@@ -54,7 +54,7 @@ export const MyServiceButtonBar = memo((props: Props) => {
                 {
                     "buttonId": "helmValues",
                     "icon": id<MuiIconComponentName>("Code"),
-                    "label": areHelmValuesShown ? "Reduce" : "Helm Values"
+                    "label": areHelmValuesShown ? t("reduce") : t("helm values")
                 }
             ]}
             onClick={buttonId => {
@@ -74,3 +74,8 @@ export const MyServiceButtonBar = memo((props: Props) => {
         />
     );
 });
+
+const { i18n } = declareComponentKeys<
+    "back" | "external monitoring" | "reduce" | "helm values"
+>()({ MyServiceButtonBar });
+export type I18n = typeof i18n;

@@ -609,6 +609,12 @@ ${
         "not necessarily first logs": "这不一定是第一批日志，较旧的日志可能已被清除",
         "new logs are displayed in realtime": "新日志实时显示"
     },
+    "MyServiceButtonBar": {
+        "back": "返回",
+        "external monitoring": "外部监控",
+        "helm values": "Helm 值",
+        "reduce": "减少"
+    },
     "LauncherMainCard": {
         "card title": "创建自定义服务",
         "friendly name": "自定义名称",
