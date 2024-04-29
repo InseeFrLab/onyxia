@@ -116,23 +116,6 @@ export const MyServicesCard = memo((props: Props) => {
                             {capitalize(service.friendlyName)}
                         </Text>
                         <div style={{ "flex": 1 }} />
-                        {service.doesSupportSuspend && service.state === "running" && (
-                            <Tooltip
-                                title={
-                                    "Click to suspend the service and release resources"
-                                }
-                            >
-                                <IconButton
-                                    disabled={service.areInteractionLocked}
-                                    icon={id<MuiIconComponentName>("Pause")}
-                                    onClick={event => {
-                                        onRequestPauseOrResume();
-                                        event.stopPropagation();
-                                        event.preventDefault();
-                                    }}
-                                />
-                            </Tooltip>
-                        )}
                         {service.ownership.isShared && (
                             <Tooltip title={t("this is a shared service")}>
                                 <Icon icon={id<MuiIconComponentName>("People")} />
@@ -231,6 +214,22 @@ export const MyServicesCard = memo((props: Props) => {
                             onClick={onRequestDelete}
                         />
                     )}
+                    {service.doesSupportSuspend && service.state === "running" && (
+                        <Tooltip
+                            title={"Click to suspend the service and release resources"}
+                        >
+                            <IconButton
+                                disabled={service.areInteractionLocked}
+                                icon={id<MuiIconComponentName>("Pause")}
+                                onClick={event => {
+                                    onRequestPauseOrResume();
+                                    event.stopPropagation();
+                                    event.preventDefault();
+                                }}
+                            />
+                        </Tooltip>
+                    )}
+
                     <div style={{ "flex": 1 }} />
 
                     {service.state === "suspended" && (
