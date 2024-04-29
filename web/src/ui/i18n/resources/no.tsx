@@ -754,7 +754,11 @@ Føl deg fri til å utforske og ta kontroll over dine Kubernetes-implementeringe
         "this is a shared service": "Denne tjenesten deles blant prosjektets medlemmer",
         "status": "Status",
         "container starting": "Container starter",
-        "failed": "Mislyktes"
+        "failed": "Mislyktes",
+        "suspend service tooltip": "Suspender tjenesten og frigjør ressurser",
+        "resume service tooltip": "Gjenoppta tjenesten",
+        "suspended": "Suspendert",
+        "suspending": "Suspenderer"
     },
     "MyServicesRestorableConfigOptions": {
         "edit": "Rediger",

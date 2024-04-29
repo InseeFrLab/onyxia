@@ -747,7 +747,11 @@ Feel free to explore and take charge of your Kubernetes deployments!
         "this is a shared service": "This service is shared among project's member",
         "status": "Status",
         "container starting": "Container starting",
-        "failed": "Failed"
+        "failed": "Failed",
+        "suspend service tooltip": "Suspend the service and release resources",
+        "resume service tooltip": "Resume the service",
+        "suspended": "Suspended",
+        "suspending": "Suspending"
     },
     "MyServicesRestorableConfigOptions": {
         "edit": "Edit",

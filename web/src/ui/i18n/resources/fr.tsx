@@ -766,7 +766,11 @@ N'hésitez pas à explorer et à prendre en main vos déploiements Kubernetes !
         "this is a shared service": "Ce service est partagé au sein du projet",
         "status": "Statut",
         "container starting": "Démarrage du conteneur",
-        "failed": "Échoué"
+        "failed": "Échoué",
+        "suspend service tooltip": "Suspendre le service et libérer les ressources",
+        "resume service tooltip": "Reprendre le service",
+        "suspended": "Suspendu",
+        "suspending": "En suspension"
     },
     "MyServicesRestorableConfigOptions": {
         "edit": "Modifier",

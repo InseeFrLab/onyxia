@@ -175,9 +175,11 @@ export const MyServicesCard = memo((props: Props) => {
                                 case "failed":
                                     return <Text typo="label 1">{t("failed")}</Text>;
                                 case "suspended":
-                                    return <Text typo="label 1">{"Suspended"}</Text>;
+                                    return <Text typo="label 1">{t("suspended")}</Text>;
                                 case "suspending":
-                                    return <Text typo="label 1">{"Suspending..."}</Text>;
+                                    return (
+                                        <Text typo="label 1">{t("suspending")}...</Text>
+                                    );
                                 case "starting":
                                     return (
                                         <Text typo="label 1">
@@ -215,9 +217,7 @@ export const MyServicesCard = memo((props: Props) => {
                         />
                     )}
                     {service.doesSupportSuspend && service.state === "running" && (
-                        <Tooltip
-                            title={"Click to suspend the service and release resources"}
-                        >
+                        <Tooltip title={t("suspend service tooltip")}>
                             <span>
                                 <IconButton
                                     disabled={service.areInteractionLocked}
@@ -235,7 +235,7 @@ export const MyServicesCard = memo((props: Props) => {
                     <div style={{ "flex": 1 }} />
 
                     {service.state === "suspended" && (
-                        <Tooltip title={"Click to resume the service"}>
+                        <Tooltip title={t("resume service tooltip")}>
                             <span>
                                 <IconButton
                                     disabled={service.areInteractionLocked}
@@ -291,6 +291,10 @@ const { i18n } = declareComponentKeys<
     | "status"
     | "container starting"
     | "failed"
+    | "suspend service tooltip"
+    | "resume service tooltip"
+    | "suspended"
+    | "suspending"
 >()({ MyServicesCard });
 export type I18n = typeof i18n;
 

@@ -758,7 +758,11 @@ Sentiti libero di esplorare e prendere il controllo dei tuoi deployment Kubernet
             "Questo servizio è condiviso all'interno del progetto",
         "status": "Stato",
         "container starting": "Avvio del contenitore",
-        "failed": "Fallito"
+        "failed": "Fallito",
+        "suspend service tooltip": "Sospendi il servizio e rilascia le risorse",
+        "resume service tooltip": "Riprendi il servizio",
+        "suspended": "Sospeso",
+        "suspending": "Sospensione in corso"
     },
     "MyServicesRestorableConfigOptions": {
         "edit": "Modificare",

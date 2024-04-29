@@ -702,7 +702,11 @@ ${
         "this is a shared service": "该服务在项目内共享",
         "status": "状态",
         "container starting": "容器启动中",
-        "failed": "失败"
+        "failed": "失败",
+        "suspend service tooltip": "暂停服务并释放资源",
+        "resume service tooltip": "恢复服务",
+        "suspended": "已暂停",
+        "suspending": "正在暂停"
     },
     "MyServicesRestorableConfigOptions": {
         "edit": "编辑服务",

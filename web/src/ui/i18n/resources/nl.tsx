@@ -761,7 +761,11 @@ Voel je vrij om te verkennen en de controle over je Kubernetes-implementaties te
         "this is a shared service": "Deze dienst wordt gedeeld binnen het project",
         "status": "Status",
         "container starting": "Container start",
-        "failed": "Mislukt"
+        "failed": "Mislukt",
+        "suspend service tooltip": "Onderbreek de dienst en bevrijd de middelen",
+        "resume service tooltip": "Hervat de dienst",
+        "suspended": "Opgeschort",
+        "suspending": "Opschorten"
     },
     "MyServicesRestorableConfigOptions": {
         "edit": "Wijzigen",
