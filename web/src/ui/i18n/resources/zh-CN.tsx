@@ -707,7 +707,7 @@ ${
     },
     "MyServicesCard": {
         "service": "服务",
-        "running since": "运行时间: ",
+        "running since": "开始于：",
         "open": "打开",
         "readme": "自述文件",
         "shared by you": "你分享的",

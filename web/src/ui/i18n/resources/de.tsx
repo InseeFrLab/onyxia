@@ -772,7 +772,7 @@ Fühlen Sie sich frei, Ihre Kubernetes-Bereitstellungen zu erkunden und die Kont
     },
     "MyServicesCard": {
         "service": "Dienst",
-        "running since": "In Betrieb seit: ",
+        "running since": "Gestartet: ",
         "open": "öffnen",
         "readme": "readme",
         "shared by you": "von Ihnen geteilt",

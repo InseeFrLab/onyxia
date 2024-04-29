@@ -764,7 +764,7 @@ Sentiti libero di esplorare e prendere il controllo dei tuoi deployment Kubernet
     },
     "MyServicesCard": {
         "service": "Servizio",
-        "running since": "In esecuzione da: ",
+        "running since": "Avviato: ",
         "open": "Aprire",
         "readme": "readme",
         "shared by you": "Condiviso da te",

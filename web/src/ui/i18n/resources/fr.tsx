@@ -773,7 +773,7 @@ N'hésitez pas à explorer et à prendre en main vos déploiements Kubernetes !
     },
     "MyServicesCard": {
         "service": "Service",
-        "running since": "En exécution depuis : ",
+        "running since": "Démarré : ",
         "open": "ouvrir",
         "readme": "readme",
         "shared by you": "partagé par vous",

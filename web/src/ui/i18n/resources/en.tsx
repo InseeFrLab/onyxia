@@ -754,7 +754,7 @@ Feel free to explore and take charge of your Kubernetes deployments!
     },
     "MyServicesCard": {
         "service": "Service",
-        "running since": "Running since: ",
+        "running since": "Started: ",
         "open": "Open",
         "readme": "readme",
         "shared by you": "Shared by you",

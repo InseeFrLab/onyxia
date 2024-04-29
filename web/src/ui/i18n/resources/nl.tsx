@@ -767,7 +767,7 @@ Voel je vrij om te verkennen en de controle over je Kubernetes-implementaties te
     },
     "MyServicesCard": {
         "service": "Dienst",
-        "running since": "In uitvoering sinds : ",
+        "running since": "Gestart: ",
         "open": "openen",
         "readme": "readme",
         "shared by you": "gedeeld door u",

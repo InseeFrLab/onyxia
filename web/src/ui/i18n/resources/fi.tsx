@@ -755,7 +755,7 @@ Tutustu vapaasti ja ota hallintaan Kubernetes-julkaisusi!
     },
     "MyServicesCard": {
         "service": "Palvelu",
-        "running since": "Käynnissä alkaen: ",
+        "running since": "Käynnistetty: ",
         "open": "avata",
         "readme": "lueminut",
         "shared by you": "Jaettu sinun kanssasi",

@@ -761,7 +761,7 @@ Føl deg fri til å utforske og ta kontroll over dine Kubernetes-implementeringe
     },
     "MyServicesCard": {
         "service": "Tjeneste",
-        "running since": "Kjører siden: ",
+        "running since": "Startet: ",
         "open": "åpne",
         "readme": "lesmeg",
         "shared by you": "Delt av deg",
