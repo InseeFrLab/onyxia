@@ -647,6 +647,11 @@ Tutustu vapaasti ja ota hallintaan Kubernetes-julkaisusi!
         "page title": ({ helmReleaseFriendlyName }) =>
             `${helmReleaseFriendlyName} Valvonta`
     },
+    "PodLogsTab": {
+        "not necessarily first logs":
+            "Nämä eivät välttämättä ole ensimmäiset lokit, vanhemmat lokit saattavat olla poistettu",
+        "new logs are displayed in realtime": "Uudet lokit näytetään reaaliajassa"
+    },
     "LauncherMainCard": {
         "card title": "Luo omat palvelusi",
         "friendly name": "Käyttäjäystävällinen nimi",

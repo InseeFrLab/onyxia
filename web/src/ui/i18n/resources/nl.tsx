@@ -657,6 +657,11 @@ Voel je vrij om te verkennen en de controle over je Kubernetes-implementaties te
         "page title": ({ helmReleaseFriendlyName }) =>
             `${helmReleaseFriendlyName} Monitoring`
     },
+    "PodLogsTab": {
+        "not necessarily first logs":
+            "Dit zijn niet noodzakelijkerwijs de eerste logs, oudere logs kunnen zijn verwijderd",
+        "new logs are displayed in realtime": "Nieuwe logs worden in realtime weergegeven"
+    },
     "LauncherMainCard": {
         "card title": "Uw eigen dienst aanmaken",
         "friendly name": "Gepersonaliseerde naam",

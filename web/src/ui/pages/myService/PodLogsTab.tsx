@@ -7,6 +7,7 @@ import { useCoreState, useCore } from "core";
 import { CircularProgress } from "onyxia-ui/CircularProgress";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Switch from "@mui/material/Switch";
+import { declareComponentKeys, useTranslation } from "ui/i18n";
 
 type Props = {
     className?: string;
@@ -57,6 +58,8 @@ function ActualLogs(props: { paginatedLogs: string[] }) {
 
     const [currentPage, setCurrentPage] = useState(paginatedLogs.length);
     const [doFollow, setDoFollow] = useState(true);
+
+    const { t } = useTranslation({ PodLogsTab });
 
     useEffect(() => {
         if (!doFollow) {
@@ -119,21 +122,27 @@ function ActualLogs(props: { paginatedLogs: string[] }) {
             <pre ref={setPreElement} className={classes.pre}>
                 {currentPage === 1 && paginatedLogs.length > 5 && (
                     <Text typo="body 1" className={classes.pageAnnotation}>
-                        This is not necessarily the first logs, older logs might have been
-                        flushed&nbsp;
+                        {t("not necessarily first logs")}
+                        &nbsp;
                     </Text>
                 )}
 
                 {paginatedLogs[currentPage - 1]}
                 {currentPage === paginatedLogs.length && (
                     <Text typo="body 1" className={classes.newLogsText}>
-                        New logs are displayed in realtime <LoadingDots />
+                        {t("new logs are displayed in realtime")} <LoadingDots />
                     </Text>
                 )}
             </pre>
         </>
     );
 }
+
+const { i18n } = declareComponentKeys<
+    "not necessarily first logs" | "new logs are displayed in realtime"
+>()({ PodLogsTab });
+
+export type I18n = typeof i18n;
 
 const useStyles = tss.withName({ PodLogsTab }).create(({ theme }) => ({
     "root": {

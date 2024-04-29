@@ -662,6 +662,12 @@ Fühlen Sie sich frei, Ihre Kubernetes-Bereitstellungen zu erkunden und die Kont
         "page title": ({ helmReleaseFriendlyName }) =>
             `${helmReleaseFriendlyName} Überwachung`
     },
+    "PodLogsTab": {
+        "not necessarily first logs":
+            "Dies sind nicht unbedingt die ersten Protokolle, ältere Protokolle könnten gelöscht worden sein",
+        "new logs are displayed in realtime":
+            "Neue Protokolle werden in Echtzeit angezeigt"
+    },
     "LauncherMainCard": {
         "card title": "Erstellen Sie Ihren eigenen Dienst",
         "friendly name": "Personalisierter Name",

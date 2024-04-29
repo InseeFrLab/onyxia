@@ -646,6 +646,11 @@ Feel free to explore and take charge of your Kubernetes deployments!
         "page title": ({ helmReleaseFriendlyName }) =>
             `${helmReleaseFriendlyName} Monitoring`
     },
+    "PodLogsTab": {
+        "not necessarily first logs":
+            "This is not necessarily the first logs, older logs might have been flushed",
+        "new logs are displayed in realtime": "New logs are displayed in realtime"
+    },
     "LauncherMainCard": {
         "card title": "Create your personal services",
         "friendly name": "Friendly name",

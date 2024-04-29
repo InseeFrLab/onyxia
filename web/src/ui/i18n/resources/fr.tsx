@@ -663,6 +663,12 @@ N'hésitez pas à explorer et à prendre en main vos déploiements Kubernetes !
         "page title": ({ helmReleaseFriendlyName }) =>
             `${helmReleaseFriendlyName} Surveillance`
     },
+    "PodLogsTab": {
+        "not necessarily first logs":
+            "Ce ne sont pas nécessairement les premiers journaux, les journaux plus anciens peuvent avoir été effacés",
+        "new logs are displayed in realtime":
+            "Les nouveaux journaux sont affichés en temps réel"
+    },
     "LauncherMainCard": {
         "card title": "Créer votre propre service",
         "friendly name": "Nom personnalisé",

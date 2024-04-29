@@ -653,6 +653,12 @@ Sentiti libero di esplorare e prendere il controllo dei tuoi deployment Kubernet
         "page title": ({ helmReleaseFriendlyName }) =>
             `${helmReleaseFriendlyName} Monitoraggio`
     },
+    "PodLogsTab": {
+        "not necessarily first logs":
+            "Questi non sono necessariamente i primi log, i log più vecchi potrebbero essere stati cancellati",
+        "new logs are displayed in realtime":
+            "I nuovi log vengono visualizzati in tempo reale"
+    },
     "LauncherMainCard": {
         "card title": "Crea il tuo proprio servizio",
         "friendly name": "Nome personalizzato",

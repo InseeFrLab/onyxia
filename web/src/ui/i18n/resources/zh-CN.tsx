@@ -605,6 +605,10 @@ ${
     "MyService": {
         "page title": ({ helmReleaseFriendlyName }) => `${helmReleaseFriendlyName} 监控`
     },
+    "PodLogsTab": {
+        "not necessarily first logs": "这不一定是第一批日志，较旧的日志可能已被清除",
+        "new logs are displayed in realtime": "新日志实时显示"
+    },
     "LauncherMainCard": {
         "card title": "创建自定义服务",
         "friendly name": "自定义名称",

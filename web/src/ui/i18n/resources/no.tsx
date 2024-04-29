@@ -655,6 +655,11 @@ Føl deg fri til å utforske og ta kontroll over dine Kubernetes-implementeringe
         "page title": ({ helmReleaseFriendlyName }) =>
             `${helmReleaseFriendlyName} Overvåking`
     },
+    "PodLogsTab": {
+        "not necessarily first logs":
+            "Dette er ikke nødvendigvis de første loggene, eldre logger kan ha blitt fjernet",
+        "new logs are displayed in realtime": "Nye logger vises i sanntid"
+    },
     "LauncherMainCard": {
         "card title": "Opprett dine personlige tjenester",
         "friendly name": "Vennlig navn",
