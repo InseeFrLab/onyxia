@@ -185,7 +185,7 @@ const useStyles = tss
             "position": "absolute",
             "right": 0,
             "top": 0,
-            "zIndex": 1,
+            "zIndex": 2,
             "transition": "opacity 750ms linear",
             "width": "min(100%, 600px)"
         },
