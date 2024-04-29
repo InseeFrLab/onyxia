@@ -761,7 +761,6 @@ Voel je vrij om te verkennen en de controle over je Kubernetes-implementaties te
         "this is a shared service": "Deze dienst wordt gedeeld binnen het project",
         "status": "Status",
         "container starting": "Container start",
-        "pending": "In afwachting",
         "failed": "Mislukt"
     },
     "MyServicesRestorableConfigOptions": {

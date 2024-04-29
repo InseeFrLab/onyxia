@@ -754,7 +754,6 @@ Føl deg fri til å utforske og ta kontroll over dine Kubernetes-implementeringe
         "this is a shared service": "Denne tjenesten deles blant prosjektets medlemmer",
         "status": "Status",
         "container starting": "Container starter",
-        "pending": "Venter",
         "failed": "Mislyktes"
     },
     "MyServicesRestorableConfigOptions": {

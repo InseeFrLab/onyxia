@@ -748,7 +748,6 @@ Tutustu vapaasti ja ota hallintaan Kubernetes-julkaisusi!
         "this is a shared service": "Tämä palvelu on jaettu projektin jäsenten kesken",
         "status": "Tila",
         "container starting": "Säiliö käynnistyy",
-        "pending": "Odottaa",
         "failed": "Epäonnistui"
     },
     "MyServicesRestorableConfigOptions": {

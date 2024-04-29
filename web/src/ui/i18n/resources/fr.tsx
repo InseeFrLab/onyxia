@@ -766,7 +766,6 @@ N'hésitez pas à explorer et à prendre en main vos déploiements Kubernetes !
         "this is a shared service": "Ce service est partagé au sein du projet",
         "status": "Statut",
         "container starting": "Démarrage du conteneur",
-        "pending": "En attente",
         "failed": "Échoué"
     },
     "MyServicesRestorableConfigOptions": {

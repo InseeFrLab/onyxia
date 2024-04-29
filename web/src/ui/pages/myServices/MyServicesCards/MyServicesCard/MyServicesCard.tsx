@@ -290,7 +290,6 @@ const { i18n } = declareComponentKeys<
     | "this is a shared service"
     | "status"
     | "container starting"
-    | "pending" //TODO: Remove
     | "failed"
 >()({ MyServicesCard });
 export type I18n = typeof i18n;

@@ -765,7 +765,6 @@ Fühlen Sie sich frei, Ihre Kubernetes-Bereitstellungen zu erkunden und die Kont
         "this is a shared service": "Dieser Dienst wird im Projekt geteilt",
         "status": "Status",
         "container starting": "Container wird gestartet",
-        "pending": "Ausstehend",
         "failed": "Fehlgeschlagen"
     },
     "MyServicesRestorableConfigOptions": {

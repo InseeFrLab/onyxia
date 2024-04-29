@@ -702,7 +702,6 @@ ${
         "this is a shared service": "该服务在项目内共享",
         "status": "状态",
         "container starting": "容器启动中",
-        "pending": "待定",
         "failed": "失败"
     },
     "MyServicesRestorableConfigOptions": {
