@@ -653,6 +653,10 @@ Voel je vrij om te verkennen en de controle over je Kubernetes-implementaties te
             "Deze dienst uitvoeren kan gevaarlijk zijn",
         "proceed to launch": "Bewust uitvoeren"
     },
+    "MyService": {
+        "page title": ({ helmReleaseFriendlyName }) =>
+            `${helmReleaseFriendlyName} Monitoring`
+    },
     "LauncherMainCard": {
         "card title": "Uw eigen dienst aanmaken",
         "friendly name": "Gepersonaliseerde naam",

@@ -651,6 +651,10 @@ Føl deg fri til å utforske og ta kontroll over dine Kubernetes-implementeringe
             "Å starte denne tjenesten kan være farlig",
         "proceed to launch": "Fortsett til oppstart"
     },
+    "MyService": {
+        "page title": ({ helmReleaseFriendlyName }) =>
+            `${helmReleaseFriendlyName} Overvåking`
+    },
     "LauncherMainCard": {
         "card title": "Opprett dine personlige tjenester",
         "friendly name": "Vennlig navn",

@@ -599,8 +599,11 @@ ${
     },
     "SensitiveConfigurationDialog": {
         "cancel": "取消",
-        "sensitive configuration dialog title": "您想更换它吗?", //TODO
-        "proceed to launch": "继续启动" //TODO
+        "sensitive configuration dialog title": "您想更换它吗?",
+        "proceed to launch": "继续启动"
+    },
+    "MyService": {
+        "page title": ({ helmReleaseFriendlyName }) => `${helmReleaseFriendlyName} 监控`
     },
     "LauncherMainCard": {
         "card title": "创建自定义服务",

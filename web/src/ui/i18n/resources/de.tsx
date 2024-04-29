@@ -658,6 +658,10 @@ Fühlen Sie sich frei, Ihre Kubernetes-Bereitstellungen zu erkunden und die Kont
         "cancel": "Abbrechen",
         "proceed to launch": "Bewusst starten"
     },
+    "MyService": {
+        "page title": ({ helmReleaseFriendlyName }) =>
+            `${helmReleaseFriendlyName} Überwachung`
+    },
     "LauncherMainCard": {
         "card title": "Erstellen Sie Ihren eigenen Dienst",
         "friendly name": "Personalisierter Name",

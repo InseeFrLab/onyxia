@@ -642,6 +642,10 @@ Feel free to explore and take charge of your Kubernetes deployments!
         "cancel": "Annuler",
         "proceed to launch": "Proceed to launch"
     },
+    "MyService": {
+        "page title": ({ helmReleaseFriendlyName }) =>
+            `${helmReleaseFriendlyName} Monitoring`
+    },
     "LauncherMainCard": {
         "card title": "Create your personal services",
         "friendly name": "Friendly name",

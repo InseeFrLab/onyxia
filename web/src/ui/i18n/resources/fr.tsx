@@ -659,6 +659,10 @@ N'hésitez pas à explorer et à prendre en main vos déploiements Kubernetes !
         "proceed to launch": "Lancer en conscience",
         "cancel": "Annuler"
     },
+    "MyService": {
+        "page title": ({ helmReleaseFriendlyName }) =>
+            `${helmReleaseFriendlyName} Surveillance`
+    },
     "LauncherMainCard": {
         "card title": "Créer votre propre service",
         "friendly name": "Nom personnalisé",

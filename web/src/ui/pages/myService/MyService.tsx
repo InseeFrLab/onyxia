@@ -12,6 +12,7 @@ import { CircularProgress } from "onyxia-ui/CircularProgress";
 import { CommandBar } from "ui/shared/CommandBar";
 import { useEvt } from "evt/hooks";
 import { useDomRect } from "powerhooks/useDomRect";
+import { declareComponentKeys } from "ui/i18n";
 
 export type Props = {
     route: PageRoute;
@@ -144,6 +145,15 @@ export default function MyService(props: Props) {
         </div>
     );
 }
+
+const { i18n } = declareComponentKeys<{
+    K: "page title";
+    P: {
+        helmReleaseFriendlyName: string;
+    };
+}>()({ MyService });
+
+export type I18n = typeof i18n;
 
 const useStyles = tss
     .withName({ MyService })

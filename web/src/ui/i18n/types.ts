@@ -56,6 +56,7 @@ export type ComponentKey =
     | import("ui/pages/launcher/LauncherDialogs/AutoLaunchDisabledDialog").I18n
     | import("ui/pages/launcher/LauncherDialogs/NoLongerBookmarkedDialog").I18n
     | import("ui/pages/launcher/LauncherDialogs/SensitiveConfigurationDialog").I18n
+    | import("ui/pages/myService/MyService").I18n
     | import("ui/pages/myServices/MyServices").I18n
     | import("ui/pages/myServices/ClusterEventsDialog").I18n
     | import("ui/pages/myServices/MyServicesConfirmDeleteDialog").I18n

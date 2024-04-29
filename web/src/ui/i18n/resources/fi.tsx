@@ -643,6 +643,10 @@ Tutustu vapaasti ja ota hallintaan Kubernetes-julkaisusi!
         "cancel": "Peruuta",
         "proceed to launch": "Jatka käynnistämistä"
     },
+    "MyService": {
+        "page title": ({ helmReleaseFriendlyName }) =>
+            `${helmReleaseFriendlyName} Valvonta`
+    },
     "LauncherMainCard": {
         "card title": "Luo omat palvelusi",
         "friendly name": "Käyttäjäystävällinen nimi",

@@ -649,6 +649,10 @@ Sentiti libero di esplorare e prendere il controllo dei tuoi deployment Kubernet
             "Avviare questo servizio potrebbe essere pericoloso.",
         "proceed to launch": "Lanciare con consapevolezza"
     },
+    "MyService": {
+        "page title": ({ helmReleaseFriendlyName }) =>
+            `${helmReleaseFriendlyName} Monitoraggio`
+    },
     "LauncherMainCard": {
         "card title": "Crea il tuo proprio servizio",
         "friendly name": "Nome personalizzato",
