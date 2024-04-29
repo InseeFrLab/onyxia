@@ -80,8 +80,12 @@ export const MyServicesCard = memo((props: Props) => {
         assert<Equals<typeof service.state, never>>(false);
     }, [service]);
 
+    const isAboveDividerALink =
+        service.state === "running" && !service.areInteractionLocked;
+
     const { classes, cx, theme } = useStyles({
-        "hasBeenRunningForTooLong": severity === "warning"
+        "hasBeenRunningForTooLong": severity === "warning",
+        isAboveDividerALink
     });
 
     const evtOpenReadmeDialog = useConst(() => Evt.create());
@@ -104,43 +108,59 @@ export const MyServicesCard = memo((props: Props) => {
 
     return (
         <div className={cx(classes.root, className)}>
-            <a className={classes.aboveDivider} {...myServiceLink}>
-                <MyServicesRoundLogo url={service.iconUrl} severity={severity} />
-                <Text className={classes.title} typo="object heading">
-                    {capitalize(service.friendlyName)}
-                </Text>
-                <div style={{ "flex": 1 }} />
-                {service.doesSupportSuspend && service.state === "running" && (
-                    <Tooltip title={"Click to suspend the service and release resources"}>
-                        <IconButton
-                            disabled={service.areInteractionLocked}
-                            icon={id<MuiIconComponentName>("Pause")}
-                            onClick={event => {
-                                onRequestPauseOrResume();
-                                event.stopPropagation();
-                                event.preventDefault();
-                            }}
-                        />
-                    </Tooltip>
-                )}
-                {service.ownership.isShared && (
-                    <Tooltip title={t("this is a shared service")}>
-                        <Icon icon={id<MuiIconComponentName>("People")} />
-                    </Tooltip>
-                )}
-                <Tooltip
-                    title={
-                        <Fragment key={"reminder"}>
-                            {t("reminder to delete services")}
-                        </Fragment>
-                    }
-                >
-                    <Icon
-                        icon={id<MuiIconComponentName>("ErrorOutline")}
-                        className={classes.errorOutlineIcon}
-                    />
-                </Tooltip>
-            </a>
+            {(() => {
+                const aboveDividerChildren = (
+                    <>
+                        <MyServicesRoundLogo url={service.iconUrl} severity={severity} />
+                        <Text className={classes.title} typo="object heading">
+                            {capitalize(service.friendlyName)}
+                        </Text>
+                        <div style={{ "flex": 1 }} />
+                        {service.doesSupportSuspend && service.state === "running" && (
+                            <Tooltip
+                                title={
+                                    "Click to suspend the service and release resources"
+                                }
+                            >
+                                <IconButton
+                                    disabled={service.areInteractionLocked}
+                                    icon={id<MuiIconComponentName>("Pause")}
+                                    onClick={event => {
+                                        onRequestPauseOrResume();
+                                        event.stopPropagation();
+                                        event.preventDefault();
+                                    }}
+                                />
+                            </Tooltip>
+                        )}
+                        {service.ownership.isShared && (
+                            <Tooltip title={t("this is a shared service")}>
+                                <Icon icon={id<MuiIconComponentName>("People")} />
+                            </Tooltip>
+                        )}
+                        <Tooltip
+                            title={
+                                <Fragment key={"reminder"}>
+                                    {t("reminder to delete services")}
+                                </Fragment>
+                            }
+                        >
+                            <Icon
+                                icon={id<MuiIconComponentName>("ErrorOutline")}
+                                className={classes.errorOutlineIcon}
+                            />
+                        </Tooltip>
+                    </>
+                );
+
+                return isAboveDividerALink ? (
+                    <a className={classes.aboveDivider} {...myServiceLink}>
+                        {aboveDividerChildren}
+                    </a>
+                ) : (
+                    <div className={classes.aboveDivider}>{aboveDividerChildren}</div>
+                );
+            })()}
             <div className={classes.belowDivider}>
                 <div className={classes.belowDividerTop}>
                     <div>
@@ -275,10 +295,11 @@ export type I18n = typeof i18n;
 const useStyles = tss
     .withParams<{
         hasBeenRunningForTooLong: boolean;
+        isAboveDividerALink: boolean;
     }>()
     .withName({ MyServicesCard })
     .withNestedSelectors<"title">()
-    .create(({ theme, hasBeenRunningForTooLong, classes }) => ({
+    .create(({ theme, hasBeenRunningForTooLong, isAboveDividerALink, classes }) => ({
         "root": {
             "borderRadius": 8,
             "boxShadow": theme.shadows[1],
@@ -297,9 +318,13 @@ const useStyles = tss
             "alignItems": "center",
             "color": "inherit",
             "textDecoration": "none",
-            [`&:hover .${classes.title}`]: {
-                "color": theme.colors.useCases.typography.textFocus
-            }
+            ...(!isAboveDividerALink
+                ? undefined
+                : {
+                      [`&:hover .${classes.title}`]: {
+                          "color": theme.colors.useCases.typography.textFocus
+                      }
+                  })
         },
         "title": {
             "marginLeft": theme.spacing(3)
