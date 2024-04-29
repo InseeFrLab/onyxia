@@ -88,7 +88,7 @@ export const MyServicesCards = memo((props: Props) => {
                     )
             );
         },
-        [evtAction, services]
+        [evtAction, getMyServicesFunctionProps]
     );
 
     return (

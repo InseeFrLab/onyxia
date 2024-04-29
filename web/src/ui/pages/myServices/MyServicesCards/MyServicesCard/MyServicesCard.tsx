@@ -96,7 +96,7 @@ export const MyServicesCard = memo((props: Props) => {
                 action => action === "open readme dialog",
                 ctx,
                 async () => {
-                    if (!service.postInstallInstructions !== undefined) {
+                    if (service.postInstallInstructions === undefined) {
                         return;
                     }
                     evtOpenReadmeDialog.post();

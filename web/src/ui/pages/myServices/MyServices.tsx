@@ -195,10 +195,6 @@ export default function MyServices(props: Props) {
             return;
         }
 
-        if (services === undefined) {
-            return;
-        }
-
         const service = services.find(
             ({ helmReleaseName }) => helmReleaseName === autoOpenHelmReleaseName
         );
