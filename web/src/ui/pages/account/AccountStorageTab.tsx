@@ -32,6 +32,7 @@ const technologies = [
     "R (paws)",
     "Python (s3fs)",
     "Python (boto3)",
+    "Python (polars)",
     "shell environment variables",
     "MC client",
     "s3cmd",
