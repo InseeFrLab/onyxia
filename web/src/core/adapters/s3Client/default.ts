@@ -307,13 +307,28 @@ export function createS3Client(params: ParamsOfCreateS3Client): S3Client {
 
             const { awsS3Client } = await getAwsS3Client();
 
-            const { Contents, CommonPrefixes } = await awsS3Client.send(
-                new ns_aws_sdk_client_s3.ListObjectsV2Command({
-                    "Bucket": bucketName,
-                    "Prefix": prefix,
-                    "Delimiter": "/"
-                })
-            );
+            const Contents: ns_aws_sdk_client_s3._Object[] = [];
+            const CommonPrefixes: ns_aws_sdk_client_s3.CommonPrefix[] = [];
+
+            {
+                let continuationToken: string | undefined;
+
+                do {
+                    const resp = await awsS3Client.send(
+                        new ns_aws_sdk_client_s3.ListObjectsV2Command({
+                            "Bucket": bucketName,
+                            "Prefix": prefix,
+                            "Delimiter": "/",
+                            "ContinuationToken": continuationToken
+                        })
+                    );
+
+                    Contents.push(...(resp.Contents ?? []));
+                    CommonPrefixes.push(...(resp.CommonPrefixes ?? []));
+
+                    continuationToken = resp.NextContinuationToken;
+                } while (continuationToken);
+            }
 
             return {
                 "directories": (CommonPrefixes ?? [])
