@@ -327,7 +327,7 @@ export function createS3Client(params: ParamsOfCreateS3Client): S3Client {
                     CommonPrefixes.push(...(resp.CommonPrefixes ?? []));
 
                     continuationToken = resp.NextContinuationToken;
-                } while (continuationToken);
+                } while (continuationToken !== undefined);
             }
 
             return {
