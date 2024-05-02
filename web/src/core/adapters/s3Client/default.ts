@@ -331,15 +331,13 @@ export function createS3Client(params: ParamsOfCreateS3Client): S3Client {
             }
 
             return {
-                "directories": (CommonPrefixes ?? [])
-                    .map(({ Prefix }) => Prefix)
+                "directories": CommonPrefixes.map(({ Prefix }) => Prefix)
                     .filter(exclude(undefined))
                     .map(directoryPath => {
                         const split = directoryPath.split("/");
                         return split[split.length - 2];
                     }),
-                "files": (Contents ?? [])
-                    .map(({ Key }) => Key)
+                "files": Contents.map(({ Key }) => Key)
                     .filter(exclude(undefined))
                     .map(filePath => {
                         const split = filePath.split("/");
