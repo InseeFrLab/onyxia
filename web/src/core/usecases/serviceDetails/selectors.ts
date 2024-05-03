@@ -134,9 +134,7 @@ const main = createSelector(
         assert(helmReleaseFriendlyName !== undefined);
         assert(podNames !== undefined);
         assert(selectedPodName !== undefined);
-        assert(monitoringUrl !== undefined);
         assert(commandLogsEntries !== undefined);
-        assert(isCommandBarExpanded !== undefined);
 
         return {
             "isReady": true,
