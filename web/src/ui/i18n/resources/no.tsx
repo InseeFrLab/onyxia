@@ -11,7 +11,7 @@ export const translations: Translations<"no"> = {
     /* spell-checker: disable */
     "Account": {
         "infos": "Kontoinformasjon",
-        "third-party-integration": "Eksterne tjenester",
+        "git": undefined,
         "storage": "Koble til lagring",
         "k8sCodeSnippets": "Kubernetes",
         "user-interface": "Grensesnittspreferanser",
@@ -31,21 +31,38 @@ export const translations: Translations<"no"> = {
         "instructions about how to change password":
             'For å endre passordet ditt, bare logg ut og klikk på "glemt passord"-lenken.'
     },
-    "AccountIntegrationsTab": {
-        "git section title": "Git-konfigurasjon",
-        "git section helper": `For å sikre at du vises som forfatter av Git-bidragene dine`,
+    "AccountGitTab": {
         "gitName": "Brukernavn for Git",
+        "gitName helper text": ({ gitName, focusClassName }) => (
+            <>
+                Denne kommandoen vil sette ditt globale Git-brukernavn, utført ved
+                oppstart av tjenesten:&nbsp;
+                <code className={focusClassName}>
+                    git config --global user.name "{gitName || "<ditt_brukernavn>"}"
+                </code>
+            </>
+        ),
         "gitEmail": "E-post for Git",
-        "third party tokens section title":
-            "Koble Gitlab-, Github- og Kaggle-kontoene dine",
-        "third party tokens section helper": `
-            Koble tjenestene dine til eksterne kontoer ved hjelp av
-            personlige tilgangstokens og miljøvariabler
-            `,
-        "personal token": ({ serviceName }) => `${serviceName}-personlig tilgangstoken`,
-        "link for token creation": ({ serviceName }) =>
-            `Opprett ${serviceName}-tokenet ditt.`,
-        "accessible as env": "Tilgjengelig i tjenestene dine som en miljøvariabel"
+        "gitEmail helper text": ({ gitEmail, focusClassName }) => (
+            <>
+                Denne kommandoen vil sette din globale Git-e-post, utført ved oppstart av
+                tjenesten:&nbsp;
+                <code className={focusClassName}>
+                    git config --global user.email "{gitEmail || "<din_email@domene.no>"}"
+                </code>
+            </>
+        ),
+        "githubPersonalAccessToken": "Personlig tilgangstoken for Git-tjeneste",
+        "githubPersonalAccessToken helper text": ({ focusClassName }) => (
+            <>
+                Ved å oppgi dette tokenet, kan du klone og pushe til dine private GitHub-
+                eller GitLab-repositorier uten å måtte skrive inn dine
+                tjenestelegitimasjoner på nytt.
+                <br />
+                Dette tokenet vil også være tilgjengelig som en miljøvariabel:&nbsp;
+                <span className={focusClassName}>$GIT_PERSONAL_ACCESS_TOKEN</span>
+            </>
+        )
     },
     "AccountStorageTab": {
         "credentials section title": "Koble dataene dine til tjenestene dine",

@@ -11,7 +11,7 @@ export const translations: Translations<"fr"> = {
     /* spell-checker: disable */
     "Account": {
         "infos": "Information du compte",
-        "third-party-integration": "Services externes",
+        "git": undefined,
         "storage": "Connexion au stockage",
         "k8sCodeSnippets": "Connexion à Kubernetes",
         "user-interface": "Modes d'interface",
@@ -30,21 +30,40 @@ export const translations: Translations<"fr"> = {
         "instructions about how to change password":
             'Pour changer votre mot de passe, déconnectez-vous simplement, puis cliquez sur le lien "mot de passe oublié".'
     },
-    "AccountIntegrationsTab": {
-        "git section title": "Configurations Git",
-        "git section helper":
-            "Pour vous assurer que vous apparaissez depuis vos services comme l'auteur des contributions Git",
+    "AccountGitTab": {
         "gitName": "Nom d'utilisateur pour Git",
+        "gitName helper text": ({ gitName, focusClassName }) => (
+            <>
+                Cette commande configurera votre nom d'utilisateur global Git, exécutée au
+                démarrage du service:&nbsp;
+                <code className={focusClassName}>
+                    git config --global user.name "{gitName || "<votre_nom_utilisateur>"}"
+                </code>
+            </>
+        ),
         "gitEmail": "Email pour Git",
-        "third party tokens section title":
-            "Connecter vos comptes Gitlab, Github et Kaggle",
-        "third party tokens section helper":
-            "Connectez vos services à des comptes extérieurs à l'aide de jetons d'accès personnel et de variables d'environnement.",
-        "personal token": ({ serviceName }) => `Jeton d'accès personnel ${serviceName}`,
-        "link for token creation": ({ serviceName }) =>
-            `Créer votre jeton ${serviceName}.`,
-        "accessible as env":
-            "Accessible au sein de vos services en tant que la variable d'environnement"
+        "gitEmail helper text": ({ gitEmail, focusClassName }) => (
+            <>
+                Cette commande configurera votre email global Git, exécutée au démarrage
+                du service:&nbsp;
+                <code className={focusClassName}>
+                    git config --global user.email "
+                    {gitEmail || "<votre_email@domaine.com>"}"
+                </code>
+            </>
+        ),
+        "githubPersonalAccessToken": "Token d'accès personnel pour Forge Git",
+        "githubPersonalAccessToken helper text": ({ focusClassName }) => (
+            <>
+                En fournissant ce token, vous pourrez cloner et pousser vers vos dépôts
+                privés GitHub ou GitLab sans devoir saisir à nouveau vos identifiants de
+                forge.
+                <br />
+                Ce token sera également disponible en tant que variable
+                d'environnement:&nbsp;
+                <span className={focusClassName}>$GIT_PERSONAL_ACCESS_TOKEN</span>
+            </>
+        )
     },
     "AccountStorageTab": {
         "credentials section title": "Connecter vos données à vos services",

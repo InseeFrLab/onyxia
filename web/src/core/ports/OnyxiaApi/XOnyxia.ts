@@ -58,7 +58,6 @@ export type XOnyxiaContext = {
         VAULT_MOUNT: string;
         VAULT_TOP_DIR: string;
     };
-    kaggleApiToken: string | undefined;
     s3: {
         AWS_ACCESS_KEY_ID: string;
         AWS_SECRET_ACCESS_KEY: string;

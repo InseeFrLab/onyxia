@@ -10,7 +10,7 @@ import { capitalize } from "tsafe/capitalize";
 export const translations: Translations<"en"> = {
     "Account": {
         "infos": "Account infos",
-        "third-party-integration": "External services",
+        "git": "Git",
         "storage": "Connect to storage",
         "k8sCodeSnippets": "Kubernetes",
         "user-interface": "Interface preferences",
@@ -30,23 +30,39 @@ export const translations: Translations<"en"> = {
         "instructions about how to change password":
             'To change your password, simply logout, and click on the "forgot password" link.'
     },
-    "AccountIntegrationsTab": {
-        "git section title": "Git configuration",
-        "git section helper": `To ensure that you appear from your services 
-            as the author of Git contributions`,
+    "AccountGitTab": {
         "gitName": "Username for Git",
+        "gitName helper text": ({ gitName, focusClassName }) => (
+            <>
+                This command will set your global Git username, executed at service
+                startup:&nbsp;
+                <code className={focusClassName}>
+                    git config --global user.name "{gitName || "<your_username>"}"
+                </code>
+            </>
+        ),
         "gitEmail": "Email for Git",
-        "third party tokens section title":
-            "Connect your Gitlab, Github and Kaggle accounts",
-        "third party tokens section helper": `
-                Connect your services to external accounts using 
-                personal access tokens and environment variables
-            `,
-        "personal token": ({ serviceName }) => `${serviceName} personal access token`,
-        "link for token creation": ({ serviceName }) =>
-            `Create your ${serviceName} token.`,
-        "accessible as env":
-            "Accessible withing your services as the environnement variable"
+        "gitEmail helper text": ({ gitEmail, focusClassName }) => (
+            <>
+                This command will set your global Git email, executed at service
+                startup:&nbsp;
+                <code className={focusClassName}>
+                    git config --global user.email "
+                    {gitEmail || "<your_email@domain.com>"}"
+                </code>
+            </>
+        ),
+        "githubPersonalAccessToken": "Git Forge Personal Access Token",
+        "githubPersonalAccessToken helper text": ({ focusClassName }) => (
+            <>
+                By providing this token, you can clone and push to your private GitHub or
+                GitLab repositories without re-entering your forge's credentials each
+                time.
+                <br />
+                This token will also be available as an environment variable:&nbsp;
+                <span className={focusClassName}>$GIT_PERSONAL_ACCESS_TOKEN</span>
+            </>
+        )
     },
     "AccountStorageTab": {
         "credentials section title": "Connect your data to your services",

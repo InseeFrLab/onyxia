@@ -35,7 +35,7 @@ export type ComponentKey =
     | import("ui/shared/SettingField").I18n
     | import("ui/pages/account/Account").I18n
     | import("ui/pages/account/AccountInfoTab").I18n
-    | import("ui/pages/account/AccountIntegrationsTab").I18n
+    | import("ui/pages/account/AccountGitTab").I18n
     | import("ui/pages/account/AccountStorageTab").I18n
     | import("ui/pages/account/AccountKubernetesTab").I18n
     | import("ui/pages/account/AccountUserInterfaceTab").I18n

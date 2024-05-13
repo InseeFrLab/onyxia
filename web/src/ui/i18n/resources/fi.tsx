@@ -11,7 +11,7 @@ export const translations: Translations<"fi"> = {
     /* spell-checker: disable */
     "Account": {
         "infos": "Tilin tiedot",
-        "third-party-integration": "Kolmannen osapuolen integraatio",
+        "git": undefined,
         "storage": "Yhdistä tallennustilaan",
         "k8sCodeSnippets": "Kubernetes",
         "user-interface": "Käyttöliittymän asetukset",
@@ -31,20 +31,39 @@ export const translations: Translations<"fi"> = {
         "instructions about how to change password":
             'Vaihtaaksesi salasanasi, kirjaudu vain ulos ja klikkaa "unohdin salasanani" -linkkiä.'
     },
-    "AccountIntegrationsTab": {
-        "git section title": "Git-konfiguraatio",
-        "git section helper": `Varmistaaksesi, että näyt olevan Git-kontribuutioidesi tekijä`,
-        "gitName": "Git-käyttäjänimi",
-        "gitEmail": "Git-sähköposti",
-        "third party tokens section title": "Yhdistä Gitlab-, Github- ja Kaggle-tilisi",
-        "third party tokens section helper": `
-                Yhdistä palvelusi ulkoisiin tileihin käyttämällä henkilökohtaisia pääsykoodeja ja ympäristömuuttujia
-            `,
-        "personal token": ({ serviceName }) =>
-            `${serviceName}-henkilökohtainen pääsykoodi`,
-        "link for token creation": ({ serviceName }) =>
-            `Luo ${serviceName}-pääsykoodejasi.`,
-        "accessible as env": "Käytettävissä palveluissasi ympäristömuuttujana"
+    "AccountGitTab": {
+        "gitName": "Käyttäjänimi Gitille",
+        "gitName helper text": ({ gitName, focusClassName }) => (
+            <>
+                Tämä komento asettaa globaalin Git-käyttäjänimesi ja suoritetaan palvelun
+                käynnistyessä:&nbsp;
+                <code className={focusClassName}>
+                    git config --global user.name "{gitName || "<käyttäjänimesi>"}"
+                </code>
+            </>
+        ),
+        "gitEmail": "Sähköposti Gitille",
+        "gitEmail helper text": ({ gitEmail, focusClassName }) => (
+            <>
+                Tämä komento asettaa globaalin Git-sähköpostiosoitteesi ja suoritetaan
+                palvelun käynnistyessä:&nbsp;
+                <code className={focusClassName}>
+                    git config --global user.email "
+                    {gitEmail || "<sähköpostisi@domain.com>"}"
+                </code>
+            </>
+        ),
+        "githubPersonalAccessToken": "Henkilökohtainen pääsyavain Git-alustalle",
+        "githubPersonalAccessToken helper text": ({ focusClassName }) => (
+            <>
+                Tämän avaimen antaminen mahdollistaa yksityisten GitHub- tai
+                GitLab-repositorioidesi kloonaamisen ja päivittämisen ilman, että sinun
+                tarvitsee syöttää alustan tunnistetietojasi uudelleen.
+                <br />
+                Tämä avain on myös saatavilla ympäristömuuttujana:&nbsp;
+                <span className={focusClassName}>$GIT_PERSONAL_ACCESS_TOKEN</span>
+            </>
+        )
     },
     "AccountStorageTab": {
         "credentials section title": "Yhdistä datat palveluihisi",

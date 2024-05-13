@@ -516,9 +516,6 @@ const privateThunks = {
                         )
                     };
                 })(),
-                "kaggleApiToken": !doInjectPersonalInfos
-                    ? undefined
-                    : userConfigs.kaggleApiToken ?? undefined,
                 "s3": await (async () => {
                     const baseS3Config =
                         s3ConfigManagement.protectedSelectors.baseS3Config(getState());

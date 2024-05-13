@@ -1,7 +1,7 @@
 import { Tabs } from "onyxia-ui/Tabs";
 import { type AccountTabId, accountTabIds } from "./accountTabIds";
 import { AccountInfoTab } from "./AccountInfoTab";
-import { AccountIntegrationsTab } from "./AccountIntegrationsTab";
+import { AccountGitTab } from "./AccountGitTab";
 import { AccountKubernetesTab } from "./AccountKubernetesTab";
 import { AccountVaultTab } from "./AccountVaultTab";
 import { AccountStorageTab } from "./AccountStorageTab";
@@ -75,8 +75,8 @@ export default function Account(props: Props) {
                     switch (route.params.tabId) {
                         case "infos":
                             return <AccountInfoTab />;
-                        case "third-party-integration":
-                            return <AccountIntegrationsTab />;
+                        case "git":
+                            return <AccountGitTab />;
                         case "storage":
                             return <AccountStorageTab />;
                         case "user-interface":

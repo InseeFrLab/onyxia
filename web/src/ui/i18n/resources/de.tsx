@@ -11,7 +11,7 @@ export const translations: Translations<"de"> = {
     /* spell-checker: disable */
     "Account": {
         "infos": "Kontoinformationen",
-        "third-party-integration": "Externe Dienstleistungen",
+        "git": undefined,
         "storage": "Verbindung zum Speicher",
         "k8sCodeSnippets": "Verbindung zu Kubernetes",
         "user-interface": "Konfiguration der Benutzeroberfläche",
@@ -30,19 +30,39 @@ export const translations: Translations<"de"> = {
         "instructions about how to change password":
             'Um Ihr Passwort zu ändern, loggen Sie sich einfach aus und klicken Sie auf den Link "Passwort vergessen".'
     },
-    "AccountIntegrationsTab": {
-        "git section title": "Git-Konfiguration",
-        "git section helper": `Stellen Sie sicher, dass Sie in Ihren Diensten als Autor von Git commits erscheinen`,
+    "AccountGitTab": {
         "gitName": "Benutzername für Git",
+        "gitName helper text": ({ gitName, focusClassName }) => (
+            <>
+                Dieser Befehl legt Ihren globalen Git-Benutzernamen fest und wird beim
+                Start des Dienstes ausgeführt:&nbsp;
+                <code className={focusClassName}>
+                    git config --global user.name "{gitName || "<Ihr_Benutzername>"}"
+                </code>
+            </>
+        ),
         "gitEmail": "E-Mail für Git",
-        "third party tokens section title":
-            "Verbinden Sie Ihre Gitlab-, Github- und Kaggle-Konten",
-        "third party tokens section helper": `Verbinden Sie Ihre Dienste mit externen Konten mit Hilfe von persönlichen Zugriffstoken und Umgebungsvariablen.`,
-        "personal token": ({ serviceName }) =>
-            `Persönlicher Zugriffstoken ${serviceName}`,
-        "link for token creation": ({ serviceName }) =>
-            `Erstellen Sie Ihren Token ${serviceName}.`,
-        "accessible as env": "In Ihren Diensten als Umgebungsvariable verfügbar"
+        "gitEmail helper text": ({ gitEmail, focusClassName }) => (
+            <>
+                Dieser Befehl legt Ihre globale Git-E-Mail-Adresse fest und wird beim
+                Start des Dienstes ausgeführt:&nbsp;
+                <code className={focusClassName}>
+                    git config --global user.email "
+                    {gitEmail || "<ihre_email@domain.com>"}"
+                </code>
+            </>
+        ),
+        "githubPersonalAccessToken": "Persönlicher Zugangstoken für Git-Plattform",
+        "githubPersonalAccessToken helper text": ({ focusClassName }) => (
+            <>
+                Durch Bereitstellen dieses Tokens können Sie ohne erneute Eingabe Ihrer
+                Plattform-Anmeldedaten auf Ihre privaten GitHub- oder GitLab-Repositories
+                zugreifen und Änderungen vornehmen.
+                <br />
+                Dieser Token ist auch als Umgebungsvariable verfügbar:&nbsp;
+                <span className={focusClassName}>$GIT_PERSONAL_ACCESS_TOKEN</span>
+            </>
+        )
     },
     "AccountStorageTab": {
         "credentials section title": "Verbinden Sie Ihre Daten mit Ihren Diensten",

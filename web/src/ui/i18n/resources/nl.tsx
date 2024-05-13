@@ -11,7 +11,7 @@ export const translations: Translations<"nl"> = {
     /* spell-checker: disable */
     "Account": {
         "infos": "Accountgegevens",
-        "third-party-integration": "Externe diensten",
+        "git": undefined,
         "storage": "Verbinding met opslag",
         "k8sCodeSnippets": "Verbinding met Kubernetes",
         "user-interface": "Interfacemodi",
@@ -30,20 +30,39 @@ export const translations: Translations<"nl"> = {
         "instructions about how to change password":
             'Om uw wachtwoord te wijzigen, logt u simpelweg uit en klikt u op de link "wachtwoord vergeten".'
     },
-    "AccountIntegrationsTab": {
-        "git section title": "Git-configuraties",
-        "git section helper": `Om ervoor te zorgen dat u vanuit uw diensten verschijnt
-            als de auteur van de Git-bijdragen`,
+    "AccountGitTab": {
         "gitName": "Gebruikersnaam voor Git",
-        "gitEmail": "E-mailadres voor Git",
-        "third party tokens section title":
-            "Uw Gitlab-, Github- en Kaggle-accounts verbinden",
-        "third party tokens section helper": `Verbind uw diensten met externe accounts met behulp van
-            persoonlijke toegangstokens en omgevingsvariabelen.`,
-        "personal token": ({ serviceName }) => `Persoonlijk toegangstoken ${serviceName}`,
-        "link for token creation": ({ serviceName }) =>
-            `Uw token aanmaken ${serviceName}.`,
-        "accessible as env": "Toegankelijk binnen uw diensten als omgevingsvariabele"
+        "gitName helper text": ({ gitName, focusClassName }) => (
+            <>
+                Dit commando zal je globale Git-gebruikersnaam instellen, uitgevoerd bij
+                het opstarten van de service:&nbsp;
+                <code className={focusClassName}>
+                    git config --global user.name "{gitName || "<jouw_gebruikersnaam>"}"
+                </code>
+            </>
+        ),
+        "gitEmail": "E-mail voor Git",
+        "gitEmail helper text": ({ gitEmail, focusClassName }) => (
+            <>
+                Dit commando zal je globale Git-e-mailadres instellen, uitgevoerd bij het
+                opstarten van de service:&nbsp;
+                <code className={focusClassName}>
+                    git config --global user.email "{gitEmail || "<jouw_email@domain.nl>"}
+                    "
+                </code>
+            </>
+        ),
+        "githubPersonalAccessToken": "Persoonlijke toegangstoken voor Git Forge",
+        "githubPersonalAccessToken helper text": ({ focusClassName }) => (
+            <>
+                Door dit token te verstrekken, kun je zonder opnieuw je inloggegevens van
+                je forge in te voeren, klonen en pushen naar je privé GitHub of GitLab
+                repositories.
+                <br />
+                Dit token zal ook beschikbaar zijn als een omgevingsvariabele:&nbsp;
+                <span className={focusClassName}>$GIT_PERSONAL_ACCESS_TOKEN</span>
+            </>
+        )
     },
     "AccountStorageTab": {
         "credentials section title": "Uw gegevens verbinden met uw diensten",

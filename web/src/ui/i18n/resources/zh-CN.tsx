@@ -11,7 +11,7 @@ export const translations: Translations<"zh-CN"> = {
     /* spell-checker: disable */
     "Account": {
         "infos": "账号信息",
-        "third-party-integration": "外部服务",
+        "git": undefined,
         "storage": "链接到储存器",
         "user-interface": "变换显示模式",
         "k8sCodeSnippets": "Kubernetes",
@@ -29,18 +29,36 @@ export const translations: Translations<"zh-CN"> = {
         "instructions about how to change password":
             "要更改密码，只需登出，然后点击“忘记密码”链接。"
     },
-    "AccountIntegrationsTab": {
-        "git section title": "Git 配置",
-        "git section helper": `为了确保您在您的服务中
-            作为 Git 贡献者`,
-        "gitName": "您Git 账号的用户名",
-        "gitEmail": "您Git 账号的注册电子邮件",
-        "third party tokens section title": "连接您的 Gitlab、Github 和 Kaggle 帐户",
-        "third party tokens section helper":
-            "利用您的个人访问令牌和环境变量，来将您的服务连接到外部帐户.",
-        "personal token": ({ serviceName }) => `个人访问令牌 ${serviceName}`,
-        "link for token creation": ({ serviceName }) => `创建您的令牌 ${serviceName}.`,
-        "accessible as env": "可在您的服务中作为环境变量被访问"
+    "AccountGitTab": {
+        "gitName": "Git 用户名",
+        "gitName helper text": ({ gitName, focusClassName }) => (
+            <>
+                此命令将设置您的全局 Git 用户名，服务启动时执行：&nbsp;
+                <code className={focusClassName}>
+                    git config --global user.name "{gitName || "<您的用户名>"}"
+                </code>
+            </>
+        ),
+        "gitEmail": "Git 邮箱",
+        "gitEmail helper text": ({ gitEmail, focusClassName }) => (
+            <>
+                此命令将设置您的全局 Git 邮箱，服务启动时执行：&nbsp;
+                <code className={focusClassName}>
+                    git config --global user.email "
+                    {gitEmail || "<您的邮箱地址@域名.com>"}"
+                </code>
+            </>
+        ),
+        "githubPersonalAccessToken": "Git 服务平台个人访问令牌",
+        "githubPersonalAccessToken helper text": ({ focusClassName }) => (
+            <>
+                提供此令牌后，您可以在不再次输入您的服务平台凭据的情况下，克隆和推送到您的私人
+                GitHub 或 GitLab 仓库。
+                <br />
+                此令牌还将作为环境变量提供：&nbsp;
+                <span className={focusClassName}>$GIT_PERSONAL_ACCESS_TOKEN</span>
+            </>
+        )
     },
     "AccountStorageTab": {
         "credentials section title": "将您的数据连接到您的服务",
