@@ -196,17 +196,32 @@ export function createS3Client(params: ParamsOfCreateS3Client): S3Client {
                         "awsS3Client": cachedAwsS3Client
                     };
                 }
-
-                const awsS3Client = new ns_aws_sdk_client_s3.S3Client({
+                let awsS3ClientConfiguration = {
                     "region": params.region ?? "us-east-1",
-                    "credentials": {
-                        "accessKeyId": tokens.accessKeyId,
-                        "secretAccessKey": tokens.secretAccessKey,
-                        "sessionToken": tokens.sessionToken
-                    },
                     "endpoint": params.url,
                     "forcePathStyle": params.pathStyleAccess
-                });
+                };
+                let awsS3Client: ns_aws_sdk_client_s3.S3Client;
+                if (
+                    tokens.accessKeyId === undefined ||
+                    tokens.secretAccessKey === undefined
+                ) {
+                    awsS3Client = new ns_aws_sdk_client_s3.S3Client(
+                        Object.assign(awsS3ClientConfiguration, {
+                            "signer": { sign: async (request: any) => request }
+                        })
+                    );
+                } else {
+                    awsS3Client = new ns_aws_sdk_client_s3.S3Client(
+                        Object.assign(awsS3ClientConfiguration, {
+                            "credentials": {
+                                "accessKeyId": tokens.accessKeyId,
+                                "secretAccessKey": tokens.secretAccessKey,
+                                "sessionToken": tokens.sessionToken
+                            }
+                        })
+                    );
+                }
 
                 awsS3ClientByTokens.set(tokens, awsS3Client);
 
