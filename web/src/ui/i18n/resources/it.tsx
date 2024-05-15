@@ -511,16 +511,7 @@ export const translations: Translations<"it"> = {
         "cardButton3": "Consultare i dati"
     },
     "Catalog": {
-        "header text1": "Catalogo di servizi",
-        "header text2": "Esplora, avvia e configura servizi con pochi clic.",
-        "header help": ({ catalogName, catalogDescription, repositoryUrl }) => (
-            <>
-                Stai esplorando il repository di Helm Chart{" "}
-                <MuiLink href={repositoryUrl} target="_blank">
-                    {catalogName}: {catalogDescription}
-                </MuiLink>
-            </>
-        ),
+        "header": "Catalogo di servizi",
         "no result found": ({ forWhat }) => `Nessun risultato trovato per ${forWhat}`,
         "search results": "Risultati della ricerca",
         "search": "Cercare"

@@ -508,17 +508,7 @@ export const translations: Translations<"fi"> = {
         "cardButton3": "Selaa tietoja"
     },
     "Catalog": {
-        "header text1": "Palvelukatalogi",
-        "header text2":
-            "Selaa, käynnistä ja määritä palveluita muutamalla napsautuksella.",
-        "header help": ({ catalogName, catalogDescription, repositoryUrl }) => (
-            <>
-                Olet tutkimassa Helm Chart Repositorya{" "}
-                <MuiLink href={repositoryUrl} target="_blank">
-                    {catalogName}: {catalogDescription}
-                </MuiLink>
-            </>
-        ),
+        "header": "Palvelukatalogi",
         "no result found": ({ forWhat }) => `Tuloksia ei löytynyt haulle ${forWhat}`,
         "search results": "Hakutulokset",
         "search": "Haku"

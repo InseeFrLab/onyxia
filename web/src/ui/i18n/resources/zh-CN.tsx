@@ -472,16 +472,7 @@ export const translations: Translations<"zh-CN"> = {
         "cardButton3": "查看数据"
     },
     "Catalog": {
-        "header text1": "服务目录",
-        "header text2": "只需单击几下即可探索、启动和配置服务.",
-        "header help": ({ catalogName, catalogDescription, repositoryUrl }) => (
-            <>
-                您正在浏览 Helm Chart 仓库{" "}
-                <MuiLink href={repositoryUrl} target="_blank">
-                    {catalogName}：{catalogDescription}
-                </MuiLink>
-            </>
-        ),
+        "header": "服务目录",
         "no result found": ({ forWhat }) => `没有找到关于 ${forWhat} 的结果`,
         "search results": "搜索结果",
         "search": "收索服务"

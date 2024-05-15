@@ -506,16 +506,7 @@ export const translations: Translations<"en"> = {
         "cardButton3": "Consult the data"
     },
     "Catalog": {
-        "header text1": "Service catalog",
-        "header text2": "Explore, launch and configure services with just a few clicks.",
-        "header help": ({ catalogName, catalogDescription, repositoryUrl }) => (
-            <>
-                You are exploring Helm Chart Repository{" "}
-                <MuiLink href={repositoryUrl} target="_blank">
-                    {catalogName}: {catalogDescription}
-                </MuiLink>
-            </>
-        ),
+        "header": "Service catalog",
         "no result found": ({ forWhat }) => `No result found for ${forWhat}`,
         "search results": "Search result",
         "search": "Search"

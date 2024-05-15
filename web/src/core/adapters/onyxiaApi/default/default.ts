@@ -274,7 +274,7 @@ export function createOnyxiaApi(params: {
                     "catalogs": data.catalogs.map(
                         (apiCatalog): Catalog => ({
                             "id": apiCatalog.id,
-                            "name": apiCatalog.name,
+                            "name": apiCatalog.name ?? apiCatalog.id,
                             "repositoryUrl": apiCatalog.location,
                             "description": apiCatalog.description,
                             "isHidden": apiCatalog.status !== "PROD"

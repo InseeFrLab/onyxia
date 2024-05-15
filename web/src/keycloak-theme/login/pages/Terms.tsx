@@ -1,5 +1,5 @@
 import { useRerenderOnStateChange } from "evt/hooks";
-import { Markdown } from "onyxia-ui/Markdown";
+import { Markdown } from "ui/shared/Markdown";
 import type { PageProps } from "keycloakify/login/pages/PageProps";
 import { evtTermMarkdown } from "keycloakify/login/lib/useDownloadTerms";
 import type { KcContext } from "../kcContext";

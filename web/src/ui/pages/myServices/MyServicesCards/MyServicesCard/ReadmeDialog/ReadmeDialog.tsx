@@ -5,7 +5,7 @@ import { useTranslation } from "ui/i18n";
 import { CircularProgress } from "onyxia-ui/CircularProgress";
 import { declareComponentKeys } from "i18nifty";
 import { Dialog } from "onyxia-ui/Dialog";
-import { Markdown } from "onyxia-ui/Markdown";
+import { Markdown } from "ui/shared/Markdown";
 import { useConstCallback } from "powerhooks/useConstCallback";
 import type { NonPostableEvt } from "evt";
 import { useEvt } from "evt/hooks";

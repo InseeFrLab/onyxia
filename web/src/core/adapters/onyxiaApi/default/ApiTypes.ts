@@ -155,9 +155,9 @@ export type ApiTypes = {
     "/public/catalogs": {
         catalogs: {
             id: string;
-            name: LocalizedString;
+            name?: LocalizedString;
             location: string;
-            description: LocalizedString;
+            description?: LocalizedString;
             status: "PROD" | "TEST";
             catalog: {
                 entries: Record<
