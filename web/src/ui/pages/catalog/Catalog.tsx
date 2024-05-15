@@ -106,7 +106,8 @@ export default function Catalog(props: Props) {
             <PageHeader
                 classes={{
                     "title": css({ "paddingBottom": 3 }),
-                    "helpTitle": css({ "display": "none" })
+                    "helpTitle": css({ "display": "none" }),
+                    "helpIcon": css({ "display": "none" })
                 }}
                 mainIcon={customIcons.catalogSvgUrl}
                 title={t("header")}
