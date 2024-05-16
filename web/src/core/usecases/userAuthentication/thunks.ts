@@ -40,9 +40,21 @@ export const protectedThunks = {
                         ? { "isUserLoggedIn": false }
                         : {
                               "isUserLoggedIn": true,
-                              "user": (await onyxiaApi.getUserAndProjects()).user
+                              "user": (await onyxiaApi.getUserAndProjects()).user,
+                              "decodedIdToken": oidc.getTokens().decodedIdToken
                           }
                 )
             );
+        },
+    "getDecodedIdToken":
+        () =>
+        (...args) => {
+            const [, , { oidc }] = args;
+
+            assert(oidc.isUserLoggedIn);
+
+            const { decodedIdToken } = oidc.getTokens();
+
+            return decodedIdToken;
         }
 } satisfies Thunks;

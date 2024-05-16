@@ -467,7 +467,10 @@ const privateThunks = {
                     "password": servicePassword,
                     "ip": !doInjectPersonalInfos ? "0.0.0.0" : await onyxiaApi.getIp(),
                     "darkMode": userConfigs.isDarkModeEnabled,
-                    "lang": paramsOfBootstrapCore.getCurrentLang()
+                    "lang": paramsOfBootstrapCore.getCurrentLang(),
+                    "decodedIdToken": dispatch(
+                        userAuthentication.protectedThunks.getDecodedIdToken()
+                    )
                 },
                 "service": {
                     "oneTimePassword": generateRandomPassword()

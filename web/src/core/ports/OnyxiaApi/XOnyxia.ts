@@ -37,6 +37,35 @@ export type XOnyxiaContext = {
         ip: string;
         darkMode: boolean;
         lang: "en" | "fr" | "zh-CN" | "no" | "fi" | "nl" | "it" | "de";
+        /**
+         * Decoded JWT OIDC ID token of the user launching the service.
+         *
+         * Sample value:
+         * {
+         *   "sub": "9000ffa3-5fb8-45b5-88e4-e2e869ba3cfa",
+         *   "name": "Joseph Garrone",
+         *   "aud": ["onyxia", "minio-datanode"],
+         *   "groups": [
+         *       "USER_ONYXIA",
+         *       "codegouv",
+         *       "onyxia",
+         *       "sspcloud-admin",
+         *   ],
+         *   "preferred_username": "jgarrone",
+         *   "given_name": "Joseph",
+         *   "locale": "en",
+         *   "family_name": "Garrone",
+         *   "email": "joseph.garrone@insee.fr",
+         *   "policy": "stsonly",
+         *   "typ": "ID",
+         *   "azp": "onyxia",
+         *   "email_verified": true,
+         *   "realm_access": {
+         *       "roles": ["offline_access", "uma_authorization", "default-roles-sspcloud"]
+         *   }
+         * }
+         */
+        decodedIdToken: Record<string, unknown>;
     };
     service: {
         oneTimePassword: string;

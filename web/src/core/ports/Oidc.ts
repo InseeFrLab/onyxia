@@ -32,5 +32,6 @@ export declare namespace Oidc {
         idToken: string;
         refreshToken: string;
         refreshTokenExpirationTime: number;
+        decodedIdToken: Record<string, unknown>;
     };
 }
