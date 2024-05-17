@@ -12,6 +12,7 @@ type ImportMetaEnv = {
   HEADER_HIDE_ONYXIA: string
   HEADER_TEXT_BOLD: string
   HEADER_TEXT_FOCUS: string
+  DARK_MODE: string
   PALETTE_OVERRIDE: string
   FONT: string
   SPLASHSCREEN_LOGO: string

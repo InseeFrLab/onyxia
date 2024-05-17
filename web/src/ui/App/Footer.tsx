@@ -63,11 +63,13 @@ export const Footer = memo((props: Props) => {
                 </a>
             )}
             {spacing}
-            <DarkModeSwitch
-                size="extra small"
-                className={classes.darkModeSwitch}
-                ariaLabel={t("dark mode switch")}
-            />
+            {env.DARK_MODE === undefined && (
+                <DarkModeSwitch
+                    size="extra small"
+                    className={classes.darkModeSwitch}
+                    ariaLabel={t("dark mode switch")}
+                />
+            )}
         </footer>
     );
 });

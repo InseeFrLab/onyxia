@@ -82,7 +82,7 @@ fs.writeFileSync(
             "",
             ...Object.entries(parsedEnvLocalYaml.onyxia.web.env).map(
                 ([key, value]) =>
-                    `${key}="vite-envs:b64Decode(${Buffer.from(value, "utf8").toString("base64")})"`
+                    `${key}="vite-envs:b64Decode(${Buffer.from(`${value}`, "utf8").toString("base64")})"`
             )
         ].join("\n"),
         "utf8"

@@ -94,6 +94,14 @@ const lang = ENABLED_LANGUAGES === "" ? "en" : ENABLED_LANGUAGES.split(",")[0].t
         (function () {
         
             var isDarkModeEnabled = /true/.test((function () {
+
+                {
+                    var envValue = "<%= import.meta.env.DARK_MODE %>";
+
+                    if(envValue !== ""){
+                        return envValue;
+                    }
+                }
             
                 var key = "powerhooks_useGlobalState_isDarkModeEnabled";
                 var value = null;

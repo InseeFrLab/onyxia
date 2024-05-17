@@ -1130,6 +1130,26 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
             assert(envValue !== "", "Should have default in .env");
             return envValue;
         }
+    },
+    {
+        "envName": "DARK_MODE",
+        "isUsedInKeycloakTheme": false,
+        "validateAndParseOrGetDefault": ({ envValue, envName })=> {
+
+            assert(
+                envValue === "" || envValue === "true" || envValue === "false",
+                `${envName} should either be "true" or "false" or "" (not defined)}`
+            );
+
+            switch(envValue){
+                case "true": return true;
+                case "false": return false;
+                case "": return undefined;
+            }
+
+            assert<Equals<typeof envValue, never>>(false);
+            
+        }
     }
 ]);
 
