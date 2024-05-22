@@ -80,9 +80,10 @@ fs.writeFileSync(
             )}`,
             `# Do not edit it manually!`,
             "",
-            ...Object.entries(parsedEnvLocalYaml.onyxia.web.env).map(
-                ([key, value]) =>
-                    `${key}="vite-envs:b64Decode(${Buffer.from(`${value}`, "utf8").toString("base64")})"`
+            ...Object.entries(parsedEnvLocalYaml.onyxia.web.env).map(([key, value]) =>
+                value === ""
+                    ? `${key}=""`
+                    : `${key}="vite-envs:b64Decode(${Buffer.from(`${value}`, "utf8").toString("base64")})"`
             )
         ].join("\n"),
         "utf8"
