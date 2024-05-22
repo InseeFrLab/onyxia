@@ -1,11 +1,11 @@
 import type { Translations } from "../types";
 import MuiLink from "@mui/material/Link";
 import { Markdown } from "ui/shared/Markdown";
-import { elementsToSentence } from "ui/tools/elementsToSentence";
 import { Icon } from "onyxia-ui/Icon";
 import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
 import { id } from "tsafe/id";
 import { capitalize } from "tsafe/capitalize";
+import { MaybeLink } from "ui/shared/MaybeLink";
 
 export const translations: Translations<"zh-CN"> = {
     /* spell-checker: disable */
@@ -489,23 +489,38 @@ export const translations: Translations<"zh-CN"> = {
     },
     "Launcher": {
         "header text1": "服务目录",
-        "header text2": "只需单击几下即可探索、启动和配置服务.",
-        "chart sources": ({ chartName, urls }) =>
-            urls.length === 0 ? (
-                <></>
-            ) : (
-                <>
-                    访问图表 {chartName} 的源{urls.length === 1 ? "" : "们"}：&nbsp;
-                    {elementsToSentence({
-                        "elements": urls.map(source => (
-                            <MuiLink href={source} target="_blank" underline="hover">
-                                这里
+        "sources": ({ helmChartName, helmChartRepositoryName, sourceUrls }) => (
+            <>
+                您即将部署 Helm 图表{" "}
+                {
+                    <MaybeLink href={sourceUrls.helmChartSourceUrl}>
+                        {helmChartName}
+                    </MaybeLink>
+                }
+                ， 它属于 Helm 图表仓库{" "}
+                {
+                    <MaybeLink href={sourceUrls.helmChartRepositorySourceUrl}>
+                        {helmChartRepositoryName}
+                    </MaybeLink>
+                }
+                。
+                {sourceUrls.dockerImageSourceUrl !== undefined && (
+                    <>
+                        {" "}
+                        它基于 Docker 镜像{" "}
+                        {
+                            <MuiLink
+                                href={sourceUrls.dockerImageSourceUrl}
+                                target="_blank"
+                            >
+                                {helmChartName}
                             </MuiLink>
-                        )),
-                        "language": "zh-CN"
-                    })}
-                </>
-            ),
+                        }
+                        。
+                    </>
+                )}
+            </>
+        ),
         "download as script": "下载脚本",
         "api logs help body": ({
             k8CredentialsHref,
@@ -649,13 +664,23 @@ ${
         ),
         "version select label": "版本",
         "version select helper text": ({
-            chartName,
-            catalogRepositoryUrl,
-            catalogName
+            helmCharName,
+            helmRepositoryName,
+            sourceUrls
         }) => (
             <>
-                {chartName} Chart 的版本位于&nbsp;
-                <MuiLink href={catalogRepositoryUrl}>{catalogName} Helm 仓库</MuiLink>
+                {
+                    <MaybeLink href={sourceUrls.helmChartSourceUrl}>
+                        {helmCharName}
+                    </MaybeLink>
+                }{" "}
+                helm 图表的版本 属于{" "}
+                {
+                    <MaybeLink href={sourceUrls.helmChartRepositorySourceUrl}>
+                        {helmRepositoryName}
+                    </MaybeLink>
+                }{" "}
+                helm 图表仓库。
             </>
         ),
         "save changes": "保存更改",

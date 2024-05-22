@@ -1,11 +1,11 @@
 import type { Translations } from "../types";
 import MuiLink from "@mui/material/Link";
 import { Markdown } from "ui/shared/Markdown";
-import { elementsToSentence } from "ui/tools/elementsToSentence";
 import { Icon } from "onyxia-ui/Icon";
 import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
 import { id } from "tsafe/id";
 import { capitalize } from "tsafe/capitalize";
+import { MaybeLink } from "ui/shared/MaybeLink";
 
 export const translations: Translations<"nl"> = {
     /* spell-checker: disable */
@@ -529,26 +529,39 @@ export const translations: Translations<"nl"> = {
         "go back": "Terug naar de voornaamste diensten"
     },
     "Launcher": {
-        "header text1": "Catalogus van de diensten",
-        "header text2":
-            "Ontdek, start en configureer diensten in slechts een paar klikken.",
-        "chart sources": ({ chartName, urls }) =>
-            urls.length === 0 ? (
-                <></>
-            ) : (
-                <>
-                    Toegang tot de bron{urls.length === 1 ? "" : "nen"} van de grafiek{" "}
-                    {chartName}:&nbsp;
-                    {elementsToSentence({
-                        "elements": urls.map(source => (
-                            <MuiLink href={source} target="_blank" underline="hover">
-                                hier
+        "header text1": "Dienstencatalogus",
+        "sources": ({ helmChartName, helmChartRepositoryName, sourceUrls }) => (
+            <>
+                Je staat op het punt om het Helm-chart{" "}
+                {
+                    <MaybeLink href={sourceUrls.helmChartSourceUrl}>
+                        {helmChartName}
+                    </MaybeLink>
+                }
+                te implementeren dat behoort tot de Helm-chartrepository{" "}
+                {
+                    <MaybeLink href={sourceUrls.helmChartRepositorySourceUrl}>
+                        {helmChartRepositoryName}
+                    </MaybeLink>
+                }
+                .
+                {sourceUrls.dockerImageSourceUrl !== undefined && (
+                    <>
+                        {" "}
+                        Het is gebaseerd op de Docker-afbeelding{" "}
+                        {
+                            <MuiLink
+                                href={sourceUrls.dockerImageSourceUrl}
+                                target="_blank"
+                            >
+                                {helmChartName}
                             </MuiLink>
-                        )),
-                        "language": "nl"
-                    })}
-                </>
-            ),
+                        }
+                        .
+                    </>
+                )}
+            </>
+        ),
         "download as script": "Downloaden als script",
         "api logs help body": ({
             k8CredentialsHref,
@@ -704,15 +717,24 @@ Voel je vrij om te verkennen en de controle over je Kubernetes-implementaties te
         ),
         "version select label": "Versie",
         "version select helper text": ({
-            chartName,
-            catalogRepositoryUrl,
-            catalogName
+            helmCharName,
+            helmRepositoryName,
+            sourceUrls
         }) => (
             <>
-                Versie van de Chart {chartName} in de&nbsp;
-                <MuiLink href={catalogRepositoryUrl}>
-                    Helm repository {catalogName}
-                </MuiLink>
+                Versie van de helm-chart{" "}
+                {
+                    <MaybeLink href={sourceUrls.helmChartSourceUrl}>
+                        {helmCharName}
+                    </MaybeLink>
+                }
+                die behoort tot de helm-chart repository{" "}
+                {
+                    <MaybeLink href={sourceUrls.helmChartRepositorySourceUrl}>
+                        {helmRepositoryName}
+                    </MaybeLink>
+                }
+                .
             </>
         ),
         "save changes": "Wijzigingen opslaan",

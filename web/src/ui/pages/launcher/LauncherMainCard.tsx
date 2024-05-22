@@ -26,6 +26,7 @@ import { useResolveLocalizedString, type LocalizedString } from "ui/i18n";
 import { id } from "tsafe/id";
 import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
 import { same } from "evt/tools/inDepth/same";
+import type { SourceUrls } from "core/usecases/launcher/selectors";
 
 export type Props = {
     className?: string;
@@ -39,7 +40,7 @@ export type Props = {
     availableChartVersions: string[];
     onChartVersionChange: (chartVersion: string) => void;
     catalogName: LocalizedString;
-    catalogRepositoryUrl: string;
+    sourceUrls: Pick<SourceUrls, "helmChartSourceUrl" | "helmChartRepositorySourceUrl">;
 
     myServicesSavedConfigsExtendedLink: Link;
     onRequestToggleBookmark: () => void;
@@ -111,7 +112,7 @@ export const LauncherMainCard = memo((props: Props) => {
         availableChartVersions,
         onChartVersionChange,
         catalogName,
-        catalogRepositoryUrl,
+        sourceUrls,
 
         myServicesSavedConfigsExtendedLink,
         friendlyName,
@@ -257,9 +258,10 @@ export const LauncherMainCard = memo((props: Props) => {
                             {t("version select label")}&nbsp;
                             <Tooltip
                                 title={t("version select helper text", {
-                                    chartName,
-                                    "catalogName": resolveLocalizedString(catalogName),
-                                    catalogRepositoryUrl
+                                    "helmCharName": chartName,
+                                    "helmRepositoryName":
+                                        resolveLocalizedString(catalogName),
+                                    sourceUrls
                                 })}
                             >
                                 <Icon
@@ -436,18 +438,13 @@ const { i18n } = declareComponentKeys<
           K: "bookmark button";
           P: { isBookmarked: boolean };
       }
-    // Version
     | "version select label"
-    /*
-        Version of the {chartName} Chart in the 
-        <MuiLink href={catalogRepositoryUrl}>{resolveLocalizedString(catalogName)} Helm Repository </MuiLink>
-    */
     | {
           K: "version select helper text";
           P: {
-              chartName: string;
-              catalogName: JSX.Element;
-              catalogRepositoryUrl: string;
+              helmCharName: string;
+              helmRepositoryName: JSX.Element;
+              sourceUrls: Props["sourceUrls"];
           };
           R: JSX.Element;
       }

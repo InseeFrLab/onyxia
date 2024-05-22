@@ -1,11 +1,11 @@
 import type { Translations } from "../types";
 import MuiLink from "@mui/material/Link";
 import { Markdown } from "ui/shared/Markdown";
-import { elementsToSentence } from "ui/tools/elementsToSentence";
 import { Icon } from "onyxia-ui/Icon";
 import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
 import { id } from "tsafe/id";
 import { capitalize } from "tsafe/capitalize";
+import { MaybeLink } from "ui/shared/MaybeLink";
 
 export const translations: Translations<"de"> = {
     /* spell-checker: disable */
@@ -536,26 +536,39 @@ export const translations: Translations<"de"> = {
         "go back": "Zurück zu den Hauptdiensten"
     },
     "Launcher": {
-        "header text1": "Dienstkatalog",
-        "header text2":
-            "Erkunden, starten und konfigurieren Sie Dienste mit nur wenigen Klicks.",
-        "chart sources": ({ chartName, urls }) =>
-            urls.length === 0 ? (
-                <></>
-            ) : (
-                <>
-                    Auf die Quelle{urls.length === 1 ? "" : "n"} des Charts {chartName}{" "}
-                    zugreifen:&nbsp;
-                    {elementsToSentence({
-                        "elements": urls.map(source => (
-                            <MuiLink href={source} target="_blank" underline="hover">
-                                hier
+        "header text1": "Servicekatalog",
+        "sources": ({ helmChartName, helmChartRepositoryName, sourceUrls }) => (
+            <>
+                Sie sind dabei, das Helm-Chart{" "}
+                {
+                    <MaybeLink href={sourceUrls.helmChartSourceUrl}>
+                        {helmChartName}
+                    </MaybeLink>
+                }
+                zu deployen, das zum Helm-Chart-Repository{" "}
+                {
+                    <MaybeLink href={sourceUrls.helmChartRepositorySourceUrl}>
+                        {helmChartRepositoryName}
+                    </MaybeLink>
+                }{" "}
+                gehört.
+                {sourceUrls.dockerImageSourceUrl !== undefined && (
+                    <>
+                        {" "}
+                        Es basiert auf dem Docker-Image{" "}
+                        {
+                            <MuiLink
+                                href={sourceUrls.dockerImageSourceUrl}
+                                target="_blank"
+                            >
+                                {helmChartName}
                             </MuiLink>
-                        )),
-                        "language": "de"
-                    })}
-                </>
-            ),
+                        }
+                        .
+                    </>
+                )}
+            </>
+        ),
         "download as script": "Als Skript herunterladen",
         "api logs help body": ({
             k8CredentialsHref,
@@ -711,15 +724,24 @@ Fühlen Sie sich frei, Ihre Kubernetes-Bereitstellungen zu erkunden und die Kont
         ),
         "version select label": "Version",
         "version select helper text": ({
-            chartName,
-            catalogRepositoryUrl,
-            catalogName
+            helmCharName,
+            helmRepositoryName,
+            sourceUrls
         }) => (
             <>
-                Version des {chartName} Charts im&nbsp;
-                <MuiLink href={catalogRepositoryUrl}>
-                    {catalogName} Helm Repository
-                </MuiLink>
+                Version des Helm-Charts{" "}
+                {
+                    <MaybeLink href={sourceUrls.helmChartSourceUrl}>
+                        {helmCharName}
+                    </MaybeLink>
+                }
+                das zum Helm-Chart-Repository{" "}
+                {
+                    <MaybeLink href={sourceUrls.helmChartRepositorySourceUrl}>
+                        {helmRepositoryName}
+                    </MaybeLink>
+                }{" "}
+                gehört.
             </>
         ),
         "save changes": "Änderungen speichern",

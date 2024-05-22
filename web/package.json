@@ -46,7 +46,7 @@
         "moment": "^2.29.1",
         "mustache": "^4.2.0",
         "oidc-spa": "^4.6.1",
-        "onyxia-ui": "^5.1.11",
+        "onyxia-ui": "^5.2.0",
         "pathe": "^1.1.2",
         "powerhooks": "^1.0.10",
         "react": "^18.2.0",

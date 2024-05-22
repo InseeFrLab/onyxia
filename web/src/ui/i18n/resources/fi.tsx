@@ -1,11 +1,11 @@
 import MuiLink from "@mui/material/Link";
 import type { Translations } from "../types";
 import { Markdown } from "ui/shared/Markdown";
-import { elementsToSentence } from "ui/tools/elementsToSentence";
 import { Icon } from "onyxia-ui/Icon";
 import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
 import { id } from "tsafe/id";
 import { capitalize } from "tsafe/capitalize";
+import { MaybeLink } from "ui/shared/MaybeLink";
 
 export const translations: Translations<"fi"> = {
     /* spell-checker: disable */
@@ -525,25 +525,38 @@ export const translations: Translations<"fi"> = {
     },
     "Launcher": {
         "header text1": "Palvelukatalogi",
-        "header text2":
-            "Selaa, käynnistä ja määritä palveluita muutamalla napsautuksella.",
-        "chart sources": ({ chartName, urls }) =>
-            urls.length === 0 ? (
-                <></>
-            ) : (
-                <>
-                    Pääsy kaavion {chartName} lähteese{urls.length === 1 ? "en" : "isiin"}
-                    :&nbsp;
-                    {elementsToSentence({
-                        "elements": urls.map(source => (
-                            <MuiLink href={source} target="_blank" underline="hover">
-                                täällä
+        "sources": ({ helmChartName, helmChartRepositoryName, sourceUrls }) => (
+            <>
+                Olet ottamassa käyttöön{" "}
+                {
+                    <MaybeLink href={sourceUrls.helmChartSourceUrl}>
+                        {helmChartName} Helm Chartin
+                    </MaybeLink>
+                }
+                {
+                    <MaybeLink href={sourceUrls.helmChartRepositorySourceUrl}>
+                        {helmChartRepositoryName} Helm Chart -arkistosta
+                    </MaybeLink>
+                }
+                .
+                {sourceUrls.dockerImageSourceUrl !== undefined && (
+                    <>
+                        {" "}
+                        Se perustuu{" "}
+                        {
+                            <MuiLink
+                                href={sourceUrls.dockerImageSourceUrl}
+                                target="_blank"
+                            >
+                                {helmChartName} Docker-kuvaan
                             </MuiLink>
-                        )),
-                        "language": "fi"
-                    })}
-                </>
-            ),
+                        }
+                        .
+                    </>
+                )}
+            </>
+        ),
+
         "download as script": "Lataa skriptinä",
         "api logs help body": ({
             k8CredentialsHref,
@@ -692,15 +705,24 @@ Tutustu vapaasti ja ota hallintaan Kubernetes-julkaisusi!
         ),
         "version select label": "Versio",
         "version select helper text": ({
-            chartName,
-            catalogRepositoryUrl,
-            catalogName
+            helmCharName,
+            helmRepositoryName,
+            sourceUrls
         }) => (
             <>
-                {chartName} kaavion versio&nbsp;
-                <MuiLink href={catalogRepositoryUrl}>
-                    {catalogName} Helm Repository
-                </MuiLink>
+                Version of the{" "}
+                {
+                    <MaybeLink href={sourceUrls.helmChartSourceUrl}>
+                        {helmCharName}
+                    </MaybeLink>
+                }{" "}
+                helm chart joka kuuluu helm-kaaviosäilöön{" "}
+                {
+                    <MaybeLink href={sourceUrls.helmChartRepositorySourceUrl}>
+                        {helmRepositoryName}
+                    </MaybeLink>
+                }
+                .
             </>
         ),
         "save changes": "Tallenna muutokset",

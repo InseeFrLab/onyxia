@@ -1,11 +1,11 @@
 import type { Translations } from "../types";
 import MuiLink from "@mui/material/Link";
 import { Markdown } from "ui/shared/Markdown";
-import { elementsToSentence } from "ui/tools/elementsToSentence";
 import { Icon } from "onyxia-ui/Icon";
 import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
 import { id } from "tsafe/id";
 import { capitalize } from "tsafe/capitalize";
+import { MaybeLink } from "ui/shared/MaybeLink";
 
 export const translations: Translations<"it"> = {
     /* spell-checker: disable */
@@ -527,26 +527,40 @@ export const translations: Translations<"it"> = {
         "go back": "Torna ai servizi principali"
     },
     "Launcher": {
-        "header text1": "Catalogo di servizi",
-        "header text2": "Esplora, avvia e configura servizi con pochi clic.",
-        "download as script": "Scaricare lo script",
-        "chart sources": ({ chartName, urls }) =>
-            urls.length === 0 ? (
-                <></>
-            ) : (
-                <>
-                    Accedi alla fonte{urls.length === 1 ? "" : "i"} del grafico{" "}
-                    {chartName}:&nbsp;
-                    {elementsToSentence({
-                        "elements": urls.map(source => (
-                            <MuiLink href={source} target="_blank" underline="hover">
-                                qui
+        "header text1": "Catalogo dei servizi",
+        "sources": ({ helmChartName, helmChartRepositoryName, sourceUrls }) => (
+            <>
+                Stai per distribuire il chart Helm{" "}
+                {
+                    <MaybeLink href={sourceUrls.helmChartSourceUrl}>
+                        {helmChartName}
+                    </MaybeLink>
+                }
+                che appartiene al repository di chart Helm{" "}
+                {
+                    <MaybeLink href={sourceUrls.helmChartRepositorySourceUrl}>
+                        {helmChartRepositoryName}
+                    </MaybeLink>
+                }
+                .
+                {sourceUrls.dockerImageSourceUrl !== undefined && (
+                    <>
+                        {" "}
+                        Si basa sull'immagine Docker{" "}
+                        {
+                            <MuiLink
+                                href={sourceUrls.dockerImageSourceUrl}
+                                target="_blank"
+                            >
+                                {helmChartName}
                             </MuiLink>
-                        )),
-                        "language": "it"
-                    })}
-                </>
-            ),
+                        }
+                        .
+                    </>
+                )}
+            </>
+        ),
+        "download as script": "Scaricare lo script",
         "api logs help body": ({
             k8CredentialsHref,
             myServicesHref,
@@ -702,15 +716,24 @@ Sentiti libero di esplorare e prendere il controllo dei tuoi deployment Kubernet
         ),
         "version select label": "Versione",
         "version select helper text": ({
-            chartName,
-            catalogRepositoryUrl,
-            catalogName
+            helmCharName,
+            helmRepositoryName,
+            sourceUrls
         }) => (
             <>
-                Versione del Chart {chartName} nel&nbsp;
-                <MuiLink href={catalogRepositoryUrl}>
-                    repository Helm {catalogName}
-                </MuiLink>
+                Versione dell'helm chart{" "}
+                {
+                    <MaybeLink href={sourceUrls.helmChartSourceUrl}>
+                        {helmCharName}
+                    </MaybeLink>
+                }
+                che appartiene al repository di helm chart{" "}
+                {
+                    <MaybeLink href={sourceUrls.helmChartRepositorySourceUrl}>
+                        {helmRepositoryName}
+                    </MaybeLink>
+                }
+                .
             </>
         ),
         "save changes": "Salva modifiche",

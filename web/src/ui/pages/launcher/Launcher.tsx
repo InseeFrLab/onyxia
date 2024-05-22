@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useTranslation } from "ui/i18n";
+import { useTranslation, useResolveLocalizedString, declareComponentKeys } from "ui/i18n";
 import { tss } from "tss";
 import { PageHeader } from "onyxia-ui/PageHeader";
 import { useCoreState, useCore } from "core";
@@ -7,7 +7,6 @@ import { useStateRef } from "powerhooks/useStateRef";
 import { useConstCallback } from "powerhooks/useConstCallback";
 import { useDomRect } from "powerhooks/useDomRect";
 import { useConst } from "powerhooks/useConst";
-import { declareComponentKeys } from "i18nifty";
 import type { PageRoute } from "./route";
 import { useSplashScreen } from "onyxia-ui";
 import { useEvt } from "evt/hooks";
@@ -26,6 +25,7 @@ import {
     MaybeAcknowledgeConfigVolatilityDialog,
     type MaybeAcknowledgeConfigVolatilityDialogProps
 } from "ui/shared/MaybeAcknowledgeConfigVolatilityDialog";
+import type { SourceUrls } from "core/usecases/launcher/selectors";
 
 export type Props = {
     route: PageRoute;
@@ -81,13 +81,12 @@ export default function Launcher(props: Props) {
         chartVersion,
         availableChartVersions,
         catalogName,
-        catalogRepositoryUrl,
         chartIconUrl,
         launchScript,
         commandLogsEntries,
-        chartSourceUrls,
         groupProjectName,
-        s3ConfigSelect
+        s3ConfigSelect,
+        sourceUrls
     } = useCoreState("launcher", "main");
 
     const scrollableDivRef = useStateRef<HTMLDivElement>(null);
@@ -297,6 +296,10 @@ export default function Launcher(props: Props) {
         }).link
     }));
 
+    const { resolveLocalizedString } = useResolveLocalizedString({
+        "labelWhenMismatchingLanguage": true
+    });
+
     if (!isReady) {
         return null;
     }
@@ -310,10 +313,10 @@ export default function Launcher(props: Props) {
                     }}
                     mainIcon={customIcons.catalogSvgUrl}
                     title={t("header text1")}
-                    helpTitle={t("header text2")}
-                    helpContent={t("chart sources", {
-                        chartName,
-                        "urls": chartSourceUrls
+                    helpContent={t("sources", {
+                        "helmChartName": chartName,
+                        "helmChartRepositoryName": resolveLocalizedString(catalogName),
+                        sourceUrls
                     })}
                     helpIcon="sentimentSatisfied"
                     titleCollapseParams={{
@@ -375,7 +378,7 @@ export default function Launcher(props: Props) {
                                 availableChartVersions={availableChartVersions}
                                 onChartVersionChange={onChartVersionChange}
                                 catalogName={catalogName}
-                                catalogRepositoryUrl={catalogRepositoryUrl}
+                                sourceUrls={sourceUrls}
                                 myServicesSavedConfigsExtendedLink={
                                     myServicesSavedConfigsExtendedLink
                                 }
@@ -453,12 +456,12 @@ export default function Launcher(props: Props) {
 
 const { i18n } = declareComponentKeys<
     | "header text1"
-    | "header text2"
     | {
-          K: "chart sources";
+          K: "sources";
           P: {
-              chartName: string;
-              urls: string[];
+              helmChartName: string;
+              helmChartRepositoryName: JSX.Element;
+              sourceUrls: SourceUrls;
           };
           R: JSX.Element;
       }

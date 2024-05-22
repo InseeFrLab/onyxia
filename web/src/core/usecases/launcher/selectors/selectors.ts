@@ -550,11 +550,80 @@ const commandLogsEntries = createSelector(
     }
 );
 
-const chartSourceUrls = createSelector(readyState, state => {
+export type SourceUrls = {
+    helmChartSourceUrl: string | undefined;
+    helmChartRepositorySourceUrl: string | undefined;
+    dockerImageSourceUrl: string | undefined;
+};
+
+const sourceUrls = createSelector(readyState, state => {
     if (state === undefined) {
         return undefined;
     }
-    return state.chartSourceUrls;
+    const { chartSourceUrls } = state;
+
+    const chartRepositoryName = (
+        state.catalogRepositoryUrl
+            .split("/")
+            .filter(exclude(""))
+            .filter(part => !part.startsWith("http"))
+            .pop() ?? state.catalogId
+    ).toLowerCase();
+
+    const chartName = state.chartName.toLowerCase();
+
+    let helmChartSourceUrl = (() => {
+        const candidates = chartSourceUrls
+            .map(url => url.toLowerCase())
+            .filter(url => url.includes(chartRepositoryName) && url.includes(chartName));
+
+        return candidates.find(url => url.includes("helm")) ?? candidates.shift();
+    })();
+
+    const helmChartRepositorySourceUrl = (() => {
+        from_helmChartUrl: {
+            if (helmChartSourceUrl === undefined) {
+                break from_helmChartUrl;
+            }
+
+            if (!helmChartSourceUrl.includes(chartRepositoryName)) {
+                break from_helmChartUrl;
+            }
+
+            let candidate = helmChartSourceUrl.split("?")[0].replace(/\/$/, "");
+
+            if (!candidate.includes("tree")) {
+                break from_helmChartUrl;
+            }
+
+            if (!candidate.includes(chartName)) {
+                break from_helmChartUrl;
+            }
+
+            candidate = candidate.split("/tree/")[0].replace(/\/-$/, "");
+
+            return candidate;
+        }
+
+        const candidates = chartSourceUrls
+            .map(url => url.toLowerCase())
+            .filter(url => url !== helmChartSourceUrl)
+            .filter(url => url.includes(chartRepositoryName));
+
+        return candidates.find(url => url.includes("helm")) ?? candidates.shift();
+    })();
+
+    const sourceUrls: SourceUrls = {
+        helmChartSourceUrl,
+        helmChartRepositorySourceUrl,
+        "dockerImageSourceUrl": chartSourceUrls
+            .map(url => url.toLowerCase())
+            .filter(url => url !== helmChartSourceUrl)
+            .filter(url => url !== helmChartRepositorySourceUrl)
+            .find(url => url.includes(chartName))
+    };
+
+    return sourceUrls;
 });
 
 const groupProjectName = createSelector(
@@ -706,13 +775,12 @@ const main = createSelector(
     chartVersion,
     availableChartVersions,
     catalogName,
-    catalogRepositoryUrl,
     chartIconUrl,
     launchScript,
     commandLogsEntries,
-    chartSourceUrls,
     groupProjectName,
     s3ConfigSelect,
+    sourceUrls,
     (
         isReady,
         friendlyName,
@@ -728,13 +796,12 @@ const main = createSelector(
         chartVersion,
         availableChartVersions,
         catalogName,
-        catalogRepositoryUrl,
         chartIconUrl,
         launchScript,
         commandLogsEntries,
-        chartSourceUrls,
         groupProjectName,
-        s3ConfigSelect
+        s3ConfigSelect,
+        sourceUrls
     ) => {
         if (!isReady) {
             return {
@@ -753,9 +820,8 @@ const main = createSelector(
         assert(chartVersion !== undefined);
         assert(availableChartVersions !== undefined);
         assert(catalogName !== undefined);
-        assert(catalogRepositoryUrl !== undefined);
         assert(launchScript !== undefined);
-        assert(chartSourceUrls !== undefined);
+        assert(sourceUrls !== undefined);
 
         return {
             "isReady": true as const,
@@ -772,13 +838,12 @@ const main = createSelector(
             chartVersion,
             availableChartVersions,
             catalogName,
-            catalogRepositoryUrl,
             chartIconUrl,
             launchScript,
             commandLogsEntries,
-            chartSourceUrls,
             groupProjectName,
-            s3ConfigSelect
+            s3ConfigSelect,
+            sourceUrls
         };
     }
 );

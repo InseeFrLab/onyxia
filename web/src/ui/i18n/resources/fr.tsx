@@ -1,11 +1,11 @@
 import type { Translations } from "../types";
 import MuiLink from "@mui/material/Link";
 import { Markdown } from "ui/shared/Markdown";
-import { elementsToSentence } from "ui/tools/elementsToSentence";
 import { Icon } from "onyxia-ui/Icon";
 import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
 import { id } from "tsafe/id";
 import { capitalize } from "tsafe/capitalize";
+import { MaybeLink } from "ui/shared/MaybeLink";
 
 export const translations: Translations<"fr"> = {
     /* spell-checker: disable */
@@ -536,25 +536,38 @@ export const translations: Translations<"fr"> = {
     },
     "Launcher": {
         "header text1": "Catalogue de services",
-        "header text2":
-            "Explorez, lancez et configurez des services en quelques clics seulement.",
-        "chart sources": ({ chartName, urls }) =>
-            urls.length === 0 ? (
-                <></>
-            ) : (
-                <>
-                    Accéder aux source{urls.length === 1 ? "" : "s"} du chart {chartName}
-                    :&nbsp;
-                    {elementsToSentence({
-                        "elements": urls.map(source => (
-                            <MuiLink href={source} target="_blank" underline="hover">
-                                ici
+        "sources": ({ helmChartName, helmChartRepositoryName, sourceUrls }) => (
+            <>
+                Vous êtes sur le point de déployer le chart Helm{" "}
+                {
+                    <MaybeLink href={sourceUrls.helmChartSourceUrl}>
+                        {helmChartName}
+                    </MaybeLink>
+                }
+                qui appartient au dépôt de charts Helm{" "}
+                {
+                    <MaybeLink href={sourceUrls.helmChartRepositorySourceUrl}>
+                        {helmChartRepositoryName}
+                    </MaybeLink>
+                }
+                .
+                {sourceUrls.dockerImageSourceUrl !== undefined && (
+                    <>
+                        {" "}
+                        Il est basé sur l'image Docker{" "}
+                        {
+                            <MuiLink
+                                href={sourceUrls.dockerImageSourceUrl}
+                                target="_blank"
+                            >
+                                {helmChartName}
                             </MuiLink>
-                        )),
-                        "language": "fr"
-                    })}
-                </>
-            ),
+                        }
+                        .
+                    </>
+                )}
+            </>
+        ),
         "download as script": "Télécharger le script",
         "api logs help body": ({
             k8CredentialsHref,
@@ -711,13 +724,26 @@ N'hésitez pas à explorer et à prendre en main vos déploiements Kubernetes !
         ),
         "version select label": "Version",
         "version select helper text": ({
-            chartName,
-            catalogRepositoryUrl,
-            catalogName
+            helmCharName,
+            helmRepositoryName,
+            sourceUrls
         }) => (
             <>
-                Version du Chart {chartName} dans le&nbsp;
-                <MuiLink href={catalogRepositoryUrl}>dépôt Helm {catalogName}</MuiLink>
+                Version du helm chart{" "}
+                {
+                    <MaybeLink href={sourceUrls.helmChartSourceUrl}>
+                        {helmCharName}
+                    </MaybeLink>
+                }
+                qui appartient au dépôt de helm charts{" "}
+                {
+                    <>
+                        <MaybeLink href={sourceUrls.helmChartRepositorySourceUrl}>
+                            {helmRepositoryName}
+                        </MaybeLink>
+                        .
+                    </>
+                }
             </>
         ),
         "save changes": "Enregistrer les modifications",

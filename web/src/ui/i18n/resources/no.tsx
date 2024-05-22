@@ -1,11 +1,11 @@
 import MuiLink from "@mui/material/Link";
 import type { Translations } from "../types";
 import { Markdown } from "ui/shared/Markdown";
-import { elementsToSentence } from "ui/tools/elementsToSentence";
 import { Icon } from "onyxia-ui/Icon";
 import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
 import { id } from "tsafe/id";
 import { capitalize } from "tsafe/capitalize";
+import { MaybeLink } from "ui/shared/MaybeLink";
 
 export const translations: Translations<"no"> = {
     /* spell-checker: disable */
@@ -529,24 +529,38 @@ export const translations: Translations<"no"> = {
     },
     "Launcher": {
         "header text1": "Tjenestekatalog",
-        "header text2": "Utforsk, start og konfigurer tjenester med noen få klikk.",
-        "chart sources": ({ chartName, urls }) =>
-            urls.length === 0 ? (
-                <></>
-            ) : (
-                <>
-                    Tilgang til kild{urls.length === 1 ? "en" : "ene"} for diagrammet{" "}
-                    {chartName}:&nbsp;
-                    {elementsToSentence({
-                        "elements": urls.map(source => (
-                            <MuiLink href={source} target="_blank" underline="hover">
-                                her
+        "sources": ({ helmChartName, helmChartRepositoryName, sourceUrls }) => (
+            <>
+                Du er i ferd med å distribuere Helm-diagrammet{" "}
+                {
+                    <MaybeLink href={sourceUrls.helmChartSourceUrl}>
+                        {helmChartName}
+                    </MaybeLink>
+                }
+                som tilhører Helm-diagramlageret{" "}
+                {
+                    <MaybeLink href={sourceUrls.helmChartRepositorySourceUrl}>
+                        {helmChartRepositoryName}
+                    </MaybeLink>
+                }
+                .
+                {sourceUrls.dockerImageSourceUrl !== undefined && (
+                    <>
+                        {" "}
+                        Det er basert på Docker-avbildningen{" "}
+                        {
+                            <MuiLink
+                                href={sourceUrls.dockerImageSourceUrl}
+                                target="_blank"
+                            >
+                                {helmChartName}
                             </MuiLink>
-                        )),
-                        "language": "no"
-                    })}
-                </>
-            ),
+                        }
+                        .
+                    </>
+                )}
+            </>
+        ),
         "download as script": "Last ned som skript",
         "api logs help body": ({
             k8CredentialsHref,
@@ -700,13 +714,24 @@ Føl deg fri til å utforske og ta kontroll over dine Kubernetes-implementeringe
         ),
         "version select label": "Versjon",
         "version select helper text": ({
-            chartName,
-            catalogRepositoryUrl,
-            catalogName
+            helmCharName,
+            helmRepositoryName,
+            sourceUrls
         }) => (
             <>
-                Versjon av Chart {chartName} i&nbsp;
-                <MuiLink href={catalogRepositoryUrl}>Helm depotet {catalogName}</MuiLink>
+                Versjon av helm-diagrammet{" "}
+                {
+                    <MaybeLink href={sourceUrls.helmChartSourceUrl}>
+                        {helmCharName}
+                    </MaybeLink>
+                }
+                som tilhører helm-diagramdepotet{" "}
+                {
+                    <MaybeLink href={sourceUrls.helmChartRepositorySourceUrl}>
+                        {helmRepositoryName}
+                    </MaybeLink>
+                }
+                .
             </>
         ),
         "save changes": "Lagre endringer",

@@ -1,11 +1,11 @@
 import MuiLink from "@mui/material/Link";
 import { Markdown } from "ui/shared/Markdown";
 import type { Translations } from "../types";
-import { elementsToSentence } from "ui/tools/elementsToSentence";
 import { Icon } from "onyxia-ui/Icon";
 import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
 import { id } from "tsafe/id";
 import { capitalize } from "tsafe/capitalize";
+import { MaybeLink } from "ui/shared/MaybeLink";
 
 export const translations: Translations<"en"> = {
     "Account": {
@@ -522,25 +522,39 @@ export const translations: Translations<"en"> = {
         "go back": "Back to main services"
     },
     "Launcher": {
-        "header text1": "Services catalog",
-        "header text2": "Explore, launch and configure services with just a few clicks.",
-        "chart sources": ({ chartName, urls }) =>
-            urls.length === 0 ? (
-                <></>
-            ) : (
-                <>
-                    Access the source{urls.length === 1 ? "" : "s"} of the chart{" "}
-                    {chartName}:&nbsp;
-                    {elementsToSentence({
-                        "elements": urls.map(source => (
-                            <MuiLink href={source} target="_blank" underline="hover">
-                                here
+        "header text1": "Service Catalog",
+        "sources": ({ helmChartName, helmChartRepositoryName, sourceUrls }) => (
+            <>
+                You are about to deploy the{" "}
+                {
+                    <MaybeLink href={sourceUrls.helmChartSourceUrl}>
+                        {helmChartName}
+                    </MaybeLink>
+                }{" "}
+                Helm chart that belong to the{" "}
+                {
+                    <MaybeLink href={sourceUrls.helmChartRepositorySourceUrl}>
+                        {helmChartRepositoryName}
+                    </MaybeLink>
+                }{" "}
+                Helm chart repository.
+                {sourceUrls.dockerImageSourceUrl !== undefined && (
+                    <>
+                        {" "}
+                        It is based on the{" "}
+                        {
+                            <MuiLink
+                                href={sourceUrls.dockerImageSourceUrl}
+                                target="_blank"
+                            >
+                                {helmChartName}
                             </MuiLink>
-                        )),
-                        "language": "en"
-                    })}
-                </>
-            ),
+                        }{" "}
+                        Docker image.
+                    </>
+                )}
+            </>
+        ),
         "download as script": "Download as script",
         "api logs help body": ({
             k8CredentialsHref,
@@ -690,15 +704,26 @@ Feel free to explore and take charge of your Kubernetes deployments!
         ),
         "version select label": "Version",
         "version select helper text": ({
-            chartName,
-            catalogRepositoryUrl,
-            catalogName
+            helmCharName,
+            helmRepositoryName,
+            sourceUrls
         }) => (
             <>
-                Version of the {chartName} Chart in the&nbsp;
-                <MuiLink href={catalogRepositoryUrl}>
-                    {catalogName} Helm Repository{" "}
-                </MuiLink>
+                Version of the{" "}
+                {
+                    <MaybeLink href={sourceUrls.helmChartSourceUrl}>
+                        {helmCharName}
+                    </MaybeLink>
+                }{" "}
+                Helm chart that belongs to the{" "}
+                {
+                    <>
+                        <MaybeLink href={sourceUrls.helmChartRepositorySourceUrl}>
+                            {helmRepositoryName}
+                        </MaybeLink>{" "}
+                        Helm chart repository.
+                    </>
+                }
             </>
         ),
         "save changes": "Save changes",
