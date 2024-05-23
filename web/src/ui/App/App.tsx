@@ -189,14 +189,17 @@ function useSyncDarkModeWithValueInProfile() {
     const userConfigsIsDarkModeEnabled = useCoreState("userConfigs", "isDarkModeEnabled");
 
     useEffect(() => {
-        if (userConfigsIsDarkModeEnabled === undefined) {
-            return;
+        if (userConfigsIsDarkModeEnabled !== undefined && env.DARK_MODE === undefined) {
+            setIsDarkModeEnabled(userConfigsIsDarkModeEnabled);
         }
-
-        setIsDarkModeEnabled(userConfigsIsDarkModeEnabled);
     }, []);
 
     useEffectOnValueChange(() => {
+        //TODO: Remove after vivatech
+        if (env.DARK_MODE !== undefined) {
+            return;
+        }
+
         if (!isUserLoggedIn) {
             return;
         }
