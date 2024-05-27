@@ -56,7 +56,9 @@ const formValuesErrors = createSelector(formValues, formValues => {
                     !(
                         key === "url" ||
                         key === "workingDirectoryPath" ||
-                        key === "accountFriendlyName"
+                        key === "accountFriendlyName" ||
+                        key === "accessKeyId" ||
+                        key === "secretAccessKey"
                     )
                 ) {
                     break empty_required_field;
@@ -132,8 +134,8 @@ export const submittableFormValues = createSelector(
                     .replace(/\/*$/g, "") + "/", // Enforce trailing slash
             "pathStyleAccess": formValues.pathStyleAccess,
             "accountFriendlyName": formValues.accountFriendlyName.trim(),
-            "accessKeyId": formValues.accessKeyId?.trim(),
-            "secretAccessKey": formValues.secretAccessKey?.trim(),
+            "accessKeyId": formValues.accessKeyId.trim(),
+            "secretAccessKey": formValues.secretAccessKey.trim(),
             "sessionToken": formValues.sessionToken?.trim()
         };
     }

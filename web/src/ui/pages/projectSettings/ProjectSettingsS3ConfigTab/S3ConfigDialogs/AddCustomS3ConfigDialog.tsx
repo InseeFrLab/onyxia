@@ -288,12 +288,12 @@ const Body = memo(() => {
                             ? undefined
                             : t(formValuesErrors.accessKeyId)
                     }
-                    defaultValue={formValues.accessKeyId ?? ""}
+                    defaultValue={formValues.accessKeyId}
                     doOnlyShowErrorAfterFirstFocusLost
                     onValueBeingTypedChange={({ value }) =>
                         s3ConfigCreation.changeValue({
                             "key": "accessKeyId",
-                            "value": value || undefined
+                            value
                         })
                     }
                 />
@@ -309,12 +309,12 @@ const Body = memo(() => {
                             ? undefined
                             : t(formValuesErrors.secretAccessKey)
                     }
-                    defaultValue={formValues.secretAccessKey ?? ""}
+                    defaultValue={formValues.secretAccessKey}
                     doOnlyShowErrorAfterFirstFocusLost
                     onValueBeingTypedChange={({ value }) =>
                         s3ConfigCreation.changeValue({
                             "key": "secretAccessKey",
-                            "value": value || undefined
+                            value
                         })
                     }
                 />
