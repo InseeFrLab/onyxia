@@ -54,6 +54,7 @@ By separating these components into distinct repositories, Onyxia ensures a clea
 
 ### List of maintainers
 
+As described in the Onyxia's Repository Structure section, there are many repositories.
 For each repository, a file named Maintainers.md must be created with the following format:
 
 
