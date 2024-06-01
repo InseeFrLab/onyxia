@@ -204,6 +204,11 @@ export const translations: Translations<"no"> = {
         "accountFriendlyName textField label": "Brukervennlig kontonavn",
         "accountFriendlyName textField helper text":
             "Dette er bare for å hjelpe deg med å identifisere denne kontoen. Eksempel: Min personlige konto",
+
+        "isAnonymous switch label": "Anonym tilgang",
+        "isAnonymous switch helper text":
+            "Sett til PÅ hvis ingen hemmelig tilgangsnøkkel er nødvendig",
+
         "accessKeyId textField label": "Tilgangsnøkkel-ID",
         "accessKeyId textField helper text": "Eksempel: 1A2B3C4D5E6F7G8H9I0J",
         "secretAccessKey textField label": "Hemmelig tilgangsnøkkel",

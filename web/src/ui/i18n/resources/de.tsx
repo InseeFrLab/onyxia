@@ -206,6 +206,9 @@ export const translations: Translations<"de"> = {
         "accountFriendlyName textField label": "Benutzerfreundlicher Kontoname",
         "accountFriendlyName textField helper text":
             "Dient nur zur Identifikation dieses Kontos. Beispiel: Mein persönliches Konto",
+        "isAnonymous switch label": "Anonymer Zugang",
+        "isAnonymous switch helper text":
+            "Auf EIN stellen, wenn kein geheimer Zugangsschlüssel erforderlich ist",
         "accessKeyId textField label": "Zugangsschlüssel-ID",
         "accessKeyId textField helper text": "Beispiel: 1A2B3C4D5E6F7G8H9I0J",
         "secretAccessKey textField label": "Geheimer Zugangsschlüssel",

@@ -106,6 +106,12 @@ export type XOnyxiaContext = {
          * <AWS_BUCKET_NAME>/<objectNamePrefix>
          * */
         workingDirectoryPath: string;
+        /**
+         * If true the bucket's (directory) should be accessible without any credentials.
+         * In this case s3.AWS_ACCESS_KEY_ID, s3.AWS_SECRET_ACCESS_KEY and s3.AWS_SESSION_TOKEN
+         * will be empty strings.
+         */
+        isAnonymous: boolean;
     };
     region: {
         defaultIpProtection: boolean | undefined;

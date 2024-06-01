@@ -20,9 +20,7 @@ export async function testS3CustomConfigConnection(params: {
         "pathStyleAccess": customS3Config.pathStyleAccess,
         "isStsEnabled": false,
         "region": customS3Config.region,
-        "accessKeyId": customS3Config.accessKeyId,
-        "secretAccessKey": customS3Config.secretAccessKey,
-        "sessionToken": customS3Config.sessionToken
+        "credentials": customS3Config.credentials
     });
 
     try {

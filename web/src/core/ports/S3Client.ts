@@ -3,13 +3,16 @@ export type S3Client = {
     url: string;
     pathStyleAccess: boolean;
 
-    getToken: (params: { doForceRenew: boolean }) => Promise<{
-        accessKeyId: string;
-        secretAccessKey: string;
-        sessionToken: string | undefined;
-        expirationTime: number | undefined;
-        acquisitionTime: number | undefined;
-    }>;
+    getToken: (params: { doForceRenew: boolean }) => Promise<
+        | {
+              accessKeyId: string;
+              secretAccessKey: string;
+              sessionToken: string | undefined;
+              expirationTime: number | undefined;
+              acquisitionTime: number | undefined;
+          }
+        | undefined
+    >;
 
     /** In charge of creating bucket if doesn't exist. */
     list: (params: { path: string }) => Promise<{

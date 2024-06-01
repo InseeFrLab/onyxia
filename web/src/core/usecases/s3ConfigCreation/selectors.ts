@@ -4,38 +4,40 @@ import { name } from "./state";
 import { objectKeys } from "tsafe/objectKeys";
 import { assert } from "tsafe/assert";
 import { bucketNameAndObjectNameFromS3Path } from "core/adapters/s3Client/utils/bucketNameAndObjectNameFromS3Path";
+import { id } from "tsafe/id";
+import type { ProjectConfigs } from "core/usecases/projectManagement";
 
 const readyState = (rootState: RootState) => {
     const state = rootState[name];
 
     if (state.stateDescription !== "ready") {
-        return undefined;
+        return null;
     }
 
     return state;
 };
 
-const isReady = createSelector(readyState, state => state !== undefined);
+const isReady = createSelector(readyState, state => state !== null);
 
 const formValues = createSelector(readyState, state => {
-    if (state === undefined) {
-        return undefined;
+    if (state === null) {
+        return null;
     }
 
     return state.formValues;
 });
 
 const connectionTestStatus = createSelector(readyState, state => {
-    if (state === undefined) {
-        return undefined;
+    if (state === null) {
+        return null;
     }
 
     return state.connectionTestStatus;
 });
 
 const formValuesErrors = createSelector(formValues, formValues => {
-    if (formValues === undefined) {
-        return undefined;
+    if (formValues === null) {
+        return null;
     }
 
     const out: Record<
@@ -45,27 +47,23 @@ const formValuesErrors = createSelector(formValues, formValues => {
 
     for (const key of objectKeys(formValues)) {
         out[key] = (() => {
-            empty_required_field: {
-                const value = formValues[key];
-
-                if (typeof value !== "string") {
-                    break empty_required_field;
-                }
-
+            required_fields: {
                 if (
                     !(
                         key === "url" ||
                         key === "workingDirectoryPath" ||
                         key === "accountFriendlyName" ||
-                        key === "accessKeyId" ||
-                        key === "secretAccessKey"
+                        (!formValues.isAnonymous &&
+                            (key === "accessKeyId" || key === "secretAccessKey"))
                     )
                 ) {
-                    break empty_required_field;
+                    break required_fields;
                 }
 
-                if (value.trim() !== "") {
-                    break empty_required_field;
+                const value = formValues[key];
+
+                if ((value ?? "").trim() !== "") {
+                    break required_fields;
                 }
 
                 return "is required";
@@ -94,11 +92,11 @@ const isFormSubmittable = createSelector(
     connectionTestStatus,
     (isReady, formValuesErrors, connectionTestStatus) => {
         if (!isReady) {
-            return undefined;
+            return null;
         }
 
-        assert(formValuesErrors !== undefined);
-        assert(connectionTestStatus !== undefined);
+        assert(formValuesErrors !== null);
+        assert(connectionTestStatus !== null);
 
         if (connectionTestStatus.isTestOngoing) {
             return false;
@@ -110,72 +108,126 @@ const isFormSubmittable = createSelector(
     }
 );
 
-export const submittableFormValues = createSelector(
+const formattedFormValuesUrl = createSelector(
     isReady,
     formValues,
-    (isReady, formValues) => {
+    formValuesErrors,
+    (isReady, formValues, formValuesErrors) => {
         if (!isReady) {
+            return null;
+        }
+        assert(formValues !== null);
+        assert(formValuesErrors !== null);
+
+        if (formValuesErrors.url !== undefined) {
             return undefined;
         }
 
-        assert(formValues !== undefined);
+        const trimmedValue = formValues.url.trim();
 
-        return {
-            "url": ((trimmedValue: string) =>
-                trimmedValue.startsWith("http")
-                    ? trimmedValue
-                    : `https://${trimmedValue}`)(formValues.url.trim()),
+        return trimmedValue.startsWith("http") ? trimmedValue : `https://${trimmedValue}`;
+    }
+);
+
+const formattedFormValuesWorkingDirectoryPath = createSelector(
+    isReady,
+    formValues,
+    formValuesErrors,
+    (isReady, formValues, formValuesErrors) => {
+        if (!isReady) {
+            return null;
+        }
+        assert(formValues !== null);
+        assert(formValuesErrors !== null);
+
+        if (formValuesErrors.workingDirectoryPath !== undefined) {
+            return undefined;
+        }
+
+        return (
+            formValues.workingDirectoryPath
+                .trim()
+                .replace(/\/\//g, "/") // Remove double slashes if any
+                .replace(/^\//g, "") // Ensure no leading slash
+                .replace(/\/*$/g, "") + "/"
+        ); // Enforce trailing slash
+    }
+);
+
+const submittableFormValuesAsCustomS3Config = createSelector(
+    isReady,
+    formValues,
+    formattedFormValuesUrl,
+    formattedFormValuesWorkingDirectoryPath,
+    (
+        isReady,
+        formValues,
+        formattedFormValuesUrl,
+        formattedFormValuesWorkingDirectoryPath
+    ) => {
+        if (!isReady) {
+            return null;
+        }
+        assert(formValues !== null);
+        assert(formattedFormValuesUrl !== null);
+        assert(formattedFormValuesWorkingDirectoryPath !== null);
+
+        assert(formattedFormValuesUrl !== undefined);
+        assert(formattedFormValuesWorkingDirectoryPath !== undefined);
+
+        return id<ProjectConfigs.CustomS3Config>({
+            "url": formattedFormValuesUrl,
             "region": formValues.region.trim(),
-            "workingDirectoryPath":
-                formValues.workingDirectoryPath
-                    .trim()
-                    .replace(/\/\//g, "/") // Remove double slashes if any
-                    .replace(/^\//g, "") // Ensure no leading slash
-                    .replace(/\/*$/g, "") + "/", // Enforce trailing slash
+            "workingDirectoryPath": formattedFormValuesWorkingDirectoryPath,
             "pathStyleAccess": formValues.pathStyleAccess,
             "accountFriendlyName": formValues.accountFriendlyName.trim(),
-            "accessKeyId": formValues.accessKeyId.trim(),
-            "secretAccessKey": formValues.secretAccessKey.trim(),
-            "sessionToken": formValues.sessionToken?.trim()
-        };
+
+            "credentials": (() => {
+                if (formValues.isAnonymous) {
+                    return undefined;
+                }
+
+                assert(formValues.accessKeyId !== undefined);
+                assert(formValues.secretAccessKey !== undefined);
+
+                return {
+                    "accessKeyId": formValues.accessKeyId,
+                    "secretAccessKey": formValues.secretAccessKey,
+                    "sessionToken": formValues.sessionToken
+                };
+            })()
+        });
     }
 );
 
 const urlStylesExamples = createSelector(
     isReady,
-    submittableFormValues,
-    formValuesErrors,
-    (isReady, submittableFormValues, formValuesErrors) => {
+    formattedFormValuesUrl,
+    formattedFormValuesWorkingDirectoryPath,
+    (isReady, formattedFormValuesUrl, formattedFormValuesWorkingDirectoryPath) => {
         if (!isReady) {
-            return undefined;
+            return null;
         }
 
-        assert(submittableFormValues !== undefined);
-        assert(formValuesErrors !== undefined);
+        assert(formattedFormValuesUrl !== null);
+        assert(formattedFormValuesWorkingDirectoryPath !== null);
 
         if (
-            formValuesErrors.url !== undefined ||
-            formValuesErrors.workingDirectoryPath !== undefined
+            formattedFormValuesUrl === undefined ||
+            formattedFormValuesWorkingDirectoryPath === undefined
         ) {
             return undefined;
         }
 
-        const urlObject = new URL(submittableFormValues.url);
+        const urlObject = new URL(formattedFormValuesUrl);
 
         const { bucketName, objectName: objectNamePrefix } =
-            bucketNameAndObjectNameFromS3Path(submittableFormValues.workingDirectoryPath);
+            bucketNameAndObjectNameFromS3Path(formattedFormValuesWorkingDirectoryPath);
 
-        const domain = submittableFormValues.url
+        const domain = formattedFormValuesUrl
             .split(urlObject.protocol)[1]
             .split("//")[1]
             .replace(/\/$/, "");
-
-        console.log({
-            "domain": domain,
-            "bucketName": bucketName,
-            "objectNamePrefix": objectNamePrefix,
-            "workingDirectoryPath": submittableFormValues.workingDirectoryPath
-        });
 
         return {
             "pathStyle": `${domain}/${bucketName}/${objectNamePrefix}`,
@@ -185,8 +237,8 @@ const urlStylesExamples = createSelector(
 );
 
 const customConfigIndex = createSelector(readyState, state => {
-    if (state === undefined) {
-        return undefined;
+    if (state === null) {
+        return null;
     }
 
     return state.customConfigIndex;
@@ -197,7 +249,7 @@ const isEditionOfAnExistingConfig = createSelector(
     customConfigIndex,
     (isReady, customConfigIndex) => {
         if (!isReady) {
-            return undefined;
+            return null;
         }
 
         return customConfigIndex !== undefined;
@@ -227,11 +279,12 @@ const main = createSelector(
             };
         }
 
-        assert(formValues !== undefined);
-        assert(connectionTestStatus !== undefined);
-        assert(formValuesErrors !== undefined);
-        assert(isFormSubmittable !== undefined);
-        assert(isEditionOfAnExistingConfig !== undefined);
+        assert(formValues !== null);
+        assert(connectionTestStatus !== null);
+        assert(formValuesErrors !== null);
+        assert(isFormSubmittable !== null);
+        assert(urlStylesExamples !== null);
+        assert(isEditionOfAnExistingConfig !== null);
 
         return {
             "isReady": true,
@@ -246,7 +299,8 @@ const main = createSelector(
 );
 
 export const privateSelectors = {
-    submittableFormValues,
+    formattedFormValuesUrl,
+    submittableFormValuesAsCustomS3Config,
     formValuesErrors,
     customConfigIndex,
     connectionTestStatus

@@ -25,8 +25,9 @@ export namespace State {
             workingDirectoryPath: string;
             pathStyleAccess: boolean;
             accountFriendlyName: string;
-            accessKeyId: string;
-            secretAccessKey: string;
+            isAnonymous: boolean;
+            accessKeyId: string | undefined;
+            secretAccessKey: string | undefined;
             sessionToken: string | undefined;
         };
     }

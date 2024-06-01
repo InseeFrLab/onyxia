@@ -148,7 +148,8 @@ export const thunks = {
                                     "objectNamePrefix":
                                         xOnyxiaContext.s3.objectNamePrefix + "x/",
                                     "workingDirectoryPath":
-                                        xOnyxiaContext.s3.workingDirectoryPath + "x/"
+                                        xOnyxiaContext.s3.workingDirectoryPath + "x/",
+                                    "isAnonymous": !xOnyxiaContext.s3.isAnonymous
                                 }
                             }
                         }),
@@ -403,16 +404,20 @@ export const thunks = {
                         );
 
                     return {
-                        "AWS_ACCESS_KEY_ID": customS3Config.accessKeyId,
                         "AWS_BUCKET_NAME": bucketName,
-                        "AWS_SECRET_ACCESS_KEY": customS3Config.secretAccessKey,
-                        "AWS_SESSION_TOKEN": customS3Config.sessionToken ?? "",
+                        "AWS_ACCESS_KEY_ID":
+                            customS3Config.credentials?.accessKeyId ?? "",
+                        "AWS_SECRET_ACCESS_KEY":
+                            customS3Config.credentials?.secretAccessKey ?? "",
+                        "AWS_SESSION_TOKEN":
+                            customS3Config.credentials?.sessionToken ?? "",
                         "AWS_DEFAULT_REGION": customS3Config.region,
                         "AWS_S3_ENDPOINT": host,
                         port,
                         "pathStyleAccess": customS3Config.pathStyleAccess,
                         objectNamePrefix,
-                        "workingDirectoryPath": customS3Config.workingDirectoryPath
+                        "workingDirectoryPath": customS3Config.workingDirectoryPath,
+                        "isAnonymous": customS3Config.credentials === undefined
                     };
                 })()
             };
@@ -541,7 +546,8 @@ const privateThunks = {
                         port,
                         "pathStyleAccess": baseS3Config.pathStyleAccess,
                         objectNamePrefix,
-                        "workingDirectoryPath": baseS3Config.workingDirectoryPath
+                        "workingDirectoryPath": baseS3Config.workingDirectoryPath,
+                        "isAnonymous": false
                     };
 
                     inject_tokens: {
@@ -569,6 +575,8 @@ const privateThunks = {
                             );
                             break inject_tokens;
                         }
+
+                        assert(tokens !== undefined);
 
                         const { accessKeyId, secretAccessKey, sessionToken } = tokens;
 

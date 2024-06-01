@@ -140,26 +140,28 @@ export const thunks = {
                 return { region, host, port };
             })();
 
-            const { accessKeyId, secretAccessKey, sessionToken, expirationTime } =
-                await s3ClientSts.getToken({ "doForceRenew": doForceRenewToken });
+            const tokens = await s3ClientSts.getToken({
+                "doForceRenew": doForceRenewToken
+            });
 
-            assert(sessionToken !== undefined);
-            assert(expirationTime !== undefined);
+            assert(tokens !== undefined);
+            assert(tokens.sessionToken !== undefined);
+            assert(tokens.expirationTime !== undefined);
 
             dispatch(
                 actions.refreshed({
                     "credentials": {
-                        "AWS_ACCESS_KEY_ID": accessKeyId,
-                        "AWS_SECRET_ACCESS_KEY": secretAccessKey,
+                        "AWS_ACCESS_KEY_ID": tokens.accessKeyId,
+                        "AWS_SECRET_ACCESS_KEY": tokens.secretAccessKey,
                         "AWS_DEFAULT_REGION": region ?? "",
-                        "AWS_SESSION_TOKEN": sessionToken,
+                        "AWS_SESSION_TOKEN": tokens.sessionToken,
                         "AWS_S3_ENDPOINT": `${
                             host === "s3.amazonaws.com"
                                 ? `s3.${region}.amazonaws.com`
                                 : host
                         }${port === 443 ? "" : `:${port}`}`
                     },
-                    expirationTime
+                    "expirationTime": tokens.expirationTime
                 })
             );
         },

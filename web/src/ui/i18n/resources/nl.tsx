@@ -204,6 +204,11 @@ export const translations: Translations<"nl"> = {
         "accountFriendlyName textField label": "Vriendelijke naam van het account",
         "accountFriendlyName textField helper text":
             "Dit is slechts om u te helpen dit account te identificeren. Voorbeeld: Mijn persoonlijke account",
+
+        "isAnonymous switch label": "Anonieme toegang",
+        "isAnonymous switch helper text":
+            "Zet op AAN als er geen geheime toegangssleutel nodig is",
+
         "accessKeyId textField label": "Toegangssleutel-ID",
         "accessKeyId textField helper text": "Voorbeeld: 1A2B3C4D5E6F7G8H9I0J",
         "secretAccessKey textField label": "Geheime toegangssleutel",

@@ -161,6 +161,48 @@ export const privateThunks = {
                     "secret": valueToSecret(JSON.parse(value))
                 });
             }
+
+            moveS3CredentialsToASubObject: {
+                if (!files.includes("s3")) {
+                    break moveS3CredentialsToASubObject;
+                }
+
+                const path = pathJoin(projectConfigVaultDirPath, "s3");
+
+                const s3 = await secretsManager
+                    .get({ path })
+                    .then(({ secret }) => secretToValue(secret) as ProjectConfigs["s3"]);
+
+                let hasPatchBeenApplied = false;
+
+                s3.customConfigs.forEach((customConfig: any) => {
+                    if (!("accessKeyId" in customConfig)) {
+                        return;
+                    }
+
+                    customConfig.credentials = {};
+
+                    for (const key of [
+                        "accessKeyId",
+                        "secretAccessKey",
+                        "sessionToken"
+                    ]) {
+                        customConfig.credentials[key] = customConfig[key];
+                        delete customConfig[key];
+                    }
+
+                    hasPatchBeenApplied = true;
+                });
+
+                if (!hasPatchBeenApplied) {
+                    break moveS3CredentialsToASubObject;
+                }
+
+                await secretsManager.put({
+                    "path": path,
+                    "secret": valueToSecret(s3)
+                });
+            }
         }
 } satisfies Thunks;
 

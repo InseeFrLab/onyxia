@@ -13,10 +13,14 @@ import type { ReturnType } from "tsafe";
 export const createDuckDbSqlOlap = (params: {
     getS3Config: () => Promise<{
         s3_endpoint: string;
-        s3_access_key_id: string;
-        s3_secret_access_key: string;
-        s3_session_token: string | undefined;
         s3_url_style: "path" | "vhost";
+        credentials:
+            | {
+                  s3_access_key_id: string;
+                  s3_secret_access_key: string;
+                  s3_session_token: string | undefined;
+              }
+            | undefined;
     }>;
 }): SqlOlap => {
     const { getS3Config } = params;
@@ -34,21 +38,26 @@ export const createDuckDbSqlOlap = (params: {
 
         const {
             s3_endpoint,
-            s3_access_key_id,
-            s3_secret_access_key,
-            s3_session_token
-            //s3_url_style
+            //s3_url_style,
+            credentials
         } = s3Config;
 
         await conn.query(
             [
                 `SET s3_endpoint = '${s3_endpoint}';`,
-                `SET s3_access_key_id = '${s3_access_key_id}';`,
-                `SET s3_secret_access_key = '${s3_secret_access_key}';`,
-                ...(s3_session_token === undefined
-                    ? []
-                    : [`SET s3_session_token = '${s3_session_token}';`])
+                // https://github.com/duckdb/duckdb-wasm/issues/1207
                 //`SET s3_url_style = '${s3_url_style}';`
+                ...(credentials === undefined
+                    ? []
+                    : [
+                          `SET s3_access_key_id = '${credentials.s3_access_key_id}';`,
+                          `SET s3_secret_access_key = '${credentials.s3_secret_access_key}';`,
+                          ...(credentials.s3_session_token === undefined
+                              ? []
+                              : [
+                                    `SET s3_session_token = '${credentials.s3_session_token}';`
+                                ])
+                      ])
             ].join("\n")
         );
     }

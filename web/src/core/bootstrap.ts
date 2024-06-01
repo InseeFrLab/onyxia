@@ -147,16 +147,20 @@ export async function bootstrapCore(
             "getS3Config": async () => {
                 const { s3ClientForExplorer } = context;
 
-                const { accessKeyId, secretAccessKey, sessionToken } =
-                    await s3ClientForExplorer.getToken({
-                        "doForceRenew": false
-                    });
+                const tokens = await s3ClientForExplorer.getToken({
+                    "doForceRenew": false
+                });
 
                 return {
                     "s3_endpoint": s3ClientForExplorer.url,
-                    "s3_access_key_id": accessKeyId,
-                    "s3_secret_access_key": secretAccessKey,
-                    "s3_session_token": sessionToken,
+                    "credentials":
+                        tokens === undefined
+                            ? undefined
+                            : {
+                                  "s3_access_key_id": tokens.accessKeyId,
+                                  "s3_secret_access_key": tokens.secretAccessKey,
+                                  "s3_session_token": tokens.sessionToken
+                              },
                     "s3_url_style": s3ClientForExplorer.pathStyleAccess ? "path" : "vhost"
                 };
             }
@@ -332,9 +336,7 @@ export async function bootstrapCore(
                         "url": customS3ConfigForExplorer.url,
                         "pathStyleAccess": customS3ConfigForExplorer.pathStyleAccess,
                         "region": customS3ConfigForExplorer.region,
-                        "accessKeyId": customS3ConfigForExplorer.accessKeyId,
-                        "secretAccessKey": customS3ConfigForExplorer.secretAccessKey,
-                        "sessionToken": customS3ConfigForExplorer.sessionToken
+                        "credentials": customS3ConfigForExplorer.credentials
                     })
                 ];
             })

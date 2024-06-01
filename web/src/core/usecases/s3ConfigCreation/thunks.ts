@@ -35,10 +35,14 @@ export const thunks = {
                             "region": customS3Config.region,
                             "workingDirectoryPath": customS3Config.workingDirectoryPath,
                             "pathStyleAccess": customS3Config.pathStyleAccess,
-                            "accessKeyId": customS3Config.accessKeyId,
-                            "secretAccessKey": customS3Config.secretAccessKey,
                             "accountFriendlyName": customS3Config.accountFriendlyName,
-                            "sessionToken": customS3Config.sessionToken
+                            "isAnonymous": customS3Config.credentials === undefined,
+                            "accessKeyId":
+                                customS3Config.credentials?.accessKeyId ?? undefined,
+                            "secretAccessKey":
+                                customS3Config.credentials?.secretAccessKey ?? undefined,
+                            "sessionToken":
+                                customS3Config.credentials?.sessionToken ?? undefined
                         }
                     })
                 );
@@ -57,9 +61,10 @@ export const thunks = {
                         "region": baseS3Config?.region ?? "",
                         "workingDirectoryPath": baseS3Config?.workingDirectoryPath ?? "",
                         "pathStyleAccess": baseS3Config?.pathStyleAccess ?? false,
-                        "accessKeyId": "",
-                        "secretAccessKey": "",
                         "accountFriendlyName": "",
+                        "isAnonymous": false,
+                        "accessKeyId": undefined,
+                        "secretAccessKey": undefined,
                         "sessionToken": undefined
                     }
                 })
@@ -79,30 +84,22 @@ export const thunks = {
 
             const customConfigIndex = privateSelectors.customConfigIndex(getState());
 
-            const submittableFormValues =
-                privateSelectors.submittableFormValues(getState());
+            assert(customConfigIndex !== null);
 
-            assert(submittableFormValues !== undefined);
+            const customS3Config =
+                privateSelectors.submittableFormValuesAsCustomS3Config(getState());
+
+            assert(customS3Config !== null);
 
             const connectionTestStatus =
                 privateSelectors.connectionTestStatus(getState());
 
-            assert(connectionTestStatus !== undefined);
+            assert(connectionTestStatus !== null);
 
             await dispatch(
                 s3ConfigManagement.protectedThunks.addOrUpdateCustomS3Config({
                     customConfigIndex,
-                    "customS3Config": {
-                        "url": submittableFormValues.url,
-                        "region": submittableFormValues.region,
-                        "workingDirectoryPath":
-                            submittableFormValues.workingDirectoryPath,
-                        "pathStyleAccess": submittableFormValues.pathStyleAccess,
-                        "accountFriendlyName": submittableFormValues.accountFriendlyName,
-                        "accessKeyId": submittableFormValues.accessKeyId,
-                        "secretAccessKey": submittableFormValues.secretAccessKey,
-                        "sessionToken": submittableFormValues.sessionToken
-                    },
+                    customS3Config,
                     connectionTestStatus
                 })
             );
@@ -116,22 +113,13 @@ export const thunks = {
 
             dispatch(actions.connectionTestStarted());
 
-            const submittableFormValues =
-                privateSelectors.submittableFormValues(getState());
+            const customS3Config =
+                privateSelectors.submittableFormValuesAsCustomS3Config(getState());
 
-            assert(submittableFormValues !== undefined);
+            assert(customS3Config !== null);
 
             const result = await testS3CustomConfigConnection({
-                "customS3Config": {
-                    "url": submittableFormValues.url,
-                    "region": submittableFormValues.region,
-                    "workingDirectoryPath": submittableFormValues.workingDirectoryPath,
-                    "pathStyleAccess": submittableFormValues.pathStyleAccess,
-                    "accountFriendlyName": submittableFormValues.accountFriendlyName,
-                    "accessKeyId": submittableFormValues.accessKeyId,
-                    "secretAccessKey": submittableFormValues.secretAccessKey,
-                    "sessionToken": submittableFormValues.sessionToken
-                }
+                customS3Config
             });
 
             if (result.isSuccess) {
@@ -153,20 +141,13 @@ export const thunks = {
                     break preset_pathStyleAccess;
                 }
 
-                const formValuesErrors = privateSelectors.formValuesErrors(getState());
+                const url = privateSelectors.formattedFormValuesUrl(getState());
 
-                assert(formValuesErrors !== undefined);
+                assert(url !== null);
 
-                if (formValuesErrors.url !== undefined) {
+                if (url === undefined) {
                     break preset_pathStyleAccess;
                 }
-
-                const submittableFormValues =
-                    privateSelectors.submittableFormValues(getState());
-
-                assert(submittableFormValues !== undefined);
-
-                const { url } = submittableFormValues;
 
                 if (url.toLowerCase().includes("amazonaws.com")) {
                     dispatch(

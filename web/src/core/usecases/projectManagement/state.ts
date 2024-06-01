@@ -32,9 +32,13 @@ export namespace ProjectConfigs {
         workingDirectoryPath: string;
         pathStyleAccess: boolean;
         accountFriendlyName: string;
-        accessKeyId: string;
-        secretAccessKey: string;
-        sessionToken: string | undefined;
+        credentials:
+            | {
+                  accessKeyId: string;
+                  secretAccessKey: string;
+                  sessionToken: string | undefined;
+              }
+            | undefined;
     };
 
     export type RestorableServiceConfig = {

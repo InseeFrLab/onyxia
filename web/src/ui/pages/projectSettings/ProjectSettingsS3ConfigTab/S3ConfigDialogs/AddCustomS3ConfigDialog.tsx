@@ -17,6 +17,8 @@ import { useCore, useCoreState } from "core";
 import { declareComponentKeys, useTranslation } from "ui/i18n";
 import { Text } from "onyxia-ui/Text";
 import { TestS3ConnectionButton } from "../TestS3ConnectionButton";
+import FormHelperText from "@mui/material/FormHelperText";
+import Switch from "@mui/material/Switch";
 
 export type Props = {
     evtOpen: NonPostableEvt<{
@@ -277,69 +279,98 @@ const Body = memo(() => {
                         })
                     }
                 />
-                <TextField
+                <FormControl
                     className={css({
                         "marginBottom": theme.spacing(6)
                     })}
-                    label={t("accessKeyId textField label")}
-                    helperText={t("accessKeyId textField helper text")}
-                    helperTextError={
-                        formValuesErrors.accessKeyId === undefined
-                            ? undefined
-                            : t(formValuesErrors.accessKeyId)
-                    }
-                    defaultValue={formValues.accessKeyId}
-                    doOnlyShowErrorAfterFirstFocusLost
-                    onValueBeingTypedChange={({ value }) =>
-                        s3ConfigCreation.changeValue({
-                            "key": "accessKeyId",
-                            value
-                        })
-                    }
-                />
-                <TextField
-                    className={css({
-                        "marginBottom": theme.spacing(6)
-                    })}
-                    type="sensitive"
-                    selectAllTextOnFocus
-                    label={t("secretAccessKey textField label")}
-                    helperTextError={
-                        formValuesErrors.secretAccessKey === undefined
-                            ? undefined
-                            : t(formValuesErrors.secretAccessKey)
-                    }
-                    defaultValue={formValues.secretAccessKey}
-                    doOnlyShowErrorAfterFirstFocusLost
-                    onValueBeingTypedChange={({ value }) =>
-                        s3ConfigCreation.changeValue({
-                            "key": "secretAccessKey",
-                            value
-                        })
-                    }
-                />
-                <TextField
-                    className={css({
-                        "marginBottom": theme.spacing(6)
-                    })}
-                    type="sensitive"
-                    selectAllTextOnFocus
-                    label={t("sessionToken textField label")}
-                    helperText={t("sessionToken textField helper text")}
-                    helperTextError={
-                        formValuesErrors.sessionToken === undefined
-                            ? undefined
-                            : t(formValuesErrors.sessionToken)
-                    }
-                    defaultValue={formValues.sessionToken ?? ""}
-                    doOnlyShowErrorAfterFirstFocusLost
-                    onValueBeingTypedChange={({ value }) =>
-                        s3ConfigCreation.changeValue({
-                            "key": "sessionToken",
-                            "value": value || undefined
-                        })
-                    }
-                />
+                    component="fieldset"
+                    variant="standard"
+                >
+                    <FormGroup>
+                        <FormControlLabel
+                            control={
+                                <Switch
+                                    checked={formValues.isAnonymous}
+                                    onChange={(...[, isChecked]) =>
+                                        s3ConfigCreation.changeValue({
+                                            "key": "isAnonymous",
+                                            "value": isChecked
+                                        })
+                                    }
+                                />
+                            }
+                            label={t("isAnonymous switch label")}
+                        />
+                    </FormGroup>
+                    <FormHelperText>{t("isAnonymous switch helper text")}</FormHelperText>
+                </FormControl>
+                {!formValues.isAnonymous && (
+                    <>
+                        <TextField
+                            className={css({
+                                "marginBottom": theme.spacing(6)
+                            })}
+                            label={t("accessKeyId textField label")}
+                            helperText={t("accessKeyId textField helper text")}
+                            helperTextError={
+                                formValuesErrors.accessKeyId === undefined
+                                    ? undefined
+                                    : t(formValuesErrors.accessKeyId)
+                            }
+                            defaultValue={formValues.accessKeyId ?? ""}
+                            doOnlyShowErrorAfterFirstFocusLost
+                            onValueBeingTypedChange={({ value }) =>
+                                s3ConfigCreation.changeValue({
+                                    "key": "accessKeyId",
+                                    "value": value || undefined
+                                })
+                            }
+                        />
+                        <TextField
+                            className={css({
+                                "marginBottom": theme.spacing(6)
+                            })}
+                            type="sensitive"
+                            selectAllTextOnFocus
+                            label={t("secretAccessKey textField label")}
+                            helperTextError={
+                                formValuesErrors.secretAccessKey === undefined
+                                    ? undefined
+                                    : t(formValuesErrors.secretAccessKey)
+                            }
+                            defaultValue={formValues.secretAccessKey ?? ""}
+                            doOnlyShowErrorAfterFirstFocusLost
+                            onValueBeingTypedChange={({ value }) =>
+                                s3ConfigCreation.changeValue({
+                                    "key": "secretAccessKey",
+                                    "value": value || undefined
+                                })
+                            }
+                        />
+                        <TextField
+                            className={css({
+                                "marginBottom": theme.spacing(6)
+                            })}
+                            type="sensitive"
+                            selectAllTextOnFocus
+                            label={t("sessionToken textField label")}
+                            helperText={t("sessionToken textField helper text")}
+                            helperTextError={
+                                formValuesErrors.sessionToken === undefined
+                                    ? undefined
+                                    : t(formValuesErrors.sessionToken)
+                            }
+                            defaultValue={formValues.sessionToken ?? ""}
+                            doOnlyShowErrorAfterFirstFocusLost
+                            onValueBeingTypedChange={({ value }) =>
+                                s3ConfigCreation.changeValue({
+                                    "key": "sessionToken",
+                                    "value": value || undefined
+                                })
+                            }
+                        />
+                    </>
+                )}
             </FormGroup>
         </>
     );
@@ -388,6 +419,8 @@ const { i18n } = declareComponentKeys<
     | "account credentials"
     | "accountFriendlyName textField label"
     | "accountFriendlyName textField helper text"
+    | "isAnonymous switch label"
+    | "isAnonymous switch helper text"
     | "accessKeyId textField label"
     | "accessKeyId textField helper text"
     | "secretAccessKey textField label"

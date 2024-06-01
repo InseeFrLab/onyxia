@@ -27,9 +27,13 @@ export namespace ParamsOfCreateS3Client {
     export type NoSts = Common & {
         isStsEnabled: false;
         region: string;
-        accessKeyId: string;
-        secretAccessKey: string;
-        sessionToken: string | undefined;
+        credentials:
+            | {
+                  accessKeyId: string;
+                  secretAccessKey: string;
+                  sessionToken: string | undefined;
+              }
+            | undefined;
     };
 
     export type Sts = Common & {
@@ -52,16 +56,19 @@ export function createS3Client(params: ParamsOfCreateS3Client): S3Client {
     const { getNewlyRequestedOrCachedToken, clearCachedToken, getAwsS3Client } = (() => {
         const { getNewlyRequestedOrCachedToken, clearCachedToken } = (() => {
             if (!params.isStsEnabled) {
-                const tokens = {
-                    "accessKeyId": params.accessKeyId,
-                    "secretAccessKey": params.secretAccessKey,
-                    "sessionToken": params.sessionToken,
-                    "expirationTime": undefined,
-                    "acquisitionTime": undefined
-                };
+                const token =
+                    params.credentials === undefined
+                        ? undefined
+                        : {
+                              "accessKeyId": params.credentials.accessKeyId,
+                              "secretAccessKey": params.credentials.secretAccessKey,
+                              "sessionToken": params.credentials.sessionToken,
+                              "expirationTime": undefined,
+                              "acquisitionTime": undefined
+                          };
 
                 return {
-                    "getNewlyRequestedOrCachedToken": () => Promise.resolve(tokens),
+                    "getNewlyRequestedOrCachedToken": () => Promise.resolve(token),
                     "clearCachedToken": () => {
                         throw new Error(
                             "Can't renew token when using non volatile account"
@@ -168,9 +175,9 @@ export function createS3Client(params: ParamsOfCreateS3Client): S3Client {
 
                         return {
                             accessKeyId,
-                            "expirationTime": new Date(expiration).getTime(),
                             secretAccessKey,
                             sessionToken,
+                            "expirationTime": new Date(expiration).getTime(),
                             "acquisitionTime": now
                         };
                     },
@@ -181,15 +188,19 @@ export function createS3Client(params: ParamsOfCreateS3Client): S3Client {
         })();
 
         const { getAwsS3Client } = (() => {
+            const noTokensRef = { "__noCredentials__": true } as const;
+
             const awsS3ClientByTokens = new WeakMap<
-                { accessKeyId: string },
+                { secretAccessKey: string } | { __noCredentials__: true },
                 ns_aws_sdk_client_s3.S3Client
             >();
 
             async function getAwsS3Client() {
                 const tokens = await getNewlyRequestedOrCachedToken();
 
-                const cachedAwsS3Client = awsS3ClientByTokens.get(tokens);
+                const weakMapKey = tokens ?? noTokensRef;
+
+                const cachedAwsS3Client = awsS3ClientByTokens.get(weakMapKey);
 
                 if (cachedAwsS3Client !== undefined) {
                     return {
@@ -199,16 +210,24 @@ export function createS3Client(params: ParamsOfCreateS3Client): S3Client {
 
                 const awsS3Client = new ns_aws_sdk_client_s3.S3Client({
                     "region": params.region ?? "us-east-1",
-                    "credentials": {
-                        "accessKeyId": tokens.accessKeyId,
-                        "secretAccessKey": tokens.secretAccessKey,
-                        "sessionToken": tokens.sessionToken
-                    },
                     "endpoint": params.url,
-                    "forcePathStyle": params.pathStyleAccess
+                    "forcePathStyle": params.pathStyleAccess,
+                    ...(tokens === undefined
+                        ? {
+                              "signer": {
+                                  "sign": request => Promise.resolve(request)
+                              }
+                          }
+                        : {
+                              "credentials": {
+                                  "accessKeyId": tokens.accessKeyId,
+                                  "secretAccessKey": tokens.secretAccessKey,
+                                  "sessionToken": tokens.sessionToken
+                              }
+                          })
                 });
 
-                awsS3ClientByTokens.set(tokens, awsS3Client);
+                awsS3ClientByTokens.set(weakMapKey, awsS3Client);
 
                 return { awsS3Client };
             }

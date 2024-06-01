@@ -205,6 +205,10 @@ export const translations: Translations<"fi"> = {
         "accountFriendlyName textField label": "Tilin ystävällinen nimi",
         "accountFriendlyName textField helper text":
             "Tämä on vain avuksi tilin tunnistamisessa. Esimerkki: Oma henkilökohtainen tili",
+        "isAnonymous switch label": "Anonyymi pääsy",
+        "isAnonymous switch helper text":
+            "Aseta PÄÄLLE, jos salainen pääsyavain ei ole tarpeen",
+
         "accessKeyId textField label": "Pääsyavaimen tunnus",
         "accessKeyId textField helper text": "Esimerkki: 1A2B3C4D5E6F7G8H9I0J",
         "secretAccessKey textField label": "Salainen pääsyavain",

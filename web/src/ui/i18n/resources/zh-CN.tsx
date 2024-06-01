@@ -187,6 +187,8 @@ export const translations: Translations<"zh-CN"> = {
         "accountFriendlyName textField label": "账户友好名称",
         "accountFriendlyName textField helper text":
             "这只是为了帮助你识别这个账户。例如：我的个人账户",
+        "isAnonymous switch label": "匿名访问",
+        "isAnonymous switch helper text": "如果不需要密钥，请将其设置为开启",
         "accessKeyId textField label": "访问密钥 ID",
         "accessKeyId textField helper text": "例如：1A2B3C4D5E6F7G8H9I0J",
         "secretAccessKey textField label": "秘密访问密钥",
