@@ -683,8 +683,6 @@ export function createOnyxiaApi(params: {
             ctxUnsubscribe.done();
 
             reader.releaseLock();
-
-            console.log("done");
         },
         "helmUpgradeGlobalSuspend": async ({ helmReleaseName, value }) => {
             if (value === true) {
