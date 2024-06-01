@@ -69,10 +69,6 @@ export async function createSecretManager(params: Params): Promise<SecretsManage
             "returnCachedTokenIfStillValidForXPercentOfItsTTL": "90%"
         });
 
-    if (oidc.loginScenario !== "sessionStorageRestoration") {
-        clearCachedToken();
-    }
-
     const { axiosInstance } = (() => {
         const axiosInstance = createAxiosInstance();
 
