@@ -346,7 +346,7 @@ export function createOnyxiaApi(params: {
                 if (error.response?.status === 409) {
                     //NOTE: The onboarding has already been done.
                     console.log(
-                        "The onboarding has already been done, the above 409 is normal"
+                        "^ The project onboarding has already been done, the above 409 is normal"
                     );
                     return;
                 }

@@ -13,7 +13,7 @@ export const thunks = {
     "changeProject":
         (params: { projectId: string }) =>
         async (...args) => {
-            const [dispatch, , { onyxiaApi, secretsManager }] = args;
+            const [dispatch, , { onyxiaApi, secretsManager, oidc }] = args;
 
             const { projectId } = params;
 
@@ -27,6 +27,16 @@ export const thunks = {
                 const { vaultTopDir: projectVaultTopDirPath, group } = project;
 
                 return { projectVaultTopDirPath, group };
+            })();
+
+            const prOnboarding = (async () => {
+                assert(oidc.isUserLoggedIn);
+
+                if (oidc.loginScenario === "sessionStorageRestoration") {
+                    return;
+                }
+
+                await onyxiaApi.onboard({ group });
             })();
 
             await dispatch(privateThunks.__configMigration({ projectVaultTopDirPath }));
@@ -48,10 +58,6 @@ export const thunks = {
                 await Promise.all(
                     keys.map(async key => {
                         if (!files.includes(key)) {
-                            if (key === "onboardingTimestamp") {
-                                await onyxiaApi.onboard({ group });
-                            }
-
                             const value = getDefaultConfig(key);
 
                             await secretsManager.put({
@@ -70,6 +76,8 @@ export const thunks = {
                     })
                 )
             ) as any;
+
+            await prOnboarding;
 
             dispatch(
                 actions.projectChanged({
@@ -101,7 +109,6 @@ export const thunks = {
 
 const keys = [
     "servicePassword",
-    "onboardingTimestamp",
     "restorableConfigs",
     "s3",
     "clusterNotificationCheckoutTime"
@@ -290,11 +297,6 @@ function getDefaultConfig<K extends keyof ProjectConfigs>(key_: K): ProjectConfi
     switch (key) {
         case "servicePassword": {
             const out: ProjectConfigs[typeof key] = generateRandomPassword();
-            // @ts-expect-error
-            return out;
-        }
-        case "onboardingTimestamp": {
-            const out: ProjectConfigs[typeof key] = Date.now();
             // @ts-expect-error
             return out;
         }

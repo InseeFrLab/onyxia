@@ -14,7 +14,6 @@ type State = {
 };
 
 export type ProjectConfigs = {
-    onboardingTimestamp: number;
     servicePassword: string;
     restorableConfigs: ProjectConfigs.RestorableServiceConfig[];
     s3: {
