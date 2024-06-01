@@ -32,9 +32,24 @@ const lastClusterEvent = createSelector(clusterEvents, clusterEvents => {
         return undefined;
     }
 
-    const { message, severity } = clusterEvents[clusterEvents.length - 1];
+    let i = 1;
 
-    return { message, severity };
+    while (true) {
+        const { message, severity } = clusterEvents[clusterEvents.length - i];
+
+        if (message.includes("probe failed:")) {
+            if (i === clusterEvents.length) {
+                break;
+            }
+
+            i++;
+            continue;
+        }
+
+        return { message, severity };
+    }
+
+    return undefined;
 });
 
 export const selectors = {
