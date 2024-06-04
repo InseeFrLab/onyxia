@@ -4,7 +4,17 @@ import type { Language } from "core";
 import type { LocalizedString } from "./i18n";
 
 //List the languages you with to support
-export const languages = ["en", "fr", "zh-CN", "no", "fi", "nl", "it", "de"] as const;
+export const languages = [
+    "en",
+    "fr",
+    "zh-CN",
+    "no",
+    "fi",
+    "nl",
+    "it",
+    "es",
+    "de"
+] as const;
 
 assert<Equals<(typeof languages)[number], Language>>();
 
@@ -16,6 +26,7 @@ export const zLanguage = z.union([
     z.literal("fi"),
     z.literal("nl"),
     z.literal("it"),
+    z.literal("es"),
     z.literal("de")
 ]);
 

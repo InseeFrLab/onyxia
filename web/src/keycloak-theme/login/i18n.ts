@@ -74,6 +74,21 @@ export const { useI18n } = createUseI18n({
         "doRegister": "Crea un account",
         "tabTitleSuffix": "Accedi"
     },
+    "es": {
+        "lowerCaseAlphanumericalCharsOnly": "Solo caracteres alfanuméricos en minúsculas",
+        "allowed email domains": "Dominios permitidos",
+        "minimum length": "Longitud mínima: {0}",
+        "must be different from username":
+            "La contraseña no puede ser el nombre de usuario",
+        "password mismatch": "Las contraseñas no coinciden",
+        "go back": "Regresar",
+        "form not filled properly yet":
+            "Por favor, asegúrese de que el formulario esté correctamente lleno",
+        "must respect the pattern": "Debe respetar el patrón",
+        "or": "o",
+        "doRegister": "Crear una cuenta",
+        "tabTitleSuffix": "Iniciar sesión"
+    },
     "nl": {
         "lowerCaseAlphanumericalCharsOnly": "Alleen kleine alfanumerieke tekens",
         "allowed email domains": "Toegestane e-maildomeinen",
