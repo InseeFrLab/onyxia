@@ -35,6 +35,7 @@ export const {
         "fi": () => import("./resources/fi").then(({ translations }) => translations),
         "nl": () => import("./resources/nl").then(({ translations }) => translations),
         "it": () => import("./resources/it").then(({ translations }) => translations),
+        "es": () => import("./resources/es").then(({ translations }) => translations),
         "de": () => import("./resources/de").then(({ translations }) => translations)
     }
 );
@@ -60,6 +61,7 @@ export const languagesPrettyPrint: Record<Language, string> = objectFromEntries(
         "fr": "Français",
         "de": "Deutsch",
         "it": "Italiano",
+        "es": "Español",
         "nl": "Nederlands",
         "no": "Norsk",
         "fi": "Suomi",
