@@ -2,7 +2,7 @@ import { useState } from "react";
 import { UserProfileFormFields } from "./shared/UserProfileFormFields";
 import type { PageProps } from "keycloakify/login/pages/PageProps";
 import { useGetClassName } from "keycloakify/login/lib/useGetClassName";
-import type { KcContext } from "../kcContext";
+import type { KcContext } from "../KcContext";
 import type { I18n } from "../i18n";
 import { tss } from "tss";
 import { Button } from "onyxia-ui/Button";

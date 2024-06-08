@@ -1,4 +1,4 @@
-import { getKcContext, type KcContext } from "./kcContext";
+import { getKcContext, type KcContext } from "./KcContext";
 import KcApp from "./KcApp";
 import type { DeepPartial } from "keycloakify/tools/DeepPartial";
 

@@ -1,6 +1,6 @@
 import { useEffect, lazy, Suspense } from "react";
 import Fallback, { type PageProps } from "keycloakify/login";
-import type { KcContext } from "./kcContext";
+import type { KcContext } from "./KcContext";
 import { useI18n } from "./i18n";
 import { loadThemedFavicon } from "keycloak-theme/login/theme";
 import { tss } from "tss";

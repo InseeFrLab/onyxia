@@ -1,6 +1,6 @@
 /* In keycloak-theme, this should be evaluated early */
 
-import { kcContext as kcLoginThemeContext } from "keycloak-theme/login/kcContext";
+import { kcContext as kcLoginThemeContext } from "keycloak-theme/login/KcContext";
 import {
     retrieveParamFromUrl,
     addParamToUrl,

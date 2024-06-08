@@ -2,7 +2,7 @@ import { useRerenderOnStateChange } from "evt/hooks";
 import { Markdown } from "onyxia-ui/Markdown";
 import type { PageProps } from "keycloakify/login/pages/PageProps";
 import { evtTermMarkdown } from "keycloakify/login/lib/useDownloadTerms";
-import type { KcContext } from "../kcContext";
+import type { KcContext } from "../KcContext";
 import type { I18n } from "../i18n";
 import { useDownloadTerms } from "keycloakify/login";
 import { createResolveLocalizedStringFactory } from "i18nifty/LocalizedString/LocalizedString";

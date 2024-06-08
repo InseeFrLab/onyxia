@@ -1,5 +1,5 @@
 import { getSafeUrl as getSafeUrl_base } from "onyxia-ui/tools/getSafeUrl";
-import { kcContext } from "keycloak-theme/login/kcContext";
+import { kcContext } from "keycloak-theme/login/KcContext";
 import { assert } from "tsafe/assert";
 
 /** Throws if urls isn't safe, returns url */

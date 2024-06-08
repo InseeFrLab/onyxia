@@ -3,7 +3,7 @@
 import { usePrepareTemplate } from "keycloakify/lib/usePrepareTemplate";
 import { type TemplateProps as GenericTemplateProps } from "keycloakify/login/TemplateProps";
 import { useGetClassName } from "keycloakify/login/lib/useGetClassName";
-import type { KcContext } from "./kcContext";
+import type { KcContext } from "./KcContext";
 import type { I18n } from "./i18n";
 import { memo } from "react";
 import { useConstCallback } from "powerhooks/useConstCallback";
