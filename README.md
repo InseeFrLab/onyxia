@@ -46,13 +46,6 @@ Onyxia is developed by the French National institute of statistics and economic 
 ## Media
 
 <p align="center">
-    <i>OW2Con'23</i><br>
-    <a href="https://youtu.be/wBYWEwF7pK8">
-        <img src="https://github.com/inseefrlab/onyxia/assets/6702424/48206b71-020c-449e-88f4-5e18323fd3a1" width="640">
-    </a>
-</p>
-
-<p align="center">
     <i>Devoxx France 2023</i><br>
     <a href="https://youtu.be/GXINfnVB21E">
         <img src="https://user-images.githubusercontent.com/6702424/234834115-28a5fc8d-4819-4f6d-abf5-9a9ba25e3749.png" width="640">
@@ -70,6 +63,13 @@ Onyxia is developed by the French National institute of statistics and economic 
     <i>Open Source Experience 2022</i><br>
     <a href="https://www.youtube.com/watch?v=QBHyAKcNmS0">
         <img src="https://user-images.githubusercontent.com/6702424/206958731-32480b6c-4fab-432f-8afa-bc7922df9857.png" width="640">
+    </a>
+</p>
+
+<p align="center">
+    <i>OW2Con'23</i><br>
+    <a href="https://youtu.be/wBYWEwF7pK8">
+        <img src="https://github.com/inseefrlab/onyxia/assets/6702424/48206b71-020c-449e-88f4-5e18323fd3a1" width="640">
     </a>
 </p>
 
