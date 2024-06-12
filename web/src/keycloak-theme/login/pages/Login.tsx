@@ -112,6 +112,7 @@ export default function Login(
                                     defaultValue={login.username ?? ""}
                                     id="username"
                                     name="username"
+                                    inputProps_autoFocus
                                     inputProps_aria-label="username"
                                     inputProps_spellCheck={false}
                                     label={
