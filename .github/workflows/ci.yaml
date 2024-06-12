@@ -98,11 +98,10 @@ jobs:
       - uses: bahmutov/npm-install@v1.8.35
         env:
           XDG_CACHE_HOME: "/home/runner/.cache/yarn"
-      - run: rm -r public/material-icons
-      - run: yarn build
-      - run: npx keycloakify
+      - run: yarn build-keycloak-theme
         env:
           KEYCLOAKIFY_THEME_VERSION: ${{needs.prepare_release.outputs.new_chart_version}}
+      - run: mv dist_keycloak/keycloak-theme-for-kc-22-and-above.jar dist_keycloak/keycloak-theme.jar
       - uses: yogeshlonkar/wait-for-jobs@v0.1.8
         with:
           ignore-skipped: true

@@ -9,7 +9,7 @@ import commonjs from "vite-plugin-commonjs";
 import { keycloakify } from "keycloakify/vite-plugin";
 import { viteEnvs } from "vite-envs";
 import { join as pathJoin } from "path";
-import * as fs from "fs";
+import * as fs from "fs/promises";
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -40,12 +40,27 @@ export default defineConfig({
                     "name": "ONYXIA_TAB_TITLE",
                     "default": "Onyxia"
                 }
-            ]
+            ],
+            "postBuild": async () => {
+                await fs.rm(
+                    pathJoin(
+                        "theme",
+                        "onyxia",
+                        "login",
+                        "resources",
+                        "build",
+                        "material-icons"
+                    ),
+                    { "recursive": true }
+                );
+            }
         }),
         viteEnvs({
-            "computedEnv": ({ resolvedConfig }) => ({
+            "computedEnv": async ({ resolvedConfig }) => ({
                 "WEB_VERSION": JSON.parse(
-                    fs.readFileSync(pathJoin(__dirname, "package.json")).toString("utf8")
+                    (await fs.readFile(pathJoin(__dirname, "package.json"))).toString(
+                        "utf8"
+                    )
                 ).version,
                 // Only so that html substitution can work (after rendering of the EJS).
                 // Do not use in the TS code.
