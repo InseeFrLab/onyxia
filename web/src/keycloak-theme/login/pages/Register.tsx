@@ -72,7 +72,12 @@ export default function Register(props: RegisterProps) {
                     </div>
                 )}
                 <div className={classes.buttonsWrapper}>
-                    <Button variant="secondary" href={url.loginUrl} tabIndex={-1}>
+                    <Button
+                        variant="secondary"
+                        href={url.loginUrl}
+                        doOpenNewTabIfHref={false}
+                        tabIndex={-1}
+                    >
                         {msg("go back")}
                     </Button>
                     {(() => {
