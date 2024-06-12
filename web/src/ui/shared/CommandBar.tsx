@@ -279,7 +279,6 @@ const useStyles = tss
                 },
                 "transform": "scaleY(1)",
                 "transformOrigin": "top",
-                borderRadius,
                 "paddingTop": theme.spacing(2),
                 // Only work on Firefox when writing this
                 // Note this spec isn't great, we can't specify the hover color...
