@@ -1,14 +1,14 @@
 import { Suspense, lazy } from "react";
 import type { ClassKey } from "keycloakify/login";
+import { useThemedImageUrl } from "onyxia-ui/ThemedImage";
 import type { KcContext } from "./KcContext";
 import { useI18n } from "./i18n";
 import { loadThemedFavicon } from "keycloak-theme/login/theme";
 import { tss } from "tss";
-import onyxiaNeumorphismDarkModeUrl from "ui/assets/svg/OnyxiaNeumorphismDarkMode.svg";
-import onyxiaNeumorphismLightModeUrl from "ui/assets/svg/OnyxiaNeumorphismLightMode.svg";
 import { OnyxiaUi } from "keycloak-theme/login/theme";
 import { useDownloadTerms } from "keycloakify/login";
 import { downloadTermsMarkdown } from "ui/shared/downloadTermsMarkdown";
+import { env } from "env";
 
 loadThemedFavicon();
 
@@ -35,7 +35,11 @@ export default function KcApp(props: Props) {
 function ContextualizedKcApp(props: Props) {
     const { kcContext } = props;
 
-    const { classes: defaultPageClasses } = useStyles();
+    const backgroundUrl = useThemedImageUrl(env.BACKGROUND_ASSET);
+
+    const { classes: defaultPageClasses } = useStyles({
+        backgroundUrl
+    });
 
     const { i18n } = useI18n({ kcContext });
 
@@ -108,19 +112,12 @@ const doMakeUserConfirmPassword = false;
 
 const useStyles = tss
     .withName({ KcApp })
+    .withParams<{ backgroundUrl: string | undefined }>()
     .withNestedSelectors<"kcHeaderWrapperClass">()
     .create(
-        ({ theme, classes }) =>
+        ({ theme, backgroundUrl, classes }) =>
             ({
                 "kcHtmlClass": {
-                    "& body": {
-                        "background": `url(${
-                            theme.isDarkModeEnabled
-                                ? onyxiaNeumorphismDarkModeUrl
-                                : onyxiaNeumorphismLightModeUrl
-                        }) no-repeat center center fixed`,
-                        "fontFamily": theme.typography.fontFamily
-                    },
                     "background": `${theme.colors.useCases.surfaces.background}`,
                     "& a": {
                         "color": `${theme.colors.useCases.typography.textFocus}`
@@ -138,12 +135,16 @@ const useStyles = tss
                     }
                 },
                 "kcBodyClass": {
-                    "background": `url(${
-                        theme.isDarkModeEnabled
-                            ? onyxiaNeumorphismDarkModeUrl
-                            : onyxiaNeumorphismLightModeUrl
-                    }) no-repeat center center fixed`,
-                    "fontFamily": theme.typography.fontFamily
+                    "&&": {
+                        ...(backgroundUrl === undefined
+                            ? undefined
+                            : {
+                                  "backgroundImage": `url(${backgroundUrl})`,
+                                  "backgroundSize": "auto 60%",
+                                  "backgroundPosition": "center",
+                                  "backgroundRepeat": "no-repeat"
+                              })
+                    }
                 },
                 "kcLocaleWrapperClass": {
                     "visibility": "hidden"
