@@ -421,8 +421,6 @@ function CustomInputTag(
                 </>
             }
             helperText={(() => {
-                console.log("before", attribute.name, displayableErrors_props);
-
                 {
                     const nonEmailPatternDisplayableErrors =
                         displayableErrors_props.filter(
@@ -441,10 +439,6 @@ function CustomInputTag(
                             )
                         );
                     }
-                }
-
-                if (attribute.name === "email") {
-                    return msg("allowed email domains");
                 }
 
                 {
@@ -484,6 +478,7 @@ function CustomInputTag(
                             pattern :
                             undefined;
             })()}
+            doOnlyShowErrorAfterFirstFocusLost={false}
             // prettier-ignore
             isErrored={displayableErrors_props.length !== 0}
         />

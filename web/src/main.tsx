@@ -7,8 +7,9 @@ import { getKcContextMock } from "keycloak-theme/login/getKcContextMock";
 
 if (import.meta.env.DEV) {
     window.kcContext = getKcContextMock({
-        pageId: "info.ftl",
-        overrides: {}
+        pageId: "register.ftl",
+        overrides: {
+        }
     });
 }
 */

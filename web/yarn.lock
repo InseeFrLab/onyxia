@@ -3830,10 +3830,10 @@ jwt-decode@^3.1.2:
   resolved "https://registry.yarnpkg.com/jwt-decode/-/jwt-decode-3.1.2.tgz#3fb319f3675a2df0c2895c8f5e9fa4b67b04ed59"
   integrity sha512-UfpWE/VZn0iP50d8cz9NrZLM9lSWhcJ+0Gt/nm4by88UL+J1SiKN8/5dkjMmbEzwL2CAe+67GsegCbIKtbp75A==
 
-keycloakify@10.0.0-rc.58:
-  version "10.0.0-rc.58"
-  resolved "https://registry.yarnpkg.com/keycloakify/-/keycloakify-10.0.0-rc.58.tgz#083b91d922198622e83aa435c7b455dc1017bff5"
-  integrity sha512-w3oGLGqgwoztsEFzFeH/HjzQmgziFxklkzF/pIVoGDTpvYY3tgvWTc1UALxWfVNwSSJCbrUg0lH5JdArOUW+ZA==
+keycloakify@10.0.0-rc.59:
+  version "10.0.0-rc.59"
+  resolved "https://registry.yarnpkg.com/keycloakify/-/keycloakify-10.0.0-rc.59.tgz#3034dc92f8be76f92978c326d79b844bca98bde2"
+  integrity sha512-jUhvAp9WK9Da4SnYrdtHwKLp23l1KlOzmUtOK0LxU5/3nO8NLq+bw0Rukn5ji0pr8RpVQaY1895k3Ir/TL/PAg==
   dependencies:
     react-markdown "^5.0.3"
     tsafe "^1.6.6"
