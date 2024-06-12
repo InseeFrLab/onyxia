@@ -19,12 +19,27 @@ export default defineConfig({
         commonjs(),
         keycloakify({
             "themeName": "onyxia",
-            "extraThemeProperties": [
-                "RESOURCES_ALLOWED_ORIGINS=${env.ONYXIA_RESOURCES_ALLOWED_ORIGINS:*}",
-                "HEADER_TEXT_BOLD=${env.ONYXIA_HEADER_TEXT_BOLD:}",
-                "HEADER_TEXT_FOCUS=${env.ONYXIA_HEADER_TEXT_FOCUS:}",
-                "PALETTE_OVERRIDE=${env.ONYXIA_PALETTE_OVERRIDE:}",
-                "TAB_TITLE=${env.ONYXIA_TAB_TITLE:}"
+            "environmentVariables": [
+                {
+                    "name": "ONYXIA_RESOURCES_ALLOWED_ORIGINS",
+                    "default": "*"
+                },
+                {
+                    "name": "ONYXIA_HEADER_TEXT_BOLD",
+                    "default": ""
+                },
+                {
+                    "name": "ONYXIA_HEADER_TEXT_FOCUS",
+                    "default": ""
+                },
+                {
+                    "name": "ONYXIA_PALETTE_OVERRIDE",
+                    "default": ""
+                },
+                {
+                    "name": "ONYXIA_TAB_TITLE",
+                    "default": "Onyxia"
+                }
             ]
         }),
         viteEnvs({

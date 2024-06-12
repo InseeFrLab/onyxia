@@ -1,8 +1,10 @@
-/* eslint-disable jsx-a11y/anchor-is-valid */
-
-import { usePrepareTemplate } from "keycloakify/lib/usePrepareTemplate";
-import { type TemplateProps as GenericTemplateProps } from "keycloakify/login/TemplateProps";
-import { useGetClassName } from "keycloakify/login/lib/useGetClassName";
+import { useEffect } from "react";
+import { assert } from "keycloakify/tools/assert";
+import type { TemplateProps as TemplateProps_generic } from "keycloakify/login/TemplateProps";
+import { getKcClsx } from "keycloakify/login/lib/kcClsx";
+import { useInsertScriptTags } from "keycloakify/tools/useInsertScriptTags";
+import { useInsertLinkTags } from "keycloakify/tools/useInsertLinkTags";
+import { useSetClassName } from "keycloakify/tools/useSetClassName";
 import type { KcContext } from "./KcContext";
 import type { I18n } from "./i18n";
 import { memo } from "react";
@@ -22,10 +24,17 @@ import { useConst } from "powerhooks/useConst";
 import { env } from "env";
 import { useThemedImageUrl } from "onyxia-ui/ThemedImage";
 
-type TemplateProps = GenericTemplateProps<KcContext, I18n>;
+type TemplateProps = TemplateProps_generic<KcContext, I18n>;
 
 export default function Template(props: TemplateProps) {
-    const { kcContext, doUseDefaultCss, classes: classes_props, children } = props;
+    const {
+        bodyClassName,
+        kcContext,
+        i18n,
+        doUseDefaultCss,
+        classes: classes_props,
+        children
+    } = props;
 
     const backgroundUrl = useThemedImageUrl(env.BACKGROUND_ASSET);
 
@@ -33,31 +42,97 @@ export default function Template(props: TemplateProps) {
         backgroundUrl
     });
 
-    const { getClassName } = useGetClassName({
+    const { kcClsx } = getKcClsx({
         doUseDefaultCss,
-        "classes": classes_props
+        classes: classes_props
     });
 
-    const { url } = kcContext;
+    const { locale, url, authenticationSession, scripts } = kcContext;
 
-    const { isReady } = usePrepareTemplate({
-        "doFetchDefaultThemeResources": doUseDefaultCss,
-        "styles": [
-            `${url.resourcesCommonPath}/node_modules/patternfly/dist/css/patternfly.min.css`,
-            `${url.resourcesCommonPath}/node_modules/patternfly/dist/css/patternfly-additions.min.css`,
-            `${url.resourcesCommonPath}/lib/zocial/zocial.css`,
-            `${url.resourcesPath}/css/login.css`
-        ],
-        "htmlClassName": getClassName("kcHtmlClass"),
-        "bodyClassName": undefined
+    useEffect(() => {
+        document.title = `${env.TAB_TITLE} - ${i18n.msgStr("tabTitleSuffix")}`;
+    }, []);
+
+    useSetClassName({
+        qualifiedName: "html",
+        className: kcClsx("kcHtmlClass")
     });
 
-    if (!isReady) {
+    useSetClassName({
+        qualifiedName: "body",
+        className: bodyClassName ?? kcClsx("kcBodyClass")
+    });
+
+    useEffect(() => {
+        const { currentLanguageTag } = locale ?? {};
+
+        if (currentLanguageTag === undefined) {
+            return;
+        }
+
+        const html = document.querySelector("html");
+        assert(html !== null);
+        html.lang = currentLanguageTag;
+    }, []);
+
+    const { areAllStyleSheetsLoaded } = useInsertLinkTags({
+        componentOrHookName: "Template",
+        hrefs: !doUseDefaultCss
+            ? []
+            : [
+                  `${url.resourcesCommonPath}/node_modules/@patternfly/patternfly/patternfly.min.css`,
+                  `${url.resourcesCommonPath}/node_modules/patternfly/dist/css/patternfly.min.css`,
+                  `${url.resourcesCommonPath}/node_modules/patternfly/dist/css/patternfly-additions.min.css`,
+                  `${url.resourcesCommonPath}/lib/pficon/pficon.css`,
+                  `${url.resourcesPath}/css/login.css`
+              ]
+    });
+
+    const { insertScriptTags } = useInsertScriptTags({
+        componentOrHookName: "Template",
+        scriptTags: [
+            {
+                type: "module",
+                src: `${url.resourcesPath}/js/menu-button-links.js`
+            },
+            ...(authenticationSession === undefined
+                ? []
+                : [
+                      {
+                          type: "module",
+                          textContent: [
+                              `import { checkCookiesAndSetTimer } from "${url.resourcesPath}/js/authChecker.js";`,
+                              ``,
+                              `checkCookiesAndSetTimer(`,
+                              `  "${authenticationSession.authSessionId}",`,
+                              `  "${authenticationSession.tabId}",`,
+                              `  "${url.ssoLoginInOtherTabsUrl}"`,
+                              `);`
+                          ].join("\n")
+                      } as const
+                  ]),
+            ...scripts.map(
+                script =>
+                    ({
+                        type: "text/javascript",
+                        src: script
+                    }) as const
+            )
+        ]
+    });
+
+    useEffect(() => {
+        if (areAllStyleSheetsLoaded) {
+            insertScriptTags();
+        }
+    }, [areAllStyleSheetsLoaded]);
+
+    if (!areAllStyleSheetsLoaded) {
         return null;
     }
 
     return (
-        <div className={cx(classes.root, getClassName("kcLoginClass"))}>
+        <div className={cx(classes.root, kcClsx("kcLoginClass"))}>
             <Header className={classes.header} />
             <section className={classes.betweenHeaderAndFooter}>
                 <Page {...props} className={classes.page}>
@@ -152,7 +227,6 @@ const { Page } = (() => {
         | "displayInfo"
         | "displayMessage"
         | "displayRequiredFields"
-        | "displayWide"
         | "showAnotherWayIfPresent"
         | "headerNode"
         | "showUsernameNode"
@@ -169,7 +243,6 @@ const { Page } = (() => {
             displayInfo = false,
             displayMessage = true,
             displayRequiredFields = false,
-            displayWide = false,
             showAnotherWayIfPresent = true,
             headerNode,
             showUsernameNode = null,
@@ -226,7 +299,6 @@ const { Page } = (() => {
                         kcContext={kcContext}
                         displayMessage={displayMessage}
                         showAnotherWayIfPresent={showAnotherWayIfPresent}
-                        displayWide={displayWide}
                         displayInfo={displayInfo}
                         infoNode={infoNode}
                         i18n={i18n}
@@ -292,7 +364,7 @@ const { Page } = (() => {
 
             const { classes, cx } = useStyles();
 
-            const { getClassName } = useGetClassName({
+            const { kcClsx } = getKcClsx({
                 doUseDefaultCss,
                 "classes": classes_props
             });
@@ -305,10 +377,10 @@ const { Page } = (() => {
                         !kcContext.auth.showResetCredentials
                     ) ? (
                         displayRequiredFields ? (
-                            <div className={getClassName("kcContentWrapperClass")}>
+                            <div className={kcClsx("kcContentWrapperClass")}>
                                 <div
                                     className={cx(
-                                        getClassName("kcLabelWrapperClass"),
+                                        kcClsx("kcLabelWrapperClass"),
                                         "subtitle"
                                     )}
                                 >
@@ -329,12 +401,9 @@ const { Page } = (() => {
                             </Text>
                         )
                     ) : displayRequiredFields ? (
-                        <div className={getClassName("kcContentWrapperClass")}>
+                        <div className={kcClsx("kcContentWrapperClass")}>
                             <div
-                                className={cx(
-                                    getClassName("kcLabelWrapperClass"),
-                                    "subtitle"
-                                )}
+                                className={cx(kcClsx("kcLabelWrapperClass"), "subtitle")}
                             >
                                 <span className="subtitle">
                                     <span className="required">*</span>{" "}
@@ -343,7 +412,7 @@ const { Page } = (() => {
                             </div>
                             <div className="col-md-10">
                                 {showUsernameNode}
-                                <div className={getClassName("kcFormGroupClass")}>
+                                <div className={kcClsx("kcFormGroupClass")}>
                                     <div id="kc-username">
                                         <label id="kc-attempted-username">
                                             {kcContext.auth?.attemptedUsername}
@@ -354,9 +423,7 @@ const { Page } = (() => {
                                         >
                                             <div className="kc-login-tooltip">
                                                 <i
-                                                    className={getClassName(
-                                                        "kcResetFlowIcon"
-                                                    )}
+                                                    className={kcClsx("kcResetFlowIcon")}
                                                 ></i>
                                                 <span className="kc-tooltip-text">
                                                     {msg("restartLoginTooltip")}
@@ -370,7 +437,7 @@ const { Page } = (() => {
                     ) : (
                         <>
                             {showUsernameNode}
-                            <div className={getClassName("kcFormGroupClass")}>
+                            <div className={kcClsx("kcFormGroupClass")}>
                                 <div id="kc-username">
                                     <label id="kc-attempted-username">
                                         {kcContext.auth?.attemptedUsername}
@@ -380,11 +447,7 @@ const { Page } = (() => {
                                         href={kcContext.url.loginRestartFlowUrl}
                                     >
                                         <div className="kc-login-tooltip">
-                                            <i
-                                                className={getClassName(
-                                                    "kcResetFlowIcon"
-                                                )}
-                                            ></i>
+                                            <i className={kcClsx("kcResetFlowIcon")}></i>
                                             <span className="kc-tooltip-text">
                                                 {msg("restartLoginTooltip")}
                                             </span>
@@ -417,7 +480,6 @@ const { Page } = (() => {
             | "displayMessage"
             | "children"
             | "showAnotherWayIfPresent"
-            | "displayWide"
             | "displayInfo"
             | "infoNode"
             | "i18n"
@@ -431,7 +493,6 @@ const { Page } = (() => {
                 displayMessage,
                 showAnotherWayIfPresent,
                 displayInfo,
-                displayWide,
                 kcContext,
                 children,
                 infoNode,
@@ -445,14 +506,14 @@ const { Page } = (() => {
                 return false;
             });
 
-            const { getClassName } = useGetClassName({
+            const { kcClsx } = getKcClsx({
                 doUseDefaultCss,
                 "classes": classes_props
             });
 
             const { msg } = i18n;
 
-            const { classes, cx } = useStyles();
+            const { classes } = useStyles();
 
             return (
                 <div id="kc-content">
@@ -483,26 +544,9 @@ const { Page } = (() => {
                                     id="kc-select-try-another-way-form"
                                     action={kcContext.url.loginAction}
                                     method="post"
-                                    className={cx(
-                                        displayWide &&
-                                            getClassName("kcContentWrapperClass")
-                                    )}
                                 >
-                                    <div
-                                        className={cx(
-                                            displayWide && [
-                                                getClassName(
-                                                    "kcFormSocialAccountContentClass"
-                                                ),
-                                                getClassName("kcFormSocialAccountClass")
-                                            ]
-                                        )}
-                                    >
-                                        <div
-                                            className={cx(
-                                                getClassName("kcFormGroupClass")
-                                            )}
-                                        >
+                                    <div>
+                                        <div className={kcClsx("kcFormGroupClass")}>
                                             <input
                                                 type="hidden"
                                                 name="tryAnotherWay"
@@ -520,13 +564,10 @@ const { Page } = (() => {
                                 </form>
                             )}
                         {displayInfo && (
-                            <div
-                                id="kc-info"
-                                className={cx(getClassName("kcSignUpClass"))}
-                            >
+                            <div id="kc-info" className={kcClsx("kcSignUpClass")}>
                                 <div
                                     id="kc-info-wrapper"
-                                    className={cx(getClassName("kcInfoAreaWrapperClass"))}
+                                    className={kcClsx("kcInfoAreaWrapperClass")}
                                 >
                                     {infoNode}
                                 </div>

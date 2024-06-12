@@ -1,21 +1,33 @@
 import { useState } from "react";
-import { UserProfileFormFields } from "./shared/UserProfileFormFields";
 import type { PageProps } from "keycloakify/login/pages/PageProps";
-import { useGetClassName } from "keycloakify/login/lib/useGetClassName";
+import type { LazyOrNot } from "keycloakify/tools/LazyOrNot";
+import { getKcClsx } from "keycloakify/login/lib/kcClsx";
+import type { UserProfileFormFieldsProps } from "keycloakify/login/UserProfileFormFieldsProps";
 import type { KcContext } from "../KcContext";
 import type { I18n } from "../i18n";
 import { tss } from "tss";
 import { Button } from "onyxia-ui/Button";
 import { Tooltip } from "onyxia-ui/Tooltip";
 
-export default function RegisterUserProfile(
-    props: PageProps<Extract<KcContext, { pageId: "register-user-profile.ftl" }>, I18n>
-) {
-    const { kcContext, i18n, doUseDefaultCss, Template, classes: classes_props } = props;
+type RegisterProps = PageProps<Extract<KcContext, { pageId: "register.ftl" }>, I18n> & {
+    UserProfileFormFields: LazyOrNot<(props: UserProfileFormFieldsProps) => JSX.Element>;
+    doMakeUserConfirmPassword: boolean;
+};
+
+export default function Register(props: RegisterProps) {
+    const {
+        kcContext,
+        i18n,
+        doUseDefaultCss,
+        Template,
+        classes: classes_props,
+        UserProfileFormFields,
+        doMakeUserConfirmPassword
+    } = props;
 
     const { classes, cx, css } = useStyles();
 
-    const { getClassName } = useGetClassName({
+    const { kcClsx } = getKcClsx({
         doUseDefaultCss,
         "classes": {
             ...classes_props,
@@ -50,12 +62,12 @@ export default function RegisterUserProfile(
                     kcContext={kcContext}
                     onIsFormSubmittableValueChange={setIsFormSubmittable}
                     i18n={i18n}
-                    getClassName={getClassName}
-                    getIncrementedTabIndex={getIncrementedTabIndex}
+                    kcClsx={kcClsx}
+                    doMakeUserConfirmPassword={doMakeUserConfirmPassword}
                 />
                 {recaptchaRequired && (
                     <div className="form-group">
-                        <div className={getClassName("kcInputWrapperClass")}>
+                        <div className={kcClsx("kcInputWrapperClass")}>
                             <div
                                 className="g-recaptcha"
                                 data-size="compact"
@@ -98,7 +110,7 @@ export default function RegisterUserProfile(
     );
 }
 
-const useStyles = tss.withName({ RegisterUserProfile }).create(({ theme }) => ({
+const useStyles = tss.withName({ Register }).create(({ theme }) => ({
     "root": {
         "& .MuiTextField-root": {
             "width": "100%",

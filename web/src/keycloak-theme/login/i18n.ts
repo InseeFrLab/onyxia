@@ -1,6 +1,6 @@
 import { createUseI18n } from "keycloakify/login";
 
-export const { useI18n } = createUseI18n({
+export const { useI18n, ofTypeI18n } = createUseI18n({
     "en": {
         "lowerCaseAlphanumericalCharsOnly": "Only lowercase alphanumerical characters",
         "allowed email domains": "Allowed domains",
@@ -135,4 +135,4 @@ export const { useI18n } = createUseI18n({
     /* spell-checker: enable */
 });
 
-export type I18n = NonNullable<ReturnType<typeof useI18n>>;
+export type I18n = typeof ofTypeI18n;

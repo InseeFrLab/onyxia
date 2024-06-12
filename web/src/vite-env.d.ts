@@ -56,15 +56,15 @@ type ImportMetaEnv = {
   ONYXIA_API_URL: string
   ALLOW_THEME_TESTING_VIA_URL: string
   // @user-defined-start
-    /*
-     * Here you can define your own special variables
-     * that would be available on `import.meta.env` but
-     * that vite-envs does not know about.
-     * This section will be preserved thanks to the special comments.
-     * Example:
-     */
-    // SSR: boolean;
-    // @user-defined-end
+  /*
+   * Here you can define your own special variables
+   * that would be available on `import.meta.env` but
+   * that vite-envs does not know about.
+   * This section will be preserved thanks to the special comments.
+   * Example:
+   */
+  // SSR: boolean;
+  // @user-defined-end
 }
 
 interface ImportMeta {
@@ -77,4 +77,8 @@ interface ImportMeta {
   readonly env: ImportMetaEnv
 
   glob: import('vite-envs/types/importGlob').ImportGlobFunction
+}
+
+interface Window {
+  kcContext?: import("./keycloak-theme/login/KcContext").KcContext;
 }
