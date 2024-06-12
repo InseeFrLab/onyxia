@@ -1,12 +1,13 @@
 /* In keycloak-theme, this should be evaluated early */
 
-import { kcContext as kcLoginThemeContext } from "keycloak-theme/login/kcContext";
 import {
     retrieveParamFromUrl,
     addParamToUrl,
     updateSearchBarUrl
 } from "powerhooks/tools/urlSearchParams";
 import { assert, type Equals } from "tsafe/assert";
+import { isAmong } from "tsafe/isAmong";
+import { kcEnvNames } from "keycloak-theme/kc.gen";
 import { is } from "tsafe/is";
 import { typeGuard } from "tsafe/typeGuard";
 import { id } from "tsafe/id";
@@ -1180,13 +1181,7 @@ function createParsedEnvs<Parser extends Entry<EnvName>>(
 
     const injectFunctions: ((url: string) => string)[] = [];
 
-    const kcContext = (() => {
-        if (kcLoginThemeContext !== undefined) {
-            return kcLoginThemeContext;
-        }
-
-        return undefined;
-    })();
+    const kcContext = window.kcContext?.themeType === "login" ? window.kcContext : undefined;
 
     //NOTE: Initially we where in CRA so we used PUBLIC_URL,
     // in Vite BASE_URL is the equivalent but it's not exactly formatted the same way.
@@ -1264,7 +1259,7 @@ function createParsedEnvs<Parser extends Entry<EnvName>>(
             import.meta.env.MODE === "production" && kcContext !== undefined;
 
         const getEnvValue = () => {
-            if (!isUsedInKeycloakTheme && kcLoginThemeContext !== undefined) {
+            if (!isUsedInKeycloakTheme && kcContext !== undefined) {
                 throw new Error(
                     `Env ${envName} not labeled as being used in keycloak theme`
                 );
@@ -1295,7 +1290,10 @@ function createParsedEnvs<Parser extends Entry<EnvName>>(
                 updateSearchBarUrl(newUrl);
 
                 if (isProductionKeycloak) {
-                    const kcEnvValue = (kcContext as any).properties[envName] ?? "";
+
+                    const kcEnvName= `ONYXIA_${envName}` as const;
+
+                    const kcEnvValue = isAmong(kcEnvNames, kcEnvName) ? kcContext.properties[kcEnvName] : "";
 
                     if (kcEnvValue !== "") {
                         localStorage.removeItem(localStorageKey);
@@ -1419,3 +1417,4 @@ function createParsedEnvs<Parser extends Entry<EnvName>>(
 
     return { env, injectTransferableEnvsInQueryParams };
 }
+

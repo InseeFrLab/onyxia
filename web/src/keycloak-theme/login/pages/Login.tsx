@@ -3,7 +3,7 @@ import { useConstCallback } from "keycloakify/tools/useConstCallback";
 import type { PageProps } from "keycloakify/login/pages/PageProps";
 import { tss } from "tss";
 import { Text } from "onyxia-ui/Text";
-import type { KcContext } from "../kcContext";
+import type { KcContext } from "../KcContext";
 import type { I18n } from "../i18n";
 import Link from "@mui/material/Link";
 import { TextField } from "onyxia-ui/TextField";
@@ -53,13 +53,12 @@ export default function Login(
             displayInfo={
                 realm.password && realm.registrationAllowed && !registrationDisabled
             }
-            displayWide={realm.password && social.providers !== undefined}
             headerNode={msg("doLogIn")}
             i18n={i18n}
             infoNode={
                 <div className={classes.linkToRegisterWrapper}>
                     <Text typo="body 2" color="secondary">
-                        {msg("noAccount")!}
+                        {msg("noAccount")}
                     </Text>
                     <Link
                         href={url.registrationUrl}

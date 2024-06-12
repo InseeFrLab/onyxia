@@ -1,9 +1,21 @@
-import { createGetKcContext } from "keycloakify/login";
+import { createGetKcContextMock } from "keycloakify/login/KcContext";
+import type { KcContextExtension, KcContextExtensionPerPage } from "./KcContext";
+import { themeNames, kcEnvDefaults } from "../kc.gen";
 
-export const { getKcContext } = createGetKcContext({
-    "mockData": [
-        {
-            "pageId": "login.ftl",
+const kcContextExtension: KcContextExtension = {
+    themeName: themeNames[0],
+    properties: {
+        ...kcEnvDefaults
+    }
+};
+const kcContextExtensionPerPage: KcContextExtensionPerPage = {};
+
+export const { getKcContextMock } = createGetKcContextMock({
+    kcContextExtension,
+    kcContextExtensionPerPage,
+    "overrides": {},
+    "overridesPerPage": {
+        "login.ftl": {
             "social": {
                 "providers": [
                     {
@@ -15,11 +27,10 @@ export const { getKcContext } = createGetKcContext({
                 ]
             }
         },
-        {
-            "pageId": "register-user-profile.ftl",
+        "register.ftl": {
             "profile": {
-                "attributes": [
-                    {
+                "attributesByName": {
+                    "username": {
                         "validators": {
                             "pattern": {
                                 "pattern": "^[a-z0-9]+$",
@@ -31,7 +42,7 @@ export const { getKcContext } = createGetKcContext({
                         "value": undefined,
                         "name": "username"
                     },
-                    {
+                    "email": {
                         "validators": {
                             "pattern": {
                                 /* spell-checker: disable */
@@ -42,15 +53,8 @@ export const { getKcContext } = createGetKcContext({
                         },
                         "name": "email"
                     }
-                ]
+                }
             }
         }
-    ]
+    }
 });
-
-export const { kcContext } = getKcContext({
-    // Uncomment to test the login page for development.
-    //"mockPageId": "login.ftl"
-});
-
-export type KcContext = NonNullable<ReturnType<typeof getKcContext>["kcContext"]>;

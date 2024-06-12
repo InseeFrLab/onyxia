@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Markdown } from "ui/shared/Markdown";
 import { useLang } from "ui/i18n";
 import { tss } from "tss";
-import { downloadTermMarkdown } from "keycloak-theme/login/pages/Terms";
+import { downloadTermsMarkdown } from "ui/shared/downloadTermsMarkdown";
 import type { PageRoute } from "./route";
 import { CircularProgress } from "onyxia-ui/CircularProgress";
 
@@ -15,13 +15,13 @@ export default function Terms(props: Props) {
     const { className } = props;
 
     const [tos, setTos] = useState<
-        { markdownString: string; lang: string | undefined } | undefined
+        { termsMarkdown: string; langOfTheTerms: string | undefined } | undefined
     >(undefined);
 
     const { lang } = useLang();
 
     useEffect(() => {
-        downloadTermMarkdown({ "currentLanguageTag": lang }).then(setTos);
+        downloadTermsMarkdown({ "currentLanguageTag": lang }).then(setTos);
     }, [lang]);
 
     const { classes, cx } = useStyles();
@@ -30,12 +30,11 @@ export default function Terms(props: Props) {
         return <CircularProgress />;
     }
 
+    const { langOfTheTerms, termsMarkdown } = tos;
+
     return (
-        <div
-            className={cx(classes.root, className)}
-            lang={lang !== tos.lang ? tos.lang : undefined}
-        >
-            <Markdown className={classes.markdown}>{tos.markdownString}</Markdown>
+        <div className={cx(classes.root, className)} lang={langOfTheTerms}>
+            <Markdown className={classes.markdown}>{termsMarkdown}</Markdown>
         </div>
     );
 }
