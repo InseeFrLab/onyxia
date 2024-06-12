@@ -77,11 +77,7 @@ export default function Register(props: RegisterProps) {
                     </div>
                 )}
                 <div className={classes.buttonsWrapper}>
-                    <Button
-                        variant="secondary"
-                        onClick={() => global.history.back()}
-                        tabIndex={-1}
-                    >
+                    <Button variant="secondary" href={url.loginUrl} tabIndex={-1}>
                         {msg("go back")}
                     </Button>
                     {(() => {
