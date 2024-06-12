@@ -178,6 +178,9 @@ const useStyles = tss
                         "borderBottom": `1px solid ${theme.colors.useCases.typography.textFocus}`
                     }
                 },
-                "kcHeaderWrapperClass": {}
+                "kcHeaderWrapperClass": {},
+                "kcAlertClass": {
+                    "marginBottom": theme.spacing(6)
+                }
             }) as const satisfies { [key in ClassKey]?: unknown }
     );
