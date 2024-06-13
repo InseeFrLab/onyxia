@@ -91,11 +91,15 @@ function injectXOnyxiaContextInValuesSchemaJsonRec(params: {
             overwriteDefaultWith: unknown;
             isRoot: boolean;
         }): unknown => {
-            const { overwriteDefaultWith, isRoot } = params;
+            const { isRoot, overwriteDefaultWith: overwriteDefaultWith_unknown } = params;
 
-            if (typeof overwriteDefaultWith === "string") {
+            if (typeof overwriteDefaultWith_unknown === "string") {
+                const overwriteDefaultWith_str = !isRoot
+                    ? overwriteDefaultWith_unknown
+                    : overwriteDefaultWith_unknown.replace(/\[(\d+)\]/g, ".$1"); // convert 'a.b[0].c' to 'a.b.0.c'
+
                 full_substitution: {
-                    const match = overwriteDefaultWith.match(/^{{([^}]+)}}$/);
+                    const match = overwriteDefaultWith_str.match(/^{{([^}]+)}}$/);
 
                     if (match === null) {
                         break full_substitution;
@@ -108,12 +112,14 @@ function injectXOnyxiaContextInValuesSchemaJsonRec(params: {
                 }
 
                 string_substitution: {
-                    if (!overwriteDefaultWith.includes("{{")) {
+                    if (!overwriteDefaultWith_str.includes("{{")) {
                         break string_substitution;
                     }
 
                     return Mustache.render(
-                        overwriteDefaultWith.replace(/{{/g, "{{{").replace(/}}/g, "}}}"),
+                        overwriteDefaultWith_str
+                            .replace(/{{/g, "{{{")
+                            .replace(/}}/g, "}}}"),
                         xOnyxiaContext
                     );
                 }
@@ -124,16 +130,16 @@ function injectXOnyxiaContextInValuesSchemaJsonRec(params: {
                     }
 
                     return resolveOverwriteDefaultWith({
-                        "overwriteDefaultWith": `{{${overwriteDefaultWith}}}`,
+                        "overwriteDefaultWith": `{{${overwriteDefaultWith_str}}}`,
                         isRoot
                     });
                 }
 
-                return overwriteDefaultWith;
+                return overwriteDefaultWith_str;
             }
 
-            if (overwriteDefaultWith instanceof Array) {
-                return overwriteDefaultWith.map(entry =>
+            if (overwriteDefaultWith_unknown instanceof Array) {
+                return overwriteDefaultWith_unknown.map(entry =>
                     resolveOverwriteDefaultWith({
                         "overwriteDefaultWith": entry,
                         "isRoot": false
@@ -141,9 +147,9 @@ function injectXOnyxiaContextInValuesSchemaJsonRec(params: {
                 );
             }
 
-            if (overwriteDefaultWith instanceof Object) {
+            if (overwriteDefaultWith_unknown instanceof Object) {
                 return Object.fromEntries(
-                    Object.entries(overwriteDefaultWith).map(([key, value]) => [
+                    Object.entries(overwriteDefaultWith_unknown).map(([key, value]) => [
                         key,
                         resolveOverwriteDefaultWith({
                             "overwriteDefaultWith": value,
@@ -153,7 +159,7 @@ function injectXOnyxiaContextInValuesSchemaJsonRec(params: {
                 );
             }
 
-            return overwriteDefaultWith;
+            return overwriteDefaultWith_unknown;
         };
 
         const resolvedValue = resolveOverwriteDefaultWith({
