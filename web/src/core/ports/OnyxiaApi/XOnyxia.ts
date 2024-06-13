@@ -23,6 +23,7 @@ export type XOnyxiaParams = {
         | boolean
         | unknown[]
         | Record<string, unknown>;
+    overwriteListEnumWith?: unknown[] | string;
     hidden?: boolean;
     readonly?: boolean;
     useRegionSliderConfig?: string;

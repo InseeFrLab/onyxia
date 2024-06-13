@@ -29,6 +29,7 @@ export namespace JSONSchemaFormFieldDescription {
                   path: string;
               };
         [onyxiaReservedPropertyNameInFieldDescription]?: XOnyxiaParams;
+        listEnum?: T[];
     };
 
     export type Boolean = Common<boolean> & {

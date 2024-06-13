@@ -186,6 +186,33 @@ function injectXOnyxiaContextInValuesSchemaJsonRec(params: {
         }
     }
 
+    overwrite_list_enum: {
+        const { overwriteListEnumWith } =
+            jsonSchemaFormFieldDescription["x-onyxia"] ?? {};
+
+        if (overwriteListEnumWith === undefined) {
+            break overwrite_list_enum;
+        }
+
+        const resolvedValue = resolveXOnyxiaValueReference({
+            xOnyxiaContext,
+            "expression": overwriteListEnumWith
+        });
+
+        if (resolvedValue === undefined || resolvedValue === null) {
+            break overwrite_list_enum;
+        }
+
+        if (!(resolvedValue instanceof Array)) {
+            console.warn(
+                `${JSON.stringify(overwriteListEnumWith)} is not an array (${path})`
+            );
+            break overwrite_list_enum;
+        }
+
+        jsonSchemaFormFieldDescription.listEnum = resolvedValue;
+    }
+
     use_region_slider_config: {
         if (
             !(
