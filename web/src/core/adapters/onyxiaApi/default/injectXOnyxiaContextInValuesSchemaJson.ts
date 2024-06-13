@@ -3,10 +3,10 @@ import {
     type JSONSchemaFormFieldDescription,
     type XOnyxiaContext
 } from "core/ports/OnyxiaApi";
-import Mustache from "mustache";
 import { assert } from "tsafe/assert";
 import type { Equals } from "tsafe";
 import { getValueAtPathInObject } from "core/tools/getValueAtPathInObject";
+import { resolveXOnyxiaValueReference } from "./resolveXOnyxiaValueReference";
 
 export function injectXOnyxiaContextInValuesSchemaJson(params: {
     xOnyxiaContext: XOnyxiaContext;
@@ -268,96 +268,3 @@ function injectXOnyxiaContextInValuesSchemaJsonRec(params: {
         }
     }
 }
-
-const { resolveXOnyxiaValueReference } = (() => {
-    type Params = {
-        expression: unknown;
-        xOnyxiaContext: XOnyxiaContext;
-    };
-
-    function resolveXOnyxiaValueReference_rec(
-        params: Params & { isRoot: boolean }
-    ): unknown {
-        const { isRoot, expression: expression_unknown, xOnyxiaContext } = params;
-
-        if (typeof expression_unknown === "string") {
-            const expression_str = !isRoot
-                ? expression_unknown
-                : expression_unknown.replace(/\[(\d+)\]/g, ".$1"); // convert 'a.b[0].c' to 'a.b.0.c'
-
-            full_substitution: {
-                const match = expression_str.match(/^{{([^}]+)}}$/);
-
-                if (match === null) {
-                    break full_substitution;
-                }
-
-                return getValueAtPathInObject({
-                    "path": match[1].split("."),
-                    "obj": xOnyxiaContext
-                });
-            }
-
-            string_substitution: {
-                if (!expression_str.includes("{{")) {
-                    break string_substitution;
-                }
-
-                return Mustache.render(
-                    expression_str.replace(/{{/g, "{{{").replace(/}}/g, "}}}"),
-                    xOnyxiaContext
-                );
-            }
-
-            implicit_reference: {
-                if (!isRoot) {
-                    break implicit_reference;
-                }
-
-                return resolveXOnyxiaValueReference_rec({
-                    "expression": `{{${expression_str}}}`,
-                    xOnyxiaContext,
-                    "isRoot": true
-                });
-            }
-
-            return expression_str;
-        }
-
-        if (expression_unknown instanceof Array) {
-            return expression_unknown.map(entry =>
-                resolveXOnyxiaValueReference_rec({
-                    "expression": entry,
-                    "isRoot": false,
-                    xOnyxiaContext
-                })
-            );
-        }
-
-        if (expression_unknown instanceof Object) {
-            return Object.fromEntries(
-                Object.entries(expression_unknown).map(([key, value]) => [
-                    key,
-                    resolveXOnyxiaValueReference_rec({
-                        "expression": value,
-                        "isRoot": false,
-                        xOnyxiaContext
-                    })
-                ])
-            );
-        }
-
-        return expression_unknown;
-    }
-
-    function resolveXOnyxiaValueReference(params: Params): unknown {
-        const { expression, xOnyxiaContext } = params;
-        return resolveXOnyxiaValueReference_rec({
-            expression,
-            xOnyxiaContext,
-            "isRoot": true
-        });
-    }
-
-    return { resolveXOnyxiaValueReference };
-})();
