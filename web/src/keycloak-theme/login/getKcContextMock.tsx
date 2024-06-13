@@ -54,6 +54,9 @@ export const { getKcContextMock } = createGetKcContextMock({
                         "name": "email"
                     }
                 }
+            },
+            "passwordPolicies": {
+                "length": 12
             }
         }
     }

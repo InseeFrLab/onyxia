@@ -421,38 +421,72 @@ function CustomInputTag(
                 </>
             }
             helperText={(() => {
-                {
-                    const nonEmailPatternDisplayableErrors =
-                        displayableErrors_props.filter(
-                            ({ source }) =>
-                                !(
-                                    source.type === "validator" &&
-                                    source.name === "pattern" &&
-                                    attribute.name === "email"
-                                )
-                        );
-
-                    if (nonEmailPatternDisplayableErrors.length !== 0) {
-                        return nonEmailPatternDisplayableErrors.map(
-                            ({ errorMessage }, i) => (
-                                <span key={i}>{errorMessage}&nbsp;</span>
-                            )
-                        );
+                allowed_email_domains: {
+                    if (attribute.name !== "email") {
+                        break allowed_email_domains;
                     }
+
+                    if (attribute.validators.pattern === undefined) {
+                        break allowed_email_domains;
+                    }
+
+                    const isErrored = displayableErrors_props.length !== 0;
+                    const hasPatternError = displayableErrors_props.some(
+                        ({ source }) =>
+                            source.type === "validator" && source.name === "pattern"
+                    );
+                    const hasCustomPatternErrorMessage =
+                        attribute.validators.pattern["error-message"] !== undefined;
+
+                    if (isErrored && (!hasPatternError || hasCustomPatternErrorMessage)) {
+                        break allowed_email_domains;
+                    }
+
+                    return msg("allowed email domains");
                 }
 
-                {
-                    // prettier-ignore
-                    const { pattern } = attribute.validators;
-
-                    if (pattern !== undefined) {
-                        const { "error-message": errorMessageKey } = pattern;
-
-                        // prettier-ignore
-                        return errorMessageKey !== undefined ?
-                            advancedMsg(errorMessageKey) :
-                            msg("must respect the pattern");
+                username_pattern_message: {
+                    if (attribute.name !== "username") {
+                        break username_pattern_message;
                     }
+
+                    const isErrored = displayableErrors_props.length !== 0;
+
+                    if (isErrored) {
+                        break username_pattern_message;
+                    }
+
+                    if (attribute.validators.pattern === undefined) {
+                        break username_pattern_message;
+                    }
+
+                    const patternErrorMessage =
+                        attribute.validators.pattern["error-message"];
+
+                    if (patternErrorMessage === undefined) {
+                        break username_pattern_message;
+                    }
+
+                    return advancedMsg(patternErrorMessage);
+                }
+
+                error_messages_default_behavior: {
+                    const isErrored = displayableErrors_props.length !== 0;
+
+                    if (!isErrored) {
+                        break error_messages_default_behavior;
+                    }
+
+                    return (
+                        <>
+                            {displayableErrors_props.map(({ errorMessage }, i, arr) => (
+                                <Fragment key={i}>
+                                    <span key={i}>{errorMessage}</span>
+                                    {arr.length - 1 !== i && <br />}
+                                </Fragment>
+                            ))}
+                        </>
+                    );
                 }
 
                 return undefined;
@@ -461,22 +495,24 @@ function CustomInputTag(
             questionMarkHelperText={(() => {
                 const { pattern } = attribute.validators.pattern ?? {};
 
-                // prettier-ignore
-                return pattern === undefined ?
-                    undefined :
-                    attribute.name === "email" ?
-                        (() => {
+                if (pattern === undefined) {
+                    return undefined;
+                }
 
-                            try {
-                                return regExpStrToEmailDomains(pattern).join(", ");
-                            } catch {
-                                return pattern;
-                            }
+                if (attribute.name === "email") {
 
-                        })() :
-                        displayableErrors_props.length === 0 ?
-                            pattern :
-                            undefined;
+                    try {
+                        return regExpStrToEmailDomains(pattern).join(", ");
+                    } catch {
+                        return pattern;
+                    }
+
+                }
+
+                return displayableErrors_props.length === 0 ?
+                    pattern :
+                    undefined;
+
             })()}
             doOnlyShowErrorAfterFirstFocusLost={false}
             // prettier-ignore
