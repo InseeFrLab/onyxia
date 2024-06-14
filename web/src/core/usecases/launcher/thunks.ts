@@ -2,7 +2,7 @@ import type { Thunks } from "core/bootstrap";
 import { id } from "tsafe/id";
 import { assert } from "tsafe/assert";
 import { same } from "evt/tools/inDepth/same";
-import { type FormFieldValue, formFieldsValueToObject } from "./FormField";
+import type { FormFieldValue } from "./FormField";
 import {
     type JSONSchemaFormFieldDescription,
     type JSONSchemaObject,
@@ -222,7 +222,12 @@ export const thunks = {
                 }
 
                 use_custom_s3_config: {
-                    if (privateSelectors.has3sConfigBeenManuallyChanged(getState())) {
+                    const has3sConfigBeenManuallyChanged =
+                        privateSelectors.has3sConfigBeenManuallyChanged(getState());
+
+                    assert(has3sConfigBeenManuallyChanged !== null);
+
+                    if (has3sConfigBeenManuallyChanged) {
                         break use_custom_s3_config;
                     }
 
@@ -284,7 +289,7 @@ export const thunks = {
             const formFieldsValueDifferentFromDefault =
                 privateSelectors.formFieldsValueDifferentFromDefault(rootState);
 
-            assert(formFieldsValueDifferentFromDefault !== undefined);
+            assert(formFieldsValueDifferentFromDefault !== null);
 
             dispatch(actions.resetToNotInitialized());
 
@@ -311,23 +316,11 @@ export const thunks = {
 
             dispatch(actions.launchStarted());
 
-            const rootState = getState();
+            const helmInstallParams = privateSelectors.helmInstallParams(getState());
 
-            const helmReleaseName = privateSelectors.helmReleaseName(rootState);
+            assert(helmInstallParams !== null);
 
-            assert(helmReleaseName !== undefined);
-
-            const state = rootState[name];
-
-            assert(state.stateDescription === "ready");
-
-            await onyxiaApi.helmInstall({
-                helmReleaseName,
-                "catalogId": state.catalogId,
-                "chartName": state.chartName,
-                "chartVersion": state.chartVersion,
-                "values": formFieldsValueToObject(state.formFields)
-            });
+            await onyxiaApi.helmInstall(helmInstallParams);
 
             dispatch(actions.launchCompleted());
         },

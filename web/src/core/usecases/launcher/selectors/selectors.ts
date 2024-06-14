@@ -11,7 +11,7 @@ import { scaffoldingIndexedFormFieldsToFinal } from "./scaffoldingIndexedFormFie
 import type { IndexedFormFields } from "../FormField";
 import { createGetIsFieldHidden } from "./getIsFieldHidden";
 import * as yaml from "yaml";
-import { name, type State } from "../state";
+import { name } from "../state";
 import * as restorableConfigManagement from "core/usecases/restorableConfigManagement";
 import * as projectManagement from "core/usecases/projectManagement";
 import * as s3ConfigManagement from "core/usecases/s3ConfigManagement";
@@ -20,39 +20,53 @@ import { exclude } from "tsafe/exclude";
 import { createSelector } from "clean-architecture";
 import { id } from "tsafe/id";
 
-const readyState = (rootState: RootState): State.Ready | undefined => {
+const readyState = (rootState: RootState) => {
     const state = rootState[name];
-    switch (state.stateDescription) {
-        case "ready":
-            return state;
-        default:
-            return undefined;
+
+    if (state.stateDescription !== "ready") {
+        return null;
     }
+
+    return state;
 };
 
-const isReady = createSelector(readyState, state => state !== undefined);
+const isReady = createSelector(readyState, state => state !== null);
 
-const chartName = createSelector(readyState, state => state?.chartName);
+const chartName = createSelector(readyState, state => {
+    if (state === null) {
+        return null;
+    }
+    return state.chartName;
+});
 
-const formFields = createSelector(readyState, state => state?.formFields);
+const formFields = createSelector(readyState, state => {
+    if (state === null) {
+        return null;
+    }
+    return state.formFields;
+});
 
-const infosAboutWhenFieldsShouldBeHidden = createSelector(
-    readyState,
-    state => state?.infosAboutWhenFieldsShouldBeHidden
-);
+const infosAboutWhenFieldsShouldBeHidden = createSelector(readyState, state => {
+    if (state === null) {
+        return null;
+    }
+    return state.infosAboutWhenFieldsShouldBeHidden;
+});
 
 const nonLibraryChartDependencies = createSelector(readyState, state => {
-    if (state === undefined) {
-        return undefined;
+    if (state === null) {
+        return null;
     }
 
     return state.nonLibraryChartDependencies;
 });
 
-const friendlyName = createSelector(formFields, formFields => {
-    if (formFields === undefined) {
-        return undefined;
+const friendlyName = createSelector(isReady, formFields, (isReady, formFields) => {
+    if (!isReady) {
+        return null;
     }
+
+    assert(formFields !== null);
 
     const friendlyName = formFields.find(({ path }) =>
         same(path, onyxiaFriendlyNameFormFieldPath.split("."))
@@ -63,7 +77,12 @@ const friendlyName = createSelector(formFields, formFields => {
     return friendlyName;
 });
 
-const valuesSchema = createSelector(readyState, state => state?.valuesSchema);
+const valuesSchema = createSelector(readyState, state => {
+    if (state === null) {
+        return null;
+    }
+    return state.valuesSchema;
+});
 
 const indexedFormFields = createSelector(
     isReady,
@@ -79,16 +98,16 @@ const indexedFormFields = createSelector(
         infosAboutWhenFieldsShouldBeHidden,
         packageName,
         nonLibraryChartDependencies
-    ): IndexedFormFields | undefined => {
+    ): IndexedFormFields | null => {
         if (!isReady) {
-            return undefined;
+            return null;
         }
 
-        assert(valuesSchema !== undefined);
-        assert(formFields !== undefined);
-        assert(packageName !== undefined);
-        assert(nonLibraryChartDependencies !== undefined);
-        assert(infosAboutWhenFieldsShouldBeHidden !== undefined);
+        assert(valuesSchema !== null);
+        assert(formFields !== null);
+        assert(infosAboutWhenFieldsShouldBeHidden !== null);
+        assert(packageName !== null);
+        assert(nonLibraryChartDependencies !== null);
 
         const indexedFormFields: IndexedFormFields.Scaffolding = {};
 
@@ -219,13 +238,13 @@ const formFieldsIsWellFormed = createSelector(
         isReady,
         formFields,
         infosAboutWhenFieldsShouldBeHidden
-    ): FormFieldValidity[] | undefined => {
+    ): FormFieldValidity[] | null => {
         if (!isReady) {
-            return undefined;
+            return null;
         }
 
-        assert(formFields !== undefined);
-        assert(infosAboutWhenFieldsShouldBeHidden !== undefined);
+        assert(formFields !== null);
+        assert(infosAboutWhenFieldsShouldBeHidden !== null);
 
         const { getIsFieldHidden } = createGetIsFieldHidden({
             formFields,
@@ -323,11 +342,14 @@ const formFieldsIsWellFormed = createSelector(
 );
 
 const isLaunchable = createSelector(
+    isReady,
     formFieldsIsWellFormed,
-    (formFieldsIsWellFormed): boolean | undefined => {
-        if (!formFieldsIsWellFormed) {
-            return undefined;
+    (isReady, formFieldsIsWellFormed): boolean | null => {
+        if (!isReady) {
+            return null;
         }
+
+        assert(formFieldsIsWellFormed !== null);
 
         return formFieldsIsWellFormed.every(({ isWellFormed }) => isWellFormed);
     }
@@ -335,14 +357,24 @@ const isLaunchable = createSelector(
 
 const pathOfFormFieldsWhoseValuesAreDifferentFromDefault = createSelector(
     readyState,
-    state => state?.pathOfFormFieldsWhoseValuesAreDifferentFromDefault
+    state => {
+        if (state === null) {
+            return null;
+        }
+        return state.pathOfFormFieldsWhoseValuesAreDifferentFromDefault;
+    }
 );
 
-const catalogId = createSelector(readyState, state => state?.catalogId);
+const catalogId = createSelector(readyState, state => {
+    if (state === null) {
+        return null;
+    }
+    return state.catalogId;
+});
 
 const chartVersion = createSelector(readyState, state => {
-    if (state === undefined) {
-        return undefined;
+    if (state === null) {
+        return null;
     }
 
     return state.chartVersion;
@@ -362,16 +394,16 @@ const restorableConfig = createSelector(
         chartVersion,
         formFields,
         pathOfFormFieldsWhoseValuesAreDifferentFromDefault
-    ): projectManagement.ProjectConfigs.RestorableServiceConfig | undefined => {
+    ): projectManagement.ProjectConfigs.RestorableServiceConfig | null => {
         if (!isReady) {
-            return undefined;
+            return null;
         }
 
-        assert(catalogId !== undefined);
-        assert(chartName !== undefined);
-        assert(chartVersion !== undefined);
-        assert(formFields !== undefined);
-        assert(pathOfFormFieldsWhoseValuesAreDifferentFromDefault !== undefined);
+        assert(catalogId !== null);
+        assert(chartName !== null);
+        assert(chartVersion !== null);
+        assert(formFields !== null);
+        assert(pathOfFormFieldsWhoseValuesAreDifferentFromDefault !== null);
 
         return {
             catalogId,
@@ -393,10 +425,10 @@ const isRestorableConfigSaved = createSelector(
     restorableConfigManagement.protectedSelectors.restorableConfigs,
     (isReady, restorableConfig, restorableConfigs) => {
         if (!isReady) {
-            return undefined;
+            return null;
         }
 
-        assert(restorableConfig !== undefined);
+        assert(restorableConfig !== null);
 
         return (
             restorableConfigs.find(restorableConfig_i =>
@@ -410,8 +442,8 @@ const isRestorableConfigSaved = createSelector(
 );
 
 const chartVersionDifferentFromDefault = createSelector(readyState, state => {
-    if (state === undefined) {
-        return undefined;
+    if (state === null) {
+        return null;
     }
 
     const { chartVersion, defaultChartVersion } = state;
@@ -429,9 +461,10 @@ const areAllFieldsDefault = createSelector(
         chartVersionDifferentFromDefault
     ) => {
         if (!isReady) {
-            return undefined;
+            return null;
         }
-        assert(pathOfFormFieldsWhoseValuesAreDifferentFromDefault !== undefined);
+        assert(pathOfFormFieldsWhoseValuesAreDifferentFromDefault !== null);
+        assert(chartVersionDifferentFromDefault !== null);
 
         return (
             pathOfFormFieldsWhoseValuesAreDifferentFromDefault.length === 0 &&
@@ -441,22 +474,22 @@ const areAllFieldsDefault = createSelector(
 );
 
 const chartIconUrl = createSelector(readyState, state => {
-    if (state === undefined) {
-        return undefined;
+    if (state === null) {
+        return null;
     }
     return state.chartIconUrl;
 });
 
 const helmReleaseName = createSelector(readyState, state => {
-    if (state === undefined) {
-        return undefined;
+    if (state === null) {
+        return null;
     }
     return `${state.chartName}-${state.k8sRandomSubdomain}`;
 });
 
 const catalogRepositoryUrl = createSelector(readyState, state => {
-    if (state === undefined) {
-        return undefined;
+    if (state === null) {
+        return null;
     }
     return state.catalogRepositoryUrl;
 });
@@ -468,8 +501,8 @@ const launchCommands = createSelector(
     formFields,
     catalogRepositoryUrl,
     helmReleaseName,
-    projectManagement.selectors.currentProject,
     chartVersionDifferentFromDefault,
+    projectManagement.selectors.currentProject,
     (
         isReady,
         catalogId,
@@ -477,18 +510,19 @@ const launchCommands = createSelector(
         formFields,
         catalogRepositoryUrl,
         helmReleaseName,
-        project,
-        chartVersionDifferentFromDefault
+        chartVersionDifferentFromDefault,
+        currentProject
     ) => {
         if (!isReady) {
-            return undefined;
+            return null;
         }
 
-        assert(catalogId !== undefined);
-        assert(chartName !== undefined);
-        assert(formFields !== undefined);
-        assert(catalogRepositoryUrl !== undefined);
-        assert(helmReleaseName !== undefined);
+        assert(catalogId !== null);
+        assert(chartName !== null);
+        assert(formFields !== null);
+        assert(catalogRepositoryUrl !== null);
+        assert(helmReleaseName !== null);
+        assert(chartVersionDifferentFromDefault !== null);
 
         return [
             `helm repo add ${catalogId} ${catalogRepositoryUrl}`,
@@ -499,9 +533,9 @@ const launchCommands = createSelector(
             ].join("\n"),
             [
                 `helm install ${helmReleaseName} ${catalogId}/${chartName}`,
-                project.group === undefined
+                currentProject.group === undefined
                     ? undefined
-                    : `--namespace ${project.namespace}`,
+                    : `--namespace ${currentProject.namespace}`,
                 chartVersionDifferentFromDefault === undefined
                     ? undefined
                     : `--version ${chartVersionDifferentFromDefault}`,
@@ -519,10 +553,10 @@ const launchScript = createSelector(
     helmReleaseName,
     (isReady, launchCommands, helmReleaseName) => {
         if (!isReady) {
-            return undefined;
+            return null;
         }
-        assert(launchCommands !== undefined);
-        assert(helmReleaseName !== undefined);
+        assert(launchCommands !== null);
+        assert(helmReleaseName !== null);
         return {
             "fileBasename": `launch-${helmReleaseName}.sh`,
             "content": launchCommands.join("\n\n")
@@ -531,12 +565,15 @@ const launchScript = createSelector(
 );
 
 const commandLogsEntries = createSelector(
+    isReady,
     launchCommands,
     userConfigs.selectors.userConfigs,
-    (launchCommands, userConfigs) => {
-        if (launchCommands === undefined) {
-            return undefined;
+    (isReady, launchCommands, userConfigs) => {
+        if (!isReady) {
+            return null;
         }
+
+        assert(launchCommands !== null);
 
         if (!userConfigs.isCommandBarEnabled) {
             return undefined;
@@ -557,8 +594,8 @@ export type SourceUrls = {
 };
 
 const sourceUrls = createSelector(readyState, state => {
-    if (state === undefined) {
-        return undefined;
+    if (state === null) {
+        return null;
     }
     const { chartSourceUrls } = state;
 
@@ -572,7 +609,7 @@ const sourceUrls = createSelector(readyState, state => {
 
     const chartName = state.chartName.toLowerCase();
 
-    let helmChartSourceUrl = (() => {
+    const helmChartSourceUrl = (() => {
         const candidates = chartSourceUrls
             .map(url => url.toLowerCase())
             .filter(url => url.includes(chartRepositoryName) && url.includes(chartName));
@@ -628,7 +665,8 @@ const sourceUrls = createSelector(readyState, state => {
 
 const groupProjectName = createSelector(
     projectManagement.selectors.currentProject,
-    project => (project.group === undefined ? undefined : project.name)
+    currentProject =>
+        currentProject.group === undefined ? undefined : currentProject.name
 );
 
 const isShared = createSelector(
@@ -637,33 +675,42 @@ const isShared = createSelector(
     groupProjectName,
     (isReady, formFields, groupProjectName) => {
         if (!isReady) {
-            return undefined;
+            return null;
         }
 
-        assert(formFields !== undefined);
+        assert(formFields !== null);
 
         if (groupProjectName === undefined) {
-            return;
+            return false;
         }
 
-        const isShared = formFields.find(({ path }) =>
+        const formField_isShared = formFields.find(({ path }) =>
             same(path, onyxiaIsSharedFormFieldPath.split("."))
-        )!.value;
+        );
 
-        assert(typeof isShared === "boolean");
+        if (formField_isShared === undefined) {
+            return false;
+        }
 
-        return isShared;
+        assert(typeof formField_isShared.value === "boolean");
+
+        return formField_isShared.value;
     }
 );
 
 const availableChartVersions = createSelector(readyState, state => {
-    if (state === undefined) {
-        return undefined;
+    if (state === null) {
+        return null;
     }
     return state.availableChartVersions;
 });
 
-const catalogName = createSelector(readyState, state => state?.catalogName);
+const catalogName = createSelector(readyState, state => {
+    if (state === null) {
+        return null;
+    }
+    return state.catalogName;
+});
 
 const willOverwriteExistingConfigOnSave = createSelector(
     isReady,
@@ -682,12 +729,12 @@ const willOverwriteExistingConfigOnSave = createSelector(
         chartIconAndFriendlyNameByRestorableConfigIndex
     ) => {
         if (!isReady) {
-            return undefined;
+            return null;
         }
 
-        assert(friendlyName !== undefined);
-        assert(chartName !== undefined);
-        assert(catalogId !== undefined);
+        assert(chartName !== null);
+        assert(catalogId !== null);
+        assert(friendlyName !== null);
 
         return (
             restorableConfigs.find(
@@ -705,8 +752,8 @@ const s3ConfigSelect = createSelector(
     readyState,
     s3ConfigManagement.selectors.s3Configs,
     (state, s3Configs) => {
-        if (state === undefined) {
-            return undefined;
+        if (state === null) {
+            return null;
         }
 
         // We don't display the s3 config selector if there is no config or only one
@@ -809,19 +856,25 @@ const main = createSelector(
             };
         }
 
-        assert(friendlyName !== undefined);
-        assert(willOverwriteExistingConfigOnSave !== undefined);
-        assert(restorableConfig !== undefined);
-        assert(isRestorableConfigSaved !== undefined);
-        assert(indexedFormFields !== undefined);
-        assert(isLaunchable !== undefined);
-        assert(formFieldsIsWellFormed !== undefined);
-        assert(chartName !== undefined);
-        assert(chartVersion !== undefined);
-        assert(availableChartVersions !== undefined);
-        assert(catalogName !== undefined);
-        assert(launchScript !== undefined);
-        assert(sourceUrls !== undefined);
+        assert(friendlyName !== null);
+        assert(willOverwriteExistingConfigOnSave !== null);
+        assert(isShared !== null);
+        assert(indexedFormFields !== null);
+        assert(isLaunchable !== null);
+        assert(formFieldsIsWellFormed !== null);
+        assert(restorableConfig !== null);
+        assert(isRestorableConfigSaved !== null);
+        assert(areAllFieldsDefault !== null);
+        assert(chartName !== null);
+        assert(chartVersion !== null);
+        assert(availableChartVersions !== null);
+        assert(catalogName !== null);
+        assert(chartIconUrl !== null);
+        assert(launchScript !== null);
+        assert(commandLogsEntries !== null);
+        assert(groupProjectName !== null);
+        assert(s3ConfigSelect !== null);
+        assert(sourceUrls !== null);
 
         return {
             "isReady": true as const,
@@ -855,25 +908,53 @@ const formFieldsValueDifferentFromDefault = createSelector(
     restorableConfig,
     (isReady, restorableConfig) => {
         if (!isReady) {
-            return undefined;
+            return null;
         }
 
-        assert(restorableConfig !== undefined);
+        assert(restorableConfig !== null);
 
         return restorableConfig.formFieldsValueDifferentFromDefault;
     }
 );
 
 const has3sConfigBeenManuallyChanged = createSelector(readyState, state => {
-    if (state === undefined) {
-        return undefined;
+    if (state === null) {
+        return null;
     }
     return state.has3sConfigBeenManuallyChanged;
 });
+
+const helmInstallParams = createSelector(
+    isReady,
+    helmReleaseName,
+    catalogId,
+    chartName,
+    chartVersion,
+    formFields,
+    (isReady, helmReleaseName, catalogId, chartName, chartVersion, formFields) => {
+        if (!isReady) {
+            return null;
+        }
+        assert(helmReleaseName !== null);
+        assert(catalogId !== null);
+        assert(chartName !== null);
+        assert(chartVersion !== null);
+        assert(formFields !== null);
+
+        return {
+            helmReleaseName,
+            catalogId,
+            chartName,
+            chartVersion,
+            "values": formFieldsValueToObject(formFields)
+        };
+    }
+);
 
 export const privateSelectors = {
     helmReleaseName,
     formFieldsValueDifferentFromDefault,
     isShared,
-    has3sConfigBeenManuallyChanged
+    has3sConfigBeenManuallyChanged,
+    helmInstallParams
 };

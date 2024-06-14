@@ -39,7 +39,7 @@ export const createEvt = (({ evtAction, getState }) => {
             action => action.actionName === "launchCompleted",
             () => {
                 const helmReleaseName = privateSelectors.helmReleaseName(getState());
-                assert(helmReleaseName !== undefined);
+                assert(helmReleaseName !== null);
                 evtOut.post({ "actionName": "launchCompleted", helmReleaseName });
             }
         )
