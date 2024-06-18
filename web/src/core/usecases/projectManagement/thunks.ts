@@ -8,6 +8,7 @@ import { selectors, protectedSelectors } from "./selectors";
 import * as userConfigs from "core/usecases/userConfigs";
 import { same } from "evt/tools/inDepth";
 import { id } from "tsafe/id";
+import { is } from "tsafe/is";
 
 export const thunks = {
     "changeProject":
@@ -122,7 +123,7 @@ export const privateThunks = {
         async (...args) => {
             const { projectVaultTopDirPath } = params;
 
-            const [, , { secretsManager }] = args;
+            const [, getState, { secretsManager, onyxiaApi }] = args;
 
             const projectConfigVaultDirPath = getProjectConfigVaultDirPath({
                 projectVaultTopDirPath
@@ -208,6 +209,97 @@ export const privateThunks = {
                 await secretsManager.put({
                     "path": path,
                     "secret": valueToSecret(s3)
+                });
+            }
+
+            // TODO: Remove this block in a few months
+            moveFriendlyNameAndIsSharedFromFormFieldValuesToRoot: {
+                if (!files.includes("restorableConfigs")) {
+                    break moveFriendlyNameAndIsSharedFromFormFieldValuesToRoot;
+                }
+
+                const path = pathJoin(projectConfigVaultDirPath, "restorableConfigs");
+
+                const secretOrError = await secretsManager
+                    .get({ path })
+                    .then(({ secret }) => secret)
+                    .catch(cause => new Error(String(cause), { cause }));
+
+                if (secretOrError instanceof Error) {
+                    break moveFriendlyNameAndIsSharedFromFormFieldValuesToRoot;
+                }
+
+                const restorableConfigs = secretToValue(secretOrError);
+
+                if (!(restorableConfigs instanceof Array)) {
+                    break moveFriendlyNameAndIsSharedFromFormFieldValuesToRoot;
+                }
+
+                assert(is<ProjectConfigs.RestorableServiceConfig[]>(restorableConfigs));
+
+                if (restorableConfigs.length === 0) {
+                    break moveFriendlyNameAndIsSharedFromFormFieldValuesToRoot;
+                }
+
+                const { isGroupProject } = await (async () => {
+                    const { projects } = await onyxiaApi.getUserAndProjects();
+
+                    let { selectedProjectId } =
+                        userConfigs.selectors.userConfigs(getState());
+
+                    if (
+                        selectedProjectId === null ||
+                        !projects.map(({ id }) => id).includes(selectedProjectId)
+                    ) {
+                        selectedProjectId = projects[0].id;
+                    }
+
+                    const selectedProject = projects.find(
+                        project => project.id === selectedProjectId
+                    );
+
+                    assert(selectedProject !== undefined);
+
+                    const isGroupProject = selectedProject.group !== undefined;
+
+                    return { isGroupProject };
+                })();
+
+                for (const restorableConfig of restorableConfigs) {
+                    if (restorableConfig.friendlyName !== undefined) {
+                        break moveFriendlyNameAndIsSharedFromFormFieldValuesToRoot;
+                    }
+
+                    let friendlyName: string = restorableConfig.chartName;
+                    let isShared: boolean | undefined = isGroupProject
+                        ? false
+                        : undefined;
+
+                    for (const formField of restorableConfig.formFieldsValueDifferentFromDefault) {
+                        const pathStr = formField.path.join(".");
+
+                        switch (pathStr) {
+                            case "onyxia.friendlyName":
+                                assert(typeof formField.value === "string");
+                                friendlyName = formField.value;
+                                continue;
+                            case "onyxia.share":
+                                if (!isGroupProject) {
+                                    continue;
+                                }
+                                assert(typeof formField.value === "boolean");
+                                isShared = formField.value;
+                                continue;
+                        }
+                    }
+
+                    restorableConfig.friendlyName = friendlyName;
+                    restorableConfig.isShared = isShared;
+                }
+
+                await secretsManager.put({
+                    path,
+                    "secret": valueToSecret(restorableConfigs)
                 });
             }
         }

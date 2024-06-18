@@ -19,6 +19,7 @@ import { injectXOnyxiaContextInValuesSchemaJson } from "./injectXOnyxiaContextIn
 import { exclude } from "tsafe/exclude";
 import type { ApiTypes } from "./ApiTypes";
 import { Evt } from "evt";
+import { id } from "tsafe/id";
 
 export function createOnyxiaApi(params: {
     url: string;
@@ -439,6 +440,8 @@ export function createOnyxiaApi(params: {
             catalogId,
             chartName,
             chartVersion,
+            friendlyName,
+            isShared,
             values
         }) => {
             await axiosInstance.put("/my-lab/app", {
@@ -446,6 +449,8 @@ export function createOnyxiaApi(params: {
                 "packageName": chartName,
                 "packageVersion": chartVersion,
                 "name": helmReleaseName,
+                friendlyName,
+                "share": isShared ?? false,
                 "options": values,
                 "dryRun": false
             });
@@ -472,29 +477,72 @@ export function createOnyxiaApi(params: {
             const { data } =
                 await axiosInstance.get<ApiTypes["/my-lab/services"]>("/my-lab/services");
 
-            const helmReleases = data.apps.map(
-                (apiApp): HelmRelease => ({
+            const helmReleases = data.apps.map((apiApp): HelmRelease => {
+                const { chartName, chartVersion } = (() => {
+                    const [chartName] = apiApp.chart.split(/-\d+\.\d+\.\d+/);
+
+                    const [, chartVersion] = apiApp.chart.split(`${chartName}-`);
+
+                    return {
+                        chartName,
+                        chartVersion
+                    };
+                })();
+
+                const isShared = (() => {
+                    if (getCurrentProjectId() === undefined) {
+                        return undefined;
+                    }
+
+                    // TODO: Remove this block in a few months
+                    {
+                        const shared = id<Record<string, string | undefined>>(apiApp.env)[
+                            "onyxia.shared"
+                        ];
+
+                        if (shared !== undefined) {
+                            return shared === "true";
+                        }
+                    }
+
+                    return apiApp.share;
+                })();
+
+                const friendlyName = (() => {
+                    // TODO: Remove this block in a few months
+                    value_from_env: {
+                        const valueFromEnv = id<Record<string, string | undefined>>(
+                            apiApp.env
+                        )["onyxia.friendlyName"];
+
+                        if (valueFromEnv === undefined) {
+                            break value_from_env;
+                        }
+
+                        if (valueFromEnv === chartName) {
+                            break value_from_env;
+                        }
+
+                        return valueFromEnv;
+                    }
+
+                    return apiApp.friendlyName;
+                })();
+
+                return {
                     "helmReleaseName": apiApp.id,
-                    //TODO: Here also get the catalogId
-                    "friendlyName": apiApp.env["onyxia.friendlyName"],
+                    friendlyName,
+                    "catalogId": apiApp.catalogId,
                     "postInstallInstructions": apiApp.postInstallInstructions,
                     "urls": apiApp.urls,
                     "startedAt": apiApp.startedAt,
                     "values": apiApp.env,
                     "appVersion": apiApp.appVersion,
                     "revision": apiApp.revision,
-                    ...(() => {
-                        const [chartName] = apiApp.chart.split(/-\d+\.\d+\.\d+/);
-
-                        const [, chartVersion] = apiApp.chart.split(`${chartName}-`);
-
-                        return {
-                            chartName,
-                            chartVersion
-                        };
-                    })(),
+                    chartName,
+                    chartVersion,
                     "ownerUsername": apiApp.env["onyxia.owner"],
-                    "isShared": apiApp.env["onyxia.share"] === "true",
+                    isShared,
                     "areAllTasksReady":
                         apiApp.tasks.length !== 0 &&
                         apiApp.tasks[0].containers.length !== 0 &&
@@ -503,8 +551,8 @@ export function createOnyxiaApi(params: {
                     "podNames": apiApp.tasks.map(({ id }) => id),
                     "doesSupportSuspend": apiApp.suspendable,
                     "isSuspended": apiApp.suspended
-                })
-            );
+                };
+            });
 
             return helmReleases;
         },

@@ -29,7 +29,7 @@ export type Service = {
     ownership:
         | {
               isOwned: true;
-              isShared: boolean;
+              isShared: boolean | undefined;
           }
         | {
               isShared: true;

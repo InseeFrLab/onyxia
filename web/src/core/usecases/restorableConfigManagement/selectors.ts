@@ -1,9 +1,6 @@
 import { createSelector } from "clean-architecture";
 import type { State as RootState } from "core/bootstrap";
 import { name } from "./state";
-import { same } from "evt/tools/inDepth/same";
-import { assert } from "tsafe/assert";
-import { onyxiaFriendlyNameFormFieldPath } from "core/ports/OnyxiaApi";
 import * as projectManagement from "core/usecases/projectManagement";
 
 function state(rootState: RootState) {
@@ -15,35 +12,18 @@ const restorableConfigs = createSelector(
     ({ restorableConfigs }) => [...restorableConfigs].reverse()
 );
 
-export function readFriendlyName(
-    restorableConfig: projectManagement.ProjectConfigs.RestorableServiceConfig
-): string {
-    const userSetFriendlyName = restorableConfig.formFieldsValueDifferentFromDefault.find(
-        ({ path }) => same(path, onyxiaFriendlyNameFormFieldPath.split("."))
-    )?.value;
-    assert(userSetFriendlyName === undefined || typeof userSetFriendlyName === "string");
-    return userSetFriendlyName ?? restorableConfig.chartName;
-}
-
-const chartIconAndFriendlyNameByRestorableConfigIndex = createSelector(
+const chartIconUrlByRestorableConfigIndex = createSelector(
     state,
     restorableConfigs,
-    (
-        state,
-        restorableConfigs
-    ): Record<number, { friendlyName: string; chartIconUrl: string | undefined }> => {
-        const { chartIconUrlByChartNameAndCatalogId } = state;
+    (state, restorableConfigs): Record<number, string | undefined> => {
+        const { indexedChartsIcons } = state;
 
         return Object.fromEntries(
             restorableConfigs.map((restorableConfig, restorableConfigIndex) => [
                 restorableConfigIndex,
-                {
-                    "chartIconUrl":
-                        chartIconUrlByChartNameAndCatalogId[restorableConfig.catalogId]?.[
-                            restorableConfig.chartName
-                        ],
-                    "friendlyName": readFriendlyName(restorableConfig)
-                }
+                indexedChartsIcons[restorableConfig.catalogId]?.[
+                    restorableConfig.chartName
+                ]?.[restorableConfig.chartVersion]
             ])
         );
     }
@@ -51,16 +31,16 @@ const chartIconAndFriendlyNameByRestorableConfigIndex = createSelector(
 
 const main = createSelector(
     restorableConfigs,
-    chartIconAndFriendlyNameByRestorableConfigIndex,
-    (restorableConfigs, chartIconAndFriendlyNameByRestorableConfigIndex) => ({
+    chartIconUrlByRestorableConfigIndex,
+    (restorableConfigs, chartIconUrlByRestorableConfigIndex) => ({
         restorableConfigs,
-        chartIconAndFriendlyNameByRestorableConfigIndex
+        chartIconUrlByRestorableConfigIndex
     })
 );
 
 export const protectedSelectors = {
     restorableConfigs,
-    chartIconAndFriendlyNameByRestorableConfigIndex
+    chartIconUrlByRestorableConfigIndex
 };
 
 export const selectors = {

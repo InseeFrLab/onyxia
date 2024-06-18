@@ -116,7 +116,7 @@ export const MyServicesCard = memo((props: Props) => {
                             {capitalize(service.friendlyName)}
                         </Text>
                         <div style={{ "flex": 1 }} />
-                        {service.ownership.isShared && (
+                        {service.ownership.isShared === true && (
                             <Tooltip title={t("this is a shared service")}>
                                 <Icon icon={id<MuiIconComponentName>("People")} />
                             </Tooltip>
@@ -152,7 +152,7 @@ export const MyServicesCard = memo((props: Props) => {
                         </Text>
                         <div className={classes.packageNameWrapper}>
                             <Text typo="label 1">{capitalize(service.chartName)}</Text>
-                            {service.ownership.isShared && (
+                            {service.ownership.isShared === true && (
                                 <Tag
                                     className={classes.sharedTag}
                                     text={

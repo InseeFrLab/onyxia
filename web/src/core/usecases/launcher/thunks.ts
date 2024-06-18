@@ -9,10 +9,6 @@ import {
     type XOnyxiaContext,
     Chart
 } from "core/ports/OnyxiaApi";
-import {
-    onyxiaFriendlyNameFormFieldPath,
-    onyxiaIsSharedFormFieldPath
-} from "core/ports/OnyxiaApi";
 import * as userAuthentication from "../userAuthentication";
 import * as deploymentRegionManagement from "core/usecases/deploymentRegionManagement";
 import * as projectManagement from "core/usecases/projectManagement";
@@ -25,7 +21,7 @@ import * as secretExplorer from "../secretExplorer";
 import type { FormField } from "./FormField";
 import * as yaml from "yaml";
 import type { Equals } from "tsafe";
-import { actions, name, type State } from "./state";
+import { actions, type State } from "./state";
 import { generateRandomPassword } from "core/tools/generateRandomPassword";
 import * as restorableConfigManagement from "core/usecases/restorableConfigManagement";
 import { privateSelectors } from "./selectors";
@@ -38,35 +34,46 @@ export const thunks = {
             catalogId: string;
             chartName: string;
             chartVersion: string | undefined;
+            friendlyName: string | undefined;
+            isShared?: boolean | undefined;
             formFieldsValueDifferentFromDefault: FormFieldValue[];
         }) =>
         (...args): { cleanup: () => void } => {
-            const {
-                catalogId,
-                chartName,
-                chartVersion: pinnedChartVersion,
-                formFieldsValueDifferentFromDefault
-            } = params;
-
             const [dispatch, getState, rootContext] = args;
             const { onyxiaApi, evtAction } = rootContext;
 
-            assert(
-                getState()[name].stateDescription === "not initialized",
-                "the cleanup should have been called"
-            );
+            let evtCleanupInitialize: Evt<void>;
+
+            if (getIsContextSet(rootContext)) {
+                evtCleanupInitialize = getContext(rootContext).evtCleanupInitialize;
+                evtCleanupInitialize.post();
+            } else {
+                evtCleanupInitialize = Evt.create();
+            }
+
+            const {
+                catalogId,
+                chartName,
+                chartVersion: chatVersion_params,
+                formFieldsValueDifferentFromDefault
+            } = params;
+
+            const friendlyName = params.friendlyName ?? chartName;
+            const isShared =
+                params.isShared ??
+                projectManagement.selectors.currentProject(getState()).group === undefined
+                    ? undefined
+                    : false;
 
             dispatch(actions.initializationStarted());
 
             const ctx = Evt.newCtx();
 
+            evtCleanupInitialize.attachOnce(() => ctx.done());
+
             ctx.evtDoneOrAborted.attachOnce(() =>
                 dispatch(actions.resetToNotInitialized())
             );
-
-            const cleanup = () => {
-                ctx.done();
-            };
 
             evtAction.attachOnce(
                 event =>
@@ -74,7 +81,7 @@ export const thunks = {
                     event.actionName === "projectChanged",
                 ctx,
                 () => {
-                    cleanup();
+                    evtCleanupInitialize.post();
                     dispatch(thunks.initialize(params));
                 }
             );
@@ -91,9 +98,13 @@ export const thunks = {
                     privateThunks.getChartInfos({
                         catalogId,
                         chartName,
-                        pinnedChartVersion
+                        chartVersion: chatVersion_params
                     })
                 );
+
+                if (ctx.completionStatus !== undefined) {
+                    return;
+                }
 
                 const {
                     nonLibraryDependencies: nonLibraryChartDependencies,
@@ -115,7 +126,8 @@ export const thunks = {
 
                 setContext(rootContext, {
                     xOnyxiaContext,
-                    getChartValuesSchemaJson
+                    getChartValuesSchemaJson,
+                    evtCleanupInitialize
                 });
 
                 const { pathOfFormFieldsAffectedByS3ConfigChange } = (() => {
@@ -178,7 +190,9 @@ export const thunks = {
                                 catalogId,
                                 chartName,
                                 chartVersion,
-                                formFieldsValueDifferentFromDefault
+                                formFieldsValueDifferentFromDefault,
+                                isShared,
+                                friendlyName
                             }
                         }
                     )
@@ -213,13 +227,11 @@ export const thunks = {
                         "sensitiveConfigurations": isRestorableConfigSaved
                             ? sensitiveConfigurations
                             : [],
-                        "k8sRandomSubdomain": xOnyxiaContext.k8s.randomSubdomain
+                        "k8sRandomSubdomain": xOnyxiaContext.k8s.randomSubdomain,
+                        friendlyName,
+                        isShared
                     })
                 );
-
-                if (pinnedChartVersion === undefined) {
-                    dispatch(actions.defaultChartVersionSelected());
-                }
 
                 use_custom_s3_config: {
                     const has3sConfigBeenManuallyChanged =
@@ -247,7 +259,11 @@ export const thunks = {
                 }
             })();
 
-            return { cleanup };
+            return {
+                "cleanup": () => {
+                    evtCleanupInitialize.post();
+                }
+            };
         },
     "restoreAllDefault":
         () =>
@@ -274,31 +290,20 @@ export const thunks = {
 
             const [dispatch, getState] = args;
 
-            const rootState = getState();
+            const initializeThunkParams =
+                privateSelectors.initializeThunkParams(getState());
 
-            const state = rootState[name];
+            assert(initializeThunkParams !== null);
 
-            if (state.stateDescription !== "ready") {
+            if (initializeThunkParams.chartVersion === chartVersion) {
+                // NOTE: No changes, skip.
                 return;
             }
-
-            if (state.chartVersion === chartVersion) {
-                return;
-            }
-
-            const formFieldsValueDifferentFromDefault =
-                privateSelectors.formFieldsValueDifferentFromDefault(rootState);
-
-            assert(formFieldsValueDifferentFromDefault !== null);
-
-            dispatch(actions.resetToNotInitialized());
 
             dispatch(
                 thunks.initialize({
-                    "catalogId": state.catalogId,
-                    "chartName": state.chartName,
-                    chartVersion,
-                    formFieldsValueDifferentFromDefault
+                    ...initializeThunkParams,
+                    chartVersion
                 })
             );
         },
@@ -328,26 +333,17 @@ export const thunks = {
         (friendlyName: string) =>
         (...args) => {
             const [dispatch] = args;
-            dispatch(
-                thunks.changeFormFieldValue({
-                    "path": onyxiaFriendlyNameFormFieldPath.split("."),
-                    "value": friendlyName
-                })
-            );
+
+            dispatch(actions.friendlyNameChanged({ friendlyName }));
         },
     "changeIsShared":
         (params: { isShared: boolean }) =>
         (...args) => {
-            const [dispatch, getState] = args;
+            const { isShared } = params;
 
-            assert(privateSelectors.isShared(getState()) !== undefined);
+            const [dispatch] = args;
 
-            dispatch(
-                thunks.changeFormFieldValue({
-                    "path": onyxiaIsSharedFormFieldPath.split("."),
-                    "value": params.isShared
-                })
-            );
+            dispatch(actions.isSharedChanged({ isShared }));
         },
     "useSpecificS3Config":
         (
@@ -618,12 +614,12 @@ const privateThunks = {
         (params: {
             catalogId: string;
             chartName: string;
-            pinnedChartVersion: string | undefined;
+            chartVersion: string | undefined;
         }) =>
         async (...args) => {
             const [, , { onyxiaApi }] = args;
 
-            const { catalogId, chartName, pinnedChartVersion } = params;
+            const { catalogId, chartName, chartVersion: chartVersion_params } = params;
 
             const { catalogs, chartsByCatalogId } =
                 await onyxiaApi.getCatalogsAndCharts();
@@ -641,15 +637,15 @@ const privateThunks = {
             const defaultChartVersion = Chart.getDefaultVersion(chart);
 
             const chartVersion = (() => {
-                if (pinnedChartVersion !== undefined) {
+                if (chartVersion_params !== undefined) {
                     if (
                         chart.versions.find(
-                            ({ version }) => version === pinnedChartVersion
+                            ({ version }) => version === chartVersion_params
                         ) === undefined
                     ) {
                         console.log(
                             [
-                                `No ${pinnedChartVersion} version found for ${chartName} in ${catalog.repositoryUrl}.`,
+                                `No ${chartVersion_params} version found for ${chartName} in ${catalog.repositoryUrl}.`,
                                 `Falling back to default version ${defaultChartVersion}`
                             ].join("\n")
                         );
@@ -657,7 +653,7 @@ const privateThunks = {
                         return defaultChartVersion;
                     }
 
-                    return pinnedChartVersion;
+                    return chartVersion_params;
                 }
 
                 return defaultChartVersion;
@@ -666,9 +662,15 @@ const privateThunks = {
             return {
                 "catalogName": catalog.name,
                 "catalogRepositoryUrl": catalog.repositoryUrl,
-                "chartIconUrl": chart.versions.find(
-                    ({ version }) => version === chartVersion
-                )!.iconUrl,
+                "chartIconUrl": (() => {
+                    const entry = chart.versions.find(
+                        ({ version }) => version === chartVersion
+                    );
+
+                    assert(entry !== undefined);
+
+                    return entry.iconUrl;
+                })(),
                 defaultChartVersion,
                 chartVersion,
                 "availableChartVersions": chart.versions.map(({ version }) => version)
@@ -676,11 +678,12 @@ const privateThunks = {
         }
 } satisfies Thunks;
 
-const { getContext, setContext } = createUsecaseContextApi<{
+const { getContext, setContext, getIsContextSet } = createUsecaseContextApi<{
     xOnyxiaContext: XOnyxiaContext;
     getChartValuesSchemaJson: (params: {
         xOnyxiaContext: XOnyxiaContext;
     }) => JSONSchemaObject;
+    evtCleanupInitialize: Evt<void>;
 }>();
 
 function getInitialFormFields(params: {

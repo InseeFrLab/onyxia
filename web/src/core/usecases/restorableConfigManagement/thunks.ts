@@ -4,9 +4,7 @@ import { same } from "evt/tools/inDepth/same";
 import { assert, type Equals } from "tsafe/assert";
 import type { Thunks } from "core/bootstrap";
 import * as projectManagement from "core/usecases/projectManagement";
-import { Chart } from "core/ports/OnyxiaApi";
 import { actions, type State } from "./state";
-import { readFriendlyName } from "./selectors";
 
 export const protectedThunks = {
     "initialize":
@@ -20,26 +18,19 @@ export const protectedThunks = {
                 const { catalogs, chartsByCatalogId } =
                     await onyxiaApi.getCatalogsAndCharts();
 
-                const chartIconUrlByChartNameAndCatalogId: State["chartIconUrlByChartNameAndCatalogId"] =
-                    {};
+                const indexedChartsIcons: State["indexedChartsIcons"] = {};
 
-                catalogs.forEach(({ id: catalogId }) => {
-                    const chartIconUrlByChartName: State["chartIconUrlByChartNameAndCatalogId"][string] =
-                        {};
+                catalogs.forEach(({ id: catalogId }) =>
+                    chartsByCatalogId[catalogId].forEach(chart =>
+                        chart.versions.find(
+                            version =>
+                                (((indexedChartsIcons[catalogId] ??= {})[chart.name] ??=
+                                    {})[version.version] = version.iconUrl)
+                        )
+                    )
+                );
 
-                    chartsByCatalogId[catalogId].forEach(chart => {
-                        const defaultVersion = Chart.getDefaultVersion(chart);
-
-                        chartIconUrlByChartName[chart.name] = chart.versions.find(
-                            ({ version }) => version === defaultVersion
-                        )!.iconUrl;
-                    });
-
-                    chartIconUrlByChartNameAndCatalogId[catalogId] =
-                        chartIconUrlByChartName;
-                });
-
-                dispatch(actions.initialized({ chartIconUrlByChartNameAndCatalogId }));
+                dispatch(actions.initialized({ indexedChartsIcons }));
             })();
         },
     "getIsRestorableConfigSaved":
@@ -78,8 +69,8 @@ export const thunks = {
             const restorableConfigWithSameFriendlyNameAndSameService = (() => {
                 const results = restorableConfigs.filter(
                     restorableConfig_i =>
-                        readFriendlyName(restorableConfig_i) ===
-                            readFriendlyName(restorableConfig) &&
+                        restorableConfig_i.friendlyName ===
+                            restorableConfig.friendlyName &&
                         restorableConfig_i.catalogId === restorableConfig.catalogId &&
                         restorableConfig_i.chartName === restorableConfig.chartName
                 );
@@ -166,6 +157,8 @@ export function getAreSameRestorableConfig(
                 catalogId,
                 chartName,
                 chartVersion,
+                friendlyName,
+                isShared,
                 formFieldsValueDifferentFromDefault,
                 ...rest
             }) => {
@@ -175,6 +168,8 @@ export function getAreSameRestorableConfig(
                     catalogId,
                     chartName,
                     chartVersion,
+                    friendlyName,
+                    isShared,
                     formFieldsValueToObject(formFieldsValueDifferentFromDefault)
                 ];
             }

@@ -41,6 +41,8 @@ export namespace ProjectConfigs {
     };
 
     export type RestorableServiceConfig = {
+        friendlyName: string;
+        isShared: boolean | undefined;
         catalogId: string;
         chartName: string;
         chartVersion: string;

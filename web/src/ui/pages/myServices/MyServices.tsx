@@ -49,7 +49,7 @@ export default function MyServices(props: Props) {
     /* prettier-ignore */
     const { serviceManagement, restorableConfigManagement, k8sCodeSnippets, clusterEventsMonitor } = useCore().functions;
     /* prettier-ignore */
-    const { restorableConfigs, chartIconAndFriendlyNameByRestorableConfigIndex } = useCoreState("restorableConfigManagement", "main");
+    const { restorableConfigs, chartIconUrlByRestorableConfigIndex } = useCoreState("restorableConfigManagement", "main");
     const {
         isUpdating,
         services,
@@ -154,30 +154,40 @@ export default function MyServices(props: Props) {
     const restorableConfigEntires = useMemo(
         (): MyServicesRestorableConfigsProps["entries"] =>
             restorableConfigs.map((restorableConfig, restorableConfigIndex) => {
-                const buildLink = (autoLaunch: boolean) =>
-                    routes.launcher({
-                        "catalogId": restorableConfig.catalogId,
-                        "chartName": restorableConfig.chartName,
+                const buildLink = (autoLaunch: boolean) => {
+                    const {
+                        catalogId,
+                        chartName,
+                        chartVersion,
+                        friendlyName,
+                        isShared,
+                        formFieldsValueDifferentFromDefault,
+                        ...rest
+                    } = restorableConfig;
+
+                    assert<Equals<typeof rest, {}>>(true);
+
+                    return routes.launcher({
+                        catalogId,
+                        chartName,
                         "version": restorableConfig.chartVersion,
-                        "formFieldsValueDifferentFromDefault":
-                            restorableConfig.formFieldsValueDifferentFromDefault,
+                        formFieldsValueDifferentFromDefault,
+                        "name": friendlyName,
+                        "shared": isShared,
                         "autoLaunch": autoLaunch ? true : undefined
                     }).link;
-
-                const { chartIconUrl, friendlyName } =
-                    chartIconAndFriendlyNameByRestorableConfigIndex[
-                        restorableConfigIndex
-                    ];
+                };
 
                 return {
                     restorableConfigIndex,
-                    chartIconUrl,
-                    friendlyName,
+                    "chartIconUrl":
+                        chartIconUrlByRestorableConfigIndex[restorableConfigIndex],
+                    "friendlyName": restorableConfig.friendlyName,
                     "launchLink": buildLink(true),
                     "editLink": buildLink(false)
                 };
             }),
-        [restorableConfigs, chartIconAndFriendlyNameByRestorableConfigIndex]
+        [restorableConfigs, chartIconUrlByRestorableConfigIndex]
     );
 
     const getMyServiceLink = useConstCallback<MyServicesCardsProps["getMyServiceLink"]>(

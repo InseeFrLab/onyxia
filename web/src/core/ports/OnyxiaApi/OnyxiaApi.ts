@@ -55,6 +55,8 @@ export type OnyxiaApi = {
         catalogId: string;
         chartName: string;
         chartVersion: string;
+        friendlyName: string;
+        isShared: boolean | undefined;
         values: Record<string, unknown>;
     }) => Promise<void>;
 

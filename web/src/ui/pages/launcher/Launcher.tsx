@@ -100,7 +100,9 @@ export default function Launcher(props: Props) {
             catalogId,
             chartName,
             version: chartVersion,
-            formFieldsValueDifferentFromDefault
+            formFieldsValueDifferentFromDefault,
+            "name": friendlyName,
+            shared: isShared
         } = route.params;
 
         showSplashScreen({ "enableTransparency": true });
@@ -109,39 +111,57 @@ export default function Launcher(props: Props) {
             catalogId,
             chartName,
             chartVersion,
-            formFieldsValueDifferentFromDefault
+            formFieldsValueDifferentFromDefault,
+            friendlyName,
+            isShared
         });
 
         return cleanup;
     }, []);
 
-    useEffect(() => {
-        const { version: chartVersion } = route.params;
-
-        if (chartVersion === undefined) {
-            return;
-        }
-
-        launcher.changeChartVersion({ chartVersion });
-    }, [route.params.version]);
-
     const { evtLauncher } = useCore().evts;
+
+    const routeUpdateReplace = useConstCallback(
+        (params: Partial<(typeof route)["params"]>) => {
+            routes[route.name]({
+                ...route.params,
+                ...params
+            }).replace();
+        }
+    );
 
     useEvt(
         ctx => {
             evtLauncher.$attach(
-                action =>
-                    action.actionName === "chartVersionInternallySet" ? [action] : null,
+                event => (event.eventName === "chartVersionChanged" ? [event] : null),
                 ctx,
-                ({ chartVersion }) =>
-                    routes[route.name]({
-                        ...route.params,
-                        "version": chartVersion
-                    }).replace()
+                ({ chartVersion }) => routeUpdateReplace({ "version": chartVersion })
             );
 
             evtLauncher.$attach(
-                action => (action.actionName === "initialized" ? [action] : null),
+                event => (event.eventName === "friendlyNameChanged" ? [event] : null),
+                ctx,
+                ({ friendlyName }) => routeUpdateReplace({ "name": friendlyName })
+            );
+
+            evtLauncher.$attach(
+                event => (event.eventName === "isSharedChanged" ? [event] : null),
+                ctx,
+                ({ isShared }) => routeUpdateReplace({ "shared": isShared })
+            );
+
+            evtLauncher.$attach(
+                event =>
+                    event.eventName === "formFieldsValueDifferentFromDefaultChanged"
+                        ? [event]
+                        : null,
+                ctx,
+                ({ formFieldsValueDifferentFromDefault }) =>
+                    routeUpdateReplace({ formFieldsValueDifferentFromDefault })
+            );
+
+            evtLauncher.$attach(
+                event => (event.eventName === "initialized" ? [event] : null),
                 ctx,
                 async ({ sensitiveConfigurations }) => {
                     hideSplashScreen();
@@ -151,10 +171,9 @@ export default function Launcher(props: Props) {
                             break auto_launch;
                         }
 
-                        routes[route.name]({
-                            ...route.params,
+                        routeUpdateReplace({
                             "autoLaunch": undefined
-                        }).replace();
+                        });
 
                         if (
                             env.DISABLE_AUTO_LAUNCH &&
@@ -179,19 +198,18 @@ export default function Launcher(props: Props) {
                         }
 
                         launcher.launch();
-                        return;
                     }
                 }
             );
 
             evtLauncher.attach(
-                action => action.actionName === "launchStarted",
+                event => event.eventName === "launchStarted",
                 ctx,
                 () => showSplashScreen({ "enableTransparency": true })
             );
 
             evtLauncher.$attach(
-                action => (action.actionName === "launchCompleted" ? [action] : null),
+                event => (event.eventName === "launchCompleted" ? [event] : null),
                 ctx,
                 ({ helmReleaseName }) => {
                     hideSplashScreen();
@@ -201,24 +219,8 @@ export default function Launcher(props: Props) {
                 }
             );
         },
-        [evtLauncher, route.params]
+        [evtLauncher]
     );
-
-    useEffect(() => {
-        if (restorableConfig === undefined) {
-            return;
-        }
-
-        const { catalogId, chartName, formFieldsValueDifferentFromDefault } =
-            restorableConfig;
-
-        routes[route.name]({
-            ...route.params,
-            catalogId,
-            chartName,
-            formFieldsValueDifferentFromDefault
-        }).replace();
-    }, [restorableConfig]);
 
     const onRequestCancel = useConstCallback(() =>
         routes.catalog({ "catalogId": route.params.catalogId }).push()
@@ -270,10 +272,7 @@ export default function Launcher(props: Props) {
     });
 
     const onChartVersionChange = useConstCallback((chartVersion: string) =>
-        routes[route.name]({
-            ...route.params,
-            "version": chartVersion
-        }).replace()
+        launcher.changeChartVersion({ chartVersion })
     );
 
     const {

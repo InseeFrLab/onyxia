@@ -351,38 +351,37 @@ const privateThunks = {
                 ? dispatch(privateThunks.getLoggedOnyxiaApi())
                 : rootContext.onyxiaApi;
 
-            //NOTE: We do not have the catalog id nor the chart id so we search in every catalog.
             const { getLogoUrl } = await (async () => {
-                const { catalogs, chartsByCatalogId } =
-                    await onyxiaApi.getCatalogsAndCharts();
+                const { chartsByCatalogId } = await onyxiaApi.getCatalogsAndCharts();
 
                 function getLogoUrl(params: {
+                    catalogId: string;
                     chartName: string;
                     chartVersion: string;
                 }): string | undefined {
-                    const { chartName, chartVersion } = params;
+                    const { catalogId, chartName, chartVersion } = params;
 
-                    catalog: for (const { id: catalogId } of catalogs) {
-                        for (const chart of chartsByCatalogId[catalogId]) {
-                            if (chart.name === chartName) {
-                                const iconUrl = chart.versions.find(
-                                    ({ version }) => version === chartVersion
-                                )?.iconUrl;
+                    const catalogCharts = chartsByCatalogId[catalogId];
 
-                                if (iconUrl === undefined) {
-                                    const { iconUrl } = chart.versions[0] ?? {};
-                                    if (iconUrl !== undefined) {
-                                        return iconUrl;
-                                    }
-
-                                    continue catalog;
-                                }
-
-                                return iconUrl;
-                            }
-                        }
+                    if (catalogCharts === undefined) {
+                        return undefined;
                     }
-                    return undefined;
+
+                    const chart = catalogCharts.find(chart => chart.name === chartName);
+
+                    if (chart === undefined) {
+                        return undefined;
+                    }
+
+                    const version = chart.versions.find(
+                        ({ version }) => version === chartVersion
+                    );
+
+                    if (version === undefined) {
+                        return undefined;
+                    }
+
+                    return version.iconUrl;
                 }
 
                 return { getLogoUrl };
@@ -405,6 +404,7 @@ const privateThunks = {
                         helmReleases.map(helmRelease => [
                             helmRelease.helmReleaseName,
                             getLogoUrl({
+                                "catalogId": helmRelease.catalogId,
                                 "chartName": helmRelease.chartName,
                                 "chartVersion": helmRelease.chartVersion
                             })

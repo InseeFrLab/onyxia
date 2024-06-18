@@ -2,8 +2,16 @@ import { createUsecaseActions } from "clean-architecture";
 import { id } from "tsafe/id";
 
 export type State = {
-    chartIconUrlByChartNameAndCatalogId: {
-        [catalogId: string]: { [chartName: string]: string | undefined };
+    indexedChartsIcons: {
+        [catalogId: string]:
+            | {
+                  [chartName: string]:
+                      | {
+                            [version: string]: string | undefined;
+                        }
+                      | undefined;
+              }
+            | undefined;
     };
 };
 
@@ -12,7 +20,7 @@ export const name = "restorableConfigManagement";
 export const { reducer, actions } = createUsecaseActions({
     name,
     "initialState": id<State>({
-        "chartIconUrlByChartNameAndCatalogId": {}
+        "indexedChartsIcons": {}
     }),
     "reducers": {
         "initialized": (
@@ -21,14 +29,13 @@ export const { reducer, actions } = createUsecaseActions({
                 payload
             }: {
                 payload: {
-                    chartIconUrlByChartNameAndCatalogId: State["chartIconUrlByChartNameAndCatalogId"];
+                    indexedChartsIcons: State["indexedChartsIcons"];
                 };
             }
         ) => {
-            const { chartIconUrlByChartNameAndCatalogId } = payload;
+            const { indexedChartsIcons } = payload;
 
-            state.chartIconUrlByChartNameAndCatalogId =
-                chartIconUrlByChartNameAndCatalogId;
+            state.indexedChartsIcons = indexedChartsIcons;
         }
     }
 });

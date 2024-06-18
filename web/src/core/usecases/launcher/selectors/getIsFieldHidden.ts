@@ -1,9 +1,5 @@
 import { assert } from "tsafe/assert";
 import { same } from "evt/tools/inDepth/same";
-import {
-    onyxiaFriendlyNameFormFieldPath,
-    onyxiaIsSharedFormFieldPath
-} from "core/ports/OnyxiaApi";
 import type { FormField } from "../FormField";
 import type { State } from "../state";
 
@@ -16,12 +12,18 @@ export function createGetIsFieldHidden(params: {
     function getIsFieldHidden(params: { path: string[] }) {
         const { path } = params;
 
-        for (const onyxiaSpecialFormFieldPath of [
-            onyxiaFriendlyNameFormFieldPath,
-            onyxiaIsSharedFormFieldPath
-        ]) {
-            if (same(onyxiaSpecialFormFieldPath.split("."), path)) {
-                return true;
+        // TODO: Remove this block when the catalog will be updated
+        {
+            const onyxiaFriendlyNameFormFieldPath = "onyxia.friendlyName";
+            const onyxiaIsSharedFormFieldPath = "onyxia.share";
+
+            for (const onyxiaSpecialFormFieldPath of [
+                onyxiaFriendlyNameFormFieldPath,
+                onyxiaIsSharedFormFieldPath
+            ]) {
+                if (same(onyxiaSpecialFormFieldPath.split("."), path)) {
+                    return true;
+                }
             }
         }
 

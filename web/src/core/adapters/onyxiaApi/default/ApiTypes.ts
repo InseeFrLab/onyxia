@@ -1,10 +1,5 @@
 /* eslint-disable no-template-curly-in-string */
-import type {
-    LocalizedString,
-    JSONSchemaObject,
-    onyxiaFriendlyNameFormFieldPath,
-    onyxiaIsSharedFormFieldPath
-} from "core/ports/OnyxiaApi";
+import type { LocalizedString, JSONSchemaObject } from "core/ports/OnyxiaApi";
 
 export type ApiTypes = {
     "/public/ip": {
@@ -189,10 +184,9 @@ export type ApiTypes = {
             status: "deployed" | "pending-install" | "failed";
             urls: string[];
             env: {
-                [onyxiaIsSharedFormFieldPath]: "true" | "false";
-                [onyxiaFriendlyNameFormFieldPath]: string;
                 "onyxia.owner": string;
-                [key: string]: string;
+                // Actually Record<string, string> but we prefer only listing known properties
+                // for type safety.
             };
             startedAt: number;
             tasks: {
@@ -205,6 +199,9 @@ export type ApiTypes = {
             revision: string;
             suspendable: boolean;
             suspended: boolean;
+            friendlyName: string;
+            catalogId: string;
+            share: boolean;
         }[];
     };
     "/user/info": {

@@ -17,6 +17,8 @@ export declare namespace State {
 
     export type Ready = {
         stateDescription: "ready";
+        friendlyName: string;
+        isShared: boolean | undefined;
         chartIconUrl: string | undefined;
         catalogId: string;
         catalogName: LocalizedString;
@@ -69,6 +71,8 @@ export const { reducer, actions } = createUsecaseActions({
                     payload
                 }: {
                     payload: {
+                        friendlyName: string;
+                        isShared: boolean | undefined;
                         catalogId: string;
                         catalogName: LocalizedString;
                         catalogRepositoryUrl: string;
@@ -90,6 +94,8 @@ export const { reducer, actions } = createUsecaseActions({
                 }
             ) => {
                 const {
+                    friendlyName,
+                    isShared,
                     catalogId,
                     catalogName,
                     catalogRepositoryUrl,
@@ -133,7 +139,9 @@ export const { reducer, actions } = createUsecaseActions({
                         valuesSchema,
                         k8sRandomSubdomain,
                         "selectedCustomS3ConfigIndex": undefined,
-                        "has3sConfigBeenManuallyChanged": false
+                        "has3sConfigBeenManuallyChanged": false,
+                        friendlyName,
+                        isShared
                     })
                 );
 
@@ -325,14 +333,43 @@ export const { reducer, actions } = createUsecaseActions({
                     }
                 }
             },
+            "friendlyNameChanged": (
+                state,
+                {
+                    payload
+                }: {
+                    payload: {
+                        friendlyName: string;
+                    };
+                }
+            ) => {
+                const { friendlyName } = payload;
+
+                assert(state.stateDescription === "ready");
+
+                state.friendlyName = friendlyName;
+            },
+            "isSharedChanged": (
+                state,
+                {
+                    payload
+                }: {
+                    payload: {
+                        isShared: boolean | undefined;
+                    };
+                }
+            ) => {
+                const { isShared } = payload;
+
+                assert(state.stateDescription === "ready");
+
+                state.isShared = isShared;
+            },
             "launchStarted": () => {
                 /* NOTE: For coreEvt */
             },
             "launchCompleted": () => {
                 /* NOTE: For coreEvt */
-            },
-            "defaultChartVersionSelected": () => {
-                /* Only for evt */
             }
         } satisfies Record<string, (state: State, ...rest: any[]) => State | void>;
 

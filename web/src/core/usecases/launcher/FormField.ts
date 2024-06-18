@@ -160,8 +160,8 @@ export declare namespace IndexedFormFields {
 
 /**
  *
- * in:  [{ "path": ["a", "b"], "value": 32 }, { "path": ["a", "c"], "value": 33 }]
- * out: { "a": { "b": 32, "c": 33 } }
+ * in:  [{ "path": ["a", "b"], "value": 32 }, { "path": ["a", "c"], "value": 33 }]
+ * out: { "a": { "b": 32, "c": 33 } }
  *
  *
  */

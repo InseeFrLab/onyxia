@@ -3,10 +3,6 @@ import type { State as RootState } from "core/bootstrap";
 import { assert } from "tsafe/assert";
 import { same } from "evt/tools/inDepth/same";
 import { formFieldsValueToObject } from "../FormField";
-import {
-    onyxiaFriendlyNameFormFieldPath,
-    onyxiaIsSharedFormFieldPath
-} from "core/ports/OnyxiaApi";
 import { scaffoldingIndexedFormFieldsToFinal } from "./scaffoldingIndexedFormFieldsToFinal";
 import type { IndexedFormFields } from "../FormField";
 import { createGetIsFieldHidden } from "./getIsFieldHidden";
@@ -61,20 +57,12 @@ const nonLibraryChartDependencies = createSelector(readyState, state => {
     return state.nonLibraryChartDependencies;
 });
 
-const friendlyName = createSelector(isReady, formFields, (isReady, formFields) => {
-    if (!isReady) {
+const friendlyName = createSelector(readyState, state => {
+    if (state === null) {
         return null;
     }
 
-    assert(formFields !== null);
-
-    const friendlyName = formFields.find(({ path }) =>
-        same(path, onyxiaFriendlyNameFormFieldPath.split("."))
-    )!.value;
-
-    assert(typeof friendlyName === "string");
-
-    return friendlyName;
+    return state.friendlyName;
 });
 
 const valuesSchema = createSelector(readyState, state => {
@@ -380,8 +368,24 @@ const chartVersion = createSelector(readyState, state => {
     return state.chartVersion;
 });
 
+const groupProjectName = createSelector(
+    projectManagement.selectors.currentProject,
+    currentProject =>
+        currentProject.group === undefined ? undefined : currentProject.name
+);
+
+const isShared = createSelector(readyState, state => {
+    if (state === null) {
+        return null;
+    }
+
+    return state.isShared;
+});
+
 const restorableConfig = createSelector(
     isReady,
+    friendlyName,
+    isShared,
     catalogId,
     chartName,
     chartVersion,
@@ -389,6 +393,8 @@ const restorableConfig = createSelector(
     pathOfFormFieldsWhoseValuesAreDifferentFromDefault,
     (
         isReady,
+        friendlyName,
+        isShared,
         catalogId,
         chartName,
         chartVersion,
@@ -400,13 +406,17 @@ const restorableConfig = createSelector(
         }
 
         assert(catalogId !== null);
+        assert(friendlyName !== null);
+        assert(isShared !== null);
         assert(chartName !== null);
         assert(chartVersion !== null);
         assert(formFields !== null);
         assert(pathOfFormFieldsWhoseValuesAreDifferentFromDefault !== null);
 
         return {
+            friendlyName,
             catalogId,
+            isShared,
             chartName,
             chartVersion,
             "formFieldsValueDifferentFromDefault":
@@ -663,41 +673,6 @@ const sourceUrls = createSelector(readyState, state => {
     return sourceUrls;
 });
 
-const groupProjectName = createSelector(
-    projectManagement.selectors.currentProject,
-    currentProject =>
-        currentProject.group === undefined ? undefined : currentProject.name
-);
-
-const isShared = createSelector(
-    isReady,
-    formFields,
-    groupProjectName,
-    (isReady, formFields, groupProjectName) => {
-        if (!isReady) {
-            return null;
-        }
-
-        assert(formFields !== null);
-
-        if (groupProjectName === undefined) {
-            return false;
-        }
-
-        const formField_isShared = formFields.find(({ path }) =>
-            same(path, onyxiaIsSharedFormFieldPath.split("."))
-        );
-
-        if (formField_isShared === undefined) {
-            return false;
-        }
-
-        assert(typeof formField_isShared.value === "boolean");
-
-        return formField_isShared.value;
-    }
-);
-
 const availableChartVersions = createSelector(readyState, state => {
     if (state === null) {
         return null;
@@ -718,16 +693,7 @@ const willOverwriteExistingConfigOnSave = createSelector(
     catalogId,
     friendlyName,
     restorableConfigManagement.protectedSelectors.restorableConfigs,
-    restorableConfigManagement.protectedSelectors
-        .chartIconAndFriendlyNameByRestorableConfigIndex,
-    (
-        isReady,
-        chartName,
-        catalogId,
-        friendlyName,
-        restorableConfigs,
-        chartIconAndFriendlyNameByRestorableConfigIndex
-    ) => {
+    (isReady, chartName, catalogId, friendlyName, restorableConfigs) => {
         if (!isReady) {
             return null;
         }
@@ -738,11 +704,10 @@ const willOverwriteExistingConfigOnSave = createSelector(
 
         return (
             restorableConfigs.find(
-                (restorableConfig, i) =>
+                restorableConfig =>
                     restorableConfig.catalogId === catalogId &&
                     restorableConfig.chartName === chartName &&
-                    chartIconAndFriendlyNameByRestorableConfigIndex[i].friendlyName ===
-                        friendlyName
+                    restorableConfig.friendlyName === friendlyName
             ) !== undefined
         );
     }
@@ -930,8 +895,19 @@ const helmInstallParams = createSelector(
     catalogId,
     chartName,
     chartVersion,
+    friendlyName,
+    isShared,
     formFields,
-    (isReady, helmReleaseName, catalogId, chartName, chartVersion, formFields) => {
+    (
+        isReady,
+        helmReleaseName,
+        catalogId,
+        chartName,
+        chartVersion,
+        friendlyName,
+        isShared,
+        formFields
+    ) => {
         if (!isReady) {
             return null;
         }
@@ -939,6 +915,8 @@ const helmInstallParams = createSelector(
         assert(catalogId !== null);
         assert(chartName !== null);
         assert(chartVersion !== null);
+        assert(friendlyName !== null);
+        assert(isShared !== null);
         assert(formFields !== null);
 
         return {
@@ -946,7 +924,48 @@ const helmInstallParams = createSelector(
             catalogId,
             chartName,
             chartVersion,
+            friendlyName,
+            "isShared": isShared ?? false,
             "values": formFieldsValueToObject(formFields)
+        };
+    }
+);
+
+const initializeThunkParams = createSelector(
+    isReady,
+    catalogId,
+    chartName,
+    chartVersion,
+    friendlyName,
+    isShared,
+    formFieldsValueDifferentFromDefault,
+    (
+        isReady,
+        catalogId,
+        chartName,
+        chartVersion,
+        friendlyName,
+        isShared,
+        formFieldsValueDifferentFromDefault
+    ) => {
+        if (!isReady) {
+            return null;
+        }
+        assert(catalogId !== null);
+        assert(chartName !== null);
+        assert(chartVersion !== null);
+        assert(friendlyName !== null);
+        assert(isShared !== null);
+        assert(formFieldsValueDifferentFromDefault !== null);
+
+        return {
+            isReady,
+            catalogId,
+            chartName,
+            chartVersion,
+            friendlyName,
+            isShared,
+            formFieldsValueDifferentFromDefault
         };
     }
 );
@@ -956,5 +975,6 @@ export const privateSelectors = {
     formFieldsValueDifferentFromDefault,
     isShared,
     has3sConfigBeenManuallyChanged,
-    helmInstallParams
+    helmInstallParams,
+    initializeThunkParams
 };

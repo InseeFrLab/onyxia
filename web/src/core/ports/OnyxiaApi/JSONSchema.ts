@@ -115,7 +115,3 @@ export namespace JSONSchemaFormFieldDescription {
         type: "array";
     };
 }
-
-export const onyxiaFriendlyNameFormFieldPath = "onyxia.friendlyName";
-
-export const onyxiaIsSharedFormFieldPath = "onyxia.share";

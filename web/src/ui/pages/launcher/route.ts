@@ -135,6 +135,8 @@ export const routeDefs = {
         {
             "catalogId": param.path.string,
             "chartName": param.path.string,
+            "name": param.query.optional.string,
+            "shared": param.query.optional.boolean,
             "version": param.query.optional.string,
             "autoLaunch": param.query.optional.boolean,
             ...formFieldsDefineRouteParam
