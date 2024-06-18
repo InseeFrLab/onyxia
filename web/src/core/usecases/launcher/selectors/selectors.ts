@@ -976,5 +976,7 @@ export const privateSelectors = {
     isShared,
     has3sConfigBeenManuallyChanged,
     helmInstallParams,
-    initializeThunkParams
+    initializeThunkParams,
+    isRestorableConfigSaved,
+    restorableConfig
 };

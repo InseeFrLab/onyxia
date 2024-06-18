@@ -88,7 +88,6 @@ export const { reducer, actions } = createUsecaseActions({
                         valuesSchema: State.Ready["valuesSchema"];
                         nonLibraryChartDependencies: string[];
                         formFieldsValueDifferentFromDefault: FormFieldValue[];
-                        sensitiveConfigurations: FormFieldValue[];
                         k8sRandomSubdomain: string;
                     };
                 }

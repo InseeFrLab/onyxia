@@ -32,24 +32,6 @@ export const protectedThunks = {
 
                 dispatch(actions.initialized({ indexedChartsIcons }));
             })();
-        },
-    "getIsRestorableConfigSaved":
-        (params: {
-            restorableConfig: projectManagement.ProjectConfigs.RestorableServiceConfig;
-        }) =>
-        (...args): boolean => {
-            const [, getState] = args;
-
-            const { restorableConfig } = params;
-
-            const { restorableConfigs } =
-                projectManagement.protectedSelectors.currentProjectConfigs(getState());
-
-            return (
-                restorableConfigs.find(restorableConfig_i =>
-                    getAreSameRestorableConfig(restorableConfig_i, restorableConfig)
-                ) !== undefined
-            );
         }
 } satisfies Thunks;
 

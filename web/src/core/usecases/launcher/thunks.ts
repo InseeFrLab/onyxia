@@ -23,7 +23,6 @@ import * as yaml from "yaml";
 import type { Equals } from "tsafe";
 import { actions, type State } from "./state";
 import { generateRandomPassword } from "core/tools/generateRandomPassword";
-import * as restorableConfigManagement from "core/usecases/restorableConfigManagement";
 import { privateSelectors } from "./selectors";
 import { Evt } from "evt";
 import { createUsecaseContextApi } from "clean-architecture";
@@ -37,6 +36,13 @@ export const thunks = {
             friendlyName: string | undefined;
             isShared?: boolean | undefined;
             formFieldsValueDifferentFromDefault: FormFieldValue[];
+            autoLaunch:
+                | false
+                | {
+                      confirmAutoLaunch: (prams: {
+                          sensitiveConfigurations: FormFieldValue[];
+                      }) => Promise<{ doConfirmAutoLaunch: boolean }>;
+                  };
         }) =>
         (...args): { cleanup: () => void } => {
             const [dispatch, getState, rootContext] = args;
@@ -55,7 +61,8 @@ export const thunks = {
                 catalogId,
                 chartName,
                 chartVersion: chatVersion_params,
-                formFieldsValueDifferentFromDefault
+                formFieldsValueDifferentFromDefault,
+                autoLaunch
             } = params;
 
             const friendlyName = params.friendlyName ?? chartName;
@@ -183,21 +190,6 @@ export const thunks = {
                     return { pathOfFormFieldsAffectedByS3ConfigChange };
                 })();
 
-                const isRestorableConfigSaved = dispatch(
-                    restorableConfigManagement.protectedThunks.getIsRestorableConfigSaved(
-                        {
-                            "restorableConfig": {
-                                catalogId,
-                                chartName,
-                                chartVersion,
-                                formFieldsValueDifferentFromDefault,
-                                isShared,
-                                friendlyName
-                            }
-                        }
-                    )
-                );
-
                 const {
                     formFields,
                     infosAboutWhenFieldsShouldBeHidden,
@@ -224,9 +216,6 @@ export const thunks = {
                         valuesSchema,
                         nonLibraryChartDependencies,
                         formFieldsValueDifferentFromDefault,
-                        "sensitiveConfigurations": isRestorableConfigSaved
-                            ? sensitiveConfigurations
-                            : [],
                         "k8sRandomSubdomain": xOnyxiaContext.k8s.randomSubdomain,
                         friendlyName,
                         isShared
@@ -256,6 +245,32 @@ export const thunks = {
                             "customS3ConfigIndex": indexForXOnyxia
                         })
                     );
+                }
+
+                auto_launch: {
+                    if (autoLaunch === false) {
+                        break auto_launch;
+                    }
+
+                    confirm_auto_launch: {
+                        const isRestorableConfigSaved =
+                            privateSelectors.isRestorableConfigSaved(getState());
+
+                        if (isRestorableConfigSaved) {
+                            break confirm_auto_launch;
+                        }
+
+                        const { doConfirmAutoLaunch } =
+                            await autoLaunch.confirmAutoLaunch({
+                                sensitiveConfigurations
+                            });
+
+                        if (!doConfirmAutoLaunch) {
+                            break auto_launch;
+                        }
+                    }
+
+                    dispatch(thunks.launch());
                 }
             })();
 
@@ -303,7 +318,8 @@ export const thunks = {
             dispatch(
                 thunks.initialize({
                     ...initializeThunkParams,
-                    chartVersion
+                    chartVersion,
+                    "autoLaunch": false
                 })
             );
         },

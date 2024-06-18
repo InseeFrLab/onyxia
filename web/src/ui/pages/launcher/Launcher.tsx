@@ -10,7 +10,7 @@ import { useConst } from "powerhooks/useConst";
 import type { PageRoute } from "./route";
 import { useSplashScreen } from "onyxia-ui";
 import { useEvt } from "evt/hooks";
-import { routes, getPreviousRouteName } from "ui/routes";
+import { routes } from "ui/routes";
 import { env } from "env";
 import { assert } from "tsafe/assert";
 import { Deferred } from "evt/tools/Deferred";
@@ -26,6 +26,7 @@ import {
     type MaybeAcknowledgeConfigVolatilityDialogProps
 } from "ui/shared/MaybeAcknowledgeConfigVolatilityDialog";
 import type { SourceUrls } from "core/usecases/launcher/selectors";
+import type { FormFieldValue } from "core/usecases/launcher/FormField";
 
 export type Props = {
     route: PageRoute;
@@ -113,11 +114,40 @@ export default function Launcher(props: Props) {
             chartVersion,
             formFieldsValueDifferentFromDefault,
             friendlyName,
-            isShared
+            isShared,
+            "autoLaunch": !route.params.autoLaunch ? false : { confirmAutoLaunch }
         });
 
         return cleanup;
     }, []);
+
+    const confirmAutoLaunch = useConstCallback(
+        async (params: {
+            sensitiveConfigurations: FormFieldValue[];
+        }): Promise<{ doConfirmAutoLaunch: boolean }> => {
+            const { sensitiveConfigurations } = params;
+
+            if (env.DISABLE_AUTO_LAUNCH) {
+                evtAutoLaunchDisabledDialogOpen.post();
+                return { "doConfirmAutoLaunch": false };
+            }
+
+            if (sensitiveConfigurations.length !== 0) {
+                const dDoProceedToLaunch = new Deferred<boolean>();
+
+                evtSensitiveConfigurationDialogOpen.post({
+                    sensitiveConfigurations,
+                    "resolveDoProceedToLaunch": dDoProceedToLaunch.resolve
+                });
+
+                if (!(await dDoProceedToLaunch.pr)) {
+                    return { "doConfirmAutoLaunch": false };
+                }
+            }
+
+            return { "doConfirmAutoLaunch": true };
+        }
+    );
 
     const { evtLauncher } = useCore().evts;
 
@@ -131,94 +161,44 @@ export default function Launcher(props: Props) {
     );
 
     useEvt(
-        ctx => {
-            evtLauncher.$attach(
-                event => (event.eventName === "chartVersionChanged" ? [event] : null),
-                ctx,
-                ({ chartVersion }) => routeUpdateReplace({ "version": chartVersion })
-            );
-
-            evtLauncher.$attach(
-                event => (event.eventName === "friendlyNameChanged" ? [event] : null),
-                ctx,
-                ({ friendlyName }) => routeUpdateReplace({ "name": friendlyName })
-            );
-
-            evtLauncher.$attach(
-                event => (event.eventName === "isSharedChanged" ? [event] : null),
-                ctx,
-                ({ isShared }) => routeUpdateReplace({ "shared": isShared })
-            );
-
-            evtLauncher.$attach(
-                event =>
-                    event.eventName === "formFieldsValueDifferentFromDefaultChanged"
-                        ? [event]
-                        : null,
-                ctx,
-                ({ formFieldsValueDifferentFromDefault }) =>
-                    routeUpdateReplace({ formFieldsValueDifferentFromDefault })
-            );
-
-            evtLauncher.$attach(
-                event => (event.eventName === "initialized" ? [event] : null),
-                ctx,
-                async ({ sensitiveConfigurations }) => {
-                    hideSplashScreen();
-
-                    auto_launch: {
-                        if (!route.params.autoLaunch) {
-                            break auto_launch;
-                        }
-
+        ctx =>
+            evtLauncher
+                .pipe(ctx)
+                .$attach(
+                    event =>
+                        event.eventName === "initializationParamsChanged"
+                            ? [event]
+                            : null,
+                    ({
+                        chartVersion,
+                        formFieldsValueDifferentFromDefault,
+                        friendlyName,
+                        isShared
+                    }) =>
                         routeUpdateReplace({
-                            "autoLaunch": undefined
-                        });
-
-                        if (
-                            env.DISABLE_AUTO_LAUNCH &&
-                            //If auto launch from myServices the user is launching one of his service, it's safe
-                            getPreviousRouteName() !== "myServices"
-                        ) {
-                            evtAutoLaunchDisabledDialogOpen.post();
-                            break auto_launch;
-                        }
-
-                        if (sensitiveConfigurations.length !== 0) {
-                            const dDoProceedToLaunch = new Deferred<boolean>();
-
-                            evtSensitiveConfigurationDialogOpen.post({
-                                sensitiveConfigurations,
-                                "resolveDoProceedToLaunch": dDoProceedToLaunch.resolve
-                            });
-
-                            if (!(await dDoProceedToLaunch.pr)) {
-                                break auto_launch;
-                            }
-                        }
-
-                        launcher.launch();
+                            "version": chartVersion,
+                            "name": friendlyName,
+                            "shared": isShared,
+                            formFieldsValueDifferentFromDefault
+                        })
+                )
+                .attach(
+                    event => event.eventName === "initialized",
+                    () => hideSplashScreen()
+                )
+                .attach(
+                    event => event.eventName === "launchStarted",
+                    () => showSplashScreen({ "enableTransparency": true })
+                )
+                .$attach(
+                    event => (event.eventName === "launchCompleted" ? [event] : null),
+                    ({ helmReleaseName }) => {
+                        hideSplashScreen();
+                        routes
+                            .myServices({ "autoOpenHelmReleaseName": helmReleaseName })
+                            .push();
                     }
-                }
-            );
-
-            evtLauncher.attach(
-                event => event.eventName === "launchStarted",
-                ctx,
-                () => showSplashScreen({ "enableTransparency": true })
-            );
-
-            evtLauncher.$attach(
-                event => (event.eventName === "launchCompleted" ? [event] : null),
-                ctx,
-                ({ helmReleaseName }) => {
-                    hideSplashScreen();
-                    routes
-                        .myServices({ "autoOpenHelmReleaseName": helmReleaseName })
-                        .push();
-                }
-            );
-        },
+                ),
         [evtLauncher]
     );
 
