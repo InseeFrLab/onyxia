@@ -10,7 +10,7 @@ import { useConst } from "powerhooks/useConst";
 import type { PageRoute } from "./route";
 import { useSplashScreen } from "onyxia-ui";
 import { useEvt } from "evt/hooks";
-import { routes } from "ui/routes";
+import { routes, getPreviousRouteName } from "ui/routes";
 import { env } from "env";
 import { assert } from "tsafe/assert";
 import { Deferred } from "evt/tools/Deferred";
@@ -26,7 +26,6 @@ import {
     type MaybeAcknowledgeConfigVolatilityDialogProps
 } from "ui/shared/MaybeAcknowledgeConfigVolatilityDialog";
 import type { SourceUrls } from "core/usecases/launcher/selectors";
-import type { FormFieldValue } from "core/usecases/launcher/FormField";
 
 export type Props = {
     route: PageRoute;
@@ -41,7 +40,6 @@ export default function Launcher(props: Props) {
     const {
         evtAcknowledgeSharingOfConfigConfirmDialogOpen,
         evtAutoLaunchDisabledDialogOpen,
-        evtSensitiveConfigurationDialogOpen,
         evtNoLongerBookmarkedDialogOpen,
         evtMaybeAcknowledgeConfigVolatilityDialogOpen
     } = useConst(() => ({
@@ -54,10 +52,6 @@ export default function Launcher(props: Props) {
         "evtAutoLaunchDisabledDialogOpen":
             Evt.create<
                 UnpackEvt<LauncherDialogsProps["evtAutoLaunchDisabledDialogOpen"]>
-            >(),
-        "evtSensitiveConfigurationDialogOpen":
-            Evt.create<
-                UnpackEvt<LauncherDialogsProps["evtSensitiveConfigurationDialogOpen"]>
             >(),
         "evtNoLongerBookmarkedDialogOpen":
             Evt.create<
@@ -108,6 +102,26 @@ export default function Launcher(props: Props) {
 
         showSplashScreen({ "enableTransparency": true });
 
+        let autoLaunch = route.params.autoLaunch ?? false;
+
+        disable_auto_launch: {
+            if (!autoLaunch) {
+                break disable_auto_launch;
+            }
+
+            if (!env.DISABLE_AUTO_LAUNCH) {
+                break disable_auto_launch;
+            }
+
+            if (getPreviousRouteName() === "myServices") {
+                break disable_auto_launch;
+            }
+
+            evtAutoLaunchDisabledDialogOpen.postAsyncOnceHandled();
+
+            autoLaunch = false;
+        }
+
         const { cleanup } = launcher.initialize({
             catalogId,
             chartName,
@@ -115,39 +129,11 @@ export default function Launcher(props: Props) {
             formFieldsValueDifferentFromDefault,
             friendlyName,
             isShared,
-            "autoLaunch": !route.params.autoLaunch ? false : { confirmAutoLaunch }
+            autoLaunch
         });
 
         return cleanup;
     }, []);
-
-    const confirmAutoLaunch = useConstCallback(
-        async (params: {
-            sensitiveConfigurations: FormFieldValue[];
-        }): Promise<{ doConfirmAutoLaunch: boolean }> => {
-            const { sensitiveConfigurations } = params;
-
-            if (env.DISABLE_AUTO_LAUNCH) {
-                evtAutoLaunchDisabledDialogOpen.post();
-                return { "doConfirmAutoLaunch": false };
-            }
-
-            if (sensitiveConfigurations.length !== 0) {
-                const dDoProceedToLaunch = new Deferred<boolean>();
-
-                evtSensitiveConfigurationDialogOpen.post({
-                    sensitiveConfigurations,
-                    "resolveDoProceedToLaunch": dDoProceedToLaunch.resolve
-                });
-
-                if (!(await dDoProceedToLaunch.pr)) {
-                    return { "doConfirmAutoLaunch": false };
-                }
-            }
-
-            return { "doConfirmAutoLaunch": true };
-        }
-    );
 
     const { evtLauncher } = useCore().evts;
 
@@ -423,7 +409,6 @@ export default function Launcher(props: Props) {
                     evtAcknowledgeSharingOfConfigConfirmDialogOpen
                 }
                 evtAutoLaunchDisabledDialogOpen={evtAutoLaunchDisabledDialogOpen}
-                evtSensitiveConfigurationDialogOpen={evtSensitiveConfigurationDialogOpen}
                 evtNoLongerBookmarkedDialogOpen={evtNoLongerBookmarkedDialogOpen}
             />
             <MaybeAcknowledgeConfigVolatilityDialog

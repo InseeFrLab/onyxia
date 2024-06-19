@@ -672,12 +672,6 @@ Sentiti libero di esplorare e prendere il controllo dei tuoi deployment Kubernet
             "Clicca nuovamente sull'icona del segnalibro per aggiornare la configurazione salvata.",
         "ok": "Ok"
     },
-    "SensitiveConfigurationDialog": {
-        "cancel": "Annullare",
-        "sensitive configuration dialog title":
-            "Avviare questo servizio potrebbe essere pericoloso.",
-        "proceed to launch": "Lanciare con consapevolezza"
-    },
     "MyService": {
         "page title": ({ helmReleaseFriendlyName }) =>
             `${helmReleaseFriendlyName} Monitoraggio`

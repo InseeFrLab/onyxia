@@ -972,11 +972,8 @@ const initializeThunkParams = createSelector(
 
 export const privateSelectors = {
     helmReleaseName,
-    formFieldsValueDifferentFromDefault,
-    isShared,
     has3sConfigBeenManuallyChanged,
     helmInstallParams,
     initializeThunkParams,
-    isRestorableConfigSaved,
     restorableConfig
 };

@@ -623,11 +623,6 @@ ${
         "no longer bookmarked dialog body": "再次单击书签符号以更新您保存的配置.",
         "ok": "是"
     },
-    "SensitiveConfigurationDialog": {
-        "cancel": "取消",
-        "sensitive configuration dialog title": "您想更换它吗?",
-        "proceed to launch": "继续启动"
-    },
     "MyService": {
         "page title": ({ helmReleaseFriendlyName }) => `${helmReleaseFriendlyName} 监控`
     },

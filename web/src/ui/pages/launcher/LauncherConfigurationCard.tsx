@@ -427,13 +427,10 @@ const { TabContent } = (() => {
 
                                             switch (formFieldIsWellFormed.message) {
                                                 case "mismatching pattern":
-                                                    return t(
-                                                        formFieldIsWellFormed.message,
-                                                        {
-                                                            "pattern":
-                                                                formFieldIsWellFormed.pattern
-                                                        }
-                                                    );
+                                                    return t("mismatching pattern", {
+                                                        "pattern":
+                                                            formFieldIsWellFormed.pattern
+                                                    });
                                                 default: {
                                                     return t(
                                                         formFieldIsWellFormed.message

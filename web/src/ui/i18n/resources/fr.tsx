@@ -678,12 +678,6 @@ N'hésitez pas à explorer et à prendre en main vos déploiements Kubernetes !
             "Cliquer une nouvelle fois sur le symbole marque-page pour mettre à jour votre configuration enregistrée.",
         "ok": "Ok"
     },
-    "SensitiveConfigurationDialog": {
-        "sensitive configuration dialog title":
-            "Lancer ce service pourrait être dangereux",
-        "proceed to launch": "Lancer en conscience",
-        "cancel": "Annuler"
-    },
     "MyService": {
         "page title": ({ helmReleaseFriendlyName }) =>
             `${helmReleaseFriendlyName} Surveillance`

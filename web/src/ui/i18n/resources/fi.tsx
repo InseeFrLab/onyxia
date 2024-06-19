@@ -663,12 +663,6 @@ Tutustu vapaasti ja ota hallintaan Kubernetes-julkaisusi!
             "Päivitä tallennettu konfiguraatio napsauttamalla kirjanmerkkikuvaketta uudelleen.",
         "ok": "Ok"
     },
-    "SensitiveConfigurationDialog": {
-        "sensitive configuration dialog title":
-            "Palvelun käynnistäminen voi olla vaarallista",
-        "cancel": "Peruuta",
-        "proceed to launch": "Jatka käynnistämistä"
-    },
     "MyService": {
         "page title": ({ helmReleaseFriendlyName }) =>
             `${helmReleaseFriendlyName} Valvonta`

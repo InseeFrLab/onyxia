@@ -36,13 +36,7 @@ export const thunks = {
             friendlyName: string | undefined;
             isShared?: boolean | undefined;
             formFieldsValueDifferentFromDefault: FormFieldValue[];
-            autoLaunch:
-                | false
-                | {
-                      confirmAutoLaunch: (prams: {
-                          sensitiveConfigurations: FormFieldValue[];
-                      }) => Promise<{ doConfirmAutoLaunch: boolean }>;
-                  };
+            autoLaunch: boolean;
         }) =>
         (...args): { cleanup: () => void } => {
             const [dispatch, getState, rootContext] = args;
@@ -141,8 +135,7 @@ export const thunks = {
                     const { formFields: formFields_ref } = getInitialFormFields({
                         "valuesSchema": getChartValuesSchemaJson({
                             xOnyxiaContext
-                        }),
-                        "formFieldsValueDifferentFromDefault": []
+                        })
                     });
 
                     const { formFields: formFields_diff } = getInitialFormFields({
@@ -171,8 +164,7 @@ export const thunks = {
                                     "isAnonymous": !xOnyxiaContext.s3.isAnonymous
                                 }
                             }
-                        }),
-                        "formFieldsValueDifferentFromDefault": []
+                        })
                     });
 
                     const pathOfFormFieldsAffectedByS3ConfigChange = formFields_ref
@@ -190,14 +182,8 @@ export const thunks = {
                     return { pathOfFormFieldsAffectedByS3ConfigChange };
                 })();
 
-                const {
-                    formFields,
-                    infosAboutWhenFieldsShouldBeHidden,
-                    sensitiveConfigurations
-                } = getInitialFormFields({
-                    formFieldsValueDifferentFromDefault,
-                    valuesSchema
-                });
+                const { formFields, infosAboutWhenFieldsShouldBeHidden } =
+                    getInitialFormFields({ valuesSchema });
 
                 dispatch(
                     actions.initialized({
@@ -247,29 +233,7 @@ export const thunks = {
                     );
                 }
 
-                auto_launch: {
-                    if (autoLaunch === false) {
-                        break auto_launch;
-                    }
-
-                    confirm_auto_launch: {
-                        const isRestorableConfigSaved =
-                            privateSelectors.isRestorableConfigSaved(getState());
-
-                        if (isRestorableConfigSaved) {
-                            break confirm_auto_launch;
-                        }
-
-                        const { doConfirmAutoLaunch } =
-                            await autoLaunch.confirmAutoLaunch({
-                                sensitiveConfigurations
-                            });
-
-                        if (!doConfirmAutoLaunch) {
-                            break auto_launch;
-                        }
-                    }
-
+                if (autoLaunch) {
                     dispatch(thunks.launch());
                 }
             })();
@@ -430,8 +394,7 @@ export const thunks = {
             const { formFields } = getInitialFormFields({
                 "valuesSchema": getChartValuesSchemaJson({
                     "xOnyxiaContext": xOnyxiaContextWithCustomS3Config
-                }),
-                "formFieldsValueDifferentFromDefault": []
+                })
             });
 
             dispatch(
@@ -702,24 +665,18 @@ const { getContext, setContext, getIsContextSet } = createUsecaseContextApi<{
     evtCleanupInitialize: Evt<void>;
 }>();
 
-function getInitialFormFields(params: {
-    formFieldsValueDifferentFromDefault: FormFieldValue[];
-    valuesSchema: JSONSchemaObject;
-}): {
+function getInitialFormFields(params: { valuesSchema: JSONSchemaObject }): {
     formFields: FormField[];
     infosAboutWhenFieldsShouldBeHidden: {
         path: string[];
         isHidden: boolean | FormFieldValue;
     }[];
-    sensitiveConfigurations: FormFieldValue[];
 } {
-    const { formFieldsValueDifferentFromDefault, valuesSchema } = params;
+    const { valuesSchema } = params;
 
     const formFields: State.Ready["formFields"] = [];
     const infosAboutWhenFieldsShouldBeHidden: State.Ready["infosAboutWhenFieldsShouldBeHidden"] =
         [];
-
-    const sensitiveConfigurations: FormFieldValue[] = [];
 
     (function callee(params: {
         jsonSchemaObject: JSONSchemaObject;
@@ -912,32 +869,6 @@ function getInitialFormFields(params: {
                             });
                         }
 
-                        security_warning: {
-                            const { pattern } =
-                                jsonSchemaFormFieldDescription["x-security"] ?? {};
-
-                            if (pattern === undefined) {
-                                break security_warning;
-                            }
-
-                            const value = formFieldsValueDifferentFromDefault.find(
-                                ({ path }) => same(path, common.path)
-                            )?.value;
-
-                            if (value === undefined) {
-                                break security_warning;
-                            }
-
-                            if (new RegExp(pattern).test(`${value}`)) {
-                                break security_warning;
-                            }
-
-                            sensitiveConfigurations.push({
-                                "path": common.path,
-                                value
-                            });
-                        }
-
                         return id<FormField.Text>({
                             ...common,
                             "pattern": jsonSchemaFormFieldDescription.pattern,
@@ -988,7 +919,6 @@ function getInitialFormFields(params: {
 
     return {
         formFields,
-        infosAboutWhenFieldsShouldBeHidden,
-        sensitiveConfigurations
+        infosAboutWhenFieldsShouldBeHidden
     };
 }

@@ -672,12 +672,6 @@ export const translations: Translations<"en"> = {
             "Haz clic en el icono de marcador nuevamente para actualizar tu configuración guardada",
         "ok": "Ok"
     },
-    "SensitiveConfigurationDialog": {
-        "sensitive configuration dialog title":
-            "Lanzar este servicio puede ser peligroso",
-        "cancel": "Cancelar",
-        "proceed to launch": "Continuar con el lanzamiento"
-    },
     "MyService": {
         "page title": ({ helmReleaseFriendlyName }) =>
             `Monitoreo de ${helmReleaseFriendlyName}`

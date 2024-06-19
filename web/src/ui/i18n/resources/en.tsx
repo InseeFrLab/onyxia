@@ -660,11 +660,6 @@ Feel free to explore and take charge of your Kubernetes deployments!
             "Click on the bookmark icon again to update your saved configuration",
         "ok": "Ok"
     },
-    "SensitiveConfigurationDialog": {
-        "sensitive configuration dialog title": "Launching this service may be dangerous",
-        "cancel": "Annuler",
-        "proceed to launch": "Proceed to launch"
-    },
     "MyService": {
         "page title": ({ helmReleaseFriendlyName }) =>
             `${helmReleaseFriendlyName} Monitoring`

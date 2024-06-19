@@ -674,12 +674,6 @@ Voel je vrij om te verkennen en de controle over je Kubernetes-implementaties te
             "Klik opnieuw op het symbool van de bladwijzer om de opgeslagen configuratie bij te werken.",
         "ok": "Ok"
     },
-    "SensitiveConfigurationDialog": {
-        "cancel": "Annuleren",
-        "sensitive configuration dialog title":
-            "Deze dienst uitvoeren kan gevaarlijk zijn",
-        "proceed to launch": "Bewust uitvoeren"
-    },
     "MyService": {
         "page title": ({ helmReleaseFriendlyName }) =>
             `${helmReleaseFriendlyName} Monitoring`

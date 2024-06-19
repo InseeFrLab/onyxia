@@ -47,10 +47,6 @@ export namespace JSONSchemaFormFieldDescription {
             type: "string";
             pattern?: string;
             render?: "textArea" | "password";
-            //NOTE: Only for init.personalInit
-            "x-security"?: {
-                pattern: string;
-            };
         };
 
         export type Enum = Enum.HelmValue | Enum.UIValue;

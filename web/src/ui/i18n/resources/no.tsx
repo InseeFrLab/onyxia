@@ -672,12 +672,6 @@ Føl deg fri til å utforske og ta kontroll over dine Kubernetes-implementeringe
             "Klikk på bokmerkeikonet igjen for å oppdatere den lagrede konfigurasjonen din",
         "ok": "Ok"
     },
-    "SensitiveConfigurationDialog": {
-        "cancel": "Avbryt",
-        "sensitive configuration dialog title":
-            "Å starte denne tjenesten kan være farlig",
-        "proceed to launch": "Fortsett til oppstart"
-    },
     "MyService": {
         "page title": ({ helmReleaseFriendlyName }) =>
             `${helmReleaseFriendlyName} Overvåking`
