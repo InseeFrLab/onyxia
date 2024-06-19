@@ -275,22 +275,31 @@ export const privateThunks = {
                         ? false
                         : undefined;
 
-                    for (const formField of restorableConfig.formFieldsValueDifferentFromDefault) {
-                        const pathStr = formField.path.join(".");
-
-                        switch (pathStr) {
+                    for (const formField of [
+                        ...restorableConfig.formFieldsValueDifferentFromDefault
+                    ]) {
+                        switch (formField.path.join(".")) {
                             case "onyxia.friendlyName":
                                 assert(typeof formField.value === "string");
                                 friendlyName = formField.value;
-                                continue;
+                                break;
                             case "onyxia.share":
                                 if (!isGroupProject) {
-                                    continue;
+                                    break;
                                 }
                                 assert(typeof formField.value === "boolean");
                                 isShared = formField.value;
+                                break;
+                            default:
                                 continue;
                         }
+
+                        restorableConfig.formFieldsValueDifferentFromDefault.splice(
+                            restorableConfig.formFieldsValueDifferentFromDefault.indexOf(
+                                formField
+                            ),
+                            1
+                        );
                     }
 
                     restorableConfig.friendlyName = friendlyName;
