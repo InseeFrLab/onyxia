@@ -5,6 +5,7 @@ import { assert, type Equals } from "tsafe/assert";
 import type { Thunks } from "core/bootstrap";
 import * as projectManagement from "core/usecases/projectManagement";
 import { actions, type State } from "./state";
+import { Chart } from "core/ports/OnyxiaApi";
 
 export const protectedThunks = {
     "initialize":
@@ -21,13 +22,30 @@ export const protectedThunks = {
                 const indexedChartsIcons: State["indexedChartsIcons"] = {};
 
                 catalogs.forEach(({ id: catalogId }) =>
-                    chartsByCatalogId[catalogId].forEach(chart =>
-                        chart.versions.find(
-                            version =>
-                                (((indexedChartsIcons[catalogId] ??= {})[chart.name] ??=
-                                    {})[version.version] = version.iconUrl)
-                        )
-                    )
+                    chartsByCatalogId[catalogId].forEach(chart => {
+                        const defaultVersion = Chart.getDefaultVersion(chart);
+
+                        const versions_withIcon = chart.versions.filter(
+                            ({ iconUrl }) => iconUrl !== undefined
+                        );
+
+                        const defaultVersion_withIcon = versions_withIcon.find(
+                            ({ version }) => version === defaultVersion
+                        );
+
+                        (indexedChartsIcons[catalogId] ??= {})[chart.name] = (() => {
+                            if (defaultVersion_withIcon === undefined) {
+                                const version_withIcon = versions_withIcon[0];
+                                if (version_withIcon === undefined) {
+                                    return undefined;
+                                }
+
+                                return version_withIcon.iconUrl;
+                            }
+
+                            return defaultVersion_withIcon.iconUrl;
+                        })();
+                    })
                 );
 
                 dispatch(actions.initialized({ indexedChartsIcons }));

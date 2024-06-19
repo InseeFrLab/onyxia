@@ -5,11 +5,7 @@ export type State = {
     indexedChartsIcons: {
         [catalogId: string]:
             | {
-                  [chartName: string]:
-                      | {
-                            [version: string]: string | undefined;
-                        }
-                      | undefined;
+                  [chartName: string]: string | undefined;
               }
             | undefined;
     };

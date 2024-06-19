@@ -18,14 +18,16 @@ const chartIconUrlByRestorableConfigIndex = createSelector(
     (state, restorableConfigs): Record<number, string | undefined> => {
         const { indexedChartsIcons } = state;
 
-        return Object.fromEntries(
+        const chartIconUrlByRestorableConfigIndex = Object.fromEntries(
             restorableConfigs.map((restorableConfig, restorableConfigIndex) => [
                 restorableConfigIndex,
                 indexedChartsIcons[restorableConfig.catalogId]?.[
                     restorableConfig.chartName
-                ]?.[restorableConfig.chartVersion]
+                ]
             ])
         );
+
+        return chartIconUrlByRestorableConfigIndex;
     }
 );
 
