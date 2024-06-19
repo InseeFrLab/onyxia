@@ -667,7 +667,7 @@ const sourceUrls = createSelector(readyState, state => {
             .map(url => url.toLowerCase())
             .filter(url => url !== helmChartSourceUrl)
             .filter(url => url !== helmChartRepositorySourceUrl)
-            .find(url => url.includes(chartName))
+            .find(url => url.includes("image") || url.includes("docker"))
     };
 
     return sourceUrls;
