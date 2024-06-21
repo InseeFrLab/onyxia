@@ -799,17 +799,39 @@ export const translations: Translations<"en"> = {
         "running since": "Iniciado: ",
         "open": "Abrir",
         "readme": "leerme",
-        "shared by you": "Compartido por ti",
         "reminder to delete services": "Recuerda eliminar tus servicios.",
-        "this is a shared service":
-            "Este servicio se comparte entre los miembros del proyecto",
         "status": "Estado",
         "container starting": "Iniciando contenedor",
         "failed": "Fallido",
         "suspend service tooltip": "Suspender el servicio y liberar recursos",
         "resume service tooltip": "Reanudar el servicio",
         "suspended": "Suspendido",
-        "suspending": "Suspendiendo"
+        "suspending": "Suspendiendo",
+        "share tooltip - belong to someone else": ({
+            projectName,
+            ownerUsername,
+            focusColor
+        }) => (
+            <>
+                Este servicio se comparte entre los miembros del proyecto{" "}
+                <span style={{ color: focusColor }}>{projectName}</span>
+                por <span style={{ color: focusColor }}>{ownerUsername}</span>.
+            </>
+        ),
+        "share tooltip - belong to you, shared": ({ projectName, focusColor }) => (
+            <>
+                Este servicio se comparte entre los miembros del proyecto{" "}
+                <span style={{ color: focusColor }}>{projectName}</span>. Haga clic para
+                dejar de compartir.
+            </>
+        ),
+        "share tooltip - belong to you, not shared": ({ projectName, focusColor }) => (
+            <>
+                Solo usted puede acceder a este servicio. Haga clic para compartirlo con
+                los miembros del proyecto{" "}
+                <span style={{ color: focusColor }}>{projectName}</span>.
+            </>
+        )
     },
     "MyServicesRestorableConfigOptions": {
         "edit": "Editar",

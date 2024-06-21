@@ -138,6 +138,34 @@ export const { reducer, actions } = createUsecaseActions({
 
                 reducers.helmReleaseUnlocked(state, { "payload": { helmReleaseName } });
             },
+            "changeServiceSharedStatusStarted": (
+                state,
+                { payload }: { payload: { helmReleaseName: string; isShared: boolean } }
+            ) => {
+                const { helmReleaseName, isShared } = payload;
+
+                assert(state.stateDescription === "ready");
+
+                reducers.helmReleaseLocked(state, {
+                    "payload": { helmReleaseName, reason: "other" }
+                });
+
+                const helmRelease = state.helmReleases.find(
+                    helmRelease => helmRelease.helmReleaseName === helmReleaseName
+                );
+
+                assert(helmRelease !== undefined);
+
+                helmRelease.isShared = isShared;
+            },
+            "changeServiceSharedStatusCompleted": (
+                state,
+                { payload }: { payload: { helmReleaseName: string } }
+            ) => {
+                const { helmReleaseName } = payload;
+
+                reducers.helmReleaseUnlocked(state, { "payload": { helmReleaseName } });
+            },
             "commandLogsEntryAdded": (
                 state,
                 {

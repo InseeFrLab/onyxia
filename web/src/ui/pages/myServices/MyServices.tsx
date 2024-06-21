@@ -56,7 +56,8 @@ export default function MyServices(props: Props) {
         isThereOwnedSharedServices,
         commandLogsEntries,
         isThereNonOwnedServices,
-        isThereDeletableServices
+        isThereDeletableServices,
+        groupProjectName
     } = useCoreState("serviceManagement", "main");
 
     const { isCommandBarEnabled } = useCoreState("userConfigs", "userConfigs");
@@ -264,6 +265,15 @@ export default function MyServices(props: Props) {
         })
     );
 
+    const onRequestChangeSharedStatus = useConstCallback<
+        MyServicesCardsProps["onRequestChangeSharedStatus"]
+    >(({ helmReleaseName, isShared }) =>
+        serviceManagement.changeServiceSharedStatus({
+            helmReleaseName,
+            isShared
+        })
+    );
+
     const onOpenClusterEventsDialog = useConstCallback(() => {
         evtClusterEventsDialogOpen.post();
     });
@@ -355,6 +365,10 @@ export default function MyServices(props: Props) {
                                     projectServicePassword={servicePassword}
                                     lastClusterEvent={lastClusterEvent}
                                     onOpenClusterEventsDialog={onOpenClusterEventsDialog}
+                                    onRequestChangeSharedStatus={
+                                        onRequestChangeSharedStatus
+                                    }
+                                    groupProjectName={groupProjectName}
                                 />
                             )}
                             <div className={classes.rightPanel}>

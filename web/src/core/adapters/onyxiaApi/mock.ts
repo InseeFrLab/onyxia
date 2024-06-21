@@ -77,5 +77,6 @@ export const onyxiaApi: OnyxiaApi = {
     ...createPropertyThatThrowIfAccessed("kubectlLogs", "Not mocked"),
     ...createPropertyThatThrowIfAccessed("subscribeToClusterEvents", "Not mocked"),
     ...createPropertyThatThrowIfAccessed("helmUpgradeGlobalSuspend", "Not mocked"),
-    ...createPropertyThatThrowIfAccessed("changeHelmReleaseFriendlyName", "Not mocked")
+    ...createPropertyThatThrowIfAccessed("changeHelmReleaseFriendlyName", "Not mocked"),
+    ...createPropertyThatThrowIfAccessed("changeHelmReleaseSharedStatus", "Not mocked")
 };

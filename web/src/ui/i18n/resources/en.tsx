@@ -786,16 +786,39 @@ Feel free to explore and take charge of your Kubernetes deployments!
         "running since": "Started: ",
         "open": "Open",
         "readme": "readme",
-        "shared by you": "Shared by you",
         "reminder to delete services": "Remember to delete your services.",
-        "this is a shared service": "This service is shared among project's member",
         "status": "Status",
         "container starting": "Container starting",
         "failed": "Failed",
         "suspend service tooltip": "Suspend the service and release resources",
         "resume service tooltip": "Resume the service",
         "suspended": "Suspended",
-        "suspending": "Suspending"
+        "suspending": "Suspending",
+        "share tooltip - belong to someone else": ({
+            projectName,
+            ownerUsername,
+            focusColor
+        }) => (
+            <>
+                This service is shared among{" "}
+                <span style={{ color: focusColor }}>{projectName}</span>'s project members
+                by <span style={{ color: focusColor }}>{ownerUsername}</span>.
+            </>
+        ),
+        "share tooltip - belong to you, shared": ({ projectName, focusColor }) => (
+            <>
+                This service is shared among{" "}
+                <span style={{ color: focusColor }}>{projectName}</span>'s project
+                members. Click to stop sharing.
+            </>
+        ),
+        "share tooltip - belong to you, not shared": ({ projectName, focusColor }) => (
+            <>
+                Only you can access this service. Click to share it with{" "}
+                <span style={{ color: focusColor }}>{projectName}</span>'s project
+                members.
+            </>
+        )
     },
     "MyServicesRestorableConfigOptions": {
         "edit": "Edit",

@@ -269,6 +269,27 @@ export const thunks = {
             });
 
             dispatch(actions.changeServiceFriendlyNameCompleted({ helmReleaseName }));
+        },
+    "changeServiceSharedStatus":
+        (params: { helmReleaseName: string; isShared: boolean }) =>
+        async (...args) => {
+            const { helmReleaseName, isShared } = params;
+
+            const [dispatch, , { onyxiaApi }] = args;
+
+            dispatch(
+                actions.changeServiceSharedStatusStarted({
+                    helmReleaseName,
+                    isShared
+                })
+            );
+
+            await onyxiaApi.changeHelmReleaseSharedStatus({
+                helmReleaseName,
+                isShared
+            });
+
+            dispatch(actions.changeServiceSharedStatusCompleted({ helmReleaseName }));
         }
 } satisfies Thunks;
 

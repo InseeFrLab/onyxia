@@ -478,6 +478,11 @@ export function createOnyxiaApi(params: {
                 serviceID: helmReleaseName,
                 friendlyName
             }),
+        "changeHelmReleaseSharedStatus": ({ helmReleaseName, isShared }) =>
+            axiosInstance.post("/my-lab/app/share", {
+                serviceID: helmReleaseName,
+                share: isShared
+            }),
         "listHelmReleases": async () => {
             const { data } =
                 await axiosInstance.get<ApiTypes["/my-lab/services"]>("/my-lab/services");

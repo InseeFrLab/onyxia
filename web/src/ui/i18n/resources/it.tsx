@@ -799,18 +799,40 @@ Sentiti libero di esplorare e prendere il controllo dei tuoi deployment Kubernet
         "running since": "Avviato: ",
         "open": "Aprire",
         "readme": "readme",
-        "shared by you": "Condiviso da te",
         "reminder to delete services":
             "Ricordati di eliminare i tuoi servizi dopo l'utilizzo.",
-        "this is a shared service":
-            "Questo servizio è condiviso all'interno del progetto",
         "status": "Stato",
         "container starting": "Avvio del contenitore",
         "failed": "Fallito",
         "suspend service tooltip": "Sospendi il servizio e rilascia le risorse",
         "resume service tooltip": "Riprendi il servizio",
         "suspended": "Sospeso",
-        "suspending": "Sospensione in corso"
+        "suspending": "Sospensione in corso",
+        "share tooltip - belong to someone else": ({
+            projectName,
+            ownerUsername,
+            focusColor
+        }) => (
+            <>
+                Questo servizio è condiviso tra i membri del progetto{" "}
+                <span style={{ color: focusColor }}>{projectName}</span>
+                da <span style={{ color: focusColor }}>{ownerUsername}</span>.
+            </>
+        ),
+        "share tooltip - belong to you, shared": ({ projectName, focusColor }) => (
+            <>
+                Questo servizio è condiviso tra i membri del progetto{" "}
+                <span style={{ color: focusColor }}>{projectName}</span>. Clicca per
+                interrompere la condivisione.
+            </>
+        ),
+        "share tooltip - belong to you, not shared": ({ projectName, focusColor }) => (
+            <>
+                Solo tu puoi accedere a questo servizio. Clicca per condividerlo con i
+                membri del progetto{" "}
+                <span style={{ color: focusColor }}>{projectName}</span>.
+            </>
+        )
     },
     "MyServicesRestorableConfigOptions": {
         "edit": "Modificare",

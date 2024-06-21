@@ -804,17 +804,40 @@ Fühlen Sie sich frei, Ihre Kubernetes-Bereitstellungen zu erkunden und die Kont
         "running since": "Gestartet: ",
         "open": "öffnen",
         "readme": "readme",
-        "shared by you": "von Ihnen geteilt",
         "reminder to delete services":
             "Denken Sie daran, Ihre Dienste nach Gebrauch zu löschen.",
-        "this is a shared service": "Dieser Dienst wird im Projekt geteilt",
         "status": "Status",
         "container starting": "Container wird gestartet",
         "failed": "Fehlgeschlagen",
         "suspend service tooltip": "Den Dienst unterbrechen und Ressourcen freigeben",
         "resume service tooltip": "Den Dienst fortsetzen",
         "suspended": "Ausgesetzt",
-        "suspending": "Aussetzend"
+        "suspending": "Aussetzend",
+        "share tooltip - belong to someone else": ({
+            projectName,
+            ownerUsername,
+            focusColor
+        }) => (
+            <>
+                Dieser Dienst wird unter den Mitgliedern des Projekts{" "}
+                <span style={{ color: focusColor }}>{projectName}</span>
+                von <span style={{ color: focusColor }}>{ownerUsername}</span> geteilt.
+            </>
+        ),
+        "share tooltip - belong to you, shared": ({ projectName, focusColor }) => (
+            <>
+                Dieser Dienst wird unter den Mitgliedern des Projekts{" "}
+                <span style={{ color: focusColor }}>{projectName}</span> geteilt. Klicken
+                Sie, um die Freigabe zu beenden.
+            </>
+        ),
+        "share tooltip - belong to you, not shared": ({ projectName, focusColor }) => (
+            <>
+                Nur Sie können auf diesen Dienst zugreifen. Klicken Sie, um ihn mit den
+                Mitgliedern des Projekts{" "}
+                <span style={{ color: focusColor }}>{projectName}</span> zu teilen.
+            </>
+        )
     },
     "MyServicesRestorableConfigOptions": {
         "edit": "Bearbeiten",

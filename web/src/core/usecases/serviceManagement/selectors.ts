@@ -3,6 +3,7 @@ import { createSelector } from "clean-architecture";
 import { name } from "./state";
 import { assert } from "tsafe/assert";
 import { exclude } from "tsafe/exclude";
+import * as projectManagement from "core/usecases/projectManagement";
 
 const state = (rootState: RootState) => rootState[name];
 
@@ -137,6 +138,16 @@ const isThereDeletableServices = createSelector(services, services => {
     return services.some(service => service.ownership.isOwned);
 });
 
+const groupProjectName = createSelector(
+    projectManagement.selectors.currentProject,
+    currentProject => {
+        if (currentProject.group == undefined) {
+            return undefined;
+        }
+        return currentProject.name;
+    }
+);
+
 const main = createSelector(
     isReady,
     isUpdating,
@@ -145,6 +156,7 @@ const main = createSelector(
     isThereOwnedSharedServices,
     isThereNonOwnedServices,
     isThereDeletableServices,
+    groupProjectName,
     (
         isReady,
         isUpdating,
@@ -152,7 +164,8 @@ const main = createSelector(
         commandLogsEntries,
         isThereOwnedSharedServices,
         isThereNonOwnedServices,
-        isThereDeletableServices
+        isThereDeletableServices,
+        groupProjectName
     ) => {
         if (!isReady) {
             return {
@@ -161,7 +174,8 @@ const main = createSelector(
                 "services": [],
                 isThereOwnedSharedServices,
                 isThereNonOwnedServices,
-                isThereDeletableServices
+                isThereDeletableServices,
+                groupProjectName
             };
         }
 
@@ -173,7 +187,8 @@ const main = createSelector(
             services,
             isThereOwnedSharedServices,
             isThereNonOwnedServices,
-            isThereDeletableServices
+            isThereDeletableServices,
+            groupProjectName
         };
     }
 );

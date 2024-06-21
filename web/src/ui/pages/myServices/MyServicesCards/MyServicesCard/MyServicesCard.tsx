@@ -8,7 +8,6 @@ import { useTranslation } from "ui/i18n";
 import { capitalize } from "tsafe/capitalize";
 import { MyServicesRoundLogo } from "./MyServicesRoundLogo";
 import { MyServicesRunningTime } from "./MyServicesRunningTime";
-import { Tag } from "onyxia-ui/Tag";
 import { Tooltip } from "onyxia-ui/Tooltip";
 import { declareComponentKeys } from "i18nifty";
 import { ReadmeDialog } from "./ReadmeDialog";
@@ -44,6 +43,8 @@ export type Props = {
         | undefined;
     onOpenClusterEventsDialog: () => void;
     onRequestChangeFriendlyName: (friendlyName: string) => void;
+    onRequestChangeSharedStatus: (isShared: boolean) => void;
+    groupProjectName: string | undefined;
     projectServicePassword: string;
     service: Service;
 };
@@ -59,6 +60,8 @@ export const MyServicesCard = memo((props: Props) => {
         lastClusterEvent,
         onOpenClusterEventsDialog,
         onRequestChangeFriendlyName,
+        onRequestChangeSharedStatus,
+        groupProjectName,
         projectServicePassword,
         service
     } = props;
@@ -156,15 +159,64 @@ export const MyServicesCard = memo((props: Props) => {
                 ) : (
                     <IconButton
                         icon={id<MuiIconComponentName>("Edit")}
+                        disabled={service.areInteractionLocked}
                         onClick={() => setIsEditingFriendlyName(true)}
                     />
                 )}
                 <div style={{ "flex": 1 }} />
-                {service.ownership.isShared === true && (
-                    <Tooltip title={t("this is a shared service")}>
-                        <Icon icon={id<MuiIconComponentName>("People")} />
-                    </Tooltip>
-                )}
+                {(() => {
+                    if (groupProjectName === undefined) {
+                        return null;
+                    }
+
+                    if (!service.ownership.isOwned) {
+                        return (
+                            <Tooltip
+                                title={t("share tooltip - belong to someone else", {
+                                    "ownerUsername": service.ownership.ownerUsername,
+                                    "projectName": groupProjectName,
+                                    "focusColor":
+                                        theme.colors.useCases.typography.textFocus
+                                })}
+                            >
+                                <Icon icon={id<MuiIconComponentName>("Diversity3")} />
+                            </Tooltip>
+                        );
+                    }
+
+                    if (service.ownership.isShared) {
+                        return (
+                            <Tooltip
+                                title={t("share tooltip - belong to you, shared", {
+                                    "projectName": groupProjectName,
+                                    "focusColor":
+                                        theme.colors.useCases.typography.textFocus
+                                })}
+                            >
+                                <IconButton
+                                    disabled={service.areInteractionLocked}
+                                    onClick={() => onRequestChangeSharedStatus(false)}
+                                    icon={id<MuiIconComponentName>("Diversity3")}
+                                />
+                            </Tooltip>
+                        );
+                    }
+
+                    return (
+                        <Tooltip
+                            title={t("share tooltip - belong to you, not shared", {
+                                "projectName": groupProjectName,
+                                "focusColor": theme.colors.useCases.typography.textFocus
+                            })}
+                        >
+                            <IconButton
+                                disabled={service.areInteractionLocked}
+                                onClick={() => onRequestChangeSharedStatus(true)}
+                                icon={id<MuiIconComponentName>("AdminPanelSettings")}
+                            />
+                        </Tooltip>
+                    );
+                })()}
                 <Tooltip
                     title={
                         <Fragment key={"reminder"}>
@@ -186,16 +238,6 @@ export const MyServicesCard = memo((props: Props) => {
                         </Text>
                         <div className={classes.packageNameWrapper}>
                             <Text typo="label 1">{capitalize(service.chartName)}</Text>
-                            {service.ownership.isShared === true && (
-                                <Tag
-                                    className={classes.sharedTag}
-                                    text={
-                                        service.ownership.isOwned
-                                            ? t("shared by you")
-                                            : service.ownership.ownerUsername
-                                    }
-                                />
-                            )}
                         </div>
                     </div>
                     <div className={classes.timeAndStatusContainer}>
@@ -316,9 +358,7 @@ const { i18n } = declareComponentKeys<
     | "running since"
     | "open"
     | "readme"
-    | "shared by you"
     | "reminder to delete services"
-    | "this is a shared service"
     | "status"
     | "container starting"
     | "failed"
@@ -326,6 +366,21 @@ const { i18n } = declareComponentKeys<
     | "resume service tooltip"
     | "suspended"
     | "suspending"
+    | {
+          K: "share tooltip - belong to someone else";
+          P: { ownerUsername: string; projectName: string; focusColor: string };
+          R: JSX.Element;
+      }
+    | {
+          K: "share tooltip - belong to you, not shared";
+          P: { projectName: string; focusColor: string };
+          R: JSX.Element;
+      }
+    | {
+          K: "share tooltip - belong to you, shared";
+          P: { projectName: string; focusColor: string };
+          R: JSX.Element;
+      }
 >()({ MyServicesCard });
 export type I18n = typeof i18n;
 
@@ -396,9 +451,6 @@ const useStyles = tss
             "& > *": {
                 "display": "inline-block"
             }
-        },
-        "sharedTag": {
-            "marginLeft": theme.spacing(2)
         },
         "belowDividerBottom": {
             "display": "flex",

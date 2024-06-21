@@ -741,16 +741,36 @@ ${
         "running since": "开始于：",
         "open": "打开",
         "readme": "自述文件",
-        "shared by you": "你分享的",
         "reminder to delete services": "请在使用后删除您的服务。",
-        "this is a shared service": "该服务在项目内共享",
         "status": "状态",
         "container starting": "容器启动中",
         "failed": "失败",
         "suspend service tooltip": "暂停服务并释放资源",
         "resume service tooltip": "恢复服务",
         "suspended": "已暂停",
-        "suspending": "正在暂停"
+        "suspending": "正在暂停",
+        "share tooltip - belong to someone else": ({
+            projectName,
+            ownerUsername,
+            focusColor
+        }) => (
+            <>
+                该服务由<span style={{ color: focusColor }}>{ownerUsername}</span>共享给
+                <span style={{ color: focusColor }}>{projectName}</span>项目成员。
+            </>
+        ),
+        "share tooltip - belong to you, shared": ({ projectName, focusColor }) => (
+            <>
+                该服务已共享给<span style={{ color: focusColor }}>{projectName}</span>
+                项目成员。点击停止共享。
+            </>
+        ),
+        "share tooltip - belong to you, not shared": ({ projectName, focusColor }) => (
+            <>
+                只有您可以访问此服务。点击共享给
+                <span style={{ color: focusColor }}>{projectName}</span>项目成员。
+            </>
+        )
     },
     "MyServicesRestorableConfigOptions": {
         "edit": "编辑服务",

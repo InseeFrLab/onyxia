@@ -26,6 +26,10 @@ export type Props = {
         helmReleaseName: string;
         friendlyName: string;
     }) => void;
+    onRequestChangeSharedStatus: (params: {
+        helmReleaseName: string;
+        isShared: boolean;
+    }) => void;
     evtAction: NonPostableEvt<{
         action: "open readme dialog";
         helmReleaseName: string;
@@ -35,6 +39,7 @@ export type Props = {
         | { message: string; severity: "error" | "info" | "warning" }
         | undefined;
     onOpenClusterEventsDialog: () => void;
+    groupProjectName: string | undefined;
 };
 
 export const MyServicesCards = memo((props: Props) => {
@@ -51,7 +56,9 @@ export const MyServicesCards = memo((props: Props) => {
         evtAction,
         projectServicePassword,
         lastClusterEvent,
-        onOpenClusterEventsDialog
+        onOpenClusterEventsDialog,
+        onRequestChangeSharedStatus,
+        groupProjectName
     } = props;
 
     const { classes, cx } = useStyles({
@@ -71,7 +78,8 @@ export const MyServicesCards = memo((props: Props) => {
                 "onRequestChangeFriendlyName": (friendlyName: string) =>
                     onRequestChangeFriendlyName({ helmReleaseName, friendlyName }),
                 "myServiceLink": getMyServiceLink({ helmReleaseName }),
-
+                "onRequestChangeSharedStatus": (isShared: boolean) =>
+                    onRequestChangeSharedStatus({ helmReleaseName, isShared }),
                 "evtAction": Evt.create<"open readme dialog">()
             })),
         [
@@ -79,6 +87,7 @@ export const MyServicesCards = memo((props: Props) => {
             onRequestChangeFriendlyName,
             onRequestDelete,
             onRequestPauseOrResume,
+            onRequestChangeSharedStatus,
             getMyServiceLink
         ]
     );
@@ -128,6 +137,7 @@ export const MyServicesCards = memo((props: Props) => {
                             onRequestChangeFriendlyName,
                             onRequestDelete,
                             onRequestPauseOrResume,
+                            onRequestChangeSharedStatus,
                             myServiceLink,
                             evtAction
                         } = getMyServicesFunctionProps(service.helmReleaseName);
@@ -145,6 +155,8 @@ export const MyServicesCards = memo((props: Props) => {
                                 onOpenClusterEventsDialog={onOpenClusterEventsDialog}
                                 projectServicePassword={projectServicePassword}
                                 service={service}
+                                groupProjectName={groupProjectName}
+                                onRequestChangeSharedStatus={onRequestChangeSharedStatus}
                             />
                         );
                     });

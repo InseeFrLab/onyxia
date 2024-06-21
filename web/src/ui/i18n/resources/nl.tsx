@@ -800,17 +800,39 @@ Voel je vrij om te verkennen en de controle over je Kubernetes-implementaties te
         "running since": "Gestart: ",
         "open": "openen",
         "readme": "readme",
-        "shared by you": "gedeeld door u",
         "reminder to delete services":
             "Vergeet niet uw diensten te verwijderen na gebruik.",
-        "this is a shared service": "Deze dienst wordt gedeeld binnen het project",
         "status": "Status",
         "container starting": "Container start",
         "failed": "Mislukt",
         "suspend service tooltip": "Onderbreek de dienst en bevrijd de middelen",
         "resume service tooltip": "Hervat de dienst",
         "suspended": "Opgeschort",
-        "suspending": "Opschorten"
+        "suspending": "Opschorten",
+        "share tooltip - belong to someone else": ({
+            projectName,
+            ownerUsername,
+            focusColor
+        }) => (
+            <>
+                Deze dienst wordt gedeeld onder de projectleden van{" "}
+                <span style={{ color: focusColor }}>{projectName}</span>
+                door <span style={{ color: focusColor }}>{ownerUsername}</span>.
+            </>
+        ),
+        "share tooltip - belong to you, shared": ({ projectName, focusColor }) => (
+            <>
+                Deze dienst wordt gedeeld onder de projectleden van{" "}
+                <span style={{ color: focusColor }}>{projectName}</span>. Klik om te
+                stoppen met delen.
+            </>
+        ),
+        "share tooltip - belong to you, not shared": ({ projectName, focusColor }) => (
+            <>
+                Alleen jij hebt toegang tot deze dienst. Klik om het te delen met de
+                projectleden van <span style={{ color: focusColor }}>{projectName}</span>.
+            </>
+        )
     },
     "MyServicesRestorableConfigOptions": {
         "edit": "Wijzigen",

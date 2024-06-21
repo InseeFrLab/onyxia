@@ -796,16 +796,39 @@ Føl deg fri til å utforske og ta kontroll over dine Kubernetes-implementeringe
         "running since": "Startet: ",
         "open": "åpne",
         "readme": "lesmeg",
-        "shared by you": "Delt av deg",
         "reminder to delete services": "Husk å slette tjenestene dine.",
-        "this is a shared service": "Denne tjenesten deles blant prosjektets medlemmer",
         "status": "Status",
         "container starting": "Container starter",
         "failed": "Mislyktes",
         "suspend service tooltip": "Suspender tjenesten og frigjør ressurser",
         "resume service tooltip": "Gjenoppta tjenesten",
         "suspended": "Suspendert",
-        "suspending": "Suspenderer"
+        "suspending": "Suspenderer",
+        "share tooltip - belong to someone else": ({
+            projectName,
+            ownerUsername,
+            focusColor
+        }) => (
+            <>
+                Denne tjenesten deles blant prosjektdeltakerne i{" "}
+                <span style={{ color: focusColor }}>{projectName}</span>
+                av <span style={{ color: focusColor }}>{ownerUsername}</span>.
+            </>
+        ),
+        "share tooltip - belong to you, shared": ({ projectName, focusColor }) => (
+            <>
+                Denne tjenesten deles blant prosjektdeltakerne i{" "}
+                <span style={{ color: focusColor }}>{projectName}</span>. Klikk for å
+                slutte å dele.
+            </>
+        ),
+        "share tooltip - belong to you, not shared": ({ projectName, focusColor }) => (
+            <>
+                Bare du har tilgang til denne tjenesten. Klikk for å dele den med
+                prosjektdeltakerne i{" "}
+                <span style={{ color: focusColor }}>{projectName}</span>.
+            </>
+        )
     },
     "MyServicesRestorableConfigOptions": {
         "edit": "Rediger",

@@ -67,6 +67,11 @@ export type OnyxiaApi = {
         friendlyName: string;
     }) => Promise<void>;
 
+    changeHelmReleaseSharedStatus: (params: {
+        helmReleaseName: string;
+        isShared: boolean;
+    }) => Promise<void>;
+
     helmUninstall: (params: { helmReleaseName: string }) => Promise<void>;
     helmUpgradeGlobalSuspend: (params: {
         helmReleaseName: string;

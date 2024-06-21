@@ -808,17 +808,40 @@ N'hésitez pas à explorer et à prendre en main vos déploiements Kubernetes !
         "running since": "Démarré : ",
         "open": "ouvrir",
         "readme": "readme",
-        "shared by you": "partagé par vous",
         "reminder to delete services":
             "Rappelez-vous de supprimer vos services après utilisation.",
-        "this is a shared service": "Ce service est partagé au sein du projet",
         "status": "Statut",
         "container starting": "Démarrage du conteneur",
         "failed": "Échoué",
         "suspend service tooltip": "Suspendre le service et libérer les ressources",
         "resume service tooltip": "Reprendre le service",
         "suspended": "Suspendu",
-        "suspending": "En suspension"
+        "suspending": "En suspension",
+        "share tooltip - belong to someone else": ({
+            projectName,
+            ownerUsername,
+            focusColor
+        }) => (
+            <>
+                Ce service est partagé parmi les membres du projet{" "}
+                <span style={{ color: focusColor }}>{projectName}</span>
+                par <span style={{ color: focusColor }}>{ownerUsername}</span>.
+            </>
+        ),
+        "share tooltip - belong to you, shared": ({ projectName, focusColor }) => (
+            <>
+                Ce service est partagé parmi les membres du projet{" "}
+                <span style={{ color: focusColor }}>{projectName}</span>. Cliquez pour
+                arrêter le partage.
+            </>
+        ),
+        "share tooltip - belong to you, not shared": ({ projectName, focusColor }) => (
+            <>
+                Vous seul pouvez accéder à ce service. Cliquez pour le partager avec les
+                membres du projet <span style={{ color: focusColor }}>{projectName}</span>
+                .
+            </>
+        )
     },
     "MyServicesRestorableConfigOptions": {
         "edit": "Modifier",

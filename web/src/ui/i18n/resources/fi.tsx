@@ -787,16 +787,40 @@ Tutustu vapaasti ja ota hallintaan Kubernetes-julkaisusi!
         "running since": "Käynnistetty: ",
         "open": "avata",
         "readme": "lueminut",
-        "shared by you": "Jaettu sinun kanssasi",
         "reminder to delete services": "Muista poistaa palvelusi.",
-        "this is a shared service": "Tämä palvelu on jaettu projektin jäsenten kesken",
         "status": "Tila",
         "container starting": "Säiliö käynnistyy",
         "failed": "Epäonnistui",
         "suspend service tooltip": "Keskeytä palvelu ja vapauta resurssit",
         "resume service tooltip": "Jatka palvelua",
         "suspended": "Keskeytetty",
-        "suspending": "Keskeyttää"
+        "suspending": "Keskeyttää",
+        "share tooltip - belong to someone else": ({
+            projectName,
+            ownerUsername,
+            focusColor
+        }) => (
+            <>
+                Tämä palvelu on jaettu{" "}
+                <span style={{ color: focusColor }}>{projectName}</span>
+                projektin jäsenten kesken käyttäjän{" "}
+                <span style={{ color: focusColor }}>{ownerUsername}</span> toimesta.
+            </>
+        ),
+        "share tooltip - belong to you, shared": ({ projectName, focusColor }) => (
+            <>
+                Tämä palvelu on jaettu{" "}
+                <span style={{ color: focusColor }}>{projectName}</span> projektin
+                jäsenten kesken. Napsauta lopettaaksesi jakamisen.
+            </>
+        ),
+        "share tooltip - belong to you, not shared": ({ projectName, focusColor }) => (
+            <>
+                Vain sinä voit käyttää tätä palvelua. Napsauta jakaaksesi sen{" "}
+                <span style={{ color: focusColor }}>{projectName}</span> projektin
+                jäsenten kanssa.
+            </>
+        )
     },
     "MyServicesRestorableConfigOptions": {
         "edit": "Muokkaa",
