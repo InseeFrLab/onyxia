@@ -255,6 +255,15 @@ export default function MyServices(props: Props) {
         serviceManagement.suspendOrResumeService({ "helmReleaseName": helmReleaseName })
     );
 
+    const onRequestChangeFriendlyName = useConstCallback<
+        MyServicesCardsProps["onRequestChangeFriendlyName"]
+    >(({ helmReleaseName, friendlyName }) =>
+        serviceManagement.changeServiceFriendlyName({
+            helmReleaseName,
+            friendlyName
+        })
+    );
+
     const onOpenClusterEventsDialog = useConstCallback(() => {
         evtClusterEventsDialogOpen.post();
     });
@@ -338,6 +347,9 @@ export default function MyServices(props: Props) {
                                     onRequestPauseOrResume={onRequestPauseOrResume}
                                     onRequestLogHelmGetNotes={
                                         serviceManagement.logHelmGetNotes
+                                    }
+                                    onRequestChangeFriendlyName={
+                                        onRequestChangeFriendlyName
                                     }
                                     evtAction={evtMyServiceCardsAction}
                                     projectServicePassword={servicePassword}

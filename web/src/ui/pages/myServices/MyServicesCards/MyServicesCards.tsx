@@ -22,6 +22,10 @@ export type Props = {
     onRequestDelete(params: { helmReleaseName: string }): void;
     onRequestPauseOrResume: (params: { helmReleaseName: string }) => void;
     onRequestLogHelmGetNotes: (params: { helmReleaseName: string }) => void;
+    onRequestChangeFriendlyName: (params: {
+        helmReleaseName: string;
+        friendlyName: string;
+    }) => void;
     evtAction: NonPostableEvt<{
         action: "open readme dialog";
         helmReleaseName: string;
@@ -43,6 +47,7 @@ export const MyServicesCards = memo((props: Props) => {
         onRequestDelete,
         onRequestPauseOrResume,
         onRequestLogHelmGetNotes,
+        onRequestChangeFriendlyName,
         evtAction,
         projectServicePassword,
         lastClusterEvent,
@@ -63,11 +68,15 @@ export const MyServicesCards = memo((props: Props) => {
                 "onRequestDelete": () => onRequestDelete({ helmReleaseName }),
                 "onRequestPauseOrResume": () =>
                     onRequestPauseOrResume({ helmReleaseName }),
+                "onRequestChangeFriendlyName": (friendlyName: string) =>
+                    onRequestChangeFriendlyName({ helmReleaseName, friendlyName }),
                 "myServiceLink": getMyServiceLink({ helmReleaseName }),
+
                 "evtAction": Evt.create<"open readme dialog">()
             })),
         [
             onRequestLogHelmGetNotes,
+            onRequestChangeFriendlyName,
             onRequestDelete,
             onRequestPauseOrResume,
             getMyServiceLink
@@ -116,6 +125,7 @@ export const MyServicesCards = memo((props: Props) => {
                     return services.map(service => {
                         const {
                             onRequestLogHelmGetNotes,
+                            onRequestChangeFriendlyName,
                             onRequestDelete,
                             onRequestPauseOrResume,
                             myServiceLink,
@@ -129,6 +139,7 @@ export const MyServicesCards = memo((props: Props) => {
                                 onRequestDelete={onRequestDelete}
                                 onRequestPauseOrResume={onRequestPauseOrResume}
                                 onRequestLogHelmGetNotes={onRequestLogHelmGetNotes}
+                                onRequestChangeFriendlyName={onRequestChangeFriendlyName}
                                 myServiceLink={myServiceLink}
                                 lastClusterEvent={lastClusterEvent}
                                 onOpenClusterEventsDialog={onOpenClusterEventsDialog}

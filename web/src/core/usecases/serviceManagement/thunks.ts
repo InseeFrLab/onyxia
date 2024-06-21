@@ -150,7 +150,7 @@ export const thunks = {
 
             const services = protectedSelectors.services(getState());
 
-            if (services === undefined) {
+            if (services === null) {
                 return;
             }
 
@@ -232,6 +232,43 @@ export const thunks = {
                     }
                 })
             );
+        },
+    "changeServiceFriendlyName":
+        (params: { helmReleaseName: string; friendlyName: string }) =>
+        async (...args) => {
+            const { helmReleaseName, friendlyName } = params;
+
+            const [dispatch, getState, { onyxiaApi }] = args;
+
+            {
+                const services = protectedSelectors.services(getState());
+
+                assert(services !== null);
+
+                const service = services.find(
+                    service => service.helmReleaseName === helmReleaseName
+                );
+
+                assert(service !== undefined);
+
+                if (service.friendlyName === friendlyName) {
+                    return;
+                }
+            }
+
+            dispatch(
+                actions.changeServiceFriendlyNameStarted({
+                    helmReleaseName,
+                    friendlyName
+                })
+            );
+
+            await onyxiaApi.changeHelmReleaseFriendlyName({
+                helmReleaseName,
+                friendlyName
+            });
+
+            dispatch(actions.changeServiceFriendlyNameCompleted({ helmReleaseName }));
         }
 } satisfies Thunks;
 

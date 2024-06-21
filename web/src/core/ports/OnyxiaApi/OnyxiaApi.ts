@@ -62,6 +62,11 @@ export type OnyxiaApi = {
 
     listHelmReleases: () => Promise<HelmRelease[]>;
 
+    changeHelmReleaseFriendlyName: (params: {
+        helmReleaseName: string;
+        friendlyName: string;
+    }) => Promise<void>;
+
     helmUninstall: (params: { helmReleaseName: string }) => Promise<void>;
     helmUpgradeGlobalSuspend: (params: {
         helmReleaseName: string;

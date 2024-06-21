@@ -1,4 +1,4 @@
-import { Fragment, useMemo, memo } from "react";
+import { useState, Fragment, useMemo, memo } from "react";
 import { tss } from "tss";
 import { Button } from "onyxia-ui/Button";
 import { Text } from "onyxia-ui/Text";
@@ -21,6 +21,7 @@ import { CircularProgress } from "onyxia-ui/CircularProgress";
 import type { Link } from "type-route";
 import type { Service } from "core/usecases/serviceManagement";
 import { assert, type Equals } from "tsafe/assert";
+import { TextField, TextFieldProps } from "onyxia-ui/TextField";
 
 const runningTimeThreshold = 7 * 24 * 3600 * 1000;
 
@@ -41,6 +42,7 @@ export type Props = {
         | { message: string; severity: "error" | "info" | "warning" }
         | undefined;
     onOpenClusterEventsDialog: () => void;
+    onRequestChangeFriendlyName: (friendlyName: string) => void;
     projectServicePassword: string;
     service: Service;
 };
@@ -55,6 +57,7 @@ export const MyServicesCard = memo((props: Props) => {
         myServiceLink,
         lastClusterEvent,
         onOpenClusterEventsDialog,
+        onRequestChangeFriendlyName,
         projectServicePassword,
         service
     } = props;
@@ -106,15 +109,59 @@ export const MyServicesCard = memo((props: Props) => {
         [evtAction]
     );
 
+    const [isEditingFriendlyName, setIsEditingFriendlyName] = useState(false);
+
+    const evtFriendlyNameTextFieldAction = useConst(() =>
+        Evt.create<TextFieldProps["evtAction"]>()
+    );
+
     return (
         <div className={cx(classes.root, className)}>
             {(() => {
                 const aboveDividerChildren = (
                     <>
                         <MyServicesRoundLogo url={service.iconUrl} severity={severity} />
-                        <Text className={classes.title} typo="object heading">
-                            {capitalize(service.friendlyName)}
-                        </Text>
+                        {isEditingFriendlyName ? (
+                            <TextField
+                                className={classes.friendlyNameTextField}
+                                inputProps_autoFocus={true}
+                                selectAllTextOnFocus={true}
+                                defaultValue={capitalize(service.friendlyName)}
+                                evtAction={evtFriendlyNameTextFieldAction}
+                                onEnterKeyDown={() =>
+                                    evtFriendlyNameTextFieldAction.post("TRIGGER SUBMIT")
+                                }
+                                onSubmit={friendlyName => {
+                                    setIsEditingFriendlyName(false);
+
+                                    onRequestChangeFriendlyName(friendlyName);
+                                }}
+                                onEscapeKeyDown={() => {
+                                    setIsEditingFriendlyName(false);
+                                }}
+                            />
+                        ) : (
+                            <Text className={classes.title} typo="object heading">
+                                {capitalize(service.friendlyName)}
+                            </Text>
+                        )}
+                        {isEditingFriendlyName ? (
+                            <IconButton
+                                icon={id<MuiIconComponentName>("Check")}
+                                onClick={() =>
+                                    evtFriendlyNameTextFieldAction.post("TRIGGER SUBMIT")
+                                }
+                            />
+                        ) : (
+                            <IconButton
+                                icon={id<MuiIconComponentName>("Edit")}
+                                onClick={e => {
+                                    setIsEditingFriendlyName(true);
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                }}
+                            />
+                        )}
                         <div style={{ "flex": 1 }} />
                         {service.ownership.isShared === true && (
                             <Tooltip title={t("this is a shared service")}>
@@ -136,7 +183,7 @@ export const MyServicesCard = memo((props: Props) => {
                     </>
                 );
 
-                return isAboveDividerALink ? (
+                return isAboveDividerALink && !isEditingFriendlyName ? (
                     <a className={classes.aboveDivider} {...myServiceLink}>
                         {aboveDividerChildren}
                     </a>
@@ -375,5 +422,8 @@ const useStyles = tss
         "belowDividerBottom": {
             "display": "flex",
             "alignItems": "center"
+        },
+        "friendlyNameTextField": {
+            "marginLeft": theme.spacing(3)
         }
     }));

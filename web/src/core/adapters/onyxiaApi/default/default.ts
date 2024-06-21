@@ -473,6 +473,11 @@ export function createOnyxiaApi(params: {
                 }
             }
         },
+        "changeHelmReleaseFriendlyName": ({ helmReleaseName, friendlyName }) =>
+            axiosInstance.post("/my-lab/app/rename", {
+                serviceID: helmReleaseName,
+                friendlyName
+            }),
         "listHelmReleases": async () => {
             const { data } =
                 await axiosInstance.get<ApiTypes["/my-lab/services"]>("/my-lab/services");

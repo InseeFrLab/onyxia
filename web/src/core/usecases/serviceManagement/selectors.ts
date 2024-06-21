@@ -8,7 +8,7 @@ const state = (rootState: RootState) => rootState[name];
 
 const readyState = createSelector(state, state => {
     if (state.stateDescription !== "ready") {
-        return undefined;
+        return null;
     }
 
     return state;
@@ -40,8 +40,8 @@ export type Service = {
 };
 
 const services = createSelector(readyState, state => {
-    if (state === undefined) {
-        return undefined;
+    if (state === null) {
+        return null;
     }
 
     const { helmReleases, lockedHelmReleaseNames, logoUrlByReleaseName, username } =
@@ -112,7 +112,7 @@ const isUpdating = createSelector(state, state => {
 const commandLogsEntries = createSelector(state, state => state.commandLogsEntries);
 
 const isThereOwnedSharedServices = createSelector(services, services => {
-    if (services === undefined) {
+    if (services === null) {
         return false;
     }
 
@@ -122,7 +122,7 @@ const isThereOwnedSharedServices = createSelector(services, services => {
 });
 
 const isThereNonOwnedServices = createSelector(services, services => {
-    if (services === undefined) {
+    if (services === null) {
         return false;
     }
 
@@ -130,7 +130,7 @@ const isThereNonOwnedServices = createSelector(services, services => {
 });
 
 const isThereDeletableServices = createSelector(services, services => {
-    if (services === undefined) {
+    if (services === null) {
         return false;
     }
 
@@ -165,7 +165,7 @@ const main = createSelector(
             };
         }
 
-        assert(services !== undefined);
+        assert(services !== null);
 
         return {
             isUpdating,
@@ -183,7 +183,7 @@ export const selectors = {
 };
 
 const shouldKeepRefreshing = createSelector(services, services => {
-    assert(services !== undefined);
+    assert(services !== null);
 
     return services.some(
         service => service.state === "starting" || service.state === "suspending"
