@@ -22,6 +22,7 @@ import type { Link } from "type-route";
 import type { Service } from "core/usecases/serviceManagement";
 import { assert, type Equals } from "tsafe/assert";
 import { TextField, TextFieldProps } from "onyxia-ui/TextField";
+import MuiLink from "@mui/material/Link";
 
 const runningTimeThreshold = 7 * 24 * 3600 * 1000;
 
@@ -83,12 +84,12 @@ export const MyServicesCard = memo((props: Props) => {
         assert<Equals<typeof service.state, never>>(false);
     }, [service]);
 
-    const isAboveDividerALink =
+    const isServiceTitleALink =
         service.state === "running" && !service.areInteractionLocked;
 
     const { classes, cx, theme } = useStyles({
         "hasBeenRunningForTooLong": severity === "warning",
-        isAboveDividerALink
+        isServiceTitleALink
     });
 
     const evtOpenReadmeDialog = useConst(() => Evt.create());
@@ -117,80 +118,66 @@ export const MyServicesCard = memo((props: Props) => {
 
     return (
         <div className={cx(classes.root, className)}>
-            {(() => {
-                const aboveDividerChildren = (
-                    <>
-                        <MyServicesRoundLogo url={service.iconUrl} severity={severity} />
-                        {isEditingFriendlyName ? (
-                            <TextField
-                                className={classes.friendlyNameTextField}
-                                inputProps_autoFocus={true}
-                                selectAllTextOnFocus={true}
-                                defaultValue={capitalize(service.friendlyName)}
-                                evtAction={evtFriendlyNameTextFieldAction}
-                                onEnterKeyDown={() =>
-                                    evtFriendlyNameTextFieldAction.post("TRIGGER SUBMIT")
-                                }
-                                onSubmit={friendlyName => {
-                                    setIsEditingFriendlyName(false);
+            <div className={classes.aboveDivider}>
+                <MyServicesRoundLogo url={service.iconUrl} severity={severity} />
+                {isEditingFriendlyName ? (
+                    <TextField
+                        className={classes.friendlyNameTextField}
+                        inputProps_autoFocus={true}
+                        selectAllTextOnFocus={true}
+                        defaultValue={capitalize(service.friendlyName)}
+                        evtAction={evtFriendlyNameTextFieldAction}
+                        onEnterKeyDown={() =>
+                            evtFriendlyNameTextFieldAction.post("TRIGGER SUBMIT")
+                        }
+                        onSubmit={friendlyName => {
+                            setIsEditingFriendlyName(false);
 
-                                    onRequestChangeFriendlyName(friendlyName);
-                                }}
-                                onEscapeKeyDown={() => {
-                                    setIsEditingFriendlyName(false);
-                                }}
-                            />
-                        ) : (
-                            <Text className={classes.title} typo="object heading">
-                                {capitalize(service.friendlyName)}
-                            </Text>
-                        )}
-                        {isEditingFriendlyName ? (
-                            <IconButton
-                                icon={id<MuiIconComponentName>("Check")}
-                                onClick={() =>
-                                    evtFriendlyNameTextFieldAction.post("TRIGGER SUBMIT")
-                                }
-                            />
-                        ) : (
-                            <IconButton
-                                icon={id<MuiIconComponentName>("Edit")}
-                                onClick={e => {
-                                    setIsEditingFriendlyName(true);
-                                    e.preventDefault();
-                                    e.stopPropagation();
-                                }}
-                            />
-                        )}
-                        <div style={{ "flex": 1 }} />
-                        {service.ownership.isShared === true && (
-                            <Tooltip title={t("this is a shared service")}>
-                                <Icon icon={id<MuiIconComponentName>("People")} />
-                            </Tooltip>
-                        )}
-                        <Tooltip
-                            title={
-                                <Fragment key={"reminder"}>
-                                    {t("reminder to delete services")}
-                                </Fragment>
-                            }
-                        >
-                            <Icon
-                                icon={id<MuiIconComponentName>("ErrorOutline")}
-                                className={classes.errorOutlineIcon}
-                            />
-                        </Tooltip>
-                    </>
-                );
-
-                return isAboveDividerALink && !isEditingFriendlyName ? (
-                    <a className={classes.aboveDivider} {...myServiceLink}>
-                        {aboveDividerChildren}
-                    </a>
+                            onRequestChangeFriendlyName(friendlyName);
+                        }}
+                        onEscapeKeyDown={() => {
+                            setIsEditingFriendlyName(false);
+                        }}
+                    />
                 ) : (
-                    <div className={classes.aboveDivider}>{aboveDividerChildren}</div>
-                );
-            })()}
+                    <MuiLink {...myServiceLink}>
+                        <Text className={classes.title} typo="object heading">
+                            {capitalize(service.friendlyName)}
+                        </Text>
+                    </MuiLink>
+                )}
+                {isEditingFriendlyName ? (
+                    <IconButton
+                        icon={id<MuiIconComponentName>("Check")}
+                        onClick={() =>
+                            evtFriendlyNameTextFieldAction.post("TRIGGER SUBMIT")
+                        }
+                    />
+                ) : (
+                    <IconButton
+                        icon={id<MuiIconComponentName>("Edit")}
+                        onClick={() => setIsEditingFriendlyName(true)}
+                    />
+                )}
+                <div style={{ "flex": 1 }} />
+                {service.ownership.isShared === true && (
+                    <Tooltip title={t("this is a shared service")}>
+                        <Icon icon={id<MuiIconComponentName>("People")} />
+                    </Tooltip>
+                )}
+                <Tooltip
+                    title={
+                        <Fragment key={"reminder"}>
+                            {t("reminder to delete services")}
+                        </Fragment>
+                    }
+                >
+                    <Icon
+                        icon={id<MuiIconComponentName>("ErrorOutline")}
+                        className={classes.errorOutlineIcon}
+                    />
+                </Tooltip>
+            </div>
             <div className={classes.belowDivider}>
                 <div className={classes.belowDividerTop}>
                     <div>
@@ -278,9 +265,7 @@ export const MyServicesCard = memo((props: Props) => {
                             </span>
                         </Tooltip>
                     )}
-
                     <div style={{ "flex": 1 }} />
-
                     {service.state === "suspended" && (
                         <Tooltip title={t("resume service tooltip")}>
                             <span>
@@ -292,7 +277,6 @@ export const MyServicesCard = memo((props: Props) => {
                             </span>
                         </Tooltip>
                     )}
-
                     {(service.state === "running" || service.state === "starting") &&
                         (service.openUrl !== undefined ||
                             service.postInstallInstructions !== undefined) && (
@@ -348,11 +332,10 @@ export type I18n = typeof i18n;
 const useStyles = tss
     .withParams<{
         hasBeenRunningForTooLong: boolean;
-        isAboveDividerALink: boolean;
+        isServiceTitleALink: boolean;
     }>()
     .withName({ MyServicesCard })
-    .withNestedSelectors<"title">()
-    .create(({ theme, hasBeenRunningForTooLong, isAboveDividerALink, classes }) => ({
+    .create(({ theme, hasBeenRunningForTooLong, isServiceTitleALink }) => ({
         "root": {
             "borderRadius": 8,
             "boxShadow": theme.shadows[1],
@@ -370,17 +353,15 @@ const useStyles = tss
             "display": "flex",
             "alignItems": "center",
             "color": "inherit",
-            "textDecoration": "none",
-            ...(!isAboveDividerALink
-                ? undefined
-                : {
-                      [`&:hover .${classes.title}`]: {
-                          "color": theme.colors.useCases.typography.textFocus
-                      }
-                  })
+            "textDecoration": "none"
         },
         "title": {
-            "marginLeft": theme.spacing(3)
+            "marginLeft": theme.spacing(3),
+            "&:hover": {
+                "color": isServiceTitleALink
+                    ? theme.colors.useCases.typography.textFocus
+                    : undefined
+            }
         },
         "errorOutlineIcon": !hasBeenRunningForTooLong
             ? { "display": "none" }
