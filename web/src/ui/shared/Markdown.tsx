@@ -3,6 +3,7 @@ import { session } from "ui/routes";
 import type { Param0 } from "tsafe";
 import { type LocalizedString, useResolveLocalizedString } from "ui/i18n";
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const { Markdown } = createMarkdown({
     "getLinkProps": ({ href }) => ({
         href,
@@ -17,7 +18,9 @@ export const { Markdown } = createMarkdown({
 });
 
 export function LocalizedMarkdown(
-    props: Omit<Param0<typeof Markdown>, "children"> & { children: LocalizedString }
+    props: Omit<Param0<typeof Markdown>, "children" | "lang"> & {
+        children: LocalizedString;
+    }
 ) {
     const { children, ...rest } = props;
 

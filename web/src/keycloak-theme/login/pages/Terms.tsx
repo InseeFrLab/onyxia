@@ -31,15 +31,16 @@ export default function Terms(
             headerNode={null}
             i18n={i18n}
         >
-            <div
-                className={classes.markdownWrapper}
-                lang={
-                    kcContext.locale?.currentLanguageTag !== termsLanguageTag
-                        ? termsLanguageTag
-                        : undefined
-                }
-            >
-                <Markdown>{termsMarkdown}</Markdown>
+            <div className={classes.markdownWrapper}>
+                <Markdown
+                    lang={
+                        kcContext.locale?.currentLanguageTag !== termsLanguageTag
+                            ? termsLanguageTag
+                            : undefined
+                    }
+                >
+                    {termsMarkdown}
+                </Markdown>
             </div>
             <form className="form-actions" action={url.loginAction} method="POST">
                 <div className={classes.buttonsWrapper}>

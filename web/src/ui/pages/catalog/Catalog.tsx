@@ -20,7 +20,7 @@ import { useCallbackFactory } from "powerhooks/useCallbackFactory";
 import { CatalogChartCard } from "./CatalogChartCard";
 import { customIcons } from "ui/theme";
 import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
-import { Markdown } from "ui/shared/Markdown";
+import { LocalizedMarkdown } from "ui/shared/Markdown";
 import { id } from "tsafe/id";
 
 export type Props = {
@@ -92,10 +92,9 @@ export default function Catalog(props: Props) {
         Evt.create<UnpackEvt<SearchBarProps["evtAction"]>>()
     );
 
-    const { resolveLocalizedString, resolveLocalizedStringDetailed } =
-        useResolveLocalizedString({
-            "labelWhenMismatchingLanguage": true
-        });
+    const { resolveLocalizedString } = useResolveLocalizedString({
+        "labelWhenMismatchingLanguage": true
+    });
 
     if (!isReady) {
         return null;
@@ -112,26 +111,19 @@ export default function Catalog(props: Props) {
                 mainIcon={customIcons.catalogSvgUrl}
                 title={t("header")}
                 helpTitle={""}
-                helpContent={(() => {
-                    if (selectedCatalog.description === undefined) {
-                        return "";
-                    }
-
-                    const { str, langAttrValue } = resolveLocalizedStringDetailed(
-                        selectedCatalog.description
-                    );
-
-                    return (
-                        <Markdown
-                            lang={langAttrValue}
+                helpContent={
+                    selectedCatalog.description === undefined ? (
+                        ""
+                    ) : (
+                        <LocalizedMarkdown
                             className={css({
                                 "&>p": { "margin": 0 }
                             })}
                         >
-                            {str}
-                        </Markdown>
-                    );
-                })()}
+                            {selectedCatalog.description}
+                        </LocalizedMarkdown>
+                    )
+                }
                 helpIcon={id<MuiIconComponentName>("SentimentSatisfied")}
                 titleCollapseParams={{
                     "behavior": "collapses on scroll",

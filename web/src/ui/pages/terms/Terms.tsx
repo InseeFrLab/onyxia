@@ -33,8 +33,10 @@ export default function Terms(props: Props) {
     const { langOfTheTerms, termsMarkdown } = tos;
 
     return (
-        <div className={cx(classes.root, className)} lang={langOfTheTerms}>
-            <Markdown className={classes.markdown}>{termsMarkdown}</Markdown>
+        <div className={cx(classes.root, className)}>
+            <Markdown className={classes.markdown} lang={langOfTheTerms}>
+                {termsMarkdown}
+            </Markdown>
         </div>
     );
 }

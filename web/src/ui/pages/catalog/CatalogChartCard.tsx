@@ -38,7 +38,11 @@ export const CatalogChartCard = memo((props: Props) => {
         <div className={cx(classes.root, className)}>
             <div className={classes.aboveDivider}>
                 {iconUrl !== undefined && <RoundLogo url={iconUrl} size="large" />}
-                <Text className={classes.title} typo="object heading">
+                <Text
+                    className={classes.title}
+                    typo="object heading"
+                    componentProps={{ lang: "und" }}
+                >
                     {renderStringWithHighlights({
                         "stringWithHighlights": chartNameWithHighlights,
                         "doCapitalize": true,
@@ -48,7 +52,11 @@ export const CatalogChartCard = memo((props: Props) => {
             </div>
             <div className={classes.belowDivider}>
                 <div className={classes.body}>
-                    <Text typo="body 1" className={classes.bodyTypo}>
+                    <Text
+                        typo="body 1"
+                        className={classes.bodyTypo}
+                        componentProps={{ lang: "und" }}
+                    >
                         {renderStringWithHighlights({
                             "stringWithHighlights": chartDescriptionWithHighlights,
                             "doCapitalize": true,

@@ -63,7 +63,7 @@ export const ReadmeDialog = memo((props: Props) => {
             body={
                 isOpen && (
                     <div className={classes.dialogBody}>
-                        <Markdown>{postInstallInstructions}</Markdown>
+                        <Markdown lang="und">{postInstallInstructions}</Markdown>
                         {!isReady && (
                             <div className={classes.clusterEventWrapper}>
                                 <LinearProgress />
