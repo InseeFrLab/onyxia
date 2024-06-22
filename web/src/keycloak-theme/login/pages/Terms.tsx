@@ -1,10 +1,12 @@
+import { useState, useEffect } from "react";
 import { Markdown } from "onyxia-ui/Markdown";
 import type { PageProps } from "keycloakify/login/pages/PageProps";
 import type { KcContext } from "../KcContext";
 import type { I18n } from "../i18n";
 import { tss } from "tss";
 import { Button } from "onyxia-ui/Button";
-import { useTermsMarkdown } from "keycloakify/login/lib/useDownloadTerms";
+import { downloadTermsMarkdown } from "ui/shared/downloadTermsMarkdown";
+import { CircularProgress } from "onyxia-ui/CircularProgress";
 
 export default function Terms(
     props: PageProps<Extract<KcContext, { pageId: "terms.ftl" }>, I18n>
@@ -13,15 +15,25 @@ export default function Terms(
 
     const { msgStr } = i18n;
 
-    const { isDownloadComplete, termsLanguageTag, termsMarkdown } = useTermsMarkdown();
-
     const { url } = kcContext;
 
     const { classes } = useStyles();
 
-    if (!isDownloadComplete) {
-        return null;
+    const [tos, setTos] = useState<
+        { termsMarkdown: string; langOfTheTerms: string | undefined } | undefined
+    >(undefined);
+
+    useEffect(() => {
+        downloadTermsMarkdown({
+            "currentLanguageTag": kcContext.locale?.currentLanguageTag ?? "en"
+        }).then(setTos);
+    }, []);
+
+    if (tos === undefined) {
+        return <CircularProgress />;
     }
+
+    const { langOfTheTerms, termsMarkdown } = tos;
 
     return (
         <Template
@@ -32,15 +44,7 @@ export default function Terms(
             i18n={i18n}
         >
             <div className={classes.markdownWrapper}>
-                <Markdown
-                    lang={
-                        kcContext.locale?.currentLanguageTag !== termsLanguageTag
-                            ? termsLanguageTag
-                            : undefined
-                    }
-                >
-                    {termsMarkdown}
-                </Markdown>
+                <Markdown lang={langOfTheTerms}>{termsMarkdown}</Markdown>
             </div>
             <form className="form-actions" action={url.loginAction} method="POST">
                 <div className={classes.buttonsWrapper}>

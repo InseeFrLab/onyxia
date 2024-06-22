@@ -6,8 +6,6 @@ import { useI18n } from "./i18n";
 import { loadThemedFavicon } from "keycloak-theme/login/theme";
 import { tss } from "tss";
 import { OnyxiaUi } from "keycloak-theme/login/theme";
-import { useDownloadTerms } from "keycloakify/login";
-import { downloadTermsMarkdown } from "ui/shared/downloadTermsMarkdown";
 import { env } from "env";
 
 loadThemedFavicon();
@@ -42,20 +40,6 @@ function ContextualizedKcApp(props: Props) {
     });
 
     const { i18n } = useI18n({ kcContext });
-
-    useDownloadTerms({
-        kcContext,
-        "downloadTermsMarkdown": async ({ currentLanguageTag }) => {
-            const { termsMarkdown, langOfTheTerms } = await downloadTermsMarkdown({
-                currentLanguageTag
-            });
-
-            return {
-                termsMarkdown,
-                termsLanguageTag: langOfTheTerms
-            };
-        }
-    });
 
     return (
         <Suspense>
