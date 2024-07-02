@@ -1,11 +1,15 @@
 import { id } from "tsafe/id";
-import { assert, type Equals } from "tsafe/assert";
-import { same } from "evt/tools/inDepth/same";
-import { type FormFieldValue } from "./FormField";
-import { type JSONSchemaObject } from "core/ports/OnyxiaApi";
-import type { FormField } from "./FormField";
-import { type LocalizedString } from "core/ports/OnyxiaApi";
+import { assert } from "tsafe/assert";
+import type { JSONSchema } from "core/ports/OnyxiaApi";
+import type { LocalizedString } from "core/ports/OnyxiaApi";
 import { createUsecaseActions } from "clean-architecture";
+import { FormFieldValue } from "./formTypes";
+import {
+    type StringifyableObject,
+    type StringifyableAtomic,
+    assignValueAtPath
+} from "core/tools/Stringifyable";
+import type { ProjectConfigs } from "core/usecases/projectManagement";
 
 type State = State.NotInitialized | State.Ready;
 
@@ -27,25 +31,21 @@ export declare namespace State {
         chartVersion: string;
         // NOTE: Just for knowing if we need to display --version in the helm command bar
         defaultChartVersion: string;
-        availableChartVersions: string[];
-        chartSourceUrls: string[];
-        pathOfFormFieldsWhoseValuesAreDifferentFromDefault: {
-            path: string[];
-        }[];
-        pathOfFormFieldsAffectedByS3ConfigChange: {
-            path: string[];
-        }[];
-        formFields: FormField[];
-        infosAboutWhenFieldsShouldBeHidden: {
-            path: string[];
-            isHidden: boolean | FormFieldValue;
-        }[];
-        defaultFormFieldsValue: FormFieldValue[];
-        nonLibraryChartDependencies: string[];
-        valuesSchema: JSONSchemaObject;
         k8sRandomSubdomain: string;
-        selectedCustomS3ConfigIndex: number | undefined;
-        has3sConfigBeenManuallyChanged: boolean;
+        chartSourceUrls: string[];
+        availableChartVersions: string[];
+        s3ConfigurationOptions: {
+            optionValue: string;
+            helmValuesPatch: {
+                helmValuesPath: (string | number)[];
+                value: StringifyableAtomic;
+            }[];
+            dataSource: string;
+            accountFriendlyName: string | undefined;
+        }[];
+        helmValuesSchema: JSONSchema;
+        defaultHelmValues: StringifyableObject;
+        helmValues: StringifyableObject;
     };
 }
 
@@ -66,153 +66,101 @@ export const { reducer, actions } = createUsecaseActions({
                 state.isInitializing = true;
             },
             "initialized": (
-                state,
+                _,
                 {
                     payload
                 }: {
                     payload: {
                         friendlyName: string;
-                        isShared: boolean | undefined;
+                        chartIconUrl: string | undefined;
                         catalogId: string;
                         catalogName: LocalizedString;
                         catalogRepositoryUrl: string;
                         chartName: string;
-                        chartVersion: string;
                         defaultChartVersion: string;
-                        availableChartVersions: string[];
-                        chartIconUrl: string | undefined;
-                        chartSourceUrls: string[];
-                        pathOfFormFieldsAffectedByS3ConfigChange: State.Ready["pathOfFormFieldsAffectedByS3ConfigChange"];
-                        formFields: State.Ready["formFields"];
-                        infosAboutWhenFieldsShouldBeHidden: State.Ready["infosAboutWhenFieldsShouldBeHidden"];
-                        valuesSchema: State.Ready["valuesSchema"];
-                        nonLibraryChartDependencies: string[];
-                        formFieldsValueDifferentFromDefault: FormFieldValue[];
                         k8sRandomSubdomain: string;
+                        chartSourceUrls: string[];
+                        availableChartVersions: string[];
+                        s3ConfigurationOptions: State.Ready["s3ConfigurationOptions"];
+                        defaultLauncherS3ConfigurationOptionValue: string | undefined;
+                        helmValuesSchema: JSONSchema;
+                        defaultHelmValues: StringifyableObject;
+                        isPersonalProject: boolean;
+                        restorableConfig:
+                            | Pick<
+                                  ProjectConfigs.RestorableServiceConfig,
+                                  | "isShared"
+                                  | "chartVersion"
+                                  | "friendlyName"
+                                  | "helmValuesPatch"
+                              >
+                            | undefined;
                     };
                 }
             ) => {
                 const {
                     friendlyName,
-                    isShared,
+                    chartIconUrl,
                     catalogId,
                     catalogName,
                     catalogRepositoryUrl,
                     chartName,
-                    chartVersion,
                     defaultChartVersion,
-                    availableChartVersions,
-                    chartIconUrl,
+                    k8sRandomSubdomain,
                     chartSourceUrls,
-                    pathOfFormFieldsAffectedByS3ConfigChange,
-                    formFields,
-                    infosAboutWhenFieldsShouldBeHidden,
-                    valuesSchema,
-                    nonLibraryChartDependencies,
-                    formFieldsValueDifferentFromDefault,
-                    k8sRandomSubdomain
+                    availableChartVersions,
+                    s3ConfigurationOptions,
+                    defaultLauncherS3ConfigurationOptionValue,
+                    helmValuesSchema,
+                    defaultHelmValues,
+                    isPersonalProject,
+                    restorableConfig
                 } = payload;
 
-                Object.assign(
-                    state,
-                    id<State.Ready>({
-                        "stateDescription": "ready",
-                        catalogId,
-                        catalogName,
-                        catalogRepositoryUrl,
-                        chartName,
-                        chartVersion,
-                        defaultChartVersion,
-                        availableChartVersions,
-                        chartIconUrl,
-                        chartSourceUrls,
-                        pathOfFormFieldsAffectedByS3ConfigChange,
-                        formFields,
-                        infosAboutWhenFieldsShouldBeHidden,
-                        "defaultFormFieldsValue": formFields.map(({ path, value }) => ({
-                            path,
-                            value
-                        })),
-                        nonLibraryChartDependencies,
-                        "pathOfFormFieldsWhoseValuesAreDifferentFromDefault": [],
-                        valuesSchema,
-                        k8sRandomSubdomain,
-                        "selectedCustomS3ConfigIndex": undefined,
-                        "has3sConfigBeenManuallyChanged": false,
-                        friendlyName,
-                        isShared
-                    })
-                );
+                const readyState: State.Ready = {
+                    "stateDescription": "ready",
+                    "friendlyName": restorableConfig?.friendlyName ?? friendlyName,
+                    "isShared":
+                        restorableConfig?.isShared ?? isPersonalProject
+                            ? undefined
+                            : false,
+                    chartIconUrl,
+                    catalogId,
+                    catalogName,
+                    catalogRepositoryUrl,
+                    chartName,
+                    "chartVersion": restorableConfig?.chartVersion ?? defaultChartVersion,
+                    defaultChartVersion,
+                    k8sRandomSubdomain,
+                    chartSourceUrls,
+                    availableChartVersions,
+                    s3ConfigurationOptions,
+                    helmValuesSchema,
+                    defaultHelmValues,
+                    "helmValues": defaultHelmValues
+                };
 
-                assert(state.stateDescription === "ready");
+                if (defaultLauncherS3ConfigurationOptionValue !== undefined) {
+                    reducers.s3ConfigChanged(readyState, {
+                        "payload": {
+                            "optionValue": defaultLauncherS3ConfigurationOptionValue
+                        }
+                    });
+                }
 
-                formFieldsValueDifferentFromDefault.forEach(formFieldValue =>
-                    reducers.formFieldValueChanged(state, {
-                        "payload": { formFieldValue }
-                    })
-                );
+                if (restorableConfig !== undefined) {
+                    restorableConfig.helmValuesPatch.forEach(({ path, value }) =>
+                        assignValueAtPath(readyState.helmValues, path, value)
+                    );
+                }
+
+                return readyState;
             },
             "allDefaultRestored": state => {
                 assert(state.stateDescription === "ready");
-
-                state.defaultFormFieldsValue.forEach(({ path, value }) =>
-                    reducers.formFieldValueChanged(state, {
-                        "payload": {
-                            "formFieldValue": {
-                                path,
-                                value
-                            }
-                        }
-                    })
-                );
+                state.helmValues = state.defaultHelmValues;
+                state.chartVersion = state.defaultChartVersion;
             },
-            "s3ConfigChanged": (
-                state,
-                {
-                    payload
-                }: {
-                    payload:
-                        | {
-                              customS3ConfigIndex: number;
-                              formFieldsValue: FormFieldValue[];
-                          }
-                        | {
-                              customS3ConfigIndex: undefined;
-                              formFieldsValue?: never;
-                          };
-                }
-            ) => {
-                const { customS3ConfigIndex, formFieldsValue } = payload;
-
-                assert(state.stateDescription === "ready");
-
-                state.selectedCustomS3ConfigIndex = customS3ConfigIndex;
-
-                (formFieldsValue ?? state.defaultFormFieldsValue)
-                    .filter(
-                        ({ path }) =>
-                            state.pathOfFormFieldsAffectedByS3ConfigChange.find(
-                                ({ path: pathToCheck }) => same(path, pathToCheck)
-                            ) !== undefined
-                    )
-                    .forEach(({ path, value }) =>
-                        reducers.formFieldValueChanged(state, {
-                            "payload": {
-                                "formFieldValue": {
-                                    path,
-                                    value
-                                }
-                            }
-                        })
-                    );
-
-                state.has3sConfigBeenManuallyChanged = false;
-            },
-            "resetToNotInitialized": () =>
-                id<State.NotInitialized>({
-                    "stateDescription": "not initialized",
-                    "isInitializing": false
-                }),
             "formFieldValueChanged": (
                 state,
                 {
@@ -223,115 +171,58 @@ export const { reducer, actions } = createUsecaseActions({
                     };
                 }
             ) => {
-                assert(state.stateDescription === "ready");
-
                 const { formFieldValue } = payload;
 
-                const { path, value } = formFieldValue;
+                assert(state.stateDescription === "ready");
 
-                {
-                    const formField = state.formFields.find(formField =>
-                        same(formField.path, path)
-                    );
+                const { helmValues, helmValuesSchema } = state;
 
-                    if (formField === undefined) {
-                        // NOTE: Can happen when restoring config in a different chart version
+                /*
+                (function callee(path, object: any){
+
+                    assert(object instanceof Object || object instanceof Array);
+
+                    const [first, ...rest]= path;
+
+                    if(rest.length === 0){
+                        object[first] = value;
                         return;
                     }
 
-                    const areTypesConsistent = (() => {
-                        switch (formField.type) {
-                            case "boolean":
-                            case "integer":
-                            case "text":
-                            case "password":
-                            case "slider":
-                                return (
-                                    typeof formField.value === typeof formFieldValue.value
-                                );
-                            case "array":
-                                return formFieldValue.value instanceof Array;
-                            case "enum":
-                                return (
-                                    typeof formFieldValue.value === "string" &&
-                                    formField.enum.includes(formFieldValue.value)
-                                );
-                            case "object":
-                                assert<
-                                    Equals<
-                                        typeof formField.value,
-                                        {
-                                            type: "yaml";
-                                            yamlStr: string;
-                                        }
-                                    >
-                                >();
-                                return (
-                                    formFieldValue.value instanceof Object &&
-                                    "type" in formFieldValue.value &&
-                                    formFieldValue.value.type === "yaml"
-                                );
-                        }
+                    callee(rest, object[first]);
 
-                        assert<Equals<typeof formField, never>>();
-                    })();
-
-                    if (!areTypesConsistent) {
-                        // NOTE: Can happen when restoring config in a different chart version
-                        return;
-                    }
-
-                    if (same(formField.value, value)) {
-                        return;
-                    }
-
-                    formField.value = value;
-                }
-
-                if (
-                    state.pathOfFormFieldsAffectedByS3ConfigChange.find(
-                        ({ path: pathAffectedByS3Config }) =>
-                            same(path, pathAffectedByS3Config)
-                    ) !== undefined
-                ) {
-                    state.has3sConfigBeenManuallyChanged = true;
-                }
-
-                {
-                    const { pathOfFormFieldsWhoseValuesAreDifferentFromDefault } = state;
-
-                    if (
-                        !same(
-                            state.defaultFormFieldsValue.find(formField =>
-                                same(formField.path, path)
-                            )!.value,
-                            value
-                        )
-                    ) {
-                        if (
-                            !pathOfFormFieldsWhoseValuesAreDifferentFromDefault.find(
-                                ({ path: path_i }) => same(path_i, path)
-                            )
-                        ) {
-                            pathOfFormFieldsWhoseValuesAreDifferentFromDefault.push({
-                                path
-                            });
-                        }
-                    } else {
-                        const index =
-                            pathOfFormFieldsWhoseValuesAreDifferentFromDefault.findIndex(
-                                ({ path: path_i }) => same(path_i, path)
-                            );
-
-                        if (index >= 0) {
-                            pathOfFormFieldsWhoseValuesAreDifferentFromDefault.splice(
-                                index,
-                                1
-                            );
-                        }
-                    }
-                }
+                })(helmValuesPath, state.helmValues);
+                */
             },
+            "s3ConfigChanged": (
+                state,
+                {
+                    payload
+                }: {
+                    payload: {
+                        optionValue: string;
+                    };
+                }
+            ) => {
+                assert(state.stateDescription === "ready");
+
+                const { optionValue } = payload;
+
+                const option = state.s3ConfigurationOptions.find(
+                    option => option.optionValue === optionValue
+                );
+
+                assert(option !== undefined);
+
+                option.helmValuesPatch.forEach(({ helmValuesPath, value }) =>
+                    assignValueAtPath(state.helmValues, helmValuesPath, value)
+                );
+            },
+            "resetToNotInitialized": () =>
+                id<State.NotInitialized>({
+                    "stateDescription": "not initialized",
+                    "isInitializing": false
+                }),
             "friendlyNameChanged": (
                 state,
                 {

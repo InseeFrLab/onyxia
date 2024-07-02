@@ -1,15 +1,20 @@
 import "minimal-polyfills/Object.fromEntries";
 import { createRouter, defineRoute, param, createGroup, type Route } from "type-route";
-import type { FormFieldValue } from "core/usecases/launcher/FormField";
 import type { QueryStringSerializer } from "type-route";
-import { arrPartition } from "evt/tools/reducers/partition";
-import { assert } from "tsafe/assert";
+import { partition } from "evt/tools/reducers/partition";
+import { assert, type Equals } from "tsafe/assert";
 import type { ValueSerializer } from "type-route";
+import { StringifyableAtomic } from "core/tools/Stringifyable";
 
-const { formFieldsDefineRouteParam, queryStringSerializer } = (() => {
-    const formFieldsValueDifferentFromDefault = "formFieldsValueDifferentFromDefault";
+const { helmValuesPatchWrap, queryStringSerializer } = (() => {
+    const helmValuesPatch_key = "helmValuesPatch";
 
-    const formFieldsValueSerializer: ValueSerializer<FormFieldValue[]> = {
+    type HelmValuesPatchEntry = {
+        path: (string | number)[];
+        value: StringifyableAtomic;
+    };
+
+    const helmValuesPatchSerializer: ValueSerializer<HelmValuesPatchEntry[]> = {
         "urlEncode": false,
         "stringify": JSON.stringify,
         "parse": JSON.parse
@@ -17,115 +22,141 @@ const { formFieldsDefineRouteParam, queryStringSerializer } = (() => {
 
     const queryStringSerializer = {
         "parse": raw => {
-            const allEntries = raw.split("&").map(part => part.split("="));
+            const [queryParamsEntries_helmValuesPatch, queryParamsEntries_other] = raw
+                .split("&")
+                .map(part => {
+                    const [queryParamKey, queryParamValue, ...rest] = part.split("=");
+                    assert(rest.length === 0);
+                    return [queryParamKey, queryParamValue] as const;
+                })
+                .reduce(
+                    ...partition<readonly [string, string]>(([queryParamKey]) =>
+                        queryParamKey.includes(".")
+                    )
+                );
 
-            const [formFieldsEntries, otherEntries] = arrPartition(allEntries, ([key]) =>
-                key.includes(".")
-            );
+            const helmValuesPatch = queryParamsEntries_helmValuesPatch.map(
+                ([queryParamKey, queryParamValue]): HelmValuesPatchEntry => ({
+                    "path": (() => {
+                        const escapedDotsPlaceholder =
+                            "escapedDotsPlaceholder_xKdMzIdVmT";
+                        const arrayIndexPrefix = "arrayIndexPrefix_xKdMzIdVmT_";
 
-            const formFieldsValue = formFieldsEntries.map(
-                ([pathStr, valueStr]): FormFieldValue => ({
-                    "path": pathStr
-                        //NOTE the two next pipe mean "split all non escaped dots"
-                        //the regular expression 'look behind' is not supported by Safari.
-                        .split(".")
-                        .reduce<string[]>(
-                            (prev, curr) =>
-                                prev[prev.length - 1]?.endsWith("\\")
-                                    ? ((prev[prev.length - 1] += `.${curr}`), prev)
-                                    : [...prev, curr],
-                            []
-                        )
-                        .map(s => s.replace(/\\\./g, ".")),
+                        return queryParamKey
+                            .replace(/\\\./g, escapedDotsPlaceholder)
+                            .replace(
+                                /\[(\d+)\]/g,
+                                (...[, x]) => `.${arrayIndexPrefix}${x}.`
+                            )
+                            .split(".")
+                            .filter((s, i, arr) =>
+                                i === arr.length - 1 && s === "" ? false : true
+                            )
+                            .map(s =>
+                                s.startsWith(arrayIndexPrefix)
+                                    ? parseInt(s.slice(arrayIndexPrefix.length), 10)
+                                    : s.replace(
+                                          new RegExp(escapedDotsPlaceholder, "g"),
+                                          "."
+                                      )
+                            );
+                    })(),
                     "value": (() => {
-                        if (["true", "false"].includes(valueStr)) {
-                            return "true" === valueStr;
+                        if (["true", "false"].includes(queryParamValue)) {
+                            return "true" === queryParamValue;
+                        }
+
+                        if (queryParamValue === "null") {
+                            return null;
                         }
 
                         {
-                            const x = parseFloat(valueStr);
+                            const x = parseFloat(queryParamValue);
                             if (!isNaN(x)) {
                                 return x;
                             }
                         }
 
-                        const decodedValue = decodeURIComponent(valueStr);
+                        const match =
+                            decodeURIComponent(queryParamValue).match(/^«([^»]*)»$/);
 
-                        {
-                            const str = decodedValue.replace(/^«/, "").replace(/»$/, "");
+                        assert(match !== null);
 
-                            if (str !== decodedValue) {
-                                return str;
-                            }
-                        }
-
-                        const object = JSON.parse(decodeURIComponent(decodedValue));
-
-                        assert(object instanceof Object);
-
-                        return object;
+                        return match[1];
                     })()
                 })
             );
 
             return Object.fromEntries([
-                ...otherEntries,
+                ...queryParamsEntries_other,
                 [
-                    formFieldsValueDifferentFromDefault,
-                    formFieldsValueSerializer.stringify(formFieldsValue)
+                    helmValuesPatch_key,
+                    helmValuesPatchSerializer.stringify(helmValuesPatch)
                 ]
             ]);
         },
         "stringify": queryParams =>
             Object.keys(queryParams)
-                .map(name => {
-                    if (name === formFieldsValueDifferentFromDefault) {
-                        const formFieldsValue = formFieldsValueSerializer.parse(
-                            queryParams[name].value!
+                .map(queryParamKey => {
+                    if (queryParamKey === helmValuesPatch_key) {
+                        const serializedHelmValuesPatch =
+                            queryParams[queryParamKey].value;
+
+                        assert(serializedHelmValuesPatch !== null);
+
+                        const helmValuesPatch = helmValuesPatchSerializer.parse(
+                            serializedHelmValuesPatch
                         );
 
-                        assert(!("__noMatch" in formFieldsValue));
+                        assert(!("__noMatch" in helmValuesPatch));
 
-                        return formFieldsValue
-                            .map(({ path, value }) =>
-                                [
-                                    path
-                                        .map(part => part.replace(/\./g, "\\."))
-                                        .join("."),
-                                    (() => {
-                                        switch (typeof value) {
-                                            case "boolean":
-                                                return value ? "true" : "false";
-                                            case "number":
-                                                return value.toString(10);
-                                            case "string":
-                                                return `«${encodeURIComponent(value)}»`;
-                                            case "object":
-                                                return encodeURIComponent(
-                                                    JSON.stringify(value)
-                                                );
-                                            default:
-                                                assert(false);
-                                        }
-                                    })()
-                                ].join("=")
-                            )
-                            .join("&");
+                        return helmValuesPatch.map(({ path, value }) =>
+                            [
+                                path
+                                    .map(part =>
+                                        typeof part === "number"
+                                            ? part
+                                            : part.replace(/\./g, "\\.")
+                                    )
+                                    .reduce<string>(
+                                        (prev, curr) =>
+                                            typeof curr === "number"
+                                                ? `${prev}[${curr}]`
+                                                : `${prev}.${curr}`,
+                                        ""
+                                    ),
+                                (() => {
+                                    if (value === null) {
+                                        return "null";
+                                    }
+                                    switch (typeof value) {
+                                        case "boolean":
+                                            return value ? "true" : "false";
+                                        case "number":
+                                            return `${value}`;
+                                        case "string":
+                                            return `«${encodeURIComponent(value)}»`;
+                                    }
+
+                                    assert<Equals<typeof value, never>>(false);
+                                })()
+                            ].join("=")
+                        );
                     }
 
-                    return `${name}=${queryParams[name].value}`;
+                    return [`${queryParamKey}=${queryParams[queryParamKey].value}`];
                 })
-                .filter(part => part !== "")
+                .flat()
                 .join("&")
     } satisfies QueryStringSerializer;
 
-    const formFieldsDefineRouteParam = {
-        [formFieldsValueDifferentFromDefault]: param.query.optional
-            .ofType(formFieldsValueSerializer)
+    const helmValuesPatchWrap = {
+        [helmValuesPatch_key]: param.query.optional
+            .ofType(helmValuesPatchSerializer)
             .default([])
     };
 
-    return { queryStringSerializer, formFieldsDefineRouteParam };
+    return { helmValuesPatchWrap, queryStringSerializer };
 })();
 
 export { queryStringSerializer };
@@ -139,7 +170,7 @@ export const routeDefs = {
             "shared": param.query.optional.boolean,
             "version": param.query.optional.string,
             "autoLaunch": param.query.optional.boolean,
-            ...formFieldsDefineRouteParam
+            ...helmValuesPatchWrap
         },
         ({ catalogId, chartName }) => `/launcher/${catalogId}/${chartName}`
     )

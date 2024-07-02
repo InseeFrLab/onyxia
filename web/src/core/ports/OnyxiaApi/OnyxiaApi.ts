@@ -5,7 +5,7 @@ import type { Catalog } from "./Catalog";
 import type { Chart } from "./Chart";
 import type { HelmRelease } from "./HelmRelease";
 import type { User } from "./User";
-import { JSONSchemaObject } from "./JSONSchema";
+import { JSONSchema } from "./JSONSchema";
 import type { NonPostableEvt } from "evt";
 
 export type OnyxiaApi = {
@@ -45,7 +45,7 @@ export type OnyxiaApi = {
     }) => Promise<{
         getChartValuesSchemaJson: (params: {
             xOnyxiaContext: XOnyxiaContext;
-        }) => JSONSchemaObject;
+        }) => JSONSchema;
         nonLibraryDependencies: string[];
         sourceUrls: string[];
     }>;
