@@ -1,11 +1,11 @@
 import type { Project } from "core/ports/OnyxiaApi";
-import type { FormFieldValue } from "core/usecases/launcher/FormField";
 import { assert, type Equals } from "tsafe/assert";
 import {
     createUsecaseActions,
     createObjectThatThrowsIfAccessed
 } from "clean-architecture";
 import * as userConfigs from "core/usecases/userConfigs";
+import type { StringifyableAtomic } from "core/tools/Stringifyable";
 
 type State = {
     projects: Project[];
@@ -46,7 +46,10 @@ export namespace ProjectConfigs {
         catalogId: string;
         chartName: string;
         chartVersion: string;
-        formFieldsValueDifferentFromDefault: FormFieldValue[];
+        helmValuesPatch: {
+            path: (string | number)[];
+            value: StringifyableAtomic;
+        }[];
     };
 }
 
