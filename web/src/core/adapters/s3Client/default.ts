@@ -10,9 +10,6 @@ import type { Oidc } from "core/ports/Oidc";
 import { bucketNameAndObjectNameFromS3Path } from "./utils/bucketNameAndObjectNameFromS3Path";
 import { exclude } from "tsafe/exclude";
 import { fnv1aHashToHex } from "core/tools/fnv1aHashToHex";
-import * as ns_aws_sdk_client_s3 from "@aws-sdk/client-s3";
-import * as ns_aws_sdk_lib_storage from "@aws-sdk/lib-storage";
-import * as ns_aws_sdk_s3_request_presigner from "@aws-sdk/s3-request-presigner";
 
 export type ParamsOfCreateS3Client =
     | ParamsOfCreateS3Client.NoSts
@@ -196,11 +193,14 @@ export function createS3Client(params: ParamsOfCreateS3Client): S3Client {
 
             const awsS3ClientByTokens = new WeakMap<
                 { secretAccessKey: string } | { __noCredentials__: true },
-                ns_aws_sdk_client_s3.S3Client
+                import("@aws-sdk/client-s3").S3Client
             >();
 
             async function getAwsS3Client() {
-                const tokens = await getNewlyRequestedOrCachedToken();
+                const [tokens, AwsS3Client] = await Promise.all([
+                    getNewlyRequestedOrCachedToken(),
+                    import("@aws-sdk/client-s3").then(({ S3Client }) => S3Client)
+                ] as const);
 
                 const weakMapKey = tokens ?? noTokensRef;
 
@@ -212,7 +212,7 @@ export function createS3Client(params: ParamsOfCreateS3Client): S3Client {
                     };
                 }
 
-                const awsS3Client = new ns_aws_sdk_client_s3.S3Client({
+                const awsS3Client = new AwsS3Client({
                     "region": params.region ?? "us-east-1",
                     "endpoint": params.url,
                     "forcePathStyle": params.pathStyleAccess,
@@ -258,9 +258,12 @@ export function createS3Client(params: ParamsOfCreateS3Client): S3Client {
 
             const { awsS3Client } = await getAwsS3Client();
 
+            const { CreateBucketCommand, BucketAlreadyExists, BucketAlreadyOwnedByYou } =
+                await import("@aws-sdk/client-s3");
+
             try {
                 await awsS3Client.send(
-                    new ns_aws_sdk_client_s3.CreateBucketCommand({
+                    new CreateBucketCommand({
                         "Bucket": nameOfBucketToCreateIfNotExist
                     })
                 );
@@ -268,8 +271,8 @@ export function createS3Client(params: ParamsOfCreateS3Client): S3Client {
                 assert(is<Error>(error));
 
                 if (
-                    !(error instanceof ns_aws_sdk_client_s3.BucketAlreadyExists) &&
-                    !(error instanceof ns_aws_sdk_client_s3.BucketAlreadyOwnedByYou)
+                    !(error instanceof BucketAlreadyExists) &&
+                    !(error instanceof BucketAlreadyOwnedByYou)
                 ) {
                     throw error;
                 }
@@ -330,15 +333,15 @@ export function createS3Client(params: ParamsOfCreateS3Client): S3Client {
 
             const { awsS3Client } = await getAwsS3Client();
 
-            const Contents: ns_aws_sdk_client_s3._Object[] = [];
-            const CommonPrefixes: ns_aws_sdk_client_s3.CommonPrefix[] = [];
+            const Contents: import("@aws-sdk/client-s3")._Object[] = [];
+            const CommonPrefixes: import("@aws-sdk/client-s3").CommonPrefix[] = [];
 
             {
                 let continuationToken: string | undefined;
 
                 do {
                     const resp = await awsS3Client.send(
-                        new ns_aws_sdk_client_s3.ListObjectsV2Command({
+                        new (await import("@aws-sdk/client-s3")).ListObjectsV2Command({
                             "Bucket": bucketName,
                             "Prefix": prefix,
                             "Delimiter": "/",
@@ -369,11 +372,14 @@ export function createS3Client(params: ParamsOfCreateS3Client): S3Client {
             };
         },
         "uploadFile": async ({ blob, path, onUploadProgress }) => {
-            const { awsS3Client } = await getAwsS3Client();
+            const [{ awsS3Client }, Upload] = await Promise.all([
+                getAwsS3Client(),
+                import("@aws-sdk/lib-storage").then(({ Upload }) => Upload)
+            ]);
 
             const { bucketName, objectName } = bucketNameAndObjectNameFromS3Path(path);
 
-            const upload = new ns_aws_sdk_lib_storage.Upload({
+            const upload = new Upload({
                 "client": awsS3Client,
                 "params": {
                     "Bucket": bucketName,
@@ -402,7 +408,7 @@ export function createS3Client(params: ParamsOfCreateS3Client): S3Client {
             const { awsS3Client } = await getAwsS3Client();
 
             await awsS3Client.send(
-                new ns_aws_sdk_client_s3.DeleteObjectCommand({
+                new (await import("@aws-sdk/client-s3")).DeleteObjectCommand({
                     "Bucket": bucketName,
                     "Key": objectName
                 })
@@ -413,9 +419,11 @@ export function createS3Client(params: ParamsOfCreateS3Client): S3Client {
 
             const { awsS3Client } = await getAwsS3Client();
 
-            const downloadUrl = await ns_aws_sdk_s3_request_presigner.getSignedUrl(
+            const downloadUrl = await (
+                await import("@aws-sdk/s3-request-presigner")
+            ).getSignedUrl(
                 awsS3Client,
-                new ns_aws_sdk_client_s3.GetObjectCommand({
+                new (await import("@aws-sdk/client-s3")).GetObjectCommand({
                     "Bucket": bucketName,
                     "Key": objectName
                 }),
