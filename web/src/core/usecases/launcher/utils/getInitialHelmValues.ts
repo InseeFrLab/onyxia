@@ -1,3 +1,14 @@
+import type { JSONSchema } from "core/ports/OnyxiaApi/JSONSchema";
+import type { XOnyxiaContext } from "core/ports/OnyxiaApi";
+
+export function getInitialHelmValues(params: {
+    helmValuesSchema: JSONSchema;
+    xOnyxiaContext: XOnyxiaContext;
+}): { helmValues: Record<string, unknown> } {
+    return null as any;
+}
+
+/*
 import {
     type JSONSchemaObject,
     type JSONSchemaFormFieldDescription,
@@ -268,3 +279,5 @@ function injectXOnyxiaContextInValuesSchemaJsonRec(params: {
         }
     }
 }
+
+*/

@@ -95,7 +95,7 @@ const isLaunchable = createSelector(isReady, formFieldGroup, (isReady, formTree)
                             case "range slider":
                                 return true;
                             case "yaml code block":
-                                return child.isValid;
+                                return child.isValidYamlAndDataType;
                             case "text field":
                                 return child.doesMatchPattern;
                         }

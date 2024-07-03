@@ -1,4 +1,3 @@
-import type { XOnyxiaContext } from "./XOnyxia";
 import type { DeploymentRegion } from "./DeploymentRegion";
 import type { Project } from "./Project";
 import type { Catalog } from "./Catalog";
@@ -43,11 +42,13 @@ export type OnyxiaApi = {
         chartName: string;
         chartVersion: string;
     }) => Promise<{
-        getChartValuesSchemaJson: (params: {
-            xOnyxiaContext: XOnyxiaContext;
-        }) => JSONSchema;
-        nonLibraryDependencies: string[];
+        helmValuesSchema: JSONSchema;
         sourceUrls: string[];
+        dependencies: {
+            helmRepositoryUrl: string;
+            chartName: string;
+            chartVersion: string;
+        }[];
     }>;
 
     helmInstall: (params: {

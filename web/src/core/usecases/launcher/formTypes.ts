@@ -1,11 +1,11 @@
-import type { JSONSchema } from "core/ports/OnyxiaApi/JSONSchema";
-import type { XOnyxiaContext } from "core/ports/OnyxiaApi";
 import { assert, type Equals } from "tsafe/assert";
 
 export type FormFieldGroup = {
     type: "group";
     helmValuesPath: (string | number)[];
     groupName: string;
+    groupDescription?: string;
+
     children: (FormField | FormFieldGroup)[];
     canAdd: boolean;
     canRemove: boolean;
@@ -35,9 +35,9 @@ export namespace FormField {
 
     export type YamlCodeBlock = Common & {
         fieldType: "yaml code block";
-        expectedYamlType: "object" | "array";
+        expectedDataType: "object" | "array";
         value: string;
-        isValid: boolean;
+        isValidYamlAndDataType: boolean;
     };
 
     export type IntegerField = Common & {
@@ -97,10 +97,3 @@ export namespace FormFieldValue {
 }
 
 assert<Equals<FormFieldValue["fieldType"], FormField["fieldType"]>>(true);
-
-export function getInitialHelmValues(params: {
-    helmValuesSchema: JSONSchema;
-    xOnyxiaContext: XOnyxiaContext;
-}): { helmValues: Record<string, unknown> } {
-    return null as any;
-}

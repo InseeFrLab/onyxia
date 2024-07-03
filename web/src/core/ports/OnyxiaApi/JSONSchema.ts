@@ -2,15 +2,15 @@ import {
     onyxiaReservedPropertyNameInFieldDescription,
     type XOnyxiaParams
 } from "./XOnyxia";
+import type { ArrayOrNot } from "core/tools/ArrayOrNot";
 
 export type JSONSchema = {
-    type: "object" | "array" | "string" | "boolean" | "integer";
+    type: ArrayOrNot<"object" | "array" | "string" | "boolean" | "integer">;
     title?: string;
     description?: string;
     default: unknown;
     hidden?: boolean | { value: string | boolean | number; path: string };
     items?: JSONSchema;
-    properties?: Record<string, JSONSchema>;
     minimum?: number;
     pattern?: string;
     render?: "textArea" | "password" | "list" | "slider";
@@ -24,4 +24,5 @@ export type JSONSchema = {
     sliderRangeId?: string;
     sliderExtremity?: "down" | "up";
     [onyxiaReservedPropertyNameInFieldDescription]?: XOnyxiaParams;
+    properties?: Record<string, JSONSchema>;
 };

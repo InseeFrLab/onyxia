@@ -15,7 +15,6 @@ import memoize from "memoizee";
 import { assert } from "tsafe/assert";
 import { is } from "tsafe/is";
 import { compareVersions } from "compare-versions";
-import { injectXOnyxiaContextInValuesSchemaJson } from "./injectXOnyxiaContextInValuesSchemaJson";
 import { exclude } from "tsafe/exclude";
 import type { ApiTypes } from "./ApiTypes";
 import { Evt } from "evt";
@@ -362,53 +361,6 @@ export function createOnyxiaApi(params: {
             }
         },
         "getHelmChartDetails": async ({ catalogId, chartName, chartVersion }) => {
-            const { chartsByCatalogId, catalogs } =
-                await onyxiaApi.getCatalogsAndCharts();
-
-            function getIsDependencyLibrary(params: {
-                catalogRepositoryUrl: string;
-                chartName: string;
-                chartVersion: string;
-            }): boolean {
-                const { catalogRepositoryUrl, chartName, chartVersion } = params;
-
-                const catalog = catalogs.find(
-                    catalog => catalog.repositoryUrl === catalogRepositoryUrl
-                );
-
-                if (catalog === undefined) {
-                    console.warn(
-                        [
-                            "Here we have a dependency that is not in any catalog, we can't tel if it's a library or not",
-                            "Please submit an issue about it on the onyxia repo"
-                        ].join(" ")
-                    );
-                    return false;
-                }
-
-                const charts = chartsByCatalogId[catalog.id];
-
-                assert(charts !== undefined);
-
-                const chart = charts.find(chart => chart.name === chartName);
-
-                if (chart === undefined) {
-                    // We've filtered it out, it's a library
-                    return true;
-                }
-
-                const version = chart.versions.find(
-                    version => version.version === chartVersion
-                );
-
-                if (version === undefined) {
-                    // We've filtered it out, it's a library
-                    return true;
-                }
-
-                return false;
-            }
-
             const { data } = await axiosInstance.get<
                 ApiTypes["/public/catalogs/${catalogId}/charts/${chartName}/versions/${chartVersion}"]
             >(
@@ -416,23 +368,15 @@ export function createOnyxiaApi(params: {
             );
 
             return {
-                "nonLibraryDependencies":
-                    data.dependencies
-                        ?.filter(
-                            ({ name, repository, version }) =>
-                                !getIsDependencyLibrary({
-                                    "catalogRepositoryUrl": repository,
-                                    "chartName": name,
-                                    "chartVersion": version
-                                })
-                        )
-                        .map(({ name }) => name) ?? [],
+                "helmValuesSchema": data.config,
                 "sourceUrls": data.sources ?? [],
-                "getChartValuesSchemaJson": ({ xOnyxiaContext }) =>
-                    injectXOnyxiaContextInValuesSchemaJson({
-                        xOnyxiaContext,
-                        "valuesSchemaJsonBeforeInjection": data.config
+                "dependencies": (data.dependencies ?? []).map(
+                    ({ name, repository, version }) => ({
+                        "helmRepositoryUrl": repository,
+                        "chartName": name,
+                        "chartVersion": version
                     })
+                )
             };
         },
         "helmInstall": async ({

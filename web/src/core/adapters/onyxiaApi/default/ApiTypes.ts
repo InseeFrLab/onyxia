@@ -1,5 +1,5 @@
 /* eslint-disable no-template-curly-in-string */
-import type { LocalizedString, JSONSchemaObject } from "core/ports/OnyxiaApi";
+import type { LocalizedString, JSONSchema } from "core/ports/OnyxiaApi";
 
 export type ApiTypes = {
     "/public/ip": {
@@ -170,7 +170,7 @@ export type ApiTypes = {
         }[];
     };
     "/public/catalogs/${catalogId}/charts/${chartName}/versions/${chartVersion}": {
-        config: JSONSchemaObject;
+        config: JSONSchema;
         sources?: string[];
         dependencies?: {
             name: string;
