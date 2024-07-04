@@ -1,8 +1,6 @@
 import { S3Client } from "core/ports/S3Client";
 
 export const s3client: S3Client = {
-    "url": "",
-    "pathStyleAccess": true,
     "list": () =>
         Promise.resolve({
             "directories": [],

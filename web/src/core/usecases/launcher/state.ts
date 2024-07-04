@@ -34,8 +34,9 @@ export declare namespace State {
         k8sRandomSubdomain: string;
         chartSourceUrls: string[];
         availableChartVersions: string[];
-        s3ConfigurationOptions: {
+        s3Options: {
             optionValue: string;
+            isSts: boolean;
             helmValuesPatch: {
                 helmValuesPath: (string | number)[];
                 value: StringifyableAtomic;
@@ -81,8 +82,8 @@ export const { reducer, actions } = createUsecaseActions({
                         k8sRandomSubdomain: string;
                         chartSourceUrls: string[];
                         availableChartVersions: string[];
-                        s3ConfigurationOptions: State.Ready["s3ConfigurationOptions"];
-                        defaultLauncherS3ConfigurationOptionValue: string | undefined;
+                        s3Options: State.Ready["s3Options"];
+                        selectedS3OptionValue: string | undefined;
                         helmValuesSchema: JSONSchema;
                         defaultHelmValues: StringifyableObject;
                         isPersonalProject: boolean;
@@ -109,15 +110,15 @@ export const { reducer, actions } = createUsecaseActions({
                     k8sRandomSubdomain,
                     chartSourceUrls,
                     availableChartVersions,
-                    s3ConfigurationOptions,
-                    defaultLauncherS3ConfigurationOptionValue,
+                    s3Options,
+                    selectedS3OptionValue,
                     helmValuesSchema,
                     defaultHelmValues,
                     isPersonalProject,
                     restorableConfig
                 } = payload;
 
-                const readyState: State.Ready = {
+                const state: State.Ready = {
                     "stateDescription": "ready",
                     "friendlyName": restorableConfig?.friendlyName ?? friendlyName,
                     "isShared":
@@ -134,27 +135,27 @@ export const { reducer, actions } = createUsecaseActions({
                     k8sRandomSubdomain,
                     chartSourceUrls,
                     availableChartVersions,
-                    s3ConfigurationOptions,
+                    s3Options,
                     helmValuesSchema,
                     defaultHelmValues,
                     "helmValues": defaultHelmValues
                 };
 
-                if (defaultLauncherS3ConfigurationOptionValue !== undefined) {
-                    reducers.s3ConfigChanged(readyState, {
+                if (selectedS3OptionValue !== undefined) {
+                    reducers.selectedS3OptionChanged(state, {
                         "payload": {
-                            "optionValue": defaultLauncherS3ConfigurationOptionValue
+                            selectedS3OptionValue
                         }
                     });
                 }
 
                 if (restorableConfig !== undefined) {
                     restorableConfig.helmValuesPatch.forEach(({ path, value }) =>
-                        assignValueAtPath(readyState.helmValues, path, value)
+                        assignValueAtPath(state.helmValues, path, value)
                     );
                 }
 
-                return readyState;
+                return state;
             },
             "allDefaultRestored": state => {
                 assert(state.stateDescription === "ready");
@@ -194,22 +195,22 @@ export const { reducer, actions } = createUsecaseActions({
                 })(helmValuesPath, state.helmValues);
                 */
             },
-            "s3ConfigChanged": (
+            "selectedS3OptionChanged": (
                 state,
                 {
                     payload
                 }: {
                     payload: {
-                        optionValue: string;
+                        selectedS3OptionValue: string;
                     };
                 }
             ) => {
                 assert(state.stateDescription === "ready");
 
-                const { optionValue } = payload;
+                const { selectedS3OptionValue } = payload;
 
-                const option = state.s3ConfigurationOptions.find(
-                    option => option.optionValue === optionValue
+                const option = state.s3Options.find(
+                    option => option.optionValue === selectedS3OptionValue
                 );
 
                 assert(option !== undefined);

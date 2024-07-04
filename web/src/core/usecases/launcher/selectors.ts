@@ -14,6 +14,7 @@ import {
     readValueAtPath,
     getIsAtomic
 } from "core/tools/Stringifyable";
+import { same } from "evt/tools/inDepth/same";
 
 const readyState = (rootState: RootState) => {
     const state = rootState[name];
@@ -129,6 +130,70 @@ const groupProjectName = createSelector(
         currentProject.group === undefined ? undefined : currentProject.name
 );
 
+const s3Options = createSelector(readyState, state => {
+    if (state === null) {
+        return null;
+    }
+
+    return state.s3Options;
+});
+
+const selectedS3OptionValue = createSelector(
+    isReady,
+    s3Options,
+    helmValues,
+    (isReady, s3Options, helmValues) => {
+        if (!isReady) {
+            return null;
+        }
+
+        assert(s3Options !== null);
+        assert(helmValues !== null);
+
+        return s3Options.find(option => {
+            for (const { helmValuesPath, value } of option.helmValuesPatch) {
+                if (readValueAtPath(helmValues, helmValuesPath) !== value) {
+                    return false;
+                }
+            }
+            return true;
+        })?.optionValue;
+    }
+);
+
+const s3ConfigSelect = createSelector(
+    isReady,
+    s3Options,
+    selectedS3OptionValue,
+    (isReady, s3Options, selectedS3OptionValue) => {
+        if (!isReady) {
+            return null;
+        }
+
+        assert(s3Options !== null);
+        assert(selectedS3OptionValue !== null);
+
+        // We don't display the s3 config selector if there is no config or only one
+        if (s3Options.length <= 1) {
+            return undefined;
+        }
+
+        // If the chart at hand does not use s3, we don't display the s3 config selector
+        if (s3Options[0].helmValuesPatch.length === 0) {
+            return undefined;
+        }
+
+        return {
+            "options": s3Options.map(option => ({
+                "optionValue": option.optionValue,
+                "dataSource": option.dataSource,
+                "accountFriendlyName": option.accountFriendlyName
+            })),
+            "selectedOptionValue": selectedS3OptionValue
+        };
+    }
+);
+
 const isShared = createSelector(readyState, state => {
     if (state === null) {
         return null;
@@ -154,6 +219,8 @@ const restorableConfig = createSelector(
     chartVersion,
     helmValues,
     defaultHelmValues,
+    s3Options,
+    selectedS3OptionValue,
     (
         isReady,
         friendlyName,
@@ -162,7 +229,9 @@ const restorableConfig = createSelector(
         chartName,
         chartVersion,
         helmValues,
-        defaultHelmValues
+        defaultHelmValues,
+        s3Options,
+        selectedS3OptionValue
     ): projectManagement.ProjectConfigs.RestorableServiceConfig | null => {
         if (!isReady) {
             return null;
@@ -175,15 +244,38 @@ const restorableConfig = createSelector(
         assert(chartVersion !== null);
         assert(helmValues !== null);
         assert(defaultHelmValues !== null);
+        assert(s3Options !== null);
+        assert(selectedS3OptionValue !== null);
 
         const helmValuesPatch: {
             path: (string | number)[];
             value: StringifyableAtomic;
         }[] = [];
 
+        const s3StsHelmValuesPaths = (() => {
+            if (selectedS3OptionValue === undefined) {
+                return [];
+            }
+
+            const s3Option = s3Options.find(
+                option => option.optionValue === selectedS3OptionValue
+            );
+
+            assert(s3Option !== undefined);
+
+            if (!s3Option.isSts) {
+                return [];
+            }
+
+            return s3Option.helmValuesPatch.map(({ helmValuesPath }) => helmValuesPath);
+        })();
+
         (function crawl(value: Stringifyable, path: (string | number)[]) {
             if (getIsAtomic(value)) {
                 if (readValueAtPath(defaultHelmValues, path) !== value) {
+                    if (s3StsHelmValuesPaths.some(s3Path => same(s3Path, path))) {
+                        return;
+                    }
                     helmValuesPatch.push({
                         path,
                         "value": value
@@ -486,54 +578,6 @@ const willOverwriteExistingConfigOnSave = createSelector(
                     restorableConfig.friendlyName === friendlyName
             ) !== undefined
         );
-    }
-);
-
-const s3ConfigurationOptions = createSelector(readyState, state => {
-    if (state === null) {
-        return null;
-    }
-
-    return state.s3ConfigurationOptions;
-});
-
-const s3ConfigSelect = createSelector(
-    isReady,
-    s3ConfigurationOptions,
-    helmValues,
-    (isReady, s3ConfigurationOptions, helmValues) => {
-        if (!isReady) {
-            return null;
-        }
-
-        assert(s3ConfigurationOptions !== null);
-        assert(helmValues !== null);
-
-        // We don't display the s3 config selector if there is no config or only one
-        if (s3ConfigurationOptions.length <= 1) {
-            return undefined;
-        }
-
-        // If the chart at hand does not use s3, we don't display the s3 config selector
-        if (s3ConfigurationOptions[0].helmValuesPatch.length === 0) {
-            return undefined;
-        }
-
-        return {
-            "options": s3ConfigurationOptions.map(option => ({
-                "optionValue": option.optionValue,
-                "dataSource": option.dataSource,
-                "accountFriendlyName": option.accountFriendlyName
-            })),
-            "selectedOptionValue": s3ConfigurationOptions.find(option => {
-                for (const { helmValuesPath, value } of option.helmValuesPatch) {
-                    if (readValueAtPath(helmValues, helmValuesPath) !== value) {
-                        return false;
-                    }
-                }
-                return true;
-            })?.optionValue
-        };
     }
 );
 

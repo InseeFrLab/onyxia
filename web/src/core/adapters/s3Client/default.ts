@@ -304,8 +304,6 @@ export function createS3Client(params: ParamsOfCreateS3Client): S3Client {
     })();
 
     const s3Client: S3Client = {
-        "url": params.url,
-        "pathStyleAccess": params.pathStyleAccess,
         "getToken": async ({ doForceRenew }) => {
             if (doForceRenew) {
                 await clearCachedToken();
