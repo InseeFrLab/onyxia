@@ -5,7 +5,10 @@ export function createOidc(params: { isUserInitiallyLoggedIn: boolean }): Oidc {
     const { isUserInitiallyLoggedIn } = params;
 
     const oidc = createMockOidc({
-        isUserInitiallyLoggedIn
+        isUserInitiallyLoggedIn,
+        "mockedTokens": {
+            "decodedIdToken": {}
+        }
     });
 
     return oidc;
