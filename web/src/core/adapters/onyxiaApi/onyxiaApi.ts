@@ -119,143 +119,212 @@ export function createOnyxiaApi(params: {
                           };
 
                 const regions = data.regions.map(
-                    (apiRegion): DeploymentRegion => ({
-                        "id": apiRegion.id,
-                        "servicesMonitoringUrlPattern":
-                            apiRegion.services.monitoring?.URLPattern,
-                        "defaultIpProtection":
-                            apiRegion.services.defaultConfiguration?.ipprotection,
-                        "defaultNetworkPolicy":
-                            apiRegion.services.defaultConfiguration?.networkPolicy,
-                        "kubernetesClusterDomain": apiRegion.services.expose.domain,
-                        "ingressClassName": apiRegion.services.expose.ingressClassName,
-                        "ingress": apiRegion.services.expose.ingress,
-                        "route": apiRegion.services.expose.route,
-                        "customValues": apiRegion.services.customValues,
-                        "istio": apiRegion.services.expose.istio,
-                        "initScriptUrl": apiRegion.services.initScript,
-                        "s3": (() => {
-                            const { S3 } = apiRegion.data ?? {};
+                    (apiRegion): DeploymentRegion =>
+                        id<DeploymentRegion>({
+                            "id": apiRegion.id,
+                            "servicesMonitoringUrlPattern":
+                                apiRegion.services.monitoring?.URLPattern,
+                            "defaultIpProtection":
+                                apiRegion.services.defaultConfiguration?.ipprotection,
+                            "defaultNetworkPolicy":
+                                apiRegion.services.defaultConfiguration?.networkPolicy,
+                            "kubernetesClusterDomain": apiRegion.services.expose.domain,
+                            "ingressClassName":
+                                apiRegion.services.expose.ingressClassName,
+                            "ingress": apiRegion.services.expose.ingress,
+                            "route": apiRegion.services.expose.route,
+                            "customValues": apiRegion.services.customValues,
+                            "istio": apiRegion.services.expose.istio,
+                            "initScriptUrl": apiRegion.services.initScript,
+                            ...(() => {
+                                const s3Configs_api = (() => {
+                                    const value = apiRegion.data?.S3;
 
-                            if (S3 === undefined) {
-                                return undefined;
-                            }
+                                    if (value === undefined) {
+                                        return [];
+                                    }
 
-                            return {
-                                "url": S3.URL,
-                                "pathStyleAccess": S3.pathStyleAccess ?? true,
-                                "region": S3.region,
-                                "sts":
-                                    S3.sts === undefined
-                                        ? undefined
-                                        : {
-                                              "url": S3.sts.URL,
-                                              "durationSeconds": S3.sts.durationSeconds,
-                                              "role": S3.sts.role,
-                                              "oidcParams":
-                                                  S3.sts.oidcConfiguration === undefined
-                                                      ? undefined
-                                                      : {
-                                                            "issuerUri":
-                                                                S3.sts.oidcConfiguration
-                                                                    .issuerURI,
-                                                            "clientId":
-                                                                S3.sts.oidcConfiguration
-                                                                    .clientID
-                                                        }
-                                          },
-                                "workingDirectory":
-                                    S3.workingDirectory ??
-                                    (assert(
-                                        S3.sts !== undefined,
-                                        "If region.data.S3.sts is not undefined workingDirectory must be specified"
-                                    ),
-                                    {
-                                        "bucketMode": "shared",
-                                        "bucketName": "",
-                                        "prefix": "",
-                                        "prefixGroup": ""
-                                    })
-                            };
-                        })(),
-                        "allowedURIPatternForUserDefinedInitScript":
-                            apiRegion.services.allowedURIPattern,
-                        "kafka": (() => {
-                            const { kafka } =
-                                apiRegion.services.defaultConfiguration ?? {};
+                                    if (value instanceof Array) {
+                                        return value;
+                                    }
 
-                            if (kafka === undefined) {
-                                return undefined;
-                            }
-                            const { URL, topicName } = kafka;
+                                    return [value];
+                                })();
 
-                            return { "url": URL, topicName };
-                        })(),
-                        "tolerations":
-                            apiRegion.services?.defaultConfiguration?.tolerations,
-                        "from": apiRegion.services?.defaultConfiguration?.from,
-                        "nodeSelector":
-                            apiRegion.services.defaultConfiguration?.nodeSelector,
-                        "startupProbe":
-                            apiRegion.services.defaultConfiguration?.startupProbe,
-                        "vault":
-                            apiRegion.vault === undefined
-                                ? undefined
-                                : {
-                                      "url": apiRegion.vault.URL,
-                                      "kvEngine": apiRegion.vault.kvEngine,
-                                      "role": apiRegion.vault.role,
-                                      "authPath": apiRegion.vault.authPath,
-                                      "oidcParams":
-                                          apiRegion.vault.oidcConfiguration === undefined
-                                              ? undefined
-                                              : {
-                                                    "issuerUri":
-                                                        apiRegion.vault.oidcConfiguration
-                                                            .issuerURI,
-                                                    "clientId":
-                                                        apiRegion.vault.oidcConfiguration
-                                                            .clientID
+                                const s3ConfigCreationFormDefaults: DeploymentRegion["s3ConfigCreationFormDefaults"] =
+                                    (() => {
+                                        const s3Config_api = (() => {
+                                            config_without_sts: {
+                                                const s3Config_api = s3Configs_api.find(
+                                                    s3Config_api =>
+                                                        s3Config_api.sts === undefined
+                                                );
+
+                                                if (s3Config_api === undefined) {
+                                                    break config_without_sts;
                                                 }
-                                  },
-                        "proxyInjection": apiRegion.proxyInjection,
-                        "packageRepositoryInjection":
-                            apiRegion.packageRepositoryInjection,
-                        "certificateAuthorityInjection":
-                            apiRegion.certificateAuthorityInjection,
-                        "kubernetes": (() => {
-                            const { k8sPublicEndpoint } = apiRegion.services;
 
-                            if (k8sPublicEndpoint?.URL === undefined) {
-                                return undefined;
+                                                return s3Config_api;
+                                            }
+
+                                            if (s3Configs_api.length === 0) {
+                                                return undefined;
+                                            }
+
+                                            const [s3Config_api] = s3Configs_api;
+
+                                            return s3Config_api;
+                                        })();
+
+                                        if (s3Config_api === undefined) {
+                                            return undefined;
+                                        }
+
+                                        return {
+                                            "url": s3Config_api.URL,
+                                            "pathStyleAccess":
+                                                s3Config_api.pathStyleAccess ?? true,
+                                            "region": s3Config_api.region,
+                                            "workingDirectory":
+                                                s3Config_api.workingDirectory
+                                        };
+                                    })();
+
+                                const s3Configs: DeploymentRegion["s3Configs"] =
+                                    s3Configs_api
+                                        .map(({ sts, workingDirectory, ...rest }) => {
+                                            if (sts === undefined) {
+                                                return undefined;
+                                            }
+                                            assert(
+                                                workingDirectory !== undefined,
+                                                "If region.data.S3.sts is not undefined workingDirectory must be specified"
+                                            );
+
+                                            return {
+                                                sts,
+                                                workingDirectory,
+                                                ...rest
+                                            };
+                                        })
+                                        .filter(exclude(undefined))
+                                        .map(s3Config_api => ({
+                                            "url": s3Config_api.URL,
+                                            "pathStyleAccess":
+                                                s3Config_api.pathStyleAccess ?? true,
+                                            "region": s3Config_api.region,
+                                            "sts": {
+                                                "url": s3Config_api.sts.URL,
+                                                "durationSeconds":
+                                                    s3Config_api.sts.durationSeconds,
+                                                "role": s3Config_api.sts.role,
+                                                "oidcParams":
+                                                    s3Config_api.sts.oidcConfiguration ===
+                                                    undefined
+                                                        ? undefined
+                                                        : {
+                                                              "issuerUri":
+                                                                  s3Config_api.sts
+                                                                      .oidcConfiguration
+                                                                      .issuerURI,
+                                                              "clientId":
+                                                                  s3Config_api.sts
+                                                                      .oidcConfiguration
+                                                                      .clientID
+                                                          }
+                                            },
+                                            "workingDirectory":
+                                                s3Config_api.workingDirectory
+                                        }));
+
+                                return {
+                                    s3Configs,
+                                    s3ConfigCreationFormDefaults
+                                };
+                            })(),
+                            "allowedURIPatternForUserDefinedInitScript":
+                                apiRegion.services.allowedURIPattern,
+                            "kafka": (() => {
+                                const { kafka } =
+                                    apiRegion.services.defaultConfiguration ?? {};
+
+                                if (kafka === undefined) {
+                                    return undefined;
+                                }
+                                const { URL, topicName } = kafka;
+
+                                return { "url": URL, topicName };
+                            })(),
+                            "tolerations":
+                                apiRegion.services?.defaultConfiguration?.tolerations,
+                            "from": apiRegion.services?.defaultConfiguration?.from,
+                            "nodeSelector":
+                                apiRegion.services.defaultConfiguration?.nodeSelector,
+                            "startupProbe":
+                                apiRegion.services.defaultConfiguration?.startupProbe,
+                            "vault":
+                                apiRegion.vault === undefined
+                                    ? undefined
+                                    : {
+                                          "url": apiRegion.vault.URL,
+                                          "kvEngine": apiRegion.vault.kvEngine,
+                                          "role": apiRegion.vault.role,
+                                          "authPath": apiRegion.vault.authPath,
+                                          "oidcParams":
+                                              apiRegion.vault.oidcConfiguration ===
+                                              undefined
+                                                  ? undefined
+                                                  : {
+                                                        "issuerUri":
+                                                            apiRegion.vault
+                                                                .oidcConfiguration
+                                                                .issuerURI,
+                                                        "clientId":
+                                                            apiRegion.vault
+                                                                .oidcConfiguration
+                                                                .clientID
+                                                    }
+                                      },
+                            "proxyInjection": apiRegion.proxyInjection,
+                            "packageRepositoryInjection":
+                                apiRegion.packageRepositoryInjection,
+                            "certificateAuthorityInjection":
+                                apiRegion.certificateAuthorityInjection,
+                            "kubernetes": (() => {
+                                const { k8sPublicEndpoint } = apiRegion.services;
+
+                                if (k8sPublicEndpoint?.URL === undefined) {
+                                    return undefined;
+                                }
+
+                                return {
+                                    "url": k8sPublicEndpoint.URL,
+                                    "oidcParams":
+                                        k8sPublicEndpoint.oidcConfiguration === undefined
+                                            ? undefined
+                                            : {
+                                                  "issuerUri":
+                                                      k8sPublicEndpoint.oidcConfiguration
+                                                          .issuerURI,
+                                                  "clientId":
+                                                      k8sPublicEndpoint.oidcConfiguration
+                                                          .clientID
+                                              }
+                                };
+                            })(),
+                            "sliders":
+                                apiRegion.services.defaultConfiguration?.sliders ?? {},
+                            "resources":
+                                apiRegion.services.defaultConfiguration?.resources,
+                            "certManager": {
+                                "useCertManager":
+                                    apiRegion.services.expose.certManager
+                                        ?.useCertManager ?? false,
+                                "certManagerClusterIssuer":
+                                    apiRegion.services.expose.certManager
+                                        ?.certManagerClusterIssuer
                             }
-
-                            return {
-                                "url": k8sPublicEndpoint.URL,
-                                "oidcParams":
-                                    k8sPublicEndpoint.oidcConfiguration === undefined
-                                        ? undefined
-                                        : {
-                                              "issuerUri":
-                                                  k8sPublicEndpoint.oidcConfiguration
-                                                      .issuerURI,
-                                              "clientId":
-                                                  k8sPublicEndpoint.oidcConfiguration
-                                                      .clientID
-                                          }
-                            };
-                        })(),
-                        "sliders": apiRegion.services.defaultConfiguration?.sliders ?? {},
-                        "resources": apiRegion.services.defaultConfiguration?.resources,
-                        "certManager": {
-                            "useCertManager":
-                                apiRegion.services.expose.certManager?.useCertManager ??
-                                false,
-                            "certManagerClusterIssuer":
-                                apiRegion.services.expose.certManager
-                                    ?.certManagerClusterIssuer
-                        }
-                    })
+                        })
                 );
 
                 return { regions, oidcParams };

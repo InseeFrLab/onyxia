@@ -42,7 +42,7 @@ export declare namespace State {
                 value: StringifyableAtomic;
             }[];
             dataSource: string;
-            accountFriendlyName: string | undefined;
+            friendlyName: string | undefined;
         }[];
         helmValuesSchema: JSONSchema;
         defaultHelmValues: StringifyableObject;

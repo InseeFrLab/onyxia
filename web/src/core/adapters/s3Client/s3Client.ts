@@ -19,11 +19,11 @@ export namespace ParamsOfCreateS3Client {
     export type Common = {
         url: string;
         pathStyleAccess: boolean;
+        region: string | undefined;
     };
 
     export type NoSts = Common & {
         isStsEnabled: false;
-        region: string;
         credentials:
             | {
                   accessKeyId: string;
@@ -36,8 +36,12 @@ export namespace ParamsOfCreateS3Client {
     export type Sts = Common & {
         isStsEnabled: true;
         stsUrl: string | undefined;
-        region: string | undefined;
-        oidc: Oidc.LoggedIn;
+        oidcParams:
+            | {
+                  issuerUri?: string;
+                  clientId: string;
+              }
+            | undefined;
         durationSeconds: number | undefined;
         role:
             | {
@@ -49,9 +53,14 @@ export namespace ParamsOfCreateS3Client {
     };
 }
 
-export function createS3Client(params: ParamsOfCreateS3Client): S3Client {
-    const { getNewlyRequestedOrCachedToken, clearCachedToken, getAwsS3Client } = (() => {
-        const { getNewlyRequestedOrCachedToken, clearCachedToken } = (() => {
+export function createS3Client(
+    params: ParamsOfCreateS3Client,
+    getOidc: (
+        oidcParams: ParamsOfCreateS3Client.Sts["oidcParams"]
+    ) => Promise<Oidc.LoggedIn>
+): S3Client {
+    const prApi = (async () => {
+        const { getNewlyRequestedOrCachedToken, clearCachedToken } = await (async () => {
             if (!params.isStsEnabled) {
                 const token =
                     params.credentials === undefined
@@ -74,7 +83,7 @@ export function createS3Client(params: ParamsOfCreateS3Client): S3Client {
                 };
             }
 
-            const { oidc } = params;
+            const oidc = await getOidc(params.oidcParams);
 
             const { getNewlyRequestedOrCachedToken, clearCachedToken } =
                 getNewlyRequestedOrCachedTokenFactory({
@@ -182,7 +191,7 @@ export function createS3Client(params: ParamsOfCreateS3Client): S3Client {
                 });
 
             if (oidc.loginScenario !== "sessionStorageRestoration") {
-                clearCachedToken();
+                await clearCachedToken();
             }
 
             return { getNewlyRequestedOrCachedToken, clearCachedToken };
@@ -239,21 +248,15 @@ export function createS3Client(params: ParamsOfCreateS3Client): S3Client {
             return { getAwsS3Client };
         })();
 
-        let hasBucketBeenCreated = false;
-
-        async function createBucketIfApplicableAndNotExist() {
+        create_bucket: {
             if (!params.isStsEnabled) {
-                return;
+                break create_bucket;
             }
 
             const { nameOfBucketToCreateIfNotExist } = params;
 
             if (nameOfBucketToCreateIfNotExist === undefined) {
-                return;
-            }
-
-            if (hasBucketBeenCreated) {
-                return;
+                break create_bucket;
             }
 
             const { awsS3Client } = await getAwsS3Client();
@@ -284,27 +287,15 @@ export function createS3Client(params: ParamsOfCreateS3Client): S3Client {
                     ].join(" ")
                 );
             }
-
-            hasBucketBeenCreated = true;
         }
 
-        return {
-            "getNewlyRequestedOrCachedToken": async () => {
-                await createBucketIfApplicableAndNotExist();
-
-                return getNewlyRequestedOrCachedToken();
-            },
-            clearCachedToken,
-            "getAwsS3Client": async () => {
-                await createBucketIfApplicableAndNotExist();
-
-                return getAwsS3Client();
-            }
-        };
+        return { getNewlyRequestedOrCachedToken, clearCachedToken, getAwsS3Client };
     })();
 
     const s3Client: S3Client = {
         "getToken": async ({ doForceRenew }) => {
+            const { getNewlyRequestedOrCachedToken, clearCachedToken } = await prApi;
+
             if (doForceRenew) {
                 await clearCachedToken();
             }
@@ -328,6 +319,8 @@ export function createS3Client(params: ParamsOfCreateS3Client): S3Client {
                     prefix
                 };
             })();
+
+            const { getAwsS3Client } = await prApi;
 
             const { awsS3Client } = await getAwsS3Client();
 
@@ -370,6 +363,8 @@ export function createS3Client(params: ParamsOfCreateS3Client): S3Client {
             };
         },
         "uploadFile": async ({ blob, path, onUploadProgress }) => {
+            const { getAwsS3Client } = await prApi;
+
             const [{ awsS3Client }, Upload] = await Promise.all([
                 getAwsS3Client(),
                 import("@aws-sdk/lib-storage").then(({ Upload }) => Upload)
@@ -403,6 +398,8 @@ export function createS3Client(params: ParamsOfCreateS3Client): S3Client {
         "deleteFile": async ({ path }) => {
             const { bucketName, objectName } = bucketNameAndObjectNameFromS3Path(path);
 
+            const { getAwsS3Client } = await prApi;
+
             const { awsS3Client } = await getAwsS3Client();
 
             await awsS3Client.send(
@@ -414,6 +411,8 @@ export function createS3Client(params: ParamsOfCreateS3Client): S3Client {
         },
         "getFileDownloadUrl": async ({ path, validityDurationSecond }) => {
             const { bucketName, objectName } = bucketNameAndObjectNameFromS3Path(path);
+
+            const { getAwsS3Client } = await prApi;
 
             const { awsS3Client } = await getAwsS3Client();
 
