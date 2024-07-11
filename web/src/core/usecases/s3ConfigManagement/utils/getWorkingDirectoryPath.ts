@@ -28,7 +28,6 @@ export function getWorkingDirectoryPath(params: {
                         }
                         assert<Equals<typeof context, never>>(false);
                     })();
-                    break;
                 case "shared":
                     return [
                         workingDirectory.bucketName,
