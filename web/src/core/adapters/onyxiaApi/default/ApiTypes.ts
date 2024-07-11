@@ -184,10 +184,10 @@ export type ApiTypes = {
             status: "deployed" | "pending-install" | "failed";
             urls: string[];
             env: {
-                "onyxia.owner": string;
                 // Actually Record<string, string> but we prefer only listing known properties
                 // for type safety.
             };
+            owner: string;
             startedAt: number;
             tasks: {
                 id: string;

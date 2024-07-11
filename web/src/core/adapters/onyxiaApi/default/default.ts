@@ -539,6 +539,27 @@ export function createOnyxiaApi(params: {
                     return apiApp.friendlyName;
                 })();
 
+                const ownerUsername = (() => {
+                    // TODO: Remove this block in a few months
+                    value_from_env: {
+                        const valueFromEnv = id<Record<string, string | undefined>>(
+                            apiApp.env
+                        )["onyxia.owner"];
+
+                        if (valueFromEnv === undefined) {
+                            break value_from_env;
+                        }
+
+                        if (valueFromEnv === chartName) {
+                            break value_from_env;
+                        }
+
+                        return valueFromEnv;
+                    }
+
+                    return apiApp.owner;
+                })();
+
                 return {
                     "helmReleaseName": apiApp.id,
                     friendlyName,
@@ -551,7 +572,7 @@ export function createOnyxiaApi(params: {
                     "revision": apiApp.revision,
                     chartName,
                     chartVersion,
-                    "ownerUsername": apiApp.env["onyxia.owner"],
+                    ownerUsername,
                     isShared,
                     "areAllTasksReady":
                         apiApp.tasks.length !== 0 &&
