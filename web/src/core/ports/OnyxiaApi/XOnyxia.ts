@@ -89,6 +89,7 @@ export type XOnyxiaContext = {
         VAULT_TOP_DIR: string;
     };
     s3: {
+        isEnabled: boolean;
         AWS_ACCESS_KEY_ID: string;
         AWS_SECRET_ACCESS_KEY: string;
         AWS_SESSION_TOKEN: string;

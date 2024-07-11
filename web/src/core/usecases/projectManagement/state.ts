@@ -1,11 +1,11 @@
 import type { Project } from "core/ports/OnyxiaApi";
-import type { FormFieldValue } from "core/usecases/launcher/FormField";
 import { assert, type Equals } from "tsafe/assert";
 import {
     createUsecaseActions,
     createObjectThatThrowsIfAccessed
 } from "clean-architecture";
 import * as userConfigs from "core/usecases/userConfigs";
+import type { StringifyableAtomic } from "core/tools/Stringifyable";
 
 type State = {
     projects: Project[];
@@ -16,21 +16,20 @@ type State = {
 export type ProjectConfigs = {
     servicePassword: string;
     restorableConfigs: ProjectConfigs.RestorableServiceConfig[];
-    s3: {
-        customConfigs: ProjectConfigs.CustomS3Config[];
-        indexForXOnyxia: number | undefined;
-        indexForExplorer: number | undefined;
-    };
+    s3Configs: ProjectConfigs.S3Config[];
+    s3Config_defaultXOnyxia: { id: string } | "none" | undefined;
+    s3Config_explorer: { id: string } | "none" | undefined;
     clusterNotificationCheckoutTime: number;
 };
 
 export namespace ProjectConfigs {
-    export type CustomS3Config = {
+    export type S3Config = {
+        creationTime: number;
+        friendlyName: string;
         url: string;
-        region: string;
+        region: string | undefined;
         workingDirectoryPath: string;
         pathStyleAccess: boolean;
-        accountFriendlyName: string;
         credentials:
             | {
                   accessKeyId: string;
@@ -46,7 +45,10 @@ export namespace ProjectConfigs {
         catalogId: string;
         chartName: string;
         chartVersion: string;
-        formFieldsValueDifferentFromDefault: FormFieldValue[];
+        helmValuesPatch: {
+            path: (string | number)[];
+            value: StringifyableAtomic;
+        }[];
     };
 }
 

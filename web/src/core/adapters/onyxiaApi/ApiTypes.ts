@@ -1,5 +1,6 @@
 /* eslint-disable no-template-curly-in-string */
-import type { LocalizedString, JSONSchemaObject } from "core/ports/OnyxiaApi";
+import type { LocalizedString, JSONSchema } from "core/ports/OnyxiaApi";
+import type { ArrayOrNot } from "core/tools/ArrayOrNot";
 
 export type ApiTypes = {
     "/public/ip": {
@@ -79,7 +80,7 @@ export type ApiTypes = {
                 };
             };
             data?: {
-                S3?: {
+                S3?: ArrayOrNot<{
                     URL: string;
                     pathStyleAccess?: true;
 
@@ -112,7 +113,7 @@ export type ApiTypes = {
                               bucketNamePrefix: string;
                               bucketNamePrefixGroup: string;
                           };
-                };
+                }>;
             };
             vault?: {
                 URL: string;
@@ -170,7 +171,7 @@ export type ApiTypes = {
         }[];
     };
     "/public/catalogs/${catalogId}/charts/${chartName}/versions/${chartVersion}": {
-        config: JSONSchemaObject;
+        config: JSONSchema;
         sources?: string[];
         dependencies?: {
             name: string;

@@ -95,9 +95,9 @@ export default function Launcher(props: Props) {
             catalogId,
             chartName,
             version: chartVersion,
-            formFieldsValueDifferentFromDefault,
             "name": friendlyName,
-            shared: isShared
+            shared: isShared,
+            helmValuesPatch
         } = route.params;
 
         showSplashScreen({ "enableTransparency": true });
@@ -152,20 +152,15 @@ export default function Launcher(props: Props) {
                 .pipe(ctx)
                 .$attach(
                     event =>
-                        event.eventName === "initializationParamsChanged"
+                        event.eventName === "restorableServiceConfigChanged"
                             ? [event]
                             : null,
-                    ({
-                        chartVersion,
-                        formFieldsValueDifferentFromDefault,
-                        friendlyName,
-                        isShared
-                    }) =>
+                    ({ restorableServiceConfig }) =>
                         routeUpdateReplace({
-                            "version": chartVersion,
-                            "name": friendlyName,
-                            "shared": isShared,
-                            formFieldsValueDifferentFromDefault
+                            "version": restorableServiceConfig.chartVersion,
+                            "name": restorableServiceConfig.friendlyName,
+                            "shared": restorableServiceConfig.isShared,
+                            "helmValuesPatch": restorableServiceConfig.helmValuesPatch
                         })
                 )
                 .attach(

@@ -1,82 +1,83 @@
-import type { State as RootState } from "core/bootstrap";
 import { createSelector } from "clean-architecture";
 import * as projectManagement from "core/usecases/projectManagement";
 import * as deploymentRegionManagement from "core/usecases/deploymentRegionManagement";
 import * as userAuthentication from "core/usecases/userAuthentication";
-import { assert, type Equals } from "tsafe/assert";
+import * as s3ConfigConnectionTest from "core/usecases/s3ConfigConnectionTest";
 import { bucketNameAndObjectNameFromS3Path } from "core/adapters/s3Client/utils/bucketNameAndObjectNameFromS3Path";
-import { id } from "tsafe/id";
-import { name, type ConnectionTestStatus } from "./state";
+import type { ParamsOfCreateS3Client } from "core/adapters/s3Client";
+import { same } from "evt/tools/inDepth/same";
+import { getWorkingDirectoryPath } from "./utils/getWorkingDirectoryPath";
+import { getWorkingDirectoryBucketToCreate } from "./utils/getWorkingDirectoryBucket";
+import { fnv1aHashToHex } from "core/tools/fnv1aHashToHex";
 
-const state = (rootState: RootState) => rootState[name];
+export type S3Config = S3Config.FromDeploymentRegion | S3Config.FromProject;
 
-const projectS3Config = createSelector(
-    projectManagement.protectedSelectors.currentProjectConfigs,
-    currentProjectConfigs => currentProjectConfigs.s3
-);
+export namespace S3Config {
+    type Common = {
+        id: string;
+        dataSource: string;
+        region: string | undefined;
+        workingDirectoryPath: string;
+        paramsOfCreateS3Client: ParamsOfCreateS3Client;
+        isXOnyxiaDefault: boolean;
+        isExplorerConfig: boolean;
+        connectionTestStatus:
+            | { status: "not tested" }
+            | { status: "test ongoing" }
+            | { status: "test failed"; errorMessage: string }
+            | { status: "test succeeded" };
+    };
 
-const baseS3Config = createSelector(
-    deploymentRegionManagement.selectors.currentDeploymentRegion,
-    projectManagement.selectors.currentProject,
-    userAuthentication.selectors.user,
-    (deploymentRegion, project, user) => {
-        return {
-            "url": deploymentRegion.s3?.url ?? "",
-            "region": deploymentRegion.s3?.region ?? "",
-            "workingDirectoryPath": ((): string => {
-                const { workingDirectory } = deploymentRegion.s3 ?? {};
+    export type FromDeploymentRegion = Common & {
+        origin: "deploymentRegion";
+    };
 
-                if (workingDirectory === undefined) {
-                    return "";
-                }
-
-                // NOTE: This is the case when no workingDirectory is set in the config.
-                if (
-                    workingDirectory.bucketMode === "shared" &&
-                    workingDirectory.bucketName === ""
-                ) {
-                    return "";
-                }
-
-                return (
-                    (() => {
-                        switch (workingDirectory.bucketMode) {
-                            case "multi":
-                                return project.group === undefined
-                                    ? `${workingDirectory.bucketNamePrefix}${user.username}`
-                                    : `${workingDirectory.bucketNamePrefixGroup}${project.group}`;
-                            case "shared":
-                                return [
-                                    workingDirectory.bucketName,
-                                    project.group === undefined
-                                        ? `${workingDirectory.prefix}${user.username}`
-                                        : `${workingDirectory.prefixGroup}${project.group}`
-                                ].join("/");
-                        }
-                        assert<Equals<typeof workingDirectory, never>>(true);
-                    })()
-                        .trim()
-                        .replace(/\/\//g, "/") // Remove double slashes if any
-                        .replace(/^\//g, "") // Ensure no leading slash
-                        .replace(/\/+$/g, "") + "/"
-                ); // Enforce trailing slash
-            })(),
-            "pathStyleAccess": deploymentRegion.s3?.pathStyleAccess ?? true
-        };
-    }
-);
+    export type FromProject = Common & {
+        origin: "project";
+        creationTime: number;
+        friendlyName: string;
+    };
+}
 
 const s3Configs = createSelector(
-    baseS3Config,
-    projectS3Config,
-    deploymentRegionManagement.selectors.currentDeploymentRegion,
-    state,
-    (baseS3Config, projectS3Config, deploymentRegion, state) => {
-        function getDataSource(params: {
+    createSelector(
+        projectManagement.protectedSelectors.projectConfig,
+        projectConfig => projectConfig.s3Configs
+    ),
+    createSelector(
+        projectManagement.protectedSelectors.projectConfig,
+        projectConfig => projectConfig.s3Config_defaultXOnyxia
+    ),
+    createSelector(
+        projectManagement.protectedSelectors.projectConfig,
+        projectConfig => projectConfig.s3Config_explorer
+    ),
+    createSelector(
+        deploymentRegionManagement.selectors.currentDeploymentRegion,
+        deploymentRegion => deploymentRegion.s3Configs
+    ),
+    s3ConfigConnectionTest.protectedSelectors.configTestResults,
+    s3ConfigConnectionTest.protectedSelectors.ongoingConfigTests,
+    createSelector(userAuthentication.selectors.user, user => user.username),
+    createSelector(
+        projectManagement.protectedSelectors.project,
+        project => project.group
+    ),
+    (
+        s3ProjectConfigs,
+        s3Config_defaultXOnyxia,
+        s3Config_explorer,
+        s3RegionConfigs,
+        configTestResults,
+        ongoingConfigTests,
+        username,
+        projectGroup
+    ): S3Config[] => {
+        const getDataSource = (params: {
             url: string;
             pathStyleAccess: boolean;
             workingDirectoryPath: string;
-        }): string {
+        }): string => {
             const { url, pathStyleAccess, workingDirectoryPath } = params;
 
             let out = url;
@@ -91,53 +92,184 @@ const s3Configs = createSelector(
                 : `${bucketName}.${out}/${objectName}`;
 
             return out;
-        }
+        };
 
-        const s3Configs = projectS3Config.customConfigs.map((customS3Config, index) => ({
-            "customConfigIndex": id<number | undefined>(index),
-            "dataSource": getDataSource({
-                "url": customS3Config.url,
-                "pathStyleAccess": customS3Config.pathStyleAccess,
-                "workingDirectoryPath": customS3Config.workingDirectoryPath
-            }),
-            "region": customS3Config.region,
-            "accountFriendlyName": id<string | undefined>(
-                customS3Config.accountFriendlyName
-            ),
-            "isUsedForXOnyxia": projectS3Config.indexForXOnyxia === index,
-            "isUsedForExplorer": projectS3Config.indexForExplorer === index,
-            "connectionTestStatus": id<ConnectionTestStatus | undefined>(
-                state.connectionTestStatuses[index]
-            )
-        }));
+        const getConnectionTestStatus = (params: {
+            workingDirectoryPath: string;
+            paramsOfCreateS3Client: ParamsOfCreateS3Client;
+        }): S3Config["connectionTestStatus"] => {
+            const { workingDirectoryPath, paramsOfCreateS3Client } = params;
 
-        if (deploymentRegion.s3?.sts !== undefined) {
-            s3Configs.unshift({
-                "customConfigIndex": undefined,
-                "dataSource": getDataSource({
-                    "url": baseS3Config.url,
-                    "pathStyleAccess": baseS3Config.pathStyleAccess,
-                    "workingDirectoryPath": baseS3Config.workingDirectoryPath
-                }),
-                "region": baseS3Config.region,
-                "accountFriendlyName": undefined,
-                "isUsedForXOnyxia":
-                    s3Configs.find(({ isUsedForXOnyxia }) => isUsedForXOnyxia) ===
-                    undefined,
-                "isUsedForExplorer":
-                    s3Configs.find(({ isUsedForExplorer }) => isUsedForExplorer) ===
-                    undefined,
-                "connectionTestStatus": undefined
-            });
-        }
+            if (
+                ongoingConfigTests.find(
+                    e =>
+                        same(e.paramsOfCreateS3Client, paramsOfCreateS3Client) &&
+                        e.workingDirectoryPath === workingDirectoryPath
+                ) !== undefined
+            ) {
+                return { "status": "test ongoing" };
+            }
 
-        return s3Configs;
+            has_result: {
+                const { result } =
+                    configTestResults.find(
+                        e =>
+                            same(e.paramsOfCreateS3Client, paramsOfCreateS3Client) &&
+                            e.workingDirectoryPath === workingDirectoryPath
+                    ) ?? {};
+
+                if (result === undefined) {
+                    break has_result;
+                }
+
+                return result.isSuccess
+                    ? { "status": "test succeeded" }
+                    : { "status": "test failed", "errorMessage": result.errorMessage };
+            }
+
+            return { "status": "not tested" };
+        };
+
+        return [
+            ...s3ProjectConfigs
+                .map((c): S3Config.FromProject => {
+                    const id = `project-${c.creationTime}`;
+
+                    const workingDirectoryPath = c.workingDirectoryPath;
+                    const url = c.url;
+                    const pathStyleAccess = c.pathStyleAccess;
+                    const region = c.region;
+
+                    const paramsOfCreateS3Client: ParamsOfCreateS3Client.NoSts = {
+                        url,
+                        pathStyleAccess,
+                        isStsEnabled: false,
+                        region,
+                        credentials: c.credentials
+                    };
+
+                    return {
+                        "origin": "project",
+                        "creationTime": c.creationTime,
+                        "friendlyName": c.friendlyName,
+                        id,
+                        "dataSource": getDataSource({
+                            url,
+                            pathStyleAccess,
+                            workingDirectoryPath
+                        }),
+                        region,
+                        workingDirectoryPath,
+                        paramsOfCreateS3Client,
+                        "isXOnyxiaDefault": (() => {
+                            if (s3Config_defaultXOnyxia === "none") {
+                                return false;
+                            }
+
+                            if (s3Config_defaultXOnyxia === undefined) {
+                                return false;
+                            }
+
+                            return s3Config_defaultXOnyxia.id === id;
+                        })(),
+                        "isExplorerConfig": (() => {
+                            if (s3Config_explorer === "none") {
+                                return false;
+                            }
+
+                            if (s3Config_explorer === undefined) {
+                                return false;
+                            }
+
+                            return s3Config_explorer.id === id;
+                        })(),
+                        "connectionTestStatus": getConnectionTestStatus({
+                            paramsOfCreateS3Client,
+                            workingDirectoryPath
+                        })
+                    };
+                })
+                .sort((a, b) => b.creationTime - a.creationTime),
+            ...s3RegionConfigs.map((c): S3Config.FromDeploymentRegion => {
+                const id = `project-${fnv1aHashToHex(JSON.stringify(c))}`;
+
+                const workingDirectoryContext =
+                    projectGroup === undefined
+                        ? {
+                              "type": "personalProject" as const,
+                              username
+                          }
+                        : {
+                              "type": "groupProject" as const,
+                              projectGroup
+                          };
+
+                const workingDirectoryPath = getWorkingDirectoryPath({
+                    "workingDirectory": c.workingDirectory,
+                    "context": workingDirectoryContext
+                });
+                const url = c.url;
+                const pathStyleAccess = c.pathStyleAccess;
+                const region = c.region;
+
+                const paramsOfCreateS3Client: ParamsOfCreateS3Client.Sts = {
+                    url,
+                    pathStyleAccess,
+                    isStsEnabled: true,
+                    stsUrl: c.sts.url,
+                    region,
+                    oidcParams: c.sts.oidcParams,
+                    durationSeconds: c.sts.durationSeconds,
+                    role: c.sts.role,
+                    nameOfBucketToCreateIfNotExist: getWorkingDirectoryBucketToCreate({
+                        "workingDirectory": c.workingDirectory,
+                        "context": workingDirectoryContext
+                    })
+                };
+
+                return {
+                    "origin": "deploymentRegion",
+                    id,
+                    "dataSource": getDataSource({
+                        url,
+                        pathStyleAccess,
+                        workingDirectoryPath
+                    }),
+                    region,
+                    workingDirectoryPath,
+                    paramsOfCreateS3Client,
+                    "isXOnyxiaDefault": (() => {
+                        if (s3Config_defaultXOnyxia === "none") {
+                            return false;
+                        }
+
+                        if (s3Config_defaultXOnyxia === undefined) {
+                            // TODO: Set default to the first one
+                            return false;
+                        }
+
+                        return s3Config_defaultXOnyxia.id === id;
+                    })(),
+                    "isExplorerConfig": (() => {
+                        if (s3Config_explorer === "none") {
+                            return false;
+                        }
+
+                        if (s3Config_explorer === undefined) {
+                            // TODO: Set default to the first one
+                            return false;
+                        }
+
+                        return s3Config_explorer.id === id;
+                    })(),
+                    "connectionTestStatus": getConnectionTestStatus({
+                        paramsOfCreateS3Client,
+                        workingDirectoryPath
+                    })
+                };
+            })
+        ];
     }
 );
-
-export const protectedSelectors = {
-    projectS3Config,
-    baseS3Config
-};
 
 export const selectors = { s3Configs };

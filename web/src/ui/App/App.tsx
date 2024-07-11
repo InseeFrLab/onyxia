@@ -29,7 +29,7 @@ loadThemedFavicon();
 injectCustomFontFaceIfNotAlreadyDone();
 
 const { CoreProvider } = createCoreProvider({
-    "apiUrl": import.meta.env.ONYXIA_API_URL,
+    "apiUrl": env.ONYXIA_API_URL,
     "getCurrentLang": () => evtLang.state,
     "transformUrlBeforeRedirectToLogin": url =>
         [url]
