@@ -1,5 +1,6 @@
 import { assert, type Equals } from "tsafe/assert";
 import type { DeploymentRegion } from "core/ports/OnyxiaApi";
+import { getWorkingDirectoryBucketToCreate } from "./getWorkingDirectoryBucket";
 
 export function getWorkingDirectoryPath(params: {
     workingDirectory: DeploymentRegion.S3Config["workingDirectory"];
@@ -18,16 +19,14 @@ export function getWorkingDirectoryPath(params: {
     return (
         (() => {
             switch (workingDirectory.bucketMode) {
-                case "multi":
-                    return (() => {
-                        switch (context.type) {
-                            case "personalProject":
-                                return `${workingDirectory.bucketNamePrefix}${context.username}`;
-                            case "groupProject":
-                                return `${workingDirectory.bucketNamePrefixGroup}${context.projectGroup}`;
-                        }
-                        assert<Equals<typeof context, never>>(false);
-                    })();
+                case "multi": {
+                    const bucketName = getWorkingDirectoryBucketToCreate({
+                        workingDirectory,
+                        context
+                    });
+                    assert(bucketName !== undefined);
+                    return bucketName;
+                }
                 case "shared":
                     return [
                         workingDirectory.bucketName,

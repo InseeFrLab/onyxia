@@ -111,13 +111,54 @@ export const thunks = {
 const keys = [
     "servicePassword",
     "restorableConfigs",
-    "s3",
+    "s3Configs",
+    "s3ConfigId_defaultXOnyxia",
+    "s3ConfigId_explorer",
     "clusterNotificationCheckoutTime"
 ] as const;
 
 assert<Equals<(typeof keys)[number], keyof ProjectConfigs>>();
 
-export const privateThunks = {
+function getDefaultConfig<K extends keyof ProjectConfigs>(key_: K): ProjectConfigs[K] {
+    const key = key_ as keyof ProjectConfigs;
+    switch (key) {
+        case "servicePassword": {
+            const out: ProjectConfigs[typeof key] = generateRandomPassword();
+            // @ts-expect-error
+            return out;
+        }
+        case "restorableConfigs": {
+            const out: ProjectConfigs[typeof key] = [];
+            // @ts-expect-error
+            return out;
+        }
+        case "s3Configs": {
+            const out: ProjectConfigs[typeof key] = [];
+            // @ts-expect-error
+            return out;
+        }
+        case "s3ConfigId_defaultXOnyxia": {
+            // NOTE: When we will see that the id does not exist we will fallback
+            // to the default.
+            const out: ProjectConfigs[typeof key] = "";
+            // @ts-expect-error
+            return out;
+        }
+        case "s3ConfigId_explorer": {
+            const out: ProjectConfigs[typeof key] = "";
+            // @ts-expect-error
+            return out;
+        }
+        case "clusterNotificationCheckoutTime": {
+            const out: ProjectConfigs[typeof key] = 0;
+            // @ts-expect-error
+            return out;
+        }
+    }
+    assert<Equals<typeof key, never>>(false);
+}
+
+const privateThunks = {
     "__configMigration":
         (params: { projectVaultTopDirPath: string }) =>
         async (...args) => {
@@ -392,37 +433,6 @@ export const protectedThunks = {
             });
         }
 } satisfies Thunks;
-
-function getDefaultConfig<K extends keyof ProjectConfigs>(key_: K): ProjectConfigs[K] {
-    const key = key_ as keyof ProjectConfigs;
-    switch (key) {
-        case "servicePassword": {
-            const out: ProjectConfigs[typeof key] = generateRandomPassword();
-            // @ts-expect-error
-            return out;
-        }
-        case "restorableConfigs": {
-            const out: ProjectConfigs[typeof key] = [];
-            // @ts-expect-error
-            return out;
-        }
-        case "s3": {
-            const out: ProjectConfigs[typeof key] = {
-                "customConfigs": [],
-                "indexForExplorer": undefined,
-                "indexForXOnyxia": undefined
-            };
-            // @ts-expect-error
-            return out;
-        }
-        case "clusterNotificationCheckoutTime": {
-            const out: ProjectConfigs[typeof key] = 0;
-            // @ts-expect-error
-            return out;
-        }
-    }
-    assert<Equals<typeof key, never>>(false);
-}
 
 function valueToSecret(value: any): Secret {
     if (

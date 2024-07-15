@@ -9,6 +9,7 @@ import { same } from "evt/tools/inDepth/same";
 import { getWorkingDirectoryPath } from "./utils/getWorkingDirectoryPath";
 import { getWorkingDirectoryBucketToCreate } from "./utils/getWorkingDirectoryBucket";
 import { fnv1aHashToHex } from "core/tools/fnv1aHashToHex";
+import { assert, type Equals } from "tsafe/assert";
 
 export type S3Config = S3Config.FromDeploymentRegion | S3Config.FromProject;
 
@@ -46,11 +47,11 @@ const s3Configs = createSelector(
     ),
     createSelector(
         projectManagement.protectedSelectors.projectConfig,
-        projectConfig => projectConfig.s3Config_defaultXOnyxia
+        projectConfig => projectConfig.s3ConfigId_defaultXOnyxia
     ),
     createSelector(
         projectManagement.protectedSelectors.projectConfig,
-        projectConfig => projectConfig.s3Config_explorer
+        projectConfig => projectConfig.s3ConfigId_explorer
     ),
     createSelector(
         deploymentRegionManagement.selectors.currentDeploymentRegion,
@@ -65,8 +66,8 @@ const s3Configs = createSelector(
     ),
     (
         s3ProjectConfigs,
-        s3Config_defaultXOnyxia,
-        s3Config_explorer,
+        s3ConfigId_defaultXOnyxia,
+        s3ConfigId_explorer,
         s3RegionConfigs,
         configTestResults,
         ongoingConfigTests,
@@ -130,7 +131,7 @@ const s3Configs = createSelector(
             return { "status": "not tested" };
         };
 
-        return [
+        const s3Configs: S3Config[] = [
             ...s3ProjectConfigs
                 .map((c): S3Config.FromProject => {
                     const id = `project-${c.creationTime}`;
@@ -161,28 +162,8 @@ const s3Configs = createSelector(
                         region,
                         workingDirectoryPath,
                         paramsOfCreateS3Client,
-                        "isXOnyxiaDefault": (() => {
-                            if (s3Config_defaultXOnyxia === "none") {
-                                return false;
-                            }
-
-                            if (s3Config_defaultXOnyxia === undefined) {
-                                return false;
-                            }
-
-                            return s3Config_defaultXOnyxia.id === id;
-                        })(),
-                        "isExplorerConfig": (() => {
-                            if (s3Config_explorer === "none") {
-                                return false;
-                            }
-
-                            if (s3Config_explorer === undefined) {
-                                return false;
-                            }
-
-                            return s3Config_explorer.id === id;
-                        })(),
+                        "isXOnyxiaDefault": false,
+                        "isExplorerConfig": false,
                         "connectionTestStatus": getConnectionTestStatus({
                             paramsOfCreateS3Client,
                             workingDirectoryPath
@@ -191,7 +172,15 @@ const s3Configs = createSelector(
                 })
                 .sort((a, b) => b.creationTime - a.creationTime),
             ...s3RegionConfigs.map((c): S3Config.FromDeploymentRegion => {
-                const id = `project-${fnv1aHashToHex(JSON.stringify(c))}`;
+                const id = `region-${fnv1aHashToHex(
+                    JSON.stringify(
+                        Object.fromEntries(
+                            Object.entries(c).sort(([key1], [key2]) =>
+                                key1.localeCompare(key2)
+                            )
+                        )
+                    )
+                )}`;
 
                 const workingDirectoryContext =
                     projectGroup === undefined
@@ -238,30 +227,8 @@ const s3Configs = createSelector(
                     region,
                     workingDirectoryPath,
                     paramsOfCreateS3Client,
-                    "isXOnyxiaDefault": (() => {
-                        if (s3Config_defaultXOnyxia === "none") {
-                            return false;
-                        }
-
-                        if (s3Config_defaultXOnyxia === undefined) {
-                            // TODO: Set default to the first one
-                            return false;
-                        }
-
-                        return s3Config_defaultXOnyxia.id === id;
-                    })(),
-                    "isExplorerConfig": (() => {
-                        if (s3Config_explorer === "none") {
-                            return false;
-                        }
-
-                        if (s3Config_explorer === undefined) {
-                            // TODO: Set default to the first one
-                            return false;
-                        }
-
-                        return s3Config_explorer.id === id;
-                    })(),
+                    "isXOnyxiaDefault": false,
+                    "isExplorerConfig": false,
                     "connectionTestStatus": getConnectionTestStatus({
                         paramsOfCreateS3Client,
                         workingDirectoryPath
@@ -269,6 +236,37 @@ const s3Configs = createSelector(
                 };
             })
         ];
+
+        (
+            [
+                ["defaultXOnyxia", s3ConfigId_defaultXOnyxia],
+                ["explorer", s3ConfigId_explorer]
+            ] as const
+        ).forEach(([prop, s3ConfigId]) => {
+            if (s3ConfigId === undefined) {
+                return;
+            }
+
+            const s3Config =
+                s3Configs.find(({ id }) => id === s3ConfigId) ??
+                s3Configs.find(s3Config => s3Config.origin === "deploymentRegion");
+
+            if (s3Config === undefined) {
+                return;
+            }
+
+            switch (prop) {
+                case "defaultXOnyxia":
+                    s3Config.isXOnyxiaDefault = true;
+                    return;
+                case "explorer":
+                    s3Config.isExplorerConfig = true;
+                    return;
+            }
+            assert<Equals<typeof prop, never>>(false);
+        });
+
+        return s3Configs;
     }
 );
 

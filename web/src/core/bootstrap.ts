@@ -78,7 +78,8 @@ export async function bootstrapCore(
             }
 
             try {
-                return usecases.projectManagement.selectors.currentProject(getState()).id;
+                return usecases.projectManagement.protectedSelectors.project(getState())
+                    .id;
             } catch (error) {
                 if (error instanceof AccessError) {
                     return undefined;
@@ -189,7 +190,6 @@ export async function bootstrapCore(
             "url": deploymentRegion.vault.url,
             "authPath": deploymentRegion.vault.authPath,
             "oidc": await createOidcOrFallback({
-                "oidcAdapterImplementationToUseIfNotFallingBack": "default",
                 "oidcParams": deploymentRegion.vault.oidcParams,
                 "fallbackOidc": oidc
             })
