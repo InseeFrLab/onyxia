@@ -255,7 +255,14 @@ export function createOnyxiaApi(params: {
                             "certManagerClusterIssuer":
                                 apiRegion.services.expose.certManager
                                     ?.certManagerClusterIssuer
-                        }
+                        },
+                        "openshiftSCC":
+                            apiRegion.openshiftSCC === undefined
+                                ? undefined
+                                : {
+                                      "scc": apiRegion.openshiftSCC.scc,
+                                      "enabled": apiRegion.openshiftSCC.enabled
+                                  }
                     })
                 );
 

@@ -148,6 +148,12 @@ export type XOnyxiaContext = {
                   gpu?: `${number}`;
               }
             | undefined;
+        openshiftSCC:
+            | {
+                  scc: string;
+                  enabled: boolean;
+              }
+            | undefined;
     };
     k8s: {
         domain: string;

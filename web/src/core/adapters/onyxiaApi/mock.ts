@@ -39,7 +39,8 @@ export const onyxiaApi: OnyxiaApi = {
                         "certManager": {
                             "useCertManager": false,
                             "certManagerClusterIssuer": undefined
-                        }
+                        },
+                        "openshiftSCC": undefined
                     }
                 ],
                 "oidcParams": undefined

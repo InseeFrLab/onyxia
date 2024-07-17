@@ -140,6 +140,10 @@ export type ApiTypes = {
                 cacerts: string;
                 pathToCaBundle: string;
             };
+            openshiftSCC?: {
+                scc: string;
+                enabled: boolean;
+            };
         }[];
         oidcConfiguration?: {
             issuerURI: string;
