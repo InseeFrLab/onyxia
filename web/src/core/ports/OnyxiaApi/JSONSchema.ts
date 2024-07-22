@@ -25,6 +25,7 @@ export namespace JSONSchemaFormFieldDescription {
         hidden?:
             | boolean
             | {
+                  isPathRelative?: boolean;
                   value: string | boolean | number;
                   path: string;
               };

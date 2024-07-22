@@ -905,9 +905,15 @@ function getInitialFormFields(params: { valuesSchema: JSONSchemaObject }): {
                             return hidden;
                         }
 
+                        const { value, isPathRelative = false } = hidden;
+
+                        const splittedPath = hidden.path.split("/");
+
                         return {
-                            "path": hidden.path.split("/"),
-                            "value": hidden.value
+                            "path": isPathRelative
+                                ? [...currentPath, ...splittedPath]
+                                : splittedPath,
+                            value
                         };
                     })()
                 });
