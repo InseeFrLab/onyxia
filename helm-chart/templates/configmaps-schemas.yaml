@@ -3,7 +3,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: json-config-{{ .relativePath | sha256sum | trunc 8 }}
+  name: {{ template "onyxia.fullname" . }}-{{ .relativePath | sha256sum | trunc 8 }}
 data:
   {{ .relativePath | base }}: |-
 {{ .content | indent 4 }}
