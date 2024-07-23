@@ -3,13 +3,14 @@ import { assert } from "tsafe/assert";
 import type { JSONSchema } from "core/ports/OnyxiaApi";
 import type { LocalizedString } from "core/ports/OnyxiaApi";
 import { createUsecaseActions } from "clean-architecture";
-import { FormFieldValue } from "./formTypes";
+import type { FormFieldValue } from "./formTypes";
 import {
     type StringifyableObject,
     type StringifyableAtomic,
     assignValueAtPath
 } from "core/tools/Stringifyable";
-import type { ProjectConfigs } from "core/usecases/projectManagement";
+import structuredClone from "@ungap/structured-clone";
+import type { Omit } from "core/tools/Omit";
 
 type State = State.NotInitialized | State.Ready;
 
@@ -21,32 +22,38 @@ export declare namespace State {
 
     export type Ready = {
         stateDescription: "ready";
-        friendlyName: string;
-        isShared: boolean | undefined;
-        chartIconUrl: string | undefined;
         catalogId: string;
-        catalogName: LocalizedString;
-        catalogRepositoryUrl: string;
         chartName: string;
         chartVersion: string;
-        // NOTE: Just for knowing if we need to display --version in the helm command bar
-        defaultChartVersion: string;
-        k8sRandomSubdomain: string;
-        chartSourceUrls: string[];
-        availableChartVersions: string[];
-        s3Options: {
-            optionValue: string;
-            isSts: boolean;
-            helmValuesPatch: {
-                helmValuesPath: (string | number)[];
-                value: StringifyableAtomic;
-            }[];
-            dataSource: string;
-            friendlyName: string | undefined;
+        chartVersion_default: string;
+
+        friendlyName: string;
+        friendlyName_default: string;
+        isShared: boolean | undefined;
+        isShared_default: boolean | undefined;
+        s3Config:
+            | { isChartUsingS3: false }
+            | {
+                  isChartUsingS3: true;
+                  s3ConfigId: string | undefined;
+                  s3ConfigId_default: string | undefined;
+              };
+
+        helmDependencies: {
+            helmRepositoryUrl: string;
+            chartName: string;
+            chartVersion: string;
         }[];
         helmValuesSchema: JSONSchema;
-        defaultHelmValues: StringifyableObject;
+        helmValues_default: StringifyableObject;
         helmValues: StringifyableObject;
+
+        chartIconUrl: string | undefined;
+        catalogRepositoryUrl: string;
+        catalogName: LocalizedString;
+        k8sRandomSubdomain: string;
+        helmChartSourceUrls: string[];
+        availableChartVersions: string[];
     };
 }
 
@@ -72,95 +79,27 @@ export const { reducer, actions } = createUsecaseActions({
                     payload
                 }: {
                     payload: {
-                        friendlyName: string;
-                        chartIconUrl: string | undefined;
-                        catalogId: string;
-                        catalogName: LocalizedString;
-                        catalogRepositoryUrl: string;
-                        chartName: string;
-                        defaultChartVersion: string;
-                        k8sRandomSubdomain: string;
-                        chartSourceUrls: string[];
-                        availableChartVersions: string[];
-                        s3Options: State.Ready["s3Options"];
-                        selectedS3OptionValue: string | undefined;
-                        helmValuesSchema: JSONSchema;
-                        defaultHelmValues: StringifyableObject;
-                        isPersonalProject: boolean;
-                        restorableConfig:
-                            | Pick<
-                                  ProjectConfigs.RestorableServiceConfig,
-                                  | "isShared"
-                                  | "chartVersion"
-                                  | "friendlyName"
-                                  | "helmValuesPatch"
-                              >
-                            | undefined;
+                        readyState: Omit<State.Ready, "stateDescription" | "helmValues">;
+                        helmValuesPatch: {
+                            path: (string | number)[];
+                            value: StringifyableAtomic;
+                        }[];
                     };
                 }
             ) => {
-                const {
-                    friendlyName,
-                    chartIconUrl,
-                    catalogId,
-                    catalogName,
-                    catalogRepositoryUrl,
-                    chartName,
-                    defaultChartVersion,
-                    k8sRandomSubdomain,
-                    chartSourceUrls,
-                    availableChartVersions,
-                    s3Options,
-                    selectedS3OptionValue,
-                    helmValuesSchema,
-                    defaultHelmValues,
-                    isPersonalProject,
-                    restorableConfig
-                } = payload;
+                const { readyState: readyState_partial, helmValuesPatch } = payload;
 
                 const state: State.Ready = {
                     "stateDescription": "ready",
-                    "friendlyName": restorableConfig?.friendlyName ?? friendlyName,
-                    "isShared":
-                        restorableConfig?.isShared ?? isPersonalProject
-                            ? undefined
-                            : false,
-                    chartIconUrl,
-                    catalogId,
-                    catalogName,
-                    catalogRepositoryUrl,
-                    chartName,
-                    "chartVersion": restorableConfig?.chartVersion ?? defaultChartVersion,
-                    defaultChartVersion,
-                    k8sRandomSubdomain,
-                    chartSourceUrls,
-                    availableChartVersions,
-                    s3Options,
-                    helmValuesSchema,
-                    defaultHelmValues,
-                    "helmValues": defaultHelmValues
+                    ...readyState_partial,
+                    "helmValues": structuredClone(readyState_partial.helmValues_default)
                 };
 
-                if (selectedS3OptionValue !== undefined) {
-                    reducers.selectedS3OptionChanged(state, {
-                        "payload": {
-                            selectedS3OptionValue
-                        }
-                    });
-                }
-
-                if (restorableConfig !== undefined) {
-                    restorableConfig.helmValuesPatch.forEach(({ path, value }) =>
-                        assignValueAtPath(state.helmValues, path, value)
-                    );
-                }
+                helmValuesPatch.forEach(({ path, value }) =>
+                    assignValueAtPath(state.helmValues, path, value)
+                );
 
                 return state;
-            },
-            "allDefaultRestored": state => {
-                assert(state.stateDescription === "ready");
-                state.helmValues = state.defaultHelmValues;
-                state.chartVersion = state.defaultChartVersion;
             },
             "formFieldValueChanged": (
                 state,
@@ -178,6 +117,9 @@ export const { reducer, actions } = createUsecaseActions({
 
                 const { helmValues, helmValuesSchema } = state;
 
+                console.log({ helmValues, helmValuesSchema });
+                // TODO: Implement this
+
                 /*
                 (function callee(path, object: any){
 
@@ -194,30 +136,6 @@ export const { reducer, actions } = createUsecaseActions({
 
                 })(helmValuesPath, state.helmValues);
                 */
-            },
-            "selectedS3OptionChanged": (
-                state,
-                {
-                    payload
-                }: {
-                    payload: {
-                        selectedS3OptionValue: string;
-                    };
-                }
-            ) => {
-                assert(state.stateDescription === "ready");
-
-                const { selectedS3OptionValue } = payload;
-
-                const option = state.s3Options.find(
-                    option => option.optionValue === selectedS3OptionValue
-                );
-
-                assert(option !== undefined);
-
-                option.helmValuesPatch.forEach(({ helmValuesPath, value }) =>
-                    assignValueAtPath(state.helmValues, helmValuesPath, value)
-                );
             },
             "resetToNotInitialized": () =>
                 id<State.NotInitialized>({

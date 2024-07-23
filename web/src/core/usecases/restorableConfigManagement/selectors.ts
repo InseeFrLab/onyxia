@@ -3,6 +3,9 @@ import type { State as RootState } from "core/bootstrap";
 import { name } from "./state";
 import * as projectManagement from "core/usecases/projectManagement";
 
+export type RestorableServiceConfig =
+    projectManagement.ProjectConfigs.RestorableServiceConfig;
+
 function state(rootState: RootState) {
     return rootState[name];
 }

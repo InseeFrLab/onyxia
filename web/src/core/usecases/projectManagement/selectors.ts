@@ -9,7 +9,7 @@ const state = (rootState: RootState) => rootState[name];
 const projectConfig = createSelector(state, state => state.currentProjectConfigs);
 
 export const protectedSelectors = {
-    "project": createSelector(state, (state): Project => {
+    "currentProject": createSelector(state, (state): Project => {
         const { projects, selectedProjectId } = state;
 
         const project = projects.find(({ id }) => id === selectedProjectId);

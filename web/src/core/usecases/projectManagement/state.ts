@@ -45,6 +45,7 @@ export namespace ProjectConfigs {
         catalogId: string;
         chartName: string;
         chartVersion: string;
+        s3ConfigId: string | undefined;
         helmValuesPatch: {
             path: (string | number)[];
             value: StringifyableAtomic;

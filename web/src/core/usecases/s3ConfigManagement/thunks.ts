@@ -2,6 +2,10 @@ import type { Thunks } from "core/bootstrap";
 import { selectors } from "./selectors";
 import * as projectManagement from "core/usecases/projectManagement";
 import { assert, type Equals } from "tsafe/assert";
+import { type S3Client } from "core/ports/S3Client";
+import { createOidcOrFallback } from "core/adapters/oidc/utils/createOidcOrFallback";
+import { createUsecaseContextApi } from "clean-architecture";
+import type { StringifyableObject } from "core/tools/Stringifyable";
 
 export const thunks = {} satisfies Thunks;
 
@@ -39,5 +43,53 @@ export const protectedThunks = {
                     }
                 )
             );
+        },
+    "getS3ClientForSpecificConfig":
+        (params: { s3ConfigId: string | undefined }) =>
+        async (...args): Promise<S3Client> => {
+            const { s3ConfigId } = params;
+            const [, getState, rootContext] = args;
+
+            const { s3ClientByConfigId } = getContext(rootContext);
+
+            const s3Config = (() => {
+                const s3Configs = selectors.s3Configs(getState());
+
+                const s3Config = s3Configs.find(s3Config => s3Config.id === s3ConfigId);
+                assert(s3Config !== undefined);
+
+                return s3Config;
+            })();
+
+            use_cached_s3Client: {
+                const s3Client = s3ClientByConfigId.get(s3Config.id);
+
+                if (s3Client === undefined) {
+                    break use_cached_s3Client;
+                }
+
+                return s3Client;
+            }
+
+            const { createS3Client } = await import("core/adapters/s3Client");
+
+            const { oidc } = rootContext;
+
+            assert(oidc.isUserLoggedIn);
+
+            const s3Client = createS3Client(s3Config.paramsOfCreateS3Client, oidcParams =>
+                createOidcOrFallback({
+                    oidcParams,
+                    "fallbackOidc": oidc
+                })
+            );
+
+            s3ClientByConfigId.set(s3Config.id, s3Client);
+
+            return s3Client;
         }
 } satisfies Thunks;
+
+const { getContext } = createUsecaseContextApi(() => ({
+    "s3ClientByConfigId": new Map<string, S3Client>()
+}));

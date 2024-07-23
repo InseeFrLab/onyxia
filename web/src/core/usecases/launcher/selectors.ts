@@ -14,7 +14,9 @@ import {
     readValueAtPath,
     getIsAtomic
 } from "core/tools/Stringifyable";
-import { same } from "evt/tools/inDepth/same";
+import * as s3ConfigManagement from "core/usecases/s3ConfigManagement";
+import type { RestorableServiceConfig } from "core/usecases/restorableConfigManagement";
+import { id } from "tsafe/id";
 
 const readyState = (rootState: RootState) => {
     const state = rootState[name];
@@ -43,14 +45,6 @@ const friendlyName = createSelector(readyState, state => {
     return state.friendlyName;
 });
 
-const helmValuesSchema = createSelector(readyState, state => {
-    if (state === null) {
-        return null;
-    }
-
-    return state.helmValuesSchema;
-});
-
 const helmValues = createSelector(readyState, state => {
     if (state === null) {
         return null;
@@ -61,15 +55,30 @@ const helmValues = createSelector(readyState, state => {
 
 const formFieldGroup = createSelector(
     isReady,
-    helmValuesSchema,
+    createSelector(readyState, state => {
+        if (state === null) {
+            return null;
+        }
+
+        return state.helmValuesSchema;
+    }),
     helmValues,
-    (isReady, helmValuesSchema, helmValues) => {
+    createSelector(readyState, state => {
+        if (state === null) {
+            return null;
+        }
+
+        return state.helmDependencies;
+    }),
+
+    (isReady, helmValuesSchema, helmValues, helmDependencies) => {
         if (!isReady) {
             return null;
         }
 
         assert(helmValuesSchema !== null);
         assert(helmValues !== null);
+        assert(helmDependencies !== null);
 
         // TODO
         return null as any as FormFieldGroup;
@@ -124,72 +133,42 @@ const chartVersion = createSelector(readyState, state => {
     return state.chartVersion;
 });
 
-const groupProjectName = createSelector(
-    projectManagement.selectors.currentProject,
-    currentProject =>
-        currentProject.group === undefined ? undefined : currentProject.name
-);
-
-const s3Options = createSelector(readyState, state => {
-    if (state === null) {
-        return null;
-    }
-
-    return state.s3Options;
-});
-
-const selectedS3OptionValue = createSelector(
-    isReady,
-    s3Options,
-    helmValues,
-    (isReady, s3Options, helmValues) => {
-        if (!isReady) {
-            return null;
-        }
-
-        assert(s3Options !== null);
-        assert(helmValues !== null);
-
-        return s3Options.find(option => {
-            for (const { helmValuesPath, value } of option.helmValuesPatch) {
-                if (readValueAtPath(helmValues, helmValuesPath) !== value) {
-                    return false;
-                }
-            }
-            return true;
-        })?.optionValue;
-    }
-);
-
 const s3ConfigSelect = createSelector(
+    s3ConfigManagement.selectors.s3Configs,
     isReady,
-    s3Options,
-    selectedS3OptionValue,
-    (isReady, s3Options, selectedS3OptionValue) => {
+    createSelector(readyState, state => {
+        if (state === null) {
+            return null;
+        }
+        return state.s3Config;
+    }),
+    (s3Configs, isReady, s3Config) => {
         if (!isReady) {
             return null;
         }
 
-        assert(s3Options !== null);
-        assert(selectedS3OptionValue !== null);
+        assert(s3Config !== null);
 
-        // We don't display the s3 config selector if there is no config or only one
-        if (s3Options.length <= 1) {
+        // If the chart at hand does not use s3, we don't display the s3 config selector
+        if (!s3Config.isChartUsingS3) {
             return undefined;
         }
 
-        // If the chart at hand does not use s3, we don't display the s3 config selector
-        if (s3Options[0].helmValuesPatch.length === 0) {
+        // We don't display the s3 config selector if there is no config or only one
+        if (s3Configs.length <= 1) {
             return undefined;
         }
 
         return {
-            "options": s3Options.map(option => ({
-                "optionValue": option.optionValue,
-                "dataSource": option.dataSource,
-                "accountFriendlyName": option.accountFriendlyName
+            "options": s3Configs.map(s3Config => ({
+                "optionValue": s3Config.id,
+                "label": {
+                    "dataSource": s3Config.dataSource,
+                    "friendlyName":
+                        s3Config.origin === "project" ? s3Config.friendlyName : undefined
+                }
             })),
-            "selectedOptionValue": selectedS3OptionValue
+            "selectedOptionValue": s3Config.s3ConfigId
         };
     }
 );
@@ -202,14 +181,6 @@ const isShared = createSelector(readyState, state => {
     return state.isShared;
 });
 
-const defaultHelmValues = createSelector(readyState, state => {
-    if (state === null) {
-        return null;
-    }
-
-    return state.helmValues;
-});
-
 const restorableConfig = createSelector(
     isReady,
     friendlyName,
@@ -217,10 +188,20 @@ const restorableConfig = createSelector(
     catalogId,
     chartName,
     chartVersion,
+    createSelector(readyState, state => {
+        if (state === null) {
+            return null;
+        }
+        return state.s3Config.isChartUsingS3 ? state.s3Config.s3ConfigId : undefined;
+    }),
     helmValues,
-    defaultHelmValues,
-    s3Options,
-    selectedS3OptionValue,
+    createSelector(readyState, state => {
+        if (state === null) {
+            return null;
+        }
+
+        return state.helmValues_default;
+    }),
     (
         isReady,
         friendlyName,
@@ -228,11 +209,10 @@ const restorableConfig = createSelector(
         catalogId,
         chartName,
         chartVersion,
+        s3ConfigId,
         helmValues,
-        defaultHelmValues,
-        s3Options,
-        selectedS3OptionValue
-    ): projectManagement.ProjectConfigs.RestorableServiceConfig | null => {
+        helmValues_default
+    ): RestorableServiceConfig | null => {
         if (!isReady) {
             return null;
         }
@@ -242,40 +222,18 @@ const restorableConfig = createSelector(
         assert(isShared !== null);
         assert(chartName !== null);
         assert(chartVersion !== null);
+        assert(s3ConfigId !== null);
         assert(helmValues !== null);
-        assert(defaultHelmValues !== null);
-        assert(s3Options !== null);
-        assert(selectedS3OptionValue !== null);
+        assert(helmValues_default !== null);
 
         const helmValuesPatch: {
             path: (string | number)[];
             value: StringifyableAtomic;
         }[] = [];
 
-        const s3StsHelmValuesPaths = (() => {
-            if (selectedS3OptionValue === undefined) {
-                return [];
-            }
-
-            const s3Option = s3Options.find(
-                option => option.optionValue === selectedS3OptionValue
-            );
-
-            assert(s3Option !== undefined);
-
-            if (!s3Option.isSts) {
-                return [];
-            }
-
-            return s3Option.helmValuesPatch.map(({ helmValuesPath }) => helmValuesPath);
-        })();
-
         (function crawl(value: Stringifyable, path: (string | number)[]) {
             if (getIsAtomic(value)) {
-                if (readValueAtPath(defaultHelmValues, path) !== value) {
-                    if (s3StsHelmValuesPaths.some(s3Path => same(s3Path, path))) {
-                        return;
-                    }
+                if (readValueAtPath(helmValues_default, path) !== value) {
                     helmValuesPatch.push({
                         path,
                         "value": value
@@ -293,11 +251,12 @@ const restorableConfig = createSelector(
         })(helmValues, []);
 
         return {
-            friendlyName,
             catalogId,
-            isShared,
             chartName,
+            friendlyName,
+            isShared,
             chartVersion,
+            s3ConfigId,
             helmValuesPatch
         };
     }
@@ -325,28 +284,55 @@ const isRestorableConfigSaved = createSelector(
     }
 );
 
-const defaultChartVersion = createSelector(readyState, state => {
-    if (state === null) {
-        return null;
-    }
-
-    return state.defaultChartVersion;
-});
-
 const isDefaultConfiguration = createSelector(
     isReady,
-    defaultChartVersion,
+    createSelector(readyState, state => {
+        if (state === null) {
+            return null;
+        }
+        return state.friendlyName_default;
+    }),
+    createSelector(readyState, state => {
+        if (state === null) {
+            return null;
+        }
+        return state.chartVersion_default;
+    }),
+    createSelector(readyState, state => {
+        if (state === null) {
+            return null;
+        }
+        return state.isShared_default;
+    }),
+    createSelector(readyState, state => {
+        if (state === null) {
+            return null;
+        }
+        const { s3Config } = state;
+        return s3Config.isChartUsingS3 ? s3Config.s3ConfigId_default : undefined;
+    }),
     restorableConfig,
-    (isReady, defaultChartVersion, restorableConfig) => {
+    (
+        isReady,
+        friendlyName_default,
+        chartVersion_default,
+        isShared_default,
+        s3ConfigId_default,
+        restorableConfig
+    ) => {
         if (!isReady) {
             return null;
         }
-        assert(defaultChartVersion !== null);
+        assert(friendlyName_default !== null);
+        assert(chartVersion_default !== null);
+        assert(isShared_default !== null);
+        assert(s3ConfigId_default !== null);
         assert(restorableConfig !== null);
 
         return (
-            restorableConfig.chartVersion === defaultChartVersion &&
-            restorableConfig.isShared !== true &&
+            restorableConfig.chartVersion === chartVersion_default &&
+            restorableConfig.isShared === isShared_default &&
+            restorableConfig.friendlyName === friendlyName_default &&
             restorableConfig.helmValuesPatch.length === 0
         );
     }
@@ -378,17 +364,22 @@ const launchCommands = createSelector(
     catalogId,
     chartName,
     chartVersion,
-    defaultChartVersion,
+    createSelector(readyState, state => {
+        if (state === null) {
+            return null;
+        }
+        return state.chartVersion_default;
+    }),
     catalogRepositoryUrl,
     helmReleaseName,
     helmValues,
-    projectManagement.selectors.currentProject,
+    projectManagement.protectedSelectors.currentProject,
     (
         isReady,
         catalogId,
         chartName,
         chartVersion,
-        defaultChartVersion,
+        chartVersion_default,
         catalogRepositoryUrl,
         helmReleaseName,
         helmValues,
@@ -401,7 +392,7 @@ const launchCommands = createSelector(
         assert(catalogId !== null);
         assert(chartName !== null);
         assert(chartVersion !== null);
-        assert(defaultChartVersion !== null);
+        assert(chartVersion_default !== null);
         assert(catalogRepositoryUrl !== null);
         assert(helmReleaseName !== null);
         assert(helmValues !== null);
@@ -414,7 +405,7 @@ const launchCommands = createSelector(
                 currentProject.group === undefined
                     ? undefined
                     : `--namespace ${currentProject.namespace}`,
-                chartVersion === defaultChartVersion
+                chartVersion === chartVersion_default
                     ? undefined
                     : `--version ${chartVersion}`,
                 `-f values.yaml`
@@ -465,17 +456,17 @@ const commandLogsEntries = createSelector(
     }
 );
 
-export type SourceUrls = {
+export type LabeledHelmChartSourceUrls = {
     helmChartSourceUrl: string | undefined;
     helmChartRepositorySourceUrl: string | undefined;
     dockerImageSourceUrl: string | undefined;
 };
 
-const sourceUrls = createSelector(readyState, state => {
+const labeledHelmChartSourceUrls = createSelector(readyState, state => {
     if (state === null) {
         return null;
     }
-    const { chartSourceUrls } = state;
+    const { helmChartSourceUrls } = state;
 
     const chartRepositoryName = (
         state.catalogRepositoryUrl
@@ -488,7 +479,7 @@ const sourceUrls = createSelector(readyState, state => {
     const chartName = state.chartName.toLowerCase();
 
     const helmChartSourceUrl = (() => {
-        const candidates = chartSourceUrls
+        const candidates = helmChartSourceUrls
             .map(url => url.toLowerCase())
             .filter(url => url.includes(chartRepositoryName) && url.includes(chartName));
 
@@ -520,7 +511,7 @@ const sourceUrls = createSelector(readyState, state => {
             return candidate;
         }
 
-        const candidates = chartSourceUrls
+        const candidates = helmChartSourceUrls
             .map(url => url.toLowerCase())
             .filter(url => url !== helmChartSourceUrl)
             .filter(url => url.includes(chartRepositoryName));
@@ -528,17 +519,15 @@ const sourceUrls = createSelector(readyState, state => {
         return candidates.find(url => url.includes("helm")) ?? candidates.shift();
     })();
 
-    const sourceUrls: SourceUrls = {
+    return id<LabeledHelmChartSourceUrls>({
         helmChartSourceUrl,
         helmChartRepositorySourceUrl,
-        "dockerImageSourceUrl": chartSourceUrls
+        "dockerImageSourceUrl": helmChartSourceUrls
             .map(url => url.toLowerCase())
             .filter(url => url !== helmChartSourceUrl)
             .filter(url => url !== helmChartRepositorySourceUrl)
             .find(url => url.includes("image") || url.includes("docker"))
-    };
-
-    return sourceUrls;
+    });
 });
 
 const availableChartVersions = createSelector(readyState, state => {
@@ -581,6 +570,12 @@ const willOverwriteExistingConfigOnSave = createSelector(
     }
 );
 
+const groupProjectName = createSelector(
+    projectManagement.protectedSelectors.currentProject,
+    currentProject =>
+        currentProject.group === undefined ? undefined : currentProject.name
+);
+
 const main = createSelector(
     isReady,
     friendlyName,
@@ -600,7 +595,7 @@ const main = createSelector(
     commandLogsEntries,
     groupProjectName,
     s3ConfigSelect,
-    sourceUrls,
+    labeledHelmChartSourceUrls,
     (
         isReady,
         friendlyName,
@@ -620,7 +615,7 @@ const main = createSelector(
         commandLogsEntries,
         groupProjectName,
         s3ConfigSelect,
-        sourceUrls
+        labeledHelmChartSourceUrls
     ) => {
         if (!isReady) {
             return {
@@ -645,7 +640,7 @@ const main = createSelector(
         assert(commandLogsEntries !== null);
         assert(groupProjectName !== null);
         assert(s3ConfigSelect !== null);
-        assert(sourceUrls !== null);
+        assert(labeledHelmChartSourceUrls !== null);
 
         return {
             "isReady": true as const,
@@ -666,7 +661,7 @@ const main = createSelector(
             commandLogsEntries,
             groupProjectName,
             s3ConfigSelect,
-            sourceUrls
+            labeledHelmChartSourceUrls
         };
     }
 );
@@ -675,5 +670,11 @@ export const selectors = { main };
 
 export const privateSelectors = {
     helmReleaseName,
-    restorableConfig
+    restorableConfig,
+    "helmValues": createSelector(readyState, state => {
+        if (state === null) {
+            return null;
+        }
+        return state.helmValues;
+    })
 };

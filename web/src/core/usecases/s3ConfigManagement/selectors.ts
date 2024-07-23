@@ -61,7 +61,7 @@ const s3Configs = createSelector(
     s3ConfigConnectionTest.protectedSelectors.ongoingConfigTests,
     createSelector(userAuthentication.selectors.user, user => user.username),
     createSelector(
-        projectManagement.protectedSelectors.project,
+        projectManagement.protectedSelectors.currentProject,
         project => project.group
     ),
     (
