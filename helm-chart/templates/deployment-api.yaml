@@ -79,9 +79,10 @@ spec:
           volumeMounts:
             {{- if .Values.api.schemas.enabled }}
             {{- $path := .Values.api.schemas.rootPath -}}
+            {{- $fullname := include "onyxia.fullname" . -}}
             {{- range .Values.api.schemas.files }}
-            - name: {{ template "onyxia.fullname" . }}-{{ .relativePath | sha256sum | trunc 8 }}
-              mountPath: {{ $path}}{{ .relativePath }}
+            - name: {{ $fullname }}-{{ .relativePath | sha256sum | trunc 8 }}
+              mountPath: {{ $path }}{{ .relativePath }}
               subPath: {{ .relativePath | base }}
             {{- end }}
             {{- end }}
@@ -104,10 +105,11 @@ spec:
       {{- if or .Values.api.schemas.enabled .Values.api.extraVolumes }}
       volumes:
         {{- if .Values.api.schemas.enabled }}
+        {{- $fullname := include "onyxia.fullname" . -}}
         {{- range .Values.api.schemas.files }}
-        - name: {{ template "onyxia.fullname" . }}-{{ .relativePath | sha256sum | trunc 8 }}
+        - name: {{ $fullname }}-{{ .relativePath | sha256sum | trunc 8 }}
           configMap:
-            name: {{ template "onyxia.fullname" . }}-{{ .relativePath | sha256sum | trunc 8 }}
+            name: {{ $fullname }}-{{ .relativePath | sha256sum | trunc 8 }}
         {{- end }}
         {{- end }}
         {{- if .Values.api.extraVolumes }}

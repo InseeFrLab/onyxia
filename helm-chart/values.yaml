@@ -165,7 +165,7 @@ api:
 
   schemas:
     enabled: false
-    rootPath: /schemas
+    rootPath: /schemas/
     files: []
       # - relativePath: nodeSelector.json
       #   content: |
