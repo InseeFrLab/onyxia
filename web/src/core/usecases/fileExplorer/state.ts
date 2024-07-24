@@ -90,7 +90,9 @@ export const { reducer, actions } = createUsecaseActions({
             s3FileBeingUploaded.uploadPercent = uploadPercent;
 
             if (
-                !!s3FilesBeingUploaded.find(({ uploadPercent }) => uploadPercent !== 100)
+                s3FilesBeingUploaded.find(
+                    ({ uploadPercent }) => uploadPercent !== 100
+                ) !== undefined
             ) {
                 return;
             }

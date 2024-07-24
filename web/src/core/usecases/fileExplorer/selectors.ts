@@ -2,10 +2,9 @@ import type { State as RootState } from "core/bootstrap";
 import memoize from "memoizee";
 import { type State, name } from "./state";
 import { createSelector } from "clean-architecture";
-import * as deploymentRegionManagement from "core/usecases/deploymentRegionManagement";
 import * as userConfigs from "core/usecases/userConfigs";
-import * as userAuthentication from "core/usecases/userAuthentication";
 import * as s3ConfigManagement from "core/usecases/s3ConfigManagement";
+import { assert } from "tsafe/assert";
 
 const state = (rootState: RootState): State => rootState[name];
 
@@ -59,10 +58,14 @@ type CurrentWorkingDirectoryView = {
 };
 
 const currentWorkingDirectoryView = createSelector(
-    state,
-    (state): CurrentWorkingDirectoryView | undefined => {
-        const { directoryPath, directoryItems, ongoingOperations } = state;
-
+    createSelector(state, state => state.directoryPath),
+    createSelector(state, state => state.directoryItems),
+    createSelector(state, state => state.ongoingOperations),
+    (
+        directoryPath,
+        directoryItems,
+        ongoingOperations
+    ): CurrentWorkingDirectoryView | undefined => {
         if (directoryPath === undefined) {
             return undefined;
         }
@@ -107,26 +110,15 @@ const currentWorkingDirectoryView = createSelector(
 const isNavigationOngoing = createSelector(state, state => state.isNavigationOngoing);
 
 const workingDirectoryPath = createSelector(
-    s3ConfigManagement.protectedSelectors.projectS3Config,
-    s3ConfigManagement.protectedSelectors.baseS3Config,
-    (projectS3Config, baseS3Config) => {
-        from_project_configs: {
-            const { indexForExplorer, customConfigs } = projectS3Config;
-
-            if (indexForExplorer === undefined) {
-                break from_project_configs;
-            }
-
-            return customConfigs[indexForExplorer].workingDirectoryPath;
-        }
-
-        return baseS3Config.workingDirectoryPath;
+    s3ConfigManagement.selectors.s3Configs,
+    s3Configs => {
+        const s3Config = s3Configs.find(s3Config => s3Config.isExplorerConfig);
+        assert(s3Config !== undefined);
+        return s3Config.workingDirectoryPath;
     }
 );
 
 const pathMinDepth = createSelector(workingDirectoryPath, workingDirectoryPath => {
-    console.log("workingDirectoryPath", workingDirectoryPath);
-
     // "jgarrone/" -> 0
     // "jgarrone/foo/" -> 1
     // "jgarrone/foo/bar/" -> 2
@@ -167,26 +159,10 @@ const main = createSelector(
     }
 );
 
-const isFileExplorerEnabled = (rootState: RootState) => {
-    const deploymentRegion =
-        deploymentRegionManagement.selectors.currentDeploymentRegion(rootState);
-
-    if (deploymentRegion.s3?.sts !== undefined) {
-        return true;
-    }
-
-    const { isUserLoggedIn } =
-        userAuthentication.selectors.authenticationState(rootState);
-
-    if (!isUserLoggedIn) {
-        return false;
-    }
-
-    const { indexForExplorer } =
-        s3ConfigManagement.protectedSelectors.projectS3Config(rootState);
-
-    return indexForExplorer !== undefined;
-};
+const isFileExplorerEnabled = createSelector(
+    s3ConfigManagement.selectors.s3Configs,
+    s3Configs => s3Configs.find(s3Config => s3Config.isExplorerConfig) !== undefined
+);
 
 export const protectedSelectors = { workingDirectoryPath };
 
