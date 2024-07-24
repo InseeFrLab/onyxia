@@ -1,11 +1,10 @@
 import type { Thunks } from "core/bootstrap";
-import { selectors } from "./selectors";
+import { selectors, type S3Config } from "./selectors";
 import * as projectManagement from "core/usecases/projectManagement";
 import { assert, type Equals } from "tsafe/assert";
-import { type S3Client } from "core/ports/S3Client";
+import type { S3Client } from "core/ports/S3Client";
 import { createOidcOrFallback } from "core/adapters/oidc/utils/createOidcOrFallback";
 import { createUsecaseContextApi } from "clean-architecture";
-import type { StringifyableObject } from "core/tools/Stringifyable";
 
 export const thunks = {} satisfies Thunks;
 
@@ -87,6 +86,29 @@ export const protectedThunks = {
             s3ClientByConfigId.set(s3Config.id, s3Client);
 
             return s3Client;
+        },
+    "getS3ConfigAndClientForExplorer":
+        () =>
+        async (
+            ...args
+        ): Promise<undefined | { s3Client: S3Client; s3Config: S3Config }> => {
+            const [dispatch, getState] = args;
+
+            const s3Config = selectors
+                .s3Configs(getState())
+                .find(s3Config => s3Config.isExplorerConfig);
+
+            if (s3Config === undefined) {
+                return undefined;
+            }
+
+            const s3Client = await dispatch(
+                protectedThunks.getS3ClientForSpecificConfig({
+                    "s3ConfigId": s3Config.id
+                })
+            );
+
+            return { s3Client, s3Config };
         }
 } satisfies Thunks;
 

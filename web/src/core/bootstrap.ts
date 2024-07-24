@@ -61,31 +61,44 @@ export async function bootstrapCore(
                 return undefined;
             }
 
+            let project;
+
             try {
-                return usecases.deploymentRegionManagement.selectors.currentDeploymentRegion(
-                    getState()
-                ).id;
+                project =
+                    usecases.deploymentRegionManagement.selectors.currentDeploymentRegion(
+                        getState()
+                    );
             } catch (error) {
                 if (error instanceof AccessError) {
+                    // NOTE: Not initialized yet, it's not a bug.
                     return undefined;
                 }
                 throw error;
             }
+
+            return project.id;
         },
         "getCurrentProjectId": () => {
             if (!isCoreCreated) {
                 return undefined;
             }
 
+            let project;
+
             try {
-                return usecases.projectManagement.protectedSelectors.project(getState())
-                    .id;
+                project =
+                    usecases.projectManagement.protectedSelectors.currentProject(
+                        getState()
+                    );
             } catch (error) {
                 if (error instanceof AccessError) {
+                    // NOTE: Not initialized yet, it's not a bug.
                     return undefined;
                 }
                 throw error;
             }
+
+            return project.id;
         }
     });
 
@@ -127,14 +140,20 @@ export async function bootstrapCore(
         }),
         "sqlOlap": createDuckDbSqlOlap({
             "getS3Config": async () => {
-                const { s3ClientForExplorer } = context;
+                const result = await dispatch(
+                    usecases.s3ConfigManagement.protectedThunks.getS3ConfigAndClientForExplorer()
+                );
 
-                const tokens = await s3ClientForExplorer.getToken({
-                    "doForceRenew": false
-                });
+                if (result === undefined) {
+                    return undefined;
+                }
+
+                const { s3Config, s3Client } = result;
+
+                const tokens = await s3Client.getToken({ "doForceRenew": false });
 
                 return {
-                    "s3_endpoint": s3ClientForExplorer.url,
+                    "s3_endpoint": s3Config.paramsOfCreateS3Client.url,
                     "credentials":
                         tokens === undefined
                             ? undefined
@@ -143,7 +162,9 @@ export async function bootstrapCore(
                                   "s3_secret_access_key": tokens.secretAccessKey,
                                   "s3_session_token": tokens.sessionToken
                               },
-                    "s3_url_style": s3ClientForExplorer.pathStyleAccess ? "path" : "vhost"
+                    "s3_url_style": s3Config.paramsOfCreateS3Client.pathStyleAccess
+                        ? "path"
+                        : "vhost"
                 };
             }
         })
