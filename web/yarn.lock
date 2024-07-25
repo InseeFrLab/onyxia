@@ -4196,10 +4196,10 @@ object-assign@^4.1.1:
   resolved "https://registry.yarnpkg.com/object-assign/-/object-assign-4.1.1.tgz#2109adc7965887cfc05cbbd442cac8bfbb360863"
   integrity sha512-rJgTQnkUnH1sFw8yT6VSU3zD3sWmu6sZhIseY8VX+GRu3P6F7Fu+JNDoXfklElbLJSnc3FUQHVe4cU5hj+BcUg==
 
-oidc-spa@4.10.0-rc.4:
-  version "4.10.0-rc.4"
-  resolved "https://registry.yarnpkg.com/oidc-spa/-/oidc-spa-4.10.0-rc.4.tgz#22c82ebb769cca86e8ab941abefe053c6c482f5a"
-  integrity sha512-HMiz+/VUyVV1P3oX3vA8ajeqDJA9/kthgVF3FxSuz0CQBLUsPURPp7voKYqOFy2dE7M3AKGubtYxHHdqRcXjEw==
+oidc-spa@^4.10.0:
+  version "4.10.0"
+  resolved "https://registry.yarnpkg.com/oidc-spa/-/oidc-spa-4.10.0.tgz#d6099577ef1506072770f86572e0a1c8bad49d06"
+  integrity sha512-jWPbFAM5XYnSdW7buAt5HikpUBfVDNSET9rf5C6J7OUEXyaKJ+H0s048uxLRuGIKP/ovYfUSKxauACxaI+h/Ig==
 
 once@^1.3.0:
   version "1.4.0"
