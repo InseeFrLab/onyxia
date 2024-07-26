@@ -196,17 +196,32 @@ export function createS3Client(params: ParamsOfCreateS3Client): S3Client {
                         "awsS3Client": cachedAwsS3Client
                     };
                 }
-
-                const awsS3Client = new ns_aws_sdk_client_s3.S3Client({
+                let awsS3ClientConfiguration = {
                     "region": params.region ?? "us-east-1",
-                    "credentials": {
-                        "accessKeyId": tokens.accessKeyId,
-                        "secretAccessKey": tokens.secretAccessKey,
-                        "sessionToken": tokens.sessionToken
-                    },
                     "endpoint": params.url,
                     "forcePathStyle": params.pathStyleAccess
-                });
+                };
+                let awsS3Client: ns_aws_sdk_client_s3.S3Client;
+                if (
+                    tokens.accessKeyId === undefined ||
+                    tokens.secretAccessKey === undefined
+                ) {
+                    awsS3Client = new ns_aws_sdk_client_s3.S3Client(
+                        Object.assign(awsS3ClientConfiguration, {
+                            "signer": { sign: async (request: any) => request }
+                        })
+                    );
+                } else {
+                    awsS3Client = new ns_aws_sdk_client_s3.S3Client(
+                        Object.assign(awsS3ClientConfiguration, {
+                            "credentials": {
+                                "accessKeyId": tokens.accessKeyId,
+                                "secretAccessKey": tokens.secretAccessKey,
+                                "sessionToken": tokens.sessionToken
+                            }
+                        })
+                    );
+                }
 
                 awsS3ClientByTokens.set(tokens, awsS3Client);
 
@@ -307,24 +322,37 @@ export function createS3Client(params: ParamsOfCreateS3Client): S3Client {
 
             const { awsS3Client } = await getAwsS3Client();
 
-            const { Contents, CommonPrefixes } = await awsS3Client.send(
-                new ns_aws_sdk_client_s3.ListObjectsV2Command({
-                    "Bucket": bucketName,
-                    "Prefix": prefix,
-                    "Delimiter": "/"
-                })
-            );
+            const Contents: ns_aws_sdk_client_s3._Object[] = [];
+            const CommonPrefixes: ns_aws_sdk_client_s3.CommonPrefix[] = [];
+
+            {
+                let continuationToken: string | undefined;
+
+                do {
+                    const resp = await awsS3Client.send(
+                        new ns_aws_sdk_client_s3.ListObjectsV2Command({
+                            "Bucket": bucketName,
+                            "Prefix": prefix,
+                            "Delimiter": "/",
+                            "ContinuationToken": continuationToken
+                        })
+                    );
+
+                    Contents.push(...(resp.Contents ?? []));
+                    CommonPrefixes.push(...(resp.CommonPrefixes ?? []));
+
+                    continuationToken = resp.NextContinuationToken;
+                } while (continuationToken !== undefined);
+            }
 
             return {
-                "directories": (CommonPrefixes ?? [])
-                    .map(({ Prefix }) => Prefix)
+                "directories": CommonPrefixes.map(({ Prefix }) => Prefix)
                     .filter(exclude(undefined))
                     .map(directoryPath => {
                         const split = directoryPath.split("/");
                         return split[split.length - 2];
                     }),
-                "files": (Contents ?? [])
-                    .map(({ Key }) => Key)
+                "files": Contents.map(({ Key }) => Key)
                     .filter(exclude(undefined))
                     .map(filePath => {
                         const split = filePath.split("/");

@@ -26,20 +26,21 @@ import { useResolveLocalizedString, type LocalizedString } from "ui/i18n";
 import { id } from "tsafe/id";
 import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
 import { same } from "evt/tools/inDepth/same";
+import type { SourceUrls } from "core/usecases/launcher/selectors";
 
 export type Props = {
     className?: string;
     chartName: string;
     chartIconUrl: string | undefined;
     isBookmarked: boolean;
-    isThereASavedConfigWithThisFriendlyName: boolean;
+    willOverwriteExistingConfigOnSave: boolean;
 
     chartVersion: string;
 
     availableChartVersions: string[];
     onChartVersionChange: (chartVersion: string) => void;
     catalogName: LocalizedString;
-    catalogRepositoryUrl: string;
+    sourceUrls: Pick<SourceUrls, "helmChartSourceUrl" | "helmChartRepositorySourceUrl">;
 
     myServicesSavedConfigsExtendedLink: Link;
     onRequestToggleBookmark: () => void;
@@ -105,13 +106,13 @@ export const LauncherMainCard = memo((props: Props) => {
         chartName,
         chartIconUrl,
         isBookmarked,
-        isThereASavedConfigWithThisFriendlyName,
+        willOverwriteExistingConfigOnSave,
 
         chartVersion,
         availableChartVersions,
         onChartVersionChange,
         catalogName,
-        catalogRepositoryUrl,
+        sourceUrls,
 
         myServicesSavedConfigsExtendedLink,
         friendlyName,
@@ -211,7 +212,7 @@ export const LauncherMainCard = memo((props: Props) => {
                             }
                             onClick={onRequestToggleBookmark}
                         />
-                    ) : isThereASavedConfigWithThisFriendlyName && !isBookmarked ? (
+                    ) : willOverwriteExistingConfigOnSave && !isBookmarked ? (
                         <Button
                             className={classes.saveButton}
                             variant="ternary"
@@ -257,9 +258,10 @@ export const LauncherMainCard = memo((props: Props) => {
                             {t("version select label")}&nbsp;
                             <Tooltip
                                 title={t("version select helper text", {
-                                    chartName,
-                                    "catalogName": resolveLocalizedString(catalogName),
-                                    catalogRepositoryUrl
+                                    "helmCharName": chartName,
+                                    "helmRepositoryName":
+                                        resolveLocalizedString(catalogName),
+                                    sourceUrls
                                 })}
                             >
                                 <Icon
@@ -412,7 +414,7 @@ export const LauncherMainCard = memo((props: Props) => {
 
 LauncherMainCard.displayName = symToStr({ LauncherMainCard });
 
-export const { i18n } = declareComponentKeys<
+const { i18n } = declareComponentKeys<
     | "card title"
     | "cancel"
     | "launch"
@@ -436,18 +438,13 @@ export const { i18n } = declareComponentKeys<
           K: "bookmark button";
           P: { isBookmarked: boolean };
       }
-    // Version
     | "version select label"
-    /*
-        Version of the {chartName} Chart in the 
-        <MuiLink href={catalogRepositoryUrl}>{resolveLocalizedString(catalogName)} Helm Repository </MuiLink>
-    */
     | {
           K: "version select helper text";
           P: {
-              chartName: string;
-              catalogName: JSX.Element;
-              catalogRepositoryUrl: string;
+              helmCharName: string;
+              helmRepositoryName: JSX.Element;
+              sourceUrls: Props["sourceUrls"];
           };
           R: JSX.Element;
       }
@@ -460,6 +457,7 @@ export const { i18n } = declareComponentKeys<
           R: JSX.Element;
       }
 >()({ LauncherMainCard });
+export type I18n = typeof i18n;
 
 const useStyles = tss.withName({ LauncherMainCard }).create(({ theme }) => ({
     "root": {

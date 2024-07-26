@@ -21,6 +21,7 @@ import type { Link } from "type-route";
 import type { PageRoute } from "./route";
 import { useEvt } from "evt/hooks";
 import { customIcons } from "ui/theme";
+import { env } from "env";
 
 export type Props = {
     route: PageRoute;
@@ -226,8 +227,7 @@ export default function MySecrets(props: Props) {
                 title={t("page title - my secrets")}
                 helpTitle={t("what this page is used for - my secrets")}
                 helpContent={t("help content", {
-                    "docHref":
-                        "https://docs.sspcloud.fr/onyxia-guide/utiliser-des-variables-denvironnement",
+                    "docHref": env.VAULT_DOCUMENTATION_LINK,
                     "accountTabLink": routes.account({ "tabId": "vault" }).link
                 })}
                 helpIcon="sentimentSatisfied"
@@ -309,7 +309,7 @@ export default function MySecrets(props: Props) {
     );
 }
 
-export const { i18n } = declareComponentKeys<
+const { i18n } = declareComponentKeys<
     | "page title - my secrets"
     | "what this page is used for - my secrets"
     | "learn more - my files"
@@ -322,6 +322,7 @@ export const { i18n } = declareComponentKeys<
           R: JSX.Element;
       }
 >()({ MySecrets: MySecrets });
+export type I18n = typeof i18n;
 
 const useStyles = tss.withName({ MySecrets }).create({
     "root": {

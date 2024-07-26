@@ -20,6 +20,7 @@ import { useCallbackFactory } from "powerhooks/useCallbackFactory";
 import { CatalogChartCard } from "./CatalogChartCard";
 import { customIcons } from "ui/theme";
 import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
+import { Markdown } from "ui/shared/Markdown";
 import { id } from "tsafe/id";
 
 export type Props = {
@@ -91,9 +92,10 @@ export default function Catalog(props: Props) {
         Evt.create<UnpackEvt<SearchBarProps["evtAction"]>>()
     );
 
-    const { resolveLocalizedString } = useResolveLocalizedString({
-        "labelWhenMismatchingLanguage": true
-    });
+    const { resolveLocalizedString, resolveLocalizedStringDetailed } =
+        useResolveLocalizedString({
+            "labelWhenMismatchingLanguage": true
+        });
 
     if (!isReady) {
         return null;
@@ -103,29 +105,51 @@ export default function Catalog(props: Props) {
         <div className={cx(classes.root, className)}>
             <PageHeader
                 classes={{
-                    "title": css({ "paddingBottom": 3 })
+                    "title": css({ "paddingBottom": 3 }),
+                    "helpTitle": css({ "display": "none" }),
+                    "helpIcon": css({ "display": "none" })
                 }}
                 mainIcon={customIcons.catalogSvgUrl}
-                title={t("header text1")}
-                helpTitle={t("header text2")}
-                helpContent={t("header help", {
-                    "catalogDescription": resolveLocalizedString(
+                title={t("header")}
+                helpTitle={""}
+                helpContent={(() => {
+                    if (selectedCatalog.description === undefined) {
+                        return "";
+                    }
+
+                    const { str, langAttrValue } = resolveLocalizedStringDetailed(
                         selectedCatalog.description
-                    ),
-                    "catalogName": resolveLocalizedString(selectedCatalog.name),
-                    "repositoryUrl": selectedCatalog.repositoryUrl
-                })}
+                    );
+
+                    return (
+                        <Markdown
+                            lang={langAttrValue}
+                            className={css({
+                                "&>p": { "margin": 0 }
+                            })}
+                        >
+                            {str}
+                        </Markdown>
+                    );
+                })()}
                 helpIcon={id<MuiIconComponentName>("SentimentSatisfied")}
                 titleCollapseParams={{
                     "behavior": "collapses on scroll",
                     "scrollTopThreshold": 650,
                     "scrollableElementRef": scrollableDivRef
                 }}
-                helpCollapseParams={{
-                    "behavior": "collapses on scroll",
-                    "scrollTopThreshold": 300,
-                    "scrollableElementRef": scrollableDivRef
-                }}
+                helpCollapseParams={
+                    selectedCatalog.description === undefined
+                        ? {
+                              "behavior": "controlled",
+                              "isCollapsed": true
+                          }
+                        : {
+                              "behavior": "collapses on scroll",
+                              "scrollTopThreshold": 300,
+                              "scrollableElementRef": scrollableDivRef
+                          }
+                }
             />
             <div className={classes.bodyWrapper}>
                 <div className={classes.body}>
@@ -213,22 +237,13 @@ export default function Catalog(props: Props) {
     );
 }
 
-export const { i18n } = declareComponentKeys<
-    | "header text1"
-    | "header text2"
-    | {
-          K: "header help";
-          P: {
-              catalogName: JSX.Element;
-              catalogDescription: JSX.Element;
-              repositoryUrl: string;
-          };
-          R: JSX.Element;
-      }
+const { i18n } = declareComponentKeys<
+    | "header"
     | "search results"
     | { K: "no result found"; P: { forWhat: string } }
     | "search"
 >()({ Catalog });
+export type I18n = typeof i18n;
 
 const useStyles = tss
     .withName({ Catalog })

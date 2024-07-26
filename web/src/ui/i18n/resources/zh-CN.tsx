@@ -1,17 +1,17 @@
 import type { Translations } from "../types";
 import MuiLink from "@mui/material/Link";
 import { Markdown } from "ui/shared/Markdown";
-import { elementsToSentence } from "ui/tools/elementsToSentence";
 import { Icon } from "onyxia-ui/Icon";
 import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
 import { id } from "tsafe/id";
 import { capitalize } from "tsafe/capitalize";
+import { MaybeLink } from "ui/shared/MaybeLink";
 
 export const translations: Translations<"zh-CN"> = {
     /* spell-checker: disable */
     "Account": {
         "infos": "账号信息",
-        "third-party-integration": "外部服务",
+        "git": undefined,
         "storage": "链接到储存器",
         "user-interface": "变换显示模式",
         "k8sCodeSnippets": "Kubernetes",
@@ -29,18 +29,36 @@ export const translations: Translations<"zh-CN"> = {
         "instructions about how to change password":
             "要更改密码，只需登出，然后点击“忘记密码”链接。"
     },
-    "AccountIntegrationsTab": {
-        "git section title": "Git 配置",
-        "git section helper": `为了确保您在您的服务中
-            作为 Git 贡献者`,
-        "gitName": "您Git 账号的用户名",
-        "gitEmail": "您Git 账号的注册电子邮件",
-        "third party tokens section title": "连接您的 Gitlab、Github 和 Kaggle 帐户",
-        "third party tokens section helper":
-            "利用您的个人访问令牌和环境变量，来将您的服务连接到外部帐户.",
-        "personal token": ({ serviceName }) => `个人访问令牌 ${serviceName}`,
-        "link for token creation": ({ serviceName }) => `创建您的令牌 ${serviceName}.`,
-        "accessible as env": "可在您的服务中作为环境变量被访问"
+    "AccountGitTab": {
+        "gitName": "Git 用户名",
+        "gitName helper text": ({ gitName, focusClassName }) => (
+            <>
+                此命令将设置您的全局 Git 用户名，服务启动时执行：&nbsp;
+                <code className={focusClassName}>
+                    git config --global user.name "{gitName || "<您的用户名>"}"
+                </code>
+            </>
+        ),
+        "gitEmail": "Git 邮箱",
+        "gitEmail helper text": ({ gitEmail, focusClassName }) => (
+            <>
+                此命令将设置您的全局 Git 邮箱，服务启动时执行：&nbsp;
+                <code className={focusClassName}>
+                    git config --global user.email "
+                    {gitEmail || "<您的邮箱地址@域名.com>"}"
+                </code>
+            </>
+        ),
+        "githubPersonalAccessToken": "Git 服务平台个人访问令牌",
+        "githubPersonalAccessToken helper text": ({ focusClassName }) => (
+            <>
+                提供此令牌后，您可以在不再次输入您的服务平台凭据的情况下，克隆和推送到您的私人
+                GitHub 或 GitLab 仓库。
+                <br />
+                此令牌还将作为环境变量提供：&nbsp;
+                <span className={focusClassName}>$GIT_PERSONAL_ACCESS_TOKEN</span>
+            </>
+        )
     },
     "AccountStorageTab": {
         "credentials section title": "将您的数据连接到您的服务",
@@ -454,16 +472,7 @@ export const translations: Translations<"zh-CN"> = {
         "cardButton3": "查看数据"
     },
     "Catalog": {
-        "header text1": "服务目录",
-        "header text2": "只需单击几下即可探索、启动和配置服务.",
-        "header help": ({ catalogName, catalogDescription, repositoryUrl }) => (
-            <>
-                您正在浏览 Helm Chart 仓库{" "}
-                <MuiLink href={repositoryUrl} target="_blank">
-                    {catalogName}：{catalogDescription}
-                </MuiLink>
-            </>
-        ),
+        "header": "服务目录",
         "no result found": ({ forWhat }) => `没有找到关于 ${forWhat} 的结果`,
         "search results": "搜索结果",
         "search": "收索服务"
@@ -480,23 +489,38 @@ export const translations: Translations<"zh-CN"> = {
     },
     "Launcher": {
         "header text1": "服务目录",
-        "header text2": "只需单击几下即可探索、启动和配置服务.",
-        "chart sources": ({ chartName, urls }) =>
-            urls.length === 0 ? (
-                <></>
-            ) : (
-                <>
-                    访问图表 {chartName} 的源{urls.length === 1 ? "" : "们"}：&nbsp;
-                    {elementsToSentence({
-                        "elements": urls.map(source => (
-                            <MuiLink href={source} target="_blank" underline="hover">
-                                这里
+        "sources": ({ helmChartName, helmChartRepositoryName, sourceUrls }) => (
+            <>
+                您即将部署 Helm 图表{" "}
+                {
+                    <MaybeLink href={sourceUrls.helmChartSourceUrl}>
+                        {helmChartName}
+                    </MaybeLink>
+                }
+                ， 它属于 Helm 图表仓库{" "}
+                {
+                    <MaybeLink href={sourceUrls.helmChartRepositorySourceUrl}>
+                        {helmChartRepositoryName}
+                    </MaybeLink>
+                }
+                。
+                {sourceUrls.dockerImageSourceUrl !== undefined && (
+                    <>
+                        {" "}
+                        它基于 Docker 镜像{" "}
+                        {
+                            <MuiLink
+                                href={sourceUrls.dockerImageSourceUrl}
+                                target="_blank"
+                            >
+                                {helmChartName}
                             </MuiLink>
-                        )),
-                        "language": "zh-CN"
-                    })}
-                </>
-            ),
+                        }
+                        。
+                    </>
+                )}
+            </>
+        ),
         "download as script": "下载脚本",
         "api logs help body": ({
             k8CredentialsHref,
@@ -599,8 +623,21 @@ ${
     },
     "SensitiveConfigurationDialog": {
         "cancel": "取消",
-        "sensitive configuration dialog title": "您想更换它吗?", //TODO
-        "proceed to launch": "继续启动" //TODO
+        "sensitive configuration dialog title": "您想更换它吗?",
+        "proceed to launch": "继续启动"
+    },
+    "MyService": {
+        "page title": ({ helmReleaseFriendlyName }) => `${helmReleaseFriendlyName} 监控`
+    },
+    "PodLogsTab": {
+        "not necessarily first logs": "这不一定是第一批日志，较旧的日志可能已被清除",
+        "new logs are displayed in realtime": "新日志实时显示"
+    },
+    "MyServiceButtonBar": {
+        "back": "返回",
+        "external monitoring": "外部监控",
+        "helm values": "Helm 值",
+        "reduce": "减少"
     },
     "LauncherMainCard": {
         "card title": "创建自定义服务",
@@ -627,13 +664,23 @@ ${
         ),
         "version select label": "版本",
         "version select helper text": ({
-            chartName,
-            catalogRepositoryUrl,
-            catalogName
+            helmCharName,
+            helmRepositoryName,
+            sourceUrls
         }) => (
             <>
-                {chartName} Chart 的版本位于&nbsp;
-                <MuiLink href={catalogRepositoryUrl}>{catalogName} Helm 仓库</MuiLink>
+                {
+                    <MaybeLink href={sourceUrls.helmChartSourceUrl}>
+                        {helmCharName}
+                    </MaybeLink>
+                }{" "}
+                helm 图表的版本 属于{" "}
+                {
+                    <MaybeLink href={sourceUrls.helmChartRepositorySourceUrl}>
+                        {helmRepositoryName}
+                    </MaybeLink>
+                }{" "}
+                helm 图表仓库。
             </>
         ),
         "save changes": "保存更改",
@@ -668,6 +715,15 @@ ${
         "text3": "建议您在每次工作会话后删除您的服务.",
         "running services": "正在运行的服务"
     },
+    "ClusterEventsDialog": {
+        "title": "事件",
+        "subtitle": (
+            <>
+                Kubernetes 命名空间的事件，这是一个来自 <code>kubectl get events</code>
+                的实时流
+            </>
+        )
+    },
     "MyServicesConfirmDeleteDialog": {
         "confirm delete title": "您确定?",
         "confirm delete subtitle": "确保您的服务不包括未保存的工作。",
@@ -685,7 +741,7 @@ ${
     },
     "MyServicesCard": {
         "service": "服务",
-        "running since": "运行时间: ",
+        "running since": "开始于：",
         "open": "打开",
         "readme": "自述文件",
         "shared by you": "你分享的",
@@ -693,8 +749,11 @@ ${
         "this is a shared service": "该服务在项目内共享",
         "status": "状态",
         "container starting": "容器启动中",
-        "pending": "待定",
-        "failed": "失败"
+        "failed": "失败",
+        "suspend service tooltip": "暂停服务并释放资源",
+        "resume service tooltip": "恢复服务",
+        "suspended": "已暂停",
+        "suspending": "正在暂停"
     },
     "MyServicesRestorableConfigOptions": {
         "edit": "编辑服务",
@@ -709,7 +768,7 @@ ${
         "saved": "已经保存",
         "expand": "展开"
     },
-    "ReadmeAndEnvDialog": {
+    "ReadmeDialog": {
         "ok": "是",
         "return": "返回"
     },

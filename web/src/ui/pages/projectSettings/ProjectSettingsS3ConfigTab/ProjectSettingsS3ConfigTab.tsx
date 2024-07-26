@@ -196,6 +196,7 @@ const useStyles = tss.withName({ ProjectSettingsS3ConfigTab }).create(({ theme }
     }
 }));
 
-export const { i18n } = declareComponentKeys<"add custom config">()({
+const { i18n } = declareComponentKeys<"add custom config">()({
     ProjectSettingsS3ConfigTab
 });
+export type I18n = typeof i18n;

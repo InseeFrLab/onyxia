@@ -199,7 +199,8 @@ export const SecretsExplorerItem = memo((props: SecretsExplorerItemProps) => {
     );
 });
 
-export const { i18n } = declareComponentKeys<"description">()({ SecretsExplorerItem });
+const { i18n } = declareComponentKeys<"description">()({ SecretsExplorerItem });
+export type I18n = typeof i18n;
 
 const useStyles = tss
     .withName({ SecretsExplorerItem })

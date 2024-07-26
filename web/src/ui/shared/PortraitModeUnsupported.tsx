@@ -51,6 +51,7 @@ const useStyles = tss.withName({ PortraitModeUnsupported }).create(({ theme }) =
     }
 }));
 
-export const { i18n } = declareComponentKeys<"instructions">()({
+const { i18n } = declareComponentKeys<"instructions">()({
     PortraitModeUnsupported
 });
+export type I18n = typeof i18n;

@@ -1,6 +1,6 @@
 export const accountTabIds = [
     "infos",
-    "third-party-integration",
+    "git",
     "storage",
     "k8sCodeSnippets",
     "vault",

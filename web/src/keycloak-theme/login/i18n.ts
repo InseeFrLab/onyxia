@@ -2,7 +2,7 @@ import { createUseI18n } from "keycloakify/login";
 
 export const { useI18n } = createUseI18n({
     "en": {
-        "alphanumericalCharsOnly": "Only alphanumerical characters",
+        "lowerCaseAlphanumericalCharsOnly": "Only lowercase alphanumerical characters",
         "allowed email domains": "Allowed domains",
         "minimum length": "Minimum length: {0}",
         "must be different from username": "Pass can't be the username",
@@ -17,7 +17,8 @@ export const { useI18n } = createUseI18n({
     },
     /* spell-checker: disable */
     "fr": {
-        "alphanumericalCharsOnly": "Caractère alphanumérique uniquement",
+        "lowerCaseAlphanumericalCharsOnly":
+            "Uniquement des caractères alphanumériques en minuscules",
         "allowed email domains": "Domaines autorisés",
         "minimum length": "Longueur minimum {0}",
         "must be different from username": "Ne peut pas être le nom d'utilisateur",
@@ -31,7 +32,7 @@ export const { useI18n } = createUseI18n({
         "tabTitleSuffix": "Connexion"
     },
     "de": {
-        "alphanumericalCharsOnly": "Nur alphanumerische Zeichen",
+        "lowerCaseAlphanumericalCharsOnly": "Nur Kleinbuchstaben und Zahlen",
         "allowed email domains": "Erlaubte Domänen",
         "minimum length": "Mindestlänge: {0}",
         "must be different from username":
@@ -46,7 +47,7 @@ export const { useI18n } = createUseI18n({
         "tabTitleSuffix": "Anmeldung"
     },
     "fi": {
-        "alphanumericalCharsOnly": "Vain alfanumeeriset merkit",
+        "lowerCaseAlphanumericalCharsOnly": "Vain pienet kirjaimet ja numerot",
         "allowed email domains": "Sallitut sähköpostidomainit",
         "minimum length": "Minimipituus: {0}",
         "must be different from username": "Salasanan on oltava eri kuin käyttäjänimi",
@@ -59,7 +60,7 @@ export const { useI18n } = createUseI18n({
         "tabTitleSuffix": "Kirjaudu sisään"
     },
     "it": {
-        "alphanumericalCharsOnly": "Solo caratteri alfanumerici",
+        "lowerCaseAlphanumericalCharsOnly": "Solo caratteri alfanumerici minuscoli",
         "allowed email domains": "Domini email consentiti",
         "minimum length": "Lunghezza minima: {0}",
         "must be different from username":
@@ -74,7 +75,7 @@ export const { useI18n } = createUseI18n({
         "tabTitleSuffix": "Accedi"
     },
     "nl": {
-        "alphanumericalCharsOnly": "Alleen alfanumerieke karakters",
+        "lowerCaseAlphanumericalCharsOnly": "Alleen kleine alfanumerieke tekens",
         "allowed email domains": "Toegestane e-maildomeinen",
         "minimum length": "Minimale lengte: {0}",
         "must be different from username":
@@ -89,7 +90,7 @@ export const { useI18n } = createUseI18n({
         "tabTitleSuffix": "Inloggen"
     },
     "no": {
-        "alphanumericalCharsOnly": "Bare alfanumeriske tegn",
+        "lowerCaseAlphanumericalCharsOnly": "Kun små bokstaver og tall",
         "allowed email domains": "Tillatte e-postdomener",
         "minimum length": "Minimum lengde: {0}",
         "must be different from username":
@@ -104,7 +105,7 @@ export const { useI18n } = createUseI18n({
         "tabTitleSuffix": "Logg inn"
     },
     "zh-CN": {
-        "alphanumericalCharsOnly": "仅限字母数字字符",
+        "lowerCaseAlphanumericalCharsOnly": "仅小写字母和数字",
         "allowed email domains": "允许的电子邮件域",
         "minimum length": "最小长度：{0}",
         "must be different from username": "密码不能与用户名相同",

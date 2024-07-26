@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { tss } from "tss";
+import { tss, useStyles as useClasslessStyles } from "tss";
 import type { PageRoute } from "./route";
 import { routes } from "ui/routes";
 import { useCore, useCoreState } from "core";
@@ -37,8 +37,6 @@ const { useDebounce } = createUseDebounce({
 
 export default function DataExplorer(props: Props) {
     const { className, route } = props;
-
-    const { classes, cx } = useStyles();
 
     const { dataExplorer } = useCore().functions;
 
@@ -113,6 +111,17 @@ export default function DataExplorer(props: Props) {
         "dataExplorer",
         "main"
     );
+
+    const { classes, cx } = useStyles({
+        "rowsToFrom":
+            rows === undefined || rowCount !== undefined
+                ? undefined
+                : {
+                      "from": (route.params.page - 1) * route.params.rowsPerPage + 1,
+                      "to":
+                          (route.params.page - 1) * route.params.rowsPerPage + rows.length
+                  }
+    });
 
     const { t } = useTranslation({ DataExplorer });
 
@@ -192,7 +201,8 @@ export default function DataExplorer(props: Props) {
                                         classes.dataGridPanelWrapper
                                     ),
                                     "panelFooter": classes.dataGridPanelFooter,
-                                    "menu": classes.dataGridMenu
+                                    "menu": classes.dataGridMenu,
+                                    "footerContainer": classes.dataGridFooterContainer
                                 }}
                                 disableVirtualization={!isVirtualizationEnabled}
                                 columnVisibilityModel={route.params.columnVisibility}
@@ -234,7 +244,7 @@ export default function DataExplorer(props: Props) {
                                 }}
                                 loading={isQuerying}
                                 paginationMode="server"
-                                rowCount={rowCount}
+                                rowCount={rowCount ?? 999999999}
                                 pageSizeOptions={(() => {
                                     const pageSizeOptions = [25, 50, 100];
 
@@ -267,7 +277,7 @@ export default function DataExplorer(props: Props) {
 function CustomToolbar() {
     const { t } = useTranslation({ DataExplorer });
 
-    const { css, theme } = useStyles();
+    const { css, theme } = useClasslessStyles();
 
     const { fileDownloadUrl } = useCoreState("dataExplorer", "main");
 
@@ -344,73 +354,103 @@ function CustomToolbar() {
     );
 }
 
-const useStyles = tss.withName({ DataExplorer }).create(({ theme }) => ({
-    "root": {
-        "height": "100%",
-        "display": "flex",
-        "flexDirection": "column"
-    },
-    "pageHeaderHelpMiddle": {
-        "& > h5": {
-            "marginBottom": theme.spacing(2)
-        }
-    },
-    "initializing": {
-        "display": "flex",
-        "justifyContent": "center",
-        "alignItems": "center",
-        "height": "100%"
-    },
-    "urlInput": {
-        "marginBottom": theme.spacing(4)
-    },
-    "errorAlert": {
-        "marginTop": theme.spacing(4),
-        "maxWidth": 950
-    },
-    "mainArea": {
-        "flex": 1,
-        "overflow": "hidden"
-    },
-    "dataGridWrapper": {
-        "width": "100%",
-        "height": "100%",
-        "overflowY": "hidden",
-        "overflowX": "auto"
-    },
-    "dataGridPanel": {
-        "overflow": "hidden",
-        "borderRadius": 8,
-        "boxShadow": theme.shadows[1],
-        "&:hover": {
-            "boxShadow": theme.shadows[6]
-        }
-    },
-    "dataGridPanelWrapper": {
-        "backgroundColor": theme.colors.useCases.surfaces.surface1,
-        "padding": theme.spacing(2)
-    },
-    "dataGridPanelFooter": {
-        "& .MuiButton-root": {
-            "textTransform": "unset"
-        }
-    },
-    "dataGridMenu": {
-        "& .MuiMenuItem-root": {
-            "&.Mui-selected": {
-                "backgroundColor": theme.colors.useCases.surfaces.surface2
-            },
-            "& svg": {
-                "color": theme.colors.useCases.typography.textPrimary
-            },
-            "&:hover": {
-                "backgroundColor": theme.colors.palette.focus.light
+const useStyles = tss
+    .withName({ DataExplorer })
+    .withParams<{
+        rowsToFrom:
+            | {
+                  from: number;
+                  to: number;
+              }
+            | undefined;
+    }>()
+    .create(({ theme, rowsToFrom }) => ({
+        "root": {
+            "height": "100%",
+            "display": "flex",
+            "flexDirection": "column"
+        },
+        "pageHeaderHelpMiddle": {
+            "& > h5": {
+                "marginBottom": theme.spacing(2)
             }
+        },
+        "initializing": {
+            "display": "flex",
+            "justifyContent": "center",
+            "alignItems": "center",
+            "height": "100%"
+        },
+        "urlInput": {
+            "marginBottom": theme.spacing(4)
+        },
+        "errorAlert": {
+            "marginTop": theme.spacing(4),
+            "maxWidth": 950
+        },
+        "mainArea": {
+            "flex": 1,
+            "overflow": "hidden"
+        },
+        "dataGridWrapper": {
+            "width": "100%",
+            "height": "100%",
+            "overflowY": "hidden",
+            "overflowX": "auto"
+        },
+        "dataGridPanel": {
+            "overflow": "hidden",
+            "borderRadius": 8,
+            "boxShadow": theme.shadows[1],
+            "&:hover": {
+                "boxShadow": theme.shadows[6]
+            }
+        },
+        "dataGridPanelWrapper": {
+            "backgroundColor": theme.colors.useCases.surfaces.surface1,
+            "padding": theme.spacing(2)
+        },
+        "dataGridPanelFooter": {
+            "& .MuiButton-root": {
+                "textTransform": "unset"
+            }
+        },
+        "dataGridMenu": {
+            "& .MuiMenuItem-root": {
+                "&.Mui-selected": {
+                    "backgroundColor": theme.colors.useCases.surfaces.surface2
+                },
+                "& svg": {
+                    "color": theme.colors.useCases.typography.textPrimary
+                },
+                "&:hover": {
+                    "backgroundColor": theme.colors.palette.focus.light
+                }
+            }
+        },
+        "dataGridFooterContainer": {
+            "& .MuiTablePagination-displayedRows":
+                rowsToFrom === undefined
+                    ? {}
+                    : {
+                          "&": {
+                              "fontSize": 0,
+                              "width": 50,
+                              "position": "relative"
+                          },
+                          "&::after": {
+                              "content": `"${rowsToFrom.from}-${rowsToFrom.to}"`,
+                              "fontSize": theme.typography.rootFontSizePx * 0.85,
+                              "color": theme.colors.useCases.typography.textPrimary,
+                              "position": "absolute",
+                              "right": 0,
+                              "top": 0
+                          }
+                      }
         }
-    }
-}));
+    }));
 
-export const { i18n } = declareComponentKeys<
+const { i18n } = declareComponentKeys<
     | "page header title"
     | "page header help title"
     | {
@@ -422,3 +462,4 @@ export const { i18n } = declareComponentKeys<
     | "density"
     | "download file"
 >()({ DataExplorer });
+export type I18n = typeof i18n;

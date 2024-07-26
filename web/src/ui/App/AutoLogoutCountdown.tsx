@@ -79,6 +79,7 @@ const useStyles = tss.withName({ AutoLogoutCountdown }).create(({ theme }) => ({
     }
 }));
 
-export const { i18n } = declareComponentKeys<
+const { i18n } = declareComponentKeys<
     "are you still there" | "you'll soon be automatically logged out"
 >()({ AutoLogoutCountdown });
+export type I18n = typeof i18n;

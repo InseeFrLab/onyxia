@@ -21,6 +21,7 @@ import { useEvt } from "evt/hooks";
 import { customIcons } from "ui/theme";
 import { MyFilesDisabledDialog } from "./MyFilesDisabledDialog";
 import { assert } from "tsafe/assert";
+import { env } from "env";
 
 export type Props = {
     route: PageRoute;
@@ -178,8 +179,7 @@ function MyFiles(props: Props) {
                 title={t("page title - my files")}
                 helpTitle={t("what this page is used for - my files")}
                 helpContent={t("help content", {
-                    "docHref":
-                        "https://docs.sspcloud.fr/onyxia-guide/stockage-de-donnees",
+                    "docHref": env.S3_DOCUMENTATION_LINK,
                     "accountTabLink": routes.account({ "tabId": "storage" }).link
                 })}
                 helpIcon="sentimentSatisfied"
@@ -214,7 +214,7 @@ function MyFiles(props: Props) {
     );
 }
 
-export const { i18n } = declareComponentKeys<
+const { i18n } = declareComponentKeys<
     | "page title - my files"
     | "what this page is used for - my files"
     | {
@@ -226,6 +226,7 @@ export const { i18n } = declareComponentKeys<
           R: JSX.Element;
       }
 >()({ MyFiles });
+export type I18n = typeof i18n;
 
 const useStyles = tss.withName({ MyFiles }).create({
     "root": {

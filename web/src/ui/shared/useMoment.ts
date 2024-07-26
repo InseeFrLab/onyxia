@@ -172,7 +172,7 @@ const divisorKeys = [
 ] as const;
 type DivisorKey = (typeof divisorKeys)[number];
 
-export const { i18n } = declareComponentKeys<
+const { i18n } = declareComponentKeys<
     | {
           K: "date format";
           P: { isSameYear: boolean };
@@ -194,3 +194,4 @@ export const { i18n } = declareComponentKeys<
           P: { divisorKey: DivisorKey };
       }
 >()("moment");
+export type I18n = typeof i18n;

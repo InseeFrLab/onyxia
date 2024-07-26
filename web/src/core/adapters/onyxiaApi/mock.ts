@@ -35,7 +35,11 @@ export const onyxiaApi: OnyxiaApi = {
                         "certificateAuthorityInjection": undefined,
                         "kubernetes": undefined,
                         "sliders": {},
-                        "resources": undefined
+                        "resources": undefined,
+                        "certManager": {
+                            "useCertManager": false,
+                            "certManagerClusterIssuer": undefined
+                        }
                     }
                 ],
                 "oidcParams": undefined
@@ -70,5 +74,7 @@ export const onyxiaApi: OnyxiaApi = {
     ...createPropertyThatThrowIfAccessed("helmInstall", "Not mocked"),
     ...createPropertyThatThrowIfAccessed("listHelmReleases", "Not mocked"),
     ...createPropertyThatThrowIfAccessed("helmUninstall", "Not mocked"),
-    ...createPropertyThatThrowIfAccessed("getTaskLogs", "Not mocked")
+    ...createPropertyThatThrowIfAccessed("kubectlLogs", "Not mocked"),
+    ...createPropertyThatThrowIfAccessed("subscribeToClusterEvents", "Not mocked"),
+    ...createPropertyThatThrowIfAccessed("helmUpgradeGlobalSuspend", "Not mocked")
 };

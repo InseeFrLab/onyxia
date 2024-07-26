@@ -22,6 +22,7 @@ export function CopyToClipboardIconButton(props: Props) {
     );
 }
 
-export const { i18n } = declareComponentKeys<
-    "copy to clipboard" | "copied to clipboard"
->()({ CopyToClipboardIconButton });
+const { i18n } = declareComponentKeys<"copy to clipboard" | "copied to clipboard">()({
+    CopyToClipboardIconButton
+});
+export type I18n = typeof i18n;

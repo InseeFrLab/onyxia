@@ -164,7 +164,7 @@ export const AccountKubernetesTab = memo((props: Props) => {
     );
 });
 
-export const { i18n } = declareComponentKeys<
+const { i18n } = declareComponentKeys<
     | "credentials section title"
     | "credentials section helper"
     | "init script section title"
@@ -175,6 +175,7 @@ export const { i18n } = declareComponentKeys<
       }
     | { K: "expires in"; P: { howMuchTime: string } }
 >()({ AccountKubernetesTab });
+export type I18n = typeof i18n;
 
 const useStyles = tss.withName({ AccountKubernetesTab }).create(({ theme }) => ({
     "divider": {

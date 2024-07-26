@@ -6,6 +6,7 @@ import type { Chart } from "./Chart";
 import type { HelmRelease } from "./HelmRelease";
 import type { User } from "./User";
 import { JSONSchemaObject } from "./JSONSchema";
+import type { NonPostableEvt } from "evt";
 
 export type OnyxiaApi = {
     getAvailableRegionsAndOidcParams: {
@@ -60,10 +61,28 @@ export type OnyxiaApi = {
     listHelmReleases: () => Promise<HelmRelease[]>;
 
     helmUninstall: (params: { helmReleaseName: string }) => Promise<void>;
+    helmUpgradeGlobalSuspend: (params: {
+        helmReleaseName: string;
+        value: boolean;
+    }) => Promise<void>;
 
     onboard: (params: { group: string | undefined }) => Promise<void>;
 
     getQuotas: () => Promise<Record<string, Record<"spec" | "usage", string | number>>>;
 
-    getTaskLogs: (params: { helmReleaseName: string; taskId: string }) => Promise<string>;
+    kubectlLogs: (params: {
+        helmReleaseName: string;
+        podName: string;
+    }) => Promise<string>;
+
+    subscribeToClusterEvents: (params: {
+        onNewEvent: (event: {
+            eventId: string;
+            message: string;
+            timestamp: number;
+            severity: "info" | "warning" | "error";
+            originalEvent: Record<string, unknown>;
+        }) => void;
+        evtUnsubscribe: NonPostableEvt<void>;
+    }) => Promise<void>;
 };

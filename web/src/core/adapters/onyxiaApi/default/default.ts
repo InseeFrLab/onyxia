@@ -18,6 +18,7 @@ import { compareVersions } from "compare-versions";
 import { injectXOnyxiaContextInValuesSchemaJson } from "./injectXOnyxiaContextInValuesSchemaJson";
 import { exclude } from "tsafe/exclude";
 import type { ApiTypes } from "./ApiTypes";
+import { Evt } from "evt";
 
 export function createOnyxiaApi(params: {
     url: string;
@@ -28,6 +29,42 @@ export function createOnyxiaApi(params: {
 }): OnyxiaApi {
     const { url, getOidcAccessToken, getCurrentRegionId, getCurrentProjectId } = params;
 
+    const getHeaders = () => {
+        const headers: Record<string, string> = {};
+
+        add_bearer_token: {
+            const accessToken = getOidcAccessToken();
+
+            if (accessToken === undefined) {
+                break add_bearer_token;
+            }
+
+            headers["Authorization"] = `Bearer ${accessToken}`;
+        }
+
+        add_region: {
+            const regionId = getCurrentRegionId();
+
+            if (regionId === undefined) {
+                break add_region;
+            }
+
+            headers["ONYXIA-REGION"] = regionId;
+        }
+
+        add_project: {
+            const projectId = getCurrentProjectId();
+
+            if (projectId === undefined) {
+                break add_project;
+            }
+
+            headers["ONYXIA-PROJECT"] = projectId;
+        }
+
+        return headers;
+    };
+
     const { axiosInstance } = (() => {
         const axiosInstance = axios.create({ "baseURL": url, "timeout": 120_000 });
 
@@ -35,12 +72,7 @@ export function createOnyxiaApi(params: {
             ...config,
             "headers": {
                 ...config?.headers,
-                "Authorization": (accessToken =>
-                    accessToken === undefined ? undefined : `Bearer ${accessToken}`)(
-                    getOidcAccessToken()
-                ),
-                "ONYXIA-REGION": getCurrentRegionId(),
-                "ONYXIA-PROJECT": getCurrentProjectId()
+                ...getHeaders()
             }
         }));
 
@@ -214,7 +246,15 @@ export function createOnyxiaApi(params: {
                             };
                         })(),
                         "sliders": apiRegion.services.defaultConfiguration?.sliders ?? {},
-                        "resources": apiRegion.services.defaultConfiguration?.resources
+                        "resources": apiRegion.services.defaultConfiguration?.resources,
+                        "certManager": {
+                            "useCertManager":
+                                apiRegion.services.expose.certManager?.useCertManager ??
+                                false,
+                            "certManagerClusterIssuer":
+                                apiRegion.services.expose.certManager
+                                    ?.certManagerClusterIssuer
+                        }
                     })
                 );
 
@@ -234,7 +274,7 @@ export function createOnyxiaApi(params: {
                     "catalogs": data.catalogs.map(
                         (apiCatalog): Catalog => ({
                             "id": apiCatalog.id,
-                            "name": apiCatalog.name,
+                            "name": apiCatalog.name ?? apiCatalog.id,
                             "repositoryUrl": apiCatalog.location,
                             "description": apiCatalog.description,
                             "isHidden": apiCatalog.status !== "PROD"
@@ -432,7 +472,7 @@ export function createOnyxiaApi(params: {
             const { data } =
                 await axiosInstance.get<ApiTypes["/my-lab/services"]>("/my-lab/services");
 
-            return data.apps.map(
+            const helmReleases = data.apps.map(
                 (apiApp): HelmRelease => ({
                     "helmReleaseName": apiApp.id,
                     //TODO: Here also get the catalogId
@@ -440,7 +480,7 @@ export function createOnyxiaApi(params: {
                     "postInstallInstructions": apiApp.postInstallInstructions,
                     "urls": apiApp.urls,
                     "startedAt": apiApp.startedAt,
-                    "env": apiApp.env,
+                    "values": apiApp.env,
                     "appVersion": apiApp.appVersion,
                     "revision": apiApp.revision,
                     ...(() => {
@@ -460,13 +500,13 @@ export function createOnyxiaApi(params: {
                         apiApp.tasks[0].containers.length !== 0 &&
                         apiApp.tasks[0].containers.every(({ ready }) => ready),
                     "status": apiApp.status,
-                    "taskIds": apiApp.tasks.map(({ id }) => id),
-                    "events": apiApp.events.map(({ timestamp, message }) => ({
-                        "time": timestamp,
-                        message
-                    }))
+                    "podNames": apiApp.tasks.map(({ id }) => id),
+                    "doesSupportSuspend": apiApp.suspendable,
+                    "isSuspended": apiApp.suspended
                 })
             );
+
+            return helmReleases;
         },
         "helmUninstall": async ({ helmReleaseName }) => {
             const { data } = await axiosInstance.delete<{ success: boolean }>(
@@ -549,15 +589,113 @@ export function createOnyxiaApi(params: {
                     .filter(exclude(undefined))
             );
         },
-        "getTaskLogs": async ({ helmReleaseName, taskId }) => {
+        "kubectlLogs": async ({ helmReleaseName, podName }) => {
             const { data } = await axiosInstance.get<string>("/my-lab/app/logs", {
                 "params": {
                     "serviceId": helmReleaseName,
-                    "taskId": taskId
+                    "taskId": podName
                 }
             });
 
             return data;
+        },
+        "subscribeToClusterEvents": async params => {
+            const { onNewEvent } = params;
+            const ctxUnsubscribe = Evt.newCtx();
+            const evtUnsubscribe = params.evtUnsubscribe.pipe(ctxUnsubscribe);
+
+            const response = await fetch(`${url}/my-lab/events`, {
+                "headers": getHeaders()
+            })
+                // NOTE: This happens when there's no data to read.
+                .catch(() => undefined);
+
+            if (response === undefined) {
+                return;
+            }
+
+            if (evtUnsubscribe.postCount !== 0) {
+                return;
+            }
+
+            assert(response.body !== null);
+
+            const reader = response.body.getReader();
+
+            evtUnsubscribe.attachOnce(() => {
+                reader.cancel();
+            });
+
+            let rest = "";
+
+            while (true) {
+                let result;
+
+                try {
+                    result = await reader.read();
+                } catch (error) {
+                    break;
+                }
+
+                if (evtUnsubscribe.postCount !== 0) {
+                    break;
+                }
+
+                const { done, value } = result;
+
+                if (done) {
+                    break;
+                }
+                // Convert Uint8Array to string assuming UTF-8 encoding
+                const chunk = new TextDecoder("utf-8").decode(value);
+
+                `${rest}${chunk}`.split("\n\n").forEach((part, index, parts) => {
+                    if (index === parts.length - 1) {
+                        rest = part;
+                        return;
+                    }
+
+                    const event: ApiTypes["/my-lab/events"] = JSON.parse(
+                        part.slice("data:".length)
+                    );
+
+                    onNewEvent({
+                        "eventId": event.metadata.uid,
+                        "message": event.message,
+                        "timestamp": new Date(event.metadata.creationTimestamp).getTime(),
+                        "severity": (() => {
+                            switch (event.type) {
+                                case "Normal":
+                                    return "info";
+                                case "Warning":
+                                    return "warning";
+                                case "Error":
+                                    return "error";
+                                default:
+                                    return "info";
+                            }
+                        })(),
+                        "originalEvent": event
+                    });
+                });
+            }
+
+            ctxUnsubscribe.done();
+
+            reader.releaseLock();
+
+            console.log("done");
+        },
+        "helmUpgradeGlobalSuspend": async ({ helmReleaseName, value }) => {
+            if (value === true) {
+                await axiosInstance.post("/my-lab/app/suspend", {
+                    "serviceID": helmReleaseName
+                });
+            } else {
+                await axiosInstance.post("/my-lab/app/resume", {
+                    "serviceID": helmReleaseName
+                });
+            }
         }
     };
 

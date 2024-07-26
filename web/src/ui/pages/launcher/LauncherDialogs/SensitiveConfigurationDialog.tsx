@@ -5,7 +5,7 @@ import { useTranslation } from "ui/i18n";
 import { useCallbackFactory } from "powerhooks/useCallbackFactory";
 import { useEvt } from "evt/hooks";
 import { Dialog } from "onyxia-ui/Dialog";
-import { Markdown } from "onyxia-ui/Markdown";
+import { Markdown } from "ui/shared/Markdown";
 import { Button } from "onyxia-ui/Button";
 import { symToStr } from "tsafe/symToStr";
 import type { NonPostableEvt, UnpackEvt } from "evt";
@@ -65,6 +65,7 @@ export const SensitiveConfigurationDialog = memo((props: Props) => {
 
 SensitiveConfigurationDialog.displayName = symToStr({ SensitiveConfigurationDialog });
 
-export const { i18n } = declareComponentKeys<
+const { i18n } = declareComponentKeys<
     "sensitive configuration dialog title" | "cancel" | "proceed to launch"
 >()({ SensitiveConfigurationDialog });
+export type I18n = typeof i18n;

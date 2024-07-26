@@ -77,9 +77,10 @@ export const CatalogChartCard = memo((props: Props) => {
 
 CatalogChartCard.displayName = symToStr({ CatalogChartCard });
 
-export const { i18n } = declareComponentKeys<"learn more" | "launch">()({
+const { i18n } = declareComponentKeys<"learn more" | "launch">()({
     CatalogChartCard
 });
+export type I18n = typeof i18n;
 
 const useStyles = tss
     .withName({ CatalogChartCard })

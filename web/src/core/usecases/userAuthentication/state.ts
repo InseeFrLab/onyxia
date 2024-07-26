@@ -16,6 +16,7 @@ namespace State {
     export type LoggedIn = {
         isUserLoggedIn: true;
         user: User;
+        decodedIdToken: Record<string, unknown>;
     };
 }
 

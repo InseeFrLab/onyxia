@@ -39,9 +39,10 @@ export const NoRunningService = memo((props: Props) => {
     );
 });
 
-export const { i18n } = declareComponentKeys<"no services running" | "launch one">()({
+const { i18n } = declareComponentKeys<"no services running" | "launch one">()({
     NoRunningService
 });
+export type I18n = typeof i18n;
 
 const useStyles = tss.withName({ NoRunningService }).create(({ theme }) => ({
     "root": {

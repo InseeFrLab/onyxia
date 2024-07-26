@@ -284,7 +284,8 @@ export const ExplorerItems = memo((props: ExplorerItemsProps) => {
     );
 });
 
-export const { i18n } = declareComponentKeys<"empty directory">()({ ExplorerItems });
+const { i18n } = declareComponentKeys<"empty directory">()({ ExplorerItems });
+export type I18n = typeof i18n;
 
 const useStyles = tss
     .withName({ ExplorerItems })

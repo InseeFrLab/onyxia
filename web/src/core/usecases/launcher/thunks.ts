@@ -467,7 +467,10 @@ const privateThunks = {
                     "password": servicePassword,
                     "ip": !doInjectPersonalInfos ? "0.0.0.0" : await onyxiaApi.getIp(),
                     "darkMode": userConfigs.isDarkModeEnabled,
-                    "lang": paramsOfBootstrapCore.getCurrentLang()
+                    "lang": paramsOfBootstrapCore.getCurrentLang(),
+                    "decodedIdToken": dispatch(
+                        userAuthentication.protectedThunks.getDecodedIdToken()
+                    )
                 },
                 "service": {
                     "oneTimePassword": generateRandomPassword()
@@ -516,9 +519,6 @@ const privateThunks = {
                         )
                     };
                 })(),
-                "kaggleApiToken": !doInjectPersonalInfos
-                    ? undefined
-                    : userConfigs.kaggleApiToken ?? undefined,
                 "s3": await (async () => {
                     const baseS3Config =
                         s3ConfigManagement.protectedSelectors.baseS3Config(getState());
@@ -601,7 +601,10 @@ const privateThunks = {
                     "route": region.route,
                     "istio": region.istio,
                     "randomSubdomain": `${Math.floor(Math.random() * 1000000)}`,
-                    "initScriptUrl": region.initScriptUrl
+                    "initScriptUrl": region.initScriptUrl,
+                    "useCertManager": region.certManager?.useCertManager,
+                    "certManagerClusterIssuer":
+                        region.certManager?.certManagerClusterIssuer
                 },
                 "proxyInjection": region.proxyInjection,
                 "packageRepositoryInjection": region.packageRepositoryInjection,
@@ -643,7 +646,7 @@ const privateThunks = {
                             ({ version }) => version === pinnedChartVersion
                         ) === undefined
                     ) {
-                        alert(
+                        console.log(
                             [
                                 `No ${pinnedChartVersion} version found for ${chartName} in ${catalog.repositoryUrl}.`,
                                 `Falling back to default version ${defaultChartVersion}`

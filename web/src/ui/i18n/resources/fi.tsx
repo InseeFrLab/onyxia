@@ -1,17 +1,17 @@
 import MuiLink from "@mui/material/Link";
 import type { Translations } from "../types";
 import { Markdown } from "ui/shared/Markdown";
-import { elementsToSentence } from "ui/tools/elementsToSentence";
 import { Icon } from "onyxia-ui/Icon";
 import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
 import { id } from "tsafe/id";
 import { capitalize } from "tsafe/capitalize";
+import { MaybeLink } from "ui/shared/MaybeLink";
 
 export const translations: Translations<"fi"> = {
     /* spell-checker: disable */
     "Account": {
         "infos": "Tilin tiedot",
-        "third-party-integration": "Kolmannen osapuolen integraatio",
+        "git": undefined,
         "storage": "Yhdistä tallennustilaan",
         "k8sCodeSnippets": "Kubernetes",
         "user-interface": "Käyttöliittymän asetukset",
@@ -31,20 +31,39 @@ export const translations: Translations<"fi"> = {
         "instructions about how to change password":
             'Vaihtaaksesi salasanasi, kirjaudu vain ulos ja klikkaa "unohdin salasanani" -linkkiä.'
     },
-    "AccountIntegrationsTab": {
-        "git section title": "Git-konfiguraatio",
-        "git section helper": `Varmistaaksesi, että näyt olevan Git-kontribuutioidesi tekijä`,
-        "gitName": "Git-käyttäjänimi",
-        "gitEmail": "Git-sähköposti",
-        "third party tokens section title": "Yhdistä Gitlab-, Github- ja Kaggle-tilisi",
-        "third party tokens section helper": `
-                Yhdistä palvelusi ulkoisiin tileihin käyttämällä henkilökohtaisia pääsykoodeja ja ympäristömuuttujia
-            `,
-        "personal token": ({ serviceName }) =>
-            `${serviceName}-henkilökohtainen pääsykoodi`,
-        "link for token creation": ({ serviceName }) =>
-            `Luo ${serviceName}-pääsykoodejasi.`,
-        "accessible as env": "Käytettävissä palveluissasi ympäristömuuttujana"
+    "AccountGitTab": {
+        "gitName": "Käyttäjänimi Gitille",
+        "gitName helper text": ({ gitName, focusClassName }) => (
+            <>
+                Tämä komento asettaa globaalin Git-käyttäjänimesi ja suoritetaan palvelun
+                käynnistyessä:&nbsp;
+                <code className={focusClassName}>
+                    git config --global user.name "{gitName || "<käyttäjänimesi>"}"
+                </code>
+            </>
+        ),
+        "gitEmail": "Sähköposti Gitille",
+        "gitEmail helper text": ({ gitEmail, focusClassName }) => (
+            <>
+                Tämä komento asettaa globaalin Git-sähköpostiosoitteesi ja suoritetaan
+                palvelun käynnistyessä:&nbsp;
+                <code className={focusClassName}>
+                    git config --global user.email "
+                    {gitEmail || "<sähköpostisi@domain.com>"}"
+                </code>
+            </>
+        ),
+        "githubPersonalAccessToken": "Henkilökohtainen pääsyavain Git-alustalle",
+        "githubPersonalAccessToken helper text": ({ focusClassName }) => (
+            <>
+                Tämän avaimen antaminen mahdollistaa yksityisten GitHub- tai
+                GitLab-repositorioidesi kloonaamisen ja päivittämisen ilman, että sinun
+                tarvitsee syöttää alustan tunnistetietojasi uudelleen.
+                <br />
+                Tämä avain on myös saatavilla ympäristömuuttujana:&nbsp;
+                <span className={focusClassName}>$GIT_PERSONAL_ACCESS_TOKEN</span>
+            </>
+        )
     },
     "AccountStorageTab": {
         "credentials section title": "Yhdistä datat palveluihisi",
@@ -489,17 +508,7 @@ export const translations: Translations<"fi"> = {
         "cardButton3": "Selaa tietoja"
     },
     "Catalog": {
-        "header text1": "Palvelukatalogi",
-        "header text2":
-            "Selaa, käynnistä ja määritä palveluita muutamalla napsautuksella.",
-        "header help": ({ catalogName, catalogDescription, repositoryUrl }) => (
-            <>
-                Olet tutkimassa Helm Chart Repositorya{" "}
-                <MuiLink href={repositoryUrl} target="_blank">
-                    {catalogName}: {catalogDescription}
-                </MuiLink>
-            </>
-        ),
+        "header": "Palvelukatalogi",
         "no result found": ({ forWhat }) => `Tuloksia ei löytynyt haulle ${forWhat}`,
         "search results": "Hakutulokset",
         "search": "Haku"
@@ -516,25 +525,38 @@ export const translations: Translations<"fi"> = {
     },
     "Launcher": {
         "header text1": "Palvelukatalogi",
-        "header text2":
-            "Selaa, käynnistä ja määritä palveluita muutamalla napsautuksella.",
-        "chart sources": ({ chartName, urls }) =>
-            urls.length === 0 ? (
-                <></>
-            ) : (
-                <>
-                    Pääsy kaavion {chartName} lähteese{urls.length === 1 ? "en" : "isiin"}
-                    :&nbsp;
-                    {elementsToSentence({
-                        "elements": urls.map(source => (
-                            <MuiLink href={source} target="_blank" underline="hover">
-                                täällä
+        "sources": ({ helmChartName, helmChartRepositoryName, sourceUrls }) => (
+            <>
+                Olet ottamassa käyttöön{" "}
+                {
+                    <MaybeLink href={sourceUrls.helmChartSourceUrl}>
+                        {helmChartName} Helm Chartin
+                    </MaybeLink>
+                }
+                {
+                    <MaybeLink href={sourceUrls.helmChartRepositorySourceUrl}>
+                        {helmChartRepositoryName} Helm Chart -arkistosta
+                    </MaybeLink>
+                }
+                .
+                {sourceUrls.dockerImageSourceUrl !== undefined && (
+                    <>
+                        {" "}
+                        Se perustuu{" "}
+                        {
+                            <MuiLink
+                                href={sourceUrls.dockerImageSourceUrl}
+                                target="_blank"
+                            >
+                                {helmChartName} Docker-kuvaan
                             </MuiLink>
-                        )),
-                        "language": "fi"
-                    })}
-                </>
-            ),
+                        }
+                        .
+                    </>
+                )}
+            </>
+        ),
+
         "download as script": "Lataa skriptinä",
         "api logs help body": ({
             k8CredentialsHref,
@@ -643,6 +665,21 @@ Tutustu vapaasti ja ota hallintaan Kubernetes-julkaisusi!
         "cancel": "Peruuta",
         "proceed to launch": "Jatka käynnistämistä"
     },
+    "MyService": {
+        "page title": ({ helmReleaseFriendlyName }) =>
+            `${helmReleaseFriendlyName} Valvonta`
+    },
+    "PodLogsTab": {
+        "not necessarily first logs":
+            "Nämä eivät välttämättä ole ensimmäiset lokit, vanhemmat lokit saattavat olla poistettu",
+        "new logs are displayed in realtime": "Uudet lokit näytetään reaaliajassa"
+    },
+    "MyServiceButtonBar": {
+        "back": "Takaisin",
+        "external monitoring": "Ulkoinen valvonta",
+        "helm values": "Helm-arvot",
+        "reduce": "Vähennä"
+    },
     "LauncherMainCard": {
         "card title": "Luo omat palvelusi",
         "friendly name": "Käyttäjäystävällinen nimi",
@@ -668,15 +705,24 @@ Tutustu vapaasti ja ota hallintaan Kubernetes-julkaisusi!
         ),
         "version select label": "Versio",
         "version select helper text": ({
-            chartName,
-            catalogRepositoryUrl,
-            catalogName
+            helmCharName,
+            helmRepositoryName,
+            sourceUrls
         }) => (
             <>
-                {chartName} kaavion versio&nbsp;
-                <MuiLink href={catalogRepositoryUrl}>
-                    {catalogName} Helm Repository
-                </MuiLink>
+                Version of the{" "}
+                {
+                    <MaybeLink href={sourceUrls.helmChartSourceUrl}>
+                        {helmCharName}
+                    </MaybeLink>
+                }{" "}
+                helm chart joka kuuluu helm-kaaviosäilöön{" "}
+                {
+                    <MaybeLink href={sourceUrls.helmChartRepositorySourceUrl}>
+                        {helmRepositoryName}
+                    </MaybeLink>
+                }
+                .
             </>
         ),
         "save changes": "Tallenna muutokset",
@@ -712,6 +758,15 @@ Tutustu vapaasti ja ota hallintaan Kubernetes-julkaisusi!
             "Palveluiden odotetaan olevan sammutettuina, kun et enää käytä niitä aktiivisesti.",
         "running services": "Käynnissä olevat palvelut"
     },
+    "ClusterEventsDialog": {
+        "title": "Tapahtumat",
+        "subtitle": (
+            <>
+                Kubernetes-nimiavaruuden tapahtumat, se on reaaliaikainen syöte komennosta{" "}
+                <code>kubectl get events</code>
+            </>
+        )
+    },
     "MyServicesConfirmDeleteDialog": {
         "confirm delete title": "Oletko varma?",
         "confirm delete subtitle":
@@ -731,7 +786,7 @@ Tutustu vapaasti ja ota hallintaan Kubernetes-julkaisusi!
     },
     "MyServicesCard": {
         "service": "Palvelu",
-        "running since": "Käynnissä alkaen: ",
+        "running since": "Käynnistetty: ",
         "open": "avata",
         "readme": "lueminut",
         "shared by you": "Jaettu sinun kanssasi",
@@ -739,8 +794,11 @@ Tutustu vapaasti ja ota hallintaan Kubernetes-julkaisusi!
         "this is a shared service": "Tämä palvelu on jaettu projektin jäsenten kesken",
         "status": "Tila",
         "container starting": "Säiliö käynnistyy",
-        "pending": "Odottaa",
-        "failed": "Epäonnistui"
+        "failed": "Epäonnistui",
+        "suspend service tooltip": "Keskeytä palvelu ja vapauta resurssit",
+        "resume service tooltip": "Jatka palvelua",
+        "suspended": "Keskeytetty",
+        "suspending": "Keskeyttää"
     },
     "MyServicesRestorableConfigOptions": {
         "edit": "Muokkaa",
@@ -755,7 +813,7 @@ Tutustu vapaasti ja ota hallintaan Kubernetes-julkaisusi!
         "saved": "Tallennettu",
         "expand": "Laajenna"
     },
-    "ReadmeAndEnvDialog": {
+    "ReadmeDialog": {
         "ok": "ok",
         "return": "Palaa"
     },

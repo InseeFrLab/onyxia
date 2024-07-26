@@ -480,7 +480,7 @@ export const SettingField = memo((props: Props): ReturnType<FunctionComponent> =
     );
 });
 
-export const { i18n } = declareComponentKeys<
+const { i18n } = declareComponentKeys<
     | Exclude<Props["type"], "text" | "editable text" | "toggle">
     | "copy tooltip"
     | {
@@ -492,6 +492,7 @@ export const { i18n } = declareComponentKeys<
     | "reset helper dialogs helper text"
     | "reset"
 >()({ SettingField });
+export type I18n = typeof i18n;
 
 const useStyles = tss
     .withName({ SettingField })

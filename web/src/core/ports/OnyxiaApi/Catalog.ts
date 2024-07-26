@@ -4,6 +4,6 @@ export type Catalog = {
     id: string;
     name: LocalizedString;
     repositoryUrl: string;
-    description: LocalizedString;
+    description: LocalizedString | undefined;
     isHidden: boolean;
 };

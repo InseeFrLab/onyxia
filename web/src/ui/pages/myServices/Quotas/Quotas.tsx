@@ -57,8 +57,8 @@ export function Quotas(props: Props) {
             {(() => {
                 if (!isReady) {
                     return (
-                        <div className={classes.loading}>
-                            <CircularProgress />
+                        <div className={classes.loadingWrapper}>
+                            <CircularProgress className={classes.loading} />
                         </div>
                     );
                 }
@@ -152,11 +152,14 @@ const useStyles = tss.withName({ Quotas }).create(({ theme }) => ({
     "checkIcon": {
         "color": theme.colors.useCases.alertSeverity.success.main
     },
-    "loading": {
+    "loadingWrapper": {
         "display": "flex",
         "justifyContent": "center",
         "alignItems": "center",
         "height": theme.typography.rootFontSizePx * 10
+    },
+    "loading": {
+        "color": theme.colors.useCases.typography.textPrimary
     },
     "podDeletingCircularProgress": {
         "position": "relative",
@@ -174,6 +177,7 @@ const useStyles = tss.withName({ Quotas }).create(({ theme }) => ({
     }
 }));
 
-export const { i18n } = declareComponentKeys<
+const { i18n } = declareComponentKeys<
     "show more" | "resource usage quotas" | "current resource usage is reasonable"
 >()({ Quotas });
+export type I18n = typeof i18n;

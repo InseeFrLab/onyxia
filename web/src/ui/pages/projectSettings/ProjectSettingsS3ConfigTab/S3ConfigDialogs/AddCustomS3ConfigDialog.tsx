@@ -288,12 +288,12 @@ const Body = memo(() => {
                             ? undefined
                             : t(formValuesErrors.accessKeyId)
                     }
-                    defaultValue={formValues.accessKeyId}
+                    defaultValue={formValues.accessKeyId ?? ""}
                     doOnlyShowErrorAfterFirstFocusLost
                     onValueBeingTypedChange={({ value }) =>
                         s3ConfigCreation.changeValue({
                             "key": "accessKeyId",
-                            value
+                            "value": value || undefined
                         })
                     }
                 />
@@ -309,12 +309,12 @@ const Body = memo(() => {
                             ? undefined
                             : t(formValuesErrors.secretAccessKey)
                     }
-                    defaultValue={formValues.secretAccessKey}
+                    defaultValue={formValues.secretAccessKey ?? ""}
                     doOnlyShowErrorAfterFirstFocusLost
                     onValueBeingTypedChange={({ value }) =>
                         s3ConfigCreation.changeValue({
                             "key": "secretAccessKey",
-                            value
+                            "value": value || undefined
                         })
                     }
                 />
@@ -367,7 +367,7 @@ const useBodyStyles = tss
         }
     }));
 
-export const { i18n } = declareComponentKeys<
+const { i18n } = declareComponentKeys<
     | "dialog title"
     | "dialog subtitle"
     | "cancel"
@@ -406,3 +406,4 @@ export const { i18n } = declareComponentKeys<
           R: JSX.Element;
       }
 >()({ AddCustomS3ConfigDialog });
+export type I18n = typeof i18n;

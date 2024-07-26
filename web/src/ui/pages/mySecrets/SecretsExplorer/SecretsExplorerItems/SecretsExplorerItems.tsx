@@ -418,9 +418,10 @@ export const SecretsExplorerItems = memo((props: SecretsExplorerItemsProps) => {
     );
 });
 
-export const { i18n } = declareComponentKeys<"empty directory">()({
+const { i18n } = declareComponentKeys<"empty directory">()({
     SecretsExplorerItems
 });
+export type I18n = typeof i18n;
 
 const useStyles = tss
     .withParams<{ isEmpty: boolean }>()

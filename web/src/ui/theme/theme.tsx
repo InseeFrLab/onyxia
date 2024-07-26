@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import { createOnyxiaUi, defaultGetTypographyDesc } from "onyxia-ui";
 import { palette } from "./palette";
 import { targetWindowInnerWidth } from "./targetWindowInnerWidth";
@@ -69,11 +70,11 @@ pluginSystemInitTheme({
     cx
 });
 
-export function OnyxiaUi(props: { darkMode?: boolean; children: React.ReactNode }) {
-    const { darkMode, children } = props;
+export function OnyxiaUi(props: { children: React.ReactNode }) {
+    const { children } = props;
     return (
         <CacheProvider value={emotionCache}>
-            <OnyxiaUiWithoutEmotionCache darkMode={darkMode}>
+            <OnyxiaUiWithoutEmotionCache darkMode={env.DARK_MODE}>
                 {children}
             </OnyxiaUiWithoutEmotionCache>
         </CacheProvider>

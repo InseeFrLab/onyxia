@@ -32,6 +32,7 @@ const technologies = [
     "R (paws)",
     "Python (s3fs)",
     "Python (boto3)",
+    "Python (polars)",
     "shell environment variables",
     "MC client",
     "s3cmd",
@@ -189,7 +190,7 @@ export const AccountStorageTab = memo((props: Props) => {
     );
 });
 
-export const { i18n } = declareComponentKeys<
+const { i18n } = declareComponentKeys<
     | "credentials section title"
     | "credentials section helper"
     | "accessible as env"
@@ -197,6 +198,7 @@ export const { i18n } = declareComponentKeys<
     | "init script section helper"
     | { K: "expires in"; P: { howMuchTime: string } }
 >()({ AccountStorageTab });
+export type I18n = typeof i18n;
 
 const useStyles = tss.withName({ AccountStorageTab }).create(({ theme }) => ({
     "divider": {

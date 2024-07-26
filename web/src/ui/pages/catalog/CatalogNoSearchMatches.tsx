@@ -39,12 +39,13 @@ export function CatalogNoSearchMatches(props: Props) {
     );
 }
 
-export const { i18n } = declareComponentKeys<
+const { i18n } = declareComponentKeys<
     | "no service found"
     | { K: "no result found"; P: { forWhat: string } }
     | "check spelling"
     | "go back"
 >()({ CatalogNoSearchMatches });
+export type I18n = typeof i18n;
 
 const useStyles = tss.withName({ CatalogNoSearchMatches }).create(({ theme }) => ({
     "root": {

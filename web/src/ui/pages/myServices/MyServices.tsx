@@ -27,6 +27,13 @@ import {
 import { Deferred } from "evt/tools/Deferred";
 import { customIcons } from "ui/theme";
 import { Quotas } from "./Quotas";
+import { assert, type Equals } from "tsafe/assert";
+import { ClusterEventsDialog } from "./ClusterEventsDialog";
+import {
+    ClusterEventsSnackbar,
+    type ClusterEventsSnackbarProps
+} from "./ClusterEventsSnackbar";
+import { useEvt } from "evt/hooks";
 
 export type Props = {
     route: PageRoute;
@@ -40,25 +47,31 @@ export default function MyServices(props: Props) {
     const { t: tCatalogLauncher } = useTranslation("Launcher");
 
     /* prettier-ignore */
-    const { serviceManagement, restorableConfigManagement, k8sCodeSnippets } = useCore().functions;
+    const { serviceManagement, restorableConfigManagement, k8sCodeSnippets, clusterEventsMonitor } = useCore().functions;
     /* prettier-ignore */
     const { restorableConfigs, chartIconAndFriendlyNameByRestorableConfigIndex } = useCoreState("restorableConfigManagement", "main");
     const {
         isUpdating,
-        runningServices,
-        deletableRunningServiceHelmReleaseNames,
-        isThereNonOwnedServices,
+        services,
         isThereOwnedSharedServices,
-        commandLogsEntries
+        commandLogsEntries,
+        isThereNonOwnedServices,
+        isThereDeletableServices
     } = useCoreState("serviceManagement", "main");
 
-    const { isCommandBarEnabled, isDevModeEnabled } = useCoreState(
-        "userConfigs",
-        "userConfigs"
-    );
+    const { isCommandBarEnabled } = useCoreState("userConfigs", "userConfigs");
     const servicePassword = useCoreState("projectManagement", "servicePassword");
 
     const evtQuotasActionUpdate = useConst(() => Evt.create());
+
+    const eventsNotificationCount = useCoreState(
+        "clusterEventsMonitor",
+        "notificationsCount"
+    );
+
+    const lastClusterEvent = useCoreState("clusterEventsMonitor", "lastClusterEvent");
+
+    const evtClusterEventsDialogOpen = useConst(() => Evt.create<void>());
 
     const onButtonBarClick = useConstCallback(async (buttonId: ButtonId) => {
         switch (buttonId) {
@@ -69,7 +82,7 @@ export default function MyServices(props: Props) {
                 serviceManagement.update();
                 evtQuotasActionUpdate.post();
                 return;
-            case "trash":
+            case "trash": {
                 const dDoProceed = new Deferred<boolean>();
 
                 evtConfirmDeleteDialogOpen.post({
@@ -81,16 +94,24 @@ export default function MyServices(props: Props) {
                     return;
                 }
 
-                deletableRunningServiceHelmReleaseNames.map(helmReleaseName =>
-                    serviceManagement.stopService({ helmReleaseName })
-                );
+                serviceManagement.deleteAllServices();
 
                 return;
+            }
+            case "events":
+                evtClusterEventsDialogOpen.post();
+                return;
         }
+        assert<Equals<typeof buttonId, never>>(false);
     });
 
     useEffect(() => {
         const { setInactive } = serviceManagement.setActive();
+        return () => setInactive();
+    }, []);
+
+    useEffect(() => {
+        const { setInactive } = clusterEventsMonitor.setActive();
         return () => setInactive();
     }, []);
 
@@ -159,41 +180,8 @@ export default function MyServices(props: Props) {
         [restorableConfigs, chartIconAndFriendlyNameByRestorableConfigIndex]
     );
 
-    const cards = useMemo(
-        (): MyServicesCardsProps["cards"] | undefined =>
-            runningServices?.map(
-                ({
-                    helmReleaseName,
-                    chartIconUrl,
-                    friendlyName,
-                    chartName,
-                    urls,
-                    startedAt,
-                    monitoringUrl,
-                    status,
-                    areAllTasksReady,
-                    hasPostInstallInstructions,
-                    ...rest
-                }) => ({
-                    helmReleaseName,
-                    chartIconUrl,
-                    friendlyName,
-                    chartName,
-                    "openUrl": urls[0],
-                    monitoringUrl,
-                    "startTime": startedAt,
-                    status,
-                    areAllTasksReady,
-                    hasPostInstallInstructions,
-                    "isShared": rest.isShared,
-                    "isOwned": rest.isOwned,
-                    "myServiceLink": !isDevModeEnabled
-                        ? undefined
-                        : routes.myService({ helmReleaseName }).link,
-                    "ownerUsername": rest.isOwned ? undefined : rest.ownerUsername
-                })
-            ),
-        [runningServices]
+    const getMyServiceLink = useConstCallback<MyServicesCardsProps["getMyServiceLink"]>(
+        ({ helmReleaseName }) => routes.myService({ helmReleaseName }).link
     );
 
     const evtMyServiceCardsAction = useConst(() =>
@@ -207,29 +195,26 @@ export default function MyServices(props: Props) {
             return;
         }
 
-        const runningService = (runningServices ?? []).find(
+        const service = services.find(
             ({ helmReleaseName }) => helmReleaseName === autoOpenHelmReleaseName
         );
 
-        if (runningService === undefined) {
+        if (service === undefined) {
             return;
         }
 
         routes
             .myServices({
                 ...route.params,
-                "isSavedConfigsExtended": route.params.isSavedConfigsExtended
-                    ? true
-                    : undefined,
                 "autoOpenHelmReleaseName": undefined
             })
             .replace();
 
         evtMyServiceCardsAction.post({
-            "action": "TRIGGER SHOW POST INSTALL INSTRUCTIONS",
-            "helmReleaseName": runningService.helmReleaseName
+            "action": "open readme dialog",
+            "helmReleaseName": service.helmReleaseName
         });
-    }, [route.params.autoOpenHelmReleaseName, runningServices]);
+    }, [route.params.autoOpenHelmReleaseName, services]);
 
     const catalogExplorerLink = useMemo(() => routes.catalog().link, []);
 
@@ -250,87 +235,130 @@ export default function MyServices(props: Props) {
                 return;
             }
 
-            serviceManagement.stopService({ helmReleaseName });
+            serviceManagement.deleteService({ helmReleaseName });
         }
     );
 
+    const onRequestPauseOrResume = useConstCallback<
+        MyServicesCardsProps["onRequestPauseOrResume"]
+    >(async ({ helmReleaseName }) =>
+        serviceManagement.suspendOrResumeService({ "helmReleaseName": helmReleaseName })
+    );
+
+    const onOpenClusterEventsDialog = useConstCallback(() => {
+        evtClusterEventsDialogOpen.post();
+    });
+
+    const { evtClusterEventsMonitor } = useCore().evts;
+
+    const evtClusterEventsSnackbarAction = useConst(() =>
+        Evt.create<UnpackEvt<ClusterEventsSnackbarProps["evtAction"]>>()
+    );
+
+    useEvt(
+        ctx => {
+            evtClusterEventsMonitor.$attach(
+                action =>
+                    action.actionName === "display notification" ? [action] : null,
+                ctx,
+                ({ message, severity }) => {
+                    evtClusterEventsSnackbarAction.post({
+                        "action": "show notification",
+                        message,
+                        severity
+                    });
+                }
+            );
+        },
+        [evtClusterEventsMonitor]
+    );
+
     return (
-        <div className={cx(classes.root, className)}>
-            <PageHeader
-                mainIcon={customIcons.servicesSvgUrl}
-                title={t("text1")}
-                helpTitle={t("text2")}
-                helpContent={t("text3")}
-                helpIcon="sentimentSatisfied"
-            />
-            <div className={classes.belowHeader} ref={belowHeaderRef}>
-                <div ref={buttonBarRef}>
-                    <MyServicesButtonBar
-                        onClick={onButtonBarClick}
-                        isThereNonOwnedServicesShown={isThereNonOwnedServices}
-                        isThereDeletableServices={
-                            deletableRunningServiceHelmReleaseNames.length !== 0
-                        }
-                    />
-                </div>
-                {isCommandBarEnabled && (
-                    <CommandBar
-                        classes={{
-                            "root": classes.commandBar,
-                            "rootWhenExpended": classes.commandBarWhenExpended
-                        }}
-                        entries={commandLogsEntries}
-                        maxHeight={commandBarMaxHeight}
-                        helpDialog={{
-                            "body": tCatalogLauncher("api logs help body", {
-                                "k8CredentialsHref": !k8sCodeSnippets.getIsAvailable()
-                                    ? undefined
-                                    : routes.account({
-                                          "tabId": "k8sCodeSnippets"
-                                      }).href,
-                                "myServicesHref": routes.myServices().href,
-                                "interfacePreferenceHref": routes.account({
-                                    "tabId": "user-interface"
-                                }).href
-                            })
-                        }}
-                    />
-                )}
-                <div className={classes.cardsAndSavedConfigs}>
-                    <>
-                        {!isSavedConfigsExtended && (
-                            <MyServicesCards
-                                isUpdating={isUpdating}
-                                className={classes.cards}
-                                cards={cards}
-                                onRequestDelete={onRequestDelete}
-                                catalogExplorerLink={catalogExplorerLink}
-                                evtAction={evtMyServiceCardsAction}
-                                projectServicePassword={servicePassword}
-                                getEnv={serviceManagement.getEnv}
-                                getPostInstallInstructions={
-                                    serviceManagement.getPostInstallInstructions
-                                }
-                            />
-                        )}
-                        <div className={classes.rightPanel}>
+        <>
+            <div className={cx(classes.root, className)}>
+                <PageHeader
+                    mainIcon={customIcons.servicesSvgUrl}
+                    title={t("text1")}
+                    helpTitle={t("text2")}
+                    helpContent={t("text3")}
+                    helpIcon="sentimentSatisfied"
+                />
+                <div className={classes.belowHeader} ref={belowHeaderRef}>
+                    <div ref={buttonBarRef}>
+                        <MyServicesButtonBar
+                            onClick={onButtonBarClick}
+                            isThereNonOwnedServicesShown={isThereNonOwnedServices}
+                            isThereDeletableServices={isThereDeletableServices}
+                            eventsNotificationCount={eventsNotificationCount}
+                        />
+                    </div>
+                    {isCommandBarEnabled && (
+                        <CommandBar
+                            classes={{
+                                "root": classes.commandBar,
+                                "rootWhenExpended": classes.commandBarWhenExpended
+                            }}
+                            entries={commandLogsEntries}
+                            maxHeight={commandBarMaxHeight}
+                            helpDialog={{
+                                "body": tCatalogLauncher("api logs help body", {
+                                    "k8CredentialsHref": !k8sCodeSnippets.getIsAvailable()
+                                        ? undefined
+                                        : routes.account({
+                                              "tabId": "k8sCodeSnippets"
+                                          }).href,
+                                    "myServicesHref": routes.myServices().href,
+                                    "interfacePreferenceHref": routes.account({
+                                        "tabId": "user-interface"
+                                    }).href
+                                })
+                            }}
+                        />
+                    )}
+                    <div className={classes.cardsAndSavedConfigs}>
+                        <>
                             {!isSavedConfigsExtended && (
-                                <Quotas evtActionUpdate={evtQuotasActionUpdate} />
+                                <MyServicesCards
+                                    className={classes.cards}
+                                    isUpdating={isUpdating}
+                                    services={services}
+                                    getMyServiceLink={getMyServiceLink}
+                                    catalogExplorerLink={catalogExplorerLink}
+                                    onRequestDelete={onRequestDelete}
+                                    onRequestPauseOrResume={onRequestPauseOrResume}
+                                    onRequestLogHelmGetNotes={
+                                        serviceManagement.logHelmGetNotes
+                                    }
+                                    evtAction={evtMyServiceCardsAction}
+                                    projectServicePassword={servicePassword}
+                                    lastClusterEvent={lastClusterEvent}
+                                    onOpenClusterEventsDialog={onOpenClusterEventsDialog}
+                                />
                             )}
-                            <MyServicesRestorableConfigs
-                                isShortVariant={!isSavedConfigsExtended}
-                                entries={restorableConfigEntires}
-                                onRequestDelete={onRequestDeleteRestorableConfig}
-                                onRequestToggleIsShortVariant={
-                                    onRequestToggleIsShortVariant
-                                }
-                            />
-                        </div>
-                    </>
+                            <div className={classes.rightPanel}>
+                                {!isSavedConfigsExtended && (
+                                    <Quotas evtActionUpdate={evtQuotasActionUpdate} />
+                                )}
+                                <MyServicesRestorableConfigs
+                                    isShortVariant={!isSavedConfigsExtended}
+                                    entries={restorableConfigEntires}
+                                    onRequestDelete={onRequestDeleteRestorableConfig}
+                                    onRequestToggleIsShortVariant={
+                                        onRequestToggleIsShortVariant
+                                    }
+                                />
+                            </div>
+                        </>
+                    </div>
+                    <MyServicesConfirmDeleteDialog evtOpen={evtConfirmDeleteDialogOpen} />
                 </div>
-                <MyServicesConfirmDeleteDialog evtOpen={evtConfirmDeleteDialogOpen} />
             </div>
-        </div>
+            <ClusterEventsDialog evtOpen={evtClusterEventsDialogOpen} />
+            <ClusterEventsSnackbar
+                evtAction={evtClusterEventsSnackbarAction}
+                onOpenClusterEventsDialog={onOpenClusterEventsDialog}
+            />
+        </>
     );
 }
 
@@ -364,9 +392,10 @@ function useCommandBarPositioning() {
     };
 }
 
-export const { i18n } = declareComponentKeys<
-    "text1" | "text2" | "text3" | "running services"
->()({ MyServices });
+const { i18n } = declareComponentKeys<"text1" | "text2" | "text3" | "running services">()(
+    { MyServices }
+);
+export type I18n = typeof i18n;
 
 const useStyles = tss
     .withName({ MyServices })
@@ -394,7 +423,7 @@ const useStyles = tss
             "display": "flex"
         },
         ...(() => {
-            const ratio = 0.65;
+            const ratio = 0.6;
 
             return {
                 "cards": {

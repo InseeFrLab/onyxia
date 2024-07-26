@@ -64,13 +64,14 @@ export const ExplorerButtonBar = memo((props: Props) => {
     return <ButtonBar buttons={buttons} onClick={onClick} />;
 });
 
-export const { i18n } = declareComponentKeys<
+const { i18n } = declareComponentKeys<
     | ButtonId
     | "upload file"
     | "file"
     //TODO: Remove
     | { K: "create what"; P: { what: string } }
 >()({ ExplorerButtonBar });
+export type I18n = typeof i18n;
 
 const buttonIds = ["refresh", "new", "create directory", "delete", "copy path"] as const;
 

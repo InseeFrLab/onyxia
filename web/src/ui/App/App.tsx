@@ -22,6 +22,7 @@ import { GlobalAlert } from "./GlobalAlert";
 import { Main } from "./Main";
 import { AutoLogoutCountdown } from "./AutoLogoutCountdown";
 import { onyxiaInstancePublicUrlKey } from "keycloak-theme/login/onyxiaInstancePublicUrl";
+import { useDomRect } from "powerhooks/useDomRect";
 
 loadThemedFavicon();
 // NOTE: We do that only to showcase the app with an other font with the URL.
@@ -87,7 +88,11 @@ function ScreenScalerOutOfRangeFallback() {
 function ContextualizedApp() {
     useSyncDarkModeWithValueInProfile();
 
-    const { classes } = useStyles();
+    const {
+        ref: globalAlertRef,
+        domRect: { height: globalAlertHeight }
+    } = useDomRect();
+    const { classes } = useStyles({ globalAlertHeight });
     const { isUserLoggedIn } = useCoreState("userAuthentication", "authenticationState");
 
     return (
@@ -95,6 +100,7 @@ function ContextualizedApp() {
             <div className={classes.root}>
                 {env.GLOBAL_ALERT !== undefined && (
                     <GlobalAlert
+                        ref={globalAlertRef}
                         className={classes.globalAlert}
                         severity={env.GLOBAL_ALERT.severity}
                         message={env.GLOBAL_ALERT.message}
@@ -112,55 +118,59 @@ function ContextualizedApp() {
     );
 }
 
-const useStyles = tss.withName({ App }).create(({ theme }) => {
-    const footerHeight = 32;
+const useStyles = tss
+    .withName({ App })
+    .withParams<{ globalAlertHeight: number }>()
+    .create(({ theme, globalAlertHeight }) => {
+        const footerHeight = 32;
 
-    const rootRightLeftMargin = theme.spacing(4);
+        const rootRightLeftMargin = theme.spacing(4);
 
-    return {
-        "root": {
-            "height": "100%",
-            "display": "flex",
-            "flexDirection": "column",
-            "backgroundColor": theme.colors.useCases.surfaces.background,
-            "margin": `0 ${rootRightLeftMargin}px`,
-            "position": "relative"
-        },
-        "globalAlert": {
-            "position": "relative",
-            "width": `calc(100% + 2 * ${rootRightLeftMargin}px)`,
-            "left": -rootRightLeftMargin,
-            "marginBottom": theme.spacing(1)
-        },
-        "header": {
-            "paddingBottom": 0 //For the LeftBar shadow
-        },
-        "betweenHeaderAndFooter": {
-            "flex": 1,
-            "overflow": "hidden",
-            "display": "flex",
-            "paddingTop": theme.spacing(2.3), //For the LeftBar shadow
-            "paddingBottom": footerHeight
-        },
-        "footer": {
-            "height": footerHeight,
-            "position": "absolute",
-            "bottom": 0,
-            "width": "100%",
-            "background": "transparent"
-        },
-        "leftBar": {
-            "height": "100%"
-        },
-        "main": {
-            "height": "100%",
-            "flex": 1,
-            //TODO: See if scroll delegation works if we put auto here instead of "hidden"
-            "paddingLeft": theme.spacing(4),
-            "overflow": "hidden"
-        }
-    };
-});
+        return {
+            "root": {
+                "height": "100%",
+                "display": "flex",
+                "flexDirection": "column",
+                "backgroundColor": theme.colors.useCases.surfaces.background,
+                "margin": `0 ${rootRightLeftMargin}px`,
+                "position": "relative"
+            },
+            "globalAlert": {
+                "position": "absolute",
+                "width": theme.windowInnerWidth,
+                "left": -rootRightLeftMargin
+            },
+            "header": {
+                "marginTop":
+                    globalAlertHeight === 0 ? 0 : globalAlertHeight + theme.spacing(2),
+                "paddingBottom": 0 //For the LeftBar shadow
+            },
+            "betweenHeaderAndFooter": {
+                "flex": 1,
+                "overflow": "hidden",
+                "display": "flex",
+                "paddingTop": theme.spacing(2.3), //For the LeftBar shadow
+                "paddingBottom": footerHeight
+            },
+            "footer": {
+                "height": footerHeight,
+                "position": "absolute",
+                "bottom": 0,
+                "width": "100%",
+                "background": "transparent"
+            },
+            "leftBar": {
+                "height": "100%"
+            },
+            "main": {
+                "height": "100%",
+                "flex": 1,
+                //TODO: See if scroll delegation works if we put auto here instead of "hidden"
+                "paddingLeft": theme.spacing(4),
+                "overflow": "hidden"
+            }
+        };
+    });
 
 /**
  * This hook to two things:
@@ -179,14 +189,17 @@ function useSyncDarkModeWithValueInProfile() {
     const userConfigsIsDarkModeEnabled = useCoreState("userConfigs", "isDarkModeEnabled");
 
     useEffect(() => {
-        if (userConfigsIsDarkModeEnabled === undefined) {
-            return;
+        if (userConfigsIsDarkModeEnabled !== undefined && env.DARK_MODE === undefined) {
+            setIsDarkModeEnabled(userConfigsIsDarkModeEnabled);
         }
-
-        setIsDarkModeEnabled(userConfigsIsDarkModeEnabled);
     }, []);
 
     useEffectOnValueChange(() => {
+        //TODO: Remove after vivatech
+        if (env.DARK_MODE !== undefined) {
+            return;
+        }
+
         if (!isUserLoggedIn) {
             return;
         }

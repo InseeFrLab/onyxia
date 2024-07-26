@@ -1,5 +1,5 @@
 import { tss } from "tss";
-import { useReducer, memo, useState, type ReactNode } from "react";
+import { memo, useState, useEffect, type ReactNode } from "react";
 import { useDomRect } from "powerhooks/useDomRect";
 import { CircularProgress } from "onyxia-ui/CircularProgress";
 import { Button } from "onyxia-ui/Button";
@@ -32,6 +32,9 @@ export type CommandBarProps = {
         title?: NonNullable<ReactNode>;
         body: NonNullable<ReactNode>;
     };
+    /** For controlled mode */
+    isExpended?: boolean;
+    onIsExpendedChange?: (isExpended: boolean) => void;
 };
 
 export namespace CommandBarProps {
@@ -43,7 +46,15 @@ export namespace CommandBarProps {
 }
 
 export const CommandBar = memo((props: CommandBarProps) => {
-    const { className, entries, maxHeight, downloadButton, helpDialog } = props;
+    const {
+        className,
+        entries,
+        maxHeight,
+        downloadButton,
+        helpDialog,
+        isExpended: isExpended_props,
+        onIsExpendedChange
+    } = props;
 
     const {
         domRect: { height: headerHeight },
@@ -52,7 +63,15 @@ export const CommandBar = memo((props: CommandBarProps) => {
 
     const panelRef = useStateRef<HTMLDivElement>(null);
 
-    const [isExpended, toggleIsExpended] = useReducer(isExpended => !isExpended, false);
+    const [isExpended, setIsExpended] = useState(false);
+
+    useEffect(() => {
+        if (isExpended_props === undefined) {
+            return;
+        }
+
+        setIsExpended(isExpended_props);
+    }, [isExpended_props]);
 
     {
         const evtIsExpended = useConst(() => Evt.create<boolean>(isExpended));
@@ -135,7 +154,13 @@ export const CommandBar = memo((props: CommandBarProps) => {
                     <IconButton
                         icon={id<MuiIconComponentName>("ExpandMore")}
                         className={cx(classes.iconButton, classes.expandIconButton)}
-                        onClick={toggleIsExpended}
+                        onClick={() => {
+                            const newIsExpended = !isExpended;
+
+                            setIsExpended(newIsExpended);
+
+                            onIsExpendedChange?.(newIsExpended);
+                        }}
                     />
                 </div>
                 <div
@@ -187,7 +212,8 @@ export const CommandBar = memo((props: CommandBarProps) => {
     );
 });
 
-export const { i18n } = declareComponentKeys<"ok">()({ CommandBar });
+const { i18n } = declareComponentKeys<"ok">()({ CommandBar });
+export type I18n = typeof i18n;
 
 const useStyles = tss
     .withParams<{

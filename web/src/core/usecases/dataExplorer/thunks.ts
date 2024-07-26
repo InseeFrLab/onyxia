@@ -126,10 +126,12 @@ export const thunks = {
                 return;
             }
 
+            const rowCount = rowCountOrErrorMessage;
+
             const rowsOrErrorMessage = await sqlOlap
                 .getRows({
                     sourceUrl,
-                    "rowsPerPage": queryParams.rowsPerPage,
+                    "rowsPerPage": queryParams.rowsPerPage + 1,
                     "page": queryParams.page
                 })
                 .catch(error => String(error));
@@ -149,10 +151,20 @@ export const thunks = {
                 return;
             }
 
+            const rows = rowsOrErrorMessage;
+
+            const hasMore = rows.length === queryParams.rowsPerPage + 1;
+
             dispatch(
                 actions.querySucceeded({
-                    "rows": rowsOrErrorMessage,
-                    "rowCount": rowCountOrErrorMessage ?? 99999999,
+                    "rows": hasMore ? rows.slice(0, -1) : rows,
+                    "rowCount":
+                        rowCount !== undefined
+                            ? rowCount
+                            : hasMore
+                              ? undefined
+                              : queryParams.rowsPerPage * (queryParams.page - 1) +
+                                rows.length,
                     fileDownloadUrl
                 })
             );

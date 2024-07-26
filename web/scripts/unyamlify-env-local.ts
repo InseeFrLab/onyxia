@@ -37,8 +37,30 @@ if (!fs.existsSync(envLocalYamlFilePath)) {
                 `            url: "https://www.sspcloud.fr/formation"`,
                 `          }`,
                 `        ]`,
-                `      CUSTOM_HTML_HEAD: |`,
-                `          <script src="%PUBLIC_URL%/custom-resources/my-plugin.js"></script>`,
+                `      #PALETTE_OVERRIDE: |`,
+                `      #  {`,
+                `      #    focus: {`,
+                `      #      main: "#FF9100", // Light mode focus`,
+                `      #      light: "#FAB900", // Dark mode focus`,
+                `      #    },`,
+                `      #    limeGreen: {`,
+                `      #        main: "#00DF0A"`,
+                `      #    }`,
+                `      #  }`,
+                `      #GLOBAL_ALERT: |`,
+                `      #  {`,
+                `      #    severity: "success",`,
+                `      #    message: {`,
+                `      #      en: "Hello!  \\n\\`,
+                `      #        This is a global alert message.\\`,
+                `      #        It Supports **Mardown**. You can include [links](https://example.com).",`,
+                `      #      en: "Bonjour!  \\n\\`,
+                `      #        Ceci est un message d'alerte global.\\`,
+                `      #        Il supporte **Markdown**. Vous pouvez inclure [des liens](https://example.com)."`,
+                `      #    }`,
+                `      #  }`,
+                `      #CUSTOM_HTML_HEAD: |`,
+                `      #    <script src="%PUBLIC_URL%/custom-resources/my-plugin.js"></script>`,
                 ``
             ].join("\n"),
             "utf8"
@@ -58,8 +80,10 @@ fs.writeFileSync(
             )}`,
             `# Do not edit it manually!`,
             "",
-            ...Object.entries(parsedEnvLocalYaml.onyxia.web.env).map(
-                ([key, value]) => `${key}="${value.replace(/\n/g, "\\n")}"`
+            ...Object.entries(parsedEnvLocalYaml.onyxia.web.env).map(([key, value]) =>
+                value === ""
+                    ? `${key}=""`
+                    : `${key}="vite-envs:b64Decode(${Buffer.from(`${value}`, "utf8").toString("base64")})"`
             )
         ].join("\n"),
         "utf8"

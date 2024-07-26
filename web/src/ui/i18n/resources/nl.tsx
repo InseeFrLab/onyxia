@@ -1,17 +1,17 @@
 import type { Translations } from "../types";
 import MuiLink from "@mui/material/Link";
 import { Markdown } from "ui/shared/Markdown";
-import { elementsToSentence } from "ui/tools/elementsToSentence";
 import { Icon } from "onyxia-ui/Icon";
 import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
 import { id } from "tsafe/id";
 import { capitalize } from "tsafe/capitalize";
+import { MaybeLink } from "ui/shared/MaybeLink";
 
 export const translations: Translations<"nl"> = {
     /* spell-checker: disable */
     "Account": {
         "infos": "Accountgegevens",
-        "third-party-integration": "Externe diensten",
+        "git": undefined,
         "storage": "Verbinding met opslag",
         "k8sCodeSnippets": "Verbinding met Kubernetes",
         "user-interface": "Interfacemodi",
@@ -30,20 +30,39 @@ export const translations: Translations<"nl"> = {
         "instructions about how to change password":
             'Om uw wachtwoord te wijzigen, logt u simpelweg uit en klikt u op de link "wachtwoord vergeten".'
     },
-    "AccountIntegrationsTab": {
-        "git section title": "Git-configuraties",
-        "git section helper": `Om ervoor te zorgen dat u vanuit uw diensten verschijnt
-            als de auteur van de Git-bijdragen`,
+    "AccountGitTab": {
         "gitName": "Gebruikersnaam voor Git",
-        "gitEmail": "E-mailadres voor Git",
-        "third party tokens section title":
-            "Uw Gitlab-, Github- en Kaggle-accounts verbinden",
-        "third party tokens section helper": `Verbind uw diensten met externe accounts met behulp van
-            persoonlijke toegangstokens en omgevingsvariabelen.`,
-        "personal token": ({ serviceName }) => `Persoonlijk toegangstoken ${serviceName}`,
-        "link for token creation": ({ serviceName }) =>
-            `Uw token aanmaken ${serviceName}.`,
-        "accessible as env": "Toegankelijk binnen uw diensten als omgevingsvariabele"
+        "gitName helper text": ({ gitName, focusClassName }) => (
+            <>
+                Dit commando zal je globale Git-gebruikersnaam instellen, uitgevoerd bij
+                het opstarten van de service:&nbsp;
+                <code className={focusClassName}>
+                    git config --global user.name "{gitName || "<jouw_gebruikersnaam>"}"
+                </code>
+            </>
+        ),
+        "gitEmail": "E-mail voor Git",
+        "gitEmail helper text": ({ gitEmail, focusClassName }) => (
+            <>
+                Dit commando zal je globale Git-e-mailadres instellen, uitgevoerd bij het
+                opstarten van de service:&nbsp;
+                <code className={focusClassName}>
+                    git config --global user.email "{gitEmail || "<jouw_email@domain.nl>"}
+                    "
+                </code>
+            </>
+        ),
+        "githubPersonalAccessToken": "Persoonlijke toegangstoken voor Git Forge",
+        "githubPersonalAccessToken helper text": ({ focusClassName }) => (
+            <>
+                Door dit token te verstrekken, kun je zonder opnieuw je inloggegevens van
+                je forge in te voeren, klonen en pushen naar je privé GitHub of GitLab
+                repositories.
+                <br />
+                Dit token zal ook beschikbaar zijn als een omgevingsvariabele:&nbsp;
+                <span className={focusClassName}>$GIT_PERSONAL_ACCESS_TOKEN</span>
+            </>
+        )
     },
     "AccountStorageTab": {
         "credentials section title": "Uw gegevens verbinden met uw diensten",
@@ -493,17 +512,7 @@ export const translations: Translations<"nl"> = {
         "cardButton3": "Gegevens raadplegen"
     },
     "Catalog": {
-        "header text1": "Catalogus van de diensten",
-        "header text2":
-            "Ontdek, start en configureer diensten in slechts een paar klikken.",
-        "header help": ({ catalogName, catalogDescription, repositoryUrl }) => (
-            <>
-                Je bent het Helm Chart Repository aan het verkennen{" "}
-                <MuiLink href={repositoryUrl} target="_blank">
-                    {catalogName}: {catalogDescription}
-                </MuiLink>
-            </>
-        ),
+        "header": "Catalogus van de diensten",
         "no result found": ({ forWhat }) => `Geen resultaat gevonden voor ${forWhat}`,
         "search results": "Resultaten van de zoekopdracht",
         "search": "Zoeken"
@@ -520,26 +529,39 @@ export const translations: Translations<"nl"> = {
         "go back": "Terug naar de voornaamste diensten"
     },
     "Launcher": {
-        "header text1": "Catalogus van de diensten",
-        "header text2":
-            "Ontdek, start en configureer diensten in slechts een paar klikken.",
-        "chart sources": ({ chartName, urls }) =>
-            urls.length === 0 ? (
-                <></>
-            ) : (
-                <>
-                    Toegang tot de bron{urls.length === 1 ? "" : "nen"} van de grafiek{" "}
-                    {chartName}:&nbsp;
-                    {elementsToSentence({
-                        "elements": urls.map(source => (
-                            <MuiLink href={source} target="_blank" underline="hover">
-                                hier
+        "header text1": "Dienstencatalogus",
+        "sources": ({ helmChartName, helmChartRepositoryName, sourceUrls }) => (
+            <>
+                Je staat op het punt om het Helm-chart{" "}
+                {
+                    <MaybeLink href={sourceUrls.helmChartSourceUrl}>
+                        {helmChartName}
+                    </MaybeLink>
+                }
+                te implementeren dat behoort tot de Helm-chartrepository{" "}
+                {
+                    <MaybeLink href={sourceUrls.helmChartRepositorySourceUrl}>
+                        {helmChartRepositoryName}
+                    </MaybeLink>
+                }
+                .
+                {sourceUrls.dockerImageSourceUrl !== undefined && (
+                    <>
+                        {" "}
+                        Het is gebaseerd op de Docker-afbeelding{" "}
+                        {
+                            <MuiLink
+                                href={sourceUrls.dockerImageSourceUrl}
+                                target="_blank"
+                            >
+                                {helmChartName}
                             </MuiLink>
-                        )),
-                        "language": "nl"
-                    })}
-                </>
-            ),
+                        }
+                        .
+                    </>
+                )}
+            </>
+        ),
         "download as script": "Downloaden als script",
         "api logs help body": ({
             k8CredentialsHref,
@@ -653,6 +675,21 @@ Voel je vrij om te verkennen en de controle over je Kubernetes-implementaties te
             "Deze dienst uitvoeren kan gevaarlijk zijn",
         "proceed to launch": "Bewust uitvoeren"
     },
+    "MyService": {
+        "page title": ({ helmReleaseFriendlyName }) =>
+            `${helmReleaseFriendlyName} Monitoring`
+    },
+    "PodLogsTab": {
+        "not necessarily first logs":
+            "Dit zijn niet noodzakelijkerwijs de eerste logs, oudere logs kunnen zijn verwijderd",
+        "new logs are displayed in realtime": "Nieuwe logs worden in realtime weergegeven"
+    },
+    "MyServiceButtonBar": {
+        "back": "Terug",
+        "external monitoring": "Externe monitoring",
+        "helm values": "Helm waarden",
+        "reduce": "Verminderen"
+    },
     "LauncherMainCard": {
         "card title": "Uw eigen dienst aanmaken",
         "friendly name": "Gepersonaliseerde naam",
@@ -680,15 +717,24 @@ Voel je vrij om te verkennen en de controle over je Kubernetes-implementaties te
         ),
         "version select label": "Versie",
         "version select helper text": ({
-            chartName,
-            catalogRepositoryUrl,
-            catalogName
+            helmCharName,
+            helmRepositoryName,
+            sourceUrls
         }) => (
             <>
-                Versie van de Chart {chartName} in de&nbsp;
-                <MuiLink href={catalogRepositoryUrl}>
-                    Helm repository {catalogName}
-                </MuiLink>
+                Versie van de helm-chart{" "}
+                {
+                    <MaybeLink href={sourceUrls.helmChartSourceUrl}>
+                        {helmCharName}
+                    </MaybeLink>
+                }
+                die behoort tot de helm-chart repository{" "}
+                {
+                    <MaybeLink href={sourceUrls.helmChartRepositorySourceUrl}>
+                        {helmRepositoryName}
+                    </MaybeLink>
+                }
+                .
             </>
         ),
         "save changes": "Wijzigingen opslaan",
@@ -724,6 +770,15 @@ Voel je vrij om te verkennen en de controle over je Kubernetes-implementaties te
         "text3": "We raden u aan uw diensten te verwijderen na elke werksessie.",
         "running services": "Diensten in uitvoering"
     },
+    "ClusterEventsDialog": {
+        "title": "Evenementen",
+        "subtitle": (
+            <>
+                Evenementen van de Kubernetes namespace, het is een realtime feed van{" "}
+                <code>kubectl get events</code>
+            </>
+        )
+    },
     "MyServicesConfirmDeleteDialog": {
         "confirm delete title": "Bent u zeker?",
         "confirm delete subtitle":
@@ -743,7 +798,7 @@ Voel je vrij om te verkennen en de controle over je Kubernetes-implementaties te
     },
     "MyServicesCard": {
         "service": "Dienst",
-        "running since": "In uitvoering sinds : ",
+        "running since": "Gestart: ",
         "open": "openen",
         "readme": "readme",
         "shared by you": "gedeeld door u",
@@ -752,8 +807,11 @@ Voel je vrij om te verkennen en de controle over je Kubernetes-implementaties te
         "this is a shared service": "Deze dienst wordt gedeeld binnen het project",
         "status": "Status",
         "container starting": "Container start",
-        "pending": "In afwachting",
-        "failed": "Mislukt"
+        "failed": "Mislukt",
+        "suspend service tooltip": "Onderbreek de dienst en bevrijd de middelen",
+        "resume service tooltip": "Hervat de dienst",
+        "suspended": "Opgeschort",
+        "suspending": "Opschorten"
     },
     "MyServicesRestorableConfigOptions": {
         "edit": "Wijzigen",
@@ -768,7 +826,7 @@ Voel je vrij om te verkennen en de controle over je Kubernetes-implementaties te
         "saved": "Opgeslagen",
         "expand": "Uitbreiden"
     },
-    "ReadmeAndEnvDialog": {
+    "ReadmeDialog": {
         "ok": "ok",
         "return": "Terug"
     },

@@ -1,17 +1,17 @@
 import type { Translations } from "../types";
 import MuiLink from "@mui/material/Link";
 import { Markdown } from "ui/shared/Markdown";
-import { elementsToSentence } from "ui/tools/elementsToSentence";
 import { Icon } from "onyxia-ui/Icon";
 import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
 import { id } from "tsafe/id";
 import { capitalize } from "tsafe/capitalize";
+import { MaybeLink } from "ui/shared/MaybeLink";
 
 export const translations: Translations<"de"> = {
     /* spell-checker: disable */
     "Account": {
         "infos": "Kontoinformationen",
-        "third-party-integration": "Externe Dienstleistungen",
+        "git": undefined,
         "storage": "Verbindung zum Speicher",
         "k8sCodeSnippets": "Verbindung zu Kubernetes",
         "user-interface": "Konfiguration der Benutzeroberfläche",
@@ -30,19 +30,39 @@ export const translations: Translations<"de"> = {
         "instructions about how to change password":
             'Um Ihr Passwort zu ändern, loggen Sie sich einfach aus und klicken Sie auf den Link "Passwort vergessen".'
     },
-    "AccountIntegrationsTab": {
-        "git section title": "Git-Konfiguration",
-        "git section helper": `Stellen Sie sicher, dass Sie in Ihren Diensten als Autor von Git commits erscheinen`,
+    "AccountGitTab": {
         "gitName": "Benutzername für Git",
+        "gitName helper text": ({ gitName, focusClassName }) => (
+            <>
+                Dieser Befehl legt Ihren globalen Git-Benutzernamen fest und wird beim
+                Start des Dienstes ausgeführt:&nbsp;
+                <code className={focusClassName}>
+                    git config --global user.name "{gitName || "<Ihr_Benutzername>"}"
+                </code>
+            </>
+        ),
         "gitEmail": "E-Mail für Git",
-        "third party tokens section title":
-            "Verbinden Sie Ihre Gitlab-, Github- und Kaggle-Konten",
-        "third party tokens section helper": `Verbinden Sie Ihre Dienste mit externen Konten mit Hilfe von persönlichen Zugriffstoken und Umgebungsvariablen.`,
-        "personal token": ({ serviceName }) =>
-            `Persönlicher Zugriffstoken ${serviceName}`,
-        "link for token creation": ({ serviceName }) =>
-            `Erstellen Sie Ihren Token ${serviceName}.`,
-        "accessible as env": "In Ihren Diensten als Umgebungsvariable verfügbar"
+        "gitEmail helper text": ({ gitEmail, focusClassName }) => (
+            <>
+                Dieser Befehl legt Ihre globale Git-E-Mail-Adresse fest und wird beim
+                Start des Dienstes ausgeführt:&nbsp;
+                <code className={focusClassName}>
+                    git config --global user.email "
+                    {gitEmail || "<ihre_email@domain.com>"}"
+                </code>
+            </>
+        ),
+        "githubPersonalAccessToken": "Persönlicher Zugangstoken für Git-Plattform",
+        "githubPersonalAccessToken helper text": ({ focusClassName }) => (
+            <>
+                Durch Bereitstellen dieses Tokens können Sie ohne erneute Eingabe Ihrer
+                Plattform-Anmeldedaten auf Ihre privaten GitHub- oder GitLab-Repositories
+                zugreifen und Änderungen vornehmen.
+                <br />
+                Dieser Token ist auch als Umgebungsvariable verfügbar:&nbsp;
+                <span className={focusClassName}>$GIT_PERSONAL_ACCESS_TOKEN</span>
+            </>
+        )
     },
     "AccountStorageTab": {
         "credentials section title": "Verbinden Sie Ihre Daten mit Ihren Diensten",
@@ -500,17 +520,7 @@ export const translations: Translations<"de"> = {
         "cardButton3": "Daten anzeigen"
     },
     "Catalog": {
-        "header text1": "Dienstkatalog",
-        "header text2":
-            "Erkunden, starten und konfigurieren Sie Dienste mit nur wenigen Klicks.",
-        "header help": ({ catalogName, catalogDescription, repositoryUrl }) => (
-            <>
-                Sie erforschen das Helm Chart Repository{" "}
-                <MuiLink href={repositoryUrl} target="_blank">
-                    {catalogName}: {catalogDescription}
-                </MuiLink>
-            </>
-        ),
+        "header": "Dienstkatalog",
         "no result found": ({ forWhat }) => `Keine Ergebnisse gefunden für ${forWhat}`,
         "search results": "Suchergebnisse",
         "search": "Suchen"
@@ -526,26 +536,39 @@ export const translations: Translations<"de"> = {
         "go back": "Zurück zu den Hauptdiensten"
     },
     "Launcher": {
-        "header text1": "Dienstkatalog",
-        "header text2":
-            "Erkunden, starten und konfigurieren Sie Dienste mit nur wenigen Klicks.",
-        "chart sources": ({ chartName, urls }) =>
-            urls.length === 0 ? (
-                <></>
-            ) : (
-                <>
-                    Auf die Quelle{urls.length === 1 ? "" : "n"} des Charts {chartName}{" "}
-                    zugreifen:&nbsp;
-                    {elementsToSentence({
-                        "elements": urls.map(source => (
-                            <MuiLink href={source} target="_blank" underline="hover">
-                                hier
+        "header text1": "Servicekatalog",
+        "sources": ({ helmChartName, helmChartRepositoryName, sourceUrls }) => (
+            <>
+                Sie sind dabei, das Helm-Chart{" "}
+                {
+                    <MaybeLink href={sourceUrls.helmChartSourceUrl}>
+                        {helmChartName}
+                    </MaybeLink>
+                }
+                zu deployen, das zum Helm-Chart-Repository{" "}
+                {
+                    <MaybeLink href={sourceUrls.helmChartRepositorySourceUrl}>
+                        {helmChartRepositoryName}
+                    </MaybeLink>
+                }{" "}
+                gehört.
+                {sourceUrls.dockerImageSourceUrl !== undefined && (
+                    <>
+                        {" "}
+                        Es basiert auf dem Docker-Image{" "}
+                        {
+                            <MuiLink
+                                href={sourceUrls.dockerImageSourceUrl}
+                                target="_blank"
+                            >
+                                {helmChartName}
                             </MuiLink>
-                        )),
-                        "language": "de"
-                    })}
-                </>
-            ),
+                        }
+                        .
+                    </>
+                )}
+            </>
+        ),
         "download as script": "Als Skript herunterladen",
         "api logs help body": ({
             k8CredentialsHref,
@@ -658,6 +681,22 @@ Fühlen Sie sich frei, Ihre Kubernetes-Bereitstellungen zu erkunden und die Kont
         "cancel": "Abbrechen",
         "proceed to launch": "Bewusst starten"
     },
+    "MyService": {
+        "page title": ({ helmReleaseFriendlyName }) =>
+            `${helmReleaseFriendlyName} Überwachung`
+    },
+    "PodLogsTab": {
+        "not necessarily first logs":
+            "Dies sind nicht unbedingt die ersten Protokolle, ältere Protokolle könnten gelöscht worden sein",
+        "new logs are displayed in realtime":
+            "Neue Protokolle werden in Echtzeit angezeigt"
+    },
+    "MyServiceButtonBar": {
+        "back": "Zurück",
+        "external monitoring": "Externes Monitoring",
+        "helm values": "Helm-Werte",
+        "reduce": "Reduzieren"
+    },
     "LauncherMainCard": {
         "card title": "Erstellen Sie Ihren eigenen Dienst",
         "friendly name": "Personalisierter Name",
@@ -685,15 +724,24 @@ Fühlen Sie sich frei, Ihre Kubernetes-Bereitstellungen zu erkunden und die Kont
         ),
         "version select label": "Version",
         "version select helper text": ({
-            chartName,
-            catalogRepositoryUrl,
-            catalogName
+            helmCharName,
+            helmRepositoryName,
+            sourceUrls
         }) => (
             <>
-                Version des {chartName} Charts im&nbsp;
-                <MuiLink href={catalogRepositoryUrl}>
-                    {catalogName} Helm Repository
-                </MuiLink>
+                Version des Helm-Charts{" "}
+                {
+                    <MaybeLink href={sourceUrls.helmChartSourceUrl}>
+                        {helmCharName}
+                    </MaybeLink>
+                }
+                das zum Helm-Chart-Repository{" "}
+                {
+                    <MaybeLink href={sourceUrls.helmChartRepositorySourceUrl}>
+                        {helmRepositoryName}
+                    </MaybeLink>
+                }{" "}
+                gehört.
             </>
         ),
         "save changes": "Änderungen speichern",
@@ -728,6 +776,15 @@ Fühlen Sie sich frei, Ihre Kubernetes-Bereitstellungen zu erkunden und die Kont
         "text3": "Es wird empfohlen, Ihre Dienste nach jeder Arbeitssitzung zu löschen.",
         "running services": "Laufende Dienste"
     },
+    "ClusterEventsDialog": {
+        "title": "Ereignisse",
+        "subtitle": (
+            <>
+                Ereignisse des Kubernetes-Namespace, es ist ein Echtzeit-Feed von{" "}
+                <code>kubectl get events</code>
+            </>
+        )
+    },
     "MyServicesConfirmDeleteDialog": {
         "confirm delete title": "Sind Sie sicher?",
         "confirm delete subtitle":
@@ -747,7 +804,7 @@ Fühlen Sie sich frei, Ihre Kubernetes-Bereitstellungen zu erkunden und die Kont
     },
     "MyServicesCard": {
         "service": "Dienst",
-        "running since": "In Betrieb seit: ",
+        "running since": "Gestartet: ",
         "open": "öffnen",
         "readme": "readme",
         "shared by you": "von Ihnen geteilt",
@@ -756,8 +813,11 @@ Fühlen Sie sich frei, Ihre Kubernetes-Bereitstellungen zu erkunden und die Kont
         "this is a shared service": "Dieser Dienst wird im Projekt geteilt",
         "status": "Status",
         "container starting": "Container wird gestartet",
-        "pending": "Ausstehend",
-        "failed": "Fehlgeschlagen"
+        "failed": "Fehlgeschlagen",
+        "suspend service tooltip": "Den Dienst unterbrechen und Ressourcen freigeben",
+        "resume service tooltip": "Den Dienst fortsetzen",
+        "suspended": "Ausgesetzt",
+        "suspending": "Aussetzend"
     },
     "MyServicesRestorableConfigOptions": {
         "edit": "Bearbeiten",
@@ -772,7 +832,7 @@ Fühlen Sie sich frei, Ihre Kubernetes-Bereitstellungen zu erkunden und die Kont
         "saved": "Gespeichert",
         "expand": "Erweitern"
     },
-    "ReadmeAndEnvDialog": {
+    "ReadmeDialog": {
         "ok": "Ok",
         "return": "Zurück"
     },

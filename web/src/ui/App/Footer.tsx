@@ -63,18 +63,21 @@ export const Footer = memo((props: Props) => {
                 </a>
             )}
             {spacing}
-            <DarkModeSwitch
-                size="extra small"
-                className={classes.darkModeSwitch}
-                ariaLabel={t("dark mode switch")}
-            />
+            {env.DARK_MODE === undefined && (
+                <DarkModeSwitch
+                    size="extra small"
+                    className={classes.darkModeSwitch}
+                    ariaLabel={t("dark mode switch")}
+                />
+            )}
         </footer>
     );
 });
 
-export const { i18n } = declareComponentKeys<
+const { i18n } = declareComponentKeys<
     "contribute" | "terms of service" | "change language" | "dark mode switch"
 >()({ Footer });
+export type I18n = typeof i18n;
 
 const useStyles = tss
     .withParams<Props>()

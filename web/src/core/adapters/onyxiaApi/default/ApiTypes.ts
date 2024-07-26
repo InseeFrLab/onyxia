@@ -28,6 +28,10 @@ export type ApiTypes = {
                         enabled: boolean;
                         gateways: string[];
                     };
+                    certManager?: {
+                        useCertManager: boolean;
+                        certManagerClusterIssuer?: string;
+                    };
                 };
                 defaultConfiguration?: {
                     ipprotection?: boolean;
@@ -151,9 +155,9 @@ export type ApiTypes = {
     "/public/catalogs": {
         catalogs: {
             id: string;
-            name: LocalizedString;
+            name?: LocalizedString;
             location: string;
-            description: LocalizedString;
+            description?: LocalizedString;
             status: "PROD" | "TEST";
             catalog: {
                 entries: Record<
@@ -199,10 +203,8 @@ export type ApiTypes = {
             chart: string;
             appVersion: string;
             revision: string;
-            events: {
-                message: string;
-                timestamp: number;
-            }[];
+            suspendable: boolean;
+            suspended: boolean;
         }[];
     };
     "/user/info": {
@@ -221,5 +223,45 @@ export type ApiTypes = {
     "/my-lab/quota": {
         spec: Record<string, number | string>;
         usage: Record<string, number | string>;
+    };
+    "/my-lab/events": {
+        apiVersion: string;
+        kind: string;
+        metadata: {
+            creationTimestamp: string;
+            managedFields: {
+                apiVersion: string;
+                fieldsType: string;
+                fieldsV1: {
+                    [key: string]: Record<string, unknown>;
+                };
+                manager: string;
+                operation: string;
+                time: string;
+            }[];
+            name: string;
+            namespace: string;
+            resourceVersion: string;
+            uid: string;
+        };
+        count: number;
+        firstTimestamp: string;
+        lastTimestamp: string;
+        involvedObject: {
+            apiVersion: string;
+            kind: string;
+            name: string;
+            namespace: string;
+            resourceVersion: string;
+            uid: string;
+        };
+        message: string;
+        reason: string;
+        reportingComponent: string;
+        reportingInstance: string;
+        source: {
+            component: string;
+        };
+        type: "Normal" | "Warning" | string; // Allows specific types but also remains open for extension.
     };
 };

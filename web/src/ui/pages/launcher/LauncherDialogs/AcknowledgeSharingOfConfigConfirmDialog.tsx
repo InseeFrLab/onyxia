@@ -60,7 +60,7 @@ AcknowledgeSharingOfConfigConfirmDialog.displayName = symToStr({
     AcknowledgeSharingOfConfigConfirmDialog
 });
 
-export const { i18n } = declareComponentKeys<
+const { i18n } = declareComponentKeys<
     | "acknowledge sharing of config confirm dialog title"
     | {
           K: "acknowledge sharing of config confirm dialog subtitle";
@@ -70,3 +70,4 @@ export const { i18n } = declareComponentKeys<
     | "cancel"
     | "i understand, proceed"
 >()({ AcknowledgeSharingOfConfigConfirmDialog });
+export type I18n = typeof i18n;

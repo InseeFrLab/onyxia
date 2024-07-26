@@ -532,7 +532,7 @@ export const SecretsExplorer = memo((props: ExplorerProps) => {
     );
 });
 
-export const { i18n } = declareComponentKeys<
+const { i18n } = declareComponentKeys<
     | { K: "untitled what"; P: { what: string } }
     | "directory"
     | "file"
@@ -547,6 +547,7 @@ export const { i18n } = declareComponentKeys<
     | "create"
     | "new directory"
 >()({ SecretsExplorer });
+export type I18n = typeof i18n;
 
 const useStyles = tss
     .withParams<{

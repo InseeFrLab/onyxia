@@ -28,10 +28,13 @@ export const thunks = {
                     }
                 });
 
+            // TODO: Update, it isn't smart.
             evtAction.attach(
                 action =>
                     action.usecaseName === "serviceManagement" &&
-                    action.actionName === "serviceStopped",
+                    action.actionName === "helmReleaseLocked" &&
+                    (action.payload.reason === "delete" ||
+                        action.payload.reason === "suspend"),
                 ctx,
                 () => {
                     dispatch(actions.podDeletionStarted());
@@ -44,12 +47,19 @@ export const thunks = {
                         privateSelectors.isOngoingPodDeletion(getState());
 
                     await new Promise<void>(resolve => {
+                        const ctxInner = Evt.newCtx();
+
                         const timer = setTimeout(
-                            resolve,
+                            () => {
+                                ctxInner.done();
+                                resolve();
+                            },
                             isOngoingPodDeletion === true ? 4_000 : 30_000
                         );
 
-                        ctx.evtDoneOrAborted.attachOnce(() => clearTimeout(timer));
+                        ctx.evtDoneOrAborted.attachOnce(ctxInner, () =>
+                            clearTimeout(timer)
+                        );
                     });
 
                     try {

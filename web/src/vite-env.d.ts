@@ -12,6 +12,7 @@ type ImportMetaEnv = {
   HEADER_HIDE_ONYXIA: string
   HEADER_TEXT_BOLD: string
   HEADER_TEXT_FOCUS: string
+  DARK_MODE: string
   PALETTE_OVERRIDE: string
   FONT: string
   SPLASHSCREEN_LOGO: string
@@ -47,6 +48,9 @@ type ImportMetaEnv = {
   SAMPLE_DATASET_URL: string
   QUOTA_WARNING_THRESHOLD: string
   QUOTA_CRITICAL_THRESHOLD: string
+  SERVICE_CONFIGURATION_EXPANDED_BY_DEFAULT: string
+  S3_DOCUMENTATION_LINK: string
+  VAULT_DOCUMENTATION_LINK: string
   ONYXIA_VERSION: string
   ONYXIA_VERSION_URL: string
   ONYXIA_API_URL: string

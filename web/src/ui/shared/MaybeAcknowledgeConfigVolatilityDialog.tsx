@@ -105,6 +105,7 @@ export const MaybeAcknowledgeConfigVolatilityDialog = memo(
     }
 );
 
-export const { i18n } = declareComponentKeys<
+const { i18n } = declareComponentKeys<
     "dialog title" | "dialog body" | "do not show next time" | "cancel" | "I understand"
 >()({ MaybeAcknowledgeConfigVolatilityDialog });
+export type I18n = typeof i18n;

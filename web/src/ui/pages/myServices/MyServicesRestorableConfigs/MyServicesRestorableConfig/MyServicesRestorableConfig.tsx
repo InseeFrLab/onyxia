@@ -108,9 +108,10 @@ export const MyServicesRestorableConfig = memo((props: Props) => {
 
 MyServicesRestorableConfig.displayName = symToStr({ MyServicesRestorableConfig });
 
-export const { i18n } = declareComponentKeys<"edit" | "launch">()({
+const { i18n } = declareComponentKeys<"edit" | "launch">()({
     MyServicesRestorableConfig
 });
+export type I18n = typeof i18n;
 
 const useStyles = tss
     .withParams<{ hasIcon: boolean; isShortVariant: boolean }>()

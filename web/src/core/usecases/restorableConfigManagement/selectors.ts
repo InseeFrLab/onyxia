@@ -10,11 +10,10 @@ function state(rootState: RootState) {
     return rootState[name];
 }
 
-const restorableConfigs = (rootState: RootState) => {
-    const { restorableConfigs } =
-        projectManagement.protectedSelectors.currentProjectConfigs(rootState);
-    return [...restorableConfigs].reverse();
-};
+const restorableConfigs = createSelector(
+    projectManagement.protectedSelectors.currentProjectConfigs,
+    ({ restorableConfigs }) => [...restorableConfigs].reverse()
+);
 
 export function readFriendlyName(
     restorableConfig: projectManagement.ProjectConfigs.RestorableServiceConfig
@@ -59,17 +58,9 @@ const main = createSelector(
     })
 );
 
-const savedConfigFriendlyNames = createSelector(
-    chartIconAndFriendlyNameByRestorableConfigIndex,
-    chartIconAndFriendlyNameByRestorableConfigIndex =>
-        Object.values(chartIconAndFriendlyNameByRestorableConfigIndex).map(
-            ({ friendlyName }) => friendlyName
-        )
-);
-
 export const protectedSelectors = {
     restorableConfigs,
-    savedConfigFriendlyNames
+    chartIconAndFriendlyNameByRestorableConfigIndex
 };
 
 export const selectors = {

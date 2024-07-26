@@ -1,7 +1,7 @@
 import { Tabs } from "onyxia-ui/Tabs";
 import { type AccountTabId, accountTabIds } from "./accountTabIds";
 import { AccountInfoTab } from "./AccountInfoTab";
-import { AccountIntegrationsTab } from "./AccountIntegrationsTab";
+import { AccountGitTab } from "./AccountGitTab";
 import { AccountKubernetesTab } from "./AccountKubernetesTab";
 import { AccountVaultTab } from "./AccountVaultTab";
 import { AccountStorageTab } from "./AccountStorageTab";
@@ -75,8 +75,8 @@ export default function Account(props: Props) {
                     switch (route.params.tabId) {
                         case "infos":
                             return <AccountInfoTab />;
-                        case "third-party-integration":
-                            return <AccountIntegrationsTab />;
+                        case "git":
+                            return <AccountGitTab />;
                         case "storage":
                             return <AccountStorageTab />;
                         case "user-interface":
@@ -93,11 +93,12 @@ export default function Account(props: Props) {
     );
 }
 
-export const { i18n } = declareComponentKeys<
+const { i18n } = declareComponentKeys<
     AccountTabId | "text1" | "text2" | "text3" | "personal tokens tooltip"
 >()({
     Account
 });
+export type I18n = typeof i18n;
 
 const useStyles = tss.withName({ Account }).create(({ theme }) => ({
     "root": {

@@ -1,8 +1,7 @@
 import { assert } from "tsafe/assert";
 import { createUsecaseActions } from "clean-architecture";
 import { id } from "tsafe/id";
-import { nestObject } from "core/tools/nestObject";
-import * as yaml from "yaml";
+import type { HelmRelease } from "core/ports/OnyxiaApi/HelmRelease";
 
 export type State = State.NotInitialized | State.Ready;
 
@@ -22,38 +21,11 @@ export namespace State {
 
     export type Ready = Common & {
         stateDescription: "ready";
-        runningServices: RunningService[];
-        envByHelmReleaseName: Record<string, Record<string, string>>;
-        postInstallInstructionsByHelmReleaseName: Record<string, string>;
+        username: string;
         kubernetesNamespace: string;
-    };
-}
-
-export type RunningService = RunningService.Owned | RunningService.NotOwned;
-
-export declare namespace RunningService {
-    export type Common = {
-        helmReleaseName: string;
-        chartName: string;
-        friendlyName: string;
-        chartIconUrl: string | undefined;
-        monitoringUrl: string | undefined;
-        startedAt: number;
-        urls: string[];
-        hasPostInstallInstructions: boolean;
-        status: "deployed" | "pending-install" | "failed";
-        areAllTasksReady: boolean;
-    };
-
-    export type Owned = Common & {
-        isShared: boolean;
-        isOwned: true;
-    };
-
-    export type NotOwned = Common & {
-        isShared: true;
-        isOwned: false;
-        ownerUsername: string;
+        helmReleases: HelmRelease[];
+        lockedHelmReleaseNames: string[];
+        logoUrlByReleaseName: Record<string, string | undefined>;
     };
 }
 
@@ -78,120 +50,58 @@ export const { reducer, actions } = createUsecaseActions({
                 payload
             }: {
                 payload: {
-                    runningServices: RunningService[];
-                    envByHelmReleaseName: Record<string, Record<string, string>>;
-                    postInstallInstructionsByHelmReleaseName: Record<string, string>;
+                    helmReleases: HelmRelease[];
                     kubernetesNamespace: string;
+                    logoUrlByReleaseName: Record<string, string | undefined>;
+                    username: string;
                 };
             }
         ) => {
-            const {
-                runningServices,
-                envByHelmReleaseName,
-                postInstallInstructionsByHelmReleaseName,
-                kubernetesNamespace
-            } = payload;
+            const { helmReleases, kubernetesNamespace, logoUrlByReleaseName, username } =
+                payload;
 
             return id<State.Ready>({
                 "stateDescription": "ready",
                 "isUpdating": false,
-                runningServices,
-                envByHelmReleaseName,
-                postInstallInstructionsByHelmReleaseName,
+                helmReleases,
                 kubernetesNamespace,
-                "commandLogsEntries": state.commandLogsEntries
+                "commandLogsEntries": state.commandLogsEntries,
+                "lockedHelmReleaseNames":
+                    state.stateDescription === "ready"
+                        ? state.lockedHelmReleaseNames
+                        : [],
+                logoUrlByReleaseName,
+                username
             });
         },
-        "statusUpdated": (
+        "helmReleaseLocked": (
             state,
             {
                 payload
             }: {
                 payload: {
                     helmReleaseName: string;
-                    status: "deployed" | "pending-install" | "failed";
-                    areAllTasksReady: boolean;
+                    reason: "delete" | "suspend" | "other";
                 };
             }
         ) => {
-            const { helmReleaseName, status, areAllTasksReady } = payload;
+            const { helmReleaseName } = payload;
 
             assert(state.stateDescription === "ready");
 
-            const { runningServices } = state;
+            state.lockedHelmReleaseNames.push(helmReleaseName);
+        },
+        "helmReleaseUnlocked": (
+            state,
+            { payload }: { payload: { helmReleaseName: string } }
+        ) => {
+            const { helmReleaseName } = payload;
 
-            assert(runningServices !== undefined);
+            assert(state.stateDescription === "ready");
 
-            const runningService = runningServices.find(
-                runningService => runningService.helmReleaseName === helmReleaseName
+            state.lockedHelmReleaseNames = state.lockedHelmReleaseNames.filter(
+                lockedHelmReleaseName => lockedHelmReleaseName !== helmReleaseName
             );
-
-            if (runningService === undefined) {
-                return;
-            }
-
-            runningService.status = status;
-            runningService.areAllTasksReady = areAllTasksReady;
-
-            //NOTE: Harmless hack to improve UI readability.
-            if (status === "deployed" && areAllTasksReady) {
-                runningService.startedAt = Date.now();
-            }
-        },
-        "serviceStopped": (
-            state,
-            { payload }: { payload: { helmReleaseName: string } }
-        ) => {
-            const { helmReleaseName } = payload;
-
-            assert(state.stateDescription === "ready");
-
-            const { runningServices } = state;
-            assert(runningServices !== undefined);
-
-            runningServices.splice(
-                runningServices.findIndex(
-                    runningServices => runningServices.helmReleaseName === helmReleaseName
-                ),
-                1
-            );
-        },
-        "postInstallInstructionsRequested": (
-            state,
-            { payload }: { payload: { helmReleaseName: string } }
-        ) => {
-            const { helmReleaseName } = payload;
-
-            assert(state.stateDescription === "ready");
-
-            const postInstallInstructions =
-                state.postInstallInstructionsByHelmReleaseName[helmReleaseName];
-
-            assert(postInstallInstructions !== undefined);
-
-            state.commandLogsEntries.push({
-                "cmdId": Date.now(),
-                "cmd": `helm get notes ${helmReleaseName} --namespace ${state.kubernetesNamespace}`,
-                "resp": postInstallInstructions
-            });
-        },
-        "envRequested": (
-            state,
-            { payload }: { payload: { helmReleaseName: string } }
-        ) => {
-            const { helmReleaseName } = payload;
-
-            assert(state.stateDescription === "ready");
-
-            const env = state.envByHelmReleaseName[helmReleaseName];
-
-            state.commandLogsEntries.push({
-                "cmdId": Date.now(),
-                "cmd": `helm get values ${helmReleaseName} --namespace ${state.kubernetesNamespace}`,
-                "resp": ["USER-SUPPLIED VALUES:", yaml.stringify(nestObject(env))].join(
-                    "\n"
-                )
-            });
         },
         "commandLogsEntryAdded": (
             state,

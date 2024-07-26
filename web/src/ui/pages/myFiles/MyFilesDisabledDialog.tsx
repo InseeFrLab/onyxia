@@ -45,6 +45,7 @@ export const MyFilesDisabledDialog = memo(() => {
     );
 });
 
-export const { i18n } = declareComponentKeys<
+const { i18n } = declareComponentKeys<
     "dialog title" | "dialog body" | "cancel" | "go to settings"
 >()({ MyFilesDisabledDialog });
+export type I18n = typeof i18n;

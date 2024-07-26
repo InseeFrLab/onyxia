@@ -38,6 +38,7 @@ import { symToStr } from "tsafe/symToStr";
 import type { FormFieldValidity } from "core/usecases/launcher/selectors";
 import { id } from "tsafe/id";
 import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
+import { env } from "env";
 
 export type LauncherConfigurationCardProps = {
     className?: string;
@@ -60,7 +61,9 @@ export const LauncherConfigurationCard = memo((props: LauncherConfigurationCardP
 
     const { classes, cx } = useStyles();
 
-    const [isCollapsed, setIsCollapsed] = useState(true);
+    const [isCollapsed, setIsCollapsed] = useState(
+        !env.SERVICE_CONFIGURATION_EXPANDED_BY_DEFAULT
+    );
 
     const tabs = useMemo(
         () =>
@@ -111,6 +114,9 @@ export const LauncherConfigurationCard = memo((props: LauncherConfigurationCardP
                     onRequestChangeActiveTab={setActiveTabId}
                     size="small"
                     maxTabCount={4}
+                    classes={{
+                        "content": classes.tabContent
+                    }}
                 >
                     <TabContent
                         {...formFieldsByTabName[activeTabId]}
@@ -127,7 +133,7 @@ LauncherConfigurationCard.displayName = symToStr({
     LauncherConfigurationCard
 });
 
-export const { i18n } = declareComponentKeys<
+const { i18n } = declareComponentKeys<
     | "global config"
     | { K: "configuration"; P: { packageName: string } }
     | { K: "dependency"; P: { dependencyName: string } }
@@ -136,6 +142,7 @@ export const { i18n } = declareComponentKeys<
     | "Invalid YAML Object"
     | "Invalid YAML Array"
 >()({ LauncherConfigurationCard });
+export type I18n = typeof i18n;
 
 const { Header } = (() => {
     type Props = {
@@ -677,5 +684,8 @@ const useStyles = tss.withName({ LauncherConfigurationCard }).create(({ theme })
         "transition": "transform 150ms cubic-bezier(0.4, 0, 0.2, 1)",
         "transform": "scaleY(1)",
         "transformOrigin": "top"
+    },
+    "tabContent": {
+        "paddingBottom": theme.spacing(6)
     }
 }));

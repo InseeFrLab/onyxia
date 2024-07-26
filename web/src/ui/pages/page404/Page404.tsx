@@ -31,4 +31,5 @@ const useStyles = tss.withName({ Page404 }).create(({ theme }) => ({
     }
 }));
 
-export const { i18n } = declareComponentKeys<"not found">()({ Page404 });
+const { i18n } = declareComponentKeys<"not found">()({ Page404 });
+export type I18n = typeof i18n;

@@ -93,6 +93,10 @@ export type DeploymentRegion = {
               gpu?: `${number}`;
           }
         | undefined;
+    certManager: {
+        useCertManager: boolean;
+        certManagerClusterIssuer: string | undefined;
+    };
 };
 export namespace DeploymentRegion {
     /** https://github.com/InseeFrLab/onyxia-api/blob/main/docs/region-configuration.md#s3 */

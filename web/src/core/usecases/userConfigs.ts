@@ -22,7 +22,6 @@ import * as deploymentRegionManagement from "core/usecases/deploymentRegionManag
 export type UserConfigs = Id<
     Record<string, string | boolean | number | null>,
     {
-        kaggleApiToken: string | null;
         gitName: string;
         gitEmail: string;
         gitCredentialCacheDuration: number;
@@ -142,7 +141,6 @@ export const protectedThunks = {
 
             // NOTE: Default values
             const userConfigs: UserConfigs = {
-                "kaggleApiToken": null,
                 "gitName": username,
                 "gitEmail": email,
                 "gitCredentialCacheDuration": 0,

@@ -6,7 +6,7 @@ import type { Thunks } from "core/bootstrap";
 import * as projectManagement from "core/usecases/projectManagement";
 import { Chart } from "core/ports/OnyxiaApi";
 import { actions, type State } from "./state";
-import { readFriendlyName, protectedSelectors } from "./selectors";
+import { readFriendlyName } from "./selectors";
 
 export const protectedThunks = {
     "initialize":
@@ -51,7 +51,8 @@ export const protectedThunks = {
 
             const { restorableConfig } = params;
 
-            const restorableConfigs = protectedSelectors.restorableConfigs(getState());
+            const { restorableConfigs } =
+                projectManagement.protectedSelectors.currentProjectConfigs(getState());
 
             return (
                 restorableConfigs.find(restorableConfig_i =>
@@ -71,13 +72,16 @@ export const thunks = {
 
             const { restorableConfig } = params;
 
-            const restorableConfigs = protectedSelectors.restorableConfigs(getState());
+            const { restorableConfigs } =
+                projectManagement.protectedSelectors.currentProjectConfigs(getState());
 
-            const restorableConfigWithSameFriendlyName = (() => {
+            const restorableConfigWithSameFriendlyNameAndSameService = (() => {
                 const results = restorableConfigs.filter(
                     restorableConfig_i =>
                         readFriendlyName(restorableConfig_i) ===
-                        readFriendlyName(restorableConfig)
+                            readFriendlyName(restorableConfig) &&
+                        restorableConfig_i.catalogId === restorableConfig.catalogId &&
+                        restorableConfig_i.chartName === restorableConfig.chartName
                 );
 
                 if (results.length === 0) {
@@ -91,20 +95,21 @@ export const thunks = {
 
             // NOTE: In case of double call, as we don't provide a "loading state"
             if (
-                restorableConfigWithSameFriendlyName !== undefined &&
+                restorableConfigWithSameFriendlyNameAndSameService !== undefined &&
                 getAreSameRestorableConfig(
                     restorableConfig,
-                    restorableConfigWithSameFriendlyName
+                    restorableConfigWithSameFriendlyNameAndSameService
                 )
             ) {
                 return;
             }
 
             const newRestorableConfigs =
-                restorableConfigWithSameFriendlyName === undefined
+                restorableConfigWithSameFriendlyNameAndSameService === undefined
                     ? [...restorableConfigs, restorableConfig]
                     : restorableConfigs.map(restorableConfig_i =>
-                          restorableConfig_i === restorableConfigWithSameFriendlyName
+                          restorableConfig_i ===
+                          restorableConfigWithSameFriendlyNameAndSameService
                               ? restorableConfig
                               : restorableConfig_i
                       );
@@ -125,7 +130,8 @@ export const thunks = {
 
             const { restorableConfig } = params;
 
-            const restorableConfigs = protectedSelectors.restorableConfigs(getState());
+            const { restorableConfigs } =
+                projectManagement.protectedSelectors.currentProjectConfigs(getState());
 
             const indexOfRestorableConfigToDelete = restorableConfigs.findIndex(
                 restorableConfig_i =>

@@ -6,6 +6,7 @@ import { useDarkMode } from "onyxia-ui";
 import { useConstCallback } from "powerhooks/useConstCallback";
 import { useCore, useCoreState } from "core";
 import { declareComponentKeys } from "i18nifty";
+import { env } from "env";
 
 export type Props = {
     className?: string;
@@ -62,14 +63,16 @@ export const AccountUserInterfaceTab = memo((props: Props) => {
     return (
         <div className={className}>
             <SettingSectionHeader title={t("title")} />
-            <SettingField
-                type="toggle"
-                title={t("enable dark mode")}
-                helperText={t("dark mode helper")}
-                isLocked={false}
-                isOn={isDarkModeEnabled}
-                onRequestToggle={onRequestToggleIsDarkModeEnabled}
-            />
+            {env.DARK_MODE === undefined && (
+                <SettingField
+                    type="toggle"
+                    title={t("enable dark mode")}
+                    helperText={t("dark mode helper")}
+                    isLocked={false}
+                    isOn={isDarkModeEnabled}
+                    onRequestToggle={onRequestToggleIsDarkModeEnabled}
+                />
+            )}
             <SettingField
                 type="toggle"
                 title={t("enable beta")}
@@ -108,7 +111,7 @@ export const AccountUserInterfaceTab = memo((props: Props) => {
     );
 });
 
-export const { i18n } = declareComponentKeys<
+const { i18n } = declareComponentKeys<
     | "title"
     | "enable dark mode"
     | "enable beta"
@@ -125,3 +128,4 @@ export const { i18n } = declareComponentKeys<
           R: JSX.Element;
       }
 >()({ AccountUserInterfaceTab });
+export type I18n = typeof i18n;

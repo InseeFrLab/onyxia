@@ -1,17 +1,17 @@
 import MuiLink from "@mui/material/Link";
 import type { Translations } from "../types";
 import { Markdown } from "ui/shared/Markdown";
-import { elementsToSentence } from "ui/tools/elementsToSentence";
 import { Icon } from "onyxia-ui/Icon";
 import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
 import { id } from "tsafe/id";
 import { capitalize } from "tsafe/capitalize";
+import { MaybeLink } from "ui/shared/MaybeLink";
 
 export const translations: Translations<"no"> = {
     /* spell-checker: disable */
     "Account": {
         "infos": "Kontoinformasjon",
-        "third-party-integration": "Eksterne tjenester",
+        "git": undefined,
         "storage": "Koble til lagring",
         "k8sCodeSnippets": "Kubernetes",
         "user-interface": "Grensesnittspreferanser",
@@ -31,21 +31,38 @@ export const translations: Translations<"no"> = {
         "instructions about how to change password":
             'For å endre passordet ditt, bare logg ut og klikk på "glemt passord"-lenken.'
     },
-    "AccountIntegrationsTab": {
-        "git section title": "Git-konfigurasjon",
-        "git section helper": `For å sikre at du vises som forfatter av Git-bidragene dine`,
+    "AccountGitTab": {
         "gitName": "Brukernavn for Git",
+        "gitName helper text": ({ gitName, focusClassName }) => (
+            <>
+                Denne kommandoen vil sette ditt globale Git-brukernavn, utført ved
+                oppstart av tjenesten:&nbsp;
+                <code className={focusClassName}>
+                    git config --global user.name "{gitName || "<ditt_brukernavn>"}"
+                </code>
+            </>
+        ),
         "gitEmail": "E-post for Git",
-        "third party tokens section title":
-            "Koble Gitlab-, Github- og Kaggle-kontoene dine",
-        "third party tokens section helper": `
-            Koble tjenestene dine til eksterne kontoer ved hjelp av
-            personlige tilgangstokens og miljøvariabler
-            `,
-        "personal token": ({ serviceName }) => `${serviceName}-personlig tilgangstoken`,
-        "link for token creation": ({ serviceName }) =>
-            `Opprett ${serviceName}-tokenet ditt.`,
-        "accessible as env": "Tilgjengelig i tjenestene dine som en miljøvariabel"
+        "gitEmail helper text": ({ gitEmail, focusClassName }) => (
+            <>
+                Denne kommandoen vil sette din globale Git-e-post, utført ved oppstart av
+                tjenesten:&nbsp;
+                <code className={focusClassName}>
+                    git config --global user.email "{gitEmail || "<din_email@domene.no>"}"
+                </code>
+            </>
+        ),
+        "githubPersonalAccessToken": "Personlig tilgangstoken for Git-tjeneste",
+        "githubPersonalAccessToken helper text": ({ focusClassName }) => (
+            <>
+                Ved å oppgi dette tokenet, kan du klone og pushe til dine private GitHub-
+                eller GitLab-repositorier uten å måtte skrive inn dine
+                tjenestelegitimasjoner på nytt.
+                <br />
+                Dette tokenet vil også være tilgjengelig som en miljøvariabel:&nbsp;
+                <span className={focusClassName}>$GIT_PERSONAL_ACCESS_TOKEN</span>
+            </>
+        )
     },
     "AccountStorageTab": {
         "credentials section title": "Koble dataene dine til tjenestene dine",
@@ -495,16 +512,7 @@ export const translations: Translations<"no"> = {
         "cardButton3": "Se på dataene"
     },
     "Catalog": {
-        "header text1": "Tjenestekatalog",
-        "header text2": "Utforsk, start og konfigurer tjenester med noen få klikk.",
-        "header help": ({ catalogName, catalogDescription, repositoryUrl }) => (
-            <>
-                Du utforsker Helm-tjenestekatalogen{" "}
-                <MuiLink href={repositoryUrl} target="_blank">
-                    {catalogName}: {catalogDescription}
-                </MuiLink>
-            </>
-        ),
+        "header": "Tjenestekatalog",
         "no result found": ({ forWhat }) => `Ingen resultater funnet for ${forWhat}`,
         "search results": "Søkeresultat",
         "search": "Søk"
@@ -521,24 +529,38 @@ export const translations: Translations<"no"> = {
     },
     "Launcher": {
         "header text1": "Tjenestekatalog",
-        "header text2": "Utforsk, start og konfigurer tjenester med noen få klikk.",
-        "chart sources": ({ chartName, urls }) =>
-            urls.length === 0 ? (
-                <></>
-            ) : (
-                <>
-                    Tilgang til kild{urls.length === 1 ? "en" : "ene"} for diagrammet{" "}
-                    {chartName}:&nbsp;
-                    {elementsToSentence({
-                        "elements": urls.map(source => (
-                            <MuiLink href={source} target="_blank" underline="hover">
-                                her
+        "sources": ({ helmChartName, helmChartRepositoryName, sourceUrls }) => (
+            <>
+                Du er i ferd med å distribuere Helm-diagrammet{" "}
+                {
+                    <MaybeLink href={sourceUrls.helmChartSourceUrl}>
+                        {helmChartName}
+                    </MaybeLink>
+                }
+                som tilhører Helm-diagramlageret{" "}
+                {
+                    <MaybeLink href={sourceUrls.helmChartRepositorySourceUrl}>
+                        {helmChartRepositoryName}
+                    </MaybeLink>
+                }
+                .
+                {sourceUrls.dockerImageSourceUrl !== undefined && (
+                    <>
+                        {" "}
+                        Det er basert på Docker-avbildningen{" "}
+                        {
+                            <MuiLink
+                                href={sourceUrls.dockerImageSourceUrl}
+                                target="_blank"
+                            >
+                                {helmChartName}
                             </MuiLink>
-                        )),
-                        "language": "no"
-                    })}
-                </>
-            ),
+                        }
+                        .
+                    </>
+                )}
+            </>
+        ),
         "download as script": "Last ned som skript",
         "api logs help body": ({
             k8CredentialsHref,
@@ -651,6 +673,21 @@ Føl deg fri til å utforske og ta kontroll over dine Kubernetes-implementeringe
             "Å starte denne tjenesten kan være farlig",
         "proceed to launch": "Fortsett til oppstart"
     },
+    "MyService": {
+        "page title": ({ helmReleaseFriendlyName }) =>
+            `${helmReleaseFriendlyName} Overvåking`
+    },
+    "PodLogsTab": {
+        "not necessarily first logs":
+            "Dette er ikke nødvendigvis de første loggene, eldre logger kan ha blitt fjernet",
+        "new logs are displayed in realtime": "Nye logger vises i sanntid"
+    },
+    "MyServiceButtonBar": {
+        "back": "Tilbake",
+        "external monitoring": "Ekstern overvåkning",
+        "helm values": "Helm-verdier",
+        "reduce": "Reduser"
+    },
     "LauncherMainCard": {
         "card title": "Opprett dine personlige tjenester",
         "friendly name": "Vennlig navn",
@@ -677,13 +714,24 @@ Føl deg fri til å utforske og ta kontroll over dine Kubernetes-implementeringe
         ),
         "version select label": "Versjon",
         "version select helper text": ({
-            chartName,
-            catalogRepositoryUrl,
-            catalogName
+            helmCharName,
+            helmRepositoryName,
+            sourceUrls
         }) => (
             <>
-                Versjon av Chart {chartName} i&nbsp;
-                <MuiLink href={catalogRepositoryUrl}>Helm depotet {catalogName}</MuiLink>
+                Versjon av helm-diagrammet{" "}
+                {
+                    <MaybeLink href={sourceUrls.helmChartSourceUrl}>
+                        {helmCharName}
+                    </MaybeLink>
+                }
+                som tilhører helm-diagramdepotet{" "}
+                {
+                    <MaybeLink href={sourceUrls.helmChartRepositorySourceUrl}>
+                        {helmRepositoryName}
+                    </MaybeLink>
+                }
+                .
             </>
         ),
         "save changes": "Lagre endringer",
@@ -718,6 +766,15 @@ Føl deg fri til å utforske og ta kontroll over dine Kubernetes-implementeringe
         "text3": "Tjenestene skal avsluttes så snart du slutter å bruke dem aktivt.",
         "running services": "Kjørende tjenester"
     },
+    "ClusterEventsDialog": {
+        "title": "Hendelser",
+        "subtitle": (
+            <>
+                Hendelser i Kubernetes navneområde, det er en sanntidsstrøm av{" "}
+                <code>kubectl get events</code>
+            </>
+        )
+    },
     "MyServicesConfirmDeleteDialog": {
         "confirm delete title": "Er du sikker?",
         "confirm delete subtitle":
@@ -737,7 +794,7 @@ Føl deg fri til å utforske og ta kontroll over dine Kubernetes-implementeringe
     },
     "MyServicesCard": {
         "service": "Tjeneste",
-        "running since": "Kjører siden: ",
+        "running since": "Startet: ",
         "open": "åpne",
         "readme": "lesmeg",
         "shared by you": "Delt av deg",
@@ -745,8 +802,11 @@ Føl deg fri til å utforske og ta kontroll over dine Kubernetes-implementeringe
         "this is a shared service": "Denne tjenesten deles blant prosjektets medlemmer",
         "status": "Status",
         "container starting": "Container starter",
-        "pending": "Venter",
-        "failed": "Mislyktes"
+        "failed": "Mislyktes",
+        "suspend service tooltip": "Suspender tjenesten og frigjør ressurser",
+        "resume service tooltip": "Gjenoppta tjenesten",
+        "suspended": "Suspendert",
+        "suspending": "Suspenderer"
     },
     "MyServicesRestorableConfigOptions": {
         "edit": "Rediger",
@@ -761,7 +821,7 @@ Føl deg fri til å utforske og ta kontroll over dine Kubernetes-implementeringe
         "saved": "Lagret",
         "expand": "Utvid"
     },
-    "ReadmeAndEnvDialog": {
+    "ReadmeDialog": {
         "ok": "ok",
         "return": "Gå tilbake"
     },
