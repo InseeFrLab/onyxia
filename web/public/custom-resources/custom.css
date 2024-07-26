@@ -1,11 +1,8 @@
 
 [class$="-BrandHeaderSection-logoContainer"] {
-    width: auto !important;
-    max-width: 200px !important;
+    width: 50px !important;
+    margin-right: 0.5em;
 }
 [class$="-BrandHeaderSection-logo"] {
-    width: 85% !important;
-}
-[class$="-BrandHeaderSection-text_organization"] {
-    font-size: 32px !important;
+    width: 100% !important;
 }
