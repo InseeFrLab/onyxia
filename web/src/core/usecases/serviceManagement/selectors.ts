@@ -76,7 +76,11 @@ const services = createSelector(readyState, state => {
                 "iconUrl": logoUrlByReleaseName[helmRelease.helmReleaseName],
                 "startedAt": helmRelease.startedAt,
                 "openUrl": [...helmRelease.urls].sort()[0],
-                "postInstallInstructions": helmRelease.postInstallInstructions,
+                // NOTE: the + values is instant legacy code, it will be refactored in the big rework that is ongoing.
+                "postInstallInstructions":
+                    helmRelease.postInstallInstructions +
+                    "===VALUES===" +
+                    JSON.stringify(helmRelease.values),
                 "areInteractionLocked": lockedHelmReleaseNames.includes(
                     helmRelease.helmReleaseName
                 ),
