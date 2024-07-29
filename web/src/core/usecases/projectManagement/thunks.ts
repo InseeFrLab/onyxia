@@ -4,7 +4,7 @@ import { join as pathJoin } from "pathe";
 import { generateRandomPassword } from "core/tools/generateRandomPassword";
 import { actions, type ProjectConfigs, type ChangeConfigValueParams } from "./state";
 import type { Secret } from "core/ports/SecretsManager";
-import { selectors, protectedSelectors } from "./selectors";
+import { protectedSelectors } from "./selectors";
 import * as userConfigs from "core/usecases/userConfigs";
 import { same } from "evt/tools/inDepth";
 import { id } from "tsafe/id";
@@ -385,14 +385,9 @@ export const protectedThunks = {
 
             const { secretsManager } = rootContext;
 
-            const { id: projectId } = selectors.currentProject(getState());
+            const currentProjectConfig = protectedSelectors.projectConfig(getState());
 
-            if (selectors.currentProject(getState()).id !== projectId) {
-                return;
-            }
-
-            const currentLocalValue =
-                protectedSelectors.currentProjectConfigs(getState())[params.key];
+            const currentLocalValue = currentProjectConfig[params.key];
 
             if (same(currentLocalValue, params.value)) {
                 return;
@@ -403,7 +398,7 @@ export const protectedThunks = {
             const path = pathJoin(
                 getProjectConfigVaultDirPath({
                     "projectVaultTopDirPath":
-                        selectors.currentProject(getState()).vaultTopDir
+                        protectedSelectors.currentProject(getState()).vaultTopDir
                 }),
                 params.key
             );
