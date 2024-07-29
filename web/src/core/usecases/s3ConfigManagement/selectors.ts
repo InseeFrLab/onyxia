@@ -10,6 +10,7 @@ import { getWorkingDirectoryPath } from "./utils/getWorkingDirectoryPath";
 import { getWorkingDirectoryBucketToCreate } from "./utils/getWorkingDirectoryBucket";
 import { fnv1aHashToHex } from "core/tools/fnv1aHashToHex";
 import { assert, type Equals } from "tsafe/assert";
+import { getProjectS3ConfigId } from "./utils/projectS3ConfigId";
 
 export type S3Config = S3Config.FromDeploymentRegion | S3Config.FromProject;
 
@@ -19,7 +20,6 @@ export namespace S3Config {
         dataSource: string;
         region: string | undefined;
         workingDirectoryPath: string;
-        paramsOfCreateS3Client: ParamsOfCreateS3Client;
         isXOnyxiaDefault: boolean;
         isExplorerConfig: boolean;
         connectionTestStatus:
@@ -31,10 +31,12 @@ export namespace S3Config {
 
     export type FromDeploymentRegion = Common & {
         origin: "deploymentRegion";
+        paramsOfCreateS3Client: ParamsOfCreateS3Client;
     };
 
     export type FromProject = Common & {
         origin: "project";
+        paramsOfCreateS3Client: ParamsOfCreateS3Client.NoSts;
         creationTime: number;
         friendlyName: string;
     };
@@ -134,7 +136,9 @@ const s3Configs = createSelector(
         const s3Configs: S3Config[] = [
             ...s3ProjectConfigs
                 .map((c): S3Config.FromProject => {
-                    const id = `project-${c.creationTime}`;
+                    const id = getProjectS3ConfigId({
+                        "creationTime": c.creationTime
+                    });
 
                     const workingDirectoryPath = c.workingDirectoryPath;
                     const url = c.url;

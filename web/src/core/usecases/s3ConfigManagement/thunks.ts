@@ -1,10 +1,12 @@
 import type { Thunks } from "core/bootstrap";
 import { selectors, type S3Config } from "./selectors";
 import * as projectManagement from "core/usecases/projectManagement";
+import type { ProjectConfigs } from "core/usecases/projectManagement";
 import { assert, type Equals } from "tsafe/assert";
 import type { S3Client } from "core/ports/S3Client";
 import { createOidcOrFallback } from "core/adapters/oidc/utils/createOidcOrFallback";
 import { createUsecaseContextApi } from "clean-architecture";
+import { getProjectS3ConfigId } from "./utils/projectS3ConfigId";
 
 export const thunks = {} satisfies Thunks;
 
@@ -109,6 +111,41 @@ export const protectedThunks = {
             );
 
             return { s3Client, s3Config };
+        },
+    "createS3Config":
+        (params: { projectS3Config: ProjectConfigs.S3Config }) =>
+        async (...args) => {
+            const { projectS3Config } = params;
+
+            const [dispatch, getState] = args;
+
+            const projectS3Configs = [
+                ...projectManagement.protectedSelectors.projectConfig(getState())
+                    .s3Configs
+            ];
+
+            const i = projectS3Configs.findIndex(
+                projectS3Config_i =>
+                    getProjectS3ConfigId({
+                        "creationTime": projectS3Config_i.creationTime
+                    }) ===
+                    getProjectS3ConfigId({
+                        "creationTime": projectS3Config.creationTime
+                    })
+            );
+
+            if (i < 0) {
+                projectS3Configs.push(projectS3Config);
+            } else {
+                projectS3Configs[i] = projectS3Config;
+            }
+
+            await dispatch(
+                projectManagement.protectedThunks.updateConfigValue({
+                    "key": "s3Configs",
+                    "value": projectS3Configs
+                })
+            );
         }
 } satisfies Thunks;
 

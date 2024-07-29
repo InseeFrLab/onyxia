@@ -2,10 +2,14 @@ import type { State as RootState } from "core/bootstrap";
 import { createSelector } from "clean-architecture";
 import { name } from "./state";
 import { objectKeys } from "tsafe/objectKeys";
-import { assert } from "tsafe/assert";
+import { assert, type Equals } from "tsafe/assert";
 import { bucketNameAndObjectNameFromS3Path } from "core/adapters/s3Client/utils/bucketNameAndObjectNameFromS3Path";
 import { id } from "tsafe/id";
 import type { ProjectConfigs } from "core/usecases/projectManagement";
+import type { ParamsOfCreateS3Client } from "core/adapters/s3Client";
+import * as s3ConfigConnectionTest from "core/usecases/s3ConfigConnectionTest";
+import { same } from "evt/tools/inDepth/same";
+import { parseProjectS3ConfigId } from "core/usecases/s3ConfigManagement/utils/projectS3ConfigId";
 
 const readyState = (rootState: RootState) => {
     const state = rootState[name];
@@ -27,14 +31,6 @@ const formValues = createSelector(readyState, state => {
     return state.formValues;
 });
 
-const connectionTestStatus = createSelector(readyState, state => {
-    if (state === null) {
-        return null;
-    }
-
-    return state.connectionTestStatus;
-});
-
 const formValuesErrors = createSelector(formValues, formValues => {
     if (formValues === null) {
         return null;
@@ -52,7 +48,7 @@ const formValuesErrors = createSelector(formValues, formValues => {
                     !(
                         key === "url" ||
                         key === "workingDirectoryPath" ||
-                        key === "accountFriendlyName" ||
+                        key === "friendlyName" ||
                         (!formValues.isAnonymous &&
                             (key === "accessKeyId" || key === "secretAccessKey"))
                     )
@@ -89,18 +85,12 @@ const formValuesErrors = createSelector(formValues, formValues => {
 const isFormSubmittable = createSelector(
     isReady,
     formValuesErrors,
-    connectionTestStatus,
-    (isReady, formValuesErrors, connectionTestStatus) => {
+    (isReady, formValuesErrors) => {
         if (!isReady) {
             return null;
         }
 
         assert(formValuesErrors !== null);
-        assert(connectionTestStatus !== null);
-
-        if (connectionTestStatus.isTestOngoing) {
-            return false;
-        }
 
         return objectKeys(formValuesErrors).every(
             key => formValuesErrors[key] === undefined
@@ -154,16 +144,28 @@ const formattedFormValuesWorkingDirectoryPath = createSelector(
     }
 );
 
-const submittableFormValuesAsCustomS3Config = createSelector(
+const action = createSelector(readyState, state => {
+    if (state === null) {
+        return null;
+    }
+
+    return state.action;
+});
+
+const submittableFormValuesAsProjectS3Config = createSelector(
     isReady,
     formValues,
     formattedFormValuesUrl,
     formattedFormValuesWorkingDirectoryPath,
+    isFormSubmittable,
+    action,
     (
         isReady,
         formValues,
         formattedFormValuesUrl,
-        formattedFormValuesWorkingDirectoryPath
+        formattedFormValuesWorkingDirectoryPath,
+        isFormSubmittable,
+        action
     ) => {
         if (!isReady) {
             return null;
@@ -171,17 +173,34 @@ const submittableFormValuesAsCustomS3Config = createSelector(
         assert(formValues !== null);
         assert(formattedFormValuesUrl !== null);
         assert(formattedFormValuesWorkingDirectoryPath !== null);
+        assert(formattedFormValuesUrl !== null);
+        assert(formattedFormValuesWorkingDirectoryPath !== null);
+        assert(isFormSubmittable !== null);
+        assert(action !== null);
+
+        if (!isFormSubmittable) {
+            return undefined;
+        }
 
         assert(formattedFormValuesUrl !== undefined);
         assert(formattedFormValuesWorkingDirectoryPath !== undefined);
 
-        return id<ProjectConfigs.CustomS3Config>({
+        return id<ProjectConfigs.S3Config>({
+            "creationTime": (() => {
+                switch (action.type) {
+                    case "create new config":
+                        return action.creationTime;
+                    case "update existing config":
+                        return parseProjectS3ConfigId({ "s3ConfigId": action.s3ConfigId })
+                            .creationTime;
+                }
+                assert<Equals<typeof action, never>>(false);
+            })(),
+            "friendlyName": formValues.friendlyName.trim(),
             "url": formattedFormValuesUrl,
-            "region": formValues.region.trim(),
+            "region": formValues.region?.trim(),
             "workingDirectoryPath": formattedFormValuesWorkingDirectoryPath,
             "pathStyleAccess": formValues.pathStyleAccess,
-            "accountFriendlyName": formValues.accountFriendlyName.trim(),
-
             "credentials": (() => {
                 if (formValues.isAnonymous) {
                     return undefined;
@@ -197,6 +216,97 @@ const submittableFormValuesAsCustomS3Config = createSelector(
                 };
             })()
         });
+    }
+);
+
+const paramsOfCreateS3Client = createSelector(
+    isReady,
+    submittableFormValuesAsProjectS3Config,
+    (isReady, submittableFormValuesAsProjectS3Config) => {
+        if (!isReady) {
+            return null;
+        }
+
+        assert(submittableFormValuesAsProjectS3Config !== null);
+
+        if (submittableFormValuesAsProjectS3Config === undefined) {
+            return undefined;
+        }
+
+        return id<ParamsOfCreateS3Client.NoSts>({
+            "url": submittableFormValuesAsProjectS3Config.url,
+            "pathStyleAccess": submittableFormValuesAsProjectS3Config.pathStyleAccess,
+            "isStsEnabled": false,
+            "region": submittableFormValuesAsProjectS3Config.region,
+            "credentials": submittableFormValuesAsProjectS3Config.credentials
+        });
+    }
+);
+
+type ConnectionTestStatus =
+    | { status: "test ongoing" }
+    | { status: "test succeeded" }
+    | { status: "test failed"; errorMessage: string }
+    | { status: "not tested" };
+
+const connectionTestStatus = createSelector(
+    isReady,
+    isFormSubmittable,
+    paramsOfCreateS3Client,
+    formattedFormValuesWorkingDirectoryPath,
+    s3ConfigConnectionTest.protectedSelectors.configTestResults,
+    s3ConfigConnectionTest.protectedSelectors.ongoingConfigTests,
+    (
+        isReady,
+        isFormSubmittable,
+        paramsOfCreateS3Client,
+        workingDirectoryPath,
+        configTestResults,
+        ongoingConfigTests
+    ): ConnectionTestStatus | null => {
+        if (!isReady) {
+            return null;
+        }
+
+        assert(isFormSubmittable !== null);
+        assert(paramsOfCreateS3Client !== null);
+        assert(workingDirectoryPath !== null);
+
+        if (!isFormSubmittable) {
+            return { "status": "not tested" };
+        }
+
+        assert(paramsOfCreateS3Client !== undefined);
+        assert(workingDirectoryPath !== undefined);
+
+        if (
+            ongoingConfigTests.find(
+                e =>
+                    same(e.paramsOfCreateS3Client, paramsOfCreateS3Client) &&
+                    e.workingDirectoryPath === workingDirectoryPath
+            ) !== undefined
+        ) {
+            return { "status": "test ongoing" };
+        }
+
+        has_result: {
+            const { result } =
+                configTestResults.find(
+                    e =>
+                        same(e.paramsOfCreateS3Client, paramsOfCreateS3Client) &&
+                        e.workingDirectoryPath === workingDirectoryPath
+                ) ?? {};
+
+            if (result === undefined) {
+                break has_result;
+            }
+
+            return result.isSuccess
+                ? { "status": "test succeeded" }
+                : { "status": "test failed", "errorMessage": result.errorMessage };
+        }
+
+        return { "status": "not tested" } as ConnectionTestStatus;
     }
 );
 
@@ -236,42 +346,32 @@ const urlStylesExamples = createSelector(
     }
 );
 
-const customConfigIndex = createSelector(readyState, state => {
-    if (state === null) {
+const isEditionOfAnExistingConfig = createSelector(isReady, action, (isReady, action) => {
+    if (!isReady) {
         return null;
     }
 
-    return state.customConfigIndex;
+    assert(action !== null);
+
+    return action.type === "update existing config";
 });
-
-const isEditionOfAnExistingConfig = createSelector(
-    isReady,
-    customConfigIndex,
-    (isReady, customConfigIndex) => {
-        if (!isReady) {
-            return null;
-        }
-
-        return customConfigIndex !== undefined;
-    }
-);
 
 const main = createSelector(
     isReady,
     formValues,
-    connectionTestStatus,
     formValuesErrors,
     isFormSubmittable,
     urlStylesExamples,
     isEditionOfAnExistingConfig,
+    connectionTestStatus,
     (
         isReady,
         formValues,
-        connectionTestStatus,
         formValuesErrors,
         isFormSubmittable,
         urlStylesExamples,
-        isEditionOfAnExistingConfig
+        isEditionOfAnExistingConfig,
+        connectionTestStatus
     ) => {
         if (!isReady) {
             return {
@@ -280,30 +380,30 @@ const main = createSelector(
         }
 
         assert(formValues !== null);
-        assert(connectionTestStatus !== null);
         assert(formValuesErrors !== null);
         assert(isFormSubmittable !== null);
         assert(urlStylesExamples !== null);
         assert(isEditionOfAnExistingConfig !== null);
+        assert(connectionTestStatus !== null);
 
         return {
             "isReady": true,
             formValues,
-            connectionTestStatus,
             formValuesErrors,
             isFormSubmittable,
             urlStylesExamples,
-            isEditionOfAnExistingConfig
+            isEditionOfAnExistingConfig,
+            connectionTestStatus
         };
     }
 );
 
 export const privateSelectors = {
     formattedFormValuesUrl,
-    submittableFormValuesAsCustomS3Config,
+    submittableFormValuesAsProjectS3Config,
     formValuesErrors,
-    customConfigIndex,
-    connectionTestStatus
+    paramsOfCreateS3Client,
+    formattedFormValuesWorkingDirectoryPath
 };
 
 export const selectors = { main };

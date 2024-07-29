@@ -1,5 +1,6 @@
 import type { Thunks } from "core/bootstrap";
 import { actions } from "./state";
+import { assert } from "tsafe/assert";
 
 import type { ParamsOfCreateS3Client } from "core/adapters/s3Client";
 
@@ -23,7 +24,9 @@ export const protectedThunks = {
             const result = await (async () => {
                 const { createS3Client } = await import("core/adapters/s3Client");
 
-                const s3Client = createS3Client(paramsOfCreateS3Client);
+                const s3Client = createS3Client(paramsOfCreateS3Client, () => {
+                    assert(false);
+                });
 
                 try {
                     await s3Client.list({
