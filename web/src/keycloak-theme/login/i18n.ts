@@ -4,6 +4,7 @@ export const { useI18n, ofTypeI18n } = createUseI18n({
     "en": {
         "lowerCaseAlphanumericalCharsOnly": "Only lowercase alphanumerical characters",
         "allowed email domains": "Allowed domains",
+        "this email domain is not allowed": "This email domain is not allowed",
         "minimum length": "Minimum length: {0}",
         "must be different from username": "Pass can't be the username",
         "password mismatch": "Passwords mismatch",
@@ -20,6 +21,7 @@ export const { useI18n, ofTypeI18n } = createUseI18n({
         "lowerCaseAlphanumericalCharsOnly":
             "Uniquement des caractères alphanumériques en minuscules",
         "allowed email domains": "Domaines autorisés",
+        "this email domain is not allowed": "Ce domaine de messagerie n'est pas autorisé",
         "minimum length": "Longueur minimum {0}",
         "must be different from username": "Ne peut pas être le nom d'utilisateur",
         "password mismatch": "Les deux mots de passe ne correspondent pas",
@@ -34,6 +36,7 @@ export const { useI18n, ofTypeI18n } = createUseI18n({
     "de": {
         "lowerCaseAlphanumericalCharsOnly": "Nur Kleinbuchstaben und Zahlen",
         "allowed email domains": "Erlaubte Domänen",
+        "this email domain is not allowed": "Diese E-Mail-Domäne ist nicht erlaubt",
         "minimum length": "Mindestlänge: {0}",
         "must be different from username":
             "Passwort darf nicht gleich dem Benutzernamen sein",
@@ -49,6 +52,7 @@ export const { useI18n, ofTypeI18n } = createUseI18n({
     "fi": {
         "lowerCaseAlphanumericalCharsOnly": "Vain pienet kirjaimet ja numerot",
         "allowed email domains": "Sallitut sähköpostidomainit",
+        "this email domain is not allowed": "Tämä sähköpostidomain ei ole sallittu",
         "minimum length": "Minimipituus: {0}",
         "must be different from username": "Salasanan on oltava eri kuin käyttäjänimi",
         "password mismatch": "Salasanat eivät täsmää",
@@ -62,6 +66,7 @@ export const { useI18n, ofTypeI18n } = createUseI18n({
     "it": {
         "lowerCaseAlphanumericalCharsOnly": "Solo caratteri alfanumerici minuscoli",
         "allowed email domains": "Domini email consentiti",
+        "this email domain is not allowed": "Questo dominio email non è consentito",
         "minimum length": "Lunghezza minima: {0}",
         "must be different from username":
             "La password non può essere uguale all'username",
@@ -77,6 +82,8 @@ export const { useI18n, ofTypeI18n } = createUseI18n({
     "es": {
         "lowerCaseAlphanumericalCharsOnly": "Solo caracteres alfanuméricos en minúsculas",
         "allowed email domains": "Dominios permitidos",
+        "this email domain is not allowed":
+            "Este dominio de correo electrónico no está permitido",
         "minimum length": "Longitud mínima: {0}",
         "must be different from username":
             "La contraseña no puede ser el nombre de usuario",
@@ -92,6 +99,7 @@ export const { useI18n, ofTypeI18n } = createUseI18n({
     "nl": {
         "lowerCaseAlphanumericalCharsOnly": "Alleen kleine alfanumerieke tekens",
         "allowed email domains": "Toegestane e-maildomeinen",
+        "this email domain is not allowed": "Dit e-maildomein is niet toegestaan",
         "minimum length": "Minimale lengte: {0}",
         "must be different from username":
             "Wachtwoord mag niet hetzelfde zijn als gebruikersnaam",
@@ -107,6 +115,7 @@ export const { useI18n, ofTypeI18n } = createUseI18n({
     "no": {
         "lowerCaseAlphanumericalCharsOnly": "Kun små bokstaver og tall",
         "allowed email domains": "Tillatte e-postdomener",
+        "this email domain is not allowed": "Denne e-postdomenet er ikke tillatt",
         "minimum length": "Minimum lengde: {0}",
         "must be different from username":
             "Passordet kan ikke være det samme som brukernavnet",
@@ -122,6 +131,7 @@ export const { useI18n, ofTypeI18n } = createUseI18n({
     "zh-CN": {
         "lowerCaseAlphanumericalCharsOnly": "仅小写字母和数字",
         "allowed email domains": "允许的电子邮件域",
+        "this email domain is not allowed": "不允许此电子邮件域",
         "minimum length": "最小长度：{0}",
         "must be different from username": "密码不能与用户名相同",
         "password mismatch": "密码不匹配",
