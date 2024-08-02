@@ -171,6 +171,10 @@ export type ApiTypes = {
                 >;
             };
             highlightedCharts?: string[];
+            visible: {
+                user: boolean;
+                project: boolean;
+            };
         }[];
     };
     "/public/catalogs/${catalogId}/charts/${chartName}/versions/${chartVersion}": {

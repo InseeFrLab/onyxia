@@ -168,7 +168,7 @@ const availableCatalogs = createSelector(
         }
 
         return catalogs
-            .filter(({ isHidden }) => !isHidden)
+            .filter(({ isProduction }) => isProduction)
             .map(({ id, name }) => ({
                 "catalogId": id,
                 "catalogName": name

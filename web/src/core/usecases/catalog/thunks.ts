@@ -8,6 +8,7 @@ import memoize from "memoizee";
 import FlexSearch from "flexsearch";
 import { getMatchPositions } from "core/tools/highlightMatches";
 import { Chart } from "core/ports/OnyxiaApi";
+import * as projectManagement from "core/usecases/projectManagement";
 
 export const thunks = {
     "changeSelectedCatalogId":
@@ -42,11 +43,29 @@ export const thunks = {
 
             dispatch(actions.catalogsFetching());
 
-            const { catalogs, chartsByCatalogId } =
-                await onyxiaApi.getCatalogsAndCharts();
+            const { catalogs, chartsByCatalogId } = await (async () => {
+                const project = projectManagement.selectors.currentProject(getState());
+
+                const { catalogs: catalogs_all, chartsByCatalogId } =
+                    await onyxiaApi.getCatalogsAndCharts();
+
+                const catalogs = catalogs_all.filter(({ visibility }) => {
+                    switch (visibility) {
+                        case "always":
+                            return true;
+                        case "only in groups projects":
+                            return project.group !== undefined;
+                        case "ony in personal projects":
+                            return project.group === undefined;
+                    }
+                });
+
+                return { catalogs, chartsByCatalogId };
+            })();
 
             const selectedCatalogId =
-                params.catalogId ?? catalogs.filter(({ isHidden }) => !isHidden)[0].id;
+                params.catalogId ??
+                catalogs.filter(({ isProduction }) => isProduction)[0].id;
 
             dispatch(
                 actions.catalogsFetched({
@@ -158,7 +177,7 @@ const { getContext } = createUsecaseContextApi(() => {
             Object.entries(chartsByCatalogId)
                 .filter(
                     ([catalogId]) =>
-                        !catalogs.find(({ id }) => id === catalogId)!.isHidden
+                        catalogs.find(({ id }) => id === catalogId)!.isProduction
                 )
                 .forEach(([catalogId, charts]) =>
                     charts.forEach(chart =>
