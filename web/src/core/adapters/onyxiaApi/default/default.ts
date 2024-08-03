@@ -285,14 +285,14 @@ export function createOnyxiaApi(params: {
                             "visibility": (() => {
                                 if (
                                     !apiCatalog.visible.project &&
-                                    !apiCatalog.visible.project
+                                    !apiCatalog.visible.user
                                 ) {
                                     return undefined;
                                 }
 
                                 if (
                                     apiCatalog.visible.project &&
-                                    apiCatalog.visible.project
+                                    apiCatalog.visible.user
                                 ) {
                                     return "always" as const;
                                 }
