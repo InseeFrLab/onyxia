@@ -33,7 +33,7 @@ export const thunks = {
             const prOnboarding = (async () => {
                 assert(oidc.isUserLoggedIn);
 
-                if (oidc.loginScenario === "sessionStorageRestoration") {
+                if (oidc.authMethod === "session storage") {
                     return;
                 }
 

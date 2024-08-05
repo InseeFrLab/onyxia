@@ -18,10 +18,7 @@ export declare namespace Oidc {
         renewTokens(): Promise<void>;
         getTokens: () => Tokens;
         logout: (params: { redirectTo: "home" | "current page" }) => Promise<never>;
-        loginScenario:
-            | "backFromLoginPages"
-            | "sessionStorageRestoration"
-            | "silentSignin";
+        authMethod: "back from auth server" | "session storage" | "silent signin";
         subscribeToAutoLogoutCountdown: (
             tickCallback: (params: { secondsLeft: number | undefined }) => void
         ) => { unsubscribeFromAutoLogoutCountdown: () => void };
