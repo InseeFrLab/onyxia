@@ -17,16 +17,10 @@ export type XOnyxiaParams = {
      * "overwriteDefaultWith": { "foo": "bar", "bar": "{{region.oauth2.clientId}}" }
      *
      */
-    overwriteDefaultWith?:
-        | string
-        | number
-        | boolean
-        | unknown[]
-        | Record<string, unknown>;
-    overwriteListEnumWith?: unknown[] | string;
+    overwriteDefaultWith?: string;
+    overwriteListEnumWith?: string;
     hidden?: boolean;
     readonly?: boolean;
-    useRegionSliderConfig?: string;
 };
 
 export type XOnyxiaContext = {
