@@ -2,7 +2,7 @@ import { resolveXOnyxiaValueReference } from "./resolveXOnyxiaValueReference";
 import { assert } from "tsafe/assert";
 import { same } from "evt/tools/inDepth/same";
 
-// npx tsx src/core/adapters/onyxiaApi/default/resolveXOnyxiaValueReference.test.ts
+// npx tsx src/core/usecases/launcher/utils/resolveXOnyxiaValueReference.test.ts
 
 {
     const got = resolveXOnyxiaValueReference({
