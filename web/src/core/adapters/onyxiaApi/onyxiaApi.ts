@@ -438,6 +438,7 @@ export function createOnyxiaApi(params: {
 
             return {
                 "helmValuesSchema": data.config,
+                "helmValueYaml": data.defaultValues,
                 "helmChartSourceUrls": data.sources ?? [],
                 "helmDependencies": (data.dependencies ?? []).map(
                     ({ name, repository, version }) => ({

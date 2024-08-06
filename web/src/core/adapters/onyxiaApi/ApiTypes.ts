@@ -172,6 +172,7 @@ export type ApiTypes = {
     };
     "/public/catalogs/${catalogId}/charts/${chartName}/versions/${chartVersion}": {
         config: JSONSchema;
+        defaultValues: string;
         sources?: string[];
         dependencies?: {
             name: string;
