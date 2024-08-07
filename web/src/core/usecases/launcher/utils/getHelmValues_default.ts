@@ -31,10 +31,16 @@ type JSONSchemaLike = {
 assert<keyof JSONSchemaLike extends keyof JSONSchema ? true : false>();
 assert<JSONSchema extends JSONSchemaLike ? true : false>();
 
+type XOnyxiaContextLike = {
+    s3: unknown;
+};
+
+assert<XOnyxiaContext extends XOnyxiaContextLike ? true : false>();
+
 export function getHelmValues_default(params: {
     helmValuesSchema: JSONSchemaLike;
     helmValuesYaml: string;
-    xOnyxiaContext: XOnyxiaContext;
+    xOnyxiaContext: XOnyxiaContextLike;
 }): {
     helmValues_default: StringifyableObject;
     isChartUsingS3: boolean;
@@ -62,7 +68,9 @@ export function getHelmValues_default(params: {
         "xOnyxiaContext": (() => {
             const s3PropertyName = "s3";
 
-            assert<typeof s3PropertyName extends keyof XOnyxiaContext ? true : false>();
+            assert<
+                typeof s3PropertyName extends keyof XOnyxiaContextLike ? true : false
+            >();
 
             return new Proxy(xOnyxiaContext, {
                 "get": (...args) => {
@@ -83,10 +91,10 @@ export function getHelmValues_default(params: {
     return { helmValues_default, isChartUsingS3 };
 }
 
-export function getHelmValues_default_rec(params: {
+function getHelmValues_default_rec(params: {
     helmValuesSchema: JSONSchemaLike;
     helmValuesYaml_parsed: Stringifyable | undefined;
-    xOnyxiaContext: XOnyxiaContext;
+    xOnyxiaContext: XOnyxiaContextLike;
 }): Stringifyable {
     const { helmValuesSchema, helmValuesYaml_parsed, xOnyxiaContext } = params;
 
@@ -396,15 +404,17 @@ const zXOnyxiaParamsLike = (() => {
 const zJSONSchemaLike = (() => {
     type TargetType = JSONSchemaLike;
 
-    let x: z.ZodType<TargetType> = null as any;
+    let zTargetType_lazyRef: z.ZodType<TargetType>;
 
     const zTargetType = z.object({
         "type": z.enum(["object", "array", "string", "boolean", "integer", "number"]),
         "default": zStringifyable.optional(),
         "const": zStringifyable.optional(),
-        "properties": z.record(z.lazy(() => x)).optional(),
+        "properties": z.record(z.lazy(() => zTargetType_lazyRef)).optional(),
         [onyxiaReservedPropertyNameInFieldDescription]: zXOnyxiaParamsLike.optional()
     });
+
+    zTargetType_lazyRef = zTargetType;
 
     type ExtendsEachOther<T, U> = T extends U ? (U extends T ? true : false) : false;
 
