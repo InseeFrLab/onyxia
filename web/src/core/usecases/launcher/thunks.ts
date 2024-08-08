@@ -119,12 +119,16 @@ export const thunks = {
                     return;
                 }
 
-                const { helmDependencies, helmValuesSchema, helmChartSourceUrls } =
-                    await onyxiaApi.getHelmChartDetails({
-                        catalogId,
-                        chartName,
-                        chartVersion
-                    });
+                const {
+                    helmDependencies,
+                    helmValuesSchema,
+                    helmChartSourceUrls,
+                    helmValuesYaml
+                } = await onyxiaApi.getHelmChartDetails({
+                    catalogId,
+                    chartName,
+                    chartVersion
+                });
 
                 if (getIsCanceled()) {
                     return;
@@ -193,7 +197,8 @@ export const thunks = {
 
                 const { helmValues_default, isChartUsingS3 } = getHelmValues_default({
                     helmValuesSchema,
-                    xOnyxiaContext
+                    xOnyxiaContext,
+                    helmValuesYaml
                 });
 
                 const friendlyName_default = chartName;
