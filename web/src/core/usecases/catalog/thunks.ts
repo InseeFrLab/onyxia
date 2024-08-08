@@ -9,6 +9,7 @@ import FlexSearch from "flexsearch";
 import { getMatchPositions } from "core/tools/highlightMatches";
 import { Chart } from "core/ports/OnyxiaApi";
 import * as projectManagement from "core/usecases/projectManagement";
+import * as userAuthentication from "core/usecases/userAuthentication";
 
 export const thunks = {
     "changeSelectedCatalogId":
@@ -44,7 +45,12 @@ export const thunks = {
             dispatch(actions.catalogsFetching());
 
             const { catalogs, chartsByCatalogId } = await (async () => {
-                const project = projectManagement.selectors.currentProject(getState());
+                const isInGroupProject =
+                    !userAuthentication.selectors.authenticationState(getState())
+                        .isUserLoggedIn
+                        ? false
+                        : projectManagement.selectors.currentProject(getState()).group !==
+                          undefined;
 
                 const { catalogs: catalogs_all, chartsByCatalogId } =
                     await onyxiaApi.getCatalogsAndCharts();
@@ -54,9 +60,9 @@ export const thunks = {
                         case "always":
                             return true;
                         case "only in groups projects":
-                            return project.group !== undefined;
+                            return isInGroupProject;
                         case "ony in personal projects":
-                            return project.group === undefined;
+                            return !isInGroupProject;
                     }
                 });
 
