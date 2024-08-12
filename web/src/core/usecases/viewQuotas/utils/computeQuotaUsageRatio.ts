@@ -19,7 +19,7 @@ export function computeQuotaUsageRatio(params: {
 
         assert(typeof used === "string");
 
-        const cpuResourceUnit = /^(\d+)(m?)$/;
+        const cpuResourceUnit = /^(\d+)([mM]?)$/;
 
         if (!cpuResourceUnit.test(total)) {
             break cpu_resource_unit;
@@ -35,7 +35,7 @@ export function computeQuotaUsageRatio(params: {
 
             const n = Number(match[1]);
 
-            return match[2] === "m" ? n / 1000 : n;
+            return match[2].toLowerCase() === "m" ? n / 1000 : n;
         };
 
         return parseCpuResourceUnit(used) / parseCpuResourceUnit(total);

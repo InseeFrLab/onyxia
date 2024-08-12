@@ -13,23 +13,23 @@ export function toBytes(str: string) {
             return s;
         }
 
-        if (s.endsWith("ki")) {
+        if (s.endsWith("ki") || s.endsWith("k")) {
             return s.slice(0, -2) + "kb";
         }
 
-        if (s.endsWith("mi")) {
+        if (s.endsWith("mi") || s.endsWith("m")) {
             return s.slice(0, -2) + "mb";
         }
 
-        if (s.endsWith("gi")) {
+        if (s.endsWith("gi") || s.endsWith("g")) {
             return s.slice(0, -2) + "gb";
         }
 
-        if (s.endsWith("ti")) {
+        if (s.endsWith("ti") || s.endsWith("t")) {
             return s.slice(0, -2) + "tb";
         }
 
-        if (s.endsWith("pi")) {
+        if (s.endsWith("pi") || s.endsWith("p")) {
             return s.slice(0, -2) + "pb";
         }
 
