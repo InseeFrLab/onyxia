@@ -38,21 +38,9 @@ const allQuotas = createSelector(readyState, state => {
         .map(name => {
             const { spec, usage } = quotas[name];
 
-            // NOTE: To settle ambiguity between "cpu" 100m and "memory" 100m, if it's not cpu we convert "100m" to "100Mi"
-            const settleAmbiguity = (value: string | number) => {
-                if (
-                    name !== "cpu" &&
-                    typeof value === "string" &&
-                    value.toLowerCase().endsWith("m")
-                ) {
-                    return value.toLocaleLowerCase().replace("m", "Mi");
-                }
-                return value;
-            };
-
             const ratio = computeQuotaUsageRatio({
-                "used": settleAmbiguity(usage),
-                "total": settleAmbiguity(spec)
+                "used": usage,
+                "total": spec
             });
 
             if (ratio === undefined) {

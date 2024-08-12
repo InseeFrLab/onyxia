@@ -19,7 +19,7 @@ export function computeQuotaUsageRatio(params: {
 
         assert(typeof used === "string");
 
-        const cpuResourceUnit = /^(\d+)([mM]?)$/;
+        const cpuResourceUnit = /^(\d+)(m?)$/;
 
         if (!cpuResourceUnit.test(total)) {
             break cpu_resource_unit;
