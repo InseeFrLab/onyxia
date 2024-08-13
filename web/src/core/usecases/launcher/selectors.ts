@@ -1,5 +1,5 @@
 import type { State as RootState } from "core/bootstrap";
-import { assert, type Equals } from "tsafe/assert";
+import { assert } from "tsafe/assert";
 import * as yaml from "yaml";
 import { name } from "./state";
 import * as restorableConfigManagement from "core/usecases/restorableConfigManagement";
@@ -70,7 +70,6 @@ const formFieldGroup = createSelector(
 
         return state.helmDependencies;
     }),
-
     (isReady, helmValuesSchema, helmValues, helmDependencies) => {
         if (!isReady) {
             return null;
@@ -84,39 +83,6 @@ const formFieldGroup = createSelector(
         return null as any as FormFieldGroup;
     }
 );
-
-const isLaunchable = createSelector(isReady, formFieldGroup, (isReady, formTree) => {
-    if (!isReady) {
-        return null;
-    }
-
-    assert(formTree !== null);
-
-    return (function getIsValidFormTree(formTree): boolean {
-        return formTree.children.every(child => {
-            switch (child.type) {
-                case "field":
-                    return (() => {
-                        switch (child.fieldType) {
-                            case "integer field":
-                            case "select":
-                            case "checkbox":
-                            case "slider":
-                            case "range slider":
-                                return true;
-                            case "yaml code block":
-                                return child.isValidYamlAndDataType;
-                            case "text field":
-                                return child.doesMatchPattern;
-                        }
-                        assert<Equals<typeof child, never>>(true);
-                    })();
-                case "group":
-                    return getIsValidFormTree(child);
-            }
-        });
-    })(formTree);
-});
 
 const catalogId = createSelector(readyState, state => {
     if (state === null) {
@@ -586,7 +552,6 @@ const main = createSelector(
     restorableConfig,
     formFieldGroup,
     willOverwriteExistingConfigOnSave,
-    isLaunchable,
     isRestorableConfigSaved,
     isDefaultConfiguration,
     catalogName,
@@ -606,7 +571,6 @@ const main = createSelector(
         restorableConfig,
         formFieldGroup,
         willOverwriteExistingConfigOnSave,
-        isLaunchable,
         isRestorableConfigSaved,
         isDefaultConfiguration,
         catalogName,
@@ -631,7 +595,6 @@ const main = createSelector(
         assert(restorableConfig !== null);
         assert(formFieldGroup !== null);
         assert(willOverwriteExistingConfigOnSave !== null);
-        assert(isLaunchable !== null);
         assert(isRestorableConfigSaved !== null);
         assert(isDefaultConfiguration !== null);
         assert(catalogName !== null);
@@ -652,7 +615,6 @@ const main = createSelector(
             restorableConfig,
             formFieldGroup,
             willOverwriteExistingConfigOnSave,
-            isLaunchable,
             isRestorableConfigSaved,
             isDefaultConfiguration,
             catalogName,

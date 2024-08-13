@@ -1,10 +1,10 @@
 import { assert, type Equals } from "tsafe/assert";
+import type { StringifyableArray, StringifyableObject } from "core/tools/Stringifyable";
 
 export type FormFieldGroup = {
     type: "group";
-    helmValuesPath: (string | number)[];
     groupName: string;
-    groupDescription?: string;
+    groupDescription: string | undefined;
 
     children: (FormField | FormFieldGroup)[];
     canAdd: boolean;
@@ -36,8 +36,7 @@ export namespace FormField {
     export type YamlCodeBlock = Common & {
         fieldType: "yaml code block";
         expectedDataType: "object" | "array";
-        value: string;
-        isValidYamlAndDataType: boolean;
+        value: StringifyableObject | StringifyableArray;
     };
 
     export type IntegerField = Common & {
@@ -59,7 +58,6 @@ export namespace FormField {
         isSensitive: boolean;
         pattern: string | undefined;
         value: string;
-        doesMatchPattern: boolean;
     };
 
     export type Slider = Common & {
