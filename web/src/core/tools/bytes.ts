@@ -8,9 +8,12 @@ export function toBytes(str: string) {
             return "0b";
         }
 
+        if (/^\d+$/.test(s)) {
+            return s + "b";
+        }
+
         if (s.endsWith("B")) {
-            //return s.slice(0, -1) + ;
-            return s;
+            return s.toLowerCase();
         }
 
         if (s.endsWith("Ki") || s.endsWith("K")) {
