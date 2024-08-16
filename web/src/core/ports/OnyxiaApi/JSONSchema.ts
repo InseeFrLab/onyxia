@@ -5,7 +5,7 @@ import {
 import type { Stringifyable } from "core/tools/Stringifyable";
 
 export type JSONSchema = {
-    type: "object" | "array" | "string" | "boolean" | "integer";
+    type: "object" | "array" | "string" | "boolean" | "integer" | "number";
     title?: string;
     description?: string;
     default?: Stringifyable;
@@ -13,6 +13,8 @@ export type JSONSchema = {
         | boolean
         | { value: string | boolean | number; path: string; isPathRelative?: boolean };
     items?: JSONSchema;
+    minItems?: number;
+    maxItems: number;
     minimum?: number;
     pattern?: string;
     render?: "textArea" | "password" | "list" | "slider";

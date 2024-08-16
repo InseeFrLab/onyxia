@@ -349,3 +349,108 @@ import YAML from "yaml";
 
     console.log("PASS - Successfully detect access to s3 context");
 }
+
+{
+    const xOnyxiaContext = {
+        "s3": {}
+    };
+
+    const got = getHelmValues_default({
+        "helmValuesSchema": {
+            "type": "object",
+            "properties": {
+                "r": {
+                    "type": "array"
+                }
+            }
+        },
+        "helmValuesYaml": YAML.stringify({}),
+        xOnyxiaContext
+    });
+
+    const expected = {
+        "helmValues_default": { "r": [] },
+        "isChartUsingS3": false
+    };
+
+    assert(same(got, expected));
+
+    console.log("PASS - Resolve to empty array even if no default");
+}
+
+{
+    const xOnyxiaContext = {
+        "s3": {}
+    };
+
+    try {
+        getHelmValues_default({
+            "helmValuesSchema": {
+                "type": "object",
+                "properties": {
+                    "r": {
+                        "type": "array",
+                        "minItems": 3
+                    }
+                }
+            },
+            "helmValuesYaml": YAML.stringify({}),
+            xOnyxiaContext
+        });
+        assert(false);
+    } catch {
+        console.log("PASS - Choke when array, no defaults and minItems is defined");
+    }
+}
+
+{
+    const xOnyxiaContext = {
+        "s3": {}
+    };
+
+    try {
+        getHelmValues_default({
+            "helmValuesSchema": {
+                "type": "object",
+                "properties": {
+                    "r": {
+                        "type": "array",
+                        "default": ["a", "b"],
+                        "minItems": 3
+                    }
+                }
+            },
+            "helmValuesYaml": YAML.stringify({}),
+            xOnyxiaContext
+        });
+        assert(false);
+    } catch {
+        console.log("PASS - Choke if minItems not respected in default");
+    }
+}
+
+{
+    const xOnyxiaContext = {
+        "s3": {}
+    };
+
+    try {
+        getHelmValues_default({
+            "helmValuesSchema": {
+                "type": "object",
+                "properties": {
+                    "r": {
+                        "type": "array",
+                        "default": ["a", "b", "c", "d"],
+                        "maxItems": 3
+                    }
+                }
+            },
+            "helmValuesYaml": YAML.stringify({}),
+            xOnyxiaContext
+        });
+        assert(false);
+    } catch {
+        console.log("PASS - Choke if maxItems not respected in default");
+    }
+}

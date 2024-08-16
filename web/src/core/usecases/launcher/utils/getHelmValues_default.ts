@@ -4,7 +4,11 @@ import {
 } from "core/ports/OnyxiaApi/XOnyxia";
 import type { JSONSchema } from "core/ports/OnyxiaApi/JSONSchema";
 import type { XOnyxiaContext } from "core/ports/OnyxiaApi";
-import type { StringifyableObject, Stringifyable } from "core/tools/Stringifyable";
+import type {
+    StringifyableObject,
+    Stringifyable,
+    StringifyableArray
+} from "core/tools/Stringifyable";
 import { assert, type Equals } from "tsafe/assert";
 import { id } from "tsafe/id";
 import { z } from "zod";
@@ -25,6 +29,8 @@ type JSONSchemaLike = {
     default?: Stringifyable;
     const?: Stringifyable;
     properties?: Record<string, JSONSchemaLike>;
+    minItems?: number;
+    maxItems?: number;
     [onyxiaReservedPropertyNameInFieldDescription]?: XOnyxiaParamsLike;
 };
 
@@ -253,6 +259,10 @@ function getHelmValues_default_rec(params: {
                 break use_x_onyxia_overwriteDefaultWith;
             }
 
+            if (!getIsCorrectlySizedArray({ helmValuesSchema, "array": resolvedValue })) {
+                break use_x_onyxia_overwriteDefaultWith;
+            }
+
             return resolvedValue;
         }
 
@@ -278,12 +288,18 @@ function getHelmValues_default_rec(params: {
             break use_default;
         }
 
-        const doUseId = (() => {
+        const doUseIt = (() => {
             switch (helmValuesSchema.type) {
                 case "string":
                     return typeof defaultValue === "string";
                 case "array":
-                    return defaultValue instanceof Array;
+                    return (
+                        defaultValue instanceof Array &&
+                        getIsCorrectlySizedArray({
+                            helmValuesSchema,
+                            "array": defaultValue
+                        })
+                    );
                 case "object":
                     return typeof defaultValue === "object" && defaultValue !== null;
                 case "boolean":
@@ -300,7 +316,7 @@ function getHelmValues_default_rec(params: {
             assert<Equals<typeof helmValuesSchema.type, never>>();
         })();
 
-        if (!doUseId) {
+        if (!doUseIt) {
             break use_default;
         }
 
@@ -344,7 +360,13 @@ function getHelmValues_default_rec(params: {
                 case "string":
                     return typeof helmValuesYaml_parsed === "string";
                 case "array":
-                    return helmValuesYaml_parsed instanceof Array;
+                    return (
+                        helmValuesYaml_parsed instanceof Array &&
+                        getIsCorrectlySizedArray({
+                            helmValuesSchema,
+                            "array": helmValuesYaml_parsed
+                        })
+                    );
                 case "object":
                     return (
                         typeof helmValuesYaml_parsed === "object" &&
@@ -372,11 +394,25 @@ function getHelmValues_default_rec(params: {
         if (helmValuesSchema.type !== "array") {
             break schema_is_array;
         }
+        assert(
+            helmValuesSchema.minItems === undefined || helmValuesSchema.minItems === 1
+        );
         return [];
     }
 
     console.error(params);
     assert(false, "Can't resolve value");
+}
+
+function getIsCorrectlySizedArray(params: {
+    helmValuesSchema: Pick<JSONSchemaLike, "minItems" | "maxItems">;
+    array: StringifyableArray;
+}): boolean {
+    const { helmValuesSchema, array } = params;
+
+    const { minItems = 0, maxItems = Infinity } = helmValuesSchema;
+
+    return array.length >= minItems && array.length <= maxItems;
 }
 
 const zStringifyable: z.ZodType<Stringifyable> = z.any().superRefine((val, ctx) => {
@@ -410,6 +446,8 @@ const zJSONSchemaLike = (() => {
         "type": z.enum(["object", "array", "string", "boolean", "integer", "number"]),
         "default": zStringifyable.optional(),
         "const": zStringifyable.optional(),
+        "minItems": z.number().int().optional(),
+        "maxItems": z.number().nonnegative().int().optional(),
         "properties": z.record(z.lazy(() => zTargetType_lazyRef)).optional(),
         [onyxiaReservedPropertyNameInFieldDescription]: zXOnyxiaParamsLike.optional()
     });
