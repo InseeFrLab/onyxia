@@ -7,7 +7,7 @@ import * as projectManagement from "core/usecases/projectManagement";
 import * as userConfigs from "core/usecases/userConfigs";
 import { exclude } from "tsafe/exclude";
 import { createSelector } from "clean-architecture";
-import type { FormFieldGroup } from "./formTypes";
+import type { RootForm } from "./formTypes";
 import {
     type Stringifyable,
     type StringifyableAtomic,
@@ -17,6 +17,7 @@ import {
 import * as s3ConfigManagement from "core/usecases/s3ConfigManagement";
 import type { RestorableServiceConfig } from "core/usecases/restorableConfigManagement";
 import { id } from "tsafe/id";
+import { getRootForm } from "./utils/getRootForm";
 
 const readyState = (rootState: RootState) => {
     const state = rootState[name];
@@ -79,8 +80,12 @@ const formFieldGroup = createSelector(
         assert(helmValues !== null);
         assert(helmDependencies !== null);
 
-        // TODO
-        return null as any as FormFieldGroup;
+        return getRootForm({
+            helmValuesSchema,
+            helmValues,
+            // TODO: complete
+            "dependencies": helmDependencies
+        });
     }
 );
 

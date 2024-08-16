@@ -1,10 +1,23 @@
 import { assert, type Equals } from "tsafe/assert";
 import type { StringifyableArray, StringifyableObject } from "core/tools/Stringifyable";
 
+export type RootForm = {
+    main: FormFieldGroup["children"];
+    global: FormFieldGroup["children"];
+    dependencies: Record<
+        string,
+        {
+            main: FormFieldGroup["children"];
+            global: FormFieldGroup["children"];
+        }
+    >;
+    disabledDependencies: string[];
+};
+
 export type FormFieldGroup = {
     type: "group";
-    groupName: string;
-    groupDescription: string | undefined;
+    helmValuesPathSegment: string | number;
+    description: string | undefined;
 
     children: (FormField | FormFieldGroup)[];
     canAdd: boolean;
@@ -14,7 +27,7 @@ export type FormFieldGroup = {
 export type FormField =
     | FormField.Checkbox
     | FormField.YamlCodeBlock
-    | FormField.IntegerField
+    | FormField.NumberField
     | FormField.Select
     | FormField.TextField
     | FormField.Slider
@@ -23,37 +36,45 @@ export type FormField =
 export namespace FormField {
     type Common = {
         type: "field";
-        helmValuePath: (string | number)[];
         title: string;
-        description: string | undefined;
     };
 
     export type Checkbox = Common & {
         fieldType: "checkbox";
+        helmValuesPath: (string | number)[];
+        description: string | undefined;
         value: boolean;
     };
 
     export type YamlCodeBlock = Common & {
         fieldType: "yaml code block";
+        helmValuesPath: (string | number)[];
+        description: string | undefined;
         expectedDataType: "object" | "array";
         value: StringifyableObject | StringifyableArray;
     };
 
-    export type IntegerField = Common & {
+    export type NumberField = Common & {
         fieldType: "integer field";
+        helmValuesPath: (string | number)[];
+        description: string | undefined;
         value: number;
+        isInteger: boolean;
         minimum: number | undefined;
     };
 
-    // TODO: What about enums that are not strings?
     export type Select = Common & {
         fieldType: "select";
+        helmValuesPath: (string | number)[];
+        description: string | undefined;
         enum: string[];
         value: string;
     };
 
     export type TextField = Common & {
         fieldType: "text field";
+        helmValuesPath: (string | number)[];
+        description: string | undefined;
         doRenderAsTextArea: boolean;
         isSensitive: boolean;
         pattern: string | undefined;
@@ -62,36 +83,50 @@ export namespace FormField {
 
     export type Slider = Common & {
         fieldType: "slider";
-        sliderMax: number;
-        sliderMin: number;
-        sliderUnit: string;
-        sliderStep: number;
+        helmValuesPath: (string | number)[];
+        description: string | undefined;
+        max: number;
+        min: number;
+        unit: string | undefined;
+        step: number;
         value: number;
     };
 
     export type RangeSlider = Common & {
         fieldType: "range slider";
-        sliderMinSemantic: string;
-        sliderMaxSemantic: string;
-        sliderMin: number;
-        sliderMax: number;
-        sliderUnit: string; //Note this is the string in `${number}${string}`
-        sliderStep: number;
-        value: { from: number; to: number };
+        unit: string | undefined;
+        step: number;
+        lowEndRange: RangeSlider.RangeEnd;
+        highEndRange: RangeSlider.RangeEnd;
     };
+
+    export namespace RangeSlider {
+        export type RangeEnd = {
+            helmValuesPath: (string | number)[];
+            value: number;
+            rangeEndSemantic: string | undefined;
+            min: number;
+            max: number;
+            description: string | undefined;
+        };
+    }
 }
 
 export type FormFieldValue =
     | Pick<FormField.Checkbox, FormFieldValue.Name>
     | Pick<FormField.YamlCodeBlock, FormFieldValue.Name>
-    | Pick<FormField.IntegerField, FormFieldValue.Name>
+    | Pick<FormField.NumberField, FormFieldValue.Name>
     | Pick<FormField.Select, FormFieldValue.Name>
     | Pick<FormField.TextField, FormFieldValue.Name>
     | Pick<FormField.Slider, FormFieldValue.Name>
-    | Pick<FormField.RangeSlider, FormFieldValue.Name>;
+    | {
+          fieldType: "range slider";
+          lowEndRange: Pick<FormField.RangeSlider.RangeEnd, "helmValuesPath" | "value">;
+          highEndRange: Pick<FormField.RangeSlider.RangeEnd, "helmValuesPath" | "value">;
+      };
 
 export namespace FormFieldValue {
-    export type Name = "fieldType" | "helmValuePath" | "value";
+    export type Name = "fieldType" | "helmValuesPath" | "value";
 }
 
 assert<Equals<FormFieldValue["fieldType"], FormField["fieldType"]>>(true);
