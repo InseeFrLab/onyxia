@@ -14,7 +14,7 @@
         "format": "yarn _format --write",
         "format:check": "yarn _format --list-different",
         "emails-domain-accept-list-helper": "tsx scripts/emails-domain-accept-list-helper.ts",
-        "test": "tsx scripts/test.ts"
+        "test": "vitest --run"
     },
     "dependencies": {
         "@aws-sdk/client-s3": "^3.513.0",
@@ -93,7 +93,8 @@
         "vite": "^5.0.8",
         "vite-envs": "^4.3.0",
         "vite-plugin-commonjs": "^0.10.1",
-        "vite-tsconfig-paths": "^4.3.1"
+        "vite-tsconfig-paths": "^4.3.1",
+        "vitest": "^2.0.5"
     },
     "lint-staged": {
         "*.{ts,tsx,json,md}": [

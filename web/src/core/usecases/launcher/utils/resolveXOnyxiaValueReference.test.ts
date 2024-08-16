@@ -1,10 +1,7 @@
+import { it, expect } from "vitest";
 import { resolveXOnyxiaValueReference } from "./resolveXOnyxiaValueReference";
-import { assert } from "tsafe/assert";
-import { same } from "evt/tools/inDepth/same";
 
-// npx tsx src/core/usecases/launcher/utils/resolveXOnyxiaValueReference.test.ts
-
-{
+it("PASS 1", () => {
     const got = resolveXOnyxiaValueReference({
         "expression": "{{a.b.c}}",
         "xOnyxiaContext": {
@@ -18,12 +15,10 @@ import { same } from "evt/tools/inDepth/same";
 
     const expected = 42;
 
-    assert(got === expected);
+    expect(got).toBe(expected);
+});
 
-    console.log("PASS 1");
-}
-
-{
+it("PASS 2", () => {
     const got = resolveXOnyxiaValueReference({
         "expression": "a.b.c",
         "xOnyxiaContext": {
@@ -37,12 +32,10 @@ import { same } from "evt/tools/inDepth/same";
 
     const expected = 42;
 
-    assert(got === expected);
+    expect(got).toBe(expected);
+});
 
-    console.log("PASS 2");
-}
-
-{
+it("PASS 3", () => {
     const got = resolveXOnyxiaValueReference({
         "expression": "a.b.c",
         "xOnyxiaContext": {
@@ -56,12 +49,10 @@ import { same } from "evt/tools/inDepth/same";
 
     const expected = ["x", "y", "z"];
 
-    assert(same(got, expected));
+    expect(got).toEqual(expected);
+});
 
-    console.log("PASS 3");
-}
-
-{
+it("PASS 4", () => {
     const got = resolveXOnyxiaValueReference({
         "expression": "a",
         "xOnyxiaContext": {
@@ -79,12 +70,10 @@ import { same } from "evt/tools/inDepth/same";
         }
     };
 
-    assert(same(got, expected));
+    expect(got).toEqual(expected);
+});
 
-    console.log("PASS 4");
-}
-
-{
+it("PASS 5", () => {
     const got = resolveXOnyxiaValueReference({
         "expression": "a.b.c",
         "xOnyxiaContext": {
@@ -98,12 +87,10 @@ import { same } from "evt/tools/inDepth/same";
 
     const expected = "foo";
 
-    assert(got === expected);
+    expect(got).toBe(expected);
+});
 
-    console.log("PASS 5");
-}
-
-{
+it("PASS 6", () => {
     const got = resolveXOnyxiaValueReference({
         "expression": "{{a.b.c}}-{{a.b.c1}}",
         "xOnyxiaContext": {
@@ -118,12 +105,10 @@ import { same } from "evt/tools/inDepth/same";
 
     const expected = "foo-bar";
 
-    assert(got === expected);
+    expect(got).toBe(expected);
+});
 
-    console.log("PASS 6");
-}
-
-{
+it("PASS 7", () => {
     const got = resolveXOnyxiaValueReference({
         "expression": "{{a.b.c}}-postfix",
         "xOnyxiaContext": {
@@ -137,12 +122,10 @@ import { same } from "evt/tools/inDepth/same";
 
     const expected = "42-postfix";
 
-    assert(got === expected);
+    expect(got).toBe(expected);
+});
 
-    console.log("PASS 7");
-}
-
-{
+it("PASS 8", () => {
     const got = resolveXOnyxiaValueReference({
         "expression": "a['b'].c",
         "xOnyxiaContext": {
@@ -156,12 +139,10 @@ import { same } from "evt/tools/inDepth/same";
 
     const expected = 42;
 
-    assert(got === expected);
+    expect(got).toBe(expected);
+});
 
-    console.log("PASS 8");
-}
-
-{
+it("PASS 9", () => {
     const got = resolveXOnyxiaValueReference({
         "expression": 'a["b"].c',
         "xOnyxiaContext": {
@@ -175,12 +156,10 @@ import { same } from "evt/tools/inDepth/same";
 
     const expected = 42;
 
-    assert(got === expected);
+    expect(got).toBe(expected);
+});
 
-    console.log("PASS 9");
-}
-
-{
+it("PASS 10", () => {
     const got = resolveXOnyxiaValueReference({
         "expression": "a.b.c[1]",
         "xOnyxiaContext": {
@@ -194,12 +173,10 @@ import { same } from "evt/tools/inDepth/same";
 
     const expected = "yes";
 
-    assert(got === expected);
+    expect(got).toBe(expected);
+});
 
-    console.log("PASS 10");
-}
-
-{
+it("PASS 11", () => {
     const got = resolveXOnyxiaValueReference({
         "expression": "a.b[1].c",
         "xOnyxiaContext": {
@@ -217,12 +194,10 @@ import { same } from "evt/tools/inDepth/same";
 
     const expected = "yes";
 
-    assert(got === expected);
+    expect(got).toBe(expected);
+});
 
-    console.log("PASS 11");
-}
-
-{
+it("PASS 12", () => {
     const got = resolveXOnyxiaValueReference({
         "expression": "a.notExisting.c[1]",
         "xOnyxiaContext": {
@@ -232,12 +207,10 @@ import { same } from "evt/tools/inDepth/same";
 
     const expected = undefined;
 
-    assert(got === expected);
+    expect(got).toBe(expected);
+});
 
-    console.log("PASS 12");
-}
-
-{
+it("PASS 13", () => {
     const got = resolveXOnyxiaValueReference({
         "expression": "{{a.notExisting.c[1]}}-postfix",
         "xOnyxiaContext": {
@@ -247,12 +220,10 @@ import { same } from "evt/tools/inDepth/same";
 
     const expected = undefined;
 
-    assert(got === expected);
+    expect(got).toBe(expected);
+});
 
-    console.log("PASS 13");
-}
-
-{
+it("PASS 14", () => {
     const got = resolveXOnyxiaValueReference({
         "expression": 'a["b.c"].d',
         "xOnyxiaContext": {
@@ -266,7 +237,5 @@ import { same } from "evt/tools/inDepth/same";
 
     const expected = 42;
 
-    assert(got === expected);
-
-    console.log("PASS 14");
-}
+    expect(got).toBe(expected);
+});

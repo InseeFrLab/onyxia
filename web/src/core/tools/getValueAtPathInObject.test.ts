@@ -1,8 +1,7 @@
-import { assert } from "tsafe/assert";
-import { same } from "evt/tools/inDepth/same";
+import { it, expect } from "vitest";
 import { getValueAtPathInObject } from "./getValueAtPathInObject";
 
-{
+it("should return the correct value for a base case", () => {
     const got = getValueAtPathInObject({
         "obj": {
             "a": {
@@ -14,12 +13,10 @@ import { getValueAtPathInObject } from "./getValueAtPathInObject";
 
     const expected = 42;
 
-    assert(got === expected);
+    expect(got).toBe(expected);
+});
 
-    console.log("PASS - base case");
-}
-
-{
+it("should resolve to object when the path points to an object", () => {
     const got = getValueAtPathInObject({
         "obj": {
             "a": {
@@ -31,12 +28,10 @@ import { getValueAtPathInObject } from "./getValueAtPathInObject";
 
     const expected = { "c": 42 };
 
-    assert(same(got, expected));
+    expect(got).toEqual(expected); // Use toEqual for deep equality check
+});
 
-    console.log("PASS - resolve to object");
-}
-
-{
+it("should resolve to undefined when the path does not exist", () => {
     const got = getValueAtPathInObject({
         "obj": {
             "a": {
@@ -48,12 +43,10 @@ import { getValueAtPathInObject } from "./getValueAtPathInObject";
 
     const expected = undefined;
 
-    assert(got === expected);
+    expect(got).toBe(expected);
+});
 
-    console.log("PASS - resolve to undefined when path does not exist");
-}
-
-{
+it("should work with arrays", () => {
     const got = getValueAtPathInObject({
         "obj": {
             "a": [{ "b": 41 }, { "b": 42 }]
@@ -63,7 +56,5 @@ import { getValueAtPathInObject } from "./getValueAtPathInObject";
 
     const expected = 42;
 
-    assert(got === expected);
-
-    console.log("PASS - works with arrays");
-}
+    expect(got).toBe(expected);
+});

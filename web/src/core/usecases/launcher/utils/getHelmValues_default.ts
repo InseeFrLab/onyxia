@@ -395,13 +395,12 @@ function getHelmValues_default_rec(params: {
             break schema_is_array;
         }
         assert(
-            helmValuesSchema.minItems === undefined || helmValuesSchema.minItems === 1
+            helmValuesSchema.minItems === undefined || helmValuesSchema.minItems === 0
         );
         return [];
     }
 
-    console.error(params);
-    assert(false, "Can't resolve value");
+    assert(false, `Can't resolve value ${JSON.stringify(params, null, 2)}`);
 }
 
 function getIsCorrectlySizedArray(params: {

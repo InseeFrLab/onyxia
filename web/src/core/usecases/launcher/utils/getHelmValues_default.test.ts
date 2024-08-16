@@ -1,11 +1,8 @@
-import { assert } from "tsafe/assert";
-import { same } from "evt/tools/inDepth/same";
+import { it, expect } from "vitest";
 import { getHelmValues_default } from "./getHelmValues_default";
 import YAML from "yaml";
 
-// npx tsx src/core/usecases/launcher/utils/getHelmValues_default.test.ts
-
-{
+it("Use const", () => {
     const xOnyxiaContext = {
         "a": {
             "b": {
@@ -35,12 +32,10 @@ import YAML from "yaml";
         "isChartUsingS3": false
     };
 
-    assert(same(got, expected));
+    expect(got).toEqual(expected);
+});
 
-    console.log("PASS - Use const");
-}
-
-{
+it("Use x-onyxia", () => {
     const xOnyxiaContext = {
         "a": {
             "b": {
@@ -69,12 +64,10 @@ import YAML from "yaml";
         "isChartUsingS3": false
     };
 
-    assert(same(got, expected));
+    expect(got).toEqual(expected);
+});
 
-    console.log("PASS - Use x-onyxia");
-}
-
-{
+it("Use default", () => {
     const xOnyxiaContext = {
         "a": {
             "b": {
@@ -100,12 +93,10 @@ import YAML from "yaml";
         "isChartUsingS3": false
     };
 
-    assert(same(got, expected));
+    expect(got).toEqual(expected);
+});
 
-    console.log("PASS - Use default");
-}
-
-{
+it("Use values.yaml", () => {
     const xOnyxiaContext = {
         "a": {
             "b": {
@@ -130,12 +121,10 @@ import YAML from "yaml";
         "isChartUsingS3": false
     };
 
-    assert(same(got, expected));
+    expect(got).toEqual(expected);
+});
 
-    console.log("PASS - Use values.yaml");
-}
-
-{
+it("Use default if can't resolve in x-onyxia context", () => {
     const xOnyxiaContext = {
         "a": {},
         "s3": undefined
@@ -158,32 +147,31 @@ import YAML from "yaml";
         "isChartUsingS3": false
     };
 
-    assert(same(got, expected));
+    expect(got).toEqual(expected);
+});
 
-    console.log("PASS - Use default if can't resolve in x-onyxia context");
-}
-
-{
+it("Choke if can't find a default", () => {
     const xOnyxiaContext = {
         "s3": undefined
     };
 
-    try {
+    expect(() => {
         getHelmValues_default({
             "helmValuesSchema": {
-                "type": "object"
+                "type": "object",
+                "properties": {
+                    "r": {
+                        "type": "string"
+                    }
+                }
             },
             "helmValuesYaml": YAML.stringify({}),
             xOnyxiaContext
         });
+    }).toThrow();
+});
 
-        assert(false);
-    } catch {
-        console.log("PASS - Choke if can't find a default");
-    }
-}
-
-{
+it("const can override the type", () => {
     const xOnyxiaContext = {
         "s3": undefined
     };
@@ -207,12 +195,10 @@ import YAML from "yaml";
         "isChartUsingS3": false
     };
 
-    assert(same(got, expected));
+    expect(got).toEqual(expected);
+});
 
-    console.log("PASS - const can override the type");
-}
-
-{
+it("Convert string from x-onyxia context to number", () => {
     const xOnyxiaContext = {
         "a": {
             "b": "42"
@@ -241,12 +227,10 @@ import YAML from "yaml";
         "isChartUsingS3": false
     };
 
-    assert(same(got, expected));
+    expect(got).toEqual(expected);
+});
 
-    console.log("PASS - Convert string from x-onyxia context to number");
-}
-
-{
+it("Fallback to default if string interpreted as number is not an integer", () => {
     const xOnyxiaContext = {
         "a": {
             "b": "42.5"
@@ -276,14 +260,10 @@ import YAML from "yaml";
         "isChartUsingS3": false
     };
 
-    assert(same(got, expected));
+    expect(got).toEqual(expected);
+});
 
-    console.log(
-        "PASS - Fallback to default if string interpreted as number is not an integer"
-    );
-}
-
-{
+it("Interpret string as boolean", () => {
     const xOnyxiaContext = {
         "a": {
             "b": "true"
@@ -312,12 +292,10 @@ import YAML from "yaml";
         "isChartUsingS3": false
     };
 
-    assert(same(got, expected));
+    expect(got).toEqual(expected);
+});
 
-    console.log("PASS - Interpret string as boolean");
-}
-
-{
+it("Successfully detect access to s3 context", () => {
     const xOnyxiaContext = {
         "s3": {
             "AWS_ACCESS_KEY_ID": "xxx"
@@ -345,12 +323,10 @@ import YAML from "yaml";
         "isChartUsingS3": true
     };
 
-    assert(same(got, expected));
+    expect(got).toEqual(expected);
+});
 
-    console.log("PASS - Successfully detect access to s3 context");
-}
-
-{
+it("Resolve to empty array even if no default", () => {
     const xOnyxiaContext = {
         "s3": {}
     };
@@ -373,17 +349,15 @@ import YAML from "yaml";
         "isChartUsingS3": false
     };
 
-    assert(same(got, expected));
+    expect(got).toEqual(expected);
+});
 
-    console.log("PASS - Resolve to empty array even if no default");
-}
-
-{
+it("Choke when array, no defaults and minItems is defined", () => {
     const xOnyxiaContext = {
         "s3": {}
     };
 
-    try {
+    expect(() => {
         getHelmValues_default({
             "helmValuesSchema": {
                 "type": "object",
@@ -397,18 +371,15 @@ import YAML from "yaml";
             "helmValuesYaml": YAML.stringify({}),
             xOnyxiaContext
         });
-        assert(false);
-    } catch {
-        console.log("PASS - Choke when array, no defaults and minItems is defined");
-    }
-}
+    }).toThrow();
+});
 
-{
+it("Choke if minItems not respected in default", () => {
     const xOnyxiaContext = {
         "s3": {}
     };
 
-    try {
+    expect(() => {
         getHelmValues_default({
             "helmValuesSchema": {
                 "type": "object",
@@ -423,18 +394,15 @@ import YAML from "yaml";
             "helmValuesYaml": YAML.stringify({}),
             xOnyxiaContext
         });
-        assert(false);
-    } catch {
-        console.log("PASS - Choke if minItems not respected in default");
-    }
-}
+    }).toThrow();
+});
 
-{
+it("Choke if maxItems not respected in default and min items", () => {
     const xOnyxiaContext = {
         "s3": {}
     };
 
-    try {
+    expect(() => {
         getHelmValues_default({
             "helmValuesSchema": {
                 "type": "object",
@@ -442,15 +410,13 @@ import YAML from "yaml";
                     "r": {
                         "type": "array",
                         "default": ["a", "b", "c", "d"],
-                        "maxItems": 3
+                        "maxItems": 3,
+                        "minItems": 1
                     }
                 }
             },
             "helmValuesYaml": YAML.stringify({}),
             xOnyxiaContext
         });
-        assert(false);
-    } catch {
-        console.log("PASS - Choke if maxItems not respected in default");
-    }
-}
+    }).toThrow();
+});
