@@ -7,7 +7,6 @@ import * as projectManagement from "core/usecases/projectManagement";
 import * as userConfigs from "core/usecases/userConfigs";
 import { exclude } from "tsafe/exclude";
 import { createSelector } from "clean-architecture";
-import type { RootForm } from "./formTypes";
 import {
     type Stringifyable,
     type StringifyableAtomic,
@@ -54,7 +53,7 @@ const helmValues = createSelector(readyState, state => {
     return state.helmValues;
 });
 
-const formFieldGroup = createSelector(
+const rootForm = createSelector(
     isReady,
     createSelector(readyState, state => {
         if (state === null) {
@@ -555,7 +554,7 @@ const main = createSelector(
     chartVersion,
     availableChartVersions,
     restorableConfig,
-    formFieldGroup,
+    rootForm,
     willOverwriteExistingConfigOnSave,
     isRestorableConfigSaved,
     isDefaultConfiguration,
@@ -574,7 +573,7 @@ const main = createSelector(
         chartVersion,
         availableChartVersions,
         restorableConfig,
-        formFieldGroup,
+        rootForm,
         willOverwriteExistingConfigOnSave,
         isRestorableConfigSaved,
         isDefaultConfiguration,
@@ -598,7 +597,7 @@ const main = createSelector(
         assert(chartVersion !== null);
         assert(availableChartVersions !== null);
         assert(restorableConfig !== null);
-        assert(formFieldGroup !== null);
+        assert(rootForm !== null);
         assert(willOverwriteExistingConfigOnSave !== null);
         assert(isRestorableConfigSaved !== null);
         assert(isDefaultConfiguration !== null);
@@ -618,7 +617,7 @@ const main = createSelector(
             chartVersion,
             availableChartVersions,
             restorableConfig,
-            formFieldGroup,
+            rootForm,
             willOverwriteExistingConfigOnSave,
             isRestorableConfigSaved,
             isDefaultConfiguration,
