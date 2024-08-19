@@ -1,13 +1,13 @@
-import type { FormFieldGroup } from "../../../formTypes";
+import type { FormFieldGroup } from "core/usecases/launcher/formTypes";
 
 export function removeFormFieldGroupWithNoChildren(params: {
-    formFieldGroup: FormFieldGroup;
+    children: FormFieldGroup["children"];
 }): void {
-    const { formFieldGroup } = params;
+    const { children } = params;
 
     while (true) {
         const { hasRemoved } = removeFormFieldGroupLeafWithNoChildren_rec({
-            formFieldGroup
+            children
         });
 
         if (!hasRemoved) {
@@ -17,23 +17,25 @@ export function removeFormFieldGroupWithNoChildren(params: {
 }
 
 function removeFormFieldGroupLeafWithNoChildren_rec(params: {
-    formFieldGroup: FormFieldGroup;
+    children: FormFieldGroup["children"];
 }): { hasRemoved: boolean } {
-    const { formFieldGroup } = params;
+    const { children } = params;
 
     let hasRemoved = false;
 
-    formFieldGroup.children.forEach(child => {
+    children.forEach(child => {
         if (child.type === "field") {
             return;
         }
 
         if (child.children.length === 0) {
-            formFieldGroup.children.splice(formFieldGroup.children.indexOf(child), 1);
+            children.splice(children.indexOf(child), 1);
             hasRemoved = true;
         } else {
             const { hasRemoved: hasRemoved_i } =
-                removeFormFieldGroupLeafWithNoChildren_rec({ "formFieldGroup": child });
+                removeFormFieldGroupLeafWithNoChildren_rec({
+                    "children": child.children
+                });
 
             if (hasRemoved_i) {
                 hasRemoved = true;

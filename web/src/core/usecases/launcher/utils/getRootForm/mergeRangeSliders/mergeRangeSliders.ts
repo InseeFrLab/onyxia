@@ -81,5 +81,5 @@ export function mergeRangeSliders(params: { formFieldGroup: FormFieldGroup }): v
         });
     }
 
-    removeFormFieldGroupWithNoChildren({ formFieldGroup });
+    removeFormFieldGroupWithNoChildren({ "children": formFieldGroup.children });
 }
