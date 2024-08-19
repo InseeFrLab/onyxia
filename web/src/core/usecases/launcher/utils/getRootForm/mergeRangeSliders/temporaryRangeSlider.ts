@@ -4,13 +4,13 @@ import { assert } from "tsafe/assert";
 export type TemporaryRangeSliderPayload = {
     sliderMin: number;
     sliderMax: number;
-    sliderStep?: number;
-    sliderUnit?: string;
-    sliderExtremitySemantic?: string;
+    sliderStep: number | undefined;
+    sliderUnit: string | undefined;
+    sliderExtremitySemantic: string | undefined;
     sliderRangeId: string;
     helmValue: string | number;
     helmValuesPath: (string | number)[];
-    description?: string;
+    description: string | undefined;
 } & (
     | {
           sliderExtremity: "down";
@@ -33,13 +33,12 @@ export function getTemporaryRangeSliderPayload(params: {
 
 export function createTemporaryRangeSlider(params: {
     payload: TemporaryRangeSliderPayload;
-    title: string;
 }): FormField.RangeSlider {
-    const { title, payload } = params;
+    const { payload } = params;
 
     return {
         "type": "field",
-        title,
+        "title": "",
         "fieldType": "range slider",
         "lowEndRange": {
             "helmValuesPath": [],

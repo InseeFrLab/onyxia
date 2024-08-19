@@ -1,4 +1,4 @@
-import type { FormField } from "../../../formTypes";
+import type { FormField } from "core/usecases/launcher/formTypes";
 import { assert } from "tsafe/assert";
 import { id } from "tsafe/id";
 import { getTemporaryRangeSliderPayload } from "./temporaryRangeSlider";
