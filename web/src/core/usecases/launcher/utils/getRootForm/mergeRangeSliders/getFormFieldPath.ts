@@ -1,8 +1,22 @@
 import type { FormFieldGroup, FormField } from "../../../formTypes";
 import { exclude } from "tsafe/exclude";
+import { assert, type Equals } from "tsafe/assert";
+
+type FormFieldLike = {
+    type: "field";
+};
+
+assert<FormField extends FormFieldLike ? true : false>();
+
+export type FormFieldGroupLike = {
+    type: "group";
+    children: (FormFieldLike | FormFieldGroupLike)[];
+};
+
+assert<FormFieldGroup extends FormFieldGroupLike ? true : false>();
 
 export function getFormFieldPath(params: {
-    formFieldGroup: FormFieldGroup;
+    formFieldGroup: FormFieldGroupLike;
     predicate: (formField: FormField) => boolean;
 }): number[] | undefined {
     const { formFieldGroup, predicate } = params;
@@ -16,7 +30,7 @@ export function getFormFieldPath(params: {
 
 function getFormFieldPath_rec(params: {
     formFieldPath: number[];
-    formFieldGroup: FormFieldGroup;
+    formFieldGroup: FormFieldGroupLike;
     predicate: (formField: FormField) => boolean;
 }): number[] | undefined {
     const { formFieldPath, formFieldGroup, predicate } = params;
@@ -27,7 +41,10 @@ function getFormFieldPath_rec(params: {
                 return false;
             }
 
-            return predicate(child);
+            // NOTE: We don't want to go into too much generic typing here just to make the function
+            // easier to write unit test for, this is plenty safe enough.
+            assert<Equals<typeof child, FormFieldLike>>();
+            return predicate(child as FormField);
         });
 
         if (i !== -1) {
