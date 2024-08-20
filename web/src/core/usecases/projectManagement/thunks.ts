@@ -14,7 +14,7 @@ export const thunks = {
     "changeProject":
         (params: { projectId: string }) =>
         async (...args) => {
-            const [dispatch, , { onyxiaApi, secretsManager, oidc }] = args;
+            const [dispatch, , { onyxiaApi, secretsManager }] = args;
 
             const { projectId } = params;
 
@@ -31,13 +31,26 @@ export const thunks = {
             })();
 
             const prOnboarding = (async () => {
-                assert(oidc.isUserLoggedIn);
+                const sessionStorageKey = "onyxia_onboarded_groups";
 
-                if (oidc.authMethod === "session storage") {
+                function readSessionStorage(): string[] {
+                    const value = sessionStorage.getItem(sessionStorageKey);
+                    return value === null ? [] : JSON.parse(value);
+                }
+
+                function writeSessionStorage(value: string[]) {
+                    sessionStorage.setItem(sessionStorageKey, JSON.stringify(value));
+                }
+
+                const onboardedProjectIds = readSessionStorage();
+
+                if (onboardedProjectIds.includes(projectId)) {
                     return;
                 }
 
                 await onyxiaApi.onboard({ group });
+
+                writeSessionStorage([...onboardedProjectIds, projectId]);
             })();
 
             await dispatch(privateThunks.__configMigration({ projectVaultTopDirPath }));
