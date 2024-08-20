@@ -1,7 +1,21 @@
-import type { FormFieldGroup } from "core/usecases/launcher/formTypes";
+import type { FormFieldGroup, FormField } from "../../../formTypes";
+import { assert } from "tsafe/assert";
+
+type FormFieldLike = {
+    type: "field";
+};
+
+assert<FormField extends FormFieldLike ? true : false>();
+
+export type FormFieldGroupLike = {
+    type: "group";
+    children: (FormFieldLike | FormFieldGroupLike)[];
+};
+
+assert<FormFieldGroup extends FormFieldGroupLike ? true : false>();
 
 export function removeFormFieldGroupWithNoChildren(params: {
-    children: FormFieldGroup["children"];
+    children: FormFieldGroupLike["children"];
 }): void {
     const { children } = params;
 
@@ -17,7 +31,7 @@ export function removeFormFieldGroupWithNoChildren(params: {
 }
 
 function removeFormFieldGroupLeafWithNoChildren_rec(params: {
-    children: FormFieldGroup["children"];
+    children: FormFieldGroupLike["children"];
 }): { hasRemoved: boolean } {
     const { children } = params;
 

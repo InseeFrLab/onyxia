@@ -1,27 +1,20 @@
 import { it, expect, describe } from "vitest";
-import { removeFormFieldGroupWithNoChildren } from "./removeFormFieldGroupWithNoChildren";
-import type { FormFieldGroup } from "core/usecases/launcher/formTypes";
+import {
+    removeFormFieldGroupWithNoChildren,
+    type FormFieldGroupLike
+} from "./removeFormFieldGroupWithNoChildren";
 import structuredClone from "@ungap/structured-clone";
 import { symToStr } from "tsafe/symToStr";
 
 describe(symToStr({ removeFormFieldGroupWithNoChildren }), () => {
     it("simple case", () => {
-        const children: FormFieldGroup["children"] = [
+        const children: FormFieldGroupLike["children"] = [
             {
-                "type": "field",
-                "title": "field 1",
-                "fieldType": "checkbox",
-                "helmValuesPath": ["root", "field1"],
-                "description": undefined,
-                "value": true
+                "type": "field"
             },
             {
                 "type": "group",
-                "helmValuesPathSegment": "group1",
-                "description": undefined,
-                "children": [],
-                "canAdd": false,
-                "canRemove": false
+                "children": []
             }
         ];
 
@@ -37,38 +30,20 @@ describe(symToStr({ removeFormFieldGroupWithNoChildren }), () => {
     });
 
     it("more than one removal", () => {
-        const children: FormFieldGroup["children"] = [
+        const children: FormFieldGroupLike["children"] = [
             {
-                "type": "field",
-                "title": "field 1",
-                "fieldType": "checkbox",
-                "helmValuesPath": ["root", "field1"],
-                "description": undefined,
-                "value": true
+                "type": "field"
             },
             {
                 "type": "group",
-                "helmValuesPathSegment": "group1",
-                "description": undefined,
-                "children": [],
-                "canAdd": false,
-                "canRemove": false
+                "children": []
             },
             {
-                "type": "field",
-                "title": "field 2",
-                "fieldType": "checkbox",
-                "helmValuesPath": ["root", "field2"],
-                "description": undefined,
-                "value": false
+                "type": "field"
             },
             {
                 "type": "group",
-                "helmValuesPathSegment": "group2",
-                "description": undefined,
-                "children": [],
-                "canAdd": false,
-                "canRemove": false
+                "children": []
             }
         ];
 
@@ -84,39 +59,22 @@ describe(symToStr({ removeFormFieldGroupWithNoChildren }), () => {
     });
 
     it("nested case", () => {
-        const children: FormFieldGroup["children"] = [
-            {
-                "type": "field",
-                "title": "field 1",
-                "fieldType": "checkbox",
-                "helmValuesPath": ["root", "field1"],
-                "description": undefined,
-                "value": true
-            },
+        const children: FormFieldGroupLike["children"] = [
             {
                 "type": "group",
-                "helmValuesPathSegment": "group1",
-                "description": undefined,
                 "children": [
                     {
                         "type": "group",
-                        "helmValuesPathSegment": "group1.1",
-                        "description": undefined,
-                        "children": [],
-                        "canAdd": false,
-                        "canRemove": false
+                        "children": []
                     },
                     {
                         "type": "group",
-                        "helmValuesPathSegment": "group1.2",
-                        "description": undefined,
-                        "children": [],
-                        "canAdd": false,
-                        "canRemove": false
+                        "children": []
                     }
-                ],
-                "canAdd": false,
-                "canRemove": false
+                ]
+            },
+            {
+                "type": "field"
             }
         ];
 
@@ -132,53 +90,25 @@ describe(symToStr({ removeFormFieldGroupWithNoChildren }), () => {
     });
 
     it("case nothing to remove", () => {
-        const children: FormFieldGroup["children"] = [
+        const children: FormFieldGroupLike["children"] = [
             {
-                "type": "field",
-                "title": "field 1",
-                "fieldType": "checkbox",
-                "helmValuesPath": ["root", "field1"],
-                "description": undefined,
-                "value": true
+                "type": "field"
             },
             {
                 "type": "group",
-                "helmValuesPathSegment": "group1",
-                "description": undefined,
                 "children": [
                     {
                         "type": "group",
-                        "helmValuesPathSegment": "group1.1",
-                        "description": undefined,
                         "children": [
                             {
-                                "type": "field",
-                                "title": "field 1.1.1",
-                                "fieldType": "checkbox",
-                                "helmValuesPath": [
-                                    "root",
-                                    "group1",
-                                    "group1.1",
-                                    "field1.1.1"
-                                ],
-                                "description": undefined,
-                                "value": true
+                                "type": "field"
                             }
-                        ],
-                        "canAdd": false,
-                        "canRemove": false
+                        ]
                     },
                     {
-                        "type": "field",
-                        "title": "field 1.1",
-                        "fieldType": "checkbox",
-                        "helmValuesPath": ["root", "group1", "field1.1"],
-                        "description": undefined,
-                        "value": true
+                        "type": "field"
                     }
-                ],
-                "canAdd": false,
-                "canRemove": false
+                ]
             }
         ];
 
