@@ -1,8 +1,21 @@
 import type { FormFieldGroup, FormField } from "../../../formTypes";
-import { assert } from "tsafe/assert";
+import { assert, type Equals } from "tsafe/assert";
+
+type FormFieldLike = {
+    type: "field";
+};
+
+assert<FormField extends FormFieldLike ? true : false>();
+
+export type FormFieldGroupLike = {
+    type: "group";
+    children: (FormFieldLike | FormFieldGroupLike)[];
+};
+
+assert<FormFieldGroup extends FormFieldGroupLike ? true : false>();
 
 export function getFormFieldAtPath(params: {
-    formFieldGroup: FormFieldGroup;
+    formFieldGroup: FormFieldGroupLike;
     formFieldPath: number[];
     doExtract: boolean;
 }): FormField | FormFieldGroup {
@@ -17,13 +30,13 @@ export function getFormFieldAtPath(params: {
 
         const formField = formFieldGroup.children[i];
 
-        assert(formField.type === "field");
-
         if (doExtract) {
             formFieldGroup.children.splice(i, 1);
         }
 
-        return formField;
+        // NOTE: Avoid introducing too much generic typing here just to make the function easier to test.
+        assert<Equals<typeof formField, FormFieldLike | FormFieldGroupLike>>();
+        return formField as any;
     }
 
     const [i, ...rest] = formFieldPath;
