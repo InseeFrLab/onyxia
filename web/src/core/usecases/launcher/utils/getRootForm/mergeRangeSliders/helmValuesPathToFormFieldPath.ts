@@ -18,13 +18,21 @@ assert<FormFieldGroup extends FormFieldGroupLike ? true : false>();
 
 export function helmValuesPathToFormFieldPath(params: {
     helmValuesPathToGroup: (string | number)[];
-    children: FormFieldGroupLike["children"];
+    formFieldGroup: FormFieldGroupLike;
 }): number[] {
-    const { helmValuesPathToGroup, children } = params;
+    const { helmValuesPathToGroup, formFieldGroup } = params;
+
+    const [segment, ...rest] = helmValuesPathToGroup;
+
+    assert(formFieldGroup.helmValuesPathSegment === segment);
+
+    if (rest.length === 0) {
+        return [];
+    }
 
     return helmValuesPathToFormFieldPath_rec({
-        helmValuesPathToGroup,
-        children,
+        "helmValuesPathToGroup": rest,
+        "children": formFieldGroup.children,
         "currentFormFieldPath": []
     });
 }
