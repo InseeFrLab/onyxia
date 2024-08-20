@@ -1,33 +1,47 @@
-import type { FormFieldGroup } from "../../../formTypes";
+import type { FormFieldGroup, FormField } from "../../../formTypes";
 import { assert } from "tsafe/assert";
 import { exclude } from "tsafe/exclude";
 
+type FormFieldLike = {
+    type: "field";
+};
+
+assert<FormField extends FormFieldLike ? true : false>();
+
+export type FormFieldGroupLike = {
+    type: "group";
+    helmValuesPathSegment: string | number;
+    children: (FormFieldLike | FormFieldGroupLike)[];
+};
+
+assert<FormFieldGroup extends FormFieldGroupLike ? true : false>();
+
 export function helmValuesPathToFormFieldPath(params: {
-    helmValuesPath: (string | number)[];
-    children: FormFieldGroup["children"];
+    helmValuesPathToGroup: (string | number)[];
+    children: FormFieldGroupLike["children"];
 }): number[] {
-    const { helmValuesPath, children } = params;
+    const { helmValuesPathToGroup, children } = params;
 
     return helmValuesPathToFormFieldPath_rec({
-        helmValuesPath,
+        helmValuesPathToGroup,
         children,
         "currentFormFieldPath": []
     });
 }
 
 function helmValuesPathToFormFieldPath_rec(params: {
-    helmValuesPath: (string | number)[];
-    children: FormFieldGroup["children"];
+    helmValuesPathToGroup: (string | number)[];
+    children: FormFieldGroupLike["children"];
     currentFormFieldPath: number[];
 }): number[] {
-    const { helmValuesPath, children, currentFormFieldPath } = params;
+    const { helmValuesPathToGroup, children, currentFormFieldPath } = params;
 
     exit_case: {
-        if (helmValuesPath.length !== 1) {
+        if (helmValuesPathToGroup.length !== 1) {
             break exit_case;
         }
 
-        const [segment] = helmValuesPath;
+        const [segment] = helmValuesPathToGroup;
 
         const formField = children
             .map(child => (child.type !== "group" ? undefined : child))
@@ -39,7 +53,7 @@ function helmValuesPathToFormFieldPath_rec(params: {
         return [...currentFormFieldPath, children.indexOf(formField)];
     }
 
-    const [segment, ...rest] = helmValuesPath;
+    const [segment, ...rest] = helmValuesPathToGroup;
 
     const formFieldGroup = children
         .map(child => (child.type !== "group" ? undefined : child))
@@ -49,7 +63,7 @@ function helmValuesPathToFormFieldPath_rec(params: {
     assert(formFieldGroup !== undefined);
 
     return helmValuesPathToFormFieldPath_rec({
-        "helmValuesPath": rest,
+        "helmValuesPathToGroup": rest,
         "children": formFieldGroup.children,
         "currentFormFieldPath": [
             ...currentFormFieldPath,

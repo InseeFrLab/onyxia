@@ -12,7 +12,7 @@ export function insertRangeSliderFormField(params: {
 
     const formFieldPath = helmValuesPathToFormFieldPath({
         "children": formFieldGroup.children,
-        "helmValuesPath": getHelmValuesPathDeeperCommonSubpath({
+        "helmValuesPathToGroup": getHelmValuesPathDeeperCommonSubpath({
             "helmValuesPath1": rangeSliderFormField.lowEndRange.helmValuesPath,
             "helmValuesPath2": rangeSliderFormField.highEndRange.helmValuesPath
         })
