@@ -77,6 +77,10 @@ export type ApiTypes = {
                     };
                     URL?: string;
                 };
+                openshiftSCC?: {
+                    scc: string;
+                    enabled: boolean;
+                };
             };
             data?: {
                 S3?: {
@@ -139,10 +143,6 @@ export type ApiTypes = {
             certificateAuthorityInjection?: {
                 cacerts: string;
                 pathToCaBundle: string;
-            };
-            openshiftSCC?: {
-                scc: string;
-                enabled: boolean;
             };
         }[];
         oidcConfiguration?: {

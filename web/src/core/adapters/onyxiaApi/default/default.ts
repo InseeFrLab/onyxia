@@ -257,11 +257,11 @@ export function createOnyxiaApi(params: {
                                     ?.certManagerClusterIssuer
                         },
                         "openshiftSCC":
-                            apiRegion.openshiftSCC === undefined
+                            apiRegion.services.openshiftSCC === undefined
                                 ? undefined
                                 : {
-                                      "scc": apiRegion.openshiftSCC.scc,
-                                      "enabled": apiRegion.openshiftSCC.enabled
+                                      "scc": apiRegion.services.openshiftSCC.scc,
+                                      "enabled": apiRegion.services.openshiftSCC.enabled
                                   }
                     })
                 );
