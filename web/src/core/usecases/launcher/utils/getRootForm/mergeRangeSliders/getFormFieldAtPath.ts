@@ -1,5 +1,6 @@
 import type { FormFieldGroup, FormField } from "../../../formTypes";
 import { assert, type Equals } from "tsafe/assert";
+import { is } from "tsafe/is";
 
 type FormFieldLike = {
     type: "field";
@@ -36,7 +37,8 @@ export function getFormFieldAtPath(params: {
 
         // NOTE: Avoid introducing too much generic typing here just to make the function easier to test.
         assert<Equals<typeof formField, FormFieldLike | FormFieldGroupLike>>();
-        return formField as any;
+        assert(is<FormField | FormFieldGroup>(formField));
+        return formField;
     }
 
     const [i, ...rest] = formFieldPath;

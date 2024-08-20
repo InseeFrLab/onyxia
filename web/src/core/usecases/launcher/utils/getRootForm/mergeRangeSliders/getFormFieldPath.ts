@@ -1,6 +1,7 @@
 import type { FormFieldGroup, FormField } from "../../../formTypes";
 import { exclude } from "tsafe/exclude";
 import { assert, type Equals } from "tsafe/assert";
+import { is } from "tsafe/is";
 
 type FormFieldLike = {
     type: "field";
@@ -44,7 +45,8 @@ function getFormFieldPath_rec(params: {
             // NOTE: We don't want to go into too much generic typing here just to make the function
             // easier to write unit test for, this is plenty safe enough.
             assert<Equals<typeof child, FormFieldLike>>();
-            return predicate(child as FormField);
+            assert(is<FormField>(child));
+            return predicate(child);
         });
 
         if (i !== -1) {
