@@ -28,6 +28,50 @@ describe(symToStr({ insertRangeSliderFormField }), () => {
             rangeSliderFormField
         });
 
-        expect(formFieldGroup.children[0]).toBe(rangeSliderFormField);
+        expect(formFieldGroup).toEqual({
+            "type": "group",
+            "helmValuesPathSegment": "resources",
+            "children": [rangeSliderFormField]
+        });
+    });
+
+    it("subtree case", () => {
+        const formFieldGroup: FormFieldGroupLike = {
+            "type": "group",
+            "helmValuesPathSegment": "resources",
+            "children": [
+                {
+                    "type": "group",
+                    "helmValuesPathSegment": "xxx",
+                    "children": []
+                }
+            ]
+        };
+
+        const rangeSliderFormField: FormFieldRangeSliderLike = {
+            "lowEndRange": {
+                "helmValuesPath": ["resources", "xxx", "requests", "cpu"]
+            },
+            "highEndRange": {
+                "helmValuesPath": ["resources", "xxx", "limits", "cpu"]
+            }
+        };
+
+        insertRangeSliderFormField({
+            formFieldGroup,
+            rangeSliderFormField
+        });
+
+        expect(formFieldGroup).toEqual({
+            "type": "group",
+            "helmValuesPathSegment": "resources",
+            "children": [
+                {
+                    "type": "group",
+                    "helmValuesPathSegment": "xxx",
+                    "children": [rangeSliderFormField]
+                }
+            ]
+        });
     });
 });

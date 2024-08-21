@@ -22,6 +22,27 @@ export function getFormFieldAtPath(params: {
 }): FormField | FormFieldGroup {
     const { formFieldGroup, formFieldPath, doExtract } = params;
 
+    if (formFieldPath.length === 0) {
+        assert(!doExtract);
+        assert<Equals<typeof formFieldGroup, FormFieldGroupLike>>();
+        assert(is<FormFieldGroup>(formFieldGroup));
+        return formFieldGroup;
+    }
+
+    return getFormFieldAtPath_rec({
+        formFieldGroup,
+        formFieldPath,
+        doExtract
+    });
+}
+
+export function getFormFieldAtPath_rec(params: {
+    formFieldGroup: FormFieldGroupLike;
+    formFieldPath: number[];
+    doExtract: boolean;
+}): FormField | FormFieldGroup {
+    const { formFieldGroup, formFieldPath, doExtract } = params;
+
     exit_case: {
         if (formFieldPath.length !== 1) {
             break exit_case;
@@ -47,7 +68,7 @@ export function getFormFieldAtPath(params: {
 
     assert(formFieldGroup_i.type === "group");
 
-    return getFormFieldAtPath({
+    return getFormFieldAtPath_rec({
         "formFieldGroup": formFieldGroup_i,
         "formFieldPath": rest,
         doExtract
