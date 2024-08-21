@@ -22,60 +22,43 @@ export function helmValuesPathToFormFieldPath(params: {
 }): number[] {
     const { helmValuesPathToGroup, formFieldGroup } = params;
 
-    const [segment, ...rest] = helmValuesPathToGroup;
-
-    assert(formFieldGroup.helmValuesPathSegment === segment);
-
-    if (rest.length === 0) {
-        return [];
-    }
-
     return helmValuesPathToFormFieldPath_rec({
-        "helmValuesPathToGroup": rest,
-        "children": formFieldGroup.children,
+        helmValuesPathToGroup,
+        formFieldGroup,
         "currentFormFieldPath": []
     });
 }
 
 function helmValuesPathToFormFieldPath_rec(params: {
     helmValuesPathToGroup: (string | number)[];
-    children: FormFieldGroupLike["children"];
+    formFieldGroup: FormFieldGroupLike;
     currentFormFieldPath: number[];
 }): number[] {
-    const { helmValuesPathToGroup, children, currentFormFieldPath } = params;
+    const { helmValuesPathToGroup, formFieldGroup, currentFormFieldPath } = params;
 
     exit_case: {
-        if (helmValuesPathToGroup.length !== 1) {
+        if (helmValuesPathToGroup.length !== 0) {
             break exit_case;
         }
 
-        const [segment] = helmValuesPathToGroup;
-
-        const formField = children
-            .map(child => (child.type !== "group" ? undefined : child))
-            .filter(exclude(undefined))
-            .find(child => child.helmValuesPathSegment === segment);
-
-        assert(formField !== undefined);
-
-        return [...currentFormFieldPath, children.indexOf(formField)];
+        return currentFormFieldPath;
     }
 
     const [segment, ...rest] = helmValuesPathToGroup;
 
-    const formFieldGroup = children
+    const formFieldGroup_child = formFieldGroup.children
         .map(child => (child.type !== "group" ? undefined : child))
         .filter(exclude(undefined))
         .find(child => child.helmValuesPathSegment === segment);
 
-    assert(formFieldGroup !== undefined);
+    assert(formFieldGroup_child !== undefined);
 
     return helmValuesPathToFormFieldPath_rec({
         "helmValuesPathToGroup": rest,
-        "children": formFieldGroup.children,
+        "formFieldGroup": formFieldGroup_child,
         "currentFormFieldPath": [
             ...currentFormFieldPath,
-            children.indexOf(formFieldGroup)
+            formFieldGroup.children.indexOf(formFieldGroup_child)
         ]
     });
 }

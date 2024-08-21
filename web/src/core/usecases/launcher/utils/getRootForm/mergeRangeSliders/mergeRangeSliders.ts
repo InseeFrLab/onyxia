@@ -1,13 +1,28 @@
-import type { FormFieldGroup } from "../../../formTypes";
+import type { FormFieldGroup } from "core/usecases/launcher/formTypes";
 import { assert } from "tsafe/assert";
 import { removeFormFieldGroupWithNoChildren } from "./removeFormFieldGroupWithNoChildren";
-import { getFormFieldPath } from "./getFormFieldPath";
-import { getFormFieldAtPath } from "./getFormFieldAtPath";
+import {
+    getFormFieldPath,
+    type FormFieldGroupLike as FormFieldGroupLike_getFormFieldPath
+} from "./getFormFieldPath";
+import {
+    getFormFieldAtPath,
+    type FormFieldGroupLike as FormFieldGroupLike_getFormFieldAtPath
+} from "./getFormFieldAtPath";
 import { getTemporaryRangeSliderPayload } from "./temporaryRangeSlider";
 import { mergeTemporaryRangeSliders } from "./mergeTemporaryRangeSliders";
-import { insertRangeSliderFormField } from "./insertRangeSliderFormField";
+import {
+    insertRangeSliderFormField,
+    type FormFieldGroupLike as FormFieldGroupLike_insertRangeSliderFormField
+} from "./insertRangeSliderFormField";
 
-export function mergeRangeSliders(params: { formFieldGroup: FormFieldGroup }): void {
+export type FormFieldGroupLike = FormFieldGroupLike_getFormFieldPath &
+    FormFieldGroupLike_getFormFieldAtPath &
+    FormFieldGroupLike_insertRangeSliderFormField;
+
+assert<FormFieldGroup extends FormFieldGroupLike ? true : false>();
+
+export function mergeRangeSliders(params: { formFieldGroup: FormFieldGroupLike }): void {
     const { formFieldGroup } = params;
 
     while (true) {

@@ -7,13 +7,35 @@ describe(symToStr({ helmValuesPathToFormFieldPath }), () => {
         const got = helmValuesPathToFormFieldPath({
             "formFieldGroup": {
                 "type": "group",
-                "helmValuesPathSegment": "a",
+                "helmValuesPathSegment": "root",
                 "children": []
+            },
+            "helmValuesPathToGroup": []
+        });
+
+        const expected: number[] = [];
+
+        expect(got).toEqual(expected);
+    });
+
+    it("very simple case", () => {
+        const got = helmValuesPathToFormFieldPath({
+            "formFieldGroup": {
+                "type": "group",
+                "helmValuesPathSegment": "root",
+                "children": [
+                    { "type": "field" },
+                    {
+                        "type": "group",
+                        "helmValuesPathSegment": "a",
+                        "children": []
+                    }
+                ]
             },
             "helmValuesPathToGroup": ["a"]
         });
 
-        const expected: number[] = [];
+        const expected: number[] = [1];
 
         expect(got).toEqual(expected);
     });
@@ -22,14 +44,14 @@ describe(symToStr({ helmValuesPathToFormFieldPath }), () => {
         const got = helmValuesPathToFormFieldPath({
             "formFieldGroup": {
                 "type": "group",
-                "helmValuesPathSegment": "a",
+                "helmValuesPathSegment": "root",
                 "children": [
                     {
                         "type": "field"
                     },
                     {
                         "type": "group",
-                        "helmValuesPathSegment": "b",
+                        "helmValuesPathSegment": "a",
                         "children": [
                             {
                                 "type": "field"
@@ -49,7 +71,7 @@ describe(symToStr({ helmValuesPathToFormFieldPath }), () => {
                     }
                 ]
             },
-            "helmValuesPathToGroup": ["a", "b", 1, "c"]
+            "helmValuesPathToGroup": ["a", 1, "c"]
         });
 
         const expected = [1, 1, 0];
