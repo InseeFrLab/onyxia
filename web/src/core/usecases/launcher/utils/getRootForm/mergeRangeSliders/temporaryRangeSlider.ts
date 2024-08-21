@@ -21,14 +21,25 @@ export type TemporaryRangeSliderPayload = {
       }
 );
 
+const prefix = "xMePsKssR9p9e";
+
+export function getIsTemporaryRangeSlider(params: {
+    rangeSlider: FormField.RangeSlider;
+}) {
+    const { rangeSlider } = params;
+
+    return rangeSlider.unit?.startsWith(prefix);
+}
+
 export function getTemporaryRangeSliderPayload(params: {
     temporaryRangeSlider: FormField.RangeSlider;
 }): TemporaryRangeSliderPayload {
     const { temporaryRangeSlider } = params;
 
     assert(temporaryRangeSlider.unit !== undefined);
+    assert(temporaryRangeSlider.unit.startsWith(prefix));
 
-    return JSON.parse(temporaryRangeSlider.unit);
+    return JSON.parse(temporaryRangeSlider.unit.slice(prefix.length));
 }
 
 export function createTemporaryRangeSlider(params: {
@@ -56,7 +67,7 @@ export function createTemporaryRangeSlider(params: {
             "min": NaN,
             "max": NaN
         },
-        "unit": JSON.stringify(payload),
+        "unit": prefix + JSON.stringify(payload),
         "step": NaN
     };
 }

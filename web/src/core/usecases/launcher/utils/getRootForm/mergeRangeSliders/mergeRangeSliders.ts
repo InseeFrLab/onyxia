@@ -9,7 +9,10 @@ import {
     getFormFieldAtPath,
     type FormFieldGroupLike as FormFieldGroupLike_getFormFieldAtPath
 } from "./getFormFieldAtPath";
-import { getTemporaryRangeSliderPayload } from "./temporaryRangeSlider";
+import {
+    getTemporaryRangeSliderPayload,
+    getIsTemporaryRangeSlider
+} from "./temporaryRangeSlider";
 import { mergeTemporaryRangeSliders } from "./mergeTemporaryRangeSliders";
 import {
     insertRangeSliderFormField,
@@ -30,6 +33,10 @@ export function mergeRangeSliders(params: { formFieldGroup: FormFieldGroupLike }
             formFieldGroup,
             "predicate": formField => {
                 if (formField.fieldType !== "range slider") {
+                    return false;
+                }
+
+                if (!getIsTemporaryRangeSlider({ "rangeSlider": formField })) {
                     return false;
                 }
 
@@ -62,6 +69,10 @@ export function mergeRangeSliders(params: { formFieldGroup: FormFieldGroupLike }
             formFieldGroup,
             "predicate": formField => {
                 if (formField.fieldType !== "range slider") {
+                    return false;
+                }
+
+                if (!getIsTemporaryRangeSlider({ "rangeSlider": formField })) {
                     return false;
                 }
 
