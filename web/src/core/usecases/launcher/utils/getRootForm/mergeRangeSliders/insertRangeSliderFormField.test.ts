@@ -10,8 +10,14 @@ describe(symToStr({ insertRangeSliderFormField }), () => {
     it("base case", () => {
         const formFieldGroup: FormFieldGroupLike = {
             "type": "group",
-            "helmValuesPathSegment": "resources",
-            "children": []
+            "helmValuesPathSegment": "root",
+            "children": [
+                {
+                    "type": "group",
+                    "helmValuesPathSegment": "resources",
+                    "children": []
+                }
+            ]
         };
 
         const rangeSliderFormField: FormFieldRangeSliderLike = {
@@ -30,30 +36,30 @@ describe(symToStr({ insertRangeSliderFormField }), () => {
 
         expect(formFieldGroup).toEqual({
             "type": "group",
-            "helmValuesPathSegment": "resources",
-            "children": [rangeSliderFormField]
-        });
-    });
-
-    it("subtree case", () => {
-        const formFieldGroup: FormFieldGroupLike = {
-            "type": "group",
-            "helmValuesPathSegment": "resources",
+            "helmValuesPathSegment": "root",
             "children": [
                 {
                     "type": "group",
-                    "helmValuesPathSegment": "xxx",
-                    "children": []
+                    "helmValuesPathSegment": "resources",
+                    "children": [rangeSliderFormField]
                 }
             ]
+        });
+    });
+
+    it("root case", () => {
+        const formFieldGroup: FormFieldGroupLike = {
+            "type": "group",
+            "helmValuesPathSegment": "root",
+            "children": []
         };
 
         const rangeSliderFormField: FormFieldRangeSliderLike = {
             "lowEndRange": {
-                "helmValuesPath": ["resources", "xxx", "requests", "cpu"]
+                "helmValuesPath": ["resources-requests", "cpu"]
             },
             "highEndRange": {
-                "helmValuesPath": ["resources", "xxx", "limits", "cpu"]
+                "helmValuesPath": ["resources-limits", "cpu"]
             }
         };
 
@@ -64,14 +70,8 @@ describe(symToStr({ insertRangeSliderFormField }), () => {
 
         expect(formFieldGroup).toEqual({
             "type": "group",
-            "helmValuesPathSegment": "resources",
-            "children": [
-                {
-                    "type": "group",
-                    "helmValuesPathSegment": "xxx",
-                    "children": [rangeSliderFormField]
-                }
-            ]
+            "helmValuesPathSegment": "root",
+            "children": [rangeSliderFormField]
         });
     });
 });
