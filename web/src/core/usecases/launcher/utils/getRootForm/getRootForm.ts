@@ -1,10 +1,10 @@
-import type { RootForm, FormFieldGroup, FormField } from "../../formTypes";
+import type { RootForm, FormFieldGroup } from "../../formTypes";
 import type { JSONSchema } from "core/ports/OnyxiaApi/JSONSchema";
-import type { StringifyableObject, Stringifyable } from "core/tools/Stringifyable";
-import { assert } from "tsafe/assert";
+import type { StringifyableObject } from "core/tools/Stringifyable";
 import { getValueAtPathInObject } from "core/tools/getValueAtPathInObject";
 import { exclude } from "tsafe/exclude";
-import { mergeRangeSliders, createTemporaryRangeSlider } from "./mergeRangeSliders";
+import { mergeRangeSliders } from "./mergeRangeSliders";
+import { getRootFormFieldGroup } from "./getRootFormFieldGroup";
 
 export function getRootForm(params: {
     helmValuesSchema: JSONSchema;
@@ -18,13 +18,10 @@ export function getRootForm(params: {
 
     const rootForm: RootForm = {
         "main": (() => {
-            const formFieldGroup_root = getRootForm_rec({
-                "helmValuesPath": [],
+            const formFieldGroup_root = getRootFormFieldGroup({
                 helmValuesSchema,
                 helmValues
             });
-
-            assert(formFieldGroup_root.type === "group");
 
             mergeRangeSliders({ "formFieldGroup": formFieldGroup_root });
 
@@ -87,14 +84,4 @@ export function getRootForm(params: {
         );
 
     return rootForm;
-}
-
-function getRootForm_rec(params: {
-    helmValuesPath: (string | number)[];
-    helmValuesSchema: JSONSchema;
-    helmValues: Stringifyable;
-}): FormFieldGroup | FormField {
-    const { helmValues, helmValuesSchema, helmValuesPath } = params;
-
-    // TODO
 }

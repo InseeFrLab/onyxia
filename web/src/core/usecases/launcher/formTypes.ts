@@ -37,6 +37,7 @@ export namespace FormField {
     type Common = {
         type: "field";
         title: string;
+        isReadonly: boolean;
     };
 
     export type Checkbox = Common & {

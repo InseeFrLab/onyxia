@@ -9,9 +9,7 @@ export type JSONSchema = {
     title?: string;
     description?: string;
     default?: Stringifyable;
-    hidden?:
-        | boolean
-        | { value: string | boolean | number; path: string; isPathRelative?: boolean };
+    hidden?: boolean | { value: Stringifyable; path: string; isPathRelative?: boolean };
     items?: JSONSchema;
     minItems?: number;
     maxItems: number;
