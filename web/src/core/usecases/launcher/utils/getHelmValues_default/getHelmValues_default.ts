@@ -13,7 +13,7 @@ import { assert, type Equals } from "tsafe/assert";
 import {
     resolveXOnyxiaValueReference,
     type XOnyxiaContextLike as XOnyxiaContextLike_resolveXOnyxiaValueReference
-} from "./resolveXOnyxiaValueReference";
+} from "../resolveXOnyxiaValueReference";
 import { isAmong } from "tsafe/isAmong";
 import YAML from "yaml";
 
