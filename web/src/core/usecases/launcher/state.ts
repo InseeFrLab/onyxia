@@ -11,6 +11,7 @@ import {
 } from "core/tools/Stringifyable";
 import structuredClone from "@ungap/structured-clone";
 import type { Omit } from "core/tools/Omit";
+import type { XOnyxiaContext } from "core/ports/OnyxiaApi";
 
 type State = State.NotInitialized | State.Ready;
 
@@ -26,6 +27,7 @@ export declare namespace State {
         chartName: string;
         chartVersion: string;
         chartVersion_default: string;
+        xOnyxiaContext: XOnyxiaContext;
 
         friendlyName: string;
         friendlyName_default: string;

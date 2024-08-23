@@ -70,7 +70,14 @@ const rootForm = createSelector(
 
         return state.helmDependencies;
     }),
-    (isReady, helmValuesSchema, helmValues, helmDependencies) => {
+    createSelector(readyState, state => {
+        if (state === null) {
+            return null;
+        }
+
+        return state.xOnyxiaContext;
+    }),
+    (isReady, helmValuesSchema, helmValues, helmDependencies, xOnyxiaContext) => {
         if (!isReady) {
             return null;
         }
@@ -78,10 +85,12 @@ const rootForm = createSelector(
         assert(helmValuesSchema !== null);
         assert(helmValues !== null);
         assert(helmDependencies !== null);
+        assert(xOnyxiaContext !== null);
 
         return getRootForm({
             helmValuesSchema,
             helmValues,
+            xOnyxiaContext,
             // TODO: complete
             "dependencies": helmDependencies
         });

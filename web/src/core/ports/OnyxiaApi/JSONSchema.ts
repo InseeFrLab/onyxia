@@ -12,7 +12,7 @@ export type JSONSchema = {
     hidden?: boolean | { value: Stringifyable; path: string; isPathRelative?: boolean };
     items?: JSONSchema;
     minItems?: number;
-    maxItems: number;
+    maxItems?: number;
     minimum?: number;
     pattern?: string;
     render?: "textArea" | "password" | "list" | "slider";

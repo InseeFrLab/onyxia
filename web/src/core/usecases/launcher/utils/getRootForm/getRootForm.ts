@@ -4,23 +4,34 @@ import type { StringifyableObject } from "core/tools/Stringifyable";
 import { getValueAtPathInObject } from "core/tools/getValueAtPathInObject";
 import { exclude } from "tsafe/exclude";
 import { mergeRangeSliders } from "./mergeRangeSliders";
-import { getRootFormFieldGroup } from "./getRootFormFieldGroup";
+import {
+    getRootFormFieldGroup,
+    XOnyxiaContextLike as XOnyxiaContextLike_getRootFormFieldGroup
+} from "./getRootFormFieldGroup";
+import { assert } from "tsafe/assert";
+import type { XOnyxiaContext } from "core/ports/OnyxiaApi";
+
+export type XOnyxiaContextLike = XOnyxiaContextLike_getRootFormFieldGroup;
+
+assert<XOnyxiaContext extends XOnyxiaContextLike ? true : false>();
 
 export function getRootForm(params: {
     helmValuesSchema: JSONSchema;
     helmValues: StringifyableObject;
+    xOnyxiaContext: XOnyxiaContextLike;
     dependencies: {
         chartName: string;
         helmValuesPath_enabled: (string | number)[] | undefined;
     }[];
 }): RootForm {
-    const { helmValuesSchema, helmValues, dependencies } = params;
+    const { helmValuesSchema, helmValues, xOnyxiaContext, dependencies } = params;
 
     const rootForm: RootForm = {
         "main": (() => {
             const formFieldGroup_root = getRootFormFieldGroup({
                 helmValuesSchema,
-                helmValues
+                helmValues,
+                xOnyxiaContext
             });
 
             mergeRangeSliders({ "formFieldGroup": formFieldGroup_root });

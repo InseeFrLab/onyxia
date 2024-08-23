@@ -13,7 +13,10 @@ import { assert, type Equals } from "tsafe/assert";
 import { id } from "tsafe/id";
 import { z } from "zod";
 import { same } from "evt/tools/inDepth/same";
-import { resolveXOnyxiaValueReference } from "./resolveXOnyxiaValueReference";
+import {
+    resolveXOnyxiaValueReference,
+    type XOnyxiaContextLike as XOnyxiaContextLike_resolveXOnyxiaValueReference
+} from "./resolveXOnyxiaValueReference";
 import { isAmong } from "tsafe/isAmong";
 import YAML from "yaml";
 
@@ -37,7 +40,7 @@ type JSONSchemaLike = {
 assert<keyof JSONSchemaLike extends keyof JSONSchema ? true : false>();
 assert<JSONSchema extends JSONSchemaLike ? true : false>();
 
-type XOnyxiaContextLike = {
+type XOnyxiaContextLike = XOnyxiaContextLike_resolveXOnyxiaValueReference & {
     s3: unknown;
 };
 

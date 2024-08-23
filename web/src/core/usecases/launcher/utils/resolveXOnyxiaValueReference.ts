@@ -1,6 +1,12 @@
 import { getValueAtPathInObject } from "core/tools/getValueAtPathInObject";
 import { isAmong } from "tsafe/isAmong";
 import type { Stringifyable } from "core/tools/Stringifyable";
+import { assert } from "tsafe/assert";
+import type { XOnyxiaContext } from "core/ports/OnyxiaApi";
+
+export type XOnyxiaContextLike = {};
+
+assert<XOnyxiaContext extends XOnyxiaContextLike ? true : false>();
 
 type Params = {
     expression: string;

@@ -77,6 +77,7 @@ describe(symToStr({ mergeRangeSliders }), () => {
                     "children": [
                         id<FormField.RangeSlider>({
                             "type": "field",
+                            "isReadonly": false,
                             "title": "CPU",
                             "fieldType": "range slider",
                             "unit": "m",
@@ -212,6 +213,7 @@ describe(symToStr({ mergeRangeSliders }), () => {
                     "children": [
                         id<FormField.RangeSlider>({
                             "type": "field",
+                            "isReadonly": false,
                             "title": "CPU",
                             "fieldType": "range slider",
                             "unit": "m",
@@ -235,6 +237,7 @@ describe(symToStr({ mergeRangeSliders }), () => {
                         }),
                         id<FormField.RangeSlider>({
                             "type": "field",
+                            "isReadonly": false,
                             "title": "memory",
                             "fieldType": "range slider",
                             "unit": "Gi",

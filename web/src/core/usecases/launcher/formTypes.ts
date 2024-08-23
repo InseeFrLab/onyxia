@@ -1,5 +1,9 @@
 import { assert, type Equals } from "tsafe/assert";
-import type { StringifyableArray, StringifyableObject } from "core/tools/Stringifyable";
+import type {
+    Stringifyable,
+    StringifyableArray,
+    StringifyableObject
+} from "core/tools/Stringifyable";
 
 export type RootForm = {
     main: FormFieldGroup["children"];
@@ -68,8 +72,8 @@ export namespace FormField {
         fieldType: "select";
         helmValuesPath: (string | number)[];
         description: string | undefined;
-        enum: string[];
-        value: string;
+        options: Stringifyable[];
+        selectedOptionIndex: number;
     };
 
     export type TextField = Common & {
@@ -117,7 +121,11 @@ export type FormFieldValue =
     | Pick<FormField.Checkbox, FormFieldValue.Name>
     | Pick<FormField.YamlCodeBlock, FormFieldValue.Name>
     | Pick<FormField.NumberField, FormFieldValue.Name>
-    | Pick<FormField.Select, FormFieldValue.Name>
+    | {
+          fieldType: "select";
+          helmValuesPath: Pick<FormField.Select, "helmValuesPath">;
+          selectedOptionIndex: Pick<FormField.Select, "selectedOptionIndex">;
+      }
     | Pick<FormField.TextField, FormFieldValue.Name>
     | Pick<FormField.Slider, FormFieldValue.Name>
     | {

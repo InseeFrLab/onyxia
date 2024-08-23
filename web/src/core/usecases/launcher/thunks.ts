@@ -222,6 +222,7 @@ export const thunks = {
                             chartName,
                             chartVersion,
                             chartVersion_default,
+                            xOnyxiaContext,
 
                             "friendlyName": friendlyName ?? friendlyName_default,
                             friendlyName_default,
