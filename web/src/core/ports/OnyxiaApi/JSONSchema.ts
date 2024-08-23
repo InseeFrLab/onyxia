@@ -1,8 +1,12 @@
 import {
     onyxiaReservedPropertyNameInFieldDescription,
-    type XOnyxiaParams
+    type XOnyxiaParams,
+    zXOnyxiaParams
 } from "./XOnyxia";
-import type { Stringifyable } from "core/tools/Stringifyable";
+import { type Stringifyable, zStringifyable } from "core/tools/Stringifyable";
+import { z } from "zod";
+import { assert, type Equals } from "tsafe/assert";
+import { id } from "tsafe/id";
 
 export type JSONSchema = {
     type: "object" | "array" | "string" | "boolean" | "integer" | "number";
@@ -29,3 +33,56 @@ export type JSONSchema = {
     properties?: Record<string, JSONSchema>;
     [onyxiaReservedPropertyNameInFieldDescription]?: XOnyxiaParams;
 };
+
+export const zJSONSchema = (() => {
+    type TargetType = JSONSchema;
+
+    let zTargetType_lazyRef: z.ZodType<TargetType>;
+
+    const zTargetType = z.object({
+        "type": z.enum(["object", "array", "string", "boolean", "integer", "number"]),
+        "title": z.string().optional(),
+        "description": z.string().optional(),
+        "default": zStringifyable.optional(),
+        "hidden": z
+            .union([
+                z.boolean(),
+                z.object({
+                    "value": zStringifyable,
+                    "path": z.string(),
+                    "isPathRelative": z.boolean().optional()
+                })
+            ])
+            .optional(),
+        "items": z.lazy(() => zTargetType_lazyRef).optional(),
+        "minItems": z.number().int().optional(),
+        "maxItems": z.number().nonnegative().int().optional(),
+        "minimum": z.number().optional(),
+        "pattern": z.string().optional(),
+        "render": z.enum(["textArea", "password", "list", "slider"]).optional(),
+        "enum": z.array(zStringifyable).optional(),
+        "listEnum": z.array(zStringifyable).optional(),
+        "sliderMax": z.number().optional(),
+        "sliderMin": z.number().optional(),
+        "sliderUnit": z.string().optional(),
+        "sliderStep": z.number().optional(),
+        "sliderExtremitySemantic": z.string().optional(),
+        "sliderRangeId": z.string().optional(),
+        "sliderExtremity": z.enum(["down", "up"]).optional(),
+        "const": zStringifyable.optional(),
+        "properties": z.record(z.lazy(() => zTargetType_lazyRef)).optional(),
+        [onyxiaReservedPropertyNameInFieldDescription]: zXOnyxiaParams.optional()
+    });
+
+    zTargetType_lazyRef = zTargetType;
+
+    type ExtendsEachOther<T, U> = T extends U ? (U extends T ? true : false) : false;
+
+    type Got = z.infer<typeof zTargetType>;
+
+    assert<Equals<keyof Got, keyof TargetType>>();
+    // NOTE: Because of default: Stringifyable not optional we can't use Equals...
+    assert<ExtendsEachOther<Got, TargetType>>();
+
+    return id<z.ZodType<TargetType>>(zTargetType);
+})();

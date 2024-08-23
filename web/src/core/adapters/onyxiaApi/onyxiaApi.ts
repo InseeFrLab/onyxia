@@ -7,7 +7,8 @@ import {
     type Chart,
     type User,
     type HelmRelease,
-    type Project
+    type Project,
+    zJSONSchema
 } from "core/ports/OnyxiaApi";
 import axios from "axios";
 import type { AxiosResponse, AxiosRequestConfig } from "axios";
@@ -435,6 +436,8 @@ export function createOnyxiaApi(params: {
             >(
                 `/public/catalogs/${catalogId}/charts/${chartName}/versions/${chartVersion}`
             );
+
+            zJSONSchema.parse(data.config);
 
             return {
                 "helmValuesSchema": data.config,

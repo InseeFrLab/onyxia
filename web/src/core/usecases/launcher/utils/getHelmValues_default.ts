@@ -10,9 +10,6 @@ import type {
     StringifyableArray
 } from "core/tools/Stringifyable";
 import { assert, type Equals } from "tsafe/assert";
-import { id } from "tsafe/id";
-import { z } from "zod";
-import { same } from "evt/tools/inDepth/same";
 import {
     resolveXOnyxiaValueReference,
     type XOnyxiaContextLike as XOnyxiaContextLike_resolveXOnyxiaValueReference
@@ -59,11 +56,7 @@ export function getHelmValues_default(params: {
     let isChartUsingS3 = false;
 
     const helmValues_default = getHelmValues_default_rec({
-        "helmValuesSchema": (() => {
-            zJSONSchemaLike.parse(helmValuesSchema);
-
-            return helmValuesSchema;
-        })(),
+        helmValuesSchema,
         "helmValuesYaml_parsed": (() => {
             const helmValuesYaml_parsed = YAML.parse(helmValuesYaml);
 
@@ -416,53 +409,3 @@ function getIsCorrectlySizedArray(params: {
 
     return array.length >= minItems && array.length <= maxItems;
 }
-
-const zStringifyable: z.ZodType<Stringifyable> = z.any().superRefine((val, ctx) => {
-    const isStringifyable = same(JSON.parse(JSON.stringify(val)), val);
-    if (!isStringifyable) {
-        ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            message: "Not stringifyable"
-        });
-    }
-});
-
-const zXOnyxiaParamsLike = (() => {
-    type TargetType = XOnyxiaParamsLike;
-
-    const zTargetType = z.object({
-        "overwriteDefaultWith": z.string().optional()
-    });
-
-    assert<Equals<z.infer<typeof zTargetType>, TargetType>>();
-
-    return id<z.ZodType<TargetType>>(zTargetType);
-})();
-
-const zJSONSchemaLike = (() => {
-    type TargetType = JSONSchemaLike;
-
-    let zTargetType_lazyRef: z.ZodType<TargetType>;
-
-    const zTargetType = z.object({
-        "type": z.enum(["object", "array", "string", "boolean", "integer", "number"]),
-        "default": zStringifyable.optional(),
-        "const": zStringifyable.optional(),
-        "minItems": z.number().int().optional(),
-        "maxItems": z.number().nonnegative().int().optional(),
-        "properties": z.record(z.lazy(() => zTargetType_lazyRef)).optional(),
-        [onyxiaReservedPropertyNameInFieldDescription]: zXOnyxiaParamsLike.optional()
-    });
-
-    zTargetType_lazyRef = zTargetType;
-
-    type ExtendsEachOther<T, U> = T extends U ? (U extends T ? true : false) : false;
-
-    type Got = z.infer<typeof zTargetType>;
-
-    assert<Equals<keyof Got, keyof TargetType>>();
-    // NOTE: Because of default: Stringifyable not optional we can't use Equals...
-    assert<ExtendsEachOther<Got, TargetType>>();
-
-    return id<z.ZodType<TargetType>>(zTargetType);
-})();

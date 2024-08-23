@@ -1,6 +1,8 @@
 // Documentation: https://docs.onyxia.sh/contributing/catalog-of-services
 
 import type { Language } from "./Language";
+import { id } from "tsafe/id";
+import { z } from "zod";
 import { assert, type Equals } from "tsafe/assert";
 
 export const onyxiaReservedPropertyNameInFieldDescription = "x-onyxia";
@@ -22,6 +24,21 @@ export type XOnyxiaParams = {
     hidden?: boolean;
     readonly?: boolean;
 };
+
+export const zXOnyxiaParams = (() => {
+    type TargetType = XOnyxiaParams;
+
+    const zTargetType = z.object({
+        "overwriteDefaultWith": z.string().optional(),
+        "overwriteListEnumWith": z.string().optional(),
+        "hidden": z.boolean().optional(),
+        "readonly": z.boolean().optional()
+    });
+
+    assert<Equals<z.infer<typeof zTargetType>, TargetType>>();
+
+    return id<z.ZodType<TargetType>>(zTargetType);
+})();
 
 export type XOnyxiaContext = {
     user: {
