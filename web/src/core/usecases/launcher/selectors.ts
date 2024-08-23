@@ -16,7 +16,7 @@ import {
 import * as s3ConfigManagement from "core/usecases/s3ConfigManagement";
 import type { RestorableServiceConfig } from "core/usecases/restorableConfigManagement";
 import { id } from "tsafe/id";
-import { getRootForm } from "./utils/getRootForm";
+import { getRootForm } from "./utils";
 
 const readyState = (rootState: RootState) => {
     const state = rootState[name];

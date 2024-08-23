@@ -16,7 +16,7 @@ import { Evt } from "evt";
 import type { StringifyableAtomic } from "core/tools/Stringifyable";
 import { type XOnyxiaContext, Chart } from "core/ports/OnyxiaApi";
 import { createUsecaseContextApi } from "clean-architecture";
-import { getHelmValues_default } from "./utils/getHelmValues_default";
+import { getHelmValues_default } from "./utils";
 
 export const thunks = {
     "initialize":
