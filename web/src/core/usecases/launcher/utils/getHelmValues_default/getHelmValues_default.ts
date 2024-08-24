@@ -4,18 +4,18 @@ import {
 } from "core/ports/OnyxiaApi/XOnyxia";
 import type { JSONSchema } from "core/ports/OnyxiaApi/JSONSchema";
 import type { XOnyxiaContext } from "core/ports/OnyxiaApi";
-import type {
-    StringifyableObject,
-    Stringifyable,
-    StringifyableArray
-} from "core/tools/Stringifyable";
-import { assert, type Equals } from "tsafe/assert";
+import type { StringifyableObject, Stringifyable } from "core/tools/Stringifyable";
+import { assert } from "tsafe/assert";
 import {
     resolveXOnyxiaValueReference,
     type XOnyxiaContextLike as XOnyxiaContextLike_resolveXOnyxiaValueReference
-} from "../resolveXOnyxiaValueReference";
-import { isAmong } from "tsafe/isAmong";
+} from "../shared/resolveXOnyxiaValueReference";
 import YAML from "yaml";
+import {
+    validateValueAgainstJSONSchema,
+    type JSONSchemaLike as JSONSchemaLike_validateValueAgainstJSONSchema,
+    type XOnyxiaContextLike as XOnyxiaContextLike_validateValueAgainstJSONSchema
+} from "./validateValueAgainstJSONSchema";
 
 type XOnyxiaParamsLike = {
     overwriteDefaultWith?: string;
@@ -24,22 +24,21 @@ type XOnyxiaParamsLike = {
 assert<keyof XOnyxiaParamsLike extends keyof XOnyxiaParams ? true : false>();
 assert<XOnyxiaParams extends XOnyxiaParamsLike ? true : false>();
 
-type JSONSchemaLike = {
+type JSONSchemaLike = JSONSchemaLike_validateValueAgainstJSONSchema & {
     type: "object" | "array" | "string" | "boolean" | "integer" | "number";
     default?: Stringifyable;
     const?: Stringifyable;
     properties?: Record<string, JSONSchemaLike>;
-    minItems?: number;
-    maxItems?: number;
     [onyxiaReservedPropertyNameInFieldDescription]?: XOnyxiaParamsLike;
 };
 
 assert<keyof JSONSchemaLike extends keyof JSONSchema ? true : false>();
 assert<JSONSchema extends JSONSchemaLike ? true : false>();
 
-type XOnyxiaContextLike = XOnyxiaContextLike_resolveXOnyxiaValueReference & {
-    s3: unknown;
-};
+type XOnyxiaContextLike = XOnyxiaContextLike_resolveXOnyxiaValueReference &
+    XOnyxiaContextLike_validateValueAgainstJSONSchema & {
+        s3: unknown;
+    };
 
 assert<XOnyxiaContext extends XOnyxiaContextLike ? true : false>();
 
@@ -107,6 +106,14 @@ function getHelmValues_default_rec(params: {
             break use_const;
         }
 
+        const { isValid } = validateValueAgainstJSONSchema({
+            helmValuesSchema,
+            xOnyxiaContext,
+            "value": constValue
+        });
+
+        assert(isValid);
+
         return constValue;
     }
 
@@ -126,155 +133,20 @@ function getHelmValues_default_rec(params: {
             break use_x_onyxia_overwriteDefaultWith;
         }
 
-        resolved_value_is_string: {
-            if (typeof resolvedValue !== "string") {
-                break resolved_value_is_string;
-            }
+        const validationResult = validateValueAgainstJSONSchema({
+            helmValuesSchema,
+            xOnyxiaContext,
+            "value": resolvedValue
+        });
 
-            switch (helmValuesSchema.type) {
-                case "string":
-                    return resolvedValue;
-                case "array":
-                case "object":
-                    break use_x_onyxia_overwriteDefaultWith;
-                case "boolean": {
-                    const resolvedValue_lowerCase = resolvedValue.toLowerCase();
-
-                    if (isAmong(["true", "false"], resolvedValue_lowerCase)) {
-                        return resolvedValue_lowerCase === "true";
-                    }
-                    if (isAmong(["yes", "no"], resolvedValue_lowerCase)) {
-                        return resolvedValue_lowerCase === "yes";
-                    }
-                    if (isAmong(["1", "0"], resolvedValue_lowerCase)) {
-                        return resolvedValue_lowerCase === "1";
-                    }
-                    if (isAmong(["on", "off"], resolvedValue_lowerCase)) {
-                        return resolvedValue_lowerCase === "on";
-                    }
-
-                    break use_x_onyxia_overwriteDefaultWith;
-                }
-                case "integer": {
-                    const n = parseFloat(resolvedValue);
-                    if (isNaN(n)) {
-                        break use_x_onyxia_overwriteDefaultWith;
-                    }
-
-                    if (n !== Math.round(n)) {
-                        break use_x_onyxia_overwriteDefaultWith;
-                    }
-
-                    return n;
-                }
-                case "number": {
-                    const n = parseFloat(resolvedValue);
-                    if (isNaN(n)) {
-                        break use_x_onyxia_overwriteDefaultWith;
-                    }
-                    return n;
-                }
-            }
-
-            assert<Equals<typeof helmValuesSchema.type, never>>();
-        }
-
-        resolved_value_is_number: {
-            if (typeof resolvedValue !== "number") {
-                break resolved_value_is_number;
-            }
-
-            switch (helmValuesSchema.type) {
-                case "string":
-                    return `${resolvedValue}`;
-                case "array":
-                case "object":
-                    break use_x_onyxia_overwriteDefaultWith;
-                case "boolean":
-                    return resolvedValue !== 0;
-                case "integer":
-                    if (resolvedValue !== Math.round(resolvedValue)) {
-                        break use_x_onyxia_overwriteDefaultWith;
-                    }
-                    return resolvedValue;
-                case "number":
-                    return resolvedValue;
-            }
-
-            assert<Equals<typeof helmValuesSchema.type, never>>();
-        }
-
-        resolved_value_is_boolean: {
-            if (typeof resolvedValue !== "boolean") {
-                break resolved_value_is_boolean;
-            }
-
-            switch (helmValuesSchema.type) {
-                case "string":
-                    return resolvedValue ? "true" : "false";
-                case "array":
-                case "object":
-                    break use_x_onyxia_overwriteDefaultWith;
-                case "boolean":
-                    return resolvedValue;
-                case "integer":
-                case "number":
-                    return resolvedValue ? 1 : 0;
-            }
-
-            assert<Equals<typeof helmValuesSchema.type, never>>();
-        }
-
-        resolved_value_is_null: {
-            if (resolvedValue !== null) {
-                break resolved_value_is_null;
-            }
-
-            switch (helmValuesSchema.type) {
-                case "string":
-                    return "null";
-                case "array":
-                case "object":
-                    break use_x_onyxia_overwriteDefaultWith;
-                case "boolean":
-                    return false;
-                case "integer":
-                case "number":
-                    return 0;
-            }
-
-            assert<Equals<typeof helmValuesSchema.type, never>>();
-        }
-
-        resolved_value_is_array: {
-            if (!(resolvedValue instanceof Array)) {
-                break resolved_value_is_array;
-            }
-
-            if (helmValuesSchema.type !== "array") {
+        if (!validationResult.isValid) {
+            if (validationResult.bestApproximation === undefined) {
                 break use_x_onyxia_overwriteDefaultWith;
             }
-
-            if (!getIsCorrectlySizedArray({ helmValuesSchema, "array": resolvedValue })) {
-                break use_x_onyxia_overwriteDefaultWith;
-            }
-
-            return resolvedValue;
+            return validationResult.bestApproximation;
         }
 
-        resolved_value_is_object: {
-            if (typeof resolvedValue !== "object") {
-                break resolved_value_is_object;
-            }
-
-            if (helmValuesSchema.type !== "object") {
-                break use_x_onyxia_overwriteDefaultWith;
-            }
-
-            return resolvedValue;
-        }
-
-        assert(false);
+        return resolvedValue;
     }
 
     use_default: {
@@ -284,35 +156,13 @@ function getHelmValues_default_rec(params: {
             break use_default;
         }
 
-        const doUseIt = (() => {
-            switch (helmValuesSchema.type) {
-                case "string":
-                    return typeof defaultValue === "string";
-                case "array":
-                    return (
-                        defaultValue instanceof Array &&
-                        getIsCorrectlySizedArray({
-                            helmValuesSchema,
-                            "array": defaultValue
-                        })
-                    );
-                case "object":
-                    return typeof defaultValue === "object" && defaultValue !== null;
-                case "boolean":
-                    return typeof defaultValue === "boolean";
-                case "integer":
-                    return (
-                        typeof defaultValue === "number" &&
-                        defaultValue === Math.round(defaultValue)
-                    );
-                case "number":
-                    return typeof defaultValue === "number";
-            }
+        const { isValid } = validateValueAgainstJSONSchema({
+            helmValuesSchema,
+            xOnyxiaContext,
+            "value": defaultValue
+        });
 
-            assert<Equals<typeof helmValuesSchema.type, never>>();
-        })();
-
-        if (!doUseIt) {
+        if (!isValid) {
             break use_default;
         }
 
@@ -351,37 +201,13 @@ function getHelmValues_default_rec(params: {
             break use_values_yaml;
         }
 
-        const isCorrectType = (() => {
-            switch (helmValuesSchema.type) {
-                case "string":
-                    return typeof helmValuesYaml_parsed === "string";
-                case "array":
-                    return (
-                        helmValuesYaml_parsed instanceof Array &&
-                        getIsCorrectlySizedArray({
-                            helmValuesSchema,
-                            "array": helmValuesYaml_parsed
-                        })
-                    );
-                case "object":
-                    return (
-                        typeof helmValuesYaml_parsed === "object" &&
-                        helmValuesYaml_parsed !== null
-                    );
-                case "boolean":
-                    return typeof helmValuesYaml_parsed === "boolean";
-                case "integer":
-                    return (
-                        typeof helmValuesYaml_parsed === "number" &&
-                        helmValuesYaml_parsed === Math.round(helmValuesYaml_parsed)
-                    );
-                case "number":
-                    return typeof helmValuesYaml_parsed === "number";
-            }
-            assert<Equals<typeof helmValuesSchema.type, never>>();
-        })();
+        const { isValid } = validateValueAgainstJSONSchema({
+            helmValuesSchema,
+            xOnyxiaContext,
+            "value": helmValuesYaml_parsed
+        });
 
-        assert(isCorrectType);
+        assert(isValid);
 
         return helmValuesYaml_parsed;
     }
@@ -390,22 +216,19 @@ function getHelmValues_default_rec(params: {
         if (helmValuesSchema.type !== "array") {
             break schema_is_array;
         }
-        assert(
-            helmValuesSchema.minItems === undefined || helmValuesSchema.minItems === 0
-        );
-        return [];
+
+        const emptyArray: Stringifyable[] = [];
+
+        const { isValid } = validateValueAgainstJSONSchema({
+            helmValuesSchema,
+            xOnyxiaContext,
+            "value": emptyArray
+        });
+
+        assert(isValid);
+
+        return emptyArray;
     }
 
     assert(false, `Can't resolve value ${JSON.stringify(params, null, 2)}`);
-}
-
-function getIsCorrectlySizedArray(params: {
-    helmValuesSchema: Pick<JSONSchemaLike, "minItems" | "maxItems">;
-    array: StringifyableArray;
-}): boolean {
-    const { helmValuesSchema, array } = params;
-
-    const { minItems = 0, maxItems = Infinity } = helmValuesSchema;
-
-    return array.length >= minItems && array.length <= maxItems;
 }

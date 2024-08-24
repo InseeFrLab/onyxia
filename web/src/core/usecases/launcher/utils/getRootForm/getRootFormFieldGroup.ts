@@ -1,6 +1,6 @@
 import type { FormFieldGroup, FormField } from "../../formTypes";
 import type { JSONSchema } from "core/ports/OnyxiaApi/JSONSchema";
-import type { Stringifyable, StringifyableArray } from "core/tools/Stringifyable";
+import type { Stringifyable } from "core/tools/Stringifyable";
 import { mergeRangeSliders } from "./mergeRangeSliders";
 import { assert, type Equals } from "tsafe/assert";
 import { id } from "tsafe/id";
@@ -12,11 +12,13 @@ import { getValueAtPathInObject } from "core/tools/getValueAtPathInObject";
 import { exclude } from "tsafe/exclude";
 import { same } from "evt/tools/inDepth/same";
 import { isAmong } from "tsafe/isAmong";
-import { resolveXOnyxiaValueReference } from "core/usecases/launcher/utils/resolveXOnyxiaValueReference";
 import type { XOnyxiaContext } from "core/ports/OnyxiaApi";
+import {
+    resolveEnum,
+    type JSONSchemaLike as JSONSchemaLike_resolveEnum
+} from "../shared/resolveEnum";
 
 type XOnyxiaParamsLike = {
-    overwriteListEnumWith?: string;
     hidden?: boolean;
     readonly?: boolean;
 };
@@ -24,26 +26,12 @@ type XOnyxiaParamsLike = {
 assert<keyof XOnyxiaParamsLike extends keyof XOnyxiaParams ? true : false>();
 assert<XOnyxiaParams extends XOnyxiaParamsLike ? true : false>();
 
-export type JSONSchemaLike = {
+export type JSONSchemaLike = JSONSchemaLike_resolveEnum & {
     type: "object" | "array" | "string" | "boolean" | "integer" | "number";
     title?: string;
     description?: string;
     hidden?: boolean | { value: Stringifyable; path: string; isPathRelative?: boolean };
     items?: JSONSchemaLike;
-    minItems?: number;
-    maxItems?: number;
-    minimum?: number;
-    pattern?: string;
-    render?: "textArea" | "password" | "list" | "slider";
-    enum?: Stringifyable[];
-    listEnum?: Stringifyable[];
-    sliderMax?: number;
-    sliderMin?: number;
-    sliderUnit?: string;
-    sliderStep?: number;
-    sliderExtremitySemantic?: string;
-    sliderRangeId?: string;
-    sliderExtremity?: "down" | "up";
     const?: Stringifyable;
     properties?: Record<string, JSONSchemaLike>;
     [onyxiaReservedPropertyNameInFieldDescription]?: XOnyxiaParamsLike;
@@ -207,49 +195,12 @@ function getRootFormFieldGroup_rec(params: {
     }
 
     select: {
-        const options: Stringifyable[] | undefined = (() => {
-            x_onyxia_overwrite_list_enum_with: {
-                if (helmValuesSchema["x-onyxia"]?.overwriteListEnumWith === undefined) {
-                    break x_onyxia_overwrite_list_enum_with;
-                }
-
-                const options = resolveXOnyxiaValueReference({
-                    xOnyxiaContext,
-                    "expression": helmValuesSchema["x-onyxia"].overwriteListEnumWith
-                });
-
-                if (options === undefined) {
-                    break x_onyxia_overwrite_list_enum_with;
-                }
-
-                if (!(options instanceof Array)) {
-                    break x_onyxia_overwrite_list_enum_with;
-                }
-
-                return options;
-            }
-
-            list_enum: {
-                if (helmValuesSchema.listEnum === undefined) {
-                    break list_enum;
-                }
-
-                return helmValuesSchema.listEnum;
-            }
-
-            enum_: {
-                if (helmValuesSchema.enum === undefined) {
-                    break enum_;
-                }
-
-                return helmValuesSchema.enum;
-            }
-
-            return undefined;
-        })();
+        const options = resolveEnum({
+            helmValuesSchema,
+            xOnyxiaContext
+        });
 
         if (options === undefined) {
-            assert(helmValuesSchema.render !== "list");
             break select;
         }
 
@@ -339,12 +290,13 @@ function getRootFormFieldGroup_rec(params: {
                 })()
             });
         case "string": {
+            return undefined;
         }
         case "integer": {
-            //return undefined;
+            return undefined;
         }
         case "number": {
-            //return undefined;
+            return undefined;
         }
     }
 

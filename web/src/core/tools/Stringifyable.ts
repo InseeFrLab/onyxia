@@ -14,7 +14,8 @@ export interface StringifyableObject {
     [key: string]: Stringifyable;
 }
 
-export interface StringifyableArray extends Array<Stringifyable> {}
+// NOTE: Use Stringifyable[]
+interface StringifyableArray extends Array<Stringifyable> {}
 
 export const zStringifyable: z.ZodType<Stringifyable> = z
     .any()

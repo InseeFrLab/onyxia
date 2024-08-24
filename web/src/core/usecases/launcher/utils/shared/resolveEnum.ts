@@ -9,7 +9,7 @@ import type { XOnyxiaContext } from "core/ports/OnyxiaApi";
 import {
     resolveXOnyxiaValueReference,
     type XOnyxiaContextLike as XOnyxiaContextLike_resolveXOnyxiaValueReference
-} from "../resolveXOnyxiaValueReference";
+} from "./resolveXOnyxiaValueReference";
 
 type XOnyxiaParamsLike = {
     overwriteListEnumWith?: string;
@@ -19,19 +19,14 @@ assert<keyof XOnyxiaParamsLike extends keyof XOnyxiaParams ? true : false>();
 assert<XOnyxiaParams extends XOnyxiaParamsLike ? true : false>();
 
 export type JSONSchemaLike = {
-    type: "array" | "string" | "boolean" | "integer" | "number";
-    items?: JSONSchemaLike;
-    minItems?: number;
-    maxItems?: number;
-    minimum?: number;
-    pattern?: string;
-    render?: "textArea" | "password" | "list" | "slider";
+    type: "string" | "number" | "boolean" | "object" | "array" | "integer";
+    /**
+     * NOTE: Here we only check if render === "list"
+     * We throw if we don't have valid options and render is "list"
+     * */
+    render?: JSONSchema["render"];
     enum?: Stringifyable[];
     listEnum?: Stringifyable[];
-    sliderMax?: number;
-    sliderMin?: number;
-    sliderUnit?: string;
-    properties?: Record<string, JSONSchemaLike>;
     [onyxiaReservedPropertyNameInFieldDescription]?: XOnyxiaParamsLike;
 };
 
@@ -45,4 +40,51 @@ assert<XOnyxiaContext extends XOnyxiaContextLike ? true : false>();
 export function resolveEnum(params: {
     helmValuesSchema: JSONSchemaLike;
     xOnyxiaContext: XOnyxiaContextLike;
-}): Stringifyable[] | undefined {}
+}): Stringifyable[] | undefined {
+    const { helmValuesSchema, xOnyxiaContext } = params;
+
+    if (helmValuesSchema.type !== "array") {
+        return undefined;
+    }
+
+    x_onyxia_overwrite_list_enum_with: {
+        if (helmValuesSchema["x-onyxia"]?.overwriteListEnumWith === undefined) {
+            break x_onyxia_overwrite_list_enum_with;
+        }
+
+        const options = resolveXOnyxiaValueReference({
+            xOnyxiaContext,
+            "expression": helmValuesSchema["x-onyxia"].overwriteListEnumWith
+        });
+
+        if (options === undefined) {
+            break x_onyxia_overwrite_list_enum_with;
+        }
+
+        if (!(options instanceof Array)) {
+            break x_onyxia_overwrite_list_enum_with;
+        }
+
+        return options;
+    }
+
+    list_enum: {
+        if (helmValuesSchema.listEnum === undefined) {
+            break list_enum;
+        }
+
+        return helmValuesSchema.listEnum;
+    }
+
+    enum_: {
+        if (helmValuesSchema.enum === undefined) {
+            break enum_;
+        }
+
+        return helmValuesSchema.enum;
+    }
+
+    assert(helmValuesSchema.render !== "list");
+
+    return undefined;
+}
