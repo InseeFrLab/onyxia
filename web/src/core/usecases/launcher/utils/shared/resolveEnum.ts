@@ -10,6 +10,10 @@ import {
     resolveXOnyxiaValueReference,
     type XOnyxiaContextLike as XOnyxiaContextLike_resolveXOnyxiaValueReference
 } from "./resolveXOnyxiaValueReference";
+import {
+    validateValueAgainstJSONSchema_noEnumCheck,
+    type JSONSchemaLike as JSONSchemaLike_validateValueAgainstJSONSchema_noEnumCheck
+} from "./validateValueAgainstJSONSchema_noEnumCheck";
 
 type XOnyxiaParamsLike = {
     overwriteListEnumWith?: string;
@@ -18,7 +22,7 @@ type XOnyxiaParamsLike = {
 assert<keyof XOnyxiaParamsLike extends keyof XOnyxiaParams ? true : false>();
 assert<XOnyxiaParams extends XOnyxiaParamsLike ? true : false>();
 
-export type JSONSchemaLike = {
+export type JSONSchemaLike = JSONSchemaLike_validateValueAgainstJSONSchema_noEnumCheck & {
     type: "string" | "number" | "boolean" | "object" | "array" | "integer";
     /**
      * NOTE: Here we only check if render === "list"
@@ -52,39 +56,75 @@ export function resolveEnum(params: {
             break x_onyxia_overwrite_list_enum_with;
         }
 
-        const options = resolveXOnyxiaValueReference({
+        const options_unchecked = resolveXOnyxiaValueReference({
             xOnyxiaContext,
             "expression": helmValuesSchema["x-onyxia"].overwriteListEnumWith
         });
 
-        if (options === undefined) {
+        if (options_unchecked === undefined) {
             break x_onyxia_overwrite_list_enum_with;
         }
 
-        if (!(options instanceof Array)) {
+        if (!(options_unchecked instanceof Array)) {
             break x_onyxia_overwrite_list_enum_with;
+        }
+
+        const options: Stringifyable[] = [];
+
+        for (const option_unchecked of options_unchecked) {
+            const validationResult = validateValueAgainstJSONSchema_noEnumCheck({
+                helmValuesSchema,
+                "value": option_unchecked
+            });
+
+            if (validationResult.isValid) {
+                options.push(option_unchecked);
+                continue;
+            } else {
+                if (validationResult.bestApproximation === undefined) {
+                    break x_onyxia_overwrite_list_enum_with;
+                }
+
+                options.push(validationResult.bestApproximation);
+            }
         }
 
         return options;
     }
 
-    list_enum: {
-        if (helmValuesSchema.listEnum === undefined) {
-            break list_enum;
+    listEnum_or_enum: for (const key of ["listEnum", "enum"] as const) {
+        const options_unchecked = helmValuesSchema[key];
+
+        if (options_unchecked === undefined) {
+            continue;
         }
 
-        return helmValuesSchema.listEnum;
-    }
-
-    enum_: {
-        if (helmValuesSchema.enum === undefined) {
-            break enum_;
+        if (!(options_unchecked instanceof Array)) {
+            continue;
         }
 
-        return helmValuesSchema.enum;
+        const options: Stringifyable[] = [];
+
+        for (const option_unchecked of options_unchecked) {
+            const validationResult = validateValueAgainstJSONSchema_noEnumCheck({
+                helmValuesSchema,
+                "value": option_unchecked
+            });
+
+            if (!validationResult.isValid) {
+                continue listEnum_or_enum;
+            }
+
+            options.push(option_unchecked);
+        }
+
+        return options;
     }
 
-    assert(helmValuesSchema.render !== "list");
+    assert(
+        helmValuesSchema.render !== "list",
+        "Render as list but we have no valid options"
+    );
 
     return undefined;
 }
