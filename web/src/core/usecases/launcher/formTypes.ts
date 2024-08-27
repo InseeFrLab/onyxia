@@ -1,9 +1,5 @@
 import { assert, type Equals } from "tsafe/assert";
-import type {
-    Stringifyable,
-    StringifyableArray,
-    StringifyableObject
-} from "core/tools/Stringifyable";
+import type { Stringifyable } from "core/tools/Stringifyable";
 
 export type RootForm = {
     main: FormFieldGroup["children"];
@@ -41,11 +37,11 @@ export namespace FormField {
     type Common = {
         type: "field";
         title: string;
-        isReadonly: boolean;
     };
 
     export type Checkbox = Common & {
         fieldType: "checkbox";
+        isReadonly: boolean;
         helmValuesPath: (string | number)[];
         description: string | undefined;
         value: boolean;
@@ -53,14 +49,16 @@ export namespace FormField {
 
     export type YamlCodeBlock = Common & {
         fieldType: "yaml code block";
+        isReadonly: boolean;
         helmValuesPath: (string | number)[];
         description: string | undefined;
         expectedDataType: "object" | "array";
-        value: StringifyableObject | StringifyableArray;
+        value: Record<string, Stringifyable> | Stringifyable[];
     };
 
     export type NumberField = Common & {
         fieldType: "integer field";
+        isReadonly: boolean;
         helmValuesPath: (string | number)[];
         description: string | undefined;
         value: number;
@@ -70,6 +68,7 @@ export namespace FormField {
 
     export type Select = Common & {
         fieldType: "select";
+        isReadonly: boolean;
         helmValuesPath: (string | number)[];
         description: string | undefined;
         options: Stringifyable[];
@@ -78,6 +77,7 @@ export namespace FormField {
 
     export type TextField = Common & {
         fieldType: "text field";
+        isReadonly: boolean;
         helmValuesPath: (string | number)[];
         description: string | undefined;
         doRenderAsTextArea: boolean;
@@ -88,25 +88,27 @@ export namespace FormField {
 
     export type Slider = Common & {
         fieldType: "slider";
+        isReadonly: boolean;
         helmValuesPath: (string | number)[];
         description: string | undefined;
-        max: number;
         min: number;
+        max: number;
         unit: string | undefined;
-        step: number;
+        step: number | undefined;
         value: number;
     };
 
     export type RangeSlider = Common & {
         fieldType: "range slider";
         unit: string | undefined;
-        step: number;
+        step: number | undefined;
         lowEndRange: RangeSlider.RangeEnd;
         highEndRange: RangeSlider.RangeEnd;
     };
 
     export namespace RangeSlider {
         export type RangeEnd = {
+            isReadonly: boolean;
             helmValuesPath: (string | number)[];
             value: number;
             rangeEndSemantic: string | undefined;

@@ -21,6 +21,7 @@ describe(symToStr({ mergeRangeSliders }), () => {
                             "children": [
                                 createTemporaryRangeSlider({
                                     "payload": {
+                                        "isReadonly": false,
                                         "sliderMin": 50,
                                         "sliderMax": 40000,
                                         "sliderStep": 50,
@@ -46,6 +47,7 @@ describe(symToStr({ mergeRangeSliders }), () => {
                             "children": [
                                 createTemporaryRangeSlider({
                                     "payload": {
+                                        "isReadonly": true,
                                         "sliderMin": 50,
                                         "sliderMax": 40000,
                                         "sliderStep": 50,
@@ -77,12 +79,12 @@ describe(symToStr({ mergeRangeSliders }), () => {
                     "children": [
                         id<FormField.RangeSlider>({
                             "type": "field",
-                            "isReadonly": false,
                             "title": "CPU",
                             "fieldType": "range slider",
                             "unit": "m",
                             "step": 50,
                             "lowEndRange": {
+                                "isReadonly": false,
                                 "helmValuesPath": ["resources", "requests", "cpu"],
                                 "value": 150,
                                 "rangeEndSemantic": "guaranteed",
@@ -91,6 +93,7 @@ describe(symToStr({ mergeRangeSliders }), () => {
                                 "description": "The amount of cpu guaranteed"
                             },
                             "highEndRange": {
+                                "isReadonly": true,
                                 "helmValuesPath": ["resources", "limits", "cpu"],
                                 "value": 30000,
                                 "rangeEndSemantic": "Maximum",
@@ -120,6 +123,7 @@ describe(symToStr({ mergeRangeSliders }), () => {
                             "children": [
                                 createTemporaryRangeSlider({
                                     "payload": {
+                                        "isReadonly": false,
                                         "sliderMin": 50,
                                         "sliderMax": 40000,
                                         "sliderStep": 50,
@@ -139,6 +143,7 @@ describe(symToStr({ mergeRangeSliders }), () => {
                                 }),
                                 createTemporaryRangeSlider({
                                     "payload": {
+                                        "isReadonly": false,
                                         "sliderMin": 1,
                                         "sliderMax": 200,
                                         "sliderStep": 1,
@@ -164,6 +169,7 @@ describe(symToStr({ mergeRangeSliders }), () => {
                             "children": [
                                 createTemporaryRangeSlider({
                                     "payload": {
+                                        "isReadonly": false,
                                         "sliderMin": 50,
                                         "sliderMax": 40000,
                                         "sliderStep": 50,
@@ -178,6 +184,7 @@ describe(symToStr({ mergeRangeSliders }), () => {
                                 }),
                                 createTemporaryRangeSlider({
                                     "payload": {
+                                        "isReadonly": false,
                                         "sliderMin": 1,
                                         "sliderMax": 200,
                                         "sliderStep": 1,
@@ -213,12 +220,12 @@ describe(symToStr({ mergeRangeSliders }), () => {
                     "children": [
                         id<FormField.RangeSlider>({
                             "type": "field",
-                            "isReadonly": false,
                             "title": "CPU",
                             "fieldType": "range slider",
                             "unit": "m",
                             "step": 50,
                             "lowEndRange": {
+                                "isReadonly": false,
                                 "helmValuesPath": ["resources", "requests", "cpu"],
                                 "value": 150,
                                 "rangeEndSemantic": "guaranteed",
@@ -227,6 +234,7 @@ describe(symToStr({ mergeRangeSliders }), () => {
                                 "description": "The amount of cpu guaranteed"
                             },
                             "highEndRange": {
+                                "isReadonly": false,
                                 "helmValuesPath": ["resources", "limits", "cpu"],
                                 "value": 30000,
                                 "rangeEndSemantic": "Maximum",
@@ -237,12 +245,12 @@ describe(symToStr({ mergeRangeSliders }), () => {
                         }),
                         id<FormField.RangeSlider>({
                             "type": "field",
-                            "isReadonly": false,
                             "title": "memory",
                             "fieldType": "range slider",
                             "unit": "Gi",
                             "step": 1,
                             "lowEndRange": {
+                                "isReadonly": false,
                                 "helmValuesPath": ["resources", "requests", "memory"],
                                 "value": 2,
                                 "rangeEndSemantic": "guaranteed",
@@ -251,6 +259,7 @@ describe(symToStr({ mergeRangeSliders }), () => {
                                 "description": "The amount of memory guaranteed"
                             },
                             "highEndRange": {
+                                "isReadonly": false,
                                 "helmValuesPath": ["resources", "limits", "memory"],
                                 "value": 50,
                                 "rangeEndSemantic": "Maximum",

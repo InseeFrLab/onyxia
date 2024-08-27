@@ -1,7 +1,7 @@
 import type { FormFieldGroup, FormField } from "../../formTypes";
 import type { JSONSchema } from "core/ports/OnyxiaApi/JSONSchema";
 import type { Stringifyable } from "core/tools/Stringifyable";
-import { mergeRangeSliders } from "./mergeRangeSliders";
+import { createTemporaryRangeSlider } from "./mergeRangeSliders";
 import { assert, type Equals } from "tsafe/assert";
 import { id } from "tsafe/id";
 import {
@@ -30,9 +30,19 @@ export type JSONSchemaLike = JSONSchemaLike_resolveEnum & {
     type: "object" | "array" | "string" | "boolean" | "integer" | "number";
     title?: string;
     description?: string;
+    minItems?: number;
+    maxItems?: number;
     hidden?: boolean | { value: Stringifyable; path: string; isPathRelative?: boolean };
     items?: JSONSchemaLike;
     const?: Stringifyable;
+    render?: "textArea" | "password" | "list" | "slider";
+    sliderMax?: number;
+    sliderMin?: number;
+    sliderUnit?: string;
+    sliderStep?: number;
+    sliderExtremitySemantic?: string;
+    sliderRangeId?: string;
+    sliderExtremity?: "down" | "up";
     properties?: Record<string, JSONSchemaLike>;
     [onyxiaReservedPropertyNameInFieldDescription]?: XOnyxiaParamsLike;
 };
@@ -226,6 +236,118 @@ function getRootFormFieldGroup_rec(params: {
         });
     }
 
+    simple_slider: {
+        if (helmValuesSchema.sliderMin === undefined) {
+            break simple_slider;
+        }
+
+        if (helmValuesSchema.sliderExtremity !== undefined) {
+            break simple_slider;
+        }
+
+        assert(helmValuesSchema.type === "string" || helmValuesSchema.type === "number");
+        assert(
+            helmValuesSchema.render === undefined || helmValuesSchema.render === "slider"
+        );
+
+        const { sliderMin, sliderMax, sliderUnit, sliderStep } = helmValuesSchema;
+
+        assert(sliderMin !== undefined);
+        assert(sliderMax !== undefined);
+
+        return id<FormField.Slider>({
+            "type": "field",
+            "title": getTitle(),
+            isReadonly,
+            "fieldType": "slider",
+            helmValuesPath,
+            "description": helmValuesSchema.description,
+            "min": sliderMin,
+            "max": sliderMax,
+            "unit": sliderUnit,
+            "step": sliderStep,
+            "value": (() => {
+                const value = getValue();
+
+                switch (typeof value) {
+                    case "number": {
+                        assert(sliderUnit === undefined);
+
+                        return value;
+                    }
+                    case "string": {
+                        const xStr = value.slice(0, -(sliderUnit ?? "").length);
+
+                        const x = parseFloat(xStr);
+
+                        assert(!isNaN(x));
+
+                        return x;
+                    }
+                }
+
+                assert(false);
+            })()
+        });
+    }
+
+    range_slider: {
+        if (helmValuesSchema.sliderExtremity === undefined) {
+            break range_slider;
+        }
+
+        assert(helmValuesSchema.type === "string" || helmValuesSchema.type === "number");
+        assert(
+            helmValuesSchema.render === undefined || helmValuesSchema.render === "slider"
+        );
+
+        const {
+            sliderMin,
+            sliderMax,
+            sliderUnit,
+            sliderStep,
+            sliderExtremitySemantic,
+            sliderRangeId,
+            sliderExtremity
+        } = helmValuesSchema;
+
+        assert(sliderMin !== undefined);
+        assert(sliderMax !== undefined);
+        assert(sliderRangeId !== undefined);
+
+        return id<FormField.RangeSlider>(
+            createTemporaryRangeSlider({
+                "payload": {
+                    isReadonly,
+                    sliderMin,
+                    sliderMax,
+                    sliderStep,
+                    sliderUnit,
+                    sliderExtremitySemantic,
+                    sliderRangeId,
+                    "helmValue": (() => {
+                        const value = getValue();
+
+                        assert(typeof value === "number" || typeof value === "string");
+
+                        return value;
+                    })(),
+                    helmValuesPath,
+                    "description": helmValuesSchema.description,
+                    ...(() => {
+                        switch (sliderExtremity) {
+                            case "down":
+                                return { "sliderExtremity": "down", "title": getTitle() };
+                            case "up":
+                                return { "sliderExtremity": "up" };
+                        }
+                        assert<Equals<typeof sliderExtremity, never>>(false);
+                    })()
+                }
+            })
+        );
+    }
+
     switch (helmValuesSchema.type) {
         case "object":
             assert(helmValuesSchema.properties !== undefined);
@@ -250,7 +372,9 @@ function getRootFormFieldGroup_rec(params: {
                 "canRemove": false
             });
         case "array": {
-            assert(helmValuesSchema.items !== undefined);
+            const itemSchema = helmValuesSchema.items;
+
+            assert(itemSchema !== undefined);
 
             const values = getValueAtPathInObject<Stringifyable>({
                 "obj": helmValues,
@@ -268,9 +392,18 @@ function getRootFormFieldGroup_rec(params: {
                     return helmValuesPath[helmValuesPath.length - 1];
                 })(),
                 "description": helmValuesSchema.description,
-                "children": null, //TODO
-                "canAdd": false,
-                "canRemove": false
+                "children": values
+                    .map((...[, index]) =>
+                        getRootFormFieldGroup_rec({
+                            helmValues,
+                            "helmValuesPath": [...helmValuesPath, index],
+                            xOnyxiaContext,
+                            "helmValuesSchema": itemSchema
+                        })
+                    )
+                    .filter(exclude(undefined)),
+                "canAdd": values.length < (helmValuesSchema.maxItems ?? Infinity),
+                "canRemove": values.length > (helmValuesSchema.minItems ?? 0)
             });
         }
         case "boolean":
@@ -289,15 +422,44 @@ function getRootFormFieldGroup_rec(params: {
                     return value;
                 })()
             });
-        case "string": {
-            return undefined;
-        }
-        case "integer": {
-            return undefined;
-        }
-        case "number": {
-            return undefined;
-        }
+        case "string":
+            return id<FormField.TextField>({
+                "type": "field",
+                "title": getTitle(),
+                isReadonly,
+                "fieldType": "text field",
+                helmValuesPath,
+                "description": helmValuesSchema.description,
+                "doRenderAsTextArea": helmValuesSchema.render === "textArea",
+                "isSensitive": helmValuesSchema.render === "password",
+                "pattern": helmValuesSchema.pattern,
+                "value": (() => {
+                    const value = getValue();
+
+                    assert(typeof value === "string");
+
+                    return value;
+                })()
+            });
+        case "integer":
+        case "number":
+            return id<FormField.NumberField>({
+                "type": "field",
+                "title": getTitle(),
+                isReadonly,
+                "fieldType": "integer field",
+                helmValuesPath,
+                "description": helmValuesSchema.description,
+                "value": (() => {
+                    const value = getValue();
+
+                    assert(typeof value === "number");
+
+                    return value;
+                })(),
+                "isInteger": helmValuesSchema.type === "integer",
+                "minimum": helmValuesSchema.minimum
+            });
     }
 
     assert<Equals<typeof helmValuesSchema.type, never>>(false);

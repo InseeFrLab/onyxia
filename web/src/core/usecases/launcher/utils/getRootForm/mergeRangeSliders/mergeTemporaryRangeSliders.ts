@@ -113,6 +113,7 @@ export function mergeTemporaryRangeSliders(params: {
                     })();
 
                     return id<FormField.RangeSlider.RangeEnd>({
+                        "isReadonly": payload.isReadonly,
                         "helmValuesPath": payload.helmValuesPath,
                         value,
                         "rangeEndSemantic": payload.sliderExtremitySemantic,

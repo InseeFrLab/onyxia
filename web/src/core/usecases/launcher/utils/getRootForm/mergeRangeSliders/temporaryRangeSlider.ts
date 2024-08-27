@@ -2,6 +2,7 @@ import type { FormField } from "../../../formTypes";
 import { assert } from "tsafe/assert";
 
 export type TemporaryRangeSliderPayload = {
+    isReadonly: boolean;
     sliderMin: number;
     sliderMax: number;
     sliderStep: number | undefined;
@@ -52,6 +53,7 @@ export function createTemporaryRangeSlider(params: {
         "title": "",
         "fieldType": "range slider",
         "lowEndRange": {
+            "isReadonly": false,
             "helmValuesPath": [],
             "value": NaN,
             "description": undefined,
@@ -60,6 +62,7 @@ export function createTemporaryRangeSlider(params: {
             "max": NaN
         },
         "highEndRange": {
+            "isReadonly": false,
             "helmValuesPath": [],
             "value": NaN,
             "description": undefined,
