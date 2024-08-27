@@ -536,23 +536,23 @@ export const translations: Translations<"no"> = {
         "header text1": "Tjenestekatalog",
         "sources": ({ helmChartName, helmChartRepositoryName, sourceUrls }) => (
             <>
-                Du er i ferd med å distribuere Helm-diagrammet{" "}
+                Du er i ferd med å starte tjenesten{" "}
                 {
                     <MaybeLink href={sourceUrls.helmChartSourceUrl}>
                         {helmChartName}
                     </MaybeLink>
-                }
-                som tilhører Helm-diagramlageret{" "}
+                }{" "}
+                som tilhører tjenestekatalogen{" "}
                 {
                     <MaybeLink href={sourceUrls.helmChartRepositorySourceUrl}>
-                        {helmChartRepositoryName}
+                        "{helmChartRepositoryName}"
                     </MaybeLink>
                 }
                 .
                 {sourceUrls.dockerImageSourceUrl !== undefined && (
                     <>
                         {" "}
-                        Det er basert på Docker-avbildningen{" "}
+                        Det er basert på Docker-imaget{" "}
                         {
                             <MuiLink
                                 href={sourceUrls.dockerImageSourceUrl}
@@ -718,13 +718,13 @@ Føl deg fri til å utforske og ta kontroll over dine Kubernetes-implementeringe
             sourceUrls
         }) => (
             <>
-                Versjon av helm-diagrammet{" "}
+                Versjon av tjenesten{" "}
                 {
                     <MaybeLink href={sourceUrls.helmChartSourceUrl}>
                         {helmCharName}
                     </MaybeLink>
                 }
-                som tilhører helm-diagramdepotet{" "}
+                , som tilhører tjenestekatalogen{" "}
                 {
                     <MaybeLink href={sourceUrls.helmChartRepositorySourceUrl}>
                         {helmRepositoryName}
