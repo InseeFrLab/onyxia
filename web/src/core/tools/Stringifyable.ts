@@ -10,7 +10,8 @@ export type Stringifyable =
 
 export type StringifyableAtomic = string | number | boolean | null;
 
-export interface StringifyableObject {
+// NOTE: Use Record<string, Stringifyable>
+interface StringifyableObject {
     [key: string]: Stringifyable;
 }
 

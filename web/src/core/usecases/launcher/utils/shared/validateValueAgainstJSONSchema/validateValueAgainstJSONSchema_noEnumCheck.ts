@@ -2,10 +2,17 @@ import type { JSONSchema } from "core/ports/OnyxiaApi/JSONSchema";
 import type { Stringifyable } from "core/tools/Stringifyable";
 import { assert, type Equals } from "tsafe/assert";
 import { isAmong } from "tsafe/isAmong";
+import type { XOnyxiaContext } from "core/ports/OnyxiaApi";
+// NOTE: Circular dependency but it's ok
+import {
+    validateValueAgainstJSONSchema,
+    type JSONSchemaLike as JSONSchemaLike_validateValueAgainstJSONSchema,
+    type XOnyxiaContextLike as XOnyxiaContextLike_validateValueAgainstJSONSchema
+} from "./validateValueAgainstJSONSchema";
 
 export type JSONSchemaLike = {
     type: "object" | "array" | "string" | "boolean" | "integer" | "number";
-    items?: JSONSchemaLike;
+    items?: JSONSchemaLike_validateValueAgainstJSONSchema;
     minItems?: number;
     maxItems?: number;
     minimum?: number;
@@ -19,15 +26,20 @@ export type JSONSchemaLike = {
 assert<keyof JSONSchemaLike extends keyof JSONSchema ? true : false>();
 assert<JSONSchema extends JSONSchemaLike ? true : false>();
 
+export type XOnyxiaContextLike = XOnyxiaContextLike_validateValueAgainstJSONSchema;
+
+assert<XOnyxiaContext extends XOnyxiaContextLike ? true : false>();
+
 export type ValidationResult =
     | { isValid: true }
     | { isValid: false; bestApproximation: Stringifyable | undefined };
 
 export function validateValueAgainstJSONSchema_noEnumCheck(params: {
     helmValuesSchema: JSONSchemaLike;
+    xOnyxiaContext: XOnyxiaContextLike;
     value: Stringifyable;
 }): ValidationResult {
-    const { helmValuesSchema, value } = params;
+    const { helmValuesSchema, value, xOnyxiaContext } = params;
 
     const getIsSliderValueInBounds = (value: number): boolean => {
         if (
@@ -293,32 +305,72 @@ export function validateValueAgainstJSONSchema_noEnumCheck(params: {
             return { "isValid": true };
         }
 
+        let isBestApproximation = false;
+        let valueOrBestApproximation: Stringifyable[] = [];
+
         for (const value_i of value) {
-            const validationResult = validateValueAgainstJSONSchema_noEnumCheck({
+            const validationResult = validateValueAgainstJSONSchema({
                 "helmValuesSchema": helmValuesSchema.items,
-                "value": value_i
+                "value": value_i,
+                xOnyxiaContext
             });
 
-            if (!validationResult.isValid) {
-                return {
-                    "isValid": false,
-                    "bestApproximation": undefined
-                };
+            if (validationResult.isValid) {
+                valueOrBestApproximation.push(value_i);
+                continue;
             }
+
+            if (validationResult.bestApproximation === undefined) {
+                return { "isValid": false, "bestApproximation": undefined };
+            }
+
+            isBestApproximation = true;
+
+            valueOrBestApproximation.push(validationResult.bestApproximation);
         }
 
-        return { "isValid": true };
+        return isBestApproximation
+            ? { "isValid": false, "bestApproximation": valueOrBestApproximation }
+            : { "isValid": true };
     }
 
-    resolved_value_is_object: {
-        if (typeof value !== "object") {
-            break resolved_value_is_object;
-        }
-
+    if (value instanceof Object) {
         if (helmValuesSchema.type !== "object") {
-            break use_x_onyxia_overwriteDefaultWith;
+            return { "isValid": false, "bestApproximation": undefined };
         }
 
-        return value;
+        if (helmValuesSchema.properties === undefined) {
+            return { "isValid": true };
+        }
+
+        let isBestApproximation = false;
+        const valueOrBestApproximation: Record<string, Stringifyable> = {};
+
+        for (const [key, value_i] of Object.entries(value)) {
+            const validationResult = validateValueAgainstJSONSchema({
+                "helmValuesSchema": helmValuesSchema.properties[key],
+                "value": value_i,
+                xOnyxiaContext
+            });
+
+            if (validationResult.isValid) {
+                valueOrBestApproximation[key] = value_i;
+                continue;
+            }
+
+            if (validationResult.bestApproximation === undefined) {
+                return { "isValid": false, "bestApproximation": undefined };
+            }
+
+            isBestApproximation = true;
+
+            valueOrBestApproximation[key] = validationResult.bestApproximation;
+        }
+
+        return isBestApproximation
+            ? { "isValid": false, "bestApproximation": valueOrBestApproximation }
+            : { "isValid": true };
     }
+
+    assert(false);
 }

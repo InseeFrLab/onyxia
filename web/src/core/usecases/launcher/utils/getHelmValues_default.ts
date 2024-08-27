@@ -4,18 +4,18 @@ import {
 } from "core/ports/OnyxiaApi/XOnyxia";
 import type { JSONSchema } from "core/ports/OnyxiaApi/JSONSchema";
 import type { XOnyxiaContext } from "core/ports/OnyxiaApi";
-import type { StringifyableObject, Stringifyable } from "core/tools/Stringifyable";
+import type { Stringifyable } from "core/tools/Stringifyable";
 import { assert } from "tsafe/assert";
 import {
     resolveXOnyxiaValueReference,
     type XOnyxiaContextLike as XOnyxiaContextLike_resolveXOnyxiaValueReference
-} from "../shared/resolveXOnyxiaValueReference";
+} from "./shared/resolveXOnyxiaValueReference";
 import YAML from "yaml";
 import {
     validateValueAgainstJSONSchema,
     type JSONSchemaLike as JSONSchemaLike_validateValueAgainstJSONSchema,
     type XOnyxiaContextLike as XOnyxiaContextLike_validateValueAgainstJSONSchema
-} from "./validateValueAgainstJSONSchema";
+} from "./shared/validateValueAgainstJSONSchema";
 
 type XOnyxiaParamsLike = {
     overwriteDefaultWith?: string;
@@ -47,7 +47,7 @@ export function getHelmValues_default(params: {
     helmValuesYaml: string;
     xOnyxiaContext: XOnyxiaContextLike;
 }): {
-    helmValues_default: StringifyableObject;
+    helmValues_default: Record<string, Stringifyable>;
     isChartUsingS3: boolean;
 } {
     const { helmValuesSchema, helmValuesYaml, xOnyxiaContext } = params;

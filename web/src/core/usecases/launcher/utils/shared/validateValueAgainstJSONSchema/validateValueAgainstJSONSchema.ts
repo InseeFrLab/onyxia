@@ -10,13 +10,13 @@ import {
     resolveEnum,
     type JSONSchemaLike as JSONSchemaLike_resolveEnum,
     type XOnyxiaContextLike as XOnyxiaContextLike_resolveEnum
-} from "../shared/resolveEnum";
+} from "../resolveEnum";
 import { same } from "evt/tools/inDepth/same";
 import {
     validateValueAgainstJSONSchema_noEnumCheck,
     type JSONSchemaLike as JSONSchemaLike_validateValueAgainstJSONSchema_noEnumCheck,
     type ValidationResult
-} from "../shared/validateValueAgainstJSONSchema_noEnumCheck";
+} from "./validateValueAgainstJSONSchema_noEnumCheck";
 
 type XOnyxiaParamsLike = {
     overwriteListEnumWith?: string;
@@ -59,6 +59,7 @@ export function validateValueAgainstJSONSchema(params: {
 
     const validationResult = validateValueAgainstJSONSchema_noEnumCheck({
         helmValuesSchema,
+        xOnyxiaContext,
         value
     });
 

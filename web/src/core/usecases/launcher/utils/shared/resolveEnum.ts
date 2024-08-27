@@ -13,7 +13,7 @@ import {
 import {
     validateValueAgainstJSONSchema_noEnumCheck,
     type JSONSchemaLike as JSONSchemaLike_validateValueAgainstJSONSchema_noEnumCheck
-} from "./validateValueAgainstJSONSchema_noEnumCheck";
+} from "./validateValueAgainstJSONSchema/validateValueAgainstJSONSchema_noEnumCheck";
 
 type XOnyxiaParamsLike = {
     overwriteListEnumWith?: string;
@@ -74,6 +74,7 @@ export function resolveEnum(params: {
         for (const option_unchecked of options_unchecked) {
             const validationResult = validateValueAgainstJSONSchema_noEnumCheck({
                 helmValuesSchema,
+                xOnyxiaContext,
                 "value": option_unchecked
             });
 
@@ -108,6 +109,7 @@ export function resolveEnum(params: {
         for (const option_unchecked of options_unchecked) {
             const validationResult = validateValueAgainstJSONSchema_noEnumCheck({
                 helmValuesSchema,
+                xOnyxiaContext,
                 "value": option_unchecked
             });
 
