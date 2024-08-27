@@ -163,7 +163,7 @@ export function validateValueAgainstJSONSchema_noEnumCheck(params: {
             case "string": {
                 const bestApproximation = `${value}`;
 
-                if (!getDoesMatchPattern(bestApproximation)) {
+                if (!getIsStringValid(bestApproximation)) {
                     return { "isValid": false, "bestApproximation": undefined };
                 }
 
@@ -293,12 +293,10 @@ export function validateValueAgainstJSONSchema_noEnumCheck(params: {
             return { "isValid": true };
         }
 
-        for (const item of value) {
-            const validationResult = validateValueAgainstJSONSchema({
+        for (const value_i of value) {
+            const validationResult = validateValueAgainstJSONSchema_noEnumCheck({
                 "helmValuesSchema": helmValuesSchema.items,
-                "xOnyxiaContext": xOnyxiaContext,
-                "value": item,
-                "doSkipEnumCheck": false
+                "value": value_i
             });
 
             if (!validationResult.isValid) {

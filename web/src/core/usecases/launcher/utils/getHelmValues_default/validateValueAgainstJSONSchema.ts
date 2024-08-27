@@ -57,32 +57,12 @@ export function validateValueAgainstJSONSchema(params: {
 }): ValidationResult {
     const { helmValuesSchema, xOnyxiaContext, value } = params;
 
-    return validateValueAgainstJSONSchema_rec({
-        helmValuesSchema,
-        xOnyxiaContext,
-        value,
-        "doSkipEnumCheck": false
-    });
-}
-
-function validateValueAgainstJSONSchema_rec(params: {
-    helmValuesSchema: JSONSchemaLike;
-    xOnyxiaContext: XOnyxiaContextLike;
-    value: Stringifyable;
-    doSkipEnumCheck: boolean;
-}): ValidationResult {
-    const { helmValuesSchema, xOnyxiaContext, value, doSkipEnumCheck } = params;
-
     const validationResult = validateValueAgainstJSONSchema_noEnumCheck({
         helmValuesSchema,
         value
     });
 
     check_is_among_options: {
-        if (doSkipEnumCheck) {
-            break check_is_among_options;
-        }
-
         const options = resolveEnum({
             helmValuesSchema,
             xOnyxiaContext

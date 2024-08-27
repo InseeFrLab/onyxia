@@ -268,7 +268,7 @@ function getRootFormFieldGroup_rec(params: {
                     return helmValuesPath[helmValuesPath.length - 1];
                 })(),
                 "description": helmValuesSchema.description,
-                "children": [],
+                "children": null, //TODO
                 "canAdd": false,
                 "canRemove": false
             });
