@@ -13,6 +13,7 @@ describe(symToStr({ mergeTemporaryRangeSliders }), () => {
             "unit": "m",
             "step": 50,
             "lowEndRange": {
+                "isReadonly": false,
                 "helmValuesPath": ["resources", "requests", "cpu"],
                 "value": 150,
                 "rangeEndSemantic": "guaranteed",
@@ -21,6 +22,7 @@ describe(symToStr({ mergeTemporaryRangeSliders }), () => {
                 "description": "The amount of cpu guaranteed"
             },
             "highEndRange": {
+                "isReadonly": false,
                 "helmValuesPath": ["resources", "limits", "cpu"],
                 "value": 30000,
                 "rangeEndSemantic": "Maximum",
@@ -33,6 +35,7 @@ describe(symToStr({ mergeTemporaryRangeSliders }), () => {
         const got = mergeTemporaryRangeSliders({
             "temporaryRangeSlider_lowerBound": createTemporaryRangeSlider({
                 "payload": {
+                    "isReadonly": false,
                     "sliderMin": 50,
                     "sliderMax": 40000,
                     "sliderStep": 50,
@@ -48,6 +51,7 @@ describe(symToStr({ mergeTemporaryRangeSliders }), () => {
             }),
             "temporaryRangeSlider_higherBound": createTemporaryRangeSlider({
                 "payload": {
+                    "isReadonly": false,
                     "sliderMin": 50,
                     "sliderMax": 40000,
                     "sliderStep": 50,

@@ -1,6 +1,6 @@
 import type { RootForm, FormFieldGroup } from "../../formTypes";
 import type { JSONSchema } from "core/ports/OnyxiaApi/JSONSchema";
-import type { StringifyableObject } from "core/tools/Stringifyable";
+import type { Stringifyable } from "core/tools/Stringifyable";
 import { getValueAtPathInObject } from "core/tools/getValueAtPathInObject";
 import { exclude } from "tsafe/exclude";
 import { mergeRangeSliders } from "./mergeRangeSliders";
@@ -17,7 +17,7 @@ assert<XOnyxiaContext extends XOnyxiaContextLike ? true : false>();
 
 export function getRootForm(params: {
     helmValuesSchema: JSONSchema;
-    helmValues: StringifyableObject;
+    helmValues: Record<string, Stringifyable>;
     xOnyxiaContext: XOnyxiaContextLike;
     dependencies: {
         chartName: string;
