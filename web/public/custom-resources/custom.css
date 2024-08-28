@@ -8,6 +8,6 @@
 }
 
 /* Hide Project Settings, divider, My Files, Data Explorer */
-nav div a:nth-of-type(4), nav div hr:nth-of-type(3), nav div a:nth-of-type(7), nav div a:nth-of-type(8) {
+nav div hr:nth-of-type(3), nav div a[ href="/project-settings"], nav div a[ href="/my-files"], nav div a[ href="/data-explorer"] {
     display: none;
 }
