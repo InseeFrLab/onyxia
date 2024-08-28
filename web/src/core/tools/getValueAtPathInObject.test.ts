@@ -28,7 +28,7 @@ it("should resolve to object when the path points to an object", () => {
 
     const expected = { "c": 42 };
 
-    expect(got).toEqual(expected); // Use toEqual for deep equality check
+    expect(got).toStrictEqual(expected); // Use toStrictEqual for deep equality check
 });
 
 it("should resolve to undefined when the path does not exist", () => {

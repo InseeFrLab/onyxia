@@ -34,7 +34,7 @@ describe(symToStr({ getHelmValues_default }), () => {
             "isChartUsingS3": false
         };
 
-        expect(got).toEqual(expected);
+        expect(got).toStrictEqual(expected);
     });
 
     it("Use x-onyxia", () => {
@@ -66,7 +66,7 @@ describe(symToStr({ getHelmValues_default }), () => {
             "isChartUsingS3": false
         };
 
-        expect(got).toEqual(expected);
+        expect(got).toStrictEqual(expected);
     });
 
     it("Use default", () => {
@@ -95,7 +95,7 @@ describe(symToStr({ getHelmValues_default }), () => {
             "isChartUsingS3": false
         };
 
-        expect(got).toEqual(expected);
+        expect(got).toStrictEqual(expected);
     });
 
     it("Use values.yaml", () => {
@@ -123,7 +123,7 @@ describe(symToStr({ getHelmValues_default }), () => {
             "isChartUsingS3": false
         };
 
-        expect(got).toEqual(expected);
+        expect(got).toStrictEqual(expected);
     });
 
     it("Use default if can't resolve in x-onyxia context", () => {
@@ -149,7 +149,7 @@ describe(symToStr({ getHelmValues_default }), () => {
             "isChartUsingS3": false
         };
 
-        expect(got).toEqual(expected);
+        expect(got).toStrictEqual(expected);
     });
 
     it("Choke if can't find a default", () => {
@@ -224,7 +224,7 @@ describe(symToStr({ getHelmValues_default }), () => {
             "isChartUsingS3": false
         };
 
-        expect(got).toEqual(expected);
+        expect(got).toStrictEqual(expected);
     });
 
     it("Fallback to default if string interpreted as number is not an integer", () => {
@@ -257,7 +257,7 @@ describe(symToStr({ getHelmValues_default }), () => {
             "isChartUsingS3": false
         };
 
-        expect(got).toEqual(expected);
+        expect(got).toStrictEqual(expected);
     });
 
     it("Interpret string as boolean", () => {
@@ -289,7 +289,7 @@ describe(symToStr({ getHelmValues_default }), () => {
             "isChartUsingS3": false
         };
 
-        expect(got).toEqual(expected);
+        expect(got).toStrictEqual(expected);
     });
 
     it("Successfully detect access to s3 context", () => {
@@ -320,7 +320,7 @@ describe(symToStr({ getHelmValues_default }), () => {
             "isChartUsingS3": true
         };
 
-        expect(got).toEqual(expected);
+        expect(got).toStrictEqual(expected);
     });
 
     it("Resolve to empty array even if no default", () => {
@@ -346,7 +346,7 @@ describe(symToStr({ getHelmValues_default }), () => {
             "isChartUsingS3": false
         };
 
-        expect(got).toEqual(expected);
+        expect(got).toStrictEqual(expected);
     });
 
     it("Choke when array, no defaults and minItems is defined", () => {

@@ -15,7 +15,7 @@ describe(symToStr({ helmValuesPathToFormFieldPath }), () => {
 
         const expected: number[] = [];
 
-        expect(got).toEqual(expected);
+        expect(got).toStrictEqual(expected);
     });
 
     it("very simple case", () => {
@@ -37,7 +37,7 @@ describe(symToStr({ helmValuesPathToFormFieldPath }), () => {
 
         const expected: number[] = [1];
 
-        expect(got).toEqual(expected);
+        expect(got).toStrictEqual(expected);
     });
 
     it("base case", () => {
@@ -76,6 +76,6 @@ describe(symToStr({ helmValuesPathToFormFieldPath }), () => {
 
         const expected = [1, 1, 0];
 
-        expect(got).toEqual(expected);
+        expect(got).toStrictEqual(expected);
     });
 });

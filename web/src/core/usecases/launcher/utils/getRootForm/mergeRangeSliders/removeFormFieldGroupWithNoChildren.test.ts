@@ -26,7 +26,7 @@ describe(symToStr({ removeFormFieldGroupWithNoChildren }), () => {
 
         const expected = children.filter(child => child.type === "field");
 
-        expect(got).toEqual(expected);
+        expect(got).toStrictEqual(expected);
     });
 
     it("more than one removal", () => {
@@ -55,7 +55,7 @@ describe(symToStr({ removeFormFieldGroupWithNoChildren }), () => {
 
         const expected = children.filter(child => child.type === "field");
 
-        expect(got).toEqual(expected);
+        expect(got).toStrictEqual(expected);
     });
 
     it("nested case", () => {
@@ -86,7 +86,7 @@ describe(symToStr({ removeFormFieldGroupWithNoChildren }), () => {
 
         const expected = children.filter(child => child.type === "field");
 
-        expect(got).toEqual(expected);
+        expect(got).toStrictEqual(expected);
     });
 
     it("case nothing to remove", () => {
@@ -120,6 +120,6 @@ describe(symToStr({ removeFormFieldGroupWithNoChildren }), () => {
 
         const expected = children;
 
-        expect(got).toEqual(expected);
+        expect(got).toStrictEqual(expected);
     });
 });

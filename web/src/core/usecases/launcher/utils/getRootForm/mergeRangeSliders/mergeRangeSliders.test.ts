@@ -69,7 +69,7 @@ describe(symToStr({ mergeRangeSliders }), () => {
 
         mergeRangeSliders({ formFieldGroup });
 
-        expect(formFieldGroup).toEqual({
+        expect(formFieldGroup).toStrictEqual({
             "type": "group",
             "helmValuesPathSegment": "root",
             "children": [
@@ -210,7 +210,7 @@ describe(symToStr({ mergeRangeSliders }), () => {
 
         mergeRangeSliders({ formFieldGroup });
 
-        expect(formFieldGroup).toEqual({
+        expect(formFieldGroup).toStrictEqual({
             "type": "group",
             "helmValuesPathSegment": "root",
             "children": [

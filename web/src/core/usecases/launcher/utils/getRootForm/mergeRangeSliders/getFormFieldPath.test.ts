@@ -34,6 +34,6 @@ describe(symToStr({ getFormFieldPath }), () => {
 
         const expected = [1, 1, 0];
 
-        expect(got).toEqual(expected);
+        expect(got).toStrictEqual(expected);
     });
 });

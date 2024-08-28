@@ -23,7 +23,6 @@ assert<keyof XOnyxiaParamsLike extends keyof XOnyxiaParams ? true : false>();
 assert<XOnyxiaParams extends XOnyxiaParamsLike ? true : false>();
 
 export type JSONSchemaLike = JSONSchemaLike_validateValueAgainstJSONSchema_noEnumCheck & {
-    type: "string" | "number" | "boolean" | "object" | "array" | "integer";
     /**
      * NOTE: Here we only check if render === "list"
      * We throw if we don't have valid options and render is "list"
@@ -46,10 +45,6 @@ export function resolveEnum(params: {
     xOnyxiaContext: XOnyxiaContextLike;
 }): Stringifyable[] | undefined {
     const { helmValuesSchema, xOnyxiaContext } = params;
-
-    if (helmValuesSchema.type !== "array") {
-        return undefined;
-    }
 
     x_onyxia_overwrite_list_enum_with: {
         if (helmValuesSchema["x-onyxia"]?.overwriteListEnumWith === undefined) {

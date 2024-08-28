@@ -11,6 +11,6 @@ describe(symToStr({ getHelmValuesPathDeeperCommonSubpath }), () => {
 
         const expected = ["a", 1];
 
-        expect(got).toEqual(expected);
+        expect(got).toStrictEqual(expected);
     });
 });

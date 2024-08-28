@@ -106,7 +106,7 @@ describe(symToStr({ getFormFieldAtPath }), () => {
             "formFieldPath": [1, 0]
         });
 
-        expect(formFieldGroup).toEqual({
+        expect(formFieldGroup).toStrictEqual({
             "type": "group",
             "children": [
                 {

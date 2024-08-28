@@ -66,6 +66,6 @@ describe(symToStr({ mergeTemporaryRangeSliders }), () => {
             })
         });
 
-        expect(got).toEqual(expected);
+        expect(got).toStrictEqual(expected);
     });
 });

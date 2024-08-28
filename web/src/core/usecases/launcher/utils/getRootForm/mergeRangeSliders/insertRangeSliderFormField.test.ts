@@ -34,7 +34,7 @@ describe(symToStr({ insertRangeSliderFormField }), () => {
             rangeSliderFormField
         });
 
-        expect(formFieldGroup).toEqual({
+        expect(formFieldGroup).toStrictEqual({
             "type": "group",
             "helmValuesPathSegment": "root",
             "children": [
@@ -68,7 +68,7 @@ describe(symToStr({ insertRangeSliderFormField }), () => {
             rangeSliderFormField
         });
 
-        expect(formFieldGroup).toEqual({
+        expect(formFieldGroup).toStrictEqual({
             "type": "group",
             "helmValuesPathSegment": "root",
             "children": [rangeSliderFormField]
