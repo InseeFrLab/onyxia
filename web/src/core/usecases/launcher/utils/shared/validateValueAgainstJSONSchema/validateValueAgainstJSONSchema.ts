@@ -1,7 +1,3 @@
-import {
-    onyxiaReservedPropertyNameInFieldDescription,
-    type XOnyxiaParams
-} from "core/ports/OnyxiaApi/XOnyxia";
 import type { JSONSchema } from "core/ports/OnyxiaApi/JSONSchema";
 import type { Stringifyable } from "core/tools/Stringifyable";
 import { assert } from "tsafe/assert";
@@ -18,30 +14,8 @@ import {
     type ValidationResult
 } from "./validateValueAgainstJSONSchema_noEnumCheck";
 
-type XOnyxiaParamsLike = {
-    overwriteListEnumWith?: string;
-};
-
-assert<keyof XOnyxiaParamsLike extends keyof XOnyxiaParams ? true : false>();
-assert<XOnyxiaParams extends XOnyxiaParamsLike ? true : false>();
-
 export type JSONSchemaLike = JSONSchemaLike_resolveEnum &
-    JSONSchemaLike_validateValueAgainstJSONSchema_noEnumCheck & {
-        type: "object" | "array" | "string" | "boolean" | "integer" | "number";
-        items?: JSONSchemaLike;
-        minItems?: number;
-        maxItems?: number;
-        minimum?: number;
-        pattern?: string;
-        render?: "textArea" | "password" | "list" | "slider";
-        enum?: Stringifyable[];
-        listEnum?: Stringifyable[];
-        sliderMax?: number;
-        sliderMin?: number;
-        sliderUnit?: string;
-        properties?: Record<string, JSONSchemaLike>;
-        [onyxiaReservedPropertyNameInFieldDescription]?: XOnyxiaParamsLike;
-    };
+    JSONSchemaLike_validateValueAgainstJSONSchema_noEnumCheck & {};
 
 assert<keyof JSONSchemaLike extends keyof JSONSchema ? true : false>();
 assert<JSONSchema extends JSONSchemaLike ? true : false>();

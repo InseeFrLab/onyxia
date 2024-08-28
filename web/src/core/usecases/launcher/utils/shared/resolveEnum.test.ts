@@ -81,11 +81,42 @@ describe(symToStr({ resolveEnum }), () => {
         expect(got).toStrictEqual(expected);
     });
 
-    it("falls back to listEnum", () => {
+    it("keeps valid options from xOnyxia even if not all valid", () => {
         const xOnyxiaContext: XOnyxiaContextLike = {
             "r": [
                 [1, 2, 3],
                 [4, "5", 6]
+            ]
+        };
+
+        const got = resolveEnum({
+            "helmValuesSchema": {
+                "type": "array",
+                "items": {
+                    "type": "number",
+                    "enum": [2, 3, 4, 5, 6]
+                },
+                "listEnum": [
+                    [2, 2, 2],
+                    [3, 3, 3]
+                ],
+                "x-onyxia": {
+                    "overwriteListEnumWith": "r"
+                }
+            },
+            xOnyxiaContext
+        });
+
+        const expected = [[4, 5, 6]];
+
+        expect(got).toStrictEqual(expected);
+    });
+
+    it("falls back to listEnum when xOnyxia resolved has 0 valid options", () => {
+        const xOnyxiaContext: XOnyxiaContextLike = {
+            r: [
+                [7, 7, 7],
+                [8, 8, 8]
             ]
         };
 
@@ -164,13 +195,42 @@ describe(symToStr({ resolveEnum }), () => {
                     "type": "string",
                     "render": "list",
                     "listEnum": [1, 2, 3],
-                    "enum": ["a", "b", 3],
-                    "x-onyxia": {
-                        "overwriteListEnumWith": "user.decodedIdToken.groups"
-                    }
+                    "enum": ["a", "b", 3]
                 },
                 xOnyxiaContext
             });
         }).toThrowError();
+    });
+
+    it("gives undefined if render isn't list and not valid", () => {
+        const xOnyxiaContext: XOnyxiaContextLike = {};
+
+        const got = resolveEnum({
+            "helmValuesSchema": {
+                "type": "number",
+                "enum": [1, 2, "not a number"]
+            },
+            xOnyxiaContext
+        });
+
+        const expected = undefined;
+
+        expect(got).toStrictEqual(expected);
+    });
+
+    it("does not approximate when not xOnyxia", () => {
+        const xOnyxiaContext: XOnyxiaContextLike = {};
+
+        const got = resolveEnum({
+            "helmValuesSchema": {
+                "type": "number",
+                "enum": [1, 2, "3"]
+            },
+            xOnyxiaContext
+        });
+
+        const expected = undefined;
+
+        expect(got).toStrictEqual(expected);
     });
 });

@@ -78,11 +78,15 @@ export function resolveEnum(params: {
                 continue;
             } else {
                 if (validationResult.bestApproximation === undefined) {
-                    break x_onyxia_overwrite_list_enum_with;
+                    continue;
                 }
 
                 options.push(validationResult.bestApproximation);
             }
+        }
+
+        if (options.length === 0) {
+            break x_onyxia_overwrite_list_enum_with;
         }
 
         return options;
@@ -113,6 +117,10 @@ export function resolveEnum(params: {
             }
 
             options.push(option_unchecked);
+        }
+
+        if (options.length === 0) {
+            continue listEnum_or_enum;
         }
 
         return options;

@@ -1,0 +1,177 @@
+import { it, expect, describe } from "vitest";
+import {
+    validateValueAgainstJSONSchema,
+    type XOnyxiaContextLike
+} from "./validateValueAgainstJSONSchema";
+import { symToStr } from "tsafe/symToStr";
+
+describe(symToStr({ validateValueAgainstJSONSchema }), () => {
+    it("base case", () => {
+        const xOnyxiaContext: XOnyxiaContextLike = {};
+
+        const got = validateValueAgainstJSONSchema({
+            "helmValuesSchema": {
+                "type": "string"
+            },
+            xOnyxiaContext,
+            value: "a"
+        });
+
+        const expected = { "isValid": true };
+
+        expect(got).toStrictEqual(expected);
+    });
+
+    it("fail case, with approx", () => {
+        const xOnyxiaContext: XOnyxiaContextLike = {};
+
+        const got = validateValueAgainstJSONSchema({
+            "helmValuesSchema": {
+                "type": "string"
+            },
+            xOnyxiaContext,
+            value: 3
+        });
+
+        const expected = { "isValid": false, "bestApproximation": "3" };
+
+        expect(got).toStrictEqual(expected);
+    });
+
+    it("fail case, no approx", () => {
+        const xOnyxiaContext: XOnyxiaContextLike = {};
+
+        const got = validateValueAgainstJSONSchema({
+            "helmValuesSchema": {
+                "type": "number"
+            },
+            xOnyxiaContext,
+            value: "not something that can be converted to a number"
+        });
+
+        const expected = { "isValid": false, "bestApproximation": undefined };
+
+        expect(got).toStrictEqual(expected);
+    });
+
+    it("approx boolean", () => {
+        const xOnyxiaContext: XOnyxiaContextLike = {};
+
+        const got = validateValueAgainstJSONSchema({
+            "helmValuesSchema": {
+                "type": "boolean"
+            },
+            xOnyxiaContext,
+            value: "true"
+        });
+
+        const expected = { "isValid": false, "bestApproximation": true };
+
+        expect(got).toStrictEqual(expected);
+    });
+
+    it("array base case", () => {
+        const xOnyxiaContext: XOnyxiaContextLike = {};
+
+        const got = validateValueAgainstJSONSchema({
+            "helmValuesSchema": {
+                "type": "array",
+                "items": {
+                    "type": "string"
+                }
+            },
+            xOnyxiaContext,
+            value: ["a", "b", "c"]
+        });
+
+        const expected = { "isValid": true };
+
+        expect(got).toStrictEqual(expected);
+    });
+
+    it("array base case - with approx", () => {
+        const xOnyxiaContext: XOnyxiaContextLike = {};
+
+        const got = validateValueAgainstJSONSchema({
+            "helmValuesSchema": {
+                "type": "array",
+                "items": {
+                    "type": "string"
+                }
+            },
+            xOnyxiaContext,
+            value: ["a", "b", 3]
+        });
+
+        const expected = { "isValid": false, "bestApproximation": ["a", "b", "3"] };
+
+        expect(got).toStrictEqual(expected);
+    });
+
+    it("array enum", () => {
+        const xOnyxiaContext: XOnyxiaContextLike = {
+            "r": ["a", "b", "c", "d"]
+        };
+
+        const got = validateValueAgainstJSONSchema({
+            "helmValuesSchema": {
+                "type": "array",
+                "items": {
+                    "type": "string",
+                    "x-onyxia": {
+                        "overwriteListEnumWith": "r"
+                    }
+                }
+            },
+            xOnyxiaContext,
+            value: ["a", "b", "c"]
+        });
+
+        const expected = { "isValid": true };
+
+        expect(got).toStrictEqual(expected);
+    });
+
+    it("array enum - not valid", () => {
+        const xOnyxiaContext: XOnyxiaContextLike = {
+            "r": ["a", "b"]
+        };
+
+        const got = validateValueAgainstJSONSchema({
+            "helmValuesSchema": {
+                "type": "array",
+                "items": {
+                    "type": "string",
+                    "x-onyxia": {
+                        "overwriteListEnumWith": "r"
+                    }
+                }
+            },
+            xOnyxiaContext,
+            value: ["a", "b", "c"]
+        });
+
+        const expected = { "isValid": false, "bestApproximation": undefined };
+
+        expect(got).toStrictEqual(expected);
+    });
+
+    it("fails is not matching pattern", () => {
+        const xOnyxiaContext: XOnyxiaContextLike = {};
+
+        const got = validateValueAgainstJSONSchema({
+            "helmValuesSchema": {
+                "type": "string",
+                "pattern": "^[0-9]+$"
+            },
+            xOnyxiaContext,
+            value: "a"
+        });
+
+        const expected = { "isValid": false, "bestApproximation": undefined };
+
+        expect(got).toStrictEqual(expected);
+    });
+
+    //TODO: Test max items, min items maximum, minimum and slider ranges.
+});
