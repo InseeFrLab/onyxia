@@ -552,7 +552,7 @@ export const translations: Translations<"no"> = {
                 {sourceUrls.dockerImageSourceUrl !== undefined && (
                     <>
                         {" "}
-                        Det er basert på Docker-malen{" "}
+                        Den er basert på Docker-malen{" "}
                         {
                             <MuiLink
                                 href={sourceUrls.dockerImageSourceUrl}
