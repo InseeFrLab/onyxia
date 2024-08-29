@@ -11,3 +11,8 @@
 nav div hr:nth-of-type(3), nav div a[ href="/project-settings"], nav div a[ href="/my-files"], nav div a[ href="/data-explorer"] {
     display: none;
 }
+
+/* Hide terms of serivces link in footer, and redundant spacing */
+footer a[ href="/terms"], footer div:nth-of-type(3) {
+    display: none;
+}
