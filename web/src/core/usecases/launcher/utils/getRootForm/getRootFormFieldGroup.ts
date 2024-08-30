@@ -50,9 +50,7 @@ export type JSONSchemaLike = JSONSchemaLike_resolveEnum & {
 assert<keyof JSONSchemaLike extends keyof JSONSchema ? true : false>();
 assert<JSONSchema extends JSONSchemaLike ? true : false>();
 
-export type XOnyxiaContextLike = {
-    s3: unknown;
-};
+export type XOnyxiaContextLike = {};
 
 assert<XOnyxiaContext extends XOnyxiaContextLike ? true : false>();
 
