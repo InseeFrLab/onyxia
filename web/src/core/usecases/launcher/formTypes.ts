@@ -16,7 +16,7 @@ export type RootForm = {
 
 export type FormFieldGroup = {
     type: "group";
-    helmValuesPathSegment: string | number;
+    helmValuesPath: (string | number)[];
     description: string | undefined;
 
     children: (FormField | FormFieldGroup)[];

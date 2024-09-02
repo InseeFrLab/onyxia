@@ -7,7 +7,7 @@ describe(symToStr({ helmValuesPathToFormFieldPath }), () => {
         const got = helmValuesPathToFormFieldPath({
             "formFieldGroup": {
                 "type": "group",
-                "helmValuesPathSegment": "root",
+                "helmValuesPath": [],
                 "children": []
             },
             "helmValuesPathToGroup": []
@@ -22,12 +22,12 @@ describe(symToStr({ helmValuesPathToFormFieldPath }), () => {
         const got = helmValuesPathToFormFieldPath({
             "formFieldGroup": {
                 "type": "group",
-                "helmValuesPathSegment": "root",
+                "helmValuesPath": [],
                 "children": [
                     { "type": "field" },
                     {
                         "type": "group",
-                        "helmValuesPathSegment": "a",
+                        "helmValuesPath": ["a"],
                         "children": []
                     }
                 ]
@@ -44,25 +44,25 @@ describe(symToStr({ helmValuesPathToFormFieldPath }), () => {
         const got = helmValuesPathToFormFieldPath({
             "formFieldGroup": {
                 "type": "group",
-                "helmValuesPathSegment": "root",
+                "helmValuesPath": [],
                 "children": [
                     {
                         "type": "field"
                     },
                     {
                         "type": "group",
-                        "helmValuesPathSegment": "a",
+                        "helmValuesPath": ["a"],
                         "children": [
                             {
                                 "type": "field"
                             },
                             {
                                 "type": "group",
-                                "helmValuesPathSegment": 1,
+                                "helmValuesPath": ["a", 1],
                                 "children": [
                                     {
                                         "type": "group",
-                                        "helmValuesPathSegment": "c",
+                                        "helmValuesPath": ["a", 1, "c"],
                                         "children": []
                                     }
                                 ]

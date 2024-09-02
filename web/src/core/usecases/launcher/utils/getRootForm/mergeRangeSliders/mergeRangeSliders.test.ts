@@ -9,15 +9,15 @@ describe(symToStr({ mergeRangeSliders }), () => {
     it("base case", () => {
         const formFieldGroup: FormFieldGroupLike = {
             "type": "group",
-            "helmValuesPathSegment": "root",
+            "helmValuesPath": [],
             "children": [
                 {
                     "type": "group",
-                    "helmValuesPathSegment": "resources",
+                    "helmValuesPath": ["resources"],
                     "children": [
                         {
                             "type": "group",
-                            "helmValuesPathSegment": "requests",
+                            "helmValuesPath": ["resources", "requests"],
                             "children": [
                                 createTemporaryRangeSlider({
                                     "payload": {
@@ -43,7 +43,7 @@ describe(symToStr({ mergeRangeSliders }), () => {
                         },
                         {
                             "type": "group",
-                            "helmValuesPathSegment": "limits",
+                            "helmValuesPath": ["resources", "limits"],
                             "children": [
                                 createTemporaryRangeSlider({
                                     "payload": {
@@ -71,11 +71,11 @@ describe(symToStr({ mergeRangeSliders }), () => {
 
         expect(formFieldGroup).toStrictEqual({
             "type": "group",
-            "helmValuesPathSegment": "root",
+            "helmValuesPath": [],
             "children": [
                 {
                     "type": "group",
-                    "helmValuesPathSegment": "resources",
+                    "helmValuesPath": ["resources"],
                     "children": [
                         id<FormField.RangeSlider>({
                             "type": "field",
@@ -111,15 +111,15 @@ describe(symToStr({ mergeRangeSliders }), () => {
     it("with two range slider", () => {
         const formFieldGroup: FormFieldGroupLike = {
             "type": "group",
-            "helmValuesPathSegment": "root",
+            "helmValuesPath": [],
             "children": [
                 {
                     "type": "group",
-                    "helmValuesPathSegment": "resources",
+                    "helmValuesPath": ["resources"],
                     "children": [
                         {
                             "type": "group",
-                            "helmValuesPathSegment": "requests",
+                            "helmValuesPath": ["resources", "requests"],
                             "children": [
                                 createTemporaryRangeSlider({
                                     "payload": {
@@ -165,7 +165,7 @@ describe(symToStr({ mergeRangeSliders }), () => {
                         },
                         {
                             "type": "group",
-                            "helmValuesPathSegment": "limits",
+                            "helmValuesPath": ["resources", "limits"],
                             "children": [
                                 createTemporaryRangeSlider({
                                     "payload": {
@@ -212,11 +212,11 @@ describe(symToStr({ mergeRangeSliders }), () => {
 
         expect(formFieldGroup).toStrictEqual({
             "type": "group",
-            "helmValuesPathSegment": "root",
+            "helmValuesPath": [],
             "children": [
                 {
                     "type": "group",
-                    "helmValuesPathSegment": "resources",
+                    "helmValuesPath": ["resources"],
                     "children": [
                         id<FormField.RangeSlider>({
                             "type": "field",

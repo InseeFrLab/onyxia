@@ -64,7 +64,7 @@ describe(symToStr({ getRootForm }), () => {
             "main": [
                 {
                     "type": "group",
-                    "helmValuesPathSegment": "services",
+                    "helmValuesPath": ["services"],
                     "description": undefined,
                     "children": [
                         {

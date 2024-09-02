@@ -33,7 +33,7 @@ describe(symToStr({ getRootFormFieldGroup }), () => {
 
         const expected: FormFieldGroup = {
             "type": "group",
-            "helmValuesPathSegment": "root",
+            "helmValuesPath": [],
             "description": undefined,
             "children": [
                 {
@@ -98,7 +98,7 @@ describe(symToStr({ getRootFormFieldGroup }), () => {
 
         const expected: FormFieldGroup = {
             "type": "group",
-            "helmValuesPathSegment": "root",
+            "helmValuesPath": [],
             "description": undefined,
             "children": [
                 {
@@ -115,12 +115,12 @@ describe(symToStr({ getRootFormFieldGroup }), () => {
                 },
                 {
                     "type": "group",
-                    "helmValuesPathSegment": "b",
+                    "helmValuesPath": ["b"],
                     "description": undefined,
                     "children": [
                         {
                             "type": "group",
-                            "helmValuesPathSegment": 0,
+                            "helmValuesPath": ["b", 0],
                             "description": undefined,
                             "children": [
                                 {

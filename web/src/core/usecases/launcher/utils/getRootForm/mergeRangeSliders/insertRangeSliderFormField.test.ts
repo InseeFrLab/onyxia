@@ -10,11 +10,11 @@ describe(symToStr({ insertRangeSliderFormField }), () => {
     it("base case", () => {
         const formFieldGroup: FormFieldGroupLike = {
             "type": "group",
-            "helmValuesPathSegment": "root",
+            "helmValuesPath": [],
             "children": [
                 {
                     "type": "group",
-                    "helmValuesPathSegment": "resources",
+                    "helmValuesPath": ["resources"],
                     "children": []
                 }
             ]
@@ -36,11 +36,11 @@ describe(symToStr({ insertRangeSliderFormField }), () => {
 
         expect(formFieldGroup).toStrictEqual({
             "type": "group",
-            "helmValuesPathSegment": "root",
+            "helmValuesPath": [],
             "children": [
                 {
                     "type": "group",
-                    "helmValuesPathSegment": "resources",
+                    "helmValuesPath": ["resources"],
                     "children": [rangeSliderFormField]
                 }
             ]
@@ -50,7 +50,7 @@ describe(symToStr({ insertRangeSliderFormField }), () => {
     it("root case", () => {
         const formFieldGroup: FormFieldGroupLike = {
             "type": "group",
-            "helmValuesPathSegment": "root",
+            "helmValuesPath": [],
             "children": []
         };
 
@@ -70,7 +70,7 @@ describe(symToStr({ insertRangeSliderFormField }), () => {
 
         expect(formFieldGroup).toStrictEqual({
             "type": "group",
-            "helmValuesPathSegment": "root",
+            "helmValuesPath": [],
             "children": [rangeSliderFormField]
         });
     });

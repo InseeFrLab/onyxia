@@ -61,7 +61,7 @@ export function getRootForm(params: {
         const child_extracted = children
             .map(children => (children.type === "group" ? children : undefined))
             .filter(exclude(undefined))
-            .find(children => children.helmValuesPathSegment === groupName);
+            .find(children => children.helmValuesPath.slice(-1)[0] === groupName);
 
         if (child_extracted !== undefined) {
             children.splice(children.indexOf(child_extracted), 1);

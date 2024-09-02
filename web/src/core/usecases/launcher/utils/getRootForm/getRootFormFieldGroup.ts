@@ -351,10 +351,7 @@ function getRootFormFieldGroup_rec(params: {
             assert(helmValuesSchema.properties !== undefined);
             return id<FormFieldGroup>({
                 "type": "group",
-                "helmValuesPathSegment":
-                    helmValuesPath.length === 0
-                        ? "root"
-                        : helmValuesPath[helmValuesPath.length - 1],
+                helmValuesPath,
                 "description": helmValuesSchema.description,
                 "children": Object.entries(helmValuesSchema.properties)
                     .map(([segment, helmValuesSchema_child]) =>
@@ -384,11 +381,7 @@ function getRootFormFieldGroup_rec(params: {
 
             return id<FormFieldGroup>({
                 "type": "group",
-                "helmValuesPathSegment": (() => {
-                    assert(helmValuesPath.length !== 0);
-
-                    return helmValuesPath[helmValuesPath.length - 1];
-                })(),
+                helmValuesPath,
                 "description": helmValuesSchema.description,
                 "children": values
                     .map((...[, index]) =>
