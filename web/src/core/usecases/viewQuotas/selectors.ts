@@ -38,7 +38,10 @@ const allQuotas = createSelector(readyState, state => {
         .map(name => {
             const { spec, usage } = quotas[name];
 
-            const ratio = computeQuotaUsageRatio({ "used": usage, "total": spec });
+            const ratio = computeQuotaUsageRatio({
+                "used": usage,
+                "total": spec
+            });
 
             if (ratio === undefined) {
                 return undefined;

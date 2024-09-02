@@ -257,11 +257,11 @@ export function createOnyxiaApi(params: {
                                     ?.certManagerClusterIssuer
                         },
                         "openshiftSCC":
-                            apiRegion.openshiftSCC === undefined
+                            apiRegion.services.openshiftSCC === undefined
                                 ? undefined
                                 : {
-                                      "scc": apiRegion.openshiftSCC.scc,
-                                      "enabled": apiRegion.openshiftSCC.enabled
+                                      "scc": apiRegion.services.openshiftSCC.scc,
+                                      "enabled": apiRegion.services.openshiftSCC.enabled
                                   }
                     })
                 );
@@ -279,15 +279,47 @@ export function createOnyxiaApi(params: {
                 );
 
                 return {
-                    "catalogs": data.catalogs.map(
-                        (apiCatalog): Catalog => ({
-                            "id": apiCatalog.id,
-                            "name": apiCatalog.name ?? apiCatalog.id,
-                            "repositoryUrl": apiCatalog.location,
-                            "description": apiCatalog.description,
-                            "isHidden": apiCatalog.status !== "PROD"
-                        })
-                    ),
+                    "catalogs": data.catalogs
+                        .map(apiCatalog => ({
+                            apiCatalog,
+                            "visibility": (() => {
+                                if (
+                                    !apiCatalog.visible.project &&
+                                    !apiCatalog.visible.user
+                                ) {
+                                    return undefined;
+                                }
+
+                                if (
+                                    apiCatalog.visible.project &&
+                                    apiCatalog.visible.user
+                                ) {
+                                    return "always" as const;
+                                }
+
+                                if (apiCatalog.visible.project) {
+                                    return "only in groups projects" as const;
+                                }
+
+                                return "ony in personal projects" as const;
+                            })()
+                        }))
+                        .map(({ apiCatalog, visibility }) =>
+                            visibility === undefined
+                                ? undefined
+                                : { apiCatalog, visibility }
+                        )
+                        .filter(exclude(undefined))
+                        .map(
+                            ({ apiCatalog, visibility }): Catalog => ({
+                                "id": apiCatalog.id,
+                                "name": apiCatalog.name ?? apiCatalog.id,
+                                "repositoryUrl": apiCatalog.location,
+                                "description": apiCatalog.description,
+                                "isProduction": apiCatalog.status === "PROD",
+                                visibility
+                            })
+                        ),
                     "chartsByCatalogId": Object.fromEntries(
                         data.catalogs.map(apiCatalog => {
                             const {

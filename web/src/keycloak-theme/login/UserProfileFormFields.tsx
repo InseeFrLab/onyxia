@@ -15,6 +15,9 @@ import type { I18n } from "./i18n";
 import { TextField } from "onyxia-ui/TextField";
 import { capitalize } from "tsafe/capitalize";
 import { regExpStrToEmailDomains } from "./emailDomainAcceptListHelper";
+import { createResolveLocalizedString } from "i18nifty/LocalizedString";
+import { createMarkdown } from "onyxia-ui/Markdown";
+import { env } from "env";
 
 export default function UserProfileFormFields(
     props: UserProfileFormFieldsProps<KcContext, I18n>
@@ -442,6 +445,12 @@ function CustomInputTag(
                         break allowed_email_domains;
                     }
 
+                    if (!env.LIST_ALLOWED_EMAIL_DOMAINS) {
+                        return isErrored
+                            ? msg("this email domain is not allowed")
+                            : undefined;
+                    }
+
                     return msg("allowed email domains");
                 }
 
@@ -501,11 +510,57 @@ function CustomInputTag(
 
                 if (attribute.name === "email") {
 
-                    try {
-                        return regExpStrToEmailDomains(pattern).join(", ");
-                    } catch {
-                        return pattern;
+                    const emailDomainListOrPattern = (() => {
+                        try {
+                            return regExpStrToEmailDomains(pattern).join(", ");
+                        } catch {
+                            return pattern;
+                        }
+                    })();
+
+                    const isErrored = displayableErrors_props.length !== 0;
+
+                    if( !env.LIST_ALLOWED_EMAIL_DOMAINS && !isErrored ){
+                        return undefined;
                     }
+
+                    if( env.CONTACT_FOR_ADDING_EMAIL_DOMAIN === undefined && !env.LIST_ALLOWED_EMAIL_DOMAINS ){
+                        return undefined;
+                    }
+
+                    return (
+                        <>
+                            {env.CONTACT_FOR_ADDING_EMAIL_DOMAIN !== undefined && (
+                                <>
+                                    {(() => {
+
+                                        const { resolveLocalizedStringDetailed } = createResolveLocalizedString({
+                                            "currentLanguage": i18n.currentLanguageTag,
+                                            "fallbackLanguage": "en",
+                                            "labelWhenMismatchingLanguage": true
+                                        });
+
+                                        const { Markdown } = createMarkdown({
+                                            "getLinkProps": ({ href }) => ({
+                                                href,
+                                                "target": "_blank"
+                                            })
+                                        });
+
+                                        const { str, langAttrValue } = resolveLocalizedStringDetailed(env.CONTACT_FOR_ADDING_EMAIL_DOMAIN);
+
+                                        return (
+                                            <Markdown lang={langAttrValue}>
+                                                {str}
+                                            </Markdown>
+                                        );
+
+                                    })()}
+                                </>
+                            )}
+                            {env.LIST_ALLOWED_EMAIL_DOMAINS && emailDomainListOrPattern}
+                        </>
+                    );
 
                 }
 

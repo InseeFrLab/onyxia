@@ -25,18 +25,26 @@ export function computeQuotaUsageRatio(params: {
             break cpu_resource_unit;
         }
 
-        if (!cpuResourceUnit.test(used)) {
-            console.warn(`Invalid used: ${used} for total: ${total}`);
-            return undefined;
-        }
-
         const parseCpuResourceUnit = (value: string) => {
             const match = value.match(cpuResourceUnit)!;
 
             const n = Number(match[1]);
 
-            return match[2] === "m" ? n / 1000 : n;
+            return match[2].toLowerCase() === "m" ? n / 1000 : n;
         };
+
+        if (
+            !total.endsWith("m") &&
+            !used.endsWith("m") &&
+            parseCpuResourceUnit(total) > 1024
+        ) {
+            break cpu_resource_unit;
+        }
+
+        if (!cpuResourceUnit.test(used)) {
+            console.warn(`Invalid used: ${used} for total: ${total}`);
+            return undefined;
+        }
 
         return parseCpuResourceUnit(used) / parseCpuResourceUnit(total);
     }

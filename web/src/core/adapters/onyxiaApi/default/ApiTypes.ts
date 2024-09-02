@@ -77,6 +77,10 @@ export type ApiTypes = {
                     };
                     URL?: string;
                 };
+                openshiftSCC?: {
+                    scc: string;
+                    enabled: boolean;
+                };
             };
             data?: {
                 S3?: {
@@ -140,10 +144,6 @@ export type ApiTypes = {
                 cacerts: string;
                 pathToCaBundle: string;
             };
-            openshiftSCC?: {
-                scc: string;
-                enabled: boolean;
-            };
         }[];
         oidcConfiguration?: {
             issuerURI: string;
@@ -171,6 +171,10 @@ export type ApiTypes = {
                 >;
             };
             highlightedCharts?: string[];
+            visible: {
+                user: boolean;
+                project: boolean;
+            };
         }[];
     };
     "/public/catalogs/${catalogId}/charts/${chartName}/versions/${chartVersion}": {

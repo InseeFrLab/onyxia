@@ -63,7 +63,9 @@ export const ReadmeDialog = memo((props: Props) => {
             body={
                 isOpen && (
                     <div className={classes.dialogBody}>
-                        <Markdown lang="und">{postInstallInstructions}</Markdown>
+                        <Markdown lang="und">
+                            {postInstallInstructions.split("===VALUES===")[0]}
+                        </Markdown>
                         {!isReady && (
                             <div className={classes.clusterEventWrapper}>
                                 <LinearProgress />
@@ -125,21 +127,48 @@ function extractServicePasswordFromPostInstallInstructions(params: {
     postInstallInstructions: string;
     projectServicePassword: string;
 }): string | undefined {
-    const { postInstallInstructions, projectServicePassword } = params;
+    const {
+        postInstallInstructions: postInstallInstructionsAndValues,
+        projectServicePassword
+    } = params;
 
-    if (postInstallInstructions.includes(projectServicePassword)) {
+    const [postInstallInstructions, valuesStr] =
+        postInstallInstructionsAndValues.split("===VALUES===");
+
+    from_notes: {
+        if (postInstallInstructions.includes(projectServicePassword)) {
+            return projectServicePassword;
+        }
+
+        const regex = /password: ?([^\n ]+)/i;
+
+        const match = postInstallInstructions.match(regex);
+
+        if (match === null) {
+            break from_notes;
+        }
+
+        return match[1];
+    }
+
+    if (valuesStr.includes(projectServicePassword)) {
         return projectServicePassword;
     }
 
-    const regex = /password: ?([^\n ]+)/i;
+    let extractedPassword: string | undefined = undefined;
 
-    const match = postInstallInstructions.match(regex);
+    JSON.stringify(JSON.parse(valuesStr) as Record<string, string>, (key, value) => {
+        if (key.toLowerCase().endsWith("password")) {
+            extractedPassword = value;
+        }
+        return value;
+    });
 
-    if (match === null) {
-        return undefined;
+    if (extractedPassword !== undefined) {
+        return extractedPassword;
     }
 
-    return match[1];
+    return undefined;
 }
 
 const useStyles = tss

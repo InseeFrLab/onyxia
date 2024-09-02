@@ -137,8 +137,11 @@ export default function MySecrets(props: Props) {
             })
     );
 
-    const onCopyPath = useConstCallback(({ path }: Param0<ExplorerProps["onCopyPath"]>) =>
-        copyToClipboard(path.split("/").slice(2).join("/"))
+    const onCopyPath = useConstCallback(
+        ({ path }: Param0<ExplorerProps["onCopyPath"]>) => {
+            const [_root, ...rest] = path.split("/");
+            copyToClipboard(rest.join("/"));
+        }
     );
 
     const { classes, cx } = useStyles();
