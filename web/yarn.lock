@@ -5098,10 +5098,10 @@ vfile@^4.0.0:
     unist-util-stringify-position "^2.0.0"
     vfile-message "^2.0.0"
 
-vite-envs@^4.3.3:
-  version "4.3.3"
-  resolved "https://registry.yarnpkg.com/vite-envs/-/vite-envs-4.3.3.tgz#6ff58402338972dd086e629078543e6767849fe0"
-  integrity sha512-cdLUU/yNLooO8VFQ7XUSRO97Pe3YYkR+IpRcEK6lludfTKrDHYPm9Q8dfPdQLHOe3KxRD8/s9QOixoTNiAxl2w==
+vite-envs@^4.4.2:
+  version "4.4.2"
+  resolved "https://registry.yarnpkg.com/vite-envs/-/vite-envs-4.4.2.tgz#dbb2eb229799c561731c810a528c52d60387683f"
+  integrity sha512-t1SrIEIjp8ErteuOd0IQVc5jp3LPbUXK+462b2Oas4T4nxlfAszWb2jv800afV3l4bKgGjsRl0CssOcPmRVXpw==
 
 vite-plugin-commonjs@^0.10.1:
   version "0.10.1"
