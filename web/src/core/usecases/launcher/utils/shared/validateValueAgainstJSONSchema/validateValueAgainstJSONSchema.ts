@@ -49,7 +49,7 @@ export function validateValueAgainstJSONSchema(params: {
 
         const valueToTest = validationResult.isValid
             ? value
-            : validationResult.bestApproximation;
+            : validationResult.reasonableApproximation;
 
         if (valueToTest === undefined) {
             break check_is_among_options;
@@ -60,7 +60,7 @@ export function validateValueAgainstJSONSchema(params: {
 
         return {
             "isValid": false,
-            "bestApproximation": undefined
+            "reasonableApproximation": undefined
         };
     }
 

@@ -140,10 +140,10 @@ function getHelmValues_default_rec(params: {
         });
 
         if (!validationResult.isValid) {
-            if (validationResult.bestApproximation === undefined) {
+            if (validationResult.reasonableApproximation === undefined) {
                 break use_x_onyxia_overwriteDefaultWith;
             }
-            return validationResult.bestApproximation;
+            return validationResult.reasonableApproximation;
         }
 
         return resolvedValue;

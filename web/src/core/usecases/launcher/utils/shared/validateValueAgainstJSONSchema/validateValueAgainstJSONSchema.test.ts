@@ -33,7 +33,7 @@ describe(symToStr({ validateValueAgainstJSONSchema }), () => {
             "value": 3
         });
 
-        const expected = { "isValid": false, "bestApproximation": "3" };
+        const expected = { "isValid": false, "reasonableApproximation": "3" };
 
         expect(got).toStrictEqual(expected);
     });
@@ -49,7 +49,7 @@ describe(symToStr({ validateValueAgainstJSONSchema }), () => {
             "value": "not something that can be converted to a number"
         });
 
-        const expected = { "isValid": false, "bestApproximation": undefined };
+        const expected = { "isValid": false, "reasonableApproximation": undefined };
 
         expect(got).toStrictEqual(expected);
     });
@@ -65,7 +65,7 @@ describe(symToStr({ validateValueAgainstJSONSchema }), () => {
             "value": "true"
         });
 
-        const expected = { "isValid": false, "bestApproximation": true };
+        const expected = { "isValid": false, "reasonableApproximation": true };
 
         expect(got).toStrictEqual(expected);
     });
@@ -103,7 +103,7 @@ describe(symToStr({ validateValueAgainstJSONSchema }), () => {
             "value": ["a", "b", 3]
         });
 
-        const expected = { "isValid": false, "bestApproximation": ["a", "b", "3"] };
+        const expected = { "isValid": false, "reasonableApproximation": ["a", "b", "3"] };
 
         expect(got).toStrictEqual(expected);
     });
@@ -151,7 +151,7 @@ describe(symToStr({ validateValueAgainstJSONSchema }), () => {
             "value": ["a", "b", "c"]
         });
 
-        const expected = { "isValid": false, "bestApproximation": undefined };
+        const expected = { "isValid": false, "reasonableApproximation": undefined };
 
         expect(got).toStrictEqual(expected);
     });
@@ -168,7 +168,7 @@ describe(symToStr({ validateValueAgainstJSONSchema }), () => {
             "value": "a"
         });
 
-        const expected = { "isValid": false, "bestApproximation": undefined };
+        const expected = { "isValid": false, "reasonableApproximation": undefined };
 
         expect(got).toStrictEqual(expected);
     });
@@ -205,7 +205,7 @@ describe(symToStr({ validateValueAgainstJSONSchema }), () => {
             value: ["a", "b", "c"]
         });
 
-        const expected = { "isValid": false, "bestApproximation": undefined };
+        const expected = { "isValid": false, "reasonableApproximation": undefined };
 
         expect(got).toStrictEqual(expected);
     });
@@ -225,7 +225,7 @@ describe(symToStr({ validateValueAgainstJSONSchema }), () => {
             "value": ["a"]
         });
 
-        const expected = { "isValid": false, "bestApproximation": undefined };
+        const expected = { "isValid": false, "reasonableApproximation": undefined };
 
         expect(got).toStrictEqual(expected);
     });
@@ -260,7 +260,7 @@ describe(symToStr({ validateValueAgainstJSONSchema }), () => {
             "value": 1
         });
 
-        const expected = { "isValid": false, "bestApproximation": undefined };
+        const expected = { "isValid": false, "reasonableApproximation": undefined };
 
         expect(got).toStrictEqual(expected);
     });
@@ -315,7 +315,7 @@ describe(symToStr({ validateValueAgainstJSONSchema }), () => {
             "value": "4.1Gi"
         });
 
-        const expected = { "isValid": false, "bestApproximation": undefined };
+        const expected = { "isValid": false, "reasonableApproximation": undefined };
 
         expect(got).toStrictEqual(expected);
     });
@@ -334,7 +334,7 @@ describe(symToStr({ validateValueAgainstJSONSchema }), () => {
             "value": "1.9Gi"
         });
 
-        const expected = { "isValid": false, "bestApproximation": undefined };
+        const expected = { "isValid": false, "reasonableApproximation": undefined };
 
         expect(got).toStrictEqual(expected);
     });
@@ -370,7 +370,7 @@ describe(symToStr({ validateValueAgainstJSONSchema }), () => {
             "value": 4.1
         });
 
-        const expected = { "isValid": false, "bestApproximation": undefined };
+        const expected = { "isValid": false, "reasonableApproximation": undefined };
 
         expect(got).toStrictEqual(expected);
     });

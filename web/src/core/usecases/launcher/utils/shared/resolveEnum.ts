@@ -77,11 +77,11 @@ export function resolveEnum(params: {
                 options.push(option_unchecked);
                 continue;
             } else {
-                if (validationResult.bestApproximation === undefined) {
+                if (validationResult.reasonableApproximation === undefined) {
                     continue;
                 }
 
-                options.push(validationResult.bestApproximation);
+                options.push(validationResult.reasonableApproximation);
             }
         }
 
