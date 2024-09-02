@@ -196,11 +196,11 @@ export function validateValueAgainstJSONSchema_noEnumCheck(params: {
                     "bestApproximation": value !== 0
                 };
             case "integer":
-                if (value !== Math.round(value)) {
+            case "number":
+                if (!getIsNumberValid(value)) {
                     return { "isValid": false, "bestApproximation": undefined };
                 }
-                return { "isValid": true };
-            case "number":
+
                 return { "isValid": true };
         }
         assert<Equals<typeof helmValuesSchema.type, never>>();
