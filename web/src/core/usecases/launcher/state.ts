@@ -5,13 +5,14 @@ import type { LocalizedString } from "core/ports/OnyxiaApi";
 import { createUsecaseActions } from "clean-architecture";
 import type { FormFieldValue } from "./formTypes";
 import {
-    type StringifyableObject,
+    type Stringifyable,
     type StringifyableAtomic,
     assignValueAtPath
 } from "core/tools/Stringifyable";
 import structuredClone from "@ungap/structured-clone";
 import type { Omit } from "core/tools/Omit";
 import type { XOnyxiaContext } from "core/ports/OnyxiaApi";
+import { updateHelmValues } from "./utils/updateHelmValues";
 
 type State = State.NotInitialized | State.Ready;
 
@@ -47,8 +48,8 @@ export declare namespace State {
             chartVersion: string;
         }[];
         helmValuesSchema: JSONSchema;
-        helmValues_default: StringifyableObject;
-        helmValues: StringifyableObject;
+        helmValues_default: Record<string, Stringifyable>;
+        helmValues: Record<string, Stringifyable>;
 
         chartIconUrl: string | undefined;
         catalogRepositoryUrl: string;
@@ -119,25 +120,66 @@ export const { reducer, actions } = createUsecaseActions({
 
                 const { helmValues, helmValuesSchema } = state;
 
-                console.log({ helmValues, helmValuesSchema });
-                // TODO: Implement this
-
-                /*
-                (function callee(path, object: any){
-
-                    assert(object instanceof Object || object instanceof Array);
-
-                    const [first, ...rest]= path;
-
-                    if(rest.length === 0){
-                        object[first] = value;
-                        return;
+                updateHelmValues({
+                    helmValues,
+                    helmValuesSchema,
+                    "action": {
+                        "name": "update value",
+                        formFieldValue
                     }
+                });
+            },
+            "arrayItemAdded": (
+                state,
+                {
+                    payload
+                }: {
+                    payload: {
+                        helmValuesPath: (string | number)[];
+                    };
+                }
+            ) => {
+                const { helmValuesPath } = payload;
 
-                    callee(rest, object[first]);
+                assert(state.stateDescription === "ready");
 
-                })(helmValuesPath, state.helmValues);
-                */
+                const { helmValues, helmValuesSchema } = state;
+
+                updateHelmValues({
+                    helmValues,
+                    helmValuesSchema,
+                    "action": {
+                        "name": "add array item",
+                        helmValuesPath
+                    }
+                });
+            },
+            "arrayItemRemoved": (
+                state,
+                {
+                    payload
+                }: {
+                    payload: {
+                        helmValuesPath: (string | number)[];
+                        index: number;
+                    };
+                }
+            ) => {
+                const { helmValuesPath, index } = payload;
+
+                assert(state.stateDescription === "ready");
+
+                const { helmValues, helmValuesSchema } = state;
+
+                updateHelmValues({
+                    helmValues,
+                    helmValuesSchema,
+                    "action": {
+                        "name": "remove array item",
+                        helmValuesPath,
+                        index
+                    }
+                });
             },
             "resetToNotInitialized": () =>
                 id<State.NotInitialized>({

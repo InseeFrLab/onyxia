@@ -340,6 +340,24 @@ export const thunks = {
 
             dispatch(actions.friendlyNameChanged({ friendlyName }));
         },
+    "addArrayItem":
+        (params: { helmValuesPath: (string | number)[] }) =>
+        (...args) => {
+            const { helmValuesPath } = params;
+
+            const [dispatch] = args;
+
+            dispatch(actions.arrayItemAdded({ helmValuesPath }));
+        },
+    "removeArrayItem":
+        (params: { helmValuesPath: (string | number)[]; index: number }) =>
+        (...args) => {
+            const { helmValuesPath, index } = params;
+
+            const [dispatch] = args;
+
+            dispatch(actions.arrayItemRemoved({ helmValuesPath, index }));
+        },
     "changeIsShared":
         (params: { isShared: boolean }) =>
         (...args) => {
