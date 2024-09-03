@@ -15,7 +15,7 @@ import { Evt } from "evt";
 import type { StringifyableAtomic } from "core/tools/Stringifyable";
 import { type XOnyxiaContext, Chart } from "core/ports/OnyxiaApi";
 import { createUsecaseContextApi } from "clean-architecture";
-import { getHelmValues_default, type FormFieldValue } from "./decoupledBusinessLogic";
+import { computeHelmValues, type FormFieldValue } from "./decoupledBusinessLogic";
 
 export const thunks = {
     "initialize":
@@ -194,11 +194,12 @@ export const thunks = {
                     return;
                 }
 
-                const { helmValues_default, isChartUsingS3 } = getHelmValues_default({
-                    helmValuesSchema,
-                    xOnyxiaContext,
-                    helmValuesYaml
-                });
+                const { helmValues: helmValues_default, isChartUsingS3 } =
+                    computeHelmValues({
+                        helmValuesSchema,
+                        xOnyxiaContext,
+                        helmValuesYaml
+                    });
 
                 const friendlyName_default = chartName;
 

@@ -1,9 +1,9 @@
 import { describe, it, expect } from "vitest";
-import { getHelmValues_default } from "./getHelmValues_default";
+import { computeHelmValues } from "./computeHelmValues";
 import YAML from "yaml";
 import { symToStr } from "tsafe/symToStr";
 
-describe(symToStr({ getHelmValues_default }), () => {
+describe(symToStr({ computeHelmValues }), () => {
     it("Use const", () => {
         const xOnyxiaContext = {
             "a": {
@@ -14,7 +14,7 @@ describe(symToStr({ getHelmValues_default }), () => {
             "s3": undefined
         };
 
-        const got = getHelmValues_default({
+        const got = computeHelmValues({
             "helmValuesSchema": {
                 "type": "object",
                 "const": { "r": "const" },
@@ -30,7 +30,7 @@ describe(symToStr({ getHelmValues_default }), () => {
         });
 
         const expected = {
-            "helmValues_default": { "r": "const" },
+            "helmValues": { "r": "const" },
             "isChartUsingS3": false
         };
 
@@ -47,7 +47,7 @@ describe(symToStr({ getHelmValues_default }), () => {
             "s3": undefined
         };
 
-        const got = getHelmValues_default({
+        const got = computeHelmValues({
             "helmValuesSchema": {
                 "type": "object",
                 "default": { "r": "default" },
@@ -62,7 +62,7 @@ describe(symToStr({ getHelmValues_default }), () => {
         });
 
         const expected = {
-            "helmValues_default": { "r": "x-onyxia context" },
+            "helmValues": { "r": "x-onyxia context" },
             "isChartUsingS3": false
         };
 
@@ -79,7 +79,7 @@ describe(symToStr({ getHelmValues_default }), () => {
             "s3": undefined
         };
 
-        const got = getHelmValues_default({
+        const got = computeHelmValues({
             "helmValuesSchema": {
                 "type": "object",
                 "default": { "r": "default" }
@@ -91,7 +91,7 @@ describe(symToStr({ getHelmValues_default }), () => {
         });
 
         const expected = {
-            "helmValues_default": { "r": "default" },
+            "helmValues": { "r": "default" },
             "isChartUsingS3": false
         };
 
@@ -108,7 +108,7 @@ describe(symToStr({ getHelmValues_default }), () => {
             "s3": undefined
         };
 
-        const got = getHelmValues_default({
+        const got = computeHelmValues({
             "helmValuesSchema": {
                 "type": "object"
             },
@@ -119,7 +119,7 @@ describe(symToStr({ getHelmValues_default }), () => {
         });
 
         const expected = {
-            "helmValues_default": { "r": "values.yaml" },
+            "helmValues": { "r": "values.yaml" },
             "isChartUsingS3": false
         };
 
@@ -132,7 +132,7 @@ describe(symToStr({ getHelmValues_default }), () => {
             "s3": undefined
         };
 
-        const got = getHelmValues_default({
+        const got = computeHelmValues({
             "helmValuesSchema": {
                 "type": "object",
                 "default": { "r": "default" },
@@ -145,7 +145,7 @@ describe(symToStr({ getHelmValues_default }), () => {
         });
 
         const expected = {
-            "helmValues_default": { "r": "default" },
+            "helmValues": { "r": "default" },
             "isChartUsingS3": false
         };
 
@@ -158,7 +158,7 @@ describe(symToStr({ getHelmValues_default }), () => {
         };
 
         expect(() => {
-            getHelmValues_default({
+            computeHelmValues({
                 "helmValuesSchema": {
                     "type": "object",
                     "properties": {
@@ -179,7 +179,7 @@ describe(symToStr({ getHelmValues_default }), () => {
         };
 
         expect(() => {
-            getHelmValues_default({
+            computeHelmValues({
                 "helmValuesSchema": {
                     "type": "object",
                     "properties": {
@@ -203,7 +203,7 @@ describe(symToStr({ getHelmValues_default }), () => {
             "s3": undefined
         };
 
-        const got = getHelmValues_default({
+        const got = computeHelmValues({
             "helmValuesSchema": {
                 "type": "object",
                 "properties": {
@@ -220,7 +220,7 @@ describe(symToStr({ getHelmValues_default }), () => {
         });
 
         const expected = {
-            "helmValues_default": { "r": 42 },
+            "helmValues": { "r": 42 },
             "isChartUsingS3": false
         };
 
@@ -235,7 +235,7 @@ describe(symToStr({ getHelmValues_default }), () => {
             "s3": undefined
         };
 
-        const got = getHelmValues_default({
+        const got = computeHelmValues({
             "helmValuesSchema": {
                 "type": "object",
                 "properties": {
@@ -253,7 +253,7 @@ describe(symToStr({ getHelmValues_default }), () => {
         });
 
         const expected = {
-            "helmValues_default": { "r": 42 },
+            "helmValues": { "r": 42 },
             "isChartUsingS3": false
         };
 
@@ -268,7 +268,7 @@ describe(symToStr({ getHelmValues_default }), () => {
             "s3": undefined
         };
 
-        const got = getHelmValues_default({
+        const got = computeHelmValues({
             "helmValuesSchema": {
                 "type": "object",
                 "properties": {
@@ -285,7 +285,7 @@ describe(symToStr({ getHelmValues_default }), () => {
         });
 
         const expected = {
-            "helmValues_default": { "r": true },
+            "helmValues": { "r": true },
             "isChartUsingS3": false
         };
 
@@ -299,7 +299,7 @@ describe(symToStr({ getHelmValues_default }), () => {
             }
         };
 
-        const got = getHelmValues_default({
+        const got = computeHelmValues({
             "helmValuesSchema": {
                 "type": "object",
                 "properties": {
@@ -316,7 +316,7 @@ describe(symToStr({ getHelmValues_default }), () => {
         });
 
         const expected = {
-            "helmValues_default": { "r": "xxx" },
+            "helmValues": { "r": "xxx" },
             "isChartUsingS3": true
         };
 
@@ -328,7 +328,7 @@ describe(symToStr({ getHelmValues_default }), () => {
             "s3": {}
         };
 
-        const got = getHelmValues_default({
+        const got = computeHelmValues({
             "helmValuesSchema": {
                 "type": "object",
                 "properties": {
@@ -342,7 +342,7 @@ describe(symToStr({ getHelmValues_default }), () => {
         });
 
         const expected = {
-            "helmValues_default": { "r": [] },
+            "helmValues": { "r": [] },
             "isChartUsingS3": false
         };
 
@@ -355,7 +355,7 @@ describe(symToStr({ getHelmValues_default }), () => {
         };
 
         expect(() => {
-            getHelmValues_default({
+            computeHelmValues({
                 "helmValuesSchema": {
                     "type": "object",
                     "properties": {
@@ -377,7 +377,7 @@ describe(symToStr({ getHelmValues_default }), () => {
         };
 
         expect(() => {
-            getHelmValues_default({
+            computeHelmValues({
                 "helmValuesSchema": {
                     "type": "object",
                     "properties": {
@@ -400,7 +400,7 @@ describe(symToStr({ getHelmValues_default }), () => {
         };
 
         expect(() => {
-            getHelmValues_default({
+            computeHelmValues({
                 "helmValuesSchema": {
                     "type": "object",
                     "properties": {

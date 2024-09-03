@@ -42,19 +42,19 @@ type XOnyxiaContextLike = XOnyxiaContextLike_resolveXOnyxiaValueReference &
 
 assert<XOnyxiaContext extends XOnyxiaContextLike ? true : false>();
 
-export function getHelmValues_default(params: {
+export function computeHelmValues(params: {
     helmValuesSchema: JSONSchemaLike;
     helmValuesYaml: string;
     xOnyxiaContext: XOnyxiaContextLike;
 }): {
-    helmValues_default: Record<string, Stringifyable>;
+    helmValues: Record<string, Stringifyable>;
     isChartUsingS3: boolean;
 } {
     const { helmValuesSchema, helmValuesYaml, xOnyxiaContext } = params;
 
     let isChartUsingS3 = false;
 
-    const helmValues_default = getHelmValues_default_rec({
+    const helmValues = getHelmValues_default_rec({
         helmValuesSchema,
         "helmValuesYaml_parsed": (() => {
             const helmValuesYaml_parsed = YAML.parse(helmValuesYaml);
@@ -85,11 +85,9 @@ export function getHelmValues_default(params: {
         })()
     });
 
-    assert(
-        helmValues_default instanceof Object && !(helmValues_default instanceof Array)
-    );
+    assert(helmValues instanceof Object && !(helmValues instanceof Array));
 
-    return { helmValues_default, isChartUsingS3 };
+    return { helmValues, isChartUsingS3 };
 }
 
 function getHelmValues_default_rec(params: {
