@@ -1,4 +1,4 @@
-import type { FormFieldGroup, FormField } from "../../../formTypes";
+import type { FormFieldGroup, FormField } from "../../formTypes";
 import { exclude } from "tsafe/exclude";
 import { assert, type Equals } from "tsafe/assert";
 import { is } from "tsafe/is";

@@ -2,7 +2,7 @@ import type { Stringifyable } from "core/tools/Stringifyable";
 import type { JSONSchema } from "core/ports/OnyxiaApi";
 import type { FormFieldValue } from "../formTypes";
 
-export function updateHelmValues(params: {
+export function mutateHelmValues(params: {
     helmValues: Record<string, Stringifyable>;
     helmValuesSchema: JSONSchema;
     action:

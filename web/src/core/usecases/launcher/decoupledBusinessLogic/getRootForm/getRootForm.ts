@@ -1,4 +1,4 @@
-import type { RootForm, FormFieldGroup } from "../../formTypes";
+import type { RootForm, FormFieldGroup } from "../formTypes";
 import type { JSONSchema } from "core/ports/OnyxiaApi/JSONSchema";
 import type { Stringifyable } from "core/tools/Stringifyable";
 import { getValueAtPathInObject } from "core/tools/getValueAtPathInObject";

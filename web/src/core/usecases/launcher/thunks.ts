@@ -1,6 +1,5 @@
 import type { Thunks } from "core/bootstrap";
 import { assert } from "tsafe/assert";
-import type { FormFieldValue } from "./formTypes";
 import * as userAuthentication from "../userAuthentication";
 import * as deploymentRegionManagement from "core/usecases/deploymentRegionManagement";
 import * as projectManagement from "core/usecases/projectManagement";
@@ -16,7 +15,7 @@ import { Evt } from "evt";
 import type { StringifyableAtomic } from "core/tools/Stringifyable";
 import { type XOnyxiaContext, Chart } from "core/ports/OnyxiaApi";
 import { createUsecaseContextApi } from "clean-architecture";
-import { getHelmValues_default } from "./utils";
+import { getHelmValues_default, type FormFieldValue } from "./decoupledBusinessLogic";
 
 export const thunks = {
     "initialize":

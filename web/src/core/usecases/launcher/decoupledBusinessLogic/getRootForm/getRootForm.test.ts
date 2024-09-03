@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { getRootForm } from "./getRootForm";
 import { symToStr } from "tsafe/symToStr";
-import type { RootForm } from "../../formTypes";
+import type { RootForm } from "../formTypes";
 
 describe(symToStr({ getRootForm }), () => {
     it("simple case", () => {

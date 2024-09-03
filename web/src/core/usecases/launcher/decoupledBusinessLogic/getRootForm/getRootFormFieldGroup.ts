@@ -1,4 +1,4 @@
-import type { FormFieldGroup, FormField } from "../../formTypes";
+import type { FormFieldGroup, FormField } from "../formTypes";
 import type { JSONSchema } from "core/ports/OnyxiaApi/JSONSchema";
 import type { Stringifyable } from "core/tools/Stringifyable";
 import { createTemporaryRangeSlider } from "./mergeRangeSliders";

@@ -1,4 +1,4 @@
-import type { FormField } from "../../../formTypes";
+import type { FormField } from "../../formTypes";
 import { assert } from "tsafe/assert";
 
 export type TemporaryRangeSliderPayload = {

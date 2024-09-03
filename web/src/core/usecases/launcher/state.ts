@@ -3,7 +3,6 @@ import { assert } from "tsafe/assert";
 import type { JSONSchema } from "core/ports/OnyxiaApi";
 import type { LocalizedString } from "core/ports/OnyxiaApi";
 import { createUsecaseActions } from "clean-architecture";
-import type { FormFieldValue } from "./formTypes";
 import {
     type Stringifyable,
     type StringifyableAtomic,
@@ -12,7 +11,7 @@ import {
 import structuredClone from "@ungap/structured-clone";
 import type { Omit } from "core/tools/Omit";
 import type { XOnyxiaContext } from "core/ports/OnyxiaApi";
-import { updateHelmValues } from "./utils/updateHelmValues";
+import { mutateHelmValues, type FormFieldValue } from "./decoupledBusinessLogic";
 
 type State = State.NotInitialized | State.Ready;
 
@@ -120,7 +119,7 @@ export const { reducer, actions } = createUsecaseActions({
 
                 const { helmValues, helmValuesSchema } = state;
 
-                updateHelmValues({
+                mutateHelmValues({
                     helmValues,
                     helmValuesSchema,
                     "action": {
@@ -145,7 +144,7 @@ export const { reducer, actions } = createUsecaseActions({
 
                 const { helmValues, helmValuesSchema } = state;
 
-                updateHelmValues({
+                mutateHelmValues({
                     helmValues,
                     helmValuesSchema,
                     "action": {
@@ -171,7 +170,7 @@ export const { reducer, actions } = createUsecaseActions({
 
                 const { helmValues, helmValuesSchema } = state;
 
-                updateHelmValues({
+                mutateHelmValues({
                     helmValues,
                     helmValuesSchema,
                     "action": {
