@@ -7,16 +7,11 @@ import * as projectManagement from "core/usecases/projectManagement";
 import * as userConfigs from "core/usecases/userConfigs";
 import { exclude } from "tsafe/exclude";
 import { createSelector } from "clean-architecture";
-import {
-    type Stringifyable,
-    type StringifyableAtomic,
-    readValueAtPath,
-    getIsAtomic
-} from "core/tools/Stringifyable";
 import * as s3ConfigManagement from "core/usecases/s3ConfigManagement";
 import type { RestorableServiceConfig } from "core/usecases/restorableConfigManagement";
 import { id } from "tsafe/id";
 import { computeRootForm } from "./decoupledBusinessLogic";
+import { computeDiff } from "core/tools/Stringifyable";
 
 const readyState = (rootState: RootState) => {
     const state = rootState[name];
@@ -205,29 +200,10 @@ const restorableConfig = createSelector(
         assert(helmValues !== null);
         assert(helmValues_default !== null);
 
-        const helmValuesPatch: {
-            path: (string | number)[];
-            value: StringifyableAtomic;
-        }[] = [];
-
-        (function crawl(value: Stringifyable, path: (string | number)[]) {
-            if (getIsAtomic(value)) {
-                if (readValueAtPath(helmValues_default, path) !== value) {
-                    helmValuesPatch.push({
-                        path,
-                        "value": value
-                    });
-                }
-                return;
-            }
-
-            if (value instanceof Array) {
-                value.forEach((e, i) => crawl(e, [...path, i]));
-                return;
-            }
-
-            Object.entries(value).forEach(([key, value]) => crawl(value, [...path, key]));
-        })(helmValues, []);
+        const { diffPatch } = computeDiff({
+            "before": helmValues_default,
+            "current": helmValues
+        });
 
         return {
             catalogId,
@@ -236,7 +212,7 @@ const restorableConfig = createSelector(
             isShared,
             chartVersion,
             s3ConfigId,
-            helmValuesPatch
+            "helmValuesPatch": diffPatch
         };
     }
 );

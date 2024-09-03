@@ -6,7 +6,7 @@ import { createUsecaseActions } from "clean-architecture";
 import {
     type Stringifyable,
     type StringifyableAtomic,
-    assignValueAtPath
+    applyDiffPatch
 } from "core/tools/Stringifyable";
 import structuredClone from "@ungap/structured-clone";
 import type { Omit } from "core/tools/Omit";
@@ -84,7 +84,7 @@ export const { reducer, actions } = createUsecaseActions({
                         readyState: Omit<State.Ready, "stateDescription" | "helmValues">;
                         helmValuesPatch: {
                             path: (string | number)[];
-                            value: StringifyableAtomic;
+                            value: StringifyableAtomic | undefined;
                         }[];
                     };
                 }
@@ -97,9 +97,10 @@ export const { reducer, actions } = createUsecaseActions({
                     "helmValues": structuredClone(readyState_partial.helmValues_default)
                 };
 
-                helmValuesPatch.forEach(({ path, value }) =>
-                    assignValueAtPath(state.helmValues, path, value)
-                );
+                applyDiffPatch({
+                    "objectOrArray": state.helmValues,
+                    "diffPatch": helmValuesPatch
+                });
 
                 return state;
             },

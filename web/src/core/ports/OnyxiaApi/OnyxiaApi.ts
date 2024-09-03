@@ -6,7 +6,7 @@ import type { HelmRelease } from "./HelmRelease";
 import type { User } from "./User";
 import { JSONSchema } from "./JSONSchema";
 import type { NonPostableEvt } from "evt";
-import type { StringifyableObject } from "core/tools/Stringifyable";
+import type { Stringifyable } from "core/tools/Stringifyable";
 
 export type OnyxiaApi = {
     getAvailableRegionsAndOidcParams: {
@@ -60,7 +60,7 @@ export type OnyxiaApi = {
         chartVersion: string;
         friendlyName: string;
         isShared: boolean | undefined;
-        values: StringifyableObject;
+        values: Record<string, Stringifyable>;
     }) => Promise<void>;
 
     listHelmReleases: () => Promise<HelmRelease[]>;

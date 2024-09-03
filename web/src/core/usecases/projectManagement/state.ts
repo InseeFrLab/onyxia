@@ -48,7 +48,7 @@ export namespace ProjectConfigs {
         s3ConfigId: string | undefined;
         helmValuesPatch: {
             path: (string | number)[];
-            value: StringifyableAtomic;
+            value: StringifyableAtomic | undefined;
         }[];
     };
 }
