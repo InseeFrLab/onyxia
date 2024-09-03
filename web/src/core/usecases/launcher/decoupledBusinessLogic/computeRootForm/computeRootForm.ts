@@ -5,17 +5,17 @@ import { getValueAtPathInObject } from "core/tools/getValueAtPathInObject";
 import { exclude } from "tsafe/exclude";
 import { mergeRangeSliders } from "./mergeRangeSliders";
 import {
-    getRootFormFieldGroup,
-    XOnyxiaContextLike as XOnyxiaContextLike_getRootFormFieldGroup
-} from "./getRootFormFieldGroup";
+    computeRootFormFieldGroup,
+    XOnyxiaContextLike as XOnyxiaContextLike_computeRootFormFieldGroup
+} from "./computeRootFormFieldGroup";
 import { assert } from "tsafe/assert";
 import type { XOnyxiaContext } from "core/ports/OnyxiaApi";
 
-export type XOnyxiaContextLike = XOnyxiaContextLike_getRootFormFieldGroup;
+export type XOnyxiaContextLike = XOnyxiaContextLike_computeRootFormFieldGroup;
 
 assert<XOnyxiaContext extends XOnyxiaContextLike ? true : false>();
 
-export function getRootForm(params: {
+export function computeRootForm(params: {
     helmValuesSchema: JSONSchema;
     helmValues: Record<string, Stringifyable>;
     xOnyxiaContext: XOnyxiaContextLike;
@@ -28,7 +28,7 @@ export function getRootForm(params: {
 
     const rootForm: RootForm = {
         "main": (() => {
-            const formFieldGroup_root = getRootFormFieldGroup({
+            const formFieldGroup_root = computeRootFormFieldGroup({
                 helmValuesSchema,
                 helmValues,
                 xOnyxiaContext

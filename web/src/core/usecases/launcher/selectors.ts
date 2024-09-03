@@ -16,7 +16,7 @@ import {
 import * as s3ConfigManagement from "core/usecases/s3ConfigManagement";
 import type { RestorableServiceConfig } from "core/usecases/restorableConfigManagement";
 import { id } from "tsafe/id";
-import { getRootForm } from "./decoupledBusinessLogic";
+import { computeRootForm } from "./decoupledBusinessLogic";
 
 const readyState = (rootState: RootState) => {
     const state = rootState[name];
@@ -87,7 +87,7 @@ const rootForm = createSelector(
         assert(helmDependencies !== null);
         assert(xOnyxiaContext !== null);
 
-        return getRootForm({
+        return computeRootForm({
             helmValuesSchema,
             helmValues,
             xOnyxiaContext,

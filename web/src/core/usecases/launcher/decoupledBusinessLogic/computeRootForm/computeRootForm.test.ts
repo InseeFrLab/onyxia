@@ -1,11 +1,11 @@
 import { describe, it, expect } from "vitest";
-import { getRootForm } from "./getRootForm";
+import { computeRootForm } from "./computeRootForm";
 import { symToStr } from "tsafe/symToStr";
 import type { RootForm } from "../formTypes";
 
-describe(symToStr({ getRootForm }), () => {
+describe(symToStr({ computeRootForm }), () => {
     it("simple case", () => {
-        const got = getRootForm({
+        const got = computeRootForm({
             "helmValuesSchema": {
                 "type": "object",
                 "properties": {

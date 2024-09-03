@@ -54,14 +54,14 @@ export type XOnyxiaContextLike = {};
 
 assert<XOnyxiaContext extends XOnyxiaContextLike ? true : false>();
 
-export function getRootFormFieldGroup(params: {
+export function computeRootFormFieldGroup(params: {
     helmValuesSchema: JSONSchemaLike;
     helmValues: Stringifyable;
     xOnyxiaContext: XOnyxiaContextLike;
 }): FormFieldGroup {
     const { helmValuesSchema, helmValues, xOnyxiaContext } = params;
 
-    const formFieldGroup = getRootFormFieldGroup_rec({
+    const formFieldGroup = computeRootFormFieldGroup_rec({
         helmValuesSchema,
         helmValues,
         xOnyxiaContext,
@@ -74,7 +74,7 @@ export function getRootFormFieldGroup(params: {
     return formFieldGroup;
 }
 
-function getRootFormFieldGroup_rec(params: {
+function computeRootFormFieldGroup_rec(params: {
     helmValuesSchema: JSONSchemaLike;
     helmValues: Stringifyable;
     xOnyxiaContext: XOnyxiaContextLike;
@@ -355,7 +355,7 @@ function getRootFormFieldGroup_rec(params: {
                 "description": helmValuesSchema.description,
                 "children": Object.entries(helmValuesSchema.properties)
                     .map(([segment, helmValuesSchema_child]) =>
-                        getRootFormFieldGroup_rec({
+                        computeRootFormFieldGroup_rec({
                             helmValues,
                             "helmValuesPath": [...helmValuesPath, segment],
                             xOnyxiaContext,
@@ -385,7 +385,7 @@ function getRootFormFieldGroup_rec(params: {
                 "description": helmValuesSchema.description,
                 "children": values
                     .map((...[, index]) =>
-                        getRootFormFieldGroup_rec({
+                        computeRootFormFieldGroup_rec({
                             helmValues,
                             "helmValuesPath": [...helmValuesPath, index],
                             xOnyxiaContext,

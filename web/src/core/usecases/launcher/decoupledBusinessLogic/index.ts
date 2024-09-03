@@ -1,4 +1,4 @@
 export { computeHelmValues } from "./computeHelmValues";
-export { getRootForm } from "./getRootForm";
+export { computeRootForm } from "./computeRootForm";
 export { mutateHelmValues } from "./mutateHelmValues";
 export type * from "./formTypes";

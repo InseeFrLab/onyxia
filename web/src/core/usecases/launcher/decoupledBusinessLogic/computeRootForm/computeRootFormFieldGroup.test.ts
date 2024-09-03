@@ -1,15 +1,15 @@
 import { describe, it, expect } from "vitest";
-import { getRootFormFieldGroup } from "./getRootFormFieldGroup";
+import { computeRootFormFieldGroup } from "./computeRootFormFieldGroup";
 import { symToStr } from "tsafe/symToStr";
 import type { FormFieldGroup } from "../formTypes";
 
-describe(symToStr({ getRootFormFieldGroup }), () => {
+describe(symToStr({ computeRootFormFieldGroup }), () => {
     it("simple case", () => {
         const xOnyxiaContext = {
             "r": [1, 2, 3]
         };
 
-        const got = getRootFormFieldGroup({
+        const got = computeRootFormFieldGroup({
             "helmValuesSchema": {
                 "type": "object",
                 "properties": {
@@ -69,7 +69,7 @@ describe(symToStr({ getRootFormFieldGroup }), () => {
     it("with array", () => {
         const xOnyxiaContext = {};
 
-        const got = getRootFormFieldGroup({
+        const got = computeRootFormFieldGroup({
             "helmValuesSchema": {
                 "type": "object",
                 "properties": {
