@@ -9,13 +9,13 @@ import { assert } from "tsafe/assert";
 import {
     resolveXOnyxiaValueReference,
     type XOnyxiaContextLike as XOnyxiaContextLike_resolveXOnyxiaValueReference
-} from "../shared/resolveXOnyxiaValueReference";
+} from "./shared/resolveXOnyxiaValueReference";
 import YAML from "yaml";
 import {
     validateValueAgainstJSONSchema,
     type JSONSchemaLike as JSONSchemaLike_validateValueAgainstJSONSchema,
     type XOnyxiaContextLike as XOnyxiaContextLike_validateValueAgainstJSONSchema
-} from "../shared/validateValueAgainstJSONSchema";
+} from "./shared/validateValueAgainstJSONSchema";
 
 type XOnyxiaParamsLike = {
     overwriteDefaultWith?: string;
