@@ -28,7 +28,7 @@ export const thunks = {
             s3ConfigId: string | undefined;
             helmValuesPatch: {
                 path: (string | number)[];
-                value: StringifyableAtomic;
+                value: StringifyableAtomic | undefined;
             }[];
             autoLaunch: boolean;
         }) =>
