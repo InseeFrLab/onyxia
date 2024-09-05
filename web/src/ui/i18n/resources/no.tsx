@@ -29,7 +29,7 @@ export const translations: Translations<"no"> = {
         "full name": "Fullt navn",
         "email": "E-postadresse",
         "instructions about how to change password":
-            'For å endre passordet ditt, bare logg ut og klikk på "glemt passord"-lenken.'
+            'For å endre passordet ditt, logg ut og klikk på lenken for "glemt passord"'
     },
     "AccountGitTab": {
         "gitName": "Brukernavn for Git",
@@ -190,7 +190,7 @@ export const translations: Translations<"no"> = {
         "url textField label": "URL",
         "url textField helper text": "URL til S3-tjenesten",
         "region textField label": "AWS S3-region",
-        "region textField helper text": "Eksempel: eu-west-1, hvis usikker, la være tom",
+        "region textField helper text": "Eksempel: eu-west-1, hvis du er usikker, la det stå tomt",
         "workingDirectoryPath textField label": "Arbeidsmappesti",
         "workingDirectoryPath textField helper text": (
             <>
@@ -200,7 +200,7 @@ export const translations: Translations<"no"> = {
                 <code>kun min-bøtte/</code> hvis du eier hele bøtten.
             </>
         ),
-        "account credentials": "Kontokredensialer",
+        "account credentials": "Kontoinformasjon",
         "accountFriendlyName textField label": "Brukervennlig kontonavn",
         "accountFriendlyName textField helper text":
             "Dette er bare for å hjelpe deg med å identifisere denne kontoen. Eksempel: Min personlige konto",
@@ -387,7 +387,7 @@ export const translations: Translations<"no"> = {
         "deletion dialog title": ({ deleteWhat }) => `Slett ${deleteWhat}?`,
         "deletion dialog body": ({ deleteWhat }) =>
             `Du er i ferd med å slette ${deleteWhat}.
-      Denne handlingen kan ikke reverseres.`,
+      Denne handlingen kan ikke angres.`,
         "already a directory with this name":
             "Det finnes allerede en mappe med dette navnet",
         "can't be empty": "Kan ikke være tom",
@@ -800,10 +800,10 @@ Utforsk gjerne og ta kontroll over tjenestene du kjører på Kubernetes!
         "status": "Status",
         "container starting": "Container starter",
         "failed": "Mislyktes",
-        "suspend service tooltip": "Suspender tjenesten og frigjør ressurser",
+        "suspend service tooltip": "Pause tjenesten og frigjør ressurser",
         "resume service tooltip": "Gjenoppta tjenesten",
-        "suspended": "Suspendert",
-        "suspending": "Suspenderer",
+        "suspended": "Pauset",
+        "suspending": "Pauser",
         "share tooltip - belong to someone else": ({
             projectName,
             ownerUsername,
