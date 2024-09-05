@@ -86,8 +86,7 @@ const rootForm = createSelector(
             helmValuesSchema,
             helmValues,
             xOnyxiaContext,
-            // TODO: complete
-            "dependencies": helmDependencies
+            helmDependencies
         });
     }
 );

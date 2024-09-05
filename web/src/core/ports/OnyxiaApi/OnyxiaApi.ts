@@ -50,6 +50,7 @@ export type OnyxiaApi = {
             helmRepositoryUrl: string;
             chartName: string;
             chartVersion: string;
+            condition: (string | number)[] | undefined;
         }[];
     }>;
 

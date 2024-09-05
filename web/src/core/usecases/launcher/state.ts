@@ -45,6 +45,7 @@ export declare namespace State {
             helmRepositoryUrl: string;
             chartName: string;
             chartVersion: string;
+            condition: (string | number)[] | undefined;
         }[];
         helmValuesSchema: JSONSchema;
         helmValues_default: Record<string, Stringifyable>;

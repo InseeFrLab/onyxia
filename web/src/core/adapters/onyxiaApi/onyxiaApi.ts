@@ -444,10 +444,17 @@ export function createOnyxiaApi(params: {
                 "helmValuesYaml": data.defaultValues,
                 "helmChartSourceUrls": data.sources ?? [],
                 "helmDependencies": (data.dependencies ?? []).map(
-                    ({ name, repository, version }) => ({
+                    ({ name, repository, version, condition }) => ({
                         "helmRepositoryUrl": repository,
                         "chartName": name,
-                        "chartVersion": version
+                        "chartVersion": version,
+                        "condition":
+                            condition === undefined
+                                ? undefined
+                                : condition.split(".").map(segment => {
+                                      const x = parseInt(segment);
+                                      return isNaN(x) ? segment : x;
+                                  })
                     })
                 )
             };

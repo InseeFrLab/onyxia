@@ -19,12 +19,12 @@ export function computeRootForm(params: {
     helmValuesSchema: JSONSchema;
     helmValues: Record<string, Stringifyable>;
     xOnyxiaContext: XOnyxiaContextLike;
-    dependencies: {
+    helmDependencies: {
         chartName: string;
-        helmValuesPath_enabled: (string | number)[] | undefined;
+        condition: (string | number)[] | undefined;
     }[];
 }): RootForm {
-    const { helmValuesSchema, helmValues, xOnyxiaContext, dependencies } = params;
+    const { helmValuesSchema, helmValues, xOnyxiaContext, helmDependencies } = params;
 
     const rootForm: RootForm = {
         "main": (() => {
@@ -38,13 +38,13 @@ export function computeRootForm(params: {
 
             return formFieldGroup_root.children;
         })(),
-        "disabledDependencies": dependencies
-            .filter(({ helmValuesPath_enabled }) =>
-                helmValuesPath_enabled === undefined
+        "disabledDependencies": helmDependencies
+            .filter(({ condition }) =>
+                condition === undefined
                     ? false
                     : getValueAtPathInObject({
                           "obj": helmValues,
-                          "path": helmValuesPath_enabled
+                          "path": condition
                       }) !== true
             )
             .map(({ chartName }) => chartName),
@@ -76,7 +76,7 @@ export function computeRootForm(params: {
             "groupName": "global"
         }) ?? [];
 
-    dependencies
+    helmDependencies
         .filter(({ chartName }) => !rootForm.disabledDependencies.includes(chartName))
         .forEach(
             ({ chartName }) =>

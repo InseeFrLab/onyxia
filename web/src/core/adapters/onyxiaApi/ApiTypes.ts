@@ -178,6 +178,7 @@ export type ApiTypes = {
             name: string;
             repository: string;
             version: string;
+            condition?: string;
         }[];
     };
     "/my-lab/services": {
