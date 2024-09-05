@@ -11,7 +11,7 @@ const { helmValuesPatchWrap, queryStringSerializer } = (() => {
 
     type HelmValuesPatchEntry = {
         path: (string | number)[];
-        value: StringifyableAtomic;
+        value: StringifyableAtomic | undefined;
     };
 
     const helmValuesPatchSerializer: ValueSerializer<HelmValuesPatchEntry[]> = {
@@ -68,6 +68,10 @@ const { helmValuesPatchWrap, queryStringSerializer } = (() => {
 
                         if (queryParamValue === "null") {
                             return null;
+                        }
+
+                        if (queryParamValue === "-") {
+                            return undefined;
                         }
 
                         {
@@ -129,6 +133,11 @@ const { helmValuesPatchWrap, queryStringSerializer } = (() => {
                                     if (value === null) {
                                         return "null";
                                     }
+
+                                    if (value === undefined) {
+                                        return "-";
+                                    }
+
                                     switch (typeof value) {
                                         case "boolean":
                                             return value ? "true" : "false";
@@ -169,6 +178,7 @@ export const routeDefs = {
             "name": param.query.optional.string,
             "shared": param.query.optional.boolean,
             "version": param.query.optional.string,
+            "s3": param.query.optional.string,
             "autoLaunch": param.query.optional.boolean,
             ...helmValuesPatchWrap
         },

@@ -120,7 +120,7 @@ export default function Launcher(props: Props) {
                 "chartVersion": route.params.version,
                 "friendlyName": route.params.name,
                 "isShared": route.params.shared,
-                "s3ConfigId": route.params.s3ConfigId,
+                "s3ConfigId": route.params.s3,
                 "helmValuesPatch": route.params.helmValuesPatch
             },
             autoLaunch
@@ -148,13 +148,13 @@ export default function Launcher(props: Props) {
         assert<Equals<typeof rest, {}>>();
 
         routes[route.name]({
-            "catalogId": restorableConfig.catalogId,
-            "chartName": restorableConfig.chartName,
-            "version": restorableConfig.chartVersion,
-            "name": restorableConfig.friendlyName,
-            "shared": restorableConfig.isShared,
-            "s3ConfigId": restorableConfig.s3ConfigId,
-            "helmValuesPatch": restorableConfig.helmValuesPatch
+            catalogId,
+            chartName,
+            "version": chartVersion,
+            "name": friendlyName,
+            "shared": isShared,
+            "s3": s3ConfigId,
+            helmValuesPatch
         }).replace();
     }, [restorableConfig]);
 
