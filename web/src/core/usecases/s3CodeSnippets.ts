@@ -274,6 +274,7 @@ minio$list_buckets()
 						`;
                         case "Python (s3fs)":
                             return `
+import os
 import s3fs
 os.environ["AWS_ACCESS_KEY_ID"] = '${credentials.AWS_ACCESS_KEY_ID}'
 os.environ["AWS_SECRET_ACCESS_KEY"] = '${credentials.AWS_SECRET_ACCESS_KEY}'
