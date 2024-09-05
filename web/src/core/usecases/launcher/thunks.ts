@@ -1,5 +1,5 @@
 import type { Thunks } from "core/bootstrap";
-import { assert } from "tsafe/assert";
+import { assert, type Equals } from "tsafe/assert";
 import * as userAuthentication from "../userAuthentication";
 import * as deploymentRegionManagement from "core/usecases/deploymentRegionManagement";
 import * as projectManagement from "core/usecases/projectManagement";
@@ -16,20 +16,40 @@ import type { StringifyableAtomic } from "core/tools/Stringifyable";
 import { type XOnyxiaContext, Chart } from "core/ports/OnyxiaApi";
 import { createUsecaseContextApi } from "clean-architecture";
 import { computeHelmValues, type FormFieldValue } from "./decoupledBusinessLogic";
+import type { RestorableServiceConfig } from "core/usecases/restorableConfigManagement";
+
+type RestorableServiceConfigLike = {
+    [Key in keyof RestorableServiceConfig]: Key extends "chartName"
+        ? RestorableServiceConfig[Key]
+        : Key extends "catalogId"
+          ? RestorableServiceConfig[Key]
+          : RestorableServiceConfig[Key] | undefined;
+};
+
+{
+    type Got = RestorableServiceConfigLike;
+    type Expected = {
+        catalogId: string;
+        chartName: string;
+        chartVersion: string | undefined;
+        friendlyName: string | undefined;
+        isShared: boolean | undefined;
+        s3ConfigId: string | undefined;
+        helmValuesPatch:
+            | {
+                  path: (string | number)[];
+                  value: StringifyableAtomic | undefined;
+              }[]
+            | undefined;
+    };
+
+    assert<Equals<Got, Expected>>();
+}
 
 export const thunks = {
     "initialize":
         (params: {
-            catalogId: string;
-            chartName: string;
-            chartVersion: string | undefined;
-            friendlyName: string | undefined;
-            isShared: boolean | undefined;
-            s3ConfigId: string | undefined;
-            helmValuesPatch: {
-                path: (string | number)[];
-                value: StringifyableAtomic | undefined;
-            }[];
+            restorableConfig: RestorableServiceConfigLike;
             autoLaunch: boolean;
         }) =>
         (...args): { cleanup: () => void } => {
@@ -89,13 +109,15 @@ export const thunks = {
 
             (async () => {
                 const {
-                    catalogId,
-                    chartName,
-                    chartVersion: chartVersion_pinned,
-                    friendlyName,
-                    isShared,
-                    s3ConfigId: s3ConfigId_pinned,
-                    helmValuesPatch,
+                    restorableConfig: {
+                        catalogId,
+                        chartName,
+                        chartVersion: chartVersion_pinned,
+                        friendlyName,
+                        isShared,
+                        s3ConfigId: s3ConfigId_pinned,
+                        helmValuesPatch
+                    },
                     autoLaunch
                 } = params;
 
@@ -247,7 +269,7 @@ export const thunks = {
                             helmChartSourceUrls,
                             availableChartVersions
                         },
-                        helmValuesPatch
+                        "helmValuesPatch": helmValuesPatch ?? []
                     })
                 );
 
@@ -269,11 +291,15 @@ export const thunks = {
 
             dispatch(
                 thunks.initialize({
-                    ...restorableConfig,
-                    "chartVersion": undefined,
-                    "friendlyName": undefined,
-                    "helmValuesPatch": [],
-                    "isShared": undefined,
+                    "restorableConfig": {
+                        "catalogId": restorableConfig.catalogId,
+                        "chartName": restorableConfig.chartName,
+                        "chartVersion": undefined,
+                        "friendlyName": undefined,
+                        "helmValuesPatch": undefined,
+                        "isShared": undefined,
+                        "s3ConfigId": undefined
+                    },
                     "autoLaunch": false
                 })
             );
@@ -296,8 +322,10 @@ export const thunks = {
 
             dispatch(
                 thunks.initialize({
-                    ...restorableConfig,
-                    chartVersion,
+                    "restorableConfig": {
+                        ...restorableConfig,
+                        chartVersion
+                    },
                     "autoLaunch": false
                 })
             );
@@ -320,8 +348,10 @@ export const thunks = {
 
             dispatch(
                 thunks.initialize({
-                    ...restorableConfig,
-                    s3ConfigId,
+                    "restorableConfig": {
+                        ...restorableConfig,
+                        s3ConfigId
+                    },
                     "autoLaunch": false
                 })
             );

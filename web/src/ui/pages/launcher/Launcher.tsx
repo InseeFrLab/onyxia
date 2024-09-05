@@ -12,7 +12,7 @@ import { useSplashScreen } from "onyxia-ui";
 import { useEvt } from "evt/hooks";
 import { routes, getPreviousRouteName } from "ui/routes";
 import { env } from "env";
-import { assert } from "tsafe/assert";
+import { assert, type Equals } from "tsafe/assert";
 import { Deferred } from "evt/tools/Deferred";
 import { Evt, type UnpackEvt } from "evt";
 import { LauncherDialogs, type Props as LauncherDialogsProps } from "./LauncherDialogs";
@@ -91,15 +91,6 @@ export default function Launcher(props: Props) {
     const { showSplashScreen, hideSplashScreen } = useSplashScreen();
 
     useEffect(() => {
-        const {
-            catalogId,
-            chartName,
-            version: chartVersion,
-            "name": friendlyName,
-            shared: isShared,
-            helmValuesPatch
-        } = route.params;
-
         showSplashScreen({ "enableTransparency": true });
 
         let autoLaunch = route.params.autoLaunch ?? false;
@@ -123,46 +114,56 @@ export default function Launcher(props: Props) {
         }
 
         const { cleanup } = launcher.initialize({
-            catalogId,
-            chartName,
-            chartVersion,
-            formFieldsValueDifferentFromDefault,
-            friendlyName,
-            isShared,
+            "restorableConfig": {
+                "catalogId": route.params.catalogId,
+                "chartName": route.params.chartName,
+                "chartVersion": route.params.version,
+                "friendlyName": route.params.name,
+                "isShared": route.params.shared,
+                "s3ConfigId": route.params.s3ConfigId,
+                "helmValuesPatch": route.params.helmValuesPatch
+            },
             autoLaunch
         });
 
         return cleanup;
     }, []);
 
-    const { evtLauncher } = useCore().evts;
-
-    const routeUpdateReplace = useConstCallback(
-        (params: Partial<(typeof route)["params"]>) => {
-            routes[route.name]({
-                ...route.params,
-                ...params
-            }).replace();
+    useEffect(() => {
+        if (!isReady) {
+            return;
         }
-    );
+
+        const {
+            catalogId,
+            chartName,
+            chartVersion,
+            friendlyName,
+            isShared,
+            s3ConfigId,
+            helmValuesPatch,
+            ...rest
+        } = restorableConfig;
+
+        assert<Equals<typeof rest, {}>>();
+
+        routes[route.name]({
+            "catalogId": restorableConfig.catalogId,
+            "chartName": restorableConfig.chartName,
+            "version": restorableConfig.chartVersion,
+            "name": restorableConfig.friendlyName,
+            "shared": restorableConfig.isShared,
+            "s3ConfigId": restorableConfig.s3ConfigId,
+            "helmValuesPatch": restorableConfig.helmValuesPatch
+        }).replace();
+    }, [restorableConfig]);
+
+    const { evtLauncher } = useCore().evts;
 
     useEvt(
         ctx =>
             evtLauncher
                 .pipe(ctx)
-                .$attach(
-                    event =>
-                        event.eventName === "restorableServiceConfigChanged"
-                            ? [event]
-                            : null,
-                    ({ restorableServiceConfig }) =>
-                        routeUpdateReplace({
-                            "version": restorableServiceConfig.chartVersion,
-                            "name": restorableServiceConfig.friendlyName,
-                            "shared": restorableServiceConfig.isShared,
-                            "helmValuesPatch": restorableServiceConfig.helmValuesPatch
-                        })
-                )
                 .attach(
                     event => event.eventName === "initialized",
                     () => hideSplashScreen()
