@@ -417,4 +417,92 @@ describe(symToStr({ computeHelmValues }), () => {
             });
         }).toThrow();
     });
+
+    it("to throw if the default array does not match the items type", () => {
+        const xOnyxiaContext = {
+            "s3": {}
+        };
+
+        expect(() => {
+            computeHelmValues({
+                "helmValuesSchema": {
+                    "type": "object",
+                    "properties": {
+                        "r": {
+                            "type": "array",
+                            "minItems": 3,
+                            "default": ["a", "b", "c"],
+                            "items": {
+                                "type": "number"
+                            }
+                        }
+                    }
+                },
+                "helmValuesYaml": YAML.stringify({}),
+                xOnyxiaContext
+            });
+        }).toThrow();
+    });
+
+    it("to compute successfully if the default array matches the items type", () => {
+        const xOnyxiaContext = {
+            "s3": {}
+        };
+
+        const got = computeHelmValues({
+            "helmValuesSchema": {
+                "type": "object",
+                "properties": {
+                    "r": {
+                        "type": "array",
+                        "minItems": 3,
+                        "default": ["a", "b", "c"],
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "helmValuesYaml": YAML.stringify({}),
+            xOnyxiaContext
+        });
+
+        const expected = {
+            "helmValues": { "r": ["a", "b", "c"] },
+            "isChartUsingS3": false
+        };
+
+        expect(got).toStrictEqual(expected);
+    });
+
+    it("to fill array with default items if no default", () => {
+        const xOnyxiaContext = {
+            "s3": {}
+        };
+
+        const got = computeHelmValues({
+            "helmValuesSchema": {
+                "type": "object",
+                "properties": {
+                    "r": {
+                        "type": "array",
+                        "minItems": 3,
+                        "items": {
+                            "type": "string",
+                            "default": "a"
+                        }
+                    }
+                }
+            },
+            "helmValuesYaml": YAML.stringify({}),
+            xOnyxiaContext
+        });
+
+        const expected = {
+            "helmValues": { "r": ["a", "a", "a"] },
+            "isChartUsingS3": false
+        };
+
+        expect(got).toStrictEqual(expected);
+    });
 });

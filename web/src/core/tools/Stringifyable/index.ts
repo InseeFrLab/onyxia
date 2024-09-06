@@ -1,4 +1,4 @@
-export type * from "./Stringifyable";
+export * from "./Stringifyable";
 export { assignValueAtPath } from "./assignValueAtPath";
 export { getIsAtomic } from "./getIsAtomic";
 export { getValueAtPath } from "./getValueAtPath";

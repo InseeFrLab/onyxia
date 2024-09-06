@@ -26,6 +26,8 @@ assert<XOnyxiaParams extends XOnyxiaParamsLike ? true : false>();
 
 type JSONSchemaLike = JSONSchemaLike_validateValueAgainstJSONSchema & {
     type: "object" | "array" | "string" | "boolean" | "integer" | "number";
+    items?: JSONSchemaLike;
+    minItems?: number;
     default?: Stringifyable;
     const?: Stringifyable;
     properties?: Record<string, JSONSchemaLike>;
@@ -215,17 +217,31 @@ function getHelmValues_default_rec(params: {
             break schema_is_array;
         }
 
-        const emptyArray: Stringifyable[] = [];
+        const candidateArray: Stringifyable[] = [];
 
-        const { isValid } = validateValueAgainstJSONSchema({
-            helmValuesSchema,
-            xOnyxiaContext,
-            "value": emptyArray
-        });
+        fill_with_items_default: {
+            const { minItems } = helmValuesSchema;
 
-        assert(isValid);
+            if (minItems === undefined || minItems === 0) {
+                break fill_with_items_default;
+            }
 
-        return emptyArray;
+            const { items } = helmValuesSchema;
+
+            assert(items !== undefined);
+
+            const defaultItem = getHelmValues_default_rec({
+                "helmValuesSchema": items,
+                "helmValuesYaml_parsed": undefined,
+                xOnyxiaContext
+            });
+
+            for (let i = 0; i < minItems; i++) {
+                candidateArray.push(defaultItem);
+            }
+        }
+
+        return candidateArray;
     }
 
     assert(false, `Can't resolve value ${JSON.stringify(params, null, 2)}`);
