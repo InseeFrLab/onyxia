@@ -8,31 +8,8 @@ import { Evt } from "evt";
 import { CacheProvider } from "@emotion/react";
 import { createCssAndCx } from "tss-react/cssAndCx";
 import createCache from "@emotion/cache";
-import { enableScreenScaler } from "screen-scaler/react";
 import { pluginSystemInitTheme } from "pluginSystem";
-
-// NOTE: This must happen very early-on, if overwrite some DOM APIs.
-export const { ScreenScalerOutOfRangeFallbackProvider } = enableScreenScaler({
-    "rootDivId": "root",
-    "targetWindowInnerWidth": ({ zoomFactor, isPortraitOrientation }) =>
-        isPortraitOrientation ? undefined : targetWindowInnerWidth * zoomFactor
-});
-
-/*
-export const ScreenScalerOutOfRangeFallbackProvider = ({ children}: { 
-    children: React.ReactNode;
-    fallback?: React.ReactNode;
-})=> {
-
-
-    return (
-        <>
-            {children}
-        </>
-    );
-
-}
-*/
+import { isStorybook } from "ui/tools/isStorybook";
 
 const {
     OnyxiaUi: OnyxiaUiWithoutEmotionCache,
@@ -50,11 +27,13 @@ const {
         "fontFamily": `'${env.FONT.fontFamily}'`
     }),
     palette,
-    "splashScreenParams": {
-        "assetUrl": env.SPLASHSCREEN_LOGO,
-        "assetScaleFactor": env.SPLASHSCREEN_LOGO_SCALE_FACTOR,
-        "minimumDisplayDuration": 0
-    },
+    "splashScreenParams": isStorybook
+        ? undefined
+        : {
+              "assetUrl": env.SPLASHSCREEN_LOGO,
+              "assetScaleFactor": env.SPLASHSCREEN_LOGO_SCALE_FACTOR,
+              "minimumDisplayDuration": 0
+          },
     "BASE_URL": env.PUBLIC_URL
 });
 
@@ -82,6 +61,7 @@ export function OnyxiaUi(props: { children: React.ReactNode }) {
 }
 
 export type Theme = typeof ofTypeTheme;
+export { evtTheme };
 
 export const loadThemedFavicon = () =>
     loadThemedFavicon_base({ "evtTheme": Evt.loosenType(evtTheme) });
