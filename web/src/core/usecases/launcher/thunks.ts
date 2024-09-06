@@ -19,28 +19,28 @@ import { computeHelmValues, type FormFieldValue } from "./decoupledLogic";
 import type { RestorableServiceConfig } from "core/usecases/restorableConfigManagement";
 
 type RestorableServiceConfigLike = {
-    [Key in keyof RestorableServiceConfig]: Key extends "chartName"
-        ? RestorableServiceConfig[Key]
-        : Key extends "catalogId"
-          ? RestorableServiceConfig[Key]
-          : RestorableServiceConfig[Key] | undefined;
+    catalogId: string;
+    chartName: string;
+    chartVersion: string | undefined;
+    friendlyName: string | undefined;
+    isShared: boolean | undefined;
+    s3ConfigId: string | undefined;
+    helmValuesPatch:
+        | {
+              path: (string | number)[];
+              value: StringifyableAtomic | undefined;
+          }[]
+        | undefined;
 };
 
 {
     type Got = RestorableServiceConfigLike;
     type Expected = {
-        catalogId: string;
-        chartName: string;
-        chartVersion: string | undefined;
-        friendlyName: string | undefined;
-        isShared: boolean | undefined;
-        s3ConfigId: string | undefined;
-        helmValuesPatch:
-            | {
-                  path: (string | number)[];
-                  value: StringifyableAtomic | undefined;
-              }[]
-            | undefined;
+        [Key in keyof RestorableServiceConfig]: Key extends "chartName"
+            ? RestorableServiceConfig[Key]
+            : Key extends "catalogId"
+              ? RestorableServiceConfig[Key]
+              : RestorableServiceConfig[Key] | undefined;
     };
 
     assert<Equals<Got, Expected>>();
