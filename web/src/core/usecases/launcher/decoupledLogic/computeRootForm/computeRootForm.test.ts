@@ -36,10 +36,10 @@ describe(symToStr({ computeRootForm }), () => {
                     }
                 }
             },
-            "dependencies": [
+            "helmDependencies": [
                 {
                     "chartName": "postgresql",
-                    "helmValuesPath_enabled": ["postgresql", "enabled"]
+                    "condition": ["postgresql", "enabled"]
                 }
             ],
             "xOnyxiaContext": {},

@@ -11,7 +11,7 @@ import {
 import structuredClone from "@ungap/structured-clone";
 import type { Omit } from "core/tools/Omit";
 import type { XOnyxiaContext } from "core/ports/OnyxiaApi";
-import { mutateHelmValues, type FormFieldValue } from "./decoupledBusinessLogic";
+import { mutateHelmValues, type FormFieldValue } from "./decoupledLogic";
 
 type State = State.NotInitialized | State.Ready;
 

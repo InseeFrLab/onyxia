@@ -15,7 +15,7 @@ import { Evt } from "evt";
 import type { StringifyableAtomic } from "core/tools/Stringifyable";
 import { type XOnyxiaContext, Chart } from "core/ports/OnyxiaApi";
 import { createUsecaseContextApi } from "clean-architecture";
-import { computeHelmValues, type FormFieldValue } from "./decoupledBusinessLogic";
+import { computeHelmValues, type FormFieldValue } from "./decoupledLogic";
 import type { RestorableServiceConfig } from "core/usecases/restorableConfigManagement";
 
 type RestorableServiceConfigLike = {

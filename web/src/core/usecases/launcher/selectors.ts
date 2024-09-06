@@ -10,7 +10,7 @@ import { createSelector } from "clean-architecture";
 import * as s3ConfigManagement from "core/usecases/s3ConfigManagement";
 import type { RestorableServiceConfig } from "core/usecases/restorableConfigManagement";
 import { id } from "tsafe/id";
-import { computeRootForm } from "./decoupledBusinessLogic";
+import { computeRootForm } from "./decoupledLogic";
 import { computeDiff } from "core/tools/Stringifyable";
 
 const readyState = (rootState: RootState) => {
