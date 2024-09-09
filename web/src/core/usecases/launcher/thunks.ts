@@ -261,6 +261,7 @@ export const thunks = {
 
                             helmValuesSchema,
                             helmValues_default,
+                            helmValuesYaml,
 
                             chartIconUrl,
                             catalogRepositoryUrl,

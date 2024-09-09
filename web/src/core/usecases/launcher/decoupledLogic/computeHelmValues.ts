@@ -24,7 +24,7 @@ type XOnyxiaParamsLike = {
 assert<keyof XOnyxiaParamsLike extends keyof XOnyxiaParams ? true : false>();
 assert<XOnyxiaParams extends XOnyxiaParamsLike ? true : false>();
 
-type JSONSchemaLike = JSONSchemaLike_validateValueAgainstJSONSchema & {
+export type JSONSchemaLike = JSONSchemaLike_validateValueAgainstJSONSchema & {
     type: "object" | "array" | "string" | "boolean" | "integer" | "number";
     items?: JSONSchemaLike;
     minItems?: number;
@@ -37,10 +37,9 @@ type JSONSchemaLike = JSONSchemaLike_validateValueAgainstJSONSchema & {
 assert<keyof JSONSchemaLike extends keyof JSONSchema ? true : false>();
 assert<JSONSchema extends JSONSchemaLike ? true : false>();
 
-type XOnyxiaContextLike = XOnyxiaContextLike_resolveXOnyxiaValueReference &
-    XOnyxiaContextLike_validateValueAgainstJSONSchema & {
-        s3: unknown;
-    };
+export type XOnyxiaContextLike = XOnyxiaContextLike_computeHelmValues_rec & {
+    s3: unknown;
+};
 
 assert<XOnyxiaContext extends XOnyxiaContextLike ? true : false>();
 
@@ -56,7 +55,7 @@ export function computeHelmValues(params: {
 
     let isChartUsingS3 = false;
 
-    const helmValues = getHelmValues_default_rec({
+    const helmValues = computeHelmValues_rec({
         helmValuesSchema,
         "helmValuesYaml_parsed": (() => {
             const helmValuesYaml_parsed = YAML.parse(helmValuesYaml);
@@ -92,10 +91,16 @@ export function computeHelmValues(params: {
     return { helmValues, isChartUsingS3 };
 }
 
-function getHelmValues_default_rec(params: {
+export type XOnyxiaContextLike_computeHelmValues_rec =
+    XOnyxiaContextLike_resolveXOnyxiaValueReference &
+        XOnyxiaContextLike_validateValueAgainstJSONSchema & {};
+
+assert<XOnyxiaContext extends XOnyxiaContextLike_computeHelmValues_rec ? true : false>();
+
+export function computeHelmValues_rec(params: {
     helmValuesSchema: JSONSchemaLike;
     helmValuesYaml_parsed: Stringifyable | undefined;
-    xOnyxiaContext: XOnyxiaContextLike;
+    xOnyxiaContext: XOnyxiaContextLike_computeHelmValues_rec;
 }): Stringifyable {
     const { helmValuesSchema, helmValuesYaml_parsed, xOnyxiaContext } = params;
 
@@ -183,7 +188,7 @@ function getHelmValues_default_rec(params: {
         return Object.fromEntries(
             Object.entries(properties).map(([propertyName, propertySchema]) => [
                 propertyName,
-                getHelmValues_default_rec({
+                computeHelmValues_rec({
                     "helmValuesSchema": propertySchema,
                     "helmValuesYaml_parsed":
                         helmValuesYaml_parsed instanceof Object &&
@@ -226,15 +231,32 @@ function getHelmValues_default_rec(params: {
                 break fill_with_items_default;
             }
 
-            const { items } = helmValuesSchema;
+            const defaultItem = (() => {
+                const { items } = helmValuesSchema;
 
-            assert(items !== undefined);
+                if (items === undefined) {
+                    return undefined;
+                }
 
-            const defaultItem = getHelmValues_default_rec({
-                "helmValuesSchema": items,
-                "helmValuesYaml_parsed": undefined,
-                xOnyxiaContext
-            });
+                let defaultItem;
+
+                try {
+                    defaultItem = computeHelmValues_rec({
+                        "helmValuesSchema": items,
+                        "helmValuesYaml_parsed": undefined,
+                        xOnyxiaContext
+                    });
+                } catch {
+                    return undefined;
+                }
+
+                return defaultItem;
+            })();
+
+            assert(
+                defaultItem !== undefined,
+                "We have no default items yet we have a minItems value"
+            );
 
             for (let i = 0; i < minItems; i++) {
                 candidateArray.push(defaultItem);

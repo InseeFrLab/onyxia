@@ -11,7 +11,12 @@ import {
 import structuredClone from "@ungap/structured-clone";
 import type { Omit } from "core/tools/Omit";
 import type { XOnyxiaContext } from "core/ports/OnyxiaApi";
-import { mutateHelmValues, type FormFieldValue } from "./decoupledLogic";
+import {
+    type FormFieldValue,
+    mutateHelmValues_addArrayItem,
+    mutateHelmValues_removeArrayItem,
+    mutateHelmValues_update
+} from "./decoupledLogic";
 
 type State = State.NotInitialized | State.Ready;
 
@@ -50,6 +55,7 @@ export declare namespace State {
         helmValuesSchema: JSONSchema;
         helmValues_default: Record<string, Stringifyable>;
         helmValues: Record<string, Stringifyable>;
+        helmValuesYaml: string;
 
         chartIconUrl: string | undefined;
         catalogRepositoryUrl: string;
@@ -121,13 +127,10 @@ export const { reducer, actions } = createUsecaseActions({
 
                 const { helmValues, helmValuesSchema } = state;
 
-                mutateHelmValues({
+                mutateHelmValues_update({
                     helmValues,
                     helmValuesSchema,
-                    "action": {
-                        "name": "update value",
-                        formFieldValue
-                    }
+                    formFieldValue
                 });
             },
             "arrayItemAdded": (
@@ -144,15 +147,15 @@ export const { reducer, actions } = createUsecaseActions({
 
                 assert(state.stateDescription === "ready");
 
-                const { helmValues, helmValuesSchema } = state;
+                const { helmValues, helmValuesSchema, helmValuesYaml, xOnyxiaContext } =
+                    state;
 
-                mutateHelmValues({
+                mutateHelmValues_addArrayItem({
                     helmValues,
                     helmValuesSchema,
-                    "action": {
-                        "name": "add array item",
-                        helmValuesPath
-                    }
+                    xOnyxiaContext,
+                    helmValuesPath,
+                    helmValuesYaml
                 });
             },
             "arrayItemRemoved": (
@@ -170,16 +173,12 @@ export const { reducer, actions } = createUsecaseActions({
 
                 assert(state.stateDescription === "ready");
 
-                const { helmValues, helmValuesSchema } = state;
+                const { helmValues } = state;
 
-                mutateHelmValues({
+                mutateHelmValues_removeArrayItem({
                     helmValues,
-                    helmValuesSchema,
-                    "action": {
-                        "name": "remove array item",
-                        helmValuesPath,
-                        index
-                    }
+                    helmValuesPath,
+                    index
                 });
             },
             "resetToNotInitialized": () =>

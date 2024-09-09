@@ -121,10 +121,6 @@ function computeRootFormFieldGroup_rec(params: {
         return undefined;
     }
 
-    if (helmValuesSchema.hidden) {
-        return undefined;
-    }
-
     if (helmValuesSchema["x-onyxia"]?.hidden === true) {
         return undefined;
     }
