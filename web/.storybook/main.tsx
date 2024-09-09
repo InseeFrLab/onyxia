@@ -7,7 +7,8 @@ export default {
         "@storybook/addon-essentials",
         "storybook-dark-mode",
         "@storybook/addon-interactions",
-        "@storybook/addon-themes"
+        "@storybook/addon-themes",
+        "@storybook/addon-a11y"
     ],
     "framework": {
         "name": "@storybook/react-vite",
@@ -16,11 +17,5 @@ export default {
     "core": {
         "builder": "@storybook/builder-vite"
     },
-    "staticDirs": ["./static", "../public"],
-    managerHead: head => {
-        return `
-    ${head}
-        <meta name="onyxia-font" content="Work Sans">
-  `;
-    }
+    "staticDirs": ["./static", "../public"]
 } as StorybookConfig;

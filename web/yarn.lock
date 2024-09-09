@@ -3129,6 +3129,14 @@
     "@smithy/types" "^2.9.1"
     tslib "^2.5.0"
 
+"@storybook/addon-a11y@^8.2.9":
+  version "8.2.9"
+  resolved "https://registry.yarnpkg.com/@storybook/addon-a11y/-/addon-a11y-8.2.9.tgz#a32cebf454e0c518e4a609adc5ca7fb29dc3d852"
+  integrity sha512-9zm0Ecn2KUUKZbRsQM5l2KcQ8RHK6a9eqdQtOMjGagrdUvUstcf7XjBmV1W6PQE2Urj93ciz1cgx4T1AYQyKtA==
+  dependencies:
+    "@storybook/addon-highlight" "8.2.9"
+    axe-core "^4.2.0"
+
 "@storybook/addon-actions@8.2.9":
   version "8.2.9"
   resolved "https://registry.yarnpkg.com/@storybook/addon-actions/-/addon-actions-8.2.9.tgz#5a27f07f276ec776fb768f5da9bfe2c43fe3e851"
@@ -4245,6 +4253,11 @@ available-typed-arrays@^1.0.7:
   integrity sha512-wvUjBtSGN7+7SjNpq/9M2Tg350UZD3q62IFZLbRAR1bSMlCo1ZaeW+BJ+D090e4hIIZLBcTDWe4Mh4jvUDajzQ==
   dependencies:
     possible-typed-array-names "^1.0.0"
+
+axe-core@^4.2.0:
+  version "4.10.0"
+  resolved "https://registry.yarnpkg.com/axe-core/-/axe-core-4.10.0.tgz#d9e56ab0147278272739a000880196cdfe113b59"
+  integrity sha512-Mr2ZakwQ7XUAjp7pAwQWRhhK8mQQ6JAaNWSjmjxil0R8BPioMtQsTLOolGYkji1rcL++3dCqZA3zWqpT+9Ew6g==
 
 axios@^0.26.0:
   version "0.26.1"

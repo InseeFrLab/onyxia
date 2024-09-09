@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { CircularMetric } from "./CircularMetric";
 
+console.log(import.meta.env);
 const meta = {
     title: "Shared/CircularMetric",
     component: CircularMetric

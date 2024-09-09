@@ -1,9 +1,11 @@
 import type { Preview } from "@storybook/react";
-import { DocsContainer } from "./DocsContainer";
+import { useDarkMode as useStorybookUiDarkMode } from "storybook-dark-mode";
 import { darkTheme, lightTheme } from "./theme";
 import React from "react";
 import { OnyxiaUi } from "../src/ui/theme";
-import { withThemeFromJSXProvider } from "@storybook/addon-themes";
+import { injectCustomFontFaceIfNotAlreadyDone } from "../src/ui/theme/injectCustomFontFaceIfNotAlreadyDone";
+
+injectCustomFontFaceIfNotAlreadyDone();
 
 const preview: Preview = {
     parameters: {
@@ -14,21 +16,13 @@ const preview: Preview = {
         },
         docs: { disable: true, hidden: true }
     },
-    argTypes: {
-        darkMode: {
-            control: { type: "boolean" },
-            "description":
-                "Global color scheme enabled, light or dark, it change only the color scheme of the Canvas"
-        }
-    },
+    argTypes: {},
     decorators: [
         (Story, {}) => {
-            import("../src/ui/theme/injectCustomFontFaceIfNotAlreadyDone").then(
-                ({ injectCustomFontFaceIfNotAlreadyDone }) =>
-                    injectCustomFontFaceIfNotAlreadyDone()
-            );
+            const isStorybookUiDark = useStorybookUiDarkMode();
+
             return (
-                <OnyxiaUi>
+                <OnyxiaUi darkMode={isStorybookUiDark}>
                     <Story />
                 </OnyxiaUi>
             );

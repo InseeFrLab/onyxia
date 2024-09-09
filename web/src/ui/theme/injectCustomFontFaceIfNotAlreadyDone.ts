@@ -1,17 +1,16 @@
 import { env } from "env";
 import { assert, type Equals } from "tsafe/assert";
 import { exclude } from "tsafe/exclude";
-import { typeGuard } from "tsafe/typeGuard";
 
 export function injectCustomFontFaceIfNotAlreadyDone(): void {
     const { fontFamily, dirUrl } = env.FONT;
 
     {
-        const metaTag = document.querySelector(`meta[name='onyxia-font']`);
+        const metaTag = document.querySelector(
+            `meta[name='onyxia-font']`
+        ) as HTMLMetaElement | null;
 
-        assert(typeGuard<HTMLMetaElement>(metaTag, metaTag !== null));
-
-        if (metaTag.content === fontFamily) {
+        if (metaTag !== null && metaTag.content === fontFamily) {
             return;
         }
     }

@@ -49,11 +49,11 @@ pluginSystemInitTheme({
     cx
 });
 
-export function OnyxiaUi(props: { children: React.ReactNode }) {
-    const { children } = props;
+export function OnyxiaUi(props: { children: React.ReactNode; darkMode?: boolean }) {
+    const { children, darkMode } = props;
     return (
         <CacheProvider value={emotionCache}>
-            <OnyxiaUiWithoutEmotionCache darkMode={env.DARK_MODE}>
+            <OnyxiaUiWithoutEmotionCache darkMode={darkMode ?? env.DARK_MODE}>
                 {children}
             </OnyxiaUiWithoutEmotionCache>
         </CacheProvider>
