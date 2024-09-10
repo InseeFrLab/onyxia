@@ -17,8 +17,8 @@ export const Default: Story = {
         chartIconUrl:
             "https://minio.lab.sspcloud.fr/projet-onyxia/assets/servicesImg/vscode.png",
         friendlyName: "Example Service",
-        launchLink: { href: "javascript:void(0);", onClick: action("launch") },
-        editLink: { href: "javascript:void(0);", onClick: action("edit") },
+        launchLink: { href: "", onClick: action("launch") },
+        editLink: { href: "", onClick: action("edit") },
         onRequestDelete: action("requestDelete")
     }
 };

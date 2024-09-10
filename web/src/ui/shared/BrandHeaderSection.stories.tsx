@@ -14,6 +14,6 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {
     args: {
         doShowOnyxia: true,
-        link: { href: "javascript:void(0);", onClick: action("header") }
+        link: { href: "", onClick: action("header") }
     }
 };
