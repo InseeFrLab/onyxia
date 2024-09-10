@@ -190,7 +190,8 @@ export const translations: Translations<"no"> = {
         "url textField label": "URL",
         "url textField helper text": "URL til S3-tjenesten",
         "region textField label": "AWS S3-region",
-        "region textField helper text": "Eksempel: eu-west-1, hvis du er usikker, la det stå tomt",
+        "region textField helper text":
+            "Eksempel: eu-west-1, hvis du er usikker, la det stå tomt",
         "workingDirectoryPath textField label": "Arbeidsmappesti",
         "workingDirectoryPath textField helper text": (
             <>

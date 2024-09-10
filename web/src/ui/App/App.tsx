@@ -11,9 +11,9 @@ import { injectGlobalStatesInSearchParams } from "powerhooks/useGlobalState";
 import { evtLang, I18nFetchingSuspense } from "ui/i18n";
 import {
     OnyxiaUi,
-    ScreenScalerOutOfRangeFallbackProvider,
     loadThemedFavicon,
-    injectCustomFontFaceIfNotAlreadyDone
+    injectCustomFontFaceIfNotAlreadyDone,
+    targetWindowInnerWidth
 } from "ui/theme";
 import { PortraitModeUnsupported } from "ui/shared/PortraitModeUnsupported";
 import { addParamToUrl } from "powerhooks/tools/urlSearchParams";
@@ -23,10 +23,18 @@ import { Main } from "./Main";
 import { AutoLogoutCountdown } from "./AutoLogoutCountdown";
 import { onyxiaInstancePublicUrlKey } from "keycloak-theme/login/onyxiaInstancePublicUrl";
 import { useDomRect } from "powerhooks/useDomRect";
+import { enableScreenScaler } from "screen-scaler/react";
 
 loadThemedFavicon();
 // NOTE: We do that only to showcase the app with an other font with the URL.
 injectCustomFontFaceIfNotAlreadyDone();
+
+// NOTE: This must happen very early-on, if overwrite some DOM APIs.
+const { ScreenScalerOutOfRangeFallbackProvider } = enableScreenScaler({
+    "rootDivId": "root",
+    "targetWindowInnerWidth": ({ zoomFactor, isPortraitOrientation }) =>
+        isPortraitOrientation ? undefined : targetWindowInnerWidth * zoomFactor
+});
 
 const { CoreProvider } = createCoreProvider({
     "apiUrl": import.meta.env.ONYXIA_API_URL,
