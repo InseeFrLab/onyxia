@@ -23,7 +23,6 @@ type State = State.NotInitialized | State.Ready;
 export declare namespace State {
     export type NotInitialized = {
         stateDescription: "not initialized";
-        isInitializing: boolean;
     };
 
     export type Ready = {
@@ -72,16 +71,13 @@ export const { reducer, actions } = createUsecaseActions({
     name,
     "initialState": id<State>(
         id<State.NotInitialized>({
-            "stateDescription": "not initialized",
-            "isInitializing": false
+            "stateDescription": "not initialized"
         })
     ),
     "reducers": (() => {
         const reducers = {
-            "initializationStarted": state => {
-                assert(state.stateDescription === "not initialized");
-                state.isInitializing = true;
-            },
+            "resetToNotInitialized": () =>
+                id<State.NotInitialized>({ "stateDescription": "not initialized" }),
             "initialized": (
                 _,
                 {
@@ -181,11 +177,6 @@ export const { reducer, actions } = createUsecaseActions({
                     index
                 });
             },
-            "resetToNotInitialized": () =>
-                id<State.NotInitialized>({
-                    "stateDescription": "not initialized",
-                    "isInitializing": false
-                }),
             "friendlyNameChanged": (
                 state,
                 {

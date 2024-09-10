@@ -75,8 +75,6 @@ export const thunks = {
                     setContext(rootContext, { evtCleanupInitialize });
                 }
 
-                dispatch(actions.initializationStarted());
-
                 const ctx = Evt.newCtx();
 
                 evtCleanupInitialize.attachOnce(() => ctx.done());
