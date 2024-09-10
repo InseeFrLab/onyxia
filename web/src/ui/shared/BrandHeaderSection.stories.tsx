@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { BrandHeaderSection } from "./BrandHeaderSection";
-import { storyLink } from "ui/tools/storybook/storyLink";
+import { action } from "@storybook/addon-actions";
 
 const meta = {
     title: "Shared/BrandHeaderSection",
@@ -14,6 +14,6 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {
     args: {
         doShowOnyxia: true,
-        link: storyLink
+        link: { href: "javascript:void(0);", onClick: action("header") }
     }
 };

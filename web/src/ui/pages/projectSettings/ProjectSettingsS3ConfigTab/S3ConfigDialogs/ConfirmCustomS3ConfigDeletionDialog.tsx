@@ -20,6 +20,7 @@ export const ConfirmCustomS3ConfigDeletionDialog = memo((props: Props) => {
         undefined
     );
 
+    console.log("state", state);
     useEvt(
         ctx => {
             evtOpen.attach(ctx, ({ resolveDoProceed }) => setState({ resolveDoProceed }));

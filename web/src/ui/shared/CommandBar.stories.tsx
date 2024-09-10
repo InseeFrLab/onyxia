@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { CommandBar, type CommandBarProps } from "./CommandBar";
+import { action } from "@storybook/addon-actions";
 
 const meta = {
     title: "Shared/CommandBar",
@@ -18,7 +19,7 @@ const sampleEntries: CommandBarProps.Entry[] = [
 
 const downloadAction = {
     tooltipTitle: "Download logs",
-    onClick: () => alert("Logs downloaded!")
+    onClick: () => action("Logs downloaded!")
 };
 
 const helpDialog = {

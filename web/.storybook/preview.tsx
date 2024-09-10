@@ -5,9 +5,7 @@ import React, { useEffect } from "react";
 import { OnyxiaUi } from "../src/ui/theme";
 import { injectCustomFontFaceIfNotAlreadyDone } from "../src/ui/theme/injectCustomFontFaceIfNotAlreadyDone";
 import {
-    I18nFetchingSuspense,
     Language,
-    languages,
     languagesPrettyPrint,
     useLang,
     fallbackLanguage
@@ -22,17 +20,6 @@ const languagesGlobal = Object.entries(languagesPrettyPrint).map(([value, title]
     title
 }));
 
-const globalTypes = {
-    locale: {
-        name: "Locale",
-        description: "Internationalization locale",
-        defaultValue: fallbackLanguage,
-        toolbar: {
-            icon: "globe",
-            items: languagesGlobal
-        }
-    }
-};
 const preview: Preview = {
     parameters: {
         backgrounds: { disable: true },
@@ -42,7 +29,17 @@ const preview: Preview = {
         },
         docs: { disable: true, hidden: true }
     },
-    globalTypes,
+    globalTypes: {
+        locale: {
+            name: "Locale",
+            description: "Internationalization locale",
+            defaultValue: fallbackLanguage,
+            toolbar: {
+                icon: "globe",
+                items: languagesGlobal
+            }
+        }
+    },
     argTypes: {},
     decorators: [
         (Story, { globals: { locale } }) => {
@@ -56,11 +53,9 @@ const preview: Preview = {
             }, [locale]);
 
             return (
-                <I18nFetchingSuspense>
-                    <OnyxiaUi darkMode={isStorybookUiDark}>
-                        <Story />
-                    </OnyxiaUi>
-                </I18nFetchingSuspense>
+                <OnyxiaUi darkMode={isStorybookUiDark}>
+                    <Story />
+                </OnyxiaUi>
             );
         }
     ]

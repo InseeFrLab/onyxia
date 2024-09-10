@@ -77,7 +77,8 @@ export const Default: Story = {
         chartNameWithHighlights: exampleChartNameWithHighlights,
         chartDescriptionWithHighlights: exampleChartDescriptionWithHighlights,
         projectHomepageUrl: "https://example.com",
-        iconUrl: "https://example.com/logo.png",
+        iconUrl:
+            "https://minio.lab.sspcloud.fr/projet-onyxia/assets/servicesImg/vscode.png",
         onRequestLaunch: action("Launch button clicked")
     }
 };

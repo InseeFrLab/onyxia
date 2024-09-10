@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { SettingField } from "./SettingField";
+import { action } from "@storybook/addon-actions";
 
 const meta = {
     title: "Shared/SettingField",
@@ -15,7 +16,7 @@ export const Default: Story = {
         type: "service password",
         groupProjectName: "Project A",
         servicePassword: "mypassword",
-        onRequestServicePasswordRenewal: () => alert("Password renewed"),
-        onRequestCopy: () => alert("Copied to clipboard")
+        onRequestServicePasswordRenewal: () => action("Password renewed"),
+        onRequestCopy: () => action("Copied to clipboard")
     }
 };
