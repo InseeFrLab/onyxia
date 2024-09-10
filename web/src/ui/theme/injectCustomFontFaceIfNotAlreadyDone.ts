@@ -6,9 +6,9 @@ export function injectCustomFontFaceIfNotAlreadyDone(): void {
     const { fontFamily, dirUrl } = env.FONT;
 
     {
-        const metaTag = document.querySelector(
+        const metaTag = document.querySelector<HTMLMetaElement>(
             `meta[name='onyxia-font']`
-        ) as HTMLMetaElement | null;
+        );
 
         if (metaTag !== null && metaTag.content === fontFamily) {
             return;
