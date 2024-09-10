@@ -16,11 +16,9 @@ type Story = StoryObj<typeof ConfirmCustomS3ConfigDeletionDialog>;
 
 export const Default: Story = {
     render: () => {
-        const [evtOpen] = useState(() =>
-            Evt.create<{
-                resolveDoProceed: (doProceed: boolean) => void;
-            }>()
-        );
+        const evtOpen = Evt.create<{
+            resolveDoProceed: (doProceed: boolean) => void;
+        }>();
 
         const openDialog = () => {
             evtOpen.post({
