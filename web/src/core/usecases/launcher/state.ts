@@ -13,6 +13,7 @@ import type { Omit } from "core/tools/Omit";
 import type { XOnyxiaContext } from "core/ports/OnyxiaApi";
 import {
     type FormFieldValue,
+    type RootForm,
     mutateHelmValues_addArrayItem,
     mutateHelmValues_removeArrayItem,
     mutateHelmValues_update
@@ -114,19 +115,20 @@ export const { reducer, actions } = createUsecaseActions({
                 }: {
                     payload: {
                         formFieldValue: FormFieldValue;
+                        rootForm: RootForm;
                     };
                 }
             ) => {
-                const { formFieldValue } = payload;
+                const { formFieldValue, rootForm } = payload;
 
                 assert(state.stateDescription === "ready");
 
-                const { helmValues, helmValuesSchema } = state;
+                const { helmValues } = state;
 
                 mutateHelmValues_update({
                     helmValues,
-                    helmValuesSchema,
-                    formFieldValue
+                    formFieldValue,
+                    rootForm
                 });
             },
             "arrayItemAdded": (

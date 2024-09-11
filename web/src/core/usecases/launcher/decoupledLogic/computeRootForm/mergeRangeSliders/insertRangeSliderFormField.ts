@@ -6,7 +6,7 @@ import {
     helmValuesPathToFormFieldPath,
     FormFieldGroupLike as FormFieldGroupLike_helmValuesPathToFormFieldPath
 } from "./helmValuesPathToFormFieldPath";
-import { getHelmValuesPathDeeperCommonSubpath } from "./getHelmValuesPathDeeperCommonSubpath";
+import { getHelmValuesPathDeeperCommonSubpath } from "../../shared/getHelmValuesPathDeeperCommonSubpath";
 
 export type FormFieldGroupLike = FormFieldGroupLike_helmValuesPathToFormFieldPath;
 

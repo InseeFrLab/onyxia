@@ -358,9 +358,14 @@ export const thunks = {
     "changeFormFieldValue":
         (params: FormFieldValue) =>
         (...args) => {
-            const [dispatch] = args;
+            const [dispatch, getState] = args;
             const formFieldValue = params;
-            dispatch(actions.formFieldValueChanged({ formFieldValue }));
+
+            const rootForm = privateSelectors.rootForm(getState());
+
+            assert(rootForm !== null);
+
+            dispatch(actions.formFieldValueChanged({ formFieldValue, rootForm }));
         },
     "changeFriendlyName":
         (friendlyName: string) =>

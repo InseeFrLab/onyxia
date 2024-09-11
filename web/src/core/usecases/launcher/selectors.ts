@@ -626,5 +626,6 @@ export const privateSelectors = {
             return null;
         }
         return state.helmValues;
-    })
+    }),
+    rootForm
 };

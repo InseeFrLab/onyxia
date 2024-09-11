@@ -125,8 +125,8 @@ export type FormFieldValue =
     | Pick<FormField.NumberField, FormFieldValue.Name>
     | {
           fieldType: "select";
-          helmValuesPath: Pick<FormField.Select, "helmValuesPath">;
-          selectedOptionIndex: Pick<FormField.Select, "selectedOptionIndex">;
+          helmValuesPath: FormField.Select["helmValuesPath"];
+          selectedOptionIndex: FormField.Select["selectedOptionIndex"];
       }
     | Pick<FormField.TextField, FormFieldValue.Name>
     | Pick<FormField.Slider, FormFieldValue.Name>
