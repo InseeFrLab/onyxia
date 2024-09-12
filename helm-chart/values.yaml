@@ -102,7 +102,7 @@ api:
   replicaCount: 1
   image:
     repository: inseefrlab/onyxia-api
-    tag: v2.8.1
+    tag: v3.0.0
     pullPolicy: IfNotPresent
   contextPath: /api
 
@@ -166,7 +166,8 @@ api:
   schemas:
     enabled: false
     rootPath: /schemas/
-    files: []
+    files:
+      []
       # - relativePath: nodeSelector.json
       #   content: |
       #  {
