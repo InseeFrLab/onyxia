@@ -139,7 +139,7 @@ const isThereDeletableServices = createSelector(services, services => {
 });
 
 const groupProjectName = createSelector(
-    projectManagement.selectors.currentProject,
+    projectManagement.protectedSelectors.currentProject,
     currentProject => {
         if (currentProject.group == undefined) {
             return undefined;
