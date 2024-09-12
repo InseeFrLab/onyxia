@@ -58,15 +58,16 @@ export const AccountStorageTab = memo((props: Props) => {
         s3CodeSnippets.refresh({ "doForceRenewToken": false });
     }, []);
 
-    const isReady = useCoreState("s3CodeSnippets", "isReady");
-    const credentials = useCoreState("s3CodeSnippets", "credentials");
-    const expirationTime = useCoreState("s3CodeSnippets", "expirationTime");
-    const initScript = useCoreState("s3CodeSnippets", "initScript");
-    const selectedTechnology = useCoreState("s3CodeSnippets", "selectedTechnology");
-    const isRefreshing = useCoreState("s3CodeSnippets", "isRefreshing");
+    const {
+        isReady,
+        isRefreshing,
+        credentials,
+        expirationTime,
+        initScript,
+        selectedTechnology
+    } = useCoreState("s3CodeSnippets", "main");
 
     const { fromNowText } = useFromNow({ "dateTime": expirationTime ?? 0 });
-
     const onSelectChangeTechnology = useConstCallback((e: SelectChangeEvent) =>
         s3CodeSnippets.changeTechnology({
             "technology": e.target.value as Technology
@@ -78,7 +79,7 @@ export const AccountStorageTab = memo((props: Props) => {
     );
 
     const onGetAppIconButtonClick = useConstCallback(() => {
-        assert(initScript !== undefined);
+        assert(isReady);
         saveAs(
             new Blob([initScript.scriptCode], {
                 "type": "text/plain;charset=utf-8"
@@ -94,12 +95,6 @@ export const AccountStorageTab = memo((props: Props) => {
     if (!isReady) {
         return <CircularProgress />;
     }
-
-    assert(credentials !== undefined);
-    assert(expirationTime !== undefined);
-    assert(initScript !== undefined);
-    assert(selectedTechnology !== undefined);
-    assert(isRefreshing !== undefined);
 
     return (
         <div className={className}>
