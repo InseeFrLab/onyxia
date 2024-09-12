@@ -2,11 +2,11 @@ import { describe, it, expect } from "vitest";
 import { mutateHelmValues_update } from "./mutateHelmValues_update";
 import { symToStr } from "tsafe/symToStr";
 import type { FormField, FormFieldGroup, RootForm } from "../../formTypes";
-import { createObjectThatThrowsIfAccessed } from "clean-architecture/tools/createObjectThatThrowsIfAccessed";
 import {
+    createObjectThatThrowsIfAccessed,
     createObjectWithSomePropertiesThatThrowIfAccessed,
     THROW_IF_ACCESSED
-} from "core/tools/createObjectWithSomePropertiesThatThrowIfAccessed";
+} from "clean-architecture/tools/createObjectThatThrowsIfAccessed";
 
 describe(symToStr({ mutateHelmValues_update }), () => {
     it("simple case", () => {

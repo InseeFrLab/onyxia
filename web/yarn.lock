@@ -2923,14 +2923,14 @@ chownr@^2.0.0:
   resolved "https://registry.yarnpkg.com/chownr/-/chownr-2.0.0.tgz#15bfbe53d2eab4cf70f18a8cd68ebe5b3cb1dece"
   integrity sha512-bIomtDF5KGpdogkLd9VspvFzk9KfpyyGlS8YFVZl7TGPBHL5snIOnxeshwVgPteQ9b4Eydl+pVbIyE1DcvCWgQ==
 
-clean-architecture@^4.3.7:
-  version "4.3.7"
-  resolved "https://registry.yarnpkg.com/clean-architecture/-/clean-architecture-4.3.7.tgz#3dc9622b1dd86ee49de6af045647dedc5f78d519"
-  integrity sha512-6RQ7aix9HVq9CW6MPjFlOeBCCffEDAAnjPqH5124u3jmPmUMy5jNE8N3QQ+XsBj88mDLxDt/f1DNBnbmdZaxhg==
+clean-architecture@^4.3.8:
+  version "4.3.8"
+  resolved "https://registry.yarnpkg.com/clean-architecture/-/clean-architecture-4.3.8.tgz#422d6033bb02045827554d028c7c0964f2352079"
+  integrity sha512-zUk8f7OahZjsYsGQRuJF+5bD22iILNIG1/5zSTVuv5tWkQQ0lZxs6cADCz7zyESjIHJu9pPRwz+maou9q9fQoA==
   dependencies:
     "@reduxjs/toolkit" "^1.9.6"
     minimal-polyfills "^2.2.3"
-    tsafe "^1.6.5"
+    tsafe "^1.7.2"
 
 clean-stack@^2.0.0:
   version "2.2.0"
