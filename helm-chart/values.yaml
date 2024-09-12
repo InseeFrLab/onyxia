@@ -162,6 +162,30 @@ api:
     #     "type": "helm",
     #   }
     # ]
+
+    enabled: false
+    rootPath: /schemas/
+    files: []
+      # - relativePath: nodeSelector.json
+      #   content: |
+      #  {
+      #    "$schema": "http://json-schema.org/draft-07/schema#",
+      #    "title": "Node Selector",
+      #    "type": "object",
+      #    "properties": {
+      #      "disktype": {
+      #        "description": "The type of disk",
+      #        "type": "string",
+      #        "enum": ["ssd", "hdd"]
+      #      },
+      #      "gpu": {
+      #        "description": "The type of GPU",
+      #        "type": "string",
+      #        "enum": ["A2", "H100"]
+      #      }
+      #    },
+      #    "additionalProperties": false
+      #  }
   livenessProbe:
     enabled: true
     path: /public/healthcheck
