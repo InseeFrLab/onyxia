@@ -4,7 +4,7 @@ import { assert } from "tsafe/assert";
 import { privateSelectors } from "./selectors";
 import * as s3ConfigManagement from "core/usecases/s3ConfigManagement";
 import * as deploymentRegionManagement from "core/usecases/deploymentRegionManagement";
-import { getWorkingDirectoryPath } from "core/usecases/s3ConfigManagement/utils/getWorkingDirectoryPath";
+import { getWorkingDirectoryPath } from "core/usecases/s3ConfigManagement/decoupledLogic/getWorkingDirectoryPath";
 import * as projectManagement from "core/usecases/projectManagement";
 import * as userAuthentication from "core/usecases/userAuthentication";
 

@@ -6,11 +6,11 @@ import * as s3ConfigConnectionTest from "core/usecases/s3ConfigConnectionTest";
 import { bucketNameAndObjectNameFromS3Path } from "core/adapters/s3Client/utils/bucketNameAndObjectNameFromS3Path";
 import type { ParamsOfCreateS3Client } from "core/adapters/s3Client";
 import { same } from "evt/tools/inDepth/same";
-import { getWorkingDirectoryPath } from "./utils/getWorkingDirectoryPath";
-import { getWorkingDirectoryBucketToCreate } from "./utils/getWorkingDirectoryBucket";
+import { getWorkingDirectoryPath } from "./decoupledLogic/getWorkingDirectoryPath";
+import { getWorkingDirectoryBucketToCreate } from "./decoupledLogic/getWorkingDirectoryBucket";
 import { fnv1aHashToHex } from "core/tools/fnv1aHashToHex";
 import { assert, type Equals } from "tsafe/assert";
-import { getProjectS3ConfigId } from "./utils/projectS3ConfigId";
+import { getProjectS3ConfigId } from "./decoupledLogic/projectS3ConfigId";
 
 export type S3Config = S3Config.FromDeploymentRegion | S3Config.FromProject;
 

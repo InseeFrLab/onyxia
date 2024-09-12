@@ -6,7 +6,7 @@ import { assert, type Equals } from "tsafe/assert";
 import type { S3Client } from "core/ports/S3Client";
 import { createOidcOrFallback } from "core/adapters/oidc/utils/createOidcOrFallback";
 import { createUsecaseContextApi } from "clean-architecture";
-import { getProjectS3ConfigId } from "./utils/projectS3ConfigId";
+import { getProjectS3ConfigId } from "./decoupledLogic/projectS3ConfigId";
 
 export const thunks = {} satisfies Thunks;
 

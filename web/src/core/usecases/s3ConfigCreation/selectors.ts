@@ -9,7 +9,7 @@ import type { ProjectConfigs } from "core/usecases/projectManagement";
 import type { ParamsOfCreateS3Client } from "core/adapters/s3Client";
 import * as s3ConfigConnectionTest from "core/usecases/s3ConfigConnectionTest";
 import { same } from "evt/tools/inDepth/same";
-import { parseProjectS3ConfigId } from "core/usecases/s3ConfigManagement/utils/projectS3ConfigId";
+import { parseProjectS3ConfigId } from "core/usecases/s3ConfigManagement/decoupledLogic/projectS3ConfigId";
 
 const readyState = (rootState: RootState) => {
     const state = rootState[name];
