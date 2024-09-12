@@ -163,6 +163,7 @@ api:
     #   }
     # ]
 
+  schemas:
     enabled: false
     rootPath: /schemas/
     files: []
