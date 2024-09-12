@@ -8,14 +8,14 @@ const state = (rootState: RootState) => rootState[name];
 const clusterEvents = createSelector(
     state,
     projectManagement.protectedSelectors.currentProject,
-    projectManagement.protectedSelectors.currentProjectConfigs,
-    (state, currentProject, currentProjectConfigs) =>
+    projectManagement.protectedSelectors.projectConfig,
+    (state, currentProject, currentProjectConfig) =>
         (state.clusterEventsByProjectId[currentProject.id] ?? []).map(clusterEvent => ({
             ...clusterEvent,
             "isHighlighted":
                 clusterEvent.severity !== "info" &&
                 clusterEvent.timestamp >
-                    currentProjectConfigs.clusterNotificationCheckoutTime
+                    currentProjectConfig.clusterNotificationCheckoutTime
         }))
 );
 
