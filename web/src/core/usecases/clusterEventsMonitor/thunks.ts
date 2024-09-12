@@ -63,7 +63,7 @@ export const thunks = {
                                 actions.newClusterEventReceived({
                                     "clusterEvent": clusterEvent,
                                     "projectId":
-                                        projectManagement.selectors.currentProject(
+                                        projectManagement.protectedSelectors.currentProject(
                                             getState()
                                         ).id
                                 })

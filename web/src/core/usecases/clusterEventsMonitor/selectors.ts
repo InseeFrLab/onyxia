@@ -7,7 +7,7 @@ const state = (rootState: RootState) => rootState[name];
 
 const clusterEvents = createSelector(
     state,
-    projectManagement.selectors.currentProject,
+    projectManagement.protectedSelectors.currentProject,
     projectManagement.protectedSelectors.currentProjectConfigs,
     (state, currentProject, currentProjectConfigs) =>
         (state.clusterEventsByProjectId[currentProject.id] ?? []).map(clusterEvent => ({
