@@ -33,7 +33,7 @@ web:
   replicaCount: 1
   image:
     repository: inseefrlab/onyxia-web
-    tag: 4.29.1
+    tag: 4.32.15
     pullPolicy: IfNotPresent
 
   ## Pod priority settings
@@ -102,7 +102,7 @@ api:
   replicaCount: 1
   image:
     repository: inseefrlab/onyxia-api
-    tag: v2.7.0
+    tag: v3.0.0
     pullPolicy: IfNotPresent
   contextPath: /api
 
@@ -162,6 +162,32 @@ api:
     #     "type": "helm",
     #   }
     # ]
+
+  schemas:
+    enabled: false
+    rootPath: /schemas/
+    files:
+      []
+      # - relativePath: nodeSelector.json
+      #   content: |
+      #  {
+      #    "$schema": "http://json-schema.org/draft-07/schema#",
+      #    "title": "Node Selector",
+      #    "type": "object",
+      #    "properties": {
+      #      "disktype": {
+      #        "description": "The type of disk",
+      #        "type": "string",
+      #        "enum": ["ssd", "hdd"]
+      #      },
+      #      "gpu": {
+      #        "description": "The type of GPU",
+      #        "type": "string",
+      #        "enum": ["A2", "H100"]
+      #      }
+      #    },
+      #    "additionalProperties": false
+      #  }
   livenessProbe:
     enabled: true
     path: /public/healthcheck

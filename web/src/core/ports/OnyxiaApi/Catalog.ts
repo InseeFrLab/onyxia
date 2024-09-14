@@ -5,5 +5,6 @@ export type Catalog = {
     name: LocalizedString;
     repositoryUrl: string;
     description: LocalizedString | undefined;
-    isHidden: boolean;
+    isProduction: boolean;
+    visibility: "always" | "ony in personal projects" | "only in groups projects";
 };

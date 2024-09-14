@@ -102,6 +102,12 @@ export type DeploymentRegion = {
         useCertManager: boolean;
         certManagerClusterIssuer: string | undefined;
     };
+    openshiftSCC:
+        | {
+              scc: string;
+              enabled: boolean;
+          }
+        | undefined;
 };
 export namespace DeploymentRegion {
     /** https://github.com/InseeFrLab/onyxia-api/blob/main/docs/region-configuration.md#s3 */

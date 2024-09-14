@@ -20,3 +20,6 @@ data:
 {{- if .Values.api.catalogs }}
   catalogs: {{ .Values.api.catalogs | toJson | quote }}
 {{- end}}
+{{- if .Values.api.schemas.enabled }}
+  external.schema.directory: {{ .Values.api.schemas.rootPath | quote }}
+{{- end}}

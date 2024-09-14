@@ -29,7 +29,7 @@ export const translations: Translations<"no"> = {
         "full name": "Fullt navn",
         "email": "E-postadresse",
         "instructions about how to change password":
-            'For å endre passordet ditt, bare logg ut og klikk på "glemt passord"-lenken.'
+            'For å endre passordet ditt, logg ut og klikk på lenken for "glemt passord"'
     },
     "AccountGitTab": {
         "gitName": "Brukernavn for Git",
@@ -190,7 +190,8 @@ export const translations: Translations<"no"> = {
         "url textField label": "URL",
         "url textField helper text": "URL til S3-tjenesten",
         "region textField label": "AWS S3-region",
-        "region textField helper text": "Eksempel: eu-west-1, hvis usikker, la være tom",
+        "region textField helper text":
+            "Eksempel: eu-west-1, hvis du er usikker, la det stå tomt",
         "workingDirectoryPath textField label": "Arbeidsmappesti",
         "workingDirectoryPath textField helper text": (
             <>
@@ -200,7 +201,7 @@ export const translations: Translations<"no"> = {
                 <code>kun min-bøtte/</code> hvis du eier hele bøtten.
             </>
         ),
-        "account credentials": "Kontokredensialer",
+        "account credentials": "Kontoinformasjon",
         "accountFriendlyName textField label": "Brukervennlig kontonavn",
         "accountFriendlyName textField helper text":
             "Dette er bare for å hjelpe deg med å identifisere denne kontoen. Eksempel: Min personlige konto",
@@ -387,7 +388,7 @@ export const translations: Translations<"no"> = {
         "deletion dialog title": ({ deleteWhat }) => `Slett ${deleteWhat}?`,
         "deletion dialog body": ({ deleteWhat }) =>
             `Du er i ferd med å slette ${deleteWhat}.
-      Denne handlingen kan ikke reverseres.`,
+      Denne handlingen kan ikke angres.`,
         "already a directory with this name":
             "Det finnes allerede en mappe med dette navnet",
         "can't be empty": "Kan ikke være tom",
@@ -536,13 +537,13 @@ export const translations: Translations<"no"> = {
         "header text1": "Tjenestekatalog",
         "sources": ({ helmChartName, helmChartRepositoryName, sourceUrls }) => (
             <>
-                Du er i ferd med å distribuere Helm-diagrammet{" "}
+                Du er i ferd med å starte{" "}
                 {
                     <MaybeLink href={sourceUrls.helmChartSourceUrl}>
                         {helmChartName}
                     </MaybeLink>
                 }
-                som tilhører Helm-diagramlageret{" "}
+                fra tjenestekatalogen{" "}
                 {
                     <MaybeLink href={sourceUrls.helmChartRepositorySourceUrl}>
                         {helmChartRepositoryName}
@@ -552,7 +553,7 @@ export const translations: Translations<"no"> = {
                 {sourceUrls.dockerImageSourceUrl !== undefined && (
                     <>
                         {" "}
-                        Det er basert på Docker-avbildningen{" "}
+                        Den er basert på Docker-malen{" "}
                         {
                             <MuiLink
                                 href={sourceUrls.dockerImageSourceUrl}
@@ -594,22 +595,22 @@ export const translations: Translations<"no"> = {
                             : {})
                     };
                 }}
-            >{`Vi har designet kommandolinjen for å gi deg full kontroll over dine Kubernetes-implementeringer.
+            >{`Vi har designet kommandolinjen for å gi deg full kontroll over tjenestene du kjører på Kubernetes.
 Her er det du trenger å vite:
 
 #### Hva er disse Helm-kommandoene?
 
-Disse kommandoene er de eksakte Helm-kommandoene som Onyxia API vil utføre på dine vegne i ditt Kubernetes-navnerom.
-Dette lar deg vite hva som skjer i kulissene når du interagerer med brukergrensesnittet.
+Disse kommandoene er de Helm-kommandoene som Onyxia API vil utføre på dine vegne i ditt Kubernetes-navnerom.
+Dette gir deg innsikt i hva som skjer i kulissene når du jobber med brukergrensesnittet.
 
 #### Sanntidsoppdateringer
 
-Når du interagerer med brukergrensesnittet, vil Helm-kommandoene automatisk oppdatere seg for å reflektere hva du gjør.
+Når du bruker grensesnittet, vil Helm-kommandoene automatisk oppdatere seg for å reflektere hva du gjør.
 
 #### Hvorfor bør jeg bry meg?
 
 - **Gjennomsiktighet:** Vi mener du har rett til å vite hvilke handlinger som utføres i ditt miljø.
-- **Læring:** Å forstå disse kommandoene kan gi innsikt i Kubernetes og Helm, og dypere din kunnskap.
+- **Læring:** Å forstå disse kommandoene kan gi innsikt i Kubernetes og Helm, og gi bedre kunnskap.
 - **Manuell utførelse:** Du kan kopiere og lime inn disse kommandoene i en terminal med skrivetilgang til Kubernetes, som lar deg starte tjenesten manuelt.
 
 #### Hvordan kan jeg kjøre disse kommandoene manuelt?
@@ -636,7 +637,7 @@ Ved å kjøre kommandoen manuelt, vil du fortsatt kunne se tjenesten i [\`Mine t
 
 Du kan deaktivere kommandolinjen i [\`Min konto -> Grensesnitt preferanse-fanen\`](${interfacePreferenceHref}).
 
-Føl deg fri til å utforske og ta kontroll over dine Kubernetes-implementeringer!
+Utforsk gjerne og ta kontroll over tjenestene du kjører på Kubernetes!
         `}</Markdown>
         )
     },
@@ -718,13 +719,13 @@ Føl deg fri til å utforske og ta kontroll over dine Kubernetes-implementeringe
             sourceUrls
         }) => (
             <>
-                Versjon av helm-diagrammet{" "}
+                Versjon av Helm-malen{" "}
                 {
                     <MaybeLink href={sourceUrls.helmChartSourceUrl}>
                         {helmCharName}
                     </MaybeLink>
                 }
-                som tilhører helm-diagramdepotet{" "}
+                som tilhører Helm-katalogen{" "}
                 {
                     <MaybeLink href={sourceUrls.helmChartRepositorySourceUrl}>
                         {helmRepositoryName}
@@ -800,10 +801,10 @@ Føl deg fri til å utforske og ta kontroll over dine Kubernetes-implementeringe
         "status": "Status",
         "container starting": "Container starter",
         "failed": "Mislyktes",
-        "suspend service tooltip": "Suspender tjenesten og frigjør ressurser",
+        "suspend service tooltip": "Pause tjenesten og frigjør ressurser",
         "resume service tooltip": "Gjenoppta tjenesten",
-        "suspended": "Suspendert",
-        "suspending": "Suspenderer",
+        "suspended": "Pauset",
+        "suspending": "Pauser",
         "share tooltip - belong to someone else": ({
             projectName,
             ownerUsername,

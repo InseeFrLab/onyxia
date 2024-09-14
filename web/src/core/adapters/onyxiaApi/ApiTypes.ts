@@ -78,6 +78,10 @@ export type ApiTypes = {
                     };
                     URL?: string;
                 };
+                openshiftSCC?: {
+                    scc: string;
+                    enabled: boolean;
+                };
             };
             data?: {
                 S3?: ArrayOrNot<{
@@ -168,6 +172,10 @@ export type ApiTypes = {
                 >;
             };
             highlightedCharts?: string[];
+            visible: {
+                user: boolean;
+                project: boolean;
+            };
         }[];
     };
     "/public/catalogs/${catalogId}/charts/${chartName}/versions/${chartVersion}": {
@@ -186,11 +194,8 @@ export type ApiTypes = {
             id: string;
             status: "deployed" | "pending-install" | "failed";
             urls: string[];
-            env: {
-                "onyxia.owner": string;
-                // Actually Record<string, string> but we prefer only listing known properties
-                // for type safety.
-            };
+            env: Record<string, string>;
+            owner: string;
             startedAt: number;
             tasks: {
                 id: string;

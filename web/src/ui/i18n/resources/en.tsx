@@ -255,7 +255,7 @@ export const translations: Translations<"en"> = {
             <>
                 The{" "}
                 <MuiLink href={imgUrl} target="_blank">
-                    the command bar
+                    command bar
                 </MuiLink>{" "}
                 gives you insight on the commands ran on your behalf when you interact
                 with the UI.

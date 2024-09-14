@@ -22,7 +22,7 @@ ingress:
     - host: datalab.my-domain.net
 EOF
 
-helm install onyxia onyxia/onyxia --version "8.23.0" -f onyxia-values.yaml
+helm install onyxia onyxia/onyxia --version "9.0.0" -f onyxia-values.yaml
 ```
 
 ### Using the Keycloak Theme (Optional)
@@ -44,7 +44,7 @@ extraInitContainers: |
     args:
       - -c
       - |
-        curl -L -f -S -o /extensions/onyxia.jar https://github.com/InseeFrLab/onyxia/releases/download/v8.23.0/keycloak-theme.jar
+        curl -L -f -S -o /extensions/onyxia.jar https://github.com/InseeFrLab/onyxia/releases/download/v9.0.0/keycloak-theme.jar
     volumeMounts:
       - name: extensions
         mountPath: /extensions
@@ -70,8 +70,8 @@ After that, you should be able to select *onyxia* as *Login Theme*.
 
 Documentation reference for the available configuration parameter of the Onyxia Helm Chart.
 
--   [The REST API (`api`)](https://github.com/InseeFrLab/onyxia-api/blob/v2.7.0/README.md#configuration)
--   [The Web Application (`web`)](https://github.com/InseeFrLab/onyxia/blob/web-v4.29.1/web/.env)
+-   [The REST API (`api`)](https://github.com/InseeFrLab/onyxia-api/blob/v3.0.0/README.md#configuration)
+-   [The Web Application (`web`)](https://github.com/InseeFrLab/onyxia/blob/web-v4.32.15/web/.env)
 
 Below is a sample `onyxia-values.yaml` file that illustrates where to specify the `api` and `web` configuration parameters.
 
@@ -107,4 +107,4 @@ Below is a sample `onyxia-values.yaml` file that illustrates where to specify th
 If you are building your own service catalog for Onyxia ([learn how](https://docs.onyxia.sh/catalog-of-services)).  
 Here are defined the onyxia reserved parameter and the structure of the dynamic context:
 
-[`values.schema.json` `"x-onyxia"` specifications](https://github.com/InseeFrLab/onyxia/blob/web-v4.29.1/web/src/core/ports/OnyxiaApi/XOnyxia.ts)
+[`values.schema.json` `"x-onyxia"` specifications](https://github.com/InseeFrLab/onyxia/blob/web-v4.32.15/web/src/core/ports/OnyxiaApi/XOnyxia.ts)

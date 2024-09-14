@@ -69,7 +69,7 @@ export async function createSecretManager(params: Params): Promise<SecretsManage
             "returnCachedTokenIfStillValidForXPercentOfItsTTL": "90%"
         });
 
-    if (oidc.loginScenario !== "sessionStorageRestoration") {
+    if (oidc.authMethod !== "session storage") {
         clearCachedToken();
     }
 

@@ -190,7 +190,7 @@ export function createS3Client(
                     "returnCachedTokenIfStillValidForXPercentOfItsTTL": "90%"
                 });
 
-            if (oidc.loginScenario !== "sessionStorageRestoration") {
+            if (oidc.authMethod !== "session storage") {
                 await clearCachedToken();
             }
 

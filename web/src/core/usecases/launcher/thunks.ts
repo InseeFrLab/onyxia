@@ -600,7 +600,8 @@ const privateThunks = {
                     "startupProbe": region.startupProbe,
                     "sliders": region.sliders,
                     "resources": region.resources,
-                    "customValues": region.customValues ?? {}
+                    "customValues": region.customValues ?? {},
+                    "openshiftSCC": region.openshiftSCC
                 },
                 "k8s": {
                     "domain": region.kubernetesClusterDomain,

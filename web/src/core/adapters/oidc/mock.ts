@@ -1,10 +1,12 @@
 import type { Oidc } from "core/ports/Oidc";
 import { createMockOidc } from "oidc-spa/mock";
 
-export function createOidc(params: { isUserInitiallyLoggedIn: boolean }): Oidc {
+export async function createOidc(params: {
+    isUserInitiallyLoggedIn: boolean;
+}): Promise<Oidc> {
     const { isUserInitiallyLoggedIn } = params;
 
-    const oidc = createMockOidc({
+    const oidc = await createMockOidc({
         isUserInitiallyLoggedIn
     });
 

@@ -1,38 +1,15 @@
 /* eslint-disable react-refresh/only-export-components */
 import { createOnyxiaUi, defaultGetTypographyDesc } from "onyxia-ui";
 import { palette } from "./palette";
-import { targetWindowInnerWidth } from "./targetWindowInnerWidth";
 import { env } from "env";
 import { loadThemedFavicon as loadThemedFavicon_base } from "./loadThemedFavicon";
 import { Evt } from "evt";
 import { CacheProvider } from "@emotion/react";
 import { createCssAndCx } from "tss-react/cssAndCx";
 import createCache from "@emotion/cache";
-import { enableScreenScaler } from "screen-scaler/react";
 import { pluginSystemInitTheme } from "pluginSystem";
-
-// NOTE: This must happen very early-on, if overwrite some DOM APIs.
-export const { ScreenScalerOutOfRangeFallbackProvider } = enableScreenScaler({
-    "rootDivId": "root",
-    "targetWindowInnerWidth": ({ zoomFactor, isPortraitOrientation }) =>
-        isPortraitOrientation ? undefined : targetWindowInnerWidth * zoomFactor
-});
-
-/*
-export const ScreenScalerOutOfRangeFallbackProvider = ({ children}: { 
-    children: React.ReactNode;
-    fallback?: React.ReactNode;
-})=> {
-
-
-    return (
-        <>
-            {children}
-        </>
-    );
-
-}
-*/
+import { targetWindowInnerWidth } from "ui/theme/targetWindowInnerWidth";
+import { isStorybook } from "ui/tools/isStorybook";
 
 const {
     OnyxiaUi: OnyxiaUiWithoutEmotionCache,
@@ -50,11 +27,13 @@ const {
         "fontFamily": `'${env.FONT.fontFamily}'`
     }),
     palette,
-    "splashScreenParams": {
-        "assetUrl": env.SPLASHSCREEN_LOGO,
-        "assetScaleFactor": env.SPLASHSCREEN_LOGO_SCALE_FACTOR,
-        "minimumDisplayDuration": 0
-    },
+    "splashScreenParams": isStorybook
+        ? undefined
+        : {
+              "assetUrl": env.SPLASHSCREEN_LOGO,
+              "assetScaleFactor": env.SPLASHSCREEN_LOGO_SCALE_FACTOR,
+              "minimumDisplayDuration": 0
+          },
     "BASE_URL": env.PUBLIC_URL
 });
 
@@ -70,11 +49,11 @@ pluginSystemInitTheme({
     cx
 });
 
-export function OnyxiaUi(props: { children: React.ReactNode }) {
-    const { children } = props;
+export function OnyxiaUi(props: { children: React.ReactNode; darkMode?: boolean }) {
+    const { children, darkMode } = props;
     return (
         <CacheProvider value={emotionCache}>
-            <OnyxiaUiWithoutEmotionCache darkMode={env.DARK_MODE}>
+            <OnyxiaUiWithoutEmotionCache darkMode={darkMode ?? env.DARK_MODE}>
                 {children}
             </OnyxiaUiWithoutEmotionCache>
         </CacheProvider>

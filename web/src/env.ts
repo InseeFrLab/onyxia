@@ -1160,6 +1160,57 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
             assert<Equals<typeof envValue, never>>(false);
             
         }
+    },
+    {
+        "envName": "LIST_ALLOWED_EMAIL_DOMAINS",
+        "isUsedInKeycloakTheme": true,
+        "validateAndParseOrGetDefault": ({ envValue, envName }) => {
+
+            const possibleValues = ["true", "false"];
+
+            assert(
+                possibleValues.indexOf(envValue) >= 0,
+                `${envName} should either be ${possibleValues.join(" or ")}`
+            );
+
+            return envValue === "true";
+
+        }
+    },
+    {
+        "envName": "CONTACT_FOR_ADDING_EMAIL_DOMAIN",
+        "isUsedInKeycloakTheme": true,
+        "validateAndParseOrGetDefault": ({
+            envValue,
+            envName
+        }): LocalizedString | undefined => {
+            if (envValue === "") {
+                return undefined;
+            }
+
+            if (!getIsJSON5ObjectOrArray(envValue)) {
+                return envValue;
+            }
+
+            let parsedValue: unknown;
+
+            try {
+                parsedValue = JSON5.parse(envValue);
+            } catch {
+                throw new Error(`${envName} is not a valid JSON`);
+            }
+
+            try {
+                zLocalizedString.parse(parsedValue);
+            } catch (error) {
+                throw new Error(
+                    `The format of ${envName} is not valid: ${String(error)}`
+                );
+            }
+            assert(is<LocalizedString>(parsedValue));
+
+            return parsedValue;
+        }
     }
 ]);
 

@@ -2,34 +2,37 @@ import bytes from "bytes";
 
 export function toBytes(str: string) {
     const validBytesInput = (() => {
-        const s = str.trim().toLowerCase();
+        const s = str.trim();
 
         if (s === "0") {
             return "0b";
         }
 
-        if (s.endsWith("b")) {
-            //return s.slice(0, -1) + ;
-            return s;
+        if (/^\d+$/.test(s)) {
+            return s + "b";
         }
 
-        if (s.endsWith("ki")) {
+        if (s.endsWith("B")) {
+            return s.toLowerCase();
+        }
+
+        if (s.endsWith("Ki") || s.endsWith("K")) {
             return s.slice(0, -2) + "kb";
         }
 
-        if (s.endsWith("mi")) {
+        if (s.endsWith("Mi") || s.endsWith("M")) {
             return s.slice(0, -2) + "mb";
         }
 
-        if (s.endsWith("gi")) {
+        if (s.endsWith("Gi") || s.endsWith("G")) {
             return s.slice(0, -2) + "gb";
         }
 
-        if (s.endsWith("ti")) {
+        if (s.endsWith("Ti") || s.endsWith("T")) {
             return s.slice(0, -2) + "tb";
         }
 
-        if (s.endsWith("pi")) {
+        if (s.endsWith("Pi") || s.endsWith("P")) {
             return s.slice(0, -2) + "pb";
         }
 

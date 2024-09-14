@@ -1,19 +1,26 @@
 import { env } from "env";
 import { assert, type Equals } from "tsafe/assert";
+import { is } from "tsafe/is";
 import { exclude } from "tsafe/exclude";
-import { typeGuard } from "tsafe/typeGuard";
 
 export function injectCustomFontFaceIfNotAlreadyDone(): void {
     const { fontFamily, dirUrl } = env.FONT;
 
-    {
+    skip_if_already_done: {
         const metaTag = document.querySelector(`meta[name='onyxia-font']`);
 
-        assert(typeGuard<HTMLMetaElement>(metaTag, metaTag !== null));
-
-        if (metaTag.content === fontFamily) {
-            return;
+        if (metaTag === null) {
+            break skip_if_already_done;
         }
+
+        assert(is<HTMLMetaElement>(metaTag));
+
+        if (metaTag.content !== fontFamily) {
+            break skip_if_already_done;
+        }
+
+        // NOTE: We already have the correct font face.
+        return;
     }
 
     const styleElement = document.createElement("style");
