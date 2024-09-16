@@ -42,5 +42,9 @@ export const selectors = {
             }
             return currentProject.name;
         }
+    ),
+    "doesUserBelongToSomeGroupProject": createSelector(
+        state,
+        state => state.projects.length !== 1
     )
 };
