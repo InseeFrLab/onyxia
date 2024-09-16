@@ -33,5 +33,14 @@ export const selectors = {
     "servicePassword": createSelector(
         projectConfig,
         projectConfig => projectConfig.servicePassword
+    ),
+    "groupProjectName": createSelector(
+        protectedSelectors.currentProject,
+        currentProject => {
+            if (currentProject.group == undefined) {
+                return undefined;
+            }
+            return currentProject.name;
+        }
     )
 };

@@ -61,7 +61,6 @@ export default function MyServices(props: Props) {
     } = useCoreState("serviceManagement", "main");
 
     const { isCommandBarEnabled } = useCoreState("userConfigs", "userConfigs");
-    const servicePassword = useCoreState("projectManagement", "servicePassword");
 
     const evtQuotasActionUpdate = useConst(() => Evt.create());
 
@@ -362,7 +361,6 @@ export default function MyServices(props: Props) {
                                         onRequestChangeFriendlyName
                                     }
                                     evtAction={evtMyServiceCardsAction}
-                                    projectServicePassword={servicePassword}
                                     lastClusterEvent={lastClusterEvent}
                                     onOpenClusterEventsDialog={onOpenClusterEventsDialog}
                                     onRequestChangeSharedStatus={

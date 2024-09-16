@@ -45,7 +45,6 @@ export type Props = {
     onRequestChangeFriendlyName: (friendlyName: string) => void;
     onRequestChangeSharedStatus: (isShared: boolean) => void;
     groupProjectName: string | undefined;
-    projectServicePassword: string;
     service: Service;
 };
 
@@ -62,7 +61,6 @@ export const MyServicesCard = memo((props: Props) => {
         onRequestChangeFriendlyName,
         onRequestChangeSharedStatus,
         groupProjectName,
-        projectServicePassword,
         service
     } = props;
 
@@ -343,7 +341,7 @@ export const MyServicesCard = memo((props: Props) => {
                 evtOpen={evtOpenReadmeDialog}
                 isReady={service.state === "running"}
                 openUrl={service.openUrl}
-                projectServicePassword={projectServicePassword}
+                servicePassword={service.servicePassword}
                 postInstallInstructions={service.postInstallInstructions}
                 onRequestLogHelmGetNotes={onRequestLogHelmGetNotes}
                 lastClusterEvent={lastClusterEvent}

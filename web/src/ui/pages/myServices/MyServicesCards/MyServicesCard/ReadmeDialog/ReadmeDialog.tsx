@@ -16,7 +16,7 @@ type Props = {
     evtOpen: NonPostableEvt<void>;
     isReady: boolean;
     openUrl: string | undefined;
-    projectServicePassword: string;
+    servicePassword: string | undefined;
     postInstallInstructions: string | undefined;
     onRequestLogHelmGetNotes: () => void;
     lastClusterEvent:
@@ -30,7 +30,7 @@ export const ReadmeDialog = memo((props: Props) => {
         evtOpen,
         isReady,
         openUrl,
-        projectServicePassword,
+        servicePassword,
         postInstallInstructions = "",
         onRequestLogHelmGetNotes,
         lastClusterEvent,
@@ -104,12 +104,7 @@ export const ReadmeDialog = memo((props: Props) => {
                             openUrl !== undefined && (
                                 <CopyOpenButton
                                     openUrl={openUrl}
-                                    servicePassword={extractServicePasswordFromPostInstallInstructions(
-                                        {
-                                            postInstallInstructions,
-                                            projectServicePassword
-                                        }
-                                    )}
+                                    servicePassword={servicePassword}
                                     onDialogClose={onDialogClose}
                                 />
                             )
@@ -120,27 +115,6 @@ export const ReadmeDialog = memo((props: Props) => {
         />
     );
 });
-
-function extractServicePasswordFromPostInstallInstructions(params: {
-    postInstallInstructions: string;
-    projectServicePassword: string;
-}): string | undefined {
-    const { postInstallInstructions, projectServicePassword } = params;
-
-    if (postInstallInstructions.includes(projectServicePassword)) {
-        return projectServicePassword;
-    }
-
-    const regex = /password: ?([^\n ]+)/i;
-
-    const match = postInstallInstructions.match(regex);
-
-    if (match === null) {
-        return undefined;
-    }
-
-    return match[1];
-}
 
 const useStyles = tss
     .withName({ ReadmeDialog })

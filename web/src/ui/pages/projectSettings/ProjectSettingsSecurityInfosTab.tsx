@@ -13,13 +13,13 @@ export const ProjectSettingsSecurityInfosTab = memo((props: Props) => {
     const { projectManagement } = useCore().functions;
 
     const servicePassword = useCoreState("projectManagement", "servicePassword");
-    const project = useCoreState("projectManagement", "currentProject");
+    const groupProjectName = useCoreState("projectManagement", "groupProjectName");
 
     return (
         <div className={className}>
             <SettingField
                 type="service password"
-                groupProjectName={project.group === undefined ? undefined : project.name}
+                groupProjectName={groupProjectName}
                 servicePassword={servicePassword}
                 onRequestCopy={() => copyToClipboard(servicePassword)}
                 onRequestServicePasswordRenewal={() =>
