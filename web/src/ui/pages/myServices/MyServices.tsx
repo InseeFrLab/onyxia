@@ -161,7 +161,8 @@ export default function MyServices(props: Props) {
                         chartVersion,
                         friendlyName,
                         isShared,
-                        formFieldsValueDifferentFromDefault,
+                        s3ConfigId,
+                        helmValuesPatch,
                         ...rest
                     } = restorableConfig;
 
@@ -170,10 +171,11 @@ export default function MyServices(props: Props) {
                     return routes.launcher({
                         catalogId,
                         chartName,
-                        "version": restorableConfig.chartVersion,
-                        formFieldsValueDifferentFromDefault,
                         "name": friendlyName,
                         "shared": isShared,
+                        "version": restorableConfig.chartVersion,
+                        "s3": s3ConfigId,
+                        helmValuesPatch,
                         "autoLaunch": autoLaunch ? true : undefined
                     }).link;
                 };

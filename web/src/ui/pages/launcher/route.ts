@@ -179,8 +179,8 @@ export const routeDefs = {
             "shared": param.query.optional.boolean,
             "version": param.query.optional.string,
             "s3": param.query.optional.string,
-            "autoLaunch": param.query.optional.boolean,
-            ...helmValuesPatchWrap
+            ...helmValuesPatchWrap,
+            "autoLaunch": param.query.optional.boolean
         },
         ({ catalogId, chartName }) => `/launcher/${catalogId}/${chartName}`
     )
