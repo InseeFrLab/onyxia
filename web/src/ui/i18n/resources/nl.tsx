@@ -326,6 +326,10 @@ export const translations: Translations<"nl"> = {
         "cancel": "Annuleren",
         "go to settings": "Ga naar instellingen"
     },
+    "MyFilesShareDialog": {
+        "cancel": "Annuleren",
+        "create and copy link": "Creare e copiare il link"
+    },
     "MySecrets": {
         "page title - my secrets": "My Secrets",
         "what this page is used for - my secrets":

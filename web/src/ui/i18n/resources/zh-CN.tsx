@@ -292,6 +292,10 @@ export const translations: Translations<"zh-CN"> = {
         "cancel": "取消",
         "go to settings": "前往设置"
     },
+    "MyFilesShareDialog": {
+        "cancel": "取消",
+        "create and copy link": "创建并复制链接"
+    },
     "MySecrets": {
         "page title - my secrets": "我的密钥",
         "what this page is used for - my secrets":
