@@ -323,6 +323,10 @@ export const translations: Translations<"fi"> = {
         "cancel": "Peruuta",
         "go to settings": "Siirry asetuksiin"
     },
+    "MyFilesShareDialog": {
+        "cancel": "Peruuta",
+        "create and copy link": "Luo ja kopioi linkki"
+    },
     "MySecrets": {
         "page title - my secrets": "Omat salaisuudet",
         "what this page is used for - my secrets":
