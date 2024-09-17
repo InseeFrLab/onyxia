@@ -323,6 +323,10 @@ export const translations: Translations<"no"> = {
         "cancel": "Avbryt",
         "go to settings": "Gå til innstillinger"
     },
+    "MyFilesShareDialog": {
+        "cancel": "Avbryt",
+        "create and copy link": "Opprett og kopier lenke"
+    },
     "MySecrets": {
         "page title - my secrets": "Mine hemmeligheter",
         "what this page is used for - my secrets":

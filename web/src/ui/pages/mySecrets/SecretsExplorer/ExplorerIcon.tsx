@@ -26,6 +26,7 @@ export const ExplorerIcon = memo((props: Props) => {
                         return directorySvgUrl;
                 }
             })()}
+            key={iconId}
         />
     );
 });
