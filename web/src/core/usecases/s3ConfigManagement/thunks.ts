@@ -7,8 +7,67 @@ import type { S3Client } from "core/ports/S3Client";
 import { createOidcOrFallback } from "core/adapters/oidc/utils/createOidcOrFallback";
 import { createUsecaseContextApi } from "clean-architecture";
 import { getProjectS3ConfigId } from "./decoupledLogic/projectS3ConfigId";
+import * as s3ConfigConnectionTest from "core/usecases/s3ConfigConnectionTest";
 
-export const thunks = {} satisfies Thunks;
+export const thunks = {
+    "testS3Connection":
+        (params: { projectS3ConfigId: string }) =>
+        async (...args) => {
+            const { projectS3ConfigId } = params;
+            const [dispatch, getState] = args;
+
+            const s3Configs = selectors.s3Configs(getState());
+
+            const s3Config = s3Configs.find(
+                s3Config => s3Config.id === projectS3ConfigId
+            );
+
+            assert(s3Config !== undefined);
+            assert(s3Config.origin === "project");
+
+            await dispatch(
+                s3ConfigConnectionTest.protectedThunks.testS3Connection({
+                    "paramsOfCreateS3Client": s3Config.paramsOfCreateS3Client,
+                    "workingDirectoryPath": s3Config.workingDirectoryPath
+                })
+            );
+        },
+    "deleteS3Config":
+        (params: { projectConfigId: string }) =>
+        async (...args) => {
+            const { projectConfigId } = params;
+
+            const [dispatch, getState] = args;
+
+            const projectS3Configs = [
+                ...projectManagement.protectedSelectors.projectConfig(getState())
+                    .s3Configs
+            ];
+
+            const i = projectS3Configs.findIndex(
+                projectS3Config_i =>
+                    getProjectS3ConfigId({
+                        "creationTime": projectS3Config_i.creationTime
+                    }) ===
+                    getProjectS3ConfigId({
+                        "creationTime": projectS3Config.creationTime
+                    })
+            );
+
+            if (i < 0) {
+                projectS3Configs.push(projectS3Config);
+            } else {
+                projectS3Configs[i] = projectS3Config;
+            }
+
+            await dispatch(
+                projectManagement.protectedThunks.updateConfigValue({
+                    "key": "s3Configs",
+                    "value": projectS3Configs
+                })
+            );
+        }
+} satisfies Thunks;
 
 export const protectedThunks = {
     "initialize":
