@@ -16,9 +16,11 @@ type State = {
 export type ProjectConfigs = {
     servicePassword: string;
     restorableConfigs: ProjectConfigs.RestorableServiceConfig[];
-    s3Configs: ProjectConfigs.S3Config[];
-    s3ConfigId_defaultXOnyxia: string | undefined;
-    s3ConfigId_explorer: string | undefined;
+    s3: {
+        s3Configs: ProjectConfigs.S3Config[];
+        s3ConfigId_defaultXOnyxia: string | undefined;
+        s3ConfigId_explorer: string | undefined;
+    };
     clusterNotificationCheckoutTime: number;
 };
 

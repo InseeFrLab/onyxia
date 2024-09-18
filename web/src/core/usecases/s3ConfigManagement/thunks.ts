@@ -1,13 +1,17 @@
 import type { Thunks } from "core/bootstrap";
-import { selectors, type S3Config } from "./selectors";
+import { selectors } from "./selectors";
+import type { S3Config } from "./decoupledLogic/getS3Configs";
 import * as projectManagement from "core/usecases/projectManagement";
 import type { ProjectConfigs } from "core/usecases/projectManagement";
-import { assert, type Equals } from "tsafe/assert";
+import { assert } from "tsafe/assert";
 import type { S3Client } from "core/ports/S3Client";
 import { createOidcOrFallback } from "core/adapters/oidc/utils/createOidcOrFallback";
 import { createUsecaseContextApi } from "clean-architecture";
 import { getProjectS3ConfigId } from "./decoupledLogic/projectS3ConfigId";
 import * as s3ConfigConnectionTest from "core/usecases/s3ConfigConnectionTest";
+import { updateDefaultS3ConfigsAfterPotentialDeletion } from "./decoupledLogic/updateDefaultS3ConfigsAfterPotentialDeletion";
+import structuredClone from "@ungap/structured-clone";
+import * as deploymentRegionManagement from "core/usecases/deploymentRegionManagement";
 
 export const thunks = {
     "testS3Connection":
@@ -33,77 +37,61 @@ export const thunks = {
             );
         },
     "deleteS3Config":
-        (params: { projectConfigId: string }) =>
+        (params: { projectS3ConfigId: string }) =>
         async (...args) => {
-            const { projectConfigId } = params;
+            const { projectS3ConfigId } = params;
 
             const [dispatch, getState] = args;
 
-            const projectS3Configs = [
-                ...projectManagement.protectedSelectors.projectConfig(getState())
-                    .s3Configs
-            ];
+            const projectConfigsS3 = structuredClone(
+                projectManagement.protectedSelectors.projectConfig(getState()).s3
+            );
 
-            const i = projectS3Configs.findIndex(
+            const i = projectConfigsS3.s3Configs.findIndex(
                 projectS3Config_i =>
                     getProjectS3ConfigId({
                         "creationTime": projectS3Config_i.creationTime
-                    }) ===
-                    getProjectS3ConfigId({
-                        "creationTime": projectS3Config.creationTime
-                    })
+                    }) === projectS3ConfigId
             );
 
-            if (i < 0) {
-                projectS3Configs.push(projectS3Config);
-            } else {
-                projectS3Configs[i] = projectS3Config;
+            assert(i !== -1);
+
+            projectConfigsS3.s3Configs.splice(i, 1);
+
+            {
+                const actions = updateDefaultS3ConfigsAfterPotentialDeletion({
+                    projectConfigsS3,
+                    "s3RegionConfigs":
+                        deploymentRegionManagement.selectors.currentDeploymentRegion(
+                            getState()
+                        ).s3Configs
+                });
+
+                await Promise.all(
+                    (["s3ConfigId_defaultXOnyxia", "s3ConfigId_explorer"] as const).map(
+                        async propertyName => {
+                            const action = actions[propertyName];
+
+                            if (!action.isUpdateNeeded) {
+                                return;
+                            }
+
+                            projectConfigsS3[propertyName] = action.s3ConfigId;
+                        }
+                    )
+                );
             }
 
             await dispatch(
                 projectManagement.protectedThunks.updateConfigValue({
-                    "key": "s3Configs",
-                    "value": projectS3Configs
+                    "key": "s3",
+                    "value": projectConfigsS3
                 })
             );
         }
 } satisfies Thunks;
 
 export const protectedThunks = {
-    "initialize":
-        () =>
-        async (...args) => {
-            const [dispatch, getState] = args;
-
-            const s3Configs = selectors.s3Configs(getState());
-
-            await Promise.all(
-                (["s3ConfigId_defaultXOnyxia", "s3ConfigId_explorer"] as const).map(
-                    async key => {
-                        const s3Config = s3Configs.find(s3Config => {
-                            switch (key) {
-                                case "s3ConfigId_defaultXOnyxia":
-                                    return s3Config.isXOnyxiaDefault;
-                                case "s3ConfigId_explorer":
-                                    return s3Config.isExplorerConfig;
-                            }
-                            assert<Equals<typeof key, never>>(false);
-                        });
-
-                        if (s3Config === undefined) {
-                            return;
-                        }
-
-                        await dispatch(
-                            projectManagement.protectedThunks.updateConfigValue({
-                                key,
-                                "value": s3Config.id
-                            })
-                        );
-                    }
-                )
-            );
-        },
     "getS3ClientForSpecificConfig":
         (params: { s3ConfigId: string | undefined }) =>
         async (...args): Promise<S3Client> => {
@@ -178,12 +166,11 @@ export const protectedThunks = {
 
             const [dispatch, getState] = args;
 
-            const projectS3Configs = [
-                ...projectManagement.protectedSelectors.projectConfig(getState())
-                    .s3Configs
-            ];
+            const projectConfigsS3 = structuredClone(
+                projectManagement.protectedSelectors.projectConfig(getState()).s3
+            );
 
-            const i = projectS3Configs.findIndex(
+            const i = projectConfigsS3.s3Configs.findIndex(
                 projectS3Config_i =>
                     getProjectS3ConfigId({
                         "creationTime": projectS3Config_i.creationTime
@@ -194,15 +181,15 @@ export const protectedThunks = {
             );
 
             if (i < 0) {
-                projectS3Configs.push(projectS3Config);
+                projectConfigsS3.s3Configs.push(projectS3Config);
             } else {
-                projectS3Configs[i] = projectS3Config;
+                projectConfigsS3.s3Configs[i] = projectS3Config;
             }
 
             await dispatch(
                 projectManagement.protectedThunks.updateConfigValue({
-                    "key": "s3Configs",
-                    "value": projectS3Configs
+                    "key": "s3",
+                    "value": projectConfigsS3
                 })
             );
         }

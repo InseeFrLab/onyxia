@@ -4,22 +4,26 @@ import type { ParamsOfCreateS3Client } from "core/adapters/s3Client";
 import { same } from "evt/tools/inDepth/same";
 
 type State = {
-    configTestResults: {
-        paramsOfCreateS3Client: ParamsOfCreateS3Client;
-        workingDirectoryPath: string;
-        result:
-            | {
-                  isSuccess: true;
-              }
-            | {
-                  isSuccess: false;
-                  errorMessage: string;
-              };
-    }[];
-    ongoingConfigTests: {
-        paramsOfCreateS3Client: ParamsOfCreateS3Client;
-        workingDirectoryPath: string;
-    }[];
+    configTestResults: ConfigTestResult[];
+    ongoingConfigTests: OngoingConfigTest[];
+};
+
+export type OngoingConfigTest = {
+    paramsOfCreateS3Client: ParamsOfCreateS3Client;
+    workingDirectoryPath: string;
+};
+
+export type ConfigTestResult = {
+    paramsOfCreateS3Client: ParamsOfCreateS3Client;
+    workingDirectoryPath: string;
+    result:
+        | {
+              isSuccess: true;
+          }
+        | {
+              isSuccess: false;
+              errorMessage: string;
+          };
 };
 
 export const name = "s3ConfigConnectionTest";

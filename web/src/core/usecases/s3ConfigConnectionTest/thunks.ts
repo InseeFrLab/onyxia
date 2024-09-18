@@ -9,7 +9,7 @@ export const thunks = {} satisfies Thunks;
 export const protectedThunks = {
     "testS3Connection":
         (params: {
-            paramsOfCreateS3Client: ParamsOfCreateS3Client;
+            paramsOfCreateS3Client: ParamsOfCreateS3Client.NoSts;
             workingDirectoryPath: string;
         }) =>
         async (...args) => {
@@ -24,9 +24,11 @@ export const protectedThunks = {
             const result = await (async () => {
                 const { createS3Client } = await import("core/adapters/s3Client");
 
-                const s3Client = createS3Client(paramsOfCreateS3Client, () => {
+                const getOidc = () => {
                     assert(false);
-                });
+                };
+
+                const s3Client = createS3Client(paramsOfCreateS3Client, getOidc);
 
                 try {
                     await s3Client.list({

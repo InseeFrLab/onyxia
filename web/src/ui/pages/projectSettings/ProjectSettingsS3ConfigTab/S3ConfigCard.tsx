@@ -4,7 +4,7 @@ import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
 import { id } from "tsafe/id";
 import { Button } from "onyxia-ui/Button";
 import { tss } from "tss";
-import type { ConnectionTestStatus } from "core/usecases/s3ConfigManagement";
+import type { S3Config } from "core/usecases/s3ConfigManagement";
 import { TestS3ConnectionButton } from "./TestS3ConnectionButton";
 import { Icon } from "onyxia-ui/Icon";
 import Tooltip from "@mui/material/Tooltip";
@@ -22,7 +22,7 @@ type Props = {
     onIsUsedForXOnyxiaValueChange: ((isUsed: boolean) => void) | undefined;
     onEdit: (() => void) | undefined;
     doHideUsageSwitches: boolean;
-    connectionTestStatus: ConnectionTestStatus | undefined;
+    connectionTestStatus: S3Config["connectionTestStatus"] | undefined;
     onTestConnection: (() => void) | undefined;
 };
 
