@@ -88,6 +88,53 @@ export const thunks = {
                     "value": projectConfigsS3
                 })
             );
+        },
+    "changeIsDefault":
+        (params: {
+            s3ConfigId: string;
+            usecase: "defaultXOnyxia" | "explorer";
+            value: boolean;
+        }) =>
+        async (...args) => {
+            const { s3ConfigId, usecase, value } = params;
+
+            const [dispatch, getState] = args;
+
+            const projectConfigsS3 = structuredClone(
+                projectManagement.protectedSelectors.projectConfig(getState()).s3
+            );
+
+            const propertyName = (() => {
+                switch (usecase) {
+                    case "defaultXOnyxia":
+                        return "s3ConfigId_defaultXOnyxia";
+                    case "explorer":
+                        return "s3ConfigId_explorer";
+                }
+            })();
+
+            {
+                const currentDefault = projectConfigsS3[propertyName];
+
+                if (value) {
+                    if (currentDefault === s3ConfigId) {
+                        return;
+                    }
+                } else {
+                    if (currentDefault !== s3ConfigId) {
+                        return;
+                    }
+                }
+            }
+
+            projectConfigsS3[propertyName] = value ? s3ConfigId : undefined;
+
+            await dispatch(
+                projectManagement.protectedThunks.updateConfigValue({
+                    "key": "s3",
+                    "value": projectConfigsS3
+                })
+            );
         }
 } satisfies Thunks;
 
