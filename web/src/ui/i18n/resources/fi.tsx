@@ -202,9 +202,9 @@ export const translations: Translations<"fi"> = {
             </>
         ),
         "account credentials": "Tilin tunnistetiedot",
-        "accountFriendlyName textField label": "Tilin ystävällinen nimi",
-        "accountFriendlyName textField helper text":
-            "Tämä on vain avuksi tilin tunnistamisessa. Esimerkki: Oma henkilökohtainen tili",
+        "friendlyName textField label": "Konfiguraation nimi",
+        "friendlyName textField helper text":
+            "Tämä auttaa sinua tunnistamaan tämän konfiguraation. Esimerkki: Minun AWS-bucket",
         "isAnonymous switch label": "Anonyymi pääsy",
         "isAnonymous switch helper text":
             "Aseta PÄÄLLE, jos salainen pääsyavain ei ole tarpeen",

@@ -203,9 +203,9 @@ export const translations: Translations<"de"> = {
             </>
         ),
         "account credentials": "Kontozugangsdaten",
-        "accountFriendlyName textField label": "Benutzerfreundlicher Kontoname",
-        "accountFriendlyName textField helper text":
-            "Dient nur zur Identifikation dieses Kontos. Beispiel: Mein persönliches Konto",
+        "friendlyName textField label": "Konfigurationsname",
+        "friendlyName textField helper text":
+            "Dies hilft Ihnen nur, diese Konfiguration zu identifizieren. Beispiel: Mein AWS-Bucket",
         "isAnonymous switch label": "Anonymer Zugang",
         "isAnonymous switch helper text":
             "Auf EIN stellen, wenn kein geheimer Zugangsschlüssel erforderlich ist",

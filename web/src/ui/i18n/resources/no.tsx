@@ -202,9 +202,9 @@ export const translations: Translations<"no"> = {
             </>
         ),
         "account credentials": "Kontoinformasjon",
-        "accountFriendlyName textField label": "Brukervennlig kontonavn",
-        "accountFriendlyName textField helper text":
-            "Dette er bare for å hjelpe deg med å identifisere denne kontoen. Eksempel: Min personlige konto",
+        "friendlyName textField label": "Konfigurasjonsnavn",
+        "friendlyName textField helper text":
+            "Dette er bare for å hjelpe deg med å identifisere denne konfigurasjonen. Eksempel: Min AWS-bøtte",
 
         "isAnonymous switch label": "Anonym tilgang",
         "isAnonymous switch helper text":

@@ -133,9 +133,9 @@ export function getS3Configs(params: {
                 const paramsOfCreateS3Client: ParamsOfCreateS3Client.NoSts = {
                     url,
                     pathStyleAccess,
-                    isStsEnabled: false,
+                    "isStsEnabled": false,
                     region,
-                    credentials: c.credentials
+                    "credentials": c.credentials
                 };
 
                 return {

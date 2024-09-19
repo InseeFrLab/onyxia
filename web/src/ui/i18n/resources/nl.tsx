@@ -201,9 +201,9 @@ export const translations: Translations<"nl"> = {
             </>
         ),
         "account credentials": "Accountgegevens",
-        "accountFriendlyName textField label": "Vriendelijke naam van het account",
-        "accountFriendlyName textField helper text":
-            "Dit is slechts om u te helpen dit account te identificeren. Voorbeeld: Mijn persoonlijke account",
+        "friendlyName textField label": "Configuratienaam",
+        "friendlyName textField helper text":
+            "Dit helpt je alleen om deze configuratie te identificeren. Voorbeeld: Mijn AWS-bucket",
 
         "isAnonymous switch label": "Anonieme toegang",
         "isAnonymous switch helper text":

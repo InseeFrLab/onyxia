@@ -7,30 +7,33 @@ import * as deploymentRegionManagement from "core/usecases/deploymentRegionManag
 import { getWorkingDirectoryPath } from "core/usecases/s3ConfigManagement/decoupledLogic/getWorkingDirectoryPath";
 import * as projectManagement from "core/usecases/projectManagement";
 import * as userAuthentication from "core/usecases/userAuthentication";
+import * as s3ConfigConnectionTest from "core/usecases/s3ConfigConnectionTest";
 
 export const thunks = {
     "initialize":
-        (params: { s3ConfigId: string | undefined }) =>
+        (params: { s3ConfigIdToEdit: string | undefined }) =>
         async (...args) => {
-            const { s3ConfigId } = params;
+            const { s3ConfigIdToEdit } = params;
 
             const [dispatch, getState] = args;
 
             const s3Configs = s3ConfigManagement.selectors.s3Configs(getState());
 
             update_existing_config: {
-                if (s3ConfigId === undefined) {
+                if (s3ConfigIdToEdit === undefined) {
                     break update_existing_config;
                 }
 
-                const s3Config = s3Configs.find(s3Config => s3Config.id === s3ConfigId);
+                const s3Config = s3Configs.find(
+                    s3Config => s3Config.id === s3ConfigIdToEdit
+                );
 
                 assert(s3Config !== undefined);
                 assert(s3Config.origin === "project");
 
                 dispatch(
                     actions.initialized({
-                        s3ConfigId,
+                        s3ConfigIdToEdit,
                         "initialFormValues": {
                             "friendlyName": s3Config.friendlyName,
                             "url": s3Config.paramsOfCreateS3Client.url,
@@ -77,7 +80,7 @@ export const thunks = {
             if (s3ConfigCreationFormDefaults === undefined) {
                 dispatch(
                     actions.initialized({
-                        "s3ConfigId": undefined,
+                        "s3ConfigIdToEdit": undefined,
                         "initialFormValues": {
                             "friendlyName": "",
                             "url": "",
@@ -121,7 +124,7 @@ export const thunks = {
 
             dispatch(
                 actions.initialized({
-                    "s3ConfigId": undefined,
+                    "s3ConfigIdToEdit": undefined,
                     "initialFormValues": {
                         "friendlyName": "",
                         "url": s3ConfigCreationFormDefaults.url,
@@ -204,5 +207,29 @@ export const thunks = {
                     break preset_pathStyleAccess;
                 }
             }
+        },
+    "testConnection":
+        () =>
+        async (...args) => {
+            const [dispatch, getState] = args;
+
+            const projectS3Config =
+                privateSelectors.submittableFormValuesAsProjectS3Config(getState());
+
+            assert(projectS3Config !== null);
+            assert(projectS3Config !== undefined);
+
+            await dispatch(
+                s3ConfigConnectionTest.protectedThunks.testS3Connection({
+                    "paramsOfCreateS3Client": {
+                        "isStsEnabled": false,
+                        "url": projectS3Config.url,
+                        "pathStyleAccess": projectS3Config.pathStyleAccess,
+                        "region": projectS3Config.region,
+                        "credentials": projectS3Config.credentials
+                    },
+                    "workingDirectoryPath": projectS3Config.workingDirectoryPath
+                })
+            );
         }
 } satisfies Thunks;

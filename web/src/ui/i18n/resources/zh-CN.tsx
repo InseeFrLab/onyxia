@@ -184,9 +184,9 @@ export const translations: Translations<"zh-CN"> = {
             </>
         ),
         "account credentials": "账户凭证",
-        "accountFriendlyName textField label": "账户友好名称",
-        "accountFriendlyName textField helper text":
-            "这只是为了帮助你识别这个账户。例如：我的个人账户",
+        "friendlyName textField label": "配置名称",
+        "friendlyName textField helper text":
+            "这只是帮助您识别此配置。例如：我的 AWS 存储桶",
         "isAnonymous switch label": "匿名访问",
         "isAnonymous switch helper text": "如果不需要密钥，请将其设置为开启",
         "accessKeyId textField label": "访问密钥 ID",

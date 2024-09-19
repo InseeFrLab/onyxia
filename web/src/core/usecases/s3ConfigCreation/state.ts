@@ -55,25 +55,25 @@ export const { reducer, actions } = createUsecaseActions({
                 payload
             }: {
                 payload: {
-                    s3ConfigId: string | undefined;
+                    s3ConfigIdToEdit: string | undefined;
                     initialFormValues: State.Ready["formValues"];
                 };
             }
         ) => {
-            const { s3ConfigId, initialFormValues } = payload;
+            const { s3ConfigIdToEdit, initialFormValues } = payload;
 
             return id<State.Ready>({
                 "stateDescription": "ready",
                 "formValues": initialFormValues,
                 "action":
-                    s3ConfigId === undefined
+                    s3ConfigIdToEdit === undefined
                         ? {
                               "type": "create new config",
                               "creationTime": Date.now()
                           }
                         : {
                               "type": "update existing config",
-                              s3ConfigId
+                              "s3ConfigId": s3ConfigIdToEdit
                           }
             });
         },
