@@ -667,6 +667,11 @@ Utforsk gjerne og ta kontroll over tjenestene du kjører på Kubernetes!
             </>
         )
     },
+    "YamlCodeBlockFormField": {
+        "not an array": "En matrise forventes",
+        "not an object": "Et objekt forventes",
+        "not valid yaml": "Ugyldig YAML/JSON"
+    },
     "NoLongerBookmarkedDialog": {
         "no longer bookmarked dialog title": "Endringene dine vil ikke bli lagret",
         "no longer bookmarked dialog body":

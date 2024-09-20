@@ -657,6 +657,11 @@ Tutustu vapaasti ja ota hallintaan Kubernetes-julkaisusi!
         ),
         "ok": "Ok"
     },
+    "YamlCodeBlockFormField": {
+        "not an array": "Taulukkoa odotetaan",
+        "not an object": "Oliota odotetaan",
+        "not valid yaml": "Virheellinen YAML/JSON"
+    },
     "NoLongerBookmarkedDialog": {
         "no longer bookmarked dialog title": "Muutokset eivät tallennu",
         "no longer bookmarked dialog body":

@@ -672,6 +672,11 @@ N'hésitez pas à explorer et à prendre en main vos déploiements Kubernetes !
         ),
         "ok": "Ok"
     },
+    "YamlCodeBlockFormField": {
+        "not an array": "Un tableau est attendu",
+        "not an object": "Un objet est attendu",
+        "not valid yaml": "YAML/JSON invalide"
+    },
     "NoLongerBookmarkedDialog": {
         "no longer bookmarked dialog title": "Changements non enregistrés",
         "no longer bookmarked dialog body":

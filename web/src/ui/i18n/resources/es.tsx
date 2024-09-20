@@ -8,6 +8,7 @@ import { capitalize } from "tsafe/capitalize";
 import { MaybeLink } from "ui/shared/MaybeLink";
 
 export const translations: Translations<"en"> = {
+    /* spell-checker: disable */
     "Account": {
         "infos": "Información de la cuenta",
         "git": "Git",
@@ -666,6 +667,11 @@ export const translations: Translations<"en"> = {
         ),
         "ok": "Ok"
     },
+    "YamlCodeBlockFormField": {
+        "not an array": "Se espera un arreglo",
+        "not an object": "Se espera un objeto",
+        "not valid yaml": "YAML/JSON no válido"
+    },
     "NoLongerBookmarkedDialog": {
         "no longer bookmarked dialog title": "Tus cambios no se guardarán",
         "no longer bookmarked dialog body":
@@ -1007,4 +1013,5 @@ export const translations: Translations<"en"> = {
         "copied to clipboard": "¡Copiado!",
         "copy to clipboard": "Copiar al portapapeles"
     }
+    /* spell-checker: enable */
 };

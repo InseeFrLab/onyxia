@@ -618,6 +618,11 @@ ${
             </>
         )
     },
+    "YamlCodeBlockFormField": {
+        "not an array": "需要是数组",
+        "not an object": "需要是对象",
+        "not valid yaml": "无效的 YAML/JSON"
+    },
     "NoLongerBookmarkedDialog": {
         "no longer bookmarked dialog title": "更改未保存",
         "no longer bookmarked dialog body": "再次单击书签符号以更新您保存的配置.",

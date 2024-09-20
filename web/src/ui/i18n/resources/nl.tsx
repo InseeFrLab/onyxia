@@ -668,6 +668,11 @@ Voel je vrij om te verkennen en de controle over je Kubernetes-implementaties te
             </>
         )
     },
+    "YamlCodeBlockFormField": {
+        "not an array": "Een array wordt verwacht",
+        "not an object": "Een object wordt verwacht",
+        "not valid yaml": "Ongeldige YAML/JSON"
+    },
     "NoLongerBookmarkedDialog": {
         "no longer bookmarked dialog title": "Niet opgeslagen wijzigingen",
         "no longer bookmarked dialog body":

@@ -666,6 +666,11 @@ Sentiti libero di esplorare e prendere il controllo dei tuoi deployment Kubernet
             </>
         )
     },
+    "YamlCodeBlockFormField": {
+        "not an array": "È previsto un array",
+        "not an object": "È previsto un oggetto",
+        "not valid yaml": "YAML/JSON non valido"
+    },
     "NoLongerBookmarkedDialog": {
         "no longer bookmarked dialog title": "Modifiche non salvate",
         "no longer bookmarked dialog body":

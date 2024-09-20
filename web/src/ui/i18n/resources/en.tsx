@@ -660,6 +660,11 @@ Feel free to explore and take charge of your Kubernetes deployments!
             "Click on the bookmark icon again to update your saved configuration",
         "ok": "Ok"
     },
+    "YamlCodeBlockFormField": {
+        "not an array": "An array is expected",
+        "not an object": "An object is expected",
+        "not valid yaml": "Invalid YAML/JSON"
+    },
     "MyService": {
         "page title": ({ helmReleaseFriendlyName }) =>
             `${helmReleaseFriendlyName} Monitoring`

@@ -672,6 +672,11 @@ Fühlen Sie sich frei, Ihre Kubernetes-Bereitstellungen zu erkunden und die Kont
             </>
         )
     },
+    "YamlCodeBlockFormField": {
+        "not an array": "Ein Array wird erwartet",
+        "not an object": "Ein Objekt wird erwartet",
+        "not valid yaml": "Ungültiges YAML/JSON"
+    },
     "NoLongerBookmarkedDialog": {
         "no longer bookmarked dialog title": "Nicht gespeicherte Änderungen",
         "no longer bookmarked dialog body":
