@@ -1,8 +1,8 @@
 import { memo, Suspense } from "react";
 import type { Stringifyable } from "core/tools/Stringifyable";
-import { FormFieldWrapper } from "./FormFieldWrapper";
+import { FormFieldWrapper } from "./shared/FormFieldWrapper";
 import { tss } from "tss";
-import { useFormField } from "./useFormField";
+import { useFormField } from "./shared/useFormField";
 import YAML from "yaml";
 import { declareComponentKeys, useTranslation } from "ui/i18n";
 
