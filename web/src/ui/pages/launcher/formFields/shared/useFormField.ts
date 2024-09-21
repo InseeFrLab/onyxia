@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { useConstCallback } from "powerhooks/useConstCallback";
 import { useConst } from "powerhooks/useConst";
 import { waitForDebounceFactory } from "powerhooks/tools/waitForDebounce";
+import { assert } from "tsafe/assert";
+import { same } from "evt/tools/inDepth/same";
 
 export function useFormField<
     TValue,
@@ -31,6 +33,23 @@ export function useFormField<
     );
 
     useEffect(() => {
+        if (serializedValue_params === serializedValue) {
+            return;
+        }
+
+        const resultOfParse_params = parse(serializedValue_params);
+
+        assert(resultOfParse_params.isValid);
+
+        const resultOfParse = parse(serializedValue);
+
+        if (
+            resultOfParse.isValid &&
+            same(resultOfParse.value, resultOfParse_params.value)
+        ) {
+            return;
+        }
+
         setSerializedValue(serializedValue_params);
     }, [serializedValue_params]);
 

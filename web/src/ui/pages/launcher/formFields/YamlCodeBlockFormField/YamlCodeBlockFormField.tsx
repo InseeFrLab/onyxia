@@ -1,10 +1,12 @@
-import { memo, Suspense } from "react";
+import { memo, Suspense, lazy } from "react";
 import type { Stringifyable } from "core/tools/Stringifyable";
-import { FormFieldWrapper } from "./shared/FormFieldWrapper";
+import { FormFieldWrapper } from "../shared/FormFieldWrapper";
 import { tss } from "tss";
-import { useFormField } from "./shared/useFormField";
+import { useFormField } from "../shared/useFormField";
 import YAML from "yaml";
 import { declareComponentKeys, useTranslation } from "ui/i18n";
+import { CircularProgress } from "onyxia-ui/CircularProgress";
+const YamlCodeEditor = lazy(() => import("./YamlCodeEditor"));
 
 type Props = {
     className?: string;
@@ -14,6 +16,8 @@ type Props = {
     value: Record<string, Stringifyable> | Stringifyable[];
     onChange: (newValue: Record<string, Stringifyable> | Stringifyable[]) => void;
 };
+
+const DEFAULT_HEIGHT = 300;
 
 export const YamlCodeBlockFormField = memo((props: Props) => {
     const { className, title, description, expectedDataType, value, onChange } = props;
@@ -28,7 +32,7 @@ export const YamlCodeBlockFormField = memo((props: Props) => {
             string,
             "not valid yaml" | "not an array" | "not an object"
         >({
-            "serializedValue": JSON.stringify(value),
+            "serializedValue": YAML.stringify(value),
             onChange,
             "parse": serializedValue => {
                 let value: Record<string, Stringifyable> | Stringifyable[];
@@ -76,11 +80,18 @@ export const YamlCodeBlockFormField = memo((props: Props) => {
             error={errorMessageKey === undefined ? undefined : t(errorMessageKey)}
             onResetToDefault={resetToDefault}
         >
-            <Suspense fallback={null}>
-                <input
-                    className={cx(classes.input)}
-                    value={serializedValue}
-                    onChange={e => setSerializedValue(e.target.value)}
+            <Suspense
+                fallback={
+                    <div className={cx(classes.suspenseFallback)}>
+                        <CircularProgress />
+                    </div>
+                }
+            >
+                <YamlCodeEditor
+                    className={classes.yamlCodeEditor}
+                    yamlCode={serializedValue}
+                    onYamlCodeChange={setSerializedValue}
+                    defaultHeight={DEFAULT_HEIGHT}
                 />
             </Suspense>
         </FormFieldWrapper>
@@ -89,7 +100,13 @@ export const YamlCodeBlockFormField = memo((props: Props) => {
 
 const useStyles = tss.withName({ YamlCodeBlockFormField }).create({
     "root": {},
-    "input": {}
+    "yamlCodeEditor": {},
+    "suspenseFallback": {
+        "display": "flex",
+        "justifyContent": "center",
+        "alignItems": "center",
+        "height": DEFAULT_HEIGHT
+    }
 });
 
 const { i18n } = declareComponentKeys<
