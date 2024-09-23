@@ -4,7 +4,7 @@ import { action } from "@storybook/addon-actions";
 import { css } from "ui/theme";
 
 const meta = {
-    title: "Pages/MyFiles/NewComponents/ExplorerItem",
+    title: "Pages/MyFiles/NewComponents/ExplorerItems/ExplorerItem",
     component: ExplorerItem
 } satisfies Meta<typeof ExplorerItem>;
 
