@@ -3,12 +3,12 @@ import { Text } from "onyxia-ui/Text";
 import { useMemo, memo } from "react";
 import { useClick } from "powerhooks/useClick";
 import { smartTrim } from "ui/tools/smartTrim";
-import { ExplorerIcon } from "../Explorer/ExplorerIcon";
 import { Icon } from "onyxia-ui/Icon";
 import { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
 import { id } from "tsafe";
 import { Tooltip } from "onyxia-ui/Tooltip";
 import { fileSizePrettyPrint } from "ui/tools/fileSizePrettyPrint";
+import { ExplorerIcon } from "../../Explorer/ExplorerIcon";
 
 export type ExplorerItemProps = {
     className?: string;
@@ -92,20 +92,22 @@ export const ExplorerItem = memo((props: ExplorerItemProps) => {
                         hasShadow={true}
                     />
                 </div>
-                <Text typo="navigation label" className={classes.baseNameText}>
-                    {formattedBasename}
-                </Text>
-                <div className={classes.sizeAndFileTypeText}>
-                    <Text typo="body 1">
-                        {fileType} {prettySize.value}
-                        {prettySize.unit}
+                <div className={classes.textContainer}>
+                    <Text typo="navigation label" className={classes.baseNameText}>
+                        {formattedBasename}
                     </Text>
-                    {kind === "directory" && (
-                        <Icon
-                            size="extra small"
-                            icon={id<MuiIconComponentName>("ChevronRight")}
-                        />
-                    )}
+                    <div className={classes.sizeAndFileTypeText}>
+                        <Text typo="body 1">
+                            {fileType} {prettySize.value}
+                            {prettySize.unit}
+                        </Text>
+                        {kind === "directory" && (
+                            <Icon
+                                size="extra small"
+                                icon={id<MuiIconComponentName>("ChevronRight")}
+                            />
+                        )}
+                    </div>
                 </div>
             </div>
         </Tooltip>
@@ -123,30 +125,31 @@ const useStyles = tss
                 : "rgba(0, 0, 0, 0.05)",
             "cursor": "pointer",
             "display": "grid",
-            "gridTemplateColumns": "1fr",
-            "gridTemplateRows": "auto auto",
+            "gridTemplateColumns": "1fr 1fr",
+            "gridTemplateRows": "2fr",
             "padding": theme.spacing(3)
         },
         "iconContainer": {
             "gridColumn": 1,
             "gridRow": 1,
-            "maxWidth": "50%",
-            "marginBottom": theme.spacing(4)
+            padding: theme.spacing(2)
         },
-        "baseNameText": {
-            "gridColumn": 1,
-            "gridRow": 2
+        "textContainer": {
+            "gridColumn": "1 / 3",
+            "gridRow": 2,
+            "marginTop": theme.spacing(4),
+            "display": "flex",
+            "flexDirection": "column",
+            "justifyContent": "flex-end",
+            "alignSelf": "flex-end"
         },
+        "baseNameText": {},
         "sizeAndFileTypeText": {
-            "gridColumn": 1,
-            "gridRow": 3,
             "display": "flex",
             "alignItems": "center",
             "justifyContent": "space-between"
         },
-        "explorerIcon": {
-            "height": "50px"
-        },
+        "explorerIcon": {},
         "hiddenSpan": {
             "width": 0,
             "overflow": "hidden",
