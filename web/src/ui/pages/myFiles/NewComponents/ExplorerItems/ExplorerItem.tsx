@@ -78,20 +78,18 @@ export const ExplorerItem = memo((props: ExplorerItemProps) => {
     return (
         <Tooltip title={basename}>
             <div className={cx(classes.root, className)} {...getOnMouseProps()}>
-                <div className={classes.iconContainer}>
-                    <ExplorerIcon
-                        className={classes.explorerIcon}
-                        iconId={(() => {
-                            switch (kind) {
-                                case "directory":
-                                    return "directory";
-                                case "file":
-                                    return "data";
-                            }
-                        })()}
-                        hasShadow={true}
-                    />
-                </div>
+                <ExplorerIcon
+                    className={classes.explorerIcon}
+                    iconId={(() => {
+                        switch (kind) {
+                            case "directory":
+                                return "directory";
+                            case "file":
+                                return "data";
+                        }
+                    })()}
+                    hasShadow={true}
+                />
                 <div className={classes.textContainer}>
                     <Text typo="navigation label" className={classes.baseNameText}>
                         {formattedBasename}
@@ -124,32 +122,24 @@ const useStyles = tss
                 ? theme.colors.useCases.surfaces.surface1
                 : "rgba(0, 0, 0, 0.05)",
             "cursor": "pointer",
-            "display": "grid",
-            "gridTemplateColumns": "1fr 1fr",
-            "gridTemplateRows": "2fr",
-            "padding": theme.spacing(3)
-        },
-        "iconContainer": {
-            "gridColumn": 1,
-            "gridRow": 1,
-            padding: theme.spacing(2)
-        },
-        "textContainer": {
-            "gridColumn": "1 / 3",
-            "gridRow": 2,
-            "marginTop": theme.spacing(4),
             "display": "flex",
             "flexDirection": "column",
-            "justifyContent": "flex-end",
-            "alignSelf": "flex-end"
+            "justifyContent": "space-between",
+            "padding": theme.spacing(3)
         },
-        "baseNameText": {},
+        "textContainer": {
+            "display": "flex",
+            "flexDirection": "column"
+        },
+        "baseNameText": { "marginBottom": theme.spacing(1) },
         "sizeAndFileTypeText": {
             "display": "flex",
-            "alignItems": "center",
             "justifyContent": "space-between"
         },
-        "explorerIcon": {},
+        "explorerIcon": {
+            "width": "60px", // Either we set a fixed size, or we measure the size of the root
+            "height": "60px"
+        },
         "hiddenSpan": {
             "width": 0,
             "overflow": "hidden",
