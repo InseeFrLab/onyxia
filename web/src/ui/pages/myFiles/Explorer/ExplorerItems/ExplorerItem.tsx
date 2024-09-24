@@ -52,7 +52,7 @@ export const ExplorerItem = memo((props: ExplorerItemProps) => {
         () =>
             smartTrim({
                 "text": baseName,
-                "maxLength": theme.muiTheme.breakpoints.down("md") ? 8 : 12,
+                "maxLength": 12,
                 "minCharAtTheEnd": 3
             })
                 //NOTE: Word break with - or space but not _,
