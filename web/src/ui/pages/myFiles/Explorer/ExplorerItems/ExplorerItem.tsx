@@ -1,14 +1,13 @@
 import { tss } from "tss";
 import { Text } from "onyxia-ui/Text";
-import { useState, useEffect, useMemo, memo } from "react";
-import { useConstCallback } from "powerhooks/useConstCallback";
-import { TextField } from "onyxia-ui/TextField";
-import type { TextFieldProps } from "onyxia-ui/TextField";
+import { useMemo, memo } from "react";
 import { useClick } from "powerhooks/useClick";
-import Color from "color";
-import { useTranslation } from "ui/i18n";
-import { Evt } from "evt";
 import { smartTrim } from "ui/tools/smartTrim";
+import { Icon } from "onyxia-ui/Icon";
+import { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
+import { id } from "tsafe";
+import { Tooltip } from "onyxia-ui/Tooltip";
+import { fileSizePrettyPrint } from "ui/tools/fileSizePrettyPrint";
 import { ExplorerIcon } from "../ExplorerIcon";
 import { declareComponentKeys } from "i18nifty";
 
@@ -24,69 +23,37 @@ export type ExplorerItemProps = {
     /** Represent if the item is currently selected */
     isSelected: boolean;
 
-    isCircularProgressShown: boolean;
-
-    getIsValidBasename: (params: { basename: string }) => boolean;
-
+    /** File or directory size in bytes */
+    size: number;
     /**
      * Invoked when the component have been clicked once
      * and when it has been double clicked
      */
-    onMouseEvent: (params: { type: "down" | "double"; target: "icon" | "text" }) => void;
+    onMouseEvent: (params: { type: "down" | "double" }) => void;
 };
 
 export const ExplorerItem = memo((props: ExplorerItemProps) => {
-    const {
-        className,
-        kind,
-        basename,
-        isCircularProgressShown,
-        isSelected,
-        getIsValidBasename,
-        onMouseEvent
-    } = props;
+    const { className, kind, basename, isSelected, size, onMouseEvent } = props;
 
-    const { t } = useTranslation({ ExplorerItem });
+    const prettySize = fileSizePrettyPrint({
+        "bytes": size
+    });
+    const [baseName, fileType] =
+        kind === "file" ? basename.split(".") : [basename, undefined];
 
-    const { classes, cx } = useStyles({ isSelected, basename });
+    const { classes, cx, theme } = useStyles({ isSelected, basename });
 
-    const [isInEditingState, setIsInEditingState] = useState(false);
-
-    const { getOnMouseProps } = useClick<"icon" | "text">({
+    const { getOnMouseProps } = useClick({
         "doubleClickDelayMs": 500,
-        "callback": ({ type, extraArg: target }) => onMouseEvent({ type, target })
+        "callback": ({ type }) => onMouseEvent({ type })
     });
-
-    //TODO: We need a custom hook for this.
-    const [evtIsCircularProgressShown] = useState(() =>
-        Evt.create(isCircularProgressShown)
-    );
-    useEffect(() => {
-        evtIsCircularProgressShown.state = isCircularProgressShown;
-    });
-
-    const getIsValidValue = useConstCallback((value: string) =>
-        getIsValidBasename({ "basename": value })
-            ? ({ "isValidValue": true } as const)
-            : ({ "isValidValue": false, "message": "" } as const)
-    );
-
-    const [evtInputAction] = useState(() => Evt.create<TextFieldProps["evtAction"]>());
-
-    const onInputSubmit = useConstCallback<TextFieldProps["onSubmit"]>(() => {
-        setIsInEditingState(false);
-    });
-
-    const onEscapeKeyDown = useConstCallback(() => setIsInEditingState(false));
-
-    const onEnterKeyDown = useConstCallback(() => evtInputAction.post("TRIGGER SUBMIT"));
 
     const formattedBasename = useMemo(
         () =>
             smartTrim({
-                "text": basename,
-                "maxLength": 21,
-                "minCharAtTheEnd": 5
+                "text": baseName,
+                "maxLength": theme.muiTheme.breakpoints.down("md") ? 8 : 12,
+                "minCharAtTheEnd": 3
             })
                 //NOTE: Word break with - or space but not _,
                 //see: https://stackoverflow.com/a/29541502/3731798
@@ -111,8 +78,8 @@ export const ExplorerItem = memo((props: ExplorerItemProps) => {
     );
 
     return (
-        <div className={cx(classes.root, className)}>
-            <div className={classes.frame} {...getOnMouseProps("icon")}>
+        <Tooltip title={basename}>
+            <div className={cx(classes.root, className)} {...getOnMouseProps()}>
                 <ExplorerIcon
                     className={classes.explorerIcon}
                     iconId={(() => {
@@ -125,36 +92,25 @@ export const ExplorerItem = memo((props: ExplorerItemProps) => {
                     })()}
                     hasShadow={true}
                 />
-            </div>
-            {!isInEditingState && !isCircularProgressShown ? (
-                <div {...getOnMouseProps("text")}>
-                    {/* TODO: Something better like https://stackoverflow.com/a/64763506/3731798 */}
-                    <Text typo="body 1" className={classes.text}>
+                <div className={classes.textContainer}>
+                    <Text typo="navigation label" className={classes.baseNameText}>
                         {formattedBasename}
                     </Text>
+                    <div className={classes.sizeAndFileTypeText}>
+                        <Text typo="body 1">
+                            {fileType} {prettySize.value}
+                            {prettySize.unit}
+                        </Text>
+                        {kind === "directory" && (
+                            <Icon
+                                size="extra small"
+                                icon={id<MuiIconComponentName>("ChevronRight")}
+                            />
+                        )}
+                    </div>
                 </div>
-            ) : (
-                <form className={classes.root /*TODO*/} noValidate autoComplete="off">
-                    <TextField
-                        className={classes.input}
-                        defaultValue={basename}
-                        inputProps_aria-label={t("description")}
-                        inputProps_autoFocus={true}
-                        disabled={isCircularProgressShown}
-                        isCircularProgressShown={isCircularProgressShown}
-                        selectAllTextOnFocus={true}
-                        doRenderAsTextArea={true}
-                        onEscapeKeyDown={onEscapeKeyDown}
-                        onEnterKeyDown={onEnterKeyDown}
-                        onBlur={onEnterKeyDown}
-                        evtAction={evtInputAction}
-                        onSubmit={onInputSubmit}
-                        getIsValidValue={getIsValidValue}
-                        inputProps_spellCheck={false}
-                    />
-                </form>
-            )}
-        </div>
+            </div>
+        </Tooltip>
     );
 });
 
@@ -164,48 +120,35 @@ export type I18n = typeof i18n;
 const useStyles = tss
     .withName({ ExplorerItem })
     .withParams<Pick<ExplorerItemProps, "isSelected" | "basename">>()
-    .create(({ theme, isSelected, basename }) => ({
+    .create(({ theme, isSelected }) => ({
         "root": {
-            "textAlign": "center",
+            "borderRadius": "16px",
+            "backgroundColor": isSelected
+                ? theme.colors.useCases.surfaces.surface1
+                : "rgba(0, 0, 0, 0.05)",
             "cursor": "pointer",
-            "width": theme.spacing(9)
+            "display": "flex",
+            "flexDirection": "column",
+            "justifyContent": "space-between",
+            "padding": theme.spacing(3)
         },
-        "frame": {
-            "borderRadius": "5px",
-            "backgroundColor": isSelected ? "rgba(0, 0, 0, 0.2)" : undefined,
-            "display": "inline-block",
-            "padding": theme.muiTheme.spacing(2, 2)
+        "textContainer": {
+            "display": "flex",
+            "flexDirection": "column",
+            "marginTop": theme.spacing(2)
+        },
+        "baseNameText": { "marginBottom": theme.spacing(1) },
+        "sizeAndFileTypeText": {
+            "display": "flex",
+            "justifyContent": "space-between"
         },
         "explorerIcon": {
-            "height": 60
-        },
-        "text": {
-            //"color": theme.palette.text[isSelected ? "primary" : "secondary"]
-            //"color": !isSelected ? "rgba(0, 0, 0, 0.62)" : undefined
-            "color": (() => {
-                const color = new Color(
-                    theme.colors.useCases.typography.textPrimary
-                ).rgb();
-
-                return color
-                    .alpha((color as any).valpha * (isSelected ? 1.2 : 0.8))
-                    .string();
-            })(),
-            "wordBreak": /[_\- ]/.test(basename) ? undefined : "break-all"
+            "width": "50px", // Either we set a fixed size, or we measure the size of the root
+            "height": "50px"
         },
         "hiddenSpan": {
             "width": 0,
             "overflow": "hidden",
             "display": "inline-block"
-        },
-        "input": {
-            //NOTE: So that the text does not move when editing start.
-            //"marginTop": "2px",
-            "marginTop": "-1px",
-
-            "paddingTop": 0,
-            "& .MuiInput-input": {
-                "textAlign": "center"
-            }
         }
     }));

@@ -1,6 +1,5 @@
 import { useMemo, useState, memo } from "react";
-import type { ExplorerItemProps } from "./ExplorerItem";
-import { ExplorerItem } from "./ExplorerItem";
+import { ExplorerItem, type ExplorerItemProps } from "./ExplorerItem";
 import { getKeyPropFactory } from "ui/tools/getKeyProp";
 import type { NonPostableEvt } from "evt";
 import { useEvt } from "evt/hooks";
@@ -55,8 +54,6 @@ export const ExplorerItems = memo((props: ExplorerItemsProps) => {
         onOpenFile,
         onDeleteItem,
         onCopyPath,
-        directoriesBeingCreated,
-        filesBeingCreated,
         evtAction,
         onSelectedItemKindValueChange
     } = props;
@@ -186,35 +183,6 @@ export const ExplorerItems = memo((props: ExplorerItemsProps) => {
         }
     );
 
-    const getIsValidBasenameFactory = useCallbackFactory(
-        (
-            [kind, basename]: ["file" | "directory", string],
-
-            [{ basename: candidateBasename }]: [
-                Parameters<ExplorerItemProps["getIsValidBasename"]>[0]
-            ]
-        ) => {
-            if (basename === candidateBasename) {
-                return true;
-            }
-
-            if (
-                (() => {
-                    switch (kind) {
-                        case "directory":
-                            return directories;
-                        case "file":
-                            return files;
-                    }
-                })().includes(candidateBasename)
-            ) {
-                return false;
-            }
-
-            return !candidateBasename.includes(" ") && !candidateBasename.includes("/");
-        }
-    );
-
     const containerRef = useStateRef<HTMLDivElement>(null);
 
     const onGridMouseDown = useConstCallback(
@@ -261,19 +229,8 @@ export const ExplorerItems = memo((props: ExplorerItemsProps) => {
                                     kind={kind}
                                     basename={basename}
                                     isSelected={isSelected}
-                                    isCircularProgressShown={(() => {
-                                        switch (kind) {
-                                            case "directory":
-                                                return [...directoriesBeingCreated];
-                                            case "file":
-                                                return [...filesBeingCreated];
-                                        }
-                                    })().includes(basename)}
                                     onMouseEvent={onMouseEventFactory(kind, basename)}
-                                    getIsValidBasename={getIsValidBasenameFactory(
-                                        kind,
-                                        basename
-                                    )}
+                                    size={1000000}
                                 />
                             );
                         })
@@ -301,6 +258,8 @@ const useStyles = tss
                   })
         },
         "item": {
+            "width": theme.spacing(9),
+            "height": theme.spacing(9),
             "margin": theme.spacing(2)
         }
     }));
