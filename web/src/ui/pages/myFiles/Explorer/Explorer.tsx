@@ -85,7 +85,6 @@ export const Explorer = memo((props: ExplorerProps) => {
         pathMinDepth
     } = props;
 
-    console.log(props);
     const [files, directories, directoriesBeingCreated, filesBeingCreated] = useMemo(
         () =>
             (
