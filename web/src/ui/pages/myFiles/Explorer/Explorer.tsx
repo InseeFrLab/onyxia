@@ -3,7 +3,7 @@ import { Button } from "onyxia-ui/Button";
 import { useState, useEffect, useMemo, memo } from "react";
 import type { RefObject } from "react";
 import { useConstCallback } from "powerhooks/useConstCallback";
-import type { ExplorerItemsProps as ItemsProps } from "./ExplorerItems/ExplorerItems";
+import type { ExplorerItemsProps as ItemsProps } from "./ExplorerItems";
 import { Breadcrumb } from "onyxia-ui/Breadcrumb";
 import type { BreadcrumbProps } from "onyxia-ui/Breadcrumb";
 import { Props as ButtonBarProps } from "./ExplorerButtonBar";
@@ -38,6 +38,7 @@ import type { ExplorerUploadModalProps } from "./ExplorerUploadModal";
 import { declareComponentKeys } from "i18nifty";
 import { CircularProgress } from "onyxia-ui/CircularProgress";
 
+//TODO -> Get File and directory size
 export type ExplorerProps = {
     /**
      * For this component to work it must have a fixed width
@@ -84,6 +85,7 @@ export const Explorer = memo((props: ExplorerProps) => {
         pathMinDepth
     } = props;
 
+    console.log(props);
     const [files, directories, directoriesBeingCreated, filesBeingCreated] = useMemo(
         () =>
             (
