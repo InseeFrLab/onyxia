@@ -964,6 +964,15 @@ ${
     "CopyToClipboardIconButton": {
         "copied to clipboard": "已复制！",
         "copy to clipboard": "复制到剪贴板"
+    },
+    "CustomDataGridToolbarDensitySelector": {
+        "toolbarDensity": "密度",
+        "toolbarDensityStandard": "标准",
+        "toolbarDensityComfortable": "舒适",
+        "toolbarDensityCompact": "紧凑"
+    },
+    "CustomDataGridToolbarColumnsButton": {
+        "toolbarColumnsLabel": "列"
     }
     /* spell-checker: enable */
 };

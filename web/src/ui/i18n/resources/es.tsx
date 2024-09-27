@@ -1028,6 +1028,16 @@ export const translations: Translations<"en"> = {
     "CopyToClipboardIconButton": {
         "copied to clipboard": "¡Copiado!",
         "copy to clipboard": "Copiar al portapapeles"
+    },
+
+    "CustomDataGridToolbarDensitySelector": {
+        "toolbarDensity": "Densidad",
+        "toolbarDensityStandard": "Estándar",
+        "toolbarDensityComfortable": "Cómodo",
+        "toolbarDensityCompact": "Compacto"
+    },
+    "CustomDataGridToolbarColumnsButton": {
+        "toolbarColumnsLabel": "Columnas"
     }
     /* spell-checker: enable */
 };

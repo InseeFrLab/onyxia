@@ -1025,6 +1025,15 @@ Utforsk gjerne og ta kontroll over tjenestene du kjører på Kubernetes!
     "CopyToClipboardIconButton": {
         "copied to clipboard": "Kopiert!",
         "copy to clipboard": "Kopier til utklippstavlen"
+    },
+    "CustomDataGridToolbarDensitySelector": {
+        "toolbarDensity": "Tetthet",
+        "toolbarDensityStandard": "Standard",
+        "toolbarDensityComfortable": "Komfortabel",
+        "toolbarDensityCompact": "Kompakt"
+    },
+    "CustomDataGridToolbarColumnsButton": {
+        "toolbarColumnsLabel": "Kolonner"
     }
     /* spell-checker: enable */
 };

@@ -1039,6 +1039,15 @@ N'hésitez pas à explorer et à prendre en main vos déploiements Kubernetes !
     "CopyToClipboardIconButton": {
         "copied to clipboard": "Copié !",
         "copy to clipboard": "Copier dans le presse-papiers"
+    },
+    "CustomDataGridToolbarDensitySelector": {
+        "toolbarDensity": "Densité",
+        "toolbarDensityStandard": "Standard",
+        "toolbarDensityComfortable": "Confortable",
+        "toolbarDensityCompact": "Compact"
+    },
+    "CustomDataGridToolbarColumnsButton": {
+        "toolbarColumnsLabel": "Colonnes"
     }
     /* spell-checker: enable */
 };

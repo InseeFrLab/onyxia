@@ -1015,5 +1015,14 @@ Feel free to explore and take charge of your Kubernetes deployments!
     "CopyToClipboardIconButton": {
         "copied to clipboard": "Copied!",
         "copy to clipboard": "Copy to clipboard"
+    },
+    "CustomDataGridToolbarDensitySelector": {
+        "toolbarDensity": "Density",
+        "toolbarDensityStandard": "Standard",
+        "toolbarDensityComfortable": "Comfortable",
+        "toolbarDensityCompact": "Compact"
+    },
+    "CustomDataGridToolbarColumnsButton": {
+        "toolbarColumnsLabel": "Columns"
     }
 };
