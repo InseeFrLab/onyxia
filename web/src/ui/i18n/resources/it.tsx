@@ -1030,6 +1030,15 @@ Sentiti libero di esplorare e prendere il controllo dei tuoi deployment Kubernet
     "CopyToClipboardIconButton": {
         "copied to clipboard": "Copiato!",
         "copy to clipboard": "Copia negli appunti"
+    },
+    "CustomDataGridToolbarDensitySelector": {
+        "toolbarDensity": "Densità",
+        "toolbarDensityStandard": "Standard",
+        "toolbarDensityComfortable": "Confortevole",
+        "toolbarDensityCompact": "Compatto"
+    },
+    "CustomDataGridToolbarColumnsButton": {
+        "toolbarColumnsLabel": "Colonne"
     }
     /* spell-checker: enable */
 };
