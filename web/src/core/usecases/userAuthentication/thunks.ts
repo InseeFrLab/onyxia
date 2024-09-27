@@ -46,15 +46,15 @@ export const protectedThunks = {
                 )
             );
         },
-    "getDecodedIdToken":
+    "getTokens":
         () =>
         (...args) => {
             const [, , { oidc }] = args;
 
             assert(oidc.isUserLoggedIn);
 
-            const { decodedIdToken } = oidc.getTokens();
+            const { decodedIdToken, accessToken, refreshToken } = oidc.getTokens();
 
-            return decodedIdToken;
+            return { decodedIdToken, accessToken, refreshToken };
         }
 } satisfies Thunks;

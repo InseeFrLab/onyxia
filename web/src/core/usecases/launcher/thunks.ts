@@ -432,6 +432,10 @@ const privateThunks = {
                 project.group === undefined ||
                 !paramsOfBootstrapCore.disablePersonalInfosInjectionInGroup;
 
+            const { decodedIdToken, accessToken, refreshToken } = dispatch(
+                userAuthentication.protectedThunks.getTokens()
+            );
+
             const xOnyxiaContext: XOnyxiaContext = {
                 "user": {
                     "idep": user.username,
@@ -441,9 +445,9 @@ const privateThunks = {
                     "ip": !doInjectPersonalInfos ? "0.0.0.0" : await onyxiaApi.getIp(),
                     "darkMode": userConfigs.isDarkModeEnabled,
                     "lang": paramsOfBootstrapCore.getCurrentLang(),
-                    "decodedIdToken": dispatch(
-                        userAuthentication.protectedThunks.getDecodedIdToken()
-                    )
+                    decodedIdToken,
+                    accessToken,
+                    refreshToken
                 },
                 "service": {
                     "oneTimePassword": generateRandomPassword()
