@@ -81,7 +81,9 @@ export type ComponentKey =
     | import("ui/pages/dataExplorer/UrlInput").I18n
     | import("ui/shared/CommandBar").I18n
     | import("ui/shared/useMoment").I18n
-    | import("ui/shared/CopyToClipboardIconButton").I18n;
+    | import("ui/shared/CopyToClipboardIconButton").I18n
+    | import("ui/shared/Datagrid/CustomDataGridToolbarDensitySelector").I18n
+    | import("ui/shared/Datagrid/CustomDataGridToolbarColumnsButton").I18n;
 
 export type Translations<L extends Language> = GenericTranslations<
     ComponentKey,
