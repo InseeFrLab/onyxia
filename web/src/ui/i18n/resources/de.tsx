@@ -1034,6 +1034,15 @@ Fühlen Sie sich frei, Ihre Kubernetes-Bereitstellungen zu erkunden und die Kont
     "CopyToClipboardIconButton": {
         "copied to clipboard": "Kopiert!",
         "copy to clipboard": "In die Zwischenablage kopieren"
+    },
+    "CustomDataGridToolbarDensitySelector": {
+        "toolbarDensity": "Dichte",
+        "toolbarDensityStandard": "Standard",
+        "toolbarDensityComfortable": "Bequem",
+        "toolbarDensityCompact": "Kompakt"
+    },
+    "CustomDataGridToolbarColumnsButton": {
+        "toolbarColumnsLabel": "Spalten"
     }
     /* spell-checker: enable */
 };

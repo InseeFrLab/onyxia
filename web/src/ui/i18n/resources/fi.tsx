@@ -1018,6 +1018,15 @@ Tutustu vapaasti ja ota hallintaan Kubernetes-julkaisusi!
     "CopyToClipboardIconButton": {
         "copied to clipboard": "Kopioitu!",
         "copy to clipboard": "Kopioi leikepöydälle"
+    },
+    "CustomDataGridToolbarDensitySelector": {
+        "toolbarDensity": "Tiheys",
+        "toolbarDensityStandard": "Normaali",
+        "toolbarDensityComfortable": "Mukava",
+        "toolbarDensityCompact": "Tiivis"
+    },
+    "CustomDataGridToolbarColumnsButton": {
+        "toolbarColumnsLabel": "Sarakkeet"
     }
     /* spell-checker: enable */
 };
