@@ -1031,6 +1031,15 @@ Voel je vrij om te verkennen en de controle over je Kubernetes-implementaties te
     "CopyToClipboardIconButton": {
         "copied to clipboard": "Gekopieerd!",
         "copy to clipboard": "Kopiëren naar klembord"
+    },
+    "CustomDataGridToolbarDensitySelector": {
+        "toolbarDensity": "Dichtheid",
+        "toolbarDensityStandard": "Standaard",
+        "toolbarDensityComfortable": "Comfortabel",
+        "toolbarDensityCompact": "Compact"
+    },
+    "CustomDataGridToolbarColumnsButton": {
+        "toolbarColumnsLabel": "Kolommen"
     }
     /* spell-checker: enable */
 };
