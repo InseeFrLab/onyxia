@@ -78,6 +78,8 @@ export type XOnyxiaContext = {
          * }
          */
         decodedIdToken: Record<string, unknown>;
+        accessToken: string;
+        refreshToken: string;
     };
     service: {
         oneTimePassword: string;

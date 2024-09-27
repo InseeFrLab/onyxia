@@ -59,6 +59,14 @@ export const thunks = {
                                 clusterEvent.severity = "info";
                             }
 
+                            if (
+                                clusterEvent.message.includes(
+                                    "pod has unbound immediate PersistentVolumeClaims"
+                                )
+                            ) {
+                                clusterEvent.severity = "info";
+                            }
+
                             dispatch(
                                 actions.newClusterEventReceived({
                                     "clusterEvent": clusterEvent,
