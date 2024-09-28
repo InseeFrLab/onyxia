@@ -12,8 +12,7 @@ import { evtLang, I18nFetchingSuspense } from "ui/i18n";
 import {
     OnyxiaUi,
     loadThemedFavicon,
-    injectCustomFontFaceIfNotAlreadyDone,
-    targetWindowInnerWidth
+    injectCustomFontFaceIfNotAlreadyDone
 } from "ui/theme";
 import { PortraitModeUnsupported } from "ui/shared/PortraitModeUnsupported";
 import { addParamToUrl } from "powerhooks/tools/urlSearchParams";
@@ -23,18 +22,10 @@ import { Main } from "./Main";
 import { AutoLogoutCountdown } from "./AutoLogoutCountdown";
 import { onyxiaInstancePublicUrlKey } from "keycloak-theme/login/onyxiaInstancePublicUrl";
 import { useDomRect } from "powerhooks/useDomRect";
-import { enableScreenScaler } from "screen-scaler/react";
 
 loadThemedFavicon();
 // NOTE: We do that only to showcase the app with an other font with the URL.
 injectCustomFontFaceIfNotAlreadyDone();
-
-// NOTE: This must happen very early-on, if overwrite some DOM APIs.
-const { ScreenScalerOutOfRangeFallbackProvider } = enableScreenScaler({
-    "rootDivId": "root",
-    "targetWindowInnerWidth": ({ zoomFactor, isPortraitOrientation }) =>
-        isPortraitOrientation ? undefined : targetWindowInnerWidth * zoomFactor
-});
 
 const { CoreProvider } = createCoreProvider({
     "apiUrl": import.meta.env.ONYXIA_API_URL,
@@ -66,7 +57,15 @@ const { CoreProvider } = createCoreProvider({
     "isAuthGloballyRequired": env.AUTHENTICATION_GLOBALLY_REQUIRED
 });
 
-export default function App() {
+type Props = {
+    ScreenScalerOutOfRangeFallbackProvider: (props: {
+        fallback: JSX.Element;
+        children: JSX.Element;
+    }) => JSX.Element;
+};
+
+export default function App(props: Props) {
+    const { ScreenScalerOutOfRangeFallbackProvider } = props;
     return (
         <RouteProvider>
             <I18nFetchingSuspense>
