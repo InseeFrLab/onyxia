@@ -203,11 +203,6 @@ function useSyncDarkModeWithValueInProfile() {
     }, []);
 
     useEffectOnValueChange(() => {
-        //TODO: Remove after vivatech
-        if (env.DARK_MODE !== undefined) {
-            return;
-        }
-
         if (!isUserLoggedIn) {
             return;
         }
