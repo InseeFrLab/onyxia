@@ -268,25 +268,26 @@ const { Page } = (() => {
         return (
             <div ref={containerRef} className={cx(classes.root, className)}>
                 <Card ref={paperRef} className={classes.paper}>
-                    {kcContext.pageId === "login.ftl" && (
-                        <div className={classes.crossButtonWrapper}>
-                            <div style={{ "flex": 1 }} />
-                            <IconButton
-                                icon={CloseIcon}
-                                tabIndex={-1}
-                                onClick={() => {
-                                    const referrerUrl = getReferrerUrl();
+                    {kcContext.pageId === "login.ftl" &&
+                        !env.AUTHENTICATION_GLOBALLY_REQUIRED && (
+                            <div className={classes.crossButtonWrapper}>
+                                <div style={{ "flex": 1 }} />
+                                <IconButton
+                                    icon={CloseIcon}
+                                    tabIndex={-1}
+                                    onClick={() => {
+                                        const referrerUrl = getReferrerUrl();
 
-                                    if (referrerUrl === undefined) {
-                                        window.history.back();
-                                        return;
-                                    }
+                                        if (referrerUrl === undefined) {
+                                            window.history.back();
+                                            return;
+                                        }
 
-                                    window.location.href = referrerUrl;
-                                }}
-                            />
-                        </div>
-                    )}
+                                        window.location.href = referrerUrl;
+                                    }}
+                                />
+                            </div>
+                        )}
                     <Head
                         kcContext={kcContext}
                         displayRequiredFields={displayRequiredFields}

@@ -7,7 +7,9 @@ import { loadThemedFavicon } from "keycloak-theme/login/theme";
 import { tss } from "tss";
 import { OnyxiaUi } from "keycloak-theme/login/theme";
 import { env } from "env";
+import { injectCustomFontFaceIfNotAlreadyDone } from "ui/theme/injectCustomFontFaceIfNotAlreadyDone";
 
+injectCustomFontFaceIfNotAlreadyDone();
 loadThemedFavicon();
 
 const DefaultTemplate = lazy(() => import("keycloakify/login/Template"));

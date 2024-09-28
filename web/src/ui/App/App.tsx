@@ -22,15 +22,6 @@ import { Main } from "./Main";
 import { AutoLogoutCountdown } from "./AutoLogoutCountdown";
 import { onyxiaInstancePublicUrlKey } from "keycloak-theme/login/onyxiaInstancePublicUrl";
 import { useDomRect } from "powerhooks/useDomRect";
-import { enableScreenScaler } from "screen-scaler/react";
-import { targetWindowInnerWidth } from "ui/theme/targetWindowInnerWidth";
-
-// NOTE: This must happen very early-on, if overwrite some DOM APIs.
-const { ScreenScalerOutOfRangeFallbackProvider } = enableScreenScaler({
-    "rootDivId": "root",
-    "targetWindowInnerWidth": ({ zoomFactor, isPortraitOrientation }) =>
-        isPortraitOrientation ? undefined : targetWindowInnerWidth * zoomFactor
-});
 
 loadThemedFavicon();
 // NOTE: We do that only to showcase the app with an other font with the URL.
@@ -62,10 +53,19 @@ const { CoreProvider } = createCoreProvider({
     "disablePersonalInfosInjectionInGroup": env.DISABLE_PERSONAL_INFOS_INJECTION_IN_GROUP,
     "isCommandBarEnabledByDefault": !env.DISABLE_COMMAND_BAR,
     "quotaWarningThresholdPercent": env.QUOTA_WARNING_THRESHOLD * 100,
-    "quotaCriticalThresholdPercent": env.QUOTA_CRITICAL_THRESHOLD * 100
+    "quotaCriticalThresholdPercent": env.QUOTA_CRITICAL_THRESHOLD * 100,
+    "isAuthGloballyRequired": env.AUTHENTICATION_GLOBALLY_REQUIRED
 });
 
-export default function App() {
+type Props = {
+    ScreenScalerOutOfRangeFallbackProvider: (props: {
+        fallback: JSX.Element;
+        children: JSX.Element;
+    }) => JSX.Element;
+};
+
+export default function App(props: Props) {
+    const { ScreenScalerOutOfRangeFallbackProvider } = props;
     return (
         <RouteProvider>
             <I18nFetchingSuspense>
@@ -203,11 +203,6 @@ function useSyncDarkModeWithValueInProfile() {
     }, []);
 
     useEffectOnValueChange(() => {
-        //TODO: Remove after vivatech
-        if (env.DARK_MODE !== undefined) {
-            return;
-        }
-
         if (!isUserLoggedIn) {
             return;
         }

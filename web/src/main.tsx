@@ -2,6 +2,8 @@
 import { lazy, Suspense } from "react";
 import { createRoot } from "react-dom/client";
 import { assert } from "tsafe/assert";
+const App = lazy(() => import("ui/App"));
+const KcLoginThemePage = lazy(() => import("keycloak-theme/login/KcPages"));
 /*
 import { getKcContextMock } from "keycloak-theme/login/getKcContextMock";
 
@@ -25,30 +27,16 @@ if (import.meta.env.DEV) {
     );
 }
 
-const App = lazy(() => import("ui/App"));
-const KcLoginThemePage = lazy(() => import("keycloak-theme/login/KcPages"));
+const rootElement = document.getElementById("root");
 
-createRoot(
-    (() => {
-        const rootElement = document.getElementById("root");
+assert(rootElement !== null);
 
-        assert(rootElement !== null);
-
-        return rootElement;
-    })()
-).render(
+createRoot(rootElement).render(
     <Suspense>
-        {(() => {
-            if (window.kcContext !== undefined) {
-                // We want to do that as soon as possible to prevent Flash Of Unstyled Content (FOUC)
-                import("ui/theme/injectCustomFontFaceIfNotAlreadyDone").then(
-                    ({ injectCustomFontFaceIfNotAlreadyDone }) =>
-                        injectCustomFontFaceIfNotAlreadyDone()
-                );
-
-                return <KcLoginThemePage kcContext={window.kcContext} />;
-            }
-            return <App />;
-        })()}
+        {window.kcContext !== undefined ? (
+            <KcLoginThemePage kcContext={window.kcContext} />
+        ) : (
+            <App />
+        )}
     </Suspense>
 );

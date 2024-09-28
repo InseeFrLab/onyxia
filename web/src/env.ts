@@ -902,6 +902,21 @@ export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
         }
     },
     {
+        "envName": "AUTHENTICATION_GLOBALLY_REQUIRED",
+        "isUsedInKeycloakTheme": true,
+        "validateAndParseOrGetDefault": ({ envValue, envName }) => {
+
+            const possibleValues = ["true", "false"];
+
+            assert(
+                possibleValues.indexOf(envValue) >= 0,
+                `${envName} should either be ${possibleValues.join(" or ")}`
+            );
+
+            return envValue === "true";
+        }
+    },
+    {
         "envName": "HEADER_HIDE_ONYXIA",
         "isUsedInKeycloakTheme": false,
         "validateAndParseOrGetDefault": ({ envValue, envName }) => {

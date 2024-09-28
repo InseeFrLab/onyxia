@@ -2,7 +2,7 @@
     "name": "onyxia-web",
     "homepage": "https://onyxia.sh",
     "type": "module",
-    "version": "4.32.16",
+    "version": "4.33.1",
     "license": "MIT",
     "scripts": {
         "prepare": "yarn install-git-hooks && vite-envs update-types && copy-material-icons-to-public",
@@ -61,7 +61,7 @@
         "memoizee": "^0.4.15",
         "minimal-polyfills": "^2.2.3",
         "moment": "^2.29.1",
-        "oidc-spa": "^5.3.0",
+        "oidc-spa": "^5.4.0",
         "onyxia-ui": "^5.3.6",
         "pathe": "^1.1.2",
         "powerhooks": "^1.0.12",
