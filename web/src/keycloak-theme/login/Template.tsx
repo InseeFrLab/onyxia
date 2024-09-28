@@ -268,7 +268,7 @@ const { Page } = (() => {
         return (
             <div ref={containerRef} className={cx(classes.root, className)}>
                 <Card ref={paperRef} className={classes.paper}>
-                    {kcContext.pageId === "login.ftl" && (
+                    {kcContext.pageId === "login.ftl" && !env.AUTHENTICATION_GLOBALLY_REQUIRED && (
                         <div className={classes.crossButtonWrapper}>
                             <div style={{ "flex": 1 }} />
                             <IconButton

@@ -28,6 +28,7 @@ type ParamsOfBootstrapCore = {
     isCommandBarEnabledByDefault: boolean;
     quotaWarningThresholdPercent: number;
     quotaCriticalThresholdPercent: number;
+    isAuthGloballyRequired: boolean;
 };
 
 export type Context = {
@@ -45,7 +46,7 @@ export type Core = GenericCore<typeof usecases, Context>;
 export async function bootstrapCore(
     params: ParamsOfBootstrapCore
 ): Promise<{ core: Core }> {
-    const { apiUrl, transformUrlBeforeRedirectToLogin } = params;
+    const { apiUrl, transformUrlBeforeRedirectToLogin, isAuthGloballyRequired } = params;
 
     const isSandboxEnvironment = apiUrl === "";
 
@@ -135,6 +136,11 @@ export async function bootstrapCore(
             }
         });
     })();
+
+    if (isAuthGloballyRequired && !oidc.isUserLoggedIn) {
+        await oidc.login({ "doesCurrentHrefRequiresAuth": true });
+        // NOTE: Never reached
+    }
 
     const context: Context = {
         "paramsOfBootstrapCore": params,
