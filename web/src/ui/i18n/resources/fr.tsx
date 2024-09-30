@@ -945,7 +945,8 @@ N'hésitez pas à explorer et à prendre en main vos déploiements Kubernetes !
         ),
         "column": "colonne",
         "density": "densité",
-        "download file": "télécharger le fichier"
+        "download file": "télécharger le fichier",
+        "resize table": "Redimensionner"
     },
     "UrlInput": {
         "load": "Charger"

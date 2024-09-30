@@ -870,7 +870,8 @@ ${
         ),
         "column": "列",
         "density": "密度",
-        "download file": "下载文件"
+        "download file": "下载文件",
+        "resize table": "调整大小"
     },
     "UrlInput": {
         "load": "加载"
