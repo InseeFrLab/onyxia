@@ -934,7 +934,8 @@ export const translations: Translations<"en"> = {
         ),
         "column": "columna",
         "density": "densidad",
-        "download file": "Descargar archivo"
+        "download file": "Descargar archivo",
+        "resize table": "Redimensionar"
     },
     "UrlInput": {
         "load": "Cargar"
