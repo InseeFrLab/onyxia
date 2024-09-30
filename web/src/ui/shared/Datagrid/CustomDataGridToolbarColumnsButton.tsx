@@ -27,7 +27,7 @@ export const CustomDataGridToolbarColumnsButton = memo(() => {
     const apiRef = useGridApiContext();
     const { t } = useTranslation({ CustomDataGridToolbarColumnsButton });
     const preferencePanel = useGridSelector(apiRef, gridPreferencePanelStateSelector);
-    console.log(apiRef);
+
     const showColumns = () => {
         if (
             preferencePanel.open &&
