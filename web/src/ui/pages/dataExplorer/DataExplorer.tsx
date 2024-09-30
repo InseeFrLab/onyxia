@@ -1,24 +1,13 @@
 import { useEffect, useState } from "react";
-import { tss, useStyles as useClasslessStyles } from "tss";
+import { tss } from "tss";
 import type { PageRoute } from "./route";
 import { routes } from "ui/routes";
 import { useCore, useCoreState } from "core";
 import { Alert } from "onyxia-ui/Alert";
-import {
-    GridToolbarContainer,
-    GridToolbarColumnsButton,
-    GridToolbarDensitySelector,
-    DataGrid,
-    useGridApiRef,
-    GridToolbarProps,
-    GridToolbar,
-    useGridApiContext,
-    gridDensitySelector
-} from "@mui/x-data-grid";
+import { useGridApiRef } from "@mui/x-data-grid";
 import { CircularProgress } from "onyxia-ui/CircularProgress";
 import { assert, type Equals } from "tsafe/assert";
 import { useEvt } from "evt/hooks";
-import { exclude } from "tsafe/exclude";
 import { UrlInput } from "./UrlInput";
 import { PageHeader } from "onyxia-ui/PageHeader";
 import { id } from "tsafe/id";
@@ -26,11 +15,10 @@ import { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
 import { declareComponentKeys, useTranslation } from "ui/i18n";
 import type { Link } from "type-route";
 import { useOnOpenBrowserSearch } from "ui/tools/useOnOpenBrowserSearch";
-import { ButtonBar } from "onyxia-ui/ButtonBar";
 import { env } from "env";
-import { CustomDataGridToolbar } from "./CustomDataGrid/CustomDataGridToolbar";
-import { Button } from "onyxia-ui/Button";
-import { CustomDataGrid } from "./CustomDataGrid";
+import { CustomDataGrid } from "ui/shared/Datagrid/CustomDataGrid";
+import { SlotsDataGridToolbar } from "./SlotsDataGridToolbar";
+import { exclude } from "tsafe/exclude";
 
 export type Props = {
     route: PageRoute;
@@ -175,18 +163,11 @@ export default function DataExplorer(props: Props) {
                             </div>
                         );
                     }
-
-                    const autosizeOptions = {
-                        expand: true,
-                        includeHeaders: true,
-                        includeOutliers: true
-                    };
-
-                    console.log("render");
                     return (
                         <div className={cx(classes.dataGridWrapper, className)}>
                             <CustomDataGrid
                                 apiRef={apiRef}
+                                slots={{ "toolbar": SlotsDataGridToolbar }}
                                 // classes={{
                                 //     "panelWrapper": cx(
                                 //         //dataGridPanelWrapperRefClassName,
@@ -197,29 +178,29 @@ export default function DataExplorer(props: Props) {
                                 //     "footerContainer": classes.dataGridFooterContainer
                                 // }}
                                 disableVirtualization={!isVirtualizationEnabled}
-                                //columnVisibilityModel={route.params.columnVisibility}
-                                // onColumnVisibilityModelChange={columnVisibilityModel =>
-                                //     routes[route.name]({
-                                //         ...route.params,
-                                //         "columnVisibility": columnVisibilityModel
-                                //     }).replace()
-                                // }
-                                // onRowSelectionModelChange={rowSelectionModel => {
-                                //     const selectedRowIndex = rowSelectionModel[0];
+                                columnVisibilityModel={route.params.columnVisibility}
+                                onColumnVisibilityModelChange={columnVisibilityModel =>
+                                    routes[route.name]({
+                                        ...route.params,
+                                        "columnVisibility": columnVisibilityModel
+                                    }).replace()
+                                }
+                                onRowSelectionModelChange={rowSelectionModel => {
+                                    const selectedRowIndex = rowSelectionModel[0];
 
-                                //     assert(
-                                //         typeof selectedRowIndex === "number" ||
-                                //             selectedRowIndex === undefined
-                                //     );
+                                    assert(
+                                        typeof selectedRowIndex === "number" ||
+                                            selectedRowIndex === undefined
+                                    );
 
-                                //     routes[route.name]({
-                                //         ...route.params,
-                                //         "selectedRow": selectedRowIndex
-                                //     }).replace();
-                                // }}
-                                // rowSelectionModel={[
-                                //     route.params.selectedRow ?? undefined
-                                // ].filter(exclude(undefined))}
+                                    routes[route.name]({
+                                        ...route.params,
+                                        "selectedRow": selectedRowIndex
+                                    }).replace();
+                                }}
+                                rowSelectionModel={[
+                                    route.params.selectedRow ?? undefined
+                                ].filter(exclude(undefined))}
                                 rows={rows}
                                 columns={columns}
                                 disableColumnMenu
@@ -246,8 +227,6 @@ export default function DataExplorer(props: Props) {
                                         "page": page + 1
                                     }).replace()
                                 }
-                                autosizeOnMount={true}
-                                autosizeOptions={autosizeOptions}
                             />
                         </div>
                     );
@@ -363,5 +342,6 @@ const { i18n } = declareComponentKeys<
     | "column"
     | "density"
     | "download file"
+    | "resize table"
 >()({ DataExplorer });
 export type I18n = typeof i18n;

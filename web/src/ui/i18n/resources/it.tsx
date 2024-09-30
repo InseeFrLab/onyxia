@@ -935,7 +935,8 @@ Sentiti libero di esplorare e prendere il controllo dei tuoi deployment Kubernet
         ),
         "column": "colonna",
         "density": "densità",
-        "download file": "scarica file"
+        "download file": "scarica file",
+        "resize table": "Ridimensiona"
     },
     "UrlInput": {
         "load": "Carica"
