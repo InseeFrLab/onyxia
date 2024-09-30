@@ -935,7 +935,8 @@ Voel je vrij om te verkennen en de controle over je Kubernetes-implementaties te
         ),
         "column": "kolom",
         "density": "dichtheid",
-        "download file": "bestand downloaden"
+        "download file": "bestand downloaden",
+        "resize table": "Formaat wijzigen"
     },
     "UrlInput": {
         "load": "Laden"

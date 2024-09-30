@@ -5,13 +5,14 @@ import { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
 import { id } from "tsafe";
 import { tss } from "tss";
 import { useTranslation } from "ui/i18n";
-import DataExplorer from "../DataExplorer";
+import DataExplorer from "./DataExplorer";
 import { useCoreState } from "core";
 import { BaseBar } from "onyxia-ui/BaseBar";
 import { CustomDataGridToolbarDensitySelector } from "ui/shared/Datagrid/CustomDataGridToolbarDensitySelector";
 import { CustomDataGridToolbarColumnsButton } from "ui/shared/Datagrid/CustomDataGridToolbarColumnsButton";
+import { autosizeOptions } from "ui/shared/Datagrid/CustomDataGrid";
 
-export const CustomDataGridToolbar = memo(() => {
+export const SlotsDataGridToolbar = memo(() => {
     const { classes } = useStyles();
     return (
         <GridToolbarContainer>
@@ -25,29 +26,27 @@ export const CustomDataGridToolbar = memo(() => {
     );
 });
 
-const useStyles = tss.withName({ CustomDataGridToolbar }).create(({ theme }) => ({
-    "root": {
-        "flex": 1,
-        "marginBottom": theme.spacing(2)
-    }
-}));
+const useStyles = tss
+    .withName({ CustomDataGridToolbar: SlotsDataGridToolbar })
+    .create(({ theme }) => ({
+        "root": {
+            "flex": 1,
+            "marginBottom": theme.spacing(2)
+        }
+    }));
 
 function ResizeButton() {
     const apiRef = useGridApiContext();
+    const { t } = useTranslation({ DataExplorer });
 
     return (
         <ButtonBarButton
             startIcon={id<MuiIconComponentName>("AspectRatio")}
             onClick={() => {
-                console.log("ok log", apiRef.current);
-                apiRef.current.autosizeColumns({
-                    expand: true,
-                    includeHeaders: true,
-                    includeOutliers: true
-                });
+                apiRef.current.autosizeColumns(autosizeOptions);
             }}
         >
-            Redimentionner
+            {t("resize table")}
         </ButtonBarButton>
     );
 }

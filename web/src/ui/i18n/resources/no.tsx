@@ -930,7 +930,8 @@ Utforsk gjerne og ta kontroll over tjenestene du kjører på Kubernetes!
         ),
         "column": "kolonne",
         "density": "tetthet",
-        "download file": "last ned fil"
+        "download file": "last ned fil",
+        "resize table": "Endre størrelse"
     },
     "UrlInput": {
         "load": "Last"
