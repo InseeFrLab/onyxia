@@ -923,7 +923,8 @@ Tutustu vapaasti ja ota hallintaan Kubernetes-julkaisusi!
         ),
         "column": "sarake",
         "density": "tiheys",
-        "download file": "lataa tiedosto"
+        "download file": "lataa tiedosto",
+        "resize table": "Muuta taulukon kokoa"
     },
     "UrlInput": {
         "load": "Lataa"

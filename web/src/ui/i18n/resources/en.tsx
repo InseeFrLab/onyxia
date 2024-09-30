@@ -920,7 +920,8 @@ Feel free to explore and take charge of your Kubernetes deployments!
         ),
         "column": "column",
         "density": "density",
-        "download file": "Download file"
+        "download file": "Download file",
+        "resize table": "Resize"
     },
     "UrlInput": {
         "load": "Load"
