@@ -542,7 +542,7 @@ export const translations: Translations<"no"> = {
                     <MaybeLink href={sourceUrls.helmChartSourceUrl}>
                         {helmChartName}
                     </MaybeLink>
-                }
+                }{" "}
                 fra tjenestekatalogen{" "}
                 {
                     <MaybeLink href={sourceUrls.helmChartRepositorySourceUrl}>
