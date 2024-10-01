@@ -25,7 +25,7 @@ export function FormFieldWrapper(props: Props) {
     return (
         <div className={className}>
             <div className={classes.header}>
-                <Text typo="object heading" className={classes.title}>
+                <Text typo="label 1" className={classes.title}>
                     {
                         <label htmlFor={inputId} lang="und">
                             {title}
@@ -43,7 +43,6 @@ export function FormFieldWrapper(props: Props) {
                     {<span lang="und">{description}</span>}
                 </Text>
             )}
-
             <div className={classes.childrenWrapper}>{children}</div>
             <div className={classes.errorWrapper}>
                 {error !== undefined && (

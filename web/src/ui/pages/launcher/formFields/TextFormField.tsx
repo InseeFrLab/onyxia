@@ -112,9 +112,6 @@ export const TextFormField = memo((props: Props) => {
                                 onClick={() =>
                                     setIsSensitiveTextDisclosed(!isSensitiveTextDisclosed)
                                 }
-                                //onMouseDown={event => event.preventDefault()}
-                                //onMouseUp={event => event.preventDefault()}
-                                //edge="end"
                                 icon={id<MuiIconComponentName>(
                                     isSensitiveTextDisclosed
                                         ? "VisibilityOff"
