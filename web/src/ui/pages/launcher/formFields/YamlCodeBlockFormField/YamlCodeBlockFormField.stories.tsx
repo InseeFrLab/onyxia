@@ -8,7 +8,7 @@ import type { Stringifyable } from "core/tools/Stringifyable";
 const meta = {
     title: "pages/Launcher/formFields/YamlCodeBlock",
     component: StoryWrapper
-} satisfies Meta<typeof YamlCodeBlockFormField>;
+} satisfies Meta<typeof StoryWrapper>;
 
 export default meta;
 

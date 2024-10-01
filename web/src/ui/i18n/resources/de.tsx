@@ -677,6 +677,10 @@ Fühlen Sie sich frei, Ihre Kubernetes-Bereitstellungen zu erkunden und die Kont
         "not an object": "Ein Objekt wird erwartet",
         "not valid yaml": "Ungültiges YAML/JSON"
     },
+    "TextFormField": {
+        "not matching pattern": ({ pattern }) => `Entspricht nicht dem Muster ${pattern}`,
+        "toggle password visibility": "Passwortsichtbarkeit umschalten"
+    },
     "NoLongerBookmarkedDialog": {
         "no longer bookmarked dialog title": "Nicht gespeicherte Änderungen",
         "no longer bookmarked dialog body":

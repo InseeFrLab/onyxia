@@ -1,4 +1,4 @@
-import { memo, Suspense, lazy } from "react";
+import { memo, Suspense, lazy, useId } from "react";
 import type { Stringifyable } from "core/tools/Stringifyable";
 import { FormFieldWrapper } from "../shared/FormFieldWrapper";
 import { tss } from "tss";
@@ -72,13 +72,16 @@ export const YamlCodeBlockFormField = memo((props: Props) => {
             }
         });
 
+    const inputId = useId();
+
     return (
         <FormFieldWrapper
-            className={cx(classes.root, className)}
+            className={className}
             title={title}
             description={description}
             error={errorMessageKey === undefined ? undefined : t(errorMessageKey)}
             onResetToDefault={resetToDefault}
+            inputId={inputId}
         >
             <Suspense
                 fallback={
@@ -88,7 +91,7 @@ export const YamlCodeBlockFormField = memo((props: Props) => {
                 }
             >
                 <YamlCodeEditor
-                    className={classes.yamlCodeEditor}
+                    id={inputId}
                     yamlCode={serializedValue}
                     onYamlCodeChange={setSerializedValue}
                     defaultHeight={DEFAULT_HEIGHT}
@@ -99,8 +102,6 @@ export const YamlCodeBlockFormField = memo((props: Props) => {
 });
 
 const useStyles = tss.withName({ YamlCodeBlockFormField }).create({
-    "root": {},
-    "yamlCodeEditor": {},
     "suspenseFallback": {
         "display": "flex",
         "justifyContent": "center",

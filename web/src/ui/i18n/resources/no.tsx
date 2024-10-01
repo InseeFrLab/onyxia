@@ -672,6 +672,10 @@ Utforsk gjerne og ta kontroll over tjenestene du kjører på Kubernetes!
         "not an object": "Et objekt forventes",
         "not valid yaml": "Ugyldig YAML/JSON"
     },
+    "TextFormField": {
+        "not matching pattern": ({ pattern }) => `Matcher ikke mønsteret ${pattern}`,
+        "toggle password visibility": "Bytt synlighet for passord"
+    },
     "NoLongerBookmarkedDialog": {
         "no longer bookmarked dialog title": "Endringene dine vil ikke bli lagret",
         "no longer bookmarked dialog body":

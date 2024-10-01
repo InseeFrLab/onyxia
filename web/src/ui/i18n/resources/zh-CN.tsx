@@ -623,6 +623,10 @@ ${
         "not an object": "需要是对象",
         "not valid yaml": "无效的 YAML/JSON"
     },
+    "TextFormField": {
+        "not matching pattern": ({ pattern }) => `不符合模式 ${pattern}`,
+        "toggle password visibility": "切换密码可见性"
+    },
     "NoLongerBookmarkedDialog": {
         "no longer bookmarked dialog title": "更改未保存",
         "no longer bookmarked dialog body": "再次单击书签符号以更新您保存的配置.",

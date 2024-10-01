@@ -671,6 +671,10 @@ Sentiti libero di esplorare e prendere il controllo dei tuoi deployment Kubernet
         "not an object": "È previsto un oggetto",
         "not valid yaml": "YAML/JSON non valido"
     },
+    "TextFormField": {
+        "not matching pattern": ({ pattern }) => `Non corrisponde al modello ${pattern}`,
+        "toggle password visibility": "Alterna la visibilità della password"
+    },
     "NoLongerBookmarkedDialog": {
         "no longer bookmarked dialog title": "Modifiche non salvate",
         "no longer bookmarked dialog body":

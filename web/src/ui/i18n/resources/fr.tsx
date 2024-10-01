@@ -677,6 +677,10 @@ N'hésitez pas à explorer et à prendre en main vos déploiements Kubernetes !
         "not an object": "Un objet est attendu",
         "not valid yaml": "YAML/JSON invalide"
     },
+    "TextFormField": {
+        "not matching pattern": ({ pattern }) => `Ne correspond pas au motif ${pattern}`,
+        "toggle password visibility": "Basculer la visibilité du mot de passe"
+    },
     "NoLongerBookmarkedDialog": {
         "no longer bookmarked dialog title": "Changements non enregistrés",
         "no longer bookmarked dialog body":

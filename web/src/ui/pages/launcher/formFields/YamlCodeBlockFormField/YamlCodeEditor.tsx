@@ -8,13 +8,14 @@ import { tss } from "tss";
 
 type Props = {
     className?: string;
+    id: string;
     yamlCode: string;
     onYamlCodeChange: (newCode: string) => void;
     defaultHeight: number;
 };
 
 export default function YamlCodeEditor(props: Props) {
-    const { className, yamlCode, defaultHeight, onYamlCodeChange } = props;
+    const { className, id, yamlCode, defaultHeight, onYamlCodeChange } = props;
 
     const { cx, classes, theme } = useStyles();
 
@@ -66,6 +67,7 @@ export default function YamlCodeEditor(props: Props) {
     return (
         <CodeMirror
             className={cx(classes.root, className)}
+            id={id}
             value={yamlCode}
             theme={codeMirrorTheme}
             height={`${defaultHeight}px`}

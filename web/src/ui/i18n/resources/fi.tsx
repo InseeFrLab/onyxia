@@ -662,6 +662,10 @@ Tutustu vapaasti ja ota hallintaan Kubernetes-julkaisusi!
         "not an object": "Oliota odotetaan",
         "not valid yaml": "Virheellinen YAML/JSON"
     },
+    "TextFormField": {
+        "not matching pattern": ({ pattern }) => `Ei vastaa mallia ${pattern}`,
+        "toggle password visibility": "Vaihda salasanan näkyvyyttä"
+    },
     "NoLongerBookmarkedDialog": {
         "no longer bookmarked dialog title": "Muutokset eivät tallennu",
         "no longer bookmarked dialog body":

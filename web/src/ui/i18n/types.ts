@@ -56,6 +56,7 @@ export type ComponentKey =
     | import("ui/pages/launcher/LauncherDialogs/AutoLaunchDisabledDialog").I18n
     | import("ui/pages/launcher/LauncherDialogs/NoLongerBookmarkedDialog").I18n
     | import("ui/pages/launcher/formFields/YamlCodeBlockFormField/YamlCodeBlockFormField").I18n
+    | import("ui/pages/launcher/formFields/TextFormField").I18n
     | import("ui/pages/myService/MyService").I18n
     | import("ui/pages/myService/PodLogsTab").I18n
     | import("ui/pages/myService/MyServiceButtonBar").I18n

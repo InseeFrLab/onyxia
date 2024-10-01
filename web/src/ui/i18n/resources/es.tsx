@@ -672,6 +672,10 @@ export const translations: Translations<"en"> = {
         "not an object": "Se espera un objeto",
         "not valid yaml": "YAML/JSON no válido"
     },
+    "TextFormField": {
+        "not matching pattern": ({ pattern }) => `No coincide con el patrón ${pattern}`,
+        "toggle password visibility": "Alternar la visibilidad de la contraseña"
+    },
     "NoLongerBookmarkedDialog": {
         "no longer bookmarked dialog title": "Tus cambios no se guardarán",
         "no longer bookmarked dialog body":

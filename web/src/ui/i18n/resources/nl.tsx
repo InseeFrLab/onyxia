@@ -673,6 +673,11 @@ Voel je vrij om te verkennen en de controle over je Kubernetes-implementaties te
         "not an object": "Een object wordt verwacht",
         "not valid yaml": "Ongeldige YAML/JSON"
     },
+    "TextFormField": {
+        "not matching pattern": ({ pattern }) =>
+            `Komt niet overeen met het patroon ${pattern}`,
+        "toggle password visibility": "Wachtwoordzichtbaarheid wisselen"
+    },
     "NoLongerBookmarkedDialog": {
         "no longer bookmarked dialog title": "Niet opgeslagen wijzigingen",
         "no longer bookmarked dialog body":

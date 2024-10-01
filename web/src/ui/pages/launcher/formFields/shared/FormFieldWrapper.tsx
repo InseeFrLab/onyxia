@@ -11,17 +11,27 @@ type Props = {
     onResetToDefault: () => void;
     error: JSX.Element | string | undefined;
     children: JSX.Element;
+    inputId: string | undefined;
 };
 
 export function FormFieldWrapper(props: Props) {
-    const { className, title, description, onResetToDefault, error, children } = props;
+    const { className, title, description, onResetToDefault, error, inputId, children } =
+        props;
 
-    const { cx, classes } = useStyles({ "isErrored": error !== undefined });
+    const { classes } = useStyles({
+        "isErrored": error !== undefined
+    });
 
     return (
-        <div className={cx(classes.root, className)}>
+        <div className={className}>
             <div className={classes.header}>
-                <Text typo="object heading">{<span lang="und">{title}</span>}</Text>
+                <Text typo="object heading" className={classes.title}>
+                    {
+                        <label htmlFor={inputId} lang="und">
+                            {title}
+                        </label>
+                    }
+                </Text>
                 <div style={{ "flex": 1 }} />
                 <IconButton
                     onClick={onResetToDefault}
@@ -29,11 +39,19 @@ export function FormFieldWrapper(props: Props) {
                 />
             </div>
             {description !== undefined && (
-                <Text typo="caption">{<span lang="und">{description}</span>}</Text>
+                <Text typo="caption" className={classes.description}>
+                    {<span lang="und">{description}</span>}
+                </Text>
             )}
 
             <div className={classes.childrenWrapper}>{children}</div>
-            <div className={classes.errorWrapper}>{error !== undefined && error}</div>
+            <div className={classes.errorWrapper}>
+                {error !== undefined && (
+                    <Text typo="caption" className={classes.error}>
+                        {error}
+                    </Text>
+                )}
+            </div>
         </div>
     );
 }
@@ -42,7 +60,12 @@ const useStyles = tss
     .withName({ FormFieldWrapper })
     .withParams<{ isErrored: boolean }>()
     .create(({ theme, isErrored }) => ({
-        "root": {
+        "title": {
+            "color": !isErrored
+                ? undefined
+                : theme.colors.useCases.alertSeverity.error.main
+        },
+        "description": {
             "color": !isErrored
                 ? undefined
                 : theme.colors.useCases.alertSeverity.error.main
@@ -57,5 +80,8 @@ const useStyles = tss
         "errorWrapper": {
             "marginTop": theme.spacing(3),
             "minHeight": theme.typography.rootFontSizePx * 1.5
+        },
+        "error": {
+            "color": theme.colors.useCases.alertSeverity.error.main
         }
     }));

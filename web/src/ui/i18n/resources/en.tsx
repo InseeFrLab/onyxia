@@ -665,6 +665,10 @@ Feel free to explore and take charge of your Kubernetes deployments!
         "not an object": "An object is expected",
         "not valid yaml": "Invalid YAML/JSON"
     },
+    "TextFormField": {
+        "not matching pattern": ({ pattern }) => `Does not match the pattern ${pattern}`,
+        "toggle password visibility": "Toggle password visibility"
+    },
     "MyService": {
         "page title": ({ helmReleaseFriendlyName }) =>
             `${helmReleaseFriendlyName} Monitoring`
