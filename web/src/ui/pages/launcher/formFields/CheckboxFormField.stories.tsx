@@ -8,7 +8,7 @@ import Divider from "@mui/material/Divider";
 const meta = {
     title: "pages/Launcher/formFields/CheckboxFormField",
     component: StoryWrapper
-} satisfies Meta<typeof CheckboxFormField>;
+} satisfies Meta<typeof StoryWrapper>;
 
 export default meta;
 

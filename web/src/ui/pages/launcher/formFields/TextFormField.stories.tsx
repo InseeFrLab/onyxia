@@ -8,7 +8,7 @@ import Divider from "@mui/material/Divider";
 const meta = {
     title: "pages/Launcher/formFields/TextFormField",
     component: StoryWrapper
-} satisfies Meta<typeof TextFormField>;
+} satisfies Meta<typeof StoryWrapper>;
 
 export default meta;
 
