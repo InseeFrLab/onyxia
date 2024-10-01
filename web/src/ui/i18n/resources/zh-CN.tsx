@@ -618,6 +618,9 @@ ${
             </>
         )
     },
+    "FormFieldWrapper": {
+        "reset to default": "重置为默认值"
+    },
     "YamlCodeBlockFormField": {
         "not an array": "需要是数组",
         "not an object": "需要是对象",

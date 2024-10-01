@@ -660,6 +660,9 @@ Feel free to explore and take charge of your Kubernetes deployments!
             "Click on the bookmark icon again to update your saved configuration",
         "ok": "Ok"
     },
+    "FormFieldWrapper": {
+        "reset to default": "Reset to default"
+    },
     "YamlCodeBlockFormField": {
         "not an array": "An array is expected",
         "not an object": "An object is expected",

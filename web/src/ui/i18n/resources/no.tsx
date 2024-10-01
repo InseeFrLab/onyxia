@@ -667,6 +667,9 @@ Utforsk gjerne og ta kontroll over tjenestene du kjører på Kubernetes!
             </>
         )
     },
+    "FormFieldWrapper": {
+        "reset to default": "Tilbakestill til standard"
+    },
     "YamlCodeBlockFormField": {
         "not an array": "En matrise forventes",
         "not an object": "Et objekt forventes",

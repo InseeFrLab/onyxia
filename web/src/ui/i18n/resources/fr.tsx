@@ -672,6 +672,9 @@ N'hésitez pas à explorer et à prendre en main vos déploiements Kubernetes !
         ),
         "ok": "Ok"
     },
+    "FormFieldWrapper": {
+        "reset to default": "Réinitialiser à la valeur par défaut"
+    },
     "YamlCodeBlockFormField": {
         "not an array": "Un tableau est attendu",
         "not an object": "Un objet est attendu",

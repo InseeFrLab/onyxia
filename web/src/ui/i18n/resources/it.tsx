@@ -666,6 +666,9 @@ Sentiti libero di esplorare e prendere il controllo dei tuoi deployment Kubernet
             </>
         )
     },
+    "FormFieldWrapper": {
+        "reset to default": "Ripristina il valore predefinito"
+    },
     "YamlCodeBlockFormField": {
         "not an array": "È previsto un array",
         "not an object": "È previsto un oggetto",

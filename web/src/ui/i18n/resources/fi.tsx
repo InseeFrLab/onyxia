@@ -657,6 +657,9 @@ Tutustu vapaasti ja ota hallintaan Kubernetes-julkaisusi!
         ),
         "ok": "Ok"
     },
+    "FormFieldWrapper": {
+        "reset to default": "Palauta oletusarvoon"
+    },
     "YamlCodeBlockFormField": {
         "not an array": "Taulukkoa odotetaan",
         "not an object": "Oliota odotetaan",

@@ -668,6 +668,9 @@ Voel je vrij om te verkennen en de controle over je Kubernetes-implementaties te
             </>
         )
     },
+    "FormFieldWrapper": {
+        "reset to default": "Terugzetten naar standaardwaarden"
+    },
     "YamlCodeBlockFormField": {
         "not an array": "Een array wordt verwacht",
         "not an object": "Een object wordt verwacht",

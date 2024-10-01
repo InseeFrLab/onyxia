@@ -667,6 +667,9 @@ export const translations: Translations<"en"> = {
         ),
         "ok": "Ok"
     },
+    "FormFieldWrapper": {
+        "reset to default": "Restablecer a los valores predeterminados"
+    },
     "YamlCodeBlockFormField": {
         "not an array": "Se espera un arreglo",
         "not an object": "Se espera un objeto",

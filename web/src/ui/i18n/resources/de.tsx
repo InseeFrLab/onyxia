@@ -672,6 +672,9 @@ Fühlen Sie sich frei, Ihre Kubernetes-Bereitstellungen zu erkunden und die Kont
             </>
         )
     },
+    "FormFieldWrapper": {
+        "reset to default": "Zurücksetzen auf Standardwert"
+    },
     "YamlCodeBlockFormField": {
         "not an array": "Ein Array wird erwartet",
         "not an object": "Ein Objekt wird erwartet",
