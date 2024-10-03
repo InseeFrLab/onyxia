@@ -672,6 +672,11 @@ Feel free to explore and take charge of your Kubernetes deployments!
         "not matching pattern": ({ pattern }) => `Does not match the pattern ${pattern}`,
         "toggle password visibility": "Toggle password visibility"
     },
+    "NumberFormField": {
+        "below minimum": ({ minimum }) => `Must be greater than or equal to ${minimum}`,
+        "not a number": "Not a number",
+        "not an integer": "Not an integer"
+    },
     "MyService": {
         "page title": ({ helmReleaseFriendlyName }) =>
             `${helmReleaseFriendlyName} Monitoring`

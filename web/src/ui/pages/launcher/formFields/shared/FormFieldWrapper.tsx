@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { tss } from "tss";
 import { Text } from "onyxia-ui/Text";
 import { IconButton } from "onyxia-ui/IconButton";
@@ -12,7 +13,7 @@ type Props = {
     description: string | JSX.Element | undefined;
     onResetToDefault: () => void;
     error: JSX.Element | string | undefined;
-    children: JSX.Element;
+    children: ReactNode;
     inputId: string | undefined;
 };
 

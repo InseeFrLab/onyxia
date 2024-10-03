@@ -630,6 +630,11 @@ ${
         "not matching pattern": ({ pattern }) => `不符合模式 ${pattern}`,
         "toggle password visibility": "切换密码可见性"
     },
+    "NumberFormField": {
+        "below minimum": ({ minimum }) => `必须大于或等于 ${minimum}`,
+        "not a number": "不是数字",
+        "not an integer": "不是整数"
+    },
     "NoLongerBookmarkedDialog": {
         "no longer bookmarked dialog title": "更改未保存",
         "no longer bookmarked dialog body": "再次单击书签符号以更新您保存的配置.",

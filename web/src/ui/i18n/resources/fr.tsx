@@ -684,6 +684,11 @@ N'hésitez pas à explorer et à prendre en main vos déploiements Kubernetes !
         "not matching pattern": ({ pattern }) => `Ne correspond pas au motif ${pattern}`,
         "toggle password visibility": "Basculer la visibilité du mot de passe"
     },
+    "NumberFormField": {
+        "below minimum": ({ minimum }) => `Doit être supérieur ou égal à ${minimum}`,
+        "not a number": "Pas un nombre",
+        "not an integer": "Pas un entier"
+    },
     "NoLongerBookmarkedDialog": {
         "no longer bookmarked dialog title": "Changements non enregistrés",
         "no longer bookmarked dialog body":

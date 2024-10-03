@@ -68,6 +68,7 @@ export const RangeSliderFormField = memo((props: Props) => {
             inputId={inputId}
         >
             <RangeSlider
+                id={inputId}
                 className={className}
                 label=""
                 lowExtremitySemantic={lowEndRange.rangeEndSemantic}

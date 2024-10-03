@@ -681,6 +681,11 @@ Voel je vrij om te verkennen en de controle over je Kubernetes-implementaties te
             `Komt niet overeen met het patroon ${pattern}`,
         "toggle password visibility": "Wachtwoordzichtbaarheid wisselen"
     },
+    "NumberFormField": {
+        "below minimum": ({ minimum }) => `Moet groter dan of gelijk aan ${minimum} zijn`,
+        "not a number": "Geen getal",
+        "not an integer": "Geen geheel getal"
+    },
     "NoLongerBookmarkedDialog": {
         "no longer bookmarked dialog title": "Niet opgeslagen wijzigingen",
         "no longer bookmarked dialog body":

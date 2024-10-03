@@ -679,6 +679,11 @@ export const translations: Translations<"en"> = {
         "not matching pattern": ({ pattern }) => `No coincide con el patrón ${pattern}`,
         "toggle password visibility": "Alternar la visibilidad de la contraseña"
     },
+    "NumberFormField": {
+        "below minimum": ({ minimum }) => `Debe ser mayor o igual a ${minimum}`,
+        "not a number": "No es un número",
+        "not an integer": "No es un número entero"
+    },
     "NoLongerBookmarkedDialog": {
         "no longer bookmarked dialog title": "Tus cambios no se guardarán",
         "no longer bookmarked dialog body":

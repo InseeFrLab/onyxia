@@ -1,0 +1,139 @@
+import { memo, useId } from "react";
+import { FormFieldWrapper } from "./shared/FormFieldWrapper";
+import { useFormField } from "./shared/useFormField";
+import Input from "@mui/material/Input";
+import { declareComponentKeys, useTranslation } from "ui/i18n";
+import { assert } from "tsafe/assert";
+import { IconButton } from "onyxia-ui/IconButton";
+import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
+import { id } from "tsafe/id";
+
+type Props = {
+    className?: string;
+    title: string;
+    isReadonly: boolean;
+    description: string | undefined;
+    isInteger: boolean;
+    minimum: number | undefined;
+    value: number;
+    onChange: (newValue: number) => void;
+};
+
+export const NumberFormField = memo((props: Props) => {
+    const {
+        className,
+        title,
+        isReadonly,
+        description,
+        isInteger,
+        minimum,
+        value,
+        onChange
+    } = props;
+
+    const { serializedValue, setSerializedValue, errorMessageKey, resetToDefault } =
+        useFormField<number, string, "below minimum" | "not a number" | "not an integer">(
+            {
+                "serializedValue": `${value}`,
+                onChange,
+                "parse": serializedValue => {
+                    if (!/^[0-9.]+$/.test(serializedValue)) {
+                        console.log("not a number");
+                        return {
+                            "isValid": false,
+                            "errorMessageKey": "not a number"
+                        };
+                    }
+
+                    const value = parseFloat(serializedValue);
+
+                    if (isNaN(value)) {
+                        return {
+                            "isValid": false,
+                            "errorMessageKey": "not a number"
+                        };
+                    }
+
+                    if (isInteger && !Number.isInteger(value)) {
+                        return {
+                            "isValid": false,
+                            "errorMessageKey": "not an integer"
+                        };
+                    }
+
+                    check_minimum: {
+                        if (minimum === undefined) {
+                            break check_minimum;
+                        }
+
+                        if (value < minimum) {
+                            return {
+                                "isValid": false,
+                                "errorMessageKey": "below minimum"
+                            };
+                        }
+                    }
+
+                    return {
+                        "isValid": true,
+                        "value": value
+                    };
+                }
+            }
+        );
+
+    const inputId = useId();
+
+    const { t } = useTranslation({ NumberFormField });
+
+    return (
+        <FormFieldWrapper
+            className={className}
+            title={title}
+            description={description}
+            error={(() => {
+                if (errorMessageKey === undefined) {
+                    return undefined;
+                }
+
+                if (errorMessageKey === "below minimum") {
+                    assert(minimum !== undefined);
+                    return t("below minimum", { minimum });
+                }
+
+                return t(errorMessageKey);
+            })()}
+            onResetToDefault={resetToDefault}
+            inputId={inputId}
+        >
+            <Input
+                id={inputId}
+                readOnly={isReadonly}
+                value={serializedValue}
+                onChange={event => setSerializedValue(event.target.value)}
+            />
+            {isInteger && (
+                <>
+                    <IconButton
+                        icon={id<MuiIconComponentName>("RemoveCircleOutline")}
+                        onClick={() =>
+                            setSerializedValue(`${parseInt(serializedValue) - 1}`)
+                        }
+                    />
+                    <IconButton
+                        icon={id<MuiIconComponentName>("AddCircleOutline")}
+                        onClick={() =>
+                            setSerializedValue(`${parseInt(serializedValue) + 1}`)
+                        }
+                    />
+                </>
+            )}
+        </FormFieldWrapper>
+    );
+});
+
+const { i18n } = declareComponentKeys<
+    { K: "below minimum"; P: { minimum: number } } | "not a number" | "not an integer"
+>()({ NumberFormField });
+
+export type I18n = typeof i18n;

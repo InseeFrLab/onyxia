@@ -684,6 +684,11 @@ Fühlen Sie sich frei, Ihre Kubernetes-Bereitstellungen zu erkunden und die Kont
         "not matching pattern": ({ pattern }) => `Entspricht nicht dem Muster ${pattern}`,
         "toggle password visibility": "Passwortsichtbarkeit umschalten"
     },
+    "NumberFormField": {
+        "below minimum": ({ minimum }) => `Muss größer oder gleich ${minimum} sein`,
+        "not a number": "Keine Zahl",
+        "not an integer": "Keine ganze Zahl"
+    },
     "NoLongerBookmarkedDialog": {
         "no longer bookmarked dialog title": "Nicht gespeicherte Änderungen",
         "no longer bookmarked dialog body":

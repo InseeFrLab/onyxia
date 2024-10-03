@@ -678,6 +678,11 @@ Sentiti libero di esplorare e prendere il controllo dei tuoi deployment Kubernet
         "not matching pattern": ({ pattern }) => `Non corrisponde al modello ${pattern}`,
         "toggle password visibility": "Alterna la visibilità della password"
     },
+    "NumberFormField": {
+        "below minimum": ({ minimum }) => `Deve essere maggiore o uguale a ${minimum}`,
+        "not a number": "Non è un numero",
+        "not an integer": "Non è un numero intero"
+    },
     "NoLongerBookmarkedDialog": {
         "no longer bookmarked dialog title": "Modifiche non salvate",
         "no longer bookmarked dialog body":

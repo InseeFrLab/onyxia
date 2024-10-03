@@ -669,6 +669,12 @@ Tutustu vapaasti ja ota hallintaan Kubernetes-julkaisusi!
         "not matching pattern": ({ pattern }) => `Ei vastaa mallia ${pattern}`,
         "toggle password visibility": "Vaihda salasanan näkyvyyttä"
     },
+    "NumberFormField": {
+        "below minimum": ({ minimum }) =>
+            `Täytyy olla suurempi tai yhtä suuri kuin ${minimum}`,
+        "not a number": "Ei ole numero",
+        "not an integer": "Ei ole kokonaisluku"
+    },
     "NoLongerBookmarkedDialog": {
         "no longer bookmarked dialog title": "Muutokset eivät tallennu",
         "no longer bookmarked dialog body":
