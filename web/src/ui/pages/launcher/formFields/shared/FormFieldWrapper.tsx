@@ -9,7 +9,7 @@ import { declareComponentKeys, useTranslation } from "ui/i18n";
 type Props = {
     className?: string;
     title: string;
-    description: string | undefined;
+    description: string | JSX.Element | undefined;
     onResetToDefault: () => void;
     error: JSX.Element | string | undefined;
     children: JSX.Element;
