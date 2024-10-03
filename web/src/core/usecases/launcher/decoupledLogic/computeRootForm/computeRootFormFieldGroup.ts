@@ -434,7 +434,7 @@ function computeRootFormFieldGroup_rec(params: {
                 "type": "field",
                 "title": getTitle(),
                 isReadonly,
-                "fieldType": "integer field",
+                "fieldType": "number field",
                 helmValuesPath,
                 "description": helmValuesSchema.description,
                 "value": (() => {

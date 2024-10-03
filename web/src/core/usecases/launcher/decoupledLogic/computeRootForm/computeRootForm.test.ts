@@ -90,7 +90,7 @@ describe(symToStr({ computeRootForm }), () => {
                     "type": "field",
                     "title": "c",
                     "isReadonly": false,
-                    "fieldType": "integer field",
+                    "fieldType": "number field",
                     "helmValuesPath": ["global", "c"],
                     "description": undefined,
                     "value": 2,

@@ -99,7 +99,7 @@ export function mutateHelmValues_update(params: {
     switch (formFieldValue.fieldType) {
         case "checkbox":
         case "yaml code block":
-        case "integer field":
+        case "number field":
         case "text field":
             assignValueAtPath({
                 "stringifyableObjectOrArray": helmValues,

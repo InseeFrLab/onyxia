@@ -57,7 +57,7 @@ export namespace FormField {
     };
 
     export type NumberField = Common & {
-        fieldType: "integer field";
+        fieldType: "number field";
         isReadonly: boolean;
         helmValuesPath: (string | number)[];
         description: string | undefined;
