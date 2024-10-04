@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useConstCallback } from "powerhooks/useConstCallback";
 import { useConst } from "powerhooks/useConst";
-import { waitForDebounceFactory } from "powerhooks/tools/waitForDebounce";
+import { createWaitForThrottle } from "ui/tools/waitForThrottle";
 import { assert } from "tsafe/assert";
 import { same } from "evt/tools/inDepth/same";
 
@@ -55,29 +55,32 @@ export function useFormField<
 
     const onChange_const = useConstCallback(onChange);
 
-    const onChangeWithDebounce = useConst(() => {
-        const { waitForDebounce } = waitForDebounceFactory({ "delay": 500 });
+    const { onChangeWithThrottle, cancelThrottle } = useConst(() => {
+        const { waitForThrottle, cancelThrottle } = createWaitForThrottle({
+            "delay": 500
+        });
 
-        async function onChangeWithDebounce(newValue: TValue) {
-            await waitForDebounce();
+        async function onChangeWithThrottle(newValue: TValue) {
+            await waitForThrottle();
 
             onChange_const(newValue);
         }
 
-        return onChangeWithDebounce;
+        return { onChangeWithThrottle, cancelThrottle };
     });
 
     useEffect(() => {
         const resultOfParse = parse(serializedValue);
 
         if (!resultOfParse.isValid) {
+            cancelThrottle();
             setErrorMessageKey(resultOfParse.errorMessageKey);
             return;
         }
 
         setErrorMessageKey(undefined);
 
-        onChangeWithDebounce(resultOfParse.value);
+        onChangeWithThrottle(resultOfParse.value);
     }, [serializedValue]);
 
     return {
