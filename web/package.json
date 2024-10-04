@@ -47,7 +47,7 @@
         "memoizee": "^0.4.15",
         "minimal-polyfills": "^2.2.3",
         "moment": "^2.29.1",
-        "oidc-spa": "^5.4.0",
+        "oidc-spa": "^5.4.1",
         "onyxia-ui": "^5.3.6",
         "pathe": "^1.1.2",
         "powerhooks": "^1.0.12",
