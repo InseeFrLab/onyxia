@@ -37,6 +37,7 @@ function StoryWrapper(params: Params) {
                     onChangeAction(newValue);
                     setValue(newValue);
                 }}
+                onRemove={undefined}
             />
             <Divider />
             <p>Value: </p>

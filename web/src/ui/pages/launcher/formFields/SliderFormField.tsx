@@ -15,6 +15,7 @@ type Props = {
     max: number;
     unit: string | undefined;
     step: number | undefined;
+    onRemove: (() => void) | undefined;
     value: number;
     onChange: (newValue: number) => void;
 };
@@ -29,6 +30,7 @@ export const SliderFormField = memo((props: Props) => {
         max,
         unit = "",
         step,
+        onRemove,
         value,
         onChange
     } = props;
@@ -58,6 +60,7 @@ export const SliderFormField = memo((props: Props) => {
             error={undefined}
             onResetToDefault={resetToDefault}
             inputId={inputId}
+            onRemove={onRemove}
         >
             <div>
                 <div className={classes.valueWrapper}>

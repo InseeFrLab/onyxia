@@ -15,6 +15,7 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 const onChangeAction = action("onChange");
+const onRemoveAction = action("onRemove");
 
 type Params = {
     isReadonly: boolean;
@@ -23,10 +24,11 @@ type Params = {
     unit: string | undefined;
     step: number | undefined;
     defaultValue: number;
+    hasOnRemove: boolean;
 };
 
 function StoryWrapper(params: Params) {
-    const { isReadonly, min, max, unit, step, defaultValue } = params;
+    const { isReadonly, min, max, unit, step, defaultValue, hasOnRemove } = params;
 
     const [value, setValue] = useState(defaultValue);
 
@@ -46,6 +48,7 @@ function StoryWrapper(params: Params) {
                     onChangeAction(newValue);
                     setValue(newValue);
                 }}
+                onRemove={hasOnRemove ? () => onRemoveAction() : undefined}
             />
             <Divider />
             <p>Value: </p>
@@ -61,7 +64,8 @@ export const Default: Story = {
         "max": 100,
         "unit": "m",
         "step": 1,
-        "defaultValue": 50
+        "defaultValue": 50,
+        "hasOnRemove": false
     }
 };
 
@@ -72,7 +76,8 @@ export const WithMarks: Story = {
         "max": 7,
         "unit": undefined,
         "step": 1,
-        "defaultValue": 2
+        "defaultValue": 2,
+        "hasOnRemove": false
     }
 };
 
@@ -83,7 +88,8 @@ export const WitNoOptions: Story = {
         "max": 1,
         "unit": undefined,
         "step": 1,
-        "defaultValue": 1
+        "defaultValue": 1,
+        "hasOnRemove": false
     }
 };
 
@@ -94,6 +100,19 @@ export const ReadOnly: Story = {
         "max": 100,
         "unit": "m",
         "step": 1,
-        "defaultValue": 50
+        "defaultValue": 50,
+        "hasOnRemove": false
+    }
+};
+
+export const WithOnRemove: Story = {
+    "args": {
+        "isReadonly": false,
+        "min": 0,
+        "max": 100,
+        "unit": "m",
+        "step": 1,
+        "defaultValue": 50,
+        "hasOnRemove": true
     }
 };

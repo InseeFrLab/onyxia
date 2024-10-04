@@ -43,6 +43,7 @@ function StoryWrapper() {
                     onChangeAction(newValue);
                     setValue(newValue);
                 }}
+                onRemove={undefined}
             />
             <br />
             <br />

@@ -13,6 +13,7 @@ type Props = {
     title: string;
     description: string | undefined;
     expectedDataType: "object" | "array";
+    onRemove: (() => void) | undefined;
     value: Record<string, Stringifyable> | Stringifyable[];
     onChange: (newValue: Record<string, Stringifyable> | Stringifyable[]) => void;
 };
@@ -20,7 +21,8 @@ type Props = {
 const DEFAULT_HEIGHT = 300;
 
 export const YamlCodeBlockFormField = memo((props: Props) => {
-    const { className, title, description, expectedDataType, value, onChange } = props;
+    const { className, title, description, expectedDataType, onRemove, value, onChange } =
+        props;
 
     const { t } = useTranslation({ YamlCodeBlockFormField });
 
@@ -82,6 +84,7 @@ export const YamlCodeBlockFormField = memo((props: Props) => {
             error={errorMessageKey === undefined ? undefined : t(errorMessageKey)}
             onResetToDefault={resetToDefault}
             inputId={inputId}
+            onRemove={onRemove}
         >
             <Suspense
                 fallback={

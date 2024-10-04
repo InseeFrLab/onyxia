@@ -13,13 +13,22 @@ type Props = {
     description: string | JSX.Element | undefined;
     onResetToDefault: () => void;
     error: JSX.Element | string | undefined;
-    children: ReactNode;
     inputId: string | undefined;
+    onRemove: (() => void) | undefined;
+    children: ReactNode;
 };
 
 export function FormFieldWrapper(props: Props) {
-    const { className, title, description, onResetToDefault, error, inputId, children } =
-        props;
+    const {
+        className,
+        title,
+        description,
+        onResetToDefault,
+        error,
+        inputId,
+        onRemove,
+        children
+    } = props;
 
     const { classes } = useStyles({
         "isErrored": error !== undefined
@@ -30,6 +39,14 @@ export function FormFieldWrapper(props: Props) {
     return (
         <div className={className}>
             <div className={classes.header}>
+                {onRemove !== undefined && (
+                    <IconButton
+                        className={classes.removeButton}
+                        iconClassName={classes.removeButtonIcon}
+                        onClick={onRemove}
+                        icon={id<MuiIconComponentName>("RemoveCircleOutline")}
+                    />
+                )}
                 <Text typo="label 1" className={classes.title}>
                     {
                         <label htmlFor={inputId} lang="und">
@@ -78,7 +95,16 @@ const useStyles = tss
         },
         "header": {
             "display": "flex",
-            "alignItems": "center"
+            "alignItems": "center",
+            "position": "relative",
+            "overflow": "visible"
+        },
+        "removeButton": {
+            "position": "absolute",
+            "left": -theme.typography.rootFontSizePx * 2.5
+        },
+        "removeButtonIcon": {
+            "color": theme.colors.useCases.alertSeverity.error.main
         },
         "childrenWrapper": {
             "marginTop": theme.spacing(4)

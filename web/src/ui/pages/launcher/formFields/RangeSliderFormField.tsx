@@ -66,11 +66,11 @@ export const RangeSliderFormField = memo((props: Props) => {
                 highEndRangeApi.resetToDefault();
             }}
             inputId={inputId}
+            onRemove={undefined}
         >
             <RangeSlider
-                id={inputId}
+                inputId={inputId}
                 className={className}
-                label=""
                 lowExtremitySemantic={lowEndRange.rangeEndSemantic}
                 min={lowEndRange.min}
                 max={highEndRange.max}

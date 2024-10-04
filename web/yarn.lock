@@ -7473,10 +7473,10 @@ onetime@^6.0.0:
   dependencies:
     mimic-fn "^4.0.0"
 
-onyxia-ui@^5.3.6:
-  version "5.3.6"
-  resolved "https://registry.yarnpkg.com/onyxia-ui/-/onyxia-ui-5.3.6.tgz#499a205fd48c6b9672cfe82f46e92b40bef3c4e4"
-  integrity sha512-eP8jMpskxjOMfSXWvtcxOM/p4fZKWyZv2ORdeBpGKsFWulVfi+UshWAl5x4Y2Fos4fvHHDdgPTDuXhT08lHwpw==
+onyxia-ui@^5.3.16:
+  version "5.3.16"
+  resolved "https://registry.yarnpkg.com/onyxia-ui/-/onyxia-ui-5.3.16.tgz#9eba9155c978ee9293c74a761bad6917c29a4ec1"
+  integrity sha512-5oXLYSLgOZq304G4ihGiQB6ozO3AXq3nHoaBv0aT8HKzAGXNFPOa4Iu1htAS2BVTOUMs7vY0UC9paQzEqhQszw==
   dependencies:
     "@mui/icons-material" "^5.14.18"
     "@types/memoizee" "^0.4.11"
@@ -7485,11 +7485,11 @@ onyxia-ui@^5.3.6:
     make-fetch-happen "^10.2.1"
     memoizee "^0.4.17"
     minimal-polyfills "^2.2.3"
-    powerhooks "^1.0.12"
+    powerhooks "^1.0.15"
     react-markdown "^5.0.3"
     run-exclusive "^2.2.19"
-    tsafe "^1.7.2"
-    tss-react "^4.9.12"
+    tsafe "^1.7.5"
+    tss-react "^4.9.13"
     yauzl "^2.10.0"
     yazl "^2.5.1"
 
@@ -7778,6 +7778,15 @@ powerhooks@^1.0.12:
     evt "^2.5.7"
     memoizee "^0.4.15"
     tsafe "^1.7.2"
+
+powerhooks@^1.0.15:
+  version "1.0.15"
+  resolved "https://registry.yarnpkg.com/powerhooks/-/powerhooks-1.0.15.tgz#396ec7634ee0d61fe432956ed293ec61713fcc54"
+  integrity sha512-rTOGCA7egw/yjVaclOMrKTgTV6kAbmx8IY1t8CN8C2hnhInlAawAvLqaKxm0Qc997jnqI8SlQqdVFpLVhvvsXw==
+  dependencies:
+    evt "^2.5.7"
+    memoizee "^0.4.15"
+    tsafe "^1.7.5"
 
 prelude-ls@^1.2.1:
   version "1.2.1"
@@ -8924,6 +8933,11 @@ tsafe@^1.7.2:
   resolved "https://registry.yarnpkg.com/tsafe/-/tsafe-1.7.2.tgz#0f63d414876287ad01b135f832722f93e22da374"
   integrity sha512-dAPfQLhCfCRre5qs+Z5Q2a7s2CV7RxffZUmvj7puGaePYjECzWREJFd3w4XSFe/T5tbxgowfItA/JSSZ6Ma3dA==
 
+tsafe@^1.7.5:
+  version "1.7.5"
+  resolved "https://registry.yarnpkg.com/tsafe/-/tsafe-1.7.5.tgz#0d3a31202b5ef87c7ba997e66e03fd80801278ef"
+  integrity sha512-tbNyyBSbwfbilFfiuXkSOj82a6++ovgANwcoqBAcO9/REPoZMEQoE8kWPeO0dy5A2D/2Lajr8Ohue5T0ifIvLQ==
+
 tsconfck@^3.0.1:
   version "3.0.2"
   resolved "https://registry.yarnpkg.com/tsconfck/-/tsconfck-3.0.2.tgz#d8e279f7a049d55f207f528d13fa493e1d8e7ceb"
@@ -8962,6 +8976,15 @@ tss-react@^4.9.12:
   version "4.9.12"
   resolved "https://registry.yarnpkg.com/tss-react/-/tss-react-4.9.12.tgz#beaae5459cae2dd966af4c97f6dc6dd6655e183d"
   integrity sha512-bsREJF9opq8OEZKibw7Awao2g16ZSlsBavmIxzKVF7EMcJ1d0Uc/Z2lJEKlZwYoct6g1C0dxd5XI+RwPhTrlUA==
+  dependencies:
+    "@emotion/cache" "*"
+    "@emotion/serialize" "*"
+    "@emotion/utils" "*"
+
+tss-react@^4.9.13:
+  version "4.9.13"
+  resolved "https://registry.yarnpkg.com/tss-react/-/tss-react-4.9.13.tgz#e6ac0bfea3977e58b5ef5a261cd0b035e6bd8254"
+  integrity sha512-Gu19qqPH8/SAyKVIgDE5qHygirEDnNIQcXhiEc+l4Q9T7C1sfvUnbVWs+yBpmN26/wyk4FTOupjYS2wq4vH0yA==
   dependencies:
     "@emotion/cache" "*"
     "@emotion/serialize" "*"

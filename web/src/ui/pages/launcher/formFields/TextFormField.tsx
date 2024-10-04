@@ -18,6 +18,7 @@ type Props = {
     doRenderAsTextArea: boolean;
     isSensitive: boolean;
     pattern: string | undefined;
+    onRemove: (() => void) | undefined;
     value: string;
     onChange: (newValue: string) => void;
 };
@@ -31,6 +32,7 @@ export const TextFormField = memo((props: Props) => {
         doRenderAsTextArea,
         isSensitive,
         pattern,
+        onRemove,
         value,
         onChange
     } = props;
@@ -88,6 +90,7 @@ export const TextFormField = memo((props: Props) => {
             })()}
             onResetToDefault={resetToDefault}
             inputId={inputId}
+            onRemove={onRemove}
         >
             <Input
                 id={inputId}

@@ -40,6 +40,7 @@ function StoryWrapper(params: Params) {
                     onChangeAction(newSelectedOptionIndex);
                     setSelectedOptionIndex(newSelectedOptionIndex);
                 }}
+                onRemove={undefined}
             />
             <Divider />
             <p>selectedOptionIndex: </p>

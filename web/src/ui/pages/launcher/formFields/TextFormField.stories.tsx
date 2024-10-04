@@ -15,16 +15,18 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 const onChangeAction = action("onChange");
+const onRemoveAction = action("onRemove");
 
 type Params = {
     isReadonly: boolean;
     doRenderAsTextArea: boolean;
     isSensitive: boolean;
     pattern: string | undefined;
+    hasOnRemove: boolean;
 };
 
 function StoryWrapper(params: Params) {
-    const { isReadonly, doRenderAsTextArea, isSensitive, pattern } = params;
+    const { isReadonly, doRenderAsTextArea, isSensitive, pattern, hasOnRemove } = params;
 
     const [value, setValue] = useState("Hello, world!");
 
@@ -43,6 +45,7 @@ function StoryWrapper(params: Params) {
                     onChangeAction(newValue);
                     setValue(newValue);
                 }}
+                onRemove={hasOnRemove ? () => onRemoveAction() : undefined}
             />
             <Divider />
             <p>Value: </p>
@@ -56,7 +59,8 @@ export const Default: Story = {
         "isReadonly": false,
         "doRenderAsTextArea": false,
         "isSensitive": false,
-        "pattern": undefined
+        "pattern": undefined,
+        "hasOnRemove": false
     }
 };
 
@@ -65,7 +69,8 @@ export const TextArea: Story = {
         "isReadonly": false,
         "doRenderAsTextArea": true,
         "isSensitive": false,
-        "pattern": undefined
+        "pattern": undefined,
+        "hasOnRemove": false
     }
 };
 
@@ -74,7 +79,8 @@ export const Sensitive: Story = {
         "isReadonly": false,
         "doRenderAsTextArea": false,
         "isSensitive": true,
-        "pattern": undefined
+        "pattern": undefined,
+        "hasOnRemove": false
     }
 };
 
@@ -83,7 +89,8 @@ export const WithPattern: Story = {
         "isReadonly": false,
         "doRenderAsTextArea": false,
         "isSensitive": false,
-        "pattern": "^[a-zA-Z0-9]*$"
+        "pattern": "^[a-zA-Z0-9]*$",
+        "hasOnRemove": false
     }
 };
 
@@ -92,6 +99,17 @@ export const Readonly: Story = {
         "isReadonly": true,
         "doRenderAsTextArea": false,
         "isSensitive": false,
-        "pattern": undefined
+        "pattern": undefined,
+        "hasOnRemove": false
+    }
+};
+
+export const WithOnRemove: Story = {
+    "args": {
+        "isReadonly": false,
+        "doRenderAsTextArea": false,
+        "isSensitive": false,
+        "pattern": undefined,
+        "hasOnRemove": true
     }
 };

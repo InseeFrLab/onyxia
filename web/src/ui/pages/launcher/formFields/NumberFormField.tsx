@@ -15,6 +15,7 @@ type Props = {
     description: string | undefined;
     isInteger: boolean;
     minimum: number | undefined;
+    onRemove: (() => void) | undefined;
     value: number;
     onChange: (newValue: number) => void;
 };
@@ -27,6 +28,7 @@ export const NumberFormField = memo((props: Props) => {
         description,
         isInteger,
         minimum,
+        onRemove,
         value,
         onChange
     } = props;
@@ -105,6 +107,7 @@ export const NumberFormField = memo((props: Props) => {
             })()}
             onResetToDefault={resetToDefault}
             inputId={inputId}
+            onRemove={onRemove}
         >
             <Input
                 id={inputId}

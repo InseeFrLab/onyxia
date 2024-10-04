@@ -12,6 +12,7 @@ type Props = {
     description: string | undefined;
     isReadonly: boolean;
     options: Stringifyable[];
+    onRemove: (() => void) | undefined;
     selectedOptionIndex: number;
     onSelectedOptionIndexChange: (selectedOptionIndex: number) => void;
 };
@@ -23,6 +24,7 @@ export const SelectFormField = memo((props: Props) => {
         description,
         isReadonly,
         options,
+        onRemove,
         selectedOptionIndex,
         onSelectedOptionIndexChange
     } = props;
@@ -52,10 +54,10 @@ export const SelectFormField = memo((props: Props) => {
             error={undefined}
             onResetToDefault={resetToDefault}
             inputId={inputId}
+            onRemove={onRemove}
         >
             <Select
                 className={classes.select}
-                labelId="demo-simple-select-label"
                 id={inputId}
                 value={`${serializedValue}`}
                 onChange={event => setSerializedValue(parseInt(event.target.value))}
