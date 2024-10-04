@@ -681,6 +681,9 @@ Voel je vrij om te verkennen en de controle over je Kubernetes-implementaties te
             `Komt niet overeen met het patroon ${pattern}`,
         "toggle password visibility": "Wachtwoordzichtbaarheid wisselen"
     },
+    "FormFieldGroupWrapper": {
+        "add": "Toevoegen"
+    },
     "NumberFormField": {
         "below minimum": ({ minimum }) => `Moet groter dan of gelijk aan ${minimum} zijn`,
         "not a number": "Geen getal",

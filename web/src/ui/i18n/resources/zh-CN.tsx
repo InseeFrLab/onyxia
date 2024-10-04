@@ -630,6 +630,9 @@ ${
         "not matching pattern": ({ pattern }) => `不符合模式 ${pattern}`,
         "toggle password visibility": "切换密码可见性"
     },
+    "FormFieldGroupWrapper": {
+        "add": "添加"
+    },
     "NumberFormField": {
         "below minimum": ({ minimum }) => `必须大于或等于 ${minimum}`,
         "not a number": "不是数字",

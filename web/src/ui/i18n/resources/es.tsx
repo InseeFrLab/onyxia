@@ -679,6 +679,9 @@ export const translations: Translations<"en"> = {
         "not matching pattern": ({ pattern }) => `No coincide con el patrón ${pattern}`,
         "toggle password visibility": "Alternar la visibilidad de la contraseña"
     },
+    "FormFieldGroupWrapper": {
+        "add": "Añadir"
+    },
     "NumberFormField": {
         "below minimum": ({ minimum }) => `Debe ser mayor o igual a ${minimum}`,
         "not a number": "No es un número",

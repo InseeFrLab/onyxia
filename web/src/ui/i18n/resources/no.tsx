@@ -679,6 +679,9 @@ Utforsk gjerne og ta kontroll over tjenestene du kjører på Kubernetes!
         "not matching pattern": ({ pattern }) => `Matcher ikke mønsteret ${pattern}`,
         "toggle password visibility": "Bytt synlighet for passord"
     },
+    "FormFieldGroupWrapper": {
+        "add": "Legg til"
+    },
     "NumberFormField": {
         "below minimum": ({ minimum }) => `Må være større enn eller lik ${minimum}`,
         "not a number": "Ikke et tall",

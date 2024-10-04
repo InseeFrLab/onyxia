@@ -59,6 +59,7 @@ export type ComponentKey =
     | import("ui/pages/launcher/formFields/YamlCodeBlockFormField/YamlCodeBlockFormField").I18n
     | import("ui/pages/launcher/formFields/TextFormField").I18n
     | import("ui/pages/launcher/formFields/NumberFormField").I18n
+    | import("ui/pages/launcher/FormFieldGroup/FormFieldGroupWrapper").I18n
     | import("ui/pages/myService/MyService").I18n
     | import("ui/pages/myService/PodLogsTab").I18n
     | import("ui/pages/myService/MyServiceButtonBar").I18n

@@ -684,6 +684,9 @@ Fühlen Sie sich frei, Ihre Kubernetes-Bereitstellungen zu erkunden und die Kont
         "not matching pattern": ({ pattern }) => `Entspricht nicht dem Muster ${pattern}`,
         "toggle password visibility": "Passwortsichtbarkeit umschalten"
     },
+    "FormFieldGroupWrapper": {
+        "add": "Hinzufügen"
+    },
     "NumberFormField": {
         "below minimum": ({ minimum }) => `Muss größer oder gleich ${minimum} sein`,
         "not a number": "Keine Zahl",
