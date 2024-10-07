@@ -122,6 +122,15 @@ export function FormFieldGroupComponent(props: Props): ReactNode {
     return (
         <FormFieldGroupComponentWrapper
             className={cx(classes.root, className)}
+            title={(() => {
+                const lastSegment = helmValuesPath[helmValuesPath.length - 1];
+
+                if (typeof lastSegment === "number") {
+                    return undefined;
+                }
+
+                return lastSegment;
+            })()}
             description={description}
             onAdd={onAdd === undefined ? undefined : () => onAdd({ helmValuesPath })}
         >
