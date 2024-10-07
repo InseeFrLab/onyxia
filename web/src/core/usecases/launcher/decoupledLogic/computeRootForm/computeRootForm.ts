@@ -36,7 +36,7 @@ export function computeRootForm(params: {
 
             mergeRangeSliders({ "formFieldGroup": formFieldGroup_root });
 
-            return formFieldGroup_root.children;
+            return formFieldGroup_root.nodes;
         })(),
         "disabledDependencies": helmDependencies
             .filter(({ condition }) =>
@@ -53,26 +53,26 @@ export function computeRootForm(params: {
     };
 
     const extractGroup = (params: {
-        children: FormFieldGroup["children"];
+        nodes: FormFieldGroup["nodes"];
         groupName: string;
-    }): FormFieldGroup["children"] | undefined => {
-        const { children, groupName } = params;
+    }): FormFieldGroup["nodes"] | undefined => {
+        const { nodes, groupName } = params;
 
-        const child_extracted = children
-            .map(children => (children.type === "group" ? children : undefined))
+        const child_extracted = nodes
+            .map(nodes => (nodes.type === "group" ? nodes : undefined))
             .filter(exclude(undefined))
-            .find(children => children.helmValuesPath.slice(-1)[0] === groupName);
+            .find(nodes => nodes.helmValuesPath.slice(-1)[0] === groupName);
 
         if (child_extracted !== undefined) {
-            children.splice(children.indexOf(child_extracted), 1);
+            nodes.splice(nodes.indexOf(child_extracted), 1);
         }
 
-        return child_extracted?.children;
+        return child_extracted?.nodes;
     };
 
     rootForm.global =
         extractGroup({
-            "children": rootForm.main,
+            "nodes": rootForm.main,
             "groupName": "global"
         }) ?? [];
 
@@ -83,12 +83,12 @@ export function computeRootForm(params: {
                 (rootForm.dependencies[chartName] = {
                     "main":
                         extractGroup({
-                            "children": rootForm.main,
+                            "nodes": rootForm.main,
                             "groupName": chartName
                         }) ?? [],
                     "global":
                         extractGroup({
-                            "children": rootForm.global,
+                            "nodes": rootForm.global,
                             "groupName": chartName
                         }) ?? []
                 })

@@ -3,7 +3,7 @@ import { assert } from "tsafe/assert";
 import { same } from "evt/tools/inDepth/same";
 import { getHelmValuesPathDeeperCommonSubpath } from "../../shared/getHelmValuesPathDeeperCommonSubpath";
 
-function rootFormToChildren(rootForm: RootForm): FormFieldGroup["children"] {
+function rootFormToNodes(rootForm: RootForm): FormFieldGroup["nodes"] {
     return [
         ...rootForm.main,
         ...rootForm.global,
@@ -20,7 +20,7 @@ export function findInRootForm(params: {
     const { rootForm, helmValuesPath } = params;
 
     const formField = findInRootForm_rec({
-        "children": rootFormToChildren(rootForm),
+        "nodes": rootFormToNodes(rootForm),
         "helmValuesPath": helmValuesPath
     });
 
@@ -31,35 +31,35 @@ export function findInRootForm(params: {
 }
 
 function findInRootForm_rec(params: {
-    children: FormFieldGroup["children"];
+    nodes: FormFieldGroup["nodes"];
     helmValuesPath: (string | number)[];
 }): Exclude<FormField, FormField.RangeSlider> | FormFieldGroup | undefined {
-    const { children, helmValuesPath } = params;
+    const { nodes, helmValuesPath } = params;
 
-    for (const child of children) {
-        switch (child.type) {
+    for (const node of nodes) {
+        switch (node.type) {
             case "field":
-                if (child.fieldType === "range slider") {
+                if (node.fieldType === "range slider") {
                     continue;
                 }
-                if (!same(child.helmValuesPath, helmValuesPath)) {
+                if (!same(node.helmValuesPath, helmValuesPath)) {
                     continue;
                 }
-                return child;
+                return node;
             case "group": {
                 if (
                     !getDoesPathStartWith({
-                        "shorterPath": child.helmValuesPath,
+                        "shorterPath": node.helmValuesPath,
                         "longerPath": helmValuesPath
                     })
                 ) {
                     continue;
                 }
-                if (child.helmValuesPath.length === helmValuesPath.length) {
-                    return child;
+                if (node.helmValuesPath.length === helmValuesPath.length) {
+                    return node;
                 }
                 const formField = findInRootForm_rec({
-                    "children": child.children,
+                    "nodes": node.nodes,
                     "helmValuesPath": helmValuesPath
                 });
                 if (formField === undefined) {
@@ -80,7 +80,7 @@ export function findInRootForm_rangeSlider(params: {
     const { rootForm, helmValuesPath_highEndRange, helmValuesPath_lowEndRange } = params;
 
     const formFieldGroup = findInRootForm_rec({
-        "children": rootFormToChildren(rootForm),
+        "nodes": rootFormToNodes(rootForm),
         "helmValuesPath": getHelmValuesPathDeeperCommonSubpath({
             "helmValuesPath1": helmValuesPath_lowEndRange,
             "helmValuesPath2": helmValuesPath_highEndRange
@@ -90,20 +90,20 @@ export function findInRootForm_rangeSlider(params: {
     assert(formFieldGroup !== undefined);
     assert(formFieldGroup.type === "group");
 
-    for (const child of formFieldGroup.children) {
-        if (child.type !== "field") {
+    for (const node of formFieldGroup.nodes) {
+        if (node.type !== "field") {
             continue;
         }
-        if (child.fieldType !== "range slider") {
+        if (node.fieldType !== "range slider") {
             continue;
         }
-        if (!same(child.lowEndRange.helmValuesPath, helmValuesPath_lowEndRange)) {
+        if (!same(node.lowEndRange.helmValuesPath, helmValuesPath_lowEndRange)) {
             continue;
         }
-        if (!same(child.highEndRange.helmValuesPath, helmValuesPath_highEndRange)) {
+        if (!same(node.highEndRange.helmValuesPath, helmValuesPath_highEndRange)) {
             continue;
         }
-        return child;
+        return node;
     }
 
     assert(false);

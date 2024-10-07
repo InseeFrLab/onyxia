@@ -21,10 +21,8 @@ type Props = {
     className?: string;
     description: string | undefined;
     helmValuesPath: (string | number)[];
-
-    children: (FormField | FormFieldGroup)[];
-
-    onChangeFormFieldValue: (params: FormFieldValue) => void;
+    nodes: (FormField | FormFieldGroup)[];
+    onChange: (params: FormFieldValue) => void;
     onAdd: ((params: { helmValuesPath: (string | number)[] }) => void) | undefined;
     onRemove:
         | ((params: { helmValuesPath: (string | number)[]; index: number }) => void)
@@ -32,15 +30,8 @@ type Props = {
 };
 
 export function FormFieldGroupComponent(props: Props): ReactNode {
-    const {
-        className,
-        description,
-        helmValuesPath,
-        children,
-        onChangeFormFieldValue,
-        onAdd,
-        onRemove
-    } = props;
+    const { className, description, helmValuesPath, nodes, onChange, onAdd, onRemove } =
+        props;
 
     const { cx, classes } = useStyles();
 
@@ -52,7 +43,7 @@ export function FormFieldGroupComponent(props: Props): ReactNode {
 
     const getOnChange_checkbox = useCallbackFactory(
         ([helmValuesPathStr]: [string], [value]: [boolean]) =>
-            onChangeFormFieldValue({
+            onChange({
                 "fieldType": "checkbox",
                 "helmValuesPath": JSON.parse(helmValuesPathStr),
                 value
@@ -64,7 +55,7 @@ export function FormFieldGroupComponent(props: Props): ReactNode {
             [helmValuesPathStr]: [string],
             [value]: [Record<string, Stringifyable> | Stringifyable[]]
         ) =>
-            onChangeFormFieldValue({
+            onChange({
                 "fieldType": "yaml code block",
                 "helmValuesPath": JSON.parse(helmValuesPathStr),
                 value
@@ -73,7 +64,7 @@ export function FormFieldGroupComponent(props: Props): ReactNode {
 
     const getOnChange_number = useCallbackFactory(
         ([helmValuesPathStr]: [string], [value]: [number]) =>
-            onChangeFormFieldValue({
+            onChange({
                 "fieldType": "number field",
                 "helmValuesPath": JSON.parse(helmValuesPathStr),
                 value
@@ -82,7 +73,7 @@ export function FormFieldGroupComponent(props: Props): ReactNode {
 
     const getOnChange_select = useCallbackFactory(
         ([helmValuesPathStr]: [string], [selectedOptionIndex]: [number]) =>
-            onChangeFormFieldValue({
+            onChange({
                 "fieldType": "select",
                 "helmValuesPath": JSON.parse(helmValuesPathStr),
                 selectedOptionIndex
@@ -91,7 +82,7 @@ export function FormFieldGroupComponent(props: Props): ReactNode {
 
     const getOnChange_text = useCallbackFactory(
         ([helmValuesPathStr]: [string], [value]: [string]) =>
-            onChangeFormFieldValue({
+            onChange({
                 "fieldType": "text field",
                 "helmValuesPath": JSON.parse(helmValuesPathStr),
                 value
@@ -100,7 +91,7 @@ export function FormFieldGroupComponent(props: Props): ReactNode {
 
     const getOnChange_slider = useCallbackFactory(
         ([helmValuesPathStr]: [string], [value]: [number]) =>
-            onChangeFormFieldValue({
+            onChange({
                 "fieldType": "slider",
                 "helmValuesPath": JSON.parse(helmValuesPathStr),
                 value
@@ -115,7 +106,7 @@ export function FormFieldGroupComponent(props: Props): ReactNode {
             ],
             [params]: [{ highEndRangeValue: number; lowEndRangeValue: number }]
         ) =>
-            onChangeFormFieldValue({
+            onChange({
                 "fieldType": "range slider",
                 "highEndRange": {
                     "helmValuesPath": JSON.parse(helmValuesPathStr_highEndRange),
@@ -134,25 +125,25 @@ export function FormFieldGroupComponent(props: Props): ReactNode {
             description={description}
             onAdd={onAdd === undefined ? undefined : () => onAdd({ helmValuesPath })}
         >
-            {children.map((child, index) => {
+            {nodes.map((node, index) => {
                 const key = JSON.stringify(
-                    child.type === "field" && child.fieldType === "range slider"
+                    node.type === "field" && node.fieldType === "range slider"
                         ? [
-                              ...child.lowEndRange.helmValuesPath,
-                              ...child.highEndRange.helmValuesPath
+                              ...node.lowEndRange.helmValuesPath,
+                              ...node.highEndRange.helmValuesPath
                           ]
-                        : child.helmValuesPath
+                        : node.helmValuesPath
                 );
 
-                if (child.type === "group") {
+                if (node.type === "group") {
                     return (
                         <FormFieldGroupComponent
                             key={key}
                             className={className}
-                            description={child.description}
-                            helmValuesPath={child.helmValuesPath}
-                            children={child.children}
-                            onChangeFormFieldValue={onChangeFormFieldValue}
+                            description={node.description}
+                            helmValuesPath={node.helmValuesPath}
+                            nodes={node.nodes}
+                            onChange={onChange}
                             onAdd={onAdd}
                             onRemove={onRemove}
                         />
@@ -162,18 +153,18 @@ export function FormFieldGroupComponent(props: Props): ReactNode {
                 const onRemove_child =
                     onRemove === undefined ? undefined : getOnRemove_child(index);
 
-                switch (child.fieldType) {
+                switch (node.fieldType) {
                     case "checkbox":
                         return (
                             <CheckboxFormField
                                 key={key}
-                                title={child.title}
-                                description={child.description}
-                                isReadonly={child.isReadonly}
+                                title={node.title}
+                                description={node.description}
+                                isReadonly={node.isReadonly}
                                 onRemove={onRemove_child}
-                                value={child.value}
+                                value={node.value}
                                 onChange={getOnChange_checkbox(
-                                    JSON.stringify(child.helmValuesPath)
+                                    JSON.stringify(node.helmValuesPath)
                                 )}
                             />
                         );
@@ -181,13 +172,13 @@ export function FormFieldGroupComponent(props: Props): ReactNode {
                         return (
                             <YamlCodeBlockFormField
                                 key={key}
-                                title={child.title}
-                                description={child.description}
-                                expectedDataType={child.expectedDataType}
+                                title={node.title}
+                                description={node.description}
+                                expectedDataType={node.expectedDataType}
                                 onRemove={onRemove_child}
-                                value={child.value}
+                                value={node.value}
                                 onChange={getOnChange_yamlCodeBlock(
-                                    JSON.stringify(child.helmValuesPath)
+                                    JSON.stringify(node.helmValuesPath)
                                 )}
                             />
                         );
@@ -195,15 +186,15 @@ export function FormFieldGroupComponent(props: Props): ReactNode {
                         return (
                             <NumberFormField
                                 key={key}
-                                title={child.title}
-                                isReadonly={child.isReadonly}
-                                description={child.description}
-                                isInteger={child.isInteger}
-                                minimum={child.minimum}
+                                title={node.title}
+                                isReadonly={node.isReadonly}
+                                description={node.description}
+                                isInteger={node.isInteger}
+                                minimum={node.minimum}
                                 onRemove={onRemove_child}
-                                value={child.value}
+                                value={node.value}
                                 onChange={getOnChange_number(
-                                    JSON.stringify(child.helmValuesPath)
+                                    JSON.stringify(node.helmValuesPath)
                                 )}
                             />
                         );
@@ -211,14 +202,14 @@ export function FormFieldGroupComponent(props: Props): ReactNode {
                         return (
                             <SelectFormField
                                 key={key}
-                                title={child.title}
-                                description={child.description}
-                                isReadonly={child.isReadonly}
-                                options={child.options}
+                                title={node.title}
+                                description={node.description}
+                                isReadonly={node.isReadonly}
+                                options={node.options}
                                 onRemove={onRemove_child}
-                                selectedOptionIndex={child.selectedOptionIndex}
+                                selectedOptionIndex={node.selectedOptionIndex}
                                 onSelectedOptionIndexChange={getOnChange_select(
-                                    JSON.stringify(child.helmValuesPath)
+                                    JSON.stringify(node.helmValuesPath)
                                 )}
                             />
                         );
@@ -226,16 +217,16 @@ export function FormFieldGroupComponent(props: Props): ReactNode {
                         return (
                             <TextFormField
                                 key={key}
-                                title={child.title}
-                                description={child.description}
-                                isReadonly={child.isReadonly}
-                                doRenderAsTextArea={child.doRenderAsTextArea}
-                                isSensitive={child.isSensitive}
-                                pattern={child.pattern}
+                                title={node.title}
+                                description={node.description}
+                                isReadonly={node.isReadonly}
+                                doRenderAsTextArea={node.doRenderAsTextArea}
+                                isSensitive={node.isSensitive}
+                                pattern={node.pattern}
                                 onRemove={onRemove_child}
-                                value={child.value}
+                                value={node.value}
                                 onChange={getOnChange_text(
-                                    JSON.stringify(child.helmValuesPath)
+                                    JSON.stringify(node.helmValuesPath)
                                 )}
                             />
                         );
@@ -243,17 +234,17 @@ export function FormFieldGroupComponent(props: Props): ReactNode {
                         return (
                             <SliderFormField
                                 key={key}
-                                title={child.title}
-                                description={child.description}
-                                isReadonly={child.isReadonly}
-                                min={child.min}
-                                max={child.max}
-                                unit={child.unit}
-                                step={child.step}
+                                title={node.title}
+                                description={node.description}
+                                isReadonly={node.isReadonly}
+                                min={node.min}
+                                max={node.max}
+                                unit={node.unit}
+                                step={node.step}
                                 onRemove={onRemove_child}
-                                value={child.value}
+                                value={node.value}
                                 onChange={getOnChange_slider(
-                                    JSON.stringify(child.helmValuesPath)
+                                    JSON.stringify(node.helmValuesPath)
                                 )}
                             />
                         );
@@ -261,30 +252,29 @@ export function FormFieldGroupComponent(props: Props): ReactNode {
                         return (
                             <RangeSliderFormField
                                 key={key}
-                                title={child.title}
-                                unit={child.unit}
-                                step={child.step}
+                                title={node.title}
+                                unit={node.unit}
+                                step={node.step}
                                 lowEndRange={{
-                                    "isReadonly": child.lowEndRange.isReadonly,
-                                    "rangeEndSemantic":
-                                        child.lowEndRange.rangeEndSemantic,
-                                    "min": child.lowEndRange.min,
-                                    "max": child.lowEndRange.max,
-                                    "description": child.lowEndRange.description,
-                                    "value": child.lowEndRange.value
+                                    "isReadonly": node.lowEndRange.isReadonly,
+                                    "rangeEndSemantic": node.lowEndRange.rangeEndSemantic,
+                                    "min": node.lowEndRange.min,
+                                    "max": node.lowEndRange.max,
+                                    "description": node.lowEndRange.description,
+                                    "value": node.lowEndRange.value
                                 }}
                                 highEndRange={{
-                                    "isReadonly": child.highEndRange.isReadonly,
+                                    "isReadonly": node.highEndRange.isReadonly,
                                     "rangeEndSemantic":
-                                        child.highEndRange.rangeEndSemantic,
-                                    "min": child.highEndRange.min,
-                                    "max": child.highEndRange.max,
-                                    "description": child.highEndRange.description,
-                                    "value": child.highEndRange.value
+                                        node.highEndRange.rangeEndSemantic,
+                                    "min": node.highEndRange.min,
+                                    "max": node.highEndRange.max,
+                                    "description": node.highEndRange.description,
+                                    "value": node.highEndRange.value
                                 }}
                                 onChange={getOnChange_rangeSlider(
-                                    JSON.stringify(child.lowEndRange.helmValuesPath),
-                                    JSON.stringify(child.highEndRange.helmValuesPath)
+                                    JSON.stringify(node.lowEndRange.helmValuesPath),
+                                    JSON.stringify(node.highEndRange.helmValuesPath)
                                 )}
                             />
                         );

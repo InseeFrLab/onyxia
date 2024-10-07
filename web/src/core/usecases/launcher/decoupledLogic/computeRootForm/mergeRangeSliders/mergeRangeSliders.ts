@@ -1,6 +1,6 @@
-import type { FormFieldGroup } from "core/usecases/launcher/formTypes";
+import type { FormFieldGroup } from "../../formTypes";
 import { assert } from "tsafe/assert";
-import { removeFormFieldGroupWithNoChildren } from "./removeFormFieldGroupWithNoChildren";
+import { removeFormFieldGroupWithNoNodes } from "./removeFormFieldGroupWithNoNodes";
 import {
     getFormFieldPath,
     type FormFieldGroupLike as FormFieldGroupLike_getFormFieldPath
@@ -107,5 +107,5 @@ export function mergeRangeSliders(params: { formFieldGroup: FormFieldGroupLike }
         });
     }
 
-    removeFormFieldGroupWithNoChildren({ "children": formFieldGroup.children });
+    removeFormFieldGroupWithNoNodes({ "nodes": formFieldGroup.nodes });
 }

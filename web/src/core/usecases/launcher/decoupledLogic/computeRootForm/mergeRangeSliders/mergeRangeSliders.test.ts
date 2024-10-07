@@ -10,15 +10,15 @@ describe(symToStr({ mergeRangeSliders }), () => {
         const formFieldGroup: FormFieldGroupLike = {
             "type": "group",
             "helmValuesPath": [],
-            "children": [
+            "nodes": [
                 {
                     "type": "group",
                     "helmValuesPath": ["resources"],
-                    "children": [
+                    "nodes": [
                         {
                             "type": "group",
                             "helmValuesPath": ["resources", "requests"],
-                            "children": [
+                            "nodes": [
                                 createTemporaryRangeSlider({
                                     "payload": {
                                         "isReadonly": false,
@@ -44,7 +44,7 @@ describe(symToStr({ mergeRangeSliders }), () => {
                         {
                             "type": "group",
                             "helmValuesPath": ["resources", "limits"],
-                            "children": [
+                            "nodes": [
                                 createTemporaryRangeSlider({
                                     "payload": {
                                         "isReadonly": true,
@@ -72,11 +72,11 @@ describe(symToStr({ mergeRangeSliders }), () => {
         expect(formFieldGroup).toStrictEqual({
             "type": "group",
             "helmValuesPath": [],
-            "children": [
+            "nodes": [
                 {
                     "type": "group",
                     "helmValuesPath": ["resources"],
-                    "children": [
+                    "nodes": [
                         id<FormField.RangeSlider>({
                             "type": "field",
                             "title": "CPU",
@@ -112,15 +112,15 @@ describe(symToStr({ mergeRangeSliders }), () => {
         const formFieldGroup: FormFieldGroupLike = {
             "type": "group",
             "helmValuesPath": [],
-            "children": [
+            "nodes": [
                 {
                     "type": "group",
                     "helmValuesPath": ["resources"],
-                    "children": [
+                    "nodes": [
                         {
                             "type": "group",
                             "helmValuesPath": ["resources", "requests"],
-                            "children": [
+                            "nodes": [
                                 createTemporaryRangeSlider({
                                     "payload": {
                                         "isReadonly": false,
@@ -166,7 +166,7 @@ describe(symToStr({ mergeRangeSliders }), () => {
                         {
                             "type": "group",
                             "helmValuesPath": ["resources", "limits"],
-                            "children": [
+                            "nodes": [
                                 createTemporaryRangeSlider({
                                     "payload": {
                                         "isReadonly": false,
@@ -213,11 +213,11 @@ describe(symToStr({ mergeRangeSliders }), () => {
         expect(formFieldGroup).toStrictEqual({
             "type": "group",
             "helmValuesPath": [],
-            "children": [
+            "nodes": [
                 {
                     "type": "group",
                     "helmValuesPath": ["resources"],
-                    "children": [
+                    "nodes": [
                         id<FormField.RangeSlider>({
                             "type": "field",
                             "title": "CPU",

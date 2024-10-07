@@ -9,7 +9,7 @@ const rootForm: RootForm = {
             "type": "group",
             "helmValuesPath": ["services"],
             "description": undefined,
-            "children": [
+            "nodes": [
                 {
                     "type": "field",
                     "title": "a",
@@ -30,7 +30,7 @@ const rootForm: RootForm = {
             "type": "group",
             "helmValuesPath": ["resources"],
             "description": undefined,
-            "children": [
+            "nodes": [
                 {
                     "type": "field",
                     "fieldType": "range slider",

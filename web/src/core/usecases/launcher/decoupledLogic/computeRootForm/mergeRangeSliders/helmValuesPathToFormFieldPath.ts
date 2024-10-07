@@ -11,7 +11,7 @@ assert<FormField extends FormFieldLike ? true : false>();
 export type FormFieldGroupLike = {
     type: "group";
     helmValuesPath: (string | number)[];
-    children: (FormFieldLike | FormFieldGroupLike)[];
+    nodes: (FormFieldLike | FormFieldGroupLike)[];
 };
 
 assert<FormFieldGroup extends FormFieldGroupLike ? true : false>();
@@ -46,10 +46,10 @@ function helmValuesPathToFormFieldPath_rec(params: {
 
     const [segment, ...rest] = helmValuesPathToGroup;
 
-    const formFieldGroup_child = formFieldGroup.children
-        .map(child => (child.type !== "group" ? undefined : child))
+    const formFieldGroup_child = formFieldGroup.nodes
+        .map(node => (node.type !== "group" ? undefined : node))
         .filter(exclude(undefined))
-        .find(child => child.helmValuesPath.slice(-1)[0] === segment);
+        .find(node => node.helmValuesPath.slice(-1)[0] === segment);
 
     assert(formFieldGroup_child !== undefined);
 
@@ -58,7 +58,7 @@ function helmValuesPathToFormFieldPath_rec(params: {
         "formFieldGroup": formFieldGroup_child,
         "currentFormFieldPath": [
             ...currentFormFieldPath,
-            formFieldGroup.children.indexOf(formFieldGroup_child)
+            formFieldGroup.nodes.indexOf(formFieldGroup_child)
         ]
     });
 }

@@ -35,7 +35,7 @@ describe(symToStr({ computeRootFormFieldGroup }), () => {
             "type": "group",
             "helmValuesPath": [],
             "description": undefined,
-            "children": [
+            "nodes": [
                 {
                     "type": "field",
                     "description": undefined,
@@ -100,7 +100,7 @@ describe(symToStr({ computeRootFormFieldGroup }), () => {
             "type": "group",
             "helmValuesPath": [],
             "description": undefined,
-            "children": [
+            "nodes": [
                 {
                     "type": "field",
                     "title": "a",
@@ -117,12 +117,12 @@ describe(symToStr({ computeRootFormFieldGroup }), () => {
                     "type": "group",
                     "helmValuesPath": ["b"],
                     "description": undefined,
-                    "children": [
+                    "nodes": [
                         {
                             "type": "group",
                             "helmValuesPath": ["b", 0],
                             "description": undefined,
-                            "children": [
+                            "nodes": [
                                 {
                                     "type": "field",
                                     "title": "foo",

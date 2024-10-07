@@ -8,7 +8,7 @@ describe(symToStr({ helmValuesPathToFormFieldPath }), () => {
             "formFieldGroup": {
                 "type": "group",
                 "helmValuesPath": [],
-                "children": []
+                "nodes": []
             },
             "helmValuesPathToGroup": []
         });
@@ -23,12 +23,12 @@ describe(symToStr({ helmValuesPathToFormFieldPath }), () => {
             "formFieldGroup": {
                 "type": "group",
                 "helmValuesPath": [],
-                "children": [
+                "nodes": [
                     { "type": "field" },
                     {
                         "type": "group",
                         "helmValuesPath": ["a"],
-                        "children": []
+                        "nodes": []
                     }
                 ]
             },
@@ -45,25 +45,25 @@ describe(symToStr({ helmValuesPathToFormFieldPath }), () => {
             "formFieldGroup": {
                 "type": "group",
                 "helmValuesPath": [],
-                "children": [
+                "nodes": [
                     {
                         "type": "field"
                     },
                     {
                         "type": "group",
                         "helmValuesPath": ["a"],
-                        "children": [
+                        "nodes": [
                             {
                                 "type": "field"
                             },
                             {
                                 "type": "group",
                                 "helmValuesPath": ["a", 1],
-                                "children": [
+                                "nodes": [
                                     {
                                         "type": "group",
                                         "helmValuesPath": ["a", 1, "c"],
-                                        "children": []
+                                        "nodes": []
                                     }
                                 ]
                             }

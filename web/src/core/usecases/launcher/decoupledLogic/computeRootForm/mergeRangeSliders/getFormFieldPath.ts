@@ -11,7 +11,7 @@ assert<FormField extends FormFieldLike ? true : false>();
 
 export type FormFieldGroupLike = {
     type: "group";
-    children: (FormFieldLike | FormFieldGroupLike)[];
+    nodes: (FormFieldLike | FormFieldGroupLike)[];
 };
 
 assert<FormFieldGroup extends FormFieldGroupLike ? true : false>();
@@ -37,16 +37,16 @@ function getFormFieldPath_rec(params: {
     const { formFieldPath, formFieldGroup, predicate } = params;
 
     {
-        const i = formFieldGroup.children.findIndex(child => {
-            if (child.type !== "field") {
+        const i = formFieldGroup.nodes.findIndex(node => {
+            if (node.type !== "field") {
                 return false;
             }
 
             // NOTE: We don't want to go into too much generic typing here just to make the function
             // easier to write unit test for, this is plenty safe enough.
-            assert<Equals<typeof child, FormFieldLike>>();
-            assert(is<FormField>(child));
-            return predicate(child);
+            assert<Equals<typeof node, FormFieldLike>>();
+            assert(is<FormField>(node));
+            return predicate(node);
         });
 
         if (i !== -1) {
@@ -54,13 +54,13 @@ function getFormFieldPath_rec(params: {
         }
     }
 
-    for (const [formFieldGroup_i, i] of formFieldGroup.children
-        .map((child, index) => {
-            if (child.type === "field") {
+    for (const [formFieldGroup_i, i] of formFieldGroup.nodes
+        .map((node, index) => {
+            if (node.type === "field") {
                 return undefined;
             }
 
-            return [child, index] as const;
+            return [node, index] as const;
         })
         .filter(exclude(undefined))) {
         const formFieldPath_next = getFormFieldPath_rec({

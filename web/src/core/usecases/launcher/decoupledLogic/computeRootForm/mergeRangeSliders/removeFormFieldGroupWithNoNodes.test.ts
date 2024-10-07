@@ -1,75 +1,75 @@
 import { it, expect, describe } from "vitest";
 import {
-    removeFormFieldGroupWithNoChildren,
+    removeFormFieldGroupWithNoNodes,
     type FormFieldGroupLike
-} from "./removeFormFieldGroupWithNoChildren";
+} from "./removeFormFieldGroupWithNoNodes";
 import structuredClone from "@ungap/structured-clone";
 import { symToStr } from "tsafe/symToStr";
 
-describe(symToStr({ removeFormFieldGroupWithNoChildren }), () => {
+describe(symToStr({ removeFormFieldGroupWithNoNodes }), () => {
     it("simple case", () => {
-        const children: FormFieldGroupLike["children"] = [
+        const nodes: FormFieldGroupLike["nodes"] = [
             {
                 "type": "field"
             },
             {
                 "type": "group",
-                "children": []
+                "nodes": []
             }
         ];
 
-        const got = structuredClone(children);
+        const got = structuredClone(nodes);
 
-        removeFormFieldGroupWithNoChildren({
-            "children": got
+        removeFormFieldGroupWithNoNodes({
+            "nodes": got
         });
 
-        const expected = children.filter(child => child.type === "field");
+        const expected = nodes.filter(node => node.type === "field");
 
         expect(got).toStrictEqual(expected);
     });
 
     it("more than one removal", () => {
-        const children: FormFieldGroupLike["children"] = [
+        const nodes: FormFieldGroupLike["nodes"] = [
             {
                 "type": "field"
             },
             {
                 "type": "group",
-                "children": []
+                "nodes": []
             },
             {
                 "type": "field"
             },
             {
                 "type": "group",
-                "children": []
+                "nodes": []
             }
         ];
 
-        const got = structuredClone(children);
+        const got = structuredClone(nodes);
 
-        removeFormFieldGroupWithNoChildren({
-            "children": got
+        removeFormFieldGroupWithNoNodes({
+            "nodes": got
         });
 
-        const expected = children.filter(child => child.type === "field");
+        const expected = nodes.filter(node => node.type === "field");
 
         expect(got).toStrictEqual(expected);
     });
 
     it("nested case", () => {
-        const children: FormFieldGroupLike["children"] = [
+        const nodes: FormFieldGroupLike["nodes"] = [
             {
                 "type": "group",
-                "children": [
+                "nodes": [
                     {
                         "type": "group",
-                        "children": []
+                        "nodes": []
                     },
                     {
                         "type": "group",
-                        "children": []
+                        "nodes": []
                     }
                 ]
             },
@@ -78,28 +78,28 @@ describe(symToStr({ removeFormFieldGroupWithNoChildren }), () => {
             }
         ];
 
-        const got = structuredClone(children);
+        const got = structuredClone(nodes);
 
-        removeFormFieldGroupWithNoChildren({
-            "children": got
+        removeFormFieldGroupWithNoNodes({
+            "nodes": got
         });
 
-        const expected = children.filter(child => child.type === "field");
+        const expected = nodes.filter(node => node.type === "field");
 
         expect(got).toStrictEqual(expected);
     });
 
     it("case nothing to remove", () => {
-        const children: FormFieldGroupLike["children"] = [
+        const nodes: FormFieldGroupLike["nodes"] = [
             {
                 "type": "field"
             },
             {
                 "type": "group",
-                "children": [
+                "nodes": [
                     {
                         "type": "group",
-                        "children": [
+                        "nodes": [
                             {
                                 "type": "field"
                             }
@@ -112,13 +112,13 @@ describe(symToStr({ removeFormFieldGroupWithNoChildren }), () => {
             }
         ];
 
-        const got = structuredClone(children);
+        const got = structuredClone(nodes);
 
-        removeFormFieldGroupWithNoChildren({
-            "children": got
+        removeFormFieldGroupWithNoNodes({
+            "nodes": got
         });
 
-        const expected = children;
+        const expected = nodes;
 
         expect(got).toStrictEqual(expected);
     });

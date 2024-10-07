@@ -6,7 +6,7 @@ describe(symToStr({ getFormFieldAtPath }), () => {
     it("target is root", () => {
         const formFieldGroup: FormFieldGroupLike = {
             "type": "group",
-            "children": []
+            "nodes": []
         };
 
         const got = getFormFieldAtPath({
@@ -23,7 +23,7 @@ describe(symToStr({ getFormFieldAtPath }), () => {
     it("throws if target is root and extract", () => {
         const formFieldGroup: FormFieldGroupLike = {
             "type": "group",
-            "children": []
+            "nodes": []
         };
 
         expect(() => {
@@ -38,18 +38,18 @@ describe(symToStr({ getFormFieldAtPath }), () => {
     it("no extract", () => {
         const targetFormFieldGroup: FormFieldGroupLike = {
             "type": "group",
-            "children": []
+            "nodes": []
         };
 
         const formFieldGroup: FormFieldGroupLike = {
             "type": "group",
-            "children": [
+            "nodes": [
                 {
                     "type": "field"
                 },
                 {
                     "type": "group",
-                    "children": [
+                    "nodes": [
                         targetFormFieldGroup,
                         {
                             "type": "field"
@@ -76,18 +76,18 @@ describe(symToStr({ getFormFieldAtPath }), () => {
     it("with extract", () => {
         const targetFormFieldGroup: FormFieldGroupLike = {
             "type": "group",
-            "children": []
+            "nodes": []
         };
 
         const formFieldGroup: FormFieldGroupLike = {
             "type": "group",
-            "children": [
+            "nodes": [
                 {
                     "type": "field"
                 },
                 {
                     "type": "group",
-                    "children": [
+                    "nodes": [
                         targetFormFieldGroup,
                         {
                             "type": "field"
@@ -108,13 +108,13 @@ describe(symToStr({ getFormFieldAtPath }), () => {
 
         expect(formFieldGroup).toStrictEqual({
             "type": "group",
-            "children": [
+            "nodes": [
                 {
                     "type": "field"
                 },
                 {
                     "type": "group",
-                    "children": [
+                    "nodes": [
                         {
                             "type": "field"
                         }

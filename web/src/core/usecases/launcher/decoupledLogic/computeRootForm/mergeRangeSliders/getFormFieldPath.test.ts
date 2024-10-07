@@ -11,19 +11,19 @@ describe(symToStr({ getFormFieldPath }), () => {
         const got = getFormFieldPath({
             "formFieldGroup": {
                 "type": "group",
-                "children": [
+                "nodes": [
                     {
                         "type": "field"
                     },
                     {
                         "type": "group",
-                        "children": [
+                        "nodes": [
                             {
                                 "type": "field"
                             },
                             {
                                 "type": "group",
-                                "children": [targetField]
+                                "nodes": [targetField]
                             }
                         ]
                     }

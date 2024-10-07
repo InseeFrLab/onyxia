@@ -49,5 +49,5 @@ export function insertRangeSliderFormField(params: {
 
     assert<Equals<typeof rangeSliderFormField, FormFieldRangeSliderLike>>();
     assert(is<FormField.RangeSlider>(rangeSliderFormField));
-    formFieldGroup_target.children.push(rangeSliderFormField);
+    formFieldGroup_target.nodes.push(rangeSliderFormField);
 }

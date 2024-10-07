@@ -10,7 +10,7 @@ assert<FormField extends FormFieldLike ? true : false>();
 
 export type FormFieldGroupLike = {
     type: "group";
-    children: (FormFieldLike | FormFieldGroupLike)[];
+    nodes: (FormFieldLike | FormFieldGroupLike)[];
 };
 
 assert<FormFieldGroup extends FormFieldGroupLike ? true : false>();
@@ -50,10 +50,10 @@ export function getFormFieldAtPath_rec(params: {
 
         const [i] = formFieldPath;
 
-        const formField = formFieldGroup.children[i];
+        const formField = formFieldGroup.nodes[i];
 
         if (doExtract) {
-            formFieldGroup.children.splice(i, 1);
+            formFieldGroup.nodes.splice(i, 1);
         }
 
         // NOTE: Avoid introducing too much generic typing here just to make the function easier to test.
@@ -64,7 +64,7 @@ export function getFormFieldAtPath_rec(params: {
 
     const [i, ...rest] = formFieldPath;
 
-    const formFieldGroup_i = formFieldGroup.children[i];
+    const formFieldGroup_i = formFieldGroup.nodes[i];
 
     assert(formFieldGroup_i.type === "group");
 

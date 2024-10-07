@@ -66,7 +66,7 @@ describe(symToStr({ computeRootForm }), () => {
                     "type": "group",
                     "helmValuesPath": ["services"],
                     "description": undefined,
-                    "children": [
+                    "nodes": [
                         {
                             "type": "field",
                             "title": "a",

@@ -2,13 +2,13 @@ import { assert, type Equals } from "tsafe/assert";
 import type { Stringifyable } from "core/tools/Stringifyable";
 
 export type RootForm = {
-    main: FormFieldGroup["children"];
-    global: FormFieldGroup["children"];
+    main: FormFieldGroup["nodes"];
+    global: FormFieldGroup["nodes"];
     dependencies: Record<
         string,
         {
-            main: FormFieldGroup["children"];
-            global: FormFieldGroup["children"];
+            main: FormFieldGroup["nodes"];
+            global: FormFieldGroup["nodes"];
         }
     >;
     disabledDependencies: string[];
@@ -19,7 +19,7 @@ export type FormFieldGroup = {
     helmValuesPath: (string | number)[];
     description: string | undefined;
 
-    children: (FormField | FormFieldGroup)[];
+    nodes: (FormField | FormFieldGroup)[];
     canAdd: boolean;
     canRemove: boolean;
 };
