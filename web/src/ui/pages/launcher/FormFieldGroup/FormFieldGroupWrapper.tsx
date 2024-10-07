@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { tss } from "tss";
 import { Text } from "onyxia-ui/Text";
 import { Button } from "onyxia-ui/Button";
@@ -9,7 +10,7 @@ export function FormFieldGroupWrapper(props: {
     className?: string;
     description: string | undefined;
     onAdd: (() => void) | undefined;
-    children: JSX.Element;
+    children: ReactNode;
 }) {
     const { className, description, onAdd, children } = props;
 

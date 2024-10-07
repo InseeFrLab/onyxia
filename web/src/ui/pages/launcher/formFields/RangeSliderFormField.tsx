@@ -3,6 +3,7 @@ import { FormFieldWrapper } from "./shared/FormFieldWrapper";
 import { useFormField } from "./shared/useFormField";
 import { RangeSlider } from "onyxia-ui/RangeSlider";
 import { capitalize } from "tsafe/capitalize";
+import { same } from "evt/tools/inDepth/same";
 
 export type Props = {
     className?: string;
@@ -98,4 +99,4 @@ export const RangeSliderFormField = memo((props: Props) => {
             />
         </FormFieldWrapper>
     );
-});
+}, same);
