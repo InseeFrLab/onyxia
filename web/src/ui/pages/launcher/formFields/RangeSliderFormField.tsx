@@ -12,6 +12,7 @@ export type Props = {
     step: number | undefined;
     lowEndRange: Props.RangeEnd;
     highEndRange: Props.RangeEnd;
+    onChange: (params: { lowEndRangeValue: number; highEndRangeValue: number }) => void;
 };
 
 export namespace Props {
@@ -22,32 +23,35 @@ export namespace Props {
         max: number;
         description: string | undefined;
         value: number;
-        onChange: (newValue: number) => void;
     };
 }
 
 export const RangeSliderFormField = memo((props: Props) => {
-    const { className, title, unit, step, lowEndRange, highEndRange } = props;
+    const { className, title, unit, step, lowEndRange, highEndRange, onChange } = props;
 
-    const lowEndRangeApi = useFormField<number, number, never>({
-        "serializedValue": lowEndRange.value,
-        "onChange": lowEndRange.onChange,
+    const serialize = ([lowEndRangeValue, highEndRangeValue]: [number, number]) =>
+        JSON.stringify([lowEndRangeValue, highEndRangeValue]);
+
+    const { serializedValue, setSerializedValue, resetToDefault } = useFormField<
+        [number, number],
+        string,
+        never
+    >({
+        "serializedValue": serialize([lowEndRange.value, highEndRange.value]),
+        "onChange": ([lowEndRangeValue, highEndRangeValue]) =>
+            onChange({ lowEndRangeValue, highEndRangeValue }),
         "parse": serializedValue => ({
             "isValid": true,
-            "value": serializedValue
-        })
-    });
-
-    const highEndRangeApi = useFormField<number, number, never>({
-        "serializedValue": highEndRange.value,
-        "onChange": highEndRange.onChange,
-        "parse": serializedValue => ({
-            "isValid": true,
-            "value": serializedValue
+            "value": JSON.parse(serializedValue) as [number, number]
         })
     });
 
     const inputId = useId();
+
+    const [lowEndRangeValue, highEndRangeValue] = JSON.parse(serializedValue) as [
+        number,
+        number
+    ];
 
     return (
         <FormFieldWrapper
@@ -62,10 +66,7 @@ export const RangeSliderFormField = memo((props: Props) => {
                 </>
             }
             error={undefined}
-            onResetToDefault={() => {
-                lowEndRangeApi.resetToDefault();
-                highEndRangeApi.resetToDefault();
-            }}
+            onResetToDefault={resetToDefault}
             inputId={inputId}
             onRemove={undefined}
         >
@@ -76,26 +77,13 @@ export const RangeSliderFormField = memo((props: Props) => {
                 min={lowEndRange.min}
                 max={highEndRange.max}
                 step={step ?? 1}
-                valueLow={lowEndRangeApi.serializedValue}
-                valueHigh={highEndRangeApi.serializedValue}
+                valueLow={lowEndRangeValue}
+                valueHigh={highEndRangeValue}
                 unit={unit ?? ""}
                 highExtremitySemantic={highEndRange.rangeEndSemantic}
-                onValueChange={({ extremity, value }) => {
-                    switch (extremity) {
-                        case "low":
-                            if (value > lowEndRange.max) {
-                                return;
-                            }
-                            lowEndRangeApi.setSerializedValue(value);
-                            break;
-                        case "high":
-                            if (value < highEndRange.min) {
-                                return;
-                            }
-                            highEndRangeApi.setSerializedValue(value);
-                            break;
-                    }
-                }}
+                onValueChange={({ valueLow, valueHigh }) =>
+                    setSerializedValue(serialize([valueLow, valueHigh]))
+                }
             />
         </FormFieldWrapper>
     );

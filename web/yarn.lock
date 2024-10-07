@@ -7473,10 +7473,10 @@ onetime@^6.0.0:
   dependencies:
     mimic-fn "^4.0.0"
 
-onyxia-ui@^5.3.16:
-  version "5.3.16"
-  resolved "https://registry.yarnpkg.com/onyxia-ui/-/onyxia-ui-5.3.16.tgz#9eba9155c978ee9293c74a761bad6917c29a4ec1"
-  integrity sha512-5oXLYSLgOZq304G4ihGiQB6ozO3AXq3nHoaBv0aT8HKzAGXNFPOa4Iu1htAS2BVTOUMs7vY0UC9paQzEqhQszw==
+onyxia-ui@^5.4.0:
+  version "5.4.0"
+  resolved "https://registry.yarnpkg.com/onyxia-ui/-/onyxia-ui-5.4.0.tgz#22dc70f6c26a29b68d9edb5ac4361a62f727e2a3"
+  integrity sha512-bLL0cZh1uhy28+uvQHX4iJ+TRTuTwD3dfvdo4ubQh7x5wUtas7oNTZrxCscXW2Iqr06d7cnghHUqcXAjpRDbqw==
   dependencies:
     "@mui/icons-material" "^5.14.18"
     "@types/memoizee" "^0.4.11"

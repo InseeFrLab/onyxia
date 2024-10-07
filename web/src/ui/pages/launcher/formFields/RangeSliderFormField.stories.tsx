@@ -14,8 +14,7 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-const onChangeAction_lowEndRange = action("onChange_lowEndRange");
-const onChangeAction_highEndRange = action("onChange_highEndRange");
+const onChangeAction = action("onChange");
 
 type Params = {
     title: string;
@@ -42,8 +41,10 @@ type Params = {
 function StoryWrapper(params: Params) {
     const { title, unit, step, lowEndRange, highEndRange } = params;
 
-    const [lowEndRangeValue, setLowEndRangeValue] = useState(lowEndRange.defaultValue);
-    const [highEndRangeValue, setHighEndRangeValue] = useState(highEndRange.defaultValue);
+    const [[lowEndRangeValue, highEndRangeValue], setLowEndRangeValue] = useState([
+        lowEndRange.defaultValue,
+        highEndRange.defaultValue
+    ] as const);
 
     return (
         <>
@@ -54,19 +55,16 @@ function StoryWrapper(params: Params) {
                 step={step}
                 lowEndRange={{
                     ...lowEndRange,
-                    value: lowEndRangeValue,
-                    onChange: newValue => {
-                        onChangeAction_lowEndRange(newValue);
-                        setLowEndRangeValue(newValue);
-                    }
+                    value: lowEndRangeValue
                 }}
                 highEndRange={{
                     ...highEndRange,
-                    value: highEndRangeValue,
-                    onChange: newValue => {
-                        onChangeAction_highEndRange(newValue);
-                        setHighEndRangeValue(newValue);
-                    }
+                    value: highEndRangeValue
+                }}
+                onChange={params => {
+                    onChangeAction(params);
+                    const { lowEndRangeValue, highEndRangeValue } = params;
+                    setLowEndRangeValue([lowEndRangeValue, highEndRangeValue]);
                 }}
             />
             <Divider />
