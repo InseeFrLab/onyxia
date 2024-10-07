@@ -681,7 +681,7 @@ Voel je vrij om te verkennen en de controle over je Kubernetes-implementaties te
             `Komt niet overeen met het patroon ${pattern}`,
         "toggle password visibility": "Wachtwoordzichtbaarheid wisselen"
     },
-    "FormFieldGroupWrapper": {
+    "FormFieldGroupComponentWrapper": {
         "add": "Toevoegen"
     },
     "NumberFormField": {

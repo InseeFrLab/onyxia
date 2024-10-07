@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { tss } from "tss";
-import { FormFieldGroupWrapper } from "./FormFieldGroupWrapper";
+import { FormFieldGroupComponentWrapper } from "./FormFieldGroupComponentWrapper";
 import type {
     FormFieldValue,
     FormField,
@@ -31,7 +31,7 @@ type Props = {
         | undefined;
 };
 
-export function FormFieldGroup(props: Props): ReactNode {
+export function FormFieldGroupComponent(props: Props): ReactNode {
     const {
         className,
         description,
@@ -129,7 +129,7 @@ export function FormFieldGroup(props: Props): ReactNode {
     );
 
     return (
-        <FormFieldGroupWrapper
+        <FormFieldGroupComponentWrapper
             className={cx(classes.root, className)}
             description={description}
             onAdd={onAdd === undefined ? undefined : () => onAdd({ helmValuesPath })}
@@ -146,7 +146,7 @@ export function FormFieldGroup(props: Props): ReactNode {
 
                 if (child.type === "group") {
                     return (
-                        <FormFieldGroup
+                        <FormFieldGroupComponent
                             key={key}
                             className={className}
                             description={child.description}
@@ -290,10 +290,10 @@ export function FormFieldGroup(props: Props): ReactNode {
                         );
                 }
             })}
-        </FormFieldGroupWrapper>
+        </FormFieldGroupComponentWrapper>
     );
 }
 
-const useStyles = tss.withName({ FormFieldGroup }).create(() => ({
+const useStyles = tss.withName({ FormFieldGroupComponent }).create(() => ({
     "root": {}
 }));

@@ -672,7 +672,7 @@ Feel free to explore and take charge of your Kubernetes deployments!
         "not matching pattern": ({ pattern }) => `Does not match the pattern ${pattern}`,
         "toggle password visibility": "Toggle password visibility"
     },
-    "FormFieldGroupWrapper": {
+    "FormFieldGroupComponentWrapper": {
         "add": "Add"
     },
     "NumberFormField": {

@@ -684,7 +684,7 @@ N'hésitez pas à explorer et à prendre en main vos déploiements Kubernetes !
         "not matching pattern": ({ pattern }) => `Ne correspond pas au motif ${pattern}`,
         "toggle password visibility": "Basculer la visibilité du mot de passe"
     },
-    "FormFieldGroupWrapper": {
+    "FormFieldGroupComponentWrapper": {
         "add": "Ajouter"
     },
     "NumberFormField": {
