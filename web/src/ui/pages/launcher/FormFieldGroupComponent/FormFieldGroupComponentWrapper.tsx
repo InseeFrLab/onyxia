@@ -44,7 +44,7 @@ const useStyles = tss
     .create(({ theme }) => ({
         "root": {
             "border": `1px solid ${theme.colors.useCases.typography.textTertiary}`,
-            "borderRadius": theme.spacing(2)
+            "borderRadius": theme.spacing(3)
         },
         "description": {
             "marginBottom": theme.spacing(2)

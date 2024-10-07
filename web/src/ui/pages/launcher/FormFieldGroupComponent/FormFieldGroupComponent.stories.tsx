@@ -22,7 +22,7 @@ const onChange = action("onChange");
 const onAdd = action("onAdd");
 const onRemove = action("onRemove");
 
-const helmValuesPath = ["foo", "bar"];
+const helmValuesPath = ["foo", "title"];
 const description = "This is the description";
 
 export const Default: Story = {
@@ -41,6 +41,18 @@ export const Default: Story = {
                 "isSensitive": false,
                 "pattern": undefined,
                 "value": "value 1"
+            }),
+            id<FormField.TextField>({
+                "type": "field",
+                "fieldType": "text field",
+                "title": "Title 2",
+                "isReadonly": false,
+                "helmValuesPath": [2],
+                "description": "Description 2",
+                "doRenderAsTextArea": false,
+                "isSensitive": false,
+                "pattern": undefined,
+                "value": "value 2"
             })
         ],
         onChange,
