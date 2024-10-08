@@ -50,6 +50,5 @@ const useStyles = tss
                         ].main;
                 }
             })()
-            //"display": "block"
         }
     }));
