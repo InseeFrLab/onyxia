@@ -291,6 +291,7 @@ export const Explorer = memo((props: ExplorerProps) => {
                         maxHeight={commandBarMaxHeight}
                     />
                 )}
+
                 {(() => {
                     const title = (() => {
                         let split = directoryPath.split("/");
@@ -327,7 +328,6 @@ export const Explorer = memo((props: ExplorerProps) => {
                         />
                     );
                 })()}
-
                 <div className={classes.breadcrumpWrapper}>
                     <Breadcrumb
                         minDepth={pathMinDepth}
