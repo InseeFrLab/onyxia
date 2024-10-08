@@ -939,7 +939,8 @@ Fühlen Sie sich frei, Ihre Kubernetes-Bereitstellungen zu erkunden und die Kont
         ),
         "column": "Spalte",
         "density": "Dichte",
-        "download file": "Datei herunterladen"
+        "download file": "Datei herunterladen",
+        "resize table": undefined
     },
     "UrlInput": {
         "load": "Laden"

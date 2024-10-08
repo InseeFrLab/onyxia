@@ -4,7 +4,6 @@ import type { PageRoute } from "./route";
 import { routes } from "ui/routes";
 import { useCore, useCoreState } from "core";
 import { Alert } from "onyxia-ui/Alert";
-import { useGridApiRef } from "@mui/x-data-grid";
 import { CircularProgress } from "onyxia-ui/CircularProgress";
 import { assert, type Equals } from "tsafe/assert";
 import { useEvt } from "evt/hooks";
@@ -31,9 +30,6 @@ export default function DataExplorer(props: Props) {
     const { dataExplorer } = useCore().functions;
     const { t } = useTranslation({ DataExplorer });
 
-    const apiRef = useGridApiRef();
-
-    console.log(route.params);
     useEffect(() => {
         dataExplorer.setQueryParamsAndExtraRestorableStates({
             "queryParams": {
@@ -42,12 +38,11 @@ export default function DataExplorer(props: Props) {
                 "page": route.params.page
             },
             "extraRestorableStates": {
-                "columnWidths": route.params.columnWidths,
                 "selectedRowIndex": route.params.selectedRow,
                 "columnVisibility": route.params.columnVisibility
             }
         });
-    }, [route]);
+    }, []); //TODO route was in the dep tree, wait for next release to manage this
 
     const { evtDataExplorer } = useCore().evts;
 
@@ -69,7 +64,7 @@ export default function DataExplorer(props: Props) {
                 ({ queryParams, extraRestorableStates }) => {
                     const { sourceUrl, rowsPerPage, page, ...rest1 } = queryParams;
                     assert<Equals<typeof rest1, {}>>();
-                    const { columnWidths, selectedRowIndex, columnVisibility, ...rest2 } =
+                    const { selectedRowIndex, columnVisibility, ...rest2 } =
                         extraRestorableStates;
                     assert<Equals<typeof rest2, {}>>();
 
@@ -79,7 +74,6 @@ export default function DataExplorer(props: Props) {
                         rowsPerPage,
                         "source": sourceUrl,
                         "selectedRow": selectedRowIndex,
-                        columnWidths,
                         columnVisibility
                     }).replace();
                 }
@@ -166,17 +160,7 @@ export default function DataExplorer(props: Props) {
                     return (
                         <div className={cx(classes.dataGridWrapper, className)}>
                             <CustomDataGrid
-                                apiRef={apiRef}
                                 slots={{ "toolbar": SlotsDataGridToolbar }}
-                                // classes={{
-                                //     "panelWrapper": cx(
-                                //         //dataGridPanelWrapperRefClassName,
-                                //         classes.dataGridPanelWrapper
-                                //     ),
-                                //     "panelFooter": classes.dataGridPanelFooter,
-                                //     "menu": classes.dataGridMenu,
-                                //     "footerContainer": classes.dataGridFooterContainer
-                                // }}
                                 disableVirtualization={!isVirtualizationEnabled}
                                 columnVisibilityModel={route.params.columnVisibility}
                                 onColumnVisibilityModelChange={columnVisibilityModel =>
