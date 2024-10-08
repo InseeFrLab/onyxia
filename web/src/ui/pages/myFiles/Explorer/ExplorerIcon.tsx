@@ -49,7 +49,7 @@ const useStyles = tss
                             theme.isDarkModeEnabled ? "light" : "dark"
                         ].main;
                 }
-            })(),
-            "display": "block"
+            })()
+            //"display": "block"
         }
     }));

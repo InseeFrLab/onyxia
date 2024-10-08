@@ -41,7 +41,7 @@ export const ExplorerItem = memo((props: ExplorerItemProps) => {
     const [baseName, fileType] =
         kind === "file" ? basename.split(".") : [basename, undefined];
 
-    const { classes, cx, theme } = useStyles({ isSelected, basename });
+    const { classes, cx } = useStyles({ isSelected, basename });
 
     const { getOnMouseProps } = useClick({
         "doubleClickDelayMs": 500,
