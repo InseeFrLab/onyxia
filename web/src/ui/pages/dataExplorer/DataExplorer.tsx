@@ -42,7 +42,7 @@ export default function DataExplorer(props: Props) {
                 "columnVisibility": route.params.columnVisibility
             }
         });
-    }, []); //TODO route was in the dep tree, wait for next release to manage this
+    }, [route.params.rowsPerPage, route.params.page]); //TODO route was in the dep tree, wait for next release to manage this
 
     const { evtDataExplorer } = useCore().evts;
 
