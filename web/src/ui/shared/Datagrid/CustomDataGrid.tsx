@@ -69,7 +69,7 @@ export const CustomDataGrid = memo((props: CustomDataGridProps) => {
             apiRef={apiRef}
             classes={dataGridClasses}
             columns={modifiedColumns}
-            autosizeOnMount={true}
+            autosizeOnMount
             autosizeOptions={autosizeOptions}
         />
     );
