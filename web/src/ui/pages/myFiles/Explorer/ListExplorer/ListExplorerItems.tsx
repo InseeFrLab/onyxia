@@ -7,6 +7,7 @@ import { fileSizePrettyPrint } from "ui/tools/fileSizePrettyPrint";
 import { id } from "tsafe";
 import { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
 import { Icon } from "onyxia-ui/Icon";
+import { Button } from "onyxia-ui/Button";
 
 const paginationModel = { page: 0, pageSize: 10 };
 
@@ -44,7 +45,8 @@ export const ListExplorerItems = memo((props: ListExplorerItems) => {
                     {
                         field: "name",
                         headerName: "Name",
-                        //width: 200,
+                        width: 200,
+                        display: "flex" as const,
                         renderCell: params => (
                             <>
                                 <ExplorerIcon
@@ -63,38 +65,35 @@ export const ListExplorerItems = memo((props: ListExplorerItems) => {
                     {
                         field: "size",
                         headerName: "Size",
-                        //width: 150,
-                        valueFormatter: params => {
+                        valueFormatter: size => {
                             const prettySize = fileSizePrettyPrint({
-                                bytes: params.value
+                                bytes: size
                             });
-
                             return `${prettySize.value} ${prettySize.unit}`;
                         }
                     },
                     {
                         field: "lastModified",
                         headerName: "Modified"
-                        //    , width: 200
                     },
                     {
                         field: "policy",
                         headerName: "Policy",
-                        // width: 150,
+                        display: "flex" as const,
                         renderCell: params => (
                             <Icon
                                 icon={id<MuiIconComponentName>(
                                     (() => {
                                         switch (params.value) {
-                                            case "public": // Valeur 1
-                                                return "Visibility"; // Icône "Visibility"
-                                            case "private": // Valeur 2
-                                                return "VisibilityOff"; // Icône "VisibilityOff"
-                                            case "diffusion": // Valeur 3
-                                                return "Language"; // Icône "Language"
-                                            // Ajoute d'autres cas si nécessaire
+                                            case "public":
+                                                return "Visibility";
+                                            case "private":
+                                                return "VisibilityOff";
+                                            case "diffusion":
+                                                return "Language";
+
                                             default:
-                                                return "HelpOutline"; // Icône par défaut si aucune correspondance
+                                                return "HelpOutline";
                                         }
                                     })()
                                 )}
@@ -106,6 +105,11 @@ export const ListExplorerItems = memo((props: ListExplorerItems) => {
                 //pageSizeOptions={[5, 10]}
                 checkboxSelection={true}
                 autosizeOnMount={true}
+                autosizeOptions={{
+                    expand: true,
+                    includeHeaders: true,
+                    includeOutliers: true
+                }}
             />
         </div>
     );
@@ -119,7 +123,7 @@ const useStyles = tss.withName({ ListExplorerItems }).create(({ theme }) => ({
     },
     "dataGrid": {
         "& .MuiDataGrid-columnHeaders": {
-            "padding": theme.spacing(1)
+            //"padding": theme.spacing(1)
         },
         "& .MuiDataGrid-cell:focus-within, & .MuiDataGrid-cell:focus": {
             outline: "none"

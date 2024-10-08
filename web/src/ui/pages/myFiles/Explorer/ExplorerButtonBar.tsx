@@ -1,9 +1,15 @@
 import { useMemo, memo } from "react";
 import { useTranslation } from "ui/i18n";
 import { useConstCallback } from "powerhooks/useConstCallback";
-import { ButtonBar } from "onyxia-ui/ButtonBar";
 import type { ButtonBarProps } from "onyxia-ui/ButtonBar";
 import { declareComponentKeys } from "i18nifty";
+import { BaseBar } from "onyxia-ui/BaseBar";
+import { ButtonBarButton } from "onyxia-ui/ButtonBarButton";
+import { useCallbackFactory } from "powerhooks/useCallbackFactory";
+import { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
+import { id } from "tsafe";
+import { IconButton } from "onyxia-ui/IconButton";
+import { useStyles } from "tss";
 
 export type Props = {
     selectedItemKind: "file" | "directory" | "none";
@@ -17,7 +23,7 @@ export const ExplorerButtonBar = memo((props: Props) => {
     const { selectedItemKind, callback } = props;
 
     const { t } = useTranslation({ ExplorerButtonBar });
-
+    const { css, theme } = useStyles();
     const onClick = useConstCallback<ButtonBarProps<ButtonId>["onClick"]>(buttonId =>
         callback(buttonId)
     );
@@ -61,7 +67,50 @@ export const ExplorerButtonBar = memo((props: Props) => {
         [selectedItemKind, t]
     );
 
-    return <ButtonBar buttons={buttons} onClick={onClick} />;
+    const onClickFactory = useCallbackFactory(([buttonId]: [ButtonId]) =>
+        onClick(buttonId)
+    );
+    //return <ButtonBar buttons={buttons} onClick={onClick} />;
+
+    return (
+        <BaseBar>
+            <IconButton onClick={() => {}} icon={id<MuiIconComponentName>("Sort")} />
+            <IconButton
+                className={css(
+                    true
+                        ? {
+                              "& svg": {
+                                  "color":
+                                      theme.colors.useCases.buttons.actionHoverPrimary
+                              }
+                          }
+                        : {}
+                )}
+                onClick={() => {}}
+                icon={id<MuiIconComponentName>("ViewCompact")}
+            />
+
+            {buttons.map(button => (
+                <ButtonBarButton
+                    startIcon={button.icon}
+                    disabled={button.isDisabled ?? false}
+                    {...("link" in button
+                        ? {
+                              "key": button.link.href,
+                              "href": button.link.href,
+                              "onClick": button.link.onClick,
+                              "doOpenNewTabIfHref": button.link.target === "_blank"
+                          }
+                        : {
+                              "key": button.buttonId,
+                              "onClick": onClickFactory(button.buttonId)
+                          })}
+                >
+                    {button.label}
+                </ButtonBarButton>
+            ))}
+        </BaseBar>
+    );
 });
 
 const { i18n } = declareComponentKeys<
