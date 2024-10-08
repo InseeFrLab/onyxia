@@ -6409,13 +6409,12 @@ jsonfile@^6.0.1, jsonfile@^6.1.0:
   optionalDependencies:
     graceful-fs "^4.1.6"
 
-keycloakify@10.0.0-rc.59:
-  version "10.0.0-rc.59"
-  resolved "https://registry.yarnpkg.com/keycloakify/-/keycloakify-10.0.0-rc.59.tgz#3034dc92f8be76f92978c326d79b844bca98bde2"
-  integrity sha512-jUhvAp9WK9Da4SnYrdtHwKLp23l1KlOzmUtOK0LxU5/3nO8NLq+bw0Rukn5ji0pr8RpVQaY1895k3Ir/TL/PAg==
+keycloakify@11.3.4:
+  version "11.3.4"
+  resolved "https://registry.yarnpkg.com/keycloakify/-/keycloakify-11.3.4.tgz#45d677ae7b39e41c25c724891ac5a5086603ac37"
+  integrity sha512-vA0MIQlf7JnxinXNJTPmUKj5AqJ3YNmBY62q1toTLKMHwcSeRbTfwBZhMW594g5BXyRGEym36P/sX129NXWdDA==
   dependencies:
-    react-markdown "^5.0.3"
-    tsafe "^1.6.6"
+    tsafe "^1.7.5"
 
 keyv@^4.5.3:
   version "4.5.4"
@@ -8410,6 +8409,11 @@ tsafe@^1.7.2:
   version "1.7.2"
   resolved "https://registry.yarnpkg.com/tsafe/-/tsafe-1.7.2.tgz#0f63d414876287ad01b135f832722f93e22da374"
   integrity sha512-dAPfQLhCfCRre5qs+Z5Q2a7s2CV7RxffZUmvj7puGaePYjECzWREJFd3w4XSFe/T5tbxgowfItA/JSSZ6Ma3dA==
+
+tsafe@^1.7.5:
+  version "1.7.5"
+  resolved "https://registry.yarnpkg.com/tsafe/-/tsafe-1.7.5.tgz#0d3a31202b5ef87c7ba997e66e03fd80801278ef"
+  integrity sha512-tbNyyBSbwfbilFfiuXkSOj82a6++ovgANwcoqBAcO9/REPoZMEQoE8kWPeO0dy5A2D/2Lajr8Ohue5T0ifIvLQ==
 
 tsconfck@^3.0.1:
   version "3.0.2"
