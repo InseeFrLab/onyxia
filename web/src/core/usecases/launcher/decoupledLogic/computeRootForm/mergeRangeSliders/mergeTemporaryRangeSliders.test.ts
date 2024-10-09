@@ -2,7 +2,7 @@ import { mergeTemporaryRangeSliders } from "./mergeTemporaryRangeSliders";
 import { createTemporaryRangeSlider } from "./temporaryRangeSlider";
 import { symToStr } from "tsafe/symToStr";
 import { it, expect, describe } from "vitest";
-import type { FormField } from "core/usecases/launcher/formTypes";
+import type { FormField } from "core/usecases/launcher/decoupledLogic/formTypes";
 
 describe(symToStr({ mergeTemporaryRangeSliders }), () => {
     it("base case", () => {

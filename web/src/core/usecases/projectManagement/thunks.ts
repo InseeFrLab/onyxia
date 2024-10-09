@@ -203,6 +203,7 @@ const privateThunks = {
     "__configMigration":
         (params: { projectVaultTopDirPath: string }) =>
         async (...args) => {
+            console.log("config migration", params, args);
             // TODO: Implement migration logic
         }
 } satisfies Thunks;
