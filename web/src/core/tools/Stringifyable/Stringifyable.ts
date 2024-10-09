@@ -1,5 +1,7 @@
 import { z } from "zod";
 import { same } from "evt/tools/inDepth/same";
+import { assert, type Equals } from "tsafe/assert";
+import { id } from "tsafe/id";
 
 export type Stringifyable =
     | StringifyableAtomic
@@ -15,6 +17,16 @@ interface StringifyableObject {
 
 // NOTE: Use Stringifyable[]
 interface StringifyableArray extends Array<Stringifyable> {}
+
+export const zStringifyableAtomic = (() => {
+    type TargetType = StringifyableAtomic;
+
+    const zTargetType = z.union([z.string(), z.number(), z.boolean(), z.null()]);
+
+    assert<Equals<z.infer<typeof zTargetType>, TargetType>>();
+
+    return id<z.ZodType<TargetType>>(zTargetType);
+})();
 
 export const zStringifyable: z.ZodType<Stringifyable> = z
     .any()
