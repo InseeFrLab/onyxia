@@ -540,28 +540,34 @@ export const translations: Translations<"en"> = {
     },
     "Launcher": {
         "header text1": "Catálogo de servicios",
-        "sources": ({ helmChartName, helmChartRepositoryName, sourceUrls }) => (
+        "sources": ({
+            helmChartName,
+            helmChartRepositoryName,
+            labeledHelmChartSourceUrls
+        }) => (
             <>
                 Estás a punto de implementar el{" "}
                 {
-                    <MaybeLink href={sourceUrls.helmChartSourceUrl}>
+                    <MaybeLink href={labeledHelmChartSourceUrls.helmChartSourceUrl}>
                         {helmChartName}
                     </MaybeLink>
                 }{" "}
                 gráfico de Helm que pertenece al{" "}
                 {
-                    <MaybeLink href={sourceUrls.helmChartRepositorySourceUrl}>
+                    <MaybeLink
+                        href={labeledHelmChartSourceUrls.helmChartRepositorySourceUrl}
+                    >
                         {helmChartRepositoryName}
                     </MaybeLink>
                 }{" "}
                 repositorio de gráficos de Helm.
-                {sourceUrls.dockerImageSourceUrl !== undefined && (
+                {labeledHelmChartSourceUrls.dockerImageSourceUrl !== undefined && (
                     <>
                         {" "}
                         basado en la{" "}
                         {
                             <MuiLink
-                                href={sourceUrls.dockerImageSourceUrl}
+                                href={labeledHelmChartSourceUrls.dockerImageSourceUrl}
                                 target="_blank"
                             >
                                 {helmChartName}
@@ -736,19 +742,21 @@ export const translations: Translations<"en"> = {
         "version select helper text": ({
             helmCharName,
             helmRepositoryName,
-            sourceUrls
+            labeledHelmChartSourceUrls
         }) => (
             <>
                 Versión del&nbsp;
                 {
-                    <MaybeLink href={sourceUrls.helmChartSourceUrl}>
+                    <MaybeLink href={labeledHelmChartSourceUrls.helmChartSourceUrl}>
                         {helmCharName}
                     </MaybeLink>
                 }{" "}
                 chart de Helm perteneciente al{" "}
                 {
                     <>
-                        <MaybeLink href={sourceUrls.helmChartRepositorySourceUrl}>
+                        <MaybeLink
+                            href={labeledHelmChartSourceUrls.helmChartRepositorySourceUrl}
+                        >
                             {helmRepositoryName}
                         </MaybeLink>{" "}
                         repositorio de charts de Helm.
@@ -765,16 +773,6 @@ export const translations: Translations<"en"> = {
                 <MuiLink {...projectS3ConfigLink}>Configuración de S3</MuiLink>.
             </>
         )
-    },
-    "LauncherConfigurationCard": {
-        "global config": "Configuración global",
-        "configuration": ({ packageName }) => `Configuraciones de ${packageName}`,
-        "dependency": ({ dependencyName }) => `Dependencia de ${dependencyName}`,
-        "launch of a service": ({ dependencyName }) =>
-            `Se lanzará un servicio ${dependencyName}`,
-        "mismatching pattern": ({ pattern }) => `Debe coincidir con ${pattern}`,
-        "Invalid YAML Object": "Objeto YAML no válido",
-        "Invalid YAML Array": "Arreglo YAML no válido"
     },
     "Footer": {
         "contribute": "Contribuir",

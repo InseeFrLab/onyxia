@@ -529,27 +529,33 @@ export const translations: Translations<"fi"> = {
     },
     "Launcher": {
         "header text1": "Palvelukatalogi",
-        "sources": ({ helmChartName, helmChartRepositoryName, sourceUrls }) => (
+        "sources": ({
+            helmChartName,
+            helmChartRepositoryName,
+            labeledHelmChartSourceUrls
+        }) => (
             <>
                 Olet ottamassa käyttöön{" "}
                 {
-                    <MaybeLink href={sourceUrls.helmChartSourceUrl}>
+                    <MaybeLink href={labeledHelmChartSourceUrls.helmChartSourceUrl}>
                         {helmChartName} Helm Chartin
                     </MaybeLink>
                 }
                 {
-                    <MaybeLink href={sourceUrls.helmChartRepositorySourceUrl}>
+                    <MaybeLink
+                        href={labeledHelmChartSourceUrls.helmChartRepositorySourceUrl}
+                    >
                         {helmChartRepositoryName} Helm Chart -arkistosta
                     </MaybeLink>
                 }
                 .
-                {sourceUrls.dockerImageSourceUrl !== undefined && (
+                {labeledHelmChartSourceUrls.dockerImageSourceUrl !== undefined && (
                     <>
                         {" "}
                         Se perustuu{" "}
                         {
                             <MuiLink
-                                href={sourceUrls.dockerImageSourceUrl}
+                                href={labeledHelmChartSourceUrls.dockerImageSourceUrl}
                                 target="_blank"
                             >
                                 {helmChartName} Docker-kuvaan
@@ -726,18 +732,20 @@ Tutustu vapaasti ja ota hallintaan Kubernetes-julkaisusi!
         "version select helper text": ({
             helmCharName,
             helmRepositoryName,
-            sourceUrls
+            labeledHelmChartSourceUrls
         }) => (
             <>
                 Version of the{" "}
                 {
-                    <MaybeLink href={sourceUrls.helmChartSourceUrl}>
+                    <MaybeLink href={labeledHelmChartSourceUrls.helmChartSourceUrl}>
                         {helmCharName}
                     </MaybeLink>
                 }{" "}
                 helm chart joka kuuluu helm-kaaviosäilöön{" "}
                 {
-                    <MaybeLink href={sourceUrls.helmChartRepositorySourceUrl}>
+                    <MaybeLink
+                        href={labeledHelmChartSourceUrls.helmChartRepositorySourceUrl}
+                    >
                         {helmRepositoryName}
                     </MaybeLink>
                 }
@@ -753,16 +761,6 @@ Tutustu vapaasti ja ota hallintaan Kubernetes-julkaisusi!
                 <MuiLink {...projectS3ConfigLink}>S3-konfiguraatio</MuiLink>.
             </>
         )
-    },
-    "LauncherConfigurationCard": {
-        "global config": "Yleinen konfiguraatio",
-        "configuration": ({ packageName }) => `${packageName} -konfiguraatiot`,
-        "dependency": ({ dependencyName }) => `${dependencyName} -riippuvuus`,
-        "launch of a service": ({ dependencyName }) =>
-            `Käynnistetään ${dependencyName} -palvelu`,
-        "mismatching pattern": ({ pattern }) => `Täsmätä ${pattern}`,
-        "Invalid YAML Object": "Virheellinen YAML-objekti",
-        "Invalid YAML Array": "Virheellinen YAML-taulukko"
     },
     "Footer": {
         "contribute": "Osallistu",

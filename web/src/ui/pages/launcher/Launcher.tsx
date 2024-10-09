@@ -19,13 +19,12 @@ import { LauncherDialogs, type Props as LauncherDialogsProps } from "./LauncherD
 import { CommandBar } from "ui/shared/CommandBar";
 import { saveAs } from "file-saver";
 import { LauncherMainCard } from "./LauncherMainCard";
-import { LauncherConfigurationCard } from "./LauncherConfigurationCard";
 import { customIcons } from "ui/theme";
 import {
     MaybeAcknowledgeConfigVolatilityDialog,
     type MaybeAcknowledgeConfigVolatilityDialogProps
 } from "ui/shared/MaybeAcknowledgeConfigVolatilityDialog";
-import type { SourceUrls } from "core/usecases/launcher/selectors";
+import type { LabeledHelmChartSourceUrls } from "core/usecases/launcher/selectors";
 
 export type Props = {
     route: PageRoute;
@@ -64,24 +63,22 @@ export default function Launcher(props: Props) {
     const {
         isReady,
         friendlyName,
-        willOverwriteExistingConfigOnSave,
         isShared,
-        indexedFormFields,
-        isLaunchable,
-        formFieldsIsWellFormed,
-        restorableConfig,
-        isRestorableConfigSaved,
-        areAllFieldsDefault,
         chartName,
         chartVersion,
         availableChartVersions,
+        restorableConfig,
+        rootForm,
+        willOverwriteExistingConfigOnSave,
+        isRestorableConfigSaved,
+        isDefaultConfiguration,
         catalogName,
         chartIconUrl,
         launchScript,
         commandLogsEntries,
         groupProjectName,
         s3ConfigSelect,
-        sourceUrls
+        labeledHelmChartSourceUrls
     } = useCoreState("launcher", "main");
 
     const scrollableDivRef = useStateRef<HTMLDivElement>(null);
@@ -277,7 +274,7 @@ export default function Launcher(props: Props) {
                     helpContent={t("sources", {
                         "helmChartName": chartName,
                         "helmChartRepositoryName": resolveLocalizedString(catalogName),
-                        sourceUrls
+                        labeledHelmChartSourceUrls
                     })}
                     helpIcon="sentimentSatisfied"
                     titleCollapseParams={{
@@ -339,7 +336,7 @@ export default function Launcher(props: Props) {
                                 availableChartVersions={availableChartVersions}
                                 onChartVersionChange={onChartVersionChange}
                                 catalogName={catalogName}
-                                sourceUrls={sourceUrls}
+                                labeledHelmChartSourceUrls={labeledHelmChartSourceUrls}
                                 myServicesSavedConfigsExtendedLink={
                                     myServicesSavedConfigsExtendedLink
                                 }
@@ -358,44 +355,29 @@ export default function Launcher(props: Props) {
                                 onRequestLaunch={launcher.launch}
                                 onRequestCancel={onRequestCancel}
                                 onRequestRestoreAllDefault={
-                                    areAllFieldsDefault
+                                    isDefaultConfiguration
                                         ? undefined
                                         : launcher.restoreAllDefault
                                 }
                                 onRequestCopyLaunchUrl={
-                                    areAllFieldsDefault || env.DISABLE_AUTO_LAUNCH
+                                    isDefaultConfiguration || env.DISABLE_AUTO_LAUNCH
                                         ? undefined
                                         : onRequestCopyLaunchUrl
                                 }
-                                isLaunchable={isLaunchable}
                                 s3ConfigsSelect={
                                     s3ConfigSelect === undefined
                                         ? undefined
                                         : {
                                               projectS3ConfigLink,
                                               "selectedOption":
-                                                  s3ConfigSelect.selectedOption,
+                                                  s3ConfigSelect.selectedOptionValue,
                                               "options": s3ConfigSelect.options,
                                               "onSelectedS3ConfigChange":
-                                                  launcher.useSpecificS3Config
+                                                  launcher.changeS3Config
                                           }
                                 }
                             />
-                            {Object.keys(indexedFormFields).map(
-                                dependencyNamePackageNameOrGlobal => (
-                                    <LauncherConfigurationCard
-                                        key={dependencyNamePackageNameOrGlobal}
-                                        dependencyNamePackageNameOrGlobal={
-                                            dependencyNamePackageNameOrGlobal
-                                        }
-                                        {...indexedFormFields[
-                                            dependencyNamePackageNameOrGlobal
-                                        ]}
-                                        onFormValueChange={launcher.changeFormFieldValue}
-                                        formFieldsIsWellFormed={formFieldsIsWellFormed}
-                                    />
-                                )
-                            )}
+                            {<pre>{JSON.stringify(rootForm, null, 2)}</pre>}
                         </div>
                     </div>
                 </div>
@@ -421,7 +403,7 @@ const { i18n } = declareComponentKeys<
           P: {
               helmChartName: string;
               helmChartRepositoryName: JSX.Element;
-              sourceUrls: SourceUrls;
+              labeledHelmChartSourceUrls: LabeledHelmChartSourceUrls;
           };
           R: JSX.Element;
       }

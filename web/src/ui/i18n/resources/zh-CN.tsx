@@ -491,28 +491,34 @@ export const translations: Translations<"zh-CN"> = {
     },
     "Launcher": {
         "header text1": "服务目录",
-        "sources": ({ helmChartName, helmChartRepositoryName, sourceUrls }) => (
+        "sources": ({
+            helmChartName,
+            helmChartRepositoryName,
+            labeledHelmChartSourceUrls
+        }) => (
             <>
                 您即将部署 Helm 图表{" "}
                 {
-                    <MaybeLink href={sourceUrls.helmChartSourceUrl}>
+                    <MaybeLink href={labeledHelmChartSourceUrls.helmChartSourceUrl}>
                         {helmChartName}
                     </MaybeLink>
                 }
                 ， 它属于 Helm 图表仓库{" "}
                 {
-                    <MaybeLink href={sourceUrls.helmChartRepositorySourceUrl}>
+                    <MaybeLink
+                        href={labeledHelmChartSourceUrls.helmChartRepositorySourceUrl}
+                    >
                         {helmChartRepositoryName}
                     </MaybeLink>
                 }
                 。
-                {sourceUrls.dockerImageSourceUrl !== undefined && (
+                {labeledHelmChartSourceUrls.dockerImageSourceUrl !== undefined && (
                     <>
                         {" "}
                         它基于 Docker 镜像{" "}
                         {
                             <MuiLink
-                                href={sourceUrls.dockerImageSourceUrl}
+                                href={labeledHelmChartSourceUrls.dockerImageSourceUrl}
                                 target="_blank"
                             >
                                 {helmChartName}
@@ -683,17 +689,19 @@ ${
         "version select helper text": ({
             helmCharName,
             helmRepositoryName,
-            sourceUrls
+            labeledHelmChartSourceUrls
         }) => (
             <>
                 {
-                    <MaybeLink href={sourceUrls.helmChartSourceUrl}>
+                    <MaybeLink href={labeledHelmChartSourceUrls.helmChartSourceUrl}>
                         {helmCharName}
                     </MaybeLink>
                 }{" "}
                 helm 图表的版本 属于{" "}
                 {
-                    <MaybeLink href={sourceUrls.helmChartRepositorySourceUrl}>
+                    <MaybeLink
+                        href={labeledHelmChartSourceUrls.helmChartRepositorySourceUrl}
+                    >
                         {helmRepositoryName}
                     </MaybeLink>
                 }{" "}
@@ -709,16 +717,6 @@ ${
                 。
             </>
         )
-    },
-    "LauncherConfigurationCard": {
-        "global config": "全局配置",
-        "configuration": ({ packageName }) => `${packageName} 配置`,
-        "dependency": ({ dependencyName }) => `${dependencyName} 依赖`,
-        "launch of a service": ({ dependencyName }) =>
-            `将启动一个 ${dependencyName} 服务`,
-        "mismatching pattern": ({ pattern }) => `应匹配 ${pattern}`,
-        "Invalid YAML Object": "无效的 YAML 对象",
-        "Invalid YAML Array": "无效的 YAML 数组"
     },
     "Footer": {
         "contribute": "为项目做贡献",

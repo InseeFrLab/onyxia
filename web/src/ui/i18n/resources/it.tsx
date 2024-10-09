@@ -533,28 +533,34 @@ export const translations: Translations<"it"> = {
     },
     "Launcher": {
         "header text1": "Catalogo dei servizi",
-        "sources": ({ helmChartName, helmChartRepositoryName, sourceUrls }) => (
+        "sources": ({
+            helmChartName,
+            helmChartRepositoryName,
+            labeledHelmChartSourceUrls
+        }) => (
             <>
                 Stai per distribuire il chart Helm{" "}
                 {
-                    <MaybeLink href={sourceUrls.helmChartSourceUrl}>
+                    <MaybeLink href={labeledHelmChartSourceUrls.helmChartSourceUrl}>
                         {helmChartName}
                     </MaybeLink>
                 }
                 che appartiene al repository di chart Helm{" "}
                 {
-                    <MaybeLink href={sourceUrls.helmChartRepositorySourceUrl}>
+                    <MaybeLink
+                        href={labeledHelmChartSourceUrls.helmChartRepositorySourceUrl}
+                    >
                         {helmChartRepositoryName}
                     </MaybeLink>
                 }
                 .
-                {sourceUrls.dockerImageSourceUrl !== undefined && (
+                {labeledHelmChartSourceUrls.dockerImageSourceUrl !== undefined && (
                     <>
                         {" "}
                         Si basa sull'immagine Docker{" "}
                         {
                             <MuiLink
-                                href={sourceUrls.dockerImageSourceUrl}
+                                href={labeledHelmChartSourceUrls.dockerImageSourceUrl}
                                 target="_blank"
                             >
                                 {helmChartName}
@@ -737,18 +743,20 @@ Sentiti libero di esplorare e prendere il controllo dei tuoi deployment Kubernet
         "version select helper text": ({
             helmCharName,
             helmRepositoryName,
-            sourceUrls
+            labeledHelmChartSourceUrls
         }) => (
             <>
                 Versione dell'helm chart{" "}
                 {
-                    <MaybeLink href={sourceUrls.helmChartSourceUrl}>
+                    <MaybeLink href={labeledHelmChartSourceUrls.helmChartSourceUrl}>
                         {helmCharName}
                     </MaybeLink>
                 }
                 che appartiene al repository di helm chart{" "}
                 {
-                    <MaybeLink href={sourceUrls.helmChartRepositorySourceUrl}>
+                    <MaybeLink
+                        href={labeledHelmChartSourceUrls.helmChartRepositorySourceUrl}
+                    >
                         {helmRepositoryName}
                     </MaybeLink>
                 }
@@ -764,16 +772,6 @@ Sentiti libero di esplorare e prendere il controllo dei tuoi deployment Kubernet
                 <MuiLink {...projectS3ConfigLink}>Configurazione S3</MuiLink>.
             </>
         )
-    },
-    "LauncherConfigurationCard": {
-        "global config": "Configurazioni globali",
-        "configuration": ({ packageName }) => `Configurazione ${packageName}`,
-        "dependency": ({ dependencyName }) => `Dipendenza ${dependencyName}`,
-        "launch of a service": ({ dependencyName }) =>
-            `Avvio di un servizio ${dependencyName}`,
-        "mismatching pattern": ({ pattern }) => `Deve rispettare ${pattern}`,
-        "Invalid YAML Object": "Oggetto YAML non valido",
-        "Invalid YAML Array": "Tabella YAML non valida"
     },
     "Footer": {
         "contribute": "Contribuire al proggetto",

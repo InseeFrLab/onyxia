@@ -51,7 +51,6 @@ export type ComponentKey =
     | import("ui/pages/catalog/CatalogNoSearchMatches").I18n
     | import("ui/pages/launcher/Launcher").I18n
     | import("ui/pages/launcher/LauncherMainCard").I18n
-    | import("ui/pages/launcher/LauncherConfigurationCard").I18n
     | import("ui/pages/launcher/LauncherDialogs/AcknowledgeSharingOfConfigConfirmDialog").I18n
     | import("ui/pages/launcher/LauncherDialogs/AutoLaunchDisabledDialog").I18n
     | import("ui/pages/launcher/LauncherDialogs/NoLongerBookmarkedDialog").I18n

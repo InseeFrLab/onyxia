@@ -535,28 +535,34 @@ export const translations: Translations<"nl"> = {
     },
     "Launcher": {
         "header text1": "Dienstencatalogus",
-        "sources": ({ helmChartName, helmChartRepositoryName, sourceUrls }) => (
+        "sources": ({
+            helmChartName,
+            helmChartRepositoryName,
+            labeledHelmChartSourceUrls
+        }) => (
             <>
                 Je staat op het punt om het Helm-chart{" "}
                 {
-                    <MaybeLink href={sourceUrls.helmChartSourceUrl}>
+                    <MaybeLink href={labeledHelmChartSourceUrls.helmChartSourceUrl}>
                         {helmChartName}
                     </MaybeLink>
                 }
                 te implementeren dat behoort tot de Helm-chartrepository{" "}
                 {
-                    <MaybeLink href={sourceUrls.helmChartRepositorySourceUrl}>
+                    <MaybeLink
+                        href={labeledHelmChartSourceUrls.helmChartRepositorySourceUrl}
+                    >
                         {helmChartRepositoryName}
                     </MaybeLink>
                 }
                 .
-                {sourceUrls.dockerImageSourceUrl !== undefined && (
+                {labeledHelmChartSourceUrls.dockerImageSourceUrl !== undefined && (
                     <>
                         {" "}
                         Het is gebaseerd op de Docker-afbeelding{" "}
                         {
                             <MuiLink
-                                href={sourceUrls.dockerImageSourceUrl}
+                                href={labeledHelmChartSourceUrls.dockerImageSourceUrl}
                                 target="_blank"
                             >
                                 {helmChartName}
@@ -739,18 +745,20 @@ Voel je vrij om te verkennen en de controle over je Kubernetes-implementaties te
         "version select helper text": ({
             helmCharName,
             helmRepositoryName,
-            sourceUrls
+            labeledHelmChartSourceUrls
         }) => (
             <>
                 Versie van de helm-chart{" "}
                 {
-                    <MaybeLink href={sourceUrls.helmChartSourceUrl}>
+                    <MaybeLink href={labeledHelmChartSourceUrls.helmChartSourceUrl}>
                         {helmCharName}
                     </MaybeLink>
                 }
                 die behoort tot de helm-chart repository{" "}
                 {
-                    <MaybeLink href={sourceUrls.helmChartRepositorySourceUrl}>
+                    <MaybeLink
+                        href={labeledHelmChartSourceUrls.helmChartRepositorySourceUrl}
+                    >
                         {helmRepositoryName}
                     </MaybeLink>
                 }
@@ -766,16 +774,6 @@ Voel je vrij om te verkennen en de controle over je Kubernetes-implementaties te
                 <MuiLink {...projectS3ConfigLink}>S3-configuratie</MuiLink>.
             </>
         )
-    },
-    "LauncherConfigurationCard": {
-        "global config": "Globale configuraties",
-        "configuration": ({ packageName }) => `Configuratie ${packageName}`,
-        "dependency": ({ dependencyName }) => `Afhankelijkheid ${dependencyName}`,
-        "launch of a service": ({ dependencyName }) =>
-            `Een dienst starten ${dependencyName}`,
-        "mismatching pattern": ({ pattern }) => `Moet ${pattern} naleven`,
-        "Invalid YAML Object": "Ongeldig YAML-object",
-        "Invalid YAML Array": "Ongeldige YAML-tabel"
     },
     "Footer": {
         "contribute": "Bijdragen aan het project",

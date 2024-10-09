@@ -539,28 +539,34 @@ export const translations: Translations<"fr"> = {
     },
     "Launcher": {
         "header text1": "Catalogue de services",
-        "sources": ({ helmChartName, helmChartRepositoryName, sourceUrls }) => (
+        "sources": ({
+            helmChartName,
+            helmChartRepositoryName,
+            labeledHelmChartSourceUrls
+        }) => (
             <>
                 Vous êtes sur le point de déployer le chart Helm{" "}
                 {
-                    <MaybeLink href={sourceUrls.helmChartSourceUrl}>
+                    <MaybeLink href={labeledHelmChartSourceUrls.helmChartSourceUrl}>
                         {helmChartName}
                     </MaybeLink>
                 }
                 qui appartient au dépôt de charts Helm{" "}
                 {
-                    <MaybeLink href={sourceUrls.helmChartRepositorySourceUrl}>
+                    <MaybeLink
+                        href={labeledHelmChartSourceUrls.helmChartRepositorySourceUrl}
+                    >
                         {helmChartRepositoryName}
                     </MaybeLink>
                 }
                 .
-                {sourceUrls.dockerImageSourceUrl !== undefined && (
+                {labeledHelmChartSourceUrls.dockerImageSourceUrl !== undefined && (
                     <>
                         {" "}
                         Il est basé sur l'image Docker{" "}
                         {
                             <MuiLink
-                                href={sourceUrls.dockerImageSourceUrl}
+                                href={labeledHelmChartSourceUrls.dockerImageSourceUrl}
                                 target="_blank"
                             >
                                 {helmChartName}
@@ -743,19 +749,21 @@ N'hésitez pas à explorer et à prendre en main vos déploiements Kubernetes !
         "version select helper text": ({
             helmCharName,
             helmRepositoryName,
-            sourceUrls
+            labeledHelmChartSourceUrls
         }) => (
             <>
                 Version du helm chart{" "}
                 {
-                    <MaybeLink href={sourceUrls.helmChartSourceUrl}>
+                    <MaybeLink href={labeledHelmChartSourceUrls.helmChartSourceUrl}>
                         {helmCharName}
                     </MaybeLink>
                 }
                 qui appartient au dépôt de helm charts{" "}
                 {
                     <>
-                        <MaybeLink href={sourceUrls.helmChartRepositorySourceUrl}>
+                        <MaybeLink
+                            href={labeledHelmChartSourceUrls.helmChartRepositorySourceUrl}
+                        >
                             {helmRepositoryName}
                         </MaybeLink>
                         .
@@ -772,16 +780,6 @@ N'hésitez pas à explorer et à prendre en main vos déploiements Kubernetes !
                 <MuiLink {...projectS3ConfigLink}>Configuration S3</MuiLink>.
             </>
         )
-    },
-    "LauncherConfigurationCard": {
-        "global config": "Configurations globales",
-        "configuration": ({ packageName }) => `Configuration ${packageName}`,
-        "dependency": ({ dependencyName }) => `Dépendance ${dependencyName}`,
-        "launch of a service": ({ dependencyName }) =>
-            `Lancement d'un service ${dependencyName}`,
-        "mismatching pattern": ({ pattern }) => `Doit respecter ${pattern}`,
-        "Invalid YAML Object": "Objet YAML non valide",
-        "Invalid YAML Array": "Tableau YAML non valide"
     },
     "Footer": {
         "contribute": "Contribuer au projet",
