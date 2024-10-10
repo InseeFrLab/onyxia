@@ -129,6 +129,7 @@ export type ApiTypes = {
                 };
             };
             proxyInjection?: {
+                enabled?: boolean;
                 httpProxyUrl: string;
                 httpsProxyUrl: string;
                 noProxy: string;
