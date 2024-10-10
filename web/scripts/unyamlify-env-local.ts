@@ -26,6 +26,7 @@ if (!fs.existsSync(envLocalYamlFilePath)) {
                 `      ONYXIA_API_URL: https://datalab.sspcloud.fr/api`,
                 `      HEADER_TEXT_BOLD: My Organization`,
                 `      HEADER_TEXT_FOCUS: Datalab`,
+                `      SCREEN_SCALER: false`,
                 `      HEADER_LINKS: |`,
                 `        [`,
                 `          {`,
