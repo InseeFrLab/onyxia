@@ -1,9 +1,9 @@
 import { lazy, Suspense } from "react";
 import { targetWindowInnerWidth } from "ui/theme/targetWindowInnerWidth";
 import { enableScreenScaler } from "screen-scaler/react";
-import { css } from "ui/theme";
+import { css } from "ui/theme/emotionCache";
 
-const AppLazy = lazy(() => import("./App.tsx"));
+const AppLazy = lazy(() => import("./App"));
 
 // NOTE: This must happen very early-on, if overwrite some DOM APIs.
 const { ScreenScalerOutOfRangeFallbackProvider } = enableScreenScaler({

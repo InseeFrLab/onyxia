@@ -67,9 +67,8 @@ type Props = {
 
 export default function App(props: Props) {
     const {
-        ScreenScalerOutOfRangeFallbackProvider = (props: React.PropsWithChildren) => (
-            <>{props.children}</>
-        )
+        className,
+        ScreenScalerOutOfRangeFallbackProvider = ({ children }) => <>{children}</>
     } = props;
     return (
         <RouteProvider>
@@ -79,7 +78,7 @@ export default function App(props: Props) {
                         fallback={<ScreenScalerOutOfRangeFallback />}
                     >
                         <CoreProvider>
-                            <ContextualizedApp />
+                            <ContextualizedApp className={className} />
                         </CoreProvider>
                     </ScreenScalerOutOfRangeFallbackProvider>
                 </OnyxiaUi>
