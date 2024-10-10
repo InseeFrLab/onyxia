@@ -201,9 +201,9 @@ export const translations: Translations<"it"> = {
             </>
         ),
         "account credentials": "Credenziali dell'account",
-        "accountFriendlyName textField label": "Nome amichevole dell'account",
-        "accountFriendlyName textField helper text":
-            "Questo serve solo per aiutarti a identificare questo account. Esempio: Il mio account personale",
+        "friendlyName textField label": "Nome della configurazione",
+        "friendlyName textField helper text":
+            "Questo serve solo ad aiutarti a identificare questa configurazione. Esempio: Il mio bucket AWS",
 
         "isAnonymous switch label": "Accesso anonimo",
         "isAnonymous switch helper text":
@@ -533,28 +533,34 @@ export const translations: Translations<"it"> = {
     },
     "Launcher": {
         "header text1": "Catalogo dei servizi",
-        "sources": ({ helmChartName, helmChartRepositoryName, sourceUrls }) => (
+        "sources": ({
+            helmChartName,
+            helmChartRepositoryName,
+            labeledHelmChartSourceUrls
+        }) => (
             <>
                 Stai per distribuire il chart Helm{" "}
                 {
-                    <MaybeLink href={sourceUrls.helmChartSourceUrl}>
+                    <MaybeLink href={labeledHelmChartSourceUrls.helmChartSourceUrl}>
                         {helmChartName}
                     </MaybeLink>
                 }
                 che appartiene al repository di chart Helm{" "}
                 {
-                    <MaybeLink href={sourceUrls.helmChartRepositorySourceUrl}>
+                    <MaybeLink
+                        href={labeledHelmChartSourceUrls.helmChartRepositorySourceUrl}
+                    >
                         {helmChartRepositoryName}
                     </MaybeLink>
                 }
                 .
-                {sourceUrls.dockerImageSourceUrl !== undefined && (
+                {labeledHelmChartSourceUrls.dockerImageSourceUrl !== undefined && (
                     <>
                         {" "}
                         Si basa sull'immagine Docker{" "}
                         {
                             <MuiLink
-                                href={sourceUrls.dockerImageSourceUrl}
+                                href={labeledHelmChartSourceUrls.dockerImageSourceUrl}
                                 target="_blank"
                             >
                                 {helmChartName}
@@ -666,6 +672,26 @@ Sentiti libero di esplorare e prendere il controllo dei tuoi deployment Kubernet
             </>
         )
     },
+    "FormFieldWrapper": {
+        "reset to default": "Ripristina il valore predefinito"
+    },
+    "YamlCodeBlockFormField": {
+        "not an array": "È previsto un array",
+        "not an object": "È previsto un oggetto",
+        "not valid yaml": "YAML/JSON non valido"
+    },
+    "TextFormField": {
+        "not matching pattern": ({ pattern }) => `Non corrisponde al modello ${pattern}`,
+        "toggle password visibility": "Alterna la visibilità della password"
+    },
+    "FormFieldGroupComponentWrapper": {
+        "add": "Aggiungi"
+    },
+    "NumberFormField": {
+        "below minimum": ({ minimum }) => `Deve essere maggiore o uguale a ${minimum}`,
+        "not a number": "Non è un numero",
+        "not an integer": "Non è un numero intero"
+    },
     "NoLongerBookmarkedDialog": {
         "no longer bookmarked dialog title": "Modifiche non salvate",
         "no longer bookmarked dialog body":
@@ -717,18 +743,20 @@ Sentiti libero di esplorare e prendere il controllo dei tuoi deployment Kubernet
         "version select helper text": ({
             helmCharName,
             helmRepositoryName,
-            sourceUrls
+            labeledHelmChartSourceUrls
         }) => (
             <>
                 Versione dell'helm chart{" "}
                 {
-                    <MaybeLink href={sourceUrls.helmChartSourceUrl}>
+                    <MaybeLink href={labeledHelmChartSourceUrls.helmChartSourceUrl}>
                         {helmCharName}
                     </MaybeLink>
                 }
                 che appartiene al repository di helm chart{" "}
                 {
-                    <MaybeLink href={sourceUrls.helmChartRepositorySourceUrl}>
+                    <MaybeLink
+                        href={labeledHelmChartSourceUrls.helmChartRepositorySourceUrl}
+                    >
                         {helmRepositoryName}
                     </MaybeLink>
                 }
@@ -744,16 +772,6 @@ Sentiti libero di esplorare e prendere il controllo dei tuoi deployment Kubernet
                 <MuiLink {...projectS3ConfigLink}>Configurazione S3</MuiLink>.
             </>
         )
-    },
-    "LauncherConfigurationCard": {
-        "global config": "Configurazioni globali",
-        "configuration": ({ packageName }) => `Configurazione ${packageName}`,
-        "dependency": ({ dependencyName }) => `Dipendenza ${dependencyName}`,
-        "launch of a service": ({ dependencyName }) =>
-            `Avvio di un servizio ${dependencyName}`,
-        "mismatching pattern": ({ pattern }) => `Deve rispettare ${pattern}`,
-        "Invalid YAML Object": "Oggetto YAML non valido",
-        "Invalid YAML Array": "Tabella YAML non valida"
     },
     "Footer": {
         "contribute": "Contribuire al proggetto",

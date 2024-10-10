@@ -97,7 +97,8 @@ export const thunks = {
                 actions.updateCompleted({
                     quotas,
                     "projectId":
-                        projectManagement.selectors.currentProject(getState()).id,
+                        projectManagement.protectedSelectors.currentProject(getState())
+                            .id,
                     "quotaWarningThresholdPercent":
                         paramsOfBootstrapCore.quotaWarningThresholdPercent,
                     "quotaCriticalThresholdPercent":

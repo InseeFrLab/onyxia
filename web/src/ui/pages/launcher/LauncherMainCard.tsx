@@ -26,7 +26,11 @@ import { useResolveLocalizedString, type LocalizedString } from "ui/i18n";
 import { id } from "tsafe/id";
 import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
 import { same } from "evt/tools/inDepth/same";
-import type { SourceUrls } from "core/usecases/launcher/selectors";
+
+type SourceUrls = {
+    helmChartSourceUrl?: string;
+    helmChartRepositorySourceUrl?: string;
+};
 
 export type Props = {
     className?: string;
@@ -40,7 +44,10 @@ export type Props = {
     availableChartVersions: string[];
     onChartVersionChange: (chartVersion: string) => void;
     catalogName: LocalizedString;
-    sourceUrls: Pick<SourceUrls, "helmChartSourceUrl" | "helmChartRepositorySourceUrl">;
+    labeledHelmChartSourceUrls: Pick<
+        SourceUrls,
+        "helmChartSourceUrl" | "helmChartRepositorySourceUrl"
+    >;
 
     myServicesSavedConfigsExtendedLink: Link;
     onRequestToggleBookmark: () => void;
@@ -55,8 +62,6 @@ export type Props = {
           }
         | undefined;
 
-    isLaunchable: boolean;
-
     onRequestLaunch: () => void;
     onRequestCancel: () => void;
 
@@ -69,33 +74,15 @@ export type Props = {
     s3ConfigsSelect:
         | {
               projectS3ConfigLink: Link;
-              selectedOption:
-                  | {
-                        type: "sts";
-                    }
-                  | {
-                        type: "custom";
-                        customS3ConfigIndex: number;
-                    }
-                  | {
-                        type: "manual form input";
-                    };
+              selectedOption: string | undefined;
               options: {
-                  customConfigIndex: number | undefined;
-                  dataSource: string;
-                  accountFriendlyName: string | undefined;
+                  optionValue: string;
+                  label: {
+                      dataSource: string;
+                      friendlyName: string | undefined;
+                  };
               }[];
-              onSelectedS3ConfigChange: (
-                  params:
-                      | {
-                            type: "default";
-                            customS3ConfigIndex?: never;
-                        }
-                      | {
-                            type: "custom";
-                            customS3ConfigIndex: number;
-                        }
-              ) => void;
+              onSelectedS3ConfigChange: (params: { s3ConfigId: string }) => void;
           }
         | undefined;
 };
@@ -112,12 +99,11 @@ export const LauncherMainCard = memo((props: Props) => {
         availableChartVersions,
         onChartVersionChange,
         catalogName,
-        sourceUrls,
+        labeledHelmChartSourceUrls,
 
         myServicesSavedConfigsExtendedLink,
         friendlyName,
         isSharedWrap,
-        isLaunchable,
         onRequestToggleBookmark,
         onFriendlyNameChange,
         onRequestLaunch,
@@ -261,7 +247,7 @@ export const LauncherMainCard = memo((props: Props) => {
                                     "helmCharName": chartName,
                                     "helmRepositoryName":
                                         resolveLocalizedString(catalogName),
-                                    sourceUrls
+                                    labeledHelmChartSourceUrls
                                 })}
                             >
                                 <Icon
@@ -310,59 +296,26 @@ export const LauncherMainCard = memo((props: Props) => {
                             </InputLabel>
                             <Select
                                 labelId={s3ConfigInputLabelId}
-                                value={(() => {
-                                    switch (s3ConfigsSelect.selectedOption.type) {
-                                        case "custom":
-                                            return `${s3ConfigsSelect.selectedOption.customS3ConfigIndex}`;
-                                        case "sts":
-                                            return "sts";
-                                        case "manual form input":
-                                            return "manual form input";
-                                    }
-                                })()}
+                                value={s3ConfigsSelect.selectedOption ?? ""}
                                 onChange={event => {
                                     const { value } = event.target;
                                     assert(typeof value === "string");
-
-                                    if (value === "sts") {
-                                        s3ConfigsSelect.onSelectedS3ConfigChange({
-                                            "type": "default"
-                                        });
-                                        return;
-                                    }
-
-                                    const customS3ConfigIndex = parseInt(value);
-
                                     s3ConfigsSelect.onSelectedS3ConfigChange({
-                                        "type": "custom",
-                                        customS3ConfigIndex
+                                        "s3ConfigId": value
                                     });
                                 }}
                             >
-                                {s3ConfigsSelect.selectedOption.type ===
-                                    "manual form input" && (
-                                    <MenuItem disabled value="manual form input">
-                                        &nbsp;
+                                <MenuItem value={""} disabled>
+                                    {" "}
+                                </MenuItem>
+                                {s3ConfigsSelect.options.map(({ label, optionValue }) => (
+                                    <MenuItem key={optionValue} value={optionValue}>
+                                        {label.friendlyName !== undefined
+                                            ? `${label.friendlyName} - `
+                                            : ""}
+                                        {label.dataSource}
                                     </MenuItem>
-                                )}
-
-                                {s3ConfigsSelect.options.map(
-                                    ({
-                                        accountFriendlyName,
-                                        customConfigIndex,
-                                        dataSource
-                                    }) => (
-                                        <MenuItem
-                                            key={customConfigIndex ?? "_"}
-                                            value={`${customConfigIndex ?? "sts"}`}
-                                        >
-                                            {accountFriendlyName !== undefined
-                                                ? `${accountFriendlyName} - `
-                                                : ""}
-                                            {dataSource}
-                                        </MenuItem>
-                                    )
-                                )}
+                                ))}
                             </Select>
                         </FormControl>
                     )}
@@ -402,7 +355,6 @@ export const LauncherMainCard = memo((props: Props) => {
                         variant="primary"
                         onClick={onRequestLaunch}
                         className={classes.launchButton}
-                        disabled={!isLaunchable}
                     >
                         {t("launch")}
                     </Button>
@@ -444,7 +396,7 @@ const { i18n } = declareComponentKeys<
           P: {
               helmCharName: string;
               helmRepositoryName: JSX.Element;
-              sourceUrls: Props["sourceUrls"];
+              labeledHelmChartSourceUrls: Props["labeledHelmChartSourceUrls"];
           };
           R: JSX.Element;
       }
