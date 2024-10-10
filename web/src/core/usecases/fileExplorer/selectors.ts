@@ -5,6 +5,7 @@ import { createSelector } from "clean-architecture";
 import * as userConfigs from "core/usecases/userConfigs";
 import * as s3ConfigManagement from "core/usecases/s3ConfigManagement";
 import { assert } from "tsafe/assert";
+import * as userAuthentication from "core/usecases/userAuthentication";
 
 const state = (rootState: RootState): State => rootState[name];
 
@@ -159,10 +160,20 @@ const main = createSelector(
     }
 );
 
-const isFileExplorerEnabled = createSelector(
-    s3ConfigManagement.selectors.s3Configs,
-    s3Configs => s3Configs.find(s3Config => s3Config.isExplorerConfig) !== undefined
-);
+const isFileExplorerEnabled = (rootState: RootState) => {
+    const { isUserLoggedIn } =
+        userAuthentication.selectors.authenticationState(rootState);
+
+    if (!isUserLoggedIn) {
+        return true;
+    } else {
+        return (
+            s3ConfigManagement.selectors
+                .s3Configs(rootState)
+                .find(s3Config => s3Config.isExplorerConfig) !== undefined
+        );
+    }
+};
 
 export const protectedSelectors = { workingDirectoryPath };
 
