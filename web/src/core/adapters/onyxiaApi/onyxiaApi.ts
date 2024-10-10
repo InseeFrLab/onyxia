@@ -286,7 +286,17 @@ export function createOnyxiaApi(params: {
                                                                 .clientID
                                                     }
                                       },
-                            "proxyInjection": apiRegion.proxyInjection,
+                            "proxyInjection":
+                                apiRegion.proxyInjection === undefined
+                                    ? undefined
+                                    : {
+                                          "enabled": apiRegion.proxyInjection.enabled,
+                                          "httpProxyUrl":
+                                              apiRegion.proxyInjection.httpProxyUrl,
+                                          "httpsProxyUrl":
+                                              apiRegion.proxyInjection.httpsProxyUrl,
+                                          "noProxy": apiRegion.proxyInjection.noProxy
+                                      },
                             "packageRepositoryInjection":
                                 apiRegion.packageRepositoryInjection,
                             "certificateAuthorityInjection":

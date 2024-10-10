@@ -48,6 +48,7 @@ export type DeploymentRegion = {
         | undefined;
     proxyInjection:
         | {
+              enabled: boolean | undefined;
               httpProxyUrl: string | undefined;
               httpsProxyUrl: string | undefined;
               noProxy: string | undefined;

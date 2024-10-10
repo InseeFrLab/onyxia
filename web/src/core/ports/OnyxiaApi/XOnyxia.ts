@@ -191,6 +191,7 @@ export type XOnyxiaContext = {
     };
     proxyInjection:
         | {
+              enabled: boolean | undefined;
               httpProxyUrl: string | undefined;
               httpsProxyUrl: string | undefined;
               noProxy: string | undefined;
