@@ -1,16 +1,15 @@
 /* eslint-disable react-refresh/only-export-components */
-import {
-    DataGrid,
-    type GridClasses,
-    type GridColDef,
-    useGridApiRef
-} from "@mui/x-data-grid";
-import { type ComponentProps, memo, useEffect, useMemo } from "react";
+import { DataGrid, type GridClasses, type GridColDef } from "@mui/x-data-grid";
+import { type ComponentProps, memo, useMemo } from "react";
 import { tss } from "tss";
 import { CopyToClipboardIconButton } from "ui/shared/CopyToClipboardIconButton";
 
 export type CustomDataGridProps = ComponentProps<typeof DataGrid> & {
-    shouldAddCopyToClipboardInCell: boolean;
+    /**
+     * Whether to add copy-to-clipboard functionality in cells.
+     * @default false
+     */
+    shouldAddCopyToClipboardInCell?: boolean;
 };
 
 export const autosizeOptions = {
@@ -21,15 +20,7 @@ export const autosizeOptions = {
 
 export const CustomDataGrid = memo((props: CustomDataGridProps) => {
     const { classes, css } = useStyles();
-    const { columns, shouldAddCopyToClipboardInCell, ...propsRest } = props;
-
-    const apiRef = useGridApiRef();
-
-    useEffect(() => {
-        return apiRef.current.subscribeEvent("columnVisibilityModelChange", () => {
-            apiRef.current.autosizeColumns(autosizeOptions);
-        });
-    }, []);
+    const { columns, shouldAddCopyToClipboardInCell = false, ...propsRest } = props;
 
     const dataGridClasses = useMemo(
         () =>
@@ -71,7 +62,6 @@ export const CustomDataGrid = memo((props: CustomDataGridProps) => {
     return (
         <DataGrid
             {...propsRest}
-            apiRef={apiRef}
             columns={modifiedColumns}
             classes={dataGridClasses}
             autosizeOnMount

@@ -157,11 +157,18 @@ const useStyles = tss
             "flexDirection": "column",
             "marginTop": theme.spacing(2)
         },
-        "baseNameText": { "marginBottom": theme.spacing(1) },
+        "baseNameText": {
+            "marginBottom": theme.spacing(1),
+            "whiteSpace": "nowrap",
+            "overflow": "hidden",
+            "textOverflow": "ellipsis"
+        },
         "sizeAndFileTypeText": {
             "display": "flex",
             "justifyContent": "space-between",
-            "overflow": "hidden"
+            "whiteSpace": "nowrap",
+            "overflow": "hidden",
+            "textOverflow": "ellipsis"
         },
         "explorerIcon": {
             "width": "50px", // Either we set a fixed size, or we measure the size of the root

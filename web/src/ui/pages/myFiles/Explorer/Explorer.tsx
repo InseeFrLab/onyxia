@@ -379,22 +379,21 @@ export const Explorer = memo((props: ExplorerProps) => {
                         />
                     )}
                 </div>
-
-                {(() => {
-                    console.log("switch");
-                    switch (viewExplorer) {
-                        case "block":
-                            return (
-                                <div
-                                    ref={scrollableDivRef}
-                                    className={cx(
-                                        css({
-                                            "flex": 1,
-                                            "paddingRight": theme.spacing(2),
-                                            "overflow": "auto"
-                                        })
-                                    )}
-                                >
+                <div
+                    ref={scrollableDivRef}
+                    className={cx(
+                        css({
+                            "flex": 1,
+                            "paddingRight": theme.spacing(2),
+                            "overflow": "auto"
+                        })
+                    )}
+                >
+                    {(() => {
+                        console.log("switch");
+                        switch (viewExplorer) {
+                            case "block":
+                                return (
                                     <ExplorerItems
                                         isNavigating={isNavigating}
                                         files={files}
@@ -410,31 +409,20 @@ export const Explorer = memo((props: ExplorerProps) => {
                                         onDeleteItem={itemsOnDeleteItem}
                                         evtAction={evtItemsAction}
                                     />
-                                </div>
-                            );
-                        case "list": {
-                            return (
-                                <div
-                                    //ref={scrollableDivRef}
-                                    className={cx(
-                                        css({
-                                            "flex": 1,
-                                            "paddingRight": theme.spacing(2),
-                                            "overflow": "auto"
-                                        })
-                                    )}
-                                >
+                                );
+                            case "list": {
+                                return (
                                     <ListExplorerItems
                                         className={css({ height: "100%" })}
                                         objects={objects}
                                     />
-                                </div>
-                            );
+                                );
+                            }
+                            default:
+                                return null;
                         }
-                        default:
-                            return null;
-                    }
-                })()}
+                    })()}
+                </div>
             </div>
             <CreateS3DirectoryDialog
                 state={createS3DirectoryDialogState}
