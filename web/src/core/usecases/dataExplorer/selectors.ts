@@ -7,18 +7,31 @@ import type { GridColDef } from "@mui/x-data-grid";
 const state = (rootState: RootState) => rootState[name];
 
 const columns = createSelector(
-    createSelector(state, state => state.data),
-    data => {
-        if (data === undefined) {
+    createSelector(
+        createSelector(state, state => state.data),
+        data => {
+            if (data === undefined) {
+                return undefined;
+            }
+
+            const firstRow = data.rows[0] ?? {};
+
+            const firstRowKeys = Object.keys(firstRow);
+
+            return JSON.stringify(firstRowKeys);
+        }
+    ),
+    firstRowKeys_str => {
+        if (firstRowKeys_str === undefined) {
             return undefined;
         }
 
-        const firstRow = data.rows[0] ?? {};
+        const firstRowKeys = JSON.parse(firstRowKeys_str) as string[];
 
-        return Object.keys(firstRow).map(
-            propertyName =>
+        return firstRowKeys.map(
+            key =>
                 ({
-                    "field": propertyName,
+                    "field": key,
                     "sortable": false
                 }) satisfies GridColDef
         );
