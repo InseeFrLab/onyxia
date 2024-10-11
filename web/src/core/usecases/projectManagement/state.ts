@@ -6,6 +6,9 @@ import {
     createObjectThatThrowsIfAccessed
 } from "clean-architecture";
 import * as userConfigs from "core/usecases/userConfigs";
+import { z } from "zod";
+import type { OptionalIfCanBeUndefined } from "core/tools/OptionalIfCanBeUndefined";
+import { id } from "tsafe/id";
 
 type State = {
     projects: Project[];
@@ -52,6 +55,135 @@ export namespace ProjectConfigs {
 
 // NOTE: Make sure there's no overlap between userConfigs and projectConfigs as they share the same vault dir.
 assert<Equals<keyof ProjectConfigs & keyof userConfigs.UserConfigs, never>>(true);
+
+export const { zProjectConfigs } = (() => {
+    const zFormFieldValueValue = (() => {
+        type TargetType =
+            ProjectConfigs.RestorableServiceConfig["formFieldsValueDifferentFromDefault"][number]["value"];
+
+        const zTargetType = z.union([
+            z.string(),
+            z.boolean(),
+            z.number(),
+            z.object({
+                "type": z.literal("yaml"),
+                "yamlStr": z.string()
+            })
+        ]);
+
+        assert<Equals<z.infer<typeof zTargetType>, TargetType>>();
+
+        return id<z.ZodType<TargetType>>(zTargetType);
+    })();
+
+    const zFormFieldValue = (() => {
+        type TargetType =
+            ProjectConfigs.RestorableServiceConfig["formFieldsValueDifferentFromDefault"][number];
+
+        const zTargetType = z.object({
+            path: z.array(z.string()),
+            value: zFormFieldValueValue
+        });
+
+        assert<Equals<z.infer<typeof zTargetType>, TargetType>>();
+
+        return id<z.ZodType<TargetType>>(zTargetType);
+    })();
+
+    const zRestorableServiceConfig = (() => {
+        type TargetType = ProjectConfigs.RestorableServiceConfig;
+
+        const zTargetType = z.object({
+            friendlyName: z.string(),
+            isShared: z.union([z.boolean(), z.undefined()]),
+            catalogId: z.string(),
+            chartName: z.string(),
+            chartVersion: z.string(),
+            formFieldsValueDifferentFromDefault: z.array(zFormFieldValue)
+        });
+
+        assert<
+            Equals<z.infer<typeof zTargetType>, OptionalIfCanBeUndefined<TargetType>>
+        >();
+
+        // @ts-expect-error
+        return id<z.ZodType<TargetType>>(zTargetType);
+    })();
+
+    const zS3Credentials = (() => {
+        type TargetType = Exclude<
+            ProjectConfigs.CustomS3Config["credentials"],
+            undefined
+        >;
+
+        const zTargetType = z.object({
+            accessKeyId: z.string(),
+            secretAccessKey: z.string(),
+            sessionToken: z.union([z.string(), z.undefined()])
+        });
+
+        assert<
+            Equals<z.infer<typeof zTargetType>, OptionalIfCanBeUndefined<TargetType>>
+        >();
+
+        // @ts-expect-error
+        return id<z.ZodType<TargetType>>(zTargetType);
+    })();
+
+    const zCustomS3Config = (() => {
+        type TargetType = ProjectConfigs.CustomS3Config;
+
+        const zTargetType = z.object({
+            url: z.string(),
+            region: z.string(),
+            workingDirectoryPath: z.string(),
+            pathStyleAccess: z.boolean(),
+            accountFriendlyName: z.string(),
+            credentials: z.union([zS3Credentials, z.undefined()])
+        });
+
+        assert<
+            Equals<z.infer<typeof zTargetType>, OptionalIfCanBeUndefined<TargetType>>
+        >();
+
+        // @ts-expect-error
+        return id<z.ZodType<TargetType>>(zTargetType);
+    })();
+
+    const zS3 = (() => {
+        type TargetType = ProjectConfigs["s3"];
+
+        const zTargetType = z.object({
+            customConfigs: z.array(zCustomS3Config),
+            indexForXOnyxia: z.union([z.number(), z.undefined()]),
+            indexForExplorer: z.union([z.number(), z.undefined()])
+        });
+
+        assert<
+            Equals<z.infer<typeof zTargetType>, OptionalIfCanBeUndefined<TargetType>>
+        >();
+
+        // @ts-expect-error
+        return id<z.ZodType<TargetType>>(zTargetType);
+    })();
+
+    const zProjectConfigs = (() => {
+        type TargetType = ProjectConfigs;
+
+        const zTargetType = z.object({
+            servicePassword: z.string(),
+            restorableConfigs: z.array(zRestorableServiceConfig),
+            s3: zS3,
+            clusterNotificationCheckoutTime: z.number()
+        });
+
+        assert<Equals<z.infer<typeof zTargetType>, TargetType>>();
+
+        return id<z.ZodType<TargetType>>(zTargetType);
+    })();
+
+    return { zProjectConfigs };
+})();
 
 export const name = "projectManagement";
 

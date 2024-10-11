@@ -2,7 +2,12 @@ import { assert, type Equals } from "tsafe/assert";
 import type { Thunks } from "core/bootstrap";
 import { join as pathJoin } from "pathe";
 import { generateRandomPassword } from "core/tools/generateRandomPassword";
-import { actions, type ProjectConfigs, type ChangeConfigValueParams } from "./state";
+import {
+    actions,
+    type ProjectConfigs,
+    type ChangeConfigValueParams,
+    zProjectConfigs
+} from "./state";
 import type { Secret } from "core/ports/SecretsManager";
 import { selectors, protectedSelectors } from "./selectors";
 import * as userConfigs from "core/usecases/userConfigs";
@@ -53,43 +58,76 @@ export const thunks = {
                 writeSessionStorage([...onboardedProjectIds, projectId]);
             })();
 
-            await dispatch(privateThunks.__configMigration({ projectVaultTopDirPath }));
+            try {
+                await dispatch(
+                    privateThunks.__configMigration({ projectVaultTopDirPath })
+                );
+            } catch {}
 
             const projectConfigVaultDirPath = getProjectConfigVaultDirPath({
                 projectVaultTopDirPath
             });
 
-            const { files } = await secretsManager
-                .list({
-                    "path": projectConfigVaultDirPath
-                })
-                .catch(() => {
-                    console.log("The above 404 is fine");
-                    return { "files": id<string[]>([]) };
-                });
-
-            const projectConfigs: ProjectConfigs = Object.fromEntries(
-                await Promise.all(
-                    keys.map(async key => {
-                        if (!files.includes(key)) {
-                            const value = getDefaultConfig(key);
-
-                            await secretsManager.put({
-                                "path": pathJoin(projectConfigVaultDirPath, key),
-                                "secret": valueToSecret(value)
-                            });
-
-                            return [key, value] as const;
-                        }
-
-                        const { secret } = await secretsManager.get({
-                            "path": pathJoin(projectConfigVaultDirPath, key)
-                        });
-
-                        return [key, secretToValue(secret)] as const;
+            const { projectConfigs } = await (async function getProjectConfig(): Promise<{
+                projectConfigs: ProjectConfigs;
+            }> {
+                const { files } = await secretsManager
+                    .list({
+                        "path": projectConfigVaultDirPath
                     })
-                )
-            ) as any;
+                    .catch(() => {
+                        console.log("The above 404 is fine");
+                        return { "files": id<string[]>([]) };
+                    });
+
+                const projectConfigs = Object.fromEntries(
+                    await Promise.all(
+                        keys.map(async key => {
+                            const path = pathJoin(projectConfigVaultDirPath, key);
+
+                            if (!files.includes(key)) {
+                                const value = getDefaultConfig(key);
+
+                                await secretsManager.put({
+                                    path,
+                                    "secret": valueToSecret(value)
+                                });
+
+                                return [key, value] as const;
+                            }
+
+                            const { secret } = await secretsManager.get({ path });
+
+                            return [key, secretToValue(secret)] as const;
+                        })
+                    )
+                );
+
+                try {
+                    zProjectConfigs.parse(projectConfigs);
+                    assert(is<ProjectConfigs>(projectConfigs));
+                } catch {
+                    console.warn(
+                        "We got a malformed ProjectConfigs object, clearing it..."
+                    );
+
+                    await Promise.all(
+                        keys.map(async key => {
+                            if (!files.includes(key)) {
+                                return;
+                            }
+
+                            await secretsManager.delete({
+                                "path": pathJoin(projectConfigVaultDirPath, key)
+                            });
+                        })
+                    );
+
+                    return getProjectConfig();
+                }
+
+                return { projectConfigs };
+            })();
 
             await prOnboarding;
 
