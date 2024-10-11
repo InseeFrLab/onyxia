@@ -13,6 +13,8 @@ import { useStyles } from "tss";
 
 export type Props = {
     selectedItemKind: "file" | "directory" | "none";
+    viewMode: "list" | "block";
+    setViewMode: (mode: Props["viewMode"]) => void;
     //TODO: Restore when we have fileViewer usecase
     //isFileOpen: boolean;
 
@@ -20,7 +22,7 @@ export type Props = {
 };
 
 export const ExplorerButtonBar = memo((props: Props) => {
-    const { selectedItemKind, callback } = props;
+    const { selectedItemKind, callback, setViewMode, viewMode } = props;
 
     const { t } = useTranslation({ ExplorerButtonBar });
     const { css, theme } = useStyles();
@@ -74,19 +76,30 @@ export const ExplorerButtonBar = memo((props: Props) => {
 
     return (
         <BaseBar>
-            <IconButton onClick={() => {}} icon={id<MuiIconComponentName>("Sort")} />
             <IconButton
+                onClick={() => setViewMode("list")}
                 className={css(
-                    true
+                    viewMode === "list"
                         ? {
                               "& svg": {
-                                  "color":
-                                      theme.colors.useCases.buttons.actionHoverPrimary
+                                  "color": theme.colors.useCases.buttons.actionActive
                               }
                           }
                         : {}
                 )}
-                onClick={() => {}}
+                icon={id<MuiIconComponentName>("Sort")}
+            />
+            <IconButton
+                onClick={() => setViewMode("block")}
+                className={css(
+                    viewMode === "block"
+                        ? {
+                              "& svg": {
+                                  "color": theme.colors.useCases.buttons.actionActive
+                              }
+                          }
+                        : {}
+                )}
                 icon={id<MuiIconComponentName>("ViewCompact")}
             />
 

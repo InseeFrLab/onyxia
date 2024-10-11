@@ -18,6 +18,7 @@ import { env } from "env";
 import { CustomDataGrid } from "ui/shared/Datagrid/CustomDataGrid";
 import { SlotsDataGridToolbar } from "./SlotsDataGridToolbar";
 import { exclude } from "tsafe/exclude";
+import { useApplyClassNameToParent } from "ui/tools/useApplyClassNameToParent";
 
 export type Props = {
     route: PageRoute;
@@ -42,7 +43,7 @@ export default function DataExplorer(props: Props) {
                 "columnVisibility": route.params.columnVisibility
             }
         });
-    }, [route.params.rowsPerPage, route.params.page]); //TODO route was in the dep tree, wait for next release to manage this
+    }, [route]);
 
     const { evtDataExplorer } = useCore().evts;
 
@@ -97,6 +98,13 @@ export default function DataExplorer(props: Props) {
                           (route.params.page - 1) * route.params.rowsPerPage + rows.length
                   }
     });
+
+    // Theres a bug in MUI classes.panel does not apply so have to apply the class manually
+    const { childrenClassName: dataGridPanelWrapperRefClassName } =
+        useApplyClassNameToParent({
+            "parentSelector": ".MuiDataGrid-panel",
+            "className": classes.dataGridPanel
+        });
 
     return (
         <div className={cx(classes.root, className)}>
@@ -160,6 +168,16 @@ export default function DataExplorer(props: Props) {
                     return (
                         <div className={cx(classes.dataGridWrapper, className)}>
                             <CustomDataGrid
+                                shouldAddCopyToClipboardInCell
+                                classes={{
+                                    "panelWrapper": cx(
+                                        dataGridPanelWrapperRefClassName,
+                                        classes.dataGridPanelWrapper
+                                    ),
+                                    "panelFooter": classes.dataGridPanelFooter,
+                                    "menu": classes.dataGridMenu,
+                                    "footerContainer": classes.dataGridFooterContainer
+                                }}
                                 slots={{ "toolbar": SlotsDataGridToolbar }}
                                 disableVirtualization={!isVirtualizationEnabled}
                                 columnVisibilityModel={route.params.columnVisibility}
@@ -263,14 +281,14 @@ const useStyles = tss
             "overflowY": "hidden",
             "overflowX": "auto"
         },
-        // "dataGridPanel": {
-        //     "overflow": "hidden",
-        //     "borderRadius": 8,
-        //     "boxShadow": theme.shadows[1],
-        //     "&:hover": {
-        //         "boxShadow": theme.shadows[6]
-        //     }
-        // },
+        "dataGridPanel": {
+            "overflow": "hidden",
+            "borderRadius": 8,
+            "boxShadow": theme.shadows[1],
+            "&:hover": {
+                "boxShadow": theme.shadows[6]
+            }
+        },
         "dataGridPanelWrapper": {
             "backgroundColor": theme.colors.useCases.surfaces.surface1,
             "padding": theme.spacing(2)
