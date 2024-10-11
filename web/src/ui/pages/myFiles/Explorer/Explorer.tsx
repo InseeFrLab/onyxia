@@ -37,7 +37,12 @@ import { ExplorerUploadModal } from "./ExplorerUploadModal";
 import type { ExplorerUploadModalProps } from "./ExplorerUploadModal";
 import { declareComponentKeys } from "i18nifty";
 import { CircularProgress } from "onyxia-ui/CircularProgress";
+import { ListExplorerItems } from "./ListExplorer/ListExplorerItems";
 
+function randomIntFromInterval(min: number, max: number) {
+    // min and max included
+    return Math.floor(Math.random() * (max - min + 1) + min);
+}
 //TODO -> Get File and directory size
 export type ExplorerProps = {
     /**
@@ -113,6 +118,8 @@ export const Explorer = memo((props: ExplorerProps) => {
     const [selectedItemKind, setSelectedItemKind] = useState<
         "file" | "directory" | "none"
     >("none");
+
+    const [viewExplorer, setViewExplorer] = useState<"list" | "block">("block"); //TO move inside core
 
     const onSelectedItemKindValueChange = useConstCallback(
         ({ selectedItemKind }: Param0<ItemsProps["onSelectedItemKindValueChange"]>) =>
@@ -270,6 +277,32 @@ export const Explorer = memo((props: ExplorerProps) => {
     const onUploadModalClose = useConstCallback(() => setIsUploadModalOpen(false));
     const onDragOver = useConstCallback(() => setIsUploadModalOpen(true));
 
+    const objects = [
+        ...(directories.map(name => ({
+            kind: "directory",
+            size: randomIntFromInterval(1, 10000000), // Random size between 1 and 10MB
+            name, // Include the name of the directory
+            lastModified: new Date(
+                Date.now() - randomIntFromInterval(1, 365) * 24 * 60 * 60 * 1000
+            ),
+            policy: ["public", "private", "diffusion"][randomIntFromInterval(0, 3)] as
+                | "public"
+                | "private"
+                | "diffusion"
+        })) as ListExplorerItems["objects"]),
+        ...(files.map(name => ({
+            kind: "file",
+            size: randomIntFromInterval(1, 10000000), // Random size between 1 and 10MB
+            name, // Include the name of the directory
+            lastModified: new Date(
+                Date.now() - randomIntFromInterval(1, 365) * 24 * 60 * 60 * 1000
+            ),
+            policy: ["public", "private", "diffusion"][randomIntFromInterval(0, 3)] as
+                | "public"
+                | "private"
+                | "diffusion"
+        })) as ListExplorerItems["objects"])
+    ];
     return (
         <>
             <div
@@ -282,6 +315,8 @@ export const Explorer = memo((props: ExplorerProps) => {
                         selectedItemKind={selectedItemKind}
                         //isFileOpen={props.isFileOpen}
                         callback={buttonBarCallback}
+                        setViewMode={setViewExplorer}
+                        viewMode={viewExplorer}
                     />
                 </div>
                 {commandLogsEntries !== undefined && (
@@ -344,30 +379,62 @@ export const Explorer = memo((props: ExplorerProps) => {
                         />
                     )}
                 </div>
-                <div
-                    ref={scrollableDivRef}
-                    className={cx(
-                        css({
-                            "flex": 1,
-                            "paddingRight": theme.spacing(2),
-                            "overflow": "auto"
-                        })
-                    )}
-                >
-                    <ExplorerItems
-                        isNavigating={isNavigating}
-                        files={files}
-                        directories={directories}
-                        directoriesBeingCreated={directoriesBeingCreated}
-                        filesBeingCreated={filesBeingCreated}
-                        onNavigate={onItemsNavigate}
-                        onOpenFile={onItemsOpenFile}
-                        onSelectedItemKindValueChange={onSelectedItemKindValueChange}
-                        onCopyPath={itemsOnCopyPath}
-                        onDeleteItem={itemsOnDeleteItem}
-                        evtAction={evtItemsAction}
-                    />
-                </div>
+
+                {(() => {
+                    console.log("switch");
+                    switch (viewExplorer) {
+                        case "block":
+                            return (
+                                <div
+                                    ref={scrollableDivRef}
+                                    className={cx(
+                                        css({
+                                            "flex": 1,
+                                            "paddingRight": theme.spacing(2),
+                                            "overflow": "auto"
+                                        })
+                                    )}
+                                >
+                                    <ExplorerItems
+                                        isNavigating={isNavigating}
+                                        files={files}
+                                        directories={directories}
+                                        directoriesBeingCreated={directoriesBeingCreated}
+                                        filesBeingCreated={filesBeingCreated}
+                                        onNavigate={onItemsNavigate}
+                                        onOpenFile={onItemsOpenFile}
+                                        onSelectedItemKindValueChange={
+                                            onSelectedItemKindValueChange
+                                        }
+                                        onCopyPath={itemsOnCopyPath}
+                                        onDeleteItem={itemsOnDeleteItem}
+                                        evtAction={evtItemsAction}
+                                    />
+                                </div>
+                            );
+                        case "list": {
+                            return (
+                                <div
+                                    //ref={scrollableDivRef}
+                                    className={cx(
+                                        css({
+                                            "flex": 1,
+                                            "paddingRight": theme.spacing(2),
+                                            "overflow": "auto"
+                                        })
+                                    )}
+                                >
+                                    <ListExplorerItems
+                                        className={css({ height: "100%" })}
+                                        objects={objects}
+                                    />
+                                </div>
+                            );
+                        }
+                        default:
+                            return null;
+                    }
+                })()}
             </div>
             <CreateS3DirectoryDialog
                 state={createS3DirectoryDialogState}
