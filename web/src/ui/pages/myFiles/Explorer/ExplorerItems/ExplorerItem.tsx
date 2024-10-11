@@ -48,6 +48,19 @@ export const ExplorerItem = memo((props: ExplorerItemProps) => {
         "callback": ({ type }) => onMouseEvent({ type })
     });
 
+    const handleKeyDown = (event: React.KeyboardEvent) => {
+        if (event.key === " ") {
+            event.preventDefault();
+            onMouseEvent({ type: "down" });
+            return;
+        }
+        if (event.key === "Enter") {
+            event.preventDefault();
+            onMouseEvent({ type: "double" });
+            return;
+        }
+    };
+
     const formattedBasename = useMemo(
         () =>
             smartTrim({
@@ -79,7 +92,14 @@ export const ExplorerItem = memo((props: ExplorerItemProps) => {
 
     return (
         <Tooltip title={basename}>
-            <div className={cx(classes.root, className)} {...getOnMouseProps()}>
+            <div
+                className={cx(classes.root, className)}
+                tabIndex={0}
+                role="button"
+                aria-selected={isSelected}
+                {...getOnMouseProps()}
+                onKeyDown={handleKeyDown}
+            >
                 <ExplorerIcon
                     className={classes.explorerIcon}
                     iconId={(() => {
@@ -140,7 +160,8 @@ const useStyles = tss
         "baseNameText": { "marginBottom": theme.spacing(1) },
         "sizeAndFileTypeText": {
             "display": "flex",
-            "justifyContent": "space-between"
+            "justifyContent": "space-between",
+            "overflow": "hidden"
         },
         "explorerIcon": {
             "width": "50px", // Either we set a fixed size, or we measure the size of the root
