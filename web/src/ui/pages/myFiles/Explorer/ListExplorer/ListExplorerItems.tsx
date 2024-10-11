@@ -7,9 +7,8 @@ import { fileSizePrettyPrint } from "ui/tools/fileSizePrettyPrint";
 import { id } from "tsafe";
 import { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
 import { Icon } from "onyxia-ui/Icon";
-import { Button } from "onyxia-ui/Button";
 
-const paginationModel = { page: 0, pageSize: 10 };
+const paginationModel = { page: 0, pageSize: 100 };
 
 export type ListExplorerItems = {
     className?: string;
@@ -25,7 +24,7 @@ export type ListExplorerItems = {
 
 export const ListExplorerItems = memo((props: ListExplorerItems) => {
     const { className, objects } = props;
-    const apiRef = useGridApiRef();
+    //const apiRef = useGridApiRef();
 
     const { classes, cx } = useStyles();
 
@@ -35,17 +34,17 @@ export const ListExplorerItems = memo((props: ListExplorerItems) => {
         lastModified: obj.lastModified.toLocaleString()
     }));
 
+    console.log("ListExplorerItems", props);
     return (
         <div className={cx(classes.root, className)}>
             <DataGrid
-                apiRef={apiRef}
+                //apiRef={apiRef}
                 className={classes.dataGrid}
                 rows={rows}
                 columns={[
                     {
                         field: "name",
                         headerName: "Name",
-                        width: 200,
                         display: "flex" as const,
                         renderCell: params => (
                             <>
@@ -101,8 +100,11 @@ export const ListExplorerItems = memo((props: ListExplorerItems) => {
                         )
                     }
                 ]}
-                //initialState={{ pagination: { paginationModel } }}
-                //pageSizeOptions={[5, 10]}
+                initialState={{
+                    pagination: {
+                        paginationModel: { pageSize: 25, page: 0 }
+                    }
+                }} // pageSizeOptions={[5, 10]}
                 checkboxSelection={true}
                 autosizeOnMount={true}
                 autosizeOptions={{

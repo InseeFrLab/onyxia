@@ -1,12 +1,17 @@
 /* eslint-disable react-refresh/only-export-components */
-import { DataGrid, GridClasses, GridColDef, useGridApiRef } from "@mui/x-data-grid";
+import {
+    DataGrid,
+    type GridClasses,
+    type GridColDef,
+    useGridApiRef
+} from "@mui/x-data-grid";
 import { type ComponentProps, memo, useEffect, useMemo } from "react";
-import { assert } from "tsafe";
-import { CopyToClipboardIconButton } from "ui/shared/CopyToClipboardIconButton";
-import { useConstCallback } from "powerhooks/useConstCallback";
 import { tss } from "tss";
+import { CopyToClipboardIconButton } from "ui/shared/CopyToClipboardIconButton";
 
-export type CustomDataGridProps = ComponentProps<typeof DataGrid>;
+export type CustomDataGridProps = ComponentProps<typeof DataGrid> & {
+    shouldAddCopyToClipboardInCell: boolean;
+};
 
 export const autosizeOptions = {
     expand: true,
@@ -15,42 +20,16 @@ export const autosizeOptions = {
 };
 
 export const CustomDataGrid = memo((props: CustomDataGridProps) => {
-    const { columns, ...propsRest } = props;
     const { classes, css } = useStyles();
-    const apiRef = useGridApiRef();
+    const { columns, shouldAddCopyToClipboardInCell, ...propsRest } = props;
 
-    const css_const = useConstCallback(css);
+    const apiRef = useGridApiRef();
 
     useEffect(() => {
         return apiRef.current.subscribeEvent("columnVisibilityModelChange", () => {
             apiRef.current.autosizeColumns(autosizeOptions);
         });
     }, []);
-
-    const modifiedColumns = useMemo(
-        () =>
-            columns.map(column => {
-                assert(column.renderCell === undefined, "Cannot override renderCell");
-
-                return {
-                    ...column,
-                    "renderCell": ({ value, hasFocus }) => (
-                        <>
-                            <div style={{ width: "100%" }}>{value}</div>
-                            <CopyToClipboardIconButton
-                                textToCopy={value}
-                                className={css_const({
-                                    visibility: hasFocus ? "visible" : "hidden", //This ensure to preserve space for the icon when cell are auto resized
-                                    right: 0
-                                })}
-                            />
-                        </>
-                    ),
-                    display: "flex"
-                } satisfies GridColDef;
-            }),
-        [columns]
-    );
 
     const dataGridClasses = useMemo(
         () =>
@@ -63,12 +42,38 @@ export const CustomDataGrid = memo((props: CustomDataGridProps) => {
         [props.classes, classes]
     );
 
+    const modifiedColumns = useMemo(
+        () =>
+            shouldAddCopyToClipboardInCell
+                ? columns.map(
+                      column =>
+                          ({
+                              ...column,
+                              "renderCell": ({ value, hasFocus }) => (
+                                  <>
+                                      <div style={{ width: "100%" }}>{value}</div>
+                                      <CopyToClipboardIconButton
+                                          textToCopy={value}
+                                          className={css({
+                                              visibility: hasFocus ? "visible" : "hidden", //This ensure to preserve space for the icon when cell are auto resized
+                                              right: 0
+                                          })}
+                                      />
+                                  </>
+                              ),
+                              display: "flex"
+                          }) satisfies GridColDef
+                  )
+                : columns,
+        [columns, shouldAddCopyToClipboardInCell]
+    );
+
     return (
         <DataGrid
             {...propsRest}
             apiRef={apiRef}
-            classes={dataGridClasses}
             columns={modifiedColumns}
+            classes={dataGridClasses}
             autosizeOnMount
             autosizeOptions={autosizeOptions}
         />
@@ -85,6 +90,6 @@ const useStyles = tss.withName({ CustomDataGrid }).create(({ theme }) => ({
     },
     "columnSeparator": { "&&&&&": { opacity: "1" } }, //Ensures the column separator remains visible (opacity 1) when a column header is selected. By default, MUI reduces the opacity to 0 because an outline is applied to the selected column header
     "iconSeparator": {
-        color: `${theme.colors.useCases.typography.textDisabled} !important`
+        "&&": { color: theme.colors.useCases.typography.textDisabled }
     }
 }));

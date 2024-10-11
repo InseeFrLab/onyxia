@@ -124,18 +124,20 @@ function MyFiles(props: Props) {
 
     const titleCollapseParams = useMemo(
         (): CollapseParams => ({
-            "behavior": "collapses on scroll",
-            "scrollTopThreshold": 100,
-            "scrollableElementRef": scrollableDivRef
+            "behavior": "controlled",
+            "isCollapsed": false
+            // "scrollTopThreshold": 100,
+            // "scrollableElementRef": scrollableDivRef
         }),
         []
     );
 
     const helpCollapseParams = useMemo(
         (): CollapseParams => ({
-            "behavior": "collapses on scroll",
-            "scrollTopThreshold": 50,
-            "scrollableElementRef": scrollableDivRef
+            "behavior": "controlled",
+            //"scrollTopThreshold": 50,
+            //"scrollableElementRef": scrollableDivRef,
+            "isCollapsed": true
         }),
         []
     );
