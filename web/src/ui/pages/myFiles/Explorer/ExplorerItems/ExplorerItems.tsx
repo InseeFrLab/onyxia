@@ -116,6 +116,8 @@ export const ExplorerItems = memo((props: ExplorerItemsProps) => {
     );
 
     useEffectOnValueChange(() => {
+        console.log("setSelectedItemKeyProp undefined");
+
         setSelectedItemKeyProp(undefined);
     }, [isNavigating]);
 
@@ -136,6 +138,7 @@ export const ExplorerItems = memo((props: ExplorerItemsProps) => {
                     selectedItem.kind === kind &&
                     removed.includes(selectedItem.basename)
                 ) {
+                    console.log("setSelectedItemKeyProp undefined");
                     setSelectedItemKeyProp(undefined);
                 }
             }
@@ -166,6 +169,7 @@ export const ExplorerItems = memo((props: ExplorerItemsProps) => {
             switch (type) {
                 case "down":
                     const keyProp = getKeyProp({ kind, basename });
+                    console.log(`setSelectedItemKeyProp ${keyProp}`);
                     setSelectedItemKeyProp(keyProp);
                     break;
 
@@ -187,13 +191,17 @@ export const ExplorerItems = memo((props: ExplorerItemsProps) => {
 
     const onGridMouseDown = useConstCallback(
         ({ target }: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+            console.log("mouseDown");
             if (
                 containerRef.current !== target &&
                 !Array.from(containerRef.current!.children).includes(target as any)
             ) {
+                console.log("not selected");
                 return;
             }
-
+            console.log(containerRef.current!.children);
+            console.log(target);
+            console.log("setSelectedItemKeyProp(undefined)");
             setSelectedItemKeyProp(undefined);
         }
     );
