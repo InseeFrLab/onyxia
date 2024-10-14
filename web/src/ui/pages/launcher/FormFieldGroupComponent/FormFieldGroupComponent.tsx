@@ -17,27 +17,79 @@ import { useCallbackFactory } from "powerhooks/useCallbackFactory";
 import { assert } from "tsafe/assert";
 import type { Stringifyable } from "core/tools/Stringifyable";
 
-type Props = {
+export type Props = {
     className?: string;
     description: string | undefined;
     helmValuesPath: (string | number)[];
     nodes: (FormField | FormFieldGroup)[];
+    canAdd: boolean;
+    canRemove: boolean;
     onChange: (params: FormFieldValue) => void;
-    onAdd: ((params: { helmValuesPath: (string | number)[] }) => void) | undefined;
-    onRemove:
-        | ((params: { helmValuesPath: (string | number)[]; index: number }) => void)
-        | undefined;
+    onAdd: (params: { helmValuesPath: (string | number)[] }) => void;
+    onRemove: (params: { helmValuesPath: (string | number)[]; index: number }) => void;
 };
 
 export function FormFieldGroupComponent(props: Props): ReactNode {
-    const { className, description, helmValuesPath, nodes, onChange, onAdd, onRemove } =
-        props;
+    const {
+        className,
+        description,
+        helmValuesPath,
+        canAdd,
+        canRemove,
+        nodes,
+        onChange,
+        onAdd,
+        onRemove
+    } = props;
 
     const { cx, classes } = useStyles();
 
-    const getOnRemove_child = useCallbackFactory(([index]: [number]) => {
-        assert(onRemove !== undefined);
+    return (
+        <FormFieldGroupComponentWrapper
+            className={cx(classes.root, className)}
+            title={(() => {
+                const lastSegment = helmValuesPath[helmValuesPath.length - 1];
 
+                if (typeof lastSegment === "number") {
+                    return undefined;
+                }
+
+                return lastSegment;
+            })()}
+            description={description}
+            onAdd={canAdd ? () => onAdd({ helmValuesPath }) : undefined}
+        >
+            <FormFieldGroupComponentInner
+                className={classes.inner}
+                nodes={nodes}
+                onChange={onChange}
+                onAdd={onAdd}
+                onRemove={onRemove}
+                {...(canRemove
+                    ? { "canRemove": true, helmValuesPath }
+                    : { "canRemove": false, "helmValuesPath": undefined })}
+            />
+        </FormFieldGroupComponentWrapper>
+    );
+}
+
+const useStyles = tss.withName({ FormFieldGroupComponent }).create(() => ({
+    "root": {},
+    "inner": {}
+}));
+
+export function FormFieldGroupComponentInner(
+    props: Omit<Props, "description" | "canAdd" | "helmValuesPath" | "canRemove"> &
+        (
+            | { canRemove: true; helmValuesPath: (string | number)[] }
+            | { canRemove: false; helmValuesPath: undefined }
+        )
+) {
+    const { className, canRemove, nodes, onChange, onAdd, onRemove, helmValuesPath } =
+        props;
+
+    const getOnRemove_child = useCallbackFactory(([index]: [number]) => {
+        assert(canRemove);
         onRemove({ helmValuesPath, index });
     });
 
@@ -119,21 +171,10 @@ export function FormFieldGroupComponent(props: Props): ReactNode {
             })
     );
 
+    const { cx, classes } = useStyles_inner();
+
     return (
-        <FormFieldGroupComponentWrapper
-            className={cx(classes.root, className)}
-            title={(() => {
-                const lastSegment = helmValuesPath[helmValuesPath.length - 1];
-
-                if (typeof lastSegment === "number") {
-                    return undefined;
-                }
-
-                return lastSegment;
-            })()}
-            description={description}
-            onAdd={onAdd === undefined ? undefined : () => onAdd({ helmValuesPath })}
-        >
+        <div className={cx(classes.root, className)}>
             {nodes.map((node, index) => {
                 const key = JSON.stringify(
                     node.type === "field" && node.fieldType === "range slider"
@@ -152,6 +193,8 @@ export function FormFieldGroupComponent(props: Props): ReactNode {
                             description={node.description}
                             helmValuesPath={node.helmValuesPath}
                             nodes={node.nodes}
+                            canAdd={node.canAdd}
+                            canRemove={node.canRemove}
                             onChange={onChange}
                             onAdd={onAdd}
                             onRemove={onRemove}
@@ -159,8 +202,7 @@ export function FormFieldGroupComponent(props: Props): ReactNode {
                     );
                 }
 
-                const onRemove_child =
-                    onRemove === undefined ? undefined : getOnRemove_child(index);
+                const onRemove_child = canRemove ? getOnRemove_child(index) : undefined;
 
                 switch (node.fieldType) {
                     case "checkbox":
@@ -289,10 +331,10 @@ export function FormFieldGroupComponent(props: Props): ReactNode {
                         );
                 }
             })}
-        </FormFieldGroupComponentWrapper>
+        </div>
     );
 }
 
-const useStyles = tss.withName({ FormFieldGroupComponent }).create(() => ({
+const useStyles_inner = tss.withName({ FormFieldGroupComponentInner }).create(() => ({
     "root": {}
 }));

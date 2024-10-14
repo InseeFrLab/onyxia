@@ -1,12 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { FormFieldGroupComponent } from "./FormFieldGroupComponent";
 import { action } from "@storybook/addon-actions";
-//import { css } from "ui/theme";
-import type {
-    //FormFieldValue,
-    FormField
-    //FormFieldGroup
-} from "core/usecases/launcher/decoupledLogic/formTypes";
+import type { FormField } from "core/usecases/launcher/decoupledLogic/formTypes";
 import { id } from "tsafe/id";
 
 const meta = {
@@ -29,6 +24,8 @@ export const Default: Story = {
     "args": {
         description,
         helmValuesPath,
+        "canAdd": true,
+        "canRemove": true,
         "nodes": [
             id<FormField.TextField>({
                 "type": "field",
