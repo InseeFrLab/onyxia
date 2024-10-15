@@ -6,6 +6,7 @@ import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
 import { id } from "tsafe/id";
 import ToolTip from "@mui/material/Tooltip";
 import { declareComponentKeys, useTranslation } from "ui/i18n";
+import { capitalize } from "tsafe/capitalize";
 
 type Props = {
     className?: string;
@@ -50,7 +51,7 @@ export function FormFieldWrapper(props: Props) {
                 <Text typo="label 1" className={classes.title}>
                     {
                         <label htmlFor={inputId} lang="und">
-                            {title}
+                            {capitalize(title)}
                         </label>
                     }
                 </Text>
@@ -64,7 +65,13 @@ export function FormFieldWrapper(props: Props) {
             </div>
             {description !== undefined && (
                 <Text typo="caption" className={classes.description}>
-                    {<span lang="und">{description}</span>}
+                    {
+                        <span lang="und">
+                            {typeof description === "string"
+                                ? capitalize(description)
+                                : description}
+                        </span>
+                    }
                 </Text>
             )}
             <div className={classes.childrenWrapper}>{children}</div>
