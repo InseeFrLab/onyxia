@@ -35,10 +35,21 @@ export function ConfigurationTopLevelGroup(props: Props) {
         return { main_formFields, main_formFieldGroups };
     }, [main]);
 
+    console.log("render");
+
     return (
         <AccordionGroupComponent
             className={cx(classes.root, className)}
             accordionEntries={[
+                ...(global.length === 0
+                    ? []
+                    : [
+                          {
+                              "title": "Global",
+                              "description": "configuration that applies to all charts",
+                              "nodes": global
+                          }
+                      ]),
                 ...(main_formFields.length === 0
                     ? []
                     : [
@@ -47,15 +58,6 @@ export function ConfigurationTopLevelGroup(props: Props) {
                               // TODO: i18n
                               "description": "Top level configuration values",
                               "nodes": main_formFields
-                          }
-                      ]),
-                ...(global === undefined
-                    ? []
-                    : [
-                          {
-                              "title": "Global",
-                              "description": "configuration that applies to all charts",
-                              "nodes": global
                           }
                       ]),
                 ...main_formFieldGroups.map(({ nodes, description, helmValuesPath }) => ({
