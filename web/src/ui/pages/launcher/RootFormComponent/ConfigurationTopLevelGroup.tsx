@@ -35,8 +35,6 @@ export function ConfigurationTopLevelGroup(props: Props) {
         return { main_formFields, main_formFieldGroups };
     }, [main]);
 
-    console.log("render");
-
     return (
         <AccordionGroupComponent
             className={cx(classes.root, className)}

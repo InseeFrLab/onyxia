@@ -12,6 +12,7 @@ import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
 import { Text } from "onyxia-ui/Text";
 import { FormFieldGroupComponentInner } from "./FormFieldGroupComponent";
 import type { FormCallbacks } from "./FormCallbacks";
+import { capitalize } from "tsafe/capitalize";
 
 type Props = {
     className?: string;
@@ -31,28 +32,38 @@ export function AccordionFromComponent(props: Props) {
     return (
         <Accordion className={cx(classes.root, className)}>
             <AccordionSummary
+                classes={{
+                    "content": classes.summaryContent
+                }}
                 expandIcon={<Icon icon={"ExpandMore" satisfies MuiIconComponentName} />}
                 aria-controls={contentId}
             >
-                <span lang="und">{title}</span>
-            </AccordionSummary>
-            <AccordionDetails id={contentId}>
+                <Text typo="label 1" componentProps={{ "lang": "und" }}>
+                    {capitalize(title)}
+                </Text>
                 {description !== undefined && (
-                    <Text typo="subtitle" componentProps={{ "lang": "und" }}>
+                    <Text typo="caption" componentProps={{ "lang": "und" }}>
                         {description}
                     </Text>
                 )}
+            </AccordionSummary>
+            <AccordionDetails id={contentId}>
+                <FormFieldGroupComponentInner
+                    className={classes.group}
+                    nodes={nodes}
+                    callbacks={callbacks}
+                />
             </AccordionDetails>
-            <FormFieldGroupComponentInner
-                className={classes.group}
-                nodes={nodes}
-                callbacks={callbacks}
-            />
         </Accordion>
     );
 }
 
-const useStyles = tss.withName({ AccordionFromComponent }).create(() => ({
+const useStyles = tss.withName({ AccordionFromComponent }).create(({ theme }) => ({
     "root": {},
+    "summaryContent": {
+        "display": "flex",
+        "alignItems": "baseline",
+        "gap": theme.spacing(2)
+    },
     "group": {}
 }));
