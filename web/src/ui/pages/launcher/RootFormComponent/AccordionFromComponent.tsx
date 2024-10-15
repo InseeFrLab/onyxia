@@ -65,5 +65,7 @@ const useStyles = tss.withName({ AccordionFromComponent }).create(({ theme }) =>
         "alignItems": "baseline",
         "gap": theme.spacing(2)
     },
-    "group": {}
+    "group": {
+        "padding": theme.spacing(2)
+    }
 }));

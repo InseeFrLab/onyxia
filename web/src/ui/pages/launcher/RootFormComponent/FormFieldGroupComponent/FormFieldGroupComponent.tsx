@@ -186,7 +186,7 @@ export function FormFieldGroupComponentInner(
                     return (
                         <FormFieldGroupComponent
                             key={key}
-                            className={className}
+                            className={classes.group}
                             description={node.description}
                             helmValuesPath={node.helmValuesPath}
                             nodes={node.nodes}
@@ -263,6 +263,7 @@ export function FormFieldGroupComponentInner(
                         return (
                             <TextFormField
                                 key={key}
+                                className={classes.field_text}
                                 title={node.title}
                                 description={node.description}
                                 isReadonly={node.isReadonly}
@@ -280,6 +281,7 @@ export function FormFieldGroupComponentInner(
                         return (
                             <SliderFormField
                                 key={key}
+                                className={classes.field_slider}
                                 title={node.title}
                                 description={node.description}
                                 isReadonly={node.isReadonly}
@@ -298,6 +300,7 @@ export function FormFieldGroupComponentInner(
                         return (
                             <RangeSliderFormField
                                 key={key}
+                                className={classes.field_slider}
                                 title={node.title}
                                 unit={node.unit}
                                 step={node.step}
@@ -330,6 +333,26 @@ export function FormFieldGroupComponentInner(
     );
 }
 
-const useStyles_inner = tss.withName({ FormFieldGroupComponentInner }).create(() => ({
-    "root": {}
-}));
+const useStyles_inner = tss
+    .withName({ FormFieldGroupComponentInner })
+    .create(({ theme }) => {
+        const gap = theme.spacing(6);
+
+        return {
+            "root": {
+                "display": "flex",
+                "flexWrap": "wrap",
+                gap
+            },
+            "group": {
+                "flex": "0 0 100%"
+            },
+            "field_text": {
+                "flex": "0 0 300px"
+            },
+            "field_slider": {
+                "flex": `0 0 calc(50% - ${gap / 2}px)`,
+                "boxSizing": "border-box"
+            }
+        };
+    });
