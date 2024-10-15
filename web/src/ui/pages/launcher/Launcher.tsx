@@ -25,6 +25,7 @@ import {
     type MaybeAcknowledgeConfigVolatilityDialogProps
 } from "ui/shared/MaybeAcknowledgeConfigVolatilityDialog";
 import type { LabeledHelmChartSourceUrls } from "core/usecases/launcher/selectors";
+import { RootFormComponent } from "./RootFormComponent/RootFormComponent";
 
 export type Props = {
     route: PageRoute;
@@ -324,7 +325,7 @@ export default function Launcher(props: Props) {
                                 }}
                             />
                         )}
-                        <div className={classes.wrapperForMawWidth}>
+                        <div className={classes.wrapperForMaxWidth}>
                             <LauncherMainCard
                                 chartName={chartName}
                                 chartIconUrl={chartIconUrl}
@@ -377,7 +378,15 @@ export default function Launcher(props: Props) {
                                           }
                                 }
                             />
-                            {<pre>{JSON.stringify(rootForm, null, 2)}</pre>}
+                            <RootFormComponent
+                                className={classes.rootForm}
+                                rootForm={rootForm}
+                                callbacks={{
+                                    "onAdd": launcher.addArrayItem,
+                                    "onChange": launcher.changeFormFieldValue,
+                                    "onRemove": launcher.removeArrayItem
+                                }}
+                            />
                         </div>
                     </div>
                 </div>
@@ -443,7 +452,7 @@ const useStyles = tss
                   theme.spacing(2),
             "position": "relative"
         },
-        "wrapperForMawWidth": {
+        "wrapperForMaxWidth": {
             "maxWidth": 1300,
             "& > *": {
                 "marginBottom": theme.spacing(3)
@@ -460,5 +469,6 @@ const useStyles = tss
         "commandBarWhenExpended": {
             "width": "min(100%, 1450px)",
             "transition": "width 70ms linear"
-        }
+        },
+        "rootForm": {}
     }));
