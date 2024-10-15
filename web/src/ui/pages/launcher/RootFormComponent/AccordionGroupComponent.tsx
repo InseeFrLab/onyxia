@@ -1,10 +1,10 @@
 import type {
     FormField,
-    FormFieldGroup,
-    FormFieldValue
+    FormFieldGroup
 } from "core/usecases/launcher/decoupledLogic/formTypes";
 import { AccordionFromComponent } from "./AccordionFromComponent";
 import { tss } from "tss";
+import type { FormCallbacks } from "./FormCallbacks";
 
 type Props = {
     className?: string;
@@ -13,13 +13,11 @@ type Props = {
         description: string | undefined;
         nodes: (FormFieldGroup | FormField)[];
     }[];
-    onChange: (params: FormFieldValue) => void;
-    onAdd: (params: { helmValuesPath: (string | number)[] }) => void;
-    onRemove: (params: { helmValuesPath: (string | number)[]; index: number }) => void;
+    callbacks: FormCallbacks;
 };
 
 export function AccordionGroupComponent(props: Props) {
-    const { className, accordionEntries, onChange, onAdd, onRemove } = props;
+    const { className, accordionEntries, callbacks } = props;
 
     const { classes, cx } = useStyles();
 
@@ -32,9 +30,7 @@ export function AccordionGroupComponent(props: Props) {
                     title={title}
                     description={description}
                     nodes={nodes}
-                    onChange={onChange}
-                    onAdd={onAdd}
-                    onRemove={onRemove}
+                    callbacks={callbacks}
                 />
             ))}
         </div>

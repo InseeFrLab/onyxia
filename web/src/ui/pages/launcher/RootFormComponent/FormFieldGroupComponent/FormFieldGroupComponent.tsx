@@ -2,7 +2,6 @@ import type { ReactNode } from "react";
 import { tss } from "tss";
 import { FormFieldGroupComponentWrapper } from "./FormFieldGroupComponentWrapper";
 import type {
-    FormFieldValue,
     FormField,
     FormFieldGroup
 } from "core/usecases/launcher/decoupledLogic/formTypes";
@@ -16,6 +15,7 @@ import { RangeSliderFormField } from "../formFields/RangeSliderFormField";
 import { useCallbackFactory } from "powerhooks/useCallbackFactory";
 import { assert } from "tsafe/assert";
 import type { Stringifyable } from "core/tools/Stringifyable";
+import type { FormCallbacks } from "../FormCallbacks";
 
 export type Props = {
     className?: string;
@@ -24,9 +24,7 @@ export type Props = {
     nodes: (FormField | FormFieldGroup)[];
     canAdd: boolean;
     canRemove: boolean;
-    onChange: (params: FormFieldValue) => void;
-    onAdd: (params: { helmValuesPath: (string | number)[] }) => void;
-    onRemove: (params: { helmValuesPath: (string | number)[]; index: number }) => void;
+    callbacks: FormCallbacks;
 };
 
 export function FormFieldGroupComponent(props: Props): ReactNode {
@@ -37,10 +35,10 @@ export function FormFieldGroupComponent(props: Props): ReactNode {
         canAdd,
         canRemove,
         nodes,
-        onChange,
-        onAdd,
-        onRemove
+        callbacks
     } = props;
+
+    const { onAdd } = callbacks;
 
     const { cx, classes } = useStyles();
 
@@ -62,9 +60,7 @@ export function FormFieldGroupComponent(props: Props): ReactNode {
             <FormFieldGroupComponentInner
                 className={classes.inner}
                 nodes={nodes}
-                onChange={onChange}
-                onAdd={onAdd}
-                onRemove={onRemove}
+                callbacks={callbacks}
                 {...(canRemove
                     ? { "canRemove": true, helmValuesPath }
                     : { "canRemove": false, "helmValuesPath": undefined })}
@@ -85,8 +81,9 @@ export function FormFieldGroupComponentInner(
             | { canRemove: false; helmValuesPath: undefined }
         )
 ) {
-    const { className, canRemove, nodes, onChange, onAdd, onRemove, helmValuesPath } =
-        props;
+    const { className, canRemove, nodes, callbacks, helmValuesPath } = props;
+
+    const { onRemove, onChange } = callbacks;
 
     const getOnRemove_child = useCallbackFactory(([index]: [number]) => {
         assert(canRemove);
@@ -195,9 +192,7 @@ export function FormFieldGroupComponentInner(
                             nodes={node.nodes}
                             canAdd={node.canAdd}
                             canRemove={node.canRemove}
-                            onChange={onChange}
-                            onAdd={onAdd}
-                            onRemove={onRemove}
+                            callbacks={callbacks}
                         />
                     );
                 }

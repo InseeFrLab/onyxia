@@ -52,8 +52,10 @@ export const Default: Story = {
                 "value": "value 2"
             })
         ],
-        onChange,
-        onAdd,
-        onRemove
+        "callbacks": {
+            onChange,
+            onAdd,
+            onRemove
+        }
     }
 };

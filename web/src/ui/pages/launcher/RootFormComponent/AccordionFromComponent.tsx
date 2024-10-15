@@ -1,8 +1,7 @@
 import { useId } from "react";
 import type {
     FormField,
-    FormFieldGroup,
-    FormFieldValue
+    FormFieldGroup
 } from "core/usecases/launcher/decoupledLogic/formTypes";
 import Accordion from "@mui/material/Accordion";
 import AccordionSummary from "@mui/material/AccordionSummary";
@@ -12,19 +11,18 @@ import { Icon } from "onyxia-ui/Icon";
 import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
 import { Text } from "onyxia-ui/Text";
 import { FormFieldGroupComponentInner } from "./FormFieldGroupComponent";
+import type { FormCallbacks } from "./FormCallbacks";
 
 type Props = {
     className?: string;
     title: string;
     description: string | undefined;
     nodes: (FormFieldGroup | FormField)[];
-    onChange: (params: FormFieldValue) => void;
-    onAdd: (params: { helmValuesPath: (string | number)[] }) => void;
-    onRemove: (params: { helmValuesPath: (string | number)[]; index: number }) => void;
+    callbacks: FormCallbacks;
 };
 
 export function AccordionFromComponent(props: Props) {
-    const { className, title, description, nodes, onChange, onAdd, onRemove } = props;
+    const { className, title, description, nodes, callbacks } = props;
 
     const { classes, cx } = useStyles();
 
@@ -48,9 +46,7 @@ export function AccordionFromComponent(props: Props) {
             <FormFieldGroupComponentInner
                 className={classes.group}
                 nodes={nodes}
-                onAdd={onAdd}
-                onChange={onChange}
-                onRemove={onRemove}
+                callbacks={callbacks}
             />
         </Accordion>
     );

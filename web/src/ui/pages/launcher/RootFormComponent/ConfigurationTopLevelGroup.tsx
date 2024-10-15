@@ -2,23 +2,21 @@ import { tss } from "tss";
 import { useMemo } from "react";
 import type {
     FormFieldGroup,
-    FormField,
-    FormFieldValue
+    FormField
 } from "core/usecases/launcher/decoupledLogic/formTypes";
 import { AccordionGroupComponent } from "./AccordionGroupComponent";
 import { assert } from "tsafe/assert";
+import type { FormCallbacks } from "./FormCallbacks";
 
 type Props = {
     className?: string;
     main: FormFieldGroup["nodes"];
     global: FormFieldGroup["nodes"];
-    onChange: (params: FormFieldValue) => void;
-    onAdd: (params: { helmValuesPath: (string | number)[] }) => void;
-    onRemove: (params: { helmValuesPath: (string | number)[]; index: number }) => void;
+    callbacks: FormCallbacks;
 };
 
 export function ConfigurationTopLevelGroup(props: Props) {
-    const { className, main, global, onAdd, onChange, onRemove } = props;
+    const { className, main, global, callbacks } = props;
 
     const { cx, classes } = useStyles();
 
@@ -70,9 +68,7 @@ export function ConfigurationTopLevelGroup(props: Props) {
                     nodes
                 }))
             ]}
-            onAdd={onAdd}
-            onChange={onChange}
-            onRemove={onRemove}
+            callbacks={callbacks}
         />
     );
 }

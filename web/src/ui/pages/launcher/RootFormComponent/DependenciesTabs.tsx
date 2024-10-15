@@ -1,12 +1,10 @@
 import { Tabs } from "onyxia-ui/Tabs";
-import type {
-    FormFieldGroup,
-    FormFieldValue
-} from "core/usecases/launcher/decoupledLogic/formTypes";
+import type { FormFieldGroup } from "core/usecases/launcher/decoupledLogic/formTypes";
 import { tss } from "tss";
 import { useMemo, useState } from "react";
 import { Text } from "onyxia-ui/Text";
 import { ConfigurationTopLevelGroup } from "./ConfigurationTopLevelGroup";
+import type { FormCallbacks } from "./FormCallbacks";
 
 type Props = {
     className?: string;
@@ -18,13 +16,11 @@ type Props = {
         }
     >;
     disabledDependencies: string[];
-    onChange: (params: FormFieldValue) => void;
-    onAdd: (params: { helmValuesPath: (string | number)[] }) => void;
-    onRemove: (params: { helmValuesPath: (string | number)[]; index: number }) => void;
+    callbacks: FormCallbacks;
 };
 
 export function DependencyTabs(props: Props) {
-    const { className, dependencies, disabledDependencies } = props;
+    const { className, dependencies, disabledDependencies, callbacks } = props;
 
     const { cx, classes } = useStyles();
 
@@ -59,9 +55,7 @@ export function DependencyTabs(props: Props) {
                     <ConfigurationTopLevelGroup
                         main={main}
                         global={global}
-                        onChange={props.onChange}
-                        onAdd={props.onAdd}
-                        onRemove={props.onRemove}
+                        callbacks={callbacks}
                     />
                 );
             })()}
