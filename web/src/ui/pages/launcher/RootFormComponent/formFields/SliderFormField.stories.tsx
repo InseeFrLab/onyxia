@@ -1,12 +1,12 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { SliderFormField } from "./SliderFormField";
 import { action } from "@storybook/addon-actions";
-import { css } from "ui/theme";
+import { css } from "ui/theme/emotionCache";
 import { useState } from "react";
 import Divider from "@mui/material/Divider";
 
 const meta = {
-    title: "pages/Launcher/formFields/SliderFormField",
+    title: "pages/Launcher/SliderFormField",
     component: StoryWrapper
 } satisfies Meta<typeof StoryWrapper>;
 

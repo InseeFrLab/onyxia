@@ -1,13 +1,13 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { SelectFormField } from "./SelectFormField";
 import { action } from "@storybook/addon-actions";
-import { css } from "ui/theme";
+import { css } from "ui/theme/emotionCache";
 import { useState } from "react";
 import Divider from "@mui/material/Divider";
 import type { Stringifyable } from "core/tools/Stringifyable";
 
 const meta = {
-    title: "pages/Launcher/formFields/SelectFormField",
+    title: "pages/Launcher/SelectFormField",
     component: StoryWrapper
 } satisfies Meta<typeof StoryWrapper>;
 

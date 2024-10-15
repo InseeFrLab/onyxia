@@ -1,12 +1,12 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { TextFormField } from "./TextFormField";
 import { action } from "@storybook/addon-actions";
-import { css } from "ui/theme";
+import { css } from "ui/theme/emotionCache";
 import { useState } from "react";
 import Divider from "@mui/material/Divider";
 
 const meta = {
-    title: "pages/Launcher/formFields/TextFormField",
+    title: "pages/Launcher/TextFormField",
     component: StoryWrapper
 } satisfies Meta<typeof StoryWrapper>;
 

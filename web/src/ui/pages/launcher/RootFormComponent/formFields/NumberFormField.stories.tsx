@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { NumberFormField } from "./NumberFormField";
 import { action } from "@storybook/addon-actions";
-import { css } from "ui/theme";
+import { css } from "ui/theme/emotionCache";
 import { useState } from "react";
 import Divider from "@mui/material/Divider";
 
