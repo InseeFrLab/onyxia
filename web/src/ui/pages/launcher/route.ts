@@ -122,13 +122,14 @@ const { helmValuesPatchWrap, queryStringSerializer } = (() => {
                                             ? part
                                             : part.replace(/\./g, "\\.")
                                     )
-                                    .reduce<string>(
-                                        (prev, curr) =>
-                                            typeof curr === "number"
-                                                ? `${prev}[${curr}]`
-                                                : `${prev}.${curr}`,
-                                        ""
-                                    ),
+                                    .reduce<string>((prev, curr) => {
+                                        if (typeof curr === "number") {
+                                            assert(prev !== "");
+                                            return `${prev}[${curr}]`;
+                                        }
+
+                                        return prev === "" ? curr : `${prev}.${curr}`;
+                                    }, ""),
                                 (() => {
                                     if (value === null) {
                                         return "null";
