@@ -1,4 +1,4 @@
-import { DataGrid, type GridColDef, useGridApiRef } from "@mui/x-data-grid";
+import { type GridColDef } from "@mui/x-data-grid";
 import { memo, useMemo } from "react";
 import { ExplorerIcon } from "../ExplorerIcon";
 import { tss } from "tss";
@@ -8,35 +8,33 @@ import { id } from "tsafe";
 import { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
 import { Icon } from "onyxia-ui/Icon";
 import { CustomDataGrid } from "ui/shared/Datagrid/CustomDataGrid";
+import type { Item } from "../../shared/types";
 
 export type ListExplorerItems = {
     className?: string;
 
-    objects: {
-        kind: "file" | "directory";
-        size: number;
-        name: string;
-        lastModified: Date;
-        policy: "public" | "private" | "diffusion";
-    }[];
+    items: Item[];
 };
 
 export const ListExplorerItems = memo((props: ListExplorerItems) => {
-    const { className, objects } = props;
+    const { className, items } = props;
 
     const { classes, cx } = useStyles();
 
-    const rows = objects.map((obj, index) => ({
-        ...obj,
+    const rows = items.map((item, index) => ({
+        ...item,
         id: index, // Maybe a better id is necessary due to pagination
-        lastModified: obj.lastModified.toLocaleString()
+        lastModified:
+            "lastModified" in item && item.lastModified
+                ? item.lastModified.toLocaleString()
+                : null
     }));
 
     const columns = useMemo(
         () =>
             [
                 {
-                    field: "name",
+                    field: "basename",
                     headerName: "Name",
                     display: "flex" as const,
                     renderCell: params => (
@@ -56,6 +54,7 @@ export const ListExplorerItems = memo((props: ListExplorerItems) => {
                     field: "size",
                     headerName: "Size",
                     valueFormatter: size => {
+                        if (size === undefined) return null;
                         const prettySize = fileSizePrettyPrint({
                             bytes: size
                         });
@@ -92,7 +91,7 @@ export const ListExplorerItems = memo((props: ListExplorerItems) => {
             ] satisfies GridColDef[],
         [classes.nameIcon]
     );
-    console.log("ListExplorerItems", props);
+
     return (
         <div className={cx(classes.root, className)}>
             <CustomDataGrid
@@ -125,6 +124,7 @@ const useStyles = tss.withName({ ListExplorerItems }).create(({ theme }) => ({
     "nameIcon": {
         "width": "30px",
         "height": "30px",
-        "marginRight": theme.spacing(2)
+        "marginRight": theme.spacing(2),
+        "flexShrink": 0
     }
 }));
