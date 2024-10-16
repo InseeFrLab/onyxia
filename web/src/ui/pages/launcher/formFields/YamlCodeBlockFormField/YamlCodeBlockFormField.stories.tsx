@@ -1,7 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { YamlCodeBlockFormField } from "./YamlCodeBlockFormField";
 import { action } from "@storybook/addon-actions";
-import { css } from "ui/theme";
+import { css } from "ui/theme/emotionCache";
+
 import { useState } from "react";
 import type { Stringifyable } from "core/tools/Stringifyable";
 
