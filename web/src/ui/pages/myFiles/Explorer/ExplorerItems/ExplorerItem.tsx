@@ -1,7 +1,6 @@
 import { tss } from "tss";
 import { Text } from "onyxia-ui/Text";
 import { useMemo, memo } from "react";
-import { useClick } from "powerhooks/useClick";
 import { smartTrim } from "ui/tools/smartTrim";
 import { Icon } from "onyxia-ui/Icon";
 import { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
@@ -23,40 +22,31 @@ export type ExplorerItemProps = {
     /** Represent if the item is currently selected */
     isSelected: boolean;
 
-    /** File or directory size in bytes */
-    size: number;
-    /**
-     * Invoked when the component have been clicked once
-     * and when it has been double clicked
-     */
-    onMouseEvent: (params: { type: "down" | "double" }) => void;
+    /** File size in bytes */
+    size: number | undefined;
+    onDoubleClick: () => void;
+    onClick: () => void;
 };
 
 export const ExplorerItem = memo((props: ExplorerItemProps) => {
-    const { className, kind, basename, isSelected, size, onMouseEvent } = props;
+    const { className, kind, basename, isSelected, size, onDoubleClick, onClick } = props;
 
-    const prettySize = fileSizePrettyPrint({
-        "bytes": size
-    });
+    const prettySize = size ? fileSizePrettyPrint({ bytes: size }) : null;
+
     const [baseName, fileType] =
         kind === "file" ? basename.split(".") : [basename, undefined];
 
     const { classes, cx } = useStyles({ isSelected, basename });
 
-    const { getOnMouseProps } = useClick({
-        "doubleClickDelayMs": 500,
-        "callback": ({ type }) => onMouseEvent({ type })
-    });
-
-    const handleKeyDown = (event: React.KeyboardEvent) => {
-        if (event.key === " ") {
-            event.preventDefault();
-            onMouseEvent({ type: "down" });
+    // Handle key events for accessibility
+    const handleKeyDown = (e: React.KeyboardEvent) => {
+        if (e.key === "Enter") {
+            onDoubleClick();
             return;
         }
-        if (event.key === "Enter") {
-            event.preventDefault();
-            onMouseEvent({ type: "double" });
+
+        if (e.key === "Enter" || e.key === " ") {
+            onClick();
             return;
         }
     };
@@ -97,7 +87,8 @@ export const ExplorerItem = memo((props: ExplorerItemProps) => {
                 tabIndex={0}
                 role="button"
                 aria-selected={isSelected}
-                {...getOnMouseProps()}
+                onDoubleClick={onDoubleClick}
+                onClick={onClick}
                 onKeyDown={handleKeyDown}
             >
                 <ExplorerIcon
@@ -118,8 +109,8 @@ export const ExplorerItem = memo((props: ExplorerItemProps) => {
                     </Text>
                     <div className={classes.sizeAndFileTypeText}>
                         <Text typo="body 1">
-                            {fileType} {prettySize.value}
-                            {prettySize.unit}
+                            {fileType}{" "}
+                            {prettySize ? `${prettySize.value} ${prettySize.unit}` : ""}
                         </Text>
                         {kind === "directory" && (
                             <Icon

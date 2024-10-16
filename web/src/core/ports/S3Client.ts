@@ -1,4 +1,22 @@
 /** All path are supposed to start with /<bucket_name> */
+
+export type S3Object = S3File | S3Directory;
+
+type S3Base = {
+    basename: string;
+    policy: "public" | "private";
+};
+
+type S3File = S3Base & {
+    kind: "file";
+    size: number | undefined;
+    lastModified: Date | undefined;
+};
+
+type S3Directory = S3Base & {
+    kind: "directory";
+};
+
 export type S3Client = {
     getToken: (params: { doForceRenew: boolean }) => Promise<
         | {
@@ -11,11 +29,16 @@ export type S3Client = {
         | undefined
     >;
 
-    /** In charge of creating bucket if doesn't exist. */
+    /**
+     *  In charge of creating bucket if doesn't exist. *
+     * @deprecated
+     */
     list: (params: { path: string }) => Promise<{
         directories: string[];
         files: string[];
     }>;
+
+    listObjects: (params: { path: string }) => Promise<S3Object[]>;
 
     /** Completed when 100% uploaded */
     uploadFile: (params: {
