@@ -38,12 +38,9 @@ import type { ExplorerUploadModalProps } from "./ExplorerUploadModal";
 import { declareComponentKeys } from "i18nifty";
 import { CircularProgress } from "onyxia-ui/CircularProgress";
 import { ListExplorerItems } from "./ListExplorer/ListExplorerItems";
+import type { Directory, Item } from "../shared/types";
+import { ViewMode } from "../shared/types";
 
-function randomIntFromInterval(min: number, max: number) {
-    // min and max included
-    return Math.floor(Math.random() * (max - min + 1) + min);
-}
-//TODO -> Get File and directory size
 export type ExplorerProps = {
     /**
      * For this component to work it must have a fixed width
@@ -52,17 +49,16 @@ export type ExplorerProps = {
     className?: string;
     doShowHidden: boolean;
 
+    viewMode: ViewMode;
+    onViewModeChange: (params: { viewMode: ViewMode }) => void;
     directoryPath: string;
     isNavigating: boolean;
     commandLogsEntries: CommandBarProps.Entry[] | undefined;
     evtAction: NonPostableEvt<"TRIGGER COPY PATH">;
-    files: string[];
-    directories: string[];
-    directoriesBeingCreated: string[];
-    filesBeingCreated: string[];
+    items: Item[];
     onNavigate: (params: { directoryPath: string }) => void;
     onRefresh: () => void;
-    onDeleteItem: (params: { kind: "file" | "directory"; basename: string }) => void;
+    onDeleteItem: (params: { item: Item }) => void;
     onCreateDirectory: (params: { basename: string }) => void;
     onCopyPath: (params: { path: string }) => void;
     scrollableDivRef: RefObject<any>;
@@ -84,33 +80,20 @@ export const Explorer = memo((props: ExplorerProps) => {
         onDeleteItem,
         onCreateDirectory,
         onCopyPath,
+        onOpenFile,
         scrollableDivRef,
         onFileSelected,
         filesBeingUploaded,
-        pathMinDepth
+        pathMinDepth,
+        onViewModeChange,
+        viewMode
     } = props;
 
-    const [files, directories, directoriesBeingCreated, filesBeingCreated] = useMemo(
-        () =>
-            (
-                [
-                    props.files,
-                    props.directories,
-                    props.directoriesBeingCreated,
-                    props.filesBeingCreated
-                ] as const
-            ).map(
-                doShowHidden
-                    ? id
-                    : arr => arr.filter(basename => !basename.startsWith("."))
-            ),
-        [
-            props.files,
-            props.directories,
-            props.directoriesBeingCreated,
-            props.filesBeingCreated,
-            doShowHidden
-        ]
+    const [items] = useMemo(
+        () => [
+            props.items.filter(doShowHidden ? id : obj => !obj.basename.startsWith("."))
+        ],
+        [props.items, doShowHidden]
     );
 
     const { t } = useTranslation({ Explorer });
@@ -118,8 +101,6 @@ export const Explorer = memo((props: ExplorerProps) => {
     const [selectedItemKind, setSelectedItemKind] = useState<
         "file" | "directory" | "none"
     >("none");
-
-    const [viewExplorer, setViewExplorer] = useState<"list" | "block">("block"); //TO move inside core
 
     const onSelectedItemKindValueChange = useConstCallback(
         ({ selectedItemKind }: Param0<ItemsProps["onSelectedItemKindValueChange"]>) =>
@@ -143,7 +124,7 @@ export const Explorer = memo((props: ExplorerProps) => {
 
     const onItemsOpenFile = useConstCallback(
         ({ basename }: Param0<ItemsProps["onOpenFile"]>) => {
-            props.onOpenFile({ basename });
+            onOpenFile({ basename });
         }
     );
 
@@ -183,7 +164,9 @@ export const Explorer = memo((props: ExplorerProps) => {
                 break;
             case "create directory":
                 setCreateS3DirectoryDialogState({
-                    directories,
+                    directories: items
+                        .filter((item): item is Directory => item.kind === "directory")
+                        .map(({ basename }) => basename),
                     "resolveBasename": basename => onCreateDirectory({ basename })
                 });
                 break;
@@ -250,13 +233,13 @@ export const Explorer = memo((props: ExplorerProps) => {
     );
 
     const itemsOnDeleteItem = useConstCallback(
-        async ({ kind, basename }: Parameters<ItemsProps["onDeleteItem"]>[0]) => {
+        async ({ item }: Parameters<ItemsProps["onDeleteItem"]>[0]) => {
             if (doShowDeletionDialogNextTime) {
                 const dDoProceedToDeletion = new Deferred();
 
                 setDeletionDialogState({
-                    kind,
-                    basename,
+                    kind: item.kind,
+                    basename: item.basename,
                     "resolveDoProceedToDeletion": dDoProceedToDeletion.resolve
                 });
 
@@ -269,7 +252,7 @@ export const Explorer = memo((props: ExplorerProps) => {
                 }
             }
 
-            onDeleteItem({ kind, basename });
+            onDeleteItem({ item });
         }
     );
 
@@ -277,32 +260,6 @@ export const Explorer = memo((props: ExplorerProps) => {
     const onUploadModalClose = useConstCallback(() => setIsUploadModalOpen(false));
     const onDragOver = useConstCallback(() => setIsUploadModalOpen(true));
 
-    const objects = [
-        ...(directories.map(name => ({
-            kind: "directory",
-            size: randomIntFromInterval(1, 10000000), // Random size between 1 and 10MB
-            name, // Include the name of the directory
-            lastModified: new Date(
-                Date.now() - randomIntFromInterval(1, 365) * 24 * 60 * 60 * 1000
-            ),
-            policy: ["public", "private", "diffusion"][randomIntFromInterval(0, 3)] as
-                | "public"
-                | "private"
-                | "diffusion"
-        })) as ListExplorerItems["objects"]),
-        ...(files.map(name => ({
-            kind: "file",
-            size: randomIntFromInterval(1, 10000000), // Random size between 1 and 10MB
-            name, // Include the name of the directory
-            lastModified: new Date(
-                Date.now() - randomIntFromInterval(1, 365) * 24 * 60 * 60 * 1000
-            ),
-            policy: ["public", "private", "diffusion"][randomIntFromInterval(0, 3)] as
-                | "public"
-                | "private"
-                | "diffusion"
-        })) as ListExplorerItems["objects"])
-    ];
     return (
         <>
             <div
@@ -315,8 +272,8 @@ export const Explorer = memo((props: ExplorerProps) => {
                         selectedItemKind={selectedItemKind}
                         //isFileOpen={props.isFileOpen}
                         callback={buttonBarCallback}
-                        setViewMode={setViewExplorer}
-                        viewMode={viewExplorer}
+                        onViewModeChange={onViewModeChange}
+                        viewMode={viewMode}
                     />
                 </div>
                 {commandLogsEntries !== undefined && (
@@ -390,16 +347,12 @@ export const Explorer = memo((props: ExplorerProps) => {
                     )}
                 >
                     {(() => {
-                        console.log("switch");
-                        switch (viewExplorer) {
+                        switch (viewMode) {
                             case "block":
                                 return (
                                     <ExplorerItems
                                         isNavigating={isNavigating}
-                                        files={files}
-                                        directories={directories}
-                                        directoriesBeingCreated={directoriesBeingCreated}
-                                        filesBeingCreated={filesBeingCreated}
+                                        items={items}
                                         onNavigate={onItemsNavigate}
                                         onOpenFile={onItemsOpenFile}
                                         onSelectedItemKindValueChange={
@@ -411,12 +364,7 @@ export const Explorer = memo((props: ExplorerProps) => {
                                     />
                                 );
                             case "list": {
-                                return (
-                                    <ListExplorerItems
-                                        className={css({ height: "100%" })}
-                                        objects={objects}
-                                    />
-                                );
+                                return <ListExplorerItems items={items} />;
                             }
                             default:
                                 return null;
