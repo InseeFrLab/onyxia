@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { ExplorerItem } from "./ExplorerItem";
 import { action } from "@storybook/addon-actions";
-import { css } from "ui/theme";
+import { css } from "ui/theme/emotionCache";
 
 const meta = {
     title: "Pages/MyFiles/Explorer/ExplorerItems/ExplorerItem",
@@ -19,7 +19,8 @@ export const FileSelected: Story = {
         size: 100000000,
         className: css({ "width": "160px", "height": "160px" }),
         isSelected: true,
-        onMouseEvent: action("Mouse event")
+        onClick: action("onClick"),
+        onDoubleClick: action("onDoubleClick")
     }
 };
 
@@ -27,9 +28,10 @@ export const DirectoryUnselected: Story = {
     args: {
         kind: "directory",
         basename: "example-directory",
-        size: 12345678901234,
+        size: undefined,
         className: css({ "width": "160px", "height": "160px" }),
         isSelected: false,
-        onMouseEvent: action("Mouse event")
+        onClick: action("onClick"),
+        onDoubleClick: action("onDoubleClick")
     }
 };

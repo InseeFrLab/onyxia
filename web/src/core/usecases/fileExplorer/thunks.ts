@@ -7,6 +7,7 @@ import { onlyIfChanged } from "evt/operators/onlyIfChanged";
 import { join as pathJoin, basename as pathBasename } from "pathe";
 import { crawlFactory } from "core/tools/crawl";
 import * as s3ConfigManagement from "core/usecases/s3ConfigManagement";
+import { S3Object } from "core/ports/S3Client";
 
 export type ExplorersCreateParams =
     | ExplorersCreateParams.Directory
@@ -56,12 +57,11 @@ const privateThunks = {
                 event =>
                     event.usecaseName === "fileExplorer" &&
                     event.actionName === "operationCompleted" &&
-                    event.payload.kind === kind &&
-                    event.payload.basename === basename &&
+                    event.payload.object.kind === kind &&
+                    event.payload.object.basename === basename &&
                     event.payload.directoryPath === directoryPath
             );
         },
-
     /**
      * NOTE: It IS possible to navigate to a directory currently being renamed or created.
      */
@@ -118,9 +118,7 @@ const privateThunks = {
                 return r.s3Client;
             });
 
-            const { directories, files } = await s3Client.list({
-                "path": directoryPath
-            });
+            const objects = await s3Client.listObjects({ path: directoryPath });
 
             if (ctx.completionStatus !== undefined) {
                 dispatch(actions.commandLogCancelled({ cmdId }));
@@ -132,40 +130,58 @@ const privateThunks = {
             dispatch(
                 actions.commandLogResponseReceived({
                     cmdId,
-                    "resp": [
-                        ...directories.map(directory => `${directory}/`),
-                        ...files
-                    ].join("\n")
+                    "resp": objects
+                        .map(({ kind, basename }) =>
+                            kind === "directory" ? `${basename}/` : basename
+                        )
+                        .join("\n")
                 })
             );
 
             dispatch(
                 actions.navigationCompleted({
                     directoryPath,
-                    "directoryItems": [
-                        ...directories.map(basename => ({
-                            basename,
-                            "kind": "directory" as const
-                        })),
-                        ...files.map(basename => ({ basename, "kind": "file" as const }))
-                    ]
+                    objects
                 })
             );
         }
 } satisfies Thunks;
 
 export const thunks = {
-    "setCurrentDirectory":
-        (params: { directoryPath: string | undefined }) =>
+    "initialize":
+        (params: { directoryPath: string | undefined; viewMode: "list" | "block" }) =>
+        async (...args) => {
+            const { directoryPath, viewMode } = params;
+
+            const [dispatch, getState] = args;
+
+            dispatch(actions.viewModeChanged({ viewMode }));
+
+            if (directoryPath === undefined) {
+                await dispatch(
+                    privateThunks.navigate({
+                        "directoryPath":
+                            protectedSelectors.directoryPath(getState()) ??
+                            protectedSelectors.workingDirectoryPath(getState()),
+                        "doListAgainIfSamePath": true
+                    })
+                );
+                return;
+            }
+            await dispatch(
+                privateThunks.navigate({
+                    "directoryPath": directoryPath,
+                    "doListAgainIfSamePath": false
+                })
+            );
+        },
+
+    "changeCurrentDirectory":
+        (params: { directoryPath: string }) =>
         async (...args) => {
             const { directoryPath } = params;
 
             const [dispatch] = args;
-
-            if (directoryPath === undefined) {
-                dispatch(actions.notifyDirectoryPath());
-                return;
-            }
 
             await dispatch(
                 privateThunks.navigate({
@@ -173,6 +189,15 @@ export const thunks = {
                     "doListAgainIfSamePath": false
                 })
             );
+        },
+    "changeViewMode":
+        (params: { viewMode: "list" | "block" }) =>
+        async (...args) => {
+            const { viewMode } = params;
+
+            const [dispatch] = args;
+
+            dispatch(actions.viewModeChanged({ viewMode }));
         },
     "refreshCurrentDirectory":
         () =>
@@ -255,7 +280,6 @@ export const thunks = {
                     }
                 });
             };
-
             switch (params.createWhat) {
                 case "file":
                     dispatch(
@@ -291,8 +315,11 @@ export const thunks = {
 
             dispatch(
                 actions.operationCompleted({
-                    "kind": params.createWhat,
-                    "basename": params.basename,
+                    object: {
+                        "kind": params.createWhat,
+                        "basename": params.basename,
+                        "policy": "private"
+                    }, //To continue
                     directoryPath
                 })
             );
@@ -304,9 +331,9 @@ export const thunks = {
      * currently listed.
      */
     "delete":
-        (params: { deleteWhat: "file" | "directory"; basename: string }) =>
+        (params: { s3Object: S3Object }) =>
         async (...args) => {
-            const { deleteWhat, basename } = params;
+            const { s3Object } = params;
 
             const [dispatch, getState] = args;
 
@@ -318,16 +345,16 @@ export const thunks = {
 
             await dispatch(
                 privateThunks.waitForNoOngoingOperation({
-                    "kind": deleteWhat,
+                    "kind": s3Object.kind,
                     directoryPath,
-                    basename
+                    basename: s3Object.basename
                 })
             );
 
             dispatch(
                 actions.operationStarted({
-                    "kind": params.deleteWhat,
-                    "basename": params.basename,
+                    "kind": params.s3Object.kind,
+                    "basename": params.s3Object.basename,
                     "operation": "delete"
                 })
             );
@@ -359,7 +386,7 @@ export const thunks = {
                 );
             };
 
-            switch (deleteWhat) {
+            switch (s3Object.kind) {
                 case "directory":
                     {
                         const { crawl } = crawlFactory({
@@ -375,7 +402,10 @@ export const thunks = {
                             }
                         });
 
-                        const directoryToDeletePath = pathJoin(directoryPath, basename);
+                        const directoryToDeletePath = pathJoin(
+                            directoryPath,
+                            s3Object.basename
+                        );
 
                         const { filePaths } = await crawl({
                             "directoryPath": directoryToDeletePath
@@ -392,7 +422,10 @@ export const thunks = {
                     break;
                 case "file":
                     {
-                        const fileToDeletePath = pathJoin(directoryPath, basename);
+                        const fileToDeletePath = pathJoin(
+                            directoryPath,
+                            s3Object.basename
+                        );
 
                         await deleteFileAndLogCommand(fileToDeletePath);
                     }
@@ -401,8 +434,7 @@ export const thunks = {
 
             dispatch(
                 actions.operationCompleted({
-                    "kind": deleteWhat,
-                    basename,
+                    object: s3Object,
                     directoryPath
                 })
             );

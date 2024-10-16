@@ -10,11 +10,12 @@ import { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
 import { id } from "tsafe";
 import { IconButton } from "onyxia-ui/IconButton";
 import { useStyles } from "tss";
+import { ViewMode } from "../shared/types";
 
 export type Props = {
     selectedItemKind: "file" | "directory" | "none";
-    viewMode: "list" | "block";
-    setViewMode: (mode: Props["viewMode"]) => void;
+    viewMode: ViewMode;
+    onViewModeChange: (params: { viewMode: ViewMode }) => void;
     //TODO: Restore when we have fileViewer usecase
     //isFileOpen: boolean;
 
@@ -22,7 +23,7 @@ export type Props = {
 };
 
 export const ExplorerButtonBar = memo((props: Props) => {
-    const { selectedItemKind, callback, setViewMode, viewMode } = props;
+    const { selectedItemKind, callback, onViewModeChange, viewMode } = props;
 
     const { t } = useTranslation({ ExplorerButtonBar });
     const { css, theme } = useStyles();
@@ -72,12 +73,11 @@ export const ExplorerButtonBar = memo((props: Props) => {
     const onClickFactory = useCallbackFactory(([buttonId]: [ButtonId]) =>
         onClick(buttonId)
     );
-    //return <ButtonBar buttons={buttons} onClick={onClick} />;
 
     return (
         <BaseBar>
             <IconButton
-                onClick={() => setViewMode("list")}
+                onClick={() => onViewModeChange({ viewMode: "list" })}
                 className={css(
                     viewMode === "list"
                         ? {
@@ -90,7 +90,7 @@ export const ExplorerButtonBar = memo((props: Props) => {
                 icon={id<MuiIconComponentName>("Sort")}
             />
             <IconButton
-                onClick={() => setViewMode("block")}
+                onClick={() => onViewModeChange({ viewMode: "block" })}
                 className={css(
                     viewMode === "block"
                         ? {
