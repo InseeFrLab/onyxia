@@ -14,7 +14,8 @@ describe(symToStr({ removeFormFieldGroupWithNoNodes }), () => {
             },
             {
                 "type": "group",
-                "nodes": []
+                "nodes": [],
+                "canAdd": false
             }
         ];
 
@@ -29,6 +30,29 @@ describe(symToStr({ removeFormFieldGroupWithNoNodes }), () => {
         expect(got).toStrictEqual(expected);
     });
 
+    it("doesn't remove empty arrays", () => {
+        const nodes: FormFieldGroupLike["nodes"] = [
+            {
+                "type": "field"
+            },
+            {
+                "type": "group",
+                "nodes": [],
+                "canAdd": true
+            }
+        ];
+
+        const got = structuredClone(nodes);
+
+        removeFormFieldGroupWithNoNodes({
+            "nodes": got
+        });
+
+        const expected = nodes;
+
+        expect(got).toStrictEqual(expected);
+    });
+
     it("more than one removal", () => {
         const nodes: FormFieldGroupLike["nodes"] = [
             {
@@ -36,14 +60,16 @@ describe(symToStr({ removeFormFieldGroupWithNoNodes }), () => {
             },
             {
                 "type": "group",
-                "nodes": []
+                "nodes": [],
+                "canAdd": false
             },
             {
                 "type": "field"
             },
             {
                 "type": "group",
-                "nodes": []
+                "nodes": [],
+                "canAdd": false
             }
         ];
 
@@ -65,13 +91,16 @@ describe(symToStr({ removeFormFieldGroupWithNoNodes }), () => {
                 "nodes": [
                     {
                         "type": "group",
-                        "nodes": []
+                        "nodes": [],
+                        "canAdd": false
                     },
                     {
                         "type": "group",
-                        "nodes": []
+                        "nodes": [],
+                        "canAdd": false
                     }
-                ]
+                ],
+                "canAdd": false
             },
             {
                 "type": "field"
@@ -103,12 +132,14 @@ describe(symToStr({ removeFormFieldGroupWithNoNodes }), () => {
                             {
                                 "type": "field"
                             }
-                        ]
+                        ],
+                        "canAdd": false
                     },
                     {
                         "type": "field"
                     }
-                ]
+                ],
+                "canAdd": false
             }
         ];
 

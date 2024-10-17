@@ -39,7 +39,8 @@ describe(symToStr({ mergeRangeSliders }), () => {
                                         "title": "CPU"
                                     }
                                 })
-                            ]
+                            ],
+                            "canAdd": false
                         },
                         {
                             "type": "group",
@@ -60,11 +61,14 @@ describe(symToStr({ mergeRangeSliders }), () => {
                                         "sliderExtremity": "up"
                                     }
                                 })
-                            ]
+                            ],
+                            "canAdd": false
                         }
-                    ]
+                    ],
+                    "canAdd": false
                 }
-            ]
+            ],
+            "canAdd": false
         };
 
         mergeRangeSliders({ formFieldGroup });
@@ -102,9 +106,11 @@ describe(symToStr({ mergeRangeSliders }), () => {
                                 "description": "The maximum amount of cpu"
                             }
                         })
-                    ]
+                    ],
+                    "canAdd": false
                 }
-            ]
+            ],
+            "canAdd": false
         });
     });
 
@@ -161,7 +167,8 @@ describe(symToStr({ mergeRangeSliders }), () => {
                                         "title": "memory"
                                     }
                                 })
-                            ]
+                            ],
+                            "canAdd": false
                         },
                         {
                             "type": "group",
@@ -201,11 +208,14 @@ describe(symToStr({ mergeRangeSliders }), () => {
                                         "sliderExtremity": "up"
                                     }
                                 })
-                            ]
+                            ],
+                            "canAdd": false
                         }
-                    ]
+                    ],
+                    "canAdd": false
                 }
-            ]
+            ],
+            "canAdd": false
         };
 
         mergeRangeSliders({ formFieldGroup });
@@ -268,9 +278,11 @@ describe(symToStr({ mergeRangeSliders }), () => {
                                 "description": "The maximum amount of memory"
                             }
                         })
-                    ]
+                    ],
+                    "canAdd": false
                 }
-            ]
+            ],
+            "canAdd": false
         });
     });
 });

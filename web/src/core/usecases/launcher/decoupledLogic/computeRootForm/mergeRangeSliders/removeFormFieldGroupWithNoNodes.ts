@@ -10,6 +10,7 @@ assert<FormField extends FormFieldLike ? true : false>();
 export type FormFieldGroupLike = {
     type: "group";
     nodes: (FormFieldLike | FormFieldGroupLike)[];
+    canAdd: boolean;
 };
 
 assert<FormFieldGroup extends FormFieldGroupLike ? true : false>();
@@ -43,6 +44,9 @@ function removeFormFieldGroupLeafWithNoNodes_rec(params: {
         }
 
         if (node.nodes.length === 0) {
+            if (node.canAdd) {
+                return;
+            }
             nodes.splice(nodes.indexOf(node), 1);
             hasRemoved = true;
         } else {

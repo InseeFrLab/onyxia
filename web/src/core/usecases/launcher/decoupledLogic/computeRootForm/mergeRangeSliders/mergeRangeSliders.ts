@@ -1,6 +1,9 @@
 import type { FormFieldGroup } from "../../formTypes";
 import { assert } from "tsafe/assert";
-import { removeFormFieldGroupWithNoNodes } from "./removeFormFieldGroupWithNoNodes";
+import {
+    removeFormFieldGroupWithNoNodes,
+    type FormFieldGroupLike as FormFieldGroupLike_removeFormFieldGroupWithNoNodes
+} from "./removeFormFieldGroupWithNoNodes";
 import {
     getFormFieldPath,
     type FormFieldGroupLike as FormFieldGroupLike_getFormFieldPath
@@ -21,7 +24,8 @@ import {
 
 export type FormFieldGroupLike = FormFieldGroupLike_getFormFieldPath &
     FormFieldGroupLike_getFormFieldAtPath &
-    FormFieldGroupLike_insertRangeSliderFormField;
+    FormFieldGroupLike_insertRangeSliderFormField &
+    FormFieldGroupLike_removeFormFieldGroupWithNoNodes;
 
 assert<FormFieldGroup extends FormFieldGroupLike ? true : false>();
 
