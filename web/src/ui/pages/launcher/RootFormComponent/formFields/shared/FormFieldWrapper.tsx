@@ -7,6 +7,7 @@ import { id } from "tsafe/id";
 import ToolTip from "@mui/material/Tooltip";
 import { declareComponentKeys, useTranslation } from "ui/i18n";
 import { capitalize } from "tsafe/capitalize";
+import SettingsBackupRestoreIcon from "@mui/icons-material/SettingsBackupRestore";
 
 type Props = {
     className?: string;
@@ -59,7 +60,7 @@ export function FormFieldWrapper(props: Props) {
                 <ToolTip title={t("reset to default")} placement="bottom">
                     <IconButton
                         onClick={onResetToDefault}
-                        icon={id<MuiIconComponentName>("SettingsBackupRestore")}
+                        icon={SettingsBackupRestoreIcon}
                     />
                 </ToolTip>
             </div>

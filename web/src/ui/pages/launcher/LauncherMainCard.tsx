@@ -26,6 +26,8 @@ import { useResolveLocalizedString, type LocalizedString } from "ui/i18n";
 import { id } from "tsafe/id";
 import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
 import { same } from "evt/tools/inDepth/same";
+import SaveIcon from "@mui/icons-material/Save";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 type SourceUrls = {
     helmChartSourceUrl?: string;
@@ -191,11 +193,7 @@ export const LauncherMainCard = memo((props: Props) => {
                 >
                     {onRequestRestoreAllDefault === undefined && !isBookmarked ? (
                         <IconButton
-                            icon={
-                                isBookmarked
-                                    ? id<MuiIconComponentName>("Delete")
-                                    : id<MuiIconComponentName>("Save")
-                            }
+                            icon={isBookmarked ? DeleteIcon : SaveIcon}
                             onClick={onRequestToggleBookmark}
                         />
                     ) : willOverwriteExistingConfigOnSave && !isBookmarked ? (
