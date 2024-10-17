@@ -685,7 +685,7 @@ Utforsk gjerne og ta kontroll over tjenestene du kjører på Kubernetes!
         "not matching pattern": ({ pattern }) => `Matcher ikke mønsteret ${pattern}`,
         "toggle password visibility": "Bytt synlighet for passord"
     },
-    "FormFieldGroupComponentWrapper": {
+    "FormFieldGroupComponent": {
         "add": "Legg til"
     },
     "NumberFormField": {

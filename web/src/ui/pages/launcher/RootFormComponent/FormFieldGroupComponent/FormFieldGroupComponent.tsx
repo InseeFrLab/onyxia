@@ -13,9 +13,11 @@ import { TextFormField } from "../formFields/TextFormField";
 import { SliderFormField } from "../formFields/SliderFormField";
 import { RangeSliderFormField } from "../formFields/RangeSliderFormField";
 import { useCallbackFactory } from "powerhooks/useCallbackFactory";
-import { assert } from "tsafe/assert";
 import type { Stringifyable } from "core/tools/Stringifyable";
 import type { FormCallbacks } from "../FormCallbacks";
+import { Button } from "onyxia-ui/Button";
+import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
+import { declareComponentKeys, useTranslation } from "ui/i18n";
 
 export type Props = {
     className?: string;
@@ -38,8 +40,6 @@ export function FormFieldGroupComponent(props: Props): ReactNode {
         callbacks
     } = props;
 
-    const { onAdd } = callbacks;
-
     const { cx, classes } = useStyles();
 
     return (
@@ -55,15 +55,14 @@ export function FormFieldGroupComponent(props: Props): ReactNode {
                 return lastSegment;
             })()}
             description={description}
-            onAdd={canAdd ? () => onAdd({ helmValuesPath }) : undefined}
         >
             <FormFieldGroupComponentInner
                 className={classes.inner}
                 nodes={nodes}
                 callbacks={callbacks}
-                {...(canRemove
-                    ? { "canRemove": true, helmValuesPath }
-                    : { "canRemove": false, "helmValuesPath": undefined })}
+                canAdd={canAdd}
+                canRemove={canRemove}
+                helmValuesPath={helmValuesPath}
             />
         </FormFieldGroupComponentWrapper>
     );
@@ -74,19 +73,12 @@ const useStyles = tss.withName({ FormFieldGroupComponent }).create(() => ({
     "inner": {}
 }));
 
-export function FormFieldGroupComponentInner(
-    props: Omit<Props, "description" | "canAdd" | "helmValuesPath" | "canRemove"> &
-        (
-            | { canRemove: true; helmValuesPath: (string | number)[] }
-            | { canRemove: false; helmValuesPath: undefined }
-        )
-) {
-    const { className, canRemove, nodes, callbacks, helmValuesPath } = props;
+export function FormFieldGroupComponentInner(props: Omit<Props, "description">) {
+    const { className, canAdd, canRemove, nodes, callbacks, helmValuesPath } = props;
 
-    const { onRemove, onChange } = callbacks;
+    const { onRemove, onAdd, onChange } = callbacks;
 
     const getOnRemove_child = useCallbackFactory(([index]: [number]) => {
-        assert(canRemove);
         onRemove({ helmValuesPath, index });
     });
 
@@ -169,6 +161,8 @@ export function FormFieldGroupComponentInner(
     );
 
     const { cx, classes } = useStyles_inner();
+
+    const { t } = useTranslation({ FormFieldGroupComponent });
 
     return (
         <div className={cx(classes.root, className)}>
@@ -329,9 +323,21 @@ export function FormFieldGroupComponentInner(
                         );
                 }
             })}
+            {canAdd && (
+                <Button
+                    startIcon={"AddCircleOutline" satisfies MuiIconComponentName}
+                    variant="ternary"
+                    onClick={() => onAdd({ helmValuesPath })}
+                >
+                    {t("add")}
+                </Button>
+            )}
         </div>
     );
 }
+
+const { i18n } = declareComponentKeys<"add">()({ FormFieldGroupComponent });
+export type I18n = typeof i18n;
 
 const useStyles_inner = tss
     .withName({ FormFieldGroupComponentInner })

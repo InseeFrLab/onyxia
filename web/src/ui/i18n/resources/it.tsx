@@ -684,7 +684,7 @@ Sentiti libero di esplorare e prendere il controllo dei tuoi deployment Kubernet
         "not matching pattern": ({ pattern }) => `Non corrisponde al modello ${pattern}`,
         "toggle password visibility": "Alterna la visibilità della password"
     },
-    "FormFieldGroupComponentWrapper": {
+    "FormFieldGroupComponent": {
         "add": "Aggiungi"
     },
     "NumberFormField": {

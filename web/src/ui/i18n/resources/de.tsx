@@ -690,7 +690,7 @@ Fühlen Sie sich frei, Ihre Kubernetes-Bereitstellungen zu erkunden und die Kont
         "not matching pattern": ({ pattern }) => `Entspricht nicht dem Muster ${pattern}`,
         "toggle password visibility": "Passwortsichtbarkeit umschalten"
     },
-    "FormFieldGroupComponentWrapper": {
+    "FormFieldGroupComponent": {
         "add": "Hinzufügen"
     },
     "NumberFormField": {

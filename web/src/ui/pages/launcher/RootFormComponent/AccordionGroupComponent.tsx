@@ -9,8 +9,10 @@ import type { FormCallbacks } from "./FormCallbacks";
 type Props = {
     className?: string;
     accordionEntries: {
-        title: string;
+        helmValuesPath: (string | number)[];
         description: string | undefined;
+        canAdd: boolean;
+        canRemove: boolean;
         nodes: (FormFieldGroup | FormField)[];
     }[];
     callbacks: FormCallbacks;
@@ -23,16 +25,20 @@ export function AccordionGroupComponent(props: Props) {
 
     return (
         <div className={cx(classes.root, className)}>
-            {accordionEntries.map(({ title, description, nodes }) => (
-                <AccordionFromComponent
-                    className={classes.accordion}
-                    key={title}
-                    title={title}
-                    description={description}
-                    nodes={nodes}
-                    callbacks={callbacks}
-                />
-            ))}
+            {accordionEntries.map(
+                ({ helmValuesPath, description, canAdd, canRemove, nodes }) => (
+                    <AccordionFromComponent
+                        key={JSON.stringify(helmValuesPath)}
+                        className={classes.accordion}
+                        helmValuesPath={helmValuesPath}
+                        description={description}
+                        canAdd={canAdd}
+                        canRemove={canRemove}
+                        nodes={nodes}
+                        callbacks={callbacks}
+                    />
+                )
+            )}
         </div>
     );
 }

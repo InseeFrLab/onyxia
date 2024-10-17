@@ -675,7 +675,7 @@ Tutustu vapaasti ja ota hallintaan Kubernetes-julkaisusi!
         "not matching pattern": ({ pattern }) => `Ei vastaa mallia ${pattern}`,
         "toggle password visibility": "Vaihda salasanan näkyvyyttä"
     },
-    "FormFieldGroupComponentWrapper": {
+    "FormFieldGroupComponent": {
         "add": "Lisää"
     },
     "NumberFormField": {

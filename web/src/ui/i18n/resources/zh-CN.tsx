@@ -636,7 +636,7 @@ ${
         "not matching pattern": ({ pattern }) => `不符合模式 ${pattern}`,
         "toggle password visibility": "切换密码可见性"
     },
-    "FormFieldGroupComponentWrapper": {
+    "FormFieldGroupComponent": {
         "add": "添加"
     },
     "NumberFormField": {

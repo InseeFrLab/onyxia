@@ -1,10 +1,6 @@
 import type { ReactNode } from "react";
 import { tss } from "tss";
 import { Text } from "onyxia-ui/Text";
-import { Button } from "onyxia-ui/Button";
-import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
-import { id } from "tsafe/id";
-import { declareComponentKeys, useTranslation } from "ui/i18n";
 import { capitalize } from "tsafe/capitalize";
 import { useBackgroundColor } from "ui/tools/useBackgroundColor";
 
@@ -12,12 +8,9 @@ export function FormFieldGroupComponentWrapper(props: {
     className?: string;
     title: string | undefined;
     description: string | undefined;
-    onAdd: (() => void) | undefined;
     children: ReactNode;
 }) {
-    const { className, title, description, onAdd, children } = props;
-
-    const { t } = useTranslation({ FormFieldGroupComponentWrapper });
+    const { className, title, description, children } = props;
 
     const { backgroundColor, setElement: setRootElement } = useBackgroundColor();
 
@@ -38,15 +31,6 @@ export function FormFieldGroupComponentWrapper(props: {
                 </div>
             )}
             {children}
-            {onAdd !== undefined && (
-                <Button
-                    startIcon={id<MuiIconComponentName>("AddCircleOutline")}
-                    variant="ternary"
-                    onClick={onAdd}
-                >
-                    {t("add")}
-                </Button>
-            )}
         </fieldset>
     );
 }
@@ -72,7 +56,3 @@ const useStyles = tss
             ...theme.spacing.rightLeft("padding", 2)
         }
     }));
-
-const { i18n } = declareComponentKeys<"add">()({ FormFieldGroupComponentWrapper });
-
-export type I18n = typeof i18n;

@@ -5,7 +5,6 @@ import type {
     FormField
 } from "core/usecases/launcher/decoupledLogic/formTypes";
 import { AccordionGroupComponent } from "./AccordionGroupComponent";
-import { assert } from "tsafe/assert";
 import type { FormCallbacks } from "./FormCallbacks";
 
 type Props = {
@@ -43,8 +42,10 @@ export function ConfigurationTopLevelGroup(props: Props) {
                     ? []
                     : [
                           {
-                              "title": "Global",
+                              "helmValuesPath": ["Global"],
                               "description": "configuration that applies to all charts",
+                              "canAdd": false,
+                              "canRemove": false,
                               "nodes": global
                           }
                       ]),
@@ -52,21 +53,23 @@ export function ConfigurationTopLevelGroup(props: Props) {
                     ? []
                     : [
                           {
-                              "title": "Miscellaneous",
+                              "helmValuesPath": ["Miscellaneous"],
                               // TODO: i18n
                               "description": "Top level configuration values",
+                              "canAdd": false,
+                              "canRemove": false,
                               "nodes": main_formFields
                           }
                       ]),
-                ...main_formFieldGroups.map(({ nodes, description, helmValuesPath }) => ({
-                    "title": (() => {
-                        const lastSegment = helmValuesPath[helmValuesPath.length - 1];
-                        assert(typeof lastSegment === "string");
-                        return lastSegment;
-                    })(),
-                    description,
-                    nodes
-                }))
+                ...main_formFieldGroups.map(
+                    ({ nodes, description, helmValuesPath, canAdd, canRemove }) => ({
+                        helmValuesPath,
+                        description,
+                        canAdd,
+                        canRemove,
+                        nodes
+                    })
+                )
             ]}
             callbacks={callbacks}
         />
