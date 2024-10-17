@@ -5,8 +5,8 @@
     <a href="https://github.com/inseefrlab/onyxia/actions">
       <img src="https://github.com/inseefrlab/onyxia/workflows/ci/badge.svg?branch=main">
     </a>
-    <a href="https://join.slack.com/t/3innovation/shared_invite/zt-1hnzukjcn-6biCSmVy4qvyDGwbNI~sWg">
-      <img src="https://img.shields.io/badge/slack-544_Members-brightgreen.svg?logo=slack">
+    <a href="https://join.slack.com/t/3innovation/shared_invite/zt-2skhjkavr-xO~uTRLgoNOCm6ubLpKG7Q">
+      <img src="https://img.shields.io/badge/slack-550_Members-brightgreen.svg?logo=slack">
     </a>
 </p>
 
@@ -15,7 +15,7 @@
     <br>
     <b>Looking for our public instance?</b> <a href="https://datalab.sspcloud.fr">datalab.sspcloud.fr</a>
     <br>
-    <b>Let's get in touch! Join </b> <a href="https://join.slack.com/t/3innovation/shared_invite/zt-1hnzukjcn-6biCSmVy4qvyDGwbNI~sWg">our Slack</a>
+    <b>Let's get in touch! Join </b> <a href="https://join.slack.com/t/3innovation/shared_invite/zt-2skhjkavr-xO~uTRLgoNOCm6ubLpKG7Q">our Slack</a>
     <br>
     <b>What's next? Checkout our</b> <a href="https://docs.onyxia.sh/roadmap">roadmap</a>
 </p>
