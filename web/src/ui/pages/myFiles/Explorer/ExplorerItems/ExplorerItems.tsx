@@ -167,11 +167,11 @@ export const ExplorerItems = memo((props: ExplorerItemsProps) => {
             }
 
             switch (type) {
-                case "down": {
+                case "down":
                     const keyProp = getKeyProp({ kind, basename });
                     setSelectedItemKeyProp(keyProp);
                     break;
-                }
+
                 case "double":
                     switch (kind) {
                         case "directory":

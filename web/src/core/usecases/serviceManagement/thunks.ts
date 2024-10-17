@@ -6,7 +6,7 @@ import { assert } from "tsafe/assert";
 import { Evt, type Ctx } from "evt";
 import { name, actions } from "./state";
 import type { OnyxiaApi } from "core/ports/OnyxiaApi";
-import { formatHelmLsResp } from "./utils/formatHelmCommands";
+import { formatHelmLsResp } from "./decoupledLogic/formatHelmCommands";
 import * as viewQuotas from "core/usecases/viewQuotas";
 import { protectedSelectors } from "./selectors";
 
@@ -314,7 +314,7 @@ const privateThunks = {
                 ...onyxiaApi,
                 "listHelmReleases": async () => {
                     const { namespace } =
-                        projectManagement.selectors.currentProject(getState());
+                        projectManagement.protectedSelectors.currentProject(getState());
 
                     const cmdId = Date.now();
 
@@ -367,8 +367,9 @@ const privateThunks = {
                             "commandLogsEntry": {
                                 cmdId,
                                 "cmd": `helm uninstall ${helmReleaseName} --namespace ${
-                                    projectManagement.selectors.currentProject(getState())
-                                        .namespace
+                                    projectManagement.protectedSelectors.currentProject(
+                                        getState()
+                                    ).namespace
                                 }`,
                                 "resp": undefined
                             }
@@ -448,7 +449,7 @@ const privateThunks = {
             const helmReleases = await onyxiaApi.listHelmReleases();
 
             const { namespace: kubernetesNamespace } =
-                projectManagement.selectors.currentProject(getState());
+                projectManagement.protectedSelectors.currentProject(getState());
 
             const {
                 user: { username }

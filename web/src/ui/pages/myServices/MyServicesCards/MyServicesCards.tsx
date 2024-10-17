@@ -34,7 +34,6 @@ export type Props = {
         action: "open readme dialog";
         helmReleaseName: string;
     }>;
-    projectServicePassword: string;
     lastClusterEvent:
         | { message: string; severity: "error" | "info" | "warning" }
         | undefined;
@@ -54,7 +53,6 @@ export const MyServicesCards = memo((props: Props) => {
         onRequestLogHelmGetNotes,
         onRequestChangeFriendlyName,
         evtAction,
-        projectServicePassword,
         lastClusterEvent,
         onOpenClusterEventsDialog,
         onRequestChangeSharedStatus,
@@ -153,7 +151,6 @@ export const MyServicesCards = memo((props: Props) => {
                                 myServiceLink={myServiceLink}
                                 lastClusterEvent={lastClusterEvent}
                                 onOpenClusterEventsDialog={onOpenClusterEventsDialog}
-                                projectServicePassword={projectServicePassword}
                                 service={service}
                                 groupProjectName={groupProjectName}
                                 onRequestChangeSharedStatus={onRequestChangeSharedStatus}
