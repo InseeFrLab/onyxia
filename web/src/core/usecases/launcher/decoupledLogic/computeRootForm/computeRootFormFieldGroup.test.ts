@@ -66,7 +66,81 @@ describe(symToStr({ computeRootFormFieldGroup }), () => {
         expect(got).toStrictEqual(expected);
     });
 
-    it("compute hidden field", () => {
+    it("compute hidden field - relative", () => {
+        const xOnyxiaContext = {};
+
+        const got = computeRootFormFieldGroup({
+            "helmValuesSchema": {
+                "type": "object",
+                "properties": {
+                    "persistence": {
+                        "description": "Configuration for persistence",
+                        "type": "object",
+                        "properties": {
+                            "enabled": {
+                                "type": "boolean",
+                                "description": "Create a persistent volume"
+                            },
+                            "size": {
+                                "type": "string",
+                                "title": "Persistent volume size",
+                                "description": "Size of the persistent volume",
+                                "render": "slider",
+                                "sliderMin": 1,
+                                "sliderMax": 100,
+                                "sliderStep": 1,
+                                "sliderUnit": "Gi",
+                                "hidden": {
+                                    "value": false,
+                                    "path": "enabled",
+                                    "isPathRelative": true
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "helmValues": {
+                "persistence": {
+                    "enabled": false,
+                    "size": "10Gi"
+                }
+            },
+            xOnyxiaContext
+        });
+
+        const expected: FormFieldGroup = {
+            "type": "group",
+            "helmValuesPath": [],
+            "description": undefined,
+            "nodes": [
+                {
+                    "type": "group",
+                    "helmValuesPath": ["persistence"],
+                    "description": "Configuration for persistence",
+                    "nodes": [
+                        {
+                            "type": "field",
+                            "title": "enabled",
+                            "isReadonly": false,
+                            "fieldType": "checkbox",
+                            "helmValuesPath": ["persistence", "enabled"],
+                            "description": "Create a persistent volume",
+                            "value": false
+                        }
+                    ],
+                    "canAdd": false,
+                    "canRemove": false
+                }
+            ],
+            "canAdd": false,
+            "canRemove": false
+        };
+
+        expect(got).toStrictEqual(expected);
+    });
+
+    it("compute hidden field - absolute", () => {
         const xOnyxiaContext = {};
 
         const got = computeRootFormFieldGroup({
@@ -102,7 +176,7 @@ describe(symToStr({ computeRootFormFieldGroup }), () => {
             "helmValues": {
                 "persistence": {
                     "enabled": false,
-                    "size": 10
+                    "size": "10Gi"
                 }
             },
             xOnyxiaContext

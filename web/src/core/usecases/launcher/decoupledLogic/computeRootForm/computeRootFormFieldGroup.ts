@@ -106,7 +106,7 @@ function computeRootFormFieldGroup_rec(params: {
         const splittedPath = path.split("/");
 
         const helmValuesPath_target = isPathRelative
-            ? [...helmValuesPath, ...splittedPath]
+            ? [...helmValuesPath.slice(0, -1), ...splittedPath]
             : splittedPath;
 
         const value_target = getValueAtPathInObject<Stringifyable>({
