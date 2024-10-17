@@ -265,7 +265,7 @@ export const thunks = {
                     return r.s3Client;
                 });
 
-                await s3Client.uploadFile({
+                const uploadResult = await s3Client.uploadFile({
                     path,
                     blob,
                     "onUploadProgress": ({ uploadPercent }) => {
@@ -279,47 +279,62 @@ export const thunks = {
                         );
                     }
                 });
+                return uploadResult;
             };
-            switch (params.createWhat) {
-                case "file":
-                    dispatch(
-                        actions.fileUploadStarted({
+            const completedObject = await (async () => {
+                switch (params.createWhat) {
+                    case "file": {
+                        dispatch(
+                            actions.fileUploadStarted({
+                                "basename": params.basename,
+                                directoryPath,
+                                "size": params.blob.size
+                            })
+                        );
+                        const uploadResult = await uploadFileAndLogCommand({
+                            "path": pathJoin(directoryPath, params.basename),
+                            "blob": params.blob,
+                            "onUploadProgress": ({ uploadPercent }) =>
+                                dispatch(
+                                    actions.uploadProgressUpdated({
+                                        "basename": params.basename,
+                                        directoryPath,
+                                        uploadPercent
+                                    })
+                                )
+                        });
+                        return {
+                            "kind": "file",
+                            "basename": uploadResult.basename,
+                            "size": uploadResult.size,
+                            "lastModified": uploadResult.lastModified,
+                            "policy": "private"
+                        } satisfies S3Object.File;
+                    }
+                    case "directory": {
+                        await uploadFileAndLogCommand({
+                            "path": pathJoin(directoryPath, params.basename, ".keep"),
+                            "blob": new Blob(
+                                ["This file tells that a directory exists"],
+                                {
+                                    "type": "text/plain"
+                                }
+                            ),
+                            "onUploadProgress": () => {}
+                        });
+
+                        return {
+                            "kind": "directory",
                             "basename": params.basename,
-                            directoryPath,
-                            "size": params.blob.size
-                        })
-                    );
-                    await uploadFileAndLogCommand({
-                        "path": pathJoin(directoryPath, params.basename),
-                        "blob": params.blob,
-                        "onUploadProgress": ({ uploadPercent }) =>
-                            dispatch(
-                                actions.uploadProgressUpdated({
-                                    "basename": params.basename,
-                                    directoryPath,
-                                    uploadPercent
-                                })
-                            )
-                    });
-                    break;
-                case "directory":
-                    await uploadFileAndLogCommand({
-                        "path": pathJoin(directoryPath, params.basename, ".keep"),
-                        "blob": new Blob(["This file tells that a directory exists"], {
-                            "type": "text/plain"
-                        }),
-                        "onUploadProgress": () => {}
-                    });
-                    break;
-            }
+                            "policy": "private"
+                        } satisfies S3Object.Directory;
+                    }
+                }
+            })();
 
             dispatch(
                 actions.operationCompleted({
-                    object: {
-                        "kind": params.createWhat,
-                        "basename": params.basename,
-                        "policy": "private"
-                    }, //To continue
+                    object: completedObject, //To continue
                     directoryPath
                 })
             );
