@@ -489,8 +489,22 @@ export function createS3Client(
 
                 onUploadProgress?.({ uploadPercent });
             });
-            const t = await upload.done();
-            console.log(t);
+
+            await upload.done();
+
+            const headObjectCommand = new (
+                await import("@aws-sdk/client-s3")
+            ).HeadObjectCommand({ Bucket: bucketName, Key: objectName });
+
+            const metadata = await awsS3Client.send(headObjectCommand);
+
+            return {
+                kind: "file",
+                basename: objectName,
+                size: metadata.ContentLength,
+                lastModified: metadata.LastModified,
+                policy: "private"
+            };
         },
         "deleteFile": async ({ path }) => {
             const { bucketName, objectName } = bucketNameAndObjectNameFromS3Path(path);
