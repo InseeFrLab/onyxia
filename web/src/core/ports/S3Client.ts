@@ -1,22 +1,23 @@
 /** All path are supposed to start with /<bucket_name> */
 
-export type S3Object = S3File | S3Directory;
+export type S3Object = S3Object.File | S3Object.Directory;
 
-type S3Base = {
-    basename: string;
-    policy: "public" | "private";
-};
+export namespace S3Object {
+    export type Base = {
+        basename: string;
+        policy: "public" | "private";
+    };
 
-type S3File = S3Base & {
-    kind: "file";
-    size: number | undefined;
-    lastModified: Date | undefined;
-};
+    export type File = Base & {
+        kind: "file";
+        size: number | undefined;
+        lastModified: Date | undefined;
+    };
 
-type S3Directory = S3Base & {
-    kind: "directory";
-};
-
+    export type Directory = Base & {
+        kind: "directory";
+    };
+}
 export type S3Client = {
     getToken: (params: { doForceRenew: boolean }) => Promise<
         | {
@@ -45,7 +46,7 @@ export type S3Client = {
         blob: Blob;
         path: string;
         onUploadProgress: (params: { uploadPercent: number }) => void;
-    }) => Promise<void>;
+    }) => Promise<S3Object.File>;
 
     deleteFile: (params: { path: string }) => Promise<void>;
 
