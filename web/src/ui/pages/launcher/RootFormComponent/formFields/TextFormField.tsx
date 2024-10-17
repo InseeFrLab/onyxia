@@ -39,6 +39,7 @@ export const TextFormField = memo((props: Props) => {
 
     const { serializedValue, setSerializedValue, errorMessageKey, resetToDefault } =
         useFormField<string, string, "not matching pattern">({
+            "throttleDelay": 500,
             "serializedValue": value,
             onChange,
             "parse": serializedValue => {

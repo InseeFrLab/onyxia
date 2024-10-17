@@ -40,6 +40,7 @@ export const SliderFormField = memo((props: Props) => {
         number,
         never
     >({
+        "throttleDelay": 500,
         "serializedValue": value,
         onChange,
         "parse": serializedValue => ({

@@ -37,6 +37,7 @@ export const NumberFormField = memo((props: Props) => {
         useFormField<number, string, "below minimum" | "not a number" | "not an integer">(
             {
                 "serializedValue": `${value}`,
+                "throttleDelay": 500,
                 onChange,
                 "parse": serializedValue => {
                     if (!/^[0-9.]+$/.test(serializedValue)) {

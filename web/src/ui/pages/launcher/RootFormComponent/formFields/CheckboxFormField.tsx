@@ -24,6 +24,7 @@ export const CheckboxFormField = memo((props: Props) => {
         never
     >({
         "serializedValue": value,
+        "throttleDelay": 0,
         onChange,
         "parse": serializedValue => ({
             "isValid": true,

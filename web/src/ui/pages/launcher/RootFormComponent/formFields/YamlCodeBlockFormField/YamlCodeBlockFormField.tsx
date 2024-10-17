@@ -34,6 +34,7 @@ export const YamlCodeBlockFormField = memo((props: Props) => {
             string,
             "not valid yaml" | "not an array" | "not an object"
         >({
+            "throttleDelay": 500,
             "serializedValue": YAML.stringify(value),
             onChange,
             "parse": serializedValue => {

@@ -11,6 +11,7 @@ export function useFormField<
     ErrorMessageKey extends string
 >(params: {
     serializedValue: TSerializedValue;
+    throttleDelay: number;
     onChange: (newValue: TValue) => void;
     parse: (
         serializedValue: TSerializedValue
@@ -23,7 +24,12 @@ export function useFormField<
     errorMessageKey: ErrorMessageKey | undefined;
     resetToDefault: () => void;
 } {
-    const { serializedValue: serializedValue_params, onChange, parse } = params;
+    const {
+        serializedValue: serializedValue_params,
+        throttleDelay,
+        onChange,
+        parse
+    } = params;
 
     const serializedValue_default = useConst(() => serializedValue_params);
 
@@ -57,7 +63,7 @@ export function useFormField<
 
     const { onChangeWithThrottle, cancelThrottle } = useConst(() => {
         const { waitForThrottle, cancelThrottle } = createWaitForThrottle({
-            "delay": 500
+            "delay": throttleDelay
         });
 
         async function onChangeWithThrottle(newValue: TValue) {

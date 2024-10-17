@@ -38,6 +38,7 @@ export const RangeSliderFormField = memo((props: Props) => {
         never
     >({
         "serializedValue": serialize([lowEndRange.value, highEndRange.value]),
+        "throttleDelay": 500,
         "onChange": ([lowEndRangeValue, highEndRangeValue]) =>
             onChange({ lowEndRangeValue, highEndRangeValue }),
         "parse": serializedValue => ({

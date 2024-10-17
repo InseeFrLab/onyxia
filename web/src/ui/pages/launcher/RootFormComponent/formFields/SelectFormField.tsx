@@ -35,6 +35,7 @@ export const SelectFormField = memo((props: Props) => {
         never
     >({
         "serializedValue": selectedOptionIndex,
+        "throttleDelay": 0,
         "onChange": onSelectedOptionIndexChange,
         "parse": serializedValue => ({
             "isValid": true,
