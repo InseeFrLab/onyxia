@@ -1,25 +1,59 @@
 import { type GridColDef } from "@mui/x-data-grid";
-import { memo, useMemo } from "react";
+import { memo, useMemo, useState } from "react";
 import { ExplorerIcon } from "../ExplorerIcon";
 import { tss } from "tss";
 import { Text } from "onyxia-ui/Text";
+import { useEffectOnValueChange } from "powerhooks/useEffectOnValueChange";
 import { fileSizePrettyPrint } from "ui/tools/fileSizePrettyPrint";
 import { id } from "tsafe";
 import { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
 import { Icon } from "onyxia-ui/Icon";
 import { CustomDataGrid } from "ui/shared/Datagrid/CustomDataGrid";
 import type { Item } from "../../shared/types";
+import { useConstCallback } from "powerhooks/useConstCallback";
+import { assert } from "tsafe/assert";
+import { useEvt } from "evt/hooks";
+import type { NonPostableEvt } from "evt";
 
 export type ListExplorerItems = {
     className?: string;
 
+    isNavigating: boolean;
+
     items: Item[];
+
+    onNavigate: (params: { basename: string }) => void;
+    onOpenFile: (params: { basename: string }) => void;
+    /** Assert initial value is none */
+    onSelectedItemKindValueChange: (params: {
+        selectedItemKind: "file" | "directory" | "none";
+    }) => void;
+
+    onDeleteItem: (params: { item: Item }) => void;
+    onCopyPath: (params: { basename: string }) => void;
+    evtAction: NonPostableEvt<
+        "DELETE SELECTED ITEM" | "COPY SELECTED ITEM PATH" //TODO: Delete, legacy from secret explorer
+    >;
 };
 
 export const ListExplorerItems = memo((props: ListExplorerItems) => {
-    const { className, items } = props;
+    const {
+        className,
+        isNavigating,
+        items,
+        onNavigate,
+        evtAction,
+        onCopyPath,
+        onDeleteItem,
+        onOpenFile,
+        onSelectedItemKindValueChange
+    } = props;
 
     const { classes, cx } = useStyles();
+
+    const [selectedItem, setSelectedItem] = useState<
+        Item | { basename: undefined; kind: "none" }
+    >({ basename: undefined, kind: "none" });
 
     const rows = items.map((item, index) => ({
         ...item,
@@ -92,6 +126,30 @@ export const ListExplorerItems = memo((props: ListExplorerItems) => {
         [classes.nameIcon]
     );
 
+    useEvt(
+        ctx =>
+            evtAction.attach(ctx, action => {
+                switch (action) {
+                    case "DELETE SELECTED ITEM":
+                        console.log(selectedItem);
+                        assert(selectedItem.kind !== "none");
+                        onDeleteItem({ "item": selectedItem });
+                        break;
+                    case "COPY SELECTED ITEM PATH":
+                        assert(selectedItem.kind !== "none");
+                        onCopyPath({
+                            "basename": selectedItem.basename
+                        });
+                        break;
+                }
+            }),
+        [evtAction, onDeleteItem, onCopyPath, selectedItem]
+    );
+
+    useEffectOnValueChange(() => {
+        setSelectedItem({ basename: undefined, kind: "none" });
+    }, [isNavigating]);
+
     return (
         <div className={cx(classes.root, className)}>
             <CustomDataGrid
@@ -102,7 +160,35 @@ export const ListExplorerItems = memo((props: ListExplorerItems) => {
                         paginationModel: { pageSize: 25, page: 0 }
                     }
                 }}
+                loading={isNavigating}
+                slotProps={{
+                    loadingOverlay: {
+                        variant: "linear-progress",
+                        noRowsVariant: "linear-progress"
+                    }
+                }}
+                onRowClick={params => {
+                    if (!selectedItem || selectedItem.kind !== params.row.kind) {
+                        onSelectedItemKindValueChange({
+                            selectedItemKind: params.row.kind
+                        });
+                    }
+                    console.log(params.row);
+                    setSelectedItem(params.row);
+                }}
+                onCellDoubleClick={params => {
+                    if (params.field !== "basename") return;
+                    switch (params.row.kind) {
+                        case "directory":
+                            onNavigate({ "basename": params.row.basename });
+                            break;
+                        case "file":
+                            onOpenFile({ "basename": params.row.basename });
+                            break;
+                    }
+                }}
                 checkboxSelection
+                disableMultipleRowSelection
                 disableColumnMenu
                 autosizeOnMount
                 autosizeOptions={{
