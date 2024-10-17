@@ -364,7 +364,20 @@ export const Explorer = memo((props: ExplorerProps) => {
                                     />
                                 );
                             case "list": {
-                                return <ListExplorerItems items={items} />;
+                                return (
+                                    <ListExplorerItems
+                                        isNavigating={isNavigating}
+                                        items={items}
+                                        onNavigate={onItemsNavigate}
+                                        onOpenFile={onItemsOpenFile}
+                                        onSelectedItemKindValueChange={
+                                            onSelectedItemKindValueChange
+                                        }
+                                        onCopyPath={itemsOnCopyPath}
+                                        onDeleteItem={itemsOnDeleteItem}
+                                        evtAction={evtItemsAction}
+                                    />
+                                );
                             }
                             default:
                                 return null;
