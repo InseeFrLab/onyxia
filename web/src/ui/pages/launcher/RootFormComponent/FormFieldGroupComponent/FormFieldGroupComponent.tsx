@@ -27,6 +27,7 @@ export type Props = {
     canAdd: boolean;
     canRemove: boolean;
     callbacks: FormCallbacks;
+    onRemove: (() => void) | undefined;
 };
 
 export function FormFieldGroupComponent(props: Props): ReactNode {
@@ -37,6 +38,7 @@ export function FormFieldGroupComponent(props: Props): ReactNode {
         canAdd,
         canRemove,
         nodes,
+        onRemove,
         callbacks
     } = props;
 
@@ -54,6 +56,7 @@ export function FormFieldGroupComponent(props: Props): ReactNode {
 
                 return lastSegment;
             })()}
+            onRemove={onRemove}
             description={description}
         >
             <FormFieldGroupComponentInner
@@ -73,7 +76,9 @@ const useStyles = tss.withName({ FormFieldGroupComponent }).create(() => ({
     "inner": {}
 }));
 
-export function FormFieldGroupComponentInner(props: Omit<Props, "description">) {
+export function FormFieldGroupComponentInner(
+    props: Omit<Props, "description" | "onRemove">
+) {
     const { className, canAdd, canRemove, nodes, callbacks, helmValuesPath } = props;
 
     const { onRemove, onAdd, onChange } = callbacks;
@@ -176,6 +181,8 @@ export function FormFieldGroupComponentInner(props: Omit<Props, "description">) 
                         : node.helmValuesPath
                 );
 
+                const onRemove_child = canRemove ? getOnRemove_child(index) : undefined;
+
                 if (node.type === "group") {
                     return (
                         <FormFieldGroupComponent
@@ -186,12 +193,11 @@ export function FormFieldGroupComponentInner(props: Omit<Props, "description">) 
                             nodes={node.nodes}
                             canAdd={node.canAdd}
                             canRemove={node.canRemove}
+                            onRemove={onRemove_child}
                             callbacks={callbacks}
                         />
                     );
                 }
-
-                const onRemove_child = canRemove ? getOnRemove_child(index) : undefined;
 
                 switch (node.fieldType) {
                     case "checkbox":

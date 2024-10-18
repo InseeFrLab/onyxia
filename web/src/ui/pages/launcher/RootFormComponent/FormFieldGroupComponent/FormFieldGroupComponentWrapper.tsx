@@ -3,14 +3,17 @@ import { tss } from "tss";
 import { Text } from "onyxia-ui/Text";
 import { capitalize } from "tsafe/capitalize";
 import { useBackgroundColor } from "ui/tools/useBackgroundColor";
+import { IconButton } from "onyxia-ui/IconButton";
+import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
 
 export function FormFieldGroupComponentWrapper(props: {
     className?: string;
     title: string | undefined;
     description: string | undefined;
+    onRemove: (() => void) | undefined;
     children: ReactNode;
 }) {
-    const { className, title, description, children } = props;
+    const { className, title, description, onRemove, children } = props;
 
     const { backgroundColor, setElement: setRootElement } = useBackgroundColor();
 
@@ -29,6 +32,14 @@ export function FormFieldGroupComponentWrapper(props: {
                         </Text>
                     )}
                 </div>
+            )}
+            {onRemove !== undefined && (
+                <IconButton
+                    className={classes.removeButton}
+                    iconClassName={classes.removeButtonIcon}
+                    onClick={onRemove}
+                    icon={"RemoveCircleOutline" as MuiIconComponentName}
+                />
             )}
             {children}
         </fieldset>
@@ -54,5 +65,12 @@ const useStyles = tss
             "backgroundColor": headingWrapperBackgroundColor,
             "borderRadius": theme.spacing(3),
             ...theme.spacing.rightLeft("padding", 2)
+        },
+        "removeButton": {
+            "position": "absolute",
+            "left": -theme.typography.rootFontSizePx * 1
+        },
+        "removeButtonIcon": {
+            "color": theme.colors.useCases.alertSeverity.error.main
         }
     }));
