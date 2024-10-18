@@ -126,8 +126,6 @@ export const ListExplorerItems = memo((props: ListExplorerItems) => {
                                             return "Visibility";
                                         case "private":
                                             return "VisibilityOff";
-                                        case "diffusion":
-                                            return "Language";
                                         default:
                                             return "HelpOutline";
                                     }

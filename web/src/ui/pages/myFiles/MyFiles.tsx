@@ -55,10 +55,14 @@ function MyFiles(props: Props) {
     const { fileExplorer } = useCore().functions;
 
     useEffect(() => {
-        fileExplorer.initialize({
+        console.log("init fileExplorer");
+        console.log("directoryPath", route.params.path);
+
+        const { cleanup } = fileExplorer.initialize({
             "directoryPath": route.params.path,
             "viewMode": route.params.mode
         });
+        return cleanup;
     }, []);
 
     useEffect(() => {
