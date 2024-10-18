@@ -329,6 +329,10 @@ export const translations: Translations<"fr"> = {
         "cancel": "Annuler",
         "go to settings": "Aller aux paramètres"
     },
+    "MyFilesShareDialog": {
+        "cancel": "Annuler",
+        "create and copy link": "Créer et copier le lien"
+    },
     "MySecrets": {
         "page title - my secrets": "My Secrets",
         "what this page is used for - my secrets":
@@ -941,7 +945,8 @@ N'hésitez pas à explorer et à prendre en main vos déploiements Kubernetes !
         ),
         "column": "colonne",
         "density": "densité",
-        "download file": "télécharger le fichier"
+        "download file": "télécharger le fichier",
+        "resize table": "Redimensionner"
     },
     "UrlInput": {
         "load": "Charger"
@@ -1036,6 +1041,15 @@ N'hésitez pas à explorer et à prendre en main vos déploiements Kubernetes !
     "CopyToClipboardIconButton": {
         "copied to clipboard": "Copié !",
         "copy to clipboard": "Copier dans le presse-papiers"
+    },
+    "CustomDataGridToolbarDensitySelector": {
+        "toolbarDensity": "Densité",
+        "toolbarDensityStandard": "Standard",
+        "toolbarDensityComfortable": "Confortable",
+        "toolbarDensityCompact": "Compact"
+    },
+    "CustomDataGridToolbarColumnsButton": {
+        "toolbarColumnsLabel": "Colonnes"
     }
     /* spell-checker: enable */
 };

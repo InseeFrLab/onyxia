@@ -326,6 +326,10 @@ export const translations: Translations<"nl"> = {
         "cancel": "Annuleren",
         "go to settings": "Ga naar instellingen"
     },
+    "MyFilesShareDialog": {
+        "cancel": "Annuleren",
+        "create and copy link": "Creare e copiare il link"
+    },
     "MySecrets": {
         "page title - my secrets": "My Secrets",
         "what this page is used for - my secrets":
@@ -932,7 +936,8 @@ Voel je vrij om te verkennen en de controle over je Kubernetes-implementaties te
         ),
         "column": "kolom",
         "density": "dichtheid",
-        "download file": "bestand downloaden"
+        "download file": "bestand downloaden",
+        "resize table": "Formaat wijzigen"
     },
     "UrlInput": {
         "load": "Laden"
@@ -1027,6 +1032,15 @@ Voel je vrij om te verkennen en de controle over je Kubernetes-implementaties te
     "CopyToClipboardIconButton": {
         "copied to clipboard": "Gekopieerd!",
         "copy to clipboard": "Kopiëren naar klembord"
+    },
+    "CustomDataGridToolbarDensitySelector": {
+        "toolbarDensity": "Dichtheid",
+        "toolbarDensityStandard": "Standaard",
+        "toolbarDensityComfortable": "Comfortabel",
+        "toolbarDensityCompact": "Compact"
+    },
+    "CustomDataGridToolbarColumnsButton": {
+        "toolbarColumnsLabel": "Kolommen"
     }
     /* spell-checker: enable */
 };
