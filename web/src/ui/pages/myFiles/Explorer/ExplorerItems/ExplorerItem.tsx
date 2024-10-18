@@ -126,18 +126,18 @@ const useStyles = tss
             "marginBottom": theme.spacing(1),
             "whiteSpace": "nowrap",
             "overflow": "hidden",
-            "textOverflow": "ellipsis",
-            "&:hover": {
-                overflow: "visible",
-                textOverflow: "unset",
-                whiteSpace: "nowrap",
-                backgroundColor: "#2C323F",
-                width: "max-content", // Étend la largeur à la longueur totale du texte
-                zIndex: 1,
-                outline: `1px solid ${theme.colors.useCases.surfaces.surface1}`,
-                boxShadow: `0px 4px 8px rgba(0, 0, 0, 0.1)`, // Ajoute une légère ombre pour un effet 3D
-                borderRadius: theme.spacing(1) // Ajoute des coins arrondis pour un effet plus doux
-            }
+            "textOverflow": "ellipsis"
+            // "&:hover": {
+            //     overflow: "visible",
+            //     textOverflow: "unset",
+            //     whiteSpace: "nowrap",
+            //     backgroundColor: "#2C323F",
+            //     width: "max-content", // Étend la largeur à la longueur totale du texte
+            //     zIndex: 1,
+            //     outline: `1px solid ${theme.colors.useCases.surfaces.surface1}`,
+            //     boxShadow: `0px 4px 8px rgba(0, 0, 0, 0.1)`, // Ajoute une légère ombre pour un effet 3D
+            //     borderRadius: theme.spacing(1) // Ajoute des coins arrondis pour un effet plus doux
+            // }
         },
         "sizeAndFileTypeText": {
             "display": "flex",
