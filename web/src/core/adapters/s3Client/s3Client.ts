@@ -388,33 +388,40 @@ export function createS3Client(
 
             const allowedPrefix: string[] = await import("@aws-sdk/client-s3")
                 .then(({ GetBucketPolicyCommand }) =>
-                    awsS3Client.send(
-                        new GetBucketPolicyCommand({
-                            Bucket: bucketName
+                    awsS3Client
+                        .send(
+                            new GetBucketPolicyCommand({
+                                Bucket: bucketName
+                            })
+                        )
+                        .catch(() => {
+                            console.log("The error is ok, there is no bucket policy");
+                            return { Policy: undefined };
                         })
-                    )
                 )
                 .then(respPolicy => {
-                    const policy = respPolicy.Policy
-                        ? JSON.parse(respPolicy.Policy)
-                        : undefined;
+                    if (respPolicy.Policy === undefined) return [];
 
-                    return (
-                        policy?.Statement?.filter(
-                            (statement: any) =>
-                                statement.Effect === "Allow" &&
-                                (statement.Action.includes("s3:GetObject") ||
-                                    statement.Action.includes("s3:*"))
-                        ).flatMap((statement: any) =>
-                            statement.Resource.map((resource: string) =>
-                                resource.replace(`arn:aws:s3:::${bucketName}/`, "")
+                    try {
+                        return JSON.parse(respPolicy.Policy)
+                            .Statement.filter(
+                                (statement: any) =>
+                                    statement.Effect === "Allow" &&
+                                    (statement.Action.includes("s3:GetObject") ||
+                                        statement.Action.includes("s3:*"))
                             )
-                        ) ?? []
-                    );
-                })
-                .catch(error => {
-                    console.error("Error fetching bucket policy:", error);
-                    return [];
+                            .flatMap((statement: any) =>
+                                statement.Resource.map((resource: string) =>
+                                    resource.replace(`arn:aws:s3:::${bucketName}/`, "")
+                                )
+                            );
+                    } catch (e) {
+                        console.warn(
+                            "The best effort attempt failed to parse the policy",
+                            e
+                        );
+                        return [];
+                    }
                 });
 
             // Extract resources allowed for s3:GetObject (or s3:*) actions
