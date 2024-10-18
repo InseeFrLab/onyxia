@@ -1,16 +1,16 @@
 import {
+    gridColumnVisibilityModelSelector,
     gridPreferencePanelStateSelector,
     GridPreferencePanelsValue,
     useGridApiContext,
-    //useGridApiEventHandler,
     useGridSelector
 } from "@mui/x-data-grid";
 import { ButtonBarButton } from "onyxia-ui/ButtonBarButton";
 import { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
 import { id } from "tsafe";
 import { declareComponentKeys, useTranslation } from "ui/i18n";
-import { memo } from "react";
-//import { autosizeOptions } from "./CustomDataGrid";
+import { memo, useEffect } from "react";
+import { autosizeOptions } from "./CustomDataGrid";
 
 /**
  * CustomDataGridToolbarColumnsButton is a component that provides a toolbar button
@@ -31,10 +31,14 @@ export const CustomDataGridToolbarColumnsButton = memo(() => {
 
     const preferencePanel = useGridSelector(apiRef, gridPreferencePanelStateSelector);
 
-    // Waiting for https://github.com/mui/mui-x/issues/14922
-    // useGridApiEventHandler(apiRef, "columnVisibilityModelChange", () => {
-    //     apiRef.current.autosizeColumns(autosizeOptions);
-    // });
+    const columnVisibilityModel = useGridSelector(
+        apiRef,
+        gridColumnVisibilityModelSelector
+    );
+
+    useEffect(() => {
+        apiRef.current.autosizeColumns(autosizeOptions);
+    }, [columnVisibilityModel]);
 
     const showColumns = () => {
         if (
