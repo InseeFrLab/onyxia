@@ -46,7 +46,7 @@ const { helmValuesPatchWrap, queryStringSerializer } = (() => {
                             .replace(/\\\./g, escapedDotsPlaceholder)
                             .replace(
                                 /\[(\d+)\]/g,
-                                (...[, x]) => `.${arrayIndexPrefix}${x}.`
+                                (...[, x]) => `.${arrayIndexPrefix}${x}`
                             )
                             .split(".")
                             .filter((s, i, arr) =>
