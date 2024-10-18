@@ -150,45 +150,65 @@ const privateThunks = {
 export const thunks = {
     "initialize":
         (params: { directoryPath: string | undefined; viewMode: "list" | "block" }) =>
-        async (...args) => {
+        (...args): { cleanup: () => void } => {
             const { directoryPath, viewMode } = params;
 
-            const [dispatch, getState, rootContext] = args;
+            const [dispatch, getState, { evtAction }] = args;
 
-            const { evtAction } = rootContext;
+            const ctx = Evt.newCtx();
 
             evtAction.attachOnce(
                 event =>
                     event.usecaseName === "projectManagement" &&
                     event.actionName === "projectChanged",
+                ctx,
                 () => {
                     dispatch(
                         thunks.initialize({
-                            ...params
+                            viewMode,
+                            "directoryPath": undefined
                         })
                     );
                 }
             );
 
-            dispatch(actions.viewModeChanged({ viewMode }));
+            (async () => {
+                dispatch(actions.viewModeChanged({ viewMode }));
 
-            if (directoryPath === undefined) {
+                if (directoryPath === undefined) {
+                    const inStateDirectoryPath =
+                        protectedSelectors.directoryPath(getState());
+
+                    const currentS3WorkingDirectoryPath =
+                        protectedSelectors.workingDirectoryPath(getState());
+
+                    await dispatch(
+                        privateThunks.navigate({
+                            "directoryPath":
+                                inStateDirectoryPath !== undefined &&
+                                inStateDirectoryPath.startsWith(
+                                    currentS3WorkingDirectoryPath
+                                )
+                                    ? inStateDirectoryPath //we can restore to the past state
+                                    : currentS3WorkingDirectoryPath, //project has changed since last visit of myFiles
+                            "doListAgainIfSamePath": true
+                        })
+                    );
+                    return;
+                }
                 await dispatch(
                     privateThunks.navigate({
-                        "directoryPath":
-                            protectedSelectors.directoryPath(getState()) ??
-                            protectedSelectors.workingDirectoryPath(getState()),
-                        "doListAgainIfSamePath": true
+                        "directoryPath": directoryPath,
+                        "doListAgainIfSamePath": false
                     })
                 );
-                return;
-            }
-            await dispatch(
-                privateThunks.navigate({
-                    "directoryPath": directoryPath,
-                    "doListAgainIfSamePath": false
-                })
-            );
+            })();
+
+            const cleanup = () => {
+                ctx.done();
+            };
+
+            return { cleanup };
         },
 
     "changeCurrentDirectory":
@@ -517,26 +537,5 @@ export const thunks = {
             );
 
             return downloadUrl;
-        }
-} satisfies Thunks;
-
-export const protectedThunks = {
-    "initialize":
-        () =>
-        (...args) => {
-            const [dispatch, getState, { evtAction }] = args;
-
-            evtAction
-                .toStateful()
-                .pipe(() => [getState()])
-                .pipe(state => [
-                    !selectors.isFileExplorerEnabled(state)
-                        ? undefined
-                        : protectedSelectors.workingDirectoryPath(state)
-                ])
-                .pipe(onlyIfChanged())
-                .toStateless()
-                .pipe(workingDirectoryPath => workingDirectoryPath !== undefined)
-                .attach(() => dispatch(actions.workingDirectoryChanged()));
         }
 } satisfies Thunks;

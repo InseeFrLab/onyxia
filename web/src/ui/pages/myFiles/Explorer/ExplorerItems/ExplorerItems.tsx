@@ -104,7 +104,7 @@ export const ExplorerItems = memo((props: ExplorerItemsProps) => {
             ) : (
                 <>
                     {items.map(item => {
-                        const { basename, kind } = item;
+                        const { basename, kind, policy } = item;
                         const size = "size" in item ? item.size : undefined;
                         return (
                             <ExplorerItem
@@ -114,6 +114,7 @@ export const ExplorerItems = memo((props: ExplorerItemsProps) => {
                                 basename={basename}
                                 isSelected={selectedItem.basename === basename}
                                 size={size}
+                                policy={policy}
                                 onClick={handleItemClick(item)}
                                 onDoubleClick={handleItemDoubleClick(item)}
                             />

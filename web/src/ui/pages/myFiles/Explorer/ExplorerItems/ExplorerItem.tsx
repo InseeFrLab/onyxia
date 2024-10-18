@@ -8,6 +8,7 @@ import { Tooltip } from "onyxia-ui/Tooltip";
 import { fileSizePrettyPrint } from "ui/tools/fileSizePrettyPrint";
 import { ExplorerIcon } from "../ExplorerIcon";
 import { declareComponentKeys } from "i18nifty";
+import { Item } from "../../shared/types";
 
 export type ExplorerItemProps = {
     className?: string;
@@ -23,12 +24,23 @@ export type ExplorerItemProps = {
 
     /** File size in bytes */
     size: number | undefined;
+
+    policy: Item["policy"];
     onDoubleClick: () => void;
     onClick: () => void;
 };
 
 export const ExplorerItem = memo((props: ExplorerItemProps) => {
-    const { className, kind, basename, isSelected, size, onDoubleClick, onClick } = props;
+    const {
+        className,
+        kind,
+        basename,
+        policy,
+        isSelected,
+        size,
+        onDoubleClick,
+        onClick
+    } = props;
 
     const prettySize = size ? fileSizePrettyPrint({ bytes: size }) : null;
 
@@ -65,18 +77,27 @@ export const ExplorerItem = memo((props: ExplorerItemProps) => {
                 onClick={onClick}
                 onKeyDown={handleKeyDown}
             >
-                <ExplorerIcon
-                    className={classes.explorerIcon}
-                    iconId={(() => {
-                        switch (kind) {
-                            case "directory":
-                                return "directory";
-                            case "file":
-                                return "data";
-                        }
-                    })()}
-                    hasShadow={true}
-                />
+                <div className={classes.iconContainer}>
+                    <ExplorerIcon
+                        className={classes.explorerIcon}
+                        iconId={(() => {
+                            switch (kind) {
+                                case "directory":
+                                    return "directory";
+                                case "file":
+                                    return "data";
+                            }
+                        })()}
+                        hasShadow={true}
+                    />
+                    <Icon
+                        className={classes.policyIcon}
+                        icon={id<MuiIconComponentName>(
+                            policy === "public" ? "Visibility" : "VisibilityOff"
+                        )}
+                    />
+                </div>
+
                 <div className={classes.textContainer}>
                     <Text typo="navigation label" className={classes.baseNameText}>
                         {baseName}
@@ -117,6 +138,14 @@ const useStyles = tss
             "justifyContent": "space-between",
             "padding": theme.spacing(3)
         },
+        "iconContainer": { "display": "flex", "justifyContent": "space-between" },
+        "explorerIcon": {
+            "width": "50px", // Either we set a fixed size, or we measure the size of the root
+            "height": "50px"
+        },
+        "policyIcon": {
+            marginLeft: theme.spacing(1) // Adjust spacing between the icons
+        },
         "textContainer": {
             "display": "flex",
             "flexDirection": "column",
@@ -145,9 +174,5 @@ const useStyles = tss
             "whiteSpace": "nowrap",
             "overflow": "hidden",
             "textOverflow": "ellipsis"
-        },
-        "explorerIcon": {
-            "width": "50px", // Either we set a fixed size, or we measure the size of the root
-            "height": "50px"
         }
     }));
