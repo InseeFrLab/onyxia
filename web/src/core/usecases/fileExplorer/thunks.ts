@@ -2,10 +2,11 @@ import { assert } from "tsafe/assert";
 import { Evt } from "evt";
 import type { Thunks } from "core/bootstrap";
 import { name, actions } from "./state";
-import { selectors, protectedSelectors } from "./selectors";
-import { onlyIfChanged } from "evt/operators/onlyIfChanged";
+import { protectedSelectors } from "./selectors";
 import { join as pathJoin, basename as pathBasename } from "pathe";
 import { crawlFactory } from "core/tools/crawl";
+import * as s3ConfigManagement from "core/usecases/s3ConfigManagement";
+import { S3Object } from "core/ports/S3Client";
 
 export type ExplorersCreateParams =
     | ExplorersCreateParams.Directory
@@ -55,12 +56,11 @@ const privateThunks = {
                 event =>
                     event.usecaseName === "fileExplorer" &&
                     event.actionName === "operationCompleted" &&
-                    event.payload.kind === kind &&
-                    event.payload.basename === basename &&
+                    event.payload.object.kind === kind &&
+                    event.payload.object.basename === basename &&
                     event.payload.directoryPath === directoryPath
             );
         },
-
     /**
      * NOTE: It IS possible to navigate to a directory currently being renamed or created.
      */
@@ -72,7 +72,7 @@ const privateThunks = {
             // Ensure trailing slash for consistency.
             const directoryPath = params.directoryPath.replace(/\/+$/, "") + "/";
 
-            const [dispatch, getState, { evtAction, s3ClientForExplorer }] = args;
+            const [dispatch, getState, { evtAction }] = args;
 
             if (
                 !doListAgainIfSamePath &&
@@ -110,9 +110,14 @@ const privateThunks = {
                 })
             );
 
-            const { directories, files } = await s3ClientForExplorer.list({
-                "path": directoryPath
+            const s3Client = await dispatch(
+                s3ConfigManagement.protectedThunks.getS3ConfigAndClientForExplorer()
+            ).then(r => {
+                assert(r !== undefined);
+                return r.s3Client;
             });
+
+            const objects = await s3Client.listObjects({ path: directoryPath });
 
             if (ctx.completionStatus !== undefined) {
                 dispatch(actions.commandLogCancelled({ cmdId }));
@@ -124,40 +129,93 @@ const privateThunks = {
             dispatch(
                 actions.commandLogResponseReceived({
                     cmdId,
-                    "resp": [
-                        ...directories.map(directory => `${directory}/`),
-                        ...files
-                    ].join("\n")
+                    "resp": objects
+                        .map(({ kind, basename }) =>
+                            kind === "directory" ? `${basename}/` : basename
+                        )
+                        .join("\n")
                 })
             );
 
             dispatch(
                 actions.navigationCompleted({
                     directoryPath,
-                    "directoryItems": [
-                        ...directories.map(basename => ({
-                            basename,
-                            "kind": "directory" as const
-                        })),
-                        ...files.map(basename => ({ basename, "kind": "file" as const }))
-                    ]
+                    objects
                 })
             );
         }
 } satisfies Thunks;
 
 export const thunks = {
-    "setCurrentDirectory":
-        (params: { directoryPath: string | undefined }) =>
+    "initialize":
+        (params: { directoryPath: string | undefined; viewMode: "list" | "block" }) =>
+        (...args): { cleanup: () => void } => {
+            const { directoryPath, viewMode } = params;
+
+            const [dispatch, getState, { evtAction }] = args;
+
+            const ctx = Evt.newCtx();
+
+            evtAction.attachOnce(
+                event =>
+                    event.usecaseName === "projectManagement" &&
+                    event.actionName === "projectChanged",
+                ctx,
+                () => {
+                    dispatch(
+                        thunks.initialize({
+                            viewMode,
+                            "directoryPath": undefined
+                        })
+                    );
+                }
+            );
+
+            (async () => {
+                dispatch(actions.viewModeChanged({ viewMode }));
+
+                if (directoryPath === undefined) {
+                    const inStateDirectoryPath =
+                        protectedSelectors.directoryPath(getState());
+
+                    const currentS3WorkingDirectoryPath =
+                        protectedSelectors.workingDirectoryPath(getState());
+
+                    await dispatch(
+                        privateThunks.navigate({
+                            "directoryPath":
+                                inStateDirectoryPath !== undefined &&
+                                inStateDirectoryPath.startsWith(
+                                    currentS3WorkingDirectoryPath
+                                )
+                                    ? inStateDirectoryPath //we can restore to the past state
+                                    : currentS3WorkingDirectoryPath, //project has changed since last visit of myFiles
+                            "doListAgainIfSamePath": true
+                        })
+                    );
+                    return;
+                }
+                await dispatch(
+                    privateThunks.navigate({
+                        "directoryPath": directoryPath,
+                        "doListAgainIfSamePath": false
+                    })
+                );
+            })();
+
+            const cleanup = () => {
+                ctx.done();
+            };
+
+            return { cleanup };
+        },
+
+    "changeCurrentDirectory":
+        (params: { directoryPath: string }) =>
         async (...args) => {
             const { directoryPath } = params;
 
             const [dispatch] = args;
-
-            if (directoryPath === undefined) {
-                dispatch(actions.notifyDirectoryPath());
-                return;
-            }
 
             await dispatch(
                 privateThunks.navigate({
@@ -165,6 +223,15 @@ export const thunks = {
                     "doListAgainIfSamePath": false
                 })
             );
+        },
+    "changeViewMode":
+        (params: { viewMode: "list" | "block" }) =>
+        async (...args) => {
+            const { viewMode } = params;
+
+            const [dispatch] = args;
+
+            dispatch(actions.viewModeChanged({ viewMode }));
         },
     "refreshCurrentDirectory":
         () =>
@@ -182,7 +249,7 @@ export const thunks = {
     "create":
         (params: ExplorersCreateParams) =>
         async (...args) => {
-            const [dispatch, getState, { s3ClientForExplorer }] = args;
+            const [dispatch, getState] = args;
 
             const state = getState()[name];
 
@@ -225,7 +292,14 @@ export const thunks = {
                     })
                 );
 
-                await s3ClientForExplorer.uploadFile({
+                const s3Client = await dispatch(
+                    s3ConfigManagement.protectedThunks.getS3ConfigAndClientForExplorer()
+                ).then(r => {
+                    assert(r !== undefined);
+                    return r.s3Client;
+                });
+
+                const uploadResult = await s3Client.uploadFile({
                     path,
                     blob,
                     "onUploadProgress": ({ uploadPercent }) => {
@@ -239,45 +313,62 @@ export const thunks = {
                         );
                     }
                 });
+                return uploadResult;
             };
+            const completedObject = await (async () => {
+                switch (params.createWhat) {
+                    case "file": {
+                        dispatch(
+                            actions.fileUploadStarted({
+                                "basename": params.basename,
+                                directoryPath,
+                                "size": params.blob.size
+                            })
+                        );
+                        const uploadResult = await uploadFileAndLogCommand({
+                            "path": pathJoin(directoryPath, params.basename),
+                            "blob": params.blob,
+                            "onUploadProgress": ({ uploadPercent }) =>
+                                dispatch(
+                                    actions.uploadProgressUpdated({
+                                        "basename": params.basename,
+                                        directoryPath,
+                                        uploadPercent
+                                    })
+                                )
+                        });
+                        return {
+                            "kind": "file",
+                            "basename": uploadResult.basename,
+                            "size": uploadResult.size,
+                            "lastModified": uploadResult.lastModified,
+                            "policy": "private"
+                        } satisfies S3Object.File;
+                    }
+                    case "directory": {
+                        await uploadFileAndLogCommand({
+                            "path": pathJoin(directoryPath, params.basename, ".keep"),
+                            "blob": new Blob(
+                                ["This file tells that a directory exists"],
+                                {
+                                    "type": "text/plain"
+                                }
+                            ),
+                            "onUploadProgress": () => {}
+                        });
 
-            switch (params.createWhat) {
-                case "file":
-                    dispatch(
-                        actions.fileUploadStarted({
+                        return {
+                            "kind": "directory",
                             "basename": params.basename,
-                            directoryPath,
-                            "size": params.blob.size
-                        })
-                    );
-                    await uploadFileAndLogCommand({
-                        "path": pathJoin(directoryPath, params.basename),
-                        "blob": params.blob,
-                        "onUploadProgress": ({ uploadPercent }) =>
-                            dispatch(
-                                actions.uploadProgressUpdated({
-                                    "basename": params.basename,
-                                    directoryPath,
-                                    uploadPercent
-                                })
-                            )
-                    });
-                    break;
-                case "directory":
-                    await uploadFileAndLogCommand({
-                        "path": pathJoin(directoryPath, params.basename, ".keep"),
-                        "blob": new Blob(["This file tells that a directory exists"], {
-                            "type": "text/plain"
-                        }),
-                        "onUploadProgress": () => {}
-                    });
-                    break;
-            }
+                            "policy": "private"
+                        } satisfies S3Object.Directory;
+                    }
+                }
+            })();
 
             dispatch(
                 actions.operationCompleted({
-                    "kind": params.createWhat,
-                    "basename": params.basename,
+                    object: completedObject, //To continue
                     directoryPath
                 })
             );
@@ -289,11 +380,11 @@ export const thunks = {
      * currently listed.
      */
     "delete":
-        (params: { deleteWhat: "file" | "directory"; basename: string }) =>
+        (params: { s3Object: S3Object }) =>
         async (...args) => {
-            const { deleteWhat, basename } = params;
+            const { s3Object } = params;
 
-            const [dispatch, getState, { s3ClientForExplorer }] = args;
+            const [dispatch, getState] = args;
 
             const state = getState()[name];
 
@@ -303,19 +394,26 @@ export const thunks = {
 
             await dispatch(
                 privateThunks.waitForNoOngoingOperation({
-                    "kind": deleteWhat,
+                    "kind": s3Object.kind,
                     directoryPath,
-                    basename
+                    basename: s3Object.basename
                 })
             );
 
             dispatch(
                 actions.operationStarted({
-                    "kind": params.deleteWhat,
-                    "basename": params.basename,
+                    "kind": params.s3Object.kind,
+                    "basename": params.s3Object.basename,
                     "operation": "delete"
                 })
             );
+
+            const s3Client = await dispatch(
+                s3ConfigManagement.protectedThunks.getS3ConfigAndClientForExplorer()
+            ).then(r => {
+                assert(r !== undefined);
+                return r.s3Client;
+            });
 
             const deleteFileAndLogCommand = async (filePath: string) => {
                 const cmdId = Date.now();
@@ -327,7 +425,7 @@ export const thunks = {
                     })
                 );
 
-                await s3ClientForExplorer.deleteFile({ "path": filePath });
+                await s3Client.deleteFile({ "path": filePath });
 
                 dispatch(
                     actions.commandLogResponseReceived({
@@ -337,15 +435,14 @@ export const thunks = {
                 );
             };
 
-            switch (deleteWhat) {
+            switch (s3Object.kind) {
                 case "directory":
                     {
                         const { crawl } = crawlFactory({
                             "list": async ({ directoryPath }) => {
-                                const { directories, files } =
-                                    await s3ClientForExplorer.list({
-                                        "path": directoryPath
-                                    });
+                                const { directories, files } = await s3Client.list({
+                                    "path": directoryPath
+                                });
 
                                 return {
                                     "fileBasenames": files,
@@ -354,7 +451,10 @@ export const thunks = {
                             }
                         });
 
-                        const directoryToDeletePath = pathJoin(directoryPath, basename);
+                        const directoryToDeletePath = pathJoin(
+                            directoryPath,
+                            s3Object.basename
+                        );
 
                         const { filePaths } = await crawl({
                             "directoryPath": directoryToDeletePath
@@ -371,7 +471,10 @@ export const thunks = {
                     break;
                 case "file":
                     {
-                        const fileToDeletePath = pathJoin(directoryPath, basename);
+                        const fileToDeletePath = pathJoin(
+                            directoryPath,
+                            s3Object.basename
+                        );
 
                         await deleteFileAndLogCommand(fileToDeletePath);
                     }
@@ -380,8 +483,7 @@ export const thunks = {
 
             dispatch(
                 actions.operationCompleted({
-                    "kind": deleteWhat,
-                    basename,
+                    object: s3Object,
                     directoryPath
                 })
             );
@@ -391,7 +493,7 @@ export const thunks = {
         async (...args): Promise<string> => {
             const { basename } = params;
 
-            const [dispatch, getState, { s3ClientForExplorer }] = args;
+            const [dispatch, getState] = args;
 
             const state = getState()[name];
 
@@ -410,7 +512,14 @@ export const thunks = {
                 })
             );
 
-            const downloadUrl = await s3ClientForExplorer.getFileDownloadUrl({
+            const s3Client = await dispatch(
+                s3ConfigManagement.protectedThunks.getS3ConfigAndClientForExplorer()
+            ).then(r => {
+                assert(r !== undefined);
+                return r.s3Client;
+            });
+
+            const downloadUrl = await s3Client.getFileDownloadUrl({
                 path,
                 "validityDurationSecond": 3600
             });
@@ -427,26 +536,5 @@ export const thunks = {
             );
 
             return downloadUrl;
-        }
-} satisfies Thunks;
-
-export const protectedThunks = {
-    "initialize":
-        () =>
-        (...args) => {
-            const [dispatch, getState, { evtAction }] = args;
-
-            evtAction
-                .toStateful()
-                .pipe(() => [getState()])
-                .pipe(state => [
-                    !selectors.isFileExplorerEnabled(state)
-                        ? undefined
-                        : protectedSelectors.workingDirectoryPath(state)
-                ])
-                .pipe(onlyIfChanged())
-                .toStateless()
-                .pipe(workingDirectoryPath => workingDirectoryPath !== undefined)
-                .attach(() => dispatch(actions.workingDirectoryChanged()));
         }
 } satisfies Thunks;

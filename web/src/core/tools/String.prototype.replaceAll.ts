@@ -10,8 +10,8 @@ export function replaceAll(
     // If the searchValue is a string
     if (typeof searchValue === "string") {
         // Escape special characters in the string to be used in a regex
-        var escapedSearchValue = searchValue.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-        var regex = new RegExp(escapedSearchValue, "g");
+        let escapedSearchValue = searchValue.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+        let regex = new RegExp(escapedSearchValue, "g");
 
         return string.replace(regex, replaceValue);
     }
@@ -27,8 +27,8 @@ export function replaceAll(
     }
 
     // Convert searchValue to string if it's not a string or RegExp
-    var searchString = String(searchValue);
-    var regexFromString = new RegExp(
+    let searchString = String(searchValue);
+    let regexFromString = new RegExp(
         searchString.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"),
         "g"
     );

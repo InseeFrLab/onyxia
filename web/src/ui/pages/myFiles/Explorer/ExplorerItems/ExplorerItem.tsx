@@ -1,16 +1,14 @@
 import { tss } from "tss";
 import { Text } from "onyxia-ui/Text";
-import { useState, useEffect, useMemo, memo } from "react";
-import { useConstCallback } from "powerhooks/useConstCallback";
-import { TextField } from "onyxia-ui/TextField";
-import type { TextFieldProps } from "onyxia-ui/TextField";
-import { useClick } from "powerhooks/useClick";
-import Color from "color";
-import { useTranslation } from "ui/i18n";
-import { Evt } from "evt";
-import { smartTrim } from "ui/tools/smartTrim";
+import { memo } from "react";
+import { Icon } from "onyxia-ui/Icon";
+import { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
+import { id } from "tsafe";
+import { Tooltip } from "onyxia-ui/Tooltip";
+import { fileSizePrettyPrint } from "ui/tools/fileSizePrettyPrint";
 import { ExplorerIcon } from "../ExplorerIcon";
 import { declareComponentKeys } from "i18nifty";
+import { Item } from "../../shared/types";
 
 export type ExplorerItemProps = {
     className?: string;
@@ -24,15 +22,12 @@ export type ExplorerItemProps = {
     /** Represent if the item is currently selected */
     isSelected: boolean;
 
-    isCircularProgressShown: boolean;
+    /** File size in bytes */
+    size: number | undefined;
 
-    getIsValidBasename: (params: { basename: string }) => boolean;
-
-    /**
-     * Invoked when the component have been clicked once
-     * and when it has been double clicked
-     */
-    onMouseEvent: (params: { type: "down" | "double"; target: "icon" | "text" }) => void;
+    policy: Item["policy"];
+    onDoubleClick: () => void;
+    onClick: () => void;
 };
 
 export const ExplorerItem = memo((props: ExplorerItemProps) => {
@@ -40,121 +35,88 @@ export const ExplorerItem = memo((props: ExplorerItemProps) => {
         className,
         kind,
         basename,
-        isCircularProgressShown,
+        policy,
         isSelected,
-        getIsValidBasename,
-        onMouseEvent
+        size,
+        onDoubleClick,
+        onClick
     } = props;
 
-    const { t } = useTranslation({ ExplorerItem });
+    const prettySize = size ? fileSizePrettyPrint({ bytes: size }) : null;
+
+    const lastDotIndex = basename.lastIndexOf(".");
+
+    const [baseName, fileType] =
+        kind === "file" && lastDotIndex !== -1
+            ? [basename.slice(0, lastDotIndex), basename.slice(lastDotIndex + 1)]
+            : [basename, undefined];
 
     const { classes, cx } = useStyles({ isSelected, basename });
 
-    const [isInEditingState, setIsInEditingState] = useState(false);
+    // Handle key events for accessibility
+    const handleKeyDown = (e: React.KeyboardEvent) => {
+        if (e.key === "Enter") {
+            onDoubleClick();
+            return;
+        }
 
-    const { getOnMouseProps } = useClick<"icon" | "text">({
-        "doubleClickDelayMs": 500,
-        "callback": ({ type, extraArg: target }) => onMouseEvent({ type, target })
-    });
-
-    //TODO: We need a custom hook for this.
-    const [evtIsCircularProgressShown] = useState(() =>
-        Evt.create(isCircularProgressShown)
-    );
-    useEffect(() => {
-        evtIsCircularProgressShown.state = isCircularProgressShown;
-    });
-
-    const getIsValidValue = useConstCallback((value: string) =>
-        getIsValidBasename({ "basename": value })
-            ? ({ "isValidValue": true } as const)
-            : ({ "isValidValue": false, "message": "" } as const)
-    );
-
-    const [evtInputAction] = useState(() => Evt.create<TextFieldProps["evtAction"]>());
-
-    const onInputSubmit = useConstCallback<TextFieldProps["onSubmit"]>(() => {
-        setIsInEditingState(false);
-    });
-
-    const onEscapeKeyDown = useConstCallback(() => setIsInEditingState(false));
-
-    const onEnterKeyDown = useConstCallback(() => evtInputAction.post("TRIGGER SUBMIT"));
-
-    const formattedBasename = useMemo(
-        () =>
-            smartTrim({
-                "text": basename,
-                "maxLength": 21,
-                "minCharAtTheEnd": 5
-            })
-                //NOTE: Word break with - or space but not _,
-                //see: https://stackoverflow.com/a/29541502/3731798
-                .split("_")
-                .reduce<React.ReactNode[]>(
-                    (prev, curr, i) => [
-                        ...prev,
-                        ...(prev.length === 0
-                            ? []
-                            : [
-                                  "_",
-                                  <span key={i} className={classes.hiddenSpan}>
-                                      {" "}
-                                  </span>
-                              ]),
-                        curr
-                    ],
-                    []
-                ),
-
-        [basename, classes.hiddenSpan]
-    );
+        if (e.key === "Enter" || e.key === " ") {
+            onClick();
+            return;
+        }
+    };
 
     return (
-        <div className={cx(classes.root, className)}>
-            <div className={classes.frame} {...getOnMouseProps("icon")}>
-                <ExplorerIcon
-                    className={classes.explorerIcon}
-                    iconId={(() => {
-                        switch (kind) {
-                            case "directory":
-                                return "directory";
-                            case "file":
-                                return "data";
-                        }
-                    })()}
-                    hasShadow={true}
-                />
-            </div>
-            {!isInEditingState && !isCircularProgressShown ? (
-                <div {...getOnMouseProps("text")}>
-                    {/* TODO: Something better like https://stackoverflow.com/a/64763506/3731798 */}
-                    <Text typo="body 1" className={classes.text}>
-                        {formattedBasename}
-                    </Text>
-                </div>
-            ) : (
-                <form className={classes.root /*TODO*/} noValidate autoComplete="off">
-                    <TextField
-                        className={classes.input}
-                        defaultValue={basename}
-                        inputProps_aria-label={t("description")}
-                        inputProps_autoFocus={true}
-                        disabled={isCircularProgressShown}
-                        isCircularProgressShown={isCircularProgressShown}
-                        selectAllTextOnFocus={true}
-                        doRenderAsTextArea={true}
-                        onEscapeKeyDown={onEscapeKeyDown}
-                        onEnterKeyDown={onEnterKeyDown}
-                        onBlur={onEnterKeyDown}
-                        evtAction={evtInputAction}
-                        onSubmit={onInputSubmit}
-                        getIsValidValue={getIsValidValue}
-                        inputProps_spellCheck={false}
+        <Tooltip title={basename}>
+            <div
+                className={cx(classes.root, className)}
+                tabIndex={0}
+                role="button"
+                aria-selected={isSelected}
+                onDoubleClick={onDoubleClick}
+                onClick={onClick}
+                onKeyDown={handleKeyDown}
+            >
+                <div className={classes.iconContainer}>
+                    <ExplorerIcon
+                        className={classes.explorerIcon}
+                        iconId={(() => {
+                            switch (kind) {
+                                case "directory":
+                                    return "directory";
+                                case "file":
+                                    return "data";
+                            }
+                        })()}
+                        hasShadow={true}
                     />
-                </form>
-            )}
-        </div>
+                    <Icon
+                        className={classes.policyIcon}
+                        icon={id<MuiIconComponentName>(
+                            policy === "public" ? "Visibility" : "VisibilityOff"
+                        )}
+                    />
+                </div>
+
+                <div className={classes.textContainer}>
+                    <Text typo="navigation label" className={classes.baseNameText}>
+                        {baseName}
+                    </Text>
+                    <div className={classes.sizeAndFileTypeText}>
+                        <Text typo="body 1">
+                            {fileType}{" "}
+                            {prettySize ? `${prettySize.value} ${prettySize.unit}` : ""}
+                        </Text>
+                        {kind === "directory" && (
+                            <Icon
+                                size="extra small"
+                                icon={id<MuiIconComponentName>("ChevronRight")}
+                            />
+                        )}
+                    </div>
+                </div>
+            </div>
+        </Tooltip>
     );
 });
 
@@ -164,48 +126,53 @@ export type I18n = typeof i18n;
 const useStyles = tss
     .withName({ ExplorerItem })
     .withParams<Pick<ExplorerItemProps, "isSelected" | "basename">>()
-    .create(({ theme, isSelected, basename }) => ({
+    .create(({ theme, isSelected }) => ({
         "root": {
-            "textAlign": "center",
+            "borderRadius": "16px",
+            "backgroundColor": isSelected
+                ? theme.colors.useCases.surfaces.surface2
+                : "rgba(0, 0, 0, 0.05)",
             "cursor": "pointer",
-            "width": theme.spacing(9)
+            "display": "flex",
+            "flexDirection": "column",
+            "justifyContent": "space-between",
+            "padding": theme.spacing(3)
         },
-        "frame": {
-            "borderRadius": "5px",
-            "backgroundColor": isSelected ? "rgba(0, 0, 0, 0.2)" : undefined,
-            "display": "inline-block",
-            "padding": theme.muiTheme.spacing(2, 2)
-        },
+        "iconContainer": { "display": "flex", "justifyContent": "space-between" },
         "explorerIcon": {
-            "height": 60
+            "width": "50px", // Either we set a fixed size, or we measure the size of the root
+            "height": "50px"
         },
-        "text": {
-            //"color": theme.palette.text[isSelected ? "primary" : "secondary"]
-            //"color": !isSelected ? "rgba(0, 0, 0, 0.62)" : undefined
-            "color": (() => {
-                const color = new Color(
-                    theme.colors.useCases.typography.textPrimary
-                ).rgb();
-
-                return color
-                    .alpha((color as any).valpha * (isSelected ? 1.2 : 0.8))
-                    .string();
-            })(),
-            "wordBreak": /[_\- ]/.test(basename) ? undefined : "break-all"
+        "policyIcon": {
+            marginLeft: theme.spacing(1) // Adjust spacing between the icons
         },
-        "hiddenSpan": {
-            "width": 0,
+        "textContainer": {
+            "display": "flex",
+            "flexDirection": "column",
+            "marginTop": theme.spacing(2)
+        },
+        "baseNameText": {
+            "marginBottom": theme.spacing(1),
+            "whiteSpace": "nowrap",
             "overflow": "hidden",
-            "display": "inline-block"
+            "textOverflow": "ellipsis"
+            // "&:hover": {
+            //     overflow: "visible",
+            //     textOverflow: "unset",
+            //     whiteSpace: "nowrap",
+            //     backgroundColor: "#2C323F",
+            //     width: "max-content", // Étend la largeur à la longueur totale du texte
+            //     zIndex: 1,
+            //     outline: `1px solid ${theme.colors.useCases.surfaces.surface1}`,
+            //     boxShadow: `0px 4px 8px rgba(0, 0, 0, 0.1)`, // Ajoute une légère ombre pour un effet 3D
+            //     borderRadius: theme.spacing(1) // Ajoute des coins arrondis pour un effet plus doux
+            // }
         },
-        "input": {
-            //NOTE: So that the text does not move when editing start.
-            //"marginTop": "2px",
-            "marginTop": "-1px",
-
-            "paddingTop": 0,
-            "& .MuiInput-input": {
-                "textAlign": "center"
-            }
+        "sizeAndFileTypeText": {
+            "display": "flex",
+            "justifyContent": "space-between",
+            "whiteSpace": "nowrap",
+            "overflow": "hidden",
+            "textOverflow": "ellipsis"
         }
     }));

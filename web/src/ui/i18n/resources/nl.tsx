@@ -201,9 +201,9 @@ export const translations: Translations<"nl"> = {
             </>
         ),
         "account credentials": "Accountgegevens",
-        "accountFriendlyName textField label": "Vriendelijke naam van het account",
-        "accountFriendlyName textField helper text":
-            "Dit is slechts om u te helpen dit account te identificeren. Voorbeeld: Mijn persoonlijke account",
+        "friendlyName textField label": "Configuratienaam",
+        "friendlyName textField helper text":
+            "Dit helpt je alleen om deze configuratie te identificeren. Voorbeeld: Mijn AWS-bucket",
 
         "isAnonymous switch label": "Anonieme toegang",
         "isAnonymous switch helper text":
@@ -325,6 +325,10 @@ export const translations: Translations<"nl"> = {
             "Er is geen S3-server geconfigureerd voor deze instantie. Je kunt er echter handmatig een toevoegen om de S3-bestandsverkenner in te schakelen.",
         "cancel": "Annuleren",
         "go to settings": "Ga naar instellingen"
+    },
+    "MyFilesShareDialog": {
+        "cancel": "Annuleren",
+        "create and copy link": "Creare e copiare il link"
     },
     "MySecrets": {
         "page title - my secrets": "My Secrets",
@@ -535,28 +539,34 @@ export const translations: Translations<"nl"> = {
     },
     "Launcher": {
         "header text1": "Dienstencatalogus",
-        "sources": ({ helmChartName, helmChartRepositoryName, sourceUrls }) => (
+        "sources": ({
+            helmChartName,
+            helmChartRepositoryName,
+            labeledHelmChartSourceUrls
+        }) => (
             <>
                 Je staat op het punt om het Helm-chart{" "}
                 {
-                    <MaybeLink href={sourceUrls.helmChartSourceUrl}>
+                    <MaybeLink href={labeledHelmChartSourceUrls.helmChartSourceUrl}>
                         {helmChartName}
                     </MaybeLink>
                 }
                 te implementeren dat behoort tot de Helm-chartrepository{" "}
                 {
-                    <MaybeLink href={sourceUrls.helmChartRepositorySourceUrl}>
+                    <MaybeLink
+                        href={labeledHelmChartSourceUrls.helmChartRepositorySourceUrl}
+                    >
                         {helmChartRepositoryName}
                     </MaybeLink>
                 }
                 .
-                {sourceUrls.dockerImageSourceUrl !== undefined && (
+                {labeledHelmChartSourceUrls.dockerImageSourceUrl !== undefined && (
                     <>
                         {" "}
                         Het is gebaseerd op de Docker-afbeelding{" "}
                         {
                             <MuiLink
-                                href={sourceUrls.dockerImageSourceUrl}
+                                href={labeledHelmChartSourceUrls.dockerImageSourceUrl}
                                 target="_blank"
                             >
                                 {helmChartName}
@@ -668,6 +678,27 @@ Voel je vrij om te verkennen en de controle over je Kubernetes-implementaties te
             </>
         )
     },
+    "FormFieldWrapper": {
+        "reset to default": "Terugzetten naar standaardwaarden"
+    },
+    "YamlCodeBlockFormField": {
+        "not an array": "Een array wordt verwacht",
+        "not an object": "Een object wordt verwacht",
+        "not valid yaml": "Ongeldige YAML/JSON"
+    },
+    "TextFormField": {
+        "not matching pattern": ({ pattern }) =>
+            `Komt niet overeen met het patroon ${pattern}`,
+        "toggle password visibility": "Wachtwoordzichtbaarheid wisselen"
+    },
+    "FormFieldGroupComponent": {
+        "add": "Toevoegen"
+    },
+    "NumberFormField": {
+        "below minimum": ({ minimum }) => `Moet groter dan of gelijk aan ${minimum} zijn`,
+        "not a number": "Geen getal",
+        "not an integer": "Geen geheel getal"
+    },
     "NoLongerBookmarkedDialog": {
         "no longer bookmarked dialog title": "Niet opgeslagen wijzigingen",
         "no longer bookmarked dialog body":
@@ -718,18 +749,20 @@ Voel je vrij om te verkennen en de controle over je Kubernetes-implementaties te
         "version select helper text": ({
             helmCharName,
             helmRepositoryName,
-            sourceUrls
+            labeledHelmChartSourceUrls
         }) => (
             <>
                 Versie van de helm-chart{" "}
                 {
-                    <MaybeLink href={sourceUrls.helmChartSourceUrl}>
+                    <MaybeLink href={labeledHelmChartSourceUrls.helmChartSourceUrl}>
                         {helmCharName}
                     </MaybeLink>
                 }
                 die behoort tot de helm-chart repository{" "}
                 {
-                    <MaybeLink href={sourceUrls.helmChartRepositorySourceUrl}>
+                    <MaybeLink
+                        href={labeledHelmChartSourceUrls.helmChartRepositorySourceUrl}
+                    >
                         {helmRepositoryName}
                     </MaybeLink>
                 }
@@ -745,16 +778,6 @@ Voel je vrij om te verkennen en de controle over je Kubernetes-implementaties te
                 <MuiLink {...projectS3ConfigLink}>S3-configuratie</MuiLink>.
             </>
         )
-    },
-    "LauncherConfigurationCard": {
-        "global config": "Globale configuraties",
-        "configuration": ({ packageName }) => `Configuratie ${packageName}`,
-        "dependency": ({ dependencyName }) => `Afhankelijkheid ${dependencyName}`,
-        "launch of a service": ({ dependencyName }) =>
-            `Een dienst starten ${dependencyName}`,
-        "mismatching pattern": ({ pattern }) => `Moet ${pattern} naleven`,
-        "Invalid YAML Object": "Ongeldig YAML-object",
-        "Invalid YAML Array": "Ongeldige YAML-tabel"
     },
     "Footer": {
         "contribute": "Bijdragen aan het project",
@@ -913,7 +936,8 @@ Voel je vrij om te verkennen en de controle over je Kubernetes-implementaties te
         ),
         "column": "kolom",
         "density": "dichtheid",
-        "download file": "bestand downloaden"
+        "download file": "bestand downloaden",
+        "resize table": "Formaat wijzigen"
     },
     "UrlInput": {
         "load": "Laden"
@@ -1008,6 +1032,15 @@ Voel je vrij om te verkennen en de controle over je Kubernetes-implementaties te
     "CopyToClipboardIconButton": {
         "copied to clipboard": "Gekopieerd!",
         "copy to clipboard": "Kopiëren naar klembord"
+    },
+    "CustomDataGridToolbarDensitySelector": {
+        "toolbarDensity": "Dichtheid",
+        "toolbarDensityStandard": "Standaard",
+        "toolbarDensityComfortable": "Comfortabel",
+        "toolbarDensityCompact": "Compact"
+    },
+    "CustomDataGridToolbarColumnsButton": {
+        "toolbarColumnsLabel": "Kolommen"
     }
     /* spell-checker: enable */
 };
