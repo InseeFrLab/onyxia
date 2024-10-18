@@ -1,5 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { ListExplorerItems } from "./ListExplorerItems";
+import { action } from "@storybook/addon-actions";
+import { Evt } from "evt";
 
 const meta = {
     title: "Pages/MyFiles/Explorer/ListExplorerItems",
@@ -89,5 +91,14 @@ const itemsSample: ListExplorerItems["items"] = [
     }
 ];
 export const Default: Story = {
-    args: { items: itemsSample }
+    args: {
+        isNavigating: false,
+        items: itemsSample,
+        onNavigate: action("Navigate to directory"),
+        onOpenFile: action("Open file"),
+        onDeleteItem: action("Delete item"),
+        onCopyPath: action("Copy path"),
+        onSelectedItemKindValueChange: action("Selected item kind changed"),
+        evtAction: Evt.create<"DELETE SELECTED ITEM" | "COPY SELECTED ITEM PATH">()
+    }
 };
