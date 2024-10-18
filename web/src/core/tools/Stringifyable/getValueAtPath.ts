@@ -15,19 +15,27 @@ function getValueAtPath_rec(
 
     const [first, ...rest] = path;
 
+    let dereferenced: Stringifyable | undefined;
+
     if (stringifyable instanceof Array) {
         if (typeof first !== "number") {
             return undefined;
         }
 
-        return getValueAtPath_rec(stringifyable[first], rest);
+        dereferenced = stringifyable[first];
+    } else {
+        if (typeof first !== "string") {
+            return undefined;
+        }
+
+        dereferenced = stringifyable[first];
     }
 
-    if (typeof first !== "string") {
+    if (dereferenced === undefined) {
         return undefined;
     }
 
-    return getValueAtPath_rec(stringifyable[first], rest);
+    return getValueAtPath_rec(dereferenced, rest);
 }
 
 export function getValueAtPath(
