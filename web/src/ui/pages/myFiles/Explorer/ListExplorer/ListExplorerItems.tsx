@@ -1,4 +1,4 @@
-import { type GridColDef } from "@mui/x-data-grid";
+import { GridRowParams, type GridColDef } from "@mui/x-data-grid";
 import { memo, useMemo, useState } from "react";
 import { ExplorerIcon } from "../ExplorerIcon";
 import { tss } from "tss";
@@ -55,21 +55,25 @@ export const ListExplorerItems = memo((props: ListExplorerItems) => {
         Item | { basename: undefined; kind: "none" }
     >({ basename: undefined, kind: "none" });
 
-    const rows = items.map((item, index) => ({
-        ...item,
-        id: index, // Maybe a better id is necessary due to pagination
-        lastModified:
-            "lastModified" in item && item.lastModified
-                ? item.lastModified.toLocaleString()
-                : null
-    }));
+    const rows = useMemo(
+        () =>
+            items.map(
+                (item, index) =>
+                    ({
+                        ...item,
+                        id: index // Maybe a better id is necessary due to pagination
+                    }) satisfies Item & { id: number }
+            ),
+        [items]
+    );
 
-    const columns = useMemo(
+    const columns: GridColDef[] = useMemo(
         () =>
             [
                 {
                     field: "basename",
                     headerName: "Name",
+                    type: "string",
                     display: "flex" as const,
                     renderCell: params => (
                         <>
@@ -87,8 +91,11 @@ export const ListExplorerItems = memo((props: ListExplorerItems) => {
                 {
                     field: "size",
                     headerName: "Size",
+                    type: "number",
+                    align: "left",
+                    headerAlign: "left",
                     valueFormatter: size => {
-                        if (size === undefined) return null;
+                        if (size === undefined) return "";
                         const prettySize = fileSizePrettyPrint({
                             bytes: size
                         });
@@ -97,12 +104,19 @@ export const ListExplorerItems = memo((props: ListExplorerItems) => {
                 },
                 {
                     field: "lastModified",
-                    headerName: "Modified"
+                    headerName: "Modified",
+                    type: "date",
+                    valueFormatter: (date?: Date) => {
+                        if (!date) return "";
+                        return date.toLocaleString();
+                    }
                 },
                 {
                     field: "policy",
                     headerName: "Policy",
                     display: "flex" as const,
+                    type: "singleSelect",
+                    valueOptions: ["public", "private"],
                     renderCell: params => (
                         <Icon
                             icon={id<MuiIconComponentName>(
@@ -131,7 +145,6 @@ export const ListExplorerItems = memo((props: ListExplorerItems) => {
             evtAction.attach(ctx, action => {
                 switch (action) {
                     case "DELETE SELECTED ITEM":
-                        console.log(selectedItem);
                         assert(selectedItem.kind !== "none");
                         onDeleteItem({ "item": selectedItem });
                         break;
@@ -150,6 +163,16 @@ export const ListExplorerItems = memo((props: ListExplorerItems) => {
         setSelectedItem({ basename: undefined, kind: "none" });
     }, [isNavigating]);
 
+    const handleRowClick = useConstCallback((params: GridRowParams) => {
+        console.log("handleRowClick", params);
+        if (!selectedItem || selectedItem.kind !== params.row.kind) {
+            onSelectedItemKindValueChange({
+                selectedItemKind: params.row.kind
+            });
+        }
+        setSelectedItem(params.row);
+    });
+
     return (
         <div className={cx(classes.root, className)}>
             <CustomDataGrid
@@ -167,35 +190,20 @@ export const ListExplorerItems = memo((props: ListExplorerItems) => {
                         noRowsVariant: "linear-progress"
                     }
                 }}
-                onRowClick={params => {
-                    if (!selectedItem || selectedItem.kind !== params.row.kind) {
-                        onSelectedItemKindValueChange({
-                            selectedItemKind: params.row.kind
-                        });
-                    }
-                    console.log(params.row);
-                    setSelectedItem(params.row);
-                }}
+                onRowClick={handleRowClick}
                 onCellDoubleClick={params => {
                     if (params.field !== "basename") return;
                     switch (params.row.kind) {
                         case "directory":
-                            onNavigate({ "basename": params.row.basename });
-                            break;
+                            return onNavigate({ "basename": params.row.basename });
+
                         case "file":
-                            onOpenFile({ "basename": params.row.basename });
-                            break;
+                            return onOpenFile({ "basename": params.row.basename });
                     }
                 }}
                 checkboxSelection
                 disableMultipleRowSelection
                 disableColumnMenu
-                autosizeOnMount
-                autosizeOptions={{
-                    expand: true,
-                    includeHeaders: true,
-                    includeOutliers: true
-                }}
             />
         </div>
     );
