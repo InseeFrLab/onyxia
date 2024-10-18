@@ -386,26 +386,38 @@ export function createS3Client(
 
             const { awsS3Client } = await getAwsS3Client();
 
-            const respPolicy = await awsS3Client.send(
-                new (await import("@aws-sdk/client-s3")).GetBucketPolicyCommand({
-                    "Bucket": bucketName
-                })
-            );
+            const allowedPrefix: string[] = await import("@aws-sdk/client-s3")
+                .then(({ GetBucketPolicyCommand }) =>
+                    awsS3Client.send(
+                        new GetBucketPolicyCommand({
+                            Bucket: bucketName
+                        })
+                    )
+                )
+                .then(respPolicy => {
+                    const policy = respPolicy.Policy
+                        ? JSON.parse(respPolicy.Policy)
+                        : undefined;
 
-            const policy = respPolicy.Policy ? JSON.parse(respPolicy.Policy) : undefined;
+                    return (
+                        policy?.Statement?.filter(
+                            (statement: any) =>
+                                statement.Effect === "Allow" &&
+                                (statement.Action.includes("s3:GetObject") ||
+                                    statement.Action.includes("s3:*"))
+                        ).flatMap((statement: any) =>
+                            statement.Resource.map((resource: string) =>
+                                resource.replace(`arn:aws:s3:::${bucketName}/`, "")
+                            )
+                        ) ?? []
+                    );
+                })
+                .catch(error => {
+                    console.error("Error fetching bucket policy:", error);
+                    return [];
+                });
 
             // Extract resources allowed for s3:GetObject (or s3:*) actions
-            const allowedPrefix: string[] =
-                policy?.Statement?.filter(
-                    (statement: any) =>
-                        statement.Effect === "Allow" &&
-                        (statement.Action.includes("s3:GetObject") ||
-                            statement.Action.includes("s3:*"))
-                ).flatMap((statement: any) =>
-                    statement.Resource.map((resource: string) =>
-                        resource.replace(`arn:aws:s3:::${bucketName}/`, "")
-                    )
-                ) ?? [];
 
             const Contents: import("@aws-sdk/client-s3")._Object[] = [];
             const CommonPrefixes: import("@aws-sdk/client-s3").CommonPrefix[] = [];
