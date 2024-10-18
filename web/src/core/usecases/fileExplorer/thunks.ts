@@ -153,7 +153,22 @@ export const thunks = {
         async (...args) => {
             const { directoryPath, viewMode } = params;
 
-            const [dispatch, getState] = args;
+            const [dispatch, getState, rootContext] = args;
+
+            const { evtAction } = rootContext;
+
+            evtAction.attachOnce(
+                event =>
+                    event.usecaseName === "projectManagement" &&
+                    event.actionName === "projectChanged",
+                () => {
+                    dispatch(
+                        thunks.initialize({
+                            ...params
+                        })
+                    );
+                }
+            );
 
             dispatch(actions.viewModeChanged({ viewMode }));
 
