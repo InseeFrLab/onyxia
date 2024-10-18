@@ -1,5 +1,5 @@
 import { GridRowParams, type GridColDef } from "@mui/x-data-grid";
-import { memo, useMemo, useState } from "react";
+import { memo, useMemo } from "react";
 import { ExplorerIcon } from "../ExplorerIcon";
 import { tss } from "tss";
 import { Text } from "onyxia-ui/Text";
@@ -14,6 +14,7 @@ import { useConstCallback } from "powerhooks/useConstCallback";
 import { assert } from "tsafe/assert";
 import { useEvt } from "evt/hooks";
 import type { NonPostableEvt } from "evt";
+import { useConst } from "powerhooks/useConst";
 
 export type ListExplorerItems = {
     className?: string;
@@ -51,9 +52,12 @@ export const ListExplorerItems = memo((props: ListExplorerItems) => {
 
     const { classes, cx } = useStyles();
 
-    const [selectedItem, setSelectedItem] = useState<
-        Item | { basename: undefined; kind: "none" }
-    >({ basename: undefined, kind: "none" });
+    const selectedItemRef = useConst(() => ({
+        current: id<Item | { basename: undefined; kind: "none" }>({
+            basename: undefined,
+            kind: "none"
+        })
+    }));
 
     const rows = useMemo(
         () =>
@@ -143,32 +147,34 @@ export const ListExplorerItems = memo((props: ListExplorerItems) => {
             evtAction.attach(ctx, action => {
                 switch (action) {
                     case "DELETE SELECTED ITEM":
-                        assert(selectedItem.kind !== "none");
-                        onDeleteItem({ "item": selectedItem });
+                        assert(selectedItemRef.current.kind !== "none");
+                        onDeleteItem({ "item": selectedItemRef.current });
                         break;
                     case "COPY SELECTED ITEM PATH":
-                        assert(selectedItem.kind !== "none");
+                        assert(selectedItemRef.current.kind !== "none");
                         onCopyPath({
-                            "basename": selectedItem.basename
+                            "basename": selectedItemRef.current.basename
                         });
                         break;
                 }
             }),
-        [evtAction, onDeleteItem, onCopyPath, selectedItem]
+        [evtAction, onDeleteItem, onCopyPath]
     );
 
     useEffectOnValueChange(() => {
-        setSelectedItem({ basename: undefined, kind: "none" });
+        selectedItemRef.current = { basename: undefined, kind: "none" };
     }, [isNavigating]);
 
     const handleRowClick = useConstCallback((params: GridRowParams) => {
-        console.log("handleRowClick", params);
-        if (!selectedItem || selectedItem.kind !== params.row.kind) {
+        if (
+            !selectedItemRef.current ||
+            selectedItemRef.current.kind !== params.row.kind
+        ) {
             onSelectedItemKindValueChange({
                 selectedItemKind: params.row.kind
             });
         }
-        setSelectedItem(params.row);
+        selectedItemRef.current = params.row;
     });
 
     return (
