@@ -56,6 +56,7 @@ export const Default: Story = {
             onChange,
             onAdd,
             onRemove
-        }
+        },
+        "onRemove": undefined
     }
 };
