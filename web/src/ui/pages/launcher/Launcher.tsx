@@ -12,20 +12,20 @@ import { useSplashScreen } from "onyxia-ui";
 import { useEvt } from "evt/hooks";
 import { routes, getPreviousRouteName } from "ui/routes";
 import { env } from "env";
-import { assert } from "tsafe/assert";
+import { assert, type Equals } from "tsafe/assert";
 import { Deferred } from "evt/tools/Deferred";
 import { Evt, type UnpackEvt } from "evt";
 import { LauncherDialogs, type Props as LauncherDialogsProps } from "./LauncherDialogs";
 import { CommandBar } from "ui/shared/CommandBar";
 import { saveAs } from "file-saver";
 import { LauncherMainCard } from "./LauncherMainCard";
-import { LauncherConfigurationCard } from "./LauncherConfigurationCard";
 import { customIcons } from "ui/theme";
 import {
     MaybeAcknowledgeConfigVolatilityDialog,
     type MaybeAcknowledgeConfigVolatilityDialogProps
 } from "ui/shared/MaybeAcknowledgeConfigVolatilityDialog";
-import type { SourceUrls } from "core/usecases/launcher/selectors";
+import type { LabeledHelmChartSourceUrls } from "core/usecases/launcher/selectors";
+import { RootFormComponent } from "./RootFormComponent/RootFormComponent";
 
 export type Props = {
     route: PageRoute;
@@ -64,24 +64,22 @@ export default function Launcher(props: Props) {
     const {
         isReady,
         friendlyName,
-        willOverwriteExistingConfigOnSave,
         isShared,
-        indexedFormFields,
-        isLaunchable,
-        formFieldsIsWellFormed,
-        restorableConfig,
-        isRestorableConfigSaved,
-        areAllFieldsDefault,
         chartName,
         chartVersion,
         availableChartVersions,
+        restorableConfig,
+        rootForm,
+        willOverwriteExistingConfigOnSave,
+        isRestorableConfigSaved,
+        isDefaultConfiguration,
         catalogName,
         chartIconUrl,
         launchScript,
         commandLogsEntries,
         groupProjectName,
         s3ConfigSelect,
-        sourceUrls
+        labeledHelmChartSourceUrls
     } = useCoreState("launcher", "main");
 
     const scrollableDivRef = useStateRef<HTMLDivElement>(null);
@@ -91,15 +89,6 @@ export default function Launcher(props: Props) {
     const { showSplashScreen, hideSplashScreen } = useSplashScreen();
 
     useEffect(() => {
-        const {
-            catalogId,
-            chartName,
-            version: chartVersion,
-            formFieldsValueDifferentFromDefault,
-            "name": friendlyName,
-            shared: isShared
-        } = route.params;
-
         showSplashScreen({ "enableTransparency": true });
 
         let autoLaunch = route.params.autoLaunch ?? false;
@@ -123,51 +112,56 @@ export default function Launcher(props: Props) {
         }
 
         const { cleanup } = launcher.initialize({
-            catalogId,
-            chartName,
-            chartVersion,
-            formFieldsValueDifferentFromDefault,
-            friendlyName,
-            isShared,
+            "restorableConfig": {
+                "catalogId": route.params.catalogId,
+                "chartName": route.params.chartName,
+                "chartVersion": route.params.version,
+                "friendlyName": route.params.name,
+                "isShared": route.params.shared,
+                "s3ConfigId": route.params.s3,
+                "helmValuesPatch": route.params.helmValuesPatch
+            },
             autoLaunch
         });
 
         return cleanup;
     }, []);
 
-    const { evtLauncher } = useCore().evts;
-
-    const routeUpdateReplace = useConstCallback(
-        (params: Partial<(typeof route)["params"]>) => {
-            routes[route.name]({
-                ...route.params,
-                ...params
-            }).replace();
+    useEffect(() => {
+        if (!isReady) {
+            return;
         }
-    );
+
+        const {
+            catalogId,
+            chartName,
+            chartVersion,
+            friendlyName,
+            isShared,
+            s3ConfigId,
+            helmValuesPatch,
+            ...rest
+        } = restorableConfig;
+
+        assert<Equals<typeof rest, {}>>();
+
+        routes[route.name]({
+            catalogId,
+            chartName,
+            "version": chartVersion,
+            "name": friendlyName,
+            "shared": isShared,
+            "s3": s3ConfigId,
+            helmValuesPatch
+        }).replace();
+    }, [restorableConfig]);
+
+    const { evtLauncher } = useCore().evts;
 
     useEvt(
         ctx =>
             evtLauncher
                 .pipe(ctx)
-                .$attach(
-                    event =>
-                        event.eventName === "initializationParamsChanged"
-                            ? [event]
-                            : null,
-                    ({
-                        chartVersion,
-                        formFieldsValueDifferentFromDefault,
-                        friendlyName,
-                        isShared
-                    }) =>
-                        routeUpdateReplace({
-                            "version": chartVersion,
-                            "name": friendlyName,
-                            "shared": isShared,
-                            formFieldsValueDifferentFromDefault
-                        })
-                )
                 .attach(
                     event => event.eventName === "initialized",
                     () => hideSplashScreen()
@@ -281,7 +275,7 @@ export default function Launcher(props: Props) {
                     helpContent={t("sources", {
                         "helmChartName": chartName,
                         "helmChartRepositoryName": resolveLocalizedString(catalogName),
-                        sourceUrls
+                        labeledHelmChartSourceUrls
                     })}
                     helpIcon="sentimentSatisfied"
                     titleCollapseParams={{
@@ -331,7 +325,7 @@ export default function Launcher(props: Props) {
                                 }}
                             />
                         )}
-                        <div className={classes.wrapperForMawWidth}>
+                        <div className={classes.wrapperForMaxWidth}>
                             <LauncherMainCard
                                 chartName={chartName}
                                 chartIconUrl={chartIconUrl}
@@ -343,7 +337,7 @@ export default function Launcher(props: Props) {
                                 availableChartVersions={availableChartVersions}
                                 onChartVersionChange={onChartVersionChange}
                                 catalogName={catalogName}
-                                sourceUrls={sourceUrls}
+                                labeledHelmChartSourceUrls={labeledHelmChartSourceUrls}
                                 myServicesSavedConfigsExtendedLink={
                                     myServicesSavedConfigsExtendedLink
                                 }
@@ -362,44 +356,37 @@ export default function Launcher(props: Props) {
                                 onRequestLaunch={launcher.launch}
                                 onRequestCancel={onRequestCancel}
                                 onRequestRestoreAllDefault={
-                                    areAllFieldsDefault
+                                    isDefaultConfiguration
                                         ? undefined
                                         : launcher.restoreAllDefault
                                 }
                                 onRequestCopyLaunchUrl={
-                                    areAllFieldsDefault || env.DISABLE_AUTO_LAUNCH
+                                    isDefaultConfiguration || env.DISABLE_AUTO_LAUNCH
                                         ? undefined
                                         : onRequestCopyLaunchUrl
                                 }
-                                isLaunchable={isLaunchable}
                                 s3ConfigsSelect={
                                     s3ConfigSelect === undefined
                                         ? undefined
                                         : {
                                               projectS3ConfigLink,
                                               "selectedOption":
-                                                  s3ConfigSelect.selectedOption,
+                                                  s3ConfigSelect.selectedOptionValue,
                                               "options": s3ConfigSelect.options,
                                               "onSelectedS3ConfigChange":
-                                                  launcher.useSpecificS3Config
+                                                  launcher.changeS3Config
                                           }
                                 }
                             />
-                            {Object.keys(indexedFormFields).map(
-                                dependencyNamePackageNameOrGlobal => (
-                                    <LauncherConfigurationCard
-                                        key={dependencyNamePackageNameOrGlobal}
-                                        dependencyNamePackageNameOrGlobal={
-                                            dependencyNamePackageNameOrGlobal
-                                        }
-                                        {...indexedFormFields[
-                                            dependencyNamePackageNameOrGlobal
-                                        ]}
-                                        onFormValueChange={launcher.changeFormFieldValue}
-                                        formFieldsIsWellFormed={formFieldsIsWellFormed}
-                                    />
-                                )
-                            )}
+                            <RootFormComponent
+                                className={classes.rootForm}
+                                rootForm={rootForm}
+                                callbacks={{
+                                    "onAdd": launcher.addArrayItem,
+                                    "onChange": launcher.changeFormFieldValue,
+                                    "onRemove": launcher.removeArrayItem
+                                }}
+                            />
                         </div>
                     </div>
                 </div>
@@ -425,7 +412,7 @@ const { i18n } = declareComponentKeys<
           P: {
               helmChartName: string;
               helmChartRepositoryName: JSX.Element;
-              sourceUrls: SourceUrls;
+              labeledHelmChartSourceUrls: LabeledHelmChartSourceUrls;
           };
           R: JSX.Element;
       }
@@ -465,7 +452,7 @@ const useStyles = tss
                   theme.spacing(2),
             "position": "relative"
         },
-        "wrapperForMawWidth": {
+        "wrapperForMaxWidth": {
             "maxWidth": 1300,
             "& > *": {
                 "marginBottom": theme.spacing(3)
@@ -482,5 +469,6 @@ const useStyles = tss
         "commandBarWhenExpended": {
             "width": "min(100%, 1450px)",
             "transition": "width 70ms linear"
-        }
+        },
+        "rootForm": {}
     }));

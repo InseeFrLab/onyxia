@@ -32,6 +32,15 @@ import { ensureUrlIsSafe } from "ui/shared/ensureUrlIsSafe";
 
 export const { env, injectTransferableEnvsInQueryParams } = createParsedEnvs([
     {
+        "envName": "ONYXIA_API_URL",
+        "isUsedInKeycloakTheme": false,
+        "validateAndParseOrGetDefault": ({ envValue }) => {
+            assert(envValue !== "", "Should have default in .env");
+
+            return envValue;
+        }
+    },
+    {
         "envName": "HEADER_LOGO",
         "isUsedInKeycloakTheme": true,
         "validateAndParseOrGetDefault": ({ envValue, envName }): ThemedAssetUrl => {

@@ -128,7 +128,6 @@ export const thunks = {
 
             if (kubernetesOidcClient === undefined) {
                 kubernetesOidcClient = await createOidcOrFallback({
-                    "oidcAdapterImplementationToUseIfNotFallingBack": "default",
                     "fallbackOidc": oidc,
                     "oidcParams": region.kubernetes.oidcParams
                 });
@@ -184,7 +183,7 @@ export const selectors = (() => {
     );
 
     const namespace = createSelector(
-        projectManagement.selectors.currentProject,
+        projectManagement.protectedSelectors.currentProject,
         selectedProject => selectedProject.namespace
     );
 

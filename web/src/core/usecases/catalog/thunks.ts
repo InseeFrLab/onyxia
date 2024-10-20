@@ -49,8 +49,8 @@ export const thunks = {
                     !userAuthentication.selectors.authenticationState(getState())
                         .isUserLoggedIn
                         ? false
-                        : projectManagement.selectors.currentProject(getState()).group !==
-                          undefined;
+                        : projectManagement.protectedSelectors.currentProject(getState())
+                              .group !== undefined;
 
                 const { catalogs: catalogs_all, chartsByCatalogId } =
                     await onyxiaApi.getCatalogsAndCharts();

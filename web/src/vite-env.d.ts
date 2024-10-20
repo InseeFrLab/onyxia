@@ -55,10 +55,11 @@ type ImportMetaEnv = {
   SERVICE_CONFIGURATION_EXPANDED_BY_DEFAULT: string
   S3_DOCUMENTATION_LINK: string
   VAULT_DOCUMENTATION_LINK: string
+  ONYXIA_API_URL: string
   ONYXIA_VERSION: string
   ONYXIA_VERSION_URL: string
-  ONYXIA_API_URL: string
   ALLOW_THEME_TESTING_VIA_URL: string
+  SCREEN_SCALER: string
   // @user-defined-start
   /*
    * Here you can define your own special variables
