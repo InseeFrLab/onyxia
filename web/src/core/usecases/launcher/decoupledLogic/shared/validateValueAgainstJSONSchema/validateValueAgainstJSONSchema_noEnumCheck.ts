@@ -78,7 +78,11 @@ export function validateValueAgainstJSONSchema_noEnumCheck(params: {
                 return false;
             }
 
-            const x = parseFloat(value.slice(0, -helmValuesSchema.sliderUnit.length));
+            const x = parseFloat(
+                helmValuesSchema.sliderUnit === ""
+                    ? value
+                    : value.slice(0, -helmValuesSchema.sliderUnit.length)
+            );
 
             if (isNaN(x)) {
                 return false;

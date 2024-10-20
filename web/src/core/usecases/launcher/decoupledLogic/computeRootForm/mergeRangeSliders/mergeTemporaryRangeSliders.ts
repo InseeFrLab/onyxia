@@ -102,7 +102,10 @@ export function mergeTemporaryRangeSliders(params: {
 
                             assert(helmValue.endsWith(unit));
 
-                            helmValue_withoutUnit = helmValue.slice(0, -unit.length);
+                            helmValue_withoutUnit =
+                                unit === ""
+                                    ? helmValue
+                                    : helmValue.slice(0, -unit.length);
                         }
 
                         const value = parseFloat(helmValue_withoutUnit);

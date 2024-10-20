@@ -98,6 +98,35 @@ describe(symToStr({ computeHelmValues }), () => {
         expect(got).toStrictEqual(expected);
     });
 
+    it("Use default - real world case", () => {
+        const xOnyxiaContext = { s3: undefined };
+
+        const got = computeHelmValues({
+            "helmValuesSchema": {
+                "type": "object",
+                "properties": {
+                    "gpu": {
+                        "type": "string",
+                        "default": "1",
+                        "render": "slider",
+                        "sliderMin": 1,
+                        "sliderMax": 3,
+                        "sliderUnit": ""
+                    }
+                }
+            },
+            "helmValuesYaml": YAML.stringify({}),
+            xOnyxiaContext
+        });
+
+        const expected = {
+            "helmValues": { "gpu": "1" },
+            "isChartUsingS3": false
+        };
+
+        expect(got).toStrictEqual(expected);
+    });
+
     it("Use values.yaml", () => {
         const xOnyxiaContext = {
             "a": {

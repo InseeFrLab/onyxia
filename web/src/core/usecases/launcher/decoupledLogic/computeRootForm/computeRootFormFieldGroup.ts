@@ -270,7 +270,10 @@ function computeRootFormFieldGroup_rec(params: {
                         return value;
                     }
                     case "string": {
-                        const xStr = value.slice(0, -(sliderUnit ?? "").length);
+                        const xStr =
+                            sliderUnit === undefined || sliderUnit === ""
+                                ? value
+                                : value.slice(0, -sliderUnit.length);
 
                         const x = parseFloat(xStr);
 
