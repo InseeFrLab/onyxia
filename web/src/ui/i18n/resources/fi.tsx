@@ -202,9 +202,9 @@ export const translations: Translations<"fi"> = {
             </>
         ),
         "account credentials": "Tilin tunnistetiedot",
-        "accountFriendlyName textField label": "Tilin ystävällinen nimi",
-        "accountFriendlyName textField helper text":
-            "Tämä on vain avuksi tilin tunnistamisessa. Esimerkki: Oma henkilökohtainen tili",
+        "friendlyName textField label": "Konfiguraation nimi",
+        "friendlyName textField helper text":
+            "Tämä auttaa sinua tunnistamaan tämän konfiguraation. Esimerkki: Minun AWS-bucket",
         "isAnonymous switch label": "Anonyymi pääsy",
         "isAnonymous switch helper text":
             "Aseta PÄÄLLE, jos salainen pääsyavain ei ole tarpeen",
@@ -322,6 +322,10 @@ export const translations: Translations<"fi"> = {
             "Tälle instanssille ei ole määritetty S3-palvelinta. Voit kuitenkin lisätä sellaisen manuaalisesti ottaaksesi käyttöön S3-tiedostonhallinnan.",
         "cancel": "Peruuta",
         "go to settings": "Siirry asetuksiin"
+    },
+    "MyFilesShareDialog": {
+        "cancel": "Peruuta",
+        "create and copy link": "Luo ja kopioi linkki"
     },
     "MySecrets": {
         "page title - my secrets": "Omat salaisuudet",
@@ -529,27 +533,33 @@ export const translations: Translations<"fi"> = {
     },
     "Launcher": {
         "header text1": "Palvelukatalogi",
-        "sources": ({ helmChartName, helmChartRepositoryName, sourceUrls }) => (
+        "sources": ({
+            helmChartName,
+            helmChartRepositoryName,
+            labeledHelmChartSourceUrls
+        }) => (
             <>
                 Olet ottamassa käyttöön{" "}
                 {
-                    <MaybeLink href={sourceUrls.helmChartSourceUrl}>
+                    <MaybeLink href={labeledHelmChartSourceUrls.helmChartSourceUrl}>
                         {helmChartName} Helm Chartin
                     </MaybeLink>
                 }
                 {
-                    <MaybeLink href={sourceUrls.helmChartRepositorySourceUrl}>
+                    <MaybeLink
+                        href={labeledHelmChartSourceUrls.helmChartRepositorySourceUrl}
+                    >
                         {helmChartRepositoryName} Helm Chart -arkistosta
                     </MaybeLink>
                 }
                 .
-                {sourceUrls.dockerImageSourceUrl !== undefined && (
+                {labeledHelmChartSourceUrls.dockerImageSourceUrl !== undefined && (
                     <>
                         {" "}
                         Se perustuu{" "}
                         {
                             <MuiLink
-                                href={sourceUrls.dockerImageSourceUrl}
+                                href={labeledHelmChartSourceUrls.dockerImageSourceUrl}
                                 target="_blank"
                             >
                                 {helmChartName} Docker-kuvaan
@@ -657,6 +667,27 @@ Tutustu vapaasti ja ota hallintaan Kubernetes-julkaisusi!
         ),
         "ok": "Ok"
     },
+    "FormFieldWrapper": {
+        "reset to default": "Palauta oletusarvoon"
+    },
+    "YamlCodeBlockFormField": {
+        "not an array": "Taulukkoa odotetaan",
+        "not an object": "Oliota odotetaan",
+        "not valid yaml": "Virheellinen YAML/JSON"
+    },
+    "TextFormField": {
+        "not matching pattern": ({ pattern }) => `Ei vastaa mallia ${pattern}`,
+        "toggle password visibility": "Vaihda salasanan näkyvyyttä"
+    },
+    "FormFieldGroupComponent": {
+        "add": "Lisää"
+    },
+    "NumberFormField": {
+        "below minimum": ({ minimum }) =>
+            `Täytyy olla suurempi tai yhtä suuri kuin ${minimum}`,
+        "not a number": "Ei ole numero",
+        "not an integer": "Ei ole kokonaisluku"
+    },
     "NoLongerBookmarkedDialog": {
         "no longer bookmarked dialog title": "Muutokset eivät tallennu",
         "no longer bookmarked dialog body":
@@ -705,18 +736,20 @@ Tutustu vapaasti ja ota hallintaan Kubernetes-julkaisusi!
         "version select helper text": ({
             helmCharName,
             helmRepositoryName,
-            sourceUrls
+            labeledHelmChartSourceUrls
         }) => (
             <>
                 Version of the{" "}
                 {
-                    <MaybeLink href={sourceUrls.helmChartSourceUrl}>
+                    <MaybeLink href={labeledHelmChartSourceUrls.helmChartSourceUrl}>
                         {helmCharName}
                     </MaybeLink>
                 }{" "}
                 helm chart joka kuuluu helm-kaaviosäilöön{" "}
                 {
-                    <MaybeLink href={sourceUrls.helmChartRepositorySourceUrl}>
+                    <MaybeLink
+                        href={labeledHelmChartSourceUrls.helmChartRepositorySourceUrl}
+                    >
                         {helmRepositoryName}
                     </MaybeLink>
                 }
@@ -732,16 +765,6 @@ Tutustu vapaasti ja ota hallintaan Kubernetes-julkaisusi!
                 <MuiLink {...projectS3ConfigLink}>S3-konfiguraatio</MuiLink>.
             </>
         )
-    },
-    "LauncherConfigurationCard": {
-        "global config": "Yleinen konfiguraatio",
-        "configuration": ({ packageName }) => `${packageName} -konfiguraatiot`,
-        "dependency": ({ dependencyName }) => `${dependencyName} -riippuvuus`,
-        "launch of a service": ({ dependencyName }) =>
-            `Käynnistetään ${dependencyName} -palvelu`,
-        "mismatching pattern": ({ pattern }) => `Täsmätä ${pattern}`,
-        "Invalid YAML Object": "Virheellinen YAML-objekti",
-        "Invalid YAML Array": "Virheellinen YAML-taulukko"
     },
     "Footer": {
         "contribute": "Osallistu",
@@ -901,7 +924,8 @@ Tutustu vapaasti ja ota hallintaan Kubernetes-julkaisusi!
         ),
         "column": "sarake",
         "density": "tiheys",
-        "download file": "lataa tiedosto"
+        "download file": "lataa tiedosto",
+        "resize table": "Muuta taulukon kokoa"
     },
     "UrlInput": {
         "load": "Lataa"
@@ -996,6 +1020,15 @@ Tutustu vapaasti ja ota hallintaan Kubernetes-julkaisusi!
     "CopyToClipboardIconButton": {
         "copied to clipboard": "Kopioitu!",
         "copy to clipboard": "Kopioi leikepöydälle"
+    },
+    "CustomDataGridToolbarDensitySelector": {
+        "toolbarDensity": "Tiheys",
+        "toolbarDensityStandard": "Normaali",
+        "toolbarDensityComfortable": "Mukava",
+        "toolbarDensityCompact": "Tiivis"
+    },
+    "CustomDataGridToolbarColumnsButton": {
+        "toolbarColumnsLabel": "Sarakkeet"
     }
     /* spell-checker: enable */
 };

@@ -4,7 +4,7 @@ import { assert } from "tsafe/assert";
 import { name } from "./state";
 import { id } from "tsafe/id";
 import { exclude } from "tsafe/exclude";
-import { computeQuotaUsageRatio } from "./utils/computeQuotaUsageRatio";
+import { computeQuotaUsageRatio } from "./decoupledLogic/computeQuotaUsageRatio";
 import { arrPartition } from "evt/tools/reducers/partition";
 
 const state = (rootState: RootState) => rootState[name];

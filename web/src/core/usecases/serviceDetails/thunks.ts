@@ -111,7 +111,7 @@ const privateThunks = {
             }
 
             const { namespace: kubernetesNamespace } =
-                projectManagement.selectors.currentProject(getState());
+                projectManagement.protectedSelectors.currentProject(getState());
 
             dispatch(
                 actions.updateCompleted({

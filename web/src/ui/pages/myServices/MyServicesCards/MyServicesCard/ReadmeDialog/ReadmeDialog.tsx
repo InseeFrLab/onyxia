@@ -16,7 +16,7 @@ type Props = {
     evtOpen: NonPostableEvt<void>;
     isReady: boolean;
     openUrl: string | undefined;
-    projectServicePassword: string;
+    servicePassword: string | undefined;
     postInstallInstructions: string | undefined;
     onRequestLogHelmGetNotes: () => void;
     lastClusterEvent:
@@ -30,7 +30,7 @@ export const ReadmeDialog = memo((props: Props) => {
         evtOpen,
         isReady,
         openUrl,
-        projectServicePassword,
+        servicePassword,
         postInstallInstructions = "",
         onRequestLogHelmGetNotes,
         lastClusterEvent,
@@ -63,9 +63,7 @@ export const ReadmeDialog = memo((props: Props) => {
             body={
                 isOpen && (
                     <div className={classes.dialogBody}>
-                        <Markdown lang="und">
-                            {postInstallInstructions.split("===VALUES===")[0]}
-                        </Markdown>
+                        <Markdown lang="und">{postInstallInstructions}</Markdown>
                         {!isReady && (
                             <div className={classes.clusterEventWrapper}>
                                 <LinearProgress />
@@ -106,12 +104,7 @@ export const ReadmeDialog = memo((props: Props) => {
                             openUrl !== undefined && (
                                 <CopyOpenButton
                                     openUrl={openUrl}
-                                    servicePassword={extractServicePasswordFromPostInstallInstructions(
-                                        {
-                                            postInstallInstructions,
-                                            projectServicePassword
-                                        }
-                                    )}
+                                    servicePassword={servicePassword}
                                     onDialogClose={onDialogClose}
                                 />
                             )
@@ -122,54 +115,6 @@ export const ReadmeDialog = memo((props: Props) => {
         />
     );
 });
-
-function extractServicePasswordFromPostInstallInstructions(params: {
-    postInstallInstructions: string;
-    projectServicePassword: string;
-}): string | undefined {
-    const {
-        postInstallInstructions: postInstallInstructionsAndValues,
-        projectServicePassword
-    } = params;
-
-    const [postInstallInstructions, valuesStr] =
-        postInstallInstructionsAndValues.split("===VALUES===");
-
-    from_notes: {
-        if (postInstallInstructions.includes(projectServicePassword)) {
-            return projectServicePassword;
-        }
-
-        const regex = /password: ?([^\n ]+)/i;
-
-        const match = postInstallInstructions.match(regex);
-
-        if (match === null) {
-            break from_notes;
-        }
-
-        return match[1];
-    }
-
-    if (valuesStr.includes(projectServicePassword)) {
-        return projectServicePassword;
-    }
-
-    let extractedPassword: string | undefined = undefined;
-
-    JSON.stringify(JSON.parse(valuesStr) as Record<string, string>, (key, value) => {
-        if (key.toLowerCase().endsWith("password")) {
-            extractedPassword = value;
-        }
-        return value;
-    });
-
-    if (extractedPassword !== undefined) {
-        return extractedPassword;
-    }
-
-    return undefined;
-}
 
 const useStyles = tss
     .withName({ ReadmeDialog })

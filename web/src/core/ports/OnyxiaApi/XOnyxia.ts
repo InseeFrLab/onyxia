@@ -1,6 +1,8 @@
 // Documentation: https://docs.onyxia.sh/contributing/catalog-of-services
 
 import type { Language } from "./Language";
+import { id } from "tsafe/id";
+import { z } from "zod";
 import { assert, type Equals } from "tsafe/assert";
 
 export const onyxiaReservedPropertyNameInFieldDescription = "x-onyxia";
@@ -17,17 +19,26 @@ export type XOnyxiaParams = {
      * "overwriteDefaultWith": { "foo": "bar", "bar": "{{region.oauth2.clientId}}" }
      *
      */
-    overwriteDefaultWith?:
-        | string
-        | number
-        | boolean
-        | unknown[]
-        | Record<string, unknown>;
-    overwriteListEnumWith?: unknown[] | string;
+    overwriteDefaultWith?: string;
+    overwriteListEnumWith?: string;
     hidden?: boolean;
     readonly?: boolean;
-    useRegionSliderConfig?: string;
 };
+
+export const zXOnyxiaParams = (() => {
+    type TargetType = XOnyxiaParams;
+
+    const zTargetType = z.object({
+        "overwriteDefaultWith": z.string().optional(),
+        "overwriteListEnumWith": z.string().optional(),
+        "hidden": z.boolean().optional(),
+        "readonly": z.boolean().optional()
+    });
+
+    assert<Equals<z.infer<typeof zTargetType>, TargetType>>();
+
+    return id<z.ZodType<TargetType>>(zTargetType);
+})();
 
 export type XOnyxiaContext = {
     user: {
@@ -84,38 +95,43 @@ export type XOnyxiaContext = {
         credentials_cache_duration: number;
         token: string | undefined;
     };
-    vault: {
-        VAULT_ADDR: string;
-        VAULT_TOKEN: string;
-        VAULT_MOUNT: string;
-        VAULT_TOP_DIR: string;
-    };
-    s3: {
-        AWS_ACCESS_KEY_ID: string;
-        AWS_SECRET_ACCESS_KEY: string;
-        AWS_SESSION_TOKEN: string;
-        AWS_DEFAULT_REGION: string;
-        AWS_S3_ENDPOINT: string;
-        AWS_BUCKET_NAME: string;
-        port: number;
-        pathStyleAccess: boolean;
-        /**
-         * The user is assumed to have read/write access on every
-         * object starting with this prefix on the bucket
-         **/
-        objectNamePrefix: string;
-        /**
-         * Only for making it easier for charts editors.
-         * <AWS_BUCKET_NAME>/<objectNamePrefix>
-         * */
-        workingDirectoryPath: string;
-        /**
-         * If true the bucket's (directory) should be accessible without any credentials.
-         * In this case s3.AWS_ACCESS_KEY_ID, s3.AWS_SECRET_ACCESS_KEY and s3.AWS_SESSION_TOKEN
-         * will be empty strings.
-         */
-        isAnonymous: boolean;
-    };
+    vault:
+        | {
+              VAULT_ADDR: string;
+              VAULT_TOKEN: string | undefined;
+              VAULT_MOUNT: string;
+              VAULT_TOP_DIR: string;
+          }
+        | undefined;
+    s3:
+        | {
+              isEnabled: true;
+              AWS_ACCESS_KEY_ID: string | undefined;
+              AWS_SECRET_ACCESS_KEY: string | undefined;
+              AWS_SESSION_TOKEN: string | undefined;
+              AWS_DEFAULT_REGION: string;
+              AWS_S3_ENDPOINT: string;
+              AWS_BUCKET_NAME: string;
+              port: number;
+              pathStyleAccess: boolean;
+              /**
+               * The user is assumed to have read/write access on every
+               * object starting with this prefix on the bucket
+               **/
+              objectNamePrefix: string;
+              /**
+               * Only for making it easier for charts editors.
+               * <AWS_BUCKET_NAME>/<objectNamePrefix>
+               * */
+              workingDirectoryPath: string;
+              /**
+               * If true the bucket's (directory) should be accessible without any credentials.
+               * In this case s3.AWS_ACCESS_KEY_ID, s3.AWS_SECRET_ACCESS_KEY and s3.AWS_SESSION_TOKEN
+               * will be empty strings.
+               */
+              isAnonymous: boolean;
+          }
+        | undefined;
     region: {
         defaultIpProtection: boolean | undefined;
         defaultNetworkPolicy: boolean | undefined;
