@@ -98,7 +98,7 @@ export const ExplorerItems = memo((props: ExplorerItemsProps) => {
     }, [isNavigating]);
 
     return (
-        <div className={cx(classes.root, className)}>
+        <div className={cx(classes.root, className)} role="listbox">
             {isEmpty ? (
                 <Text typo="body 1">{t("empty directory")}</Text>
             ) : (

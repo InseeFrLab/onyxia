@@ -62,6 +62,7 @@ export const ExplorerItem = memo((props: ExplorerItemProps) => {
 
         if (e.key === "Enter" || e.key === " ") {
             onClick();
+            e.preventDefault();
             return;
         }
     };
@@ -71,7 +72,7 @@ export const ExplorerItem = memo((props: ExplorerItemProps) => {
             <div
                 className={cx(classes.root, className)}
                 tabIndex={0}
-                role="button"
+                role="option"
                 aria-selected={isSelected}
                 onDoubleClick={onDoubleClick}
                 onClick={onClick}
@@ -130,7 +131,7 @@ const useStyles = tss
         "root": {
             "borderRadius": "16px",
             "backgroundColor": isSelected
-                ? theme.colors.useCases.surfaces.surface2
+                ? theme.colors.useCases.surfaces.surface1
                 : "rgba(0, 0, 0, 0.05)",
             "cursor": "pointer",
             "display": "flex",
