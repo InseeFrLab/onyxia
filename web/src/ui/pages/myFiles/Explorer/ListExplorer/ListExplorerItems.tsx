@@ -217,7 +217,7 @@ const useStyles = tss.withName({ ListExplorerItems }).create(({ theme }) => ({
     "root": {
         "borderRadius": theme.spacing(1),
         "boxShadow": theme.shadows[1],
-        "overflow": "hidden"
+        "height": "100%"
     },
     "nameIcon": {
         "width": "30px",
