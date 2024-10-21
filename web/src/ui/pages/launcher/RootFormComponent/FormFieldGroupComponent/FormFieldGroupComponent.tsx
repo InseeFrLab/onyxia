@@ -218,6 +218,7 @@ export function FormFieldGroupComponentInner(
                         return (
                             <YamlCodeBlockFormField
                                 key={key}
+                                className={classes.field_yamlCodeBlock}
                                 title={node.title}
                                 description={node.description}
                                 expectedDataType={node.expectedDataType}
@@ -361,6 +362,9 @@ const useStyles_inner = tss
             },
             "field_text": {
                 "flex": "0 0 300px"
+            },
+            "field_yamlCodeBlock": {
+                "flex": "0 0 100%"
             },
             "field_slider": {
                 "flex": `0 0 calc(50% - ${gap / 2}px)`,

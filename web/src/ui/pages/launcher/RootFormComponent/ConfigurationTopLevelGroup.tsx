@@ -6,6 +6,7 @@ import type {
 } from "core/usecases/launcher/decoupledLogic/formTypes";
 import { AccordionGroupComponent } from "./AccordionGroupComponent";
 import type { FormCallbacks } from "./FormCallbacks";
+import { id } from "tsafe/id";
 
 type Props = {
     className?: string;
@@ -20,14 +21,21 @@ export function ConfigurationTopLevelGroup(props: Props) {
     const { cx, classes } = useStyles();
 
     const { main_formFields, main_formFieldGroups } = useMemo(() => {
-        const main_formFields: FormField[] = [];
-        const main_formFieldGroups: FormFieldGroup[] = [];
+        const main_formFields: Exclude<FormField, FormField.YamlCodeBlock>[] = [];
+        const main_formFieldGroups: (FormFieldGroup | FormField.YamlCodeBlock)[] = [];
 
         for (const node of main) {
-            if (node.type === "field") {
-                main_formFields.push(node);
-            } else {
-                main_formFieldGroups.push(node);
+            switch (node.type) {
+                case "field":
+                    if (node.fieldType === "yaml code block") {
+                        main_formFieldGroups.push(node);
+                        break;
+                    }
+                    main_formFields.push(node);
+                    break;
+                case "group":
+                    main_formFieldGroups.push(node);
+                    break;
             }
         }
 
@@ -61,15 +69,36 @@ export function ConfigurationTopLevelGroup(props: Props) {
                               "nodes": main_formFields
                           }
                       ]),
-                ...main_formFieldGroups.map(
-                    ({ nodes, description, helmValuesPath, canAdd, canRemove }) => ({
-                        helmValuesPath,
-                        description,
-                        canAdd,
-                        canRemove,
-                        nodes
-                    })
-                )
+                ...main_formFieldGroups.map(node => {
+                    if (node.type === "field") {
+                        return {
+                            "helmValuesPath": [node.title],
+                            "description": node.description,
+                            "canAdd": false,
+                            "canRemove": false,
+                            "nodes": [
+                                id<FormField.YamlCodeBlock>({
+                                    "type": "field",
+                                    "fieldType": "yaml code block",
+                                    "description": "",
+                                    "expectedDataType": node.expectedDataType,
+                                    "helmValuesPath": node.helmValuesPath,
+                                    "isReadonly": node.isReadonly,
+                                    "title": "",
+                                    "value": node.value
+                                })
+                            ]
+                        };
+                    }
+
+                    return {
+                        "helmValuesPath": node.helmValuesPath,
+                        "description": node.description,
+                        "canAdd": node.canAdd,
+                        "canRemove": node.canRemove,
+                        "nodes": node.nodes
+                    };
+                })
             ]}
             callbacks={callbacks}
         />
