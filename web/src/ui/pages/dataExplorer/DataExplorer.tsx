@@ -88,16 +88,7 @@ export default function DataExplorer(props: Props) {
         "main"
     );
 
-    const { classes, cx } = useStyles({
-        "rowsToFrom":
-            rows === undefined || rowCount !== undefined
-                ? undefined
-                : {
-                      "from": (route.params.page - 1) * route.params.rowsPerPage + 1,
-                      "to":
-                          (route.params.page - 1) * route.params.rowsPerPage + rows.length
-                  }
-    });
+    const { classes, cx } = useStyles();
 
     // Theres a bug in MUI classes.panel does not apply so have to apply the class manually
     const { childrenClassName: dataGridPanelWrapperRefClassName } =
@@ -175,8 +166,7 @@ export default function DataExplorer(props: Props) {
                                         classes.dataGridPanelWrapper
                                     ),
                                     "panelFooter": classes.dataGridPanelFooter,
-                                    "menu": classes.dataGridMenu,
-                                    "footerContainer": classes.dataGridFooterContainer
+                                    "menu": classes.dataGridMenu
                                 }}
                                 slots={{ "toolbar": SlotsDataGridToolbar }}
                                 disableVirtualization={!isVirtualizationEnabled}
@@ -237,101 +227,71 @@ export default function DataExplorer(props: Props) {
         </div>
     );
 }
-const useStyles = tss
-    .withName({ DataExplorer })
-    .withParams<{
-        rowsToFrom:
-            | {
-                  from: number;
-                  to: number;
-              }
-            | undefined;
-    }>()
-    .create(({ theme, rowsToFrom }) => ({
-        "root": {
-            "height": "100%",
-            "display": "flex",
-            "flexDirection": "column"
-        },
-        "pageHeaderHelpMiddle": {
-            "& > h5": {
-                "marginBottom": theme.spacing(2)
-            }
-        },
-        "initializing": {
-            "display": "flex",
-            "justifyContent": "center",
-            "alignItems": "center",
-            "height": "100%"
-        },
-        "urlInput": {
-            "marginBottom": theme.spacing(4)
-        },
-        "errorAlert": {
-            "marginTop": theme.spacing(4),
-            "maxWidth": 950
-        },
-        "mainArea": {
-            "flex": 1,
-            "overflow": "hidden"
-        },
-        "dataGridWrapper": {
-            "width": "100%",
-            "height": "100%",
-            "overflowY": "hidden",
-            "overflowX": "auto"
-        },
-        "dataGridPanel": {
-            "overflow": "hidden",
-            "borderRadius": 8,
-            "boxShadow": theme.shadows[1],
-            "&:hover": {
-                "boxShadow": theme.shadows[6]
-            }
-        },
-        "dataGridPanelWrapper": {
-            "backgroundColor": theme.colors.useCases.surfaces.surface1,
-            "padding": theme.spacing(2)
-        },
-        "dataGridPanelFooter": {
-            "& .MuiButton-root": {
-                "textTransform": "unset"
-            }
-        },
-        "dataGridMenu": {
-            "& .MuiMenuItem-root": {
-                "&.Mui-selected": {
-                    "backgroundColor": theme.colors.useCases.surfaces.surface2
-                },
-                "& svg": {
-                    "color": theme.colors.useCases.typography.textPrimary
-                },
-                "&:hover": {
-                    "backgroundColor": theme.colors.palette.focus.light
-                }
-            }
-        },
-        "dataGridFooterContainer": {
-            "& .MuiTablePagination-displayedRows":
-                rowsToFrom === undefined
-                    ? {}
-                    : {
-                          "&": {
-                              "fontSize": 0,
-                              "width": 50,
-                              "position": "relative"
-                          },
-                          "&::after": {
-                              "content": `"${rowsToFrom.from}-${rowsToFrom.to}"`,
-                              "fontSize": theme.typography.rootFontSizePx * 0.85,
-                              "color": theme.colors.useCases.typography.textPrimary,
-                              "position": "absolute",
-                              "right": 0,
-                              "top": 0
-                          }
-                      }
+const useStyles = tss.withName({ DataExplorer }).create(({ theme }) => ({
+    "root": {
+        "height": "100%",
+        "display": "flex",
+        "flexDirection": "column"
+    },
+    "pageHeaderHelpMiddle": {
+        "& > h5": {
+            "marginBottom": theme.spacing(2)
         }
-    }));
+    },
+    "initializing": {
+        "display": "flex",
+        "justifyContent": "center",
+        "alignItems": "center",
+        "height": "100%"
+    },
+    "urlInput": {
+        "marginBottom": theme.spacing(4)
+    },
+    "errorAlert": {
+        "marginTop": theme.spacing(4),
+        "maxWidth": 950
+    },
+    "mainArea": {
+        "flex": 1,
+        "overflow": "hidden"
+    },
+    "dataGridWrapper": {
+        "width": "100%",
+        "height": "100%",
+        "overflowY": "hidden",
+        "overflowX": "auto"
+    },
+    "dataGridPanel": {
+        "overflow": "hidden",
+        "borderRadius": 8,
+        "boxShadow": theme.shadows[1],
+        "&:hover": {
+            "boxShadow": theme.shadows[6]
+        }
+    },
+    "dataGridPanelWrapper": {
+        "backgroundColor": theme.colors.useCases.surfaces.surface1,
+        "padding": theme.spacing(2)
+    },
+    "dataGridPanelFooter": {
+        "& .MuiButton-root": {
+            "textTransform": "unset"
+        }
+    },
+    "dataGridMenu": {
+        "& .MuiMenuItem-root": {
+            "&.Mui-selected": {
+                "backgroundColor": theme.colors.useCases.surfaces.surface2
+            },
+            "& svg": {
+                "color": theme.colors.useCases.typography.textPrimary
+            },
+            "&:hover": {
+                "backgroundColor": theme.colors.palette.focus.light
+            }
+        }
+    }
+}));
 
 const { i18n } = declareComponentKeys<
     | "page header title"
