@@ -323,6 +323,10 @@ export const translations: Translations<"no"> = {
         "cancel": "Avbryt",
         "go to settings": "Gå til innstillinger"
     },
+    "MyFilesShareDialog": {
+        "cancel": "Avbryt",
+        "create and copy link": "Opprett og kopier lenke"
+    },
     "MySecrets": {
         "page title - my secrets": "Mine hemmeligheter",
         "what this page is used for - my secrets":
@@ -927,7 +931,8 @@ Utforsk gjerne og ta kontroll over tjenestene du kjører på Kubernetes!
         ),
         "column": "kolonne",
         "density": "tetthet",
-        "download file": "last ned fil"
+        "download file": "last ned fil",
+        "resize table": "Endre størrelse"
     },
     "UrlInput": {
         "load": "Last"
@@ -1022,6 +1027,15 @@ Utforsk gjerne og ta kontroll over tjenestene du kjører på Kubernetes!
     "CopyToClipboardIconButton": {
         "copied to clipboard": "Kopiert!",
         "copy to clipboard": "Kopier til utklippstavlen"
+    },
+    "CustomDataGridToolbarDensitySelector": {
+        "toolbarDensity": "Tetthet",
+        "toolbarDensityStandard": "Standard",
+        "toolbarDensityComfortable": "Komfortabel",
+        "toolbarDensityCompact": "Kompakt"
+    },
+    "CustomDataGridToolbarColumnsButton": {
+        "toolbarColumnsLabel": "Kolonner"
     }
     /* spell-checker: enable */
 };

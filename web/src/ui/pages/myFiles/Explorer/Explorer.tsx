@@ -3,7 +3,7 @@ import { Button } from "onyxia-ui/Button";
 import { useState, useEffect, useMemo, memo } from "react";
 import type { RefObject } from "react";
 import { useConstCallback } from "powerhooks/useConstCallback";
-import type { ExplorerItemsProps as ItemsProps } from "./ExplorerItems/ExplorerItems";
+import type { ExplorerItemsProps as ItemsProps } from "./ExplorerItems";
 import { Breadcrumb } from "onyxia-ui/Breadcrumb";
 import type { BreadcrumbProps } from "onyxia-ui/Breadcrumb";
 import { Props as ButtonBarProps } from "./ExplorerButtonBar";
@@ -37,6 +37,9 @@ import { ExplorerUploadModal } from "./ExplorerUploadModal";
 import type { ExplorerUploadModalProps } from "./ExplorerUploadModal";
 import { declareComponentKeys } from "i18nifty";
 import { CircularProgress } from "onyxia-ui/CircularProgress";
+import { ListExplorerItems } from "./ListExplorer/ListExplorerItems";
+import type { Directory, Item } from "../shared/types";
+import { ViewMode } from "../shared/types";
 
 export type ExplorerProps = {
     /**
@@ -46,17 +49,16 @@ export type ExplorerProps = {
     className?: string;
     doShowHidden: boolean;
 
+    viewMode: ViewMode;
+    onViewModeChange: (params: { viewMode: ViewMode }) => void;
     directoryPath: string;
     isNavigating: boolean;
     commandLogsEntries: CommandBarProps.Entry[] | undefined;
     evtAction: NonPostableEvt<"TRIGGER COPY PATH">;
-    files: string[];
-    directories: string[];
-    directoriesBeingCreated: string[];
-    filesBeingCreated: string[];
+    items: Item[];
     onNavigate: (params: { directoryPath: string }) => void;
     onRefresh: () => void;
-    onDeleteItem: (params: { kind: "file" | "directory"; basename: string }) => void;
+    onDeleteItem: (params: { item: Item }) => void;
     onCreateDirectory: (params: { basename: string }) => void;
     onCopyPath: (params: { path: string }) => void;
     scrollableDivRef: RefObject<any>;
@@ -78,33 +80,20 @@ export const Explorer = memo((props: ExplorerProps) => {
         onDeleteItem,
         onCreateDirectory,
         onCopyPath,
+        onOpenFile,
         scrollableDivRef,
         onFileSelected,
         filesBeingUploaded,
-        pathMinDepth
+        pathMinDepth,
+        onViewModeChange,
+        viewMode
     } = props;
 
-    const [files, directories, directoriesBeingCreated, filesBeingCreated] = useMemo(
-        () =>
-            (
-                [
-                    props.files,
-                    props.directories,
-                    props.directoriesBeingCreated,
-                    props.filesBeingCreated
-                ] as const
-            ).map(
-                doShowHidden
-                    ? id
-                    : arr => arr.filter(basename => !basename.startsWith("."))
-            ),
-        [
-            props.files,
-            props.directories,
-            props.directoriesBeingCreated,
-            props.filesBeingCreated,
-            doShowHidden
-        ]
+    const [items] = useMemo(
+        () => [
+            props.items.filter(doShowHidden ? id : obj => !obj.basename.startsWith("."))
+        ],
+        [props.items, doShowHidden]
     );
 
     const { t } = useTranslation({ Explorer });
@@ -135,7 +124,7 @@ export const Explorer = memo((props: ExplorerProps) => {
 
     const onItemsOpenFile = useConstCallback(
         ({ basename }: Param0<ItemsProps["onOpenFile"]>) => {
-            props.onOpenFile({ basename });
+            onOpenFile({ basename });
         }
     );
 
@@ -175,7 +164,9 @@ export const Explorer = memo((props: ExplorerProps) => {
                 break;
             case "create directory":
                 setCreateS3DirectoryDialogState({
-                    directories,
+                    directories: items
+                        .filter((item): item is Directory => item.kind === "directory")
+                        .map(({ basename }) => basename),
                     "resolveBasename": basename => onCreateDirectory({ basename })
                 });
                 break;
@@ -242,13 +233,13 @@ export const Explorer = memo((props: ExplorerProps) => {
     );
 
     const itemsOnDeleteItem = useConstCallback(
-        async ({ kind, basename }: Parameters<ItemsProps["onDeleteItem"]>[0]) => {
+        async ({ item }: Parameters<ItemsProps["onDeleteItem"]>[0]) => {
             if (doShowDeletionDialogNextTime) {
                 const dDoProceedToDeletion = new Deferred();
 
                 setDeletionDialogState({
-                    kind,
-                    basename,
+                    kind: item.kind,
+                    basename: item.basename,
                     "resolveDoProceedToDeletion": dDoProceedToDeletion.resolve
                 });
 
@@ -261,7 +252,7 @@ export const Explorer = memo((props: ExplorerProps) => {
                 }
             }
 
-            onDeleteItem({ kind, basename });
+            onDeleteItem({ item });
         }
     );
 
@@ -281,6 +272,8 @@ export const Explorer = memo((props: ExplorerProps) => {
                         selectedItemKind={selectedItemKind}
                         //isFileOpen={props.isFileOpen}
                         callback={buttonBarCallback}
+                        onViewModeChange={onViewModeChange}
+                        viewMode={viewMode}
                     />
                 </div>
                 {commandLogsEntries !== undefined && (
@@ -290,6 +283,7 @@ export const Explorer = memo((props: ExplorerProps) => {
                         maxHeight={commandBarMaxHeight}
                     />
                 )}
+
                 {(() => {
                     const title = (() => {
                         let split = directoryPath.split("/");
@@ -326,7 +320,6 @@ export const Explorer = memo((props: ExplorerProps) => {
                         />
                     );
                 })()}
-
                 <div className={classes.breadcrumpWrapper}>
                     <Breadcrumb
                         minDepth={pathMinDepth}
@@ -353,19 +346,43 @@ export const Explorer = memo((props: ExplorerProps) => {
                         })
                     )}
                 >
-                    <ExplorerItems
-                        isNavigating={isNavigating}
-                        files={files}
-                        directories={directories}
-                        directoriesBeingCreated={directoriesBeingCreated}
-                        filesBeingCreated={filesBeingCreated}
-                        onNavigate={onItemsNavigate}
-                        onOpenFile={onItemsOpenFile}
-                        onSelectedItemKindValueChange={onSelectedItemKindValueChange}
-                        onCopyPath={itemsOnCopyPath}
-                        onDeleteItem={itemsOnDeleteItem}
-                        evtAction={evtItemsAction}
-                    />
+                    {(() => {
+                        switch (viewMode) {
+                            case "block":
+                                return (
+                                    <ExplorerItems
+                                        isNavigating={isNavigating}
+                                        items={items}
+                                        onNavigate={onItemsNavigate}
+                                        onOpenFile={onItemsOpenFile}
+                                        onSelectedItemKindValueChange={
+                                            onSelectedItemKindValueChange
+                                        }
+                                        onCopyPath={itemsOnCopyPath}
+                                        onDeleteItem={itemsOnDeleteItem}
+                                        evtAction={evtItemsAction}
+                                    />
+                                );
+                            case "list": {
+                                return (
+                                    <ListExplorerItems
+                                        isNavigating={isNavigating}
+                                        items={items}
+                                        onNavigate={onItemsNavigate}
+                                        onOpenFile={onItemsOpenFile}
+                                        onSelectedItemKindValueChange={
+                                            onSelectedItemKindValueChange
+                                        }
+                                        onCopyPath={itemsOnCopyPath}
+                                        onDeleteItem={itemsOnDeleteItem}
+                                        evtAction={evtItemsAction}
+                                    />
+                                );
+                            }
+                            default:
+                                return null;
+                        }
+                    })()}
                 </div>
             </div>
             <CreateS3DirectoryDialog

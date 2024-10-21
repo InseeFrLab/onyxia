@@ -292,6 +292,10 @@ export const translations: Translations<"zh-CN"> = {
         "cancel": "取消",
         "go to settings": "前往设置"
     },
+    "MyFilesShareDialog": {
+        "cancel": "取消",
+        "create and copy link": "创建并复制链接"
+    },
     "MySecrets": {
         "page title - my secrets": "我的密钥",
         "what this page is used for - my secrets":
@@ -866,7 +870,8 @@ ${
         ),
         "column": "列",
         "density": "密度",
-        "download file": "下载文件"
+        "download file": "下载文件",
+        "resize table": "调整大小"
     },
     "UrlInput": {
         "load": "加载"
@@ -961,6 +966,15 @@ ${
     "CopyToClipboardIconButton": {
         "copied to clipboard": "已复制！",
         "copy to clipboard": "复制到剪贴板"
+    },
+    "CustomDataGridToolbarDensitySelector": {
+        "toolbarDensity": "密度",
+        "toolbarDensityStandard": "标准",
+        "toolbarDensityComfortable": "舒适",
+        "toolbarDensityCompact": "紧凑"
+    },
+    "CustomDataGridToolbarColumnsButton": {
+        "toolbarColumnsLabel": "列"
     }
     /* spell-checker: enable */
 };

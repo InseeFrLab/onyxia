@@ -1,10 +1,31 @@
-import { createRouter, defineRoute, createGroup, param, type Route } from "type-route";
+import { id } from "tsafe";
+import {
+    createRouter,
+    defineRoute,
+    createGroup,
+    param,
+    type Route,
+    type ValueSerializer,
+    noMatch
+} from "type-route";
+import { ViewMode, viewModes } from "./shared/types";
 
 export const routeDefs = {
     "myFiles": defineRoute(
         {
             "path": param.path.trailing.optional.string,
-            "openFile": param.query.optional.string
+            "openFile": param.query.optional.string,
+            "mode": param.query.optional
+                .ofType(
+                    id<ValueSerializer<ViewMode>>({
+                        "parse": raw =>
+                            !id<readonly string[]>(viewModes).includes(raw)
+                                ? noMatch
+                                : (raw as ViewMode),
+                        "stringify": value => value
+                    })
+                )
+                .default(viewModes[0])
         },
         ({ path }) => `/my-files/${path}`
     )
