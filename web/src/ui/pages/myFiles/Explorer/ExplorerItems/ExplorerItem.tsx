@@ -4,7 +4,7 @@ import { memo } from "react";
 import { Icon } from "onyxia-ui/Icon";
 import { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
 import { id } from "tsafe";
-import { Tooltip } from "onyxia-ui/Tooltip";
+import Tooltip from "@mui/material/Tooltip";
 import { fileSizePrettyPrint } from "ui/tools/fileSizePrettyPrint";
 import { ExplorerIcon } from "../ExplorerIcon";
 import { declareComponentKeys } from "i18nifty";
@@ -68,56 +68,71 @@ export const ExplorerItem = memo((props: ExplorerItemProps) => {
     };
 
     return (
-        <Tooltip title={basename}>
-            <div
-                className={cx(classes.root, className)}
-                tabIndex={0}
-                role="option"
-                aria-selected={isSelected}
-                onDoubleClick={onDoubleClick}
-                onClick={onClick}
-                onKeyDown={handleKeyDown}
-            >
-                <div className={classes.iconContainer}>
-                    <ExplorerIcon
-                        className={classes.explorerIcon}
-                        iconId={(() => {
-                            switch (kind) {
-                                case "directory":
-                                    return "directory";
-                                case "file":
-                                    return "data";
-                            }
-                        })()}
-                        hasShadow={true}
-                    />
-                    <Icon
-                        className={classes.policyIcon}
-                        icon={id<MuiIconComponentName>(
-                            policy === "public" ? "Visibility" : "VisibilityOff"
-                        )}
-                    />
-                </div>
+        <div
+            className={cx(classes.root, className)}
+            tabIndex={0}
+            role="option"
+            aria-selected={isSelected}
+            onDoubleClick={onDoubleClick}
+            onClick={onClick}
+            onKeyDown={handleKeyDown}
+        >
+            <div className={classes.iconContainer}>
+                <ExplorerIcon
+                    className={classes.explorerIcon}
+                    iconId={(() => {
+                        switch (kind) {
+                            case "directory":
+                                return "directory";
+                            case "file":
+                                return "data";
+                        }
+                    })()}
+                    hasShadow={true}
+                />
+                <Icon
+                    className={classes.policyIcon}
+                    icon={id<MuiIconComponentName>(
+                        policy === "public" ? "Visibility" : "VisibilityOff"
+                    )}
+                />
+            </div>
 
-                <div className={classes.textContainer}>
-                    <Text typo="navigation label" className={classes.baseNameText}>
+            <div className={classes.textContainer}>
+                <Tooltip
+                    title={basename}
+                    enterDelay={300}
+                    enterNextDelay={300}
+                    onDoubleClick={e => {
+                        console.log("doubleclick Tooltip", e);
+                        e.stopPropagation();
+                    }}
+                    PopperProps={{
+                        onDoubleClick: e => {
+                            console.log("doubleclick PopperProps", e);
+                            e.stopPropagation(); //Prevent from onDoubleClick to be fired in order to let user select the text
+                        }
+                    }}
+                >
+                    <Text typo="label 1" className={classes.baseNameText}>
                         {baseName}
                     </Text>
-                    <div className={classes.sizeAndFileTypeText}>
-                        <Text typo="body 1">
-                            {fileType}{" "}
-                            {prettySize ? `${prettySize.value} ${prettySize.unit}` : ""}
-                        </Text>
-                        {kind === "directory" && (
-                            <Icon
-                                size="extra small"
-                                icon={id<MuiIconComponentName>("ChevronRight")}
-                            />
-                        )}
-                    </div>
-                </div>
+                </Tooltip>
             </div>
-        </Tooltip>
+
+            <div className={classes.sizeAndFileTypeText}>
+                <Text typo="body 1">
+                    {fileType}{" "}
+                    {prettySize ? `${prettySize.value} ${prettySize.unit}` : ""}
+                </Text>
+                {kind === "directory" && (
+                    <Icon
+                        size="extra small"
+                        icon={id<MuiIconComponentName>("ChevronRight")}
+                    />
+                )}
+            </div>
+        </div>
     );
 });
 
@@ -137,7 +152,7 @@ const useStyles = tss
             "display": "flex",
             "flexDirection": "column",
             "justifyContent": "space-between",
-            "padding": theme.spacing(3)
+            "padding": theme.spacing(2.5)
         },
         "iconContainer": { "display": "flex", "justifyContent": "space-between" },
         "explorerIcon": {
@@ -154,20 +169,12 @@ const useStyles = tss
         },
         "baseNameText": {
             "marginBottom": theme.spacing(1),
-            "whiteSpace": "nowrap",
             "overflow": "hidden",
-            "textOverflow": "ellipsis"
-            // "&:hover": {
-            //     overflow: "visible",
-            //     textOverflow: "unset",
-            //     whiteSpace: "nowrap",
-            //     backgroundColor: "#2C323F",
-            //     width: "max-content", // Étend la largeur à la longueur totale du texte
-            //     zIndex: 1,
-            //     outline: `1px solid ${theme.colors.useCases.surfaces.surface1}`,
-            //     boxShadow: `0px 4px 8px rgba(0, 0, 0, 0.1)`, // Ajoute une légère ombre pour un effet 3D
-            //     borderRadius: theme.spacing(1) // Ajoute des coins arrondis pour un effet plus doux
-            // }
+            "textOverflow": "ellipsis",
+            "display": "-webkit-box", // Necessary for line clamping
+            "wordWrap": "break-word", // Enable word wrapping
+            "WebkitLineClamp": 2, // Limit to 2 lines
+            "WebkitBoxOrient": "vertical" // Set the box orientation for multi-line ellipsis
         },
         "sizeAndFileTypeText": {
             "display": "flex",
