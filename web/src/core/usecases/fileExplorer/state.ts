@@ -38,7 +38,7 @@ export const { reducer, actions } = createUsecaseActions({
     "initialState": id<State>({
         "directoryPath": undefined,
         "objects": [],
-        "viewMode": "block",
+        "viewMode": "list",
         "isNavigationOngoing": false,
         "ongoingOperations": [],
         "s3FilesBeingUploaded": [],

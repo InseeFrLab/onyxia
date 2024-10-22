@@ -14,6 +14,6 @@ export type Directory = {
     policy: "public" | "private";
 };
 
-export const viewModes = ["block", "list"] as const;
+export const viewModes = ["list", "block"] as const;
 
 export type ViewMode = (typeof viewModes)[number];
