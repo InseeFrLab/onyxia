@@ -68,7 +68,7 @@ export const SelectFormField = memo((props: Props) => {
                     <MenuItem key={index} value={`${index}`}>
                         {(() => {
                             if (typeof option === "string") {
-                                return option;
+                                return option === "" ? "(Empty string)" : option;
                             }
 
                             return <pre>{JSON.stringify(option, null, 2)}</pre>;
