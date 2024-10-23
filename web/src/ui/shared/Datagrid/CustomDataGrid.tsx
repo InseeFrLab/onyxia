@@ -3,6 +3,7 @@ import { DataGrid, type GridClasses, type GridColDef } from "@mui/x-data-grid";
 import { type ComponentProps, memo, useMemo } from "react";
 import { tss } from "tss";
 import { CopyToClipboardIconButton } from "ui/shared/CopyToClipboardIconButton";
+import { CustomNoRowsOverlay } from "./CustomNoRowsOverlay";
 
 export type CustomDataGridProps = ComponentProps<typeof DataGrid> & {
     /**
@@ -20,7 +21,12 @@ export const autosizeOptions = {
 
 export const CustomDataGrid = memo((props: CustomDataGridProps) => {
     const { classes, css } = useStyles();
-    const { columns, shouldAddCopyToClipboardInCell = false, ...propsRest } = props;
+    const {
+        columns,
+        shouldAddCopyToClipboardInCell = false,
+        slots,
+        ...propsRest
+    } = props;
 
     const dataGridClasses = useMemo(
         () =>
@@ -61,6 +67,7 @@ export const CustomDataGrid = memo((props: CustomDataGridProps) => {
     return (
         <DataGrid
             {...propsRest}
+            slots={{ "noRowsOverlay": CustomNoRowsOverlay, ...slots }}
             columns={modifiedColumns}
             classes={dataGridClasses}
             autosizeOnMount
