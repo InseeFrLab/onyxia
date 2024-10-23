@@ -43,7 +43,8 @@ const privateThunks = {
 
             const [dispatch, getState, { onyxiaApi }] = args;
 
-            const projectId = projectManagement.selectors.currentProject(getState()).id;
+            const projectId =
+                projectManagement.protectedSelectors.currentProject(getState()).id;
 
             {
                 const state = getState()[name];

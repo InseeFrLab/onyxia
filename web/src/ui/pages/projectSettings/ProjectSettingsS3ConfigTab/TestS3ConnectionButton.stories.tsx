@@ -14,8 +14,7 @@ type Story = StoryObj<typeof TestS3ConnectionButton>;
 export const Default: Story = {
     args: {
         connectionTestStatus: {
-            isTestOngoing: false,
-            stateDescription: "not tested yet"
+            status: "not tested"
         },
         onTestConnection: action("onTestConnection")
     }
@@ -24,30 +23,27 @@ export const Default: Story = {
 export const Testing: Story = {
     args: {
         connectionTestStatus: {
-            isTestOngoing: true,
-            stateDescription: "not tested yet"
+            status: "test ongoing"
         },
-        onTestConnection: undefined
+        onTestConnection: action("onTestConnection")
     }
 };
 
 export const Success: Story = {
     args: {
         connectionTestStatus: {
-            isTestOngoing: false,
-            stateDescription: "success"
+            status: "test succeeded"
         },
-        onTestConnection: () => {}
+        onTestConnection: action("onTestConnection")
     }
 };
 
 export const Failed: Story = {
     args: {
         connectionTestStatus: {
-            isTestOngoing: false,
-            stateDescription: "failed",
+            status: "test failed",
             errorMessage: "Connection failed due to invalid credentials"
         },
-        onTestConnection: () => {}
+        onTestConnection: action("onTestConnection")
     }
 };

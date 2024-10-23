@@ -22,10 +22,11 @@ export default function ProjectSettings(props: Props) {
 
     const { t } = useTranslation({ ProjectSettings });
 
-    const project = useCoreState("projectManagement", "currentProject");
-    const availableProjects = useCoreState("projectManagement", "availableProjects");
-
-    const groupProjectName = project.group === undefined ? undefined : project.name;
+    const groupProjectName = useCoreState("projectManagement", "groupProjectName");
+    const doesUserBelongToSomeGroupProject = useCoreState(
+        "projectManagement",
+        "doesUserBelongToSomeGroupProject"
+    );
 
     const { classes, cx } = useStyles();
 
@@ -37,7 +38,7 @@ export default function ProjectSettings(props: Props) {
                 helpTitle={t("page header help title", { groupProjectName })}
                 helpContent={t("page header help content", {
                     groupProjectName,
-                    "doesUserBelongToSomeGroupProject": availableProjects.length !== 1
+                    doesUserBelongToSomeGroupProject
                 })}
                 helpIcon="sentimentSatisfied"
             />
