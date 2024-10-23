@@ -103,13 +103,8 @@ export const ExplorerItem = memo((props: ExplorerItemProps) => {
                     title={basename}
                     enterDelay={300}
                     enterNextDelay={300}
-                    onDoubleClick={e => {
-                        console.log("doubleclick Tooltip", e);
-                        e.stopPropagation();
-                    }}
                     PopperProps={{
                         onDoubleClick: e => {
-                            console.log("doubleclick PopperProps", e);
                             e.stopPropagation(); //Prevent from onDoubleClick to be fired in order to let user select the text
                         }
                     }}
@@ -160,7 +155,7 @@ const useStyles = tss
             "height": "50px"
         },
         "policyIcon": {
-            marginLeft: theme.spacing(1) // Adjust spacing between the icons
+            "marginLeft": theme.spacing(1) // Adjust spacing between the icons
         },
         "textContainer": {
             "display": "flex",
@@ -169,12 +164,10 @@ const useStyles = tss
         },
         "baseNameText": {
             "marginBottom": theme.spacing(1),
+            "wordBreak": "break-all",
             "overflow": "hidden",
             "textOverflow": "ellipsis",
-            "display": "-webkit-box", // Necessary for line clamping
-            "wordWrap": "break-word", // Enable word wrapping
-            "WebkitLineClamp": 2, // Limit to 2 lines
-            "WebkitBoxOrient": "vertical" // Set the box orientation for multi-line ellipsis
+            "height": `calc(${theme.typography.variants["label 1"].style.lineHeight} * 2)`
         },
         "sizeAndFileTypeText": {
             "display": "flex",
