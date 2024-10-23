@@ -13,7 +13,10 @@ import { ViewMode, viewModes } from "./shared/types";
 export const routeDefs = {
     "myFiles": defineRoute(
         {
-            "path": param.path.trailing.optional.string,
+            "path": param.path.trailing.optional.ofType({
+                "parse": raw => decodeURIComponent(raw), // decode the path
+                "stringify": value => encodeURI(value) // encode when creating URL
+            }),
             "openFile": param.query.optional.string,
             "mode": param.query.optional
                 .ofType(
