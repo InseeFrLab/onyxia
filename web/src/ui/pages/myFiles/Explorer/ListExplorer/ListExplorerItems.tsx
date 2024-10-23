@@ -1,4 +1,9 @@
-import { GridRowParams, type GridColDef } from "@mui/x-data-grid";
+import {
+    GridCellParams,
+    GridEventListener,
+    GridRowParams,
+    type GridColDef
+} from "@mui/x-data-grid";
 import { memo, useMemo } from "react";
 import { ExplorerIcon } from "../ExplorerIcon";
 import { tss } from "tss";
@@ -177,6 +182,18 @@ export const ListExplorerItems = memo((props: ListExplorerItems) => {
         selectedItemRef.current = params.row;
     });
 
+    const handleFileOrDirectoryAction = (params: GridCellParams) => {
+        if (params.field !== "basename") return;
+
+        switch (params.row.kind) {
+            case "directory":
+                return onNavigate({ "basename": params.row.basename });
+
+            case "file":
+                return onOpenFile({ "basename": params.row.basename });
+        }
+    };
+
     return (
         <div className={cx(classes.root, className)}>
             <CustomDataGrid
@@ -195,15 +212,10 @@ export const ListExplorerItems = memo((props: ListExplorerItems) => {
                     }
                 }}
                 onRowClick={handleRowClick}
-                onCellDoubleClick={params => {
-                    if (params.field !== "basename") return;
-                    switch (params.row.kind) {
-                        case "directory":
-                            return onNavigate({ "basename": params.row.basename });
-
-                        case "file":
-                            return onOpenFile({ "basename": params.row.basename });
-                    }
+                onCellDoubleClick={handleFileOrDirectoryAction}
+                onCellKeyDown={(params, event) => {
+                    if (event.key !== "Enter") return;
+                    handleFileOrDirectoryAction(params);
                 }}
                 checkboxSelection
                 disableMultipleRowSelection
