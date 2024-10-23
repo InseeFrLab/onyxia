@@ -5,6 +5,29 @@ import { tags } from "@lezer/highlight";
 import { useMemo } from "react";
 import { alpha } from "@mui/system";
 import { tss } from "tss";
+import { injectDomDependencies } from "@codemirror/view";
+import { performActionWithoutScreenScaler } from "screen-scaler";
+
+injectDomDependencies({
+    "getResizeObserver": () => performActionWithoutScreenScaler(() => ResizeObserver),
+    "getBoundingClientRect_Element": element =>
+        performActionWithoutScreenScaler(() => element.getBoundingClientRect()),
+    "getBoundingClientRect_Range": range =>
+        performActionWithoutScreenScaler(() => range.getBoundingClientRect()),
+    "getClientRects_Element": element =>
+        performActionWithoutScreenScaler(() => element.getClientRects()),
+    "getClientRects_Range": range =>
+        performActionWithoutScreenScaler(() => range.getClientRects()),
+    "getMouseEventClientXOrY": (event, axis) =>
+        performActionWithoutScreenScaler(() => {
+            switch (axis) {
+                case "x":
+                    return event.clientX;
+                case "y":
+                    return event.clientY;
+            }
+        })
+});
 
 type Props = {
     className?: string;

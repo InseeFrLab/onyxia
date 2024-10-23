@@ -1,0 +1,1172 @@
+diff --git a/node_modules/@codemirror/view/dist/index.cjs b/node_modules/@codemirror/view/dist/index.cjs
+index 70b93a9..0c35822 100644
+--- a/node_modules/@codemirror/view/dist/index.cjs
++++ b/node_modules/@codemirror/view/dist/index.cjs
+@@ -4,6 +4,50 @@ var state = require('@codemirror/state');
+ var styleMod = require('style-mod');
+ var w3cKeyname = require('w3c-keyname');
+ 
++let injectedDomDependencies = undefined;
++function getResizeObserver() {
++    if (injectedDomDependencies === undefined) {
++        return ResizeObserver;
++    }
++    return injectedDomDependencies.getResizeObserver();
++}
++function getMouseEventClientXOrY(event, axis) {
++    if (injectedDomDependencies === undefined) {
++        switch (axis) {
++            case 'x': return event.clientX;
++            case 'y': return event.clientY;
++        }
++    }
++    return injectedDomDependencies.getMouseEventClientXOrY(event, axis);
++}
++function getBoundingClientRect_Range(target) {
++    if (injectedDomDependencies === undefined) {
++        return target.getBoundingClientRect();
++    }
++    return injectedDomDependencies.getBoundingClientRect_Range(target);
++}
++function getBoundingClientRect_Element(target) {
++    if (injectedDomDependencies === undefined) {
++        return target.getBoundingClientRect();
++    }
++    return injectedDomDependencies.getBoundingClientRect_Element(target);
++}
++function getClientRects_Range(target) {
++    if (injectedDomDependencies === undefined) {
++        return target.getClientRects();
++    }
++    return injectedDomDependencies.getClientRects_Range(target);
++}
++function getClientRects_Element(target) {
++    if (injectedDomDependencies === undefined) {
++        return target.getClientRects();
++    }
++    return injectedDomDependencies.getClientRects_Element(target);
++}
++function injectDomDependencies(domDependencies) {
++    injectedDomDependencies = domDependencies;
++}
++
+ function getSelection(root) {
+     let target;
+     // Browsers differ on whether shadow roots have a getSelection
+@@ -35,9 +79,9 @@ function hasSelection(dom, selection) {
+ }
+ function clientRectsFor(dom) {
+     if (dom.nodeType == 3)
+-        return textRange(dom, 0, dom.nodeValue.length).getClientRects();
++        return getClientRects_Range(textRange(dom, 0, dom.nodeValue.length));
+     else if (dom.nodeType == 1)
+-        return dom.getClientRects();
++        return getClientRects_Element(dom);
+     else
+         return [];
+ }
+@@ -124,7 +168,7 @@ function scrollRectIntoView(dom, rect, side, x, y, xMargin, yMargin, ltr) {
+                     cur = cur.assignedSlot || cur.parentNode;
+                     continue;
+                 }
+-                let rect = cur.getBoundingClientRect();
++                let rect = getBoundingClientRect_Element(cur);
+                 ({ scaleX, scaleY } = getScale(cur, rect));
+                 // Make sure scrollbar width isn't included in the rectangle
+                 bounding = { left: rect.left, right: rect.left + cur.clientWidth * scaleX,
+@@ -890,7 +934,7 @@ function textCoords(text, pos, side) {
+         else if (to < length)
+             to++;
+     }
+-    let rects = textRange(text, from, to).getClientRects();
++    let rects = getClientRects_Range(textRange(text, from, to));
+     if (!rects.length)
+         return null;
+     let rect = rects[(flatten ? flatten < 0 : side >= 0) ? 0 : rects.length - 1];
+@@ -967,7 +1011,7 @@ class WidgetView extends ContentView {
+         let custom = this.widget.coordsAt(this.dom, pos, side);
+         if (custom)
+             return custom;
+-        let rects = this.dom.getClientRects(), rect = null;
++        let rects = getClientRects_Element(this.dom), rect = null;
+         if (!rects.length)
+             return null;
+         let fromBack = this.side ? this.side < 0 : pos > 0;
+@@ -1014,7 +1058,7 @@ class WidgetBufferView extends ContentView {
+     localPosFromDOM() { return 0; }
+     domBoundsAround() { return null; }
+     coordsAt(pos) {
+-        return this.dom.getBoundingClientRect();
++        return getBoundingClientRect_Element(this.dom);
+     }
+     get overrideDOMText() {
+         return state.Text.empty;
+@@ -1090,7 +1134,7 @@ function coordsInChildren(view, pos, side) {
+ function fallbackRect(view) {
+     let last = view.dom.lastChild;
+     if (!last)
+-        return view.dom.getBoundingClientRect();
++        return getBoundingClientRect_Element(view.dom);
+     let rects = clientRectsFor(last);
+     return rects[rects.length - 1] || null;
+ }
+@@ -1563,7 +1607,7 @@ class LineView extends ContentView {
+             textHeight = rects[0].height;
+         }
+         return !totalWidth ? null : {
+-            lineHeight: this.dom.getBoundingClientRect().height,
++            lineHeight: getBoundingClientRect_Element(this.dom).height,
+             charWidth: totalWidth / this.length,
+             textHeight
+         };
+@@ -1666,7 +1710,7 @@ class BlockWidgetView extends ContentView {
+             return custom;
+         if (this.widget instanceof BlockGapWidget)
+             return null;
+-        return flattenRect(this.dom.getBoundingClientRect(), this.length ? pos == 0 : side <= 0);
++        return flattenRect(getBoundingClientRect_Element(this.dom), this.length ? pos == 0 : side <= 0);
+     }
+     destroy() {
+         super.destroy();
+@@ -3129,7 +3173,7 @@ class DocView extends ContentView {
+         let end = state.findClusterBreak(child.text, off);
+         if (end == off)
+             return null;
+-        let rects = textRange(child.dom, off, end).getClientRects();
++        let rects = getClientRects_Range(textRange(child.dom, off, end));
+         for (let i = 0; i < rects.length; i++) {
+             let rect = rects[i];
+             if (i == rects.length - 1 || rect.top < rect.bottom && rect.left < rect.right)
+@@ -3147,7 +3191,7 @@ class DocView extends ContentView {
+             if (end > to)
+                 break;
+             if (pos >= from) {
+-                let childRect = child.dom.getBoundingClientRect();
++                let childRect = getBoundingClientRect_Element(child.dom);
+                 result.push(childRect.height);
+                 if (isWider) {
+                     let last = child.dom.lastChild;
+@@ -3189,7 +3233,7 @@ class DocView extends ContentView {
+         this.view.observer.ignore(() => {
+             this.dom.appendChild(dummy);
+             let rect = clientRectsFor(dummy.firstChild)[0];
+-            lineHeight = dummy.getBoundingClientRect().height;
++            lineHeight = getBoundingClientRect_Element(dummy).height;
+             charWidth = rect ? rect.width / 27 : 7;
+             textHeight = rect ? rect.height : lineHeight;
+             dummy.remove();
+@@ -3485,7 +3529,7 @@ function domPosInText(node, x, y) {
+     let len = node.nodeValue.length;
+     let closestOffset = -1, closestDY = 1e9, generalSide = 0;
+     for (let i = 0; i < len; i++) {
+-        let rects = textRange(node, i, i + 1).getClientRects();
++        let rects = getClientRects_Range(textRange(node, i, i + 1));
+         for (let j = 0; j < rects.length; j++) {
+             let rect = rects[j];
+             if (rect.top == rect.bottom)
+@@ -3498,7 +3542,7 @@ function domPosInText(node, x, y) {
+                 if (browser.chrome || browser.gecko) {
+                     // Check for RTL on browsers that support getting client
+                     // rects for empty ranges.
+-                    let rectBefore = textRange(node, i).getBoundingClientRect();
++                    let rectBefore = getBoundingClientRect_Range(textRange(node, i));
+                     if (rectBefore.left == rect.right)
+                         after = !right;
+                 }
+@@ -3513,7 +3557,7 @@ function domPosInText(node, x, y) {
+ }
+ function posAtCoords(view, coords, precise, bias = -1) {
+     var _a, _b;
+-    let content = view.contentDOM.getBoundingClientRect(), docTop = content.top + view.viewState.paddingTop;
++    let content = getBoundingClientRect_Element(view.contentDOM), docTop = content.top + view.viewState.paddingTop;
+     let block, { docHeight } = view.viewState;
+     let { x, y } = coords, yOffset = y - docTop;
+     if (yOffset < 0)
+@@ -3595,7 +3639,7 @@ function posAtCoords(view, coords, precise, bias = -1) {
+     if (!nearest)
+         return null;
+     if (nearest.isWidget && ((_b = nearest.dom) === null || _b === void 0 ? void 0 : _b.nodeType) == 1) {
+-        let rect = nearest.dom.getBoundingClientRect();
++        let rect = getBoundingClientRect_Element(nearest.dom);
+         return coords.y < rect.top || coords.y <= rect.bottom && coords.x <= (rect.left + rect.right) / 2
+             ? nearest.posAtStart : nearest.posAtEnd;
+     }
+@@ -3624,7 +3668,7 @@ function isSuspiciousSafariCaretResult(node, offset, x) {
+     for (let next = node.nextSibling; next; next = next.nextSibling)
+         if (next.nodeType != 1 || next.nodeName != "BR")
+             return false;
+-    return textRange(node, len - 1, len).getBoundingClientRect().left > x;
++    return getBoundingClientRect_Range(textRange(node, len - 1, len)).left > x;
+ }
+ // Chrome will move positions between lines to the start of the next line
+ function isSuspiciousChromeCaretResult(node, offset, x) {
+@@ -3638,8 +3682,8 @@ function isSuspiciousChromeCaretResult(node, offset, x) {
+             break;
+         cur = parent;
+     }
+-    let rect = node.nodeType == 1 ? node.getBoundingClientRect()
+-        : textRange(node, 0, Math.max(node.nodeValue.length, 1)).getBoundingClientRect();
++    let rect = node.nodeType == 1 ? getBoundingClientRect_Element(node)
++        : getBoundingClientRect_Range(textRange(node, 0, Math.max(node.nodeValue.length, 1)));
+     return x - rect.left > 5;
+ }
+ function blockAt(view, pos) {
+@@ -3656,7 +3700,7 @@ function moveToLineBoundary(view, start, forward, includeWrap) {
+     let coords = !includeWrap || line.type != exports.BlockType.Text || !(view.lineWrapping || line.widgetLineBreaks) ? null
+         : view.coordsAtPos(start.assoc < 0 && start.head > line.from ? start.head - 1 : start.head);
+     if (coords) {
+-        let editorRect = view.dom.getBoundingClientRect();
++        let editorRect = getBoundingClientRect_Element(view.dom);
+         let direction = view.textDirectionAt(line.from);
+         let pos = view.posAtCoords({ x: forward == (direction == exports.Direction.LTR) ? editorRect.right - 1 : editorRect.left + 1,
+             y: (coords.top + coords.bottom) / 2 });
+@@ -3704,7 +3748,7 @@ function moveVertically(view, start, forward, distance) {
+     if (startPos == (forward ? view.state.doc.length : 0))
+         return state.EditorSelection.cursor(startPos, start.assoc);
+     let goal = start.goalColumn, startY;
+-    let rect = view.contentDOM.getBoundingClientRect();
++    let rect = getBoundingClientRect_Element(view.contentDOM);
+     let startCoords = view.coordsAtPos(startPos, start.assoc || -1), docTop = view.documentTop;
+     if (startCoords) {
+         if (goal == null)
+@@ -4365,7 +4409,7 @@ function dragScrollSpeed(dist) {
+     return Math.max(0, dist) * 0.7 + 8;
+ }
+ function dist(a, b) {
+-    return Math.max(Math.abs(a.clientX - b.clientX), Math.abs(a.clientY - b.clientY));
++    return Math.max(Math.abs(getMouseEventClientXOrY(a, "x") - getMouseEventClientXOrY(b, "x")), Math.abs(getMouseEventClientXOrY(a, "y") - getMouseEventClientXOrY(b, "y")));
+ }
+ class MouseSelection {
+     constructor(view, startEvent, style, mustSelect) {
+@@ -4400,18 +4444,18 @@ class MouseSelection {
+         let sx = 0, sy = 0;
+         let left = 0, top = 0, right = this.view.win.innerWidth, bottom = this.view.win.innerHeight;
+         if (this.scrollParents.x)
+-            ({ left, right } = this.scrollParents.x.getBoundingClientRect());
++            ({ left, right } = getBoundingClientRect_Element(this.scrollParents.x));
+         if (this.scrollParents.y)
+-            ({ top, bottom } = this.scrollParents.y.getBoundingClientRect());
++            ({ top, bottom } = getBoundingClientRect_Element(this.scrollParents.y));
+         let margins = getScrollMargins(this.view);
+-        if (event.clientX - margins.left <= left + dragScrollMargin)
+-            sx = -dragScrollSpeed(left - event.clientX);
+-        else if (event.clientX + margins.right >= right - dragScrollMargin)
+-            sx = dragScrollSpeed(event.clientX - right);
+-        if (event.clientY - margins.top <= top + dragScrollMargin)
+-            sy = -dragScrollSpeed(top - event.clientY);
+-        else if (event.clientY + margins.bottom >= bottom - dragScrollMargin)
+-            sy = dragScrollSpeed(event.clientY - bottom);
++        if (getMouseEventClientXOrY(event, "x") - margins.left <= left + dragScrollMargin)
++            sx = -dragScrollSpeed(left - getMouseEventClientXOrY(event, "x"));
++        else if (getMouseEventClientXOrY(event, "x") + margins.right >= right - dragScrollMargin)
++            sx = dragScrollSpeed(getMouseEventClientXOrY(event, "x") - right);
++        if (getMouseEventClientXOrY(event, "y") - margins.top <= top + dragScrollMargin)
++            sy = -dragScrollSpeed(top - getMouseEventClientXOrY(event, "y"));
++        else if (getMouseEventClientXOrY(event, "y") + margins.bottom >= bottom - dragScrollMargin)
++            sy = dragScrollSpeed(getMouseEventClientXOrY(event, "y") - bottom);
+         this.setScrollSpeed(sx, sy);
+     }
+     up(event) {
+@@ -4510,11 +4554,11 @@ function isInPrimarySelection(view, event) {
+     let sel = getSelection(view.root);
+     if (!sel || sel.rangeCount == 0)
+         return true;
+-    let rects = sel.getRangeAt(0).getClientRects();
++    let rects = getClientRects_Range(sel.getRangeAt(0));
+     for (let i = 0; i < rects.length; i++) {
+         let rect = rects[i];
+-        if (rect.left <= event.clientX && rect.right >= event.clientX &&
+-            rect.top <= event.clientY && rect.bottom >= event.clientY)
++        if (rect.left <= getMouseEventClientXOrY(event, "x") && rect.right >= getMouseEventClientXOrY(event, "x") &&
++            rect.top <= getMouseEventClientXOrY(event, "y") && rect.bottom >= getMouseEventClientXOrY(event, "y"))
+             return true;
+     }
+     return false;
+@@ -4674,8 +4718,8 @@ function findPositionSide(view, pos, x, y) {
+     return before && before.bottom >= y ? -1 : 1;
+ }
+ function queryPos(view, event) {
+-    let pos = view.posAtCoords({ x: event.clientX, y: event.clientY }, false);
+-    return { pos, bias: findPositionSide(view, pos, event.clientX, event.clientY) };
++    let pos = view.posAtCoords({ x: getMouseEventClientXOrY(event, "x"), y: getMouseEventClientXOrY(event, "y") }, false);
++    return { pos, bias: findPositionSide(view, pos, getMouseEventClientXOrY(event, "x"), getMouseEventClientXOrY(event, "y")) };
+ }
+ const BadMouseDetail = browser.ie && browser.ie_version <= 11;
+ let lastMouseDown = null, lastMouseDownCount = 0, lastMouseDownTime = 0;
+@@ -4685,8 +4729,8 @@ function getClickType(event) {
+     let last = lastMouseDown, lastTime = lastMouseDownTime;
+     lastMouseDown = event;
+     lastMouseDownTime = Date.now();
+-    return lastMouseDownCount = !last || (lastTime > Date.now() - 400 && Math.abs(last.clientX - event.clientX) < 2 &&
+-        Math.abs(last.clientY - event.clientY) < 2) ? (lastMouseDownCount + 1) % 3 : 1;
++    return lastMouseDownCount = !last || (lastTime > Date.now() - 400 && Math.abs(getMouseEventClientXOrY(last, "x") - getMouseEventClientXOrY(event, "x")) < 2 &&
++        Math.abs(getMouseEventClientXOrY(last, "y") - getMouseEventClientXOrY(event, "y")) < 2) ? (lastMouseDownCount + 1) % 3 : 1;
+ }
+ function basicMouseSelection(view, event) {
+     let start = queryPos(view, event), type = getClickType(event);
+@@ -4753,7 +4797,7 @@ function dropText(view, event, text, direct) {
+     text = textFilter(view.state, clipboardInputFilter, text);
+     if (!text)
+         return;
+-    let dropPos = view.posAtCoords({ x: event.clientX, y: event.clientY }, false);
++    let dropPos = view.posAtCoords({ x: getMouseEventClientXOrY(event, "x"), y: getMouseEventClientXOrY(event, "y") }, false);
+     let { draggedContent } = view.inputState;
+     let del = direct && draggedContent && dragMovesSelection(view, event)
+         ? { from: draggedContent.from, to: draggedContent.to } : null;
+@@ -5736,7 +5780,7 @@ class DecorationComparator {
+ }
+ 
+ function visiblePixelRange(dom, paddingTop) {
+-    let rect = dom.getBoundingClientRect();
++    let rect = getBoundingClientRect_Element(dom);
+     let doc = dom.ownerDocument, win = doc.defaultView || window;
+     let left = Math.max(0, rect.left), right = Math.min(win.innerWidth, rect.right);
+     let top = Math.max(0, rect.top), bottom = Math.min(win.innerHeight, rect.bottom);
+@@ -5746,7 +5790,7 @@ function visiblePixelRange(dom, paddingTop) {
+             let style = window.getComputedStyle(elt);
+             if ((elt.scrollHeight > elt.clientHeight || elt.scrollWidth > elt.clientWidth) &&
+                 style.overflow != "visible") {
+-                let parentRect = elt.getBoundingClientRect();
++                let parentRect = getBoundingClientRect_Element(elt);
+                 left = Math.max(left, parentRect.left);
+                 right = Math.min(right, parentRect.right);
+                 top = Math.max(top, parentRect.top);
+@@ -5765,7 +5809,7 @@ function visiblePixelRange(dom, paddingTop) {
+         top: top - (rect.top + paddingTop), bottom: Math.max(top, bottom) - (rect.top + paddingTop) };
+ }
+ function fullPixelRange(dom, paddingTop) {
+-    let rect = dom.getBoundingClientRect();
++    let rect = getBoundingClientRect_Element(dom);
+     return { left: 0, right: rect.right - rect.left,
+         top: paddingTop, bottom: rect.bottom - (rect.top + paddingTop) };
+ }
+@@ -5942,7 +5986,7 @@ class ViewState {
+         let whiteSpace = style.whiteSpace;
+         this.defaultTextDirection = style.direction == "rtl" ? exports.Direction.RTL : exports.Direction.LTR;
+         let refresh = this.heightOracle.mustRefreshForWrapping(whiteSpace);
+-        let domRect = dom.getBoundingClientRect();
++        let domRect = getBoundingClientRect_Element(dom);
+         let measureContent = refresh || this.mustMeasureContent || this.contentDOMHeight != domRect.height;
+         this.contentDOMHeight = domRect.height;
+         this.mustMeasureContent = false;
+@@ -6715,6 +6759,7 @@ class DOMObserver {
+         this.onScroll = this.onScroll.bind(this);
+         if (window.matchMedia)
+             this.printQuery = window.matchMedia("print");
++        const { ResizeObserver } = getResizeObserver();
+         if (typeof ResizeObserver == "function") {
+             this.resizeScroll = new ResizeObserver(() => {
+                 var _a;
+@@ -7220,10 +7265,10 @@ class EditContextManager {
+         for (let event in this.handlers)
+             context.addEventListener(event, this.handlers[event]);
+         this.measureReq = { read: view => {
+-                this.editContext.updateControlBounds(view.contentDOM.getBoundingClientRect());
++                this.editContext.updateControlBounds(getBoundingClientRect_Element(view.contentDOM));
+                 let sel = getSelection(view.root);
+                 if (sel && sel.rangeCount)
+-                    this.editContext.updateSelectionBounds(sel.getRangeAt(0).getBoundingClientRect());
++                    this.editContext.updateSelectionBounds(getBoundingClientRect_Range(sel.getRangeAt(0)));
+             } };
+     }
+     applyEdits(update) {
+@@ -7852,7 +7897,7 @@ class EditorView {
+     directly to the top of the first line, not above the padding.
+     */
+     get documentTop() {
+-        return this.contentDOM.getBoundingClientRect().top + this.viewState.paddingTop;
++        return getBoundingClientRect_Element(this.contentDOM).top + this.viewState.paddingTop;
+     }
+     /**
+     Reports the padding above and below the document.
+@@ -8767,7 +8812,7 @@ class RectangleMarker {
+     }
+ }
+ function getBase(view) {
+-    let rect = view.scrollDOM.getBoundingClientRect();
++    let rect = getBoundingClientRect_Element(view.scrollDOM);
+     let left = view.textDirection == exports.Direction.LTR ? rect.left : rect.right - view.scrollDOM.clientWidth * view.scaleX;
+     return { left: left - view.scrollDOM.scrollLeft * view.scaleX, top: rect.top - view.scrollDOM.scrollTop * view.scaleY };
+ }
+@@ -8775,7 +8820,7 @@ function wrappedLine(view, pos, side, inside) {
+     let coords = view.coordsAtPos(pos, side * 2);
+     if (!coords)
+         return inside;
+-    let editorRect = view.dom.getBoundingClientRect();
++    let editorRect = getBoundingClientRect_Element(view.dom);
+     let y = (coords.top + coords.bottom) / 2;
+     let left = view.posAtCoords({ x: editorRect.left + 1, y });
+     let right = view.posAtCoords({ x: editorRect.right - 1, y });
+@@ -8788,7 +8833,7 @@ function rectanglesForRange(view, className, range) {
+         return [];
+     let from = Math.max(range.from, view.viewport.from), to = Math.min(range.to, view.viewport.to);
+     let ltr = view.textDirection == exports.Direction.LTR;
+-    let content = view.contentDOM, contentRect = content.getBoundingClientRect(), base = getBase(view);
++    let content = view.contentDOM, contentRect = getBoundingClientRect_Element(content), base = getBase(view);
+     let lineElt = content.querySelector(".cm-line"), lineStyle = lineElt && window.getComputedStyle(lineElt);
+     let leftSide = contentRect.left +
+         (lineStyle ? parseInt(lineStyle.paddingLeft) + Math.min(0, parseInt(lineStyle.textIndent)) : 0);
+@@ -9111,7 +9156,7 @@ const drawDropCursor = ViewPlugin.fromClass(class {
+         let rect = pos != null && view.coordsAtPos(pos);
+         if (!rect)
+             return null;
+-        let outer = view.scrollDOM.getBoundingClientRect();
++        let outer = getBoundingClientRect_Element(view.scrollDOM);
+         return {
+             left: rect.left - outer.left + view.scrollDOM.scrollLeft * view.scaleX,
+             top: rect.top - outer.top + view.scrollDOM.scrollTop * view.scaleY,
+@@ -9579,10 +9624,10 @@ function absoluteColumn(view, x) {
+     return ref ? Math.round(Math.abs((ref.left - x) / view.defaultCharacterWidth)) : -1;
+ }
+ function getPos(view, event) {
+-    let offset = view.posAtCoords({ x: event.clientX, y: event.clientY }, false);
++    let offset = view.posAtCoords({ x: getMouseEventClientXOrY(event, "x"), y: getMouseEventClientXOrY(event, "y") }, false);
+     let line = view.state.doc.lineAt(offset), off = offset - line.from;
+     let col = off > MaxOff ? -1
+-        : off == line.length ? absoluteColumn(view, event.clientX)
++        : off == line.length ? absoluteColumn(view, getMouseEventClientXOrY(event, "x"))
+             : state.countColumn(line.text, view.state.tabSize, offset - line.from);
+     return { line: line.number, col, off };
+ }
+@@ -9765,6 +9810,7 @@ const tooltipPlugin = ViewPlugin.fromClass(class {
+         this.classes = view.themeClasses;
+         this.createContainer();
+         this.measureReq = { read: this.readMeasure.bind(this), write: this.writeMeasure.bind(this), key: this };
++        const { ResizeObserver } = getResizeObserver();
+         this.resizeObserver = typeof ResizeObserver == "function" ? new ResizeObserver(() => this.measureSoon()) : null;
+         this.manager = new TooltipViewManager(view, showTooltip, (t, p) => this.createTooltip(t, p), t => {
+             if (this.resizeObserver)
+@@ -9868,7 +9914,7 @@ const tooltipPlugin = ViewPlugin.fromClass(class {
+         clearTimeout(this.measureTimeout);
+     }
+     readMeasure() {
+-        let editor = this.view.dom.getBoundingClientRect();
++        let editor = getBoundingClientRect_Element(this.view.dom);
+         let scaleX = 1, scaleY = 1, makeAbsolute = false;
+         if (this.position == "fixed" && this.manager.tooltipViews.length) {
+             let { dom } = this.manager.tooltipViews[0];
+@@ -9881,13 +9927,13 @@ const tooltipPlugin = ViewPlugin.fromClass(class {
+             else if (dom.style.top == Outside && dom.style.left == "0px") {
+                 // On other browsers, we have to awkwardly try and use other
+                 // information to detect a transform.
+-                let rect = dom.getBoundingClientRect();
++                let rect = getBoundingClientRect_Element(dom);
+                 makeAbsolute = Math.abs(rect.top + 10000) > 1 || Math.abs(rect.left) > 1;
+             }
+         }
+         if (makeAbsolute || this.position == "absolute") {
+             if (this.parent) {
+-                let rect = this.parent.getBoundingClientRect();
++                let rect = getBoundingClientRect_Element(this.parent);
+                 if (rect.width && rect.height) {
+                     scaleX = rect.width / this.parent.offsetWidth;
+                     scaleY = rect.height / this.parent.offsetHeight;
+@@ -9899,12 +9945,12 @@ const tooltipPlugin = ViewPlugin.fromClass(class {
+         }
+         return {
+             editor,
+-            parent: this.parent ? this.container.getBoundingClientRect() : editor,
++            parent: this.parent ? getBoundingClientRect_Element(this.container) : editor,
+             pos: this.manager.tooltips.map((t, i) => {
+                 let tv = this.manager.tooltipViews[i];
+                 return tv.getCoords ? tv.getCoords(t.pos) : this.view.coordsAtPos(t.pos);
+             }),
+-            size: this.manager.tooltipViews.map(({ dom }) => dom.getBoundingClientRect()),
++            size: this.manager.tooltipViews.map(({ dom }) => getBoundingClientRect_Element(dom)),
+             space: this.view.state.facet(tooltipConfig).tooltipSpace(this.view),
+             scaleX, scaleY, makeAbsolute
+         };
+@@ -10223,14 +10269,14 @@ class HoverPlugin {
+     }
+     mousemove(event) {
+         var _a, _b;
+-        this.lastMove = { x: event.clientX, y: event.clientY, target: event.target, time: Date.now() };
++        this.lastMove = { x: getMouseEventClientXOrY(event, "x"), y: getMouseEventClientXOrY(event, "y"), target: event.target, time: Date.now() };
+         if (this.hoverTimeout < 0)
+             this.hoverTimeout = setTimeout(this.checkHover, this.hoverTime);
+         let { active, tooltip } = this;
+         if (active.length && tooltip && !isInTooltip(tooltip.dom, event) || this.pending) {
+             let { pos } = active[0] || this.pending, end = (_b = (_a = active[0]) === null || _a === void 0 ? void 0 : _a.end) !== null && _b !== void 0 ? _b : pos;
+             if ((pos == end ? this.view.posAtCoords(this.lastMove) != pos
+-                : !isOverRange(this.view, pos, end, event.clientX, event.clientY))) {
++                : !isOverRange(this.view, pos, end, getMouseEventClientXOrY(event, "x"), getMouseEventClientXOrY(event, "y")))) {
+                 this.view.dispatch({ effects: this.setHover.of([]) });
+                 this.pending = null;
+             }
+@@ -10265,17 +10311,17 @@ class HoverPlugin {
+ }
+ const tooltipMargin = 4;
+ function isInTooltip(tooltip, event) {
+-    let { left, right, top, bottom } = tooltip.getBoundingClientRect(), arrow;
++    let { left, right, top, bottom } = getBoundingClientRect_Element(tooltip), arrow;
+     if (arrow = tooltip.querySelector(".cm-tooltip-arrow")) {
+-        let arrowRect = arrow.getBoundingClientRect();
++        let arrowRect = getBoundingClientRect_Element(arrow);
+         top = Math.min(arrowRect.top, top);
+         bottom = Math.max(arrowRect.bottom, bottom);
+     }
+-    return event.clientX >= left - tooltipMargin && event.clientX <= right + tooltipMargin &&
+-        event.clientY >= top - tooltipMargin && event.clientY <= bottom + tooltipMargin;
++    return getMouseEventClientXOrY(event, "x") >= left - tooltipMargin && getMouseEventClientXOrY(event, "x") <= right + tooltipMargin &&
++        getMouseEventClientXOrY(event, "y") >= top - tooltipMargin && getMouseEventClientXOrY(event, "y") <= bottom + tooltipMargin;
+ }
+ function isOverRange(view, from, to, x, y, margin) {
+-    let rect = view.scrollDOM.getBoundingClientRect();
++    let rect = getBoundingClientRect_Element(view.scrollDOM);
+     let docBottom = view.documentTop + view.documentPadding.top + view.contentHeight;
+     if (rect.left > x || rect.right < x || rect.top > y || Math.min(rect.bottom, docBottom) < y)
+         return false;
+@@ -10524,8 +10570,8 @@ class PanelGroup {
+     scrollMargin() {
+         return !this.dom || this.container ? 0
+             : Math.max(0, this.top ?
+-                this.dom.getBoundingClientRect().bottom - Math.max(0, this.view.scrollDOM.getBoundingClientRect().top) :
+-                Math.min(innerHeight, this.view.scrollDOM.getBoundingClientRect().bottom) - this.dom.getBoundingClientRect().top);
++                getBoundingClientRect_Element(this.dom).bottom - Math.max(0, getBoundingClientRect_Element(this.view.scrollDOM).top) :
++                Math.min(innerHeight, getBoundingClientRect_Element(this.view.scrollDOM).bottom) - getBoundingClientRect_Element(this.dom).top);
+     }
+     syncClasses() {
+         if (!this.container || this.classes == this.view.themeClasses)
+@@ -10834,11 +10880,11 @@ class SingleGutterView {
+                 if (target != this.dom && this.dom.contains(target)) {
+                     while (target.parentNode != this.dom)
+                         target = target.parentNode;
+-                    let rect = target.getBoundingClientRect();
++                    let rect = getBoundingClientRect_Element(target);
+                     y = (rect.top + rect.bottom) / 2;
+                 }
+                 else {
+-                    y = event.clientY;
++                    y = getMouseEventClientXOrY(event, 'y');
+                 }
+                 let line = view.lineBlockAtHeight(y - view.documentTop);
+                 if (config.domEventHandlers[prop](view, line, event))
+@@ -11117,6 +11163,7 @@ exports.highlightSpecialChars = highlightSpecialChars;
+ exports.highlightTrailingWhitespace = highlightTrailingWhitespace;
+ exports.highlightWhitespace = highlightWhitespace;
+ exports.hoverTooltip = hoverTooltip;
++exports.injectDomDependencies = injectDomDependencies;
+ exports.keymap = keymap;
+ exports.layer = layer;
+ exports.lineNumberMarkers = lineNumberMarkers;
+diff --git a/node_modules/@codemirror/view/dist/index.d.cts b/node_modules/@codemirror/view/dist/index.d.cts
+index 7d5beb0..a3ac0cf 100644
+--- a/node_modules/@codemirror/view/dist/index.d.cts
++++ b/node_modules/@codemirror/view/dist/index.d.cts
+@@ -1,5 +1,5 @@
+ import * as _codemirror_state from '@codemirror/state';
+-import { RangeSet, RangeValue, Range, EditorState, Extension, Transaction, ChangeSet, SelectionRange, ChangeDesc, EditorSelection, EditorStateConfig, StateEffect, TransactionSpec, Line, Facet, StateField } from '@codemirror/state';
++import { RangeSet, RangeValue, Range as Range$1, EditorState, Extension, Transaction, ChangeSet, SelectionRange, ChangeDesc, EditorSelection, EditorStateConfig, StateEffect, TransactionSpec, Line, Facet, StateField } from '@codemirror/state';
+ import { StyleModule, StyleSpec } from 'style-mod';
+ 
+ /**
+@@ -349,7 +349,7 @@ declare abstract class Decoration extends RangeValue {
+     decorated range or ranges. If the ranges aren't already sorted,
+     pass `true` for `sort` to make the library sort them for you.
+     */
+-    static set(of: Range<Decoration> | readonly Range<Decoration>[], sort?: boolean): DecorationSet;
++    static set(of: Range$1<Decoration> | readonly Range$1<Decoration>[], sort?: boolean): DecorationSet;
+     /**
+     The empty set of decorations.
+     */
+@@ -2209,4 +2209,14 @@ trailing whitespace.
+ */
+ declare function highlightTrailingWhitespace(): Extension;
+ 
+-export { BidiSpan, BlockInfo, BlockType, type Command, type DOMEventHandlers, type DOMEventMap, Decoration, type DecorationSet, Direction, EditorView, type EditorViewConfig, GutterMarker, type HoverTooltipSource, type KeyBinding, type LayerMarker, MatchDecorator, type MouseSelectionStyle, type Panel, type PanelConstructor, type PluginSpec, type PluginValue, type Rect, RectangleMarker, type Tooltip, type TooltipView, ViewPlugin, ViewUpdate, WidgetType, closeHoverTooltips, crosshairCursor, drawSelection, dropCursor, getDrawSelectionConfig, getPanel, getTooltip, gutter, gutterLineClass, gutterWidgetClass, gutters, hasHoverTooltips, highlightActiveLine, highlightActiveLineGutter, highlightSpecialChars, highlightTrailingWhitespace, highlightWhitespace, hoverTooltip, keymap, layer, lineNumberMarkers, lineNumberWidgetMarker, lineNumbers, logException, panels, placeholder, rectangularSelection, repositionTooltips, runScopeHandlers, scrollPastEnd, showPanel, showTooltip, tooltips };
++type DomDependencies = {
++    getResizeObserver: () => typeof ResizeObserver;
++    getMouseEventClientXOrY: (event: MouseEvent, axis: 'x' | 'y') => number;
++    getBoundingClientRect_Range: (target: Range) => DOMRect;
++    getBoundingClientRect_Element: (target: Element) => DOMRect;
++    getClientRects_Range: (target: Range) => DOMRectList;
++    getClientRects_Element: (target: Element) => DOMRectList;
++};
++declare function injectDomDependencies(domDependencies: DomDependencies): void;
++
++export { BidiSpan, BlockInfo, BlockType, type Command, type DOMEventHandlers, type DOMEventMap, Decoration, type DecorationSet, Direction, EditorView, type EditorViewConfig, GutterMarker, type HoverTooltipSource, type KeyBinding, type LayerMarker, MatchDecorator, type MouseSelectionStyle, type Panel, type PanelConstructor, type PluginSpec, type PluginValue, type Rect, RectangleMarker, type Tooltip, type TooltipView, ViewPlugin, ViewUpdate, WidgetType, closeHoverTooltips, crosshairCursor, drawSelection, dropCursor, getDrawSelectionConfig, getPanel, getTooltip, gutter, gutterLineClass, gutterWidgetClass, gutters, hasHoverTooltips, highlightActiveLine, highlightActiveLineGutter, highlightSpecialChars, highlightTrailingWhitespace, highlightWhitespace, hoverTooltip, injectDomDependencies, keymap, layer, lineNumberMarkers, lineNumberWidgetMarker, lineNumbers, logException, panels, placeholder, rectangularSelection, repositionTooltips, runScopeHandlers, scrollPastEnd, showPanel, showTooltip, tooltips };
+diff --git a/node_modules/@codemirror/view/dist/index.d.ts b/node_modules/@codemirror/view/dist/index.d.ts
+index 7d5beb0..a3ac0cf 100644
+--- a/node_modules/@codemirror/view/dist/index.d.ts
++++ b/node_modules/@codemirror/view/dist/index.d.ts
+@@ -1,5 +1,5 @@
+ import * as _codemirror_state from '@codemirror/state';
+-import { RangeSet, RangeValue, Range, EditorState, Extension, Transaction, ChangeSet, SelectionRange, ChangeDesc, EditorSelection, EditorStateConfig, StateEffect, TransactionSpec, Line, Facet, StateField } from '@codemirror/state';
++import { RangeSet, RangeValue, Range as Range$1, EditorState, Extension, Transaction, ChangeSet, SelectionRange, ChangeDesc, EditorSelection, EditorStateConfig, StateEffect, TransactionSpec, Line, Facet, StateField } from '@codemirror/state';
+ import { StyleModule, StyleSpec } from 'style-mod';
+ 
+ /**
+@@ -349,7 +349,7 @@ declare abstract class Decoration extends RangeValue {
+     decorated range or ranges. If the ranges aren't already sorted,
+     pass `true` for `sort` to make the library sort them for you.
+     */
+-    static set(of: Range<Decoration> | readonly Range<Decoration>[], sort?: boolean): DecorationSet;
++    static set(of: Range$1<Decoration> | readonly Range$1<Decoration>[], sort?: boolean): DecorationSet;
+     /**
+     The empty set of decorations.
+     */
+@@ -2209,4 +2209,14 @@ trailing whitespace.
+ */
+ declare function highlightTrailingWhitespace(): Extension;
+ 
+-export { BidiSpan, BlockInfo, BlockType, type Command, type DOMEventHandlers, type DOMEventMap, Decoration, type DecorationSet, Direction, EditorView, type EditorViewConfig, GutterMarker, type HoverTooltipSource, type KeyBinding, type LayerMarker, MatchDecorator, type MouseSelectionStyle, type Panel, type PanelConstructor, type PluginSpec, type PluginValue, type Rect, RectangleMarker, type Tooltip, type TooltipView, ViewPlugin, ViewUpdate, WidgetType, closeHoverTooltips, crosshairCursor, drawSelection, dropCursor, getDrawSelectionConfig, getPanel, getTooltip, gutter, gutterLineClass, gutterWidgetClass, gutters, hasHoverTooltips, highlightActiveLine, highlightActiveLineGutter, highlightSpecialChars, highlightTrailingWhitespace, highlightWhitespace, hoverTooltip, keymap, layer, lineNumberMarkers, lineNumberWidgetMarker, lineNumbers, logException, panels, placeholder, rectangularSelection, repositionTooltips, runScopeHandlers, scrollPastEnd, showPanel, showTooltip, tooltips };
++type DomDependencies = {
++    getResizeObserver: () => typeof ResizeObserver;
++    getMouseEventClientXOrY: (event: MouseEvent, axis: 'x' | 'y') => number;
++    getBoundingClientRect_Range: (target: Range) => DOMRect;
++    getBoundingClientRect_Element: (target: Element) => DOMRect;
++    getClientRects_Range: (target: Range) => DOMRectList;
++    getClientRects_Element: (target: Element) => DOMRectList;
++};
++declare function injectDomDependencies(domDependencies: DomDependencies): void;
++
++export { BidiSpan, BlockInfo, BlockType, type Command, type DOMEventHandlers, type DOMEventMap, Decoration, type DecorationSet, Direction, EditorView, type EditorViewConfig, GutterMarker, type HoverTooltipSource, type KeyBinding, type LayerMarker, MatchDecorator, type MouseSelectionStyle, type Panel, type PanelConstructor, type PluginSpec, type PluginValue, type Rect, RectangleMarker, type Tooltip, type TooltipView, ViewPlugin, ViewUpdate, WidgetType, closeHoverTooltips, crosshairCursor, drawSelection, dropCursor, getDrawSelectionConfig, getPanel, getTooltip, gutter, gutterLineClass, gutterWidgetClass, gutters, hasHoverTooltips, highlightActiveLine, highlightActiveLineGutter, highlightSpecialChars, highlightTrailingWhitespace, highlightWhitespace, hoverTooltip, injectDomDependencies, keymap, layer, lineNumberMarkers, lineNumberWidgetMarker, lineNumbers, logException, panels, placeholder, rectangularSelection, repositionTooltips, runScopeHandlers, scrollPastEnd, showPanel, showTooltip, tooltips };
+diff --git a/node_modules/@codemirror/view/dist/index.js b/node_modules/@codemirror/view/dist/index.js
+index 83635bc..44b8335 100644
+--- a/node_modules/@codemirror/view/dist/index.js
++++ b/node_modules/@codemirror/view/dist/index.js
+@@ -2,6 +2,50 @@ import { Text, RangeSet, MapMode, RangeValue, findClusterBreak, EditorSelection,
+ import { StyleModule } from 'style-mod';
+ import { keyName, base, shift } from 'w3c-keyname';
+ 
++let injectedDomDependencies = undefined;
++function getResizeObserver() {
++    if (injectedDomDependencies === undefined) {
++        return ResizeObserver;
++    }
++    return injectedDomDependencies.getResizeObserver();
++}
++function getMouseEventClientXOrY(event, axis) {
++    if (injectedDomDependencies === undefined) {
++        switch (axis) {
++            case 'x': return event.clientX;
++            case 'y': return event.clientY;
++        }
++    }
++    return injectedDomDependencies.getMouseEventClientXOrY(event, axis);
++}
++function getBoundingClientRect_Range(target) {
++    if (injectedDomDependencies === undefined) {
++        return target.getBoundingClientRect();
++    }
++    return injectedDomDependencies.getBoundingClientRect_Range(target);
++}
++function getBoundingClientRect_Element(target) {
++    if (injectedDomDependencies === undefined) {
++        return target.getBoundingClientRect();
++    }
++    return injectedDomDependencies.getBoundingClientRect_Element(target);
++}
++function getClientRects_Range(target) {
++    if (injectedDomDependencies === undefined) {
++        return target.getClientRects();
++    }
++    return injectedDomDependencies.getClientRects_Range(target);
++}
++function getClientRects_Element(target) {
++    if (injectedDomDependencies === undefined) {
++        return target.getClientRects();
++    }
++    return injectedDomDependencies.getClientRects_Element(target);
++}
++function injectDomDependencies(domDependencies) {
++    injectedDomDependencies = domDependencies;
++}
++
+ function getSelection(root) {
+     let target;
+     // Browsers differ on whether shadow roots have a getSelection
+@@ -33,9 +77,9 @@ function hasSelection(dom, selection) {
+ }
+ function clientRectsFor(dom) {
+     if (dom.nodeType == 3)
+-        return textRange(dom, 0, dom.nodeValue.length).getClientRects();
++        return getClientRects_Range(textRange(dom, 0, dom.nodeValue.length));
+     else if (dom.nodeType == 1)
+-        return dom.getClientRects();
++        return getClientRects_Element(dom);
+     else
+         return [];
+ }
+@@ -122,7 +166,7 @@ function scrollRectIntoView(dom, rect, side, x, y, xMargin, yMargin, ltr) {
+                     cur = cur.assignedSlot || cur.parentNode;
+                     continue;
+                 }
+-                let rect = cur.getBoundingClientRect();
++                let rect = getBoundingClientRect_Element(cur);
+                 ({ scaleX, scaleY } = getScale(cur, rect));
+                 // Make sure scrollbar width isn't included in the rectangle
+                 bounding = { left: rect.left, right: rect.left + cur.clientWidth * scaleX,
+@@ -888,7 +932,7 @@ function textCoords(text, pos, side) {
+         else if (to < length)
+             to++;
+     }
+-    let rects = textRange(text, from, to).getClientRects();
++    let rects = getClientRects_Range(textRange(text, from, to));
+     if (!rects.length)
+         return null;
+     let rect = rects[(flatten ? flatten < 0 : side >= 0) ? 0 : rects.length - 1];
+@@ -965,7 +1009,7 @@ class WidgetView extends ContentView {
+         let custom = this.widget.coordsAt(this.dom, pos, side);
+         if (custom)
+             return custom;
+-        let rects = this.dom.getClientRects(), rect = null;
++        let rects = getClientRects_Element(this.dom), rect = null;
+         if (!rects.length)
+             return null;
+         let fromBack = this.side ? this.side < 0 : pos > 0;
+@@ -1012,7 +1056,7 @@ class WidgetBufferView extends ContentView {
+     localPosFromDOM() { return 0; }
+     domBoundsAround() { return null; }
+     coordsAt(pos) {
+-        return this.dom.getBoundingClientRect();
++        return getBoundingClientRect_Element(this.dom);
+     }
+     get overrideDOMText() {
+         return Text.empty;
+@@ -1088,7 +1132,7 @@ function coordsInChildren(view, pos, side) {
+ function fallbackRect(view) {
+     let last = view.dom.lastChild;
+     if (!last)
+-        return view.dom.getBoundingClientRect();
++        return getBoundingClientRect_Element(view.dom);
+     let rects = clientRectsFor(last);
+     return rects[rects.length - 1] || null;
+ }
+@@ -1560,7 +1604,7 @@ class LineView extends ContentView {
+             textHeight = rects[0].height;
+         }
+         return !totalWidth ? null : {
+-            lineHeight: this.dom.getBoundingClientRect().height,
++            lineHeight: getBoundingClientRect_Element(this.dom).height,
+             charWidth: totalWidth / this.length,
+             textHeight
+         };
+@@ -1663,7 +1707,7 @@ class BlockWidgetView extends ContentView {
+             return custom;
+         if (this.widget instanceof BlockGapWidget)
+             return null;
+-        return flattenRect(this.dom.getBoundingClientRect(), this.length ? pos == 0 : side <= 0);
++        return flattenRect(getBoundingClientRect_Element(this.dom), this.length ? pos == 0 : side <= 0);
+     }
+     destroy() {
+         super.destroy();
+@@ -3125,7 +3169,7 @@ class DocView extends ContentView {
+         let end = findClusterBreak(child.text, off);
+         if (end == off)
+             return null;
+-        let rects = textRange(child.dom, off, end).getClientRects();
++        let rects = getClientRects_Range(textRange(child.dom, off, end));
+         for (let i = 0; i < rects.length; i++) {
+             let rect = rects[i];
+             if (i == rects.length - 1 || rect.top < rect.bottom && rect.left < rect.right)
+@@ -3143,7 +3187,7 @@ class DocView extends ContentView {
+             if (end > to)
+                 break;
+             if (pos >= from) {
+-                let childRect = child.dom.getBoundingClientRect();
++                let childRect = getBoundingClientRect_Element(child.dom);
+                 result.push(childRect.height);
+                 if (isWider) {
+                     let last = child.dom.lastChild;
+@@ -3185,7 +3229,7 @@ class DocView extends ContentView {
+         this.view.observer.ignore(() => {
+             this.dom.appendChild(dummy);
+             let rect = clientRectsFor(dummy.firstChild)[0];
+-            lineHeight = dummy.getBoundingClientRect().height;
++            lineHeight = getBoundingClientRect_Element(dummy).height;
+             charWidth = rect ? rect.width / 27 : 7;
+             textHeight = rect ? rect.height : lineHeight;
+             dummy.remove();
+@@ -3481,7 +3525,7 @@ function domPosInText(node, x, y) {
+     let len = node.nodeValue.length;
+     let closestOffset = -1, closestDY = 1e9, generalSide = 0;
+     for (let i = 0; i < len; i++) {
+-        let rects = textRange(node, i, i + 1).getClientRects();
++        let rects = getClientRects_Range(textRange(node, i, i + 1));
+         for (let j = 0; j < rects.length; j++) {
+             let rect = rects[j];
+             if (rect.top == rect.bottom)
+@@ -3494,7 +3538,7 @@ function domPosInText(node, x, y) {
+                 if (browser.chrome || browser.gecko) {
+                     // Check for RTL on browsers that support getting client
+                     // rects for empty ranges.
+-                    let rectBefore = textRange(node, i).getBoundingClientRect();
++                    let rectBefore = getBoundingClientRect_Range(textRange(node, i));
+                     if (rectBefore.left == rect.right)
+                         after = !right;
+                 }
+@@ -3509,7 +3553,7 @@ function domPosInText(node, x, y) {
+ }
+ function posAtCoords(view, coords, precise, bias = -1) {
+     var _a, _b;
+-    let content = view.contentDOM.getBoundingClientRect(), docTop = content.top + view.viewState.paddingTop;
++    let content = getBoundingClientRect_Element(view.contentDOM), docTop = content.top + view.viewState.paddingTop;
+     let block, { docHeight } = view.viewState;
+     let { x, y } = coords, yOffset = y - docTop;
+     if (yOffset < 0)
+@@ -3591,7 +3635,7 @@ function posAtCoords(view, coords, precise, bias = -1) {
+     if (!nearest)
+         return null;
+     if (nearest.isWidget && ((_b = nearest.dom) === null || _b === void 0 ? void 0 : _b.nodeType) == 1) {
+-        let rect = nearest.dom.getBoundingClientRect();
++        let rect = getBoundingClientRect_Element(nearest.dom);
+         return coords.y < rect.top || coords.y <= rect.bottom && coords.x <= (rect.left + rect.right) / 2
+             ? nearest.posAtStart : nearest.posAtEnd;
+     }
+@@ -3620,7 +3664,7 @@ function isSuspiciousSafariCaretResult(node, offset, x) {
+     for (let next = node.nextSibling; next; next = next.nextSibling)
+         if (next.nodeType != 1 || next.nodeName != "BR")
+             return false;
+-    return textRange(node, len - 1, len).getBoundingClientRect().left > x;
++    return getBoundingClientRect_Range(textRange(node, len - 1, len)).left > x;
+ }
+ // Chrome will move positions between lines to the start of the next line
+ function isSuspiciousChromeCaretResult(node, offset, x) {
+@@ -3634,8 +3678,8 @@ function isSuspiciousChromeCaretResult(node, offset, x) {
+             break;
+         cur = parent;
+     }
+-    let rect = node.nodeType == 1 ? node.getBoundingClientRect()
+-        : textRange(node, 0, Math.max(node.nodeValue.length, 1)).getBoundingClientRect();
++    let rect = node.nodeType == 1 ? getBoundingClientRect_Element(node)
++        : getBoundingClientRect_Range(textRange(node, 0, Math.max(node.nodeValue.length, 1)));
+     return x - rect.left > 5;
+ }
+ function blockAt(view, pos) {
+@@ -3652,7 +3696,7 @@ function moveToLineBoundary(view, start, forward, includeWrap) {
+     let coords = !includeWrap || line.type != BlockType.Text || !(view.lineWrapping || line.widgetLineBreaks) ? null
+         : view.coordsAtPos(start.assoc < 0 && start.head > line.from ? start.head - 1 : start.head);
+     if (coords) {
+-        let editorRect = view.dom.getBoundingClientRect();
++        let editorRect = getBoundingClientRect_Element(view.dom);
+         let direction = view.textDirectionAt(line.from);
+         let pos = view.posAtCoords({ x: forward == (direction == Direction.LTR) ? editorRect.right - 1 : editorRect.left + 1,
+             y: (coords.top + coords.bottom) / 2 });
+@@ -3700,7 +3744,7 @@ function moveVertically(view, start, forward, distance) {
+     if (startPos == (forward ? view.state.doc.length : 0))
+         return EditorSelection.cursor(startPos, start.assoc);
+     let goal = start.goalColumn, startY;
+-    let rect = view.contentDOM.getBoundingClientRect();
++    let rect = getBoundingClientRect_Element(view.contentDOM);
+     let startCoords = view.coordsAtPos(startPos, start.assoc || -1), docTop = view.documentTop;
+     if (startCoords) {
+         if (goal == null)
+@@ -4361,7 +4405,7 @@ function dragScrollSpeed(dist) {
+     return Math.max(0, dist) * 0.7 + 8;
+ }
+ function dist(a, b) {
+-    return Math.max(Math.abs(a.clientX - b.clientX), Math.abs(a.clientY - b.clientY));
++    return Math.max(Math.abs(getMouseEventClientXOrY(a, "x") - getMouseEventClientXOrY(b, "x")), Math.abs(getMouseEventClientXOrY(a, "y") - getMouseEventClientXOrY(b, "y")));
+ }
+ class MouseSelection {
+     constructor(view, startEvent, style, mustSelect) {
+@@ -4396,18 +4440,18 @@ class MouseSelection {
+         let sx = 0, sy = 0;
+         let left = 0, top = 0, right = this.view.win.innerWidth, bottom = this.view.win.innerHeight;
+         if (this.scrollParents.x)
+-            ({ left, right } = this.scrollParents.x.getBoundingClientRect());
++            ({ left, right } = getBoundingClientRect_Element(this.scrollParents.x));
+         if (this.scrollParents.y)
+-            ({ top, bottom } = this.scrollParents.y.getBoundingClientRect());
++            ({ top, bottom } = getBoundingClientRect_Element(this.scrollParents.y));
+         let margins = getScrollMargins(this.view);
+-        if (event.clientX - margins.left <= left + dragScrollMargin)
+-            sx = -dragScrollSpeed(left - event.clientX);
+-        else if (event.clientX + margins.right >= right - dragScrollMargin)
+-            sx = dragScrollSpeed(event.clientX - right);
+-        if (event.clientY - margins.top <= top + dragScrollMargin)
+-            sy = -dragScrollSpeed(top - event.clientY);
+-        else if (event.clientY + margins.bottom >= bottom - dragScrollMargin)
+-            sy = dragScrollSpeed(event.clientY - bottom);
++        if (getMouseEventClientXOrY(event, "x") - margins.left <= left + dragScrollMargin)
++            sx = -dragScrollSpeed(left - getMouseEventClientXOrY(event, "x"));
++        else if (getMouseEventClientXOrY(event, "x") + margins.right >= right - dragScrollMargin)
++            sx = dragScrollSpeed(getMouseEventClientXOrY(event, "x") - right);
++        if (getMouseEventClientXOrY(event, "y") - margins.top <= top + dragScrollMargin)
++            sy = -dragScrollSpeed(top - getMouseEventClientXOrY(event, "y"));
++        else if (getMouseEventClientXOrY(event, "y") + margins.bottom >= bottom - dragScrollMargin)
++            sy = dragScrollSpeed(getMouseEventClientXOrY(event, "y") - bottom);
+         this.setScrollSpeed(sx, sy);
+     }
+     up(event) {
+@@ -4506,11 +4550,11 @@ function isInPrimarySelection(view, event) {
+     let sel = getSelection(view.root);
+     if (!sel || sel.rangeCount == 0)
+         return true;
+-    let rects = sel.getRangeAt(0).getClientRects();
++    let rects = getClientRects_Range(sel.getRangeAt(0));
+     for (let i = 0; i < rects.length; i++) {
+         let rect = rects[i];
+-        if (rect.left <= event.clientX && rect.right >= event.clientX &&
+-            rect.top <= event.clientY && rect.bottom >= event.clientY)
++        if (rect.left <= getMouseEventClientXOrY(event, "x") && rect.right >= getMouseEventClientXOrY(event, "x") &&
++            rect.top <= getMouseEventClientXOrY(event, "y") && rect.bottom >= getMouseEventClientXOrY(event, "y"))
+             return true;
+     }
+     return false;
+@@ -4670,8 +4714,8 @@ function findPositionSide(view, pos, x, y) {
+     return before && before.bottom >= y ? -1 : 1;
+ }
+ function queryPos(view, event) {
+-    let pos = view.posAtCoords({ x: event.clientX, y: event.clientY }, false);
+-    return { pos, bias: findPositionSide(view, pos, event.clientX, event.clientY) };
++    let pos = view.posAtCoords({ x: getMouseEventClientXOrY(event, "x"), y: getMouseEventClientXOrY(event, "y") }, false);
++    return { pos, bias: findPositionSide(view, pos, getMouseEventClientXOrY(event, "x"), getMouseEventClientXOrY(event, "y")) };
+ }
+ const BadMouseDetail = browser.ie && browser.ie_version <= 11;
+ let lastMouseDown = null, lastMouseDownCount = 0, lastMouseDownTime = 0;
+@@ -4681,8 +4725,8 @@ function getClickType(event) {
+     let last = lastMouseDown, lastTime = lastMouseDownTime;
+     lastMouseDown = event;
+     lastMouseDownTime = Date.now();
+-    return lastMouseDownCount = !last || (lastTime > Date.now() - 400 && Math.abs(last.clientX - event.clientX) < 2 &&
+-        Math.abs(last.clientY - event.clientY) < 2) ? (lastMouseDownCount + 1) % 3 : 1;
++    return lastMouseDownCount = !last || (lastTime > Date.now() - 400 && Math.abs(getMouseEventClientXOrY(last, "x") - getMouseEventClientXOrY(event, "x")) < 2 &&
++        Math.abs(getMouseEventClientXOrY(last, "y") - getMouseEventClientXOrY(event, "y")) < 2) ? (lastMouseDownCount + 1) % 3 : 1;
+ }
+ function basicMouseSelection(view, event) {
+     let start = queryPos(view, event), type = getClickType(event);
+@@ -4749,7 +4793,7 @@ function dropText(view, event, text, direct) {
+     text = textFilter(view.state, clipboardInputFilter, text);
+     if (!text)
+         return;
+-    let dropPos = view.posAtCoords({ x: event.clientX, y: event.clientY }, false);
++    let dropPos = view.posAtCoords({ x: getMouseEventClientXOrY(event, "x"), y: getMouseEventClientXOrY(event, "y") }, false);
+     let { draggedContent } = view.inputState;
+     let del = direct && draggedContent && dragMovesSelection(view, event)
+         ? { from: draggedContent.from, to: draggedContent.to } : null;
+@@ -5731,7 +5775,7 @@ class DecorationComparator {
+ }
+ 
+ function visiblePixelRange(dom, paddingTop) {
+-    let rect = dom.getBoundingClientRect();
++    let rect = getBoundingClientRect_Element(dom);
+     let doc = dom.ownerDocument, win = doc.defaultView || window;
+     let left = Math.max(0, rect.left), right = Math.min(win.innerWidth, rect.right);
+     let top = Math.max(0, rect.top), bottom = Math.min(win.innerHeight, rect.bottom);
+@@ -5741,7 +5785,7 @@ function visiblePixelRange(dom, paddingTop) {
+             let style = window.getComputedStyle(elt);
+             if ((elt.scrollHeight > elt.clientHeight || elt.scrollWidth > elt.clientWidth) &&
+                 style.overflow != "visible") {
+-                let parentRect = elt.getBoundingClientRect();
++                let parentRect = getBoundingClientRect_Element(elt);
+                 left = Math.max(left, parentRect.left);
+                 right = Math.min(right, parentRect.right);
+                 top = Math.max(top, parentRect.top);
+@@ -5760,7 +5804,7 @@ function visiblePixelRange(dom, paddingTop) {
+         top: top - (rect.top + paddingTop), bottom: Math.max(top, bottom) - (rect.top + paddingTop) };
+ }
+ function fullPixelRange(dom, paddingTop) {
+-    let rect = dom.getBoundingClientRect();
++    let rect = getBoundingClientRect_Element(dom);
+     return { left: 0, right: rect.right - rect.left,
+         top: paddingTop, bottom: rect.bottom - (rect.top + paddingTop) };
+ }
+@@ -5937,7 +5981,7 @@ class ViewState {
+         let whiteSpace = style.whiteSpace;
+         this.defaultTextDirection = style.direction == "rtl" ? Direction.RTL : Direction.LTR;
+         let refresh = this.heightOracle.mustRefreshForWrapping(whiteSpace);
+-        let domRect = dom.getBoundingClientRect();
++        let domRect = getBoundingClientRect_Element(dom);
+         let measureContent = refresh || this.mustMeasureContent || this.contentDOMHeight != domRect.height;
+         this.contentDOMHeight = domRect.height;
+         this.mustMeasureContent = false;
+@@ -6710,6 +6754,7 @@ class DOMObserver {
+         this.onScroll = this.onScroll.bind(this);
+         if (window.matchMedia)
+             this.printQuery = window.matchMedia("print");
++        const { ResizeObserver } = getResizeObserver();
+         if (typeof ResizeObserver == "function") {
+             this.resizeScroll = new ResizeObserver(() => {
+                 var _a;
+@@ -7215,10 +7260,10 @@ class EditContextManager {
+         for (let event in this.handlers)
+             context.addEventListener(event, this.handlers[event]);
+         this.measureReq = { read: view => {
+-                this.editContext.updateControlBounds(view.contentDOM.getBoundingClientRect());
++                this.editContext.updateControlBounds(getBoundingClientRect_Element(view.contentDOM));
+                 let sel = getSelection(view.root);
+                 if (sel && sel.rangeCount)
+-                    this.editContext.updateSelectionBounds(sel.getRangeAt(0).getBoundingClientRect());
++                    this.editContext.updateSelectionBounds(getBoundingClientRect_Range(sel.getRangeAt(0)));
+             } };
+     }
+     applyEdits(update) {
+@@ -7847,7 +7892,7 @@ class EditorView {
+     directly to the top of the first line, not above the padding.
+     */
+     get documentTop() {
+-        return this.contentDOM.getBoundingClientRect().top + this.viewState.paddingTop;
++        return getBoundingClientRect_Element(this.contentDOM).top + this.viewState.paddingTop;
+     }
+     /**
+     Reports the padding above and below the document.
+@@ -8762,7 +8807,7 @@ class RectangleMarker {
+     }
+ }
+ function getBase(view) {
+-    let rect = view.scrollDOM.getBoundingClientRect();
++    let rect = getBoundingClientRect_Element(view.scrollDOM);
+     let left = view.textDirection == Direction.LTR ? rect.left : rect.right - view.scrollDOM.clientWidth * view.scaleX;
+     return { left: left - view.scrollDOM.scrollLeft * view.scaleX, top: rect.top - view.scrollDOM.scrollTop * view.scaleY };
+ }
+@@ -8770,7 +8815,7 @@ function wrappedLine(view, pos, side, inside) {
+     let coords = view.coordsAtPos(pos, side * 2);
+     if (!coords)
+         return inside;
+-    let editorRect = view.dom.getBoundingClientRect();
++    let editorRect = getBoundingClientRect_Element(view.dom);
+     let y = (coords.top + coords.bottom) / 2;
+     let left = view.posAtCoords({ x: editorRect.left + 1, y });
+     let right = view.posAtCoords({ x: editorRect.right - 1, y });
+@@ -8783,7 +8828,7 @@ function rectanglesForRange(view, className, range) {
+         return [];
+     let from = Math.max(range.from, view.viewport.from), to = Math.min(range.to, view.viewport.to);
+     let ltr = view.textDirection == Direction.LTR;
+-    let content = view.contentDOM, contentRect = content.getBoundingClientRect(), base = getBase(view);
++    let content = view.contentDOM, contentRect = getBoundingClientRect_Element(content), base = getBase(view);
+     let lineElt = content.querySelector(".cm-line"), lineStyle = lineElt && window.getComputedStyle(lineElt);
+     let leftSide = contentRect.left +
+         (lineStyle ? parseInt(lineStyle.paddingLeft) + Math.min(0, parseInt(lineStyle.textIndent)) : 0);
+@@ -9106,7 +9151,7 @@ const drawDropCursor = /*@__PURE__*/ViewPlugin.fromClass(class {
+         let rect = pos != null && view.coordsAtPos(pos);
+         if (!rect)
+             return null;
+-        let outer = view.scrollDOM.getBoundingClientRect();
++        let outer = getBoundingClientRect_Element(view.scrollDOM);
+         return {
+             left: rect.left - outer.left + view.scrollDOM.scrollLeft * view.scaleX,
+             top: rect.top - outer.top + view.scrollDOM.scrollTop * view.scaleY,
+@@ -9574,10 +9619,10 @@ function absoluteColumn(view, x) {
+     return ref ? Math.round(Math.abs((ref.left - x) / view.defaultCharacterWidth)) : -1;
+ }
+ function getPos(view, event) {
+-    let offset = view.posAtCoords({ x: event.clientX, y: event.clientY }, false);
++    let offset = view.posAtCoords({ x: getMouseEventClientXOrY(event, "x"), y: getMouseEventClientXOrY(event, "y") }, false);
+     let line = view.state.doc.lineAt(offset), off = offset - line.from;
+     let col = off > MaxOff ? -1
+-        : off == line.length ? absoluteColumn(view, event.clientX)
++        : off == line.length ? absoluteColumn(view, getMouseEventClientXOrY(event, "x"))
+             : countColumn(line.text, view.state.tabSize, offset - line.from);
+     return { line: line.number, col, off };
+ }
+@@ -9760,6 +9805,7 @@ const tooltipPlugin = /*@__PURE__*/ViewPlugin.fromClass(class {
+         this.classes = view.themeClasses;
+         this.createContainer();
+         this.measureReq = { read: this.readMeasure.bind(this), write: this.writeMeasure.bind(this), key: this };
++        const { ResizeObserver } = getResizeObserver();
+         this.resizeObserver = typeof ResizeObserver == "function" ? new ResizeObserver(() => this.measureSoon()) : null;
+         this.manager = new TooltipViewManager(view, showTooltip, (t, p) => this.createTooltip(t, p), t => {
+             if (this.resizeObserver)
+@@ -9863,7 +9909,7 @@ const tooltipPlugin = /*@__PURE__*/ViewPlugin.fromClass(class {
+         clearTimeout(this.measureTimeout);
+     }
+     readMeasure() {
+-        let editor = this.view.dom.getBoundingClientRect();
++        let editor = getBoundingClientRect_Element(this.view.dom);
+         let scaleX = 1, scaleY = 1, makeAbsolute = false;
+         if (this.position == "fixed" && this.manager.tooltipViews.length) {
+             let { dom } = this.manager.tooltipViews[0];
+@@ -9876,13 +9922,13 @@ const tooltipPlugin = /*@__PURE__*/ViewPlugin.fromClass(class {
+             else if (dom.style.top == Outside && dom.style.left == "0px") {
+                 // On other browsers, we have to awkwardly try and use other
+                 // information to detect a transform.
+-                let rect = dom.getBoundingClientRect();
++                let rect = getBoundingClientRect_Element(dom);
+                 makeAbsolute = Math.abs(rect.top + 10000) > 1 || Math.abs(rect.left) > 1;
+             }
+         }
+         if (makeAbsolute || this.position == "absolute") {
+             if (this.parent) {
+-                let rect = this.parent.getBoundingClientRect();
++                let rect = getBoundingClientRect_Element(this.parent);
+                 if (rect.width && rect.height) {
+                     scaleX = rect.width / this.parent.offsetWidth;
+                     scaleY = rect.height / this.parent.offsetHeight;
+@@ -9894,12 +9940,12 @@ const tooltipPlugin = /*@__PURE__*/ViewPlugin.fromClass(class {
+         }
+         return {
+             editor,
+-            parent: this.parent ? this.container.getBoundingClientRect() : editor,
++            parent: this.parent ? getBoundingClientRect_Element(this.container) : editor,
+             pos: this.manager.tooltips.map((t, i) => {
+                 let tv = this.manager.tooltipViews[i];
+                 return tv.getCoords ? tv.getCoords(t.pos) : this.view.coordsAtPos(t.pos);
+             }),
+-            size: this.manager.tooltipViews.map(({ dom }) => dom.getBoundingClientRect()),
++            size: this.manager.tooltipViews.map(({ dom }) => getBoundingClientRect_Element(dom)),
+             space: this.view.state.facet(tooltipConfig).tooltipSpace(this.view),
+             scaleX, scaleY, makeAbsolute
+         };
+@@ -10218,14 +10264,14 @@ class HoverPlugin {
+     }
+     mousemove(event) {
+         var _a, _b;
+-        this.lastMove = { x: event.clientX, y: event.clientY, target: event.target, time: Date.now() };
++        this.lastMove = { x: getMouseEventClientXOrY(event, "x"), y: getMouseEventClientXOrY(event, "y"), target: event.target, time: Date.now() };
+         if (this.hoverTimeout < 0)
+             this.hoverTimeout = setTimeout(this.checkHover, this.hoverTime);
+         let { active, tooltip } = this;
+         if (active.length && tooltip && !isInTooltip(tooltip.dom, event) || this.pending) {
+             let { pos } = active[0] || this.pending, end = (_b = (_a = active[0]) === null || _a === void 0 ? void 0 : _a.end) !== null && _b !== void 0 ? _b : pos;
+             if ((pos == end ? this.view.posAtCoords(this.lastMove) != pos
+-                : !isOverRange(this.view, pos, end, event.clientX, event.clientY))) {
++                : !isOverRange(this.view, pos, end, getMouseEventClientXOrY(event, "x"), getMouseEventClientXOrY(event, "y")))) {
+                 this.view.dispatch({ effects: this.setHover.of([]) });
+                 this.pending = null;
+             }
+@@ -10260,17 +10306,17 @@ class HoverPlugin {
+ }
+ const tooltipMargin = 4;
+ function isInTooltip(tooltip, event) {
+-    let { left, right, top, bottom } = tooltip.getBoundingClientRect(), arrow;
++    let { left, right, top, bottom } = getBoundingClientRect_Element(tooltip), arrow;
+     if (arrow = tooltip.querySelector(".cm-tooltip-arrow")) {
+-        let arrowRect = arrow.getBoundingClientRect();
++        let arrowRect = getBoundingClientRect_Element(arrow);
+         top = Math.min(arrowRect.top, top);
+         bottom = Math.max(arrowRect.bottom, bottom);
+     }
+-    return event.clientX >= left - tooltipMargin && event.clientX <= right + tooltipMargin &&
+-        event.clientY >= top - tooltipMargin && event.clientY <= bottom + tooltipMargin;
++    return getMouseEventClientXOrY(event, "x") >= left - tooltipMargin && getMouseEventClientXOrY(event, "x") <= right + tooltipMargin &&
++        getMouseEventClientXOrY(event, "y") >= top - tooltipMargin && getMouseEventClientXOrY(event, "y") <= bottom + tooltipMargin;
+ }
+ function isOverRange(view, from, to, x, y, margin) {
+-    let rect = view.scrollDOM.getBoundingClientRect();
++    let rect = getBoundingClientRect_Element(view.scrollDOM);
+     let docBottom = view.documentTop + view.documentPadding.top + view.contentHeight;
+     if (rect.left > x || rect.right < x || rect.top > y || Math.min(rect.bottom, docBottom) < y)
+         return false;
+@@ -10519,8 +10565,8 @@ class PanelGroup {
+     scrollMargin() {
+         return !this.dom || this.container ? 0
+             : Math.max(0, this.top ?
+-                this.dom.getBoundingClientRect().bottom - Math.max(0, this.view.scrollDOM.getBoundingClientRect().top) :
+-                Math.min(innerHeight, this.view.scrollDOM.getBoundingClientRect().bottom) - this.dom.getBoundingClientRect().top);
++                getBoundingClientRect_Element(this.dom).bottom - Math.max(0, getBoundingClientRect_Element(this.view.scrollDOM).top) :
++                Math.min(innerHeight, getBoundingClientRect_Element(this.view.scrollDOM).bottom) - getBoundingClientRect_Element(this.dom).top);
+     }
+     syncClasses() {
+         if (!this.container || this.classes == this.view.themeClasses)
+@@ -10829,11 +10875,11 @@ class SingleGutterView {
+                 if (target != this.dom && this.dom.contains(target)) {
+                     while (target.parentNode != this.dom)
+                         target = target.parentNode;
+-                    let rect = target.getBoundingClientRect();
++                    let rect = getBoundingClientRect_Element(target);
+                     y = (rect.top + rect.bottom) / 2;
+                 }
+                 else {
+-                    y = event.clientY;
++                    y = getMouseEventClientXOrY(event, 'y');
+                 }
+                 let line = view.lineBlockAtHeight(y - view.documentTop);
+                 if (config.domEventHandlers[prop](view, line, event))
+@@ -11083,4 +11129,4 @@ function highlightTrailingWhitespace() {
+ const __test = { HeightMap, HeightOracle, MeasuredHeights, QueryType, ChangedRange, computeOrder,
+     moveVisually, clearHeightChangeFlag, getHeightChangeFlag: () => heightChangeFlag };
+ 
+-export { BidiSpan, BlockInfo, BlockType, Decoration, Direction, EditorView, GutterMarker, MatchDecorator, RectangleMarker, ViewPlugin, ViewUpdate, WidgetType, __test, closeHoverTooltips, crosshairCursor, drawSelection, dropCursor, getDrawSelectionConfig, getPanel, getTooltip, gutter, gutterLineClass, gutterWidgetClass, gutters, hasHoverTooltips, highlightActiveLine, highlightActiveLineGutter, highlightSpecialChars, highlightTrailingWhitespace, highlightWhitespace, hoverTooltip, keymap, layer, lineNumberMarkers, lineNumberWidgetMarker, lineNumbers, logException, panels, placeholder, rectangularSelection, repositionTooltips, runScopeHandlers, scrollPastEnd, showPanel, showTooltip, tooltips };
++export { BidiSpan, BlockInfo, BlockType, Decoration, Direction, EditorView, GutterMarker, MatchDecorator, RectangleMarker, ViewPlugin, ViewUpdate, WidgetType, __test, closeHoverTooltips, crosshairCursor, drawSelection, dropCursor, getDrawSelectionConfig, getPanel, getTooltip, gutter, gutterLineClass, gutterWidgetClass, gutters, hasHoverTooltips, highlightActiveLine, highlightActiveLineGutter, highlightSpecialChars, highlightTrailingWhitespace, highlightWhitespace, hoverTooltip, injectDomDependencies, keymap, layer, lineNumberMarkers, lineNumberWidgetMarker, lineNumbers, logException, panels, placeholder, rectangularSelection, repositionTooltips, runScopeHandlers, scrollPastEnd, showPanel, showTooltip, tooltips };
