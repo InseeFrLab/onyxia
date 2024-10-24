@@ -359,8 +359,10 @@ export const translations: Translations<"nl"> = {
         "copy path": "De naam van het S3-object kopiëren",
         "create directory": "Nieuwe map",
         "refresh": "vernieuwen",
-        "create what": ({ what }) => `Nieuw ${what}`,
-        "new": "Nieuw"
+        "new": "Nieuw",
+        "share": "Delen",
+        "alt list view": "Toon lijst",
+        "alt block view": "Toon blok"
     },
     "SecretsExplorerButtonBar": {
         "secret": "geheim",
