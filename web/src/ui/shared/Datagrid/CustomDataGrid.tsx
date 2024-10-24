@@ -1,11 +1,18 @@
 /* eslint-disable react-refresh/only-export-components */
-import { DataGrid, type GridClasses, type GridColDef } from "@mui/x-data-grid";
+import {
+    DataGrid,
+    type GridValidRowModel,
+    type GridClasses,
+    type GridColDef
+} from "@mui/x-data-grid";
 import { type ComponentProps, memo, useMemo } from "react";
 import { tss } from "tss";
 import { CopyToClipboardIconButton } from "ui/shared/CopyToClipboardIconButton";
 import { CustomNoRowsOverlay } from "./CustomNoRowsOverlay";
 
-export type CustomDataGridProps = ComponentProps<typeof DataGrid> & {
+export type CustomDataGridProps<R extends GridValidRowModel = any> = ComponentProps<
+    typeof DataGrid<R>
+> & {
     /**
      * Whether to add copy-to-clipboard functionality in cells.
      * @default false

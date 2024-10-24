@@ -1,10 +1,10 @@
 import {
-    GridCellParams,
-    GridEventListener,
-    GridRowParams,
-    type GridColDef
+    type GridCellParams,
+    type GridRowSelectionModel,
+    type GridColDef,
+    type GridCallbackDetails
 } from "@mui/x-data-grid";
-import { memo, useMemo } from "react";
+import { memo, useMemo, useState } from "react";
 import { ExplorerIcon } from "../ExplorerIcon";
 import { tss } from "tss";
 import { Text } from "onyxia-ui/Text";
@@ -57,6 +57,8 @@ export const ListExplorerItems = memo((props: ListExplorerItems) => {
 
     const { classes, cx } = useStyles();
 
+    const [rowSelectionModel, setRowSelectionModel] = useState<GridRowSelectionModel>([]);
+
     const selectedItemRef = useConst(() => ({
         current: id<Item | { basename: undefined; kind: "none" }>({
             basename: undefined,
@@ -64,19 +66,7 @@ export const ListExplorerItems = memo((props: ListExplorerItems) => {
         })
     }));
 
-    const rows = useMemo(
-        () =>
-            items.map(
-                (item, index) =>
-                    ({
-                        ...item,
-                        id: index // Maybe a better id is necessary due to pagination
-                    }) satisfies Item & { id: number }
-            ),
-        [items]
-    );
-
-    const columns: GridColDef[] = useMemo(
+    const columns: GridColDef<(typeof rows)[number]>[] = useMemo(
         () =>
             [
                 {
@@ -143,8 +133,20 @@ export const ListExplorerItems = memo((props: ListExplorerItems) => {
                         />
                     )
                 }
-            ] satisfies GridColDef[],
+            ] satisfies GridColDef<(typeof rows)[number]>[],
         [classes.nameIcon]
+    );
+
+    const rows = useMemo(
+        () =>
+            items.map(
+                (item, index) =>
+                    ({
+                        ...item,
+                        id: index // Maybe a better id is necessary due to pagination
+                    }) satisfies Item & { id: number }
+            ),
+        [items]
     );
 
     useEvt(
@@ -170,17 +172,29 @@ export const ListExplorerItems = memo((props: ListExplorerItems) => {
         selectedItemRef.current = { basename: undefined, kind: "none" };
     }, [isNavigating]);
 
-    const handleRowClick = useConstCallback((params: GridRowParams) => {
-        if (
-            !selectedItemRef.current ||
-            selectedItemRef.current.kind !== params.row.kind
-        ) {
-            onSelectedItemKindValueChange({
-                selectedItemKind: params.row.kind
-            });
+    const handleRowSelection = useConstCallback(
+        (params: GridRowSelectionModel, details: GridCallbackDetails) => {
+            const selectedRows = details.api.getSelectedRows();
+            const firstSelectedRow = selectedRows.values().next().value;
+
+            const rowIndex = params[0];
+
+            assert(rowIndex === undefined || typeof rowIndex === "number");
+
+            const selectedItemKind =
+                params.length === 0
+                    ? "none"
+                    : firstSelectedRow && firstSelectedRow.kind === rows[rowIndex].kind
+                      ? undefined // No need to update the kind if it hasn't changed
+                      : rows[rowIndex].kind;
+
+            if (selectedItemKind) {
+                onSelectedItemKindValueChange({ selectedItemKind });
+            }
+
+            setRowSelectionModel(params);
         }
-        selectedItemRef.current = params.row;
-    });
+    );
 
     const handleFileOrDirectoryAction = (params: GridCellParams) => {
         if (params.field !== "basename") return;
@@ -211,7 +225,8 @@ export const ListExplorerItems = memo((props: ListExplorerItems) => {
                         noRowsVariant: "linear-progress"
                     }
                 }}
-                onRowClick={handleRowClick}
+                onRowSelectionModelChange={handleRowSelection}
+                rowSelectionModel={rowSelectionModel}
                 onCellDoubleClick={handleFileOrDirectoryAction}
                 onCellKeyDown={(params, event) => {
                     if (event.key !== "Enter") return;
