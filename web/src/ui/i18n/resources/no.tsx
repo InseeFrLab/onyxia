@@ -323,6 +323,10 @@ export const translations: Translations<"no"> = {
         "cancel": "Avbryt",
         "go to settings": "Gå til innstillinger"
     },
+    "MyFilesShareDialog": {
+        "cancel": "Avbryt",
+        "create and copy link": "Opprett og kopier lenke"
+    },
     "MySecrets": {
         "page title - my secrets": "Mine hemmeligheter",
         "what this page is used for - my secrets":
@@ -366,8 +370,10 @@ export const translations: Translations<"no"> = {
         "copy path": "Kopier S3-objektnavnet",
         "create directory": "Opprett katalog",
         "refresh": "oppdater",
-        "create what": ({ what }) => `Opprett ${what}`,
-        "new": "Ny"
+        "new": "Ny",
+        "share": "Del",
+        "alt list view": "Vis liste",
+        "alt block view": "Vis blokk"
     },
     "ExplorerItems": {
         "empty directory": "Denne katalogen er tom"
@@ -927,7 +933,8 @@ Utforsk gjerne og ta kontroll over tjenestene du kjører på Kubernetes!
         ),
         "column": "kolonne",
         "density": "tetthet",
-        "download file": "last ned fil"
+        "download file": "last ned fil",
+        "resize table": "Endre størrelse"
     },
     "UrlInput": {
         "load": "Last"
@@ -1022,6 +1029,15 @@ Utforsk gjerne og ta kontroll over tjenestene du kjører på Kubernetes!
     "CopyToClipboardIconButton": {
         "copied to clipboard": "Kopiert!",
         "copy to clipboard": "Kopier til utklippstavlen"
+    },
+    "CustomDataGridToolbarDensitySelector": {
+        "toolbarDensity": "Tetthet",
+        "toolbarDensityStandard": "Standard",
+        "toolbarDensityComfortable": "Komfortabel",
+        "toolbarDensityCompact": "Kompakt"
+    },
+    "CustomDataGridToolbarColumnsButton": {
+        "toolbarColumnsLabel": "Kolonner"
     }
     /* spell-checker: enable */
 };

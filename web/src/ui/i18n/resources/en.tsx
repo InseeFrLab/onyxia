@@ -315,6 +315,10 @@ export const translations: Translations<"en"> = {
         "cancel": "Cancel",
         "go to settings": "Go to settings"
     },
+    "MyFilesShareDialog": {
+        "cancel": "Cancel",
+        "create and copy link": "Create and copy link"
+    },
     "MySecrets": {
         "page title - my secrets": "My Secrets",
         "what this page is used for - my secrets":
@@ -355,8 +359,10 @@ export const translations: Translations<"en"> = {
         "copy path": "Copy S3 object name",
         "create directory": "Create directory",
         "refresh": "refresh",
-        "create what": ({ what }) => `Create ${what}`,
-        "new": "New"
+        "new": "New",
+        "share": "Share",
+        "alt list view": "Show list",
+        "alt block view": "Show block"
     },
     "ExplorerItems": {
         "empty directory": "This directory is empty"
@@ -917,7 +923,8 @@ Feel free to explore and take charge of your Kubernetes deployments!
         ),
         "column": "column",
         "density": "density",
-        "download file": "Download file"
+        "download file": "Download file",
+        "resize table": "Resize"
     },
     "UrlInput": {
         "load": "Load"
@@ -1012,5 +1019,14 @@ Feel free to explore and take charge of your Kubernetes deployments!
     "CopyToClipboardIconButton": {
         "copied to clipboard": "Copied!",
         "copy to clipboard": "Copy to clipboard"
+    },
+    "CustomDataGridToolbarDensitySelector": {
+        "toolbarDensity": "Density",
+        "toolbarDensityStandard": "Standard",
+        "toolbarDensityComfortable": "Comfortable",
+        "toolbarDensityCompact": "Compact"
+    },
+    "CustomDataGridToolbarColumnsButton": {
+        "toolbarColumnsLabel": "Columns"
     }
 };

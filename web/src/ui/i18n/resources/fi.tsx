@@ -323,6 +323,10 @@ export const translations: Translations<"fi"> = {
         "cancel": "Peruuta",
         "go to settings": "Siirry asetuksiin"
     },
+    "MyFilesShareDialog": {
+        "cancel": "Peruuta",
+        "create and copy link": "Luo ja kopioi linkki"
+    },
     "MySecrets": {
         "page title - my secrets": "Omat salaisuudet",
         "what this page is used for - my secrets":
@@ -363,8 +367,10 @@ export const translations: Translations<"fi"> = {
         "copy path": "Kopioi S3-objektin nimi",
         "create directory": "Luo hakemisto",
         "refresh": "päivitä",
-        "create what": ({ what }) => `Luo ${what}`,
-        "new": "Uusi"
+        "new": "Uusi",
+        "share": "Jaa",
+        "alt list view": "Näytä lista",
+        "alt block view": "Näytä lohko"
     },
     "ExplorerItems": {
         "empty directory": "Tämä hakemisto on tyhjä"
@@ -920,7 +926,8 @@ Tutustu vapaasti ja ota hallintaan Kubernetes-julkaisusi!
         ),
         "column": "sarake",
         "density": "tiheys",
-        "download file": "lataa tiedosto"
+        "download file": "lataa tiedosto",
+        "resize table": "Muuta taulukon kokoa"
     },
     "UrlInput": {
         "load": "Lataa"
@@ -1015,6 +1022,15 @@ Tutustu vapaasti ja ota hallintaan Kubernetes-julkaisusi!
     "CopyToClipboardIconButton": {
         "copied to clipboard": "Kopioitu!",
         "copy to clipboard": "Kopioi leikepöydälle"
+    },
+    "CustomDataGridToolbarDensitySelector": {
+        "toolbarDensity": "Tiheys",
+        "toolbarDensityStandard": "Normaali",
+        "toolbarDensityComfortable": "Mukava",
+        "toolbarDensityCompact": "Tiivis"
+    },
+    "CustomDataGridToolbarColumnsButton": {
+        "toolbarColumnsLabel": "Sarakkeet"
     }
     /* spell-checker: enable */
 };

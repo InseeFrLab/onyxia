@@ -326,6 +326,10 @@ export const translations: Translations<"de"> = {
         "cancel": "Abbrechen",
         "go to settings": "Zu den Einstellungen gehen"
     },
+    "MyFilesShareDialog": {
+        "cancel": "Abbrechen",
+        "create and copy link": "Erstellen und kopieren"
+    },
     "MySecrets": {
         "page title - my secrets": "Meine Geheimnisse",
         "what this page is used for - my secrets":
@@ -359,8 +363,10 @@ export const translations: Translations<"de"> = {
         "copy path": "Den S3-Objektnamen kopieren",
         "create directory": "Neues Verzeichnis",
         "refresh": "aktualisieren",
-        "create what": ({ what }) => `Neu ${what}`,
-        "new": "Neu"
+        "new": "Neu",
+        "share": "Teilen",
+        "alt list view": "Liste anzeigen",
+        "alt block view": "Blockansicht anzeigen"
     },
     "SecretsExplorerButtonBar": {
         "secret": "Geheimnis",
@@ -936,7 +942,8 @@ Fühlen Sie sich frei, Ihre Kubernetes-Bereitstellungen zu erkunden und die Kont
         ),
         "column": "Spalte",
         "density": "Dichte",
-        "download file": "Datei herunterladen"
+        "download file": "Datei herunterladen",
+        "resize table": undefined
     },
     "UrlInput": {
         "load": "Laden"
@@ -1031,6 +1038,15 @@ Fühlen Sie sich frei, Ihre Kubernetes-Bereitstellungen zu erkunden und die Kont
     "CopyToClipboardIconButton": {
         "copied to clipboard": "Kopiert!",
         "copy to clipboard": "In die Zwischenablage kopieren"
+    },
+    "CustomDataGridToolbarDensitySelector": {
+        "toolbarDensity": "Dichte",
+        "toolbarDensityStandard": "Standard",
+        "toolbarDensityComfortable": "Bequem",
+        "toolbarDensityCompact": "Kompakt"
+    },
+    "CustomDataGridToolbarColumnsButton": {
+        "toolbarColumnsLabel": "Spalten"
     }
     /* spell-checker: enable */
 };

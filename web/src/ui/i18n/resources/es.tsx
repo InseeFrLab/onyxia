@@ -327,6 +327,10 @@ export const translations: Translations<"en"> = {
         "cancel": "Cancelar",
         "go to settings": "Ir a configuración"
     },
+    "MyFilesShareDialog": {
+        "cancel": "Cancelar",
+        "create and copy link": "Crear y copiar enlace"
+    },
     "MySecrets": {
         "page title - my secrets": "Mis Secretos",
         "what this page is used for - my secrets":
@@ -367,8 +371,10 @@ export const translations: Translations<"en"> = {
         "copy path": "Copiar nombre del objeto S3",
         "create directory": "Crear directorio",
         "refresh": "actualizar",
-        "create what": ({ what }) => `Crear ${what}`,
-        "new": "Nuevo"
+        "new": "Nuevo",
+        "share": "Compartir",
+        "alt list view": "Mostrar lista",
+        "alt block view": "Mostrar bloque"
     },
     "ExplorerItems": {
         "empty directory": "Este directorio está vacío"
@@ -930,7 +936,8 @@ export const translations: Translations<"en"> = {
         ),
         "column": "columna",
         "density": "densidad",
-        "download file": "Descargar archivo"
+        "download file": "Descargar archivo",
+        "resize table": "Redimensionar"
     },
     "UrlInput": {
         "load": "Cargar"
@@ -1025,6 +1032,16 @@ export const translations: Translations<"en"> = {
     "CopyToClipboardIconButton": {
         "copied to clipboard": "¡Copiado!",
         "copy to clipboard": "Copiar al portapapeles"
+    },
+
+    "CustomDataGridToolbarDensitySelector": {
+        "toolbarDensity": "Densidad",
+        "toolbarDensityStandard": "Estándar",
+        "toolbarDensityComfortable": "Cómodo",
+        "toolbarDensityCompact": "Compacto"
+    },
+    "CustomDataGridToolbarColumnsButton": {
+        "toolbarColumnsLabel": "Columnas"
     }
     /* spell-checker: enable */
 };

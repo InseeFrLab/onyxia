@@ -325,6 +325,10 @@ export const translations: Translations<"it"> = {
         "cancel": "Annulla",
         "go to settings": "Vai alle impostazioni"
     },
+    "MyFilesShareDialog": {
+        "cancel": "Annulla",
+        "create and copy link": "Creare e copiare il link"
+    },
     "MySecrets": {
         "page title - my secrets": "I miei segreti",
         "what this page is used for - my secrets":
@@ -355,8 +359,10 @@ export const translations: Translations<"it"> = {
         "copy path": "Copia il nome dell'oggetto S3",
         "create directory": "Nuova cartella",
         "refresh": "aggiornare",
-        "create what": ({ what }) => `Nuovo ${what}`,
-        "new": "Nuovo"
+        "new": "Nuovo",
+        "share": "Condividi",
+        "alt list view": "Mostra lista",
+        "alt block view": "Mostra blocco"
     },
     "SecretsExplorerButtonBar": {
         "secret": "segreto",
@@ -931,7 +937,8 @@ Sentiti libero di esplorare e prendere il controllo dei tuoi deployment Kubernet
         ),
         "column": "colonna",
         "density": "densità",
-        "download file": "scarica file"
+        "download file": "scarica file",
+        "resize table": "Ridimensiona"
     },
     "UrlInput": {
         "load": "Carica"
@@ -1026,6 +1033,15 @@ Sentiti libero di esplorare e prendere il controllo dei tuoi deployment Kubernet
     "CopyToClipboardIconButton": {
         "copied to clipboard": "Copiato!",
         "copy to clipboard": "Copia negli appunti"
+    },
+    "CustomDataGridToolbarDensitySelector": {
+        "toolbarDensity": "Densità",
+        "toolbarDensityStandard": "Standard",
+        "toolbarDensityComfortable": "Confortevole",
+        "toolbarDensityCompact": "Compatto"
+    },
+    "CustomDataGridToolbarColumnsButton": {
+        "toolbarColumnsLabel": "Colonne"
     }
     /* spell-checker: enable */
 };
