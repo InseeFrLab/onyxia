@@ -161,15 +161,14 @@ export type ApiTypes = {
             description?: LocalizedString;
             status: "PROD" | "TEST";
             catalog: {
-                entries: Record<
+                latestPackages: Record<
                     string,
                     {
                         description?: string;
-                        version: string;
                         type: "library" | "application";
                         icon?: string;
                         home?: string;
-                    }[]
+                    }
                 >;
             };
             highlightedCharts?: string[];
@@ -179,7 +178,8 @@ export type ApiTypes = {
             };
         }[];
     };
-    "/public/catalogs/${catalogId}/charts/${chartName}/versions/${chartVersion}": {
+    "/my-lab/catalogs/${catalogId}/charts/${chartName}": { version: string }[];
+    "/my-lab/schemas/${catalogId}/charts/${chartName}/versions/${chartVersion}": {
         config: JSONSchema;
         defaultValues: string;
         sources?: string[];

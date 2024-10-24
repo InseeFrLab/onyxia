@@ -418,32 +418,16 @@ export function createOnyxiaApi(params: {
                                     : 0;
                             }
 
-                            const charts = Object.entries(catalog.entries)
+                            const charts = Object.entries(catalog.latestPackages)
+                                .filter(([, { type }]) => type !== "library")
                                 .map(
-                                    ([name, versions]): Chart => ({
+                                    ([name, { description, home, icon }]): Chart => ({
                                         name,
-                                        "versions": versions
-                                            .filter(({ type }) => type !== "library")
-                                            .map(
-                                                ({
-                                                    description,
-                                                    version,
-                                                    icon,
-                                                    home
-                                                }) => ({
-                                                    description,
-                                                    version,
-                                                    "iconUrl": icon,
-                                                    "projectHomepageUrl": home
-                                                })
-                                            )
-                                            // Most recent version first
-                                            .sort((a, b) =>
-                                                compareVersions(b.version, a.version)
-                                            )
+                                        description,
+                                        "iconUrl": icon,
+                                        "projectHomepageUrl": home
                                     })
                                 )
-                                .filter(({ versions }) => versions.length !== 0)
                                 .sort(
                                     (chartA, chartB) =>
                                         getChartWeight(chartB.name) -
@@ -457,6 +441,26 @@ export function createOnyxiaApi(params: {
             },
             { "promise": true }
         ),
+        "getChartAvailableVersions": (() => {
+            const memoizedImplementation = memoize(
+                async (catalogId: string, chartName: string) => {
+                    const { data } = await axiosInstance.get<
+                        ApiTypes["/my-lab/catalogs/${catalogId}/charts/${chartName}"]
+                    >(`/my-lab/catalogs/${catalogId}/charts/${chartName}`);
+
+                    return (
+                        data
+                            .map(({ version }) => version)
+                            // Most recent version first
+                            .sort((a, b) => compareVersions(b, a))
+                    );
+                },
+                { "promise": true }
+            );
+
+            return async ({ catalogId, chartName }) =>
+                memoizedImplementation(catalogId, chartName);
+        })(),
         "onboard": async ({ group }) => {
             try {
                 await axiosInstance.post("/onboarding", { group });
@@ -480,35 +484,43 @@ export function createOnyxiaApi(params: {
                 throw error;
             }
         },
-        "getHelmChartDetails": async ({ catalogId, chartName, chartVersion }) => {
-            const { data } = await axiosInstance.get<
-                ApiTypes["/public/catalogs/${catalogId}/charts/${chartName}/versions/${chartVersion}"]
-            >(
-                `/public/catalogs/${catalogId}/charts/${chartName}/versions/${chartVersion}`
+        "getHelmChartDetails": (() => {
+            const memoizedImplementation = memoize(
+                async (catalogId: string, chartName: string, chartVersion: string) => {
+                    const { data } = await axiosInstance.get<
+                        ApiTypes["/my-lab/schemas/${catalogId}/charts/${chartName}/versions/${chartVersion}"]
+                    >(
+                        `/my-lab/schemas/${catalogId}/charts/${chartName}/versions/${chartVersion}`
+                    );
+
+                    zJSONSchema.parse(data.config);
+
+                    return {
+                        "helmValuesSchema": data.config,
+                        "helmValuesYaml": data.defaultValues,
+                        "helmChartSourceUrls": data.sources ?? [],
+                        "helmDependencies": (data.dependencies ?? []).map(
+                            ({ name, repository, version, condition }) => ({
+                                "helmRepositoryUrl": repository,
+                                "chartName": name,
+                                "chartVersion": version,
+                                "condition":
+                                    condition === undefined
+                                        ? undefined
+                                        : condition.split(".").map(segment => {
+                                              const x = parseInt(segment);
+                                              return isNaN(x) ? segment : x;
+                                          })
+                            })
+                        )
+                    };
+                },
+                { "promise": true }
             );
 
-            zJSONSchema.parse(data.config);
-
-            return {
-                "helmValuesSchema": data.config,
-                "helmValuesYaml": data.defaultValues,
-                "helmChartSourceUrls": data.sources ?? [],
-                "helmDependencies": (data.dependencies ?? []).map(
-                    ({ name, repository, version, condition }) => ({
-                        "helmRepositoryUrl": repository,
-                        "chartName": name,
-                        "chartVersion": version,
-                        "condition":
-                            condition === undefined
-                                ? undefined
-                                : condition.split(".").map(segment => {
-                                      const x = parseInt(segment);
-                                      return isNaN(x) ? segment : x;
-                                  })
-                    })
-                )
-            };
-        },
+            return async ({ catalogId, chartName, chartVersion }) =>
+                memoizedImplementation(catalogId, chartName, chartVersion);
+        })(),
         "helmInstall": async ({
             helmReleaseName,
             catalogId,

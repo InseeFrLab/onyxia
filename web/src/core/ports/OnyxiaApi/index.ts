@@ -1,6 +1,6 @@
 export type { OnyxiaApi } from "./OnyxiaApi";
 export type { Catalog } from "./Catalog";
-export { Chart } from "./Chart";
+export type { Chart } from "./Chart";
 export type { DeploymentRegion } from "./DeploymentRegion";
 export { type JSONSchema, zJSONSchema } from "./JSONSchema";
 export type { Language, LocalizedString } from "./Language";

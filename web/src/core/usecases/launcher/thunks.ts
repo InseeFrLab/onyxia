@@ -13,7 +13,7 @@ import { generateRandomPassword } from "core/tools/generateRandomPassword";
 import { privateSelectors } from "./selectors";
 import { Evt } from "evt";
 import type { StringifyableAtomic } from "core/tools/Stringifyable";
-import { type XOnyxiaContext, Chart } from "core/ports/OnyxiaApi";
+import { type XOnyxiaContext } from "core/ports/OnyxiaApi";
 import { createUsecaseContextApi } from "clean-architecture";
 import { computeHelmValues, type FormFieldValue } from "./decoupledLogic";
 import type { RestorableServiceConfig } from "core/usecases/restorableConfigManagement";
@@ -637,8 +637,11 @@ const privateThunks = {
 
             const { catalogId, chartName, chartVersion_pinned } = params;
 
-            const { catalogs, chartsByCatalogId } =
-                await onyxiaApi.getCatalogsAndCharts();
+            const [{ catalogs, chartsByCatalogId }, availableChartVersions] =
+                await Promise.all([
+                    onyxiaApi.getCatalogsAndCharts(),
+                    onyxiaApi.getChartAvailableVersions({ catalogId, chartName })
+                ] as const);
 
             const catalog = catalogs.find(({ id }) => id === catalogId);
 
@@ -650,13 +653,28 @@ const privateThunks = {
 
             assert(chart !== undefined);
 
-            const chartVersion_default = Chart.getDefaultVersion(chart);
+            const chartVersion_default = (() => {
+                // NOTE: We assume that version are sorted from the most recent to the oldest.
+                // We do not wat to automatically select prerelease or beta version (version that contains "-"
+                // like 1.3.4-rc.0 or 1.2.3-beta.2 ).
+                const chartVersion = availableChartVersions.find(
+                    version => !version.includes("-")
+                );
+
+                if (chartVersion === undefined) {
+                    const v = availableChartVersions[0];
+                    assert(v !== undefined);
+                    return v;
+                }
+
+                return chartVersion;
+            })();
 
             const chartVersion = (() => {
                 if (chartVersion_pinned !== undefined) {
                     if (
-                        chart.versions.find(
-                            ({ version }) => version === chartVersion_pinned
+                        availableChartVersions.find(
+                            version => version === chartVersion_pinned
                         ) === undefined
                     ) {
                         console.log(
@@ -678,18 +696,10 @@ const privateThunks = {
             return {
                 "catalogName": catalog.name,
                 "catalogRepositoryUrl": catalog.repositoryUrl,
-                "chartIconUrl": (() => {
-                    const entry = chart.versions.find(
-                        ({ version }) => version === chartVersion
-                    );
-
-                    assert(entry !== undefined);
-
-                    return entry.iconUrl;
-                })(),
+                "chartIconUrl": chart.iconUrl,
                 chartVersion_default,
                 chartVersion,
-                "availableChartVersions": chart.versions.map(({ version }) => version)
+                availableChartVersions
             };
         }
 } satisfies Thunks;

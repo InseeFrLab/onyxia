@@ -2,7 +2,6 @@ import { assert } from "tsafe/assert";
 import type { Thunks } from "core/bootstrap";
 import * as projectManagement from "core/usecases/projectManagement";
 import { actions, type State } from "./state";
-import { Chart } from "core/ports/OnyxiaApi";
 import { getAreSameRestorableConfig } from "./decoupledLogic/getAreSameRestorableConfig";
 
 export const protectedThunks = {
@@ -21,28 +20,8 @@ export const protectedThunks = {
 
                 catalogs.forEach(({ id: catalogId }) =>
                     chartsByCatalogId[catalogId].forEach(chart => {
-                        const defaultVersion = Chart.getDefaultVersion(chart);
-
-                        const versions_withIcon = chart.versions.filter(
-                            ({ iconUrl }) => iconUrl !== undefined
-                        );
-
-                        const defaultVersion_withIcon = versions_withIcon.find(
-                            ({ version }) => version === defaultVersion
-                        );
-
-                        (indexedChartsIcons[catalogId] ??= {})[chart.name] = (() => {
-                            if (defaultVersion_withIcon === undefined) {
-                                const version_withIcon = versions_withIcon[0];
-                                if (version_withIcon === undefined) {
-                                    return undefined;
-                                }
-
-                                return version_withIcon.iconUrl;
-                            }
-
-                            return defaultVersion_withIcon.iconUrl;
-                        })();
+                        (indexedChartsIcons[catalogId] ??= {})[chart.name] =
+                            chart.iconUrl;
                     })
                 );
 

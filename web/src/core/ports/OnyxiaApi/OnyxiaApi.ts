@@ -38,6 +38,11 @@ export type OnyxiaApi = {
         clear: () => void;
     };
 
+    getChartAvailableVersions: (params: {
+        catalogId: string;
+        chartName: string;
+    }) => Promise<string[]>;
+
     getHelmChartDetails: (params: {
         catalogId: string;
         chartName: string;

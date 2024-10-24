@@ -416,9 +416,8 @@ const privateThunks = {
                 function getLogoUrl(params: {
                     catalogId: string;
                     chartName: string;
-                    chartVersion: string;
                 }): string | undefined {
-                    const { catalogId, chartName, chartVersion } = params;
+                    const { catalogId, chartName } = params;
 
                     const catalogCharts = chartsByCatalogId[catalogId];
 
@@ -432,15 +431,7 @@ const privateThunks = {
                         return undefined;
                     }
 
-                    const version = chart.versions.find(
-                        ({ version }) => version === chartVersion
-                    );
-
-                    if (version === undefined) {
-                        return undefined;
-                    }
-
-                    return version.iconUrl;
+                    return chart.iconUrl;
                 }
 
                 return { getLogoUrl };
@@ -464,8 +455,7 @@ const privateThunks = {
                             helmRelease.helmReleaseName,
                             getLogoUrl({
                                 "catalogId": helmRelease.catalogId,
-                                "chartName": helmRelease.chartName,
-                                "chartVersion": helmRelease.chartVersion
+                                "chartName": helmRelease.chartName
                             })
                         ])
                     ),
