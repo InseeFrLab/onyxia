@@ -31,7 +31,7 @@ export const protectedThunks = {
                 const s3Client = createS3Client(paramsOfCreateS3Client, getOidc);
 
                 try {
-                    await s3Client.list({
+                    await s3Client.listObjects({
                         "path": workingDirectoryPath
                     });
                 } catch (error) {
