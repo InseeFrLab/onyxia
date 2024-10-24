@@ -3,7 +3,7 @@ import { relative as pathRelative } from "pathe";
 import { assert } from "tsafe/assert";
 import { createUsecaseActions } from "clean-architecture";
 import type { WritableDraft } from "clean-architecture/immer";
-import { S3Object } from "core/ports/S3Client";
+import { S3BucketPolicy, S3Object } from "core/ports/S3Client";
 
 //All explorer path are expected to be absolute (start with /)
 
@@ -29,6 +29,7 @@ export type State = {
         cmd: string;
         resp: string | undefined;
     }[];
+    bucketPolicy: S3BucketPolicy | undefined;
 };
 
 export const name = "fileExplorer";
@@ -42,7 +43,8 @@ export const { reducer, actions } = createUsecaseActions({
         "isNavigationOngoing": false,
         "ongoingOperations": [],
         "s3FilesBeingUploaded": [],
-        "commandLogsEntries": []
+        "commandLogsEntries": [],
+        "bucketPolicy": undefined
     }),
     "reducers": {
         "fileUploadStarted": (
