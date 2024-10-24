@@ -325,8 +325,10 @@ export const translations: Translations<"zh-CN"> = {
         "copy path": "复制 S3 对象名称",
         "create directory": "创建目录",
         "refresh": "刷新",
-        "create what": ({ what }) => `创建 ${what}`,
-        "new": "新建"
+        "new": "新建",
+        "share": "分享",
+        "alt list view": "显示列表",
+        "alt block view": "显示块"
     },
     "SecretsExplorerButtonBar": {
         "secret": "密码",

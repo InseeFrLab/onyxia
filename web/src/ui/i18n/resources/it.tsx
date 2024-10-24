@@ -359,8 +359,10 @@ export const translations: Translations<"it"> = {
         "copy path": "Copia il nome dell'oggetto S3",
         "create directory": "Nuova cartella",
         "refresh": "aggiornare",
-        "create what": ({ what }) => `Nuovo ${what}`,
-        "new": "Nuovo"
+        "new": "Nuovo",
+        "share": "Condividi",
+        "alt list view": "Mostra lista",
+        "alt block view": "Mostra blocco"
     },
     "SecretsExplorerButtonBar": {
         "secret": "segreto",

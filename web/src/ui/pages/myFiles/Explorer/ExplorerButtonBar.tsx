@@ -47,6 +47,8 @@ export const ExplorerButtonBar = memo((props: Props) => {
                             return "add";
                         case "delete":
                             return "delete";
+                        case "share":
+                            return "share";
                     }
                 })(),
                 "isDisabled": (() => {
@@ -58,6 +60,7 @@ export const ExplorerButtonBar = memo((props: Props) => {
                             //return isFileOpen;
                             return false;
                         case "delete":
+                        case "share":
                             //return selectedItemKind === "none" || isFileOpen;
                             return selectedItemKind === "none";
                         case "copy path":
@@ -88,6 +91,7 @@ export const ExplorerButtonBar = memo((props: Props) => {
                         : {}
                 )}
                 icon={id<MuiIconComponentName>("Sort")}
+                aria-label={t("alt list view")}
             />
             <IconButton
                 onClick={() => onViewModeChange({ viewMode: "block" })}
@@ -101,6 +105,7 @@ export const ExplorerButtonBar = memo((props: Props) => {
                         : {}
                 )}
                 icon={id<MuiIconComponentName>("ViewCompact")}
+                aria-label={t("alt block view")}
             />
 
             {buttons.map(button => (
@@ -127,14 +132,19 @@ export const ExplorerButtonBar = memo((props: Props) => {
 });
 
 const { i18n } = declareComponentKeys<
-    | ButtonId
-    | "upload file"
-    | "file"
-    //TODO: Remove
-    | { K: "create what"; P: { what: string } }
->()({ ExplorerButtonBar });
+    ButtonId | "upload file" | "file" | "alt block view" | "alt list view"
+>()({
+    ExplorerButtonBar
+});
 export type I18n = typeof i18n;
 
-const buttonIds = ["refresh", "new", "create directory", "delete", "copy path"] as const;
+const buttonIds = [
+    "refresh",
+    "new",
+    "create directory",
+    "delete",
+    "copy path",
+    "share"
+] as const;
 
 export type ButtonId = (typeof buttonIds)[number];
