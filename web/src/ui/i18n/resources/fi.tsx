@@ -367,8 +367,10 @@ export const translations: Translations<"fi"> = {
         "copy path": "Kopioi S3-objektin nimi",
         "create directory": "Luo hakemisto",
         "refresh": "päivitä",
-        "create what": ({ what }) => `Luo ${what}`,
-        "new": "Uusi"
+        "new": "Uusi",
+        "share": "Jaa",
+        "alt list view": "Näytä lista",
+        "alt block view": "Näytä lohko"
     },
     "ExplorerItems": {
         "empty directory": "Tämä hakemisto on tyhjä"

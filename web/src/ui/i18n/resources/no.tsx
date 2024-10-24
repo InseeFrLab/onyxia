@@ -370,8 +370,10 @@ export const translations: Translations<"no"> = {
         "copy path": "Kopier S3-objektnavnet",
         "create directory": "Opprett katalog",
         "refresh": "oppdater",
-        "create what": ({ what }) => `Opprett ${what}`,
-        "new": "Ny"
+        "new": "Ny",
+        "share": "Del",
+        "alt list view": "Vis liste",
+        "alt block view": "Vis blokk"
     },
     "ExplorerItems": {
         "empty directory": "Denne katalogen er tom"

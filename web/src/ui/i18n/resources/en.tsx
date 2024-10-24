@@ -359,8 +359,10 @@ export const translations: Translations<"en"> = {
         "copy path": "Copy S3 object name",
         "create directory": "Create directory",
         "refresh": "refresh",
-        "create what": ({ what }) => `Create ${what}`,
-        "new": "New"
+        "new": "New",
+        "share": "Share",
+        "alt list view": "Show list",
+        "alt block view": "Show block"
     },
     "ExplorerItems": {
         "empty directory": "This directory is empty"
