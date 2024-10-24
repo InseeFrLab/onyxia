@@ -15,7 +15,12 @@ export type DeploymentRegion = {
           }
         | undefined;
     initScriptUrl: string;
-    s3: DeploymentRegion.S3 | undefined;
+    s3Configs: DeploymentRegion.S3Config[];
+    s3ConfigCreationFormDefaults:
+        | (Pick<DeploymentRegion.S3Config, "url" | "pathStyleAccess" | "region"> & {
+              workingDirectory: DeploymentRegion.S3Config["workingDirectory"] | undefined;
+          })
+        | undefined;
     allowedURIPatternForUserDefinedInitScript: string;
     kafka:
         | {
@@ -107,28 +112,26 @@ export type DeploymentRegion = {
 };
 export namespace DeploymentRegion {
     /** https://github.com/InseeFrLab/onyxia-api/blob/main/docs/region-configuration.md#s3 */
-    export type S3 = {
+    export type S3Config = {
         url: string;
         pathStyleAccess: boolean;
         region: string | undefined;
-        sts:
-            | {
-                  url: string | undefined;
-                  durationSeconds: number | undefined;
-                  role:
-                      | {
-                            roleARN: string;
-                            roleSessionName: string;
-                        }
-                      | undefined;
-                  oidcParams:
-                      | {
-                            issuerUri?: string;
-                            clientId: string;
-                        }
-                      | undefined;
-              }
-            | undefined;
+        sts: {
+            url: string | undefined;
+            durationSeconds: number | undefined;
+            role:
+                | {
+                      roleARN: string;
+                      roleSessionName: string;
+                  }
+                | undefined;
+            oidcParams:
+                | {
+                      issuerUri?: string;
+                      clientId: string;
+                  }
+                | undefined;
+        };
         workingDirectory:
             | {
                   bucketMode: "shared";

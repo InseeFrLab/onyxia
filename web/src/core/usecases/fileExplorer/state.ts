@@ -3,15 +3,14 @@ import { relative as pathRelative } from "pathe";
 import { assert } from "tsafe/assert";
 import { createUsecaseActions } from "clean-architecture";
 import type { WritableDraft } from "clean-architecture/immer";
+import { S3BucketPolicy, S3Object } from "core/ports/S3Client";
 
 //All explorer path are expected to be absolute (start with /)
 
 export type State = {
     directoryPath: string | undefined;
-    directoryItems: {
-        kind: "file" | "directory";
-        basename: string;
-    }[];
+    viewMode: "list" | "block";
+    objects: S3Object[];
     isNavigationOngoing: boolean;
     ongoingOperations: {
         directoryPath: string;
@@ -30,6 +29,7 @@ export type State = {
         cmd: string;
         resp: string | undefined;
     }[];
+    bucketPolicy: S3BucketPolicy | undefined;
 };
 
 export const name = "fileExplorer";
@@ -38,11 +38,13 @@ export const { reducer, actions } = createUsecaseActions({
     name,
     "initialState": id<State>({
         "directoryPath": undefined,
-        "directoryItems": [],
+        "objects": [],
+        "viewMode": "list",
         "isNavigationOngoing": false,
         "ongoingOperations": [],
         "s3FilesBeingUploaded": [],
-        "commandLogsEntries": []
+        "commandLogsEntries": [],
+        "bucketPolicy": undefined
     }),
     "reducers": {
         "fileUploadStarted": (
@@ -90,7 +92,9 @@ export const { reducer, actions } = createUsecaseActions({
             s3FileBeingUploaded.uploadPercent = uploadPercent;
 
             if (
-                !!s3FilesBeingUploaded.find(({ uploadPercent }) => uploadPercent !== 100)
+                s3FilesBeingUploaded.find(
+                    ({ uploadPercent }) => uploadPercent !== 100
+                ) !== undefined
             ) {
                 return;
             }
@@ -107,17 +111,14 @@ export const { reducer, actions } = createUsecaseActions({
             }: {
                 payload: {
                     directoryPath: string;
-                    directoryItems: {
-                        kind: "file" | "directory";
-                        basename: string;
-                    }[];
+                    objects: S3Object[];
                 };
             }
         ) => {
-            const { directoryPath, directoryItems } = payload;
+            const { directoryPath, objects } = payload;
 
             state.directoryPath = directoryPath;
-            state.directoryItems = directoryItems;
+            state.objects = objects;
             state.isNavigationOngoing = false;
 
             //Properly restore state when navigating back to
@@ -127,7 +128,7 @@ export const { reducer, actions } = createUsecaseActions({
                 .forEach(o => {
                     switch (o.operation) {
                         case "delete":
-                            removeIfPresent(state.directoryItems, {
+                            removeIfPresent(state.objects, {
                                 "kind": o.kind,
                                 "basename": o.basename
                             });
@@ -155,7 +156,7 @@ export const { reducer, actions } = createUsecaseActions({
 
             switch (payload.operation) {
                 case "delete":
-                    removeIfPresent(state.directoryItems, { kind, basename });
+                    removeIfPresent(state.objects, { kind, basename });
                     break;
             }
 
@@ -180,13 +181,12 @@ export const { reducer, actions } = createUsecaseActions({
                 payload
             }: {
                 payload: {
-                    kind: "file" | "directory";
-                    basename: string;
+                    object: S3Object;
                     directoryPath: string;
                 };
             }
         ) => {
-            const { kind, basename, directoryPath } = payload;
+            const { object, directoryPath } = payload;
 
             assert(state.directoryPath !== undefined);
 
@@ -194,8 +194,8 @@ export const { reducer, actions } = createUsecaseActions({
 
             const ongoingOperation = ongoingOperations.find(
                 o =>
-                    o.kind === kind &&
-                    o.basename === basename &&
+                    o.kind === object.kind &&
+                    o.basename === object.basename &&
                     pathRelative(o.directoryPath, directoryPath) === ""
             );
 
@@ -209,10 +209,7 @@ export const { reducer, actions } = createUsecaseActions({
 
             switch (ongoingOperation.operation) {
                 case "create":
-                    state.directoryItems.push({
-                        "basename": ongoingOperation.basename,
-                        kind
-                    });
+                    state.objects.push(object);
                     break;
             }
         },
@@ -276,26 +273,31 @@ export const { reducer, actions } = createUsecaseActions({
         },
         "workingDirectoryChanged": state => {
             state.directoryPath = undefined;
-            state.directoryItems = [];
+            state.objects = [];
             state.isNavigationOngoing = false;
         },
-        /** For evt */
-        "notifyDirectoryPath": () => {}
+        "viewModeChanged": (
+            state,
+            { payload }: { payload: { viewMode: "list" | "block" } }
+        ) => {
+            const { viewMode } = payload;
+            state.viewMode = viewMode;
+        }
     }
 });
 
 function removeIfPresent(
-    directoryItems: WritableDraft<{
+    object: WritableDraft<{
         kind: "file" | "directory";
         basename: string;
     }>[],
     item: { kind: "file" | "directory"; basename: string }
 ): void {
-    const index = directoryItems.findIndex(
+    const index = object.findIndex(
         item_i => item_i.kind === item.kind && item_i.basename === item.basename
     );
 
     assert(index >= 0);
 
-    directoryItems.splice(index, 1);
+    object.splice(index, 1);
 }

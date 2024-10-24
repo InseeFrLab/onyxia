@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import { useMemo } from "react";
 import { env } from "env";
 import { Text } from "onyxia-ui/Text";

@@ -198,9 +198,9 @@ export const translations: Translations<"en"> = {
             </>
         ),
         "account credentials": "Account credentials",
-        "accountFriendlyName textField label": "Account friendly name",
-        "accountFriendlyName textField helper text":
-            "This is just to help you identify this account. Example: My personal account",
+        "friendlyName textField label": "Configuration Name",
+        "friendlyName textField helper text":
+            "This is just to help you identify this configuration. Example: My AWS bucket",
         "isAnonymous switch label": "Anonymous access",
         "isAnonymous switch helper text": "Set to ON if no secret access key is required",
         "accessKeyId textField label": "Access key ID",
@@ -315,6 +315,10 @@ export const translations: Translations<"en"> = {
         "cancel": "Cancel",
         "go to settings": "Go to settings"
     },
+    "MyFilesShareDialog": {
+        "cancel": "Cancel",
+        "create and copy link": "Create and copy link"
+    },
     "MySecrets": {
         "page title - my secrets": "My Secrets",
         "what this page is used for - my secrets":
@@ -355,8 +359,10 @@ export const translations: Translations<"en"> = {
         "copy path": "Copy S3 object name",
         "create directory": "Create directory",
         "refresh": "refresh",
-        "create what": ({ what }) => `Create ${what}`,
-        "new": "New"
+        "new": "New",
+        "share": "Share",
+        "alt list view": "Show list",
+        "alt block view": "Show block"
     },
     "ExplorerItems": {
         "empty directory": "This directory is empty"
@@ -525,28 +531,34 @@ export const translations: Translations<"en"> = {
     },
     "Launcher": {
         "header text1": "Service Catalog",
-        "sources": ({ helmChartName, helmChartRepositoryName, sourceUrls }) => (
+        "sources": ({
+            helmChartName,
+            helmChartRepositoryName,
+            labeledHelmChartSourceUrls
+        }) => (
             <>
                 You are about to deploy the{" "}
                 {
-                    <MaybeLink href={sourceUrls.helmChartSourceUrl}>
+                    <MaybeLink href={labeledHelmChartSourceUrls.helmChartSourceUrl}>
                         {helmChartName}
                     </MaybeLink>
                 }{" "}
                 Helm chart that belong to the{" "}
                 {
-                    <MaybeLink href={sourceUrls.helmChartRepositorySourceUrl}>
+                    <MaybeLink
+                        href={labeledHelmChartSourceUrls.helmChartRepositorySourceUrl}
+                    >
                         {helmChartRepositoryName}
                     </MaybeLink>
                 }{" "}
                 Helm chart repository.
-                {sourceUrls.dockerImageSourceUrl !== undefined && (
+                {labeledHelmChartSourceUrls.dockerImageSourceUrl !== undefined && (
                     <>
                         {" "}
                         It is based on the{" "}
                         {
                             <MuiLink
-                                href={sourceUrls.dockerImageSourceUrl}
+                                href={labeledHelmChartSourceUrls.dockerImageSourceUrl}
                                 target="_blank"
                             >
                                 {helmChartName}
@@ -660,6 +672,26 @@ Feel free to explore and take charge of your Kubernetes deployments!
             "Click on the bookmark icon again to update your saved configuration",
         "ok": "Ok"
     },
+    "FormFieldWrapper": {
+        "reset to default": "Reset to default"
+    },
+    "YamlCodeBlockFormField": {
+        "not an array": "An array is expected",
+        "not an object": "An object is expected",
+        "not valid yaml": "Invalid YAML/JSON"
+    },
+    "TextFormField": {
+        "not matching pattern": ({ pattern }) => `Does not match the pattern ${pattern}`,
+        "toggle password visibility": "Toggle password visibility"
+    },
+    "FormFieldGroupComponent": {
+        "add": "Add"
+    },
+    "NumberFormField": {
+        "below minimum": ({ minimum }) => `Must be greater than or equal to ${minimum}`,
+        "not a number": "Not a number",
+        "not an integer": "Not an integer"
+    },
     "MyService": {
         "page title": ({ helmReleaseFriendlyName }) =>
             `${helmReleaseFriendlyName} Monitoring`
@@ -703,19 +735,21 @@ Feel free to explore and take charge of your Kubernetes deployments!
         "version select helper text": ({
             helmCharName,
             helmRepositoryName,
-            sourceUrls
+            labeledHelmChartSourceUrls
         }) => (
             <>
                 Version of the{" "}
                 {
-                    <MaybeLink href={sourceUrls.helmChartSourceUrl}>
+                    <MaybeLink href={labeledHelmChartSourceUrls.helmChartSourceUrl}>
                         {helmCharName}
                     </MaybeLink>
                 }{" "}
                 Helm chart that belongs to the{" "}
                 {
                     <>
-                        <MaybeLink href={sourceUrls.helmChartRepositorySourceUrl}>
+                        <MaybeLink
+                            href={labeledHelmChartSourceUrls.helmChartRepositorySourceUrl}
+                        >
                             {helmRepositoryName}
                         </MaybeLink>{" "}
                         Helm chart repository.
@@ -732,16 +766,6 @@ Feel free to explore and take charge of your Kubernetes deployments!
                 <MuiLink {...projectS3ConfigLink}>S3 Configuration</MuiLink>.
             </>
         )
-    },
-    "LauncherConfigurationCard": {
-        "global config": "Global configuration",
-        "configuration": ({ packageName }) => `${packageName} configurations`,
-        "dependency": ({ dependencyName }) => `${dependencyName} dependency`,
-        "launch of a service": ({ dependencyName }) =>
-            `A ${dependencyName} service will be launched`,
-        "mismatching pattern": ({ pattern }) => `Should match ${pattern}`,
-        "Invalid YAML Object": "Invalid YAML Object",
-        "Invalid YAML Array": "Invalid YAML Array"
     },
     "Footer": {
         "contribute": "Contribute",
@@ -899,7 +923,8 @@ Feel free to explore and take charge of your Kubernetes deployments!
         ),
         "column": "column",
         "density": "density",
-        "download file": "Download file"
+        "download file": "Download file",
+        "resize table": "Resize"
     },
     "UrlInput": {
         "load": "Load"
@@ -994,5 +1019,14 @@ Feel free to explore and take charge of your Kubernetes deployments!
     "CopyToClipboardIconButton": {
         "copied to clipboard": "Copied!",
         "copy to clipboard": "Copy to clipboard"
+    },
+    "CustomDataGridToolbarDensitySelector": {
+        "toolbarDensity": "Density",
+        "toolbarDensityStandard": "Standard",
+        "toolbarDensityComfortable": "Comfortable",
+        "toolbarDensityCompact": "Compact"
+    },
+    "CustomDataGridToolbarColumnsButton": {
+        "toolbarColumnsLabel": "Columns"
     }
 };

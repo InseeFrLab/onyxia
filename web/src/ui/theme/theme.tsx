@@ -1,15 +1,14 @@
 /* eslint-disable react-refresh/only-export-components */
 import { createOnyxiaUi, defaultGetTypographyDesc } from "onyxia-ui";
 import { palette } from "./palette";
-import { targetWindowInnerWidth } from "./targetWindowInnerWidth";
 import { env } from "env";
 import { loadThemedFavicon as loadThemedFavicon_base } from "./loadThemedFavicon";
 import { Evt } from "evt";
 import { CacheProvider } from "@emotion/react";
-import { createCssAndCx } from "tss-react/cssAndCx";
-import createCache from "@emotion/cache";
 import { pluginSystemInitTheme } from "pluginSystem";
+import { targetWindowInnerWidth } from "ui/theme/targetWindowInnerWidth";
 import { isStorybook } from "ui/tools/isStorybook";
+import { css, cx, emotionCache } from "./emotionCache";
 
 const {
     OnyxiaUi: OnyxiaUiWithoutEmotionCache,
@@ -37,12 +36,6 @@ const {
     "BASE_URL": env.PUBLIC_URL
 });
 
-const emotionCache = createCache({
-    "key": "tss"
-});
-
-export const { css, cx } = createCssAndCx({ "cache": emotionCache });
-
 pluginSystemInitTheme({
     "evtTheme": Evt.loosenType(evtTheme),
     css,
@@ -61,7 +54,6 @@ export function OnyxiaUi(props: { children: React.ReactNode; darkMode?: boolean 
 }
 
 export type Theme = typeof ofTypeTheme;
-export { evtTheme };
 
 export const loadThemedFavicon = () =>
     loadThemedFavicon_base({ "evtTheme": Evt.loosenType(evtTheme) });

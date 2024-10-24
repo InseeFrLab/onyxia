@@ -14,20 +14,26 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {
     args: {
         selectedItemKind: "none",
-        callback: action("Button clicked")
+        callback: action("Button clicked"),
+        onViewModeChange: action("onViewModeChange"),
+        viewMode: "list"
     }
 };
 
 export const FileSelected: Story = {
     args: {
         selectedItemKind: "file",
-        callback: action("Button clicked")
+        callback: action("Button clicked"),
+        onViewModeChange: action("onViewModeChange"),
+        viewMode: "list"
     }
 };
 
 export const DirectorySelected: Story = {
     args: {
         selectedItemKind: "directory",
-        callback: action("Button clicked")
+        callback: action("Button clicked"),
+        onViewModeChange: action("onViewModeChange"),
+        viewMode: "list"
     }
 };

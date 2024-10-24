@@ -184,9 +184,9 @@ export const translations: Translations<"zh-CN"> = {
             </>
         ),
         "account credentials": "账户凭证",
-        "accountFriendlyName textField label": "账户友好名称",
-        "accountFriendlyName textField helper text":
-            "这只是为了帮助你识别这个账户。例如：我的个人账户",
+        "friendlyName textField label": "配置名称",
+        "friendlyName textField helper text":
+            "这只是帮助您识别此配置。例如：我的 AWS 存储桶",
         "isAnonymous switch label": "匿名访问",
         "isAnonymous switch helper text": "如果不需要密钥，请将其设置为开启",
         "accessKeyId textField label": "访问密钥 ID",
@@ -292,6 +292,10 @@ export const translations: Translations<"zh-CN"> = {
         "cancel": "取消",
         "go to settings": "前往设置"
     },
+    "MyFilesShareDialog": {
+        "cancel": "取消",
+        "create and copy link": "创建并复制链接"
+    },
     "MySecrets": {
         "page title - my secrets": "我的密钥",
         "what this page is used for - my secrets":
@@ -321,8 +325,10 @@ export const translations: Translations<"zh-CN"> = {
         "copy path": "复制 S3 对象名称",
         "create directory": "创建目录",
         "refresh": "刷新",
-        "create what": ({ what }) => `创建 ${what}`,
-        "new": "新建"
+        "new": "新建",
+        "share": "分享",
+        "alt list view": "显示列表",
+        "alt block view": "显示块"
     },
     "SecretsExplorerButtonBar": {
         "secret": "密码",
@@ -491,28 +497,34 @@ export const translations: Translations<"zh-CN"> = {
     },
     "Launcher": {
         "header text1": "服务目录",
-        "sources": ({ helmChartName, helmChartRepositoryName, sourceUrls }) => (
+        "sources": ({
+            helmChartName,
+            helmChartRepositoryName,
+            labeledHelmChartSourceUrls
+        }) => (
             <>
                 您即将部署 Helm 图表{" "}
                 {
-                    <MaybeLink href={sourceUrls.helmChartSourceUrl}>
+                    <MaybeLink href={labeledHelmChartSourceUrls.helmChartSourceUrl}>
                         {helmChartName}
                     </MaybeLink>
                 }
                 ， 它属于 Helm 图表仓库{" "}
                 {
-                    <MaybeLink href={sourceUrls.helmChartRepositorySourceUrl}>
+                    <MaybeLink
+                        href={labeledHelmChartSourceUrls.helmChartRepositorySourceUrl}
+                    >
                         {helmChartRepositoryName}
                     </MaybeLink>
                 }
                 。
-                {sourceUrls.dockerImageSourceUrl !== undefined && (
+                {labeledHelmChartSourceUrls.dockerImageSourceUrl !== undefined && (
                     <>
                         {" "}
                         它基于 Docker 镜像{" "}
                         {
                             <MuiLink
-                                href={sourceUrls.dockerImageSourceUrl}
+                                href={labeledHelmChartSourceUrls.dockerImageSourceUrl}
                                 target="_blank"
                             >
                                 {helmChartName}
@@ -618,6 +630,26 @@ ${
             </>
         )
     },
+    "FormFieldWrapper": {
+        "reset to default": "重置为默认值"
+    },
+    "YamlCodeBlockFormField": {
+        "not an array": "需要是数组",
+        "not an object": "需要是对象",
+        "not valid yaml": "无效的 YAML/JSON"
+    },
+    "TextFormField": {
+        "not matching pattern": ({ pattern }) => `不符合模式 ${pattern}`,
+        "toggle password visibility": "切换密码可见性"
+    },
+    "FormFieldGroupComponent": {
+        "add": "添加"
+    },
+    "NumberFormField": {
+        "below minimum": ({ minimum }) => `必须大于或等于 ${minimum}`,
+        "not a number": "不是数字",
+        "not an integer": "不是整数"
+    },
     "NoLongerBookmarkedDialog": {
         "no longer bookmarked dialog title": "更改未保存",
         "no longer bookmarked dialog body": "再次单击书签符号以更新您保存的配置.",
@@ -663,17 +695,19 @@ ${
         "version select helper text": ({
             helmCharName,
             helmRepositoryName,
-            sourceUrls
+            labeledHelmChartSourceUrls
         }) => (
             <>
                 {
-                    <MaybeLink href={sourceUrls.helmChartSourceUrl}>
+                    <MaybeLink href={labeledHelmChartSourceUrls.helmChartSourceUrl}>
                         {helmCharName}
                     </MaybeLink>
                 }{" "}
                 helm 图表的版本 属于{" "}
                 {
-                    <MaybeLink href={sourceUrls.helmChartRepositorySourceUrl}>
+                    <MaybeLink
+                        href={labeledHelmChartSourceUrls.helmChartRepositorySourceUrl}
+                    >
                         {helmRepositoryName}
                     </MaybeLink>
                 }{" "}
@@ -689,16 +723,6 @@ ${
                 。
             </>
         )
-    },
-    "LauncherConfigurationCard": {
-        "global config": "全局配置",
-        "configuration": ({ packageName }) => `${packageName} 配置`,
-        "dependency": ({ dependencyName }) => `${dependencyName} 依赖`,
-        "launch of a service": ({ dependencyName }) =>
-            `将启动一个 ${dependencyName} 服务`,
-        "mismatching pattern": ({ pattern }) => `应匹配 ${pattern}`,
-        "Invalid YAML Object": "无效的 YAML 对象",
-        "Invalid YAML Array": "无效的 YAML 数组"
     },
     "Footer": {
         "contribute": "为项目做贡献",
@@ -848,7 +872,8 @@ ${
         ),
         "column": "列",
         "density": "密度",
-        "download file": "下载文件"
+        "download file": "下载文件",
+        "resize table": "调整大小"
     },
     "UrlInput": {
         "load": "加载"
@@ -943,6 +968,15 @@ ${
     "CopyToClipboardIconButton": {
         "copied to clipboard": "已复制！",
         "copy to clipboard": "复制到剪贴板"
+    },
+    "CustomDataGridToolbarDensitySelector": {
+        "toolbarDensity": "密度",
+        "toolbarDensityStandard": "标准",
+        "toolbarDensityComfortable": "舒适",
+        "toolbarDensityCompact": "紧凑"
+    },
+    "CustomDataGridToolbarColumnsButton": {
+        "toolbarColumnsLabel": "列"
     }
     /* spell-checker: enable */
 };

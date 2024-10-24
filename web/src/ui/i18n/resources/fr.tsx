@@ -206,9 +206,9 @@ export const translations: Translations<"fr"> = {
             </>
         ),
         "account credentials": "Identifiants du compte",
-        "accountFriendlyName textField label": "Nom convivial du compte",
-        "accountFriendlyName textField helper text":
-            "Ceci est juste pour vous aider à identifier ce compte. Exemple : Mon compte personnel",
+        "friendlyName textField label": "Nom de la configuration",
+        "friendlyName textField helper text":
+            "Ceci est juste pour vous aider à identifier cette configuration. Exemple : Mon bucket AWS",
         "isAnonymous switch label": "Accès anonyme",
         "isAnonymous switch helper text":
             "Mettre sur ON si aucune clé d'accès secrète n'est requise",
@@ -329,6 +329,10 @@ export const translations: Translations<"fr"> = {
         "cancel": "Annuler",
         "go to settings": "Aller aux paramètres"
     },
+    "MyFilesShareDialog": {
+        "cancel": "Annuler",
+        "create and copy link": "Créer et copier le lien"
+    },
     "MySecrets": {
         "page title - my secrets": "My Secrets",
         "what this page is used for - my secrets":
@@ -358,8 +362,10 @@ export const translations: Translations<"fr"> = {
         "copy path": "Copier le nom de l'objet S3",
         "create directory": "Nouveau dossier",
         "refresh": "rafraîchir",
-        "create what": ({ what }) => `Nouveau ${what}`,
-        "new": "Nouveau"
+        "new": "Nouveau",
+        "share": "Partager",
+        "alt list view": "Afficher la liste",
+        "alt block view": "Afficher en bloc"
     },
     "SecretsExplorerButtonBar": {
         "secret": "secret",
@@ -539,28 +545,34 @@ export const translations: Translations<"fr"> = {
     },
     "Launcher": {
         "header text1": "Catalogue de services",
-        "sources": ({ helmChartName, helmChartRepositoryName, sourceUrls }) => (
+        "sources": ({
+            helmChartName,
+            helmChartRepositoryName,
+            labeledHelmChartSourceUrls
+        }) => (
             <>
                 Vous êtes sur le point de déployer le chart Helm{" "}
                 {
-                    <MaybeLink href={sourceUrls.helmChartSourceUrl}>
+                    <MaybeLink href={labeledHelmChartSourceUrls.helmChartSourceUrl}>
                         {helmChartName}
                     </MaybeLink>
                 }
                 qui appartient au dépôt de charts Helm{" "}
                 {
-                    <MaybeLink href={sourceUrls.helmChartRepositorySourceUrl}>
+                    <MaybeLink
+                        href={labeledHelmChartSourceUrls.helmChartRepositorySourceUrl}
+                    >
                         {helmChartRepositoryName}
                     </MaybeLink>
                 }
                 .
-                {sourceUrls.dockerImageSourceUrl !== undefined && (
+                {labeledHelmChartSourceUrls.dockerImageSourceUrl !== undefined && (
                     <>
                         {" "}
                         Il est basé sur l'image Docker{" "}
                         {
                             <MuiLink
-                                href={sourceUrls.dockerImageSourceUrl}
+                                href={labeledHelmChartSourceUrls.dockerImageSourceUrl}
                                 target="_blank"
                             >
                                 {helmChartName}
@@ -672,6 +684,26 @@ N'hésitez pas à explorer et à prendre en main vos déploiements Kubernetes !
         ),
         "ok": "Ok"
     },
+    "FormFieldWrapper": {
+        "reset to default": "Réinitialiser à la valeur par défaut"
+    },
+    "YamlCodeBlockFormField": {
+        "not an array": "Un tableau est attendu",
+        "not an object": "Un objet est attendu",
+        "not valid yaml": "YAML/JSON invalide"
+    },
+    "TextFormField": {
+        "not matching pattern": ({ pattern }) => `Ne correspond pas au motif ${pattern}`,
+        "toggle password visibility": "Basculer la visibilité du mot de passe"
+    },
+    "FormFieldGroupComponent": {
+        "add": "Ajouter"
+    },
+    "NumberFormField": {
+        "below minimum": ({ minimum }) => `Doit être supérieur ou égal à ${minimum}`,
+        "not a number": "Pas un nombre",
+        "not an integer": "Pas un entier"
+    },
     "NoLongerBookmarkedDialog": {
         "no longer bookmarked dialog title": "Changements non enregistrés",
         "no longer bookmarked dialog body":
@@ -723,19 +755,21 @@ N'hésitez pas à explorer et à prendre en main vos déploiements Kubernetes !
         "version select helper text": ({
             helmCharName,
             helmRepositoryName,
-            sourceUrls
+            labeledHelmChartSourceUrls
         }) => (
             <>
                 Version du helm chart{" "}
                 {
-                    <MaybeLink href={sourceUrls.helmChartSourceUrl}>
+                    <MaybeLink href={labeledHelmChartSourceUrls.helmChartSourceUrl}>
                         {helmCharName}
                     </MaybeLink>
                 }
                 qui appartient au dépôt de helm charts{" "}
                 {
                     <>
-                        <MaybeLink href={sourceUrls.helmChartRepositorySourceUrl}>
+                        <MaybeLink
+                            href={labeledHelmChartSourceUrls.helmChartRepositorySourceUrl}
+                        >
                             {helmRepositoryName}
                         </MaybeLink>
                         .
@@ -752,16 +786,6 @@ N'hésitez pas à explorer et à prendre en main vos déploiements Kubernetes !
                 <MuiLink {...projectS3ConfigLink}>Configuration S3</MuiLink>.
             </>
         )
-    },
-    "LauncherConfigurationCard": {
-        "global config": "Configurations globales",
-        "configuration": ({ packageName }) => `Configuration ${packageName}`,
-        "dependency": ({ dependencyName }) => `Dépendance ${dependencyName}`,
-        "launch of a service": ({ dependencyName }) =>
-            `Lancement d'un service ${dependencyName}`,
-        "mismatching pattern": ({ pattern }) => `Doit respecter ${pattern}`,
-        "Invalid YAML Object": "Objet YAML non valide",
-        "Invalid YAML Array": "Tableau YAML non valide"
     },
     "Footer": {
         "contribute": "Contribuer au projet",
@@ -923,7 +947,8 @@ N'hésitez pas à explorer et à prendre en main vos déploiements Kubernetes !
         ),
         "column": "colonne",
         "density": "densité",
-        "download file": "télécharger le fichier"
+        "download file": "télécharger le fichier",
+        "resize table": "Redimensionner"
     },
     "UrlInput": {
         "load": "Charger"
@@ -1018,6 +1043,15 @@ N'hésitez pas à explorer et à prendre en main vos déploiements Kubernetes !
     "CopyToClipboardIconButton": {
         "copied to clipboard": "Copié !",
         "copy to clipboard": "Copier dans le presse-papiers"
+    },
+    "CustomDataGridToolbarDensitySelector": {
+        "toolbarDensity": "Densité",
+        "toolbarDensityStandard": "Standard",
+        "toolbarDensityComfortable": "Confortable",
+        "toolbarDensityCompact": "Compact"
+    },
+    "CustomDataGridToolbarColumnsButton": {
+        "toolbarColumnsLabel": "Colonnes"
     }
     /* spell-checker: enable */
 };
