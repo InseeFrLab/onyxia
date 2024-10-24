@@ -479,6 +479,21 @@ export function createS3Client(
 
             return [...directories, ...files];
         },
+        "putBucketPolicy": async ({ path, policy }) => {
+            const { getAwsS3Client } = await prApi;
+            const { awsS3Client } = await getAwsS3Client();
+
+            const { bucketName } = bucketNameAndObjectNameFromS3Path(path);
+
+            const command = new (
+                await import("@aws-sdk/client-s3")
+            ).PutBucketPolicyCommand({
+                "Bucket": bucketName,
+                "Policy": JSON.stringify(policy)
+            });
+
+            await awsS3Client.send(command);
+        },
         "uploadFile": async ({ blob, path, onUploadProgress }) => {
             const { getAwsS3Client } = await prApi;
 
