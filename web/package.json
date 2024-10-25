@@ -70,7 +70,7 @@
         "react-code-blocks": "^0.1.6",
         "react-dom": "^18.2.0",
         "run-exclusive": "^2.2.19",
-        "screen-scaler": "^1.3.0",
+        "screen-scaler": "^1.3.1",
         "tsafe": "^1.7.2",
         "tss-react": "^4.9.12",
         "type-route": "^1.1.0",

@@ -8487,10 +8487,10 @@ scheduler@^0.23.2:
   dependencies:
     loose-envify "^1.1.0"
 
-screen-scaler@^1.3.0:
-  version "1.3.0"
-  resolved "https://registry.yarnpkg.com/screen-scaler/-/screen-scaler-1.3.0.tgz#32693700afd505f12a7f2fc878539d4bc44aecb4"
-  integrity sha512-FPfgc9Rejz+2mIZgICnx58iurlVO8wmfNfX1rjBszcU+XZI3jOW5pEyYKgCPp3SXbCiSiSxVU7otlNXccf+2rg==
+screen-scaler@^1.3.1:
+  version "1.3.1"
+  resolved "https://registry.yarnpkg.com/screen-scaler/-/screen-scaler-1.3.1.tgz#1419fe7d18564e73bf09dd34b5ecc216af3d6792"
+  integrity sha512-EiyFeR1GquLioxHfpHA92Rfqxf0QCwTwMZHC7abr8OJRRVCLd0xCRcV20LJzDa7Ps0b2pEtbzelngHpJTOPZdA==
   dependencies:
     evt "^2.5.2"
     tsafe "^1.6.4"
