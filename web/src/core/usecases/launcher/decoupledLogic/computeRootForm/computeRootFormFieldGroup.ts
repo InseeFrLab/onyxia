@@ -82,10 +82,6 @@ function computeRootFormFieldGroup_rec(params: {
 }): FormFieldGroup | FormField | undefined {
     const { helmValuesSchema, helmValues, xOnyxiaContext, helmValuesPath } = params;
 
-    if (helmValuesSchema.const !== undefined) {
-        return undefined;
-    }
-
     root_hidden: {
         const { hidden } = helmValuesSchema;
 
@@ -151,7 +147,9 @@ function computeRootFormFieldGroup_rec(params: {
         return title;
     };
 
-    const isReadonly = helmValuesSchema["x-onyxia"]?.readonly ?? false;
+    const isReadonly =
+        (helmValuesSchema["x-onyxia"]?.readonly ?? false) ||
+        helmValuesSchema.const !== undefined;
 
     const getValue = () => {
         const value = getValueAtPathInObject<Stringifyable>({

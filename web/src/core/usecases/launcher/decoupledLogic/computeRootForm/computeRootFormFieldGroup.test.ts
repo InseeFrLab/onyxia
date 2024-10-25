@@ -66,6 +66,48 @@ describe(symToStr({ computeRootFormFieldGroup }), () => {
         expect(got).toStrictEqual(expected);
     });
 
+    it("const should be readonly", () => {
+        const got = computeRootFormFieldGroup({
+            "helmValuesSchema": {
+                "type": "object",
+                "properties": {
+                    "a": {
+                        "type": "string",
+                        "const": "foo"
+                    }
+                }
+            },
+            "helmValues": {
+                "a": "foo"
+            },
+            "xOnyxiaContext": {}
+        });
+
+        const expected: FormFieldGroup = {
+            "type": "group",
+            "helmValuesPath": [],
+            "description": undefined,
+            "nodes": [
+                {
+                    "type": "field",
+                    "description": undefined,
+                    "pattern": undefined,
+                    "title": "a",
+                    "isReadonly": true,
+                    "fieldType": "text field",
+                    "helmValuesPath": ["a"],
+                    "doRenderAsTextArea": false,
+                    "isSensitive": false,
+                    "value": "foo"
+                }
+            ],
+            "canAdd": false,
+            "canRemove": false
+        };
+
+        expect(got).toStrictEqual(expected);
+    });
+
     it("compute hidden field - relative", () => {
         const xOnyxiaContext = {};
 
