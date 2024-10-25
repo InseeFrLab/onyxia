@@ -12,7 +12,7 @@ type Props = {
     size?: IconProps["size"];
     ariaLabel?: string;
     policy: Item["policy"];
-    changePolicy: () => void;
+    changePolicy: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
 };
 
 export const PolicySwitch = memo((props: Props) => {
