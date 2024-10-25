@@ -10,13 +10,17 @@ import {
 } from "../computeHelmValues";
 import YAML from "yaml";
 import type { XOnyxiaContext } from "core/ports/OnyxiaApi";
+import {
+    getJSONSchemaType,
+    type JSONSchemaLike as JSONSchemaLike_getJSONSchemaType
+} from "../shared/getJSONSchemaType";
 
-type JSONSchemaLike = JSONSchemaLike_computeHelmValues & {
-    type: "object" | "array" | "string" | "boolean" | "integer" | "number";
-    default?: Stringifyable;
-    items?: JSONSchemaLike_computeHelmValues;
-    properties?: Record<string, JSONSchemaLike>;
-};
+type JSONSchemaLike = JSONSchemaLike_getJSONSchemaType &
+    JSONSchemaLike_computeHelmValues & {
+        default?: Stringifyable;
+        items?: JSONSchemaLike_computeHelmValues;
+        properties?: Record<string, JSONSchemaLike>;
+    };
 
 assert<keyof JSONSchemaLike extends keyof JSONSchema ? true : false>();
 assert<JSONSchema extends JSONSchemaLike ? true : false>();
@@ -64,7 +68,7 @@ export function mutateHelmValues_addArrayItem(params: {
 
         assert(is<JSONSchemaLike>(helmValuesSchema_target));
 
-        assert(helmValuesSchema_target.type === "array");
+        assert(getJSONSchemaType(helmValuesSchema_target) === "array");
 
         use_default_item: {
             if (helmValuesSchema_target.items === undefined) {

@@ -6,7 +6,7 @@ import { exclude } from "tsafe/exclude";
 import { mergeRangeSliders } from "./mergeRangeSliders";
 import {
     computeRootFormFieldGroup,
-    XOnyxiaContextLike as XOnyxiaContextLike_computeRootFormFieldGroup
+    type XOnyxiaContextLike as XOnyxiaContextLike_computeRootFormFieldGroup
 } from "./computeRootFormFieldGroup";
 import { assert } from "tsafe/assert";
 import type { XOnyxiaContext } from "core/ports/OnyxiaApi";

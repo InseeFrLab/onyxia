@@ -9,9 +9,12 @@ import {
     type JSONSchemaLike as JSONSchemaLike_validateValueAgainstJSONSchema,
     type XOnyxiaContextLike as XOnyxiaContextLike_validateValueAgainstJSONSchema
 } from "./validateValueAgainstJSONSchema";
+import {
+    getJSONSchemaType,
+    type JSONSchemaLike as JSONSchemaLike_getJSONSchemaType
+} from "../getJSONSchemaType";
 
-export type JSONSchemaLike = {
-    type: "object" | "array" | "string" | "boolean" | "integer" | "number";
+export type JSONSchemaLike = JSONSchemaLike_getJSONSchemaType & {
     items?: JSONSchemaLike_validateValueAgainstJSONSchema;
     minItems?: number;
     maxItems?: number;
@@ -96,6 +99,8 @@ export function validateValueAgainstJSONSchema_noEnumCheck(params: {
         return true;
     };
 
+    const helmValuesSchemaType = getJSONSchemaType(helmValuesSchema);
+
     const getIsNumberValid = (value: number): boolean => {
         if (helmValuesSchema.minimum !== undefined && value < helmValuesSchema.minimum) {
             return false;
@@ -105,7 +110,7 @@ export function validateValueAgainstJSONSchema_noEnumCheck(params: {
             return false;
         }
 
-        if (helmValuesSchema.type === "integer" && value !== Math.round(value)) {
+        if (helmValuesSchemaType === "integer" && value !== Math.round(value)) {
             return false;
         }
 
@@ -113,7 +118,7 @@ export function validateValueAgainstJSONSchema_noEnumCheck(params: {
     };
 
     if (typeof value === "string") {
-        switch (helmValuesSchema.type) {
+        switch (helmValuesSchemaType) {
             case "string":
                 if (!getIsStringValid(value)) {
                     return { "isValid": false, "reasonableApproximation": undefined };
@@ -171,11 +176,11 @@ export function validateValueAgainstJSONSchema_noEnumCheck(params: {
                 return { isValid, "reasonableApproximation": x };
             }
         }
-        assert<Equals<typeof helmValuesSchema.type, never>>();
+        assert<Equals<typeof helmValuesSchemaType, never>>();
     }
 
     if (typeof value === "number") {
-        switch (helmValuesSchema.type) {
+        switch (helmValuesSchemaType) {
             case "string": {
                 const reasonableApproximation = `${value}`;
 
@@ -207,11 +212,11 @@ export function validateValueAgainstJSONSchema_noEnumCheck(params: {
 
                 return { "isValid": true };
         }
-        assert<Equals<typeof helmValuesSchema.type, never>>();
+        assert<Equals<typeof helmValuesSchemaType, never>>();
     }
 
     if (typeof value === "boolean") {
-        switch (helmValuesSchema.type) {
+        switch (helmValuesSchemaType) {
             case "string": {
                 const reasonableApproximation = value ? "true" : "false";
 
@@ -246,11 +251,11 @@ export function validateValueAgainstJSONSchema_noEnumCheck(params: {
                 };
             }
         }
-        assert<Equals<typeof helmValuesSchema.type, never>>();
+        assert<Equals<typeof helmValuesSchemaType, never>>();
     }
 
     if (value === null) {
-        switch (helmValuesSchema.type) {
+        switch (helmValuesSchemaType) {
             case "string": {
                 const reasonableApproximation = "";
 
@@ -288,11 +293,11 @@ export function validateValueAgainstJSONSchema_noEnumCheck(params: {
                 };
             }
         }
-        assert<Equals<typeof helmValuesSchema.type, never>>();
+        assert<Equals<typeof helmValuesSchemaType, never>>();
     }
 
     if (value instanceof Array) {
-        if (helmValuesSchema.type !== "array") {
+        if (helmValuesSchemaType !== "array") {
             return { "isValid": false, "reasonableApproximation": undefined };
         }
 
@@ -342,7 +347,7 @@ export function validateValueAgainstJSONSchema_noEnumCheck(params: {
     }
 
     if (value instanceof Object) {
-        if (helmValuesSchema.type !== "object") {
+        if (helmValuesSchemaType !== "object") {
             return { "isValid": false, "reasonableApproximation": undefined };
         }
 

@@ -17,6 +17,10 @@ import {
     resolveEnum,
     type JSONSchemaLike as JSONSchemaLike_resolveEnum
 } from "../shared/resolveEnum";
+import {
+    getJSONSchemaType,
+    type JSONSchemaLike as JSONSchemaLike_getJSONSchemaType
+} from "../shared/getJSONSchemaType";
 
 type XOnyxiaParamsLike = {
     hidden?: boolean;
@@ -26,26 +30,28 @@ type XOnyxiaParamsLike = {
 assert<keyof XOnyxiaParamsLike extends keyof XOnyxiaParams ? true : false>();
 assert<XOnyxiaParams extends XOnyxiaParamsLike ? true : false>();
 
-export type JSONSchemaLike = JSONSchemaLike_resolveEnum & {
-    type: "object" | "array" | "string" | "boolean" | "integer" | "number";
-    title?: string;
-    description?: string;
-    minItems?: number;
-    maxItems?: number;
-    hidden?: boolean | { value: Stringifyable; path: string; isPathRelative?: boolean };
-    items?: JSONSchemaLike;
-    const?: Stringifyable;
-    render?: "textArea" | "password" | "list" | "slider";
-    sliderMax?: number;
-    sliderMin?: number;
-    sliderUnit?: string;
-    sliderStep?: number;
-    sliderExtremitySemantic?: string;
-    sliderRangeId?: string;
-    sliderExtremity?: "down" | "up";
-    properties?: Record<string, JSONSchemaLike>;
-    [onyxiaReservedPropertyNameInFieldDescription]?: XOnyxiaParamsLike;
-};
+export type JSONSchemaLike = JSONSchemaLike_getJSONSchemaType &
+    JSONSchemaLike_resolveEnum & {
+        title?: string;
+        description?: string;
+        minItems?: number;
+        maxItems?: number;
+        hidden?:
+            | boolean
+            | { value: Stringifyable; path: string; isPathRelative?: boolean };
+        items?: JSONSchemaLike;
+        const?: Stringifyable;
+        render?: "textArea" | "password" | "list" | "slider";
+        sliderMax?: number;
+        sliderMin?: number;
+        sliderUnit?: string;
+        sliderStep?: number;
+        sliderExtremitySemantic?: string;
+        sliderRangeId?: string;
+        sliderExtremity?: "down" | "up";
+        properties?: Record<string, JSONSchemaLike>;
+        [onyxiaReservedPropertyNameInFieldDescription]?: XOnyxiaParamsLike;
+    };
 
 assert<keyof JSONSchemaLike extends keyof JSONSchema ? true : false>();
 assert<JSONSchema extends JSONSchemaLike ? true : false>();
@@ -162,17 +168,19 @@ function computeRootFormFieldGroup_rec(params: {
         return value;
     };
 
+    const helmValuesSchemaType = getJSONSchemaType(helmValuesSchema);
+
     yaml_code_block: {
-        if (!isAmong(["object", "array"], helmValuesSchema.type)) {
+        if (!isAmong(["object", "array"], helmValuesSchemaType)) {
             break yaml_code_block;
         }
 
-        if (helmValuesSchema.type === "array" && helmValuesSchema.items !== undefined) {
+        if (helmValuesSchemaType === "array" && helmValuesSchema.items !== undefined) {
             break yaml_code_block;
         }
 
         if (
-            helmValuesSchema.type === "object" &&
+            helmValuesSchemaType === "object" &&
             helmValuesSchema.properties !== undefined
         ) {
             break yaml_code_block;
@@ -185,7 +193,7 @@ function computeRootFormFieldGroup_rec(params: {
             "fieldType": "yaml code block",
             helmValuesPath,
             "description": helmValuesSchema.description,
-            "expectedDataType": helmValuesSchema.type,
+            "expectedDataType": helmValuesSchemaType,
             "value": (() => {
                 const value = getValue();
 
@@ -237,7 +245,7 @@ function computeRootFormFieldGroup_rec(params: {
             break simple_slider;
         }
 
-        assert(helmValuesSchema.type === "string" || helmValuesSchema.type === "number");
+        assert(helmValuesSchemaType === "string" || helmValuesSchemaType === "number");
         assert(
             helmValuesSchema.render === undefined || helmValuesSchema.render === "slider"
         );
@@ -291,7 +299,7 @@ function computeRootFormFieldGroup_rec(params: {
             break range_slider;
         }
 
-        assert(helmValuesSchema.type === "string" || helmValuesSchema.type === "number");
+        assert(helmValuesSchemaType === "string" || helmValuesSchemaType === "number");
         assert(
             helmValuesSchema.render === undefined || helmValuesSchema.render === "slider"
         );
@@ -343,7 +351,7 @@ function computeRootFormFieldGroup_rec(params: {
         );
     }
 
-    switch (helmValuesSchema.type) {
+    switch (helmValuesSchemaType) {
         case "object":
             assert(helmValuesSchema.properties !== undefined);
             return id<FormFieldGroup>({
@@ -445,10 +453,10 @@ function computeRootFormFieldGroup_rec(params: {
 
                     return value;
                 })(),
-                "isInteger": helmValuesSchema.type === "integer",
+                "isInteger": helmValuesSchemaType === "integer",
                 "minimum": helmValuesSchema.minimum
             });
     }
 
-    assert<Equals<typeof helmValuesSchema.type, never>>(false);
+    assert<Equals<typeof helmValuesSchemaType, never>>(false);
 }

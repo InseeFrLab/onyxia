@@ -9,7 +9,7 @@ import { assert, type Equals } from "tsafe/assert";
 import { id } from "tsafe/id";
 
 export type JSONSchema = {
-    type: "object" | "array" | "string" | "boolean" | "integer" | "number";
+    type?: "object" | "array" | "string" | "boolean" | "integer" | "number";
     title?: string;
     description?: string;
     default?: Stringifyable;
@@ -40,7 +40,9 @@ export const zJSONSchema = (() => {
     let zTargetType_lazyRef: z.ZodType<TargetType>;
 
     const zTargetType = z.object({
-        "type": z.enum(["object", "array", "string", "boolean", "integer", "number"]),
+        "type": z
+            .enum(["object", "array", "string", "boolean", "integer", "number"])
+            .optional(),
         "title": z.string().optional(),
         "description": z.string().optional(),
         "default": zStringifyable.optional(),

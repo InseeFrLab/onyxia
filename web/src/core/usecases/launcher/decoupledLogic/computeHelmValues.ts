@@ -16,6 +16,10 @@ import {
     type JSONSchemaLike as JSONSchemaLike_validateValueAgainstJSONSchema,
     type XOnyxiaContextLike as XOnyxiaContextLike_validateValueAgainstJSONSchema
 } from "./shared/validateValueAgainstJSONSchema";
+import {
+    getJSONSchemaType,
+    type JSONSchemaLike as JSONSchemaLike_getJSONSchemaType
+} from "./shared/getJSONSchemaType";
 
 type XOnyxiaParamsLike = {
     overwriteDefaultWith?: string;
@@ -24,15 +28,15 @@ type XOnyxiaParamsLike = {
 assert<keyof XOnyxiaParamsLike extends keyof XOnyxiaParams ? true : false>();
 assert<XOnyxiaParams extends XOnyxiaParamsLike ? true : false>();
 
-export type JSONSchemaLike = JSONSchemaLike_validateValueAgainstJSONSchema & {
-    type: "object" | "array" | "string" | "boolean" | "integer" | "number";
-    items?: JSONSchemaLike;
-    minItems?: number;
-    default?: Stringifyable;
-    const?: Stringifyable;
-    properties?: Record<string, JSONSchemaLike>;
-    [onyxiaReservedPropertyNameInFieldDescription]?: XOnyxiaParamsLike;
-};
+export type JSONSchemaLike = JSONSchemaLike_getJSONSchemaType &
+    JSONSchemaLike_validateValueAgainstJSONSchema & {
+        items?: JSONSchemaLike;
+        minItems?: number;
+        default?: Stringifyable;
+        const?: Stringifyable;
+        properties?: Record<string, JSONSchemaLike>;
+        [onyxiaReservedPropertyNameInFieldDescription]?: XOnyxiaParamsLike;
+    };
 
 assert<keyof JSONSchemaLike extends keyof JSONSchema ? true : false>();
 assert<JSONSchema extends JSONSchemaLike ? true : false>();
@@ -174,8 +178,10 @@ export function computeHelmValues_rec(params: {
         return defaultValue;
     }
 
+    const helmValuesSchemaType = getJSONSchemaType(helmValuesSchema);
+
     schema_is_object_with_known_properties: {
-        if (helmValuesSchema.type !== "object") {
+        if (helmValuesSchemaType !== "object") {
             break schema_is_object_with_known_properties;
         }
 
@@ -218,7 +224,7 @@ export function computeHelmValues_rec(params: {
     }
 
     schema_is_array: {
-        if (helmValuesSchema.type !== "array") {
+        if (helmValuesSchemaType !== "array") {
             break schema_is_array;
         }
 
