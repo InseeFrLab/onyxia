@@ -13,7 +13,7 @@ type Props = {
     className?: string;
     title: string;
     description: string | JSX.Element | undefined;
-    onResetToDefault: () => void;
+    onResetToDefault: (() => void) | undefined;
     error: JSX.Element | string | undefined;
     inputId: string | undefined;
     onRemove: (() => void) | undefined;
@@ -57,12 +57,14 @@ export function FormFieldWrapper(props: Props) {
                     }
                 </Text>
                 <div style={{ "flex": 1 }} />
-                <ToolTip title={t("reset to default")} placement="bottom">
-                    <IconButton
-                        onClick={onResetToDefault}
-                        icon={SettingsBackupRestoreIcon}
-                    />
-                </ToolTip>
+                {onResetToDefault !== undefined && (
+                    <ToolTip title={t("reset to default")} placement="bottom">
+                        <IconButton
+                            onClick={onResetToDefault}
+                            icon={SettingsBackupRestoreIcon}
+                        />
+                    </ToolTip>
+                )}
             </div>
             {description !== undefined && (
                 <Text typo="caption" className={classes.description}>

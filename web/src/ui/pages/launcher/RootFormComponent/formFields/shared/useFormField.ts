@@ -22,7 +22,7 @@ export function useFormField<
     serializedValue: TSerializedValue;
     setSerializedValue: (newValue: TSerializedValue) => void;
     errorMessageKey: ErrorMessageKey | undefined;
-    resetToDefault: () => void;
+    resetToDefault: (() => void) | undefined;
 } {
     const {
         serializedValue: serializedValue_params,
@@ -93,6 +93,9 @@ export function useFormField<
         serializedValue,
         setSerializedValue,
         errorMessageKey,
-        "resetToDefault": () => setSerializedValue(serializedValue_default)
+        "resetToDefault":
+            serializedValue === serializedValue_default
+                ? undefined
+                : () => setSerializedValue(serializedValue_default)
     };
 }
