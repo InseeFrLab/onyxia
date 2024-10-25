@@ -1,6 +1,6 @@
 import { tss } from "tss";
 import { Text } from "onyxia-ui/Text";
-import { memo } from "react";
+import { memo, useState } from "react";
 import { Icon } from "onyxia-ui/Icon";
 import { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
 import { id } from "tsafe";
@@ -9,6 +9,7 @@ import { fileSizePrettyPrint } from "ui/tools/fileSizePrettyPrint";
 import { ExplorerIcon } from "../ExplorerIcon";
 import { declareComponentKeys } from "i18nifty";
 import { Item } from "../../shared/types";
+import { PolicySwitch } from "../PolicySwitch";
 
 export type ExplorerItemProps = {
     className?: string;
@@ -67,6 +68,7 @@ export const ExplorerItem = memo((props: ExplorerItemProps) => {
         }
     };
 
+    const [policyFake, setPolicyFake] = useState(policy);
     return (
         <div
             className={cx(classes.root, className)}
@@ -90,12 +92,21 @@ export const ExplorerItem = memo((props: ExplorerItemProps) => {
                     })()}
                     hasShadow={true}
                 />
-                <Icon
+                <PolicySwitch
+                    policy={policyFake}
+                    className={classes.policyIcon}
+                    changePolicy={() =>
+                        policyFake === "public"
+                            ? setPolicyFake("private")
+                            : setPolicyFake("public")
+                    }
+                />
+                {/* <Icon
                     className={classes.policyIcon}
                     icon={id<MuiIconComponentName>(
                         policy === "public" ? "Visibility" : "VisibilityOff"
                     )}
-                />
+                /> */}
             </div>
 
             <div className={classes.textContainer}>
@@ -155,6 +166,7 @@ const useStyles = tss
             "height": "50px"
         },
         "policyIcon": {
+            "padding": 0,
             "marginLeft": theme.spacing(1) // Adjust spacing between the icons
         },
         "textContainer": {

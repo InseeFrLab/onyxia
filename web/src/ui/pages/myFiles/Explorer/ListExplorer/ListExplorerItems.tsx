@@ -20,6 +20,7 @@ import { assert } from "tsafe/assert";
 import { useEvt } from "evt/hooks";
 import type { NonPostableEvt } from "evt";
 import { useConst } from "powerhooks/useConst";
+import { PolicySwitch } from "../PolicySwitch";
 
 export type ListExplorerItems = {
     className?: string;
@@ -116,22 +117,19 @@ export const ListExplorerItems = memo((props: ListExplorerItems) => {
                     display: "flex" as const,
                     type: "singleSelect",
                     valueOptions: ["public", "private"],
-                    renderCell: params => (
-                        <Icon
-                            icon={id<MuiIconComponentName>(
-                                (() => {
-                                    switch (params.value) {
-                                        case "public":
-                                            return "Visibility";
-                                        case "private":
-                                            return "VisibilityOff";
-                                        default:
-                                            return "HelpOutline";
-                                    }
-                                })()
-                            )}
-                        />
-                    )
+                    renderCell: params => {
+                        const [policy, setPolicy] = useState(params.value);
+
+                        return (
+                            <PolicySwitch
+                                policy={policy}
+                                changePolicy={e => {
+                                    setPolicy(policy === "public" ? "private" : "public");
+                                    e.stopPropagation();
+                                }}
+                            />
+                        );
+                    }
                 }
             ] satisfies GridColDef<(typeof rows)[number]>[],
         [classes.nameIcon]
