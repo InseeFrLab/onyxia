@@ -9,34 +9,25 @@ import type { NonPostableEvt } from "evt";
 import type { Stringifyable } from "core/tools/Stringifyable";
 
 export type OnyxiaApi = {
-    getAvailableRegionsAndOidcParams: {
-        (): Promise<{
-            regions: DeploymentRegion[];
-            oidcParams:
-                | {
-                      issuerUri: string;
-                      clientId: string;
-                      serializedExtraQueryParams: string | undefined;
-                  }
-                | undefined;
-        }>;
-        clear: () => void;
-    };
+    getAvailableRegionsAndOidcParams: () => Promise<{
+        regions: DeploymentRegion[];
+        oidcParams:
+            | {
+                  issuerUri: string;
+                  clientId: string;
+                  serializedExtraQueryParams: string | undefined;
+              }
+            | undefined;
+    }>;
 
     getIp: () => Promise<string>;
 
-    getUserAndProjects: {
-        (): Promise<{ user: User; projects: Project[] }>;
-        clear: () => void;
-    };
+    getUserAndProjects: () => Promise<{ user: User; projects: Project[] }>;
 
-    getCatalogsAndCharts: {
-        (): Promise<{
-            catalogs: Catalog[];
-            chartsByCatalogId: Record<string, Chart[]>;
-        }>;
-        clear: () => void;
-    };
+    getCatalogsAndCharts: () => Promise<{
+        catalogs: Catalog[];
+        chartsByCatalogId: Record<string, Chart[]>;
+    }>;
 
     getChartAvailableVersions: (params: {
         catalogId: string;

@@ -80,6 +80,17 @@ export function createOnyxiaApi(params: {
         return { axiosInstance };
     })();
 
+    const getApiCatalogsMemo = memoize(
+        async () => {
+            const { data } = await axiosInstance.get<
+                ApiTypes["/<public|my-lab>/catalogs"]
+            >(`/${getOidcAccessToken() === undefined ? "public" : "my-lab"}/catalogs`);
+
+            return data;
+        },
+        { "promise": true }
+    );
+
     const onyxiaApi: OnyxiaApi = {
         "getIp": async () => {
             const { data } =
@@ -352,11 +363,7 @@ export function createOnyxiaApi(params: {
         ),
         "getCatalogsAndCharts": memoize(
             async () => {
-                const { data } = await axiosInstance.get<ApiTypes["/public/catalogs"]>(
-                    getOidcAccessToken() === undefined
-                        ? "/public/catalogs"
-                        : "/my-lab/catalogs"
-                );
+                const data = await getApiCatalogsMemo();
 
                 return {
                     "catalogs": data.catalogs
@@ -487,19 +494,34 @@ export function createOnyxiaApi(params: {
         "getHelmChartDetails": (() => {
             const memoizedImplementation = memoize(
                 async (catalogId: string, chartName: string, chartVersion: string) => {
-                    const { data } = await axiosInstance.get<
-                        ApiTypes["/my-lab/schemas/${catalogId}/charts/${chartName}/versions/${chartVersion}"]
-                    >(
-                        `/my-lab/schemas/${catalogId}/charts/${chartName}/versions/${chartVersion}`
-                    );
+                    const [{ data: helmValuesSchema }, apiCatalogs] = await Promise.all([
+                        axiosInstance.get<
+                            ApiTypes["/my-lab/schemas/${catalogId}/charts/${chartName}/versions/${chartVersion}"]
+                        >(
+                            `/my-lab/schemas/${catalogId}/charts/${chartName}/versions/${chartVersion}`
+                        ),
+                        getApiCatalogsMemo()
+                    ] as const);
 
-                    zJSONSchema.parse(data.config);
+                    zJSONSchema.parse(helmValuesSchema);
+
+                    const apiChart = (() => {
+                        const entry = apiCatalogs.catalogs.find(c => c.id === catalogId);
+
+                        assert(entry !== undefined);
+
+                        const apiChart = entry.catalog.latestPackages[chartName];
+
+                        assert(apiChart !== undefined);
+
+                        return apiChart;
+                    })();
 
                     return {
-                        "helmValuesSchema": data.config,
-                        "helmValuesYaml": data.defaultValues,
-                        "helmChartSourceUrls": data.sources ?? [],
-                        "helmDependencies": (data.dependencies ?? []).map(
+                        helmValuesSchema,
+                        "helmValuesYaml": apiChart.defaultValues,
+                        "helmChartSourceUrls": apiChart.sources ?? [],
+                        "helmDependencies": (apiChart.dependencies ?? []).map(
                             ({ name, repository, version, condition }) => ({
                                 "helmRepositoryUrl": repository,
                                 "chartName": name,

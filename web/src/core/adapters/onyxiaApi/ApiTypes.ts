@@ -153,7 +153,7 @@ export type ApiTypes = {
             extraQueryParams?: string;
         };
     };
-    "/public/catalogs": {
+    "/<public|my-lab>/catalogs": {
         catalogs: {
             id: string;
             name?: LocalizedString;
@@ -168,6 +168,16 @@ export type ApiTypes = {
                         type: "library" | "application";
                         icon?: string;
                         home?: string;
+
+                        // TODO: Remove
+                        defaultValues: string;
+                        sources?: string[];
+                        dependencies?: {
+                            name: string;
+                            repository: string;
+                            version: string;
+                            condition?: string;
+                        }[];
                     }
                 >;
             };
@@ -179,17 +189,7 @@ export type ApiTypes = {
         }[];
     };
     "/my-lab/catalogs/${catalogId}/charts/${chartName}": { version: string }[];
-    "/my-lab/schemas/${catalogId}/charts/${chartName}/versions/${chartVersion}": {
-        config: JSONSchema;
-        defaultValues: string;
-        sources?: string[];
-        dependencies?: {
-            name: string;
-            repository: string;
-            version: string;
-            condition?: string;
-        }[];
-    };
+    "/my-lab/schemas/${catalogId}/charts/${chartName}/versions/${chartVersion}": JSONSchema;
     "/my-lab/services": {
         apps: {
             id: string;
