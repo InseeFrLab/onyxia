@@ -33,12 +33,15 @@ export const Default: Story = {
         const { changePolicy, ...rest } = props;
         const [policy, setPolicy] = useState<Item["policy"]>(props.policy);
 
-        const handleChangePolicy = () => {
-            changePolicy();
-            setPolicy(prev => (prev === "private" ? "public" : "private"));
-        };
         return (
-            <PolicySwitch {...rest} policy={policy} changePolicy={handleChangePolicy} />
+            <PolicySwitch
+                {...rest}
+                policy={policy}
+                changePolicy={e => {
+                    changePolicy(e);
+                    setPolicy(prev => (prev === "private" ? "public" : "private"));
+                }}
+            />
         );
     }
 };

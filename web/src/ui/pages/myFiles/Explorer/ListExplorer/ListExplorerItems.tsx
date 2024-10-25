@@ -11,8 +11,6 @@ import { Text } from "onyxia-ui/Text";
 import { useEffectOnValueChange } from "powerhooks/useEffectOnValueChange";
 import { fileSizePrettyPrint } from "ui/tools/fileSizePrettyPrint";
 import { id } from "tsafe";
-import { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
-import { Icon } from "onyxia-ui/Icon";
 import { CustomDataGrid } from "ui/shared/Datagrid/CustomDataGrid";
 import type { Item } from "../../shared/types";
 import { useConstCallback } from "powerhooks/useConstCallback";
