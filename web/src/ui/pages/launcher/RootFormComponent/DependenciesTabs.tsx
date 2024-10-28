@@ -29,7 +29,19 @@ export function DependencyTabs(props: Props) {
         [dependencies]
     );
 
-    const [activeTabId, setActiveTabId] = useState<string>(tabs[0].id);
+    const [activeTabId, setActiveTabId] = useState<string | undefined>(
+        (() => {
+            if (tabs.length === 0) {
+                return undefined;
+            }
+
+            return tabs[0].id;
+        })()
+    );
+
+    if (activeTabId === undefined) {
+        return null;
+    }
 
     return (
         <Tabs
