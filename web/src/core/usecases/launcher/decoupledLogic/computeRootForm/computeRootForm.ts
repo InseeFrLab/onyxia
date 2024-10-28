@@ -78,21 +78,25 @@ export function computeRootForm(params: {
 
     helmDependencies
         .filter(({ chartName }) => !rootForm.disabledDependencies.includes(chartName))
-        .forEach(
-            ({ chartName }) =>
-                (rootForm.dependencies[chartName] = {
-                    "main":
-                        extractGroup({
-                            "nodes": rootForm.main,
-                            "groupName": chartName
-                        }) ?? [],
-                    "global":
-                        extractGroup({
-                            "nodes": rootForm.global,
-                            "groupName": chartName
-                        }) ?? []
-                })
-        );
+        .forEach(({ chartName }) => {
+            const main =
+                extractGroup({
+                    "nodes": rootForm.main,
+                    "groupName": chartName
+                }) ?? [];
+
+            const global =
+                extractGroup({
+                    "nodes": rootForm.global,
+                    "groupName": chartName
+                }) ?? [];
+
+            if (main.length === 0 && global.length === 0) {
+                return;
+            }
+
+            rootForm.dependencies[chartName] = { main, global };
+        });
 
     return rootForm;
 }
