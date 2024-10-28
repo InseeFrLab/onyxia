@@ -33,7 +33,8 @@ export function DependencyTabs(props: Props) {
 
     return (
         <Tabs
-            activeTabId={cx(classes.root, className)}
+            className={cx(classes.root, className)}
+            activeTabId={activeTabId}
             maxTabCount={7}
             onRequestChangeActiveTab={setActiveTabId}
             tabs={tabs}
