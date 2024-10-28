@@ -33,8 +33,10 @@ export function RootFormComponent(props: Props) {
     );
 }
 
-const useStyles = tss.withName({ RootFormComponent }).create(() => ({
+const useStyles = tss.withName({ RootFormComponent }).create(({ theme }) => ({
     "root": {},
     "mainCard": {},
-    "dependencyTabs": {}
+    "dependencyTabs": {
+        "marginTop": theme.spacing(4)
+    }
 }));
