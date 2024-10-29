@@ -545,21 +545,21 @@ export const translations: Translations<"de"> = {
             labeledHelmChartSourceUrls
         }) => (
             <>
-                Sie sind dabei, das Helm-Chart{" "}
+                Das Helm-Chart{" "}
                 {
                     <MaybeLink href={labeledHelmChartSourceUrls.helmChartSourceUrl}>
                         {helmChartName}
                     </MaybeLink>
                 }{" "}
-                zu deployen, das zum Helm-Chart-Repository{" "}
+                gehört zum Helm-Chart-Repository{" "}
                 {
                     <MaybeLink
                         href={labeledHelmChartSourceUrls.helmChartRepositorySourceUrl}
                     >
                         {helmChartRepositoryName}
                     </MaybeLink>
-                }{" "}
-                gehört.
+                }
+                .
                 {labeledHelmChartSourceUrls.dockerImageSourceUrl !== undefined && (
                     <>
                         {" "}

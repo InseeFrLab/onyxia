@@ -545,25 +545,25 @@ export const translations: Translations<"en"> = {
             labeledHelmChartSourceUrls
         }) => (
             <>
-                Estás a punto de implementar el{" "}
+                El chart de Helm{" "}
                 {
                     <MaybeLink href={labeledHelmChartSourceUrls.helmChartSourceUrl}>
                         {helmChartName}
                     </MaybeLink>
                 }{" "}
-                gráfico de Helm que pertenece al{" "}
+                pertenece al repositorio de charts de Helm{" "}
                 {
                     <MaybeLink
                         href={labeledHelmChartSourceUrls.helmChartRepositorySourceUrl}
                     >
                         {helmChartRepositoryName}
                     </MaybeLink>
-                }{" "}
-                repositorio de gráficos de Helm.
+                }
+                .
                 {labeledHelmChartSourceUrls.dockerImageSourceUrl !== undefined && (
                     <>
                         {" "}
-                        basado en la{" "}
+                        Está basado en la imagen de Docker{" "}
                         {
                             <MuiLink
                                 href={labeledHelmChartSourceUrls.dockerImageSourceUrl}
@@ -571,8 +571,8 @@ export const translations: Translations<"en"> = {
                             >
                                 {helmChartName}
                             </MuiLink>
-                        }{" "}
-                        imagen Docker
+                        }
+                        .
                     </>
                 )}
             </>

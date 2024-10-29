@@ -496,13 +496,13 @@ export const translations: Translations<"zh-CN"> = {
             labeledHelmChartSourceUrls
         }) => (
             <>
-                您即将部署 Helm 图表{" "}
+                Helm 图表{" "}
                 {
                     <MaybeLink href={labeledHelmChartSourceUrls.helmChartSourceUrl}>
                         {helmChartName}
                     </MaybeLink>
                 }{" "}
-                ， 它属于 Helm 图表仓库{" "}
+                属于 Helm 图表仓库{" "}
                 {
                     <MaybeLink
                         href={labeledHelmChartSourceUrls.helmChartRepositorySourceUrl}

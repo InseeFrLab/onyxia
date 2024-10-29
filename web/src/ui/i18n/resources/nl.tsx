@@ -540,13 +540,13 @@ export const translations: Translations<"nl"> = {
             labeledHelmChartSourceUrls
         }) => (
             <>
-                Je staat op het punt om het Helm-chart{" "}
+                De Helm-chart{" "}
                 {
                     <MaybeLink href={labeledHelmChartSourceUrls.helmChartSourceUrl}>
                         {helmChartName}
                     </MaybeLink>
                 }{" "}
-                te implementeren dat behoort tot de Helm-chartrepository{" "}
+                behoort tot de Helm-chart repository{" "}
                 {
                     <MaybeLink
                         href={labeledHelmChartSourceUrls.helmChartRepositorySourceUrl}

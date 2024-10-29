@@ -534,30 +534,31 @@ export const translations: Translations<"fi"> = {
             labeledHelmChartSourceUrls
         }) => (
             <>
-                Olet ottamassa käyttöön{" "}
+                Helm-kaavio{" "}
                 {
                     <MaybeLink href={labeledHelmChartSourceUrls.helmChartSourceUrl}>
-                        {helmChartName} Helm Chartin
+                        {helmChartName}
                     </MaybeLink>
                 }{" "}
+                kuuluu Helm-kaaviovarastoon{" "}
                 {
                     <MaybeLink
                         href={labeledHelmChartSourceUrls.helmChartRepositorySourceUrl}
                     >
-                        {helmChartRepositoryName} Helm Chart -arkistosta
+                        {helmChartRepositoryName}
                     </MaybeLink>
                 }
                 .
                 {labeledHelmChartSourceUrls.dockerImageSourceUrl !== undefined && (
                     <>
                         {" "}
-                        Se perustuu{" "}
+                        Se perustuu Docker-kuvaan{" "}
                         {
                             <MuiLink
                                 href={labeledHelmChartSourceUrls.dockerImageSourceUrl}
                                 target="_blank"
                             >
-                                {helmChartName} Docker-kuvaan
+                                {helmChartName}
                             </MuiLink>
                         }
                         .
@@ -565,7 +566,6 @@ export const translations: Translations<"fi"> = {
                 )}
             </>
         ),
-
         "download as script": "Lataa skriptinä",
         "api logs help body": ({
             k8CredentialsHref,

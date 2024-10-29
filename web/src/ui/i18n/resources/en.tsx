@@ -530,25 +530,25 @@ export const translations: Translations<"en"> = {
             labeledHelmChartSourceUrls
         }) => (
             <>
-                You are about to deploy the{" "}
+                The Helm chart{" "}
                 {
                     <MaybeLink href={labeledHelmChartSourceUrls.helmChartSourceUrl}>
                         {helmChartName}
                     </MaybeLink>
                 }{" "}
-                Helm chart that belong to the{" "}
+                belongs to the Helm chart repository{" "}
                 {
                     <MaybeLink
                         href={labeledHelmChartSourceUrls.helmChartRepositorySourceUrl}
                     >
                         {helmChartRepositoryName}
                     </MaybeLink>
-                }{" "}
-                Helm chart repository.
+                }
+                .
                 {labeledHelmChartSourceUrls.dockerImageSourceUrl !== undefined && (
                     <>
                         {" "}
-                        It is based on the{" "}
+                        It is based on the Docker image{" "}
                         {
                             <MuiLink
                                 href={labeledHelmChartSourceUrls.dockerImageSourceUrl}
@@ -556,8 +556,8 @@ export const translations: Translations<"en"> = {
                             >
                                 {helmChartName}
                             </MuiLink>
-                        }{" "}
-                        Docker image.
+                        }
+                        .
                     </>
                 )}
             </>

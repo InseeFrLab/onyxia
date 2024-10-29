@@ -538,13 +538,13 @@ export const translations: Translations<"it"> = {
             labeledHelmChartSourceUrls
         }) => (
             <>
-                Stai per distribuire il chart Helm{" "}
+                Il chart di Helm{" "}
                 {
                     <MaybeLink href={labeledHelmChartSourceUrls.helmChartSourceUrl}>
                         {helmChartName}
                     </MaybeLink>
                 }{" "}
-                che appartiene al repository di chart Helm{" "}
+                appartiene al repository di chart Helm{" "}
                 {
                     <MaybeLink
                         href={labeledHelmChartSourceUrls.helmChartRepositorySourceUrl}
@@ -556,7 +556,7 @@ export const translations: Translations<"it"> = {
                 {labeledHelmChartSourceUrls.dockerImageSourceUrl !== undefined && (
                     <>
                         {" "}
-                        Si basa sull'immagine Docker{" "}
+                        È basato sull'immagine Docker{" "}
                         {
                             <MuiLink
                                 href={labeledHelmChartSourceUrls.dockerImageSourceUrl}
