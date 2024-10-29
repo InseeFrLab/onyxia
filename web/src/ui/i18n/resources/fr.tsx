@@ -544,13 +544,13 @@ export const translations: Translations<"fr"> = {
             labeledHelmChartSourceUrls
         }) => (
             <>
-                Vous êtes sur le point de déployer le chart Helm{" "}
+                Le chart Helm{" "}
                 {
                     <MaybeLink href={labeledHelmChartSourceUrls.helmChartSourceUrl}>
                         {helmChartName}
                     </MaybeLink>
                 }{" "}
-                qui appartient au dépôt de charts Helm{" "}
+                appartient au dépôt de charts Helm{" "}
                 {
                     <MaybeLink
                         href={labeledHelmChartSourceUrls.helmChartRepositorySourceUrl}

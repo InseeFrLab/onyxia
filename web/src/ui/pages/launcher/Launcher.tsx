@@ -264,112 +264,105 @@ export default function Launcher(props: Props) {
     return (
         <>
             <div className={cx(classes.root, className)}>
-                <div className={classes.bodyWrapper}>
-                    <div className={classes.body} ref={scrollableDivRef}>
-                        {commandLogsEntries !== undefined && (
-                            <CommandBar
-                                classes={{
-                                    "root": classes.commandBar,
-                                    "rootWhenExpended": classes.commandBarWhenExpended
-                                }}
-                                maxHeight={rootHeight - 30}
-                                entries={commandLogsEntries}
-                                downloadButton={{
-                                    "tooltipTitle": t("download as script"),
-                                    "onClick": () =>
-                                        saveAs(
-                                            new Blob([launchScript.content], {
-                                                "type": "text/plain;charset=utf-8"
-                                            }),
-                                            launchScript.fileBasename
-                                        )
-                                }}
-                                helpDialog={{
-                                    "body": t("api logs help body", {
-                                        "k8CredentialsHref":
-                                            !k8sCodeSnippets.getIsAvailable()
-                                                ? undefined
-                                                : routes.account({
-                                                      "tabId": "k8sCodeSnippets"
-                                                  }).href,
-                                        "myServicesHref": routes.myServices().href,
-                                        "interfacePreferenceHref": routes.account({
-                                            "tabId": "user-interface"
-                                        }).href
-                                    })
-                                }}
-                            />
-                        )}
-                        <div className={classes.wrapperForMaxWidth}>
-                            <LauncherMainCard
-                                chartName={chartName}
-                                chartSourceLinksNode={t("sources", {
-                                    "helmChartName": chartName,
-                                    "helmChartRepositoryName":
-                                        resolveLocalizedString(catalogName),
-                                    labeledHelmChartSourceUrls
-                                })}
-                                chartIconUrl={chartIconUrl}
-                                willOverwriteExistingConfigOnSave={
-                                    willOverwriteExistingConfigOnSave
-                                }
-                                isBookmarked={isRestorableConfigSaved}
-                                chartVersion={chartVersion}
-                                availableChartVersions={availableChartVersions}
-                                onChartVersionChange={onChartVersionChange}
-                                catalogName={catalogName}
-                                labeledHelmChartSourceUrls={labeledHelmChartSourceUrls}
-                                myServicesSavedConfigsExtendedLink={
-                                    myServicesSavedConfigsExtendedLink
-                                }
-                                onRequestToggleBookmark={onRequestToggleBookmark}
-                                friendlyName={friendlyName}
-                                onFriendlyNameChange={launcher.changeFriendlyName}
-                                isSharedWrap={
-                                    isShared === undefined
-                                        ? undefined
-                                        : {
-                                              isShared,
-                                              "onIsSharedValueChange":
-                                                  launcher.changeIsShared
-                                          }
-                                }
-                                onRequestLaunch={launcher.launch}
-                                onRequestCancel={onRequestCancel}
-                                onRequestRestoreAllDefault={
-                                    isDefaultConfiguration
-                                        ? undefined
-                                        : launcher.restoreAllDefault
-                                }
-                                onRequestCopyLaunchUrl={
-                                    isDefaultConfiguration || env.DISABLE_AUTO_LAUNCH
-                                        ? undefined
-                                        : onRequestCopyLaunchUrl
-                                }
-                                s3ConfigsSelect={
-                                    s3ConfigSelect === undefined
-                                        ? undefined
-                                        : {
-                                              projectS3ConfigLink,
-                                              "selectedOption":
-                                                  s3ConfigSelect.selectedOptionValue,
-                                              "options": s3ConfigSelect.options,
-                                              "onSelectedS3ConfigChange":
-                                                  launcher.changeS3Config
-                                          }
-                                }
-                            />
-                            <RootFormComponent
-                                className={classes.rootForm}
-                                rootForm={rootForm}
-                                callbacks={{
-                                    "onAdd": launcher.addArrayItem,
-                                    "onChange": launcher.changeFormFieldValue,
-                                    "onRemove": launcher.removeArrayItem
-                                }}
-                            />
-                        </div>
-                    </div>
+                {commandLogsEntries !== undefined && (
+                    <CommandBar
+                        classes={{
+                            "root": classes.commandBar,
+                            "rootWhenExpended": classes.commandBarWhenExpended
+                        }}
+                        maxHeight={rootHeight - 30}
+                        entries={commandLogsEntries}
+                        downloadButton={{
+                            "tooltipTitle": t("download as script"),
+                            "onClick": () =>
+                                saveAs(
+                                    new Blob([launchScript.content], {
+                                        "type": "text/plain;charset=utf-8"
+                                    }),
+                                    launchScript.fileBasename
+                                )
+                        }}
+                        helpDialog={{
+                            "body": t("api logs help body", {
+                                "k8CredentialsHref": !k8sCodeSnippets.getIsAvailable()
+                                    ? undefined
+                                    : routes.account({
+                                          "tabId": "k8sCodeSnippets"
+                                      }).href,
+                                "myServicesHref": routes.myServices().href,
+                                "interfacePreferenceHref": routes.account({
+                                    "tabId": "user-interface"
+                                }).href
+                            })
+                        }}
+                    />
+                )}
+                <div className={classes.wrapperForMaxWidth}>
+                    <LauncherMainCard
+                        chartName={chartName}
+                        chartSourceLinksNode={t("sources", {
+                            "helmChartName": chartName,
+                            "helmChartRepositoryName":
+                                resolveLocalizedString(catalogName),
+                            labeledHelmChartSourceUrls
+                        })}
+                        chartIconUrl={chartIconUrl}
+                        willOverwriteExistingConfigOnSave={
+                            willOverwriteExistingConfigOnSave
+                        }
+                        isBookmarked={isRestorableConfigSaved}
+                        chartVersion={chartVersion}
+                        availableChartVersions={availableChartVersions}
+                        onChartVersionChange={onChartVersionChange}
+                        catalogName={catalogName}
+                        labeledHelmChartSourceUrls={labeledHelmChartSourceUrls}
+                        myServicesSavedConfigsExtendedLink={
+                            myServicesSavedConfigsExtendedLink
+                        }
+                        onRequestToggleBookmark={onRequestToggleBookmark}
+                        friendlyName={friendlyName}
+                        onFriendlyNameChange={launcher.changeFriendlyName}
+                        isSharedWrap={
+                            isShared === undefined
+                                ? undefined
+                                : {
+                                      isShared,
+                                      "onIsSharedValueChange": launcher.changeIsShared
+                                  }
+                        }
+                        onRequestLaunch={launcher.launch}
+                        onRequestCancel={onRequestCancel}
+                        onRequestRestoreAllDefault={
+                            isDefaultConfiguration
+                                ? undefined
+                                : launcher.restoreAllDefault
+                        }
+                        onRequestCopyLaunchUrl={
+                            isDefaultConfiguration || env.DISABLE_AUTO_LAUNCH
+                                ? undefined
+                                : onRequestCopyLaunchUrl
+                        }
+                        s3ConfigsSelect={
+                            s3ConfigSelect === undefined
+                                ? undefined
+                                : {
+                                      projectS3ConfigLink,
+                                      "selectedOption":
+                                          s3ConfigSelect.selectedOptionValue,
+                                      "options": s3ConfigSelect.options,
+                                      "onSelectedS3ConfigChange": launcher.changeS3Config
+                                  }
+                        }
+                    />
+                    <RootFormComponent
+                        className={classes.rootForm}
+                        rootForm={rootForm}
+                        callbacks={{
+                            "onAdd": launcher.addArrayItem,
+                            "onChange": launcher.changeFormFieldValue,
+                            "onRemove": launcher.removeArrayItem
+                        }}
+                    />
                 </div>
             </div>
             <LauncherDialogs
@@ -415,22 +408,14 @@ const useStyles = tss
     .create(({ theme, isCommandBarEnabled }) => ({
         "root": {
             "height": "100%",
-            "display": "flex",
-            "flexDirection": "column"
-        },
-        "bodyWrapper": {
-            "flex": 1,
-            "overflow": "hidden"
-        },
-        "body": {
-            "height": "100%",
-            "overflow": "auto",
             "paddingTop": !isCommandBarEnabled
                 ? 0
                 : theme.typography.rootFontSizePx * 1.7 +
                   2 * theme.spacing(2) +
                   theme.spacing(2),
-            "position": "relative"
+            "position": "relative",
+            "display": "flex",
+            "flexDirection": "column"
         },
         "wrapperForMaxWidth": {
             "maxWidth": 1300,
