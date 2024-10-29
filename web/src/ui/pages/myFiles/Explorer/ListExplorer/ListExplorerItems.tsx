@@ -2,7 +2,10 @@ import {
     type GridCellParams,
     type GridRowSelectionModel,
     type GridColDef,
-    type GridCallbackDetails
+    type GridCallbackDetails,
+    GridRenderCellParams,
+    GridRowParams,
+    GRID_CHECKBOX_SELECTION_COL_DEF
 } from "@mui/x-data-grid";
 import { memo, useMemo, useState } from "react";
 import { ExplorerIcon } from "../ExplorerIcon";
@@ -19,6 +22,7 @@ import { useEvt } from "evt/hooks";
 import type { NonPostableEvt } from "evt";
 import { useConst } from "powerhooks/useConst";
 import { PolicySwitch } from "../PolicySwitch";
+import { useCallbackFactory } from "powerhooks/useCallbackFactory";
 
 export type ListExplorerItems = {
     className?: string;
@@ -32,6 +36,11 @@ export type ListExplorerItems = {
     /** Assert initial value is none */
     onSelectedItemKindValueChange: (params: {
         selectedItemKind: "file" | "directory" | "none";
+    }) => void;
+    onPolicyChange: (params: {
+        basename: string;
+        policy: Item["policy"];
+        kind: Item["kind"];
     }) => void;
 
     onDeleteItem: (params: { item: Item }) => void;
@@ -51,6 +60,7 @@ export const ListExplorerItems = memo((props: ListExplorerItems) => {
         onCopyPath,
         onDeleteItem,
         onOpenFile,
+        onPolicyChange,
         onSelectedItemKindValueChange
     } = props;
 
@@ -68,6 +78,10 @@ export const ListExplorerItems = memo((props: ListExplorerItems) => {
     const columns: GridColDef<(typeof rows)[number]>[] = useMemo(
         () =>
             [
+                {
+                    ...GRID_CHECKBOX_SELECTION_COL_DEF,
+                    maxWidth: 100
+                },
                 {
                     field: "basename",
                     headerName: "Name",
@@ -116,13 +130,26 @@ export const ListExplorerItems = memo((props: ListExplorerItems) => {
                     type: "singleSelect",
                     valueOptions: ["public", "private"],
                     renderCell: params => {
-                        const [policy, setPolicy] = useState(params.value);
-
                         return (
                             <PolicySwitch
-                                policy={policy}
+                                policy={params.value}
                                 changePolicy={e => {
-                                    setPolicy(policy === "public" ? "private" : "public");
+                                    switch (params.row.policy) {
+                                        case "public":
+                                            onPolicyChange({
+                                                "basename": params.row.basename,
+                                                "policy": "private",
+                                                "kind": params.row.kind
+                                            });
+                                            break;
+                                        case "private":
+                                            onPolicyChange({
+                                                "basename": params.row.basename,
+                                                "policy": "public",
+                                                "kind": params.row.kind
+                                            });
+                                            break;
+                                    }
                                     e.stopPropagation();
                                 }}
                             />
@@ -189,6 +216,7 @@ export const ListExplorerItems = memo((props: ListExplorerItems) => {
             }
 
             setRowSelectionModel(params);
+            selectedItemRef.current = rows[rowIndex];
         }
     );
 
@@ -214,6 +242,9 @@ export const ListExplorerItems = memo((props: ListExplorerItems) => {
                         paginationModel: { pageSize: 25, page: 0 }
                     }
                 }}
+                isRowSelectable={(params: GridRowParams<Item>) =>
+                    !(params.row.isBeingDeleted || params.row.isBeingUploaded)
+                }
                 loading={isNavigating}
                 slotProps={{
                     loadingOverlay: {

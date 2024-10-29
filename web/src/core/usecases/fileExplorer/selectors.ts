@@ -52,20 +52,52 @@ const commandLogsEntries = createSelector(
 
 type CurrentWorkingDirectoryView = {
     directoryPath: string;
-    objects: S3Object[];
+    items: (S3Object & {
+        isBeingUploaded: boolean;
+        isBeingDeleted: boolean;
+        isPolicyChanging: boolean;
+    })[];
 };
 
 const currentWorkingDirectoryView = createSelector(
     createSelector(state, state => state.directoryPath),
     createSelector(state, state => state.objects),
-    (directoryPath, objects): CurrentWorkingDirectoryView | undefined => {
+    createSelector(state, state => state.ongoingOperations),
+
+    (
+        directoryPath,
+        objects,
+        ongoingOperations
+    ): CurrentWorkingDirectoryView | undefined => {
         if (directoryPath === undefined) {
             return undefined;
         }
+        const items = objects.map(object => {
+            const isBeingUploaded = ongoingOperations.some(
+                op => op.operation === "create" && op.object.basename === object.basename
+            );
+
+            const isBeingDeleted = ongoingOperations.some(
+                op => op.operation === "delete" && op.object.basename === object.basename
+            );
+
+            const isPolicyChanging = ongoingOperations.some(
+                op =>
+                    op.operation === "modifyPolicy" &&
+                    op.object.basename === object.basename
+            );
+
+            return {
+                ...object,
+                isBeingUploaded,
+                isBeingDeleted,
+                isPolicyChanging
+            };
+        });
 
         return {
             directoryPath,
-            objects
+            items
         };
     }
 );

@@ -28,6 +28,18 @@ export declare namespace ExplorersCreateParams {
 }
 
 const privateThunks = {
+    "createOperation":
+        (params: { operation: "create" | "delete" | "modifyPolicy"; object: S3Object }) =>
+        async (...args) => {
+            const [dispatch, ,] = args;
+
+            const { operation, object } = params;
+
+            const operationId = `${operation}-${Date.now()}`;
+
+            dispatch(actions.operationStarted({ operationId, object, operation }));
+            return operationId;
+        },
     "waitForNoOngoingOperation":
         (params: {
             kind: "file" | "directory";
@@ -43,8 +55,8 @@ const privateThunks = {
 
             const ongoingOperation = ongoingOperations.find(
                 o =>
-                    o.kind === kind &&
-                    o.basename === basename &&
+                    o.object.kind === kind &&
+                    o.object.basename === basename &&
                     o.directoryPath === directoryPath
             );
 
@@ -56,9 +68,7 @@ const privateThunks = {
                 event =>
                     event.usecaseName === "fileExplorer" &&
                     event.actionName === "operationCompleted" &&
-                    event.payload.object.kind === kind &&
-                    event.payload.object.basename === basename &&
-                    event.payload.directoryPath === directoryPath
+                    event.payload.operationId === ongoingOperation.operationId
             );
         },
     /**
@@ -117,7 +127,9 @@ const privateThunks = {
                 return r.s3Client;
             });
 
-            const objects = await s3Client.listObjects({ path: directoryPath });
+            const { objects, bucketPolicy } = await s3Client.listObjects({
+                path: directoryPath
+            });
 
             if (ctx.completionStatus !== undefined) {
                 dispatch(actions.commandLogCancelled({ cmdId }));
@@ -140,7 +152,8 @@ const privateThunks = {
             dispatch(
                 actions.navigationCompleted({
                     directoryPath,
-                    objects
+                    objects,
+                    bucketPolicy
                 })
             );
         }
@@ -233,6 +246,94 @@ export const thunks = {
 
             dispatch(actions.viewModeChanged({ viewMode }));
         },
+    "changePolicy":
+        (params: {
+            basename: string;
+            policy: S3Object["policy"];
+            kind: S3Object["kind"];
+        }) =>
+        async (...args) => {
+            const { policy, basename, kind } = params;
+
+            const [dispatch, getState] = args;
+
+            const object = getState()[name].objects.find(
+                o => o.basename === basename && o.kind === kind
+            );
+
+            assert(object !== undefined);
+
+            const operationId = await dispatch(
+                privateThunks.createOperation({
+                    operation: "modifyPolicy",
+                    object: { ...object, policy }
+                })
+            );
+            const s3Client = await dispatch(
+                s3ConfigManagement.protectedThunks.getS3ConfigAndClientForExplorer()
+            ).then(r => {
+                assert(r !== undefined);
+                return r.s3Client;
+            });
+
+            const { directoryPath } = getState()[name];
+
+            assert(directoryPath !== undefined);
+
+            const filePath = pathJoin(directoryPath, basename);
+            const s3Prefix = pathJoin("s3", filePath);
+
+            const cmdId = Date.now();
+
+            dispatch(
+                actions.commandLogIssued({
+                    cmdId,
+                    "cmd": `mc anonymous set ${(() => {
+                        switch (policy) {
+                            case "public":
+                                return "download";
+                            case "private":
+                                return "none";
+                        }
+                    })()} ${s3Prefix}`
+                })
+            );
+
+            const modifiedBucketPolicy = await s3Client.setPathAccessPolicy({
+                path: filePath,
+                policy,
+                currentBucketPolicy: getState()[name].bucketPolicy
+            });
+
+            dispatch(
+                actions.operationCompleted({
+                    operationId,
+                    object
+                })
+            );
+
+            dispatch(
+                actions.commandLogResponseReceived({
+                    cmdId,
+                    resp: `Access permission for \`${s3Prefix}\` is set to \`${(() => {
+                        switch (policy) {
+                            case "public":
+                                return "download";
+                            case "private":
+                                return "custom";
+                        }
+                    })()}\``
+                })
+            );
+
+            dispatch(
+                actions.bucketPolicyModified({
+                    bucketPolicy: modifiedBucketPolicy,
+                    basename,
+                    policy
+                })
+            );
+        },
     "refreshCurrentDirectory":
         () =>
         async (...args) => {
@@ -265,11 +366,16 @@ export const thunks = {
                 })
             );
 
-            dispatch(
-                actions.operationStarted({
-                    "kind": params.createWhat,
-                    "basename": params.basename,
-                    "operation": "create"
+            const operationId = await dispatch(
+                privateThunks.createOperation({
+                    object: {
+                        kind: params.createWhat,
+                        basename: params.basename,
+                        policy: "private",
+                        size: undefined,
+                        lastModified: undefined
+                    },
+                    operation: "create"
                 })
             );
 
@@ -369,7 +475,7 @@ export const thunks = {
             dispatch(
                 actions.operationCompleted({
                     object: completedObject, //To continue
-                    directoryPath
+                    operationId
                 })
             );
         },
@@ -400,12 +506,8 @@ export const thunks = {
                 })
             );
 
-            dispatch(
-                actions.operationStarted({
-                    "kind": params.s3Object.kind,
-                    "basename": params.s3Object.basename,
-                    "operation": "delete"
-                })
+            const operationId = await dispatch(
+                privateThunks.createOperation({ operation: "delete", object: s3Object })
             );
 
             const s3Client = await dispatch(
@@ -484,7 +586,7 @@ export const thunks = {
             dispatch(
                 actions.operationCompleted({
                     object: s3Object,
-                    directoryPath
+                    operationId
                 })
             );
         },

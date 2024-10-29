@@ -38,9 +38,15 @@ export type S3Client = {
         directories: string[];
         files: string[];
     }>;
-    listObjects: (params: { path: string }) => Promise<S3Object[]>;
+    listObjects: (params: {
+        path: string;
+    }) => Promise<{ objects: S3Object[]; bucketPolicy: S3BucketPolicy | undefined }>;
 
-    putBucketPolicy: (params: { path: string; policy: S3BucketPolicy }) => Promise<void>;
+    setPathAccessPolicy: (params: {
+        path: string;
+        policy: "public" | "private";
+        currentBucketPolicy: S3BucketPolicy;
+    }) => Promise<S3BucketPolicy>;
 
     /** Completed when 100% uploaded */
     uploadFile: (params: {
@@ -51,45 +57,28 @@ export type S3Client = {
 
     deleteFile: (params: { path: string }) => Promise<void>;
 
+    // deleteObjects: (params: { paths: string[] }) => Promise<void>;
+
     getFileDownloadUrl: (params: {
         path: string;
         validityDurationSecond: number;
     }) => Promise<string>;
+
+    // getPresignedUploadUrl: (params: {
+    //     path: string;
+    //     validityDurationSecond: number;
+    // }) => Promise<string>;
 };
 
-type S3Actions =
-    | "s3:AbortMultipartUpload"
-    | "s3:BypassGovernanceRetention"
-    | "s3:CreateBucket"
-    | "s3:DeleteBucket"
-    | "s3:DeleteBucketPolicy"
-    | "s3:DeleteObject"
-    | "s3:DeleteObjectTagging"
-    | "s3:GetBucketAcl"
-    | "s3:GetBucketPolicy"
-    | "s3:GetObject"
-    | "s3:GetObjectTagging"
-    | "s3:ListBucket"
-    | "s3:PutObject"
-    | "s3:PutObjectAcl"
-    | "s3:PutBucketPolicy"
-    | "s3:ReplicateObject"
-    | "s3:RestoreObject"
-    | "s3:ListMultipartUploadParts"
-    | "s3:ListBucketVersions"
-    | "s3:ListBucketMultipartUploads"
-    | "s3:PutBucketVersioning"
-    | "s3:PutBucketTagging"
-    | "s3:GetBucketTagging"
-    | "s3:*";
+type s3Action = `s3:${string}`;
 
 export type S3BucketPolicy = {
     Version: "2012-10-17";
     Statement: Array<{
         Effect: "Allow" | "Deny";
         Principal: string | { AWS: string[] };
-        Action: S3Actions | S3Actions[];
-        Resource: string | string[];
+        Action: s3Action | s3Action[];
+        Resource: string[];
         Condition?: Record<string, any>;
     }>;
 };

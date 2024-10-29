@@ -1,5 +1,5 @@
 import axios from "axios";
-import type { S3Client, S3Object } from "core/ports/S3Client";
+import type { S3BucketPolicy, S3Client, S3Object } from "core/ports/S3Client";
 import {
     getNewlyRequestedOrCachedTokenFactory,
     createSessionStorageTokenPersistance
@@ -11,6 +11,13 @@ import { bucketNameAndObjectNameFromS3Path } from "./utils/bucketNameAndObjectNa
 import { exclude } from "tsafe/exclude";
 import { fnv1aHashToHex } from "core/tools/fnv1aHashToHex";
 import { checkIfS3KeyIsPublic } from "core/tools/checkIfS3KeyIsPublic";
+import { s3BucketPolicySchema } from "./utils/policySchema";
+import {
+    addObjectNameToListBucketCondition,
+    addResourceArnInGetObjectStatement,
+    removeObjectNameFromListBucketCondition,
+    removeResourceArnInGetObjectStatement
+} from "./utils/bucketPolicy";
 
 export type ParamsOfCreateS3Client =
     | ParamsOfCreateS3Client.NoSts
@@ -386,7 +393,7 @@ export function createS3Client(
 
             const { awsS3Client } = await getAwsS3Client();
 
-            const allowedPrefix: string[] = await import("@aws-sdk/client-s3")
+            const { bucketPolicy, allowedPrefix } = await import("@aws-sdk/client-s3")
                 .then(({ GetBucketPolicyCommand }) =>
                     awsS3Client
                         .send(
@@ -400,31 +407,40 @@ export function createS3Client(
                         })
                 )
                 .then(respPolicy => {
-                    if (respPolicy.Policy === undefined) return [];
+                    if (respPolicy.Policy === undefined)
+                        return { bucketPolicy: undefined, allowedPrefix: [] };
 
                     try {
-                        return JSON.parse(respPolicy.Policy)
-                            .Statement.filter(
-                                (statement: any) =>
-                                    statement.Effect === "Allow" &&
-                                    (statement.Action.includes("s3:GetObject") ||
-                                        statement.Action.includes("s3:*"))
+                        // Validate and parse the policy
+                        const parsedPolicy = s3BucketPolicySchema.parse(
+                            JSON.parse(respPolicy.Policy)
+                        );
+
+                        // Extract allowed prefixes based on the policy statements
+                        const allowedPrefix = parsedPolicy.Statement.filter(
+                            statement =>
+                                statement.Effect === "Allow" &&
+                                (statement.Action.includes("s3:GetObject") ||
+                                    statement.Action.includes("s3:*"))
+                        )
+                            .flatMap(statement =>
+                                Array.isArray(statement.Resource)
+                                    ? statement.Resource
+                                    : [statement.Resource]
                             )
-                            .flatMap((statement: any) =>
-                                statement.Resource.map((resource: string) =>
-                                    resource.replace(`arn:aws:s3:::${bucketName}/`, "")
-                                )
+                            .map(resource =>
+                                resource.replace(`arn:aws:s3:::${bucketName}/`, "")
                             );
+
+                        return { bucketPolicy: parsedPolicy, allowedPrefix };
                     } catch (e) {
                         console.warn(
                             "The best effort attempt failed to parse the policy",
                             e
                         );
-                        return [];
+                        return { bucketPolicy: undefined, allowedPrefix: [] };
                     }
                 });
-
-            // Extract resources allowed for s3:GetObject (or s3:*) actions
 
             const Contents: import("@aws-sdk/client-s3")._Object[] = [];
             const CommonPrefixes: import("@aws-sdk/client-s3").CommonPrefix[] = [];
@@ -448,8 +464,9 @@ export function createS3Client(
                 } while (continuationToken !== undefined);
             }
 
-            const isPathPublic = (path: string) =>
-                checkIfS3KeyIsPublic(allowedPrefix, path);
+            const isPathPublic = (path: string) => {
+                return checkIfS3KeyIsPublic(allowedPrefix, path);
+            };
 
             const directories = CommonPrefixes.filter(exclude(undefined))
                 .map(({ Prefix }) => Prefix)
@@ -477,22 +494,55 @@ export function createS3Client(
                 }
             );
 
-            return [...directories, ...files];
+            return { objects: [...directories, ...files], bucketPolicy };
         },
-        "putBucketPolicy": async ({ path, policy }) => {
+        "setPathAccessPolicy": async ({ currentBucketPolicy, policy, path }) => {
             const { getAwsS3Client } = await prApi;
             const { awsS3Client } = await getAwsS3Client();
 
-            const { bucketName } = bucketNameAndObjectNameFromS3Path(path);
+            const { bucketName, objectName } = bucketNameAndObjectNameFromS3Path(path);
+
+            const resourceArn = `arn:aws:s3:::${bucketName}/${objectName}*`;
+            const bucketArn = `arn:aws:s3:::${bucketName}`;
+
+            const updatedStatements = (() => {
+                switch (policy) {
+                    case "public":
+                        return addResourceArnInGetObjectStatement(
+                            addObjectNameToListBucketCondition(
+                                currentBucketPolicy.Statement,
+                                bucketArn,
+                                objectName
+                            ),
+                            resourceArn
+                        );
+                    case "private":
+                        return removeResourceArnInGetObjectStatement(
+                            removeObjectNameFromListBucketCondition(
+                                currentBucketPolicy.Statement,
+                                bucketArn,
+                                objectName
+                            ),
+                            resourceArn
+                        );
+                }
+            })();
+
+            const newBucketPolicy = {
+                ...currentBucketPolicy,
+                Statement: updatedStatements
+            } satisfies S3BucketPolicy;
 
             const command = new (
                 await import("@aws-sdk/client-s3")
             ).PutBucketPolicyCommand({
-                "Bucket": bucketName,
-                "Policy": JSON.stringify(policy)
+                Bucket: bucketName,
+                Policy: JSON.stringify(newBucketPolicy)
             });
 
             await awsS3Client.send(command);
+
+            return newBucketPolicy;
         },
         "uploadFile": async ({ blob, path, onUploadProgress }) => {
             const { getAwsS3Client } = await prApi;

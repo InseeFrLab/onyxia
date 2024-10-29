@@ -25,6 +25,11 @@ export type ExplorerItemsProps = {
         selectedItemKind: "file" | "directory" | "none";
     }) => void;
 
+    onPolicyChange: (params: {
+        basename: string;
+        policy: Item["policy"];
+        kind: Item["kind"];
+    }) => void;
     onDeleteItem: (params: { item: Item }) => void;
     onCopyPath: (params: { basename: string }) => void;
     evtAction: NonPostableEvt<
@@ -41,6 +46,7 @@ export const ExplorerItems = memo((props: ExplorerItemsProps) => {
         onOpenFile,
         onSelectedItemKindValueChange,
         evtAction,
+        onPolicyChange,
         onCopyPath,
         onDeleteItem
     } = props;
@@ -61,6 +67,25 @@ export const ExplorerItems = memo((props: ExplorerItemsProps) => {
             onSelectedItemKindValueChange({ selectedItemKind: item.kind });
         }
         setSelectedItem(item);
+    });
+
+    const handlePolicyChange = useCallbackFactory(([item]: [Item]) => {
+        switch (item.policy) {
+            case "public":
+                onPolicyChange({
+                    "basename": item.basename,
+                    "policy": "private",
+                    kind: item.kind
+                });
+                break;
+            case "private":
+                onPolicyChange({
+                    "basename": item.basename,
+                    "policy": "public",
+                    kind: item.kind
+                });
+                break;
+        }
     });
 
     const handleItemDoubleClick = useCallbackFactory(([item]: [Item]) => {
@@ -104,7 +129,14 @@ export const ExplorerItems = memo((props: ExplorerItemsProps) => {
             ) : (
                 <>
                     {items.map(item => {
-                        const { basename, kind, policy } = item;
+                        const {
+                            basename,
+                            kind,
+                            policy,
+                            isBeingDeleted,
+                            isBeingUploaded,
+                            isPolicyChanging
+                        } = item;
                         const size = "size" in item ? item.size : undefined;
                         return (
                             <ExplorerItem
@@ -115,8 +147,12 @@ export const ExplorerItems = memo((props: ExplorerItemsProps) => {
                                 isSelected={selectedItem.basename === basename}
                                 size={size}
                                 policy={policy}
+                                onPolicyChange={handlePolicyChange(item)}
                                 onClick={handleItemClick(item)}
                                 onDoubleClick={handleItemDoubleClick(item)}
+                                isCircularProgressShown={
+                                    isBeingDeleted || isBeingUploaded || isPolicyChanging
+                                }
                             />
                         );
                     })}

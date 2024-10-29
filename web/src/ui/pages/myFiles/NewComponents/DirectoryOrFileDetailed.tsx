@@ -38,9 +38,7 @@ export function DirectoryOrFileDetailed(props: Props) {
                 />
             </div>
             <div className={classes.contentWrapper}>
-                <Text typo="navigation label" className={classes.name}>
-                    {name}
-                </Text>
+                <Text typo="navigation label">{name}</Text>
                 <div className={classes.detailsWrapper}>
                     <Text typo="label 2" className={classes.visibility}>
                         <Icon icon={shareIconId} />
@@ -69,9 +67,6 @@ const useStyles = tss.withName({ DirectoryOrFileDetailed }).create(({ theme }) =
     "contentWrapper": {
         "display": "flex",
         "flexDirection": "column"
-    },
-    "name": {
-        "marginBottom": theme.spacing(2)
     },
     "detailsWrapper": {
         "display": "flex",
