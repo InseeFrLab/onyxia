@@ -46,7 +46,8 @@ export function AccordionFromComponent(props: Props) {
                 classes={{
                     "root": classes.summary,
                     "content": classes.summaryContent,
-                    "expanded": classes.summaryExpanded
+                    "expanded": classes.summaryExpanded,
+                    "expandIconWrapper": classes.summaryExpandIconWrapper
                 }}
                 expandIcon={<Icon icon={"ExpandMore" satisfies MuiIconComponentName} />}
                 aria-controls={contentId}
@@ -60,11 +61,9 @@ export function AccordionFromComponent(props: Props) {
                         return capitalize(lastSegment);
                     })()}
                 </Text>
-                {description !== undefined && (
-                    <Text typo="caption" componentProps={{ "lang": "und" }}>
-                        {description}
-                    </Text>
-                )}
+                <Text typo="caption" color="secondary" componentProps={{ "lang": "und" }}>
+                    {description}
+                </Text>
             </AccordionSummary>
             <AccordionDetails id={contentId} className={classes.details}>
                 <FormFieldGroupComponentInner
@@ -82,7 +81,7 @@ export function AccordionFromComponent(props: Props) {
 
 const useStyles = tss
     .withName({ AccordionFromComponent })
-    .withNestedSelectors<"summaryExpanded">()
+    .withNestedSelectors<"summary" | "summaryExpanded">()
     .create(({ theme, classes }) => ({
         "root": {
             "backgroundColor": theme.colors.useCases.surfaces.surface1
@@ -95,15 +94,20 @@ const useStyles = tss
             }
         },
         "summaryContent": {
-            //"display": "flex",
-            //"alignItems": "baseline",
             "display": "block",
             "gap": theme.spacing(2),
             "paddingLeft": theme.spacing(4)
         },
+        "summaryExpandIconWrapper": {
+            "color": theme.colors.useCases.typography.textPrimary,
+            [`.${classes.summary}:hover &`]: {
+                "color": theme.colors.useCases.typography.textFocus
+            }
+        },
         "details": {
             "paddingTop": theme.spacing(4),
-            "backgroundColor": theme.colors.useCases.surfaces.surface1
+            "backgroundColor": theme.colors.useCases.surfaces.surface1,
+            "paddingLeft": theme.spacing(4)
         },
         "group": {
             "padding": theme.spacing(2)

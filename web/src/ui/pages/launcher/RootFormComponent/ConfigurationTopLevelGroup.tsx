@@ -105,6 +105,8 @@ export function ConfigurationTopLevelGroup(props: Props) {
     );
 }
 
-const useStyles = tss.withName({ ConfigurationTopLevelGroup }).create(() => ({
-    "root": {}
+const useStyles = tss.withName({ ConfigurationTopLevelGroup }).create(({ theme }) => ({
+    "root": {
+        "marginBottom": theme.spacing(4)
+    }
 }));

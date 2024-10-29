@@ -226,7 +226,9 @@ export const LauncherMainCard = memo((props: Props) => {
                         )}
                     </Tooltip>
                 </div>
-                <Text typo="caption">{chartSourceLinksNode}</Text>
+                <Text typo="caption" color="secondary">
+                    {chartSourceLinksNode}
+                </Text>
             </div>
             <div className={classes.belowDivider}>
                 <div className={classes.textFieldAndButtonWrapper}>
