@@ -1,4 +1,4 @@
-import { useId, useState, memo } from "react";
+import { useId, useState, memo, type JSX } from "react";
 import { tss } from "tss";
 import { RoundLogo } from "ui/shared/RoundLogo";
 import { useTranslation } from "ui/i18n";
@@ -37,6 +37,7 @@ type SourceUrls = {
 export type Props = {
     className?: string;
     chartName: string;
+    chartSourceLinksNode: JSX.Element;
     chartIconUrl: string | undefined;
     isBookmarked: boolean;
     willOverwriteExistingConfigOnSave: boolean;
@@ -93,6 +94,7 @@ export const LauncherMainCard = memo((props: Props) => {
     const {
         className,
         chartName,
+        chartSourceLinksNode,
         chartIconUrl,
         isBookmarked,
         willOverwriteExistingConfigOnSave,
@@ -145,87 +147,88 @@ export const LauncherMainCard = memo((props: Props) => {
     return (
         <div className={cx(classes.root, className)}>
             <div className={classes.aboveDivider}>
-                <Text typo="object heading" className={classes.cardTitle}>
-                    {t("card title")}
-                </Text>
-                <div style={{ "flex": 1 }} />
+                <div className={classes.aboveDividerFirstLine}>
+                    <div className={classes.logoAndTitleWrapper}>
+                        {chartIconUrl !== undefined && (
+                            <RoundLogo url={chartIconUrl} size="large" />
+                        )}
+                        <Text typo="object heading" className={classes.title}>
+                            {capitalize(chartName)}
+                        </Text>
+                    </div>
 
-                {onRequestRestoreAllDefault !== undefined && (
-                    <Button variant="ternary" onClick={onRequestRestoreAllDefault}>
-                        {t("restore all default")}
-                    </Button>
-                )}
-                {onRequestCopyLaunchUrl !== undefined && (
-                    <Tooltip
-                        title={
-                            isCopyFeedbackOn ? (
-                                <>
-                                    <Icon
-                                        icon={id<MuiIconComponentName>("Check")}
-                                        size="extra small"
-                                        className={classes.copyCheckmark}
-                                    />
-                                    &nbsp;
-                                    {t("copied to clipboard")}
-                                </>
-                            ) : (
-                                t("copy auto launch url helper", { chartName })
-                            )
-                        }
-                    >
-                        <Button
-                            className={classes.copyAutoLaunchButton}
-                            startIcon={id<MuiIconComponentName>("Link")}
-                            onClick={() => {
-                                onRequestCopyLaunchUrl();
-                                triggerCopyFeedback();
-                            }}
-                            variant="ternary"
-                        >
-                            {t("copy auto launch url")}
-                        </Button>
-                    </Tooltip>
-                )}
-                <Tooltip
-                    title={t("bookmark button tooltip", {
-                        myServicesSavedConfigsExtendedLink
-                    })}
-                >
-                    {onRequestRestoreAllDefault === undefined && !isBookmarked ? (
-                        <IconButton
-                            icon={isBookmarked ? DeleteIcon : SaveIcon}
-                            onClick={onRequestToggleBookmark}
-                        />
-                    ) : willOverwriteExistingConfigOnSave && !isBookmarked ? (
-                        <Button
-                            className={classes.saveButton}
-                            variant="ternary"
-                            startIcon="save"
-                            onClick={onRequestToggleBookmark}
-                        >
-                            {t("save changes")}
-                        </Button>
-                    ) : (
-                        <Button
-                            className={classes.saveButton}
-                            variant="ternary"
-                            startIcon={isBookmarked ? "delete" : "save"}
-                            onClick={onRequestToggleBookmark}
-                        >
-                            {t("bookmark button", { isBookmarked })}
+                    <div style={{ "flex": 1 }} />
+
+                    {onRequestRestoreAllDefault !== undefined && (
+                        <Button variant="ternary" onClick={onRequestRestoreAllDefault}>
+                            {t("restore all default")}
                         </Button>
                     )}
-                </Tooltip>
+                    {onRequestCopyLaunchUrl !== undefined && (
+                        <Tooltip
+                            title={
+                                isCopyFeedbackOn ? (
+                                    <>
+                                        <Icon
+                                            icon={id<MuiIconComponentName>("Check")}
+                                            size="extra small"
+                                            className={classes.copyCheckmark}
+                                        />
+                                        &nbsp;
+                                        {t("copied to clipboard")}
+                                    </>
+                                ) : (
+                                    t("copy auto launch url helper", { chartName })
+                                )
+                            }
+                        >
+                            <Button
+                                className={classes.copyAutoLaunchButton}
+                                startIcon={id<MuiIconComponentName>("Link")}
+                                onClick={() => {
+                                    onRequestCopyLaunchUrl();
+                                    triggerCopyFeedback();
+                                }}
+                                variant="ternary"
+                            >
+                                {t("copy auto launch url")}
+                            </Button>
+                        </Tooltip>
+                    )}
+                    <Tooltip
+                        title={t("bookmark button tooltip", {
+                            myServicesSavedConfigsExtendedLink
+                        })}
+                    >
+                        {onRequestRestoreAllDefault === undefined && !isBookmarked ? (
+                            <IconButton
+                                icon={isBookmarked ? DeleteIcon : SaveIcon}
+                                onClick={onRequestToggleBookmark}
+                            />
+                        ) : willOverwriteExistingConfigOnSave && !isBookmarked ? (
+                            <Button
+                                className={classes.saveButton}
+                                variant="ternary"
+                                startIcon="save"
+                                onClick={onRequestToggleBookmark}
+                            >
+                                {t("save changes")}
+                            </Button>
+                        ) : (
+                            <Button
+                                className={classes.saveButton}
+                                variant="ternary"
+                                startIcon={isBookmarked ? "delete" : "save"}
+                                onClick={onRequestToggleBookmark}
+                            >
+                                {t("bookmark button", { isBookmarked })}
+                            </Button>
+                        )}
+                    </Tooltip>
+                </div>
+                <Text typo="caption">{chartSourceLinksNode}</Text>
             </div>
             <div className={classes.belowDivider}>
-                <div className={classes.logoAndTitleWrapper}>
-                    {chartIconUrl !== undefined && (
-                        <RoundLogo url={chartIconUrl} size="large" />
-                    )}
-                    <Text typo="object heading" className={classes.title}>
-                        {capitalize(chartName)}
-                    </Text>
-                </div>
                 <div className={classes.textFieldAndButtonWrapper}>
                     <TextField
                         label={t("friendly name")}
@@ -365,7 +368,6 @@ export const LauncherMainCard = memo((props: Props) => {
 LauncherMainCard.displayName = symToStr({ LauncherMainCard });
 
 const { i18n } = declareComponentKeys<
-    | "card title"
     | "cancel"
     | "launch"
     | "friendly name"
@@ -420,12 +422,11 @@ const useStyles = tss.withName({ LauncherMainCard }).create(({ theme }) => ({
     "aboveDivider": {
         "padding": theme.spacing({ "topBottom": 3, "rightLeft": 4 }),
         "borderBottom": `1px solid ${theme.colors.useCases.typography.textTertiary}`,
-        "boxSizing": "border-box",
-        "display": "flex"
+        "boxSizing": "border-box"
     },
-    "cardTitle": {
+    "aboveDividerFirstLine": {
         "display": "flex",
-        "alignItems": "center"
+        "marginBottom": theme.spacing(3)
     },
     "belowDivider": {
         "padding": theme.spacing(4),
@@ -434,8 +435,7 @@ const useStyles = tss.withName({ LauncherMainCard }).create(({ theme }) => ({
         "flex": 1
     },
     "logoAndTitleWrapper": {
-        "display": "flex",
-        "marginBottom": theme.spacing(3)
+        "display": "flex"
     },
     "title": {
         "display": "flex",

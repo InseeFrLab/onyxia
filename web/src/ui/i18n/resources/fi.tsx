@@ -528,7 +528,6 @@ export const translations: Translations<"fi"> = {
         "go back": "Palaa pääpalveluihin"
     },
     "Launcher": {
-        "header text1": "Palvelukatalogi",
         "sources": ({
             helmChartName,
             helmChartRepositoryName,
@@ -540,7 +539,7 @@ export const translations: Translations<"fi"> = {
                     <MaybeLink href={labeledHelmChartSourceUrls.helmChartSourceUrl}>
                         {helmChartName} Helm Chartin
                     </MaybeLink>
-                }
+                }{" "}
                 {
                     <MaybeLink
                         href={labeledHelmChartSourceUrls.helmChartRepositorySourceUrl}
@@ -706,7 +705,6 @@ Tutustu vapaasti ja ota hallintaan Kubernetes-julkaisusi!
         "reduce": "Vähennä"
     },
     "LauncherMainCard": {
-        "card title": "Luo omat palvelusi",
         "friendly name": "Käyttäjäystävällinen nimi",
         "launch": "Käynnistä",
         "cancel": "Peruuta",

@@ -534,7 +534,6 @@ export const translations: Translations<"no"> = {
         "go back": "Tilbake til hovedtjenester"
     },
     "Launcher": {
-        "header text1": "Tjenestekatalog",
         "sources": ({
             helmChartName,
             helmChartRepositoryName,
@@ -546,7 +545,7 @@ export const translations: Translations<"no"> = {
                     <MaybeLink href={labeledHelmChartSourceUrls.helmChartSourceUrl}>
                         {helmChartName}
                     </MaybeLink>
-                }
+                }{" "}
                 fra tjenestekatalogen{" "}
                 {
                     <MaybeLink
@@ -715,7 +714,6 @@ Utforsk gjerne og ta kontroll over tjenestene du kjører på Kubernetes!
         "reduce": "Reduser"
     },
     "LauncherMainCard": {
-        "card title": "Opprett dine personlige tjenester",
         "friendly name": "Vennlig navn",
         "launch": "Start",
         "cancel": "Avbryt",
@@ -750,7 +748,7 @@ Utforsk gjerne og ta kontroll over tjenestene du kjører på Kubernetes!
                     <MaybeLink href={labeledHelmChartSourceUrls.helmChartSourceUrl}>
                         {helmCharName}
                     </MaybeLink>
-                }
+                }{" "}
                 som tilhører Helm-katalogen{" "}
                 {
                     <MaybeLink

@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 import { useTranslation, useResolveLocalizedString, declareComponentKeys } from "ui/i18n";
 import { tss } from "tss";
-import { PageHeader } from "onyxia-ui/PageHeader";
 import { useCoreState, useCore } from "core";
 import { useStateRef } from "powerhooks/useStateRef";
 import { useConstCallback } from "powerhooks/useConstCallback";
@@ -19,7 +18,6 @@ import { LauncherDialogs, type Props as LauncherDialogsProps } from "./LauncherD
 import { CommandBar } from "ui/shared/CommandBar";
 import { saveAs } from "file-saver";
 import { LauncherMainCard } from "./LauncherMainCard";
-import { customIcons } from "ui/theme";
 import {
     MaybeAcknowledgeConfigVolatilityDialog,
     type MaybeAcknowledgeConfigVolatilityDialogProps
@@ -241,7 +239,7 @@ export default function Launcher(props: Props) {
         "ref": scrollableDivRef
     });
 
-    const { classes, cx, css } = useStyles({
+    const { classes, cx } = useStyles({
         "isCommandBarEnabled": commandLogsEntries !== undefined
     });
 
@@ -266,29 +264,6 @@ export default function Launcher(props: Props) {
     return (
         <>
             <div className={cx(classes.root, className)}>
-                <PageHeader
-                    classes={{
-                        "title": css({ "paddingBottom": 3 })
-                    }}
-                    mainIcon={customIcons.catalogSvgUrl}
-                    title={t("header text1")}
-                    helpContent={t("sources", {
-                        "helmChartName": chartName,
-                        "helmChartRepositoryName": resolveLocalizedString(catalogName),
-                        labeledHelmChartSourceUrls
-                    })}
-                    helpIcon="sentimentSatisfied"
-                    titleCollapseParams={{
-                        "behavior": "collapses on scroll",
-                        "scrollTopThreshold": 100,
-                        "scrollableElementRef": scrollableDivRef
-                    }}
-                    helpCollapseParams={{
-                        "behavior": "collapses on scroll",
-                        "scrollTopThreshold": 50,
-                        "scrollableElementRef": scrollableDivRef
-                    }}
-                />
                 <div className={classes.bodyWrapper}>
                     <div className={classes.body} ref={scrollableDivRef}>
                         {commandLogsEntries !== undefined && (
@@ -328,6 +303,12 @@ export default function Launcher(props: Props) {
                         <div className={classes.wrapperForMaxWidth}>
                             <LauncherMainCard
                                 chartName={chartName}
+                                chartSourceLinksNode={t("sources", {
+                                    "helmChartName": chartName,
+                                    "helmChartRepositoryName":
+                                        resolveLocalizedString(catalogName),
+                                    labeledHelmChartSourceUrls
+                                })}
                                 chartIconUrl={chartIconUrl}
                                 willOverwriteExistingConfigOnSave={
                                     willOverwriteExistingConfigOnSave
@@ -406,7 +387,6 @@ export default function Launcher(props: Props) {
 }
 
 const { i18n } = declareComponentKeys<
-    | "header text1"
     | {
           K: "sources";
           P: {

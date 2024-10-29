@@ -539,7 +539,6 @@ export const translations: Translations<"de"> = {
         "go back": "Zurück zu den Hauptdiensten"
     },
     "Launcher": {
-        "header text1": "Servicekatalog",
         "sources": ({
             helmChartName,
             helmChartRepositoryName,
@@ -551,7 +550,7 @@ export const translations: Translations<"de"> = {
                     <MaybeLink href={labeledHelmChartSourceUrls.helmChartSourceUrl}>
                         {helmChartName}
                     </MaybeLink>
-                }
+                }{" "}
                 zu deployen, das zum Helm-Chart-Repository{" "}
                 {
                     <MaybeLink
@@ -721,7 +720,6 @@ Fühlen Sie sich frei, Ihre Kubernetes-Bereitstellungen zu erkunden und die Kont
         "reduce": "Reduzieren"
     },
     "LauncherMainCard": {
-        "card title": "Erstellen Sie Ihren eigenen Dienst",
         "friendly name": "Personalisierter Name",
         "launch": "Starten",
         "cancel": "Abbrechen",
@@ -757,7 +755,7 @@ Fühlen Sie sich frei, Ihre Kubernetes-Bereitstellungen zu erkunden und die Kont
                     <MaybeLink href={labeledHelmChartSourceUrls.helmChartSourceUrl}>
                         {helmCharName}
                     </MaybeLink>
-                }
+                }{" "}
                 das zum Helm-Chart-Repository{" "}
                 {
                     <MaybeLink

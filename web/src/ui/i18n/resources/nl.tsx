@@ -534,7 +534,6 @@ export const translations: Translations<"nl"> = {
         "go back": "Terug naar de voornaamste diensten"
     },
     "Launcher": {
-        "header text1": "Dienstencatalogus",
         "sources": ({
             helmChartName,
             helmChartRepositoryName,
@@ -546,7 +545,7 @@ export const translations: Translations<"nl"> = {
                     <MaybeLink href={labeledHelmChartSourceUrls.helmChartSourceUrl}>
                         {helmChartName}
                     </MaybeLink>
-                }
+                }{" "}
                 te implementeren dat behoort tot de Helm-chartrepository{" "}
                 {
                     <MaybeLink
@@ -717,7 +716,6 @@ Voel je vrij om te verkennen en de controle over je Kubernetes-implementaties te
         "reduce": "Verminderen"
     },
     "LauncherMainCard": {
-        "card title": "Uw eigen dienst aanmaken",
         "friendly name": "Gepersonaliseerde naam",
         "launch": "Opstarten",
         "cancel": "Annuleren",
@@ -753,7 +751,7 @@ Voel je vrij om te verkennen en de controle over je Kubernetes-implementaties te
                     <MaybeLink href={labeledHelmChartSourceUrls.helmChartSourceUrl}>
                         {helmCharName}
                     </MaybeLink>
-                }
+                }{" "}
                 die behoort tot de helm-chart repository{" "}
                 {
                     <MaybeLink

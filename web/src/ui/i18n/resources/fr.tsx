@@ -538,7 +538,6 @@ export const translations: Translations<"fr"> = {
         "go back": "Retourner aux principaux services"
     },
     "Launcher": {
-        "header text1": "Catalogue de services",
         "sources": ({
             helmChartName,
             helmChartRepositoryName,
@@ -550,7 +549,7 @@ export const translations: Translations<"fr"> = {
                     <MaybeLink href={labeledHelmChartSourceUrls.helmChartSourceUrl}>
                         {helmChartName}
                     </MaybeLink>
-                }
+                }{" "}
                 qui appartient au dépôt de charts Helm{" "}
                 {
                     <MaybeLink
@@ -721,7 +720,6 @@ N'hésitez pas à explorer et à prendre en main vos déploiements Kubernetes !
         "reduce": "Réduire"
     },
     "LauncherMainCard": {
-        "card title": "Créer votre propre service",
         "friendly name": "Nom personnalisé",
         "launch": "Lancer",
         "cancel": "Annuler",
@@ -757,7 +755,7 @@ N'hésitez pas à explorer et à prendre en main vos déploiements Kubernetes !
                     <MaybeLink href={labeledHelmChartSourceUrls.helmChartSourceUrl}>
                         {helmCharName}
                     </MaybeLink>
-                }
+                }{" "}
                 qui appartient au dépôt de helm charts{" "}
                 {
                     <>

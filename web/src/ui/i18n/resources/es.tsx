@@ -539,7 +539,6 @@ export const translations: Translations<"en"> = {
         "go back": "Volver a los servicios principales"
     },
     "Launcher": {
-        "header text1": "Catálogo de servicios",
         "sources": ({
             helmChartName,
             helmChartRepositoryName,
@@ -716,7 +715,6 @@ export const translations: Translations<"en"> = {
         "reduce": "Reducir"
     },
     "LauncherMainCard": {
-        "card title": "Crea tus servicios personales",
         "friendly name": "Nombre amigable",
         "launch": "Lanzar",
         "cancel": "Cancelar",

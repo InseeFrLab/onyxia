@@ -532,7 +532,6 @@ export const translations: Translations<"it"> = {
         "go back": "Torna ai servizi principali"
     },
     "Launcher": {
-        "header text1": "Catalogo dei servizi",
         "sources": ({
             helmChartName,
             helmChartRepositoryName,
@@ -544,7 +543,7 @@ export const translations: Translations<"it"> = {
                     <MaybeLink href={labeledHelmChartSourceUrls.helmChartSourceUrl}>
                         {helmChartName}
                     </MaybeLink>
-                }
+                }{" "}
                 che appartiene al repository di chart Helm{" "}
                 {
                     <MaybeLink
@@ -715,7 +714,6 @@ Sentiti libero di esplorare e prendere il controllo dei tuoi deployment Kubernet
         "reduce": "Riduci"
     },
     "LauncherMainCard": {
-        "card title": "Crea il tuo proprio servizio",
         "friendly name": "Nome personalizzato",
         "launch": "Avviare",
         "cancel": "Annullare",
@@ -751,7 +749,7 @@ Sentiti libero di esplorare e prendere il controllo dei tuoi deployment Kubernet
                     <MaybeLink href={labeledHelmChartSourceUrls.helmChartSourceUrl}>
                         {helmCharName}
                     </MaybeLink>
-                }
+                }{" "}
                 che appartiene al repository di helm chart{" "}
                 {
                     <MaybeLink

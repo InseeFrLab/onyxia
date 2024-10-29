@@ -524,7 +524,6 @@ export const translations: Translations<"en"> = {
         "go back": "Back to main services"
     },
     "Launcher": {
-        "header text1": "Service Catalog",
         "sources": ({
             helmChartName,
             helmChartRepositoryName,
@@ -702,7 +701,6 @@ Feel free to explore and take charge of your Kubernetes deployments!
         "reduce": "Reduce"
     },
     "LauncherMainCard": {
-        "card title": "Create your personal services",
         "friendly name": "Friendly name",
         "launch": "Launch",
         "cancel": "Cancel",

@@ -490,7 +490,6 @@ export const translations: Translations<"zh-CN"> = {
         "go back": "返回主要服务"
     },
     "Launcher": {
-        "header text1": "服务目录",
         "sources": ({
             helmChartName,
             helmChartRepositoryName,
@@ -502,7 +501,7 @@ export const translations: Translations<"zh-CN"> = {
                     <MaybeLink href={labeledHelmChartSourceUrls.helmChartSourceUrl}>
                         {helmChartName}
                     </MaybeLink>
-                }
+                }{" "}
                 ， 它属于 Helm 图表仓库{" "}
                 {
                     <MaybeLink
@@ -663,7 +662,6 @@ ${
         "reduce": "减少"
     },
     "LauncherMainCard": {
-        "card title": "创建自定义服务",
         "friendly name": "自定义名称",
         "launch": "启动",
         "cancel": "取消",
