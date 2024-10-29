@@ -17,6 +17,7 @@ import { Evt } from "evt";
 import { useEvt } from "evt/hooks";
 import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
 import { id } from "tsafe/id";
+import { useClickAway } from "powerhooks/useClickAway";
 
 export type CommandBarProps = {
     className?: string;
@@ -98,6 +99,23 @@ export const CommandBar = memo((props: CommandBarProps) => {
         );
     }
 
+    const toggleIsExpended = useConstCallback(() => {
+        const newIsExpended = !isExpended;
+
+        setIsExpended(newIsExpended);
+        onIsExpendedChange?.(newIsExpended);
+    });
+
+    const { ref: rootRef } = useClickAway({
+        "onClickAway": () => {
+            if (!isExpended) {
+                return;
+            }
+
+            toggleIsExpended();
+        }
+    });
+
     const { cx, classes } = useStyles({
         maxHeight,
         headerHeight,
@@ -114,11 +132,21 @@ export const CommandBar = memo((props: CommandBarProps) => {
     return (
         <>
             <div
+                ref={rootRef}
                 className={cx(
                     classes.root,
                     isExpended ? classes.rootWhenExpended : classes.rootWhenCollapsed,
                     className
                 )}
+                onKeyDown={e => {
+                    if (!isExpended) {
+                        return;
+                    }
+
+                    if (e.key === "Escape") {
+                        toggleIsExpended();
+                    }
+                }}
             >
                 <div ref={headerRef} className={classes.header}>
                     <div className={classes.dollarContainer}>
@@ -154,13 +182,7 @@ export const CommandBar = memo((props: CommandBarProps) => {
                     <IconButton
                         icon={id<MuiIconComponentName>("ExpandMore")}
                         className={cx(classes.iconButton, classes.expandIconButton)}
-                        onClick={() => {
-                            const newIsExpended = !isExpended;
-
-                            setIsExpended(newIsExpended);
-
-                            onIsExpendedChange?.(newIsExpended);
-                        }}
+                        onClick={toggleIsExpended}
                     />
                 </div>
                 <div
