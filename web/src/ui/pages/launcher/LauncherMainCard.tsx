@@ -431,7 +431,6 @@ const useStyles = tss.withName({ LauncherMainCard }).create(({ theme }) => ({
     "belowDivider": {
         "padding": theme.spacing(4),
         "paddingLeft": theme.spacing(5),
-        "paddingTop": theme.spacing(3),
         "flex": 1
     },
     "logoAndTitleWrapper": {
