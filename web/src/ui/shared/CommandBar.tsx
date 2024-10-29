@@ -54,7 +54,7 @@ export const CommandBar = memo((props: CommandBarProps) => {
         downloadButton,
         helpDialog,
         isExpended: isExpended_props,
-        onIsExpendedChange
+        onIsExpendedChange: onIsExpendedChange_props
     } = props;
 
     const {
@@ -64,7 +64,22 @@ export const CommandBar = memo((props: CommandBarProps) => {
 
     const panelRef = useStateRef<HTMLDivElement>(null);
 
-    const [isExpended, setIsExpended] = useState(false);
+    const { isExpended, setIsExpended } = (function useClosure() {
+        const [isExpended, setIsExpended_internalState] = useState(
+            isExpended_props ?? false
+        );
+
+        const setIsExpended = useConstCallback((isExpended_new: boolean) => {
+            if (isExpended_new === isExpended) {
+                return;
+            }
+
+            setIsExpended_internalState(isExpended_new);
+            onIsExpendedChange_props?.(isExpended);
+        });
+
+        return { isExpended, setIsExpended };
+    })();
 
     useEffect(() => {
         if (isExpended_props === undefined) {
@@ -99,21 +114,8 @@ export const CommandBar = memo((props: CommandBarProps) => {
         );
     }
 
-    const toggleIsExpended = useConstCallback(() => {
-        const newIsExpended = !isExpended;
-
-        setIsExpended(newIsExpended);
-        onIsExpendedChange?.(newIsExpended);
-    });
-
     const { ref: rootRef } = useClickAway({
-        "onClickAway": () => {
-            if (!isExpended) {
-                return;
-            }
-
-            toggleIsExpended();
-        }
+        "onClickAway": () => setIsExpended(false)
     });
 
     const { cx, classes } = useStyles({
@@ -129,6 +131,20 @@ export const CommandBar = memo((props: CommandBarProps) => {
 
     const { t } = useTranslation({ CommandBar });
 
+    useEffect(() => {
+        const handleEsc = (event: KeyboardEvent) => {
+            if (event.key === "Escape") {
+                setIsExpended(false);
+            }
+        };
+
+        document.addEventListener("keydown", handleEsc);
+
+        return () => {
+            document.removeEventListener("keydown", handleEsc);
+        };
+    }, []);
+
     return (
         <>
             <div
@@ -138,15 +154,6 @@ export const CommandBar = memo((props: CommandBarProps) => {
                     isExpended ? classes.rootWhenExpended : classes.rootWhenCollapsed,
                     className
                 )}
-                onKeyDown={e => {
-                    if (!isExpended) {
-                        return;
-                    }
-
-                    if (e.key === "Escape") {
-                        toggleIsExpended();
-                    }
-                }}
             >
                 <div ref={headerRef} className={classes.header}>
                     <div className={classes.dollarContainer}>
@@ -182,7 +189,7 @@ export const CommandBar = memo((props: CommandBarProps) => {
                     <IconButton
                         icon={id<MuiIconComponentName>("ExpandMore")}
                         className={cx(classes.iconButton, classes.expandIconButton)}
-                        onClick={toggleIsExpended}
+                        onClick={() => setIsExpended(!isExpended)}
                     />
                 </div>
                 <div
