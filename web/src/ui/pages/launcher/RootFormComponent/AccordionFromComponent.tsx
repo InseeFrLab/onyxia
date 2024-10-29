@@ -44,7 +44,9 @@ export function AccordionFromComponent(props: Props) {
         <Accordion className={cx(classes.root, className)}>
             <AccordionSummary
                 classes={{
-                    "content": classes.summaryContent
+                    "root": classes.summary,
+                    "content": classes.summaryContent,
+                    "expanded": classes.summaryExpanded
                 }}
                 expandIcon={<Icon icon={"ExpandMore" satisfies MuiIconComponentName} />}
                 aria-controls={contentId}
@@ -64,7 +66,7 @@ export function AccordionFromComponent(props: Props) {
                     </Text>
                 )}
             </AccordionSummary>
-            <AccordionDetails id={contentId}>
+            <AccordionDetails id={contentId} className={classes.details}>
                 <FormFieldGroupComponentInner
                     className={classes.group}
                     nodes={nodes}
@@ -78,14 +80,32 @@ export function AccordionFromComponent(props: Props) {
     );
 }
 
-const useStyles = tss.withName({ AccordionFromComponent }).create(({ theme }) => ({
-    "root": {},
-    "summaryContent": {
-        "display": "flex",
-        "alignItems": "baseline",
-        "gap": theme.spacing(2)
-    },
-    "group": {
-        "padding": theme.spacing(2)
-    }
-}));
+const useStyles = tss
+    .withName({ AccordionFromComponent })
+    .withNestedSelectors<"summaryExpanded">()
+    .create(({ theme, classes }) => ({
+        "root": {
+            "backgroundColor": theme.colors.useCases.surfaces.surface1
+        },
+        "summaryExpanded": {},
+        "summary": {
+            "backgroundColor": theme.colors.useCases.surfaces.surface1,
+            [`&.${classes.summaryExpanded}`]: {
+                "borderBottom": `1px solid ${theme.colors.useCases.typography.textDisabled}`
+            }
+        },
+        "summaryContent": {
+            //"display": "flex",
+            //"alignItems": "baseline",
+            "display": "block",
+            "gap": theme.spacing(2),
+            "paddingLeft": theme.spacing(4)
+        },
+        "details": {
+            "paddingTop": theme.spacing(4),
+            "backgroundColor": theme.colors.useCases.surfaces.surface1
+        },
+        "group": {
+            "padding": theme.spacing(2)
+        }
+    }));

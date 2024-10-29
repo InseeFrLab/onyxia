@@ -43,7 +43,10 @@ export function AccordionGroupComponent(props: Props) {
     );
 }
 
-const useStyles = tss.withName({ AccordionFromComponent }).create(() => ({
-    "root": {},
+const useStyles = tss.withName({ AccordionFromComponent }).create(({ theme }) => ({
+    "root": {
+        "borderRadius": theme.spacing(2),
+        "overflow": "hidden"
+    },
     "accordion": {}
 }));
