@@ -1,12 +1,12 @@
-import { memo, Suspense, lazy, useId } from "react";
+import { memo, useId } from "react";
 import type { Stringifyable } from "core/tools/Stringifyable";
-import { FormFieldWrapper } from "../shared/FormFieldWrapper";
+import { FormFieldWrapper } from "./shared/FormFieldWrapper";
 import { tss } from "tss";
-import { useFormField } from "../shared/useFormField";
+import { useFormField } from "./shared/useFormField";
 import YAML from "yaml";
 import { declareComponentKeys, useTranslation } from "ui/i18n";
 import { CircularProgress } from "onyxia-ui/CircularProgress";
-const YamlCodeEditor = lazy(() => import("./YamlCodeEditor"));
+import { CodeEditor } from "ui/shared/CodeEditor";
 
 type Props = {
     className?: string;
@@ -87,20 +87,18 @@ export const YamlCodeBlockFormField = memo((props: Props) => {
             inputId={inputId}
             onRemove={onRemove}
         >
-            <Suspense
+            <CodeEditor
                 fallback={
                     <div className={cx(classes.suspenseFallback)}>
                         <CircularProgress />
                     </div>
                 }
-            >
-                <YamlCodeEditor
-                    id={inputId}
-                    yamlCode={serializedValue}
-                    onYamlCodeChange={setSerializedValue}
-                    defaultHeight={DEFAULT_HEIGHT}
-                />
-            </Suspense>
+                id={inputId}
+                value={serializedValue}
+                onChange={setSerializedValue}
+                defaultHeight={DEFAULT_HEIGHT}
+                language="yaml"
+            />
         </FormFieldWrapper>
     );
 });

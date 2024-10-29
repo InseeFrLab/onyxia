@@ -1,44 +1,21 @@
-import CodeMirror from "@uiw/react-codemirror";
-import { yaml } from "@codemirror/lang-yaml";
+import CodeMirror, { type Extension } from "@uiw/react-codemirror";
 import { createTheme } from "@uiw/codemirror-themes";
 import { tags } from "@lezer/highlight";
 import { useMemo } from "react";
 import { alpha } from "@mui/system";
 import { tss } from "tss";
-import { injectDomDependencies } from "@codemirror/view";
-import { performActionWithoutScreenScaler } from "screen-scaler";
 
-injectDomDependencies({
-    "getResizeObserver": () => performActionWithoutScreenScaler(() => ResizeObserver),
-    "getBoundingClientRect_Element": element =>
-        performActionWithoutScreenScaler(() => element.getBoundingClientRect()),
-    "getBoundingClientRect_Range": range =>
-        performActionWithoutScreenScaler(() => range.getBoundingClientRect()),
-    "getClientRects_Element": element =>
-        performActionWithoutScreenScaler(() => element.getClientRects()),
-    "getClientRects_Range": range =>
-        performActionWithoutScreenScaler(() => range.getClientRects()),
-    "getMouseEventClientXOrY": (event, axis) =>
-        performActionWithoutScreenScaler(() => {
-            switch (axis) {
-                case "x":
-                    return event.clientX;
-                case "y":
-                    return event.clientY;
-            }
-        })
-});
-
-type Props = {
+export type Props = {
     className?: string;
     id: string;
-    yamlCode: string;
-    onYamlCodeChange: (newCode: string) => void;
     defaultHeight: number;
+    extensions: Extension[];
+    value: string;
+    onChange: (newValue: string) => void;
 };
 
-export default function YamlCodeEditor(props: Props) {
-    const { className, id, yamlCode, defaultHeight, onYamlCodeChange } = props;
+export default function GenericCodeEditor(props: Props) {
+    const { className, id, defaultHeight, extensions, value, onChange } = props;
 
     const { cx, classes, theme } = useStyles();
 
@@ -91,16 +68,16 @@ export default function YamlCodeEditor(props: Props) {
         <CodeMirror
             className={cx(classes.root, className)}
             id={id}
-            value={yamlCode}
+            value={value}
+            onChange={onChange}
             theme={codeMirrorTheme}
             height={`${defaultHeight}px`}
-            extensions={[yaml()]}
-            onChange={onYamlCodeChange}
+            extensions={extensions}
         />
     );
 }
 
-const useStyles = tss.withName({ YamlCodeEditor }).create(({ theme }) => ({
+const useStyles = tss.withName({ GenericCodeEditor }).create(({ theme }) => ({
     "root": {
         "borderRadius": theme.spacing(1),
         "overflow": "hidden"
