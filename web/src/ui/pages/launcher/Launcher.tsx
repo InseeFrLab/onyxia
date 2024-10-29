@@ -2,7 +2,6 @@ import { useEffect } from "react";
 import { useTranslation, useResolveLocalizedString, declareComponentKeys } from "ui/i18n";
 import { tss } from "tss";
 import { useCoreState, useCore } from "core";
-import { useStateRef } from "powerhooks/useStateRef";
 import { useConstCallback } from "powerhooks/useConstCallback";
 import { useDomRect } from "powerhooks/useDomRect";
 import { useConst } from "powerhooks/useConst";
@@ -79,8 +78,6 @@ export default function Launcher(props: Props) {
         s3ConfigSelect,
         labeledHelmChartSourceUrls
     } = useCoreState("launcher", "main");
-
-    const scrollableDivRef = useStateRef<HTMLDivElement>(null);
 
     const { launcher, restorableConfigManagement, k8sCodeSnippets } = useCore().functions;
 
@@ -234,10 +231,9 @@ export default function Launcher(props: Props) {
     );
 
     const {
+        ref: rootRef,
         domRect: { height: rootHeight }
-    } = useDomRect({
-        "ref": scrollableDivRef
-    });
+    } = useDomRect();
 
     const { classes, cx } = useStyles({
         "isCommandBarEnabled": commandLogsEntries !== undefined
@@ -263,7 +259,7 @@ export default function Launcher(props: Props) {
 
     return (
         <>
-            <div className={cx(classes.root, className)}>
+            <div ref={rootRef} className={cx(classes.root, className)}>
                 {commandLogsEntries !== undefined && (
                     <CommandBar
                         classes={{
@@ -297,63 +293,58 @@ export default function Launcher(props: Props) {
                         }}
                     />
                 )}
-                <div className={classes.wrapperForMaxWidth}>
-                    <LauncherMainCard
-                        chartName={chartName}
-                        chartSourceLinksNode={t("sources", {
-                            "helmChartName": chartName,
-                            "helmChartRepositoryName":
-                                resolveLocalizedString(catalogName),
-                            labeledHelmChartSourceUrls
-                        })}
-                        chartIconUrl={chartIconUrl}
-                        willOverwriteExistingConfigOnSave={
-                            willOverwriteExistingConfigOnSave
-                        }
-                        isBookmarked={isRestorableConfigSaved}
-                        chartVersion={chartVersion}
-                        availableChartVersions={availableChartVersions}
-                        onChartVersionChange={onChartVersionChange}
-                        catalogName={catalogName}
-                        labeledHelmChartSourceUrls={labeledHelmChartSourceUrls}
-                        myServicesSavedConfigsExtendedLink={
-                            myServicesSavedConfigsExtendedLink
-                        }
-                        onRequestToggleBookmark={onRequestToggleBookmark}
-                        friendlyName={friendlyName}
-                        onFriendlyNameChange={launcher.changeFriendlyName}
-                        isSharedWrap={
-                            isShared === undefined
-                                ? undefined
-                                : {
-                                      isShared,
-                                      "onIsSharedValueChange": launcher.changeIsShared
-                                  }
-                        }
-                        onRequestLaunch={launcher.launch}
-                        onRequestCancel={onRequestCancel}
-                        onRequestRestoreAllDefault={
-                            isDefaultConfiguration
-                                ? undefined
-                                : launcher.restoreAllDefault
-                        }
-                        onRequestCopyLaunchUrl={
-                            isDefaultConfiguration || env.DISABLE_AUTO_LAUNCH
-                                ? undefined
-                                : onRequestCopyLaunchUrl
-                        }
-                        s3ConfigsSelect={
-                            s3ConfigSelect === undefined
-                                ? undefined
-                                : {
-                                      projectS3ConfigLink,
-                                      "selectedOption":
-                                          s3ConfigSelect.selectedOptionValue,
-                                      "options": s3ConfigSelect.options,
-                                      "onSelectedS3ConfigChange": launcher.changeS3Config
-                                  }
-                        }
-                    />
+                <LauncherMainCard
+                    className={classes.mainCard}
+                    chartName={chartName}
+                    chartSourceLinksNode={t("sources", {
+                        "helmChartName": chartName,
+                        "helmChartRepositoryName": resolveLocalizedString(catalogName),
+                        labeledHelmChartSourceUrls
+                    })}
+                    chartIconUrl={chartIconUrl}
+                    willOverwriteExistingConfigOnSave={willOverwriteExistingConfigOnSave}
+                    isBookmarked={isRestorableConfigSaved}
+                    chartVersion={chartVersion}
+                    availableChartVersions={availableChartVersions}
+                    onChartVersionChange={onChartVersionChange}
+                    catalogName={catalogName}
+                    labeledHelmChartSourceUrls={labeledHelmChartSourceUrls}
+                    myServicesSavedConfigsExtendedLink={
+                        myServicesSavedConfigsExtendedLink
+                    }
+                    onRequestToggleBookmark={onRequestToggleBookmark}
+                    friendlyName={friendlyName}
+                    onFriendlyNameChange={launcher.changeFriendlyName}
+                    isSharedWrap={
+                        isShared === undefined
+                            ? undefined
+                            : {
+                                  isShared,
+                                  "onIsSharedValueChange": launcher.changeIsShared
+                              }
+                    }
+                    onRequestLaunch={launcher.launch}
+                    onRequestCancel={onRequestCancel}
+                    onRequestRestoreAllDefault={
+                        isDefaultConfiguration ? undefined : launcher.restoreAllDefault
+                    }
+                    onRequestCopyLaunchUrl={
+                        isDefaultConfiguration || env.DISABLE_AUTO_LAUNCH
+                            ? undefined
+                            : onRequestCopyLaunchUrl
+                    }
+                    s3ConfigsSelect={
+                        s3ConfigSelect === undefined
+                            ? undefined
+                            : {
+                                  projectS3ConfigLink,
+                                  "selectedOption": s3ConfigSelect.selectedOptionValue,
+                                  "options": s3ConfigSelect.options,
+                                  "onSelectedS3ConfigChange": launcher.changeS3Config
+                              }
+                    }
+                />
+                <div className={classes.rootFormWrapper}>
                     <RootFormComponent
                         className={classes.rootForm}
                         rootForm={rootForm}
@@ -405,35 +396,43 @@ export type I18n = typeof i18n;
 const useStyles = tss
     .withParams<{ isCommandBarEnabled: boolean }>()
     .withName({ Launcher })
-    .create(({ theme, isCommandBarEnabled }) => ({
-        "root": {
-            "height": "100%",
-            "paddingTop": !isCommandBarEnabled
-                ? 0
-                : theme.typography.rootFontSizePx * 1.7 +
-                  2 * theme.spacing(2) +
-                  theme.spacing(2),
-            "position": "relative",
-            "display": "flex",
-            "flexDirection": "column"
-        },
-        "wrapperForMaxWidth": {
-            "maxWidth": 1300,
-            "& > *": {
-                "marginBottom": theme.spacing(3)
+    .create(({ theme, isCommandBarEnabled }) => {
+        const MAX_WIDTH = 1250;
+
+        return {
+            "root": {
+                "height": "100%",
+                "paddingTop": !isCommandBarEnabled
+                    ? 0
+                    : theme.typography.rootFontSizePx * 1.7 +
+                      2 * theme.spacing(2) +
+                      theme.spacing(2),
+                "position": "relative",
+                "display": "flex",
+                "flexDirection": "column"
+            },
+            "commandBar": {
+                "position": "absolute",
+                "right": 0,
+                "width": "min(100%, 1250px)",
+                "top": 0,
+                "zIndex": 1,
+                "transition": "opacity 750ms linear"
+            },
+            "commandBarWhenExpended": {
+                "width": "min(100%, 1450px)",
+                "transition": "width 70ms linear"
+            },
+            "mainCard": {
+                "maxWidth": MAX_WIDTH
+            },
+            "rootFormWrapper": {
+                "marginTop": theme.spacing(3),
+                "flex": 1,
+                "overflow": "auto"
+            },
+            "rootForm": {
+                "maxWidth": MAX_WIDTH
             }
-        },
-        "commandBar": {
-            "position": "absolute",
-            "right": 0,
-            "width": "min(100%, 1250px)",
-            "top": 0,
-            "zIndex": 1,
-            "transition": "opacity 750ms linear"
-        },
-        "commandBarWhenExpended": {
-            "width": "min(100%, 1450px)",
-            "transition": "width 70ms linear"
-        },
-        "rootForm": {}
-    }));
+        };
+    });
