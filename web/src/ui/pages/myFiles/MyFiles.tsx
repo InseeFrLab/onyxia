@@ -55,9 +55,6 @@ function MyFiles(props: Props) {
     const { fileExplorer } = useCore().functions;
 
     useEffect(() => {
-        console.log("init fileExplorer");
-        console.log("directoryPath", route.params.path);
-
         const { cleanup } = fileExplorer.initialize({
             "directoryPath": route.params.path,
             "viewMode": route.params.mode
@@ -186,7 +183,8 @@ function MyFiles(props: Props) {
                 isNavigating={isNavigationOngoing}
                 commandLogsEntries={commandLogsEntries}
                 evtAction={evtExplorerAction}
-                items={currentWorkingDirectoryView.objects}
+                items={currentWorkingDirectoryView.items}
+                changePolicy={fileExplorer.changePolicy}
                 onNavigate={fileExplorer.changeCurrentDirectory}
                 onRefresh={onRefresh}
                 onDeleteItem={onDeleteItem}

@@ -1,18 +1,23 @@
-export type Item = File | Directory;
+export type Item = Item.File | Item.Directory;
+export namespace Item {
+    export type Base = {
+        basename: string;
+        policy: "public" | "private";
+        isBeingUploaded: boolean;
+        isBeingDeleted: boolean;
+        isPolicyChanging: boolean;
+    };
 
-export type File = {
-    kind: "file";
-    size: number | undefined;
-    lastModified: Date | undefined;
-    basename: string;
-    policy: "public" | "private";
-};
+    export type File = Base & {
+        kind: "file";
+        size: number | undefined;
+        lastModified: Date | undefined;
+    };
 
-export type Directory = {
-    kind: "directory";
-    basename: string;
-    policy: "public" | "private";
-};
+    export type Directory = Base & {
+        kind: "directory";
+    };
+}
 
 export const viewModes = ["list", "block"] as const;
 

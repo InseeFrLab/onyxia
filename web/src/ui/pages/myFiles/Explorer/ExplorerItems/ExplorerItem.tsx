@@ -23,10 +23,13 @@ export type ExplorerItemProps = {
     /** Represent if the item is currently selected */
     isSelected: boolean;
 
+    isCircularProgressShown: boolean;
+
     /** File size in bytes */
     size: number | undefined;
 
     policy: Item["policy"];
+    onPolicyChange: () => void;
     onDoubleClick: () => void;
     onClick: () => void;
 };
@@ -40,6 +43,7 @@ export const ExplorerItem = memo((props: ExplorerItemProps) => {
         isSelected,
         size,
         onDoubleClick,
+        onPolicyChange,
         onClick
     } = props;
 
@@ -68,7 +72,6 @@ export const ExplorerItem = memo((props: ExplorerItemProps) => {
         }
     };
 
-    const [policyFake, setPolicyFake] = useState(policy);
     return (
         <div
             className={cx(classes.root, className)}
@@ -93,20 +96,10 @@ export const ExplorerItem = memo((props: ExplorerItemProps) => {
                     hasShadow={true}
                 />
                 <PolicySwitch
-                    policy={policyFake}
+                    policy={policy}
                     className={classes.policyIcon}
-                    changePolicy={() =>
-                        policyFake === "public"
-                            ? setPolicyFake("private")
-                            : setPolicyFake("public")
-                    }
+                    changePolicy={onPolicyChange}
                 />
-                {/* <Icon
-                    className={classes.policyIcon}
-                    icon={id<MuiIconComponentName>(
-                        policy === "public" ? "Visibility" : "VisibilityOff"
-                    )}
-                /> */}
             </div>
 
             <div className={classes.textContainer}>
@@ -120,7 +113,11 @@ export const ExplorerItem = memo((props: ExplorerItemProps) => {
                         }
                     }}
                 >
-                    <Text typo="label 1" className={classes.baseNameText}>
+                    <Text
+                        typo="label 1"
+                        className={classes.baseNameText}
+                        componentProps={{}}
+                    >
                         {baseName}
                     </Text>
                 </Tooltip>

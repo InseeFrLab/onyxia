@@ -38,8 +38,9 @@ import type { ExplorerUploadModalProps } from "./ExplorerUploadModal";
 import { declareComponentKeys } from "i18nifty";
 import { CircularProgress } from "onyxia-ui/CircularProgress";
 import { ListExplorerItems } from "./ListExplorer/ListExplorerItems";
-import type { Directory, Item } from "../shared/types";
+import type { Item } from "../shared/types";
 import { ViewMode } from "../shared/types";
+import { isDirectory } from "../shared/tools";
 
 export type ExplorerProps = {
     /**
@@ -57,6 +58,11 @@ export type ExplorerProps = {
     evtAction: NonPostableEvt<"TRIGGER COPY PATH">;
     items: Item[];
     onNavigate: (params: { directoryPath: string }) => void;
+    changePolicy: (params: {
+        policy: Item["policy"];
+        basename: string;
+        kind: Item["kind"];
+    }) => void;
     onRefresh: () => void;
     onDeleteItem: (params: { item: Item }) => void;
     onCreateDirectory: (params: { basename: string }) => void;
@@ -80,6 +86,7 @@ export const Explorer = memo((props: ExplorerProps) => {
         onDeleteItem,
         onCreateDirectory,
         onCopyPath,
+        changePolicy,
         onOpenFile,
         scrollableDivRef,
         onFileSelected,
@@ -119,6 +126,15 @@ export const Explorer = memo((props: ExplorerProps) => {
         ({ basename }: Param0<ItemsProps["onNavigate"]>) =>
             onNavigate({
                 "directoryPath": pathJoin(directoryPath, basename)
+            })
+    );
+
+    const onItemsPolicyChange = useConstCallback(
+        ({ basename, policy, kind }: Param0<ItemsProps["onPolicyChange"]>) =>
+            changePolicy({
+                basename,
+                policy,
+                kind
             })
     );
 
@@ -165,7 +181,7 @@ export const Explorer = memo((props: ExplorerProps) => {
             case "create directory":
                 setCreateS3DirectoryDialogState({
                     directories: items
-                        .filter((item): item is Directory => item.kind === "directory")
+                        .filter(isDirectory)
                         .map(({ basename }) => basename),
                     "resolveBasename": basename => onCreateDirectory({ basename })
                 });
@@ -358,6 +374,7 @@ export const Explorer = memo((props: ExplorerProps) => {
                                         onSelectedItemKindValueChange={
                                             onSelectedItemKindValueChange
                                         }
+                                        onPolicyChange={onItemsPolicyChange}
                                         onCopyPath={itemsOnCopyPath}
                                         onDeleteItem={itemsOnDeleteItem}
                                         evtAction={evtItemsAction}
@@ -373,6 +390,7 @@ export const Explorer = memo((props: ExplorerProps) => {
                                         onSelectedItemKindValueChange={
                                             onSelectedItemKindValueChange
                                         }
+                                        onPolicyChange={onItemsPolicyChange}
                                         onCopyPath={itemsOnCopyPath}
                                         onDeleteItem={itemsOnDeleteItem}
                                         evtAction={evtItemsAction}
