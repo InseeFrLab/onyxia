@@ -5,7 +5,7 @@ import {
     type GridClasses,
     type GridColDef
 } from "@mui/x-data-grid";
-import { type ComponentProps, memo, useMemo } from "react";
+import { type ComponentProps, useMemo } from "react";
 import { tss } from "tss";
 import { CopyToClipboardIconButton } from "ui/shared/CopyToClipboardIconButton";
 import { CustomNoRowsOverlay } from "./CustomNoRowsOverlay";
@@ -26,7 +26,9 @@ export const autosizeOptions = {
     includeOutliers: false
 };
 
-export const CustomDataGrid = memo((props: CustomDataGridProps) => {
+export const CustomDataGrid = <R extends GridValidRowModel = any>(
+    props: CustomDataGridProps<R>
+) => {
     const { classes, css } = useStyles();
     const {
         columns,
@@ -72,7 +74,7 @@ export const CustomDataGrid = memo((props: CustomDataGridProps) => {
     );
 
     return (
-        <DataGrid
+        <DataGrid<R>
             {...propsRest}
             slots={{ "noRowsOverlay": CustomNoRowsOverlay, ...slots }}
             columns={modifiedColumns}
@@ -81,7 +83,7 @@ export const CustomDataGrid = memo((props: CustomDataGridProps) => {
             autosizeOptions={autosizeOptions}
         />
     );
-});
+};
 
 const useStyles = tss.withName({ CustomDataGrid }).create(({ theme }) => ({
     "columnSeparator": { "&&&&&": { opacity: "1" } }, //Ensures the column separator remains visible (opacity 1) when a column header is selected. By default, MUI reduces the opacity to 0 because an outline is applied to the selected column header

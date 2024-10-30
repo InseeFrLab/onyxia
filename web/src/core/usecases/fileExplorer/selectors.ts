@@ -72,28 +72,41 @@ const currentWorkingDirectoryView = createSelector(
         if (directoryPath === undefined) {
             return undefined;
         }
-        const items = objects.map(object => {
-            const isBeingUploaded = ongoingOperations.some(
-                op => op.operation === "create" && op.object.basename === object.basename
-            );
+        const items = objects
+            .map(object => {
+                const isBeingUploaded = ongoingOperations.some(
+                    op =>
+                        op.operation === "create" &&
+                        op.object.basename === object.basename
+                );
 
-            const isBeingDeleted = ongoingOperations.some(
-                op => op.operation === "delete" && op.object.basename === object.basename
-            );
+                const isBeingDeleted = ongoingOperations.some(
+                    op =>
+                        op.operation === "delete" &&
+                        op.object.basename === object.basename
+                );
 
-            const isPolicyChanging = ongoingOperations.some(
-                op =>
-                    op.operation === "modifyPolicy" &&
-                    op.object.basename === object.basename
-            );
+                const isPolicyChanging = ongoingOperations.some(
+                    op =>
+                        op.operation === "modifyPolicy" &&
+                        op.object.basename === object.basename
+                );
 
-            return {
-                ...object,
-                isBeingUploaded,
-                isBeingDeleted,
-                isPolicyChanging
-            };
-        });
+                return {
+                    ...object,
+                    isBeingUploaded,
+                    isBeingDeleted,
+                    isPolicyChanging
+                };
+            })
+            .sort((a, b) => {
+                // Sort directories first
+                if (a.kind === "directory" && b.kind !== "directory") return -1;
+                if (a.kind !== "directory" && b.kind === "directory") return 1;
+
+                // Sort alphabetically by basename
+                return a.basename.localeCompare(b.basename);
+            });
 
         return {
             directoryPath,

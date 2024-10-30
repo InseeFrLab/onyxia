@@ -151,8 +151,9 @@ export const ExplorerItems = memo((props: ExplorerItemsProps) => {
                                 onClick={handleItemClick(item)}
                                 onDoubleClick={handleItemDoubleClick(item)}
                                 isCircularProgressShown={
-                                    isBeingDeleted || isBeingUploaded || isPolicyChanging
+                                    isBeingDeleted || isBeingUploaded
                                 }
+                                isPolicyChanging={isPolicyChanging}
                             />
                         );
                     })}

@@ -1,6 +1,6 @@
 import { tss } from "tss";
 import { Text } from "onyxia-ui/Text";
-import { memo, useState } from "react";
+import { memo } from "react";
 import { Icon } from "onyxia-ui/Icon";
 import { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
 import { id } from "tsafe";
@@ -24,6 +24,7 @@ export type ExplorerItemProps = {
     isSelected: boolean;
 
     isCircularProgressShown: boolean;
+    isPolicyChanging: boolean;
 
     /** File size in bytes */
     size: number | undefined;
@@ -44,7 +45,8 @@ export const ExplorerItem = memo((props: ExplorerItemProps) => {
         size,
         onDoubleClick,
         onPolicyChange,
-        onClick
+        onClick,
+        isPolicyChanging
     } = props;
 
     const prettySize = size ? fileSizePrettyPrint({ bytes: size }) : null;
@@ -99,6 +101,7 @@ export const ExplorerItem = memo((props: ExplorerItemProps) => {
                     policy={policy}
                     className={classes.policyIcon}
                     changePolicy={onPolicyChange}
+                    isPolicyChanging={isPolicyChanging}
                 />
             </div>
 

@@ -3,26 +3,23 @@ import {
     type GridRowSelectionModel,
     type GridColDef,
     type GridCallbackDetails,
-    GridRenderCellParams,
-    GridRowParams,
-    GRID_CHECKBOX_SELECTION_COL_DEF
+    type GridRowParams,
+    GRID_CHECKBOX_SELECTION_COL_DEF,
+    useGridApiRef
 } from "@mui/x-data-grid";
 import { memo, useMemo, useState } from "react";
 import { ExplorerIcon } from "../ExplorerIcon";
 import { tss } from "tss";
 import { Text } from "onyxia-ui/Text";
-import { useEffectOnValueChange } from "powerhooks/useEffectOnValueChange";
 import { fileSizePrettyPrint } from "ui/tools/fileSizePrettyPrint";
-import { id } from "tsafe";
 import { CustomDataGrid } from "ui/shared/Datagrid/CustomDataGrid";
 import type { Item } from "../../shared/types";
 import { useConstCallback } from "powerhooks/useConstCallback";
 import { assert } from "tsafe/assert";
 import { useEvt } from "evt/hooks";
 import type { NonPostableEvt } from "evt";
-import { useConst } from "powerhooks/useConst";
 import { PolicySwitch } from "../PolicySwitch";
-import { useCallbackFactory } from "powerhooks/useCallbackFactory";
+import { CircularProgress } from "onyxia-ui/CircularProgress";
 
 export type ListExplorerItems = {
     className?: string;
@@ -43,12 +40,14 @@ export type ListExplorerItems = {
         kind: Item["kind"];
     }) => void;
 
-    onDeleteItem: (params: { item: Item }) => void;
+    onDeleteItem: (params: { item: Item }, onDeleteConfirmed?: () => void) => void;
     onCopyPath: (params: { basename: string }) => void;
     evtAction: NonPostableEvt<
         "DELETE SELECTED ITEM" | "COPY SELECTED ITEM PATH" //TODO: Delete, legacy from secret explorer
     >;
 };
+
+type Row = Item & { id: number };
 
 export const ListExplorerItems = memo((props: ListExplorerItems) => {
     const {
@@ -64,29 +63,31 @@ export const ListExplorerItems = memo((props: ListExplorerItems) => {
         onSelectedItemKindValueChange
     } = props;
 
+    const apiRef = useGridApiRef();
+
     const { classes, cx } = useStyles();
 
     const [rowSelectionModel, setRowSelectionModel] = useState<GridRowSelectionModel>([]);
-
-    const selectedItemRef = useConst(() => ({
-        current: id<Item | { basename: undefined; kind: "none" }>({
-            basename: undefined,
-            kind: "none"
-        })
-    }));
 
     const columns: GridColDef<(typeof rows)[number]>[] = useMemo(
         () =>
             [
                 {
                     ...GRID_CHECKBOX_SELECTION_COL_DEF,
-                    maxWidth: 100
+                    maxWidth: 50,
+                    renderCell: params => {
+                        if (params.row.isBeingDeleted || params.row.isBeingUploaded)
+                            return <CircularProgress />;
+
+                        assert(GRID_CHECKBOX_SELECTION_COL_DEF.renderCell !== undefined);
+
+                        return GRID_CHECKBOX_SELECTION_COL_DEF.renderCell(params);
+                    }
                 },
                 {
                     field: "basename",
                     headerName: "Name",
                     type: "string",
-                    display: "flex" as const,
                     renderCell: params => (
                         <>
                             <ExplorerIcon
@@ -98,7 +99,8 @@ export const ListExplorerItems = memo((props: ListExplorerItems) => {
                             />
                             <Text typo="label 2">{params.value}</Text>
                         </>
-                    )
+                    ),
+                    cellClassName: classes.basenameCell
                 },
                 {
                     field: "size",
@@ -152,6 +154,7 @@ export const ListExplorerItems = memo((props: ListExplorerItems) => {
                                     }
                                     e.stopPropagation();
                                 }}
+                                isPolicyChanging={params.row.isPolicyChanging}
                             />
                         );
                     }
@@ -167,7 +170,7 @@ export const ListExplorerItems = memo((props: ListExplorerItems) => {
                     ({
                         ...item,
                         id: index // Maybe a better id is necessary due to pagination
-                    }) satisfies Item & { id: number }
+                    }) satisfies Row
             ),
         [items]
     );
@@ -175,15 +178,22 @@ export const ListExplorerItems = memo((props: ListExplorerItems) => {
     useEvt(
         ctx =>
             evtAction.attach(ctx, action => {
+                const selectedItem = apiRef.current.getSelectedRows().values().next()
+                    .value as Row;
                 switch (action) {
-                    case "DELETE SELECTED ITEM":
-                        assert(selectedItemRef.current.kind !== "none");
-                        onDeleteItem({ "item": selectedItemRef.current });
+                    case "DELETE SELECTED ITEM": {
+                        assert(selectedItem !== undefined);
+                        onDeleteItem({ "item": selectedItem }, () =>
+                            apiRef.current.updateRows([
+                                { id: selectedItem.id, _action: "delete" }
+                            ])
+                        );
                         break;
+                    }
                     case "COPY SELECTED ITEM PATH":
-                        assert(selectedItemRef.current.kind !== "none");
+                        assert(selectedItem !== undefined);
                         onCopyPath({
-                            "basename": selectedItemRef.current.basename
+                            "basename": selectedItem.basename
                         });
                         break;
                 }
@@ -191,14 +201,10 @@ export const ListExplorerItems = memo((props: ListExplorerItems) => {
         [evtAction, onDeleteItem, onCopyPath]
     );
 
-    useEffectOnValueChange(() => {
-        selectedItemRef.current = { basename: undefined, kind: "none" };
-    }, [isNavigating]);
-
     const handleRowSelection = useConstCallback(
         (params: GridRowSelectionModel, details: GridCallbackDetails) => {
-            const selectedRows = details.api.getSelectedRows();
-            const firstSelectedRow = selectedRows.values().next().value;
+            const previousSelectedRows = details.api.getSelectedRows();
+            const firstPreviouslySelectedRow = previousSelectedRows.values().next().value;
 
             const rowIndex = params[0];
 
@@ -207,7 +213,8 @@ export const ListExplorerItems = memo((props: ListExplorerItems) => {
             const selectedItemKind =
                 params.length === 0
                     ? "none"
-                    : firstSelectedRow && firstSelectedRow.kind === rows[rowIndex].kind
+                    : firstPreviouslySelectedRow &&
+                        firstPreviouslySelectedRow.kind === rows[rowIndex].kind
                       ? undefined // No need to update the kind if it hasn't changed
                       : rows[rowIndex].kind;
 
@@ -216,7 +223,6 @@ export const ListExplorerItems = memo((props: ListExplorerItems) => {
             }
 
             setRowSelectionModel(params);
-            selectedItemRef.current = rows[rowIndex];
         }
     );
 
@@ -234,7 +240,8 @@ export const ListExplorerItems = memo((props: ListExplorerItems) => {
 
     return (
         <div className={cx(classes.root, className)}>
-            <CustomDataGrid
+            <CustomDataGrid<Row>
+                apiRef={apiRef}
                 rows={rows}
                 columns={columns}
                 initialState={{
@@ -278,5 +285,10 @@ const useStyles = tss.withName({ ListExplorerItems }).create(({ theme }) => ({
         "height": "30px",
         "marginRight": theme.spacing(2),
         "flexShrink": 0
+    },
+    "basenameCell": {
+        "cursor": "pointer",
+        "display": "flex",
+        "alignItems": "center"
     }
 }));
