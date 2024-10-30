@@ -15,6 +15,8 @@ import type { FormCallbacks } from "./FormCallbacks";
 import { capitalize } from "tsafe/capitalize";
 import { assert } from "tsafe/assert";
 import { getScrollableParent } from "powerhooks/getScrollableParent";
+import { useConst } from "powerhooks/useConst";
+import { Evt } from "evt";
 
 type Props = {
     className?: string;
@@ -47,6 +49,8 @@ export function AccordionFromComponent(props: Props) {
 
     const [scrollInViewTrigger, triggerScrollInView] = useReducer(() => ({}), {});
 
+    const evtAnimationEnd = useConst(() => Evt.create());
+
     useEffect(() => {
         if (rootElement === null) {
             return;
@@ -61,16 +65,38 @@ export function AccordionFromComponent(props: Props) {
             "doReturnElementIfScrollable": false
         });
 
-        const scrollableParentRect = scrollableParent.getBoundingClientRect();
-        const rootElementRect = rootElement.getBoundingClientRect();
+        let isActive = true;
 
-        if (rootElementRect.bottom > scrollableParentRect.bottom) {
-            // set scroll behavior to smooth
-            scrollableParent.style.scrollBehavior = "smooth";
+        (async () => {
+            let isAnimationEnded = false;
 
-            scrollableParent.scrollTop +=
-                rootElementRect.bottom - scrollableParentRect.bottom + 10;
-        }
+            const ctx = Evt.newCtx();
+
+            evtAnimationEnd.attachOnce(ctx, () => {
+                isAnimationEnded = true;
+            });
+
+            while (!isAnimationEnded && isActive) {
+                const scrollableParentRect = scrollableParent.getBoundingClientRect();
+                const rootElementRect = rootElement.getBoundingClientRect();
+
+                if (rootElementRect.bottom > scrollableParentRect.bottom) {
+                    // set scroll behavior to smooth
+                    //scrollableParent.style.scrollBehavior = "smooth";
+
+                    scrollableParent.scrollTop +=
+                        rootElementRect.bottom - scrollableParentRect.bottom;
+                }
+
+                await new Promise(resolve => setTimeout(resolve, 5));
+            }
+
+            ctx.done();
+        })();
+
+        return () => {
+            isActive = false;
+        };
     }, [scrollInViewTrigger]);
 
     return (
@@ -78,11 +104,17 @@ export function AccordionFromComponent(props: Props) {
             ref={setRootElement}
             className={cx(classes.root, className)}
             expanded={isExpanded}
-            onChange={(...[, isExpanded]) => setIsExpanded(isExpanded)}
+            onChange={(...[, isExpanded]) => {
+                setIsExpanded(isExpanded);
+
+                if (isExpanded) {
+                    triggerScrollInView();
+                }
+            }}
             slotProps={{
                 "transition": {
                     onEntered: () => {
-                        triggerScrollInView();
+                        evtAnimationEnd.post();
                     }
                 }
             }}
