@@ -1,4 +1,4 @@
-import { useId } from "react";
+import { useId, useState, useEffect, useReducer } from "react";
 import type {
     FormField,
     FormFieldGroup
@@ -14,6 +14,7 @@ import { FormFieldGroupComponentInner } from "./FormFieldGroupComponent";
 import type { FormCallbacks } from "./FormCallbacks";
 import { capitalize } from "tsafe/capitalize";
 import { assert } from "tsafe/assert";
+import { getScrollableParent } from "powerhooks/getScrollableParent";
 
 type Props = {
     className?: string;
@@ -40,8 +41,52 @@ export function AccordionFromComponent(props: Props) {
 
     const contentId = useId();
 
+    const [isExpanded, setIsExpanded] = useState(false);
+
+    const [rootElement, setRootElement] = useState<HTMLElement | null>(null);
+
+    const [scrollInViewTrigger, triggerScrollInView] = useReducer(() => ({}), {});
+
+    useEffect(() => {
+        if (rootElement === null) {
+            return;
+        }
+
+        if (!isExpanded) {
+            return;
+        }
+
+        const scrollableParent = getScrollableParent({
+            "element": rootElement,
+            "doReturnElementIfScrollable": false
+        });
+
+        const scrollableParentRect = scrollableParent.getBoundingClientRect();
+        const rootElementRect = rootElement.getBoundingClientRect();
+
+        if (rootElementRect.bottom > scrollableParentRect.bottom) {
+            // set scroll behavior to smooth
+            scrollableParent.style.scrollBehavior = "smooth";
+
+            scrollableParent.scrollTop +=
+                rootElementRect.bottom - scrollableParentRect.bottom + 10;
+        }
+    }, [scrollInViewTrigger]);
+
     return (
-        <Accordion className={cx(classes.root, className)}>
+        <Accordion
+            ref={setRootElement}
+            className={cx(classes.root, className)}
+            expanded={isExpanded}
+            onChange={(...[, isExpanded]) => setIsExpanded(isExpanded)}
+            slotProps={{
+                "transition": {
+                    onEntered: () => {
+                        triggerScrollInView();
+                    }
+                }
+            }}
+        >
             <AccordionSummary
                 classes={{
                     "root": classes.summary,
