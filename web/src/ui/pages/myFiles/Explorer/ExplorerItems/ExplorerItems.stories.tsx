@@ -13,39 +13,54 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-const itemsSample = [
+const itemsSample: Item[] = [
     {
         kind: "file",
         basename: "document.pdf",
-        size: 1024000, // in bytes
+        size: 1024000, // en bytes
         lastModified: new Date("2023-10-01"),
-        policy: "private"
+        policy: "private",
+        isBeingUploaded: false,
+        isBeingDeleted: false,
+        isPolicyChanging: false
     },
     {
         kind: "file",
         basename: "photo.png",
-        size: 2048000, // in bytes
+        size: 2048000, // en bytes
         lastModified: new Date("2023-09-15"),
-        policy: "public"
+        policy: "public",
+        isBeingUploaded: false,
+        isBeingDeleted: false,
+        isPolicyChanging: false
     },
     {
         kind: "directory",
         basename: "Projects",
-        policy: "private"
+        policy: "private",
+        isBeingUploaded: false,
+        isBeingDeleted: false,
+        isPolicyChanging: false
     },
     {
         kind: "file",
         basename: "presentation.pptx",
-        size: 5120000, // in bytes
+        size: 5120000, // en bytes
         lastModified: new Date("2023-09-20"),
-        policy: "private"
+        policy: "private",
+        isBeingUploaded: false,
+        isBeingDeleted: false,
+        isPolicyChanging: false
     },
     {
         kind: "directory",
         basename: "Photos",
-        policy: "public"
+        policy: "public",
+        isBeingUploaded: false,
+        isBeingDeleted: false,
+        isPolicyChanging: false
     }
-] satisfies Item[];
+];
 
 export const Default: Story = {
     args: {
@@ -56,6 +71,7 @@ export const Default: Story = {
         onDeleteItem: action("Delete item"),
         onCopyPath: action("Copy path"),
         onSelectedItemKindValueChange: action("Selected item kind changed"),
+        onPolicyChange: action("Policy change"),
         evtAction: Evt.create<"DELETE SELECTED ITEM" | "COPY SELECTED ITEM PATH">()
     }
 };
@@ -68,6 +84,7 @@ export const EmptyDirectory: Story = {
         onOpenFile: action("Open file"),
         onDeleteItem: action("Delete item"),
         onCopyPath: action("Copy path"),
+        onPolicyChange: action("Policy change"),
         onSelectedItemKindValueChange: action("Selected item kind changed"),
         evtAction: Evt.create<"DELETE SELECTED ITEM" | "COPY SELECTED ITEM PATH">()
     }

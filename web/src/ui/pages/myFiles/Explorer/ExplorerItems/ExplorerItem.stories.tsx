@@ -20,6 +20,9 @@ export const FileSelected: Story = {
         policy: "private",
         className: css({ "width": "160px", "height": "160px" }),
         isSelected: true,
+        isCircularProgressShown: false, // Valeur par défaut pour l'animation
+        isPolicyChanging: false, // Pas de changement de politique en cours
+        onPolicyChange: action("onPolicyChange"), // Action pour les changements de politique
         onClick: action("onClick"),
         onDoubleClick: action("onDoubleClick")
     }
@@ -30,9 +33,12 @@ export const DirectoryUnselected: Story = {
         kind: "directory",
         basename: "example-directory",
         size: undefined,
-        "policy": "public",
+        policy: "public",
         className: css({ "width": "160px", "height": "160px" }),
         isSelected: false,
+        isCircularProgressShown: false, // Valeur par défaut pour l'animation
+        isPolicyChanging: false, // Pas de changement de politique en cours
+        onPolicyChange: action("onPolicyChange"), // Action pour les changements de politique
         onClick: action("onClick"),
         onDoubleClick: action("onDoubleClick")
     }

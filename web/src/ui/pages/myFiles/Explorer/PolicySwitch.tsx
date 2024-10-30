@@ -13,19 +13,21 @@ type Props = {
     ariaLabel?: string;
     policy: Item["policy"];
     changePolicy: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
+    isPolicyChanging: boolean; // New loading prop
 };
 
 export const PolicySwitch = memo((props: Props) => {
-    const { className, size, policy, changePolicy, ariaLabel } = props;
+    const { className, size, policy, changePolicy, ariaLabel, isPolicyChanging } = props;
 
     const isPublic = policy === "public";
 
-    const { classes, cx } = useStyles({ isPublic });
+    const { classes, cx } = useStyles({ isPublic, isPolicyChanging });
 
     return (
         <IconButton
             className={cx(classes.root, className)}
-            onClick={changePolicy}
+            onClick={changePolicy} // Prevent click if loading
+            disabled={isPolicyChanging}
             size={size}
             icon={
                 isPublic
@@ -41,11 +43,20 @@ const useStyles = tss
     .withName({ PolicySwitch })
     .withParams<{
         isPublic: boolean;
+        isPolicyChanging: boolean;
     }>()
-    .create(({ isPublic }) => ({
+    .create(({ isPublic, isPolicyChanging }) => ({
         "root": {
-            "transition": "transform 500ms",
-            "transform": `rotate(${isPublic ? 180 : 0}deg)`,
-            "transitionTimingFunction": "cubic-bezier(.34,1.27,1,1)"
+            "animation": isPolicyChanging
+                ? `${isPublic ? "spinClockwise" : "spinCounterClockwise"} 1s linear infinite`
+                : "none", // Apply the corresponding animation
+            "@keyframes spinClockwise": {
+                "0%": { "transform": "rotate(0deg)" },
+                "100%": { "transform": "rotate(360deg)" }
+            },
+            "@keyframes spinCounterClockwise": {
+                "0%": { "transform": "rotate(0deg)" },
+                "100%": { "transform": "rotate(-360deg)" }
+            }
         }
     }));

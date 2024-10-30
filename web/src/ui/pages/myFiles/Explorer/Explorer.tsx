@@ -249,7 +249,10 @@ export const Explorer = memo((props: ExplorerProps) => {
     );
 
     const itemsOnDeleteItem = useConstCallback(
-        async ({ item }: Parameters<ItemsProps["onDeleteItem"]>[0]) => {
+        async (
+            { item }: Parameters<ItemsProps["onDeleteItem"]>[0],
+            onDeleteConfirmed?: () => void // Callback optionnelle pour après la suppression
+        ) => {
             if (doShowDeletionDialogNextTime) {
                 const dDoProceedToDeletion = new Deferred();
 
@@ -269,6 +272,7 @@ export const Explorer = memo((props: ExplorerProps) => {
             }
 
             onDeleteItem({ item });
+            onDeleteConfirmed?.();
         }
     );
 

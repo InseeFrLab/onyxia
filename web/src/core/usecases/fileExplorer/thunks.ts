@@ -29,15 +29,28 @@ export declare namespace ExplorersCreateParams {
 
 const privateThunks = {
     "createOperation":
-        (params: { operation: "create" | "delete" | "modifyPolicy"; object: S3Object }) =>
+        (params: {
+            operation: "create" | "delete" | "modifyPolicy";
+            object: S3Object;
+            directoryPath: string;
+        }) =>
         async (...args) => {
             const [dispatch, ,] = args;
 
-            const { operation, object } = params;
+            const { operation, object, directoryPath } = params;
 
             const operationId = `${operation}-${Date.now()}`;
 
             dispatch(actions.operationStarted({ operationId, object, operation }));
+
+            await dispatch(
+                privateThunks.waitForNoOngoingOperation({
+                    "kind": object.kind,
+                    directoryPath,
+                    "basename": object.basename,
+                    "ignoreOperationId": operationId
+                })
+            );
             return operationId;
         },
     "waitForNoOngoingOperation":
@@ -45,11 +58,12 @@ const privateThunks = {
             kind: "file" | "directory";
             basename: string;
             directoryPath: string;
+            ignoreOperationId?: string;
         }) =>
         async (...args) => {
             const [, getState, { evtAction }] = args;
 
-            const { kind, basename, directoryPath } = params;
+            const { kind, basename, directoryPath, ignoreOperationId } = params;
 
             const { ongoingOperations } = getState()[name];
 
@@ -57,7 +71,8 @@ const privateThunks = {
                 o =>
                     o.object.kind === kind &&
                     o.object.basename === basename &&
-                    o.directoryPath === directoryPath
+                    o.directoryPath === directoryPath &&
+                    o.operationId !== ignoreOperationId
             );
 
             if (ongoingOperation === undefined) {
@@ -257,16 +272,20 @@ export const thunks = {
 
             const [dispatch, getState] = args;
 
-            const object = getState()[name].objects.find(
-                o => o.basename === basename && o.kind === kind
-            );
+            const state = getState()[name];
+
+            const { directoryPath, objects } = state;
+
+            const object = objects.find(o => o.basename === basename && o.kind === kind);
 
             assert(object !== undefined);
+            assert(directoryPath !== undefined);
 
             const operationId = await dispatch(
                 privateThunks.createOperation({
                     operation: "modifyPolicy",
-                    object: { ...object, policy }
+                    object: { ...object, policy },
+                    directoryPath
                 })
             );
             const s3Client = await dispatch(
@@ -275,10 +294,6 @@ export const thunks = {
                 assert(r !== undefined);
                 return r.s3Client;
             });
-
-            const { directoryPath } = getState()[name];
-
-            assert(directoryPath !== undefined);
 
             const filePath = pathJoin(directoryPath, basename);
             const s3Prefix = pathJoin("s3", filePath);
@@ -358,14 +373,6 @@ export const thunks = {
 
             assert(directoryPath !== undefined);
 
-            await dispatch(
-                privateThunks.waitForNoOngoingOperation({
-                    "kind": params.createWhat,
-                    directoryPath,
-                    "basename": params.basename
-                })
-            );
-
             const operationId = await dispatch(
                 privateThunks.createOperation({
                     object: {
@@ -375,6 +382,7 @@ export const thunks = {
                         size: undefined,
                         lastModified: undefined
                     },
+                    directoryPath,
                     operation: "create"
                 })
             );
@@ -498,16 +506,12 @@ export const thunks = {
 
             assert(directoryPath !== undefined);
 
-            await dispatch(
-                privateThunks.waitForNoOngoingOperation({
-                    "kind": s3Object.kind,
-                    directoryPath,
-                    basename: s3Object.basename
-                })
-            );
-
             const operationId = await dispatch(
-                privateThunks.createOperation({ operation: "delete", object: s3Object })
+                privateThunks.createOperation({
+                    operation: "delete",
+                    object: s3Object,
+                    directoryPath
+                })
             );
 
             const s3Client = await dispatch(
@@ -542,13 +546,17 @@ export const thunks = {
                     {
                         const { crawl } = crawlFactory({
                             "list": async ({ directoryPath }) => {
-                                const { directories, files } = await s3Client.list({
+                                const { objects } = await s3Client.listObjects({
                                     "path": directoryPath
                                 });
 
                                 return {
-                                    "fileBasenames": files,
-                                    "directoryBasenames": directories
+                                    "fileBasenames": objects
+                                        .filter(object => object.kind === "file")
+                                        .map(object => object.basename),
+                                    "directoryBasenames": objects
+                                        .filter(object => object.kind === "directory")
+                                        .map(object => object.basename)
                                 };
                             }
                         });
