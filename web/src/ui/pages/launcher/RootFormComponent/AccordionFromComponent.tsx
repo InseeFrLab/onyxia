@@ -1,4 +1,4 @@
-import { useId, useState, useEffect, useReducer } from "react";
+import { useId, useState, useEffect } from "react";
 import type {
     FormField,
     FormFieldGroup
@@ -47,8 +47,6 @@ export function AccordionFromComponent(props: Props) {
 
     const [rootElement, setRootElement] = useState<HTMLElement | null>(null);
 
-    const [scrollInViewTrigger, triggerScrollInView] = useReducer(() => ({}), {});
-
     const evtAnimationEnd = useConst(() => Evt.create());
 
     useEffect(() => {
@@ -76,16 +74,15 @@ export function AccordionFromComponent(props: Props) {
                 isAnimationEnded = true;
             });
 
+            scrollableParent.style.scrollBehavior = "unset";
+
             while (!isAnimationEnded && isActive) {
                 const scrollableParentRect = scrollableParent.getBoundingClientRect();
                 const rootElementRect = rootElement.getBoundingClientRect();
 
                 if (rootElementRect.bottom > scrollableParentRect.bottom) {
-                    // set scroll behavior to smooth
-                    //scrollableParent.style.scrollBehavior = "smooth";
-
                     scrollableParent.scrollTop +=
-                        rootElementRect.bottom - scrollableParentRect.bottom;
+                        rootElementRect.bottom - scrollableParentRect.bottom + 10;
                 }
 
                 await new Promise(resolve => setTimeout(resolve, 5));
@@ -97,20 +94,14 @@ export function AccordionFromComponent(props: Props) {
         return () => {
             isActive = false;
         };
-    }, [scrollInViewTrigger]);
+    }, [isExpanded]);
 
     return (
         <Accordion
             ref={setRootElement}
             className={cx(classes.root, className)}
             expanded={isExpanded}
-            onChange={(...[, isExpanded]) => {
-                setIsExpanded(isExpanded);
-
-                if (isExpanded) {
-                    triggerScrollInView();
-                }
-            }}
+            onChange={(...[, isExpanded]) => setIsExpanded(isExpanded)}
             slotProps={{
                 "transition": {
                     onEntered: () => {
