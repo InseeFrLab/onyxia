@@ -522,7 +522,7 @@ export const thunks = {
             });
 
             const deleteFileAndLogCommand = async (filePath: string) => {
-                const cmdId = Date.now();
+                const cmdId = Date.now() - Math.random();
 
                 dispatch(
                     actions.commandLogIssued({
