@@ -162,7 +162,8 @@ const useStyles = tss
             }
         },
         "summaryContent": {
-            "display": "block",
+            "display": "flex",
+            "alignItems": "baseline",
             "gap": theme.spacing(2),
             "paddingLeft": theme.spacing(4)
         },
