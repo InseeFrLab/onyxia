@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation, useResolveLocalizedString, declareComponentKeys } from "ui/i18n";
 import { tss } from "tss";
 import { useCoreState, useCore } from "core";
@@ -23,6 +23,10 @@ import {
 } from "ui/shared/MaybeAcknowledgeConfigVolatilityDialog";
 import type { LabeledHelmChartSourceUrls } from "core/usecases/launcher/selectors";
 import { RootFormComponent } from "./RootFormComponent/RootFormComponent";
+import type { Param0 } from "tsafe";
+import type { FormCallbacks } from "./RootFormComponent/FormCallbacks";
+import { arrRemoveDuplicates } from "evt/tools/reducers/removeDuplicates";
+import { same } from "evt/tools/inDepth/same";
 
 export type Props = {
     route: PageRoute;
@@ -253,6 +257,40 @@ export default function Launcher(props: Props) {
         "labelWhenMismatchingLanguage": true
     });
 
+    const { erroredFormFields, onFieldErrorChange } = (function useClosure() {
+        const [erroredFormFields, setErroredFormFields] = useState<(string | number)[][]>(
+            []
+        );
+
+        const onFieldErrorChange = useConstCallback(
+            ({
+                helmValuesPath,
+                hasError
+            }: Param0<FormCallbacks["onFieldErrorChange"]>) => {
+                const erroredFormFields_new = [...erroredFormFields];
+
+                if (hasError) {
+                    erroredFormFields_new.push(helmValuesPath);
+                    arrRemoveDuplicates(erroredFormFields_new, (a, b) => same(a, b));
+                } else {
+                    const index = erroredFormFields_new.findIndex(erroredFormField =>
+                        same(erroredFormField, helmValuesPath)
+                    );
+
+                    if (index === -1) {
+                        return;
+                    }
+
+                    erroredFormFields_new.splice(index, 1);
+                }
+
+                setErroredFormFields(erroredFormFields_new);
+            }
+        );
+
+        return { erroredFormFields, onFieldErrorChange };
+    })();
+
     if (!isReady) {
         return null;
     }
@@ -343,6 +381,7 @@ export default function Launcher(props: Props) {
                                   "onSelectedS3ConfigChange": launcher.changeS3Config
                               }
                     }
+                    erroredFormFields={erroredFormFields}
                 />
                 <div className={classes.rootFormWrapper}>
                     <RootFormComponent
@@ -351,7 +390,8 @@ export default function Launcher(props: Props) {
                         callbacks={{
                             "onAdd": launcher.addArrayItem,
                             "onChange": launcher.changeFormFieldValue,
-                            "onRemove": launcher.removeArrayItem
+                            "onRemove": launcher.removeArrayItem,
+                            onFieldErrorChange
                         }}
                     />
                 </div>

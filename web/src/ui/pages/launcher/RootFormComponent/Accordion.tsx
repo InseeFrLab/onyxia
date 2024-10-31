@@ -3,14 +3,14 @@ import type {
     FormField,
     FormFieldGroup
 } from "core/usecases/launcher/decoupledLogic/formTypes";
-import Accordion from "@mui/material/Accordion";
-import AccordionSummary from "@mui/material/AccordionSummary";
-import AccordionDetails from "@mui/material/AccordionDetails";
+import MuiAccordion from "@mui/material/Accordion";
+import MuiAccordionSummary from "@mui/material/AccordionSummary";
+import MuiAccordionDetails from "@mui/material/AccordionDetails";
 import { tss } from "tss";
 import { Icon } from "onyxia-ui/Icon";
 import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
 import { Text } from "onyxia-ui/Text";
-import { FormFieldGroupComponentInner } from "./FormFieldGroupComponent";
+import { FormFieldGroupComponent } from "./FormFieldGroupComponent";
 import type { FormCallbacks } from "./FormCallbacks";
 import { capitalize } from "tsafe/capitalize";
 import { assert } from "tsafe/assert";
@@ -28,7 +28,7 @@ type Props = {
     callbacks: FormCallbacks;
 };
 
-export function AccordionFromComponent(props: Props) {
+export function Accordion(props: Props) {
     const {
         className,
         helmValuesPath,
@@ -97,7 +97,7 @@ export function AccordionFromComponent(props: Props) {
     }, [isExpanded]);
 
     return (
-        <Accordion
+        <MuiAccordion
             ref={setRootElement}
             className={cx(classes.root, className)}
             expanded={isExpanded}
@@ -110,7 +110,7 @@ export function AccordionFromComponent(props: Props) {
                 }
             }}
         >
-            <AccordionSummary
+            <MuiAccordionSummary
                 classes={{
                     "root": classes.summary,
                     "content": classes.summaryContent,
@@ -132,9 +132,9 @@ export function AccordionFromComponent(props: Props) {
                 <Text typo="caption" color="secondary" componentProps={{ "lang": "und" }}>
                     {description}
                 </Text>
-            </AccordionSummary>
-            <AccordionDetails id={contentId} className={classes.details}>
-                <FormFieldGroupComponentInner
+            </MuiAccordionSummary>
+            <MuiAccordionDetails id={contentId} className={classes.details}>
+                <FormFieldGroupComponent
                     className={classes.group}
                     nodes={nodes}
                     helmValuesPath={helmValuesPath}
@@ -142,13 +142,13 @@ export function AccordionFromComponent(props: Props) {
                     canRemove={canRemove}
                     callbacks={callbacks}
                 />
-            </AccordionDetails>
-        </Accordion>
+            </MuiAccordionDetails>
+        </MuiAccordion>
     );
 }
 
 const useStyles = tss
-    .withName({ AccordionFromComponent })
+    .withName({ Accordion })
     .withNestedSelectors<"summary" | "summaryExpanded">()
     .create(({ theme, classes }) => ({
         "root": {

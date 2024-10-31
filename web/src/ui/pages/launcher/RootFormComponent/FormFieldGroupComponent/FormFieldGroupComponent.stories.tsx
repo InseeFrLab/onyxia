@@ -16,13 +16,12 @@ type Story = StoryObj<typeof meta>;
 const onChange = action("onChange");
 const onAdd = action("onAdd");
 const onRemove = action("onRemove");
+const onFieldErrorChange = action("onFieldErrorChange");
 
 const helmValuesPath = ["foo", "title"];
-const description = "This is the description";
 
 export const Default: Story = {
     "args": {
-        description,
         helmValuesPath,
         "canAdd": true,
         "canRemove": true,
@@ -55,8 +54,8 @@ export const Default: Story = {
         "callbacks": {
             onChange,
             onAdd,
-            onRemove
-        },
-        "onRemove": undefined
+            onRemove,
+            onFieldErrorChange
+        }
     }
 };

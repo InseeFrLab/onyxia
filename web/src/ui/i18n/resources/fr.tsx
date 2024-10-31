@@ -722,6 +722,7 @@ N'hésitez pas à explorer et à prendre en main vos déploiements Kubernetes !
     "LauncherMainCard": {
         "friendly name": "Nom personnalisé",
         "launch": "Lancer",
+        "problem with": "Problème avec :",
         "cancel": "Annuler",
         "copy auto launch url": "Copier l'URL de lancement automatique",
         "copy auto launch url helper": ({

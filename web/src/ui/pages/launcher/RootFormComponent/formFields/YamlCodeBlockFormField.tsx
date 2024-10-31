@@ -1,4 +1,4 @@
-import { memo, useId } from "react";
+import { memo, useId, useEffect } from "react";
 import type { Stringifyable } from "core/tools/Stringifyable";
 import { FormFieldWrapper } from "./shared/FormFieldWrapper";
 import { tss } from "tss";
@@ -16,13 +16,22 @@ type Props = {
     onRemove: (() => void) | undefined;
     value: Record<string, Stringifyable> | Stringifyable[];
     onChange: (newValue: Record<string, Stringifyable> | Stringifyable[]) => void;
+    onErrorChange: (params: { hasError: boolean }) => void;
 };
 
 const DEFAULT_HEIGHT = 300;
 
 export const YamlCodeBlockFormField = memo((props: Props) => {
-    const { className, title, description, expectedDataType, onRemove, value, onChange } =
-        props;
+    const {
+        className,
+        title,
+        description,
+        expectedDataType,
+        onRemove,
+        value,
+        onChange,
+        onErrorChange
+    } = props;
 
     const { t } = useTranslation({ YamlCodeBlockFormField });
 
@@ -74,6 +83,10 @@ export const YamlCodeBlockFormField = memo((props: Props) => {
                 };
             }
         });
+
+    useEffect(() => {
+        onErrorChange({ "hasError": errorMessageKey !== undefined });
+    }, [errorMessageKey]);
 
     const inputId = useId();
 

@@ -722,6 +722,7 @@ Fühlen Sie sich frei, Ihre Kubernetes-Bereitstellungen zu erkunden und die Kont
     "LauncherMainCard": {
         "friendly name": "Personalisierter Name",
         "launch": "Starten",
+        "problem with": "Problem mit:",
         "cancel": "Abbrechen",
         "copy auto launch url": "URL für automatisches Starten kopieren",
         "copy auto launch url helper": ({

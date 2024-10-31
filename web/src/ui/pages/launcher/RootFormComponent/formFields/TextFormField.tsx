@@ -1,4 +1,4 @@
-import { memo, useId, useState } from "react";
+import { memo, useId, useState, useEffect } from "react";
 import Input from "@mui/material/Input";
 import InputAdornment from "@mui/material/InputAdornment";
 import { FormFieldWrapper } from "./shared/FormFieldWrapper";
@@ -21,6 +21,7 @@ type Props = {
     onRemove: (() => void) | undefined;
     value: string;
     onChange: (newValue: string) => void;
+    onErrorChange: (params: { hasError: boolean }) => void;
 };
 
 export const TextFormField = memo((props: Props) => {
@@ -34,7 +35,8 @@ export const TextFormField = memo((props: Props) => {
         pattern,
         onRemove,
         value,
-        onChange
+        onChange,
+        onErrorChange
     } = props;
 
     const { serializedValue, setSerializedValue, errorMessageKey, resetToDefault } =
@@ -62,6 +64,10 @@ export const TextFormField = memo((props: Props) => {
                 };
             }
         });
+
+    useEffect(() => {
+        onErrorChange({ "hasError": errorMessageKey !== undefined });
+    }, [errorMessageKey]);
 
     const { t } = useTranslation({ TextFormField });
 

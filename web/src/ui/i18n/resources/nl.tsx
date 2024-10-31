@@ -718,6 +718,7 @@ Voel je vrij om te verkennen en de controle over je Kubernetes-implementaties te
     "LauncherMainCard": {
         "friendly name": "Gepersonaliseerde naam",
         "launch": "Opstarten",
+        "problem with": "Probleem met:",
         "cancel": "Annuleren",
         "copy auto launch url": "URL voor automatisch starten kopiëren",
         "copy auto launch url helper": ({

@@ -707,6 +707,7 @@ Tutustu vapaasti ja ota hallintaan Kubernetes-julkaisusi!
     "LauncherMainCard": {
         "friendly name": "Käyttäjäystävällinen nimi",
         "launch": "Käynnistä",
+        "problem with": "Ongelma kohteessa:",
         "cancel": "Peruuta",
         "copy auto launch url": "Kopioi automaattisen käynnistyksen URL",
         "copy auto launch url helper": ({

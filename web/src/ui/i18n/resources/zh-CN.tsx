@@ -664,6 +664,7 @@ ${
     "LauncherMainCard": {
         "friendly name": "自定义名称",
         "launch": "启动",
+        "problem with": "问题：",
         "cancel": "取消",
         "copy auto launch url": "复制自动启动 URL",
         "copy auto launch url helper": ({

@@ -716,6 +716,7 @@ Utforsk gjerne og ta kontroll over tjenestene du kjører på Kubernetes!
     "LauncherMainCard": {
         "friendly name": "Vennlig navn",
         "launch": "Start",
+        "problem with": "Problem med:",
         "cancel": "Avbryt",
         "copy auto launch url": "Kopier URL for automatisk oppstart",
         "copy auto launch url helper": ({

@@ -716,6 +716,7 @@ Sentiti libero di esplorare e prendere il controllo dei tuoi deployment Kubernet
     "LauncherMainCard": {
         "friendly name": "Nome personalizzato",
         "launch": "Avviare",
+        "problem with": "Problema con:",
         "cancel": "Annullare",
         "copy auto launch url": "Copia URL di avvio automatico",
         "copy auto launch url helper": ({

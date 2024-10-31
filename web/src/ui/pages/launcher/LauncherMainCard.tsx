@@ -1,4 +1,4 @@
-import { useId, useState, memo, type JSX } from "react";
+import { useId, useState, memo, Fragment, type JSX } from "react";
 import { tss } from "tss";
 import { RoundLogo } from "ui/shared/RoundLogo";
 import { useTranslation } from "ui/i18n";
@@ -21,7 +21,7 @@ import MenuItem from "@mui/material/MenuItem";
 import { declareComponentKeys } from "i18nifty";
 import { symToStr } from "tsafe/symToStr";
 import type { Link } from "type-route";
-import { assert } from "tsafe/assert";
+import { assert, type Equals } from "tsafe/assert";
 import { useResolveLocalizedString, type LocalizedString } from "ui/i18n";
 import { id } from "tsafe/id";
 import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
@@ -88,6 +88,8 @@ export type Props = {
               onSelectedS3ConfigChange: (params: { s3ConfigId: string }) => void;
           }
         | undefined;
+
+    erroredFormFields: (string | number)[][];
 };
 
 export const LauncherMainCard = memo((props: Props) => {
@@ -115,7 +117,8 @@ export const LauncherMainCard = memo((props: Props) => {
         onRequestCopyLaunchUrl,
         onRequestRestoreAllDefault,
 
-        s3ConfigsSelect
+        s3ConfigsSelect,
+        erroredFormFields
     } = props;
 
     const { classes, cx } = useStyles();
@@ -354,24 +357,101 @@ export const LauncherMainCard = memo((props: Props) => {
                     <Button variant="secondary" onClick={onRequestCancel}>
                         {t("cancel")}
                     </Button>
-                    <Button
-                        variant="primary"
-                        onClick={onRequestLaunch}
+
+                    <LaunchButton
                         className={classes.launchButton}
-                    >
-                        {t("launch")}
-                    </Button>
+                        tLaunch={t("launch")}
+                        tProblemWithTheFollowingValues={t("problem with")}
+                        onRequestLaunch={onRequestLaunch}
+                        erroredFormFields={erroredFormFields}
+                    />
                 </div>
             </div>
         </div>
     );
 }, same);
 
+function LaunchButton(props: {
+    className?: string;
+    tLaunch: string;
+    tProblemWithTheFollowingValues: string;
+    onRequestLaunch: () => void;
+    erroredFormFields: (string | number)[][];
+}) {
+    const {
+        className,
+        tLaunch,
+        tProblemWithTheFollowingValues,
+        onRequestLaunch,
+        erroredFormFields
+    } = props;
+
+    const renderButton = (params: { isDisabled: boolean }) => {
+        const { isDisabled } = params;
+
+        return (
+            <Button
+                variant="primary"
+                onClick={onRequestLaunch}
+                className={className}
+                disabled={isDisabled}
+            >
+                {tLaunch}
+            </Button>
+        );
+    };
+
+    if (erroredFormFields.length === 0) {
+        return renderButton({ "isDisabled": false });
+    }
+
+    return (
+        <Tooltip
+            title={
+                <>
+                    <Text typo="body 1">
+                        {tProblemWithTheFollowingValues}
+                        <br />
+                        {erroredFormFields.map((helmValuesPath, i) => (
+                            <Fragment key={i}>
+                                <span>
+                                    {helmValuesPath.reduce<string>((prev, curr) => {
+                                        switch (typeof curr) {
+                                            case "string":
+                                                if (prev === "") {
+                                                    return curr;
+                                                }
+                                                return `${prev}.${curr}`;
+                                            case "number":
+                                                return `${prev}[${curr}]`;
+                                        }
+                                        assert<Equals<typeof curr, never>>();
+                                    }, "")}
+                                </span>
+                                {i < erroredFormFields.length - 1 && (
+                                    <>
+                                        ,<br />
+                                    </>
+                                )}
+                            </Fragment>
+                        ))}
+                    </Text>
+                </>
+            }
+        >
+            <span style={{ "display": "inline-block" }}>
+                {renderButton({ "isDisabled": true })}
+            </span>
+        </Tooltip>
+    );
+}
+
 LauncherMainCard.displayName = symToStr({ LauncherMainCard });
 
 const { i18n } = declareComponentKeys<
     | "cancel"
     | "launch"
+    | "problem with"
     | "friendly name"
     | "copy auto launch url"
     | {

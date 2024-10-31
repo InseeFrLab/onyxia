@@ -1,4 +1,1 @@
-export {
-    FormFieldGroupComponent,
-    FormFieldGroupComponentInner
-} from "./FormFieldGroupComponent";
+export { FormFieldGroupComponent } from "./FormFieldGroupComponent";

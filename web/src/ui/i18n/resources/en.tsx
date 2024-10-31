@@ -703,6 +703,7 @@ Feel free to explore and take charge of your Kubernetes deployments!
     "LauncherMainCard": {
         "friendly name": "Friendly name",
         "launch": "Launch",
+        "problem with": "Problem with:",
         "cancel": "Cancel",
         "copy auto launch url": "Copy auto launch URL",
         "copy auto launch url helper": ({

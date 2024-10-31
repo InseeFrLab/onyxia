@@ -1,4 +1,3 @@
-import type { ReactNode } from "react";
 import { tss } from "tss";
 import { FormFieldGroupComponentWrapper } from "./FormFieldGroupComponentWrapper";
 import type {
@@ -21,71 +20,31 @@ import { declareComponentKeys, useTranslation } from "ui/i18n";
 
 export type Props = {
     className?: string;
-    description: string | undefined;
     helmValuesPath: (string | number)[];
     nodes: (FormField | FormFieldGroup)[];
     canAdd: boolean;
     canRemove: boolean;
     callbacks: FormCallbacks;
-    onRemove: (() => void) | undefined;
 };
 
-export function FormFieldGroupComponent(props: Props): ReactNode {
-    const {
-        className,
-        description,
-        helmValuesPath,
-        canAdd,
-        canRemove,
-        nodes,
-        onRemove,
-        callbacks
-    } = props;
-
-    const { cx, classes } = useStyles();
-
-    return (
-        <FormFieldGroupComponentWrapper
-            className={cx(classes.root, className)}
-            title={(() => {
-                const lastSegment = helmValuesPath[helmValuesPath.length - 1];
-
-                if (typeof lastSegment === "number") {
-                    return undefined;
-                }
-
-                return lastSegment;
-            })()}
-            onRemove={onRemove}
-            description={description}
-        >
-            <FormFieldGroupComponentInner
-                className={classes.inner}
-                nodes={nodes}
-                callbacks={callbacks}
-                canAdd={canAdd}
-                canRemove={canRemove}
-                helmValuesPath={helmValuesPath}
-            />
-        </FormFieldGroupComponentWrapper>
-    );
-}
-
-const useStyles = tss.withName({ FormFieldGroupComponent }).create(() => ({
-    "root": {},
-    "inner": {}
-}));
-
-export function FormFieldGroupComponentInner(
-    props: Omit<Props, "description" | "onRemove">
-) {
+export function FormFieldGroupComponent(props: Props) {
     const { className, canAdd, canRemove, nodes, callbacks, helmValuesPath } = props;
 
-    const { onRemove, onAdd, onChange } = callbacks;
+    const { onRemove, onAdd, onChange, onFieldErrorChange } = callbacks;
 
     const getOnRemove_child = useCallbackFactory(([index]: [number]) => {
         onRemove({ helmValuesPath, index });
     });
+
+    const getOnFieldErrorChange_child = useCallbackFactory(
+        ([helmValuesPathStr]: [string], [params]: [{ hasError: boolean }]) => {
+            const { hasError } = params;
+            onFieldErrorChange({
+                "helmValuesPath": JSON.parse(helmValuesPathStr),
+                hasError
+            });
+        }
+    );
 
     const getOnChange_checkbox = useCallbackFactory(
         ([helmValuesPathStr]: [string], [value]: [boolean]) =>
@@ -185,17 +144,31 @@ export function FormFieldGroupComponentInner(
 
                 if (node.type === "group") {
                     return (
-                        <FormFieldGroupComponent
-                            key={key}
+                        <FormFieldGroupComponentWrapper
                             className={classes.group}
-                            description={node.description}
-                            helmValuesPath={node.helmValuesPath}
-                            nodes={node.nodes}
-                            canAdd={node.canAdd}
-                            canRemove={node.canRemove}
+                            title={(() => {
+                                const { helmValuesPath } = node;
+
+                                const lastSegment =
+                                    helmValuesPath[helmValuesPath.length - 1];
+
+                                if (typeof lastSegment === "number") {
+                                    return undefined;
+                                }
+
+                                return lastSegment;
+                            })()}
                             onRemove={onRemove_child}
-                            callbacks={callbacks}
-                        />
+                            description={node.description}
+                        >
+                            <FormFieldGroupComponent
+                                nodes={node.nodes}
+                                callbacks={callbacks}
+                                canAdd={node.canAdd}
+                                canRemove={node.canRemove}
+                                helmValuesPath={node.helmValuesPath}
+                            />
+                        </FormFieldGroupComponentWrapper>
                     );
                 }
 
@@ -214,7 +187,8 @@ export function FormFieldGroupComponentInner(
                                 )}
                             />
                         );
-                    case "yaml code block":
+                    case "yaml code block": {
+                        const helmValuesPathStr = JSON.stringify(node.helmValuesPath);
                         return (
                             <YamlCodeBlockFormField
                                 key={key}
@@ -224,12 +198,15 @@ export function FormFieldGroupComponentInner(
                                 expectedDataType={node.expectedDataType}
                                 onRemove={onRemove_child}
                                 value={node.value}
-                                onChange={getOnChange_yamlCodeBlock(
-                                    JSON.stringify(node.helmValuesPath)
+                                onChange={getOnChange_yamlCodeBlock(helmValuesPathStr)}
+                                onErrorChange={getOnFieldErrorChange_child(
+                                    helmValuesPathStr
                                 )}
                             />
                         );
-                    case "number field":
+                    }
+                    case "number field": {
+                        const helmValuesPathStr = JSON.stringify(node.helmValuesPath);
                         return (
                             <NumberFormField
                                 key={key}
@@ -240,11 +217,13 @@ export function FormFieldGroupComponentInner(
                                 minimum={node.minimum}
                                 onRemove={onRemove_child}
                                 value={node.value}
-                                onChange={getOnChange_number(
-                                    JSON.stringify(node.helmValuesPath)
+                                onChange={getOnChange_number(helmValuesPathStr)}
+                                onErrorChange={getOnFieldErrorChange_child(
+                                    helmValuesPathStr
                                 )}
                             />
                         );
+                    }
                     case "select":
                         return (
                             <SelectFormField
@@ -260,7 +239,8 @@ export function FormFieldGroupComponentInner(
                                 )}
                             />
                         );
-                    case "text field":
+                    case "text field": {
+                        const helmValuesPathStr = JSON.stringify(node.helmValuesPath);
                         return (
                             <TextFormField
                                 key={key}
@@ -273,11 +253,13 @@ export function FormFieldGroupComponentInner(
                                 pattern={node.pattern}
                                 onRemove={onRemove_child}
                                 value={node.value}
-                                onChange={getOnChange_text(
-                                    JSON.stringify(node.helmValuesPath)
+                                onChange={getOnChange_text(helmValuesPathStr)}
+                                onErrorChange={getOnFieldErrorChange_child(
+                                    helmValuesPathStr
                                 )}
                             />
                         );
+                    }
                     case "slider":
                         return (
                             <SliderFormField
@@ -346,29 +328,27 @@ export function FormFieldGroupComponentInner(
 const { i18n } = declareComponentKeys<"add">()({ FormFieldGroupComponent });
 export type I18n = typeof i18n;
 
-const useStyles_inner = tss
-    .withName({ FormFieldGroupComponentInner })
-    .create(({ theme }) => {
-        const gap = theme.spacing(6);
+const useStyles_inner = tss.withName({ FormFieldGroupComponent }).create(({ theme }) => {
+    const gap = theme.spacing(6);
 
-        return {
-            "root": {
-                "display": "flex",
-                "flexWrap": "wrap",
-                gap
-            },
-            "group": {
-                "flex": "0 0 100%"
-            },
-            "field_text": {
-                "flex": "0 0 300px"
-            },
-            "field_yamlCodeBlock": {
-                "flex": "0 0 100%"
-            },
-            "field_slider": {
-                "flex": `0 0 calc(50% - ${gap / 2}px)`,
-                "boxSizing": "border-box"
-            }
-        };
-    });
+    return {
+        "root": {
+            "display": "flex",
+            "flexWrap": "wrap",
+            gap
+        },
+        "group": {
+            "flex": "0 0 100%"
+        },
+        "field_text": {
+            "flex": "0 0 300px"
+        },
+        "field_yamlCodeBlock": {
+            "flex": "0 0 100%"
+        },
+        "field_slider": {
+            "flex": `0 0 calc(50% - ${gap / 2}px)`,
+            "boxSizing": "border-box"
+        }
+    };
+});

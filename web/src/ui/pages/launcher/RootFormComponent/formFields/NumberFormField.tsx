@@ -1,4 +1,4 @@
-import { memo, useId } from "react";
+import { memo, useId, useEffect } from "react";
 import { FormFieldWrapper } from "./shared/FormFieldWrapper";
 import { useFormField } from "./shared/useFormField";
 import Input from "@mui/material/Input";
@@ -18,6 +18,7 @@ type Props = {
     onRemove: (() => void) | undefined;
     value: number;
     onChange: (newValue: number) => void;
+    onErrorChange: (params: { hasError: boolean }) => void;
 };
 
 export const NumberFormField = memo((props: Props) => {
@@ -30,7 +31,8 @@ export const NumberFormField = memo((props: Props) => {
         minimum,
         onRemove,
         value,
-        onChange
+        onChange,
+        onErrorChange
     } = props;
 
     const { serializedValue, setSerializedValue, errorMessageKey, resetToDefault } =
@@ -84,6 +86,10 @@ export const NumberFormField = memo((props: Props) => {
                 }
             }
         );
+
+    useEffect(() => {
+        onErrorChange({ "hasError": errorMessageKey !== undefined });
+    }, [errorMessageKey]);
 
     const inputId = useId();
 

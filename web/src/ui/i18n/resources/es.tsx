@@ -717,6 +717,7 @@ export const translations: Translations<"en"> = {
     "LauncherMainCard": {
         "friendly name": "Nombre amigable",
         "launch": "Lanzar",
+        "problem with": "Problema con:",
         "cancel": "Cancelar",
         "copy auto launch url": "Copiar URL de lanzamiento automático",
         "copy auto launch url helper": ({ chartName }) =>
