@@ -310,67 +310,6 @@ export function createS3Client(
 
             return getNewlyRequestedOrCachedToken();
         },
-        "list": async ({ path }) => {
-            const { bucketName, prefix } = (() => {
-                const { bucketName, objectName } =
-                    bucketNameAndObjectNameFromS3Path(path);
-
-                const prefix =
-                    objectName === ""
-                        ? ""
-                        : objectName.endsWith("/")
-                          ? objectName
-                          : `${objectName}/`;
-
-                return {
-                    bucketName,
-                    prefix
-                };
-            })();
-
-            const { getAwsS3Client } = await prApi;
-
-            const { awsS3Client } = await getAwsS3Client();
-
-            const Contents: import("@aws-sdk/client-s3")._Object[] = [];
-            const CommonPrefixes: import("@aws-sdk/client-s3").CommonPrefix[] = [];
-
-            {
-                let continuationToken: string | undefined;
-
-                do {
-                    const resp = await awsS3Client.send(
-                        new (await import("@aws-sdk/client-s3")).ListObjectsV2Command({
-                            "Bucket": bucketName,
-                            "Prefix": prefix,
-                            "Delimiter": "/",
-                            "ContinuationToken": continuationToken
-                        })
-                    );
-
-                    Contents.push(...(resp.Contents ?? []));
-
-                    CommonPrefixes.push(...(resp.CommonPrefixes ?? []));
-
-                    continuationToken = resp.NextContinuationToken;
-                } while (continuationToken !== undefined);
-            }
-
-            return {
-                "directories": CommonPrefixes.map(({ Prefix }) => Prefix)
-                    .filter(exclude(undefined))
-                    .map(directoryPath => {
-                        const split = directoryPath.split("/");
-                        return split[split.length - 2];
-                    }),
-                "files": Contents.map(({ Key }) => Key)
-                    .filter(exclude(undefined))
-                    .map(filePath => {
-                        const split = filePath.split("/");
-                        return split[split.length - 1];
-                    })
-            };
-        },
         "listObjects": async ({ path }) => {
             const { bucketName, prefix } = (() => {
                 const { bucketName, objectName } =
