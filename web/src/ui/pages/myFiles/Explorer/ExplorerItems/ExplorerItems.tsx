@@ -134,7 +134,7 @@ export const ExplorerItems = memo((props: ExplorerItemsProps) => {
                             kind,
                             policy,
                             isBeingDeleted,
-                            isBeingUploaded,
+                            isBeingCreated,
                             isPolicyChanging
                         } = item;
                         const size = "size" in item ? item.size : undefined;
@@ -150,9 +150,7 @@ export const ExplorerItems = memo((props: ExplorerItemsProps) => {
                                 onPolicyChange={handlePolicyChange(item)}
                                 onClick={handleItemClick(item)}
                                 onDoubleClick={handleItemDoubleClick(item)}
-                                isCircularProgressShown={
-                                    isBeingDeleted || isBeingUploaded
-                                }
+                                isCircularProgressShown={isBeingDeleted || isBeingCreated}
                                 isPolicyChanging={isPolicyChanging}
                             />
                         );

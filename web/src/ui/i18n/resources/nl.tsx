@@ -415,6 +415,7 @@ export const translations: Translations<"nl"> = {
     "ExplorerItems": {
         "empty directory": "Deze bestandenlijst is leeg"
     },
+
     "SecretsExplorerItems": {
         "empty directory": "Deze bestandenlijst is leeg"
     },
@@ -1042,6 +1043,14 @@ Voel je vrij om te verkennen en de controle over je Kubernetes-implementaties te
     },
     "CustomDataGridToolbarColumnsButton": {
         "toolbarColumnsLabel": "Kolommen"
+    },
+    "CustomDataGrid": {
+        "empty directory": "Deze map is leeg",
+        "label rows count": ({ count }) => {
+            const plural = count > 1 ? "en" : "";
+            return `${count} geselecteerde rij${plural}`;
+        },
+        "label rows per page": "Rijen per pagina"
     }
     /* spell-checker: enable */
 };

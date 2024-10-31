@@ -1029,6 +1029,14 @@ Utforsk gjerne og ta kontroll over tjenestene du kjører på Kubernetes!
         "copied to clipboard": "Kopiert!",
         "copy to clipboard": "Kopier til utklippstavlen"
     },
+    "CustomDataGrid": {
+        "empty directory": "Denne mappen er tom",
+        "label rows count": ({ count }) => {
+            const plural = count > 1 ? "r" : "";
+            return `${count} valgte rad${plural}`;
+        },
+        "label rows per page": "Rader per side"
+    },
     "CustomDataGridToolbarDensitySelector": {
         "toolbarDensity": "Tetthet",
         "toolbarDensityStandard": "Standard",

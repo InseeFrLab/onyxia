@@ -1,24 +1,9 @@
-export type Item = Item.File | Item.Directory;
-export namespace Item {
-    export type Base = {
-        basename: string;
-        policy: "public" | "private";
-        isBeingUploaded: boolean;
-        isBeingDeleted: boolean;
-        isPolicyChanging: boolean;
-    };
+import type { CurrentWorkingDirectoryView } from "core/usecases/fileExplorer";
 
-    export type File = Base & {
-        kind: "file";
-        size: number | undefined;
-        lastModified: Date | undefined;
-    };
+export type Item = CurrentWorkingDirectoryView.Item;
+export type DirectoryItem = CurrentWorkingDirectoryView.Item.Directory;
+export type FileItem = CurrentWorkingDirectoryView.Item.File;
 
-    export type Directory = Base & {
-        kind: "directory";
-    };
-}
-
-export const viewModes = ["list", "block"] as const;
+export const viewModes = ["list", "block"] as const; //the order is important, first is the default for the router
 
 export type ViewMode = (typeof viewModes)[number];

@@ -375,6 +375,7 @@ export const translations: Translations<"fi"> = {
     "ExplorerItems": {
         "empty directory": "Tämä hakemisto on tyhjä"
     },
+
     "SecretsExplorerItems": {
         "empty directory": "Tämä hakemisto on tyhjä"
     },
@@ -1021,6 +1022,14 @@ Tutustu vapaasti ja ota hallintaan Kubernetes-julkaisusi!
     "CopyToClipboardIconButton": {
         "copied to clipboard": "Kopioitu!",
         "copy to clipboard": "Kopioi leikepöydälle"
+    },
+    "CustomDataGrid": {
+        "empty directory": "Tämä hakemisto on tyhjä",
+        "label rows count": ({ count }) => {
+            const plural = count > 1 ? "a" : "";
+            return `${count} valittu riv${plural}`;
+        },
+        "label rows per page": "Rivit per sivu"
     },
     "CustomDataGridToolbarDensitySelector": {
         "toolbarDensity": "Tiheys",

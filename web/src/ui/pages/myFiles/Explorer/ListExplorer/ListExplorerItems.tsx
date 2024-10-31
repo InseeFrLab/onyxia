@@ -4,6 +4,7 @@ import {
     type GridColDef,
     type GridCallbackDetails,
     type GridRowParams,
+    type GridAutosizeOptions,
     GRID_CHECKBOX_SELECTION_COL_DEF,
     useGridApiRef
 } from "@mui/x-data-grid";
@@ -49,6 +50,13 @@ export type ListExplorerItems = {
 
 type Row = Item & { id: number };
 
+const listAutosizeOptions = {
+    expand: true,
+    columns: ["basename", "lastModified"],
+    includeHeaders: true,
+    includeOutliers: true
+} satisfies GridAutosizeOptions;
+
 export const ListExplorerItems = memo((props: ListExplorerItems) => {
     const {
         className,
@@ -76,8 +84,38 @@ export const ListExplorerItems = memo((props: ListExplorerItems) => {
                     ...GRID_CHECKBOX_SELECTION_COL_DEF,
                     maxWidth: 50,
                     renderCell: params => {
-                        if (params.row.isBeingDeleted || params.row.isBeingUploaded)
-                            return <CircularProgress />;
+                        if (params.row.isBeingCreated)
+                            return (
+                                <div className={classes.circularProgressInnerWrapper}>
+                                    {(() => {
+                                        const item = params.row;
+                                        switch (item.kind) {
+                                            case "directory":
+                                                return <CircularProgress size={32} />;
+                                            case "file":
+                                                return (
+                                                    <>
+                                                        <CircularProgress size={32} />
+                                                        <div
+                                                            className={
+                                                                classes.percentageWrapper
+                                                            }
+                                                        >
+                                                            <Text
+                                                                typo="caption"
+                                                                className={
+                                                                    classes.textUploadProgress
+                                                                }
+                                                            >
+                                                                {item.uploadPercent}%
+                                                            </Text>
+                                                        </div>
+                                                    </>
+                                                );
+                                        }
+                                    })()}
+                                </div>
+                            );
 
                         assert(GRID_CHECKBOX_SELECTION_COL_DEF.renderCell !== undefined);
 
@@ -97,25 +135,14 @@ export const ListExplorerItems = memo((props: ListExplorerItems) => {
                                 hasShadow={false}
                                 className={classes.nameIcon}
                             />
-                            <Text typo="label 2">{params.value}</Text>
+                            <a>
+                                <Text typo="label 2">{params.value}</Text>
+                            </a>
                         </>
                     ),
                     cellClassName: classes.basenameCell
                 },
-                {
-                    field: "size",
-                    headerName: "Size",
-                    type: "number",
-                    align: "left",
-                    headerAlign: "left",
-                    valueFormatter: size => {
-                        if (size === undefined) return "";
-                        const prettySize = fileSizePrettyPrint({
-                            bytes: size
-                        });
-                        return `${prettySize.value} ${prettySize.unit}`;
-                    }
-                },
+
                 {
                     field: "lastModified",
                     headerName: "Modified",
@@ -123,6 +150,18 @@ export const ListExplorerItems = memo((props: ListExplorerItems) => {
                     valueFormatter: (date?: Date) => {
                         if (!date) return "";
                         return date.toLocaleString();
+                    }
+                },
+                {
+                    field: "size",
+                    headerName: "Size",
+                    type: "number",
+                    valueFormatter: size => {
+                        if (size === undefined) return "";
+                        const prettySize = fileSizePrettyPrint({
+                            bytes: size
+                        });
+                        return `${prettySize.value} ${prettySize.unit}`;
                     }
                 },
                 {
@@ -250,7 +289,7 @@ export const ListExplorerItems = memo((props: ListExplorerItems) => {
                     }
                 }}
                 isRowSelectable={(params: GridRowParams<Item>) =>
-                    !(params.row.isBeingDeleted || params.row.isBeingUploaded)
+                    !(params.row.isBeingDeleted || params.row.isBeingCreated)
                 }
                 loading={isNavigating}
                 slotProps={{
@@ -266,6 +305,7 @@ export const ListExplorerItems = memo((props: ListExplorerItems) => {
                     if (event.key !== "Enter") return;
                     handleFileOrDirectoryAction(params);
                 }}
+                autosizeOptions={listAutosizeOptions}
                 checkboxSelection
                 disableMultipleRowSelection
                 disableColumnMenu
@@ -286,9 +326,26 @@ const useStyles = tss.withName({ ListExplorerItems }).create(({ theme }) => ({
         "marginRight": theme.spacing(2),
         "flexShrink": 0
     },
+    "circularProgressInnerWrapper": {
+        "position": "relative",
+        "display": "inline-flex"
+    },
     "basenameCell": {
         "cursor": "pointer",
         "display": "flex",
         "alignItems": "center"
+    },
+    "percentageWrapper": {
+        "position": "absolute",
+        "top": 0,
+        "left": 0,
+        "bottom": 0,
+        "right": 0,
+        "display": "flex",
+        "alignItems": "center",
+        "justifyContent": "center"
+    },
+    "textUploadProgress": {
+        "fontSize": theme.typography.rootFontSizePx * 0.6
     }
 }));

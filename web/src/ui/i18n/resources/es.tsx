@@ -379,6 +379,7 @@ export const translations: Translations<"en"> = {
     "ExplorerItems": {
         "empty directory": "Este directorio está vacío"
     },
+
     "SecretsExplorerItems": {
         "empty directory": "Este directorio está vacío"
     },
@@ -1032,7 +1033,14 @@ export const translations: Translations<"en"> = {
         "copied to clipboard": "¡Copiado!",
         "copy to clipboard": "Copiar al portapapeles"
     },
-
+    "CustomDataGrid": {
+        "empty directory": "Este directorio está vacío",
+        "label rows count": ({ count }) => {
+            const plural = count > 1 ? "s" : "";
+            return `${count} fila${plural} seleccionada${plural}`;
+        },
+        "label rows per page": "Filas por página"
+    },
     "CustomDataGridToolbarDensitySelector": {
         "toolbarDensity": "Densidad",
         "toolbarDensityStandard": "Estándar",

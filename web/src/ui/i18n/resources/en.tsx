@@ -367,6 +367,7 @@ export const translations: Translations<"en"> = {
     "ExplorerItems": {
         "empty directory": "This directory is empty"
     },
+
     "SecretsExplorerItems": {
         "empty directory": "This directory is empty"
     },
@@ -1018,6 +1019,14 @@ Feel free to explore and take charge of your Kubernetes deployments!
     "CopyToClipboardIconButton": {
         "copied to clipboard": "Copied!",
         "copy to clipboard": "Copy to clipboard"
+    },
+    "CustomDataGrid": {
+        "empty directory": "This directory is empty",
+        "label rows count": ({ count }) => {
+            const plural = count > 1 ? "s" : "";
+            return `${count} selected row${plural}`;
+        },
+        "label rows per page": "Rows per page"
     },
     "CustomDataGridToolbarDensitySelector": {
         "toolbarDensity": "Density",

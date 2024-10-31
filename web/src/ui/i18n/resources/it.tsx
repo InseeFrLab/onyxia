@@ -415,6 +415,7 @@ export const translations: Translations<"it"> = {
     "ExplorerItems": {
         "empty directory": "Questa cartella è vuota"
     },
+
     "SecretsExplorerItems": {
         "empty directory": "Questa cartella è vuota"
     },
@@ -1032,6 +1033,14 @@ Sentiti libero di esplorare e prendere il controllo dei tuoi deployment Kubernet
     "CopyToClipboardIconButton": {
         "copied to clipboard": "Copiato!",
         "copy to clipboard": "Copia negli appunti"
+    },
+    "CustomDataGrid": {
+        "empty directory": "Questa directory è vuota",
+        "label rows count": ({ count }) => {
+            const plural = count > 1 ? "e" : "a";
+            return `${count} riga${plural} selezionat${plural}`;
+        },
+        "label rows per page": "Righe per pagina"
     },
     "CustomDataGridToolbarDensitySelector": {
         "toolbarDensity": "Densità",

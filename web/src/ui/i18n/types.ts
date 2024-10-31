@@ -82,6 +82,7 @@ export type ComponentKey =
     | import("ui/shared/CommandBar").I18n
     | import("ui/shared/useMoment").I18n
     | import("ui/shared/CopyToClipboardIconButton").I18n
+    | import("ui/shared/Datagrid/CustomDataGrid").I18n
     | import("ui/shared/Datagrid/CustomDataGridToolbarDensitySelector").I18n
     | import("ui/shared/Datagrid/CustomDataGridToolbarColumnsButton").I18n;
 
