@@ -126,22 +126,22 @@ export const { reducer, actions } = createUsecaseActions({
             state.isNavigationOngoing = false;
             bucketPolicy && (state.bucketPolicy = bucketPolicy);
 
-            //Properly restore state when navigating back to
-            //a directory with ongoing operations.
-            // state.ongoingOperations
-            //     .filter(o => pathRelative(o.directoryPath, directoryPath) === "")
-            //     .forEach(o => {
-            //         switch (o.operation) {
-            //             case "delete":
-            //                 removeIfPresent(state.objects, {
-            //                     "kind": o.kind,
-            //                     "basename": o.basename
-            //                 });
-            //                 break;
-            //             case "create":
-            //                 break;
-            //         }
-            //     });
+            // Properly restore state when navigating back to
+            // a directory with ongoing operations.
+            state.ongoingOperations
+                .filter(o => pathRelative(o.directoryPath, directoryPath) === "")
+                .forEach(o => {
+                    switch (o.operation) {
+                        case "delete":
+                            removeIfPresent(state.objects, {
+                                "kind": o.object.kind,
+                                "basename": o.object.basename
+                            });
+                            break;
+                        case "create":
+                            break;
+                    }
+                });
         },
         "operationStarted": (
             state,
