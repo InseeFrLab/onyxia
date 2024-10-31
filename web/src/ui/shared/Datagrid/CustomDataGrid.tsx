@@ -3,12 +3,15 @@ import {
     DataGrid,
     type GridValidRowModel,
     type GridClasses,
-    type GridColDef
+    type GridColDef,
+    type GridAutosizeOptions
 } from "@mui/x-data-grid";
 import { type ComponentProps, useMemo } from "react";
 import { tss } from "tss";
 import { CopyToClipboardIconButton } from "ui/shared/CopyToClipboardIconButton";
 import { CustomNoRowsOverlay } from "./CustomNoRowsOverlay";
+import { declareComponentKeys } from "i18nifty";
+import { useTranslation } from "ui/i18n";
 
 export type CustomDataGridProps<R extends GridValidRowModel = any> = ComponentProps<
     typeof DataGrid<R>
@@ -24,12 +27,14 @@ export const autosizeOptions = {
     expand: true,
     includeHeaders: true,
     includeOutliers: false
-};
+} satisfies GridAutosizeOptions;
 
 export const CustomDataGrid = <R extends GridValidRowModel = any>(
     props: CustomDataGridProps<R>
 ) => {
     const { classes, css } = useStyles();
+
+    const { t } = useTranslation({ CustomDataGrid });
     const {
         columns,
         shouldAddCopyToClipboardInCell = false,
@@ -76,15 +81,33 @@ export const CustomDataGrid = <R extends GridValidRowModel = any>(
     return (
         <DataGrid<R>
             {...propsRest}
-            slots={{ "noRowsOverlay": CustomNoRowsOverlay, ...slots }}
+            slots={{
+                "noRowsOverlay": CustomNoRowsOverlay,
+
+                ...slots
+            }}
+            slotProps={{}}
             columns={modifiedColumns}
             classes={dataGridClasses}
             autosizeOnMount
-            autosizeOptions={autosizeOptions}
+            autosizeOptions={propsRest.autosizeOptions ?? autosizeOptions}
+            localeText={{
+                "MuiTablePagination": {
+                    "labelRowsPerPage": t("label rows per page")
+                },
+                "footerRowSelected": count => t("label rows count", { count })
+            }}
         />
     );
 };
 
+const { i18n } = declareComponentKeys<
+    | "empty directory"
+    | "label rows per page"
+    | { K: "label rows count"; P: { count: number }; R: string }
+>()({ CustomDataGrid });
+
+export type I18n = typeof i18n;
 const useStyles = tss.withName({ CustomDataGrid }).create(({ theme }) => ({
     "columnSeparator": { "&&&&&": { opacity: "1" } }, //Ensures the column separator remains visible (opacity 1) when a column header is selected. By default, MUI reduces the opacity to 0 because an outline is applied to the selected column header
     "iconSeparator": {

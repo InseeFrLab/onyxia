@@ -37,7 +37,7 @@ export const CustomDataGridToolbarColumnsButton = memo(() => {
     );
 
     useEffect(() => {
-        apiRef.current.autosizeColumns(autosizeOptions);
+        apiRef.current.autosizeColumns(autosizeOptions); //Maybe there is a way to get the autosizeOptions with a selector ?
     }, [columnVisibilityModel]);
 
     const showColumns = () => {

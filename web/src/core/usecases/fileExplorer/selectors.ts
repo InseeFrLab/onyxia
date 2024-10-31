@@ -5,7 +5,7 @@ import * as userConfigs from "core/usecases/userConfigs";
 import * as s3ConfigManagement from "core/usecases/s3ConfigManagement";
 import { assert } from "tsafe/assert";
 import * as userAuthentication from "core/usecases/userAuthentication";
-import { S3Object } from "core/ports/S3Client";
+import { id } from "tsafe/id";
 
 const state = (rootState: RootState): State => rootState[name];
 
@@ -50,54 +50,122 @@ const commandLogsEntries = createSelector(
         !userConfigs.isCommandBarEnabled ? undefined : state.commandLogsEntries
 );
 
-type CurrentWorkingDirectoryView = {
+export type CurrentWorkingDirectoryView = {
     directoryPath: string;
-    items: (S3Object & {
-        isBeingUploaded: boolean;
-        isBeingDeleted: boolean;
-        isPolicyChanging: boolean;
-    })[];
+    items: CurrentWorkingDirectoryView.Item[];
 };
+
+export namespace CurrentWorkingDirectoryView {
+    export type Item = Item.File | Item.Directory;
+    export namespace Item {
+        export type Common = {
+            basename: string;
+            policy: "public" | "private";
+            isBeingDeleted: boolean;
+            isPolicyChanging: boolean;
+        };
+
+        export type File = Common & {
+            kind: "file";
+            size: number | undefined;
+            lastModified: Date | undefined;
+        } & (
+                | {
+                      isBeingCreated: false;
+                  }
+                | {
+                      isBeingCreated: true;
+                      uploadPercent: number;
+                  }
+            );
+
+        export type Directory = Common & {
+            kind: "directory";
+            isBeingCreated: boolean;
+        };
+    }
+}
 
 const currentWorkingDirectoryView = createSelector(
     createSelector(state, state => state.directoryPath),
     createSelector(state, state => state.objects),
     createSelector(state, state => state.ongoingOperations),
+    createSelector(state, state => state.s3FilesBeingUploaded),
 
     (
         directoryPath,
         objects,
-        ongoingOperations
+        ongoingOperations,
+        s3FilesBeingUploaded
     ): CurrentWorkingDirectoryView | undefined => {
         if (directoryPath === undefined) {
             return undefined;
         }
+        console.log(ongoingOperations);
+        console.log(objects);
         const items = objects
-            .map(object => {
-                const isBeingUploaded = ongoingOperations.some(
-                    op =>
-                        op.operation === "create" &&
-                        op.object.basename === object.basename
-                );
-
+            .map((object): CurrentWorkingDirectoryView.Item => {
                 const isBeingDeleted = ongoingOperations.some(
                     op =>
+                        op.directoryPath === directoryPath &&
                         op.operation === "delete" &&
                         op.object.basename === object.basename
                 );
 
                 const isPolicyChanging = ongoingOperations.some(
                     op =>
+                        op.directoryPath === directoryPath &&
                         op.operation === "modifyPolicy" &&
                         op.object.basename === object.basename
                 );
 
-                return {
-                    ...object,
-                    isBeingUploaded,
+                const isBeingCreated = ongoingOperations.some(
+                    op =>
+                        op.directoryPath === directoryPath &&
+                        op.operation === "create" &&
+                        op.object.basename === object.basename
+                );
+
+                const common = {
+                    "basename": object.basename,
+                    "policy": object.policy,
                     isBeingDeleted,
                     isPolicyChanging
-                };
+                } satisfies CurrentWorkingDirectoryView.Item.Common;
+
+                switch (object.kind) {
+                    case "file": {
+                        const { size, lastModified } = object;
+
+                        return id<CurrentWorkingDirectoryView.Item.File>({
+                            "kind": "file",
+                            ...common,
+                            size,
+                            lastModified,
+                            ...(isBeingCreated
+                                ? {
+                                      "isBeingCreated": true,
+                                      uploadPercent: (() => {
+                                          const uploadEntry = s3FilesBeingUploaded.find(
+                                              o =>
+                                                  o.basename === object.basename &&
+                                                  o.directoryPath === directoryPath
+                                          );
+                                          return uploadEntry?.uploadPercent ?? 0;
+                                      })()
+                                  }
+                                : {
+                                      "isBeingCreated": false
+                                  })
+                        });
+                    }
+                    case "directory":
+                        return id<CurrentWorkingDirectoryView.Item.Directory>({
+                            kind: "directory",
+                            ...common,
+                            isBeingCreated
+                        });
+                }
             })
             .sort((a, b) => {
                 // Sort directories first

@@ -380,6 +380,7 @@ export const translations: Translations<"zh-CN"> = {
     "ExplorerItems": {
         "empty directory": "此目录为空"
     },
+
     "SecretsExplorerItems": {
         "empty directory": "此目录为空"
     },
@@ -967,6 +968,13 @@ ${
     "CopyToClipboardIconButton": {
         "copied to clipboard": "已复制！",
         "copy to clipboard": "复制到剪贴板"
+    },
+    "CustomDataGrid": {
+        "empty directory": "此目录为空",
+        "label rows count": ({ count }) => {
+            return `${count} 行已选择`;
+        },
+        "label rows per page": "每页行数"
     },
     "CustomDataGridToolbarDensitySelector": {
         "toolbarDensity": "密度",

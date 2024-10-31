@@ -418,6 +418,7 @@ export const translations: Translations<"fr"> = {
     "ExplorerItems": {
         "empty directory": "Ce répertoire est vide"
     },
+
     "SecretsExplorerItems": {
         "empty directory": "Ce répertoire est vide"
     },
@@ -1051,6 +1052,14 @@ N'hésitez pas à explorer et à prendre en main vos déploiements Kubernetes !
     },
     "CustomDataGridToolbarColumnsButton": {
         "toolbarColumnsLabel": "Colonnes"
+    },
+    "CustomDataGrid": {
+        "empty directory": "Ce répertoire est vide",
+        "label rows count": ({ count }) => {
+            const plural = count > 1 ? "s" : "";
+            return `${count} ligne${plural} sélectionnée${plural}`;
+        },
+        "label rows per page": "Lignes par page"
     }
     /* spell-checker: enable */
 };

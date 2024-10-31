@@ -20,9 +20,9 @@ const itemsSample: Item[] = [
         size: 1024000, // en bytes
         lastModified: new Date("2023-10-01"),
         policy: "private",
-        isBeingUploaded: false,
         isBeingDeleted: false,
-        isPolicyChanging: false
+        isPolicyChanging: false,
+        isBeingCreated: false
     },
     {
         kind: "file",
@@ -30,17 +30,18 @@ const itemsSample: Item[] = [
         size: 2048000, // en bytes
         lastModified: new Date("2023-09-15"),
         policy: "public",
-        isBeingUploaded: false,
         isBeingDeleted: false,
-        isPolicyChanging: false
+        isPolicyChanging: false,
+        isBeingCreated: true,
+        uploadPercent: 75 // Example upload percentage
     },
     {
         kind: "directory",
         basename: "Projects",
         policy: "private",
-        isBeingUploaded: false,
         isBeingDeleted: false,
-        isPolicyChanging: false
+        isPolicyChanging: true,
+        isBeingCreated: false
     },
     {
         kind: "file",
@@ -48,17 +49,17 @@ const itemsSample: Item[] = [
         size: 5120000, // en bytes
         lastModified: new Date("2023-09-20"),
         policy: "private",
-        isBeingUploaded: false,
         isBeingDeleted: false,
-        isPolicyChanging: false
+        isPolicyChanging: false,
+        isBeingCreated: false
     },
     {
         kind: "directory",
         basename: "Photos",
         policy: "public",
-        isBeingUploaded: false,
         isBeingDeleted: false,
-        isPolicyChanging: false
+        isPolicyChanging: false,
+        isBeingCreated: false
     }
 ];
 

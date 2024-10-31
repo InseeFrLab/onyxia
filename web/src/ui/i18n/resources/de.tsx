@@ -1038,6 +1038,14 @@ Fühlen Sie sich frei, Ihre Kubernetes-Bereitstellungen zu erkunden und die Kont
         "copied to clipboard": "Kopiert!",
         "copy to clipboard": "In die Zwischenablage kopieren"
     },
+    "CustomDataGrid": {
+        "empty directory": "Dieses Verzeichnis ist leer",
+        "label rows count": ({ count }) => {
+            const plural = count > 1 ? "e" : "";
+            return `${count} ausgewählte Zeil${plural}`;
+        },
+        "label rows per page": "Zeilen pro Seite"
+    },
     "CustomDataGridToolbarDensitySelector": {
         "toolbarDensity": "Dichte",
         "toolbarDensityStandard": "Standard",
