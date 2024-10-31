@@ -31,13 +31,8 @@ export type S3Client = {
     >;
 
     /**
-     *  In charge of creating bucket if doesn't exist. *
-     * @deprecated
+     *  In charge of creating bucket if doesn't exist.
      */
-    list: (params: { path: string }) => Promise<{
-        directories: string[];
-        files: string[];
-    }>;
     listObjects: (params: {
         path: string;
     }) => Promise<{ objects: S3Object[]; bucketPolicy: S3BucketPolicy | undefined }>;
