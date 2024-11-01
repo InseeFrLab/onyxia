@@ -15,6 +15,7 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 const onChangeAction = action("onChange");
+const onErrorChangeAction = action("onErrorChange");
 
 type Params = {
     isReadonly: boolean;
@@ -43,6 +44,7 @@ function StoryWrapper(params: Params) {
                     setValue(newValue);
                 }}
                 onRemove={undefined}
+                onErrorChange={onErrorChangeAction}
             />
             <Divider />
             <p>Value: </p>

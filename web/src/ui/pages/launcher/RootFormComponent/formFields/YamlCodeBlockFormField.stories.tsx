@@ -15,6 +15,7 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 const onChangeAction = action("onChange");
+const onErrorChangeAction = action("onErrorChange");
 
 function StoryWrapper() {
     const [value, setValue] = useState<Stringifyable[] | Record<string, Stringifyable>>({
@@ -44,6 +45,7 @@ function StoryWrapper() {
                     setValue(newValue);
                 }}
                 onRemove={undefined}
+                onErrorChange={onErrorChangeAction}
             />
             <br />
             <br />

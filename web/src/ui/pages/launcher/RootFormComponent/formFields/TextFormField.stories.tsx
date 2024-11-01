@@ -16,6 +16,7 @@ type Story = StoryObj<typeof meta>;
 
 const onChangeAction = action("onChange");
 const onRemoveAction = action("onRemove");
+const onErrorChangeAction = action("onErrorChange");
 
 type Params = {
     isReadonly: boolean;
@@ -46,6 +47,7 @@ function StoryWrapper(params: Params) {
                     setValue(newValue);
                 }}
                 onRemove={hasOnRemove ? () => onRemoveAction() : undefined}
+                onErrorChange={onErrorChangeAction}
             />
             <Divider />
             <p>Value: </p>
