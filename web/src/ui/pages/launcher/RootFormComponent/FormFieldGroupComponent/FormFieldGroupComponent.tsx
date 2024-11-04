@@ -145,6 +145,7 @@ export function FormFieldGroupComponent(props: Props) {
                 if (node.type === "group") {
                     return (
                         <FormFieldGroupComponentWrapper
+                            key={key}
                             className={classes.group}
                             title={(() => {
                                 const { helmValuesPath } = node;
