@@ -139,6 +139,7 @@ export const { reducer, actions } = createUsecaseActions({
                             });
                             break;
                         case "create":
+                            state.objects.push(o.object);
                             break;
                     }
                 });
