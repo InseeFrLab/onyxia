@@ -101,8 +101,6 @@ const currentWorkingDirectoryView = createSelector(
         if (directoryPath === undefined) {
             return undefined;
         }
-        console.log(ongoingOperations);
-        console.log(objects);
         const items = objects
             .map((object): CurrentWorkingDirectoryView.Item => {
                 const isBeingDeleted = ongoingOperations.some(
