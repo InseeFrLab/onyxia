@@ -437,6 +437,12 @@ export const translations: Translations<"fi"> = {
             `,
         "use secret dialog ok": "Selvä"
     },
+    "ListExplorerItems": {
+        "header name": "Nimi",
+        "header modified date": "Muokattu",
+        "header size": "Koko",
+        "header policy": "Käytäntö"
+    },
     "MySecretsEditorRow": {
         "key input desc": "Ympäristömuuttujan nimi",
         "value input desc": "Ympäristömuuttujan arvo"

@@ -419,6 +419,12 @@ export const translations: Translations<"no"> = {
         "can't be empty": "Kan ikke være tom",
         "new directory": "Ny katalog"
     },
+    "ListExplorerItems": {
+        "header name": "Navn",
+        "header modified date": "Endret",
+        "header size": "Størrelse",
+        "header policy": "Retningslinje"
+    },
     "MySecretsEditor": {
         "do not display again": "Ikke vis igjen",
         "add an entry": "Legg til en ny variabel",

@@ -21,6 +21,8 @@ import { useEvt } from "evt/hooks";
 import type { NonPostableEvt } from "evt";
 import { PolicySwitch } from "../PolicySwitch";
 import { CircularProgress } from "onyxia-ui/CircularProgress";
+import { declareComponentKeys } from "i18nifty";
+import { useTranslation } from "ui/i18n";
 
 export type ListExplorerItems = {
     className?: string;
@@ -75,6 +77,7 @@ export const ListExplorerItems = memo((props: ListExplorerItems) => {
 
     const { classes, cx } = useStyles();
 
+    const { t } = useTranslation({ ListExplorerItems });
     const [rowSelectionModel, setRowSelectionModel] = useState<GridRowSelectionModel>([]);
 
     const columns: GridColDef<(typeof rows)[number]>[] = useMemo(
@@ -124,7 +127,7 @@ export const ListExplorerItems = memo((props: ListExplorerItems) => {
                 },
                 {
                     field: "basename",
-                    headerName: "Name",
+                    headerName: t("header name"),
                     type: "string",
                     renderCell: params => (
                         <>
@@ -135,9 +138,7 @@ export const ListExplorerItems = memo((props: ListExplorerItems) => {
                                 hasShadow={false}
                                 className={classes.nameIcon}
                             />
-                            <a>
-                                <Text typo="label 2">{params.value}</Text>
-                            </a>
+                            <Text typo="label 2">{params.value}</Text>
                         </>
                     ),
                     cellClassName: classes.basenameCell
@@ -145,7 +146,7 @@ export const ListExplorerItems = memo((props: ListExplorerItems) => {
 
                 {
                     field: "lastModified",
-                    headerName: "Modified",
+                    headerName: t("header modified date"),
                     type: "date",
                     valueFormatter: (date?: Date) => {
                         if (!date) return "";
@@ -154,7 +155,7 @@ export const ListExplorerItems = memo((props: ListExplorerItems) => {
                 },
                 {
                     field: "size",
-                    headerName: "Size",
+                    headerName: t("header size"),
                     type: "number",
                     valueFormatter: size => {
                         if (size === undefined) return "";
@@ -166,7 +167,7 @@ export const ListExplorerItems = memo((props: ListExplorerItems) => {
                 },
                 {
                     field: "policy",
-                    headerName: "Policy",
+                    headerName: t("header policy"),
                     display: "flex" as const,
                     type: "singleSelect",
                     valueOptions: ["public", "private"],
@@ -313,6 +314,11 @@ export const ListExplorerItems = memo((props: ListExplorerItems) => {
         </div>
     );
 });
+
+const { i18n } = declareComponentKeys<
+    "header name" | "header modified date" | "header size" | "header policy"
+>()({ ListExplorerItems });
+export type I18n = typeof i18n;
 
 const useStyles = tss.withName({ ListExplorerItems }).create(({ theme }) => ({
     "root": {

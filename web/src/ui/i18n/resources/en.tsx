@@ -452,7 +452,12 @@ export const translations: Translations<"en"> = {
         "cancel": "Cancel",
         "minimize": "Minimize"
     },
-
+    "ListExplorerItems": {
+        "header name": "Name",
+        "header modified date": "Modified",
+        "header size": "Size",
+        "header policy": "Policy"
+    },
     "Header": {
         "login": "Login",
         "logout": "Logout",

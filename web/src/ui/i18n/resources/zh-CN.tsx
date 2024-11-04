@@ -359,6 +359,12 @@ export const translations: Translations<"zh-CN"> = {
         "create": "建立",
         "new directory": "新建文件夹"
     },
+    "ListExplorerItems": {
+        "header name": "名称",
+        "header modified date": "修改日期",
+        "header size": "大小",
+        "header policy": "策略"
+    },
     "SecretsExplorer": {
         "file": "文档",
         "secret": "密码",
