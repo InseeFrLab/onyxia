@@ -394,6 +394,12 @@ export const translations: Translations<"it"> = {
         "can't be empty": "Non può essere vuoto",
         "new directory": "Nuova cartella"
     },
+    "ListExplorerItems": {
+        "header name": "Nome",
+        "header modified date": "Modificato",
+        "header size": "Dimensione",
+        "header policy": "Politica"
+    },
     "SecretsExplorer": {
         "file": "file",
         "secret": "segreto",

@@ -421,6 +421,12 @@ export const translations: Translations<"en"> = {
         "can't be empty": "No puede estar vacío",
         "new directory": "Nueva carpeta"
     },
+    "ListExplorerItems": {
+        "header name": "Nombre",
+        "header modified date": "Modificado",
+        "header size": "Tamaño",
+        "header policy": "Política"
+    },
     "MySecretsEditor": {
         "do not display again": "No mostrar de nuevo",
         "add an entry": "Agregar una nueva variable",

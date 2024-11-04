@@ -394,6 +394,12 @@ export const translations: Translations<"nl"> = {
         "can't be empty": "Kan niet leeg zijn",
         "new directory": "Nieuwe map"
     },
+    "ListExplorerItems": {
+        "header name": "Naam",
+        "header modified date": "Gewijzigd",
+        "header size": "Grootte",
+        "header policy": "Beleid"
+    },
     "SecretsExplorer": {
         "file": "bestand",
         "secret": "geheim",

@@ -25,6 +25,7 @@ export type ComponentKey =
     | import("ui/pages/myFiles/Explorer/ExplorerUploadModal/ExplorerUploadModalDropArea").I18n
     | import("ui/pages/myFiles/Explorer/ExplorerUploadModal/ExplorerUploadProgress").I18n
     | import("ui/pages/myFiles/Explorer/ExplorerUploadModal/ExplorerUploadModal").I18n
+    | import("ui/pages/myFiles/Explorer/ListExplorer/ListExplorerItems").I18n
     | import("ui/pages/myFiles/NewComponents/MyFilesShareDialog").I18n
     | import("ui/App/Header/Header").I18n
     | import("ui/App/LeftBar").I18n
