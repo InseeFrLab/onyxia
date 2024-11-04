@@ -80,9 +80,17 @@ export function Accordion(props: Props) {
                 const scrollableParentRect = scrollableParent.getBoundingClientRect();
                 const rootElementRect = rootElement.getBoundingClientRect();
 
-                if (rootElementRect.bottom > scrollableParentRect.bottom) {
-                    scrollableParent.scrollTop +=
-                        rootElementRect.bottom - scrollableParentRect.bottom + 10;
+                const dSpaceLeft = rootElementRect.top - scrollableParentRect.top;
+                const dOutOfView =
+                    rootElementRect.bottom - scrollableParentRect.bottom + 10;
+
+                if (dOutOfView > 0) {
+                    if (dOutOfView >= dSpaceLeft) {
+                        scrollableParent.scrollTop += dSpaceLeft;
+                        break;
+                    }
+
+                    scrollableParent.scrollTop += dOutOfView;
                 }
 
                 await new Promise(resolve => setTimeout(resolve, 5));
