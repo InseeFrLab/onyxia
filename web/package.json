@@ -124,7 +124,7 @@
         "storybook": "^8.2.9",
         "storybook-dark-mode": "^4.0.2",
         "tsx": "^4.7.1",
-        "typescript": "^5.4.5",
+        "typescript": "^5.6.3",
         "vite": "^5.0.8",
         "vite-envs": "^4.4.5",
         "vite-plugin-commonjs": "^0.10.1",
