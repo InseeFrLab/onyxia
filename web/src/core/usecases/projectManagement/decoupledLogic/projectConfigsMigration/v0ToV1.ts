@@ -4,7 +4,6 @@ import type { StringifyableAtomic } from "core/tools/Stringifyable";
 import type { SecretsManager } from "core/ports/SecretsManager";
 import { join as pathJoin } from "pathe";
 import { secretToValue, valueToSecret } from "../secretParsing";
-import type { DeploymentRegion } from "core/ports/OnyxiaApi/DeploymentRegion";
 import YAML from "yaml";
 import { getS3Configs } from "core/usecases/s3ConfigManagement/decoupledLogic/getS3Configs";
 
