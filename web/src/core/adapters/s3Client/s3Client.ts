@@ -400,6 +400,8 @@ export function createS3Client(
                     Contents.push(...(resp.Contents ?? []));
 
                     CommonPrefixes.push(...(resp.CommonPrefixes ?? []));
+
+                    continuationToken = resp.NextContinuationToken;
                 } while (continuationToken !== undefined);
             }
 
