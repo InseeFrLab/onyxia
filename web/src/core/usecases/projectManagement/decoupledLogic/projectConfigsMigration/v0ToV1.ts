@@ -4,6 +4,9 @@ import type { StringifyableAtomic } from "core/tools/Stringifyable";
 import type { SecretsManager } from "core/ports/SecretsManager";
 import { join as pathJoin } from "pathe";
 import { secretToValue, valueToSecret } from "../secretParsing";
+import type { DeploymentRegion } from "core/ports/OnyxiaApi/DeploymentRegion";
+import YAML from "yaml";
+import { getS3Configs } from "core/usecases/s3ConfigManagement/decoupledLogic/getS3Configs";
 
 namespace v0 {
     export type ProjectConfigs = {
@@ -110,13 +113,14 @@ assert<Equals<v1.ProjectConfigs, ProjectConfigs>>;
 export async function v0ToV1(params: {
     projectVaultTopDirPath_reserved: string;
     secretsManager: SecretsManager;
+    s3RegionConfigs: DeploymentRegion.S3Config[];
 }) {
-    const { projectVaultTopDirPath_reserved, secretsManager } = params;
+    const { projectVaultTopDirPath_reserved, secretsManager, s3RegionConfigs } = params;
 
     for (const key of [
         "servicePassword",
-        "restorableConfigs",
         "s3",
+        "restorableConfigs",
         "clusterNotificationCheckoutTime"
     ] as const) {
         assert<Equals<typeof key, keyof v0.ProjectConfigs>>();
@@ -140,9 +144,85 @@ export async function v0ToV1(params: {
                                 secretToValue(secret) as v0.ProjectConfigs[typeof key]
                         );
 
-                    console.log("TODO: Convert legacyValue to newValue", legacyValue);
-
                     const newValue: v1.ProjectConfigs[typeof key] = [];
+
+                    legacyValue.forEach(restorableServiceConfig_legacy => {
+                        newValue.push({
+                            "friendlyName": restorableServiceConfig_legacy.friendlyName,
+                            "isShared": restorableServiceConfig_legacy.isShared,
+                            "catalogId": restorableServiceConfig_legacy.catalogId,
+                            "chartName": restorableServiceConfig_legacy.chartName,
+                            "chartVersion": restorableServiceConfig_legacy.chartVersion,
+                            "s3ConfigId": undefined,
+                            "helmValuesPatch": (() => {
+                                const helmValuesPatch: {
+                                    path: (string | number)[];
+                                    value: StringifyableAtomic | undefined;
+                                }[] = [];
+
+                                restorableServiceConfig_legacy.formFieldsValueDifferentFromDefault.forEach(
+                                    formFieldValue => {
+                                        if (typeof formFieldValue.value === "object") {
+                                            assert(formFieldValue.value.type === "yaml");
+
+                                            let parsed: unknown;
+
+                                            try {
+                                                parsed = YAML.parse(
+                                                    formFieldValue.value.yamlStr
+                                                );
+                                            } catch {
+                                                return undefined;
+                                            }
+
+                                            if (
+                                                typeof parsed !== "object" ||
+                                                parsed === null
+                                            ) {
+                                                return;
+                                            }
+
+                                            (function callee(
+                                                path: (string | number)[],
+                                                o: Object
+                                            ) {
+                                                Object.entries(o).forEach(
+                                                    ([segment, value]) => {
+                                                        const newPath = [
+                                                            ...path,
+                                                            segment
+                                                        ];
+
+                                                        if (
+                                                            typeof value === "object" &&
+                                                            value !== null
+                                                        ) {
+                                                            callee(newPath, value);
+                                                            return;
+                                                        }
+
+                                                        helmValuesPatch.push({
+                                                            "path": newPath,
+                                                            value
+                                                        });
+                                                    }
+                                                );
+                                            })(formFieldValue.path, parsed);
+
+                                            return;
+                                        }
+
+                                        helmValuesPatch.push({
+                                            "path": formFieldValue.path,
+                                            "value": formFieldValue.value
+                                        });
+                                    }
+                                );
+
+                                return helmValuesPatch;
+                            })()
+                        });
+                    });
 
                     await secretsManager.put({
                         path,
@@ -163,13 +243,60 @@ export async function v0ToV1(params: {
                                 secretToValue(secret) as v0.ProjectConfigs[typeof key]
                         );
 
-                    console.log("TODO: Convert legacyValue to newValue", legacyValue);
-
                     const newValue: v1.ProjectConfigs[typeof key] = {
                         "s3Configs": [],
                         "s3ConfigId_defaultXOnyxia": undefined,
                         "s3ConfigId_explorer": undefined
                     };
+
+                    legacyValue.customConfigs.forEach((customS3Config_legacy, i) => {
+                        newValue.s3Configs.push({
+                            "creationTime": Date.now() + i,
+                            "friendlyName": customS3Config_legacy.accountFriendlyName,
+                            "url": customS3Config_legacy.url,
+                            "region": customS3Config_legacy.region,
+                            "workingDirectoryPath":
+                                customS3Config_legacy.workingDirectoryPath,
+                            "pathStyleAccess": customS3Config_legacy.pathStyleAccess,
+                            "credentials": customS3Config_legacy.credentials
+                        });
+                    });
+
+                    {
+                        const s3Configs = getS3Configs({
+                            "projectConfigsS3": newValue,
+                            s3RegionConfigs,
+                            "configTestResults": [],
+                            "ongoingConfigTests": [],
+                            "username": "johndoe",
+                            "projectGroup": undefined
+                        });
+
+                        for (const [propertyName_legacy, propertyName] of [
+                            ["indexForXOnyxia", "s3ConfigId_defaultXOnyxia"],
+                            ["indexForExplorer", "s3ConfigId_explorer"]
+                        ] as const) {
+                            if (legacyValue[propertyName_legacy] !== undefined) {
+                                const entry =
+                                    newValue.s3Configs[legacyValue[propertyName_legacy]];
+
+                                assert(entry !== undefined);
+
+                                const s3Config = s3Configs.find(
+                                    s3Config =>
+                                        s3Config.origin === "project" &&
+                                        s3Config.creationTime === entry.creationTime
+                                );
+
+                                assert(s3Config !== undefined);
+
+                                newValue[propertyName] = s3Config.id;
+                            } else {
+                                newValue[propertyName] =
+                                    "a-config-id-that-does-not-exist";
+                            }
+                        }
+                    }
 
                     await secretsManager.put({
                         path,

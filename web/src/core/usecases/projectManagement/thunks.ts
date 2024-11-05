@@ -66,7 +66,11 @@ export const thunks = {
 
             await projectConfigsMigration({
                 secretsManager,
-                projectVaultTopDirPath_reserved
+                projectVaultTopDirPath_reserved,
+                "s3RegionConfigs":
+                    deploymentRegionManagement.selectors.currentDeploymentRegion(
+                        getState()
+                    ).s3Configs
             });
 
             const { projectConfigs } = await (async function getProjectConfig(): Promise<{
@@ -109,7 +113,8 @@ export const thunks = {
                     assert(is<ProjectConfigs>(projectConfigs));
                 } catch {
                     console.warn(
-                        "We got a malformed ProjectConfigs object, clearing it..."
+                        "We got a malformed ProjectConfigs object, clearing it...",
+                        projectConfigs
                     );
 
                     await clearProjectConfigs({
