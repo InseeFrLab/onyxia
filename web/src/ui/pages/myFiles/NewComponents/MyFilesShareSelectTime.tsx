@@ -41,7 +41,7 @@ export function MyFilesShareSelectTime(props: Props) {
         </FormControl>
     );
 }
-const useStyles = tss.withName({ MyFilesShareSelectTime }).create(({}) => ({
+const useStyles = tss.withName({ MyFilesShareSelectTime }).create(() => ({
     "timeSelectWrapper": {
         "minWidth": 200
     }

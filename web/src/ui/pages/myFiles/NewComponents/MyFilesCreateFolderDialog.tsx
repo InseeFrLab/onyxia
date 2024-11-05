@@ -8,11 +8,7 @@ import { TextField } from "onyxia-ui/TextField";
 import { FormControl, FormControlLabel, FormHelperText } from "@mui/material";
 import { Checkbox } from "onyxia-ui/Checkbox";
 
-export type Props = {};
-
-export const MyFilesCreateFolderDialog = memo((props: Props) => {
-    const {} = props;
-
+export const MyFilesCreateFolderDialog = memo(() => {
     const { classes } = useStyles();
     const [isOpen, setIsOpen] = useState(true);
     const onClose = () => setIsOpen(false);

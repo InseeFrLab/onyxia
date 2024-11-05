@@ -8,13 +8,12 @@ import { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
 type Props = {
     className?: string;
     name: string;
-    size: number;
     kind: "directory" | "file";
     isPublic: boolean;
 };
 
 export function DirectoryOrFileDetailed(props: Props) {
-    const { name, size, kind, isPublic, className } = props;
+    const { name, kind, isPublic, className } = props;
     const { classes, cx } = useStyles();
 
     const shareIconId = id<MuiIconComponentName>(
@@ -45,7 +44,6 @@ export function DirectoryOrFileDetailed(props: Props) {
                         &nbsp;
                         {isPublic ? "Dossier public" : "Dossier privé"}
                     </Text>
-                    <Text typo="body 2">- {size} MB</Text>
                 </div>
             </div>
         </div>

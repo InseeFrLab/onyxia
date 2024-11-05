@@ -30,7 +30,6 @@ export const MyFilesShareDialog = memo((props: Props) => {
                 <div className={classes.dialogContent}>
                     <DirectoryOrFileDetailed
                         name="test"
-                        size={100}
                         kind={kind}
                         isPublic={isPublic}
                         className={classes.directoryDetails}
