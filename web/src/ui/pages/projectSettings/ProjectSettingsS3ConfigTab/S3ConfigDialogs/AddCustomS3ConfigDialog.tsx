@@ -22,7 +22,7 @@ import Switch from "@mui/material/Switch";
 
 export type Props = {
     evtOpen: NonPostableEvt<{
-        customConfigIndex: number | undefined;
+        s3ConfigIdToEdit: string | undefined;
     }>;
 };
 
@@ -37,8 +37,8 @@ export const AddCustomS3ConfigDialog = memo((props: Props) => {
 
     useEvt(
         ctx =>
-            evtOpen.attach(ctx, ({ customConfigIndex }) =>
-                s3ConfigCreation.initialize({ customConfigIndex })
+            evtOpen.attach(ctx, ({ s3ConfigIdToEdit }) =>
+                s3ConfigCreation.initialize({ s3ConfigIdToEdit })
             ),
         [evtOpen]
     );
@@ -153,6 +153,26 @@ const Body = memo(() => {
         <>
             <FormGroup className={classes.serverConfigFormGroup}>
                 <TextField
+                    className={css({
+                        "marginBottom": theme.spacing(6)
+                    })}
+                    label={t("friendlyName textField label")}
+                    helperText={t("friendlyName textField helper text")}
+                    helperTextError={
+                        formValuesErrors.friendlyName === undefined
+                            ? undefined
+                            : t(formValuesErrors.friendlyName)
+                    }
+                    defaultValue={formValues.friendlyName}
+                    doOnlyShowErrorAfterFirstFocusLost
+                    onValueBeingTypedChange={({ value }) =>
+                        s3ConfigCreation.changeValue({
+                            "key": "friendlyName",
+                            value
+                        })
+                    }
+                />
+                <TextField
                     label={t("url textField label")}
                     helperText={t("url textField helper text")}
                     helperTextError={
@@ -259,26 +279,6 @@ const Body = memo(() => {
                 >
                     {t("account credentials")}
                 </FormLabel>
-                <TextField
-                    className={css({
-                        "marginBottom": theme.spacing(6)
-                    })}
-                    label={t("accountFriendlyName textField label")}
-                    helperText={t("accountFriendlyName textField helper text")}
-                    helperTextError={
-                        formValuesErrors.accountFriendlyName === undefined
-                            ? undefined
-                            : t(formValuesErrors.accountFriendlyName)
-                    }
-                    defaultValue={formValues.accountFriendlyName}
-                    doOnlyShowErrorAfterFirstFocusLost
-                    onValueBeingTypedChange={({ value }) =>
-                        s3ConfigCreation.changeValue({
-                            "key": "accountFriendlyName",
-                            value
-                        })
-                    }
-                />
                 <FormControl
                     className={css({
                         "marginBottom": theme.spacing(6)
@@ -417,8 +417,8 @@ const { i18n } = declareComponentKeys<
           R: JSX.Element;
       }
     | "account credentials"
-    | "accountFriendlyName textField label"
-    | "accountFriendlyName textField helper text"
+    | "friendlyName textField label"
+    | "friendlyName textField helper text"
     | "isAnonymous switch label"
     | "isAnonymous switch helper text"
     | "accessKeyId textField label"

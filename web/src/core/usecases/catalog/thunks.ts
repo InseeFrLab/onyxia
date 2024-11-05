@@ -7,7 +7,6 @@ import { is } from "tsafe/is";
 import memoize from "memoizee";
 import FlexSearch from "flexsearch";
 import { getMatchPositions } from "core/tools/highlightMatches";
-import { Chart } from "core/ports/OnyxiaApi";
 import * as projectManagement from "core/usecases/projectManagement";
 import * as userAuthentication from "core/usecases/userAuthentication";
 
@@ -49,8 +48,8 @@ export const thunks = {
                     !userAuthentication.selectors.authenticationState(getState())
                         .isUserLoggedIn
                         ? false
-                        : projectManagement.selectors.currentProject(getState()).group !==
-                          undefined;
+                        : projectManagement.protectedSelectors.currentProject(getState())
+                              .group !== undefined;
 
                 const { catalogs: catalogs_all, chartsByCatalogId } =
                     await onyxiaApi.getCatalogsAndCharts();
@@ -82,25 +81,12 @@ export const thunks = {
                         Object.keys(chartsByCatalogId).forEach(
                             catalogId =>
                                 (out[catalogId] = chartsByCatalogId[catalogId].map(
-                                    chart => {
-                                        const defaultVersion =
-                                            Chart.getDefaultVersion(chart);
-
-                                        const {
-                                            description = "",
-                                            iconUrl,
-                                            projectHomepageUrl
-                                        } = chart.versions.find(
-                                            ({ version }) => version === defaultVersion
-                                        )!;
-
-                                        return {
-                                            "name": chart.name,
-                                            description,
-                                            iconUrl,
-                                            projectHomepageUrl
-                                        };
-                                    }
+                                    chart => ({
+                                        "name": chart.name,
+                                        "description": chart.description ?? "",
+                                        "iconUrl": chart.iconUrl,
+                                        "projectHomepageUrl": chart.projectHomepageUrl
+                                    })
                                 ))
                         );
 

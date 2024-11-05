@@ -203,9 +203,9 @@ export const translations: Translations<"de"> = {
             </>
         ),
         "account credentials": "Kontozugangsdaten",
-        "accountFriendlyName textField label": "Benutzerfreundlicher Kontoname",
-        "accountFriendlyName textField helper text":
-            "Dient nur zur Identifikation dieses Kontos. Beispiel: Mein persönliches Konto",
+        "friendlyName textField label": "Konfigurationsname",
+        "friendlyName textField helper text":
+            "Dies hilft Ihnen nur, diese Konfiguration zu identifizieren. Beispiel: Mein AWS-Bucket",
         "isAnonymous switch label": "Anonymer Zugang",
         "isAnonymous switch helper text":
             "Auf EIN stellen, wenn kein geheimer Zugangsschlüssel erforderlich ist",
@@ -539,29 +539,34 @@ export const translations: Translations<"de"> = {
         "go back": "Zurück zu den Hauptdiensten"
     },
     "Launcher": {
-        "header text1": "Servicekatalog",
-        "sources": ({ helmChartName, helmChartRepositoryName, sourceUrls }) => (
+        "sources": ({
+            helmChartName,
+            helmChartRepositoryName,
+            labeledHelmChartSourceUrls
+        }) => (
             <>
-                Sie sind dabei, das Helm-Chart{" "}
+                Das Helm-Chart{" "}
                 {
-                    <MaybeLink href={sourceUrls.helmChartSourceUrl}>
+                    <MaybeLink href={labeledHelmChartSourceUrls.helmChartSourceUrl}>
                         {helmChartName}
                     </MaybeLink>
-                }
-                zu deployen, das zum Helm-Chart-Repository{" "}
+                }{" "}
+                gehört zum Helm-Chart-Repository{" "}
                 {
-                    <MaybeLink href={sourceUrls.helmChartRepositorySourceUrl}>
+                    <MaybeLink
+                        href={labeledHelmChartSourceUrls.helmChartRepositorySourceUrl}
+                    >
                         {helmChartRepositoryName}
                     </MaybeLink>
-                }{" "}
-                gehört.
-                {sourceUrls.dockerImageSourceUrl !== undefined && (
+                }
+                .
+                {labeledHelmChartSourceUrls.dockerImageSourceUrl !== undefined && (
                     <>
                         {" "}
                         Es basiert auf dem Docker-Image{" "}
                         {
                             <MuiLink
-                                href={sourceUrls.dockerImageSourceUrl}
+                                href={labeledHelmChartSourceUrls.dockerImageSourceUrl}
                                 target="_blank"
                             >
                                 {helmChartName}
@@ -672,6 +677,26 @@ Fühlen Sie sich frei, Ihre Kubernetes-Bereitstellungen zu erkunden und die Kont
             </>
         )
     },
+    "FormFieldWrapper": {
+        "reset to default": "Zurücksetzen auf Standardwert"
+    },
+    "YamlCodeBlockFormField": {
+        "not an array": "Ein Array wird erwartet",
+        "not an object": "Ein Objekt wird erwartet",
+        "not valid yaml": "Ungültiges YAML/JSON"
+    },
+    "TextFormField": {
+        "not matching pattern": ({ pattern }) => `Entspricht nicht dem Muster ${pattern}`,
+        "toggle password visibility": "Passwortsichtbarkeit umschalten"
+    },
+    "FormFieldGroupComponent": {
+        "add": "Hinzufügen"
+    },
+    "NumberFormField": {
+        "below minimum": ({ minimum }) => `Muss größer oder gleich ${minimum} sein`,
+        "not a number": "Keine Zahl",
+        "not an integer": "Keine ganze Zahl"
+    },
     "NoLongerBookmarkedDialog": {
         "no longer bookmarked dialog title": "Nicht gespeicherte Änderungen",
         "no longer bookmarked dialog body":
@@ -695,9 +720,9 @@ Fühlen Sie sich frei, Ihre Kubernetes-Bereitstellungen zu erkunden und die Kont
         "reduce": "Reduzieren"
     },
     "LauncherMainCard": {
-        "card title": "Erstellen Sie Ihren eigenen Dienst",
         "friendly name": "Personalisierter Name",
         "launch": "Starten",
+        "problem with": "Problem mit:",
         "cancel": "Abbrechen",
         "copy auto launch url": "URL für automatisches Starten kopieren",
         "copy auto launch url helper": ({
@@ -723,18 +748,20 @@ Fühlen Sie sich frei, Ihre Kubernetes-Bereitstellungen zu erkunden und die Kont
         "version select helper text": ({
             helmCharName,
             helmRepositoryName,
-            sourceUrls
+            labeledHelmChartSourceUrls
         }) => (
             <>
                 Version des Helm-Charts{" "}
                 {
-                    <MaybeLink href={sourceUrls.helmChartSourceUrl}>
+                    <MaybeLink href={labeledHelmChartSourceUrls.helmChartSourceUrl}>
                         {helmCharName}
                     </MaybeLink>
-                }
+                }{" "}
                 das zum Helm-Chart-Repository{" "}
                 {
-                    <MaybeLink href={sourceUrls.helmChartRepositorySourceUrl}>
+                    <MaybeLink
+                        href={labeledHelmChartSourceUrls.helmChartRepositorySourceUrl}
+                    >
                         {helmRepositoryName}
                     </MaybeLink>
                 }{" "}
@@ -750,16 +777,6 @@ Fühlen Sie sich frei, Ihre Kubernetes-Bereitstellungen zu erkunden und die Kont
                 <MuiLink {...projectS3ConfigLink}>S3-Konfiguration</MuiLink>.
             </>
         )
-    },
-    "LauncherConfigurationCard": {
-        "global config": "Globale Konfigurationen",
-        "configuration": ({ packageName }) => `Konfiguration ${packageName}`,
-        "dependency": ({ dependencyName }) => `Abhängigkeit ${dependencyName}`,
-        "launch of a service": ({ dependencyName }) =>
-            `Start eines Dienstes ${dependencyName}`,
-        "mismatching pattern": ({ pattern }) => `Muss ${pattern} entsprechen`,
-        "Invalid YAML Object": "Ungültiges YAML-Objekt",
-        "Invalid YAML Array": "Ungültiges YAML-Array"
     },
     "Footer": {
         "contribute": "Zum Projekt beitragen",

@@ -61,7 +61,6 @@ export default function MyServices(props: Props) {
     } = useCoreState("serviceManagement", "main");
 
     const { isCommandBarEnabled } = useCoreState("userConfigs", "userConfigs");
-    const servicePassword = useCoreState("projectManagement", "servicePassword");
 
     const evtQuotasActionUpdate = useConst(() => Evt.create());
 
@@ -162,7 +161,8 @@ export default function MyServices(props: Props) {
                         chartVersion,
                         friendlyName,
                         isShared,
-                        formFieldsValueDifferentFromDefault,
+                        s3ConfigId,
+                        helmValuesPatch,
                         ...rest
                     } = restorableConfig;
 
@@ -171,10 +171,11 @@ export default function MyServices(props: Props) {
                     return routes.launcher({
                         catalogId,
                         chartName,
-                        "version": restorableConfig.chartVersion,
-                        formFieldsValueDifferentFromDefault,
                         "name": friendlyName,
                         "shared": isShared,
+                        "version": restorableConfig.chartVersion,
+                        "s3": s3ConfigId,
+                        helmValuesPatch,
                         "autoLaunch": autoLaunch ? true : undefined
                     }).link;
                 };
@@ -362,7 +363,6 @@ export default function MyServices(props: Props) {
                                         onRequestChangeFriendlyName
                                     }
                                     evtAction={evtMyServiceCardsAction}
-                                    projectServicePassword={servicePassword}
                                     lastClusterEvent={lastClusterEvent}
                                     onOpenClusterEventsDialog={onOpenClusterEventsDialog}
                                     onRequestChangeSharedStatus={

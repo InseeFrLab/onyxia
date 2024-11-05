@@ -1,9 +1,8 @@
 import type { Oidc } from "core/ports/Oidc";
-import { assert, type Equals } from "tsafe/assert";
+import { assert } from "tsafe/assert";
 import { noUndefined } from "tsafe/noUndefined";
 
 export async function createOidcOrFallback(params: {
-    oidcAdapterImplementationToUseIfNotFallingBack: "default";
     oidcParams:
         | {
               issuerUri?: string;
@@ -12,8 +11,7 @@ export async function createOidcOrFallback(params: {
         | undefined;
     fallbackOidc: Oidc.LoggedIn | undefined;
 }): Promise<Oidc.LoggedIn> {
-    const { oidcAdapterImplementationToUseIfNotFallingBack, oidcParams, fallbackOidc } =
-        params;
+    const { oidcParams, fallbackOidc } = params;
 
     const wrap = (() => {
         const { issuerUri, clientId } = {
@@ -47,11 +45,7 @@ export async function createOidcOrFallback(params: {
         case "oidc client":
             return wrap.oidc;
         case "oidc params": {
-            assert<
-                Equals<typeof oidcAdapterImplementationToUseIfNotFallingBack, "default">
-            >();
-
-            const { createOidc } = await import("../default");
+            const { createOidc } = await import("../oidc");
 
             const oidc = await createOidc({
                 "issuerUri": wrap.oidcParams.issuerUri,

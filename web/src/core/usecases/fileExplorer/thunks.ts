@@ -6,6 +6,7 @@ import { selectors, protectedSelectors } from "./selectors";
 import { onlyIfChanged } from "evt/operators/onlyIfChanged";
 import { join as pathJoin, basename as pathBasename } from "pathe";
 import { crawlFactory } from "core/tools/crawl";
+import * as s3ConfigManagement from "core/usecases/s3ConfigManagement";
 
 export type ExplorersCreateParams =
     | ExplorersCreateParams.Directory
@@ -72,7 +73,7 @@ const privateThunks = {
             // Ensure trailing slash for consistency.
             const directoryPath = params.directoryPath.replace(/\/+$/, "") + "/";
 
-            const [dispatch, getState, { evtAction, s3ClientForExplorer }] = args;
+            const [dispatch, getState, { evtAction }] = args;
 
             if (
                 !doListAgainIfSamePath &&
@@ -110,7 +111,14 @@ const privateThunks = {
                 })
             );
 
-            const { directories, files } = await s3ClientForExplorer.list({
+            const s3Client = await dispatch(
+                s3ConfigManagement.protectedThunks.getS3ConfigAndClientForExplorer()
+            ).then(r => {
+                assert(r !== undefined);
+                return r.s3Client;
+            });
+
+            const { directories, files } = await s3Client.list({
                 "path": directoryPath
             });
 
@@ -182,7 +190,7 @@ export const thunks = {
     "create":
         (params: ExplorersCreateParams) =>
         async (...args) => {
-            const [dispatch, getState, { s3ClientForExplorer }] = args;
+            const [dispatch, getState] = args;
 
             const state = getState()[name];
 
@@ -225,7 +233,14 @@ export const thunks = {
                     })
                 );
 
-                await s3ClientForExplorer.uploadFile({
+                const s3Client = await dispatch(
+                    s3ConfigManagement.protectedThunks.getS3ConfigAndClientForExplorer()
+                ).then(r => {
+                    assert(r !== undefined);
+                    return r.s3Client;
+                });
+
+                await s3Client.uploadFile({
                     path,
                     blob,
                     "onUploadProgress": ({ uploadPercent }) => {
@@ -293,7 +308,7 @@ export const thunks = {
         async (...args) => {
             const { deleteWhat, basename } = params;
 
-            const [dispatch, getState, { s3ClientForExplorer }] = args;
+            const [dispatch, getState] = args;
 
             const state = getState()[name];
 
@@ -317,6 +332,13 @@ export const thunks = {
                 })
             );
 
+            const s3Client = await dispatch(
+                s3ConfigManagement.protectedThunks.getS3ConfigAndClientForExplorer()
+            ).then(r => {
+                assert(r !== undefined);
+                return r.s3Client;
+            });
+
             const deleteFileAndLogCommand = async (filePath: string) => {
                 const cmdId = Date.now();
 
@@ -327,7 +349,7 @@ export const thunks = {
                     })
                 );
 
-                await s3ClientForExplorer.deleteFile({ "path": filePath });
+                await s3Client.deleteFile({ "path": filePath });
 
                 dispatch(
                     actions.commandLogResponseReceived({
@@ -342,10 +364,9 @@ export const thunks = {
                     {
                         const { crawl } = crawlFactory({
                             "list": async ({ directoryPath }) => {
-                                const { directories, files } =
-                                    await s3ClientForExplorer.list({
-                                        "path": directoryPath
-                                    });
+                                const { directories, files } = await s3Client.list({
+                                    "path": directoryPath
+                                });
 
                                 return {
                                     "fileBasenames": files,
@@ -391,7 +412,7 @@ export const thunks = {
         async (...args): Promise<string> => {
             const { basename } = params;
 
-            const [dispatch, getState, { s3ClientForExplorer }] = args;
+            const [dispatch, getState] = args;
 
             const state = getState()[name];
 
@@ -410,7 +431,14 @@ export const thunks = {
                 })
             );
 
-            const downloadUrl = await s3ClientForExplorer.getFileDownloadUrl({
+            const s3Client = await dispatch(
+                s3ConfigManagement.protectedThunks.getS3ConfigAndClientForExplorer()
+            ).then(r => {
+                assert(r !== undefined);
+                return r.s3Client;
+            });
+
+            const downloadUrl = await s3Client.getFileDownloadUrl({
                 path,
                 "validityDurationSecond": 3600
             });

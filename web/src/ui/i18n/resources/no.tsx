@@ -202,9 +202,9 @@ export const translations: Translations<"no"> = {
             </>
         ),
         "account credentials": "Kontoinformasjon",
-        "accountFriendlyName textField label": "Brukervennlig kontonavn",
-        "accountFriendlyName textField helper text":
-            "Dette er bare for å hjelpe deg med å identifisere denne kontoen. Eksempel: Min personlige konto",
+        "friendlyName textField label": "Konfigurasjonsnavn",
+        "friendlyName textField helper text":
+            "Dette er bare for å hjelpe deg med å identifisere denne konfigurasjonen. Eksempel: Min AWS-bøtte",
 
         "isAnonymous switch label": "Anonym tilgang",
         "isAnonymous switch helper text":
@@ -534,29 +534,34 @@ export const translations: Translations<"no"> = {
         "go back": "Tilbake til hovedtjenester"
     },
     "Launcher": {
-        "header text1": "Tjenestekatalog",
-        "sources": ({ helmChartName, helmChartRepositoryName, sourceUrls }) => (
+        "sources": ({
+            helmChartName,
+            helmChartRepositoryName,
+            labeledHelmChartSourceUrls
+        }) => (
             <>
-                Du er i ferd med å starte{" "}
+                Helm-diagrammet{" "}
                 {
-                    <MaybeLink href={sourceUrls.helmChartSourceUrl}>
+                    <MaybeLink href={labeledHelmChartSourceUrls.helmChartSourceUrl}>
                         {helmChartName}
                     </MaybeLink>
-                }
-                fra tjenestekatalogen{" "}
+                }{" "}
+                tilhører Helm-diagramlageret{" "}
                 {
-                    <MaybeLink href={sourceUrls.helmChartRepositorySourceUrl}>
+                    <MaybeLink
+                        href={labeledHelmChartSourceUrls.helmChartRepositorySourceUrl}
+                    >
                         {helmChartRepositoryName}
                     </MaybeLink>
                 }
                 .
-                {sourceUrls.dockerImageSourceUrl !== undefined && (
+                {labeledHelmChartSourceUrls.dockerImageSourceUrl !== undefined && (
                     <>
                         {" "}
-                        Den er basert på Docker-malen{" "}
+                        Det er basert på Docker-bildet{" "}
                         {
                             <MuiLink
-                                href={sourceUrls.dockerImageSourceUrl}
+                                href={labeledHelmChartSourceUrls.dockerImageSourceUrl}
                                 target="_blank"
                             >
                                 {helmChartName}
@@ -667,6 +672,26 @@ Utforsk gjerne og ta kontroll over tjenestene du kjører på Kubernetes!
             </>
         )
     },
+    "FormFieldWrapper": {
+        "reset to default": "Tilbakestill til standard"
+    },
+    "YamlCodeBlockFormField": {
+        "not an array": "En matrise forventes",
+        "not an object": "Et objekt forventes",
+        "not valid yaml": "Ugyldig YAML/JSON"
+    },
+    "TextFormField": {
+        "not matching pattern": ({ pattern }) => `Matcher ikke mønsteret ${pattern}`,
+        "toggle password visibility": "Bytt synlighet for passord"
+    },
+    "FormFieldGroupComponent": {
+        "add": "Legg til"
+    },
+    "NumberFormField": {
+        "below minimum": ({ minimum }) => `Må være større enn eller lik ${minimum}`,
+        "not a number": "Ikke et tall",
+        "not an integer": "Ikke et heltall"
+    },
     "NoLongerBookmarkedDialog": {
         "no longer bookmarked dialog title": "Endringene dine vil ikke bli lagret",
         "no longer bookmarked dialog body":
@@ -689,9 +714,9 @@ Utforsk gjerne og ta kontroll over tjenestene du kjører på Kubernetes!
         "reduce": "Reduser"
     },
     "LauncherMainCard": {
-        "card title": "Opprett dine personlige tjenester",
         "friendly name": "Vennlig navn",
         "launch": "Start",
+        "problem with": "Problem med:",
         "cancel": "Avbryt",
         "copy auto launch url": "Kopier URL for automatisk oppstart",
         "copy auto launch url helper": ({
@@ -716,18 +741,20 @@ Utforsk gjerne og ta kontroll over tjenestene du kjører på Kubernetes!
         "version select helper text": ({
             helmCharName,
             helmRepositoryName,
-            sourceUrls
+            labeledHelmChartSourceUrls
         }) => (
             <>
                 Versjon av Helm-malen{" "}
                 {
-                    <MaybeLink href={sourceUrls.helmChartSourceUrl}>
+                    <MaybeLink href={labeledHelmChartSourceUrls.helmChartSourceUrl}>
                         {helmCharName}
                     </MaybeLink>
-                }
+                }{" "}
                 som tilhører Helm-katalogen{" "}
                 {
-                    <MaybeLink href={sourceUrls.helmChartRepositorySourceUrl}>
+                    <MaybeLink
+                        href={labeledHelmChartSourceUrls.helmChartRepositorySourceUrl}
+                    >
                         {helmRepositoryName}
                     </MaybeLink>
                 }
@@ -743,16 +770,6 @@ Utforsk gjerne og ta kontroll over tjenestene du kjører på Kubernetes!
                 <MuiLink {...projectS3ConfigLink}>S3-konfigurasjon</MuiLink>.
             </>
         )
-    },
-    "LauncherConfigurationCard": {
-        "global config": "Global konfigurasjon",
-        "configuration": ({ packageName }) => `${packageName} konfigurasjoner`,
-        "dependency": ({ dependencyName }) => `${dependencyName} avhengighet`,
-        "launch of a service": ({ dependencyName }) =>
-            `En ${dependencyName} tjeneste vil bli startet`,
-        "mismatching pattern": ({ pattern }) => `Bør samsvare med ${pattern}`,
-        "Invalid YAML Object": "Ugyldig YAML-objekt",
-        "Invalid YAML Array": "Ugyldig YAML-array"
     },
     "Footer": {
         "contribute": "Bidra",

@@ -8,6 +8,7 @@ import { capitalize } from "tsafe/capitalize";
 import { MaybeLink } from "ui/shared/MaybeLink";
 
 export const translations: Translations<"en"> = {
+    /* spell-checker: disable */
     "Account": {
         "infos": "Información de la cuenta",
         "git": "Git",
@@ -202,9 +203,9 @@ export const translations: Translations<"en"> = {
             </>
         ),
         "account credentials": "Credenciales de cuenta",
-        "accountFriendlyName textField label": "Nombre de cuenta amigable",
-        "accountFriendlyName textField helper text":
-            "Esto es solo para ayudarte a identificar esta cuenta. Ejemplo: Mi cuenta personal",
+        "friendlyName textField label": "Nombre de configuración",
+        "friendlyName textField helper text":
+            "Esto es solo para ayudarle a identificar esta configuración. Ejemplo: Mi bucket de AWS",
         "isAnonymous switch label": "Acceso anónimo",
         "isAnonymous switch helper text":
             "Activa esta opción si no se requiere una clave de acceso secreto",
@@ -538,35 +539,40 @@ export const translations: Translations<"en"> = {
         "go back": "Volver a los servicios principales"
     },
     "Launcher": {
-        "header text1": "Catálogo de servicios",
-        "sources": ({ helmChartName, helmChartRepositoryName, sourceUrls }) => (
+        "sources": ({
+            helmChartName,
+            helmChartRepositoryName,
+            labeledHelmChartSourceUrls
+        }) => (
             <>
-                Estás a punto de implementar el{" "}
+                El chart de Helm{" "}
                 {
-                    <MaybeLink href={sourceUrls.helmChartSourceUrl}>
+                    <MaybeLink href={labeledHelmChartSourceUrls.helmChartSourceUrl}>
                         {helmChartName}
                     </MaybeLink>
                 }{" "}
-                gráfico de Helm que pertenece al{" "}
+                pertenece al repositorio de charts de Helm{" "}
                 {
-                    <MaybeLink href={sourceUrls.helmChartRepositorySourceUrl}>
+                    <MaybeLink
+                        href={labeledHelmChartSourceUrls.helmChartRepositorySourceUrl}
+                    >
                         {helmChartRepositoryName}
                     </MaybeLink>
-                }{" "}
-                repositorio de gráficos de Helm.
-                {sourceUrls.dockerImageSourceUrl !== undefined && (
+                }
+                .
+                {labeledHelmChartSourceUrls.dockerImageSourceUrl !== undefined && (
                     <>
                         {" "}
-                        basado en la{" "}
+                        Está basado en la imagen de Docker{" "}
                         {
                             <MuiLink
-                                href={sourceUrls.dockerImageSourceUrl}
+                                href={labeledHelmChartSourceUrls.dockerImageSourceUrl}
                                 target="_blank"
                             >
                                 {helmChartName}
                             </MuiLink>
-                        }{" "}
-                        imagen Docker
+                        }
+                        .
                     </>
                 )}
             </>
@@ -666,6 +672,26 @@ export const translations: Translations<"en"> = {
         ),
         "ok": "Ok"
     },
+    "FormFieldWrapper": {
+        "reset to default": "Restablecer a los valores predeterminados"
+    },
+    "YamlCodeBlockFormField": {
+        "not an array": "Se espera un arreglo",
+        "not an object": "Se espera un objeto",
+        "not valid yaml": "YAML/JSON no válido"
+    },
+    "TextFormField": {
+        "not matching pattern": ({ pattern }) => `No coincide con el patrón ${pattern}`,
+        "toggle password visibility": "Alternar la visibilidad de la contraseña"
+    },
+    "FormFieldGroupComponent": {
+        "add": "Añadir"
+    },
+    "NumberFormField": {
+        "below minimum": ({ minimum }) => `Debe ser mayor o igual a ${minimum}`,
+        "not a number": "No es un número",
+        "not an integer": "No es un número entero"
+    },
     "NoLongerBookmarkedDialog": {
         "no longer bookmarked dialog title": "Tus cambios no se guardarán",
         "no longer bookmarked dialog body":
@@ -689,9 +715,9 @@ export const translations: Translations<"en"> = {
         "reduce": "Reducir"
     },
     "LauncherMainCard": {
-        "card title": "Crea tus servicios personales",
         "friendly name": "Nombre amigable",
         "launch": "Lanzar",
+        "problem with": "Problema con:",
         "cancel": "Cancelar",
         "copy auto launch url": "Copiar URL de lanzamiento automático",
         "copy auto launch url helper": ({ chartName }) =>
@@ -715,19 +741,21 @@ export const translations: Translations<"en"> = {
         "version select helper text": ({
             helmCharName,
             helmRepositoryName,
-            sourceUrls
+            labeledHelmChartSourceUrls
         }) => (
             <>
                 Versión del&nbsp;
                 {
-                    <MaybeLink href={sourceUrls.helmChartSourceUrl}>
+                    <MaybeLink href={labeledHelmChartSourceUrls.helmChartSourceUrl}>
                         {helmCharName}
                     </MaybeLink>
                 }{" "}
                 chart de Helm perteneciente al{" "}
                 {
                     <>
-                        <MaybeLink href={sourceUrls.helmChartRepositorySourceUrl}>
+                        <MaybeLink
+                            href={labeledHelmChartSourceUrls.helmChartRepositorySourceUrl}
+                        >
                             {helmRepositoryName}
                         </MaybeLink>{" "}
                         repositorio de charts de Helm.
@@ -744,16 +772,6 @@ export const translations: Translations<"en"> = {
                 <MuiLink {...projectS3ConfigLink}>Configuración de S3</MuiLink>.
             </>
         )
-    },
-    "LauncherConfigurationCard": {
-        "global config": "Configuración global",
-        "configuration": ({ packageName }) => `Configuraciones de ${packageName}`,
-        "dependency": ({ dependencyName }) => `Dependencia de ${dependencyName}`,
-        "launch of a service": ({ dependencyName }) =>
-            `Se lanzará un servicio ${dependencyName}`,
-        "mismatching pattern": ({ pattern }) => `Debe coincidir con ${pattern}`,
-        "Invalid YAML Object": "Objeto YAML no válido",
-        "Invalid YAML Array": "Arreglo YAML no válido"
     },
     "Footer": {
         "contribute": "Contribuir",
@@ -1007,4 +1025,5 @@ export const translations: Translations<"en"> = {
         "copied to clipboard": "¡Copiado!",
         "copy to clipboard": "Copiar al portapapeles"
     }
+    /* spell-checker: enable */
 };

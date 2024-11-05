@@ -1,143 +1,42 @@
-import type { State as RootState } from "core/bootstrap";
 import { createSelector } from "clean-architecture";
 import * as projectManagement from "core/usecases/projectManagement";
 import * as deploymentRegionManagement from "core/usecases/deploymentRegionManagement";
 import * as userAuthentication from "core/usecases/userAuthentication";
-import { assert, type Equals } from "tsafe/assert";
-import { bucketNameAndObjectNameFromS3Path } from "core/adapters/s3Client/utils/bucketNameAndObjectNameFromS3Path";
-import { id } from "tsafe/id";
-import { name, type ConnectionTestStatus } from "./state";
-
-const state = (rootState: RootState) => rootState[name];
-
-const projectS3Config = createSelector(
-    projectManagement.protectedSelectors.currentProjectConfigs,
-    currentProjectConfigs => currentProjectConfigs.s3
-);
-
-const baseS3Config = createSelector(
-    deploymentRegionManagement.selectors.currentDeploymentRegion,
-    projectManagement.selectors.currentProject,
-    userAuthentication.selectors.user,
-    (deploymentRegion, project, user) => {
-        return {
-            "url": deploymentRegion.s3?.url ?? "",
-            "region": deploymentRegion.s3?.region ?? "",
-            "workingDirectoryPath": ((): string => {
-                const { workingDirectory } = deploymentRegion.s3 ?? {};
-
-                if (workingDirectory === undefined) {
-                    return "";
-                }
-
-                // NOTE: This is the case when no workingDirectory is set in the config.
-                if (
-                    workingDirectory.bucketMode === "shared" &&
-                    workingDirectory.bucketName === ""
-                ) {
-                    return "";
-                }
-
-                return (
-                    (() => {
-                        switch (workingDirectory.bucketMode) {
-                            case "multi":
-                                return project.group === undefined
-                                    ? `${workingDirectory.bucketNamePrefix}${user.username}`
-                                    : `${workingDirectory.bucketNamePrefixGroup}${project.group}`;
-                            case "shared":
-                                return [
-                                    workingDirectory.bucketName,
-                                    project.group === undefined
-                                        ? `${workingDirectory.prefix}${user.username}`
-                                        : `${workingDirectory.prefixGroup}${project.group}`
-                                ].join("/");
-                        }
-                        assert<Equals<typeof workingDirectory, never>>(true);
-                    })()
-                        .trim()
-                        .replace(/\/\//g, "/") // Remove double slashes if any
-                        .replace(/^\//g, "") // Ensure no leading slash
-                        .replace(/\/+$/g, "") + "/"
-                ); // Enforce trailing slash
-            })(),
-            "pathStyleAccess": deploymentRegion.s3?.pathStyleAccess ?? true
-        };
-    }
-);
+import * as s3ConfigConnectionTest from "core/usecases/s3ConfigConnectionTest";
+import { getS3Configs, type S3Config } from "./decoupledLogic/getS3Configs";
 
 const s3Configs = createSelector(
-    baseS3Config,
-    projectS3Config,
-    deploymentRegionManagement.selectors.currentDeploymentRegion,
-    state,
-    (baseS3Config, projectS3Config, deploymentRegion, state) => {
-        function getDataSource(params: {
-            url: string;
-            pathStyleAccess: boolean;
-            workingDirectoryPath: string;
-        }): string {
-            const { url, pathStyleAccess, workingDirectoryPath } = params;
-
-            let out = url;
-
-            out = out.replace(/^https?:\/\//, "").replace(/\/$/, "");
-
-            const { bucketName, objectName } =
-                bucketNameAndObjectNameFromS3Path(workingDirectoryPath);
-
-            out = pathStyleAccess
-                ? `${out}/${bucketName}/${objectName}`
-                : `${bucketName}.${out}/${objectName}`;
-
-            return out;
-        }
-
-        const s3Configs = projectS3Config.customConfigs.map((customS3Config, index) => ({
-            "customConfigIndex": id<number | undefined>(index),
-            "dataSource": getDataSource({
-                "url": customS3Config.url,
-                "pathStyleAccess": customS3Config.pathStyleAccess,
-                "workingDirectoryPath": customS3Config.workingDirectoryPath
-            }),
-            "region": customS3Config.region,
-            "accountFriendlyName": id<string | undefined>(
-                customS3Config.accountFriendlyName
-            ),
-            "isUsedForXOnyxia": projectS3Config.indexForXOnyxia === index,
-            "isUsedForExplorer": projectS3Config.indexForExplorer === index,
-            "connectionTestStatus": id<ConnectionTestStatus | undefined>(
-                state.connectionTestStatuses[index]
-            )
-        }));
-
-        if (deploymentRegion.s3?.sts !== undefined) {
-            s3Configs.unshift({
-                "customConfigIndex": undefined,
-                "dataSource": getDataSource({
-                    "url": baseS3Config.url,
-                    "pathStyleAccess": baseS3Config.pathStyleAccess,
-                    "workingDirectoryPath": baseS3Config.workingDirectoryPath
-                }),
-                "region": baseS3Config.region,
-                "accountFriendlyName": undefined,
-                "isUsedForXOnyxia":
-                    s3Configs.find(({ isUsedForXOnyxia }) => isUsedForXOnyxia) ===
-                    undefined,
-                "isUsedForExplorer":
-                    s3Configs.find(({ isUsedForExplorer }) => isUsedForExplorer) ===
-                    undefined,
-                "connectionTestStatus": undefined
-            });
-        }
-
-        return s3Configs;
-    }
+    createSelector(
+        projectManagement.protectedSelectors.projectConfig,
+        projectConfig => projectConfig.s3
+    ),
+    createSelector(
+        deploymentRegionManagement.selectors.currentDeploymentRegion,
+        deploymentRegion => deploymentRegion.s3Configs
+    ),
+    s3ConfigConnectionTest.protectedSelectors.configTestResults,
+    s3ConfigConnectionTest.protectedSelectors.ongoingConfigTests,
+    createSelector(userAuthentication.selectors.user, user => user.username),
+    createSelector(
+        projectManagement.protectedSelectors.currentProject,
+        project => project.group
+    ),
+    (
+        projectConfigsS3,
+        s3RegionConfigs,
+        configTestResults,
+        ongoingConfigTests,
+        username,
+        projectGroup
+    ): S3Config[] =>
+        getS3Configs({
+            projectConfigsS3,
+            s3RegionConfigs,
+            configTestResults,
+            ongoingConfigTests,
+            username,
+            projectGroup
+        })
 );
-
-export const protectedSelectors = {
-    projectS3Config,
-    baseS3Config
-};
 
 export const selectors = { s3Configs };

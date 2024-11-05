@@ -1,11 +1,8 @@
-import { formFieldsValueToObject } from "core/usecases/launcher/FormField";
-import { allEquals } from "evt/tools/reducers/allEquals";
-import { same } from "evt/tools/inDepth/same";
-import { assert, type Equals } from "tsafe/assert";
+import { assert } from "tsafe/assert";
 import type { Thunks } from "core/bootstrap";
 import * as projectManagement from "core/usecases/projectManagement";
 import { actions, type State } from "./state";
-import { Chart } from "core/ports/OnyxiaApi";
+import { getAreSameRestorableConfig } from "./decoupledLogic/getAreSameRestorableConfig";
 
 export const protectedThunks = {
     "initialize":
@@ -23,28 +20,8 @@ export const protectedThunks = {
 
                 catalogs.forEach(({ id: catalogId }) =>
                     chartsByCatalogId[catalogId].forEach(chart => {
-                        const defaultVersion = Chart.getDefaultVersion(chart);
-
-                        const versions_withIcon = chart.versions.filter(
-                            ({ iconUrl }) => iconUrl !== undefined
-                        );
-
-                        const defaultVersion_withIcon = versions_withIcon.find(
-                            ({ version }) => version === defaultVersion
-                        );
-
-                        (indexedChartsIcons[catalogId] ??= {})[chart.name] = (() => {
-                            if (defaultVersion_withIcon === undefined) {
-                                const version_withIcon = versions_withIcon[0];
-                                if (version_withIcon === undefined) {
-                                    return undefined;
-                                }
-
-                                return version_withIcon.iconUrl;
-                            }
-
-                            return defaultVersion_withIcon.iconUrl;
-                        })();
+                        (indexedChartsIcons[catalogId] ??= {})[chart.name] =
+                            chart.iconUrl;
                     })
                 );
 
@@ -64,7 +41,7 @@ export const thunks = {
             const { restorableConfig } = params;
 
             const { restorableConfigs } =
-                projectManagement.protectedSelectors.currentProjectConfigs(getState());
+                projectManagement.protectedSelectors.projectConfig(getState());
 
             const restorableConfigWithSameFriendlyNameAndSameService = (() => {
                 const results = restorableConfigs.filter(
@@ -122,7 +99,7 @@ export const thunks = {
             const { restorableConfig } = params;
 
             const { restorableConfigs } =
-                projectManagement.protectedSelectors.currentProjectConfigs(getState());
+                projectManagement.protectedSelectors.projectConfig(getState());
 
             const indexOfRestorableConfigToDelete = restorableConfigs.findIndex(
                 restorableConfig_i =>
@@ -146,33 +123,3 @@ export const thunks = {
             );
         }
 } satisfies Thunks;
-
-export function getAreSameRestorableConfig(
-    restorableConfiguration1: projectManagement.ProjectConfigs.RestorableServiceConfig,
-    restorableConfiguration2: projectManagement.ProjectConfigs.RestorableServiceConfig
-): boolean {
-    return [restorableConfiguration1, restorableConfiguration2]
-        .map(
-            ({
-                catalogId,
-                chartName,
-                chartVersion,
-                friendlyName,
-                isShared,
-                formFieldsValueDifferentFromDefault,
-                ...rest
-            }) => {
-                assert<Equals<typeof rest, {}>>();
-
-                return [
-                    catalogId,
-                    chartName,
-                    chartVersion,
-                    friendlyName,
-                    isShared,
-                    formFieldsValueToObject(formFieldsValueDifferentFromDefault)
-                ];
-            }
-        )
-        .reduce(...allEquals(same));
-}

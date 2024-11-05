@@ -2,24 +2,26 @@ import { assert, type Equals } from "tsafe/assert";
 import type { Thunks } from "core/bootstrap";
 import { join as pathJoin } from "pathe";
 import { generateRandomPassword } from "core/tools/generateRandomPassword";
-import {
-    actions,
-    type ProjectConfigs,
-    type ChangeConfigValueParams,
-    zProjectConfigs
-} from "./state";
-import type { Secret } from "core/ports/SecretsManager";
-import { selectors, protectedSelectors } from "./selectors";
+import { actions, type ChangeConfigValueParams } from "./state";
+import { protectedSelectors } from "./selectors";
 import * as userConfigs from "core/usecases/userConfigs";
 import { same } from "evt/tools/inDepth";
 import { id } from "tsafe/id";
 import { is } from "tsafe/is";
+import { updateDefaultS3ConfigsAfterPotentialDeletion } from "core/usecases/s3ConfigManagement/decoupledLogic/updateDefaultS3ConfigsAfterPotentialDeletion";
+import * as deploymentRegionManagement from "core/usecases/deploymentRegionManagement";
+import { getProjectVaultTopDirPath_reserved } from "./decoupledLogic/projectVaultTopDirPath_reserved";
+import { secretToValue, valueToSecret } from "./decoupledLogic/secretParsing";
+import { projectConfigsMigration } from "./decoupledLogic/projectConfigsMigration";
+import { symToStr } from "tsafe/symToStr";
+import { type ProjectConfigs, zProjectConfigs } from "./decoupledLogic/ProjectConfigs";
+import { clearProjectConfigs } from "./decoupledLogic/clearProjectConfigs";
 
 export const thunks = {
     "changeProject":
         (params: { projectId: string }) =>
         async (...args) => {
-            const [dispatch, , { onyxiaApi, secretsManager }] = args;
+            const [dispatch, getState, { onyxiaApi, secretsManager }] = args;
 
             const { projectId } = params;
 
@@ -58,14 +60,13 @@ export const thunks = {
                 writeSessionStorage([...onboardedProjectIds, projectId]);
             })();
 
-            try {
-                await dispatch(
-                    privateThunks.__configMigration({ projectVaultTopDirPath })
-                );
-            } catch {}
-
-            const projectConfigVaultDirPath = getProjectConfigVaultDirPath({
+            const projectVaultTopDirPath_reserved = getProjectVaultTopDirPath_reserved({
                 projectVaultTopDirPath
+            });
+
+            await projectConfigsMigration({
+                secretsManager,
+                projectVaultTopDirPath_reserved
             });
 
             const { projectConfigs } = await (async function getProjectConfig(): Promise<{
@@ -73,7 +74,7 @@ export const thunks = {
             }> {
                 const { files } = await secretsManager
                     .list({
-                        "path": projectConfigVaultDirPath
+                        "path": projectVaultTopDirPath_reserved
                     })
                     .catch(() => {
                         console.log("The above 404 is fine");
@@ -83,7 +84,7 @@ export const thunks = {
                 const projectConfigs = Object.fromEntries(
                     await Promise.all(
                         keys.map(async key => {
-                            const path = pathJoin(projectConfigVaultDirPath, key);
+                            const path = pathJoin(projectVaultTopDirPath_reserved, key);
 
                             if (!files.includes(key)) {
                                 const value = getDefaultConfig(key);
@@ -108,20 +109,14 @@ export const thunks = {
                     assert(is<ProjectConfigs>(projectConfigs));
                 } catch {
                     console.warn(
-                        "We got a malformed ProjectConfigs object, clearing it..."
+                        "We got a malformed ProjectConfigs object, clearing it...",
+                        projectConfigs
                     );
 
-                    await Promise.all(
-                        ["__modelVersion", ...keys].map(async key => {
-                            if (!files.includes(key)) {
-                                return;
-                            }
-
-                            await secretsManager.delete({
-                                "path": pathJoin(projectConfigVaultDirPath, key)
-                            });
-                        })
-                    );
+                    await clearProjectConfigs({
+                        secretsManager,
+                        projectVaultTopDirPath_reserved
+                    });
 
                     return getProjectConfig();
                 }
@@ -130,6 +125,49 @@ export const thunks = {
             })();
 
             await prOnboarding;
+
+            maybe_update_pinned_default_s3_configs: {
+                const actions = updateDefaultS3ConfigsAfterPotentialDeletion({
+                    "projectConfigsS3": projectConfigs.s3,
+                    "s3RegionConfigs":
+                        deploymentRegionManagement.selectors.currentDeploymentRegion(
+                            getState()
+                        ).s3Configs
+                });
+
+                let needUpdate = false;
+
+                for (const propertyName of [
+                    "s3ConfigId_defaultXOnyxia",
+                    "s3ConfigId_explorer"
+                ] as const) {
+                    const action = actions[propertyName];
+
+                    if (!action.isUpdateNeeded) {
+                        continue;
+                    }
+
+                    needUpdate = true;
+
+                    projectConfigs.s3[propertyName] = action.s3ConfigId;
+                }
+
+                if (!needUpdate) {
+                    break maybe_update_pinned_default_s3_configs;
+                }
+
+                {
+                    const { s3 } = projectConfigs;
+
+                    await secretsManager.put({
+                        "path": pathJoin(
+                            projectVaultTopDirPath_reserved,
+                            symToStr({ s3 })
+                        ),
+                        "secret": valueToSecret(s3)
+                    });
+                }
+            }
 
             dispatch(
                 actions.projectChanged({
@@ -160,6 +198,7 @@ export const thunks = {
 } satisfies Thunks;
 
 const keys = [
+    "__modelVersion",
     "servicePassword",
     "restorableConfigs",
     "s3",
@@ -168,202 +207,42 @@ const keys = [
 
 assert<Equals<(typeof keys)[number], keyof ProjectConfigs>>();
 
-export const privateThunks = {
-    "__configMigration":
-        (params: { projectVaultTopDirPath: string }) =>
-        async (...args) => {
-            const { projectVaultTopDirPath } = params;
-
-            const [, getState, { secretsManager, onyxiaApi }] = args;
-
-            const projectConfigVaultDirPath = getProjectConfigVaultDirPath({
-                projectVaultTopDirPath
-            });
-
-            let files: string[];
-
-            try {
-                files = (
-                    await secretsManager.list({
-                        "path": projectConfigVaultDirPath
-                    })
-                ).files;
-            } catch {
-                console.log("The above 404 is fine");
-                return;
-            }
-
-            restorableConfigsStr: {
-                if (!files.includes("restorableConfigsStr")) {
-                    break restorableConfigsStr;
-                }
-
-                const path = pathJoin(projectConfigVaultDirPath, "restorableConfigsStr");
-
-                const value = await secretsManager
-                    .get({ path })
-                    .then(({ secret }) => secret.value as string | null)
-                    .catch(cause => new Error(String(cause), { cause }));
-
-                if (value instanceof Error) {
-                    break restorableConfigsStr;
-                }
-
-                await secretsManager.delete({ path });
-
-                if (value === null) {
-                    break restorableConfigsStr;
-                }
-
-                await secretsManager.put({
-                    "path": pathJoin(projectConfigVaultDirPath, "restorableConfigs"),
-                    "secret": valueToSecret(JSON.parse(value))
-                });
-            }
-
-            moveS3CredentialsToASubObject: {
-                if (!files.includes("s3")) {
-                    break moveS3CredentialsToASubObject;
-                }
-
-                const path = pathJoin(projectConfigVaultDirPath, "s3");
-
-                const s3 = await secretsManager
-                    .get({ path })
-                    .then(({ secret }) => secretToValue(secret) as ProjectConfigs["s3"]);
-
-                let hasPatchBeenApplied = false;
-
-                s3.customConfigs.forEach((customConfig: any) => {
-                    if (!("accessKeyId" in customConfig)) {
-                        return;
-                    }
-
-                    customConfig.credentials = {};
-
-                    for (const key of [
-                        "accessKeyId",
-                        "secretAccessKey",
-                        "sessionToken"
-                    ]) {
-                        customConfig.credentials[key] = customConfig[key];
-                        delete customConfig[key];
-                    }
-
-                    hasPatchBeenApplied = true;
-                });
-
-                if (!hasPatchBeenApplied) {
-                    break moveS3CredentialsToASubObject;
-                }
-
-                await secretsManager.put({
-                    "path": path,
-                    "secret": valueToSecret(s3)
-                });
-            }
-
-            // TODO: Remove this block in a few months
-            moveFriendlyNameAndIsSharedFromFormFieldValuesToRoot: {
-                if (!files.includes("restorableConfigs")) {
-                    break moveFriendlyNameAndIsSharedFromFormFieldValuesToRoot;
-                }
-
-                const path = pathJoin(projectConfigVaultDirPath, "restorableConfigs");
-
-                const secretOrError = await secretsManager
-                    .get({ path })
-                    .then(({ secret }) => secret)
-                    .catch(cause => new Error(String(cause), { cause }));
-
-                if (secretOrError instanceof Error) {
-                    break moveFriendlyNameAndIsSharedFromFormFieldValuesToRoot;
-                }
-
-                const restorableConfigs = secretToValue(secretOrError);
-
-                if (!(restorableConfigs instanceof Array)) {
-                    break moveFriendlyNameAndIsSharedFromFormFieldValuesToRoot;
-                }
-
-                assert(is<ProjectConfigs.RestorableServiceConfig[]>(restorableConfigs));
-
-                if (restorableConfigs.length === 0) {
-                    break moveFriendlyNameAndIsSharedFromFormFieldValuesToRoot;
-                }
-
-                const { isGroupProject } = await (async () => {
-                    const { projects } = await onyxiaApi.getUserAndProjects();
-
-                    let { selectedProjectId } =
-                        userConfigs.selectors.userConfigs(getState());
-
-                    if (
-                        selectedProjectId === null ||
-                        !projects.map(({ id }) => id).includes(selectedProjectId)
-                    ) {
-                        selectedProjectId = projects[0].id;
-                    }
-
-                    const selectedProject = projects.find(
-                        project => project.id === selectedProjectId
-                    );
-
-                    assert(selectedProject !== undefined);
-
-                    const isGroupProject = selectedProject.group !== undefined;
-
-                    return { isGroupProject };
-                })();
-
-                for (const restorableConfig of restorableConfigs) {
-                    if (restorableConfig.friendlyName !== undefined) {
-                        break moveFriendlyNameAndIsSharedFromFormFieldValuesToRoot;
-                    }
-
-                    let friendlyName: string = restorableConfig.chartName;
-                    let isShared: boolean | undefined = isGroupProject
-                        ? false
-                        : undefined;
-
-                    for (const formField of [
-                        ...restorableConfig.formFieldsValueDifferentFromDefault
-                    ]) {
-                        switch (formField.path.join(".")) {
-                            case "onyxia.friendlyName":
-                                assert(typeof formField.value === "string");
-                                friendlyName = formField.value;
-                                break;
-                            case "onyxia.share":
-                                if (!isGroupProject) {
-                                    break;
-                                }
-                                assert(typeof formField.value === "boolean");
-                                isShared = formField.value;
-                                break;
-                            default:
-                                continue;
-                        }
-
-                        restorableConfig.formFieldsValueDifferentFromDefault.splice(
-                            restorableConfig.formFieldsValueDifferentFromDefault.indexOf(
-                                formField
-                            ),
-                            1
-                        );
-                    }
-
-                    restorableConfig.friendlyName = friendlyName;
-                    restorableConfig.isShared = isShared;
-                }
-
-                await secretsManager.put({
-                    path,
-                    "secret": valueToSecret(restorableConfigs)
-                });
-            }
+function getDefaultConfig<K extends keyof ProjectConfigs>(key_: K): ProjectConfigs[K] {
+    const key = key_ as keyof ProjectConfigs;
+    switch (key) {
+        case "__modelVersion": {
+            const out: ProjectConfigs[typeof key] = 1;
+            // @ts-expect-error
+            return out;
         }
-} satisfies Thunks;
+        case "servicePassword": {
+            const out: ProjectConfigs[typeof key] = generateRandomPassword();
+            // @ts-expect-error
+            return out;
+        }
+        case "restorableConfigs": {
+            const out: ProjectConfigs[typeof key] = [];
+            // @ts-expect-error
+            return out;
+        }
+        case "s3": {
+            const out: ProjectConfigs[typeof key] = {
+                "s3Configs": [],
+                // NOTE: We will set to the correct default at initialization
+                "s3ConfigId_defaultXOnyxia": "a-config-id-that-does-not-exist",
+                "s3ConfigId_explorer": "a-config-id-that-does-not-exist"
+            };
+            // @ts-expect-error
+            return out;
+        }
+        case "clusterNotificationCheckoutTime": {
+            const out: ProjectConfigs[typeof key] = 0;
+            // @ts-expect-error
+            return out;
+        }
+    }
+    assert<Equals<typeof key, never>>(false);
+}
 
 export const protectedThunks = {
     "initialize":
@@ -395,14 +274,9 @@ export const protectedThunks = {
 
             const { secretsManager } = rootContext;
 
-            const { id: projectId } = selectors.currentProject(getState());
+            const currentProjectConfig = protectedSelectors.projectConfig(getState());
 
-            if (selectors.currentProject(getState()).id !== projectId) {
-                return;
-            }
-
-            const currentLocalValue =
-                protectedSelectors.currentProjectConfigs(getState())[params.key];
+            const currentLocalValue = currentProjectConfig[params.key];
 
             if (same(currentLocalValue, params.value)) {
                 return;
@@ -411,9 +285,9 @@ export const protectedThunks = {
             dispatch(actions.configValueUpdated(params));
 
             const path = pathJoin(
-                getProjectConfigVaultDirPath({
+                getProjectVaultTopDirPath_reserved({
                     "projectVaultTopDirPath":
-                        selectors.currentProject(getState()).vaultTopDir
+                        protectedSelectors.currentProject(getState()).vaultTopDir
                 }),
                 params.key
             );
@@ -443,82 +317,3 @@ export const protectedThunks = {
             });
         }
 } satisfies Thunks;
-
-function getDefaultConfig<K extends keyof ProjectConfigs>(key_: K): ProjectConfigs[K] {
-    const key = key_ as keyof ProjectConfigs;
-    switch (key) {
-        case "servicePassword": {
-            const out: ProjectConfigs[typeof key] = generateRandomPassword();
-            // @ts-expect-error
-            return out;
-        }
-        case "restorableConfigs": {
-            const out: ProjectConfigs[typeof key] = [];
-            // @ts-expect-error
-            return out;
-        }
-        case "s3": {
-            const out: ProjectConfigs[typeof key] = {
-                "customConfigs": [],
-                "indexForExplorer": undefined,
-                "indexForXOnyxia": undefined
-            };
-            // @ts-expect-error
-            return out;
-        }
-        case "clusterNotificationCheckoutTime": {
-            const out: ProjectConfigs[typeof key] = 0;
-            // @ts-expect-error
-            return out;
-        }
-    }
-    assert<Equals<typeof key, never>>(false);
-}
-
-function valueToSecret(value: any): Secret {
-    if (
-        value === null ||
-        typeof value === "string" ||
-        typeof value === "number" ||
-        typeof value === "boolean"
-    ) {
-        return { "value": value };
-    }
-
-    if (value === undefined) {
-        return {};
-    }
-
-    return { "valueAsJson": JSON.stringify(value) };
-}
-
-function secretToValue(secret: Secret): unknown {
-    const [key, ...otherKeys] = Object.keys(secret);
-
-    assert(
-        key === undefined ||
-            ((key === "value" || key === "valueAsJson") && otherKeys.length === 0),
-        `project config secret should have only one key, either "value" or "valueAsJson", got ${JSON.stringify(
-            secret
-        )}`
-    );
-
-    switch (key) {
-        case undefined:
-            return undefined;
-        case "value":
-            return secret[key];
-        case "valueAsJson": {
-            const valueStr = secret[key];
-
-            assert(typeof valueStr === "string");
-
-            return JSON.parse(valueStr);
-        }
-    }
-}
-
-const getProjectConfigVaultDirPath = (params: { projectVaultTopDirPath: string }) => {
-    const { projectVaultTopDirPath } = params;
-    return pathJoin(projectVaultTopDirPath, ".onyxia");
-};

@@ -1,5 +1,5 @@
 import { Button } from "onyxia-ui/Button";
-import type { ConnectionTestStatus } from "core/usecases/s3ConfigManagement";
+import type { S3Config } from "core/usecases/s3ConfigManagement";
 import { tss } from "tss";
 import { declareComponentKeys, useTranslation } from "ui/i18n";
 import { CircularProgress } from "onyxia-ui/CircularProgress";
@@ -11,7 +11,7 @@ import { assert, type Equals } from "tsafe/assert";
 
 export type Props = {
     className?: string;
-    connectionTestStatus: ConnectionTestStatus;
+    connectionTestStatus: S3Config.FromProject["connectionTestStatus"];
     onTestConnection: (() => void) | undefined;
 };
 
@@ -26,23 +26,27 @@ export function TestS3ConnectionButton(props: Props) {
         <div className={cx(classes.root, className)}>
             <Button
                 variant="ternary"
-                onClick={onTestConnection}
+                onClick={() => {
+                    assert(onTestConnection !== undefined);
+                    onTestConnection();
+                }}
                 startIcon={id<MuiIconComponentName>("SettingsEthernet")}
                 disabled={
-                    onTestConnection === undefined || connectionTestStatus.isTestOngoing
+                    onTestConnection === undefined ||
+                    connectionTestStatus.status === "test ongoing"
                 }
             >
                 {t("test connection")}
             </Button>
             {(() => {
-                if (connectionTestStatus.isTestOngoing) {
+                if (connectionTestStatus.status === "test ongoing") {
                     return <CircularProgress size={theme.spacing(4)} />;
                 }
 
-                switch (connectionTestStatus.stateDescription) {
-                    case "not tested yet":
+                switch (connectionTestStatus.status) {
+                    case "not tested":
                         return null;
-                    case "success":
+                    case "test succeeded":
                         return (
                             <Icon
                                 className={cx(
@@ -56,7 +60,7 @@ export function TestS3ConnectionButton(props: Props) {
                                 icon={id<MuiIconComponentName>("DoneOutline")}
                             />
                         );
-                    case "failed":
+                    case "test failed":
                         return (
                             <>
                                 <Tooltip

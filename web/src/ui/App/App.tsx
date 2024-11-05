@@ -28,7 +28,7 @@ loadThemedFavicon();
 injectCustomFontFaceIfNotAlreadyDone();
 
 const { CoreProvider } = createCoreProvider({
-    "apiUrl": import.meta.env.ONYXIA_API_URL,
+    "apiUrl": env.ONYXIA_API_URL,
     "getCurrentLang": () => evtLang.state,
     "transformUrlBeforeRedirectToLogin": url =>
         [url]
@@ -58,14 +58,18 @@ const { CoreProvider } = createCoreProvider({
 });
 
 type Props = {
-    ScreenScalerOutOfRangeFallbackProvider: (props: {
+    className?: string;
+    ScreenScalerOutOfRangeFallbackProvider?: (props: {
         fallback: JSX.Element;
         children: JSX.Element;
     }) => JSX.Element;
 };
 
 export default function App(props: Props) {
-    const { ScreenScalerOutOfRangeFallbackProvider } = props;
+    const {
+        className,
+        ScreenScalerOutOfRangeFallbackProvider = ({ children }) => <>{children}</>
+    } = props;
     return (
         <RouteProvider>
             <I18nFetchingSuspense>
@@ -74,7 +78,7 @@ export default function App(props: Props) {
                         fallback={<ScreenScalerOutOfRangeFallback />}
                     >
                         <CoreProvider>
-                            <ContextualizedApp />
+                            <ContextualizedApp className={className} />
                         </CoreProvider>
                     </ScreenScalerOutOfRangeFallbackProvider>
                 </OnyxiaUi>
@@ -93,19 +97,21 @@ function ScreenScalerOutOfRangeFallback() {
     return <PortraitModeUnsupported />;
 }
 
-function ContextualizedApp() {
+function ContextualizedApp(props: { className?: string }) {
+    const { className } = props;
+
     useSyncDarkModeWithValueInProfile();
 
     const {
         ref: globalAlertRef,
         domRect: { height: globalAlertHeight }
     } = useDomRect();
-    const { classes } = useStyles({ globalAlertHeight });
+    const { cx, classes } = useStyles({ globalAlertHeight });
     const { isUserLoggedIn } = useCoreState("userAuthentication", "authenticationState");
 
     return (
         <>
-            <div className={classes.root}>
+            <div className={cx(classes.root, className)}>
                 {env.GLOBAL_ALERT !== undefined && (
                     <GlobalAlert
                         ref={globalAlertRef}
@@ -136,7 +142,7 @@ const useStyles = tss
 
         return {
             "root": {
-                "height": "100%",
+                "height": "100vh",
                 "display": "flex",
                 "flexDirection": "column",
                 "backgroundColor": theme.colors.useCases.surfaces.background,

@@ -3,6 +3,7 @@ import { lazy, Suspense } from "react";
 import { createRoot } from "react-dom/client";
 import { assert } from "tsafe/assert";
 const App = lazy(() => import("ui/App"));
+const AppWithoutScreenScaler = lazy(() => import("ui/App/App"));
 const KcLoginThemePage = lazy(() => import("keycloak-theme/login/KcPages"));
 /*
 import { getKcContextMock } from "keycloak-theme/login/getKcContextMock";
@@ -35,8 +36,10 @@ createRoot(rootElement).render(
     <Suspense>
         {window.kcContext !== undefined ? (
             <KcLoginThemePage kcContext={window.kcContext} />
-        ) : (
+        ) : import.meta.env.SCREEN_SCALER === "true" ? (
             <App />
+        ) : (
+            <AppWithoutScreenScaler />
         )}
     </Suspense>
 );
