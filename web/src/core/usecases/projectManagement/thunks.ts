@@ -112,7 +112,7 @@ export const thunks = {
                     );
 
                     await Promise.all(
-                        keys.map(async key => {
+                        ["__modelVersion", ...keys].map(async key => {
                             if (!files.includes(key)) {
                                 return;
                             }
