@@ -113,10 +113,17 @@ export const thunks = {
                         projectConfigs
                     );
 
-                    await clearProjectConfigs({
-                        secretsManager,
-                        projectVaultTopDirPath_reserved
-                    });
+                    await Promise.all(
+                        ["__modelVersion", ...keys].map(async key => {
+                            if (!files.includes(key)) {
+                                return;
+                            }
+
+                            await secretsManager.delete({
+                                "path": pathJoin(projectConfigVaultDirPath, key)
+                            });
+                        })
+                    );
 
                     return getProjectConfig();
                 }
