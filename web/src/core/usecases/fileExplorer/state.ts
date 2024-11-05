@@ -218,15 +218,14 @@ export const { reducer, actions } = createUsecaseActions({
             }
 
             switch (ongoingOperation.operation) {
-                case "create": {
-                    state.objects = state.objects.map(obj => {
-                        const matchingObject = objects.find(
-                            o => o.basename === obj.basename && o.kind === obj.kind
-                        );
-                        return matchingObject ? matchingObject : obj;
-                    });
+                case "create":
+                    state.objects = state.objects.map(
+                        obj =>
+                            objects.find(
+                                o => o.basename === obj.basename && o.kind === obj.kind
+                            ) || obj
+                    );
                     break;
-                }
             }
         },
         "commandLogIssued": (
