@@ -14,7 +14,7 @@ const readyState = createSelector(state, state => {
     return state;
 });
 
-const isReady = createSelector(readyState, state => state !== undefined);
+const isReady = createSelector(readyState, state => state !== null);
 
 const selectedTechnology = createSelector(readyState, state => {
     if (state === null) {
@@ -38,7 +38,7 @@ const initScript = createSelector(
     credentials,
     (isReady, selectedTechnology, credentials) => {
         if (!isReady) {
-            return undefined;
+            return null;
         }
 
         assert(selectedTechnology !== null);
@@ -305,7 +305,7 @@ const main = createSelector(
 
         assert(credentials !== null);
         assert(selectedTechnology !== null);
-        assert(initScript !== undefined);
+        assert(initScript !== null);
         assert(expirationTime !== null);
 
         return {
