@@ -66,11 +66,7 @@ export const thunks = {
 
             await projectConfigsMigration({
                 secretsManager,
-                projectVaultTopDirPath_reserved,
-                "s3RegionConfigs":
-                    deploymentRegionManagement.selectors.currentDeploymentRegion(
-                        getState()
-                    ).s3Configs
+                projectVaultTopDirPath_reserved
             });
 
             const { projectConfigs } = await (async function getProjectConfig(): Promise<{

@@ -5,14 +5,12 @@ import { assert, type Equals } from "tsafe/assert";
 import { clearProjectConfigs } from "../clearProjectConfigs";
 import { join as pathJoin } from "pathe";
 import { secretToValue } from "../secretParsing";
-import type { DeploymentRegion } from "core/ports/OnyxiaApi/DeploymentRegion";
 
 export async function projectConfigsMigration(params: {
     projectVaultTopDirPath_reserved: string;
     secretsManager: SecretsManager;
-    s3RegionConfigs: DeploymentRegion.S3Config[];
 }) {
-    const { projectVaultTopDirPath_reserved, secretsManager, s3RegionConfigs } = params;
+    const { projectVaultTopDirPath_reserved, secretsManager } = params;
 
     const modelVersion = await (async () => {
         const key = "__modelVersion";
@@ -38,8 +36,7 @@ export async function projectConfigsMigration(params: {
         if (modelVersion === 0) {
             await v0ToV1({
                 projectVaultTopDirPath_reserved,
-                secretsManager,
-                s3RegionConfigs
+                secretsManager
             });
         }
     } catch {

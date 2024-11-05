@@ -113,9 +113,10 @@ assert<Equals<v1.ProjectConfigs, ProjectConfigs>>;
 export async function v0ToV1(params: {
     projectVaultTopDirPath_reserved: string;
     secretsManager: SecretsManager;
-    s3RegionConfigs: DeploymentRegion.S3Config[];
 }) {
-    const { projectVaultTopDirPath_reserved, secretsManager, s3RegionConfigs } = params;
+    const { projectVaultTopDirPath_reserved, secretsManager } = params;
+
+    console.log("Performing v0 to v1 migration");
 
     for (const key of [
         "servicePassword",
@@ -265,7 +266,7 @@ export async function v0ToV1(params: {
                     {
                         const s3Configs = getS3Configs({
                             "projectConfigsS3": newValue,
-                            s3RegionConfigs,
+                            "s3RegionConfigs": [],
                             "configTestResults": [],
                             "ongoingConfigTests": [],
                             "username": "johndoe",
