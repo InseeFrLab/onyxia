@@ -1047,10 +1047,10 @@ Fühlen Sie sich frei, Ihre Kubernetes-Bereitstellungen zu erkunden und die Kont
     "CustomDataGrid": {
         "empty directory": "Dieses Verzeichnis ist leer",
         "label rows count": ({ count }) => {
-            const plural = count > 1 ? "e" : "";
-            return `${count} ausgewählte Zeil${plural}`;
+            const plural = count > 1 ? "n" : "";
+            return `${count} Element${plural} ausgewählt`;
         },
-        "label rows per page": "Zeilen pro Seite"
+        "label rows per page": "Elemente pro Seite"
     },
     "CustomDataGridToolbarDensitySelector": {
         "toolbarDensity": "Dichte",

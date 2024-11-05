@@ -22,7 +22,7 @@ export type ExplorerItemsProps = {
     onOpenFile: (params: { basename: string }) => void;
     /** Assert initial value is none */
     onSelectedItemKindValueChange: (params: {
-        selectedItemKind: "file" | "directory" | "none";
+        selectedItemKind: "file" | "directory" | "multiple" | "none";
     }) => void;
 
     onPolicyChange: (params: {
@@ -32,9 +32,7 @@ export type ExplorerItemsProps = {
     }) => void;
     onDeleteItem: (params: { item: Item }) => void;
     onCopyPath: (params: { basename: string }) => void;
-    evtAction: NonPostableEvt<
-        "DELETE SELECTED ITEM" | "COPY SELECTED ITEM PATH" //TODO: Delete, legacy from secret explorer
-    >;
+    evtAction: NonPostableEvt<"DELETE SELECTED ITEM" | "COPY SELECTED ITEM PATH">;
 };
 
 export const ExplorerItems = memo((props: ExplorerItemsProps) => {
@@ -64,7 +62,9 @@ export const ExplorerItems = memo((props: ExplorerItemsProps) => {
 
     const handleItemClick = useCallbackFactory(([item]: [Item]) => {
         if (!selectedItem || selectedItem.kind !== item.kind) {
-            onSelectedItemKindValueChange({ selectedItemKind: item.kind });
+            onSelectedItemKindValueChange({
+                selectedItemKind: item.kind
+            });
         }
         setSelectedItem(item);
     });

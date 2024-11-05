@@ -545,6 +545,29 @@ export function createS3Client(
                 })
             );
         },
+        "deleteFiles": async ({ paths }) => {
+            //bucketName is the same for all paths
+            const { bucketName } = bucketNameAndObjectNameFromS3Path(paths[0]);
+
+            const { getAwsS3Client } = await prApi;
+
+            const { awsS3Client } = await getAwsS3Client();
+
+            await awsS3Client.send(
+                new (await import("@aws-sdk/client-s3")).DeleteObjectsCommand({
+                    "Bucket": bucketName,
+                    Delete: {
+                        "Objects": paths.map(path => {
+                            const { objectName } =
+                                bucketNameAndObjectNameFromS3Path(path);
+                            return {
+                                "Key": objectName
+                            };
+                        })
+                    }
+                })
+            );
+        },
         "getFileDownloadUrl": async ({ path, validityDurationSecond }) => {
             const { bucketName, objectName } = bucketNameAndObjectNameFromS3Path(path);
 

@@ -107,21 +107,27 @@ const currentWorkingDirectoryView = createSelector(
                     op =>
                         op.directoryPath === directoryPath &&
                         op.operation === "delete" &&
-                        op.object.basename === object.basename
+                        op.objects.some(
+                            ongoingObject => ongoingObject.basename === object.basename
+                        )
                 );
 
                 const isPolicyChanging = ongoingOperations.some(
                     op =>
                         op.directoryPath === directoryPath &&
                         op.operation === "modifyPolicy" &&
-                        op.object.basename === object.basename
+                        op.objects.some(
+                            ongoingObject => ongoingObject.basename === object.basename
+                        )
                 );
 
                 const isBeingCreated = ongoingOperations.some(
                     op =>
                         op.directoryPath === directoryPath &&
                         op.operation === "create" &&
-                        op.object.basename === object.basename
+                        op.objects.some(
+                            ongoingObject => ongoingObject.basename === object.basename
+                        )
                 );
 
                 const common = {

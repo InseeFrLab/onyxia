@@ -1054,9 +1054,9 @@ Voel je vrij om te verkennen en de controle over je Kubernetes-implementaties te
         "empty directory": "Deze map is leeg",
         "label rows count": ({ count }) => {
             const plural = count > 1 ? "en" : "";
-            return `${count} geselecteerde rij${plural}`;
+            return `${count} item${plural} geselecteerd`;
         },
-        "label rows per page": "Rijen per pagina"
+        "label rows per page": "Items per pagina"
     }
     /* spell-checker: enable */
 };

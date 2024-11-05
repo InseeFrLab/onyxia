@@ -978,9 +978,9 @@ ${
     "CustomDataGrid": {
         "empty directory": "此目录为空",
         "label rows count": ({ count }) => {
-            return `${count} 行已选择`;
+            return `已选择 ${count} 项`;
         },
-        "label rows per page": "每页行数"
+        "label rows per page": "每页项目数"
     },
     "CustomDataGridToolbarDensitySelector": {
         "toolbarDensity": "密度",

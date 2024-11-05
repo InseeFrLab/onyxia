@@ -52,7 +52,7 @@ export type S3Client = {
 
     deleteFile: (params: { path: string }) => Promise<void>;
 
-    // deleteObjects: (params: { paths: string[] }) => Promise<void>;
+    deleteFiles: (params: { paths: string[] }) => Promise<void>;
 
     getFileDownloadUrl: (params: {
         path: string;

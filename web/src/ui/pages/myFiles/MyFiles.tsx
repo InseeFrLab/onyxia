@@ -64,6 +64,7 @@ function MyFiles(props: Props) {
 
     useEffect(() => {
         if (currentWorkingDirectoryView === undefined) return;
+        console.log(viewMode);
         routes[route.name]({
             ...route.params,
             "path": currentWorkingDirectoryView.directoryPath,
@@ -88,8 +89,20 @@ function MyFiles(props: Props) {
             })
     );
 
-    const onCopyPath = useConstCallback(({ path }: Param0<ExplorerProps["onCopyPath"]>) =>
-        copyToClipboard(path.split("/").slice(2).join("/"))
+    const onDeleteItems = useConstCallback(
+        (params: Param0<ExplorerProps["onDeleteItems"]>) =>
+            fileExplorer.bulkDelete({
+                s3Objects: params.items
+            })
+    );
+
+    const onCopyPath = useConstCallback(
+        ({ path }: Param0<ExplorerProps["onCopyPath"]>) => {
+            assert(currentWorkingDirectoryView !== undefined);
+            return copyToClipboard(
+                path.split(currentWorkingDirectoryView.directoryPath.split("/")[0])[1] //get the path to object without <bucket-name>
+            );
+        }
     );
 
     const { classes, cx } = useStyles();
@@ -188,6 +201,7 @@ function MyFiles(props: Props) {
                 onNavigate={fileExplorer.changeCurrentDirectory}
                 onRefresh={onRefresh}
                 onDeleteItem={onDeleteItem}
+                onDeleteItems={onDeleteItems}
                 onCreateDirectory={onCreateDirectory}
                 onCopyPath={onCopyPath}
                 scrollableDivRef={scrollableDivRef}

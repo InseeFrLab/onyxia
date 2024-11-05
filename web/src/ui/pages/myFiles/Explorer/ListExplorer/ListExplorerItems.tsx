@@ -2,29 +2,28 @@ import {
     type GridCellParams,
     type GridRowSelectionModel,
     type GridColDef,
-    type GridCallbackDetails,
     type GridRowParams,
     type GridAutosizeOptions,
     GRID_CHECKBOX_SELECTION_COL_DEF,
     useGridApiRef
 } from "@mui/x-data-grid";
-import { memo, useMemo, useState } from "react";
+import { memo, useEffect, useMemo, useState } from "react";
 import { ExplorerIcon } from "../ExplorerIcon";
 import { tss } from "tss";
 import { Text } from "onyxia-ui/Text";
 import { fileSizePrettyPrint } from "ui/tools/fileSizePrettyPrint";
 import { CustomDataGrid } from "ui/shared/Datagrid/CustomDataGrid";
-import type { Item } from "../../shared/types";
-import { useConstCallback } from "powerhooks/useConstCallback";
 import { assert } from "tsafe/assert";
+import type { Item } from "../../shared/types";
 import { useEvt } from "evt/hooks";
 import type { NonPostableEvt } from "evt";
 import { PolicySwitch } from "../PolicySwitch";
 import { CircularProgress } from "onyxia-ui/CircularProgress";
 import { declareComponentKeys } from "i18nifty";
 import { useTranslation } from "ui/i18n";
+import Link from "@mui/material/Link";
 
-export type ListExplorerItems = {
+export type ListExplorerItemsProps = {
     className?: string;
 
     isNavigating: boolean;
@@ -35,7 +34,7 @@ export type ListExplorerItems = {
     onOpenFile: (params: { basename: string }) => void;
     /** Assert initial value is none */
     onSelectedItemKindValueChange: (params: {
-        selectedItemKind: "file" | "directory" | "none";
+        selectedItemKind: "file" | "directory" | "multiple" | "none";
     }) => void;
     onPolicyChange: (params: {
         basename: string;
@@ -44,6 +43,7 @@ export type ListExplorerItems = {
     }) => void;
 
     onDeleteItem: (params: { item: Item }, onDeleteConfirmed?: () => void) => void;
+    onDeleteItems: (params: { items: Item[] }, onDeleteConfirmed?: () => void) => void;
     onCopyPath: (params: { basename: string }) => void;
     evtAction: NonPostableEvt<
         "DELETE SELECTED ITEM" | "COPY SELECTED ITEM PATH" //TODO: Delete, legacy from secret explorer
@@ -59,7 +59,7 @@ const listAutosizeOptions = {
     includeOutliers: true
 } satisfies GridAutosizeOptions;
 
-export const ListExplorerItems = memo((props: ListExplorerItems) => {
+export const ListExplorerItems = memo((props: ListExplorerItemsProps) => {
     const {
         className,
         isNavigating,
@@ -67,7 +67,7 @@ export const ListExplorerItems = memo((props: ListExplorerItems) => {
         onNavigate,
         evtAction,
         onCopyPath,
-        onDeleteItem,
+        onDeleteItems,
         onOpenFile,
         onPolicyChange,
         onSelectedItemKindValueChange
@@ -138,7 +138,25 @@ export const ListExplorerItems = memo((props: ListExplorerItems) => {
                                 hasShadow={false}
                                 className={classes.nameIcon}
                             />
-                            <Text typo="label 2">{params.value}</Text>
+                            <Link
+                                onClick={e => {
+                                    e.stopPropagation();
+                                    switch (params.row.kind) {
+                                        case "directory":
+                                            return onNavigate({
+                                                "basename": params.row.basename
+                                            });
+
+                                        case "file":
+                                            return onOpenFile({
+                                                "basename": params.row.basename
+                                            });
+                                    }
+                                }}
+                                color="inherit"
+                            >
+                                <Text typo="label 2">{params.value}</Text>
+                            </Link>
                         </>
                     ),
                     cellClassName: classes.basenameCell
@@ -218,53 +236,52 @@ export const ListExplorerItems = memo((props: ListExplorerItems) => {
     useEvt(
         ctx =>
             evtAction.attach(ctx, action => {
-                const selectedItem = apiRef.current.getSelectedRows().values().next()
-                    .value as Row;
+                const selectedItems = Array.from(
+                    apiRef.current.getSelectedRows().values()
+                ) as Row[];
+
                 switch (action) {
                     case "DELETE SELECTED ITEM": {
-                        assert(selectedItem !== undefined);
-                        onDeleteItem({ "item": selectedItem }, () =>
-                            apiRef.current.updateRows([
-                                { id: selectedItem.id, _action: "delete" }
-                            ])
+                        assert(selectedItems !== undefined);
+                        onDeleteItems({ "items": selectedItems }, () =>
+                            selectedItems.forEach(item =>
+                                apiRef.current.updateRows([
+                                    { id: item.id, _action: "delete" }
+                                ])
+                            )
                         );
                         break;
                     }
                     case "COPY SELECTED ITEM PATH":
-                        assert(selectedItem !== undefined);
+                        assert(selectedItems !== undefined && selectedItems.length === 1);
                         onCopyPath({
-                            "basename": selectedItem.basename
+                            "basename": selectedItems[0].basename
                         });
                         break;
                 }
             }),
-        [evtAction, onDeleteItem, onCopyPath]
+        [evtAction, onDeleteItems, onCopyPath]
     );
 
-    const handleRowSelection = useConstCallback(
-        (params: GridRowSelectionModel, details: GridCallbackDetails) => {
-            const previousSelectedRows = details.api.getSelectedRows();
-            const firstPreviouslySelectedRow = previousSelectedRows.values().next().value;
+    useEffect(() => {
+        onSelectedItemKindValueChange({ selectedItemKind: "none" });
+        setRowSelectionModel([]);
+    }, [isNavigating]);
 
-            const rowIndex = params[0];
-
-            assert(rowIndex === undefined || typeof rowIndex === "number");
-
-            const selectedItemKind =
-                params.length === 0
-                    ? "none"
-                    : firstPreviouslySelectedRow &&
-                        firstPreviouslySelectedRow.kind === rows[rowIndex].kind
-                      ? undefined // No need to update the kind if it hasn't changed
-                      : rows[rowIndex].kind;
-
-            if (selectedItemKind) {
-                onSelectedItemKindValueChange({ selectedItemKind });
-            }
-
-            setRowSelectionModel(params);
+    useEffect(() => {
+        if (rowSelectionModel.length === 0) {
+            onSelectedItemKindValueChange({ selectedItemKind: "none" });
+            return;
         }
-    );
+
+        if (rowSelectionModel.length === 1) {
+            onSelectedItemKindValueChange({
+                selectedItemKind: rows[rowSelectionModel[0] as Row["id"]].kind
+            });
+            return;
+        }
+        onSelectedItemKindValueChange({ selectedItemKind: "multiple" });
+    }, [rowSelectionModel]);
 
     const handleFileOrDirectoryAction = (params: GridCellParams) => {
         if (params.field !== "basename") return;
@@ -292,6 +309,17 @@ export const ListExplorerItems = memo((props: ListExplorerItems) => {
                 isRowSelectable={(params: GridRowParams<Item>) =>
                     !(params.row.isBeingDeleted || params.row.isBeingCreated)
                 }
+                onRowSelectionModelChange={setRowSelectionModel}
+                rowSelectionModel={rowSelectionModel}
+                onRowClick={(params, event) => {
+                    if (rowSelectionModel.includes(params.id)) return;
+
+                    if (event.metaKey) {
+                        return setRowSelectionModel(prev => [...prev, params.id]);
+                    }
+
+                    setRowSelectionModel([params.id]);
+                }}
                 loading={isNavigating}
                 slotProps={{
                     loadingOverlay: {
@@ -299,8 +327,7 @@ export const ListExplorerItems = memo((props: ListExplorerItems) => {
                         noRowsVariant: "linear-progress"
                     }
                 }}
-                onRowSelectionModelChange={handleRowSelection}
-                rowSelectionModel={rowSelectionModel}
+                disableRowSelectionOnClick
                 onCellDoubleClick={handleFileOrDirectoryAction}
                 onCellKeyDown={(params, event) => {
                     if (event.key !== "Enter") return;
@@ -308,7 +335,6 @@ export const ListExplorerItems = memo((props: ListExplorerItems) => {
                 }}
                 autosizeOptions={listAutosizeOptions}
                 checkboxSelection
-                disableMultipleRowSelection
                 disableColumnMenu
             />
         </div>

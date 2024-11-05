@@ -13,7 +13,7 @@ import { useStyles } from "tss";
 import { ViewMode } from "../shared/types";
 
 export type Props = {
-    selectedItemKind: "file" | "directory" | "none";
+    selectedItemKind: "file" | "directory" | "multiple" | "none";
     viewMode: ViewMode;
     onViewModeChange: (params: { viewMode: ViewMode }) => void;
     //TODO: Restore when we have fileViewer usecase
@@ -61,10 +61,8 @@ export const ExplorerButtonBar = memo((props: Props) => {
                             return false;
                         case "delete":
                         case "share":
-                            //return selectedItemKind === "none" || isFileOpen;
                             return selectedItemKind === "none";
                         case "copy path":
-                            //return selectedItemKind === "none" || isFileOpen;
                             return selectedItemKind !== "file";
                     }
                 })(),

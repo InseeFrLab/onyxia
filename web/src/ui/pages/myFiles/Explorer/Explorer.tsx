@@ -37,7 +37,10 @@ import { ExplorerUploadModal } from "./ExplorerUploadModal";
 import type { ExplorerUploadModalProps } from "./ExplorerUploadModal";
 import { declareComponentKeys } from "i18nifty";
 import { CircularProgress } from "onyxia-ui/CircularProgress";
-import { ListExplorerItems } from "./ListExplorer/ListExplorerItems";
+import {
+    ListExplorerItems,
+    type ListExplorerItemsProps
+} from "./ListExplorer/ListExplorerItems";
 import type { Item } from "../shared/types";
 import { ViewMode } from "../shared/types";
 import { isDirectory } from "../shared/tools";
@@ -65,6 +68,8 @@ export type ExplorerProps = {
     }) => void;
     onRefresh: () => void;
     onDeleteItem: (params: { item: Item }) => void;
+    onDeleteItems: (params: { items: Item[] }) => void;
+
     onCreateDirectory: (params: { basename: string }) => void;
     onCopyPath: (params: { path: string }) => void;
     scrollableDivRef: RefObject<any>;
@@ -84,6 +89,7 @@ export const Explorer = memo((props: ExplorerProps) => {
         onNavigate,
         onRefresh,
         onDeleteItem,
+        onDeleteItems,
         onCreateDirectory,
         onCopyPath,
         changePolicy,
@@ -106,7 +112,7 @@ export const Explorer = memo((props: ExplorerProps) => {
     const { t } = useTranslation({ Explorer });
 
     const [selectedItemKind, setSelectedItemKind] = useState<
-        "file" | "directory" | "none"
+        "file" | "directory" | "multiple" | "none"
     >("none");
 
     const onSelectedItemKindValueChange = useConstCallback(
@@ -251,7 +257,7 @@ export const Explorer = memo((props: ExplorerProps) => {
     const itemsOnDeleteItem = useConstCallback(
         async (
             { item }: Parameters<ItemsProps["onDeleteItem"]>[0],
-            onDeleteConfirmed?: () => void // Callback optionnelle pour après la suppression
+            onDeleteConfirmed?: () => void
         ) => {
             if (doShowDeletionDialogNextTime) {
                 const dDoProceedToDeletion = new Deferred();
@@ -276,6 +282,35 @@ export const Explorer = memo((props: ExplorerProps) => {
         }
     );
 
+    const itemsOnDeleteItems = useConstCallback(
+        async (
+            { items }: Parameters<ListExplorerItemsProps["onDeleteItems"]>[0],
+            onDeleteConfirmed?: () => void
+        ) => {
+            if (doShowDeletionDialogNextTime) {
+                const dDoProceedToDeletion = new Deferred();
+
+                setDeletionDialogState({
+                    //TODO : handle multiple deletion in dialog
+                    kind: items[0].kind,
+                    basename: items[0].basename,
+                    "resolveDoProceedToDeletion": dDoProceedToDeletion.resolve
+                });
+
+                const doProceedToDeletion = await dDoProceedToDeletion.pr;
+
+                setDeletionDialogState(undefined);
+
+                if (!doProceedToDeletion) {
+                    return;
+                }
+            }
+
+            onDeleteItems({ items });
+            onDeleteConfirmed?.();
+        }
+    );
+
     const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
     const onUploadModalClose = useConstCallback(() => setIsUploadModalOpen(false));
     const onDragOver = useConstCallback(() => setIsUploadModalOpen(true));
@@ -290,7 +325,6 @@ export const Explorer = memo((props: ExplorerProps) => {
                 <div ref={buttonBarRef}>
                     <ExplorerButtonBar
                         selectedItemKind={selectedItemKind}
-                        //isFileOpen={props.isFileOpen}
                         callback={buttonBarCallback}
                         onViewModeChange={onViewModeChange}
                         viewMode={viewMode}
@@ -397,6 +431,7 @@ export const Explorer = memo((props: ExplorerProps) => {
                                         onPolicyChange={onItemsPolicyChange}
                                         onCopyPath={itemsOnCopyPath}
                                         onDeleteItem={itemsOnDeleteItem}
+                                        onDeleteItems={itemsOnDeleteItems}
                                         evtAction={evtItemsAction}
                                     />
                                 );

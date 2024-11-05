@@ -1029,9 +1029,9 @@ Feel free to explore and take charge of your Kubernetes deployments!
         "empty directory": "This directory is empty",
         "label rows count": ({ count }) => {
             const plural = count > 1 ? "s" : "";
-            return `${count} selected row${plural}`;
+            return `${count} item${plural} selected`;
         },
-        "label rows per page": "Rows per page"
+        "label rows per page": "Items per page"
     },
     "CustomDataGridToolbarDensitySelector": {
         "toolbarDensity": "Density",

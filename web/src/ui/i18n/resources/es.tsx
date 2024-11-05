@@ -1043,9 +1043,9 @@ export const translations: Translations<"en"> = {
         "empty directory": "Este directorio está vacío",
         "label rows count": ({ count }) => {
             const plural = count > 1 ? "s" : "";
-            return `${count} fila${plural} seleccionada${plural}`;
+            return `${count} elemento${plural} seleccionado${plural}`;
         },
-        "label rows per page": "Filas por página"
+        "label rows per page": "Elementos por página"
     },
     "CustomDataGridToolbarDensitySelector": {
         "toolbarDensity": "Densidad",

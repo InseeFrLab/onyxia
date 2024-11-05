@@ -16,7 +16,7 @@ export type State = {
         directoryPath: string;
         operationId: string;
         operation: "create" | "delete" | "modifyPolicy";
-        object: S3Object;
+        objects: S3Object[];
     }[];
     s3FilesBeingUploaded: {
         directoryPath: string;
@@ -133,13 +133,15 @@ export const { reducer, actions } = createUsecaseActions({
                 .forEach(o => {
                     switch (o.operation) {
                         case "delete":
-                            removeIfPresent(state.objects, {
-                                "kind": o.object.kind,
-                                "basename": o.object.basename
+                            o.objects.forEach(object => {
+                                removeIfPresent(state.objects, {
+                                    "kind": object.kind,
+                                    "basename": object.basename
+                                });
                             });
                             break;
                         case "create":
-                            state.objects.push(o.object);
+                            state.objects.push(...o.objects);
                             break;
                     }
                 });
@@ -151,41 +153,38 @@ export const { reducer, actions } = createUsecaseActions({
             }: {
                 payload: {
                     operationId: string;
-                    object: S3Object;
+                    objects: S3Object[];
                     operation: "create" | "delete" | "modifyPolicy";
                 };
             }
         ) => {
-            const { object, operation, operationId } = payload;
+            const { objects, operation, operationId } = payload;
 
             assert(state.directoryPath !== undefined);
 
             state.ongoingOperations.push({
                 "directoryPath": state.directoryPath,
                 operationId,
-                object,
+                objects,
                 operation
             });
 
             switch (payload.operation) {
                 case "delete":
-                    removeIfPresent(state.objects, {
-                        kind: payload.object.kind,
-                        basename: object.basename
+                    objects.forEach(object => {
+                        removeIfPresent(state.objects, {
+                            kind: object.kind,
+                            basename: object.basename
+                        });
                     });
                     break;
                 case "create":
                     //Optimistic update
-                    state.objects.push(object);
+                    state.objects.push(...objects);
                     break;
                 case "modifyPolicy":
-                //Optimistic update
+                    break;
             }
-            state.objects = state.objects.map(obj =>
-                obj.basename === object.basename && obj.kind === object.kind
-                    ? object
-                    : obj
-            );
         },
         "operationCompleted": (
             state,
@@ -194,11 +193,11 @@ export const { reducer, actions } = createUsecaseActions({
             }: {
                 payload: {
                     operationId: string;
-                    object: S3Object;
+                    objects: S3Object[];
                 };
             }
         ) => {
-            const { operationId, object } = payload;
+            const { operationId, objects } = payload;
 
             assert(state.directoryPath !== undefined);
 
@@ -219,13 +218,15 @@ export const { reducer, actions } = createUsecaseActions({
             }
 
             switch (ongoingOperation.operation) {
-                case "create":
-                    state.objects = state.objects.map(obj =>
-                        obj.basename === object.basename && obj.kind === object.kind
-                            ? object
-                            : obj
-                    );
+                case "create": {
+                    state.objects = state.objects.map(obj => {
+                        const matchingObject = objects.find(
+                            o => o.basename === obj.basename && o.kind === obj.kind
+                        );
+                        return matchingObject ? matchingObject : obj;
+                    });
                     break;
+                }
             }
         },
         "commandLogIssued": (

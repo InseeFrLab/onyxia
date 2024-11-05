@@ -31,23 +31,22 @@ const privateThunks = {
     "createOperation":
         (params: {
             operation: "create" | "delete" | "modifyPolicy";
-            object: S3Object;
+            objects: S3Object[];
             directoryPath: string;
         }) =>
         async (...args) => {
             const [dispatch, ,] = args;
 
-            const { operation, object, directoryPath } = params;
+            const { operation, objects, directoryPath } = params;
 
             const operationId = `${operation}-${Date.now()}`;
 
-            dispatch(actions.operationStarted({ operationId, object, operation }));
+            dispatch(actions.operationStarted({ operationId, objects, operation }));
 
             await dispatch(
                 privateThunks.waitForNoOngoingOperation({
-                    "kind": object.kind,
+                    "targets": objects,
                     directoryPath,
-                    "basename": object.basename,
                     "ignoreOperationId": operationId
                 })
             );
@@ -55,24 +54,28 @@ const privateThunks = {
         },
     "waitForNoOngoingOperation":
         (params: {
-            kind: "file" | "directory";
-            basename: string;
+            targets: Array<{ kind: "file" | "directory"; basename: string }>;
             directoryPath: string;
             ignoreOperationId?: string;
         }) =>
         async (...args) => {
             const [, getState, { evtAction }] = args;
 
-            const { kind, basename, directoryPath, ignoreOperationId } = params;
+            const { targets, directoryPath, ignoreOperationId } = params;
 
             const { ongoingOperations } = getState()[name];
 
             const ongoingOperation = ongoingOperations.find(
                 o =>
-                    o.object.kind === kind &&
-                    o.object.basename === basename &&
                     o.directoryPath === directoryPath &&
-                    o.operationId !== ignoreOperationId
+                    o.operationId !== ignoreOperationId &&
+                    targets.every(target =>
+                        o.objects.some(
+                            ongoingObj =>
+                                ongoingObj.kind === target.kind &&
+                                ongoingObj.basename === target.basename
+                        )
+                    )
             );
 
             if (ongoingOperation === undefined) {
@@ -120,9 +123,10 @@ const privateThunks = {
 
             await dispatch(
                 privateThunks.waitForNoOngoingOperation({
-                    "kind": "directory",
-                    "directoryPath": pathJoin(directoryPath, "..") + "/",
-                    "basename": pathBasename(directoryPath)
+                    targets: [
+                        { kind: "directory", basename: pathBasename(directoryPath) }
+                    ],
+                    "directoryPath": pathJoin(directoryPath, "..") + "/"
                 })
             );
 
@@ -180,6 +184,7 @@ export const thunks = {
         (...args): { cleanup: () => void } => {
             const { directoryPath, viewMode } = params;
 
+            console.log("initialize", viewMode);
             const [dispatch, getState, { evtAction }] = args;
 
             const ctx = Evt.newCtx();
@@ -192,7 +197,7 @@ export const thunks = {
                 () => {
                     dispatch(
                         thunks.initialize({
-                            viewMode,
+                            "viewMode": getState()[name].viewMode,
                             "directoryPath": undefined
                         })
                     );
@@ -284,7 +289,7 @@ export const thunks = {
             const operationId = await dispatch(
                 privateThunks.createOperation({
                     operation: "modifyPolicy",
-                    object: { ...object, policy },
+                    objects: [{ ...object, policy }],
                     directoryPath
                 })
             );
@@ -323,7 +328,7 @@ export const thunks = {
             dispatch(
                 actions.operationCompleted({
                     operationId,
-                    object
+                    objects: [object]
                 })
             );
 
@@ -375,13 +380,15 @@ export const thunks = {
 
             const operationId = await dispatch(
                 privateThunks.createOperation({
-                    object: {
-                        kind: params.createWhat,
-                        basename: params.basename,
-                        policy: "private",
-                        size: undefined,
-                        lastModified: undefined
-                    },
+                    objects: [
+                        {
+                            kind: params.createWhat,
+                            basename: params.basename,
+                            policy: "private",
+                            size: undefined,
+                            lastModified: undefined
+                        }
+                    ],
                     directoryPath,
                     operation: "create"
                 })
@@ -482,7 +489,7 @@ export const thunks = {
 
             dispatch(
                 actions.operationCompleted({
-                    object: completedObject, //To continue
+                    objects: [completedObject],
                     operationId
                 })
             );
@@ -509,7 +516,7 @@ export const thunks = {
             const operationId = await dispatch(
                 privateThunks.createOperation({
                     operation: "delete",
-                    object: s3Object,
+                    objects: [s3Object],
                     directoryPath
                 })
             );
@@ -593,8 +600,98 @@ export const thunks = {
 
             dispatch(
                 actions.operationCompleted({
-                    object: s3Object,
+                    objects: [s3Object],
                     operationId
+                })
+            );
+        },
+    "bulkDelete":
+        (params: { s3Objects: S3Object[] }) =>
+        async (...args): Promise<void> => {
+            const { s3Objects } = params;
+
+            const [dispatch, getState] = args;
+
+            const state = getState()[name];
+
+            const { directoryPath } = state;
+
+            assert(directoryPath !== undefined);
+
+            const operationId = await dispatch(
+                privateThunks.createOperation({
+                    operation: "delete",
+                    objects: s3Objects,
+                    directoryPath
+                })
+            );
+
+            const s3Client = await dispatch(
+                s3ConfigManagement.protectedThunks.getS3ConfigAndClientForExplorer()
+            ).then(r => {
+                assert(r !== undefined);
+                return r.s3Client;
+            });
+
+            const getFilesPathsToDelete = async (s3Object: S3Object) => {
+                if (s3Object.kind === "file") {
+                    return [pathJoin(directoryPath, s3Object.basename)];
+                }
+
+                const { crawl } = crawlFactory({
+                    list: async ({ directoryPath }) => {
+                        const { objects } = await s3Client.listObjects({
+                            path: directoryPath
+                        });
+                        return {
+                            fileBasenames: objects
+                                .filter(obj => obj.kind === "file")
+                                .map(obj => obj.basename),
+                            directoryBasenames: objects
+                                .filter(obj => obj.kind === "directory")
+                                .map(obj => obj.basename)
+                        };
+                    }
+                });
+
+                const directoryToDeletePath = pathJoin(directoryPath, s3Object.basename);
+                const { filePaths } = await crawl({
+                    directoryPath: directoryToDeletePath
+                });
+
+                return filePaths.map(filePathRelative =>
+                    pathJoin(directoryToDeletePath, filePathRelative)
+                );
+            };
+
+            const objectNamesToDelete = (
+                await Promise.all(s3Objects.map(getFilesPathsToDelete))
+            ).flat();
+
+            const cmdId = Date.now();
+
+            dispatch(
+                actions.commandLogIssued({
+                    cmdId,
+                    cmd: `mc rm -r --force  \\\n   ${s3Objects.map(({ basename }) => pathJoin("s3", directoryPath, basename)).join(" \\\n   ")}`
+                })
+            );
+
+            await s3Client.deleteFiles({ paths: objectNamesToDelete });
+
+            dispatch(
+                actions.commandLogResponseReceived({
+                    cmdId,
+                    "resp": objectNamesToDelete
+                        .map(filePath => `Removed \`${pathJoin("s3", filePath)}\``)
+                        .join("\n")
+                })
+            );
+
+            dispatch(
+                actions.operationCompleted({
+                    operationId,
+                    objects: s3Objects
                 })
             );
         },

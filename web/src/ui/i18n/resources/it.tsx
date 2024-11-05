@@ -1041,12 +1041,12 @@ Sentiti libero di esplorare e prendere il controllo dei tuoi deployment Kubernet
         "copy to clipboard": "Copia negli appunti"
     },
     "CustomDataGrid": {
-        "empty directory": "Questa directory è vuota",
+        "empty directory": "Questa cartella è vuota",
         "label rows count": ({ count }) => {
-            const plural = count > 1 ? "e" : "a";
-            return `${count} riga${plural} selezionat${plural}`;
+            const plural = count > 1 ? "i" : "o";
+            return `${count} elemento${plural} selezionato${plural}`;
         },
-        "label rows per page": "Righe per pagina"
+        "label rows per page": "Elementi per pagina"
     },
     "CustomDataGridToolbarDensitySelector": {
         "toolbarDensity": "Densità",

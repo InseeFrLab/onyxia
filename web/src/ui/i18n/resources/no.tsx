@@ -1038,10 +1038,10 @@ Utforsk gjerne og ta kontroll over tjenestene du kjører på Kubernetes!
     "CustomDataGrid": {
         "empty directory": "Denne mappen er tom",
         "label rows count": ({ count }) => {
-            const plural = count > 1 ? "r" : "";
-            return `${count} valgte rad${plural}`;
+            const plural = count > 1 ? "er" : "";
+            return `${count} element${plural} valgt`;
         },
-        "label rows per page": "Rader per side"
+        "label rows per page": "Elementer per side"
     },
     "CustomDataGridToolbarDensitySelector": {
         "toolbarDensity": "Tetthet",

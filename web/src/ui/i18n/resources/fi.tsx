@@ -1032,10 +1032,10 @@ Tutustu vapaasti ja ota hallintaan Kubernetes-julkaisusi!
     "CustomDataGrid": {
         "empty directory": "Tämä hakemisto on tyhjä",
         "label rows count": ({ count }) => {
-            const plural = count > 1 ? "a" : "";
-            return `${count} valittu riv${plural}`;
+            const plural = count > 1 ? "tta" : "";
+            return `${count} kohde${plural} valittu`;
         },
-        "label rows per page": "Rivit per sivu"
+        "label rows per page": "Kohteet per sivu"
     },
     "CustomDataGridToolbarDensitySelector": {
         "toolbarDensity": "Tiheys",

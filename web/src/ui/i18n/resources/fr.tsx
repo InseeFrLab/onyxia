@@ -1063,9 +1063,9 @@ N'hésitez pas à explorer et à prendre en main vos déploiements Kubernetes !
         "empty directory": "Ce répertoire est vide",
         "label rows count": ({ count }) => {
             const plural = count > 1 ? "s" : "";
-            return `${count} ligne${plural} sélectionnée${plural}`;
+            return `${count} élément${plural} sélectionnée${plural}`;
         },
-        "label rows per page": "Lignes par page"
+        "label rows per page": "Éléments par page"
     }
     /* spell-checker: enable */
 };
