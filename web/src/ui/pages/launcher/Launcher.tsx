@@ -257,39 +257,77 @@ export default function Launcher(props: Props) {
         "labelWhenMismatchingLanguage": true
     });
 
-    const { erroredFormFields, onFieldErrorChange } = (function useClosure() {
-        const [erroredFormFields, setErroredFormFields] = useState<(string | number)[][]>(
-            []
-        );
+    const { erroredFormFields, onFieldErrorChange, removeAllErroredFormFields } =
+        (function useClosure() {
+            const [erroredFormFields, setErroredFormFields] = useState<
+                (string | number)[][]
+            >([]);
 
-        const onFieldErrorChange = useConstCallback(
-            ({
-                helmValuesPath,
-                hasError
-            }: Param0<FormCallbacks["onFieldErrorChange"]>) => {
-                const erroredFormFields_new = [...erroredFormFields];
+            const onFieldErrorChange = useConstCallback(
+                ({
+                    helmValuesPath,
+                    hasError
+                }: Param0<FormCallbacks["onFieldErrorChange"]>) => {
+                    const erroredFormFields_new = [...erroredFormFields];
 
-                if (hasError) {
-                    erroredFormFields_new.push(helmValuesPath);
-                    arrRemoveDuplicates(erroredFormFields_new, (a, b) => same(a, b));
-                } else {
-                    const index = erroredFormFields_new.findIndex(erroredFormField =>
-                        same(erroredFormField, helmValuesPath)
-                    );
+                    if (hasError) {
+                        erroredFormFields_new.push(helmValuesPath);
+                        arrRemoveDuplicates(erroredFormFields_new, (a, b) => same(a, b));
+                    } else {
+                        const index = erroredFormFields_new.findIndex(erroredFormField =>
+                            same(erroredFormField, helmValuesPath)
+                        );
 
-                    if (index === -1) {
-                        return;
+                        if (index === -1) {
+                            return;
+                        }
+
+                        erroredFormFields_new.splice(index, 1);
                     }
 
-                    erroredFormFields_new.splice(index, 1);
+                    setErroredFormFields(erroredFormFields_new);
                 }
+            );
 
-                setErroredFormFields(erroredFormFields_new);
-            }
-        );
+            const removeAllErroredFormFields = useConstCallback(
+                (params: { startingWithHelmValuesPath: (string | number)[] }) => {
+                    const { startingWithHelmValuesPath } = params;
 
-        return { erroredFormFields, onFieldErrorChange };
-    })();
+                    const erroredFormFields_new = erroredFormFields.filter(
+                        erroredFormField => {
+                            if (
+                                erroredFormField.length <
+                                startingWithHelmValuesPath.length
+                            ) {
+                                return true;
+                            }
+
+                            for (let i = 0; i < startingWithHelmValuesPath.length; i++) {
+                                if (
+                                    erroredFormField[i] !== startingWithHelmValuesPath[i]
+                                ) {
+                                    return true;
+                                }
+                            }
+
+                            return false;
+                        }
+                    );
+
+                    setErroredFormFields(erroredFormFields_new);
+                }
+            );
+
+            return { erroredFormFields, onFieldErrorChange, removeAllErroredFormFields };
+        })();
+
+    const onRemove = useConstCallback<FormCallbacks["onRemove"]>(
+        ({ helmValuesPath, index }) => {
+            removeAllErroredFormFields({ "startingWithHelmValuesPath": helmValuesPath });
+
+            launcher.removeArrayItem({ helmValuesPath, index });
+        }
+    );
 
     if (!isReady) {
         return null;
@@ -390,7 +428,7 @@ export default function Launcher(props: Props) {
                         callbacks={{
                             "onAdd": launcher.addArrayItem,
                             "onChange": launcher.changeFormFieldValue,
-                            "onRemove": launcher.removeArrayItem,
+                            onRemove,
                             onFieldErrorChange
                         }}
                     />
