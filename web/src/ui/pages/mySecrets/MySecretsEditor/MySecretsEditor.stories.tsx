@@ -16,9 +16,9 @@ export const Default: Story = {
         isBeingUpdated: false,
         secretWithMetadata: {
             secret: {
-                "API_KEY": "12345",
-                "DB_PASSWORD": "mypassword",
-                "config": { "json": "content" }
+                API_KEY: "12345",
+                DB_PASSWORD: "mypassword",
+                config: { json: "content" }
             },
             metadata: {
                 created_time: "2023-01-01T00:00:00Z",
@@ -41,9 +41,9 @@ export const UseInServicesOpenDialog: Story = {
         isBeingUpdated: false,
         secretWithMetadata: {
             secret: {
-                "API_KEY": "12345",
-                "DB_PASSWORD": "mypassword",
-                "config": { "json": "content" }
+                API_KEY: "12345",
+                DB_PASSWORD: "mypassword",
+                config: { json: "content" }
             },
             metadata: {
                 created_time: "2023-01-01T00:00:00Z",

@@ -35,7 +35,7 @@ function StoryWrapper(params: Params) {
     return (
         <>
             <SliderFormField
-                className={css({ "width": 300, "maxHeight": 400 })}
+                className={css({ width: 300, maxHeight: 400 })}
                 title="This is the title"
                 description="This is the description"
                 isReadonly={isReadonly}
@@ -58,61 +58,61 @@ function StoryWrapper(params: Params) {
 }
 
 export const Default: Story = {
-    "args": {
-        "isReadonly": false,
-        "min": 0,
-        "max": 100,
-        "unit": "m",
-        "step": 1,
-        "defaultValue": 50,
-        "hasOnRemove": false
+    args: {
+        isReadonly: false,
+        min: 0,
+        max: 100,
+        unit: "m",
+        step: 1,
+        defaultValue: 50,
+        hasOnRemove: false
     }
 };
 
 export const WithMarks: Story = {
-    "args": {
-        "isReadonly": false,
-        "min": 1,
-        "max": 7,
-        "unit": undefined,
-        "step": 1,
-        "defaultValue": 2,
-        "hasOnRemove": false
+    args: {
+        isReadonly: false,
+        min: 1,
+        max: 7,
+        unit: undefined,
+        step: 1,
+        defaultValue: 2,
+        hasOnRemove: false
     }
 };
 
 export const WitNoOptions: Story = {
-    "args": {
-        "isReadonly": false,
-        "min": 1,
-        "max": 1,
-        "unit": undefined,
-        "step": 1,
-        "defaultValue": 1,
-        "hasOnRemove": false
+    args: {
+        isReadonly: false,
+        min: 1,
+        max: 1,
+        unit: undefined,
+        step: 1,
+        defaultValue: 1,
+        hasOnRemove: false
     }
 };
 
 export const ReadOnly: Story = {
-    "args": {
-        "isReadonly": true,
-        "min": 0,
-        "max": 100,
-        "unit": "m",
-        "step": 1,
-        "defaultValue": 50,
-        "hasOnRemove": false
+    args: {
+        isReadonly: true,
+        min: 0,
+        max: 100,
+        unit: "m",
+        step: 1,
+        defaultValue: 50,
+        hasOnRemove: false
     }
 };
 
 export const WithOnRemove: Story = {
-    "args": {
-        "isReadonly": false,
-        "min": 0,
-        "max": 100,
-        "unit": "m",
-        "step": 1,
-        "defaultValue": 50,
-        "hasOnRemove": true
+    args: {
+        isReadonly: false,
+        min: 0,
+        max: 100,
+        unit: "m",
+        step: 1,
+        defaultValue: 50,
+        hasOnRemove: true
     }
 };

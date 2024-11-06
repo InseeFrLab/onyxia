@@ -4,7 +4,7 @@ import { same } from "evt/tools/inDepth/same";
 import * as projectManagement from "core/usecases/projectManagement";
 
 export const thunks = {
-    "setActive":
+    setActive:
         (params: { helmReleaseName: string; podName: string }) =>
         (...args) => {
             const { helmReleaseName, podName } = params;
@@ -36,7 +36,7 @@ export const thunks = {
 } satisfies Thunks;
 
 const privateThunks = {
-    "update":
+    update:
         (params: { helmReleaseName: string; podName: string }) =>
         async (...args) => {
             const { helmReleaseName, podName } = params;

@@ -69,8 +69,8 @@ export function getFormFieldAtPath_rec(params: {
     assert(formFieldGroup_i.type === "group");
 
     return getFormFieldAtPath_rec({
-        "formFieldGroup": formFieldGroup_i,
-        "formFieldPath": rest,
+        formFieldGroup: formFieldGroup_i,
+        formFieldPath: rest,
         doExtract
     });
 }

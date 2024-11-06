@@ -34,7 +34,7 @@ function StoryWrapper(params: Params) {
     return (
         <>
             <TextFormField
-                className={css({ "width": 300, "maxHeight": 400 })}
+                className={css({ width: 300, maxHeight: 400 })}
                 title="This is the title"
                 description="This is the description"
                 doRenderAsTextArea={doRenderAsTextArea}
@@ -57,61 +57,61 @@ function StoryWrapper(params: Params) {
 }
 
 export const Default: Story = {
-    "args": {
-        "isReadonly": false,
-        "doRenderAsTextArea": false,
-        "isSensitive": false,
-        "pattern": undefined,
-        "hasOnRemove": false
+    args: {
+        isReadonly: false,
+        doRenderAsTextArea: false,
+        isSensitive: false,
+        pattern: undefined,
+        hasOnRemove: false
     }
 };
 
 export const TextArea: Story = {
-    "args": {
-        "isReadonly": false,
-        "doRenderAsTextArea": true,
-        "isSensitive": false,
-        "pattern": undefined,
-        "hasOnRemove": false
+    args: {
+        isReadonly: false,
+        doRenderAsTextArea: true,
+        isSensitive: false,
+        pattern: undefined,
+        hasOnRemove: false
     }
 };
 
 export const Sensitive: Story = {
-    "args": {
-        "isReadonly": false,
-        "doRenderAsTextArea": false,
-        "isSensitive": true,
-        "pattern": undefined,
-        "hasOnRemove": false
+    args: {
+        isReadonly: false,
+        doRenderAsTextArea: false,
+        isSensitive: true,
+        pattern: undefined,
+        hasOnRemove: false
     }
 };
 
 export const WithPattern: Story = {
-    "args": {
-        "isReadonly": false,
-        "doRenderAsTextArea": false,
-        "isSensitive": false,
-        "pattern": "^[a-zA-Z0-9]*$",
-        "hasOnRemove": false
+    args: {
+        isReadonly: false,
+        doRenderAsTextArea: false,
+        isSensitive: false,
+        pattern: "^[a-zA-Z0-9]*$",
+        hasOnRemove: false
     }
 };
 
 export const Readonly: Story = {
-    "args": {
-        "isReadonly": true,
-        "doRenderAsTextArea": false,
-        "isSensitive": false,
-        "pattern": undefined,
-        "hasOnRemove": false
+    args: {
+        isReadonly: true,
+        doRenderAsTextArea: false,
+        isSensitive: false,
+        pattern: undefined,
+        hasOnRemove: false
     }
 };
 
 export const WithOnRemove: Story = {
-    "args": {
-        "isReadonly": false,
-        "doRenderAsTextArea": false,
-        "isSensitive": false,
-        "pattern": undefined,
-        "hasOnRemove": true
+    args: {
+        isReadonly: false,
+        doRenderAsTextArea: false,
+        isSensitive: false,
+        pattern: undefined,
+        hasOnRemove: true
     }
 };

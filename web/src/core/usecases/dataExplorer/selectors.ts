@@ -31,8 +31,8 @@ const columns = createSelector(
         return firstRowKeys.map(
             key =>
                 ({
-                    "field": key,
-                    "sortable": false
+                    field: key,
+                    sortable: false
                 }) satisfies GridColDef
         );
     }
@@ -42,11 +42,11 @@ const main = createSelector(state, columns, (state, columns) => {
     const { isQuerying, queryParams, errorMessage, data } = state;
 
     if (errorMessage !== undefined) {
-        return { isQuerying, "errorMessage": errorMessage };
+        return { isQuerying, errorMessage: errorMessage };
     }
 
     if (data === undefined) {
-        return { isQuerying, "rows": undefined };
+        return { isQuerying, rows: undefined };
     }
 
     assert(columns !== undefined);
@@ -56,12 +56,12 @@ const main = createSelector(state, columns, (state, columns) => {
 
     return {
         isQuerying,
-        "rows": data.rows.map((row, i) => ({
-            "id": i + rowsPerPage * (page - 1),
+        rows: data.rows.map((row, i) => ({
+            id: i + rowsPerPage * (page - 1),
             ...row
         })),
-        "rowCount": data.rowCount,
-        "fileDownloadUrl": data.fileDownloadUrl,
+        rowCount: data.rowCount,
+        fileDownloadUrl: data.fileDownloadUrl,
         columns
     };
 });

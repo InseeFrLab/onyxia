@@ -25,7 +25,7 @@ export function helmValuesPathToFormFieldPath(params: {
     return helmValuesPathToFormFieldPath_rec({
         helmValuesPathToGroup,
         formFieldGroup,
-        "currentFormFieldPath": []
+        currentFormFieldPath: []
     });
 }
 
@@ -54,9 +54,9 @@ function helmValuesPathToFormFieldPath_rec(params: {
     assert(formFieldGroup_child !== undefined);
 
     return helmValuesPathToFormFieldPath_rec({
-        "helmValuesPathToGroup": rest,
-        "formFieldGroup": formFieldGroup_child,
-        "currentFormFieldPath": [
+        helmValuesPathToGroup: rest,
+        formFieldGroup: formFieldGroup_child,
+        currentFormFieldPath: [
             ...currentFormFieldPath,
             formFieldGroup.nodes.indexOf(formFieldGroup_child)
         ]

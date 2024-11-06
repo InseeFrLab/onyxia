@@ -149,43 +149,43 @@ const useStyles = tss
     .withName({ ExplorerItem })
     .withParams<Pick<ExplorerItemProps, "isSelected" | "basename">>()
     .create(({ theme, isSelected }) => ({
-        "root": {
-            "borderRadius": "16px",
-            "backgroundColor": isSelected
+        root: {
+            borderRadius: "16px",
+            backgroundColor: isSelected
                 ? theme.colors.useCases.surfaces.surface1
                 : "rgba(0, 0, 0, 0.05)",
-            "cursor": "pointer",
-            "display": "flex",
-            "flexDirection": "column",
-            "justifyContent": "space-between",
-            "padding": theme.spacing(2.5)
+            cursor: "pointer",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "space-between",
+            padding: theme.spacing(2.5)
         },
-        "iconContainer": { "display": "flex", "justifyContent": "space-between" },
-        "explorerIcon": {
-            "width": "50px", // Either we set a fixed size, or we measure the size of the root
-            "height": "50px"
+        iconContainer: { display: "flex", justifyContent: "space-between" },
+        explorerIcon: {
+            width: "50px", // Either we set a fixed size, or we measure the size of the root
+            height: "50px"
         },
-        "policyIcon": {
-            "padding": 0,
-            "marginLeft": theme.spacing(1) // Adjust spacing between the icons
+        policyIcon: {
+            padding: 0,
+            marginLeft: theme.spacing(1) // Adjust spacing between the icons
         },
-        "textContainer": {
-            "display": "flex",
-            "flexDirection": "column",
-            "marginTop": theme.spacing(2)
+        textContainer: {
+            display: "flex",
+            flexDirection: "column",
+            marginTop: theme.spacing(2)
         },
-        "baseNameText": {
-            "marginBottom": theme.spacing(1),
-            "wordBreak": "break-all",
-            "overflow": "hidden",
-            "textOverflow": "ellipsis",
-            "height": `calc(${theme.typography.variants["label 1"].style.lineHeight} * 2)`
+        baseNameText: {
+            marginBottom: theme.spacing(1),
+            wordBreak: "break-all",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            height: `calc(${theme.typography.variants["label 1"].style.lineHeight} * 2)`
         },
-        "sizeAndFileTypeText": {
-            "display": "flex",
-            "justifyContent": "space-between",
-            "whiteSpace": "nowrap",
-            "overflow": "hidden",
-            "textOverflow": "ellipsis"
+        sizeAndFileTypeText: {
+            display: "flex",
+            justifyContent: "space-between",
+            whiteSpace: "nowrap",
+            overflow: "hidden",
+            textOverflow: "ellipsis"
         }
     }));

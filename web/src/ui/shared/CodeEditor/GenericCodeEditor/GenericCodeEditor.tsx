@@ -79,8 +79,8 @@ export default function GenericCodeEditor(props: Props) {
 }
 
 const useStyles = tss.withName({ GenericCodeEditor }).create(({ theme }) => ({
-    "root": {
-        "borderRadius": theme.spacing(1),
-        "overflow": "hidden"
+    root: {
+        borderRadius: theme.spacing(1),
+        overflow: "hidden"
     }
 }));

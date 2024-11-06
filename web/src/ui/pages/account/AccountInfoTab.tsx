@@ -71,9 +71,9 @@ const { i18n } = declareComponentKeys<
 export type I18n = typeof i18n;
 
 const useStyles = tss.withName({ AccountInfoTab }).create(({ theme }) => ({
-    "howToChangePasswordInfo": {
-        "marginTop": theme.spacing(4),
-        "display": "flex",
-        "alignItems": "center"
+    howToChangePasswordInfo: {
+        marginTop: theme.spacing(4),
+        display: "flex",
+        alignItems: "center"
     }
 }));

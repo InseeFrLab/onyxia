@@ -8,7 +8,7 @@ import { assert } from "tsafe/assert";
 import { selectors } from "./selectors";
 
 export const thunks = {
-    "setActive":
+    setActive:
         () =>
         (...args) => {
             const [dispatch, getState, rootContext] = args;
@@ -44,7 +44,7 @@ export const thunks = {
 
                     onyxiaApi.subscribeToClusterEvents({
                         evtUnsubscribe,
-                        "onNewEvent": clusterEvent => {
+                        onNewEvent: clusterEvent => {
                             if (
                                 selectors
                                     .clusterEvents(getState())
@@ -69,8 +69,8 @@ export const thunks = {
 
                             dispatch(
                                 actions.newClusterEventReceived({
-                                    "clusterEvent": clusterEvent,
-                                    "projectId":
+                                    clusterEvent: clusterEvent,
+                                    projectId:
                                         projectManagement.protectedSelectors.currentProject(
                                             getState()
                                         ).id
@@ -107,22 +107,22 @@ export const thunks = {
 
             return { setInactive };
         },
-    "resetNotificationCount":
+    resetNotificationCount:
         () =>
         async (...args) => {
             const [dispatch] = args;
 
             await dispatch(
                 projectManagement.protectedThunks.updateConfigValue({
-                    "key": "clusterNotificationCheckoutTime",
-                    "value": Date.now()
+                    key: "clusterNotificationCheckoutTime",
+                    value: Date.now()
                 })
             );
         }
 } satisfies Thunks;
 
 const { getContext } = createUsecaseContextApi(() => ({
-    "restoreResentConnection": id<(() => { setInactive: () => void }) | undefined>(
+    restoreResentConnection: id<(() => { setInactive: () => void }) | undefined>(
         undefined
     )
 }));

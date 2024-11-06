@@ -71,7 +71,7 @@ export function computeRootFormFieldGroup(params: {
         helmValuesSchema,
         helmValues,
         xOnyxiaContext,
-        "helmValuesPath": []
+        helmValuesPath: []
     });
 
     assert(formFieldGroup !== undefined);
@@ -112,8 +112,8 @@ function computeRootFormFieldGroup_rec(params: {
             : splittedPath;
 
         const value_target = getValueAtPathInObject<Stringifyable>({
-            "obj": helmValues,
-            "path": helmValuesPath_target
+            obj: helmValues,
+            path: helmValuesPath_target
         });
 
         if (!same(value, value_target)) {
@@ -159,8 +159,8 @@ function computeRootFormFieldGroup_rec(params: {
 
     const getValue = () => {
         const value = getValueAtPathInObject<Stringifyable>({
-            "obj": helmValues,
-            "path": helmValuesPath
+            obj: helmValues,
+            path: helmValuesPath
         });
 
         assert(value !== undefined);
@@ -187,14 +187,14 @@ function computeRootFormFieldGroup_rec(params: {
         }
 
         return id<FormField.YamlCodeBlock>({
-            "type": "field",
+            type: "field",
             isReadonly,
-            "title": getTitle(),
-            "fieldType": "yaml code block",
+            title: getTitle(),
+            fieldType: "yaml code block",
             helmValuesPath,
-            "description": helmValuesSchema.description,
-            "expectedDataType": helmValuesSchemaType,
-            "value": (() => {
+            description: helmValuesSchema.description,
+            expectedDataType: helmValuesSchemaType,
+            value: (() => {
                 const value = getValue();
 
                 assert(value instanceof Object);
@@ -215,14 +215,14 @@ function computeRootFormFieldGroup_rec(params: {
         }
 
         return id<FormField.Select>({
-            "type": "field",
-            "title": getTitle(),
+            type: "field",
+            title: getTitle(),
             isReadonly,
-            "fieldType": "select",
+            fieldType: "select",
             helmValuesPath,
-            "description": helmValuesSchema.description,
+            description: helmValuesSchema.description,
             options,
-            "selectedOptionIndex": (() => {
+            selectedOptionIndex: (() => {
                 const selectedOption = getValue();
 
                 const selectedOptionIndex = options.findIndex(option =>
@@ -256,17 +256,17 @@ function computeRootFormFieldGroup_rec(params: {
         assert(sliderMax !== undefined);
 
         return id<FormField.Slider>({
-            "type": "field",
-            "title": getTitle(),
+            type: "field",
+            title: getTitle(),
             isReadonly,
-            "fieldType": "slider",
+            fieldType: "slider",
             helmValuesPath,
-            "description": helmValuesSchema.description,
-            "min": sliderMin,
-            "max": sliderMax,
-            "unit": sliderUnit,
-            "step": sliderStep,
-            "value": (() => {
+            description: helmValuesSchema.description,
+            min: sliderMin,
+            max: sliderMax,
+            unit: sliderUnit,
+            step: sliderStep,
+            value: (() => {
                 const value = getValue();
 
                 switch (typeof value) {
@@ -320,7 +320,7 @@ function computeRootFormFieldGroup_rec(params: {
 
         return id<FormField.RangeSlider>(
             createTemporaryRangeSlider({
-                "payload": {
+                payload: {
                     isReadonly,
                     sliderMin,
                     sliderMax,
@@ -328,7 +328,7 @@ function computeRootFormFieldGroup_rec(params: {
                     sliderUnit,
                     sliderExtremitySemantic,
                     sliderRangeId,
-                    "helmValue": (() => {
+                    helmValue: (() => {
                         const value = getValue();
 
                         assert(typeof value === "number" || typeof value === "string");
@@ -336,13 +336,13 @@ function computeRootFormFieldGroup_rec(params: {
                         return value;
                     })(),
                     helmValuesPath,
-                    "description": helmValuesSchema.description,
+                    description: helmValuesSchema.description,
                     ...(() => {
                         switch (sliderExtremity) {
                             case "down":
-                                return { "sliderExtremity": "down", "title": getTitle() };
+                                return { sliderExtremity: "down", title: getTitle() };
                             case "up":
-                                return { "sliderExtremity": "up" };
+                                return { sliderExtremity: "up" };
                         }
                         assert<Equals<typeof sliderExtremity, never>>(false);
                     })()
@@ -355,21 +355,21 @@ function computeRootFormFieldGroup_rec(params: {
         case "object":
             assert(helmValuesSchema.properties !== undefined);
             return id<FormFieldGroup>({
-                "type": "group",
+                type: "group",
                 helmValuesPath,
-                "description": helmValuesSchema.description,
-                "nodes": Object.entries(helmValuesSchema.properties)
+                description: helmValuesSchema.description,
+                nodes: Object.entries(helmValuesSchema.properties)
                     .map(([segment, helmValuesSchema_child]) =>
                         computeRootFormFieldGroup_rec({
                             helmValues,
-                            "helmValuesPath": [...helmValuesPath, segment],
+                            helmValuesPath: [...helmValuesPath, segment],
                             xOnyxiaContext,
-                            "helmValuesSchema": helmValuesSchema_child
+                            helmValuesSchema: helmValuesSchema_child
                         })
                     )
                     .filter(exclude(undefined)),
-                "canAdd": false,
-                "canRemove": false
+                canAdd: false,
+                canRemove: false
             });
         case "array": {
             const itemSchema = helmValuesSchema.items;
@@ -377,40 +377,40 @@ function computeRootFormFieldGroup_rec(params: {
             assert(itemSchema !== undefined);
 
             const values = getValueAtPathInObject<Stringifyable>({
-                "obj": helmValues,
-                "path": helmValuesPath
+                obj: helmValues,
+                path: helmValuesPath
             });
 
             assert(values !== undefined);
             assert(values instanceof Array);
 
             return id<FormFieldGroup>({
-                "type": "group",
+                type: "group",
                 helmValuesPath,
-                "description": helmValuesSchema.description,
-                "nodes": values
+                description: helmValuesSchema.description,
+                nodes: values
                     .map((...[, index]) =>
                         computeRootFormFieldGroup_rec({
                             helmValues,
-                            "helmValuesPath": [...helmValuesPath, index],
+                            helmValuesPath: [...helmValuesPath, index],
                             xOnyxiaContext,
-                            "helmValuesSchema": itemSchema
+                            helmValuesSchema: itemSchema
                         })
                     )
                     .filter(exclude(undefined)),
-                "canAdd": values.length < (helmValuesSchema.maxItems ?? Infinity),
-                "canRemove": values.length > (helmValuesSchema.minItems ?? 0)
+                canAdd: values.length < (helmValuesSchema.maxItems ?? Infinity),
+                canRemove: values.length > (helmValuesSchema.minItems ?? 0)
             });
         }
         case "boolean":
             return id<FormField.Checkbox>({
-                "type": "field",
-                "title": getTitle(),
+                type: "field",
+                title: getTitle(),
                 isReadonly,
-                "fieldType": "checkbox",
+                fieldType: "checkbox",
                 helmValuesPath,
-                "description": helmValuesSchema.description,
-                "value": (() => {
+                description: helmValuesSchema.description,
+                value: (() => {
                     const value = getValue();
 
                     assert(typeof value === "boolean");
@@ -420,16 +420,16 @@ function computeRootFormFieldGroup_rec(params: {
             });
         case "string":
             return id<FormField.TextField>({
-                "type": "field",
-                "title": getTitle(),
+                type: "field",
+                title: getTitle(),
                 isReadonly,
-                "fieldType": "text field",
+                fieldType: "text field",
                 helmValuesPath,
-                "description": helmValuesSchema.description,
-                "doRenderAsTextArea": helmValuesSchema.render === "textArea",
-                "isSensitive": helmValuesSchema.render === "password",
-                "pattern": helmValuesSchema.pattern,
-                "value": (() => {
+                description: helmValuesSchema.description,
+                doRenderAsTextArea: helmValuesSchema.render === "textArea",
+                isSensitive: helmValuesSchema.render === "password",
+                pattern: helmValuesSchema.pattern,
+                value: (() => {
                     const value = getValue();
 
                     assert(typeof value === "string");
@@ -440,21 +440,21 @@ function computeRootFormFieldGroup_rec(params: {
         case "integer":
         case "number":
             return id<FormField.NumberField>({
-                "type": "field",
-                "title": getTitle(),
+                type: "field",
+                title: getTitle(),
                 isReadonly,
-                "fieldType": "number field",
+                fieldType: "number field",
                 helmValuesPath,
-                "description": helmValuesSchema.description,
-                "value": (() => {
+                description: helmValuesSchema.description,
+                value: (() => {
                     const value = getValue();
 
                     assert(typeof value === "number");
 
                     return value;
                 })(),
-                "isInteger": helmValuesSchemaType === "integer",
-                "minimum": helmValuesSchema.minimum
+                isInteger: helmValuesSchemaType === "integer",
+                minimum: helmValuesSchema.minimum
             });
     }
 

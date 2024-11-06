@@ -25,12 +25,12 @@ export const MyFilesDisabledDialog = memo(() => {
                         doOpenNewTabIfHref={false}
                         {...(() => {
                             const link = routes.projectSettings({
-                                "tabId": "s3-configs"
+                                tabId: "s3-configs"
                             }).link;
 
                             return {
                                 ...link,
-                                "onClick": e => {
+                                onClick: e => {
                                     onClose();
                                     return link.onClick(e);
                                 }

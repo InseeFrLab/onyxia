@@ -46,17 +46,17 @@ const useStyles = tss
         isPolicyChanging: boolean;
     }>()
     .create(({ isPublic, isPolicyChanging }) => ({
-        "root": {
-            "animation": isPolicyChanging
+        root: {
+            animation: isPolicyChanging
                 ? `${isPublic ? "spinClockwise" : "spinCounterClockwise"} 1s linear infinite`
                 : "none", // Apply the corresponding animation
             "@keyframes spinClockwise": {
-                "0%": { "transform": "rotate(0deg)" },
-                "100%": { "transform": "rotate(360deg)" }
+                "0%": { transform: "rotate(0deg)" },
+                "100%": { transform: "rotate(360deg)" }
             },
             "@keyframes spinCounterClockwise": {
-                "0%": { "transform": "rotate(0deg)" },
-                "100%": { "transform": "rotate(-360deg)" }
+                "0%": { transform: "rotate(0deg)" },
+                "100%": { transform: "rotate(-360deg)" }
             }
         }
     }));

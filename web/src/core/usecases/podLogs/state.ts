@@ -20,15 +20,15 @@ export const name = "podLogs";
 
 export const { reducer, actions } = createUsecaseActions({
     name,
-    "initialState": id<State>(
+    initialState: id<State>(
         id<State>({
-            "logsByPodNameByHelmReleaseNameByProjectId": {},
-            "isFetching": false,
-            "currentPod": undefined
+            logsByPodNameByHelmReleaseNameByProjectId: {},
+            isFetching: false,
+            currentPod: undefined
         })
     ),
-    "reducers": {
-        "updateStarted": (
+    reducers: {
+        updateStarted: (
             state,
             {
                 payload
@@ -45,7 +45,7 @@ export const { reducer, actions } = createUsecaseActions({
             state.currentPod = { projectId, helmReleaseName, podName };
             state.isFetching = true;
         },
-        "updateCompleted": (
+        updateCompleted: (
             state,
             {
                 payload

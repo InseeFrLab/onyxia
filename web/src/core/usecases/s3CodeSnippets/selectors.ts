@@ -45,7 +45,7 @@ const initScript = createSelector(
         assert(credentials !== null);
 
         return {
-            "fileBasename": ((): string => {
+            fileBasename: ((): string => {
                 switch (selectedTechnology) {
                     case "R (aws.S3)":
                     case "R (paws)":
@@ -63,7 +63,7 @@ const initScript = createSelector(
                         return "rclone.conf";
                 }
             })(),
-            "scriptCode": ((): string => {
+            scriptCode: ((): string => {
                 switch (selectedTechnology) {
                     case "R (aws.S3)":
                         return `
@@ -251,7 +251,7 @@ session_token = ${credentials.AWS_SESSION_TOKEN}
             })()
                 .replace(/^\n/, "")
                 .replace(/[\t\n]+$/, ""),
-            "programmingLanguage": ((): string => {
+            programmingLanguage: ((): string => {
                 switch (selectedTechnology) {
                     case "R (aws.S3)":
                     case "R (paws)":
@@ -298,7 +298,7 @@ const main = createSelector(
     ) => {
         if (!isReady) {
             return {
-                "isReady": false as const,
+                isReady: false as const,
                 isRefreshing
             };
         }
@@ -309,7 +309,7 @@ const main = createSelector(
         assert(expirationTime !== null);
 
         return {
-            "isReady": true as const,
+            isReady: true as const,
             isRefreshing,
             credentials,
             selectedTechnology,

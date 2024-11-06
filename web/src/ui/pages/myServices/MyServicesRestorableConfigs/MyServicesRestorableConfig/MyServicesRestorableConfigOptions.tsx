@@ -122,27 +122,27 @@ export type I18n = typeof i18n;
 const useStyles = tss
     .withName({ MyServicesRestorableConfigOptions })
     .create(({ theme }) => ({
-        "icon": {
-            "color": theme.colors.useCases.typography.textPrimary
+        icon: {
+            color: theme.colors.useCases.typography.textPrimary
         },
-        "menu": {
+        menu: {
             "& .Mui-selected": {
-                "backgroundColor": theme.colors.useCases.surfaces.surface1
+                backgroundColor: theme.colors.useCases.surfaces.surface1
             },
             "& .MuiPaper-root": {
-                "backgroundColor": theme.colors.useCases.surfaces.background
+                backgroundColor: theme.colors.useCases.surfaces.background
             },
             "& a": {
-                "color": theme.colors.useCases.typography.textPrimary
+                color: theme.colors.useCases.typography.textPrimary
             }
         },
-        "menuTypo": {
-            "display": "flex",
-            "alignItems": "center"
+        menuTypo: {
+            display: "flex",
+            alignItems: "center"
         },
-        "button": {
-            "minWidth": "unset",
-            "marginLeft": theme.spacing(1)
+        button: {
+            minWidth: "unset",
+            marginLeft: theme.spacing(1)
         }
     }));
 

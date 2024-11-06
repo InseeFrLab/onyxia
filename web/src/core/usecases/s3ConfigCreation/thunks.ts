@@ -10,7 +10,7 @@ import * as userAuthentication from "core/usecases/userAuthentication";
 import * as s3ConfigConnectionTest from "core/usecases/s3ConfigConnectionTest";
 
 export const thunks = {
-    "initialize":
+    initialize:
         (params: { s3ConfigIdToEdit: string | undefined }) =>
         async (...args) => {
             const { s3ConfigIdToEdit } = params;
@@ -34,12 +34,12 @@ export const thunks = {
                 dispatch(
                     actions.initialized({
                         s3ConfigIdToEdit,
-                        "initialFormValues": {
-                            "friendlyName": s3Config.friendlyName,
-                            "url": s3Config.paramsOfCreateS3Client.url,
-                            "region": s3Config.region,
-                            "workingDirectoryPath": s3Config.workingDirectoryPath,
-                            "pathStyleAccess":
+                        initialFormValues: {
+                            friendlyName: s3Config.friendlyName,
+                            url: s3Config.paramsOfCreateS3Client.url,
+                            region: s3Config.region,
+                            workingDirectoryPath: s3Config.workingDirectoryPath,
+                            pathStyleAccess:
                                 s3Config.paramsOfCreateS3Client.pathStyleAccess,
                             ...(() => {
                                 if (
@@ -47,22 +47,22 @@ export const thunks = {
                                     undefined
                                 ) {
                                     return {
-                                        "isAnonymous": true,
-                                        "accessKeyId": undefined,
-                                        "secretAccessKey": undefined,
-                                        "sessionToken": undefined
+                                        isAnonymous: true,
+                                        accessKeyId: undefined,
+                                        secretAccessKey: undefined,
+                                        sessionToken: undefined
                                     };
                                 }
 
                                 return {
-                                    "isAnonymous": false,
-                                    "accessKeyId":
+                                    isAnonymous: false,
+                                    accessKeyId:
                                         s3Config.paramsOfCreateS3Client.credentials
                                             .accessKeyId,
-                                    "secretAccessKey":
+                                    secretAccessKey:
                                         s3Config.paramsOfCreateS3Client.credentials
                                             .secretAccessKey,
-                                    "sessionToken":
+                                    sessionToken:
                                         s3Config.paramsOfCreateS3Client.credentials
                                             .sessionToken
                                 };
@@ -80,17 +80,17 @@ export const thunks = {
             if (s3ConfigCreationFormDefaults === undefined) {
                 dispatch(
                     actions.initialized({
-                        "s3ConfigIdToEdit": undefined,
-                        "initialFormValues": {
-                            "friendlyName": "",
-                            "url": "",
-                            "region": undefined,
-                            "workingDirectoryPath": "",
-                            "pathStyleAccess": false,
-                            "isAnonymous": true,
-                            "accessKeyId": undefined,
-                            "secretAccessKey": undefined,
-                            "sessionToken": undefined
+                        s3ConfigIdToEdit: undefined,
+                        initialFormValues: {
+                            friendlyName: "",
+                            url: "",
+                            region: undefined,
+                            workingDirectoryPath: "",
+                            pathStyleAccess: false,
+                            isAnonymous: true,
+                            accessKeyId: undefined,
+                            secretAccessKey: undefined,
+                            sessionToken: undefined
                         }
                     })
                 );
@@ -101,7 +101,7 @@ export const thunks = {
                 s3ConfigCreationFormDefaults.workingDirectory === undefined
                     ? undefined
                     : getWorkingDirectoryPath({
-                          "context": (() => {
+                          context: (() => {
                               const project =
                                   projectManagement.protectedSelectors.currentProject(
                                       getState()
@@ -110,44 +110,43 @@ export const thunks = {
 
                               return project.group === undefined
                                   ? {
-                                        "type": "personalProject" as const,
-                                        "username": user.username
+                                        type: "personalProject" as const,
+                                        username: user.username
                                     }
                                   : {
-                                        "type": "groupProject" as const,
-                                        "projectGroup": project.group
+                                        type: "groupProject" as const,
+                                        projectGroup: project.group
                                     };
                           })(),
-                          "workingDirectory":
-                              s3ConfigCreationFormDefaults.workingDirectory
+                          workingDirectory: s3ConfigCreationFormDefaults.workingDirectory
                       });
 
             dispatch(
                 actions.initialized({
-                    "s3ConfigIdToEdit": undefined,
-                    "initialFormValues": {
-                        "friendlyName": "",
-                        "url": s3ConfigCreationFormDefaults.url,
-                        "region": s3ConfigCreationFormDefaults.region,
-                        "workingDirectoryPath": workingDirectoryPath ?? "",
-                        "pathStyleAccess":
+                    s3ConfigIdToEdit: undefined,
+                    initialFormValues: {
+                        friendlyName: "",
+                        url: s3ConfigCreationFormDefaults.url,
+                        region: s3ConfigCreationFormDefaults.region,
+                        workingDirectoryPath: workingDirectoryPath ?? "",
+                        pathStyleAccess:
                             s3ConfigCreationFormDefaults.pathStyleAccess ?? false,
-                        "isAnonymous": false,
-                        "accessKeyId": undefined,
-                        "secretAccessKey": undefined,
-                        "sessionToken": undefined
+                        isAnonymous: false,
+                        accessKeyId: undefined,
+                        secretAccessKey: undefined,
+                        sessionToken: undefined
                     }
                 })
             );
         },
-    "reset":
+    reset:
         () =>
         (...args) => {
             const [dispatch] = args;
 
             dispatch(actions.stateResetToNotInitialized());
         },
-    "submit":
+    submit:
         () =>
         async (...args) => {
             const [dispatch, getState] = args;
@@ -166,7 +165,7 @@ export const thunks = {
 
             dispatch(actions.stateResetToNotInitialized());
         },
-    "changeValue":
+    changeValue:
         <K extends keyof State.Ready.FormValues>(params: ChangeValueParams<K>) =>
         async (...args) => {
             const { key, value } = params;
@@ -190,8 +189,8 @@ export const thunks = {
                 if (url.toLowerCase().includes("amazonaws.com")) {
                     dispatch(
                         actions.formValueChanged({
-                            "key": "pathStyleAccess",
-                            "value": false
+                            key: "pathStyleAccess",
+                            value: false
                         })
                     );
                     break preset_pathStyleAccess;
@@ -200,15 +199,15 @@ export const thunks = {
                 if (url.toLocaleLowerCase().includes("minio")) {
                     dispatch(
                         actions.formValueChanged({
-                            "key": "pathStyleAccess",
-                            "value": true
+                            key: "pathStyleAccess",
+                            value: true
                         })
                     );
                     break preset_pathStyleAccess;
                 }
             }
         },
-    "testConnection":
+    testConnection:
         () =>
         async (...args) => {
             const [dispatch, getState] = args;
@@ -221,14 +220,14 @@ export const thunks = {
 
             await dispatch(
                 s3ConfigConnectionTest.protectedThunks.testS3Connection({
-                    "paramsOfCreateS3Client": {
-                        "isStsEnabled": false,
-                        "url": projectS3Config.url,
-                        "pathStyleAccess": projectS3Config.pathStyleAccess,
-                        "region": projectS3Config.region,
-                        "credentials": projectS3Config.credentials
+                    paramsOfCreateS3Client: {
+                        isStsEnabled: false,
+                        url: projectS3Config.url,
+                        pathStyleAccess: projectS3Config.pathStyleAccess,
+                        region: projectS3Config.region,
+                        credentials: projectS3Config.credentials
                     },
-                    "workingDirectoryPath": projectS3Config.workingDirectoryPath
+                    workingDirectoryPath: projectS3Config.workingDirectoryPath
                 })
             );
         }

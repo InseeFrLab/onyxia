@@ -44,7 +44,7 @@ export function S3ConfigCard(props: Props) {
                 <Text typo="body 1">
                     <code
                         className={css({
-                            "fontSize": "0.9rem"
+                            fontSize: "0.9rem"
                         })}
                     >
                         {s3Config.dataSource}
@@ -106,8 +106,8 @@ export function S3ConfigCard(props: Props) {
             </div>
             <div
                 className={css({
-                    "marginTop": theme.spacing(4),
-                    "display": "flex"
+                    marginTop: theme.spacing(4),
+                    display: "flex"
                 })}
             >
                 {s3Config.origin === "project" &&
@@ -119,11 +119,11 @@ export function S3ConfigCard(props: Props) {
                             onTestConnection={onTestConnection}
                         />
                     ))}
-                <div className={css({ "flex": 1 })} />
+                <div className={css({ flex: 1 })} />
                 <div
                     className={css({
-                        "display": "flex",
-                        "gap": theme.spacing(2)
+                        display: "flex",
+                        gap: theme.spacing(2)
                     })}
                 >
                     {onEdit !== undefined && (
@@ -151,26 +151,26 @@ export function S3ConfigCard(props: Props) {
 }
 
 const useStyles = tss.withName({ S3ConfigCard }).create(({ theme }) => ({
-    "root": {
-        "padding": theme.spacing(3),
-        "borderRadius": theme.spacing(2),
-        "backgroundColor": theme.colors.useCases.surfaces.surface1,
-        "boxShadow": theme.shadows[3],
+    root: {
+        padding: theme.spacing(3),
+        borderRadius: theme.spacing(2),
+        backgroundColor: theme.colors.useCases.surfaces.surface1,
+        boxShadow: theme.shadows[3],
         "&:hover": {
-            "boxShadow": theme.shadows[6]
+            boxShadow: theme.shadows[6]
         }
     },
-    "line": {
-        "marginBottom": theme.spacing(3),
-        "display": "flex",
-        "alignItems": "center"
+    line: {
+        marginBottom: theme.spacing(3),
+        display: "flex",
+        alignItems: "center"
     },
-    "helpIcon": {
-        "marginLeft": theme.spacing(2),
-        "fontSize": "inherit",
+    helpIcon: {
+        marginLeft: theme.spacing(2),
+        fontSize: "inherit",
         ...(() => {
             const factor = 1.1;
-            return { "width": `${factor}em`, "height": `${factor}em` };
+            return { width: `${factor}em`, height: `${factor}em` };
         })()
     }
 }));

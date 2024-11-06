@@ -5,8 +5,8 @@ import { symToStr } from "tsafe/symToStr";
 
 describe(symToStr({ applyDiffPatch }), () => {
     it("works with base case", () => {
-        const before = { "a": 41 };
-        const current = { "a": 42 };
+        const before = { a: 41 };
+        const current = { a: 42 };
 
         const { diffPatch } = computeDiff({
             before,
@@ -14,7 +14,7 @@ describe(symToStr({ applyDiffPatch }), () => {
         });
 
         applyDiffPatch({
-            "objectOrArray": before,
+            objectOrArray: before,
             diffPatch
         });
 
@@ -23,7 +23,7 @@ describe(symToStr({ applyDiffPatch }), () => {
 
     it("works when the value wasn't previously set", () => {
         const before = {};
-        const current = { "a": 42 };
+        const current = { a: 42 };
 
         const { diffPatch } = computeDiff({
             before,
@@ -31,7 +31,7 @@ describe(symToStr({ applyDiffPatch }), () => {
         });
 
         applyDiffPatch({
-            "objectOrArray": before,
+            objectOrArray: before,
             diffPatch
         });
 
@@ -39,8 +39,8 @@ describe(symToStr({ applyDiffPatch }), () => {
     });
 
     it("works when a value is added to an array", () => {
-        const before = { "arr": ["a", "b"] };
-        const current = { "arr": ["a", "b", "c"] };
+        const before = { arr: ["a", "b"] };
+        const current = { arr: ["a", "b", "c"] };
 
         const { diffPatch } = computeDiff({
             before,
@@ -48,7 +48,7 @@ describe(symToStr({ applyDiffPatch }), () => {
         });
 
         applyDiffPatch({
-            "objectOrArray": before,
+            objectOrArray: before,
             diffPatch
         });
 
@@ -56,8 +56,8 @@ describe(symToStr({ applyDiffPatch }), () => {
     });
 
     it("works when a value removed from an array", () => {
-        const before = { "arr": ["a", "b"] };
-        const current = { "arr": ["a"] };
+        const before = { arr: ["a", "b"] };
+        const current = { arr: ["a"] };
 
         const { diffPatch } = computeDiff({
             before,
@@ -65,7 +65,7 @@ describe(symToStr({ applyDiffPatch }), () => {
         });
 
         applyDiffPatch({
-            "objectOrArray": before,
+            objectOrArray: before,
             diffPatch
         });
 
@@ -73,8 +73,8 @@ describe(symToStr({ applyDiffPatch }), () => {
     });
 
     it("works when an array is changed", () => {
-        const before = { "arr": ["a", "b", "c"] };
-        const current = { "arr": ["a", "d"] };
+        const before = { arr: ["a", "b", "c"] };
+        const current = { arr: ["a", "d"] };
 
         const { diffPatch } = computeDiff({
             before,
@@ -82,7 +82,7 @@ describe(symToStr({ applyDiffPatch }), () => {
         });
 
         applyDiffPatch({
-            "objectOrArray": before,
+            objectOrArray: before,
             diffPatch
         });
 
@@ -90,7 +90,7 @@ describe(symToStr({ applyDiffPatch }), () => {
     });
 
     it("works when an element has been removed", () => {
-        const before = { "x": "foo" };
+        const before = { x: "foo" };
         const current = {};
 
         const { diffPatch } = computeDiff({
@@ -99,7 +99,7 @@ describe(symToStr({ applyDiffPatch }), () => {
         });
 
         applyDiffPatch({
-            "objectOrArray": before,
+            objectOrArray: before,
             diffPatch
         });
 

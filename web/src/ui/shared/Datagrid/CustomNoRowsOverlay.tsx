@@ -14,7 +14,7 @@ export function CustomNoRowsOverlay() {
 }
 
 const useStyles = tss.withName({ CustomNoRowsOverlay }).create(() => ({
-    "root": {
+    root: {
         width: "100%",
         height: "100%",
         display: "flex",

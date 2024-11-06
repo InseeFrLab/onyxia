@@ -15,11 +15,11 @@ export function formatHelmLsResp(params: {
 
     const formatTime = (time: number) =>
         new Date(time).toLocaleDateString("en-US", {
-            "year": "numeric",
-            "month": "short",
-            "day": "numeric",
-            "hour": "2-digit",
-            "minute": "2-digit"
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+            hour: "2-digit",
+            minute: "2-digit"
         });
 
     const header = {

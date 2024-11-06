@@ -11,7 +11,7 @@ import * as viewQuotas from "core/usecases/viewQuotas";
 import { protectedSelectors } from "./selectors";
 
 export const thunks = {
-    "setActive":
+    setActive:
         () =>
         (...args) => {
             const [dispatch, getState, { evtAction }] = args;
@@ -93,9 +93,7 @@ export const thunks = {
                                 return;
                             }
 
-                            dispatch(
-                                privateThunks.update({ "doLogInCommandBar": false })
-                            );
+                            dispatch(privateThunks.update({ doLogInCommandBar: false }));
 
                             if (ctxInner.completionStatus) {
                                 return;
@@ -114,14 +112,14 @@ export const thunks = {
 
             return { setInactive };
         },
-    "update":
+    update:
         () =>
         async (...args) => {
             const [dispatch] = args;
 
-            await dispatch(privateThunks.update({ "doLogInCommandBar": true }));
+            await dispatch(privateThunks.update({ doLogInCommandBar: true }));
         },
-    "deleteService":
+    deleteService:
         (params: { helmReleaseName: string }) =>
         async (...args) => {
             const { helmReleaseName } = params;
@@ -131,7 +129,7 @@ export const thunks = {
             dispatch(
                 actions.helmReleaseLocked({
                     helmReleaseName,
-                    "reason": "delete"
+                    reason: "delete"
                 })
             );
 
@@ -143,7 +141,7 @@ export const thunks = {
 
             await dispatch(thunks.update());
         },
-    "deleteAllServices":
+    deleteAllServices:
         () =>
         async (...args) => {
             const [dispatch, getState] = args;
@@ -168,7 +166,7 @@ export const thunks = {
                 })
             );
         },
-    "suspendOrResumeService":
+    suspendOrResumeService:
         (params: { helmReleaseName: string }) =>
         async (...args) => {
             const { helmReleaseName } = params;
@@ -178,7 +176,7 @@ export const thunks = {
             dispatch(
                 actions.helmReleaseLocked({
                     helmReleaseName,
-                    "reason": "suspend"
+                    reason: "suspend"
                 })
             );
 
@@ -194,14 +192,14 @@ export const thunks = {
 
             await onyxiaApi.helmUpgradeGlobalSuspend({
                 helmReleaseName,
-                "value": !helmRelease.isSuspended
+                value: !helmRelease.isSuspended
             });
 
             await dispatch(thunks.update());
 
             dispatch(actions.helmReleaseUnlocked({ helmReleaseName }));
         },
-    "logHelmGetNotes":
+    logHelmGetNotes:
         (params: { helmReleaseName: string }) =>
         (...args) => {
             const { helmReleaseName } = params;
@@ -225,15 +223,15 @@ export const thunks = {
 
             dispatch(
                 actions.commandLogsEntryAdded({
-                    "commandLogsEntry": {
-                        "cmdId": Date.now(),
-                        "cmd": `helm get notes ${helmReleaseName} --namespace ${state.kubernetesNamespace}`,
-                        "resp": postInstallInstructions
+                    commandLogsEntry: {
+                        cmdId: Date.now(),
+                        cmd: `helm get notes ${helmReleaseName} --namespace ${state.kubernetesNamespace}`,
+                        resp: postInstallInstructions
                     }
                 })
             );
         },
-    "changeServiceFriendlyName":
+    changeServiceFriendlyName:
         (params: { helmReleaseName: string; friendlyName: string }) =>
         async (...args) => {
             const { helmReleaseName, friendlyName } = params;
@@ -270,7 +268,7 @@ export const thunks = {
 
             dispatch(actions.changeServiceFriendlyNameCompleted({ helmReleaseName }));
         },
-    "changeServiceSharedStatus":
+    changeServiceSharedStatus:
         (params: { helmReleaseName: string; isShared: boolean }) =>
         async (...args) => {
             const { helmReleaseName, isShared } = params;
@@ -294,7 +292,7 @@ export const thunks = {
 } satisfies Thunks;
 
 const privateThunks = {
-    "getLoggedOnyxiaApi":
+    getLoggedOnyxiaApi:
         () =>
         (...args): OnyxiaApi => {
             const [dispatch, getState, rootContext] = args;
@@ -312,7 +310,7 @@ const privateThunks = {
 
             context.loggedOnyxiaApi = {
                 ...onyxiaApi,
-                "listHelmReleases": async () => {
+                listHelmReleases: async () => {
                     const { namespace } =
                         projectManagement.protectedSelectors.currentProject(getState());
 
@@ -320,10 +318,10 @@ const privateThunks = {
 
                     dispatch(
                         actions.commandLogsEntryAdded({
-                            "commandLogsEntry": {
+                            commandLogsEntry: {
                                 cmdId,
-                                "cmd": `helm list --namespace ${namespace}`,
-                                "resp": undefined
+                                cmd: `helm list --namespace ${namespace}`,
+                                resp: undefined
                             }
                         })
                     );
@@ -333,8 +331,8 @@ const privateThunks = {
                     dispatch(
                         actions.commandLogsRespUpdated({
                             cmdId,
-                            "resp": formatHelmLsResp({
-                                "lines": helmReleases.map(
+                            resp: formatHelmLsResp({
+                                lines: helmReleases.map(
                                     ({
                                         helmReleaseName,
                                         startedAt,
@@ -344,12 +342,12 @@ const privateThunks = {
                                         appVersion,
                                         status
                                     }) => ({
-                                        "name": helmReleaseName,
+                                        name: helmReleaseName,
                                         namespace,
                                         revision,
-                                        "updatedTime": startedAt,
-                                        "status": status,
-                                        "chart": `${chartName}-${chartVersion}`,
+                                        updatedTime: startedAt,
+                                        status: status,
+                                        chart: `${chartName}-${chartVersion}`,
                                         appVersion
                                     })
                                 )
@@ -359,19 +357,19 @@ const privateThunks = {
 
                     return helmReleases;
                 },
-                "helmUninstall": async ({ helmReleaseName }) => {
+                helmUninstall: async ({ helmReleaseName }) => {
                     const cmdId = Date.now();
 
                     dispatch(
                         actions.commandLogsEntryAdded({
-                            "commandLogsEntry": {
+                            commandLogsEntry: {
                                 cmdId,
-                                "cmd": `helm uninstall ${helmReleaseName} --namespace ${
+                                cmd: `helm uninstall ${helmReleaseName} --namespace ${
                                     projectManagement.protectedSelectors.currentProject(
                                         getState()
                                     ).namespace
                                 }`,
-                                "resp": undefined
+                                resp: undefined
                             }
                         })
                     );
@@ -381,7 +379,7 @@ const privateThunks = {
                     dispatch(
                         actions.commandLogsRespUpdated({
                             cmdId,
-                            "resp": `release "${helmReleaseName}" uninstalled`
+                            resp: `release "${helmReleaseName}" uninstalled`
                         })
                     );
                 }
@@ -389,7 +387,7 @@ const privateThunks = {
 
             return dispatch(privateThunks.getLoggedOnyxiaApi());
         },
-    "update":
+    update:
         (params: { doLogInCommandBar: boolean }) =>
         async (...args) => {
             const { doLogInCommandBar } = params;
@@ -450,12 +448,12 @@ const privateThunks = {
                 actions.updateCompleted({
                     kubernetesNamespace,
                     helmReleases,
-                    "logoUrlByReleaseName": Object.fromEntries(
+                    logoUrlByReleaseName: Object.fromEntries(
                         helmReleases.map(helmRelease => [
                             helmRelease.helmReleaseName,
                             getLogoUrl({
-                                "catalogId": helmRelease.catalogId,
-                                "chartName": helmRelease.chartName
+                                catalogId: helmRelease.catalogId,
+                                chartName: helmRelease.chartName
                             })
                         ])
                     ),
@@ -466,5 +464,5 @@ const privateThunks = {
 } satisfies Thunks;
 
 const { getContext } = createUsecaseContextApi(() => ({
-    "loggedOnyxiaApi": id<OnyxiaApi | undefined>(undefined)
+    loggedOnyxiaApi: id<OnyxiaApi | undefined>(undefined)
 }));

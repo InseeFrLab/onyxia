@@ -14,7 +14,7 @@ function generateUniqDefaultNameRec(
     return generateUniqDefaultNameRec({
         names,
         buildName,
-        "n": n + 1
+        n: n + 1
     });
 }
 
@@ -24,7 +24,7 @@ export function generateUniqDefaultName(params: {
 }): string {
     return generateUniqDefaultNameRec({
         ...params,
-        "n": 1
+        n: 1
     });
 }
 

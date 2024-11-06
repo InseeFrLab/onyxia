@@ -55,7 +55,7 @@ export const AccountStorageTab = memo((props: Props) => {
     const { s3CodeSnippets } = useCore().functions;
 
     useEffect(() => {
-        s3CodeSnippets.refresh({ "doForceRenewToken": false });
+        s3CodeSnippets.refresh({ doForceRenewToken: false });
     }, []);
 
     const {
@@ -67,10 +67,10 @@ export const AccountStorageTab = memo((props: Props) => {
         selectedTechnology
     } = useCoreState("s3CodeSnippets", "main");
 
-    const { fromNowText } = useFromNow({ "dateTime": expirationTime ?? 0 });
+    const { fromNowText } = useFromNow({ dateTime: expirationTime ?? 0 });
     const onSelectChangeTechnology = useConstCallback((e: SelectChangeEvent) =>
         s3CodeSnippets.changeTechnology({
-            "technology": e.target.value as Technology
+            technology: e.target.value as Technology
         })
     );
 
@@ -82,14 +82,14 @@ export const AccountStorageTab = memo((props: Props) => {
         assert(isReady);
         saveAs(
             new Blob([initScript.scriptCode], {
-                "type": "text/plain;charset=utf-8"
+                type: "text/plain;charset=utf-8"
             }),
             initScript.fileBasename
         );
     });
 
     const onRefreshIconButtonClick = useConstCallback(() =>
-        s3CodeSnippets.refresh({ "doForceRenewToken": true })
+        s3CodeSnippets.refresh({ doForceRenewToken: true })
     );
 
     if (!isReady) {
@@ -104,9 +104,7 @@ export const AccountStorageTab = memo((props: Props) => {
                     <>
                         {t("credentials section helper")}
                         &nbsp;
-                        <strong>
-                            {t("expires in", { "howMuchTime": fromNowText })}{" "}
-                        </strong>
+                        <strong>{t("expires in", { howMuchTime: fromNowText })} </strong>
                         <IconButton
                             size="extra small"
                             icon={id<MuiIconComponentName>("Refresh")}
@@ -132,9 +130,9 @@ export const AccountStorageTab = memo((props: Props) => {
                         key.replace(/^AWS_/, "").replace(/_/g, " ").toLowerCase()
                     )}
                     text={smartTrim({
-                        "maxLength": 50,
-                        "minCharAtTheEnd": 20,
-                        "text": credentials[key]
+                        maxLength: 50,
+                        minCharAtTheEnd: 20,
+                        text: credentials[key]
                     })}
                     helperText={
                         <>
@@ -167,7 +165,7 @@ export const AccountStorageTab = memo((props: Props) => {
                         ))}
                     </Select>
                 </FormControl>
-                <div style={{ "flex": 1 }} />
+                <div style={{ flex: 1 }} />
                 <IconButton
                     icon={id<MuiIconComponentName>("GetApp")}
                     onClick={onGetAppIconButtonClick}
@@ -196,14 +194,14 @@ const { i18n } = declareComponentKeys<
 export type I18n = typeof i18n;
 
 const useStyles = tss.withName({ AccountStorageTab }).create(({ theme }) => ({
-    "divider": {
+    divider: {
         ...theme.spacing.topBottom("margin", 4)
     },
-    "envVar": {
-        "color": theme.colors.useCases.typography.textFocus
+    envVar: {
+        color: theme.colors.useCases.typography.textFocus
     },
-    "codeBlockHeaderWrapper": {
-        "display": "flex",
-        "marginBottom": theme.spacing(3)
+    codeBlockHeaderWrapper: {
+        display: "flex",
+        marginBottom: theme.spacing(3)
     }
 }));

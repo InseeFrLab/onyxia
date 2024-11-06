@@ -29,11 +29,11 @@ export default function Register(props: RegisterProps) {
 
     const { kcClsx } = getKcClsx({
         doUseDefaultCss,
-        "classes": {
+        classes: {
             ...classes_props,
-            "kcFormGroupClass": cx(
+            kcFormGroupClass: cx(
                 classes_props?.kcFormGroupClass,
-                css({ "marginBottom": 20 })
+                css({ marginBottom: 20 })
             )
         }
     });
@@ -106,18 +106,18 @@ export default function Register(props: RegisterProps) {
 }
 
 const useStyles = tss.withName({ Register }).create(({ theme }) => ({
-    "root": {
+    root: {
         "& .MuiTextField-root": {
-            "width": "100%",
-            "marginTop": theme.spacing(6)
+            width: "100%",
+            marginTop: theme.spacing(6)
         }
     },
-    "buttonsWrapper": {
-        "marginTop": theme.spacing(8),
-        "display": "flex",
-        "justifyContent": "flex-end"
+    buttonsWrapper: {
+        marginTop: theme.spacing(8),
+        display: "flex",
+        justifyContent: "flex-end"
     },
-    "buttonSubmit": {
-        "marginLeft": theme.spacing(2)
+    buttonSubmit: {
+        marginLeft: theme.spacing(2)
     }
 }));

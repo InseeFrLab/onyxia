@@ -5,14 +5,14 @@ import { getFormFieldAtPath, type FormFieldGroupLike } from "./getFormFieldAtPat
 describe(symToStr({ getFormFieldAtPath }), () => {
     it("target is root", () => {
         const formFieldGroup: FormFieldGroupLike = {
-            "type": "group",
-            "nodes": []
+            type: "group",
+            nodes: []
         };
 
         const got = getFormFieldAtPath({
-            "doExtract": false,
+            doExtract: false,
             formFieldGroup,
-            "formFieldPath": []
+            formFieldPath: []
         });
 
         const expected = formFieldGroup;
@@ -22,50 +22,50 @@ describe(symToStr({ getFormFieldAtPath }), () => {
 
     it("throws if target is root and extract", () => {
         const formFieldGroup: FormFieldGroupLike = {
-            "type": "group",
-            "nodes": []
+            type: "group",
+            nodes: []
         };
 
         expect(() => {
             getFormFieldAtPath({
-                "doExtract": true,
+                doExtract: true,
                 formFieldGroup,
-                "formFieldPath": []
+                formFieldPath: []
             });
         }).toThrow();
     });
 
     it("no extract", () => {
         const targetFormFieldGroup: FormFieldGroupLike = {
-            "type": "group",
-            "nodes": []
+            type: "group",
+            nodes: []
         };
 
         const formFieldGroup: FormFieldGroupLike = {
-            "type": "group",
-            "nodes": [
+            type: "group",
+            nodes: [
                 {
-                    "type": "field"
+                    type: "field"
                 },
                 {
-                    "type": "group",
-                    "nodes": [
+                    type: "group",
+                    nodes: [
                         targetFormFieldGroup,
                         {
-                            "type": "field"
+                            type: "field"
                         }
                     ]
                 },
                 {
-                    "type": "field"
+                    type: "field"
                 }
             ]
         };
 
         const got = getFormFieldAtPath({
-            "doExtract": false,
+            doExtract: false,
             formFieldGroup,
-            "formFieldPath": [1, 0]
+            formFieldPath: [1, 0]
         });
 
         const expected = targetFormFieldGroup;
@@ -75,53 +75,53 @@ describe(symToStr({ getFormFieldAtPath }), () => {
 
     it("with extract", () => {
         const targetFormFieldGroup: FormFieldGroupLike = {
-            "type": "group",
-            "nodes": []
+            type: "group",
+            nodes: []
         };
 
         const formFieldGroup: FormFieldGroupLike = {
-            "type": "group",
-            "nodes": [
+            type: "group",
+            nodes: [
                 {
-                    "type": "field"
+                    type: "field"
                 },
                 {
-                    "type": "group",
-                    "nodes": [
+                    type: "group",
+                    nodes: [
                         targetFormFieldGroup,
                         {
-                            "type": "field"
+                            type: "field"
                         }
                     ]
                 },
                 {
-                    "type": "field"
+                    type: "field"
                 }
             ]
         };
 
         const got = getFormFieldAtPath({
-            "doExtract": true,
+            doExtract: true,
             formFieldGroup,
-            "formFieldPath": [1, 0]
+            formFieldPath: [1, 0]
         });
 
         expect(formFieldGroup).toStrictEqual({
-            "type": "group",
-            "nodes": [
+            type: "group",
+            nodes: [
                 {
-                    "type": "field"
+                    type: "field"
                 },
                 {
-                    "type": "group",
-                    "nodes": [
+                    type: "group",
+                    nodes: [
                         {
-                            "type": "field"
+                            type: "field"
                         }
                     ]
                 },
                 {
-                    "type": "field"
+                    type: "field"
                 }
             ]
         });

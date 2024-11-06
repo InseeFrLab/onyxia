@@ -3,7 +3,7 @@ import { useTheme } from "onyxia-ui";
 import type { Theme } from "onyxia-ui/lib/theme";
 
 export const { tss } = createTss({
-    "useContext": function useContext() {
+    useContext: function useContext() {
         const theme = useTheme<Theme>();
         return { theme };
     }

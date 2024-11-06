@@ -12,7 +12,7 @@ export async function createOidc(params: {
         issuerUri,
         clientId,
         transformUrlBeforeRedirect,
-        "publicUrl": import.meta.env.BASE_URL
+        publicUrl: import.meta.env.BASE_URL
     });
 
     return oidc;

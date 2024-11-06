@@ -34,12 +34,12 @@ export const SelectFormField = memo((props: Props) => {
         number,
         never
     >({
-        "serializedValue": selectedOptionIndex,
-        "throttleDelay": 0,
-        "onChange": onSelectedOptionIndexChange,
-        "parse": serializedValue => ({
-            "isValid": true,
-            "value": serializedValue
+        serializedValue: selectedOptionIndex,
+        throttleDelay: 0,
+        onChange: onSelectedOptionIndexChange,
+        parse: serializedValue => ({
+            isValid: true,
+            value: serializedValue
         })
     });
 
@@ -81,7 +81,7 @@ export const SelectFormField = memo((props: Props) => {
 });
 
 const useStyles = tss.withName({ SelectFormField }).create({
-    "select": {
-        "minWidth": "min(200px, 100%)"
+    select: {
+        minWidth: "min(200px, 100%)"
     }
 });

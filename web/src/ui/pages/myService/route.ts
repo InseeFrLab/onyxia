@@ -1,9 +1,9 @@
 import { createRouter, defineRoute, param, createGroup, type Route } from "type-route";
 
 export const routeDefs = {
-    "myService": defineRoute(
+    myService: defineRoute(
         {
-            "helmReleaseName": param.path.string
+            helmReleaseName: param.path.string
         },
         ({ helmReleaseName }) => `/my-service/${helmReleaseName}`
     )

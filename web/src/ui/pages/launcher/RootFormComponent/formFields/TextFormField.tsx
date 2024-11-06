@@ -41,10 +41,10 @@ export const TextFormField = memo((props: Props) => {
 
     const { serializedValue, setSerializedValue, errorMessageKey, resetToDefault } =
         useFormField<string, string, "not matching pattern">({
-            "throttleDelay": 500,
-            "serializedValue": value,
+            throttleDelay: 500,
+            serializedValue: value,
             onChange,
-            "parse": serializedValue => {
+            parse: serializedValue => {
                 check_pattern: {
                     if (pattern === undefined) {
                         break check_pattern;
@@ -52,21 +52,21 @@ export const TextFormField = memo((props: Props) => {
 
                     if (!new RegExp(pattern).test(serializedValue)) {
                         return {
-                            "isValid": false,
-                            "errorMessageKey": "not matching pattern"
+                            isValid: false,
+                            errorMessageKey: "not matching pattern"
                         };
                     }
                 }
 
                 return {
-                    "isValid": true,
-                    "value": serializedValue
+                    isValid: true,
+                    value: serializedValue
                 };
             }
         });
 
     useEffect(() => {
-        onErrorChange({ "hasError": errorMessageKey !== undefined });
+        onErrorChange({ hasError: errorMessageKey !== undefined });
     }, [errorMessageKey]);
 
     const { t } = useTranslation({ TextFormField });
@@ -78,7 +78,7 @@ export const TextFormField = memo((props: Props) => {
     >(isSensitive ? false : undefined);
 
     const { classes } = useStyles({
-        "isTextArea": doRenderAsTextArea
+        isTextArea: doRenderAsTextArea
     });
 
     return (
@@ -143,11 +143,11 @@ const useStyles = tss
     .withName({ TextFormField })
     .withParams<{ isTextArea: boolean }>()
     .create(({ theme, isTextArea }) => ({
-        "input": {
-            "border": !isTextArea
+        input: {
+            border: !isTextArea
                 ? undefined
                 : `1px dotted ${theme.colors.useCases.surfaces.surface1}`,
-            "width": "99%"
+            width: "99%"
         }
     }));
 

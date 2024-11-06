@@ -32,7 +32,7 @@ export function ProjectSelect(props: ProjectSelectProps) {
                 label="Project"
                 onChange={event =>
                     projectManagement.changeProject({
-                        "projectId": event.target.value
+                        projectId: event.target.value
                     })
                 }
             >

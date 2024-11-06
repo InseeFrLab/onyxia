@@ -11,21 +11,21 @@ import {
 import { ViewMode, viewModes } from "./shared/types";
 
 export const routeDefs = {
-    "myFiles": defineRoute(
+    myFiles: defineRoute(
         {
-            "path": param.path.trailing.optional.ofType({
-                "parse": raw => decodeURIComponent(raw), // decode the path
-                "stringify": value => encodeURI(value) // encode when creating URL
+            path: param.path.trailing.optional.ofType({
+                parse: raw => decodeURIComponent(raw), // decode the path
+                stringify: value => encodeURI(value) // encode when creating URL
             }),
-            "openFile": param.query.optional.string,
-            "mode": param.query.optional
+            openFile: param.query.optional.string,
+            mode: param.query.optional
                 .ofType(
                     id<ValueSerializer<ViewMode>>({
-                        "parse": raw =>
+                        parse: raw =>
                             !id<readonly string[]>(viewModes).includes(raw)
                                 ? noMatch
                                 : (raw as ViewMode),
-                        "stringify": value => value
+                        stringify: value => value
                     })
                 )
                 .default(viewModes[0])

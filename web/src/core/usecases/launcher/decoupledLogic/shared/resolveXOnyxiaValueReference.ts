@@ -28,7 +28,7 @@ export function resolveXOnyxiaValueReference(params: Params): Stringifyable | un
             str.replace(/\./g, dotInPropertyNamePlaceholder);
 
         return getValueAtPathInObject<Stringifyable>({
-            "path": match[1]
+            path: match[1]
                 .replace(/\[(\d+)\]/g, ".$1")
                 .replace(/\["([^"]+)"\]/g, (...[, g]) => `.${replaceDot(g)}`)
                 .replace(/\['([^']+)'\]/g, (...[, g]) => `.${replaceDot(g)}`)
@@ -36,7 +36,7 @@ export function resolveXOnyxiaValueReference(params: Params): Stringifyable | un
                 .map(part =>
                     part.replace(new RegExp(dotInPropertyNamePlaceholder, "g"), ".")
                 ),
-            "obj": xOnyxiaContext
+            obj: xOnyxiaContext
         });
     }
 
@@ -49,7 +49,7 @@ export function resolveXOnyxiaValueReference(params: Params): Stringifyable | un
 
         const resolved = expression.replace(/(\{\{[^}]+\}\})/g, (...[, group]) => {
             const resolved = resolveXOnyxiaValueReference({
-                "expression": group,
+                expression: group,
                 xOnyxiaContext
             });
 
@@ -69,7 +69,7 @@ export function resolveXOnyxiaValueReference(params: Params): Stringifyable | un
     }
 
     return resolveXOnyxiaValueReference({
-        "expression": `{{${expression}}}`,
+        expression: `{{${expression}}}`,
         xOnyxiaContext
     });
 }

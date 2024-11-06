@@ -25,7 +25,7 @@ export default function Terms(
 
     useEffect(() => {
         downloadTermsMarkdown({
-            "currentLanguageTag": kcContext.locale?.currentLanguageTag ?? "en"
+            currentLanguageTag: kcContext.locale?.currentLanguageTag ?? "en"
         }).then(setTos);
     }, []);
 
@@ -67,20 +67,20 @@ export default function Terms(
 }
 
 const useStyles = tss.withName({ Terms }).create(({ theme }) => ({
-    "buttonsWrapper": {
-        "marginTop": theme.spacing(4),
-        "display": "flex",
-        "justifyContent": "flex-end"
+    buttonsWrapper: {
+        marginTop: theme.spacing(4),
+        display: "flex",
+        justifyContent: "flex-end"
     },
-    "buttonSubmit": {
-        "marginLeft": theme.spacing(2)
+    buttonSubmit: {
+        marginLeft: theme.spacing(2)
     },
-    "markdownWrapper": {
+    markdownWrapper: {
         "& a": {
-            "color": theme.colors.useCases.buttons.actionActive
+            color: theme.colors.useCases.buttons.actionActive
         },
         "& a:hover": {
-            "textDecoration": "underline"
+            textDecoration: "underline"
         }
     }
 }));

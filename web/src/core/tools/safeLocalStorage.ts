@@ -35,9 +35,9 @@ export const getLocalStorage = memoizee(() => {
             return id<
                 Pick<typeof window.localStorage, "getItem" | "removeItem" | "setItem">
             >({
-                "getItem": key => map.get(key) ?? null,
-                "removeItem": key => map.delete(key),
-                "setItem": (key, value) => map.set(key, value)
+                getItem: key => map.get(key) ?? null,
+                removeItem: key => map.delete(key),
+                setItem: (key, value) => map.set(key, value)
             });
         })();
 

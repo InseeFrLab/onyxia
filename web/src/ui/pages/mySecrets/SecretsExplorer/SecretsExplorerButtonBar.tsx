@@ -25,8 +25,8 @@ export const SecretsExplorerButtonBar = memo((props: Props) => {
     const buttons = useMemo(
         (): ButtonBarProps<ButtonId>["buttons"] =>
             buttonIds.map(buttonId => ({
-                "buttonId": buttonId,
-                "icon": (() => {
+                buttonId: buttonId,
+                icon: (() => {
                     switch (buttonId) {
                         case "refresh":
                             return "cached" as const;
@@ -42,7 +42,7 @@ export const SecretsExplorerButtonBar = memo((props: Props) => {
                             return "edit";
                     }
                 })(),
-                "isDisabled": (() => {
+                isDisabled: (() => {
                     switch (buttonId) {
                         case "refresh":
                             return false;
@@ -61,7 +61,7 @@ export const SecretsExplorerButtonBar = memo((props: Props) => {
                             return selectedItemKind !== "file" && !isFileOpen;
                     }
                 })(),
-                "label": buttonId === "new" ? t("create secret") : t(buttonId)
+                label: buttonId === "new" ? t("create secret") : t(buttonId)
             })),
         [isSelectedItemInEditingState, selectedItemKind, isFileOpen, t]
     );

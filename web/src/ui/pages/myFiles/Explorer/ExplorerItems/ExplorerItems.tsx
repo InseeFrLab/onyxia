@@ -55,7 +55,7 @@ export const ExplorerItems = memo((props: ExplorerItemsProps) => {
     >({ basename: undefined, kind: "none" });
 
     const { classes, cx } = useStyles({
-        "isEmpty": isEmpty
+        isEmpty: isEmpty
     });
 
     const { t } = useTranslation({ ExplorerItems });
@@ -73,15 +73,15 @@ export const ExplorerItems = memo((props: ExplorerItemsProps) => {
         switch (item.policy) {
             case "public":
                 onPolicyChange({
-                    "basename": item.basename,
-                    "policy": "private",
+                    basename: item.basename,
+                    policy: "private",
                     kind: item.kind
                 });
                 break;
             case "private":
                 onPolicyChange({
-                    "basename": item.basename,
-                    "policy": "public",
+                    basename: item.basename,
+                    policy: "public",
                     kind: item.kind
                 });
                 break;
@@ -91,10 +91,10 @@ export const ExplorerItems = memo((props: ExplorerItemsProps) => {
     const handleItemDoubleClick = useCallbackFactory(([item]: [Item]) => {
         switch (item.kind) {
             case "directory":
-                onNavigate({ "basename": item.basename });
+                onNavigate({ basename: item.basename });
                 break;
             case "file":
-                onOpenFile({ "basename": item.basename });
+                onOpenFile({ basename: item.basename });
                 break;
         }
     });
@@ -105,12 +105,12 @@ export const ExplorerItems = memo((props: ExplorerItemsProps) => {
                 switch (action) {
                     case "DELETE SELECTED ITEM":
                         assert(selectedItem.kind !== "none");
-                        onDeleteItem({ "item": selectedItem });
+                        onDeleteItem({ item: selectedItem });
                         break;
                     case "COPY SELECTED ITEM PATH":
                         assert(selectedItem.kind !== "none");
                         onCopyPath({
-                            "basename": selectedItem.basename
+                            basename: selectedItem.basename
                         });
                         break;
                 }
@@ -168,18 +168,18 @@ const useStyles = tss
     .withName({ ExplorerItems })
     .withParams<{ isEmpty: boolean }>()
     .create(({ theme, isEmpty }) => ({
-        "root": {
+        root: {
             ...(isEmpty
                 ? {}
                 : {
-                      "display": "flex",
-                      "flexWrap": "wrap",
-                      "justifyContent": "flex-start"
+                      display: "flex",
+                      flexWrap: "wrap",
+                      justifyContent: "flex-start"
                   })
         },
-        "item": {
-            "width": theme.spacing(9),
-            "height": theme.spacing(9),
-            "margin": theme.spacing(2)
+        item: {
+            width: theme.spacing(9),
+            height: theme.spacing(9),
+            margin: theme.spacing(2)
         }
     }));

@@ -16,9 +16,9 @@ export function applyDiffPatch(params: {
 
     for (const { path, value } of diffPatch) {
         assignValueAtPath({
-            "stringifyableObjectOrArray": objectOrArray,
-            "path": path,
-            "value": value === undefined ? DELETED_PLACEHOLDER : value
+            stringifyableObjectOrArray: objectOrArray,
+            path: path,
+            value: value === undefined ? DELETED_PLACEHOLDER : value
         });
     }
 

@@ -8,14 +8,14 @@ export function valueToSecret(value: any): Secret {
         typeof value === "number" ||
         typeof value === "boolean"
     ) {
-        return { "value": value };
+        return { value: value };
     }
 
     if (value === undefined) {
         return {};
     }
 
-    return { "valueAsJson": JSON.stringify(value) };
+    return { valueAsJson: JSON.stringify(value) };
 }
 
 export function secretToValue(secret: Secret): unknown {

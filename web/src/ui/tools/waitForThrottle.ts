@@ -29,7 +29,7 @@ export function createWaitForThrottle(params: { delay: number }) {
             const startTime = Date.now();
 
             obsCurr.current = {
-                "timer": setTimeout(timerCallback, delay),
+                timer: setTimeout(timerCallback, delay),
                 startTime
             };
         }

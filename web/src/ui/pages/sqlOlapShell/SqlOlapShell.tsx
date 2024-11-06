@@ -59,9 +59,9 @@ function ReadySqlOlapShell(params: Props) {
         const db = sqlOlapShell.getDb();
 
         duckdbWasmShell.embed({
-            "shellModule": shellBgWasmUrl,
-            "container": containerElement,
-            "resolveDatabase": async () => db
+            shellModule: shellBgWasmUrl,
+            container: containerElement,
+            resolveDatabase: async () => db
         });
 
         isEmbeddedByElement.set(containerElement, true);
@@ -75,18 +75,18 @@ function ReadySqlOlapShell(params: Props) {
 }
 
 const useStyles = tss.withName({ SqlOlapShell }).create(({ theme }) => ({
-    "initializing": {
-        "display": "flex",
-        "justifyContent": "center",
-        "alignItems": "center",
-        "height": "100%"
+    initializing: {
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        height: "100%"
     },
-    "root": {
-        "height": "100%",
-        "overflow": "hidden",
-        "padding": "16px 0 0 20px",
-        "backgroundColor": "#333333",
-        "borderRadius": 10,
-        "boxShadow": theme.shadows[1]
+    root: {
+        height: "100%",
+        overflow: "hidden",
+        padding: "16px 0 0 20px",
+        backgroundColor: "#333333",
+        borderRadius: 10,
+        boxShadow: theme.shadows[1]
     }
 }));

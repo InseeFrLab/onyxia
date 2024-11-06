@@ -31,14 +31,14 @@ type Params = {
 export async function createSecretManager(params: Params): Promise<SecretsManager> {
     const { url, kvEngine, role, oidc, authPath = "jwt" } = params;
 
-    const createAxiosInstance = () => axios.create({ "baseURL": url });
+    const createAxiosInstance = () => axios.create({ baseURL: url });
 
     const { getNewlyRequestedOrCachedToken, clearCachedToken } =
         getNewlyRequestedOrCachedTokenFactory({
-            "persistance": createSessionStorageTokenPersistance<
+            persistance: createSessionStorageTokenPersistance<
                 ReturnType<SecretsManager["getToken"]>
             >({
-                "sessionStorageKey":
+                sessionStorageKey:
                     "vaultToken_" +
                     fnv1aHashToHex(
                         (() => {
@@ -48,7 +48,7 @@ export async function createSecretManager(params: Params): Promise<SecretsManage
                         })()
                     )
             }),
-            "requestNewToken": async () => {
+            requestNewToken: async () => {
                 const now = Date.now();
 
                 const {
@@ -57,16 +57,16 @@ export async function createSecretManager(params: Params): Promise<SecretsManage
                     auth: { lease_duration: number; client_token: string };
                 }>(`/${version}/auth/${authPath}/login`, {
                     role,
-                    "jwt": oidc.getTokens().accessToken
+                    jwt: oidc.getTokens().accessToken
                 });
 
                 return {
-                    "token": auth.client_token,
-                    "expirationTime": now + auth.lease_duration * 1000,
-                    "acquisitionTime": now
+                    token: auth.client_token,
+                    expirationTime: now + auth.lease_duration * 1000,
+                    acquisitionTime: now
                 };
             },
-            "returnCachedTokenIfStillValidForXPercentOfItsTTL": "90%"
+            returnCachedTokenIfStillValidForXPercentOfItsTTL: "90%"
         });
 
     if (oidc.authMethod !== "session storage") {
@@ -78,11 +78,11 @@ export async function createSecretManager(params: Params): Promise<SecretsManage
 
         axiosInstance.interceptors.request.use(async axiosRequestConfig => ({
             ...axiosRequestConfig,
-            "headers": {
+            headers: {
                 "X-Vault-Token": (await getNewlyRequestedOrCachedToken()).token
             },
             "Content-Type": "application/json;charset=utf-8",
-            "Accept": "application/json;charset=utf-8"
+            Accept: "application/json;charset=utf-8"
         }));
 
         return { axiosInstance };
@@ -92,21 +92,21 @@ export async function createSecretManager(params: Params): Promise<SecretsManage
         pathJoin(version, kvEngine, ...args);
 
     const secretsManager: SecretsManager = {
-        "list": async ({ path }) => {
+        list: async ({ path }) => {
             const axiosResponse = await axiosInstance.get<{
                 data: { keys: string[] };
-            }>(ctxPathJoin("metadata", path), { "params": { "list": "true" } });
+            }>(ctxPathJoin("metadata", path), { params: { list: "true" } });
 
             const [directories, files] = axiosResponse.data.data.keys.reduce(
                 ...partition<string>(key => key.endsWith("/"))
             );
 
             return {
-                "directories": directories.map(path => path.split("/")[0]),
+                directories: directories.map(path => path.split("/")[0]),
                 files
             };
         },
-        "get": async ({ path }) => {
+        get: async ({ path }) => {
             const axiosResponse = await axiosInstance.get<{
                 data: {
                     data: SecretWithMetadata["secret"];
@@ -120,15 +120,15 @@ export async function createSecretManager(params: Params): Promise<SecretsManage
 
             return { secret, metadata };
         },
-        "put": async ({ path, secret }) => {
+        put: async ({ path, secret }) => {
             await axiosInstance.put<{ data: Secret }>(ctxPathJoin("data", path), {
-                "data": secret
+                data: secret
             });
         },
-        "delete": async ({ path }) => {
+        delete: async ({ path }) => {
             await axiosInstance.delete(ctxPathJoin("metadata", path));
         },
-        "getToken": async params => {
+        getToken: async params => {
             const { doForceRefresh } = params ?? {};
 
             if (doForceRefresh) {

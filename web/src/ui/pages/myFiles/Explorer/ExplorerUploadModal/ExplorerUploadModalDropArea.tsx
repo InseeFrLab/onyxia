@@ -64,7 +64,7 @@ export const ExplorerUploadModalDropArea = memo((props: Props) => {
 
             assert(event.type === "drop");
 
-            onFileSelected({ "files": Object.values(event.dataTransfer.files) });
+            onFileSelected({ files: Object.values(event.dataTransfer.files) });
         }
     );
 
@@ -108,29 +108,29 @@ const useStyles = tss
     .withName({ ExplorerUploadModalDropArea })
     .withParams<{ isDragHover: boolean }>()
     .create(({ theme, isDragHover }) => ({
-        "root": {
-            "outline": `${isDragHover ? 3 : 1}px ${
+        root: {
+            outline: `${isDragHover ? 3 : 1}px ${
                 theme.colors.useCases.buttons[
                     isDragHover ? "actionActive" : "actionDisabled"
                 ]
             } dashed`,
-            "borderRadius": theme.spacing(3),
-            "display": "flex",
-            "justifyContent": "center",
-            "alignItems": "center",
-            "boxSizing": "border-box",
+            borderRadius: theme.spacing(3),
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            boxSizing: "border-box",
             ...theme.spacing.topBottom("padding", 7)
         },
-        "innerDiv": {
-            "display": "flex",
-            "flexDirection": "column",
-            "justifyContent": "center"
+        innerDiv: {
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center"
         },
-        "explorerIcon": {
-            "height": 60,
-            "marginBottom": theme.spacing(5)
+        explorerIcon: {
+            height: 60,
+            marginBottom: theme.spacing(5)
         },
-        "link": {
-            "cursor": "pointer"
+        link: {
+            cursor: "pointer"
         }
     }));

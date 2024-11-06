@@ -21,7 +21,7 @@ export const GlobalAlert = memo(
         const { className, severity = "info", message } = props;
 
         const { resolveLocalizedStringDetailed } = useResolveLocalizedString({
-            "labelWhenMismatchingLanguage": true
+            labelWhenMismatchingLanguage: true
         });
 
         const localStorageKey = useMemo(() => {

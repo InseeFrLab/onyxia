@@ -9,23 +9,23 @@ import {
 describe(symToStr({ insertRangeSliderFormField }), () => {
     it("base case", () => {
         const formFieldGroup: FormFieldGroupLike = {
-            "type": "group",
-            "helmValuesPath": [],
-            "nodes": [
+            type: "group",
+            helmValuesPath: [],
+            nodes: [
                 {
-                    "type": "group",
-                    "helmValuesPath": ["resources"],
-                    "nodes": []
+                    type: "group",
+                    helmValuesPath: ["resources"],
+                    nodes: []
                 }
             ]
         };
 
         const rangeSliderFormField: FormFieldRangeSliderLike = {
-            "lowEndRange": {
-                "helmValuesPath": ["resources", "requests", "cpu"]
+            lowEndRange: {
+                helmValuesPath: ["resources", "requests", "cpu"]
             },
-            "highEndRange": {
-                "helmValuesPath": ["resources", "limits", "cpu"]
+            highEndRange: {
+                helmValuesPath: ["resources", "limits", "cpu"]
             }
         };
 
@@ -35,13 +35,13 @@ describe(symToStr({ insertRangeSliderFormField }), () => {
         });
 
         expect(formFieldGroup).toStrictEqual({
-            "type": "group",
-            "helmValuesPath": [],
-            "nodes": [
+            type: "group",
+            helmValuesPath: [],
+            nodes: [
                 {
-                    "type": "group",
-                    "helmValuesPath": ["resources"],
-                    "nodes": [rangeSliderFormField]
+                    type: "group",
+                    helmValuesPath: ["resources"],
+                    nodes: [rangeSliderFormField]
                 }
             ]
         });
@@ -49,17 +49,17 @@ describe(symToStr({ insertRangeSliderFormField }), () => {
 
     it("root case", () => {
         const formFieldGroup: FormFieldGroupLike = {
-            "type": "group",
-            "helmValuesPath": [],
-            "nodes": []
+            type: "group",
+            helmValuesPath: [],
+            nodes: []
         };
 
         const rangeSliderFormField: FormFieldRangeSliderLike = {
-            "lowEndRange": {
-                "helmValuesPath": ["resources-requests", "cpu"]
+            lowEndRange: {
+                helmValuesPath: ["resources-requests", "cpu"]
             },
-            "highEndRange": {
-                "helmValuesPath": ["resources-limits", "cpu"]
+            highEndRange: {
+                helmValuesPath: ["resources-limits", "cpu"]
             }
         };
 
@@ -69,9 +69,9 @@ describe(symToStr({ insertRangeSliderFormField }), () => {
         });
 
         expect(formFieldGroup).toStrictEqual({
-            "type": "group",
-            "helmValuesPath": [],
-            "nodes": [rangeSliderFormField]
+            type: "group",
+            helmValuesPath: [],
+            nodes: [rangeSliderFormField]
         });
     });
 });

@@ -44,21 +44,21 @@ export default function Launcher(props: Props) {
         evtNoLongerBookmarkedDialogOpen,
         evtMaybeAcknowledgeConfigVolatilityDialogOpen
     } = useConst(() => ({
-        "evtAcknowledgeSharingOfConfigConfirmDialogOpen":
+        evtAcknowledgeSharingOfConfigConfirmDialogOpen:
             Evt.create<
                 UnpackEvt<
                     LauncherDialogsProps["evtAcknowledgeSharingOfConfigConfirmDialogOpen"]
                 >
             >(),
-        "evtAutoLaunchDisabledDialogOpen":
+        evtAutoLaunchDisabledDialogOpen:
             Evt.create<
                 UnpackEvt<LauncherDialogsProps["evtAutoLaunchDisabledDialogOpen"]>
             >(),
-        "evtNoLongerBookmarkedDialogOpen":
+        evtNoLongerBookmarkedDialogOpen:
             Evt.create<
                 UnpackEvt<LauncherDialogsProps["evtNoLongerBookmarkedDialogOpen"]>
             >(),
-        "evtMaybeAcknowledgeConfigVolatilityDialogOpen":
+        evtMaybeAcknowledgeConfigVolatilityDialogOpen:
             Evt.create<MaybeAcknowledgeConfigVolatilityDialogProps["evtOpen"]>()
     }));
 
@@ -88,7 +88,7 @@ export default function Launcher(props: Props) {
     const { showSplashScreen, hideSplashScreen } = useSplashScreen();
 
     useEffect(() => {
-        showSplashScreen({ "enableTransparency": true });
+        showSplashScreen({ enableTransparency: true });
 
         let autoLaunch = route.params.autoLaunch ?? false;
 
@@ -111,14 +111,14 @@ export default function Launcher(props: Props) {
         }
 
         const { cleanup } = launcher.initialize({
-            "restorableConfig": {
-                "catalogId": route.params.catalogId,
-                "chartName": route.params.chartName,
-                "chartVersion": route.params.version,
-                "friendlyName": route.params.name,
-                "isShared": route.params.shared,
-                "s3ConfigId": route.params.s3,
-                "helmValuesPatch": route.params.helmValuesPatch
+            restorableConfig: {
+                catalogId: route.params.catalogId,
+                chartName: route.params.chartName,
+                chartVersion: route.params.version,
+                friendlyName: route.params.name,
+                isShared: route.params.shared,
+                s3ConfigId: route.params.s3,
+                helmValuesPatch: route.params.helmValuesPatch
             },
             autoLaunch
         });
@@ -147,10 +147,10 @@ export default function Launcher(props: Props) {
         routes[route.name]({
             catalogId,
             chartName,
-            "version": chartVersion,
-            "name": friendlyName,
-            "shared": isShared,
-            "s3": s3ConfigId,
+            version: chartVersion,
+            name: friendlyName,
+            shared: isShared,
+            s3: s3ConfigId,
             helmValuesPatch
         }).replace();
     }, [restorableConfig]);
@@ -167,14 +167,14 @@ export default function Launcher(props: Props) {
                 )
                 .attach(
                     event => event.eventName === "launchStarted",
-                    () => showSplashScreen({ "enableTransparency": true })
+                    () => showSplashScreen({ enableTransparency: true })
                 )
                 .$attach(
                     event => (event.eventName === "launchCompleted" ? [event] : null),
                     ({ helmReleaseName }) => {
                         hideSplashScreen();
                         routes
-                            .myServices({ "autoOpenHelmReleaseName": helmReleaseName })
+                            .myServices({ autoOpenHelmReleaseName: helmReleaseName })
                             .push();
                     }
                 ),
@@ -182,7 +182,7 @@ export default function Launcher(props: Props) {
     );
 
     const onRequestCancel = useConstCallback(() =>
-        routes.catalog({ "catalogId": route.params.catalogId }).push()
+        routes.catalog({ catalogId: route.params.catalogId }).push()
     );
 
     const onRequestCopyLaunchUrl = useConstCallback(() =>
@@ -190,7 +190,7 @@ export default function Launcher(props: Props) {
             window.location.origin +
                 routes.launcher({
                     ...route.params,
-                    "autoLaunch": true
+                    autoLaunch: true
                 }).link.href
         )
     );
@@ -205,7 +205,7 @@ export default function Launcher(props: Props) {
                 const dDoProceed = new Deferred<boolean>();
 
                 evtMaybeAcknowledgeConfigVolatilityDialogOpen.post({
-                    "resolve": ({ doProceed }) => dDoProceed.resolve(doProceed)
+                    resolve: ({ doProceed }) => dDoProceed.resolve(doProceed)
                 });
 
                 if (!(await dDoProceed.pr)) {
@@ -218,7 +218,7 @@ export default function Launcher(props: Props) {
 
                 evtAcknowledgeSharingOfConfigConfirmDialogOpen.post({
                     groupProjectName,
-                    "resolveDoProceed": doProceed.resolve
+                    resolveDoProceed: doProceed.resolve
                 });
 
                 if (!(await doProceed.pr)) {
@@ -240,21 +240,21 @@ export default function Launcher(props: Props) {
     } = useDomRect();
 
     const { classes, cx } = useStyles({
-        "isCommandBarEnabled": commandLogsEntries !== undefined
+        isCommandBarEnabled: commandLogsEntries !== undefined
     });
 
     const { myServicesSavedConfigsExtendedLink, projectS3ConfigLink } = useConst(() => ({
-        "myServicesSavedConfigsExtendedLink": routes.myServices({
-            "isSavedConfigsExtended": true
+        myServicesSavedConfigsExtendedLink: routes.myServices({
+            isSavedConfigsExtended: true
         }).link,
 
-        "projectS3ConfigLink": routes.projectSettings({
-            "tabId": "s3-configs"
+        projectS3ConfigLink: routes.projectSettings({
+            tabId: "s3-configs"
         }).link
     }));
 
     const { resolveLocalizedString } = useResolveLocalizedString({
-        "labelWhenMismatchingLanguage": true
+        labelWhenMismatchingLanguage: true
     });
 
     const { erroredFormFields, onFieldErrorChange, removeAllErroredFormFields } =
@@ -323,7 +323,7 @@ export default function Launcher(props: Props) {
 
     const onRemove = useConstCallback<FormCallbacks["onRemove"]>(
         ({ helmValuesPath, index }) => {
-            removeAllErroredFormFields({ "startingWithHelmValuesPath": helmValuesPath });
+            removeAllErroredFormFields({ startingWithHelmValuesPath: helmValuesPath });
 
             launcher.removeArrayItem({ helmValuesPath, index });
         }
@@ -339,31 +339,31 @@ export default function Launcher(props: Props) {
                 {commandLogsEntries !== undefined && (
                     <CommandBar
                         classes={{
-                            "root": classes.commandBar,
-                            "rootWhenExpended": classes.commandBarWhenExpended
+                            root: classes.commandBar,
+                            rootWhenExpended: classes.commandBarWhenExpended
                         }}
                         maxHeight={rootHeight - 30}
                         entries={commandLogsEntries}
                         downloadButton={{
-                            "tooltipTitle": t("download as script"),
-                            "onClick": () =>
+                            tooltipTitle: t("download as script"),
+                            onClick: () =>
                                 saveAs(
                                     new Blob([launchScript.content], {
-                                        "type": "text/plain;charset=utf-8"
+                                        type: "text/plain;charset=utf-8"
                                     }),
                                     launchScript.fileBasename
                                 )
                         }}
                         helpDialog={{
-                            "body": t("api logs help body", {
-                                "k8CredentialsHref": !k8sCodeSnippets.getIsAvailable()
+                            body: t("api logs help body", {
+                                k8CredentialsHref: !k8sCodeSnippets.getIsAvailable()
                                     ? undefined
                                     : routes.account({
-                                          "tabId": "k8sCodeSnippets"
+                                          tabId: "k8sCodeSnippets"
                                       }).href,
-                                "myServicesHref": routes.myServices().href,
-                                "interfacePreferenceHref": routes.account({
-                                    "tabId": "user-interface"
+                                myServicesHref: routes.myServices().href,
+                                interfacePreferenceHref: routes.account({
+                                    tabId: "user-interface"
                                 }).href
                             })
                         }}
@@ -373,8 +373,8 @@ export default function Launcher(props: Props) {
                     className={classes.mainCard}
                     chartName={chartName}
                     chartSourceLinksNode={t("sources", {
-                        "helmChartName": chartName,
-                        "helmChartRepositoryName": resolveLocalizedString(catalogName),
+                        helmChartName: chartName,
+                        helmChartRepositoryName: resolveLocalizedString(catalogName),
                         labeledHelmChartSourceUrls
                     })}
                     chartIconUrl={chartIconUrl}
@@ -396,7 +396,7 @@ export default function Launcher(props: Props) {
                             ? undefined
                             : {
                                   isShared,
-                                  "onIsSharedValueChange": launcher.changeIsShared
+                                  onIsSharedValueChange: launcher.changeIsShared
                               }
                     }
                     onRequestLaunch={launcher.launch}
@@ -414,9 +414,9 @@ export default function Launcher(props: Props) {
                             ? undefined
                             : {
                                   projectS3ConfigLink,
-                                  "selectedOption": s3ConfigSelect.selectedOptionValue,
-                                  "options": s3ConfigSelect.options,
-                                  "onSelectedS3ConfigChange": launcher.changeS3Config
+                                  selectedOption: s3ConfigSelect.selectedOptionValue,
+                                  options: s3ConfigSelect.options,
+                                  onSelectedS3ConfigChange: launcher.changeS3Config
                               }
                     }
                     erroredFormFields={erroredFormFields}
@@ -426,8 +426,8 @@ export default function Launcher(props: Props) {
                         className={classes.rootForm}
                         rootForm={rootForm}
                         callbacks={{
-                            "onAdd": launcher.addArrayItem,
-                            "onChange": launcher.changeFormFieldValue,
+                            onAdd: launcher.addArrayItem,
+                            onChange: launcher.changeFormFieldValue,
                             onRemove,
                             onFieldErrorChange
                         }}
@@ -478,39 +478,39 @@ const useStyles = tss
         const MAX_WIDTH = 1250;
 
         return {
-            "root": {
-                "height": "100%",
-                "paddingTop": !isCommandBarEnabled
+            root: {
+                height: "100%",
+                paddingTop: !isCommandBarEnabled
                     ? 0
                     : theme.typography.rootFontSizePx * 1.7 +
                       2 * theme.spacing(2) +
                       theme.spacing(2),
-                "position": "relative",
-                "display": "flex",
-                "flexDirection": "column"
+                position: "relative",
+                display: "flex",
+                flexDirection: "column"
             },
-            "commandBar": {
-                "position": "absolute",
-                "right": 0,
-                "width": "min(100%, 1250px)",
-                "top": 0,
-                "zIndex": 1,
-                "transition": "opacity 750ms linear"
+            commandBar: {
+                position: "absolute",
+                right: 0,
+                width: "min(100%, 1250px)",
+                top: 0,
+                zIndex: 1,
+                transition: "opacity 750ms linear"
             },
-            "commandBarWhenExpended": {
-                "width": "min(100%, 1450px)",
-                "transition": "width 70ms linear"
+            commandBarWhenExpended: {
+                width: "min(100%, 1450px)",
+                transition: "width 70ms linear"
             },
-            "mainCard": {
-                "maxWidth": MAX_WIDTH
+            mainCard: {
+                maxWidth: MAX_WIDTH
             },
-            "rootFormWrapper": {
-                "marginTop": theme.spacing(3),
-                "flex": 1,
-                "overflow": "auto"
+            rootFormWrapper: {
+                marginTop: theme.spacing(3),
+                flex: 1,
+                overflow: "auto"
             },
-            "rootForm": {
-                "maxWidth": MAX_WIDTH
+            rootForm: {
+                maxWidth: MAX_WIDTH
             }
         };
     });

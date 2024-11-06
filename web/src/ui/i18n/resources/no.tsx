@@ -9,30 +9,29 @@ import { MaybeLink } from "ui/shared/MaybeLink";
 
 export const translations: Translations<"no"> = {
     /* spell-checker: disable */
-    "Account": {
-        "infos": "Kontoinformasjon",
-        "git": undefined,
-        "storage": "Koble til lagring",
-        "k8sCodeSnippets": "Kubernetes",
+    Account: {
+        infos: "Kontoinformasjon",
+        git: undefined,
+        storage: "Koble til lagring",
+        k8sCodeSnippets: "Kubernetes",
         "user-interface": "Grensesnittspreferanser",
-        "text1": "Min konto",
-        "text2": "Få tilgang til ulik kontoinformasjon.",
-        "text3":
-            "Konfigurer brukernavn, e-postadresser, passord og personlige tilgangstokens direkte tilkoblet tjenestene dine.",
+        text1: "Min konto",
+        text2: "Få tilgang til ulik kontoinformasjon.",
+        text3: "Konfigurer brukernavn, e-postadresser, passord og personlige tilgangstokens direkte tilkoblet tjenestene dine.",
         "personal tokens tooltip":
             "Passord som genereres for deg og har en gitt gyldighetsperiode",
-        "vault": "Vault"
+        vault: "Vault"
     },
-    "AccountInfoTab": {
+    AccountInfoTab: {
         "general information": "Generell informasjon",
         "user id": "Bruker-ID (IDEP)",
         "full name": "Fullt navn",
-        "email": "E-postadresse",
+        email: "E-postadresse",
         "instructions about how to change password":
             'For å endre passordet ditt, logg ut og klikk på lenken for "glemt passord"'
     },
-    "AccountGitTab": {
-        "gitName": "Brukernavn for Git",
+    AccountGitTab: {
+        gitName: "Brukernavn for Git",
         "gitName helper text": ({ gitName, focusClassName }) => (
             <>
                 Denne kommandoen vil sette ditt globale Git-brukernavn, utført ved
@@ -42,7 +41,7 @@ export const translations: Translations<"no"> = {
                 </code>
             </>
         ),
-        "gitEmail": "E-post for Git",
+        gitEmail: "E-post for Git",
         "gitEmail helper text": ({ gitEmail, focusClassName }) => (
             <>
                 Denne kommandoen vil sette din globale Git-e-post, utført ved oppstart av
@@ -52,7 +51,7 @@ export const translations: Translations<"no"> = {
                 </code>
             </>
         ),
-        "githubPersonalAccessToken": "Personlig tilgangstoken for Git-tjeneste",
+        githubPersonalAccessToken: "Personlig tilgangstoken for Git-tjeneste",
         "githubPersonalAccessToken helper text": ({ focusClassName }) => (
             <>
                 Ved å oppgi dette tokenet, kan du klone og pushe til dine private GitHub-
@@ -64,7 +63,7 @@ export const translations: Translations<"no"> = {
             </>
         )
     },
-    "AccountStorageTab": {
+    AccountStorageTab: {
         "credentials section title": "Koble dataene dine til tjenestene dine",
         "credentials section helper":
             "Amazon-kompatibel MinIO-objektlagring (AWS S3). Denne informasjonen fylles allerede automatisk ut.",
@@ -75,7 +74,7 @@ export const translations: Translations<"no"> = {
             "Last ned eller kopier initialiseringskriptet i programingsspråket du foretrekker.",
         "expires in": ({ howMuchTime }) => `Utløper om ${howMuchTime}`
     },
-    "AccountKubernetesTab": {
+    AccountKubernetesTab: {
         "credentials section title": "Koble til Kubernetes-klusteret",
         "credentials section helper":
             "Legitimasjon for å direkte samhandle med Kubernetes API-serveren.",
@@ -98,7 +97,7 @@ export const translations: Translations<"no"> = {
         "expires in": ({ howMuchTime }) =>
             `Disse legitimasjonene er gyldige for de neste ${howMuchTime}`
     },
-    "AccountVaultTab": {
+    AccountVaultTab: {
         "credentials section title": "Vault credentials",
         "credentials section helper": ({ vaultDocHref, mySecretLink }) => (
             <>
@@ -121,7 +120,7 @@ export const translations: Translations<"no"> = {
         ),
         "expires in": ({ howMuchTime }) => `Token går ut om ${howMuchTime}`
     },
-    "ProjectSettings": {
+    ProjectSettings: {
         "page header title": "Prosjektinnstillinger",
         "page header help title": ({ groupProjectName }) =>
             groupProjectName === undefined
@@ -160,28 +159,28 @@ export const translations: Translations<"no"> = {
         "security-info": "Sikkerhetsinformasjon",
         "s3-configs": "S3-konfigurasjoner"
     },
-    "ProjectSettingsS3ConfigTab": {
+    ProjectSettingsS3ConfigTab: {
         "add custom config": "Legg til en tilpasset S3-konfigurasjon"
     },
-    "S3ConfigCard": {
+    S3ConfigCard: {
         "data source": "Datakilde",
-        "credentials": "Legitimasjon",
+        credentials: "Legitimasjon",
         "sts credentials":
             "Token som dynamisk etterspørres på dine vegne av Onyxia (STS)",
-        "account": "Konto",
+        account: "Konto",
         "use in services": "Bruk i tjenester",
         "use in services helper": `Hvis aktivert, vil denne konfigurasjonen brukes som standard i dine tjenester som implementerer en S3-integrasjon.`,
         "use for onyxia explorers": "Bruk for Onyxia utforskere",
         "use for onyxia explorers helper": `Hvis aktivert, vil denne konfigurasjonen brukes
             av filutforskeren og datautforskeren.`,
-        "edit": "Rediger",
-        "delete": "Slett"
+        edit: "Rediger",
+        delete: "Slett"
     },
-    "AddCustomS3ConfigDialog": {
+    AddCustomS3ConfigDialog: {
         "dialog title": "Ny tilpasset S3-konfigurasjon",
         "dialog subtitle":
             "Angi en tilpasset tjenestekonto eller koble til en annen S3-kompatibel tjeneste",
-        "cancel": "Avbryt",
+        cancel: "Avbryt",
         "save config": "Lagre konfigurasjon",
         "update config": "Oppdater konfigurasjon",
         "is required": "Dette feltet er påkrevd",
@@ -240,7 +239,7 @@ export const translations: Translations<"no"> = {
             </>
         )
     },
-    "TestS3ConnectionButton": {
+    TestS3ConnectionButton: {
         "test connection": "Test forbindelse",
         "test connection failed": ({ errorMessage }) => (
             <>
@@ -249,8 +248,8 @@ export const translations: Translations<"no"> = {
             </>
         )
     },
-    "AccountUserInterfaceTab": {
-        "title": "Grensesnittspreferanser",
+    AccountUserInterfaceTab: {
+        title: "Grensesnittspreferanser",
         "enable dark mode": "Skru på mørk modus",
         "dark mode helper": "Lavlys-grensesnittstema med mørk bakgrunn.",
         "enable beta": "Aktiver beta-testmodus",
@@ -268,9 +267,9 @@ export const translations: Translations<"no"> = {
             </>
         )
     },
-    "SettingField": {
+    SettingField: {
         "copy tooltip": "Kopier til utklippstavlen",
-        "language": "Bytt språk",
+        language: "Bytt språk",
         "service password": "Standard servicepassord",
         "service password helper text": ({ groupProjectName }) => (
             <>
@@ -298,11 +297,11 @@ export const translations: Translations<"no"> = {
         ),
         "not yet defined": "Ikke definert ennå",
         "reset helper dialogs": "Tilbakestill instruksjonsvinduer",
-        "reset": "Tilbakestill",
+        reset: "Tilbakestill",
         "reset helper dialogs helper text":
             "Tilbakestill meldingsvinduer som er bedt om å ikke vises igjen"
     },
-    "MyFiles": {
+    MyFiles: {
         "page title - my files": "Mine filer",
         "what this page is used for - my files": "Her kan du bla gjennom S3-bøtter.",
         "help content": ({ accountTabLink, docHref }) => (
@@ -316,18 +315,18 @@ export const translations: Translations<"no"> = {
             </>
         )
     },
-    "MyFilesDisabledDialog": {
+    MyFilesDisabledDialog: {
         "dialog title": "Ingen S3-server konfigurert",
         "dialog body":
             "Det er ingen S3-server konfigurert for denne instansen. Men du kan legge til en manuelt for å aktivere S3-filutforskeren.",
-        "cancel": "Avbryt",
+        cancel: "Avbryt",
         "go to settings": "Gå til innstillinger"
     },
-    "MyFilesShareDialog": {
-        "cancel": "Avbryt",
+    MyFilesShareDialog: {
+        cancel: "Avbryt",
         "create and copy link": "Opprett og kopier lenke"
     },
-    "MySecrets": {
+    MySecrets: {
         "page title - my secrets": "Mine hemmeligheter",
         "what this page is used for - my secrets":
             "Her kan du definere variabler som vil være tilgjengelige i tjenestene dine som miljøvariabler.",
@@ -346,51 +345,51 @@ export const translations: Translations<"no"> = {
             </>
         )
     },
-    "SecretsExplorerItem": {
-        "description": "beskrivelse"
+    SecretsExplorerItem: {
+        description: "beskrivelse"
     },
-    "ExplorerItem": {
-        "description": "beskrivelse"
+    ExplorerItem: {
+        description: "beskrivelse"
     },
-    "SecretsExplorerButtonBar": {
-        "secret": "hemmelighet",
-        "rename": "gi nytt navn",
-        "delete": "slett",
+    SecretsExplorerButtonBar: {
+        secret: "hemmelighet",
+        rename: "gi nytt navn",
+        delete: "slett",
         "create secret": "Opprett hemmelighet",
         "copy path": "Bruk i en tjeneste",
         "create directory": "Opprett katalog",
-        "refresh": "oppdater",
+        refresh: "oppdater",
         "create what": ({ what }) => `Opprett ${what}`,
-        "new": "Ny"
+        new: "Ny"
     },
-    "ExplorerButtonBar": {
-        "file": "fil",
-        "delete": "slett",
+    ExplorerButtonBar: {
+        file: "fil",
+        delete: "slett",
         "upload file": "Last opp fil",
         "copy path": "Kopier S3-objektnavnet",
         "create directory": "Opprett katalog",
-        "refresh": "oppdater",
-        "new": "Ny",
-        "share": "Del",
+        refresh: "oppdater",
+        new: "Ny",
+        share: "Del",
         "alt list view": "Vis liste",
         "alt block view": "Vis blokk"
     },
-    "ExplorerItems": {
+    ExplorerItems: {
         "empty directory": "Denne katalogen er tom"
     },
-    "SecretsExplorerItems": {
+    SecretsExplorerItems: {
         "empty directory": "Denne katalogen er tom"
     },
-    "SecretsExplorer": {
-        "file": "fil",
-        "secret": "hemmelighet",
-        "create": "opprett",
-        "cancel": "avbryt",
-        "delete": "slett",
+    SecretsExplorer: {
+        file: "fil",
+        secret: "hemmelighet",
+        create: "opprett",
+        cancel: "avbryt",
+        delete: "slett",
         "do not display again": "Ikke vis igjen",
 
         "untitled what": ({ what }) => `uten_tittel_${what}`,
-        "directory": "mappe",
+        directory: "mappe",
         "deletion dialog title": ({ deleteWhat }) => `Slett ${deleteWhat}?`,
         "deletion dialog body": ({ deleteWhat }) =>
             `Du er i ferd med å slette ${deleteWhat}.
@@ -400,16 +399,16 @@ export const translations: Translations<"no"> = {
         "can't be empty": "Kan ikke være tom",
         "new directory": "Ny katalog"
     },
-    "Explorer": {
-        "file": "fil",
-        "secret": "hemmelighet",
-        "create": "opprett",
-        "cancel": "avbryt",
-        "delete": "slett",
+    Explorer: {
+        file: "fil",
+        secret: "hemmelighet",
+        create: "opprett",
+        cancel: "avbryt",
+        delete: "slett",
         "do not display again": "Ikke vis igjen",
 
         "untitled what": ({ what }) => `uten tittel_${what}`,
-        "directory": "mappe",
+        directory: "mappe",
         "deletion dialog title": ({ deleteWhat }) => `Slett ${deleteWhat}?`,
         "deletion dialog body": ({ deleteWhat }) =>
             `Du er i ferd med å slette ${deleteWhat}.
@@ -419,13 +418,13 @@ export const translations: Translations<"no"> = {
         "can't be empty": "Kan ikke være tom",
         "new directory": "Ny katalog"
     },
-    "ListExplorerItems": {
+    ListExplorerItems: {
         "header name": "Navn",
         "header modified date": "Endret",
         "header size": "Størrelse",
         "header policy": "Retningslinje"
     },
-    "MySecretsEditor": {
+    MySecretsEditor: {
         "do not display again": "Ikke vis igjen",
         "add an entry": "Legg til en ny variabel",
         "environnement variable default name": "NY_VAR",
@@ -449,104 +448,103 @@ export const translations: Translations<"no"> = {
     `,
         "use secret dialog ok": "Forstått"
     },
-    "MySecretsEditorRow": {
+    MySecretsEditorRow: {
         "key input desc": "Miljøvariabelnavn",
         "value input desc": "Miljøvariabelverdi"
     },
-    "ExplorerUploadModalDropArea": {
+    ExplorerUploadModalDropArea: {
         "browse files": "Bla gjennom filer",
         "drag and drop or": "Dra og slipp eller"
     },
-    "ExplorerUploadProgress": {
-        "over": "over",
-        "importing": "Importerer"
+    ExplorerUploadProgress: {
+        over: "over",
+        importing: "Importerer"
     },
-    "ExplorerUploadModal": {
+    ExplorerUploadModal: {
         "import files": "Importer filer",
-        "cancel": "Avbryt",
-        "minimize": "Minimer"
+        cancel: "Avbryt",
+        minimize: "Minimer"
     },
-    "Header": {
-        "login": "Logg inn",
-        "logout": "Logg ut",
-        "project": "Prosjekt",
-        "region": "Region"
+    Header: {
+        login: "Logg inn",
+        logout: "Logg ut",
+        project: "Prosjekt",
+        region: "Region"
     },
-    "LeftBar": {
-        "reduce": "Reduser",
-        "home": "Hjem",
-        "account": "Min konto",
-        "projectSettings": "Prosjektinnstillinger",
-        "catalog": "Tjenestekatalog",
-        "myServices": "Mine tjenester",
-        "mySecrets": "Mine hemmeligheter",
-        "myFiles": "Mine filer",
+    LeftBar: {
+        reduce: "Reduser",
+        home: "Hjem",
+        account: "Min konto",
+        projectSettings: "Prosjektinnstillinger",
+        catalog: "Tjenestekatalog",
+        myServices: "Mine tjenester",
+        mySecrets: "Mine hemmeligheter",
+        myFiles: "Mine filer",
         "divider: services features": "Tjenestefunksjoner",
         "divider: external services features": "Eksterne tjenestefunksjoner",
         "divider: onyxia instance specific features":
             "Onyxia-instansspesifikke funksjoner",
-        "dataExplorer": "Datautforsker",
-        "sqlOlapShell": "SQL OLAP-Skall"
+        dataExplorer: "Datautforsker",
+        sqlOlapShell: "SQL OLAP-Skall"
     },
-    "AutoLogoutCountdown": {
+    AutoLogoutCountdown: {
         "are you still there": "Er du fortsatt der?",
         "you'll soon be automatically logged out":
             "Du vil snart bli logget ut automatisk."
     },
-    "Page404": {
+    Page404: {
         "not found": "Side ikke funnet"
     },
-    "PortraitModeUnsupported": {
-        "instructions":
+    PortraitModeUnsupported: {
+        instructions:
             "For å bruke denne appen på telefonen din, må du aktivere rotasjonssensoren og snu telefonen."
     },
-    "MaybeAcknowledgeConfigVolatilityDialog": {
+    MaybeAcknowledgeConfigVolatilityDialog: {
         "dialog title": "Vær oppmerksom, konfigurasjoner er flyktige",
         "dialog body": `Denne Onyxia-instansen implementerer ikke noen persistensmekanisme for lagring av konfigurasjoner. 
             Alle konfigurasjoner lagres i nettleserens lokale lagring. Dette betyr at hvis du tømmer nettleserens lokale 
             lagring eller bytter nettleser, vil du miste alle dine konfigurasjoner.`,
         "do not show next time": "Ikke vis denne meldingen igjen",
-        "cancel": "Avbryt",
+        cancel: "Avbryt",
         "I understand": "Jeg forstår"
     },
-    "Home": {
+    Home: {
         "title authenticated": ({ userFirstname }) => `Velkommen ${userFirstname}!`,
-        "title": "Velkommen til Onyxia datalab",
+        title: "Velkommen til Onyxia datalab",
         "new user": "Ny på datalaben?",
-        "login": "Logg inn",
-        "subtitle":
-            "Arbeid med Python eller R, nyt all databehandlingskraften du trenger!",
-        "cardTitle1": "Et ergonomisk miljø og behovstilpassede tjenester",
-        "cardTitle2": "Et aktivt og entusiastisk fellesskap til din tjeneste",
-        "cardTitle3": "Rask, fleksibel og nettbasert dataoppbevaring",
-        "cardText1":
+        login: "Logg inn",
+        subtitle: "Arbeid med Python eller R, nyt all databehandlingskraften du trenger!",
+        cardTitle1: "Et ergonomisk miljø og behovstilpassede tjenester",
+        cardTitle2: "Et aktivt og entusiastisk fellesskap til din tjeneste",
+        cardTitle3: "Rask, fleksibel og nettbasert dataoppbevaring",
+        cardText1:
             "Analyser data, utfør distribuert databehandling og dra nytte av en stor katalog med tjenester. Reserver den databehandlingskraften du trenger.",
-        "cardText2":
+        cardText2:
             "Bruk og del tilgjengelige ressurser: opplæringsprogrammer, opplæring og utvekslingskanaler.",
-        "cardText3":
+        cardText3:
             "Få enkel tilgang til dataene dine og de som er tilgjengelige for deg fra programmene dine - implementering av S3 API",
-        "cardButton1": "Se gjennom katalogen",
-        "cardButton2": "Bli med i fellesskapet",
-        "cardButton3": "Se på dataene"
+        cardButton1: "Se gjennom katalogen",
+        cardButton2: "Bli med i fellesskapet",
+        cardButton3: "Se på dataene"
     },
-    "Catalog": {
-        "header": "Tjenestekatalog",
+    Catalog: {
+        header: "Tjenestekatalog",
         "no result found": ({ forWhat }) => `Ingen resultater funnet for ${forWhat}`,
         "search results": "Søkeresultat",
-        "search": "Søk"
+        search: "Søk"
     },
-    "CatalogChartCard": {
-        "launch": "Start",
+    CatalogChartCard: {
+        launch: "Start",
         "learn more": "Lær mer"
     },
-    "CatalogNoSearchMatches": {
+    CatalogNoSearchMatches: {
         "no service found": "Ingen tjeneste funnet",
         "no result found": ({ forWhat }) => `Ingen resultater funnet for ${forWhat}`,
         "check spelling": "Vennligst kontroller stavemåten eller prøv å utvide søket.",
         "go back": "Tilbake til hovedtjenester"
     },
-    "Launcher": {
-        "sources": ({
+    Launcher: {
+        sources: ({
             helmChartName,
             helmChartRepositoryName,
             labeledHelmChartSourceUrls
@@ -607,9 +605,7 @@ export const translations: Translations<"no"> = {
 
                     return {
                         href,
-                        ...(doOpensNewTab
-                            ? { "target": "_blank", "onClick": undefined }
-                            : {})
+                        ...(doOpensNewTab ? { target: "_blank", onClick: undefined } : {})
                     };
                 }}
             >{`Vi har designet kommandolinjen for å gi deg full kontroll over tjenestene du kjører på Kubernetes.
@@ -658,7 +654,7 @@ Utforsk gjerne og ta kontroll over tjenestene du kjører på Kubernetes!
         `}</Markdown>
         )
     },
-    "AcknowledgeSharingOfConfigConfirmDialog": {
+    AcknowledgeSharingOfConfigConfirmDialog: {
         "acknowledge sharing of config confirm dialog title":
             "Vær oppmerksom, konfigurasjoner deles",
         "acknowledge sharing of config confirm dialog subtitle": ({
@@ -667,11 +663,11 @@ Utforsk gjerne og ta kontroll over tjenestene du kjører på Kubernetes!
         denne konfigurasjonen, vil hvert medlem av prosjektet ${groupProjectName} være i stand til å starte det.`,
         "acknowledge sharing of config confirm dialog body": `Selv om ingen personlig informasjon har blitt automatisk injisert
         av Onyxia, vær forsiktig så du ikke deler sensitiv informasjon i den gjenopprettbare konfigurasjonen.`,
-        "cancel": "Avbryt",
+        cancel: "Avbryt",
         "i understand, proceed": "Jeg forstår, fortsett"
     },
-    "AutoLaunchDisabledDialog": {
-        "ok": "Ok",
+    AutoLaunchDisabledDialog: {
+        ok: "Ok",
         "auto launch disabled dialog title": "Tjenesten er ikke startet",
         "auto launch disabled dialog body": (
             <>
@@ -684,52 +680,52 @@ Utforsk gjerne og ta kontroll over tjenestene du kjører på Kubernetes!
             </>
         )
     },
-    "FormFieldWrapper": {
+    FormFieldWrapper: {
         "reset to default": "Tilbakestill til standard"
     },
-    "YamlCodeBlockFormField": {
+    YamlCodeBlockFormField: {
         "not an array": "En matrise forventes",
         "not an object": "Et objekt forventes",
         "not valid yaml": "Ugyldig YAML/JSON"
     },
-    "TextFormField": {
+    TextFormField: {
         "not matching pattern": ({ pattern }) => `Matcher ikke mønsteret ${pattern}`,
         "toggle password visibility": "Bytt synlighet for passord"
     },
-    "FormFieldGroupComponent": {
-        "add": "Legg til"
+    FormFieldGroupComponent: {
+        add: "Legg til"
     },
-    "NumberFormField": {
+    NumberFormField: {
         "below minimum": ({ minimum }) => `Må være større enn eller lik ${minimum}`,
         "not a number": "Ikke et tall",
         "not an integer": "Ikke et heltall"
     },
-    "NoLongerBookmarkedDialog": {
+    NoLongerBookmarkedDialog: {
         "no longer bookmarked dialog title": "Endringene dine vil ikke bli lagret",
         "no longer bookmarked dialog body":
             "Klikk på bokmerkeikonet igjen for å oppdatere den lagrede konfigurasjonen din",
-        "ok": "Ok"
+        ok: "Ok"
     },
-    "MyService": {
+    MyService: {
         "page title": ({ helmReleaseFriendlyName }) =>
             `${helmReleaseFriendlyName} Overvåking`
     },
-    "PodLogsTab": {
+    PodLogsTab: {
         "not necessarily first logs":
             "Dette er ikke nødvendigvis de første loggene, eldre logger kan ha blitt fjernet",
         "new logs are displayed in realtime": "Nye logger vises i sanntid"
     },
-    "MyServiceButtonBar": {
-        "back": "Tilbake",
+    MyServiceButtonBar: {
+        back: "Tilbake",
         "external monitoring": "Ekstern overvåkning",
         "helm values": "Helm-verdier",
-        "reduce": "Reduser"
+        reduce: "Reduser"
     },
-    "LauncherMainCard": {
+    LauncherMainCard: {
         "friendly name": "Vennlig navn",
-        "launch": "Start",
+        launch: "Start",
         "problem with": "Problem med:",
-        "cancel": "Avbryt",
+        cancel: "Avbryt",
         "copy auto launch url": "Kopier URL for automatisk oppstart",
         "copy auto launch url helper": ({
             chartName
@@ -783,28 +779,28 @@ Utforsk gjerne og ta kontroll over tjenestene du kjører på Kubernetes!
             </>
         )
     },
-    "Footer": {
-        "contribute": "Bidra",
+    Footer: {
+        contribute: "Bidra",
         "terms of service": "Vilkår for bruk",
         "change language": "Bytt språk",
         "dark mode switch": "Mørk modus"
     },
-    "MyServices": {
-        "text1": "Mine tjenester",
-        "text2": "Få tilgang til de kjørende tjenestene dine",
-        "text3": "Tjenestene skal avsluttes så snart du slutter å bruke dem aktivt.",
+    MyServices: {
+        text1: "Mine tjenester",
+        text2: "Få tilgang til de kjørende tjenestene dine",
+        text3: "Tjenestene skal avsluttes så snart du slutter å bruke dem aktivt.",
         "running services": "Kjørende tjenester"
     },
-    "ClusterEventsDialog": {
-        "title": "Hendelser",
-        "subtitle": (
+    ClusterEventsDialog: {
+        title: "Hendelser",
+        subtitle: (
             <>
                 Hendelser i Kubernetes navneområde, det er en sanntidsstrøm av{" "}
                 <code>kubectl get events</code>
             </>
         )
     },
-    "MyServicesConfirmDeleteDialog": {
+    MyServicesConfirmDeleteDialog: {
         "confirm delete title": "Er du sikker?",
         "confirm delete subtitle":
             "Forsikre deg om at tjenestene dine er klare til å bli slettet",
@@ -812,28 +808,28 @@ Utforsk gjerne og ta kontroll over tjenestene du kjører på Kubernetes!
             "Vær oppmerksom på at noen av tjenestene dine deles med de andre prosjektmedlemmene.",
         "confirm delete body":
             "Ikke glem å laste opp koden din på GitHub eller GitLab før du avslutter tjenestene dine",
-        "cancel": "Avbryt",
-        "confirm": "Ja, slett"
+        cancel: "Avbryt",
+        confirm: "Ja, slett"
     },
-    "MyServicesButtonBar": {
-        "refresh": "Oppdater",
-        "launch": "Ny tjeneste",
-        "trash": "Slett alt",
+    MyServicesButtonBar: {
+        refresh: "Oppdater",
+        launch: "Ny tjeneste",
+        trash: "Slett alt",
         "trash my own": "Slett alle mine tjenester"
     },
-    "MyServicesCard": {
-        "service": "Tjeneste",
+    MyServicesCard: {
+        service: "Tjeneste",
         "running since": "Startet: ",
-        "open": "åpne",
-        "readme": "lesmeg",
+        open: "åpne",
+        readme: "lesmeg",
         "reminder to delete services": "Husk å slette tjenestene dine.",
-        "status": "Status",
+        status: "Status",
         "container starting": "Container starter",
-        "failed": "Mislyktes",
+        failed: "Mislyktes",
         "suspend service tooltip": "Pause tjenesten og frigjør ressurser",
         "resume service tooltip": "Gjenoppta tjenesten",
-        "suspended": "Pauset",
-        "suspending": "Pauser",
+        suspended: "Pauset",
+        suspending: "Pauser",
         "share tooltip - belong to someone else": ({
             projectName,
             ownerUsername,
@@ -860,37 +856,37 @@ Utforsk gjerne og ta kontroll over tjenestene du kjører på Kubernetes!
             </>
         )
     },
-    "MyServicesRestorableConfigOptions": {
-        "edit": "Rediger",
+    MyServicesRestorableConfigOptions: {
+        edit: "Rediger",
         "copy link": "Kopier URL-lenke",
         "remove bookmark": "Slett"
     },
-    "MyServicesRestorableConfig": {
-        "edit": "Rediger",
-        "launch": "Start"
+    MyServicesRestorableConfig: {
+        edit: "Rediger",
+        launch: "Start"
     },
-    "MyServicesRestorableConfigs": {
-        "saved": "Lagret",
-        "expand": "Utvid"
+    MyServicesRestorableConfigs: {
+        saved: "Lagret",
+        expand: "Utvid"
     },
-    "ReadmeDialog": {
-        "ok": "ok",
-        "return": "Gå tilbake"
+    ReadmeDialog: {
+        ok: "ok",
+        return: "Gå tilbake"
     },
-    "CopyOpenButton": {
+    CopyOpenButton: {
         "first copy the password": "Klikk for å kopiere passordet...",
         "open the service": "Åpne tjenesten 🚀"
     },
-    "MyServicesCards": {
+    MyServicesCards: {
         "running services": "Kjørende tjenester"
     },
-    "NoRunningService": {
+    NoRunningService: {
         "launch one": "Klikk her for å starte en",
         "no services running": "Du har ingen kjørende tjenester"
     },
-    "CircularUsage": {
-        "max": "Maks",
-        "used": "Brukt",
+    CircularUsage: {
+        max: "Maks",
+        used: "Brukt",
         "quota card title": ({ what, isLimit }) => {
             const whatTranslated = (() => {
                 switch (what) {
@@ -912,12 +908,12 @@ Utforsk gjerne og ta kontroll over tjenestene du kjører på Kubernetes!
             return `${whatTranslated} - ${isLimit ? "Grense" : "Anmodet"}`;
         }
     },
-    "Quotas": {
+    Quotas: {
         "show more": "Vis mer",
         "resource usage quotas": "Kvoter for ressursbruk",
         "current resource usage is reasonable": "Ditt nåværende ressursbruk er rimelig."
     },
-    "DataExplorer": {
+    DataExplorer: {
         "page header title": "Datautforsker",
         "page header help title":
             "Forhåndsvis dine Parquet og CSV-filer direkte fra nettleseren din!",
@@ -936,21 +932,21 @@ Utforsk gjerne og ta kontroll over tjenestene du kjører på Kubernetes!
                 <MuiLink {...demoParquetFileLink}>demofilen</MuiLink>!
             </>
         ),
-        "column": "kolonne",
-        "density": "tetthet",
+        column: "kolonne",
+        density: "tetthet",
         "download file": "last ned fil",
         "resize table": "Endre størrelse"
     },
-    "UrlInput": {
-        "load": "Last"
+    UrlInput: {
+        load: "Last"
     },
-    "CommandBar": {
-        "ok": "ok"
+    CommandBar: {
+        ok: "ok"
     },
-    "moment": {
+    moment: {
         "date format": ({ isSameYear }) =>
             `dddd, Do MMMM${isSameYear ? "" : " YYYY"}, HH:mm`,
-        "past1": ({ divisorKey }) => {
+        past1: ({ divisorKey }) => {
             switch (divisorKey) {
                 case "now":
                     return "akkurat nå";
@@ -970,7 +966,7 @@ Utforsk gjerne og ta kontroll over tjenestene du kjører på Kubernetes!
                     return "i fjor";
             }
         },
-        "pastN": ({ divisorKey }) => {
+        pastN: ({ divisorKey }) => {
             switch (divisorKey) {
                 case "now":
                     return "akkurat nå";
@@ -990,7 +986,7 @@ Utforsk gjerne og ta kontroll over tjenestene du kjører på Kubernetes!
                     return "# år siden";
             }
         },
-        "future1": ({ divisorKey }) => {
+        future1: ({ divisorKey }) => {
             switch (divisorKey) {
                 case "now":
                     return "akkurat nå";
@@ -1010,7 +1006,7 @@ Utforsk gjerne og ta kontroll over tjenestene du kjører på Kubernetes!
                     return "neste år";
             }
         },
-        "futureN": ({ divisorKey }) => {
+        futureN: ({ divisorKey }) => {
             switch (divisorKey) {
                 case "now":
                     return "akkurat nå";
@@ -1031,11 +1027,11 @@ Utforsk gjerne og ta kontroll over tjenestene du kjører på Kubernetes!
             }
         }
     },
-    "CopyToClipboardIconButton": {
+    CopyToClipboardIconButton: {
         "copied to clipboard": "Kopiert!",
         "copy to clipboard": "Kopier til utklippstavlen"
     },
-    "CustomDataGrid": {
+    CustomDataGrid: {
         "empty directory": "Denne mappen er tom",
         "label rows count": ({ count }) => {
             const plural = count > 1 ? "er" : "";
@@ -1043,14 +1039,14 @@ Utforsk gjerne og ta kontroll over tjenestene du kjører på Kubernetes!
         },
         "label rows per page": "Elementer per side"
     },
-    "CustomDataGridToolbarDensitySelector": {
-        "toolbarDensity": "Tetthet",
-        "toolbarDensityStandard": "Standard",
-        "toolbarDensityComfortable": "Komfortabel",
-        "toolbarDensityCompact": "Kompakt"
+    CustomDataGridToolbarDensitySelector: {
+        toolbarDensity: "Tetthet",
+        toolbarDensityStandard: "Standard",
+        toolbarDensityComfortable: "Komfortabel",
+        toolbarDensityCompact: "Kompakt"
     },
-    "CustomDataGridToolbarColumnsButton": {
-        "toolbarColumnsLabel": "Kolonner"
+    CustomDataGridToolbarColumnsButton: {
+        toolbarColumnsLabel: "Kolonner"
     }
     /* spell-checker: enable */
 };

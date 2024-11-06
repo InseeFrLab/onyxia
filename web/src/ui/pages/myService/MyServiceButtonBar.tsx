@@ -30,17 +30,17 @@ export const MyServiceButtonBar = memo((props: Props) => {
             className={className}
             buttons={[
                 {
-                    "buttonId": "back",
-                    "icon": id<MuiIconComponentName>("ArrowBack"),
-                    "label": t("back")
+                    buttonId: "back",
+                    icon: id<MuiIconComponentName>("ArrowBack"),
+                    label: t("back")
                 },
                 ...(monitoringUrl === undefined
                     ? []
                     : [
                           {
-                              "buttonId": "monitoring",
-                              "icon": id<MuiIconComponentName>("Equalizer"),
-                              "label": (
+                              buttonId: "monitoring",
+                              icon: id<MuiIconComponentName>("Equalizer"),
+                              label: (
                                   <span>
                                       {t("external monitoring")}&nbsp;
                                       <Icon
@@ -52,9 +52,9 @@ export const MyServiceButtonBar = memo((props: Props) => {
                           }
                       ]),
                 {
-                    "buttonId": "helmValues",
-                    "icon": id<MuiIconComponentName>("Code"),
-                    "label": areHelmValuesShown ? t("reduce") : t("helm values")
+                    buttonId: "helmValues",
+                    icon: id<MuiIconComponentName>("Code"),
+                    label: areHelmValuesShown ? t("reduce") : t("helm values")
                 }
             ]}
             onClick={buttonId => {

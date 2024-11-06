@@ -15,29 +15,29 @@ const {
     evtTheme,
     ofTypeTheme
 } = createOnyxiaUi({
-    "getTypographyDesc": params => ({
+    getTypographyDesc: params => ({
         ...defaultGetTypographyDesc({
             ...params,
             // We don't want the font to be responsive
             // By default, the font size change depending on the screen size,
             // we don't want that here so we fix the windowInnerWidth.
-            "windowInnerWidth": targetWindowInnerWidth
+            windowInnerWidth: targetWindowInnerWidth
         }),
-        "fontFamily": `'${env.FONT.fontFamily}'`
+        fontFamily: `'${env.FONT.fontFamily}'`
     }),
     palette,
-    "splashScreenParams": isStorybook
+    splashScreenParams: isStorybook
         ? undefined
         : {
-              "assetUrl": env.SPLASHSCREEN_LOGO,
-              "assetScaleFactor": env.SPLASHSCREEN_LOGO_SCALE_FACTOR,
-              "minimumDisplayDuration": 0
+              assetUrl: env.SPLASHSCREEN_LOGO,
+              assetScaleFactor: env.SPLASHSCREEN_LOGO_SCALE_FACTOR,
+              minimumDisplayDuration: 0
           },
-    "BASE_URL": env.PUBLIC_URL
+    BASE_URL: env.PUBLIC_URL
 });
 
 pluginSystemInitTheme({
-    "evtTheme": Evt.loosenType(evtTheme),
+    evtTheme: Evt.loosenType(evtTheme),
     css,
     cx
 });
@@ -56,13 +56,13 @@ export function OnyxiaUi(props: { children: React.ReactNode; darkMode?: boolean 
 export type Theme = typeof ofTypeTheme;
 
 export const loadThemedFavicon = () =>
-    loadThemedFavicon_base({ "evtTheme": Evt.loosenType(evtTheme) });
+    loadThemedFavicon_base({ evtTheme: Evt.loosenType(evtTheme) });
 
 export const customIcons = {
-    "servicesSvgUrl": `${env.PUBLIC_URL}/icons/services.svg?v=2`,
-    "secretsSvgUrl": `${env.PUBLIC_URL}/icons/secrets.svg?v=2`,
-    "accountSvgUrl": `${env.PUBLIC_URL}/icons/account.svg?v=2`,
-    "homeSvgUrl": `${env.PUBLIC_URL}/icons/home.svg?v=2`,
-    "filesSvgUrl": `${env.PUBLIC_URL}/icons/files.svg?v=2`,
-    "catalogSvgUrl": `${env.PUBLIC_URL}/icons/catalog.svg?v=2`
+    servicesSvgUrl: `${env.PUBLIC_URL}/icons/services.svg?v=2`,
+    secretsSvgUrl: `${env.PUBLIC_URL}/icons/secrets.svg?v=2`,
+    accountSvgUrl: `${env.PUBLIC_URL}/icons/account.svg?v=2`,
+    homeSvgUrl: `${env.PUBLIC_URL}/icons/home.svg?v=2`,
+    filesSvgUrl: `${env.PUBLIC_URL}/icons/files.svg?v=2`,
+    catalogSvgUrl: `${env.PUBLIC_URL}/icons/catalog.svg?v=2`
 };

@@ -34,8 +34,8 @@ export const ExplorerButtonBar = memo((props: Props) => {
     const buttons = useMemo(
         (): ButtonBarProps<ButtonId>["buttons"] =>
             buttonIds.map(buttonId => ({
-                "buttonId": buttonId,
-                "icon": (() => {
+                buttonId: buttonId,
+                icon: (() => {
                     switch (buttonId) {
                         case "refresh":
                             return "cached" as const;
@@ -51,7 +51,7 @@ export const ExplorerButtonBar = memo((props: Props) => {
                             return "share";
                     }
                 })(),
-                "isDisabled": (() => {
+                isDisabled: (() => {
                     switch (buttonId) {
                         case "refresh":
                             return false;
@@ -66,7 +66,7 @@ export const ExplorerButtonBar = memo((props: Props) => {
                             return selectedItemKind !== "file";
                     }
                 })(),
-                "label": buttonId === "new" ? t("upload file") : t(buttonId)
+                label: buttonId === "new" ? t("upload file") : t(buttonId)
             })),
         [selectedItemKind, t]
     );
@@ -83,7 +83,7 @@ export const ExplorerButtonBar = memo((props: Props) => {
                     viewMode === "list"
                         ? {
                               "& svg": {
-                                  "color": theme.colors.useCases.buttons.actionActive
+                                  color: theme.colors.useCases.buttons.actionActive
                               }
                           }
                         : {}
@@ -97,7 +97,7 @@ export const ExplorerButtonBar = memo((props: Props) => {
                     viewMode === "block"
                         ? {
                               "& svg": {
-                                  "color": theme.colors.useCases.buttons.actionActive
+                                  color: theme.colors.useCases.buttons.actionActive
                               }
                           }
                         : {}
@@ -112,14 +112,14 @@ export const ExplorerButtonBar = memo((props: Props) => {
                     disabled={button.isDisabled ?? false}
                     {...("link" in button
                         ? {
-                              "key": button.link.href,
-                              "href": button.link.href,
-                              "onClick": button.link.onClick,
-                              "doOpenNewTabIfHref": button.link.target === "_blank"
+                              key: button.link.href,
+                              href: button.link.href,
+                              onClick: button.link.onClick,
+                              doOpenNewTabIfHref: button.link.target === "_blank"
                           }
                         : {
-                              "key": button.buttonId,
-                              "onClick": onClickFactory(button.buttonId)
+                              key: button.buttonId,
+                              onClick: onClickFactory(button.buttonId)
                           })}
                 >
                     {button.label}

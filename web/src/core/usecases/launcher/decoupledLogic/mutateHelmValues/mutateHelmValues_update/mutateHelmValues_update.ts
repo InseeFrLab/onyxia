@@ -46,8 +46,8 @@ export function mutateHelmValues_update(params: {
             })();
 
             assignValueAtPath({
-                "stringifyableObjectOrArray": helmValues,
-                "path": helmValuesPath,
+                stringifyableObjectOrArray: helmValues,
+                path: helmValuesPath,
                 value
             });
         };
@@ -56,9 +56,8 @@ export function mutateHelmValues_update(params: {
             case "range slider": {
                 const formField = findInRootForm_rangeSlider({
                     rootForm,
-                    "helmValuesPath_lowEndRange":
-                        formFieldValue.lowEndRange.helmValuesPath,
-                    "helmValuesPath_highEndRange":
+                    helmValuesPath_lowEndRange: formFieldValue.lowEndRange.helmValuesPath,
+                    helmValuesPath_highEndRange:
                         formFieldValue.highEndRange.helmValuesPath
                 });
 
@@ -67,9 +66,9 @@ export function mutateHelmValues_update(params: {
                     formFieldValue.highEndRange
                 ] as const) {
                     updateUnitValue({
-                        "unit": formField.unit,
-                        "value_formFieldValue": range.value,
-                        "helmValuesPath": range.helmValuesPath
+                        unit: formField.unit,
+                        value_formFieldValue: range.value,
+                        helmValuesPath: range.helmValuesPath
                     });
                 }
 
@@ -78,15 +77,15 @@ export function mutateHelmValues_update(params: {
             case "slider": {
                 const formField = findInRootForm({
                     rootForm,
-                    "helmValuesPath": formFieldValue.helmValuesPath
+                    helmValuesPath: formFieldValue.helmValuesPath
                 });
 
                 assert(formField.fieldType === "slider");
 
                 updateUnitValue({
-                    "unit": formField.unit,
-                    "value_formFieldValue": formFieldValue.value,
-                    "helmValuesPath": formFieldValue.helmValuesPath
+                    unit: formField.unit,
+                    value_formFieldValue: formFieldValue.value,
+                    helmValuesPath: formFieldValue.helmValuesPath
                 });
 
                 return;
@@ -102,15 +101,15 @@ export function mutateHelmValues_update(params: {
         case "number field":
         case "text field":
             assignValueAtPath({
-                "stringifyableObjectOrArray": helmValues,
-                "path": formFieldValue.helmValuesPath,
-                "value": formFieldValue.value
+                stringifyableObjectOrArray: helmValues,
+                path: formFieldValue.helmValuesPath,
+                value: formFieldValue.value
             });
             return;
         case "select": {
             const formField = findInRootForm({
                 rootForm,
-                "helmValuesPath": formFieldValue.helmValuesPath
+                helmValuesPath: formFieldValue.helmValuesPath
             });
 
             assert(formField.fieldType === "select");
@@ -120,8 +119,8 @@ export function mutateHelmValues_update(params: {
             assert(value !== undefined);
 
             assignValueAtPath({
-                "stringifyableObjectOrArray": helmValues,
-                "path": formFieldValue.helmValuesPath,
+                stringifyableObjectOrArray: helmValues,
+                path: formFieldValue.helmValuesPath,
                 value
             });
 

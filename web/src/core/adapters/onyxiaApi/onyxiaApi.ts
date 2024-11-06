@@ -67,11 +67,11 @@ export function createOnyxiaApi(params: {
     };
 
     const { axiosInstance } = (() => {
-        const axiosInstance = axios.create({ "baseURL": url, "timeout": 120_000 });
+        const axiosInstance = axios.create({ baseURL: url, timeout: 120_000 });
 
         axiosInstance.interceptors.request.use(config => ({
             ...config,
-            "headers": {
+            headers: {
                 ...config?.headers,
                 ...getHeaders()
             }
@@ -88,17 +88,17 @@ export function createOnyxiaApi(params: {
 
             return data;
         },
-        { "promise": true }
+        { promise: true }
     );
 
     const onyxiaApi: OnyxiaApi = {
-        "getIp": async () => {
+        getIp: async () => {
             const { data } =
                 await axiosInstance.get<ApiTypes["/public/ip"]>("/public/ip");
 
             return data.ip;
         },
-        "getAvailableRegionsAndOidcParams": memoize(
+        getAvailableRegionsAndOidcParams: memoize(
             async () => {
                 const { data } = await axiosInstance.get<
                     ApiTypes["/public/configuration"]
@@ -124,30 +124,29 @@ export function createOnyxiaApi(params: {
                     data.oidcConfiguration === undefined
                         ? undefined
                         : {
-                              "issuerUri": data.oidcConfiguration.issuerURI,
-                              "clientId": data.oidcConfiguration.clientID,
-                              "serializedExtraQueryParams":
+                              issuerUri: data.oidcConfiguration.issuerURI,
+                              clientId: data.oidcConfiguration.clientID,
+                              serializedExtraQueryParams:
                                   data.oidcConfiguration.extraQueryParams
                           };
 
                 const regions = data.regions.map(
                     (apiRegion): DeploymentRegion =>
                         id<DeploymentRegion>({
-                            "id": apiRegion.id,
-                            "servicesMonitoringUrlPattern":
+                            id: apiRegion.id,
+                            servicesMonitoringUrlPattern:
                                 apiRegion.services.monitoring?.URLPattern,
-                            "defaultIpProtection":
+                            defaultIpProtection:
                                 apiRegion.services.defaultConfiguration?.ipprotection,
-                            "defaultNetworkPolicy":
+                            defaultNetworkPolicy:
                                 apiRegion.services.defaultConfiguration?.networkPolicy,
-                            "kubernetesClusterDomain": apiRegion.services.expose.domain,
-                            "ingressClassName":
-                                apiRegion.services.expose.ingressClassName,
-                            "ingress": apiRegion.services.expose.ingress,
-                            "route": apiRegion.services.expose.route,
-                            "customValues": apiRegion.services.customValues,
-                            "istio": apiRegion.services.expose.istio,
-                            "initScriptUrl": apiRegion.services.initScript,
+                            kubernetesClusterDomain: apiRegion.services.expose.domain,
+                            ingressClassName: apiRegion.services.expose.ingressClassName,
+                            ingress: apiRegion.services.expose.ingress,
+                            route: apiRegion.services.expose.route,
+                            customValues: apiRegion.services.customValues,
+                            istio: apiRegion.services.expose.istio,
+                            initScriptUrl: apiRegion.services.initScript,
                             ...(() => {
                                 const s3Configs_api = (() => {
                                     const value = apiRegion.data?.S3;
@@ -193,11 +192,11 @@ export function createOnyxiaApi(params: {
                                         }
 
                                         return {
-                                            "url": s3Config_api.URL,
-                                            "pathStyleAccess":
+                                            url: s3Config_api.URL,
+                                            pathStyleAccess:
                                                 s3Config_api.pathStyleAccess ?? true,
-                                            "region": s3Config_api.region,
-                                            "workingDirectory":
+                                            region: s3Config_api.region,
+                                            workingDirectory:
                                                 s3Config_api.workingDirectory
                                         };
                                     })();
@@ -221,31 +220,31 @@ export function createOnyxiaApi(params: {
                                         })
                                         .filter(exclude(undefined))
                                         .map(s3Config_api => ({
-                                            "url": s3Config_api.URL,
-                                            "pathStyleAccess":
+                                            url: s3Config_api.URL,
+                                            pathStyleAccess:
                                                 s3Config_api.pathStyleAccess ?? true,
-                                            "region": s3Config_api.region,
-                                            "sts": {
-                                                "url": s3Config_api.sts.URL,
-                                                "durationSeconds":
+                                            region: s3Config_api.region,
+                                            sts: {
+                                                url: s3Config_api.sts.URL,
+                                                durationSeconds:
                                                     s3Config_api.sts.durationSeconds,
-                                                "role": s3Config_api.sts.role,
-                                                "oidcParams":
+                                                role: s3Config_api.sts.role,
+                                                oidcParams:
                                                     s3Config_api.sts.oidcConfiguration ===
                                                     undefined
                                                         ? undefined
                                                         : {
-                                                              "issuerUri":
+                                                              issuerUri:
                                                                   s3Config_api.sts
                                                                       .oidcConfiguration
                                                                       .issuerURI,
-                                                              "clientId":
+                                                              clientId:
                                                                   s3Config_api.sts
                                                                       .oidcConfiguration
                                                                       .clientID
                                                           }
                                             },
-                                            "workingDirectory":
+                                            workingDirectory:
                                                 s3Config_api.workingDirectory
                                         }));
 
@@ -254,9 +253,9 @@ export function createOnyxiaApi(params: {
                                     s3ConfigCreationFormDefaults
                                 };
                             })(),
-                            "allowedURIPatternForUserDefinedInitScript":
+                            allowedURIPatternForUserDefinedInitScript:
                                 apiRegion.services.allowedURIPattern,
-                            "kafka": (() => {
+                            kafka: (() => {
                                 const { kafka } =
                                     apiRegion.services.defaultConfiguration ?? {};
 
@@ -265,54 +264,54 @@ export function createOnyxiaApi(params: {
                                 }
                                 const { URL, topicName } = kafka;
 
-                                return { "url": URL, topicName };
+                                return { url: URL, topicName };
                             })(),
-                            "tolerations":
+                            tolerations:
                                 apiRegion.services?.defaultConfiguration?.tolerations,
-                            "from": apiRegion.services?.defaultConfiguration?.from,
-                            "nodeSelector":
+                            from: apiRegion.services?.defaultConfiguration?.from,
+                            nodeSelector:
                                 apiRegion.services.defaultConfiguration?.nodeSelector,
-                            "startupProbe":
+                            startupProbe:
                                 apiRegion.services.defaultConfiguration?.startupProbe,
-                            "vault":
+                            vault:
                                 apiRegion.vault === undefined
                                     ? undefined
                                     : {
-                                          "url": apiRegion.vault.URL,
-                                          "kvEngine": apiRegion.vault.kvEngine,
-                                          "role": apiRegion.vault.role,
-                                          "authPath": apiRegion.vault.authPath,
-                                          "oidcParams":
+                                          url: apiRegion.vault.URL,
+                                          kvEngine: apiRegion.vault.kvEngine,
+                                          role: apiRegion.vault.role,
+                                          authPath: apiRegion.vault.authPath,
+                                          oidcParams:
                                               apiRegion.vault.oidcConfiguration ===
                                               undefined
                                                   ? undefined
                                                   : {
-                                                        "issuerUri":
+                                                        issuerUri:
                                                             apiRegion.vault
                                                                 .oidcConfiguration
                                                                 .issuerURI,
-                                                        "clientId":
+                                                        clientId:
                                                             apiRegion.vault
                                                                 .oidcConfiguration
                                                                 .clientID
                                                     }
                                       },
-                            "proxyInjection":
+                            proxyInjection:
                                 apiRegion.proxyInjection === undefined
                                     ? undefined
                                     : {
-                                          "enabled": apiRegion.proxyInjection.enabled,
-                                          "httpProxyUrl":
+                                          enabled: apiRegion.proxyInjection.enabled,
+                                          httpProxyUrl:
                                               apiRegion.proxyInjection.httpProxyUrl,
-                                          "httpsProxyUrl":
+                                          httpsProxyUrl:
                                               apiRegion.proxyInjection.httpsProxyUrl,
-                                          "noProxy": apiRegion.proxyInjection.noProxy
+                                          noProxy: apiRegion.proxyInjection.noProxy
                                       },
-                            "packageRepositoryInjection":
+                            packageRepositoryInjection:
                                 apiRegion.packageRepositoryInjection,
-                            "certificateAuthorityInjection":
+                            certificateAuthorityInjection:
                                 apiRegion.certificateAuthorityInjection,
-                            "kubernetes": (() => {
+                            kubernetes: (() => {
                                 const { k8sPublicEndpoint } = apiRegion.services;
 
                                 if (k8sPublicEndpoint?.URL === undefined) {
@@ -320,56 +319,54 @@ export function createOnyxiaApi(params: {
                                 }
 
                                 return {
-                                    "url": k8sPublicEndpoint.URL,
-                                    "oidcParams":
+                                    url: k8sPublicEndpoint.URL,
+                                    oidcParams:
                                         k8sPublicEndpoint.oidcConfiguration === undefined
                                             ? undefined
                                             : {
-                                                  "issuerUri":
+                                                  issuerUri:
                                                       k8sPublicEndpoint.oidcConfiguration
                                                           .issuerURI,
-                                                  "clientId":
+                                                  clientId:
                                                       k8sPublicEndpoint.oidcConfiguration
                                                           .clientID
                                               }
                                 };
                             })(),
-                            "sliders":
+                            sliders:
                                 apiRegion.services.defaultConfiguration?.sliders ?? {},
-                            "resources":
-                                apiRegion.services.defaultConfiguration?.resources,
-                            "certManager": {
-                                "useCertManager":
+                            resources: apiRegion.services.defaultConfiguration?.resources,
+                            certManager: {
+                                useCertManager:
                                     apiRegion.services.expose.certManager
                                         ?.useCertManager ?? false,
-                                "certManagerClusterIssuer":
+                                certManagerClusterIssuer:
                                     apiRegion.services.expose.certManager
                                         ?.certManagerClusterIssuer
                             },
-                            "openshiftSCC":
+                            openshiftSCC:
                                 apiRegion.services.openshiftSCC === undefined
                                     ? undefined
                                     : {
-                                          "scc": apiRegion.services.openshiftSCC.scc,
-                                          "enabled":
-                                              apiRegion.services.openshiftSCC.enabled
+                                          scc: apiRegion.services.openshiftSCC.scc,
+                                          enabled: apiRegion.services.openshiftSCC.enabled
                                       }
                         })
                 );
 
                 return { regions, oidcParams };
             },
-            { "promise": true }
+            { promise: true }
         ),
-        "getCatalogsAndCharts": memoize(
+        getCatalogsAndCharts: memoize(
             async () => {
                 const data = await getApiCatalogsMemo();
 
                 return {
-                    "catalogs": data.catalogs
+                    catalogs: data.catalogs
                         .map(apiCatalog => ({
                             apiCatalog,
-                            "visibility": (() => {
+                            visibility: (() => {
                                 if (
                                     !apiCatalog.visible.project &&
                                     !apiCatalog.visible.user
@@ -399,15 +396,15 @@ export function createOnyxiaApi(params: {
                         .filter(exclude(undefined))
                         .map(
                             ({ apiCatalog, visibility }): Catalog => ({
-                                "id": apiCatalog.id,
-                                "name": apiCatalog.name ?? apiCatalog.id,
-                                "repositoryUrl": apiCatalog.location,
-                                "description": apiCatalog.description,
-                                "isProduction": apiCatalog.status === "PROD",
+                                id: apiCatalog.id,
+                                name: apiCatalog.name ?? apiCatalog.id,
+                                repositoryUrl: apiCatalog.location,
+                                description: apiCatalog.description,
+                                isProduction: apiCatalog.status === "PROD",
                                 visibility
                             })
                         ),
-                    "chartsByCatalogId": Object.fromEntries(
+                    chartsByCatalogId: Object.fromEntries(
                         data.catalogs.map(apiCatalog => {
                             const {
                                 id: catalogId,
@@ -431,8 +428,8 @@ export function createOnyxiaApi(params: {
                                     ([name, { description, home, icon }]): Chart => ({
                                         name,
                                         description,
-                                        "iconUrl": icon,
-                                        "projectHomepageUrl": home
+                                        iconUrl: icon,
+                                        projectHomepageUrl: home
                                     })
                                 )
                                 .sort(
@@ -446,9 +443,9 @@ export function createOnyxiaApi(params: {
                     )
                 };
             },
-            { "promise": true }
+            { promise: true }
         ),
-        "getChartAvailableVersions": (() => {
+        getChartAvailableVersions: (() => {
             const memoizedImplementation = memoize(
                 async (catalogId: string, chartName: string) => {
                     const { data } = await axiosInstance.get<
@@ -462,13 +459,13 @@ export function createOnyxiaApi(params: {
                             .sort((a, b) => compareVersions(b, a))
                     );
                 },
-                { "promise": true }
+                { promise: true }
             );
 
             return async ({ catalogId, chartName }) =>
                 memoizedImplementation(catalogId, chartName);
         })(),
-        "onboard": async ({ group }) => {
+        onboard: async ({ group }) => {
             try {
                 await axiosInstance.post("/onboarding", { group });
             } catch (error) {
@@ -491,7 +488,7 @@ export function createOnyxiaApi(params: {
                 throw error;
             }
         },
-        "getHelmChartDetails": (() => {
+        getHelmChartDetails: (() => {
             const memoizedImplementation = memoize(
                 async (catalogId: string, chartName: string, chartVersion: string) => {
                     const [{ data: helmValuesSchema }, apiCatalogs] = await Promise.all([
@@ -519,14 +516,14 @@ export function createOnyxiaApi(params: {
 
                     return {
                         helmValuesSchema,
-                        "helmValuesYaml": apiChart.defaultValues,
-                        "helmChartSourceUrls": apiChart.sources ?? [],
-                        "helmDependencies": (apiChart.dependencies ?? []).map(
+                        helmValuesYaml: apiChart.defaultValues,
+                        helmChartSourceUrls: apiChart.sources ?? [],
+                        helmDependencies: (apiChart.dependencies ?? []).map(
                             ({ name, repository, version, condition }) => ({
-                                "helmRepositoryUrl": repository,
-                                "chartName": name,
-                                "chartVersion": version,
-                                "condition":
+                                helmRepositoryUrl: repository,
+                                chartName: name,
+                                chartVersion: version,
+                                condition:
                                     condition === undefined
                                         ? undefined
                                         : condition.split(".").map(segment => {
@@ -537,13 +534,13 @@ export function createOnyxiaApi(params: {
                         )
                     };
                 },
-                { "promise": true }
+                { promise: true }
             );
 
             return async ({ catalogId, chartName, chartVersion }) =>
                 memoizedImplementation(catalogId, chartName, chartVersion);
         })(),
-        "helmInstall": async ({
+        helmInstall: async ({
             helmReleaseName,
             catalogId,
             chartName,
@@ -554,13 +551,13 @@ export function createOnyxiaApi(params: {
         }) => {
             await axiosInstance.put("/my-lab/app", {
                 catalogId,
-                "packageName": chartName,
-                "packageVersion": chartVersion,
-                "name": helmReleaseName,
+                packageName: chartName,
+                packageVersion: chartVersion,
+                name: helmReleaseName,
                 friendlyName,
-                "share": isShared ?? false,
-                "options": values,
-                "dryRun": false
+                share: isShared ?? false,
+                options: values,
+                dryRun: false
             });
 
             const installTime = Date.now();
@@ -568,7 +565,7 @@ export function createOnyxiaApi(params: {
             while (true) {
                 try {
                     await axiosInstance.get("/my-lab/app", {
-                        "params": { "serviceId": helmReleaseName }
+                        params: { serviceId: helmReleaseName }
                     });
 
                     break;
@@ -581,17 +578,17 @@ export function createOnyxiaApi(params: {
                 }
             }
         },
-        "changeHelmReleaseFriendlyName": ({ helmReleaseName, friendlyName }) =>
+        changeHelmReleaseFriendlyName: ({ helmReleaseName, friendlyName }) =>
             axiosInstance.post("/my-lab/app/rename", {
                 serviceID: helmReleaseName,
                 friendlyName
             }),
-        "changeHelmReleaseSharedStatus": ({ helmReleaseName, isShared }) =>
+        changeHelmReleaseSharedStatus: ({ helmReleaseName, isShared }) =>
             axiosInstance.post("/my-lab/app/share", {
                 serviceID: helmReleaseName,
                 share: isShared
             }),
-        "listHelmReleases": async () => {
+        listHelmReleases: async () => {
             const { data } =
                 await axiosInstance.get<ApiTypes["/my-lab/services"]>("/my-lab/services");
 
@@ -669,54 +666,54 @@ export function createOnyxiaApi(params: {
                 })();
 
                 return {
-                    "helmReleaseName": apiApp.id,
+                    helmReleaseName: apiApp.id,
                     friendlyName,
-                    "catalogId": apiApp.catalogId,
-                    "postInstallInstructions": apiApp.postInstallInstructions,
-                    "urls": apiApp.urls,
-                    "startedAt": apiApp.startedAt,
-                    "values": apiApp.env,
-                    "appVersion": apiApp.appVersion,
-                    "revision": apiApp.revision,
+                    catalogId: apiApp.catalogId,
+                    postInstallInstructions: apiApp.postInstallInstructions,
+                    urls: apiApp.urls,
+                    startedAt: apiApp.startedAt,
+                    values: apiApp.env,
+                    appVersion: apiApp.appVersion,
+                    revision: apiApp.revision,
                     chartName,
                     chartVersion,
                     ownerUsername,
                     isShared,
-                    "areAllTasksReady":
+                    areAllTasksReady:
                         apiApp.tasks.length !== 0 &&
                         apiApp.tasks[0].containers.length !== 0 &&
                         apiApp.tasks[0].containers.every(({ ready }) => ready),
-                    "status": apiApp.status,
-                    "podNames": apiApp.tasks.map(({ id }) => id),
-                    "doesSupportSuspend": apiApp.suspendable,
-                    "isSuspended": apiApp.suspended
+                    status: apiApp.status,
+                    podNames: apiApp.tasks.map(({ id }) => id),
+                    doesSupportSuspend: apiApp.suspendable,
+                    isSuspended: apiApp.suspended
                 };
             });
 
             return helmReleases;
         },
-        "helmUninstall": async ({ helmReleaseName }) => {
+        helmUninstall: async ({ helmReleaseName }) => {
             const { data } = await axiosInstance.delete<{ success: boolean }>(
                 `/my-lab/app`,
-                { "params": { "path": helmReleaseName } }
+                { params: { path: helmReleaseName } }
             );
 
             //TODO: Wrong assertion here once, investigate
             //Deleted one service just running, deleted all the others.
             assert(data.success, "Helm release uninstall failed");
         },
-        "getUserAndProjects": memoize(
+        getUserAndProjects: memoize(
             async () => {
                 const { data } =
                     await axiosInstance.get<ApiTypes["/user/info"]>("/user/info");
 
                 const projects = data.projects.map(
                     (apiProject): Project => ({
-                        "id": apiProject.id,
-                        "name": apiProject.name,
-                        "group": apiProject.group,
-                        "namespace": apiProject.namespace,
-                        "vaultTopDir": apiProject.vaultTopDir
+                        id: apiProject.id,
+                        name: apiProject.name,
+                        group: apiProject.group,
+                        namespace: apiProject.namespace,
+                        vaultTopDir: apiProject.vaultTopDir
                     })
                 );
 
@@ -726,8 +723,8 @@ export function createOnyxiaApi(params: {
                 );
 
                 const user: User = {
-                    "username": data.idep,
-                    "email": data.email,
+                    username: data.idep,
+                    email: data.email,
                     ...(() => {
                         const [firstName, familyName] = data.nomComplet.split(" ");
 
@@ -740,9 +737,9 @@ export function createOnyxiaApi(params: {
 
                 return { user, projects };
             },
-            { "promise": true }
+            { promise: true }
         ),
-        "getQuotas": async () => {
+        getQuotas: async () => {
             let resp;
 
             try {
@@ -771,28 +768,28 @@ export function createOnyxiaApi(params: {
                     .map(([key, value]) => {
                         const usageValue = usage[key];
 
-                        return [key, { "spec": value, "usage": usageValue }];
+                        return [key, { spec: value, usage: usageValue }];
                     })
                     .filter(exclude(undefined))
             );
         },
-        "kubectlLogs": async ({ helmReleaseName, podName }) => {
+        kubectlLogs: async ({ helmReleaseName, podName }) => {
             const { data } = await axiosInstance.get<string>("/my-lab/app/logs", {
-                "params": {
-                    "serviceId": helmReleaseName,
-                    "taskId": podName
+                params: {
+                    serviceId: helmReleaseName,
+                    taskId: podName
                 }
             });
 
             return data;
         },
-        "subscribeToClusterEvents": async params => {
+        subscribeToClusterEvents: async params => {
             const { onNewEvent } = params;
             const ctxUnsubscribe = Evt.newCtx();
             const evtUnsubscribe = params.evtUnsubscribe.pipe(ctxUnsubscribe);
 
             const response = await fetch(`${url}/my-lab/events`, {
-                "headers": getHeaders()
+                headers: getHeaders()
             })
                 // NOTE: This happens when there's no data to read.
                 .catch(() => undefined);
@@ -847,10 +844,10 @@ export function createOnyxiaApi(params: {
                     );
 
                     onNewEvent({
-                        "eventId": event.metadata.uid,
-                        "message": event.message,
-                        "timestamp": new Date(event.metadata.creationTimestamp).getTime(),
-                        "severity": (() => {
+                        eventId: event.metadata.uid,
+                        message: event.message,
+                        timestamp: new Date(event.metadata.creationTimestamp).getTime(),
+                        severity: (() => {
                             switch (event.type) {
                                 case "Normal":
                                     return "info";
@@ -862,7 +859,7 @@ export function createOnyxiaApi(params: {
                                     return "info";
                             }
                         })(),
-                        "originalEvent": event
+                        originalEvent: event
                     });
                 });
             }
@@ -871,14 +868,14 @@ export function createOnyxiaApi(params: {
 
             reader.releaseLock();
         },
-        "helmUpgradeGlobalSuspend": async ({ helmReleaseName, value }) => {
+        helmUpgradeGlobalSuspend: async ({ helmReleaseName, value }) => {
             if (value === true) {
                 await axiosInstance.post("/my-lab/app/suspend", {
-                    "serviceID": helmReleaseName
+                    serviceID: helmReleaseName
                 });
             } else {
                 await axiosInstance.post("/my-lab/app/resume", {
-                    "serviceID": helmReleaseName
+                    serviceID: helmReleaseName
                 });
             }
         }

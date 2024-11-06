@@ -65,15 +65,15 @@ const useStyles = tss
     .withName({ UrlInput })
     .withParams<{ isLoadable: boolean }>()
     .create(({ theme, isLoadable }) => ({
-        "root": {
-            "display": "flex"
+        root: {
+            display: "flex"
         },
-        "searchBarWrapper": {
-            "flex": 1
+        searchBarWrapper: {
+            flex: 1
         },
-        "loadButton": {
-            "visibility": isLoadable ? "visible" : "hidden",
-            "marginLeft": theme.spacing(4)
+        loadButton: {
+            visibility: isLoadable ? "visible" : "hidden",
+            marginLeft: theme.spacing(4)
         }
     }));
 

@@ -18,7 +18,7 @@ import { type ProjectConfigs, zProjectConfigs } from "./decoupledLogic/ProjectCo
 import { clearProjectConfigs } from "./decoupledLogic/clearProjectConfigs";
 
 export const thunks = {
-    "changeProject":
+    changeProject:
         (params: { projectId: string }) =>
         async (...args) => {
             const [dispatch, getState, { onyxiaApi, secretsManager }] = args;
@@ -74,11 +74,11 @@ export const thunks = {
             }> {
                 const { files } = await secretsManager
                     .list({
-                        "path": projectVaultTopDirPath_reserved
+                        path: projectVaultTopDirPath_reserved
                     })
                     .catch(() => {
                         console.log("The above 404 is fine");
-                        return { "files": id<string[]>([]) };
+                        return { files: id<string[]>([]) };
                     });
 
                 const projectConfigs = Object.fromEntries(
@@ -91,7 +91,7 @@ export const thunks = {
 
                                 await secretsManager.put({
                                     path,
-                                    "secret": valueToSecret(value)
+                                    secret: valueToSecret(value)
                                 });
 
                                 return [key, value] as const;
@@ -128,8 +128,8 @@ export const thunks = {
 
             maybe_update_pinned_default_s3_configs: {
                 const actions = updateDefaultS3ConfigsAfterPotentialDeletion({
-                    "projectConfigsS3": projectConfigs.s3,
-                    "s3RegionConfigs":
+                    projectConfigsS3: projectConfigs.s3,
+                    s3RegionConfigs:
                         deploymentRegionManagement.selectors.currentDeploymentRegion(
                             getState()
                         ).s3Configs
@@ -160,11 +160,8 @@ export const thunks = {
                     const { s3 } = projectConfigs;
 
                     await secretsManager.put({
-                        "path": pathJoin(
-                            projectVaultTopDirPath_reserved,
-                            symToStr({ s3 })
-                        ),
-                        "secret": valueToSecret(s3)
+                        path: pathJoin(projectVaultTopDirPath_reserved, symToStr({ s3 })),
+                        secret: valueToSecret(s3)
                     });
                 }
             }
@@ -172,26 +169,26 @@ export const thunks = {
             dispatch(
                 actions.projectChanged({
                     projects,
-                    "selectedProjectId": projectId,
-                    "currentProjectConfigs": projectConfigs
+                    selectedProjectId: projectId,
+                    currentProjectConfigs: projectConfigs
                 })
             );
 
             await dispatch(
                 userConfigs.thunks.changeValue({
-                    "key": "selectedProjectId",
-                    "value": projectId
+                    key: "selectedProjectId",
+                    value: projectId
                 })
             );
         },
-    "renewServicePassword":
+    renewServicePassword:
         () =>
         async (...args) => {
             const [dispatch] = args;
             await dispatch(
                 protectedThunks.updateConfigValue({
-                    "key": "servicePassword",
-                    "value": generateRandomPassword()
+                    key: "servicePassword",
+                    value: generateRandomPassword()
                 })
             );
         }
@@ -227,10 +224,10 @@ function getDefaultConfig<K extends keyof ProjectConfigs>(key_: K): ProjectConfi
         }
         case "s3": {
             const out: ProjectConfigs[typeof key] = {
-                "s3Configs": [],
+                s3Configs: [],
                 // NOTE: We will set to the correct default at initialization
-                "s3ConfigId_defaultXOnyxia": "a-config-id-that-does-not-exist",
-                "s3ConfigId_explorer": "a-config-id-that-does-not-exist"
+                s3ConfigId_defaultXOnyxia: "a-config-id-that-does-not-exist",
+                s3ConfigId_explorer: "a-config-id-that-does-not-exist"
             };
             // @ts-expect-error
             return out;
@@ -245,7 +242,7 @@ function getDefaultConfig<K extends keyof ProjectConfigs>(key_: K): ProjectConfi
 }
 
 export const protectedThunks = {
-    "initialize":
+    initialize:
         () =>
         async (...args) => {
             const [dispatch, getState, { onyxiaApi }] = args;
@@ -263,11 +260,11 @@ export const protectedThunks = {
 
             await dispatch(
                 thunks.changeProject({
-                    "projectId": selectedProjectId
+                    projectId: selectedProjectId
                 })
             );
         },
-    "updateConfigValue":
+    updateConfigValue:
         <K extends keyof ProjectConfigs>(params: ChangeConfigValueParams<K>) =>
         async (...args) => {
             const [dispatch, getState, rootContext] = args;
@@ -286,7 +283,7 @@ export const protectedThunks = {
 
             const path = pathJoin(
                 getProjectVaultTopDirPath_reserved({
-                    "projectVaultTopDirPath":
+                    projectVaultTopDirPath:
                         protectedSelectors.currentProject(getState()).vaultTopDir
                 }),
                 params.key
@@ -313,7 +310,7 @@ export const protectedThunks = {
 
             await secretsManager.put({
                 path,
-                "secret": valueToSecret(params.value)
+                secret: valueToSecret(params.value)
             });
         }
 } satisfies Thunks;

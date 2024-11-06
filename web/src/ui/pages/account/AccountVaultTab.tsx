@@ -36,10 +36,10 @@ export const AccountVaultTab = memo((props: Props) => {
 
     const uiState = useCoreState("vaultCredentials", "main");
 
-    const { fromNowText } = useFromNow({ "dateTime": uiState?.expirationTime ?? 0 });
+    const { fromNowText } = useFromNow({ dateTime: uiState?.expirationTime ?? 0 });
 
     useEffect(() => {
-        vaultCredentials.refresh({ "doForceRenewToken": false });
+        vaultCredentials.refresh({ doForceRenewToken: false });
     }, []);
 
     const { t } = useTranslation({ AccountVaultTab });
@@ -52,14 +52,14 @@ export const AccountVaultTab = memo((props: Props) => {
         assert(uiState !== undefined);
         saveAs(
             new Blob([uiState.bashScript], {
-                "type": "text/plain;charset=utf-8"
+                type: "text/plain;charset=utf-8"
             }),
             "config"
         );
     });
 
     const onRefreshIconButtonClick = useConstCallback(() =>
-        vaultCredentials.refresh({ "doForceRenewToken": true })
+        vaultCredentials.refresh({ doForceRenewToken: true })
     );
 
     if (uiState === undefined) {
@@ -73,13 +73,11 @@ export const AccountVaultTab = memo((props: Props) => {
                 helperText={
                     <>
                         {t("credentials section helper", {
-                            "vaultDocHref": "https://developer.hashicorp.com/vault",
-                            "mySecretLink": routes.mySecrets().link
+                            vaultDocHref: "https://developer.hashicorp.com/vault",
+                            mySecretLink: routes.mySecrets().link
                         })}
                         &nbsp;
-                        <strong>
-                            {t("expires in", { "howMuchTime": fromNowText })}{" "}
-                        </strong>
+                        <strong>{t("expires in", { howMuchTime: fromNowText })} </strong>
                         <IconButton
                             size="extra small"
                             icon={id<MuiIconComponentName>("Refresh")}
@@ -97,9 +95,9 @@ export const AccountVaultTab = memo((props: Props) => {
                         key.replace(/([a-z])([A-Z])/g, "$1 $2").toLowerCase()
                     )}
                     text={smartTrim({
-                        "maxLength": 50,
-                        "minCharAtTheEnd": 20,
-                        "text": uiState[key]
+                        maxLength: 50,
+                        minCharAtTheEnd: 20,
+                        text: uiState[key]
                     })}
                     onRequestCopy={onFieldRequestCopyFactory(uiState[key])}
                     isSensitiveInformation={key === "vaultToken"}
@@ -109,12 +107,11 @@ export const AccountVaultTab = memo((props: Props) => {
             <SettingSectionHeader
                 title={t("init script section title")}
                 helperText={t("init script section helper", {
-                    "vaultCliDocLink":
-                        "https://developer.hashicorp.com/vault/docs/commands"
+                    vaultCliDocLink: "https://developer.hashicorp.com/vault/docs/commands"
                 })}
             />
             <div className={classes.codeBlockHeaderWrapper}>
-                <div style={{ "flex": 1 }} />
+                <div style={{ flex: 1 }} />
                 <IconButton
                     icon={id<MuiIconComponentName>("GetApp")}
                     onClick={onGetAppIconButtonClick}
@@ -125,8 +122,8 @@ export const AccountVaultTab = memo((props: Props) => {
                 {/* This component depends on a heavy third party library, we don't want to include it in the main bundle */}
                 <CodeBlock
                     initScript={{
-                        "scriptCode": uiState.bashScript,
-                        "programmingLanguage": "shell"
+                        scriptCode: uiState.bashScript,
+                        programmingLanguage: "shell"
                     }}
                     isDarkModeEnabled={theme.isDarkModeEnabled}
                 />
@@ -149,11 +146,11 @@ const { i18n } = declareComponentKeys<
 export type I18n = typeof i18n;
 
 const useStyles = tss.withName({ AccountVaultTab }).create(({ theme }) => ({
-    "divider": {
+    divider: {
         ...theme.spacing.topBottom("margin", 4)
     },
-    "codeBlockHeaderWrapper": {
-        "display": "flex",
-        "marginBottom": theme.spacing(3)
+    codeBlockHeaderWrapper: {
+        display: "flex",
+        marginBottom: theme.spacing(3)
     }
 }));

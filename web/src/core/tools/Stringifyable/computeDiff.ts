@@ -23,7 +23,7 @@ export function computeDiff(params: {
             if (getValueAtPath(before, path) !== value) {
                 diffPatch.push({
                     path,
-                    "value": value
+                    value: value
                 });
             }
             return;
@@ -41,7 +41,7 @@ export function computeDiff(params: {
         if (getValueAtPath(current, path) === undefined) {
             diffPatch.push({
                 path,
-                "value": undefined
+                value: undefined
             });
         }
 

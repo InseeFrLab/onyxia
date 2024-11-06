@@ -54,28 +54,28 @@ export function AutoLogoutCountdown(props: Props) {
 }
 
 const useStyles = tss.withName({ AutoLogoutCountdown }).create(({ theme }) => ({
-    "root": {
-        "position": "absolute",
-        "zIndex": 3,
-        "height": "100%",
-        "width": "100%",
-        "top": 0,
-        "left": 0,
-        "backgroundColor": (() => {
+    root: {
+        position: "absolute",
+        zIndex: 3,
+        height: "100%",
+        width: "100%",
+        top: 0,
+        left: 0,
+        backgroundColor: (() => {
             const color = new Color(theme.colors.useCases.surfaces.background).rgb();
 
             return color.alpha(0.6).string();
         })(),
-        "backdropFilter": "blur(10px)",
-        "display": "flex",
-        "justifyContent": "center",
-        "alignItems": "center"
+        backdropFilter: "blur(10px)",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center"
     },
-    "circularMetric": {
-        "marginBottom": theme.spacing(4)
+    circularMetric: {
+        marginBottom: theme.spacing(4)
     },
-    "textWrapper": {
-        "textAlign": "center"
+    textWrapper: {
+        textAlign: "center"
     }
 }));
 

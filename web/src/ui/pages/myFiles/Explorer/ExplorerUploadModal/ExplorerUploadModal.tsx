@@ -28,9 +28,9 @@ export const ExplorerUploadModal = memo((props: ExplorerUploadModalProps) => {
     const { isOpen, onClose, filesBeingUploaded, onFileSelected } = props;
 
     useArrayDiff({
-        "array": filesBeingUploaded,
-        "watchFor": "deletion",
-        "callback": () => {
+        array: filesBeingUploaded,
+        watchFor: "deletion",
+        callback: () => {
             if (filesBeingUploaded.length === 0) {
                 onClose();
             }
@@ -118,12 +118,12 @@ const { ExplorerUploadModalBody } = (() => {
     });
 
     const useStyles = tss.withName({ ExplorerUploadModalBody }).create(({ theme }) => ({
-        "root": {
-            "minWidth": 500,
+        root: {
+            minWidth: 500,
             ...theme.spacing.topBottom("padding", 3)
         },
-        "progress": {
-            "marginTop": theme.spacing(4)
+        progress: {
+            marginTop: theme.spacing(4)
         }
     }));
 

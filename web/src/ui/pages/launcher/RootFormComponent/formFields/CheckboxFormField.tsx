@@ -23,12 +23,12 @@ export const CheckboxFormField = memo((props: Props) => {
         boolean,
         never
     >({
-        "serializedValue": value,
-        "throttleDelay": 0,
+        serializedValue: value,
+        throttleDelay: 0,
         onChange,
-        "parse": serializedValue => ({
-            "isValid": true,
-            "value": serializedValue
+        parse: serializedValue => ({
+            isValid: true,
+            value: serializedValue
         })
     });
 
@@ -60,10 +60,10 @@ export const CheckboxFormField = memo((props: Props) => {
 });
 
 const useStyles = tss.withName({ CheckboxFormField }).create({
-    "switchWrapper": {
-        "width": "100%",
-        "display": "flex",
-        "alignItems": "center",
-        "justifyContent": "center"
+    switchWrapper: {
+        width: "100%",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center"
     }
 });

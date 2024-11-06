@@ -9,11 +9,11 @@ export const name = "autoLogoutCountdown";
 
 export const { reducer, actions } = createUsecaseActions({
     name,
-    "initialState": id<State>({
-        "secondsLeft": undefined
+    initialState: id<State>({
+        secondsLeft: undefined
     }),
-    "reducers": {
-        "secondsLeftSet": (
+    reducers: {
+        secondsLeftSet: (
             state,
             { payload }: { payload: { secondsLeft: number | undefined } }
         ) => {

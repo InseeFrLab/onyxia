@@ -47,7 +47,7 @@ type RestorableServiceConfigLike = {
 }
 
 export const thunks = {
-    "initialize":
+    initialize:
         (params: {
             restorableConfig: RestorableServiceConfigLike;
             autoLaunch: boolean;
@@ -92,7 +92,7 @@ export const thunks = {
                         dispatch(
                             thunks.initialize({
                                 ...params,
-                                "autoLaunch": false
+                                autoLaunch: false
                             })
                         );
                     }
@@ -237,21 +237,21 @@ export const thunks = {
 
                 dispatch(
                     actions.initialized({
-                        "readyState": {
+                        readyState: {
                             catalogId,
                             chartName,
                             chartVersion,
                             chartVersion_default,
                             xOnyxiaContext,
 
-                            "friendlyName": friendlyName ?? friendlyName_default,
+                            friendlyName: friendlyName ?? friendlyName_default,
                             friendlyName_default,
-                            "isShared": isShared ?? isShared_default,
+                            isShared: isShared ?? isShared_default,
                             isShared_default,
-                            "s3Config": !isChartUsingS3
-                                ? { "isChartUsingS3": false }
+                            s3Config: !isChartUsingS3
+                                ? { isChartUsingS3: false }
                                 : {
-                                      "isChartUsingS3": true,
+                                      isChartUsingS3: true,
                                       s3ConfigId,
                                       s3ConfigId_default
                                   },
@@ -268,7 +268,7 @@ export const thunks = {
                             helmChartSourceUrls,
                             availableChartVersions
                         },
-                        "helmValuesPatch": helmValuesPatch ?? []
+                        helmValuesPatch: helmValuesPatch ?? []
                     })
                 );
 
@@ -279,7 +279,7 @@ export const thunks = {
 
             return { cleanup };
         },
-    "restoreAllDefault":
+    restoreAllDefault:
         () =>
         (...args) => {
             const [dispatch, getState] = args;
@@ -290,20 +290,20 @@ export const thunks = {
 
             dispatch(
                 thunks.initialize({
-                    "restorableConfig": {
-                        "catalogId": restorableConfig.catalogId,
-                        "chartName": restorableConfig.chartName,
-                        "chartVersion": undefined,
-                        "friendlyName": undefined,
-                        "helmValuesPatch": undefined,
-                        "isShared": undefined,
-                        "s3ConfigId": undefined
+                    restorableConfig: {
+                        catalogId: restorableConfig.catalogId,
+                        chartName: restorableConfig.chartName,
+                        chartVersion: undefined,
+                        friendlyName: undefined,
+                        helmValuesPatch: undefined,
+                        isShared: undefined,
+                        s3ConfigId: undefined
                     },
-                    "autoLaunch": false
+                    autoLaunch: false
                 })
             );
         },
-    "changeChartVersion":
+    changeChartVersion:
         (params: { chartVersion: string }) =>
         async (...args) => {
             const { chartVersion } = params;
@@ -321,15 +321,15 @@ export const thunks = {
 
             dispatch(
                 thunks.initialize({
-                    "restorableConfig": {
+                    restorableConfig: {
                         ...restorableConfig,
                         chartVersion
                     },
-                    "autoLaunch": false
+                    autoLaunch: false
                 })
             );
         },
-    "changeS3Config":
+    changeS3Config:
         (params: { s3ConfigId: string }) =>
         async (...args) => {
             const [dispatch, getState] = args;
@@ -347,15 +347,15 @@ export const thunks = {
 
             dispatch(
                 thunks.initialize({
-                    "restorableConfig": {
+                    restorableConfig: {
                         ...restorableConfig,
                         s3ConfigId
                     },
-                    "autoLaunch": false
+                    autoLaunch: false
                 })
             );
         },
-    "changeFormFieldValue":
+    changeFormFieldValue:
         (params: FormFieldValue) =>
         (...args) => {
             const [dispatch, getState] = args;
@@ -367,14 +367,14 @@ export const thunks = {
 
             dispatch(actions.formFieldValueChanged({ formFieldValue, rootForm }));
         },
-    "changeFriendlyName":
+    changeFriendlyName:
         (friendlyName: string) =>
         (...args) => {
             const [dispatch] = args;
 
             dispatch(actions.friendlyNameChanged({ friendlyName }));
         },
-    "addArrayItem":
+    addArrayItem:
         (params: { helmValuesPath: (string | number)[] }) =>
         (...args) => {
             const { helmValuesPath } = params;
@@ -383,7 +383,7 @@ export const thunks = {
 
             dispatch(actions.arrayItemAdded({ helmValuesPath }));
         },
-    "removeArrayItem":
+    removeArrayItem:
         (params: { helmValuesPath: (string | number)[]; index: number }) =>
         (...args) => {
             const { helmValuesPath, index } = params;
@@ -392,7 +392,7 @@ export const thunks = {
 
             dispatch(actions.arrayItemRemoved({ helmValuesPath, index }));
         },
-    "changeIsShared":
+    changeIsShared:
         (params: { isShared: boolean }) =>
         (...args) => {
             const { isShared } = params;
@@ -401,7 +401,7 @@ export const thunks = {
 
             dispatch(actions.isSharedChanged({ isShared }));
         },
-    "launch":
+    launch:
         () =>
         async (...args) => {
             const [dispatch, getState, { onyxiaApi }] = args;
@@ -418,12 +418,12 @@ export const thunks = {
 
             await onyxiaApi.helmInstall({
                 helmReleaseName,
-                "catalogId": restorableConfig.catalogId,
-                "chartName": restorableConfig.chartName,
-                "chartVersion": restorableConfig.chartVersion,
-                "friendlyName": restorableConfig.friendlyName,
-                "isShared": restorableConfig.isShared,
-                "values": helmValues
+                catalogId: restorableConfig.catalogId,
+                chartName: restorableConfig.chartName,
+                chartVersion: restorableConfig.chartVersion,
+                friendlyName: restorableConfig.friendlyName,
+                isShared: restorableConfig.isShared,
+                values: helmValues
             });
 
             dispatch(actions.launchCompleted());
@@ -435,7 +435,7 @@ const { getContext, setContext, getIsContextSet } = createUsecaseContextApi<{
 }>();
 
 const privateThunks = {
-    "getXOnyxiaContext":
+    getXOnyxiaContext:
         (params: { s3ConfigId: string | undefined; doInjectPersonalInfos: boolean }) =>
         async (...args): Promise<XOnyxiaContext> => {
             const { s3ConfigId, doInjectPersonalInfos } = params;
@@ -464,43 +464,43 @@ const privateThunks = {
             );
 
             const xOnyxiaContext: XOnyxiaContext = {
-                "user": {
-                    "idep": user.username,
-                    "name": `${user.familyName} ${user.firstName}`,
-                    "email": user.email,
-                    "password": servicePassword,
-                    "ip": !doInjectPersonalInfos ? "0.0.0.0" : await onyxiaApi.getIp(),
-                    "darkMode": userConfigs.isDarkModeEnabled,
-                    "lang": paramsOfBootstrapCore.getCurrentLang(),
+                user: {
+                    idep: user.username,
+                    name: `${user.familyName} ${user.firstName}`,
+                    email: user.email,
+                    password: servicePassword,
+                    ip: !doInjectPersonalInfos ? "0.0.0.0" : await onyxiaApi.getIp(),
+                    darkMode: userConfigs.isDarkModeEnabled,
+                    lang: paramsOfBootstrapCore.getCurrentLang(),
                     decodedIdToken,
                     accessToken,
                     refreshToken
                 },
-                "service": {
-                    "oneTimePassword": generateRandomPassword()
+                service: {
+                    oneTimePassword: generateRandomPassword()
                 },
-                "project": {
-                    "id": project.id,
-                    "password": servicePassword,
-                    "basic": btoa(
+                project: {
+                    id: project.id,
+                    password: servicePassword,
+                    basic: btoa(
                         unescape(encodeURIComponent(`${project.id}:${servicePassword}`))
                     )
                 },
-                "git": !doInjectPersonalInfos
+                git: !doInjectPersonalInfos
                     ? {
-                          "name": "",
-                          "email": "",
-                          "credentials_cache_duration": 0,
-                          "token": undefined
+                          name: "",
+                          email: "",
+                          credentials_cache_duration: 0,
+                          token: undefined
                       }
                     : {
-                          "name": userConfigs.gitName,
-                          "email": userConfigs.gitEmail,
-                          "credentials_cache_duration":
+                          name: userConfigs.gitName,
+                          email: userConfigs.gitEmail,
+                          credentials_cache_duration:
                               userConfigs.gitCredentialCacheDuration,
-                          "token": userConfigs.githubPersonalAccessToken ?? undefined
+                          token: userConfigs.githubPersonalAccessToken ?? undefined
                       },
-                "vault": await (async () => {
+                vault: await (async () => {
                     const { vault } = region;
 
                     if (vault === undefined) {
@@ -508,17 +508,17 @@ const privateThunks = {
                     }
 
                     return {
-                        "VAULT_ADDR": vault.url,
-                        "VAULT_TOKEN": !doInjectPersonalInfos
+                        VAULT_ADDR: vault.url,
+                        VAULT_TOKEN: !doInjectPersonalInfos
                             ? undefined
                             : (await secretsManager.getToken()).token,
-                        "VAULT_MOUNT": vault.kvEngine,
-                        "VAULT_TOP_DIR": dispatch(
+                        VAULT_MOUNT: vault.kvEngine,
+                        VAULT_TOP_DIR: dispatch(
                             secretExplorer.protectedThunks.getHomeDirectoryPath()
                         )
                     };
                 })(),
-                "s3": await (async () => {
+                s3: await (async () => {
                     const s3Config = (() => {
                         if (s3ConfigId === undefined) {
                             return undefined;
@@ -549,31 +549,30 @@ const privateThunks = {
                         bucketNameAndObjectNameFromS3Path(s3Config.workingDirectoryPath);
 
                     const s3: XOnyxiaContext["s3"] = {
-                        "isEnabled": true,
-                        "AWS_ACCESS_KEY_ID": undefined,
-                        "AWS_SECRET_ACCESS_KEY": undefined,
-                        "AWS_SESSION_TOKEN": undefined,
-                        "AWS_BUCKET_NAME": bucketName,
-                        "AWS_DEFAULT_REGION": s3Config.region ?? "us-east-1",
-                        "AWS_S3_ENDPOINT": host,
+                        isEnabled: true,
+                        AWS_ACCESS_KEY_ID: undefined,
+                        AWS_SECRET_ACCESS_KEY: undefined,
+                        AWS_SESSION_TOKEN: undefined,
+                        AWS_BUCKET_NAME: bucketName,
+                        AWS_DEFAULT_REGION: s3Config.region ?? "us-east-1",
+                        AWS_S3_ENDPOINT: host,
                         port,
-                        "pathStyleAccess":
-                            s3Config.paramsOfCreateS3Client.pathStyleAccess,
+                        pathStyleAccess: s3Config.paramsOfCreateS3Client.pathStyleAccess,
                         objectNamePrefix,
-                        "workingDirectoryPath": s3Config.workingDirectoryPath,
-                        "isAnonymous": false
+                        workingDirectoryPath: s3Config.workingDirectoryPath,
+                        isAnonymous: false
                     };
 
                     if (s3Config.paramsOfCreateS3Client.isStsEnabled) {
                         const s3Client = await dispatch(
                             s3ConfigManagement.protectedThunks.getS3ClientForSpecificConfig(
                                 {
-                                    "s3ConfigId": s3Config.id
+                                    s3ConfigId: s3Config.id
                                 }
                             )
                         );
 
-                        const tokens = await s3Client.getToken({ "doForceRenew": false });
+                        const tokens = await s3Client.getToken({ doForceRenew: false });
 
                         assert(tokens !== undefined);
 
@@ -593,40 +592,39 @@ const privateThunks = {
 
                     return s3;
                 })(),
-                "region": {
-                    "defaultIpProtection": region.defaultIpProtection,
-                    "defaultNetworkPolicy": region.defaultNetworkPolicy,
-                    "allowedURIPattern": region.allowedURIPatternForUserDefinedInitScript,
-                    "kafka": region.kafka,
-                    "from": region.from,
-                    "tolerations": region.tolerations,
-                    "nodeSelector": region.nodeSelector,
-                    "startupProbe": region.startupProbe,
-                    "sliders": region.sliders,
-                    "resources": region.resources,
-                    "customValues": region.customValues ?? {},
-                    "openshiftSCC": region.openshiftSCC
+                region: {
+                    defaultIpProtection: region.defaultIpProtection,
+                    defaultNetworkPolicy: region.defaultNetworkPolicy,
+                    allowedURIPattern: region.allowedURIPatternForUserDefinedInitScript,
+                    kafka: region.kafka,
+                    from: region.from,
+                    tolerations: region.tolerations,
+                    nodeSelector: region.nodeSelector,
+                    startupProbe: region.startupProbe,
+                    sliders: region.sliders,
+                    resources: region.resources,
+                    customValues: region.customValues ?? {},
+                    openshiftSCC: region.openshiftSCC
                 },
-                "k8s": {
-                    "domain": region.kubernetesClusterDomain,
-                    "ingressClassName": region.ingressClassName,
-                    "ingress": region.ingress,
-                    "route": region.route,
-                    "istio": region.istio,
-                    "randomSubdomain": `${Math.floor(Math.random() * 1000000)}`,
-                    "initScriptUrl": region.initScriptUrl,
-                    "useCertManager": region.certManager?.useCertManager,
-                    "certManagerClusterIssuer":
-                        region.certManager?.certManagerClusterIssuer
+                k8s: {
+                    domain: region.kubernetesClusterDomain,
+                    ingressClassName: region.ingressClassName,
+                    ingress: region.ingress,
+                    route: region.route,
+                    istio: region.istio,
+                    randomSubdomain: `${Math.floor(Math.random() * 1000000)}`,
+                    initScriptUrl: region.initScriptUrl,
+                    useCertManager: region.certManager?.useCertManager,
+                    certManagerClusterIssuer: region.certManager?.certManagerClusterIssuer
                 },
-                "proxyInjection": region.proxyInjection,
-                "packageRepositoryInjection": region.packageRepositoryInjection,
-                "certificateAuthorityInjection": region.certificateAuthorityInjection
+                proxyInjection: region.proxyInjection,
+                packageRepositoryInjection: region.packageRepositoryInjection,
+                certificateAuthorityInjection: region.certificateAuthorityInjection
             };
 
             return xOnyxiaContext;
         },
-    "getChartInfos":
+    getChartInfos:
         (params: {
             catalogId: string;
             chartName: string;
@@ -694,9 +692,9 @@ const privateThunks = {
             })();
 
             return {
-                "catalogName": catalog.name,
-                "catalogRepositoryUrl": catalog.repositoryUrl,
-                "chartIconUrl": chart.iconUrl,
+                catalogName: catalog.name,
+                catalogRepositoryUrl: catalog.repositoryUrl,
+                chartIconUrl: chart.iconUrl,
                 chartVersion_default,
                 chartVersion,
                 availableChartVersions

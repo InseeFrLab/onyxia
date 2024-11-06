@@ -26,7 +26,7 @@ export function CatalogNoSearchMatches(props: Props) {
                     {t("no service found")}
                 </Text>
                 <Text className={classes.typo} typo="body 1">
-                    {t("no result found", { "forWhat": search })}
+                    {t("no result found", { forWhat: search })}
                 </Text>
                 <Text className={classes.typo} typo="body 1">
                     {t("check spelling")}
@@ -48,27 +48,27 @@ const { i18n } = declareComponentKeys<
 export type I18n = typeof i18n;
 
 const useStyles = tss.withName({ CatalogNoSearchMatches }).create(({ theme }) => ({
-    "root": {
-        "display": "flex",
-        "justifyContent": "center"
+    root: {
+        display: "flex",
+        justifyContent: "center"
     },
-    "innerDiv": {
-        "textAlign": "center",
-        "maxWidth": 500
+    innerDiv: {
+        textAlign: "center",
+        maxWidth: 500
     },
-    "svg": {
-        "fill": theme.colors.palette.dark.greyVariant2,
-        "width": 100,
-        "margin": 0
+    svg: {
+        fill: theme.colors.palette.dark.greyVariant2,
+        width: 100,
+        margin: 0
     },
-    "h2": {
+    h2: {
         ...theme.spacing.topBottom("margin", 4)
     },
-    "typo": {
-        "marginBottom": theme.spacing(1),
-        "color": theme.colors.palette.light.greyVariant3
+    typo: {
+        marginBottom: theme.spacing(1),
+        color: theme.colors.palette.light.greyVariant3
     },
-    "link": {
-        "cursor": "pointer"
+    link: {
+        cursor: "pointer"
     }
 }));

@@ -147,33 +147,33 @@ const useStyles = tss
     .withName({ Template })
     .withParams<{ backgroundUrl: string | undefined }>()
     .create(({ theme, backgroundUrl }) => ({
-        "root": {
-            "height": "100vh",
-            "display": "flex",
-            "flexDirection": "column",
-            "backgroundColor": theme.colors.useCases.surfaces.background
+        root: {
+            height: "100vh",
+            display: "flex",
+            flexDirection: "column",
+            backgroundColor: theme.colors.useCases.surfaces.background
         },
 
-        "header": {
-            "width": "100%",
-            "paddingRight": "2%",
-            "height": 64
+        header: {
+            width: "100%",
+            paddingRight: "2%",
+            height: 64
         },
-        "betweenHeaderAndFooter": {
-            "flex": 1,
-            "overflow": "hidden",
+        betweenHeaderAndFooter: {
+            flex: 1,
+            overflow: "hidden",
             ...(backgroundUrl === undefined
                 ? undefined
                 : {
-                      "backgroundImage": `url(${backgroundUrl})`,
-                      "backgroundSize": "auto 90%",
-                      "backgroundPosition": "center",
-                      "backgroundRepeat": "no-repeat"
+                      backgroundImage: `url(${backgroundUrl})`,
+                      backgroundSize: "auto 90%",
+                      backgroundPosition: "center",
+                      backgroundRepeat: "no-repeat"
                   })
         },
-        "page": {
-            "height": "100%",
-            "overflow": "auto"
+        page: {
+            height: "100%",
+            overflow: "auto"
         }
     }));
 
@@ -200,8 +200,8 @@ const { Header } = (() => {
                 <BrandHeaderSection
                     doShowOnyxia={false}
                     link={{
-                        "href": referrerUrl ?? "#",
-                        "onClick": () => {}
+                        href: referrerUrl ?? "#",
+                        onClick: () => {}
                     }}
                 />
             </header>
@@ -209,11 +209,11 @@ const { Header } = (() => {
     }
 
     const useStyles = tss.withName({ Header }).create(({ theme }) => ({
-        "root": {
-            "backgroundColor": theme.colors.useCases.surfaces.background,
-            "overflow": "auto",
-            "display": "flex",
-            "alignItems": "center",
+        root: {
+            backgroundColor: theme.colors.useCases.surfaces.background,
+            overflow: "auto",
+            display: "flex",
+            alignItems: "center",
             ...theme.spacing.topBottom("padding", 2)
         }
     }));
@@ -263,7 +263,7 @@ const { Page } = (() => {
         } = useDomRect();
 
         const { classes, cx } = useStyles({
-            "isPaperBiggerThanContainer": paperHeight > containerHeight
+            isPaperBiggerThanContainer: paperHeight > containerHeight
         });
         return (
             <div ref={containerRef} className={cx(classes.root, className)}>
@@ -271,7 +271,7 @@ const { Page } = (() => {
                     {kcContext.pageId === "login.ftl" &&
                         !env.AUTHENTICATION_GLOBALLY_REQUIRED && (
                             <div className={classes.crossButtonWrapper}>
-                                <div style={{ "flex": 1 }} />
+                                <div style={{ flex: 1 }} />
                                 <IconButton
                                     icon={CloseIcon}
                                     tabIndex={-1}
@@ -318,23 +318,23 @@ const { Page } = (() => {
         }>()
         .withName({ Page })
         .create(({ theme, isPaperBiggerThanContainer }) => ({
-            "root": {
-                "display": "flex",
-                "justifyContent": "center",
-                "alignItems": isPaperBiggerThanContainer ? undefined : "center"
+            root: {
+                display: "flex",
+                justifyContent: "center",
+                alignItems: isPaperBiggerThanContainer ? undefined : "center"
             },
-            "paper": {
-                "padding": theme.spacing(5),
-                "width": 490,
-                "height": "fit-content",
-                "marginBottom": theme.spacing(4),
-                "borderRadius": 8
+            paper: {
+                padding: theme.spacing(5),
+                width: 490,
+                height: "fit-content",
+                marginBottom: theme.spacing(4),
+                borderRadius: 8
             },
-            "alert": {
-                "alignItems": "center"
+            alert: {
+                alignItems: "center"
             },
-            "crossButtonWrapper": {
-                "display": "flex"
+            crossButtonWrapper: {
+                display: "flex"
             }
         }));
 
@@ -367,7 +367,7 @@ const { Page } = (() => {
 
             const { kcClsx } = getKcClsx({
                 doUseDefaultCss,
-                "classes": classes_props
+                classes: classes_props
             });
 
             return (
@@ -465,10 +465,10 @@ const { Page } = (() => {
         const useStyles = tss
             .withName(`${symToStr({ Template })}${symToStr({ Head })}`)
             .create(({ theme }) => ({
-                "root": {
-                    "textAlign": "center",
-                    "marginTop": theme.spacing(3),
-                    "marginBottom": theme.spacing(3)
+                root: {
+                    textAlign: "center",
+                    marginTop: theme.spacing(3),
+                    marginBottom: theme.spacing(3)
                 }
             }));
 
@@ -509,7 +509,7 @@ const { Page } = (() => {
 
             const { kcClsx } = getKcClsx({
                 doUseDefaultCss,
-                "classes": classes_props
+                classes: classes_props
             });
 
             const { msg } = i18n;
@@ -531,7 +531,7 @@ const { Page } = (() => {
                                     <Text typo="label 2">
                                         <span
                                             dangerouslySetInnerHTML={{
-                                                "__html": kcContext.message.summary
+                                                __html: kcContext.message.summary
                                             }}
                                         />
                                     </Text>
@@ -582,8 +582,8 @@ const { Page } = (() => {
         const useStyles = tss
             .withName(`${symToStr({ Template })}${symToStr({ Main })}`)
             .create({
-                "alert": {
-                    "alignItems": "center"
+                alert: {
+                    alignItems: "center"
                 }
             });
 

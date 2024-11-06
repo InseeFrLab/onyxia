@@ -15,10 +15,10 @@ export const name = "projectManagement";
 
 export const { reducer, actions } = createUsecaseActions({
     name,
-    "initialState": createObjectThatThrowsIfAccessed<State>(),
-    "reducers": {
-        "projectChanged": (_state, { payload }: { payload: State }) => payload,
-        "configValueUpdated": (
+    initialState: createObjectThatThrowsIfAccessed<State>(),
+    reducers: {
+        projectChanged: (_state, { payload }: { payload: State }) => payload,
+        configValueUpdated: (
             state,
             { payload }: { payload: ChangeConfigValueParams }
         ) => {

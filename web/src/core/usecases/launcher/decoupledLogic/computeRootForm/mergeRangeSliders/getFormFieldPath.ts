@@ -25,7 +25,7 @@ export function getFormFieldPath(params: {
     return getFormFieldPath_rec({
         formFieldGroup,
         predicate,
-        "formFieldPath": []
+        formFieldPath: []
     });
 }
 
@@ -64,8 +64,8 @@ function getFormFieldPath_rec(params: {
         })
         .filter(exclude(undefined))) {
         const formFieldPath_next = getFormFieldPath_rec({
-            "formFieldGroup": formFieldGroup_i,
-            "formFieldPath": [...formFieldPath, i],
+            formFieldGroup: formFieldGroup_i,
+            formFieldPath: [...formFieldPath, i],
             predicate
         });
 

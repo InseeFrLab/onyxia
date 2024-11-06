@@ -18,18 +18,18 @@ export const name = "clusterEventsMonitor";
 
 export const { reducer, actions } = createUsecaseActions({
     name,
-    "initialState": (): State => ({
-        "clusterEventsByProjectId": {},
-        "isActive": false
+    initialState: (): State => ({
+        clusterEventsByProjectId: {},
+        isActive: false
     }),
-    "reducers": {
-        "enteredActiveState": state => {
+    reducers: {
+        enteredActiveState: state => {
             state.isActive = true;
         },
-        "exitedActiveState": state => {
+        exitedActiveState: state => {
             state.isActive = false;
         },
-        "newClusterEventReceived": (
+        newClusterEventReceived: (
             state,
             {
                 payload

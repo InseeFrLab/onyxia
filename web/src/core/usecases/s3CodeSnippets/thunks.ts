@@ -10,14 +10,14 @@ export const thunks = {
     /** Can, and must be called before the slice is refreshed,
      * tels if the feature is available.
      */
-    "isAvailable":
+    isAvailable:
         () =>
         (...args): boolean => {
             const [, getState] = args;
             return privateSelectors.s3Config(getState()) !== undefined;
         },
     /** Refresh is expected to be called whenever the component that use this slice mounts */
-    "refresh":
+    refresh:
         (params: { doForceRenewToken: boolean }) =>
         async (...args) => {
             const { doForceRenewToken } = params;
@@ -47,12 +47,12 @@ export const thunks = {
             const { tokens } = await (async () => {
                 const s3Client = await dispatch(
                     s3ConfigManagement.protectedThunks.getS3ClientForSpecificConfig({
-                        "s3ConfigId": s3Config.id
+                        s3ConfigId: s3Config.id
                     })
                 );
 
                 const tokens = await s3Client.getToken({
-                    "doForceRenew": doForceRenewToken
+                    doForceRenew: doForceRenewToken
                 });
 
                 assert(tokens !== undefined);
@@ -65,22 +65,22 @@ export const thunks = {
 
             dispatch(
                 actions.refreshed({
-                    "credentials": {
-                        "AWS_ACCESS_KEY_ID": tokens.accessKeyId,
-                        "AWS_SECRET_ACCESS_KEY": tokens.secretAccessKey,
-                        "AWS_DEFAULT_REGION": region ?? "",
-                        "AWS_SESSION_TOKEN": tokens.sessionToken,
-                        "AWS_S3_ENDPOINT": `${
+                    credentials: {
+                        AWS_ACCESS_KEY_ID: tokens.accessKeyId,
+                        AWS_SECRET_ACCESS_KEY: tokens.secretAccessKey,
+                        AWS_DEFAULT_REGION: region ?? "",
+                        AWS_SESSION_TOKEN: tokens.sessionToken,
+                        AWS_S3_ENDPOINT: `${
                             host === "s3.amazonaws.com"
                                 ? `s3.${region}.amazonaws.com`
                                 : host
                         }${port === 443 ? "" : `:${port}`}`
                     },
-                    "expirationTime": tokens.expirationTime
+                    expirationTime: tokens.expirationTime
                 })
             );
         },
-    "changeTechnology":
+    changeTechnology:
         (params: { technology: Technology }) =>
         (...args) => {
             const { technology } = params;

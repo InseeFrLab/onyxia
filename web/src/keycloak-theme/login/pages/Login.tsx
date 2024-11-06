@@ -176,7 +176,7 @@ export default function Login(
                                     name="credentialId"
                                     {...(auth?.selectedCredential !== undefined
                                         ? {
-                                              "value": auth.selectedCredential
+                                              value: auth.selectedCredential
                                           }
                                         : {})}
                                 />
@@ -198,46 +198,46 @@ export default function Login(
 }
 
 const useStyles = tss.withName({ Login }).create(({ theme }) => ({
-    "root": {
+    root: {
         "& .MuiTextField-root": {
-            "width": "100%",
-            "marginTop": theme.spacing(5)
+            width: "100%",
+            marginTop: theme.spacing(5)
         }
     },
-    "rememberMeForgotPasswordWrapper": {
-        "display": "flex",
-        "marginTop": theme.spacing(4)
+    rememberMeForgotPasswordWrapper: {
+        display: "flex",
+        marginTop: theme.spacing(4)
     },
-    "forgotPassword": {
-        "flex": 1,
-        "display": "flex",
-        "justifyContent": "flex-end",
-        "alignItems": "center"
+    forgotPassword: {
+        flex: 1,
+        display: "flex",
+        justifyContent: "flex-end",
+        alignItems: "center"
     },
-    "buttonsWrapper": {
-        "marginTop": theme.spacing(4),
-        "display": "flex",
-        "justifyContent": "flex-end"
+    buttonsWrapper: {
+        marginTop: theme.spacing(4),
+        display: "flex",
+        justifyContent: "flex-end"
     },
-    "buttonSubmit": {
-        "marginLeft": theme.spacing(2)
+    buttonSubmit: {
+        marginLeft: theme.spacing(2)
     },
-    "linkToRegisterWrapper": {
-        "marginTop": theme.spacing(5),
-        "textAlign": "center",
+    linkToRegisterWrapper: {
+        marginTop: theme.spacing(5),
+        textAlign: "center",
         "& > *": {
-            "display": "inline-block"
+            display: "inline-block"
         }
     },
-    "registerLink": {
-        "paddingLeft": theme.spacing(2)
+    registerLink: {
+        paddingLeft: theme.spacing(2)
     },
-    "divider": {
+    divider: {
         ...theme.spacing.topBottom("margin", 5)
     },
-    "providers": {
-        "listStyleType": "none",
-        "padding": 0
+    providers: {
+        listStyleType: "none",
+        padding: 0
     }
 }));
 
@@ -286,15 +286,15 @@ const { AgentConnectButton } = (() => {
     }
 
     const useStyles = tss.withName({ AgentConnectButton }).create({
-        "root": {
-            "textAlign": "center"
+        root: {
+            textAlign: "center"
         },
-        "link": {
-            "display": "block"
+        link: {
+            display: "block"
         },
-        "docLink": {
-            "display": "inline-block",
-            "marginTop": 8
+        docLink: {
+            display: "inline-block",
+            marginTop: 8
         }
     });
 
@@ -328,18 +328,18 @@ const { LoginDivider } = (() => {
     }
 
     const useStyles = tss.withName({ LoginDivider }).create(({ theme }) => ({
-        "root": {
-            "display": "flex",
-            "alignItems": "center"
+        root: {
+            display: "flex",
+            alignItems: "center"
         },
-        "separator": {
-            "height": 1,
-            "backgroundColor": theme.colors.useCases.typography.textSecondary,
-            "flex": 1
+        separator: {
+            height: 1,
+            backgroundColor: theme.colors.useCases.typography.textSecondary,
+            flex: 1
         },
-        "text": {
+        text: {
             ...theme.spacing.rightLeft("margin", 2),
-            "paddingBottom": 2
+            paddingBottom: 2
         }
     }));
 

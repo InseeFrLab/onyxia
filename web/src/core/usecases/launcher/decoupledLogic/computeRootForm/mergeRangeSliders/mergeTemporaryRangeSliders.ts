@@ -8,13 +8,13 @@ export function mergeTemporaryRangeSliders(params: {
     temporaryRangeSlider_higherBound: FormField.RangeSlider;
 }): FormField.RangeSlider {
     const payload_lowEnd = getTemporaryRangeSliderPayload({
-        "temporaryRangeSlider": params.temporaryRangeSlider_lowerBound
+        temporaryRangeSlider: params.temporaryRangeSlider_lowerBound
     });
 
     assert(payload_lowEnd.sliderExtremity === "down");
 
     const payload_highEnd = getTemporaryRangeSliderPayload({
-        "temporaryRangeSlider": params.temporaryRangeSlider_higherBound
+        temporaryRangeSlider: params.temporaryRangeSlider_higherBound
     });
 
     assert(payload_highEnd.sliderExtremity === "up");
@@ -43,11 +43,11 @@ export function mergeTemporaryRangeSliders(params: {
     })();
 
     return {
-        "type": "field",
+        type: "field",
         title,
-        "fieldType": "range slider",
+        fieldType: "range slider",
         unit,
-        "step": (() => {
+        step: (() => {
             const step_lowerBound = payload_highEnd.sliderStep;
             const step_higherBound = payload_lowEnd.sliderStep;
 
@@ -89,7 +89,7 @@ export function mergeTemporaryRangeSliders(params: {
 
                         if (typeof helmValue === "number") {
                             assert(unit === undefined || unit === "");
-                            return { "value": helmValue };
+                            return { value: helmValue };
                         }
 
                         let helmValue_withoutUnit;
@@ -116,13 +116,13 @@ export function mergeTemporaryRangeSliders(params: {
                     })();
 
                     return id<FormField.RangeSlider.RangeEnd>({
-                        "isReadonly": payload.isReadonly,
-                        "helmValuesPath": payload.helmValuesPath,
+                        isReadonly: payload.isReadonly,
+                        helmValuesPath: payload.helmValuesPath,
                         value,
-                        "rangeEndSemantic": payload.sliderExtremitySemantic,
-                        "min": payload.sliderMin,
-                        "max": payload.sliderMax,
-                        "description": payload.description
+                        rangeEndSemantic: payload.sliderExtremitySemantic,
+                        min: payload.sliderMin,
+                        max: payload.sliderMax,
+                        description: payload.description
                     });
                 });
 

@@ -5,31 +5,31 @@ import { getFormFieldPath } from "./getFormFieldPath";
 describe(symToStr({ getFormFieldPath }), () => {
     it("base case", () => {
         const targetField = {
-            "type": "field"
+            type: "field"
         } as const;
 
         const got = getFormFieldPath({
-            "formFieldGroup": {
-                "type": "group",
-                "nodes": [
+            formFieldGroup: {
+                type: "group",
+                nodes: [
                     {
-                        "type": "field"
+                        type: "field"
                     },
                     {
-                        "type": "group",
-                        "nodes": [
+                        type: "group",
+                        nodes: [
                             {
-                                "type": "field"
+                                type: "field"
                             },
                             {
-                                "type": "group",
-                                "nodes": [targetField]
+                                type: "group",
+                                nodes: [targetField]
                             }
                         ]
                     }
                 ]
             },
-            "predicate": formField => formField === targetField
+            predicate: formField => formField === targetField
         });
 
         const expected = [1, 1, 0];

@@ -46,8 +46,8 @@ export async function bootstrapCore(
     let oidc: Oidc | undefined = undefined;
 
     const onyxiaApi = createOnyxiaApi({
-        "url": apiUrl,
-        "getOidcAccessToken": () => {
+        url: apiUrl,
+        getOidcAccessToken: () => {
             if (oidc === undefined) {
                 return undefined;
             }
@@ -57,7 +57,7 @@ export async function bootstrapCore(
             }
             return oidc.getTokens().accessToken;
         },
-        "getCurrentRegionId": () => {
+        getCurrentRegionId: () => {
             if (!isCoreCreated) {
                 return undefined;
             }
@@ -79,7 +79,7 @@ export async function bootstrapCore(
 
             return project.id;
         },
-        "getCurrentProjectId": () => {
+        getCurrentProjectId: () => {
             if (!isCoreCreated) {
                 return undefined;
             }
@@ -109,15 +109,15 @@ export async function bootstrapCore(
         if (oidcParams === undefined) {
             const { createOidc } = await import("core/adapters/oidc/mock");
 
-            return createOidc({ "isUserInitiallyLoggedIn": true });
+            return createOidc({ isUserInitiallyLoggedIn: true });
         }
 
         const { createOidc } = await import("core/adapters/oidc");
 
         return createOidc({
-            "issuerUri": oidcParams.issuerUri,
-            "clientId": oidcParams.clientId,
-            "transformUrlBeforeRedirect": url => {
+            issuerUri: oidcParams.issuerUri,
+            clientId: oidcParams.clientId,
+            transformUrlBeforeRedirect: url => {
                 let transformedUrl = url;
 
                 if (oidcParams.serializedExtraQueryParams !== undefined) {
@@ -132,20 +132,20 @@ export async function bootstrapCore(
     })();
 
     if (isAuthGloballyRequired && !oidc.isUserLoggedIn) {
-        await oidc.login({ "doesCurrentHrefRequiresAuth": true });
+        await oidc.login({ doesCurrentHrefRequiresAuth: true });
         // NOTE: Never reached
     }
 
     const context: Context = {
-        "paramsOfBootstrapCore": params,
+        paramsOfBootstrapCore: params,
         oidc,
         onyxiaApi,
-        "secretsManager": createObjectThatThrowsIfAccessed<SecretsManager>({
-            "debugMessage":
+        secretsManager: createObjectThatThrowsIfAccessed<SecretsManager>({
+            debugMessage:
                 "SecretsManager not initialized, probably because user is not logged in."
         }),
-        "sqlOlap": createDuckDbSqlOlap({
-            "getS3Config": async () => {
+        sqlOlap: createDuckDbSqlOlap({
+            getS3Config: async () => {
                 const result = await dispatch(
                     usecases.s3ConfigManagement.protectedThunks.getS3ConfigAndClientForExplorer()
                 );
@@ -156,19 +156,19 @@ export async function bootstrapCore(
 
                 const { s3Config, s3Client } = result;
 
-                const tokens = await s3Client.getToken({ "doForceRenew": false });
+                const tokens = await s3Client.getToken({ doForceRenew: false });
 
                 return {
-                    "s3_endpoint": s3Config.paramsOfCreateS3Client.url,
-                    "credentials":
+                    s3_endpoint: s3Config.paramsOfCreateS3Client.url,
+                    credentials:
                         tokens === undefined
                             ? undefined
                             : {
-                                  "s3_access_key_id": tokens.accessKeyId,
-                                  "s3_secret_access_key": tokens.secretAccessKey,
-                                  "s3_session_token": tokens.sessionToken
+                                  s3_access_key_id: tokens.accessKeyId,
+                                  s3_secret_access_key: tokens.secretAccessKey,
+                                  s3_session_token: tokens.sessionToken
                               },
-                    "s3_url_style": s3Config.paramsOfCreateS3Client.pathStyleAccess
+                    s3_url_style: s3Config.paramsOfCreateS3Client.pathStyleAccess
                         ? "path"
                         : "vhost"
                 };
@@ -212,13 +212,13 @@ export async function bootstrapCore(
         ]);
 
         context.secretsManager = await createSecretManager({
-            "kvEngine": deploymentRegion.vault.kvEngine,
-            "role": deploymentRegion.vault.role,
-            "url": deploymentRegion.vault.url,
-            "authPath": deploymentRegion.vault.authPath,
-            "oidc": await createOidcOrFallback({
-                "oidcParams": deploymentRegion.vault.oidcParams,
-                "fallbackOidc": oidc
+            kvEngine: deploymentRegion.vault.kvEngine,
+            role: deploymentRegion.vault.role,
+            url: deploymentRegion.vault.url,
+            authPath: deploymentRegion.vault.authPath,
+            oidc: await createOidcOrFallback({
+                oidcParams: deploymentRegion.vault.oidcParams,
+                fallbackOidc: oidc
             })
         });
     }

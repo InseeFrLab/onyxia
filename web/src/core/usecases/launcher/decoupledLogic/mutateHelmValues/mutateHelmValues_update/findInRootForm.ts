@@ -20,8 +20,8 @@ export function findInRootForm(params: {
     const { rootForm, helmValuesPath } = params;
 
     const formField = findInRootForm_rec({
-        "nodes": rootFormToNodes(rootForm),
-        "helmValuesPath": helmValuesPath
+        nodes: rootFormToNodes(rootForm),
+        helmValuesPath: helmValuesPath
     });
 
     assert(formField !== undefined);
@@ -49,8 +49,8 @@ function findInRootForm_rec(params: {
             case "group": {
                 if (
                     !getDoesPathStartWith({
-                        "shorterPath": node.helmValuesPath,
-                        "longerPath": helmValuesPath
+                        shorterPath: node.helmValuesPath,
+                        longerPath: helmValuesPath
                     })
                 ) {
                     continue;
@@ -59,8 +59,8 @@ function findInRootForm_rec(params: {
                     return node;
                 }
                 const formField = findInRootForm_rec({
-                    "nodes": node.nodes,
-                    "helmValuesPath": helmValuesPath
+                    nodes: node.nodes,
+                    helmValuesPath: helmValuesPath
                 });
                 if (formField === undefined) {
                     continue;
@@ -80,10 +80,10 @@ export function findInRootForm_rangeSlider(params: {
     const { rootForm, helmValuesPath_highEndRange, helmValuesPath_lowEndRange } = params;
 
     const formFieldGroup = findInRootForm_rec({
-        "nodes": rootFormToNodes(rootForm),
-        "helmValuesPath": getHelmValuesPathDeeperCommonSubpath({
-            "helmValuesPath1": helmValuesPath_lowEndRange,
-            "helmValuesPath2": helmValuesPath_highEndRange
+        nodes: rootFormToNodes(rootForm),
+        helmValuesPath: getHelmValuesPathDeeperCommonSubpath({
+            helmValuesPath1: helmValuesPath_lowEndRange,
+            helmValuesPath2: helmValuesPath_highEndRange
         })
     });
 

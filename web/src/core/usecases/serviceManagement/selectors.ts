@@ -64,26 +64,26 @@ const services = createSelector(
                 //const ownership = !isOwned ? "notOwned" : helmRelease.isShared ? "ownedShared" : "owned";
                 const ownership: Service["ownership"] = !isOwned
                     ? {
-                          "isShared": true,
-                          "isOwned": false,
-                          "ownerUsername": helmRelease.ownerUsername
+                          isShared: true,
+                          isOwned: false,
+                          ownerUsername: helmRelease.ownerUsername
                       }
-                    : { "isOwned": true, "isShared": helmRelease.isShared };
+                    : { isOwned: true, isShared: helmRelease.isShared };
 
                 return { helmRelease, ownership } as const;
             })
             .filter(exclude(undefined))
             .map(
                 ({ helmRelease, ownership }): Service => ({
-                    "helmReleaseName": helmRelease.helmReleaseName,
-                    "chartName": helmRelease.chartName,
+                    helmReleaseName: helmRelease.helmReleaseName,
+                    chartName: helmRelease.chartName,
                     ownership,
-                    "friendlyName": helmRelease.friendlyName ?? helmRelease.chartName,
-                    "iconUrl": logoUrlByReleaseName[helmRelease.helmReleaseName],
-                    "startedAt": helmRelease.startedAt,
-                    "openUrl": [...helmRelease.urls].sort()[0],
-                    "postInstallInstructions": helmRelease.postInstallInstructions,
-                    "servicePassword": (() => {
+                    friendlyName: helmRelease.friendlyName ?? helmRelease.chartName,
+                    iconUrl: logoUrlByReleaseName[helmRelease.helmReleaseName],
+                    startedAt: helmRelease.startedAt,
+                    openUrl: [...helmRelease.urls].sort()[0],
+                    postInstallInstructions: helmRelease.postInstallInstructions,
+                    servicePassword: (() => {
                         const { postInstallInstructions } = helmRelease;
 
                         from_notes: {
@@ -133,10 +133,10 @@ const services = createSelector(
 
                         return undefined;
                     })(),
-                    "areInteractionLocked": lockedHelmReleaseNames.includes(
+                    areInteractionLocked: lockedHelmReleaseNames.includes(
                         helmRelease.helmReleaseName
                     ),
-                    "state": (() => {
+                    state: (() => {
                         if (helmRelease.status === "failed") {
                             return "failed";
                         }
@@ -153,7 +153,7 @@ const services = createSelector(
 
                         return helmRelease.areAllTasksReady ? "running" : "starting";
                     })(),
-                    "doesSupportSuspend": helmRelease.doesSupportSuspend
+                    doesSupportSuspend: helmRelease.doesSupportSuspend
                 })
             )
             .sort((a, b) => b.startedAt - a.startedAt);
@@ -218,7 +218,7 @@ const main = createSelector(
             return {
                 isUpdating,
                 commandLogsEntries,
-                "services": [],
+                services: [],
                 isThereOwnedSharedServices,
                 isThereNonOwnedServices,
                 isThereDeletableServices,

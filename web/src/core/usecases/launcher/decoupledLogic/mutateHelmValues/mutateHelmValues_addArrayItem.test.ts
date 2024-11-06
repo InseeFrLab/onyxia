@@ -5,116 +5,116 @@ import * as YAML from "yaml";
 
 describe(symToStr({ mutateHelmValues_addArrayItem }), () => {
     it("simple case", () => {
-        const helmValues = { "r": [1, 2, 3] };
+        const helmValues = { r: [1, 2, 3] };
 
         mutateHelmValues_addArrayItem({
             helmValues,
-            "helmValuesSchema": {
-                "type": "object",
-                "properties": {
-                    "r": {
-                        "type": "array",
-                        "items": {
-                            "type": "number",
-                            "default": 0
+            helmValuesSchema: {
+                type: "object",
+                properties: {
+                    r: {
+                        type: "array",
+                        items: {
+                            type: "number",
+                            default: 0
                         }
                     }
                 }
             },
-            "helmValuesPath": ["r"],
-            "helmValuesYaml": YAML.stringify({}),
-            "xOnyxiaContext": {}
+            helmValuesPath: ["r"],
+            helmValuesYaml: YAML.stringify({}),
+            xOnyxiaContext: {}
         });
 
         expect(helmValues).toStrictEqual({
-            "r": [1, 2, 3, 0]
+            r: [1, 2, 3, 0]
         });
     });
 
     it("takes the default at the correct index", () => {
-        const helmValues = { "r": [1, 2, 3] };
+        const helmValues = { r: [1, 2, 3] };
 
         mutateHelmValues_addArrayItem({
             helmValues,
-            "helmValuesSchema": {
-                "type": "object",
-                "properties": {
-                    "r": {
-                        "type": "array",
+            helmValuesSchema: {
+                type: "object",
+                properties: {
+                    r: {
+                        type: "array",
                         "x-onyxia": {
-                            "overwriteDefaultWith": "a.b.c"
+                            overwriteDefaultWith: "a.b.c"
                         }
                     }
                 }
             },
-            "helmValuesPath": ["r"],
-            "helmValuesYaml": YAML.stringify({}),
-            "xOnyxiaContext": {
-                "a": {
-                    "b": {
-                        "c": [0, 0, 0, 4]
+            helmValuesPath: ["r"],
+            helmValuesYaml: YAML.stringify({}),
+            xOnyxiaContext: {
+                a: {
+                    b: {
+                        c: [0, 0, 0, 4]
                     }
                 }
             }
         });
 
         expect(helmValues).toStrictEqual({
-            "r": [1, 2, 3, 4]
+            r: [1, 2, 3, 4]
         });
     });
 
     it("takes the first if not at at index in default", () => {
-        const helmValues = { "r": [1, 2, 3] };
+        const helmValues = { r: [1, 2, 3] };
 
         mutateHelmValues_addArrayItem({
             helmValues,
-            "helmValuesSchema": {
-                "type": "object",
-                "properties": {
-                    "r": {
-                        "type": "array",
+            helmValuesSchema: {
+                type: "object",
+                properties: {
+                    r: {
+                        type: "array",
                         "x-onyxia": {
-                            "overwriteDefaultWith": "a.b.c"
+                            overwriteDefaultWith: "a.b.c"
                         }
                     }
                 }
             },
-            "helmValuesPath": ["r"],
-            "helmValuesYaml": YAML.stringify({}),
-            "xOnyxiaContext": {
-                "a": {
-                    "b": {
-                        "c": [42]
+            helmValuesPath: ["r"],
+            helmValuesYaml: YAML.stringify({}),
+            xOnyxiaContext: {
+                a: {
+                    b: {
+                        c: [42]
                     }
                 }
             }
         });
 
         expect(helmValues).toStrictEqual({
-            "r": [1, 2, 3, 42]
+            r: [1, 2, 3, 42]
         });
     });
 
     it("throws if no default", () => {
-        const helmValues = { "r": [1, 2, 3] };
+        const helmValues = { r: [1, 2, 3] };
 
         expect(() => {
             mutateHelmValues_addArrayItem({
                 helmValues,
-                "helmValuesSchema": {
-                    "type": "object",
-                    "properties": {
-                        "r": {
-                            "type": "array",
-                            "items": {
-                                "type": "number"
+                helmValuesSchema: {
+                    type: "object",
+                    properties: {
+                        r: {
+                            type: "array",
+                            items: {
+                                type: "number"
                             }
                         }
                     }
                 },
-                "helmValuesPath": ["r"],
-                "helmValuesYaml": YAML.stringify({}),
-                "xOnyxiaContext": {}
+                helmValuesPath: ["r"],
+                helmValuesYaml: YAML.stringify({}),
+                xOnyxiaContext: {}
             });
         }).toThrow();
     });

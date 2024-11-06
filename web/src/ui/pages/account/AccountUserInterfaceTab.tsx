@@ -34,29 +34,29 @@ export const AccountUserInterfaceTab = memo((props: Props) => {
         const isBetaModeEnabledNew = !isBetaModeEnabled;
 
         userConfigs.changeValue({
-            "key": "isBetaModeEnabled",
-            "value": isBetaModeEnabledNew
+            key: "isBetaModeEnabled",
+            value: isBetaModeEnabledNew
         });
 
         if (!isBetaModeEnabledNew) {
             userConfigs.changeValue({
-                "key": "isDevModeEnabled",
-                "value": false
+                key: "isDevModeEnabled",
+                value: false
             });
         }
     });
 
     const onRequestToggleIsDevModeEnabled = useConstCallback(() =>
         userConfigs.changeValue({
-            "key": "isDevModeEnabled",
-            "value": !isDevModeEnabled
+            key: "isDevModeEnabled",
+            value: !isDevModeEnabled
         })
     );
 
     const onRequestToggleIsCommandBarEnabled = useConstCallback(() =>
         userConfigs.changeValue({
-            "key": "isCommandBarEnabled",
-            "value": !isCommandBarEnabled
+            key: "isCommandBarEnabled",
+            value: !isCommandBarEnabled
         })
     );
 
@@ -95,8 +95,7 @@ export const AccountUserInterfaceTab = memo((props: Props) => {
                 type="toggle"
                 title={t("Enable command bar")}
                 helperText={t("Enable command bar helper", {
-                    "imgUrl":
-                        "https://github.com/InseeFrLab/onyxia/assets/6702424/474da82c-a0e1-4107-acf7-84870aab9f78"
+                    imgUrl: "https://github.com/InseeFrLab/onyxia/assets/6702424/474da82c-a0e1-4107-acf7-84870aab9f78"
                 })}
                 isLocked={false}
                 isOn={isCommandBarEnabled}

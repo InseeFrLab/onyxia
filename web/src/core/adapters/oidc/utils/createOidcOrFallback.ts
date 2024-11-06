@@ -30,14 +30,14 @@ export async function createOidcOrFallback(params: {
             clientId === fallbackOidc.params.clientId
         ) {
             return {
-                "type": "oidc client",
-                "oidc": fallbackOidc
+                type: "oidc client",
+                oidc: fallbackOidc
             } as const;
         }
 
         return {
-            "type": "oidc params",
-            "oidcParams": { issuerUri, clientId }
+            type: "oidc params",
+            oidcParams: { issuerUri, clientId }
         } as const;
     })();
 
@@ -48,13 +48,13 @@ export async function createOidcOrFallback(params: {
             const { createOidc } = await import("../oidc");
 
             const oidc = await createOidc({
-                "issuerUri": wrap.oidcParams.issuerUri,
-                "clientId": wrap.oidcParams.clientId,
-                "transformUrlBeforeRedirect": url => url
+                issuerUri: wrap.oidcParams.issuerUri,
+                clientId: wrap.oidcParams.clientId,
+                transformUrlBeforeRedirect: url => url
             });
 
             if (!oidc.isUserLoggedIn) {
-                await oidc.login({ "doesCurrentHrefRequiresAuth": true });
+                await oidc.login({ doesCurrentHrefRequiresAuth: true });
                 assert(false);
             }
 

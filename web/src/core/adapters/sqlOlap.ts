@@ -27,7 +27,7 @@ export const createDuckDbSqlOlap = (params: {
     const { getS3Config } = params;
 
     const sqlOlap: SqlOlap = {
-        "getConfiguredAsyncDuckDb": (() => {
+        getConfiguredAsyncDuckDb: (() => {
             let currentS3Config: ReturnType<typeof getS3Config> = undefined;
 
             return async () => {
@@ -79,7 +79,7 @@ export const createDuckDbSqlOlap = (params: {
                 return db;
             };
         })(),
-        "getRows": async ({ sourceUrl, rowsPerPage, page }) => {
+        getRows: async ({ sourceUrl, rowsPerPage, page }) => {
             const db = await sqlOlap.getConfiguredAsyncDuckDb();
 
             const conn = await db.connect();
@@ -112,7 +112,7 @@ export const createDuckDbSqlOlap = (params: {
 
             return rows;
         },
-        "getRowCount": memoize(
+        getRowCount: memoize(
             async sourceUrl => {
                 if (!new URL(sourceUrl).pathname.endsWith(".parquet")) {
                     return undefined;
@@ -132,7 +132,7 @@ export const createDuckDbSqlOlap = (params: {
 
                 return count;
             },
-            { "promise": true, "max": 1 }
+            { promise: true, max: 1 }
         )
     };
 
@@ -143,13 +143,13 @@ const getAsyncDuckDb = memoize(
     async () => {
         const duckdb = await import("@duckdb/duckdb-wasm");
         const bundle = await duckdb.selectBundle({
-            "mvp": {
-                "mainModule": duckdbMvpWasmUrl,
-                "mainWorker": duckdbBrowserMvpWorkerJsUrl
+            mvp: {
+                mainModule: duckdbMvpWasmUrl,
+                mainWorker: duckdbBrowserMvpWorkerJsUrl
             },
-            "eh": {
-                "mainModule": duckdbEhWasmUrl,
-                "mainWorker": duckdbBrowserEhWorkerJsUrl
+            eh: {
+                mainModule: duckdbEhWasmUrl,
+                mainWorker: duckdbBrowserEhWorkerJsUrl
             }
         });
 
@@ -163,5 +163,5 @@ const getAsyncDuckDb = memoize(
 
         return db;
     },
-    { "promise": true }
+    { promise: true }
 );

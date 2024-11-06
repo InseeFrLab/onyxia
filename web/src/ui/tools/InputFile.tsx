@@ -35,7 +35,7 @@ export const InputFile = memo((props: InputFileProps) => {
         ({ target: { files } }) => {
             assert(files !== null);
 
-            onFileSelected({ "files": Object.values(files) });
+            onFileSelected({ files: Object.values(files) });
         }
     );
 
@@ -44,7 +44,7 @@ export const InputFile = memo((props: InputFileProps) => {
             aria-hidden="true"
             type="file"
             multiple={true}
-            style={{ "display": "none" }}
+            style={{ display: "none" }}
             ref={ref}
             onChange={onChange}
         />

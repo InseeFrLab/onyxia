@@ -74,16 +74,16 @@ export function createS3Client(
                     params.credentials === undefined
                         ? undefined
                         : {
-                              "accessKeyId": params.credentials.accessKeyId,
-                              "secretAccessKey": params.credentials.secretAccessKey,
-                              "sessionToken": params.credentials.sessionToken,
-                              "expirationTime": undefined,
-                              "acquisitionTime": undefined
+                              accessKeyId: params.credentials.accessKeyId,
+                              secretAccessKey: params.credentials.secretAccessKey,
+                              sessionToken: params.credentials.sessionToken,
+                              expirationTime: undefined,
+                              acquisitionTime: undefined
                           };
 
                 return {
-                    "getNewlyRequestedOrCachedToken": () => Promise.resolve(token),
-                    "clearCachedToken": () => {
+                    getNewlyRequestedOrCachedToken: () => Promise.resolve(token),
+                    clearCachedToken: () => {
                         throw new Error(
                             "Can't renew token when using non volatile account"
                         );
@@ -95,7 +95,7 @@ export function createS3Client(
 
             const { getNewlyRequestedOrCachedToken, clearCachedToken } =
                 getNewlyRequestedOrCachedTokenFactory({
-                    "persistance": createSessionStorageTokenPersistance<{
+                    persistance: createSessionStorageTokenPersistance<{
                         // NOTE: StsToken are like ReturnType<S3Client["getToken"]> but we know that
                         // session token expiration time and acquisition time are defined.
                         accessKeyId: string;
@@ -104,7 +104,7 @@ export function createS3Client(
                         expirationTime: number;
                         acquisitionTime: number;
                     }>({
-                        "sessionStorageKey":
+                        sessionStorageKey:
                             "s3ClientToken_" +
                             fnv1aHashToHex(
                                 (() => {
@@ -119,7 +119,7 @@ export function createS3Client(
                                 })()
                             )
                     }),
-                    "requestNewToken": async () => {
+                    requestNewToken: async () => {
                         // NOTE: We renew the OIDC access token because it's expiration time
                         // cap the duration of the token we will request to minio so we want it
                         // as fresh as possible.
@@ -129,25 +129,25 @@ export function createS3Client(
 
                         const { data } = await axios
                             .create({
-                                "baseURL": params.stsUrl ?? params.url,
-                                "headers": {
-                                    "Accept": "*/*"
+                                baseURL: params.stsUrl ?? params.url,
+                                headers: {
+                                    Accept: "*/*"
                                 }
                             })
                             .post<string>(
                                 "/?" +
                                     Object.entries({
-                                        "Action": "AssumeRoleWithWebIdentity",
-                                        "WebIdentityToken": oidc.getTokens().accessToken,
-                                        "DurationSeconds":
+                                        Action: "AssumeRoleWithWebIdentity",
+                                        WebIdentityToken: oidc.getTokens().accessToken,
+                                        DurationSeconds:
                                             params.durationSeconds ?? 7 * 24 * 3600,
-                                        "Version": "2011-06-15",
+                                        Version: "2011-06-15",
                                         ...(params.role === undefined
                                             ? {}
                                             : {
-                                                  "RoleSessionName":
+                                                  RoleSessionName:
                                                       params.role.roleSessionName,
-                                                  "RoleArn": params.role.roleARN
+                                                  RoleArn: params.role.roleARN
                                               })
                                     })
                                         .map(([key, value]) =>
@@ -191,11 +191,11 @@ export function createS3Client(
                             accessKeyId,
                             secretAccessKey,
                             sessionToken,
-                            "expirationTime": new Date(expiration).getTime(),
-                            "acquisitionTime": now
+                            expirationTime: new Date(expiration).getTime(),
+                            acquisitionTime: now
                         };
                     },
-                    "returnCachedTokenIfStillValidForXPercentOfItsTTL": "90%"
+                    returnCachedTokenIfStillValidForXPercentOfItsTTL: "90%"
                 });
 
             if (oidc.authMethod !== "session storage") {
@@ -206,7 +206,7 @@ export function createS3Client(
         })();
 
         const { getAwsS3Client } = (() => {
-            const noTokensRef = { "__noCredentials__": true } as const;
+            const noTokensRef = { __noCredentials__: true } as const;
 
             const awsS3ClientByTokens = new WeakMap<
                 { secretAccessKey: string } | { __noCredentials__: true },
@@ -225,25 +225,25 @@ export function createS3Client(
 
                 if (cachedAwsS3Client !== undefined) {
                     return {
-                        "awsS3Client": cachedAwsS3Client
+                        awsS3Client: cachedAwsS3Client
                     };
                 }
 
                 const awsS3Client = new AwsS3Client({
-                    "region": params.region ?? "us-east-1",
-                    "endpoint": params.url,
-                    "forcePathStyle": params.pathStyleAccess,
+                    region: params.region ?? "us-east-1",
+                    endpoint: params.url,
+                    forcePathStyle: params.pathStyleAccess,
                     ...(tokens === undefined
                         ? {
-                              "signer": {
-                                  "sign": request => Promise.resolve(request)
+                              signer: {
+                                  sign: request => Promise.resolve(request)
                               }
                           }
                         : {
-                              "credentials": {
-                                  "accessKeyId": tokens.accessKeyId,
-                                  "secretAccessKey": tokens.secretAccessKey,
-                                  "sessionToken": tokens.sessionToken
+                              credentials: {
+                                  accessKeyId: tokens.accessKeyId,
+                                  secretAccessKey: tokens.secretAccessKey,
+                                  sessionToken: tokens.sessionToken
                               }
                           })
                 });
@@ -275,7 +275,7 @@ export function createS3Client(
             try {
                 await awsS3Client.send(
                     new CreateBucketCommand({
-                        "Bucket": nameOfBucketToCreateIfNotExist
+                        Bucket: nameOfBucketToCreateIfNotExist
                     })
                 );
             } catch (error) {
@@ -301,7 +301,7 @@ export function createS3Client(
     })();
 
     const s3Client: S3Client = {
-        "getToken": async ({ doForceRenew }) => {
+        getToken: async ({ doForceRenew }) => {
             const { getNewlyRequestedOrCachedToken, clearCachedToken } = await prApi;
 
             if (doForceRenew) {
@@ -310,7 +310,7 @@ export function createS3Client(
 
             return getNewlyRequestedOrCachedToken();
         },
-        "listObjects": async ({ path }) => {
+        listObjects: async ({ path }) => {
             const { bucketName, prefix } = (() => {
                 const { bucketName, objectName } =
                     bucketNameAndObjectNameFromS3Path(path);
@@ -390,10 +390,10 @@ export function createS3Client(
                 do {
                     const resp = await awsS3Client.send(
                         new (await import("@aws-sdk/client-s3")).ListObjectsV2Command({
-                            "Bucket": bucketName,
-                            "Prefix": prefix,
-                            "Delimiter": "/",
-                            "ContinuationToken": continuationToken
+                            Bucket: bucketName,
+                            Prefix: prefix,
+                            Delimiter: "/",
+                            ContinuationToken: continuationToken
                         })
                     );
 
@@ -437,7 +437,7 @@ export function createS3Client(
 
             return { objects: [...directories, ...files], bucketPolicy };
         },
-        "setPathAccessPolicy": async ({ currentBucketPolicy, policy, path }) => {
+        setPathAccessPolicy: async ({ currentBucketPolicy, policy, path }) => {
             const { getAwsS3Client } = await prApi;
             const { awsS3Client } = await getAwsS3Client();
 
@@ -485,7 +485,7 @@ export function createS3Client(
 
             return newBucketPolicy;
         },
-        "uploadFile": async ({ blob, path, onUploadProgress }) => {
+        uploadFile: async ({ blob, path, onUploadProgress }) => {
             const { getAwsS3Client } = await prApi;
 
             const [{ awsS3Client }, Upload] = await Promise.all([
@@ -496,14 +496,14 @@ export function createS3Client(
             const { bucketName, objectName } = bucketNameAndObjectNameFromS3Path(path);
 
             const upload = new Upload({
-                "client": awsS3Client,
-                "params": {
-                    "Bucket": bucketName,
-                    "Key": objectName,
-                    "Body": blob
+                client: awsS3Client,
+                params: {
+                    Bucket: bucketName,
+                    Key: objectName,
+                    Body: blob
                 },
-                "partSize": 5 * 1024 * 1024, // optional size of each part
-                "leavePartsOnError": false // optional manually handle dropped parts
+                partSize: 5 * 1024 * 1024, // optional size of each part
+                leavePartsOnError: false // optional manually handle dropped parts
             });
             upload.on("httpUploadProgress", ({ total, loaded }) => {
                 if (total === undefined || loaded === undefined) {
@@ -531,7 +531,7 @@ export function createS3Client(
                 policy: "private"
             };
         },
-        "deleteFile": async ({ path }) => {
+        deleteFile: async ({ path }) => {
             const { bucketName, objectName } = bucketNameAndObjectNameFromS3Path(path);
 
             const { getAwsS3Client } = await prApi;
@@ -540,12 +540,12 @@ export function createS3Client(
 
             await awsS3Client.send(
                 new (await import("@aws-sdk/client-s3")).DeleteObjectCommand({
-                    "Bucket": bucketName,
-                    "Key": objectName
+                    Bucket: bucketName,
+                    Key: objectName
                 })
             );
         },
-        "deleteFiles": async ({ paths }) => {
+        deleteFiles: async ({ paths }) => {
             //bucketName is the same for all paths
             const { bucketName } = bucketNameAndObjectNameFromS3Path(paths[0]);
 
@@ -555,20 +555,20 @@ export function createS3Client(
 
             await awsS3Client.send(
                 new (await import("@aws-sdk/client-s3")).DeleteObjectsCommand({
-                    "Bucket": bucketName,
+                    Bucket: bucketName,
                     Delete: {
-                        "Objects": paths.map(path => {
+                        Objects: paths.map(path => {
                             const { objectName } =
                                 bucketNameAndObjectNameFromS3Path(path);
                             return {
-                                "Key": objectName
+                                Key: objectName
                             };
                         })
                     }
                 })
             );
         },
-        "getFileDownloadUrl": async ({ path, validityDurationSecond }) => {
+        getFileDownloadUrl: async ({ path, validityDurationSecond }) => {
             const { bucketName, objectName } = bucketNameAndObjectNameFromS3Path(path);
 
             const { getAwsS3Client } = await prApi;
@@ -580,11 +580,11 @@ export function createS3Client(
             ).getSignedUrl(
                 awsS3Client,
                 new (await import("@aws-sdk/client-s3")).GetObjectCommand({
-                    "Bucket": bucketName,
-                    "Key": objectName
+                    Bucket: bucketName,
+                    Key: objectName
                 }),
                 {
-                    "expiresIn": validityDurationSecond
+                    expiresIn: validityDurationSecond
                 }
             );
 

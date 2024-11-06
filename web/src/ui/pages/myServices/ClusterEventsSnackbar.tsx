@@ -48,7 +48,7 @@ export const ClusterEventsSnackbar = memo((props: ClusterEventsSnackbarProps) =>
     );
 
     const { classes } = useStyles({
-        "isOpen": openState !== undefined
+        isOpen: openState !== undefined
     });
 
     return (
@@ -63,7 +63,7 @@ export const ClusterEventsSnackbar = memo((props: ClusterEventsSnackbarProps) =>
 
                 setOpenState(undefined);
             }}
-            anchorOrigin={{ "vertical": "bottom", "horizontal": "center" }}
+            anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
         >
             <Alert severity={openState?.severity ?? "warning"} doDisplayCross>
                 <div className={classes.alertContent}>
@@ -85,12 +85,12 @@ const useStyles = tss
     .withName({ ClusterEventsSnackbar })
     .withParams<{ isOpen: boolean }>()
     .create(({ isOpen }) => ({
-        "root": {
-            "visibility": !isOpen ? "hidden" : undefined
+        root: {
+            visibility: !isOpen ? "hidden" : undefined
         },
-        "alertContent": {
-            "display": "flex",
-            "justifyContent": "center",
-            "alignItems": "center"
+        alertContent: {
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center"
         }
     }));

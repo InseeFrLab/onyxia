@@ -19,7 +19,7 @@ export async function projectConfigsMigration(params: {
 
         const modelVersion = await secretsManager
             .get({
-                "path": pathJoin(projectVaultTopDirPath_reserved, key)
+                path: pathJoin(projectVaultTopDirPath_reserved, key)
             })
             .then(
                 ({ secret }) => secretToValue(secret) as ProjectConfigs["__modelVersion"],

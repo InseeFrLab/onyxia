@@ -14,7 +14,7 @@ export type RoundLogoProps = {
 export const RoundLogo = memo((props: RoundLogoProps) => {
     const { url, size = "default", className } = props;
 
-    const { classes, cx } = useStyles({ "iconSizeName": size });
+    const { classes, cx } = useStyles({ iconSizeName: size });
 
     return (
         <Avatar src={url} className={cx(classes.root, className)}>
@@ -27,16 +27,16 @@ const useStyles = tss
     .withName({ RoundLogo })
     .withParams<{ iconSizeName: IconSizeName }>()
     .create(({ theme, iconSizeName }) => ({
-        "fallback": {
-            "fill": theme.colors.useCases.typography.textPrimary
+        fallback: {
+            fill: theme.colors.useCases.typography.textPrimary
         },
-        "root": {
+        root: {
             ...(() => {
                 const size = theme.iconSizesInPxByName[iconSizeName];
 
                 return {
-                    "width": size,
-                    "height": size
+                    width: size,
+                    height: size
                 };
             })()
         }

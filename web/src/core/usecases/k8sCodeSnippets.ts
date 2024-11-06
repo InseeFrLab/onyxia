@@ -39,17 +39,17 @@ export const name = "k8sCodeSnippets";
 
 export const { reducer, actions } = createUsecaseActions({
     name,
-    "initialState": id<State>(
+    initialState: id<State>(
         id<State.NotRefreshed>({
-            "stateDescription": "not refreshed",
-            "isRefreshing": false
+            stateDescription: "not refreshed",
+            isRefreshing: false
         })
     ),
-    "reducers": {
-        "refreshStarted": state => {
+    reducers: {
+        refreshStarted: state => {
             state.isRefreshing = true;
         },
-        "refreshed": (
+        refreshed: (
             _state,
             {
                 payload
@@ -74,8 +74,8 @@ export const { reducer, actions } = createUsecaseActions({
             } = payload;
 
             return id<State.Ready>({
-                "isRefreshing": false,
-                "stateDescription": "ready",
+                isRefreshing: false,
+                stateDescription: "ready",
                 idpIssuerUrl,
                 clientId,
                 refreshToken,
@@ -91,7 +91,7 @@ export const thunks = {
     /** Can, and must be called before the slice is refreshed,
      * tels if the feature is available.
      */
-    "getIsAvailable":
+    getIsAvailable:
         () =>
         (...args): boolean => {
             const [, getState] = args;
@@ -102,7 +102,7 @@ export const thunks = {
             return region.kubernetes !== undefined;
         },
     /** Refresh is expected to be called whenever the component that use this slice mounts */
-    "refresh":
+    refresh:
         () =>
         async (...args) => {
             const [dispatch, getState, rootContext] = args;
@@ -128,8 +128,8 @@ export const thunks = {
 
             if (kubernetesOidcClient === undefined) {
                 kubernetesOidcClient = await createOidcOrFallback({
-                    "fallbackOidc": oidc,
-                    "oidcParams": region.kubernetes.oidcParams
+                    fallbackOidc: oidc,
+                    oidcParams: region.kubernetes.oidcParams
                 });
 
                 context.kubernetesOidcClient = kubernetesOidcClient;
@@ -141,14 +141,14 @@ export const thunks = {
 
             dispatch(
                 actions.refreshed({
-                    "idpIssuerUrl": kubernetesOidcClient.params.issuerUri,
-                    "clientId": kubernetesOidcClient.params.clientId,
-                    "refreshToken": oidcTokens.refreshToken,
-                    "idToken": oidcTokens.idToken,
-                    "user": `${region.kubernetes.usernamePrefix ?? ""}${
+                    idpIssuerUrl: kubernetesOidcClient.params.issuerUri,
+                    clientId: kubernetesOidcClient.params.clientId,
+                    refreshToken: oidcTokens.refreshToken,
+                    idToken: oidcTokens.idToken,
+                    user: `${region.kubernetes.usernamePrefix ?? ""}${
                         userAuthentication.selectors.user(getState()).username
                     }`,
-                    "expirationTime": oidcTokens.refreshTokenExpirationTime
+                    expirationTime: oidcTokens.refreshTokenExpirationTime
                 })
             );
         }
@@ -157,7 +157,7 @@ export const thunks = {
 const { getContext } = createUsecaseContextApi<{
     kubernetesOidcClient: Oidc.LoggedIn | undefined;
 }>(() => ({
-    "kubernetesOidcClient": undefined
+    kubernetesOidcClient: undefined
 }));
 
 export const selectors = (() => {
@@ -228,7 +228,7 @@ export const selectors = (() => {
         (state, clusterUrl, namespace, shellScript) => {
             if (state === undefined) {
                 return {
-                    "isReady": false as const,
+                    isReady: false as const,
                     clusterUrl,
                     namespace
                 };
@@ -244,7 +244,7 @@ export const selectors = (() => {
             const isRefreshing = state.isRefreshing;
 
             return {
-                "isReady": true as const,
+                isReady: true as const,
                 clusterUrl,
                 namespace,
                 idpIssuerUrl,

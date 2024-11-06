@@ -3,12 +3,12 @@ import { getValueAtPathInObject } from "./getValueAtPathInObject";
 
 it("should return the correct value for a base case", () => {
     const got = getValueAtPathInObject({
-        "obj": {
-            "a": {
-                "b": 42
+        obj: {
+            a: {
+                b: 42
             }
         },
-        "path": ["a", "b"]
+        path: ["a", "b"]
     });
 
     const expected = 42;
@@ -18,27 +18,27 @@ it("should return the correct value for a base case", () => {
 
 it("should resolve to object when the path points to an object", () => {
     const got = getValueAtPathInObject({
-        "obj": {
-            "a": {
-                "b": { "c": 42 }
+        obj: {
+            a: {
+                b: { c: 42 }
             }
         },
-        "path": ["a", "b"]
+        path: ["a", "b"]
     });
 
-    const expected = { "c": 42 };
+    const expected = { c: 42 };
 
     expect(got).toStrictEqual(expected); // Use toStrictEqual for deep equality check
 });
 
 it("should resolve to undefined when the path does not exist", () => {
     const got = getValueAtPathInObject({
-        "obj": {
-            "a": {
-                "b": {}
+        obj: {
+            a: {
+                b: {}
             }
         },
-        "path": ["a", "b", "doesNotExist"]
+        path: ["a", "b", "doesNotExist"]
     });
 
     const expected = undefined;
@@ -48,10 +48,10 @@ it("should resolve to undefined when the path does not exist", () => {
 
 it("should work with arrays", () => {
     const got = getValueAtPathInObject({
-        "obj": {
-            "a": [{ "b": 41 }, { "b": 42 }]
+        obj: {
+            a: [{ b: 41 }, { b: 42 }]
         },
-        "path": ["a", 1, "b"]
+        path: ["a", 1, "b"]
     });
 
     const expected = 42;

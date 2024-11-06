@@ -33,14 +33,14 @@ export default function DataExplorer(props: Props) {
 
     useEffect(() => {
         dataExplorer.setQueryParamsAndExtraRestorableStates({
-            "queryParams": {
-                "sourceUrl": route.params.source ?? "",
-                "rowsPerPage": route.params.rowsPerPage,
-                "page": route.params.page
+            queryParams: {
+                sourceUrl: route.params.source ?? "",
+                rowsPerPage: route.params.rowsPerPage,
+                page: route.params.page
             },
-            "extraRestorableStates": {
-                "selectedRowIndex": route.params.selectedRow,
-                "columnVisibility": route.params.columnVisibility
+            extraRestorableStates: {
+                selectedRowIndex: route.params.selectedRow,
+                columnVisibility: route.params.columnVisibility
             }
         });
     }, [route]);
@@ -73,8 +73,8 @@ export default function DataExplorer(props: Props) {
                         ...route.params,
                         page,
                         rowsPerPage,
-                        "source": sourceUrl,
-                        "selectedRow": selectedRowIndex,
+                        source: sourceUrl,
+                        selectedRow: selectedRowIndex,
                         columnVisibility
                     }).replace();
                 }
@@ -93,44 +93,44 @@ export default function DataExplorer(props: Props) {
     // Theres a bug in MUI classes.panel does not apply so have to apply the class manually
     const { childrenClassName: dataGridPanelWrapperRefClassName } =
         useApplyClassNameToParent({
-            "parentSelector": ".MuiDataGrid-panel",
-            "className": classes.dataGridPanel
+            parentSelector: ".MuiDataGrid-panel",
+            className: classes.dataGridPanel
         });
 
     return (
         <div className={cx(classes.root, className)}>
             <PageHeader
                 classes={{
-                    "helpMiddle": classes.pageHeaderHelpMiddle
+                    helpMiddle: classes.pageHeaderHelpMiddle
                 }}
                 mainIcon={id<MuiIconComponentName>("DocumentScanner")}
                 title={t("page header title")}
                 helpTitle={t("page header help title")}
                 helpContent={t("page header help content", {
-                    "demoParquetFileLink": routes[route.name]({
-                        "source": env.SAMPLE_DATASET_URL
+                    demoParquetFileLink: routes[route.name]({
+                        source: env.SAMPLE_DATASET_URL
                     }).link
                 })}
                 helpIcon={id<MuiIconComponentName>("SentimentSatisfied")}
                 titleCollapseParams={{
-                    "behavior": "controlled",
-                    "isCollapsed": rows !== undefined
+                    behavior: "controlled",
+                    isCollapsed: rows !== undefined
                 }}
                 helpCollapseParams={{
-                    "behavior": "controlled",
-                    "isCollapsed": rows !== undefined
+                    behavior: "controlled",
+                    isCollapsed: rows !== undefined
                 }}
             />
             <UrlInput
                 className={classes.urlInput}
                 getIsValidUrl={url =>
                     dataExplorer.getIsValidSourceUrl({
-                        "sourceUrl": url
+                        sourceUrl: url
                     })
                 }
                 onUrlChange={value => {
                     routes[route.name]({
-                        "source": value
+                        source: value
                     }).replace();
                 }}
                 url={route.params.source ?? ""}
@@ -161,20 +161,20 @@ export default function DataExplorer(props: Props) {
                             <CustomDataGrid
                                 shouldAddCopyToClipboardInCell
                                 classes={{
-                                    "panelWrapper": cx(
+                                    panelWrapper: cx(
                                         dataGridPanelWrapperRefClassName,
                                         classes.dataGridPanelWrapper
                                     ),
-                                    "panelFooter": classes.dataGridPanelFooter,
-                                    "menu": classes.dataGridMenu
+                                    panelFooter: classes.dataGridPanelFooter,
+                                    menu: classes.dataGridMenu
                                 }}
-                                slots={{ "toolbar": SlotsDataGridToolbar }}
+                                slots={{ toolbar: SlotsDataGridToolbar }}
                                 disableVirtualization={!isVirtualizationEnabled}
                                 columnVisibilityModel={route.params.columnVisibility}
                                 onColumnVisibilityModelChange={columnVisibilityModel =>
                                     routes[route.name]({
                                         ...route.params,
-                                        "columnVisibility": columnVisibilityModel
+                                        columnVisibility: columnVisibilityModel
                                     }).replace()
                                 }
                                 onRowSelectionModelChange={rowSelectionModel => {
@@ -187,7 +187,7 @@ export default function DataExplorer(props: Props) {
 
                                     routes[route.name]({
                                         ...route.params,
-                                        "selectedRow": selectedRowIndex
+                                        selectedRow: selectedRowIndex
                                     }).replace();
                                 }}
                                 rowSelectionModel={[
@@ -209,14 +209,14 @@ export default function DataExplorer(props: Props) {
                                     return pageSizeOptions;
                                 })()}
                                 paginationModel={{
-                                    "page": route.params.page - 1,
-                                    "pageSize": route.params.rowsPerPage
+                                    page: route.params.page - 1,
+                                    pageSize: route.params.rowsPerPage
                                 }}
                                 onPaginationModelChange={({ page, pageSize }) =>
                                     routes[route.name]({
                                         ...route.params,
-                                        "rowsPerPage": pageSize,
-                                        "page": page + 1
+                                        rowsPerPage: pageSize,
+                                        page: page + 1
                                     }).replace()
                                 }
                             />
@@ -228,66 +228,66 @@ export default function DataExplorer(props: Props) {
     );
 }
 const useStyles = tss.withName({ DataExplorer }).create(({ theme }) => ({
-    "root": {
-        "height": "100%",
-        "display": "flex",
-        "flexDirection": "column"
+    root: {
+        height: "100%",
+        display: "flex",
+        flexDirection: "column"
     },
-    "pageHeaderHelpMiddle": {
+    pageHeaderHelpMiddle: {
         "& > h5": {
-            "marginBottom": theme.spacing(2)
+            marginBottom: theme.spacing(2)
         }
     },
-    "initializing": {
-        "display": "flex",
-        "justifyContent": "center",
-        "alignItems": "center",
-        "height": "100%"
+    initializing: {
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        height: "100%"
     },
-    "urlInput": {
-        "marginBottom": theme.spacing(4)
+    urlInput: {
+        marginBottom: theme.spacing(4)
     },
-    "errorAlert": {
-        "marginTop": theme.spacing(4),
-        "maxWidth": 950
+    errorAlert: {
+        marginTop: theme.spacing(4),
+        maxWidth: 950
     },
-    "mainArea": {
-        "flex": 1,
-        "overflow": "hidden"
+    mainArea: {
+        flex: 1,
+        overflow: "hidden"
     },
-    "dataGridWrapper": {
-        "width": "100%",
-        "height": "100%",
-        "overflowY": "hidden",
-        "overflowX": "auto"
+    dataGridWrapper: {
+        width: "100%",
+        height: "100%",
+        overflowY: "hidden",
+        overflowX: "auto"
     },
-    "dataGridPanel": {
-        "overflow": "hidden",
-        "borderRadius": 8,
-        "boxShadow": theme.shadows[1],
+    dataGridPanel: {
+        overflow: "hidden",
+        borderRadius: 8,
+        boxShadow: theme.shadows[1],
         "&:hover": {
-            "boxShadow": theme.shadows[6]
+            boxShadow: theme.shadows[6]
         }
     },
-    "dataGridPanelWrapper": {
-        "backgroundColor": theme.colors.useCases.surfaces.surface1,
-        "padding": theme.spacing(2)
+    dataGridPanelWrapper: {
+        backgroundColor: theme.colors.useCases.surfaces.surface1,
+        padding: theme.spacing(2)
     },
-    "dataGridPanelFooter": {
+    dataGridPanelFooter: {
         "& .MuiButton-root": {
-            "textTransform": "unset"
+            textTransform: "unset"
         }
     },
-    "dataGridMenu": {
+    dataGridMenu: {
         "& .MuiMenuItem-root": {
             "&.Mui-selected": {
-                "backgroundColor": theme.colors.useCases.surfaces.surface2
+                backgroundColor: theme.colors.useCases.surfaces.surface2
             },
             "& svg": {
-                "color": theme.colors.useCases.typography.textPrimary
+                color: theme.colors.useCases.typography.textPrimary
             },
             "&:hover": {
-                "backgroundColor": theme.colors.palette.focus.light
+                backgroundColor: theme.colors.palette.focus.light
             }
         }
     }

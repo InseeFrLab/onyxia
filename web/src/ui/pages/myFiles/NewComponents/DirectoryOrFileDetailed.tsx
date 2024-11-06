@@ -51,31 +51,31 @@ export function DirectoryOrFileDetailed(props: Props) {
 }
 
 const useStyles = tss.withName({ DirectoryOrFileDetailed }).create(({ theme }) => ({
-    "root": {
-        "display": "flex",
-        "alignItems": "center"
+    root: {
+        display: "flex",
+        alignItems: "center"
         //"margin": theme.spacing(2)
     },
-    "iconWrapper": {
-        "paddingRight": theme.spacing(4)
+    iconWrapper: {
+        paddingRight: theme.spacing(4)
     },
-    "fileOrDirectoryIcon": {
-        "height": 60
+    fileOrDirectoryIcon: {
+        height: 60
     },
-    "contentWrapper": {
-        "display": "flex",
-        "flexDirection": "column"
+    contentWrapper: {
+        display: "flex",
+        flexDirection: "column"
     },
-    "detailsWrapper": {
-        "display": "flex",
-        "alignItems": "center"
+    detailsWrapper: {
+        display: "flex",
+        alignItems: "center"
     },
-    "visibility": {
-        "display": "flex",
-        "alignItems": "center",
-        "marginRight": theme.spacing(1)
+    visibility: {
+        display: "flex",
+        alignItems: "center",
+        marginRight: theme.spacing(1)
     },
-    "icon": {
-        "marginRight": theme.spacing(0.5)
+    icon: {
+        marginRight: theme.spacing(0.5)
     }
 }));

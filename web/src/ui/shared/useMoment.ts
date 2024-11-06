@@ -67,7 +67,7 @@ export const { fromNow } = (() => {
             const { t } = getTranslation("moment");
 
             return divisorKeys.map(divisorKey => ({
-                "divisor": (() => {
+                divisor: (() => {
                     switch (divisorKey) {
                         case "now":
                             return 1;
@@ -87,7 +87,7 @@ export const { fromNow } = (() => {
                             return YEAR;
                     }
                 })(),
-                "max": (() => {
+                max: (() => {
                     switch (divisorKey) {
                         case "now":
                             return 4 * SECOND;
@@ -107,10 +107,10 @@ export const { fromNow } = (() => {
                             return Infinity;
                     }
                 })(),
-                "past1": t("past1", { divisorKey }),
-                "pastN": t("pastN", { divisorKey }),
-                "future1": t("future1", { divisorKey }),
-                "futureN": t("futureN", { divisorKey })
+                past1: t("past1", { divisorKey }),
+                pastN: t("pastN", { divisorKey }),
+                future1: t("future1", { divisorKey }),
+                futureN: t("futureN", { divisorKey })
             }));
         }
 

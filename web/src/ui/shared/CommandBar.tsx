@@ -105,8 +105,8 @@ export const CommandBar = memo((props: CommandBarProps) => {
                         assert(panelElement !== null);
 
                         panelElement.scroll({
-                            "top": panelElement.scrollHeight,
-                            "behavior": "smooth"
+                            top: panelElement.scrollHeight,
+                            behavior: "smooth"
                         });
                     }
                 ),
@@ -115,14 +115,14 @@ export const CommandBar = memo((props: CommandBarProps) => {
     }
 
     const { ref: rootRef } = useClickAway({
-        "onClickAway": () => setIsExpended(false)
+        onClickAway: () => setIsExpended(false)
     });
 
     const { cx, classes } = useStyles({
         maxHeight,
         headerHeight,
         isExpended,
-        "classesOverrides": props.classes
+        classesOverrides: props.classes
     });
 
     const [isHelpDialogOpen, setIsHelpDialogOpen] = useState(false);
@@ -228,7 +228,7 @@ export const CommandBar = memo((props: CommandBarProps) => {
                 <Dialog
                     maxWidth="md"
                     classes={{
-                        "root": classes.helpDialog
+                        root: classes.helpDialog
                     }}
                     title={helpDialog.title}
                     body={helpDialog.body}
@@ -259,107 +259,107 @@ const useStyles = tss
             : theme.colors.palette.limeGreen.main;
 
         return {
-            "root": {
-                "colorScheme": "dark"
+            root: {
+                colorScheme: "dark"
             },
-            "rootWhenExpended": {},
-            "rootWhenCollapsed": {},
-            "iconButton": {
+            rootWhenExpended: {},
+            rootWhenCollapsed: {},
+            iconButton: {
                 "& svg": {
-                    "color": textColor,
-                    "transition": theme.muiTheme.transitions.create(["transform"], {
-                        "duration": theme.muiTheme.transitions.duration.short
+                    color: textColor,
+                    transition: theme.muiTheme.transitions.create(["transform"], {
+                        duration: theme.muiTheme.transitions.duration.short
                     })
                 },
                 "&:hover": {
                     "& svg": {
-                        "color": theme.isDarkModeEnabled
+                        color: theme.isDarkModeEnabled
                             ? theme.colors.palette.light.light
                             : theme.colors.palette.dark.greyVariant2
                     }
                 },
                 "& .MuiTouchRipple-root": {
-                    "color": textColor
+                    color: textColor
                 }
             },
-            "expandIconButton": {
+            expandIconButton: {
                 "& svg": {
-                    "transform": isExpended ? "rotate(-180deg)" : "rotate(0)"
+                    transform: isExpended ? "rotate(-180deg)" : "rotate(0)"
                 }
             },
-            "circularLoading": {
-                "color": theme.colors.palette.light.main
+            circularLoading: {
+                color: theme.colors.palette.light.main
             },
-            "collapsedPanel": {
-                "maxHeight": 0,
-                "overflow": "hidden",
-                "transform": "scaleY(0)"
+            collapsedPanel: {
+                maxHeight: 0,
+                overflow: "hidden",
+                transform: "scaleY(0)"
             },
-            "expandedPanel": {
-                "maxHeight": maxHeight - headerHeight,
-                "backgroundColor": theme.colors.palette.dark.light,
-                "overflow": "auto",
-                "transition": window.navigator.userAgent.includes("Firefox")
+            expandedPanel: {
+                maxHeight: maxHeight - headerHeight,
+                backgroundColor: theme.colors.palette.dark.light,
+                overflow: "auto",
+                transition: window.navigator.userAgent.includes("Firefox")
                     ? undefined
                     : "transform 150ms cubic-bezier(0.4, 0, 0.2, 1) 70ms",
                 "& pre": {
-                    "whiteSpace": "pre-wrap",
-                    "wordBreak": "break-all"
+                    whiteSpace: "pre-wrap",
+                    wordBreak: "break-all"
                 },
-                "transform": "scaleY(1)",
-                "transformOrigin": "top",
+                transform: "scaleY(1)",
+                transformOrigin: "top",
                 borderRadius,
-                "paddingTop": theme.spacing(2),
+                paddingTop: theme.spacing(2),
                 // Only work on Firefox when writing this
                 // Note this spec isn't great, we can't specify the hover color...
-                "scrollbarColor": `${theme.colors.palette.dark.greyVariant3} ${theme.colors.palette.dark.light}`,
+                scrollbarColor: `${theme.colors.palette.dark.greyVariant3} ${theme.colors.palette.dark.light}`,
                 // shadow
-                "boxShadow": theme.shadows[2]
+                boxShadow: theme.shadows[2]
             },
-            "header": {
-                "backgroundColor": theme.isDarkModeEnabled
+            header: {
+                backgroundColor: theme.isDarkModeEnabled
                     ? theme.colors.palette.limeGreen.main
                     : theme.colors.palette.dark.main,
                 ...(!isExpended ? {} : { borderRadius }),
-                "borderRadius": `0 0 0 ${isExpended ? 0 : 30}px`,
-                "transition": "border-radius 70ms ease",
-                "display": "flex",
-                "alignItems": "center",
+                borderRadius: `0 0 0 ${isExpended ? 0 : 30}px`,
+                transition: "border-radius 70ms ease",
+                display: "flex",
+                alignItems: "center",
                 "& .dollarSign": {
-                    "color": textColor
+                    color: textColor
                 }
             },
-            "lastTranslatedCmd": {
-                "flex": 1,
-                "whiteSpace": "nowrap",
-                "overflow": "hidden",
-                "textOverflow": "ellipsis",
-                "fontFamily": "monospace",
-                "color": textColor,
-                "marginBottom": 1
+            lastTranslatedCmd: {
+                flex: 1,
+                whiteSpace: "nowrap",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                fontFamily: "monospace",
+                color: textColor,
+                marginBottom: 1
             },
-            "dollarContainer": {
-                "width": 70,
-                "textAlign": "end",
-                "paddingRight": 10
+            dollarContainer: {
+                width: 70,
+                textAlign: "end",
+                paddingRight: 10
             },
-            "entryRoot": {
-                "display": "flex"
+            entryRoot: {
+                display: "flex"
             },
-            "preWrapper": {
-                "flex": 1,
+            preWrapper: {
+                flex: 1,
                 "& pre:nth-of-type(1)": {
-                    "color": theme.colors.palette.limeGreen.main,
-                    "marginTop": 2
+                    color: theme.colors.palette.limeGreen.main,
+                    marginTop: 2
                 },
                 "& pre:nth-of-type(2)": {
-                    "color": theme.colors.palette.light.light
+                    color: theme.colors.palette.light.light
                 }
             },
-            "dollarIcon": {
-                "marginTop": 3,
-                "color": theme.colors.palette.limeGreen.main
+            dollarIcon: {
+                marginTop: 3,
+                color: theme.colors.palette.limeGreen.main
             },
-            "helpDialog": {}
+            helpDialog: {}
         };
     });

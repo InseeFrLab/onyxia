@@ -34,20 +34,20 @@ export const PortraitModeUnsupported = memo((props: Props) => {
 });
 
 const useStyles = tss.withName({ PortraitModeUnsupported }).create(({ theme }) => ({
-    "root": {
-        "height": "100vh",
-        "display": "flex",
-        "alignItems": "center",
-        "justifyContent": "center"
+    root: {
+        height: "100vh",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center"
     },
-    "icon": {
-        "fontSize": 5 * theme.typography.rootFontSizePx
+    icon: {
+        fontSize: 5 * theme.typography.rootFontSizePx
     },
-    "wrapper": {
-        "textAlign": "center"
+    wrapper: {
+        textAlign: "center"
     },
-    "instructions": {
-        "marginTop": theme.spacing(3)
+    instructions: {
+        marginTop: theme.spacing(3)
     }
 }));
 

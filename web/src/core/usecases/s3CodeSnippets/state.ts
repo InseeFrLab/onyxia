@@ -44,17 +44,17 @@ export const name = "s3CodeSnippets";
 
 export const { reducer, actions } = createUsecaseActions({
     name,
-    "initialState": id<State>(
+    initialState: id<State>(
         id<State.NotRefreshed>({
-            "stateDescription": "not refreshed",
-            "isRefreshing": false
+            stateDescription: "not refreshed",
+            isRefreshing: false
         })
     ),
-    "reducers": {
-        "refreshStarted": state => {
+    reducers: {
+        refreshStarted: state => {
             state.isRefreshing = true;
         },
-        "refreshed": (
+        refreshed: (
             state,
             {
                 payload
@@ -73,14 +73,14 @@ export const { reducer, actions } = createUsecaseActions({
                     : "R (paws)";
 
             return id<State.Ready>({
-                "isRefreshing": false,
-                "stateDescription": "ready",
+                isRefreshing: false,
+                stateDescription: "ready",
                 selectedTechnology,
                 credentials,
                 expirationTime
             });
         },
-        "technologyChanged": (
+        technologyChanged: (
             state,
             { payload }: { payload: { technology: Technology } }
         ) => {

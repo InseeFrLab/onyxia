@@ -25,18 +25,18 @@ export const createEvt = (({ evtAction, getState }) => {
     evtUsecaseAction
         .attach(
             action => action.actionName === "initialized",
-            () => evtOut.post({ "eventName": "initialized" })
+            () => evtOut.post({ eventName: "initialized" })
         )
         .attach(
             action => action.actionName === "launchStarted",
-            () => evtOut.post({ "eventName": "launchStarted" })
+            () => evtOut.post({ eventName: "launchStarted" })
         )
         .attach(
             action => action.actionName === "launchCompleted",
             () => {
                 const helmReleaseName = privateSelectors.helmReleaseName(getState());
                 assert(helmReleaseName !== null);
-                evtOut.post({ "eventName": "launchCompleted", helmReleaseName });
+                evtOut.post({ eventName: "launchCompleted", helmReleaseName });
             }
         );
 

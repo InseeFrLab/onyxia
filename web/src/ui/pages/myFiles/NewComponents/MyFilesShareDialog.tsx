@@ -69,27 +69,27 @@ export const MyFilesShareDialog = memo((props: Props) => {
 });
 
 const useStyles = tss.withName({ MyFilesShareDialog }).create(({ theme }) => ({
-    "dialogContent": {
+    dialogContent: {
         display: "flex",
         flexDirection: "column",
         gap: theme.spacing(6),
         marginBottom: theme.spacing(6)
     },
-    "directoryDetails": {
+    directoryDetails: {
         margin: theme.muiTheme.spacing(4, 2, 4, 2)
     },
-    "shareContainer": {
+    shareContainer: {
         display: "flex",
         justifyContent: "space-between"
     },
-    "switchContainer": {
+    switchContainer: {
         display: "flex",
         alignItems: "center"
     },
-    "shareInput": {
+    shareInput: {
         width: "100%"
     },
-    "expirationText": {
+    expirationText: {
         display: "flex",
         alignItems: "center",
         gap: theme.spacing(1)

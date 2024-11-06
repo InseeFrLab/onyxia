@@ -28,7 +28,7 @@ function StoryWrapper(params: Params) {
     return (
         <>
             <CheckboxFormField
-                className={css({ "width": 300, "maxHeight": 400 })}
+                className={css({ width: 300, maxHeight: 400 })}
                 title="This is the title"
                 description="This is the description"
                 isReadonly={isReadonly}
@@ -47,13 +47,13 @@ function StoryWrapper(params: Params) {
 }
 
 export const Default: Story = {
-    "args": {
-        "isReadonly": false
+    args: {
+        isReadonly: false
     }
 };
 
 export const Readonly: Story = {
-    "args": {
-        "isReadonly": true
+    args: {
+        isReadonly: true
     }
 };

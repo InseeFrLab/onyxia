@@ -47,15 +47,15 @@ export const name = "serviceDetails";
 
 export const { reducer, actions } = createUsecaseActions({
     name,
-    "initialState": id<State>(
+    initialState: id<State>(
         id<State.NotInitialized.Idling>({
-            "stateDescription": "not initialized",
-            "isFetching": false
+            stateDescription: "not initialized",
+            isFetching: false
         })
     ),
-    "reducers": (() => {
+    reducers: (() => {
         const reducers = {
-            "updateStarted": (
+            updateStarted: (
                 state,
                 {
                     payload
@@ -76,12 +76,12 @@ export const { reducer, actions } = createUsecaseActions({
                 }
 
                 return id<State.NotInitialized.Fetching>({
-                    "stateDescription": "not initialized",
-                    "isFetching": true,
+                    stateDescription: "not initialized",
+                    isFetching: true,
                     helmReleaseName
                 });
             },
-            "updateCompleted": (
+            updateCompleted: (
                 state,
                 {
                     payload
@@ -103,12 +103,12 @@ export const { reducer, actions } = createUsecaseActions({
                 );
 
                 const newState = id<State.Ready>({
-                    "stateDescription": "ready",
-                    "isFetching": false,
-                    "helmReleaseName": state.helmReleaseName,
+                    stateDescription: "ready",
+                    isFetching: false,
+                    helmReleaseName: state.helmReleaseName,
                     helmReleaseFriendlyName,
                     podNames,
-                    "selectedPodName":
+                    selectedPodName:
                         state.stateDescription === "ready"
                             ? podNames.includes(state.selectedPodName)
                                 ? state.selectedPodName
@@ -116,11 +116,11 @@ export const { reducer, actions } = createUsecaseActions({
                             : "",
                     helmValues,
                     monitoringUrl,
-                    "isCommandBarExpanded":
+                    isCommandBarExpanded:
                         state.stateDescription === "ready"
                             ? state.isCommandBarExpanded
                             : false,
-                    "commandLogsEntry":
+                    commandLogsEntry:
                         state.stateDescription === "ready"
                             ? state.commandLogsEntry
                             : createObjectThatThrowsIfAccessed<
@@ -130,13 +130,13 @@ export const { reducer, actions } = createUsecaseActions({
 
                 if (state.stateDescription !== "ready") {
                     reducers.selectedPodChanged(newState, {
-                        "payload": { "podName": podNames[0] }
+                        payload: { podName: podNames[0] }
                     });
                 }
 
                 return newState;
             },
-            "selectedPodChanged": (
+            selectedPodChanged: (
                 state,
                 {
                     payload
@@ -153,12 +153,12 @@ export const { reducer, actions } = createUsecaseActions({
                 state.selectedPodName = podName;
 
                 state.commandLogsEntry = {
-                    "cmdId": Date.now(),
-                    "cmd": `kubectl logs ${podName}`,
-                    "resp": ""
+                    cmdId: Date.now(),
+                    cmd: `kubectl logs ${podName}`,
+                    resp: ""
                 };
             },
-            "helmGetValueShown": (
+            helmGetValueShown: (
                 state,
                 {
                     payload
@@ -173,15 +173,15 @@ export const { reducer, actions } = createUsecaseActions({
                 assert(state.stateDescription === "ready");
 
                 state.commandLogsEntry = {
-                    "cmdId": Date.now(),
-                    "cmd": `helm get values ${state.helmReleaseName}`,
-                    "resp": cmdResp
+                    cmdId: Date.now(),
+                    cmd: `helm get values ${state.helmReleaseName}`,
+                    resp: cmdResp
                 };
 
                 state.isCommandBarExpanded = true;
             },
-            "notifyHelmReleaseNoLongerExists": () => {},
-            "commandBarCollapsed": state => {
+            notifyHelmReleaseNoLongerExists: () => {},
+            commandBarCollapsed: state => {
                 assert(state.stateDescription === "ready");
                 state.isCommandBarExpanded = false;
             }

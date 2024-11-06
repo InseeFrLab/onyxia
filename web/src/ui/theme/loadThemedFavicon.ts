@@ -14,16 +14,16 @@ export async function loadThemedFavicon(params: {
     evtTheme
         .pipe(() => [
             {
-                "isDarkModeEnabled": evtTheme.state.isDarkModeEnabled,
-                "palette": evtTheme.state.colors.palette,
-                "useCases": evtTheme.state.colors.useCases
+                isDarkModeEnabled: evtTheme.state.isDarkModeEnabled,
+                palette: evtTheme.state.colors.palette,
+                useCases: evtTheme.state.colors.useCases
             }
         ])
         .pipe(onlyIfChanged())
         .attach(async ({ isDarkModeEnabled, palette, useCases }) => {
             const faviconUrl = resolveThemedAssetUrl({
                 isDarkModeEnabled,
-                "themedAssetUrl": env.FAVICON
+                themedAssetUrl: env.FAVICON
             });
 
             const link = document.createElement("link");
@@ -42,8 +42,8 @@ export async function loadThemedFavicon(params: {
                     );
 
                     return {
-                        "type": `image/${extension}`,
-                        "href": faviconUrl
+                        type: `image/${extension}`,
+                        href: faviconUrl
                     };
                 }
 
@@ -52,7 +52,7 @@ export async function loadThemedFavicon(params: {
                 try {
                     dataUrl = await getThemedSvgAsBlobUrl({
                         isDarkModeEnabled,
-                        "svgUrl": faviconUrl,
+                        svgUrl: faviconUrl,
                         palette,
                         useCases
                     });
@@ -62,8 +62,8 @@ export async function loadThemedFavicon(params: {
                 }
 
                 return {
-                    "type": "image/svg+xml",
-                    "href": dataUrl
+                    type: "image/svg+xml",
+                    href: dataUrl
                 };
             })();
 

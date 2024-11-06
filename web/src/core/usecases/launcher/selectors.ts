@@ -143,15 +143,15 @@ const s3ConfigSelect = createSelector(
         }
 
         return {
-            "options": s3Configs.map(s3Config => ({
-                "optionValue": s3Config.id,
-                "label": {
-                    "dataSource": s3Config.dataSource,
-                    "friendlyName":
+            options: s3Configs.map(s3Config => ({
+                optionValue: s3Config.id,
+                label: {
+                    dataSource: s3Config.dataSource,
+                    friendlyName:
                         s3Config.origin === "project" ? s3Config.friendlyName : undefined
                 }
             })),
-            "selectedOptionValue": s3Config.s3ConfigId
+            selectedOptionValue: s3Config.s3ConfigId
         };
     }
 );
@@ -210,8 +210,8 @@ const restorableConfig = createSelector(
         assert(helmValues_default !== null);
 
         const { diffPatch } = computeDiff({
-            "before": helmValues_default,
-            "current": helmValues
+            before: helmValues_default,
+            current: helmValues
         });
 
         return {
@@ -221,7 +221,7 @@ const restorableConfig = createSelector(
             isShared,
             chartVersion,
             s3ConfigId,
-            "helmValuesPatch": diffPatch
+            helmValuesPatch: diffPatch
         };
     }
 );
@@ -391,8 +391,8 @@ const launchScript = createSelector(
         assert(launchCommands !== null);
         assert(helmReleaseName !== null);
         return {
-            "fileBasename": `launch-${helmReleaseName}.sh`,
-            "content": launchCommands.join("\n\n")
+            fileBasename: `launch-${helmReleaseName}.sh`,
+            content: launchCommands.join("\n\n")
         };
     }
 );
@@ -413,9 +413,9 @@ const commandLogsEntries = createSelector(
         }
 
         return launchCommands.map((cmd, i) => ({
-            "cmdId": i,
+            cmdId: i,
             cmd,
-            "resp": ""
+            resp: ""
         }));
     }
 );
@@ -486,7 +486,7 @@ const labeledHelmChartSourceUrls = createSelector(readyState, state => {
     return id<LabeledHelmChartSourceUrls>({
         helmChartSourceUrl,
         helmChartRepositorySourceUrl,
-        "dockerImageSourceUrl": helmChartSourceUrls
+        dockerImageSourceUrl: helmChartSourceUrls
             .map(url => url.toLowerCase())
             .filter(url => url !== helmChartSourceUrl)
             .filter(url => url !== helmChartRepositorySourceUrl)
@@ -581,7 +581,7 @@ const main = createSelector(
     ) => {
         if (!isReady) {
             return {
-                "isReady": false as const
+                isReady: false as const
             };
         }
 
@@ -604,7 +604,7 @@ const main = createSelector(
         assert(labeledHelmChartSourceUrls !== null);
 
         return {
-            "isReady": true as const,
+            isReady: true as const,
             friendlyName,
             isShared,
             chartName,
@@ -631,7 +631,7 @@ export const selectors = { main };
 export const privateSelectors = {
     helmReleaseName,
     restorableConfig,
-    "helmValues": createSelector(readyState, state => {
+    helmValues: createSelector(readyState, state => {
         if (state === null) {
             return null;
         }

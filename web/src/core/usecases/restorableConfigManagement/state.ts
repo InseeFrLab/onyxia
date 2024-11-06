@@ -15,11 +15,11 @@ export const name = "restorableConfigManagement";
 
 export const { reducer, actions } = createUsecaseActions({
     name,
-    "initialState": id<State>({
-        "indexedChartsIcons": {}
+    initialState: id<State>({
+        indexedChartsIcons: {}
     }),
-    "reducers": {
-        "initialized": (
+    reducers: {
+        initialized: (
             state,
             {
                 payload

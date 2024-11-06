@@ -13,8 +13,8 @@ export const name = "deploymentRegionManagement";
 
 export const { reducer, actions } = createUsecaseActions({
     name,
-    "initialState": createObjectThatThrowsIfAccessed<State>(),
-    "reducers": {
-        "initialize": (_, { payload }: { payload: State }) => payload
+    initialState: createObjectThatThrowsIfAccessed<State>(),
+    reducers: {
+        initialize: (_, { payload }: { payload: State }) => payload
     }
 });

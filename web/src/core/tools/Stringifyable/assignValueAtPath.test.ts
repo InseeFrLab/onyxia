@@ -5,19 +5,19 @@ import { symToStr } from "tsafe/symToStr";
 describe(symToStr({ assignValueAtPath }), () => {
     it("works with base case", () => {
         const object = {
-            "a": [{ "b": null }]
+            a: [{ b: null }]
         };
 
         assignValueAtPath({
-            "stringifyableObjectOrArray": object,
-            "path": ["a", 0, "b"],
-            "value": [1, 2, 3]
+            stringifyableObjectOrArray: object,
+            path: ["a", 0, "b"],
+            value: [1, 2, 3]
         });
 
         expect(object).toStrictEqual({
-            "a": [
+            a: [
                 {
-                    "b": [1, 2, 3]
+                    b: [1, 2, 3]
                 }
             ]
         });
@@ -27,15 +27,15 @@ describe(symToStr({ assignValueAtPath }), () => {
         const object = {};
 
         assignValueAtPath({
-            "stringifyableObjectOrArray": object,
-            "path": ["a", 0, "b"],
-            "value": [1, 2, 3]
+            stringifyableObjectOrArray: object,
+            path: ["a", 0, "b"],
+            value: [1, 2, 3]
         });
 
         expect(object).toStrictEqual({
-            "a": [
+            a: [
                 {
-                    "b": [1, 2, 3]
+                    b: [1, 2, 3]
                 }
             ]
         });

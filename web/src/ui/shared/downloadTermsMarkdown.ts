@@ -2,7 +2,7 @@ import { createResolveLocalizedStringFactory } from "i18nifty/LocalizedString/Lo
 import { env } from "env";
 
 const { createResolveLocalizedString } = createResolveLocalizedStringFactory({
-    "createJsxElement": ({ text, lang }) => ({ text, lang })
+    createJsxElement: ({ text, lang }) => ({ text, lang })
 });
 
 export async function downloadTermsMarkdown(params: {
@@ -11,13 +11,13 @@ export async function downloadTermsMarkdown(params: {
     const { currentLanguageTag } = params;
 
     if (env.TERMS_OF_SERVICES === undefined) {
-        return { "termsMarkdown": "No terms provided", "langOfTheTerms": "en" };
+        return { termsMarkdown: "No terms provided", langOfTheTerms: "en" };
     }
 
     const { resolveLocalizedString } = createResolveLocalizedString({
-        "currentLanguage": currentLanguageTag,
-        "fallbackLanguage": "en",
-        "labelWhenMismatchingLanguage": true
+        currentLanguage: currentLanguageTag,
+        fallbackLanguage: "en",
+        labelWhenMismatchingLanguage: true
     });
 
     const { text: termsUrl, lang: langOfTheTerms } = resolveLocalizedString(

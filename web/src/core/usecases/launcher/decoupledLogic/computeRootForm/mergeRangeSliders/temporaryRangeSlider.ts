@@ -49,28 +49,28 @@ export function createTemporaryRangeSlider(params: {
     const { payload } = params;
 
     return {
-        "type": "field",
-        "title": "",
-        "fieldType": "range slider",
-        "lowEndRange": {
-            "isReadonly": false,
-            "helmValuesPath": [],
-            "value": NaN,
-            "description": undefined,
-            "rangeEndSemantic": undefined,
-            "min": NaN,
-            "max": NaN
+        type: "field",
+        title: "",
+        fieldType: "range slider",
+        lowEndRange: {
+            isReadonly: false,
+            helmValuesPath: [],
+            value: NaN,
+            description: undefined,
+            rangeEndSemantic: undefined,
+            min: NaN,
+            max: NaN
         },
-        "highEndRange": {
-            "isReadonly": false,
-            "helmValuesPath": [],
-            "value": NaN,
-            "description": undefined,
-            "rangeEndSemantic": undefined,
-            "min": NaN,
-            "max": NaN
+        highEndRange: {
+            isReadonly: false,
+            helmValuesPath: [],
+            value: NaN,
+            description: undefined,
+            rangeEndSemantic: undefined,
+            min: NaN,
+            max: NaN
         },
-        "unit": prefix + JSON.stringify(payload),
-        "step": NaN
+        unit: prefix + JSON.stringify(payload),
+        step: NaN
     };
 }

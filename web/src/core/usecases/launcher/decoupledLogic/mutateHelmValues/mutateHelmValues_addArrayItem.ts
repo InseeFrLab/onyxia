@@ -79,8 +79,8 @@ export function mutateHelmValues_addArrayItem(params: {
 
             try {
                 item = computeHelmValues_rec({
-                    "helmValuesSchema": helmValuesSchema_target.items,
-                    "helmValuesYaml_parsed": undefined,
+                    helmValuesSchema: helmValuesSchema_target.items,
+                    helmValuesYaml_parsed: undefined,
                     xOnyxiaContext
                 });
             } catch {
@@ -104,7 +104,7 @@ export function mutateHelmValues_addArrayItem(params: {
         );
 
         const defaultArray = computeHelmValues_rec({
-            "helmValuesSchema": helmValuesSchema_target,
+            helmValuesSchema: helmValuesSchema_target,
             helmValuesYaml_parsed: helmValuesYaml_parsed_target,
             xOnyxiaContext
         });

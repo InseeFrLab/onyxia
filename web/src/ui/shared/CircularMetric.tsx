@@ -50,43 +50,42 @@ const useStyles = tss
         isInverted: boolean;
     }>()
     .create(({ theme, severity, isInverted }) => ({
-        "root": {
-            "display": "flex",
-            "justifyContent": "center",
+        root: {
+            display: "flex",
+            justifyContent: "center",
             ...theme.spacing.topBottom("margin", 2)
         },
-        "circularProgressInnerWrapper": {
-            "position": "relative"
+        circularProgressInnerWrapper: {
+            position: "relative"
         },
-        "circularProgress": {
-            "verticalAlign": "top",
-            "color": isInverted
+        circularProgress: {
+            verticalAlign: "top",
+            color: isInverted
                 ? theme.colors.useCases.surfaces.background
                 : theme.colors.useCases.alertSeverity[severity].main,
-            "position": "relative"
+            position: "relative"
         },
-        "backLayerCircularProgress": {
-            "verticalAlign": "top",
-            "color":
-                theme.colors.useCases.alertSeverity[severity][
-                    isInverted ? "main" : "background"
-                ]
+        backLayerCircularProgress: {
+            verticalAlign: "top",
+            color: theme.colors.useCases.alertSeverity[severity][
+                isInverted ? "main" : "background"
+            ]
         },
-        "percentageWrapper": {
-            "position": "absolute",
-            "top": 0,
-            "left": 0,
-            "bottom": 0,
-            "right": 0,
-            "display": "flex",
-            "alignItems": "center",
-            "justifyContent": "center"
+        percentageWrapper: {
+            position: "absolute",
+            top: 0,
+            left: 0,
+            bottom: 0,
+            right: 0,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center"
         },
-        "backLayerCircularProgressWrapper": {
-            "position": "absolute",
-            "top": 0,
-            "left": 0,
-            "bottom": 0,
-            "right": 0
+        backLayerCircularProgressWrapper: {
+            position: "absolute",
+            top: 0,
+            left: 0,
+            bottom: 0,
+            right: 0
         }
     }));

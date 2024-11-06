@@ -45,7 +45,7 @@ export default function ProjectSettings(props: Props) {
             <Tabs
                 className={classes.tabs}
                 size="big"
-                tabs={tabIds.map(tabId => ({ "id": tabId, "title": t(tabId) }))}
+                tabs={tabIds.map(tabId => ({ id: tabId, title: t(tabId) }))}
                 activeTabId={route.params.tabId}
                 maxTabCount={5}
                 onRequestChangeActiveTab={tabId =>
@@ -92,13 +92,13 @@ const { i18n } = declareComponentKeys<
 export type I18n = typeof i18n;
 
 const useStyles = tss.withName({ ProjectSettings }).create(({ theme }) => ({
-    "root": {
-        "height": "100%",
-        "overflow": "auto"
+    root: {
+        height: "100%",
+        overflow: "auto"
     },
-    "tabs": {
-        "borderRadius": 8,
-        "overflow": "hidden",
-        "boxShadow": theme.shadows[1]
+    tabs: {
+        borderRadius: 8,
+        overflow: "hidden",
+        boxShadow: theme.shadows[1]
     }
 }));

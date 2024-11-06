@@ -48,7 +48,7 @@ const callbacks: Param0<Onyxia["addEventListener"]>[] = [attachToGlobalIfReady];
 
 const onyxia: Onyxia = {
     ...id<Pick<Onyxia, "addEventListener">>({
-        "addEventListener": callback => {
+        addEventListener: callback => {
             callbacks.push(callback);
         }
     })

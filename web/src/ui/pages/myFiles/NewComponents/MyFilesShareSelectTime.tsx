@@ -42,7 +42,7 @@ export function MyFilesShareSelectTime(props: Props) {
     );
 }
 const useStyles = tss.withName({ MyFilesShareSelectTime }).create(() => ({
-    "timeSelectWrapper": {
-        "minWidth": 200
+    timeSelectWrapper: {
+        minWidth: 200
     }
 }));

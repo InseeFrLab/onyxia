@@ -15,13 +15,13 @@ const { helmValuesPatchWrap, queryStringSerializer } = (() => {
     };
 
     const helmValuesPatchSerializer: ValueSerializer<HelmValuesPatchEntry[]> = {
-        "urlEncode": false,
-        "stringify": JSON.stringify,
-        "parse": JSON.parse
+        urlEncode: false,
+        stringify: JSON.stringify,
+        parse: JSON.parse
     };
 
     const queryStringSerializer = {
-        "parse": raw => {
+        parse: raw => {
             const [queryParamsEntries_helmValuesPatch, queryParamsEntries_other] = raw
                 .split("&")
                 .map(part => {
@@ -37,7 +37,7 @@ const { helmValuesPatchWrap, queryStringSerializer } = (() => {
 
             const helmValuesPatch = queryParamsEntries_helmValuesPatch.map(
                 ([queryParamKey, queryParamValue]): HelmValuesPatchEntry => ({
-                    "path": (() => {
+                    path: (() => {
                         const escapedDotsPlaceholder =
                             "escapedDotsPlaceholder_xKdMzIdVmT";
                         const arrayIndexPrefix = "arrayIndexPrefix_xKdMzIdVmT_";
@@ -61,7 +61,7 @@ const { helmValuesPatchWrap, queryStringSerializer } = (() => {
                                       )
                             );
                     })(),
-                    "value": (() => {
+                    value: (() => {
                         if (["true", "false"].includes(queryParamValue)) {
                             return "true" === queryParamValue;
                         }
@@ -99,7 +99,7 @@ const { helmValuesPatchWrap, queryStringSerializer } = (() => {
                 ]
             ]);
         },
-        "stringify": queryParams =>
+        stringify: queryParams =>
             Object.keys(queryParams)
                 .map(queryParamKey => {
                     if (queryParamKey === helmValuesPatch_key) {
@@ -172,16 +172,16 @@ const { helmValuesPatchWrap, queryStringSerializer } = (() => {
 export { queryStringSerializer };
 
 export const routeDefs = {
-    "launcher": defineRoute(
+    launcher: defineRoute(
         {
-            "catalogId": param.path.string,
-            "chartName": param.path.string,
-            "name": param.query.optional.string,
-            "shared": param.query.optional.boolean,
-            "version": param.query.optional.string,
-            "s3": param.query.optional.string,
+            catalogId: param.path.string,
+            chartName: param.path.string,
+            name: param.query.optional.string,
+            shared: param.query.optional.boolean,
+            version: param.query.optional.string,
+            s3: param.query.optional.string,
             ...helmValuesPatchWrap,
-            "autoLaunch": param.query.optional.boolean
+            autoLaunch: param.query.optional.boolean
         },
         ({ catalogId, chartName }) => `/launcher/${catalogId}/${chartName}`
     )

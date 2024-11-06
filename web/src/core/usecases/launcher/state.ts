@@ -70,16 +70,16 @@ export const name = "launcher";
 
 export const { reducer, actions } = createUsecaseActions({
     name,
-    "initialState": id<State>(
+    initialState: id<State>(
         id<State.NotInitialized>({
-            "stateDescription": "not initialized"
+            stateDescription: "not initialized"
         })
     ),
-    "reducers": (() => {
+    reducers: (() => {
         const reducers = {
-            "resetToNotInitialized": () =>
-                id<State.NotInitialized>({ "stateDescription": "not initialized" }),
-            "initialized": (
+            resetToNotInitialized: () =>
+                id<State.NotInitialized>({ stateDescription: "not initialized" }),
+            initialized: (
                 _,
                 {
                     payload
@@ -96,19 +96,19 @@ export const { reducer, actions } = createUsecaseActions({
                 const { readyState: readyState_partial, helmValuesPatch } = payload;
 
                 const state: State.Ready = {
-                    "stateDescription": "ready",
+                    stateDescription: "ready",
                     ...readyState_partial,
-                    "helmValues": structuredClone(readyState_partial.helmValues_default)
+                    helmValues: structuredClone(readyState_partial.helmValues_default)
                 };
 
                 applyDiffPatch({
-                    "objectOrArray": state.helmValues,
-                    "diffPatch": helmValuesPatch
+                    objectOrArray: state.helmValues,
+                    diffPatch: helmValuesPatch
                 });
 
                 return state;
             },
-            "formFieldValueChanged": (
+            formFieldValueChanged: (
                 state,
                 {
                     payload
@@ -131,7 +131,7 @@ export const { reducer, actions } = createUsecaseActions({
                     rootForm
                 });
             },
-            "arrayItemAdded": (
+            arrayItemAdded: (
                 state,
                 {
                     payload
@@ -156,7 +156,7 @@ export const { reducer, actions } = createUsecaseActions({
                     helmValuesYaml
                 });
             },
-            "arrayItemRemoved": (
+            arrayItemRemoved: (
                 state,
                 {
                     payload
@@ -179,7 +179,7 @@ export const { reducer, actions } = createUsecaseActions({
                     index
                 });
             },
-            "friendlyNameChanged": (
+            friendlyNameChanged: (
                 state,
                 {
                     payload
@@ -195,7 +195,7 @@ export const { reducer, actions } = createUsecaseActions({
 
                 state.friendlyName = friendlyName;
             },
-            "isSharedChanged": (
+            isSharedChanged: (
                 state,
                 {
                     payload
@@ -211,10 +211,10 @@ export const { reducer, actions } = createUsecaseActions({
 
                 state.isShared = isShared;
             },
-            "launchStarted": () => {
+            launchStarted: () => {
                 /* NOTE: For coreEvt */
             },
-            "launchCompleted": () => {
+            launchCompleted: () => {
                 /* NOTE: For coreEvt */
             }
         } satisfies Record<string, (state: State, ...rest: any[]) => State | void>;

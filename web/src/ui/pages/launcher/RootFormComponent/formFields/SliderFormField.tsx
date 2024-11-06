@@ -40,12 +40,12 @@ export const SliderFormField = memo((props: Props) => {
         number,
         never
     >({
-        "throttleDelay": 500,
-        "serializedValue": value,
+        throttleDelay: 500,
+        serializedValue: value,
         onChange,
-        "parse": serializedValue => ({
-            "isValid": true,
-            "value": serializedValue
+        parse: serializedValue => ({
+            isValid: true,
+            value: serializedValue
         })
     });
 
@@ -103,16 +103,16 @@ export const SliderFormField = memo((props: Props) => {
 });
 
 const useStyles = tss.withName({ SliderFormField }).create(({ theme }) => ({
-    "valueWrapper": {
-        "display": "flex",
-        "justifyContent": "center",
-        "marginBottom": theme.spacing(2)
+    valueWrapper: {
+        display: "flex",
+        justifyContent: "center",
+        marginBottom: theme.spacing(2)
     },
-    "labelWrapper": {
-        "display": "flex",
-        "justifyContent": "space-between"
+    labelWrapper: {
+        display: "flex",
+        justifyContent: "space-between"
     },
-    "bound": {
-        "color": theme.colors.useCases.typography.textSecondary
+    bound: {
+        color: theme.colors.useCases.typography.textSecondary
     }
 }));

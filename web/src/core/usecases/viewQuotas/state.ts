@@ -29,17 +29,17 @@ export const name = "viewQuotas";
 
 export const { reducer, actions } = createUsecaseActions({
     name,
-    "initialState": id<State>(
+    initialState: id<State>(
         id<State.NotInitialized>({
-            "stateDescription": "not initialized",
-            "isUpdating": false
+            stateDescription: "not initialized",
+            isUpdating: false
         })
     ),
-    "reducers": {
-        "updateStarted": state => {
+    reducers: {
+        updateStarted: state => {
             state.isUpdating = true;
         },
-        "updateCompleted": (
+        updateCompleted: (
             state,
             {
                 payload
@@ -60,11 +60,11 @@ export const { reducer, actions } = createUsecaseActions({
             } = payload;
 
             return id<State.Ready>({
-                "stateDescription": "ready",
-                "isUpdating": false,
+                stateDescription: "ready",
+                isUpdating: false,
                 quotas,
                 projectId,
-                "isOngoingPodDeletion": (() => {
+                isOngoingPodDeletion: (() => {
                     if (state.stateDescription === "not initialized") {
                         return false;
                     }
@@ -77,7 +77,7 @@ export const { reducer, actions } = createUsecaseActions({
 
                     return same([quotas, projectId], [state.quotas, state.projectId]);
                 })(),
-                "isOnlyNonNegligibleQuotas": (() => {
+                isOnlyNonNegligibleQuotas: (() => {
                     if (state.stateDescription === "not initialized") {
                         return true;
                     }
@@ -90,11 +90,11 @@ export const { reducer, actions } = createUsecaseActions({
                 quotaCriticalThresholdPercent
             });
         },
-        "podDeletionStarted": state => {
+        podDeletionStarted: state => {
             assert(state.stateDescription === "ready");
             state.isOngoingPodDeletion = true;
         },
-        "isOnlyNonNegligibleQuotasToggled": state => {
+        isOnlyNonNegligibleQuotasToggled: state => {
             assert(state.stateDescription === "ready");
             state.isOnlyNonNegligibleQuotas = !state.isOnlyNonNegligibleQuotas;
         }

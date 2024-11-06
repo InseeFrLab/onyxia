@@ -130,7 +130,7 @@ export const LauncherMainCard = memo((props: Props) => {
     >(({ value }) => onFriendlyNameChange(value));
 
     const { resolveLocalizedString } = useResolveLocalizedString({
-        "labelWhenMismatchingLanguage": true
+        labelWhenMismatchingLanguage: true
     });
 
     const chartVersionInputLabelId = `chart-version-input-label-${useId()}`;
@@ -160,7 +160,7 @@ export const LauncherMainCard = memo((props: Props) => {
                         </Text>
                     </div>
 
-                    <div style={{ "flex": 1 }} />
+                    <div style={{ flex: 1 }} />
 
                     {onRequestRestoreAllDefault !== undefined && (
                         <Button variant="ternary" onClick={onRequestRestoreAllDefault}>
@@ -250,8 +250,8 @@ export const LauncherMainCard = memo((props: Props) => {
                             {t("version select label")}&nbsp;
                             <Tooltip
                                 title={t("version select helper text", {
-                                    "helmCharName": chartName,
-                                    "helmRepositoryName":
+                                    helmCharName: chartName,
+                                    helmRepositoryName:
                                         resolveLocalizedString(catalogName),
                                     labeledHelmChartSourceUrls
                                 })}
@@ -289,7 +289,7 @@ export const LauncherMainCard = memo((props: Props) => {
                                 {t("s3 configuration")}&nbsp;
                                 <Tooltip
                                     title={t("s3 configuration - explain", {
-                                        "projectS3ConfigLink":
+                                        projectS3ConfigLink:
                                             s3ConfigsSelect.projectS3ConfigLink
                                     })}
                                 >
@@ -307,7 +307,7 @@ export const LauncherMainCard = memo((props: Props) => {
                                     const { value } = event.target;
                                     assert(typeof value === "string");
                                     s3ConfigsSelect.onSelectedS3ConfigChange({
-                                        "s3ConfigId": value
+                                        s3ConfigId: value
                                     });
                                 }}
                             >
@@ -336,7 +336,7 @@ export const LauncherMainCard = memo((props: Props) => {
                                         checked={isSharedWrap.isShared}
                                         onChange={event =>
                                             isSharedWrap.onIsSharedValueChange({
-                                                "isShared": event.target.checked
+                                                isShared: event.target.checked
                                             })
                                         }
                                     />
@@ -353,7 +353,7 @@ export const LauncherMainCard = memo((props: Props) => {
                         </FormControl>
                     )}
 
-                    <div style={{ "flex": 1 }} />
+                    <div style={{ flex: 1 }} />
                     <Button variant="secondary" onClick={onRequestCancel}>
                         {t("cancel")}
                     </Button>
@@ -402,7 +402,7 @@ function LaunchButton(props: {
     };
 
     if (erroredFormFields.length === 0) {
-        return renderButton({ "isDisabled": false });
+        return renderButton({ isDisabled: false });
     }
 
     return (
@@ -439,8 +439,8 @@ function LaunchButton(props: {
                 </>
             }
         >
-            <span style={{ "display": "inline-block" }}>
-                {renderButton({ "isDisabled": true })}
+            <span style={{ display: "inline-block" }}>
+                {renderButton({ isDisabled: true })}
             </span>
         </Tooltip>
     );
@@ -494,66 +494,66 @@ const { i18n } = declareComponentKeys<
 export type I18n = typeof i18n;
 
 const useStyles = tss.withName({ LauncherMainCard }).create(({ theme }) => ({
-    "root": {
-        "borderRadius": 8,
-        "boxShadow": theme.shadows[7],
-        "backgroundColor": theme.colors.useCases.surfaces.surface1,
-        "display": "flex",
-        "flexDirection": "column"
+    root: {
+        borderRadius: 8,
+        boxShadow: theme.shadows[7],
+        backgroundColor: theme.colors.useCases.surfaces.surface1,
+        display: "flex",
+        flexDirection: "column"
     },
-    "aboveDivider": {
-        "padding": theme.spacing({ "topBottom": 3, "rightLeft": 4 }),
-        "borderBottom": `1px solid ${theme.colors.useCases.typography.textTertiary}`,
-        "boxSizing": "border-box"
+    aboveDivider: {
+        padding: theme.spacing({ topBottom: 3, rightLeft: 4 }),
+        borderBottom: `1px solid ${theme.colors.useCases.typography.textTertiary}`,
+        boxSizing: "border-box"
     },
-    "aboveDividerFirstLine": {
-        "display": "flex",
-        "marginBottom": theme.spacing(3)
+    aboveDividerFirstLine: {
+        display: "flex",
+        marginBottom: theme.spacing(3)
     },
-    "belowDivider": {
-        "padding": theme.spacing(4),
-        "paddingLeft": theme.spacing(5),
-        "flex": 1
+    belowDivider: {
+        padding: theme.spacing(4),
+        paddingLeft: theme.spacing(5),
+        flex: 1
     },
-    "logoAndTitleWrapper": {
-        "display": "flex"
+    logoAndTitleWrapper: {
+        display: "flex"
     },
-    "title": {
-        "display": "flex",
-        "alignItems": "center",
-        "marginLeft": theme.spacing(3)
+    title: {
+        display: "flex",
+        alignItems: "center",
+        marginLeft: theme.spacing(3)
     },
-    "textFieldAndButtonWrapper": {
-        "display": "flex",
-        "alignItems": "center"
+    textFieldAndButtonWrapper: {
+        display: "flex",
+        alignItems: "center"
     },
-    "versionSelectWrapper": {
-        "minWidth": 200,
-        "marginLeft": theme.spacing(4)
+    versionSelectWrapper: {
+        minWidth: 200,
+        marginLeft: theme.spacing(4)
     },
-    "versionSelectHelpIcon": {
-        "position": "relative",
-        "top": 2
+    versionSelectHelpIcon: {
+        position: "relative",
+        top: 2
     },
-    "isSharedWrapper": {
-        "marginLeft": theme.spacing(4)
+    isSharedWrapper: {
+        marginLeft: theme.spacing(4)
     },
-    "isSharedCheckbox": {
-        "padding": theme.spacing(2)
+    isSharedCheckbox: {
+        padding: theme.spacing(2)
     },
-    "isSharedFormHelperText": {
-        "marginLeft": 0
+    isSharedFormHelperText: {
+        marginLeft: 0
     },
-    "launchButton": {
-        "marginLeft": theme.spacing(2)
+    launchButton: {
+        marginLeft: theme.spacing(2)
     },
-    "copyCheckmark": {
-        "color": theme.colors.useCases.alertSeverity.success.main
+    copyCheckmark: {
+        color: theme.colors.useCases.alertSeverity.success.main
     },
-    "copyAutoLaunchButton": {
-        "marginLeft": theme.spacing(2)
+    copyAutoLaunchButton: {
+        marginLeft: theme.spacing(2)
     },
-    "saveButton": {
-        "marginLeft": theme.spacing(2)
+    saveButton: {
+        marginLeft: theme.spacing(2)
     }
 }));

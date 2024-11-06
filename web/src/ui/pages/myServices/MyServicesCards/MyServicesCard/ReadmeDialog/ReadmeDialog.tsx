@@ -53,7 +53,7 @@ export const ReadmeDialog = memo((props: Props) => {
     const onDialogClose = useConstCallback(() => setIsOpen(false));
 
     const { classes } = useStyles({
-        "lastClusterEventSeverity": lastClusterEvent?.severity ?? "info"
+        lastClusterEventSeverity: lastClusterEvent?.severity ?? "info"
     });
 
     const { t } = useTranslation({ ReadmeDialog });
@@ -120,21 +120,21 @@ const useStyles = tss
     .withName({ ReadmeDialog })
     .withParams<{ lastClusterEventSeverity: "info" | "warning" | "error" | undefined }>()
     .create(({ theme, lastClusterEventSeverity }) => ({
-        "dialogBody": {
-            "maxHeight": 450,
-            "overflow": "auto"
+        dialogBody: {
+            maxHeight: 450,
+            overflow: "auto"
         },
-        "circularProgress": {
+        circularProgress: {
             ...theme.spacing.rightLeft("margin", 3)
         },
-        "clusterEventWrapper": {
-            "marginTop": theme.spacing(5)
+        clusterEventWrapper: {
+            marginTop: theme.spacing(5)
         },
-        "clusterEvent": {
-            "display": "block",
-            "marginTop": theme.spacing(2),
-            "fontSize": theme.typography.rootFontSizePx * 0.9,
-            "color": (() => {
+        clusterEvent: {
+            display: "block",
+            marginTop: theme.spacing(2),
+            fontSize: theme.typography.rootFontSizePx * 0.9,
+            color: (() => {
                 switch (lastClusterEventSeverity) {
                     case "error":
                         return theme.colors.useCases.alertSeverity.error.main;
@@ -145,9 +145,9 @@ const useStyles = tss
                         return undefined;
                 }
             })(),
-            "height": theme.typography.rootFontSizePx * 5,
-            "overflow": "auto",
-            "cursor": "pointer"
+            height: theme.typography.rootFontSizePx * 5,
+            overflow: "auto",
+            cursor: "pointer"
         }
     }));
 

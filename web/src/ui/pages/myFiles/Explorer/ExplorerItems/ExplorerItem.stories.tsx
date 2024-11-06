@@ -18,7 +18,7 @@ export const FileSelected: Story = {
         basename: "example-file.txt",
         size: 100000000,
         policy: "private",
-        className: css({ "width": "160px", "height": "160px" }),
+        className: css({ width: "160px", height: "160px" }),
         isSelected: true,
         isCircularProgressShown: false, // Valeur par défaut pour l'animation
         isPolicyChanging: false, // Pas de changement de politique en cours
@@ -34,7 +34,7 @@ export const DirectoryUnselected: Story = {
         basename: "example-directory",
         size: undefined,
         policy: "public",
-        className: css({ "width": "160px", "height": "160px" }),
+        className: css({ width: "160px", height: "160px" }),
         isSelected: false,
         isCircularProgressShown: false, // Valeur par défaut pour l'animation
         isPolicyChanging: false, // Pas de changement de politique en cours

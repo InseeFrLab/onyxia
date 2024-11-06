@@ -13,17 +13,17 @@ export type LinkFromConfig = {
 
 export const zLinkFromConfig = z
     .object({
-        "icon": z.string().optional(),
-        "label": zLocalizedString,
-        "url": z.string(),
-        "startIcon": z.string().optional(),
-        "endIcon": z.string().optional()
+        icon: z.string().optional(),
+        label: zLocalizedString,
+        url: z.string(),
+        startIcon: z.string().optional(),
+        endIcon: z.string().optional()
     })
     .superRefine((data, ctx) => {
         if (data.startIcon !== undefined && data.icon !== undefined) {
             ctx.addIssue({
-                "code": z.ZodIssueCode.custom,
-                "message": "You can't specify both startIcon and icon"
+                code: z.ZodIssueCode.custom,
+                message: "You can't specify both startIcon and icon"
             });
         }
     });

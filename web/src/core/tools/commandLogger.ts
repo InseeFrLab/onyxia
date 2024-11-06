@@ -59,7 +59,7 @@ export function logApi<Api extends Record<string, unknown>>(params2: {
     const evt = Evt.create<UnpackEvt<CommandLogs["evt"]>>();
 
     return {
-        "loggedApi": (() => {
+        loggedApi: (() => {
             const createMethodProxy = memoize(
                 <MethodName extends MethodNames<Api>>(
                     methodName: MethodName
@@ -76,16 +76,16 @@ export function logApi<Api extends Record<string, unknown>>(params2: {
 
                         evt.post({
                             cmdId,
-                            "type": "cmd",
-                            "cmdOrResp": buildCmd(...inputs)
+                            type: "cmd",
+                            cmdOrResp: buildCmd(...inputs)
                         });
 
                         const result = await runMethod();
 
                         evt.post({
                             cmdId,
-                            "type": "result",
-                            "cmdOrResp": fmtResult({ inputs, result })
+                            type: "result",
+                            cmdOrResp: fmtResult({ inputs, result })
                         });
 
                         return result;
@@ -96,7 +96,7 @@ export function logApi<Api extends Record<string, unknown>>(params2: {
             );
 
             return new Proxy(api, {
-                "get": (...args) => {
+                get: (...args) => {
                     const [, propertyKey] = args;
 
                     if (!(propertyKey in commandLogger.methods)) {
@@ -109,10 +109,10 @@ export function logApi<Api extends Record<string, unknown>>(params2: {
                 }
             });
         })(),
-        "commandLogs": (() => {
+        commandLogs: (() => {
             const history: CommandLogs["history"][number][] = [
                 ...commandLogger.initialHistory.map(rest => ({
-                    "cmdId": getCounter(),
+                    cmdId: getCounter(),
                     ...rest
                 }))
             ];
@@ -122,8 +122,8 @@ export function logApi<Api extends Record<string, unknown>>(params2: {
                 ({ cmdId, cmdOrResp }) => {
                     history.push({
                         cmdId,
-                        "cmd": cmdOrResp,
-                        "resp": undefined
+                        cmd: cmdOrResp,
+                        resp: undefined
                     });
 
                     evt.attachOncePrepend(

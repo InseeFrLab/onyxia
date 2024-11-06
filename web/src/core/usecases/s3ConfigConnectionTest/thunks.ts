@@ -7,7 +7,7 @@ import type { ParamsOfCreateS3Client } from "core/adapters/s3Client";
 export const thunks = {} satisfies Thunks;
 
 export const protectedThunks = {
-    "testS3Connection":
+    testS3Connection:
         (params: {
             paramsOfCreateS3Client: ParamsOfCreateS3Client.NoSts;
             workingDirectoryPath: string;
@@ -32,16 +32,16 @@ export const protectedThunks = {
 
                 try {
                     await s3Client.listObjects({
-                        "path": workingDirectoryPath
+                        path: workingDirectoryPath
                     });
                 } catch (error) {
                     return {
-                        "isSuccess": false as const,
-                        "errorMessage": String(error)
+                        isSuccess: false as const,
+                        errorMessage: String(error)
                     };
                 }
 
-                return { "isSuccess": true as const };
+                return { isSuccess: true as const };
             })();
 
             dispatch(

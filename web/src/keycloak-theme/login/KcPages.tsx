@@ -103,70 +103,70 @@ const useStyles = tss
     .create(
         ({ theme, backgroundUrl, classes }) =>
             ({
-                "kcHtmlClass": {
-                    "background": `${theme.colors.useCases.surfaces.background}`,
+                kcHtmlClass: {
+                    background: `${theme.colors.useCases.surfaces.background}`,
                     "& a": {
-                        "color": `${theme.colors.useCases.typography.textFocus}`
+                        color: `${theme.colors.useCases.typography.textFocus}`
                     },
                     "& label": {
-                        "fontSize": 14,
-                        "color": theme.colors.palette.light.greyVariant3,
-                        "fontWeight": "normal"
+                        fontSize: 14,
+                        color: theme.colors.palette.light.greyVariant3,
+                        fontWeight: "normal"
                     },
                     [`& .${classes.kcHeaderWrapperClass}`]: {
-                        "visibility": "hidden"
+                        visibility: "hidden"
                     },
                     "& #kc-info-message > p:last-child": {
-                        "marginTop": theme.spacing(5)
+                        marginTop: theme.spacing(5)
                     }
                 },
-                "kcBodyClass": {
+                kcBodyClass: {
                     "&&": {
                         ...(backgroundUrl === undefined
                             ? undefined
                             : {
-                                  "backgroundImage": `url(${backgroundUrl})`,
-                                  "backgroundSize": "auto 60%",
-                                  "backgroundPosition": "center",
-                                  "backgroundRepeat": "no-repeat"
+                                  backgroundImage: `url(${backgroundUrl})`,
+                                  backgroundSize: "auto 60%",
+                                  backgroundPosition: "center",
+                                  backgroundRepeat: "no-repeat"
                               })
                     }
                 },
-                "kcLocaleWrapperClass": {
-                    "visibility": "hidden"
+                kcLocaleWrapperClass: {
+                    visibility: "hidden"
                 },
-                "kcFormHeaderClass": {
+                kcFormHeaderClass: {
                     "&& h1": {
                         ...theme.typography.variants["page heading"].style,
-                        "color": theme.colors.palette.dark.main
+                        color: theme.colors.palette.dark.main
                     }
                 },
-                "kcFormCardClass": {
-                    "borderRadius": 10,
-                    "borderColor": theme.colors.useCases.typography.textFocus
+                kcFormCardClass: {
+                    borderRadius: 10,
+                    borderColor: theme.colors.useCases.typography.textFocus
                 },
-                "kcButtonPrimaryClass": {
-                    "backgroundColor": "unset",
-                    "backgroundImage": "unset",
-                    "borderColor": `${theme.colors.useCases.typography.textFocus}`,
-                    "borderWidth": "2px",
-                    "borderRadius": `20px`,
-                    "color": `${theme.colors.useCases.typography.textFocus}`,
-                    "textTransform": "uppercase"
+                kcButtonPrimaryClass: {
+                    backgroundColor: "unset",
+                    backgroundImage: "unset",
+                    borderColor: `${theme.colors.useCases.typography.textFocus}`,
+                    borderWidth: "2px",
+                    borderRadius: `20px`,
+                    color: `${theme.colors.useCases.typography.textFocus}`,
+                    textTransform: "uppercase"
                 },
-                "kcInputClass": {
-                    "borderRadius": "unset",
-                    "border": "unset",
-                    "boxShadow": "unset",
-                    "borderBottom": `1px solid ${theme.colors.useCases.typography.textTertiary}`,
+                kcInputClass: {
+                    borderRadius: "unset",
+                    border: "unset",
+                    boxShadow: "unset",
+                    borderBottom: `1px solid ${theme.colors.useCases.typography.textTertiary}`,
                     "&:focus": {
-                        "borderColor": "unset",
-                        "borderBottom": `1px solid ${theme.colors.useCases.typography.textFocus}`
+                        borderColor: "unset",
+                        borderBottom: `1px solid ${theme.colors.useCases.typography.textFocus}`
                     }
                 },
-                "kcHeaderWrapperClass": {},
-                "kcAlertClass": {
-                    "marginBottom": theme.spacing(6)
+                kcHeaderWrapperClass: {},
+                kcAlertClass: {
+                    marginBottom: theme.spacing(6)
                 }
             }) as const satisfies { [key in ClassKey]?: unknown }
     );

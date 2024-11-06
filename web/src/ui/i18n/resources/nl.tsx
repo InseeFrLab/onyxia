@@ -9,29 +9,28 @@ import { MaybeLink } from "ui/shared/MaybeLink";
 
 export const translations: Translations<"nl"> = {
     /* spell-checker: disable */
-    "Account": {
-        "infos": "Accountgegevens",
-        "git": undefined,
-        "storage": "Verbinding met opslag",
-        "k8sCodeSnippets": "Verbinding met Kubernetes",
+    Account: {
+        infos: "Accountgegevens",
+        git: undefined,
+        storage: "Verbinding met opslag",
+        k8sCodeSnippets: "Verbinding met Kubernetes",
         "user-interface": "Interfacemodi",
-        "text1": "Mijn account",
-        "text2": "Toegang tot uw accountgegevens.",
-        "text3":
-            "Uw gebruikersnamen, e-mails, wachtwoorden en persoonlijke toegangstokens die direct verbonden zijn aan uw diensten configureren.",
+        text1: "Mijn account",
+        text2: "Toegang tot uw accountgegevens.",
+        text3: "Uw gebruikersnamen, e-mails, wachtwoorden en persoonlijke toegangstokens die direct verbonden zijn aan uw diensten configureren.",
         "personal tokens tooltip": 'Of "token" in het Engels.',
-        "vault": "Vault"
+        vault: "Vault"
     },
-    "AccountInfoTab": {
+    AccountInfoTab: {
         "general information": "Algemene informatie",
         "user id": "Gebruikersnaam (IDEP)",
         "full name": "Volledige naam",
-        "email": "E-mailadres",
+        email: "E-mailadres",
         "instructions about how to change password":
             'Om uw wachtwoord te wijzigen, logt u simpelweg uit en klikt u op de link "wachtwoord vergeten".'
     },
-    "AccountGitTab": {
-        "gitName": "Gebruikersnaam voor Git",
+    AccountGitTab: {
+        gitName: "Gebruikersnaam voor Git",
         "gitName helper text": ({ gitName, focusClassName }) => (
             <>
                 Dit commando zal je globale Git-gebruikersnaam instellen, uitgevoerd bij
@@ -41,7 +40,7 @@ export const translations: Translations<"nl"> = {
                 </code>
             </>
         ),
-        "gitEmail": "E-mail voor Git",
+        gitEmail: "E-mail voor Git",
         "gitEmail helper text": ({ gitEmail, focusClassName }) => (
             <>
                 Dit commando zal je globale Git-e-mailadres instellen, uitgevoerd bij het
@@ -52,7 +51,7 @@ export const translations: Translations<"nl"> = {
                 </code>
             </>
         ),
-        "githubPersonalAccessToken": "Persoonlijke toegangstoken voor Git Forge",
+        githubPersonalAccessToken: "Persoonlijke toegangstoken voor Git Forge",
         "githubPersonalAccessToken helper text": ({ focusClassName }) => (
             <>
                 Door dit token te verstrekken, kun je zonder opnieuw je inloggegevens van
@@ -64,7 +63,7 @@ export const translations: Translations<"nl"> = {
             </>
         )
     },
-    "AccountStorageTab": {
+    AccountStorageTab: {
         "credentials section title": "Uw gegevens verbinden met uw diensten",
         "credentials section helper":
             "Opslag object MinIO compatible Amazon (AWS S3). Deze informatie is al automatisch ingevuld.",
@@ -74,7 +73,7 @@ export const translations: Translations<"nl"> = {
         "init script section helper": `Download of kopieer het initialisatiescript in de programmeertaal van uw keuze.`,
         "expires in": ({ howMuchTime }) => `Vervalt binnen ${howMuchTime}`
     },
-    "AccountKubernetesTab": {
+    AccountKubernetesTab: {
         "credentials section title": "Verbind met de Kubernetes-cluster",
         "credentials section helper":
             "Inloggegevens om direct te communiceren met de Kubernetes API-server.",
@@ -97,7 +96,7 @@ export const translations: Translations<"nl"> = {
         "expires in": ({ howMuchTime }) =>
             `Deze inloggegevens zijn geldig voor de komende ${howMuchTime}`
     },
-    "AccountVaultTab": {
+    AccountVaultTab: {
         "credentials section title": "Gebrukersnamen Vault",
         "credentials section helper": ({ vaultDocHref, mySecretLink }) => (
             <>
@@ -120,7 +119,7 @@ export const translations: Translations<"nl"> = {
         ),
         "expires in": ({ howMuchTime }) => `Het token vervalt in ${howMuchTime}`
     },
-    "ProjectSettings": {
+    ProjectSettings: {
         "page header title": "Projectinstellingen",
         "page header help title": ({ groupProjectName }) =>
             groupProjectName === undefined
@@ -160,27 +159,27 @@ export const translations: Translations<"nl"> = {
         "security-info": "Veiligheidsinformatie",
         "s3-configs": "S3-configuraties"
     },
-    "ProjectSettingsS3ConfigTab": {
+    ProjectSettingsS3ConfigTab: {
         "add custom config": "Voeg een aangepaste S3-configuratie toe"
     },
-    "S3ConfigCard": {
+    S3ConfigCard: {
         "data source": "Gegevensbron",
-        "credentials": "Inloggegevens",
+        credentials: "Inloggegevens",
         "sts credentials": "Dynamisch aangevraagde tokens namens u door Onyxia (STS)",
-        "account": "Account",
+        account: "Account",
         "use in services": "Gebruiken in diensten",
         "use in services helper": `Indien ingeschakeld, zal deze configuratie standaard worden gebruikt in uw diensten die een S3-integratie implementeren.`,
         "use for onyxia explorers": "Gebruiken voor Onyxia-verkenners",
         "use for onyxia explorers helper": `Indien ingeschakeld zal deze configuratie worden gebruikt
             door de bestandsverkenner en de gegevensverkenner.`,
-        "edit": "Bewerken",
-        "delete": "Verwijderen"
+        edit: "Bewerken",
+        delete: "Verwijderen"
     },
-    "AddCustomS3ConfigDialog": {
+    AddCustomS3ConfigDialog: {
         "dialog title": "Nieuwe aangepaste S3-configuratie",
         "dialog subtitle":
             "Specificeer een aangepast serviceaccount of verbind met een andere S3-compatibele service",
-        "cancel": "Annuleren",
+        cancel: "Annuleren",
         "save config": "Configuratie opslaan",
         "update config": "Configuratie bijwerken",
         "is required": "Dit veld is verplicht",
@@ -240,7 +239,7 @@ export const translations: Translations<"nl"> = {
             </>
         )
     },
-    "TestS3ConnectionButton": {
+    TestS3ConnectionButton: {
         "test connection": "Verbinding testen",
         "test connection failed": ({ errorMessage }) => (
             <>
@@ -249,8 +248,8 @@ export const translations: Translations<"nl"> = {
             </>
         )
     },
-    "AccountUserInterfaceTab": {
-        "title": "De interfacemodus configureren",
+    AccountUserInterfaceTab: {
+        title: "De interfacemodus configureren",
         "enable dark mode": "Donkere modus activeren",
         "dark mode helper":
             "Thema van de interface met weinig licht en donkere achtergrond.",
@@ -271,9 +270,9 @@ export const translations: Translations<"nl"> = {
             </>
         )
     },
-    "SettingField": {
+    SettingField: {
         "copy tooltip": "Kopiëren naar klembord",
-        "language": "Taal wijzigen",
+        language: "Taal wijzigen",
         "service password": "Standaard service wachtwoord",
         "service password helper text": ({ groupProjectName }) => (
             <>
@@ -301,11 +300,11 @@ export const translations: Translations<"nl"> = {
         ),
         "not yet defined": "Niet gedefinieerd",
         "reset helper dialogs": "Instructievensters opnieuw initialiseren",
-        "reset": "Opnieuw initialiseren",
+        reset: "Opnieuw initialiseren",
         "reset helper dialogs helper text":
             "De berichtvensters waarvan u heeft gevraagd ze niet meer weer te geven, opnieuw initialiseren"
     },
-    "MyFiles": {
+    MyFiles: {
         "page title - my files": "Mijn bestanden",
         "what this page is used for - my files": "Sla hier uw gegevensbestanden op.",
         "help content": ({ accountTabLink, docHref }) => (
@@ -319,18 +318,18 @@ export const translations: Translations<"nl"> = {
             </>
         )
     },
-    "MyFilesDisabledDialog": {
+    MyFilesDisabledDialog: {
         "dialog title": "Geen S3-server geconfigureerd",
         "dialog body":
             "Er is geen S3-server geconfigureerd voor deze instantie. Je kunt er echter handmatig een toevoegen om de S3-bestandsverkenner in te schakelen.",
-        "cancel": "Annuleren",
+        cancel: "Annuleren",
         "go to settings": "Ga naar instellingen"
     },
-    "MyFilesShareDialog": {
-        "cancel": "Annuleren",
+    MyFilesShareDialog: {
+        cancel: "Annuleren",
         "create and copy link": "Creare e copiare il link"
     },
-    "MySecrets": {
+    MySecrets: {
         "page title - my secrets": "My Secrets",
         "what this page is used for - my secrets":
             "Sla hier geheimen op die toegankelijk zullen zijn als omgevingsvariabelen in uw diensten.",
@@ -346,45 +345,45 @@ export const translations: Translations<"nl"> = {
             </>
         )
     },
-    "ExplorerItem": {
-        "description": "beschrijving"
+    ExplorerItem: {
+        description: "beschrijving"
     },
-    "SecretsExplorerItem": {
-        "description": "beschrijving"
+    SecretsExplorerItem: {
+        description: "beschrijving"
     },
-    "ExplorerButtonBar": {
-        "file": "bestand",
-        "delete": "verwijderen",
+    ExplorerButtonBar: {
+        file: "bestand",
+        delete: "verwijderen",
         "upload file": "Een bestand uploaden",
         "copy path": "De naam van het S3-object kopiëren",
         "create directory": "Nieuwe map",
-        "refresh": "vernieuwen",
-        "new": "Nieuw",
-        "share": "Delen",
+        refresh: "vernieuwen",
+        new: "Nieuw",
+        share: "Delen",
         "alt list view": "Toon lijst",
         "alt block view": "Toon blok"
     },
-    "SecretsExplorerButtonBar": {
-        "secret": "geheim",
-        "rename": "hernoemen",
-        "delete": "verwijderen",
+    SecretsExplorerButtonBar: {
+        secret: "geheim",
+        rename: "hernoemen",
+        delete: "verwijderen",
         "create secret": "Nieuw geheim",
         "copy path": "Gebruiken binnen de dienst",
         "create directory": "Nieuwe map",
-        "refresh": "vernieuwen",
+        refresh: "vernieuwen",
         "create what": ({ what }) => `Nieuw ${what}`,
-        "new": "Nieuw"
+        new: "Nieuw"
     },
-    "Explorer": {
-        "file": "bestand",
-        "secret": "geheim",
-        "create": "creëren",
-        "cancel": "annuleren",
-        "delete": "verwijderen",
+    Explorer: {
+        file: "bestand",
+        secret: "geheim",
+        create: "creëren",
+        cancel: "annuleren",
+        delete: "verwijderen",
         "do not display again": "Niet meer weergeven",
 
         "untitled what": ({ what }) => `${what}_naamloos`,
-        "directory": "map",
+        directory: "map",
         "deletion dialog title": ({ deleteWhat }) => `Een ${deleteWhat} verwijderen ?`,
         "deletion dialog body": ({ deleteWhat }) => `
             Je staat op het punt om een ${deleteWhat} te verwijderen. 
@@ -394,20 +393,20 @@ export const translations: Translations<"nl"> = {
         "can't be empty": "Kan niet leeg zijn",
         "new directory": "Nieuwe map"
     },
-    "ListExplorerItems": {
+    ListExplorerItems: {
         "header name": "Naam",
         "header modified date": "Gewijzigd",
         "header size": "Grootte",
         "header policy": "Beleid"
     },
-    "SecretsExplorer": {
-        "file": "bestand",
-        "secret": "geheim",
-        "cancel": "annuleren",
-        "delete": "verwijderen",
+    SecretsExplorer: {
+        file: "bestand",
+        secret: "geheim",
+        cancel: "annuleren",
+        delete: "verwijderen",
         "do not display again": "Niet meer weergeven",
         "untitled what": ({ what }) => `${what}_naamloos`,
-        "directory": "map",
+        directory: "map",
         "deletion dialog title": ({ deleteWhat }) => `Een ${deleteWhat} verwijderen ?`,
         "deletion dialog body": ({ deleteWhat }) => `
             Je staat op het punt om een ${deleteWhat} te verwijderen. 
@@ -415,17 +414,17 @@ export const translations: Translations<"nl"> = {
             `,
         "already a directory with this name": "Er bestaat al een map met deze naam",
         "can't be empty": "Kan niet leeg zijn",
-        "create": "Creëren",
+        create: "Creëren",
         "new directory": "Nieuwe map"
     },
-    "ExplorerItems": {
+    ExplorerItems: {
         "empty directory": "Deze bestandenlijst is leeg"
     },
 
-    "SecretsExplorerItems": {
+    SecretsExplorerItems: {
         "empty directory": "Deze bestandenlijst is leeg"
     },
-    "MySecretsEditor": {
+    MySecretsEditor: {
         "do not display again": "Niet meer weergeven",
         "add an entry": "Een variabele toevoegen",
         "environnement variable default name": "NIEUWE_OMGVAR",
@@ -449,105 +448,105 @@ export const translations: Translations<"nl"> = {
             `,
         "use secret dialog ok": "Ik heb het begrepen"
     },
-    "MySecretsEditorRow": {
+    MySecretsEditorRow: {
         "key input desc": "Naam van de omgevingsvariabele",
         "value input desc": "Waarde van de omgevingsvariabele"
     },
-    "ExplorerUploadModalDropArea": {
+    ExplorerUploadModalDropArea: {
         "browse files": "uw bestanden raadplegen",
         "drag and drop or": "Slepen en neerzetten of"
     },
-    "ExplorerUploadProgress": {
-        "over": "op",
-        "importing": "importeren"
+    ExplorerUploadProgress: {
+        over: "op",
+        importing: "importeren"
     },
-    "ExplorerUploadModal": {
+    ExplorerUploadModal: {
         "import files": "Bestanden importeren",
-        "cancel": "Annuleren",
-        "minimize": "Minimaliseren"
+        cancel: "Annuleren",
+        minimize: "Minimaliseren"
     },
-    "Header": {
-        "login": "Inloggen",
-        "logout": "Uitloggen",
-        "project": "Project",
-        "region": "Regio"
+    Header: {
+        login: "Inloggen",
+        logout: "Uitloggen",
+        project: "Project",
+        region: "Regio"
     },
-    "LeftBar": {
-        "reduce": "Verkleinen",
-        "home": "Onthaal",
-        "account": "Mijn account",
-        "projectSettings": "Projectinstellingen",
-        "catalog": "Catalogus van de diensten",
-        "myServices": "Mijn diensten",
-        "mySecrets": "Mijn geheimen",
-        "myFiles": "Mijn bestanden",
+    LeftBar: {
+        reduce: "Verkleinen",
+        home: "Onthaal",
+        account: "Mijn account",
+        projectSettings: "Projectinstellingen",
+        catalog: "Catalogus van de diensten",
+        myServices: "Mijn diensten",
+        mySecrets: "Mijn geheimen",
+        myFiles: "Mijn bestanden",
         "divider: services features": "Functionaliteiten met betrekking tot de diensten",
         "divider: external services features":
             "Functionaliteiten met betrekking tot de externe diensten",
         "divider: onyxia instance specific features":
             "Functionaliteiten die specifiek zijn voor deze instantie van Onyxia",
-        "dataExplorer": "Data Verkenner",
-        "sqlOlapShell": "SQL OLAP Shell"
+        dataExplorer: "Data Verkenner",
+        sqlOlapShell: "SQL OLAP Shell"
     },
-    "AutoLogoutCountdown": {
+    AutoLogoutCountdown: {
         "are you still there": "Ben je er nog?",
         "you'll soon be automatically logged out":
             "Je wordt binnenkort automatisch uitgelogd."
     },
-    "Page404": {
+    Page404: {
         "not found": "Pagina niet gevonden"
     },
-    "PortraitModeUnsupported": {
-        "instructions":
+    PortraitModeUnsupported: {
+        instructions:
             "Om deze applicatie op uw mobiele telefoon te gebruiken, activeert u de rotatiesensor en draait u uw telefoon."
     },
-    "MaybeAcknowledgeConfigVolatilityDialog": {
+    MaybeAcknowledgeConfigVolatilityDialog: {
         "dialog title": "Wees ervan bewust, configuraties zijn vluchtig",
         "dialog body": `Deze Onyxia-instantie implementeert geen enkel persistentiemechanisme voor het opslaan van configuraties. 
             Alle configuraties worden opgeslagen in de lokale opslag van de browser. Dit betekent dat als u de lokale opslag van uw browser wist 
             of van browser wisselt, u al uw configuraties zult verliezen.`,
         "do not show next time": "Toon dit bericht niet meer",
-        "cancel": "Annuleren",
+        cancel: "Annuleren",
         "I understand": "Ik begrijp het"
     },
-    "Home": {
+    Home: {
         "title authenticated": ({ userFirstname }) => `Welkom ${userFirstname}!`,
-        "title": "Welkom in het datalab",
-        "login": "Inloggen",
+        title: "Welkom in het datalab",
+        login: "Inloggen",
         "new user": "Nieuwe gebruiker van het datalab ?",
-        "subtitle": "Werk met Python of R en krijg de kracht die je nodig hebt !",
-        "cardTitle1": "Een ergonomische omgeving en diensten op aanvraag",
-        "cardTitle2": "Een actieve en enthousiaste gemeenschap die naar u luistert",
-        "cardTitle3": "Snelle, flexibele, online opslagplaats van gegevens",
-        "cardText1":
+        subtitle: "Werk met Python of R en krijg de kracht die je nodig hebt !",
+        cardTitle1: "Een ergonomische omgeving en diensten op aanvraag",
+        cardTitle2: "Een actieve en enthousiaste gemeenschap die naar u luistert",
+        cardTitle3: "Snelle, flexibele, online opslagplaats van gegevens",
+        cardText1:
             "Analyseer gegevens, voer gedistribueerde berekeningen uit en geniet van een brede waaier aan diensten. Reserveer de rekencapaciteit die u nodig hebt.",
-        "cardText2":
+        cardText2:
             "Profiteer van de beschikbare bronnen en deel deze met anderen:  handleidingen, opleidingen en uitwisselingskanalen.",
-        "cardText3":
+        cardText3:
             "Om gemakkelijk toegang te krijgen tot uw gegevens en gegevens die u ter beschikking worden gesteld vanuit uw programma's - Implementatie API S3",
-        "cardButton1": "De catalogus raadplegen",
-        "cardButton2": "Lid worden van de gemeenschap",
-        "cardButton3": "Gegevens raadplegen"
+        cardButton1: "De catalogus raadplegen",
+        cardButton2: "Lid worden van de gemeenschap",
+        cardButton3: "Gegevens raadplegen"
     },
-    "Catalog": {
-        "header": "Catalogus van de diensten",
+    Catalog: {
+        header: "Catalogus van de diensten",
         "no result found": ({ forWhat }) => `Geen resultaat gevonden voor ${forWhat}`,
         "search results": "Resultaten van de zoekopdracht",
-        "search": "Zoeken"
+        search: "Zoeken"
     },
-    "CatalogChartCard": {
-        "launch": "Opstarten",
+    CatalogChartCard: {
+        launch: "Opstarten",
         "learn more": "Meer weten ?"
     },
-    "CatalogNoSearchMatches": {
+    CatalogNoSearchMatches: {
         "no service found": "Dienst niet gevonden",
         "no result found": ({ forWhat }) => `Geen resultaat gevonden voor ${forWhat}`,
         "check spelling": `Controleer of de naam van de dienst correct is gespeld
             of probeer uw zoekopdracht uit te breiden.`,
         "go back": "Terug naar de voornaamste diensten"
     },
-    "Launcher": {
-        "sources": ({
+    Launcher: {
+        sources: ({
             helmChartName,
             helmChartRepositoryName,
             labeledHelmChartSourceUrls
@@ -608,9 +607,7 @@ export const translations: Translations<"nl"> = {
 
                     return {
                         href,
-                        ...(doOpensNewTab
-                            ? { "target": "_blank", "onClick": undefined }
-                            : {})
+                        ...(doOpensNewTab ? { target: "_blank", onClick: undefined } : {})
                     };
                 }}
             >{`We hebben de commandobalk ontworpen om jou volledige controle te geven over je Kubernetes-implementaties.
@@ -659,7 +656,7 @@ Voel je vrij om te verkennen en de controle over je Kubernetes-implementaties te
         `}</Markdown>
         )
     },
-    "AcknowledgeSharingOfConfigConfirmDialog": {
+    AcknowledgeSharingOfConfigConfirmDialog: {
         "acknowledge sharing of config confirm dialog title":
             "Wees bewust, configuraties worden gedeeld",
         "acknowledge sharing of config confirm dialog subtitle": ({
@@ -668,11 +665,11 @@ Voel je vrij om te verkennen en de controle over je Kubernetes-implementaties te
         deze configuratie opslaat, zal elk lid van het project ${groupProjectName} in staat zijn om het te starten.`,
         "acknowledge sharing of config confirm dialog body": `Hoewel er geen persoonlijke informatie automatisch is ingevoegd
         door Onyxia, wees voorzichtig om geen gevoelige informatie te delen in de herstelbare configuratie.`,
-        "cancel": "Annuleren",
+        cancel: "Annuleren",
         "i understand, proceed": "Ik begrijp het, ga verder"
     },
-    "AutoLaunchDisabledDialog": {
-        "ok": "Ok",
+    AutoLaunchDisabledDialog: {
+        ok: "Ok",
         "auto launch disabled dialog title": "Deze dienst uitvoeren kan gevaarlijk zijn",
         "auto launch disabled dialog body": (
             <>
@@ -686,53 +683,53 @@ Voel je vrij om te verkennen en de controle over je Kubernetes-implementaties te
             </>
         )
     },
-    "FormFieldWrapper": {
+    FormFieldWrapper: {
         "reset to default": "Terugzetten naar standaardwaarden"
     },
-    "YamlCodeBlockFormField": {
+    YamlCodeBlockFormField: {
         "not an array": "Een array wordt verwacht",
         "not an object": "Een object wordt verwacht",
         "not valid yaml": "Ongeldige YAML/JSON"
     },
-    "TextFormField": {
+    TextFormField: {
         "not matching pattern": ({ pattern }) =>
             `Komt niet overeen met het patroon ${pattern}`,
         "toggle password visibility": "Wachtwoordzichtbaarheid wisselen"
     },
-    "FormFieldGroupComponent": {
-        "add": "Toevoegen"
+    FormFieldGroupComponent: {
+        add: "Toevoegen"
     },
-    "NumberFormField": {
+    NumberFormField: {
         "below minimum": ({ minimum }) => `Moet groter dan of gelijk aan ${minimum} zijn`,
         "not a number": "Geen getal",
         "not an integer": "Geen geheel getal"
     },
-    "NoLongerBookmarkedDialog": {
+    NoLongerBookmarkedDialog: {
         "no longer bookmarked dialog title": "Niet opgeslagen wijzigingen",
         "no longer bookmarked dialog body":
             "Klik opnieuw op het symbool van de bladwijzer om de opgeslagen configuratie bij te werken.",
-        "ok": "Ok"
+        ok: "Ok"
     },
-    "MyService": {
+    MyService: {
         "page title": ({ helmReleaseFriendlyName }) =>
             `${helmReleaseFriendlyName} Monitoring`
     },
-    "PodLogsTab": {
+    PodLogsTab: {
         "not necessarily first logs":
             "Dit zijn niet noodzakelijkerwijs de eerste logs, oudere logs kunnen zijn verwijderd",
         "new logs are displayed in realtime": "Nieuwe logs worden in realtime weergegeven"
     },
-    "MyServiceButtonBar": {
-        "back": "Terug",
+    MyServiceButtonBar: {
+        back: "Terug",
         "external monitoring": "Externe monitoring",
         "helm values": "Helm waarden",
-        "reduce": "Verminderen"
+        reduce: "Verminderen"
     },
-    "LauncherMainCard": {
+    LauncherMainCard: {
         "friendly name": "Gepersonaliseerde naam",
-        "launch": "Opstarten",
+        launch: "Opstarten",
         "problem with": "Probleem met:",
-        "cancel": "Annuleren",
+        cancel: "Annuleren",
         "copy auto launch url": "URL voor automatisch starten kopiëren",
         "copy auto launch url helper": ({
             chartName
@@ -787,29 +784,28 @@ Voel je vrij om te verkennen en de controle over je Kubernetes-implementaties te
             </>
         )
     },
-    "Footer": {
-        "contribute": "Bijdragen aan het project",
+    Footer: {
+        contribute: "Bijdragen aan het project",
         "terms of service": "Gebruiksvoorwaarden",
         "change language": "Taal wijzigen",
         "dark mode switch": "Schakelaar voor donkere modus"
     },
-    "MyServices": {
-        "text1": "Mijn diensten",
-        "text2":
-            "Snel uw verschillende diensten in uitvoering starten, bekijken en beheren.",
-        "text3": "We raden u aan uw diensten te verwijderen na elke werksessie.",
+    MyServices: {
+        text1: "Mijn diensten",
+        text2: "Snel uw verschillende diensten in uitvoering starten, bekijken en beheren.",
+        text3: "We raden u aan uw diensten te verwijderen na elke werksessie.",
         "running services": "Diensten in uitvoering"
     },
-    "ClusterEventsDialog": {
-        "title": "Evenementen",
-        "subtitle": (
+    ClusterEventsDialog: {
+        title: "Evenementen",
+        subtitle: (
             <>
                 Evenementen van de Kubernetes namespace, het is een realtime feed van{" "}
                 <code>kubectl get events</code>
             </>
         )
     },
-    "MyServicesConfirmDeleteDialog": {
+    MyServicesConfirmDeleteDialog: {
         "confirm delete title": "Bent u zeker?",
         "confirm delete subtitle":
             "Zorg ervoor dat uw diensten geen onopgeslagen werk bevatten.",
@@ -817,29 +813,29 @@ Voel je vrij om te verkennen en de controle over je Kubernetes-implementaties te
             "Vergeet niet om uw code naar GitHub of GitLab te pushen voordat u verder gaat.",
         "confirm delete body shared services":
             "Opgelet, sommige van uw diensten worden gedeeld met andere projectleden.",
-        "cancel": "Annuleren",
-        "confirm": "Ja, verwijderen"
+        cancel: "Annuleren",
+        confirm: "Ja, verwijderen"
     },
-    "MyServicesButtonBar": {
-        "refresh": "Vernieuwen",
-        "launch": "Nieuwe dienst",
-        "trash": "Alles verwijderen",
+    MyServicesButtonBar: {
+        refresh: "Vernieuwen",
+        launch: "Nieuwe dienst",
+        trash: "Alles verwijderen",
         "trash my own": "Al mijn diensten verwijderen"
     },
-    "MyServicesCard": {
-        "service": "Dienst",
+    MyServicesCard: {
+        service: "Dienst",
         "running since": "Gestart: ",
-        "open": "openen",
-        "readme": "readme",
+        open: "openen",
+        readme: "readme",
         "reminder to delete services":
             "Vergeet niet uw diensten te verwijderen na gebruik.",
-        "status": "Status",
+        status: "Status",
         "container starting": "Container start",
-        "failed": "Mislukt",
+        failed: "Mislukt",
         "suspend service tooltip": "Onderbreek de dienst en bevrijd de middelen",
         "resume service tooltip": "Hervat de dienst",
-        "suspended": "Opgeschort",
-        "suspending": "Opschorten",
+        suspended: "Opgeschort",
+        suspending: "Opschorten",
         "share tooltip - belong to someone else": ({
             projectName,
             ownerUsername,
@@ -865,37 +861,37 @@ Voel je vrij om te verkennen en de controle over je Kubernetes-implementaties te
             </>
         )
     },
-    "MyServicesRestorableConfigOptions": {
-        "edit": "Wijzigen",
+    MyServicesRestorableConfigOptions: {
+        edit: "Wijzigen",
         "copy link": "URL kopiëren",
         "remove bookmark": "Verwijderen"
     },
-    "MyServicesRestorableConfig": {
-        "edit": "Wijzigen",
-        "launch": "Opstarten"
+    MyServicesRestorableConfig: {
+        edit: "Wijzigen",
+        launch: "Opstarten"
     },
-    "MyServicesRestorableConfigs": {
-        "saved": "Opgeslagen",
-        "expand": "Uitbreiden"
+    MyServicesRestorableConfigs: {
+        saved: "Opgeslagen",
+        expand: "Uitbreiden"
     },
-    "ReadmeDialog": {
-        "ok": "ok",
-        "return": "Terug"
+    ReadmeDialog: {
+        ok: "ok",
+        return: "Terug"
     },
-    "CopyOpenButton": {
+    CopyOpenButton: {
         "first copy the password": "Klik om het wachtwoord te kopiëren...",
         "open the service": "De dienst openen 🚀"
     },
-    "MyServicesCards": {
+    MyServicesCards: {
         "running services": "Diensten in uitvoering"
     },
-    "NoRunningService": {
+    NoRunningService: {
         "launch one": "Klik hier om er een te starten",
         "no services running": "You don't have any service running"
     },
-    "CircularUsage": {
-        "max": "Max",
-        "used": "Gebruikt",
+    CircularUsage: {
+        max: "Max",
+        used: "Gebruikt",
         "quota card title": ({ what, isLimit }) => {
             const whatTranslated = (() => {
                 switch (what) {
@@ -917,13 +913,13 @@ Voel je vrij om te verkennen en de controle over je Kubernetes-implementaties te
             return `${whatTranslated} - ${isLimit ? "Limiet" : "Aangevraagd"}`;
         }
     },
-    "Quotas": {
+    Quotas: {
         "show more": "Meer tonen",
         "resource usage quotas": "Quota's voor het gebruik van middelen",
         "current resource usage is reasonable":
             "Uw huidig gebruik van middelen is redelijk."
     },
-    "DataExplorer": {
+    DataExplorer: {
         "page header title": "Data Verkenner",
         "page header help title":
             "Bekijk uw Parquet en CSV-bestanden direct vanuit uw browser!",
@@ -942,21 +938,21 @@ Voel je vrij om te verkennen en de controle over je Kubernetes-implementaties te
                 <MuiLink {...demoParquetFileLink}>demobestand</MuiLink>!
             </>
         ),
-        "column": "kolom",
-        "density": "dichtheid",
+        column: "kolom",
+        density: "dichtheid",
         "download file": "bestand downloaden",
         "resize table": "Formaat wijzigen"
     },
-    "UrlInput": {
-        "load": "Laden"
+    UrlInput: {
+        load: "Laden"
     },
-    "CommandBar": {
-        "ok": "ok"
+    CommandBar: {
+        ok: "ok"
     },
-    "moment": {
+    moment: {
         "date format": ({ isSameYear }) =>
             `dddd, Do MMMM${isSameYear ? "" : " YYYY"}, HH:mm`,
-        "past1": ({ divisorKey }) => {
+        past1: ({ divisorKey }) => {
             switch (divisorKey) {
                 case "now":
                     return "zojuist";
@@ -976,7 +972,7 @@ Voel je vrij om te verkennen en de controle over je Kubernetes-implementaties te
                     return "vorig jaar";
             }
         },
-        "pastN": ({ divisorKey }) => {
+        pastN: ({ divisorKey }) => {
             switch (divisorKey) {
                 case "now":
                     return "zojuist";
@@ -996,7 +992,7 @@ Voel je vrij om te verkennen en de controle over je Kubernetes-implementaties te
                     return "# jaar geleden";
             }
         },
-        "future1": ({ divisorKey }) => {
+        future1: ({ divisorKey }) => {
             switch (divisorKey) {
                 case "now":
                     return "zojuist";
@@ -1016,7 +1012,7 @@ Voel je vrij om te verkennen en de controle over je Kubernetes-implementaties te
                     return "volgend jaar";
             }
         },
-        "futureN": ({ divisorKey }) => {
+        futureN: ({ divisorKey }) => {
             switch (divisorKey) {
                 case "now":
                     return "zojuist";
@@ -1037,20 +1033,20 @@ Voel je vrij om te verkennen en de controle over je Kubernetes-implementaties te
             }
         }
     },
-    "CopyToClipboardIconButton": {
+    CopyToClipboardIconButton: {
         "copied to clipboard": "Gekopieerd!",
         "copy to clipboard": "Kopiëren naar klembord"
     },
-    "CustomDataGridToolbarDensitySelector": {
-        "toolbarDensity": "Dichtheid",
-        "toolbarDensityStandard": "Standaard",
-        "toolbarDensityComfortable": "Comfortabel",
-        "toolbarDensityCompact": "Compact"
+    CustomDataGridToolbarDensitySelector: {
+        toolbarDensity: "Dichtheid",
+        toolbarDensityStandard: "Standaard",
+        toolbarDensityComfortable: "Comfortabel",
+        toolbarDensityCompact: "Compact"
     },
-    "CustomDataGridToolbarColumnsButton": {
-        "toolbarColumnsLabel": "Kolommen"
+    CustomDataGridToolbarColumnsButton: {
+        toolbarColumnsLabel: "Kolommen"
     },
-    "CustomDataGrid": {
+    CustomDataGrid: {
         "empty directory": "Deze map is leeg",
         "label rows count": ({ count }) => {
             const plural = count > 1 ? "en" : "";

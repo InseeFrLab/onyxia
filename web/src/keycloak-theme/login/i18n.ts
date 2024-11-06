@@ -1,8 +1,8 @@
 import { createUseI18n } from "keycloakify/login";
 
 export const { useI18n, ofTypeI18n } = createUseI18n({
-    "en": {
-        "lowerCaseAlphanumericalCharsOnly": "Only lowercase alphanumerical characters",
+    en: {
+        lowerCaseAlphanumericalCharsOnly: "Only lowercase alphanumerical characters",
         "allowed email domains": "Allowed domains",
         "this email domain is not allowed": "This email domain is not allowed",
         "minimum length": "Minimum length: {0}",
@@ -12,13 +12,13 @@ export const { useI18n, ofTypeI18n } = createUseI18n({
         "form not filled properly yet":
             "Please make sure the form is properly filled out",
         "must respect the pattern": "Must respect the pattern",
-        "or": "or",
-        "doRegister": "Create an account",
-        "tabTitleSuffix": "Sign in"
+        or: "or",
+        doRegister: "Create an account",
+        tabTitleSuffix: "Sign in"
     },
     /* spell-checker: disable */
-    "fr": {
-        "lowerCaseAlphanumericalCharsOnly":
+    fr: {
+        lowerCaseAlphanumericalCharsOnly:
             "Uniquement des caractères alphanumériques en minuscules",
         "allowed email domains": "Domaines autorisés",
         "this email domain is not allowed": "Ce domaine de messagerie n'est pas autorisé",
@@ -29,12 +29,12 @@ export const { useI18n, ofTypeI18n } = createUseI18n({
         "form not filled properly yet":
             "Veuillez vérifier que vous avez bien rempli le formulaire",
         "must respect the pattern": "Doit respecter le format",
-        "or": "ou",
-        "doRegister": "Créer un compte",
-        "tabTitleSuffix": "Connexion"
+        or: "ou",
+        doRegister: "Créer un compte",
+        tabTitleSuffix: "Connexion"
     },
-    "de": {
-        "lowerCaseAlphanumericalCharsOnly": "Nur Kleinbuchstaben und Zahlen",
+    de: {
+        lowerCaseAlphanumericalCharsOnly: "Nur Kleinbuchstaben und Zahlen",
         "allowed email domains": "Erlaubte Domänen",
         "this email domain is not allowed": "Diese E-Mail-Domäne ist nicht erlaubt",
         "minimum length": "Mindestlänge: {0}",
@@ -45,12 +45,12 @@ export const { useI18n, ofTypeI18n } = createUseI18n({
         "form not filled properly yet":
             "Bitte stellen Sie sicher, dass das Formular richtig ausgefüllt ist",
         "must respect the pattern": "Muss dem Muster entsprechen",
-        "or": "oder",
-        "doRegister": "Konto erstellen",
-        "tabTitleSuffix": "Anmeldung"
+        or: "oder",
+        doRegister: "Konto erstellen",
+        tabTitleSuffix: "Anmeldung"
     },
-    "fi": {
-        "lowerCaseAlphanumericalCharsOnly": "Vain pienet kirjaimet ja numerot",
+    fi: {
+        lowerCaseAlphanumericalCharsOnly: "Vain pienet kirjaimet ja numerot",
         "allowed email domains": "Sallitut sähköpostidomainit",
         "this email domain is not allowed": "Tämä sähköpostidomain ei ole sallittu",
         "minimum length": "Minimipituus: {0}",
@@ -59,12 +59,12 @@ export const { useI18n, ofTypeI18n } = createUseI18n({
         "go back": "Palaa takaisin",
         "form not filled properly yet": "Varmista, että lomake on täytetty oikein",
         "must respect the pattern": "On noudatettava kaavaa",
-        "or": "tai",
-        "doRegister": "Luo tili",
-        "tabTitleSuffix": "Kirjaudu sisään"
+        or: "tai",
+        doRegister: "Luo tili",
+        tabTitleSuffix: "Kirjaudu sisään"
     },
-    "it": {
-        "lowerCaseAlphanumericalCharsOnly": "Solo caratteri alfanumerici minuscoli",
+    it: {
+        lowerCaseAlphanumericalCharsOnly: "Solo caratteri alfanumerici minuscoli",
         "allowed email domains": "Domini email consentiti",
         "this email domain is not allowed": "Questo dominio email non è consentito",
         "minimum length": "Lunghezza minima: {0}",
@@ -75,12 +75,12 @@ export const { useI18n, ofTypeI18n } = createUseI18n({
         "form not filled properly yet":
             "Assicurati che il modulo sia compilato correttamente",
         "must respect the pattern": "Deve rispettare il pattern",
-        "or": "o",
-        "doRegister": "Crea un account",
-        "tabTitleSuffix": "Accedi"
+        or: "o",
+        doRegister: "Crea un account",
+        tabTitleSuffix: "Accedi"
     },
-    "es": {
-        "lowerCaseAlphanumericalCharsOnly": "Solo caracteres alfanuméricos en minúsculas",
+    es: {
+        lowerCaseAlphanumericalCharsOnly: "Solo caracteres alfanuméricos en minúsculas",
         "allowed email domains": "Dominios permitidos",
         "this email domain is not allowed":
             "Este dominio de correo electrónico no está permitido",
@@ -92,12 +92,12 @@ export const { useI18n, ofTypeI18n } = createUseI18n({
         "form not filled properly yet":
             "Por favor, asegúrese de que el formulario esté correctamente lleno",
         "must respect the pattern": "Debe respetar el patrón",
-        "or": "o",
-        "doRegister": "Crear una cuenta",
-        "tabTitleSuffix": "Iniciar sesión"
+        or: "o",
+        doRegister: "Crear una cuenta",
+        tabTitleSuffix: "Iniciar sesión"
     },
-    "nl": {
-        "lowerCaseAlphanumericalCharsOnly": "Alleen kleine alfanumerieke tekens",
+    nl: {
+        lowerCaseAlphanumericalCharsOnly: "Alleen kleine alfanumerieke tekens",
         "allowed email domains": "Toegestane e-maildomeinen",
         "this email domain is not allowed": "Dit e-maildomein is niet toegestaan",
         "minimum length": "Minimale lengte: {0}",
@@ -108,12 +108,12 @@ export const { useI18n, ofTypeI18n } = createUseI18n({
         "form not filled properly yet":
             "Zorg ervoor dat het formulier correct is ingevuld",
         "must respect the pattern": "Moet het patroon respecteren",
-        "or": "of",
-        "doRegister": "Maak een account aan",
-        "tabTitleSuffix": "Inloggen"
+        or: "of",
+        doRegister: "Maak een account aan",
+        tabTitleSuffix: "Inloggen"
     },
-    "no": {
-        "lowerCaseAlphanumericalCharsOnly": "Kun små bokstaver og tall",
+    no: {
+        lowerCaseAlphanumericalCharsOnly: "Kun små bokstaver og tall",
         "allowed email domains": "Tillatte e-postdomener",
         "this email domain is not allowed": "Denne e-postdomenet er ikke tillatt",
         "minimum length": "Minimum lengde: {0}",
@@ -124,12 +124,12 @@ export const { useI18n, ofTypeI18n } = createUseI18n({
         "form not filled properly yet":
             "Vennligst sørg for at skjemaet er fylt ut riktig",
         "must respect the pattern": "Må respektere mønsteret",
-        "or": "eller",
-        "doRegister": "Opprett konto",
-        "tabTitleSuffix": "Logg inn"
+        or: "eller",
+        doRegister: "Opprett konto",
+        tabTitleSuffix: "Logg inn"
     },
     "zh-CN": {
-        "lowerCaseAlphanumericalCharsOnly": "仅小写字母和数字",
+        lowerCaseAlphanumericalCharsOnly: "仅小写字母和数字",
         "allowed email domains": "允许的电子邮件域",
         "this email domain is not allowed": "不允许此电子邮件域",
         "minimum length": "最小长度：{0}",
@@ -138,9 +138,9 @@ export const { useI18n, ofTypeI18n } = createUseI18n({
         "go back": "返回",
         "form not filled properly yet": "请确保表单填写正确",
         "must respect the pattern": "必须遵循模式",
-        "or": "或",
-        "doRegister": "创建账户",
-        "tabTitleSuffix": "登录"
+        or: "或",
+        doRegister: "创建账户",
+        tabTitleSuffix: "登录"
     }
     /* spell-checker: enable */
 });

@@ -28,14 +28,14 @@ export function injectCustomFontFaceIfNotAlreadyDone(): void {
     const fontFaceRules = ([400, 500, 600, 700] as const)
         .map(weight => ({
             weight,
-            "normalFontFileBasename": env.FONT[weight],
-            "italicFontFileBasename": env.FONT[`${weight}-italic`]
+            normalFontFileBasename: env.FONT[weight],
+            italicFontFileBasename: env.FONT[`${weight}-italic`]
         }))
         .map(({ weight, normalFontFileBasename, italicFontFileBasename }) =>
             (["normal", "italic"] as const)
                 .map(fontStyle => ({
                     fontStyle,
-                    "fontFileBasename": (() => {
+                    fontFileBasename: (() => {
                         switch (fontStyle) {
                             case "normal":
                                 return normalFontFileBasename;
@@ -57,7 +57,7 @@ export function injectCustomFontFaceIfNotAlreadyDone(): void {
                 .map(({ fontFileBasename, ...rest }) => ({
                     fontFileBasename,
                     ...rest,
-                    "format": fontFileBasename.split(".").pop()
+                    format: fontFileBasename.split(".").pop()
                 }))
                 .map(({ fontStyle, fontFileBasename, format }) =>
                     [

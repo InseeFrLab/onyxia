@@ -32,7 +32,7 @@ function StoryWrapper(params: Params) {
     return (
         <>
             <NumberFormField
-                className={css({ "width": 300, "maxHeight": 400 })}
+                className={css({ width: 300, maxHeight: 400 })}
                 title="This is the title"
                 description="This is the description"
                 isInteger={isInteger}
@@ -54,19 +54,19 @@ function StoryWrapper(params: Params) {
 }
 
 export const Default: Story = {
-    "args": {
-        "isReadonly": false,
-        "isInteger": true,
-        "minimum": 1,
-        "defaultValue": 3
+    args: {
+        isReadonly: false,
+        isInteger: true,
+        minimum: 1,
+        defaultValue: 3
     }
 };
 
 export const NonInteger: Story = {
-    "args": {
-        "isReadonly": false,
-        "isInteger": false,
-        "minimum": 2.3,
-        "defaultValue": 4.5
+    args: {
+        isReadonly: false,
+        isInteger: false,
+        minimum: 2.3,
+        defaultValue: 4.5
     }
 };

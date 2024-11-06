@@ -45,7 +45,7 @@ export const ClusterEventsDialog = memo((props: ClusterEventsDialogProps) => {
     const fromNowArr = useMemo(
         () =>
             clusterEvents.map(clusterEvent =>
-                fromNow({ "dateTime": clusterEvent.timestamp })
+                fromNow({ dateTime: clusterEvent.timestamp })
             ),
         [clusterEvents, lang]
     );
@@ -82,7 +82,7 @@ export const ClusterEventsDialog = memo((props: ClusterEventsDialogProps) => {
             maxWidth="xl"
             fullWidth
             classes={{
-                "body": classes.body
+                body: classes.body
             }}
             body={
                 <div ref={setInnerBodyElement}>
@@ -137,30 +137,30 @@ const useStyles = tss
     .withName({ ClusterEventsDialog })
     .withParams<{ windowInnerHeight: number; messageDateMaxCharCount: number }>()
     .create(({ windowInnerHeight, messageDateMaxCharCount, theme }) => ({
-        "body": {
-            "height": windowInnerHeight - 200,
-            "overflowY": "auto",
-            "backgroundColor": theme.colors.useCases.surfaces.surface2,
+        body: {
+            height: windowInnerHeight - 200,
+            overflowY: "auto",
+            backgroundColor: theme.colors.useCases.surfaces.surface2,
             ...theme.spacing.rightLeft("padding", 3)
         },
-        "warningMessage": {
-            "color": theme.colors.useCases.alertSeverity.warning.main
+        warningMessage: {
+            color: theme.colors.useCases.alertSeverity.warning.main
         },
-        "messageDate": {
-            "display": "inline-flex",
-            "width": messageDateMaxCharCount * theme.typography.rootFontSizePx * 0.67,
-            "color": theme.colors.useCases.typography.textSecondary,
+        messageDate: {
+            display: "inline-flex",
+            width: messageDateMaxCharCount * theme.typography.rootFontSizePx * 0.67,
+            color: theme.colors.useCases.typography.textSecondary,
             "&::before": {
-                "content": "'• '",
-                "color": "transparent"
+                content: "'• '",
+                color: "transparent"
             }
         },
-        "messageDateNew": {
+        messageDateNew: {
             "&::before": {
-                "color": theme.colors.useCases.typography.textFocus
+                color: theme.colors.useCases.typography.textFocus
             }
         },
-        "errorMessage": {
-            "color": theme.colors.useCases.alertSeverity.error.main
+        errorMessage: {
+            color: theme.colors.useCases.alertSeverity.error.main
         }
     }));

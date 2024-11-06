@@ -61,8 +61,8 @@ export function assignValueAtPath(params: {
     assert(is<Record<string, Stringifyable> | Stringifyable[]>(subObj));
 
     assignValueAtPath({
-        "stringifyableObjectOrArray": subObj,
-        "path": rest,
+        stringifyableObjectOrArray: subObj,
+        path: rest,
         value
     });
 }

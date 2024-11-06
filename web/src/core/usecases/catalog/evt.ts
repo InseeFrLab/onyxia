@@ -18,8 +18,8 @@ export const createEvt = (({ evtAction, getState }) => {
                 const state = getState()[name];
                 assert(state.stateDescription === "ready");
                 evtOut.post({
-                    "actionName": "catalogIdInternallySet",
-                    "catalogId": state.selectedCatalogId
+                    actionName: "catalogIdInternallySet",
+                    catalogId: state.selectedCatalogId
                 });
             }
         );

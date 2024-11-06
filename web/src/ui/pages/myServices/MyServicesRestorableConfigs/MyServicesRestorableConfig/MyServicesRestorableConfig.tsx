@@ -40,7 +40,7 @@ export const MyServicesRestorableConfig = memo((props: Props) => {
     } = props;
 
     const { classes, cx } = useStyles({
-        "hasIcon": chartIconUrl !== undefined,
+        hasIcon: chartIconUrl !== undefined,
         isShortVariant
     });
 
@@ -117,42 +117,42 @@ const useStyles = tss
     .withParams<{ hasIcon: boolean; isShortVariant: boolean }>()
     .withName({ MyServicesRestorableConfig })
     .create(({ theme, isShortVariant, hasIcon }) => ({
-        "root": {
-            "borderRadius": 16,
-            "boxShadow": theme.shadows[1],
-            "backgroundColor": theme.colors.useCases.surfaces.surface1,
+        root: {
+            borderRadius: 16,
+            boxShadow: theme.shadows[1],
+            backgroundColor: theme.colors.useCases.surfaces.surface1,
             "&:hover": {
-                "boxShadow": theme.shadows[6]
+                boxShadow: theme.shadows[6]
             },
-            "display": "flex",
-            "alignItems": "center",
-            "padding": theme.spacing(2),
-            "paddingRight": theme.spacing(3)
+            display: "flex",
+            alignItems: "center",
+            padding: theme.spacing(2),
+            paddingRight: theme.spacing(3)
         },
-        "logo": {
-            "visibility": hasIcon ? undefined : "hidden",
+        logo: {
+            visibility: hasIcon ? undefined : "hidden",
             ...theme.spacing.rightLeft("margin", 2)
         },
-        "friendlyNameWrapper": {
-            "overflow": "hidden",
-            "whiteSpace": "nowrap",
-            "flex": 1
+        friendlyNameWrapper: {
+            overflow: "hidden",
+            whiteSpace: "nowrap",
+            flex: 1
         },
-        "friendlyName": {
-            "overflow": "hidden",
-            "textOverflow": "ellipsis"
+        friendlyName: {
+            overflow: "hidden",
+            textOverflow: "ellipsis"
         },
-        "linkIcon": {
-            "marginRight": theme.spacing(3)
+        linkIcon: {
+            marginRight: theme.spacing(3)
         },
-        "editIcon": {
-            "marginRight": theme.spacing(3)
+        editIcon: {
+            marginRight: theme.spacing(3)
         },
-        "linkAndEditButtonWrapper": !isShortVariant
+        linkAndEditButtonWrapper: !isShortVariant
             ? {}
             : {
-                  "width": 0,
-                  "height": 0,
-                  "overflow": "hidden"
+                  width: 0,
+                  height: 0,
+                  overflow: "hidden"
               }
     }));

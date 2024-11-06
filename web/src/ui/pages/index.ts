@@ -41,5 +41,5 @@ objectKeys(pages).forEach(pageName =>
 );
 
 export const routerOpts = {
-    "queryStringSerializer": launcher.queryStringSerializer
+    queryStringSerializer: launcher.queryStringSerializer
 } satisfies RouterOpts;

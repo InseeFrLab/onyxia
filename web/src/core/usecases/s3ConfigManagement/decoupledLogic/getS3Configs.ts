@@ -95,7 +95,7 @@ export function getS3Configs(params: {
                     e.workingDirectoryPath === workingDirectoryPath
             ) !== undefined
         ) {
-            return { "status": "test ongoing" };
+            return { status: "test ongoing" };
         }
 
         has_result: {
@@ -111,18 +111,18 @@ export function getS3Configs(params: {
             }
 
             return result.isSuccess
-                ? { "status": "test succeeded" }
-                : { "status": "test failed", "errorMessage": result.errorMessage };
+                ? { status: "test succeeded" }
+                : { status: "test failed", errorMessage: result.errorMessage };
         }
 
-        return { "status": "not tested" };
+        return { status: "not tested" };
     };
 
     const s3Configs: S3Config[] = [
         ...s3ProjectConfigs
             .map((c): S3Config.FromProject => {
                 const id = getProjectS3ConfigId({
-                    "creationTime": c.creationTime
+                    creationTime: c.creationTime
                 });
 
                 const workingDirectoryPath = c.workingDirectoryPath;
@@ -133,17 +133,17 @@ export function getS3Configs(params: {
                 const paramsOfCreateS3Client: ParamsOfCreateS3Client.NoSts = {
                     url,
                     pathStyleAccess,
-                    "isStsEnabled": false,
+                    isStsEnabled: false,
                     region,
-                    "credentials": c.credentials
+                    credentials: c.credentials
                 };
 
                 return {
-                    "origin": "project",
-                    "creationTime": c.creationTime,
-                    "friendlyName": c.friendlyName,
+                    origin: "project",
+                    creationTime: c.creationTime,
+                    friendlyName: c.friendlyName,
                     id,
-                    "dataSource": getDataSource({
+                    dataSource: getDataSource({
                         url,
                         pathStyleAccess,
                         workingDirectoryPath
@@ -151,9 +151,9 @@ export function getS3Configs(params: {
                     region,
                     workingDirectoryPath,
                     paramsOfCreateS3Client,
-                    "isXOnyxiaDefault": false,
-                    "isExplorerConfig": false,
-                    "connectionTestStatus": getConnectionTestStatus({
+                    isXOnyxiaDefault: false,
+                    isExplorerConfig: false,
+                    connectionTestStatus: getConnectionTestStatus({
                         paramsOfCreateS3Client,
                         workingDirectoryPath
                     })
@@ -174,17 +174,17 @@ export function getS3Configs(params: {
             const workingDirectoryContext =
                 projectGroup === undefined
                     ? {
-                          "type": "personalProject" as const,
+                          type: "personalProject" as const,
                           username
                       }
                     : {
-                          "type": "groupProject" as const,
+                          type: "groupProject" as const,
                           projectGroup
                       };
 
             const workingDirectoryPath = getWorkingDirectoryPath({
-                "workingDirectory": c.workingDirectory,
-                "context": workingDirectoryContext
+                workingDirectory: c.workingDirectory,
+                context: workingDirectoryContext
             });
             const url = c.url;
             const pathStyleAccess = c.pathStyleAccess;
@@ -200,15 +200,15 @@ export function getS3Configs(params: {
                 durationSeconds: c.sts.durationSeconds,
                 role: c.sts.role,
                 nameOfBucketToCreateIfNotExist: getWorkingDirectoryBucketToCreate({
-                    "workingDirectory": c.workingDirectory,
-                    "context": workingDirectoryContext
+                    workingDirectory: c.workingDirectory,
+                    context: workingDirectoryContext
                 })
             };
 
             return {
-                "origin": "deploymentRegion",
+                origin: "deploymentRegion",
                 id,
-                "dataSource": getDataSource({
+                dataSource: getDataSource({
                     url,
                     pathStyleAccess,
                     workingDirectoryPath
@@ -216,8 +216,8 @@ export function getS3Configs(params: {
                 region,
                 workingDirectoryPath,
                 paramsOfCreateS3Client,
-                "isXOnyxiaDefault": false,
-                "isExplorerConfig": false
+                isXOnyxiaDefault: false,
+                isExplorerConfig: false
             };
         })
     ];

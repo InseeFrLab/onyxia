@@ -38,9 +38,9 @@ export const createEvt = (({ evtAction, getState }) => {
             }
 
             evtOut.post({
-                "actionName": "display notification",
-                "message": clusterEvent.message,
-                "severity": clusterEvent.severity
+                actionName: "display notification",
+                message: clusterEvent.message,
+                severity: clusterEvent.severity
             });
         }
     );

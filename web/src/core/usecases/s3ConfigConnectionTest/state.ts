@@ -30,12 +30,12 @@ export const name = "s3ConfigConnectionTest";
 
 export const { actions, reducer } = createUsecaseActions({
     name,
-    "initialState": id<State>({
-        "configTestResults": [],
-        "ongoingConfigTests": []
+    initialState: id<State>({
+        configTestResults: [],
+        ongoingConfigTests: []
     }),
-    "reducers": {
-        "testStarted": (
+    reducers: {
+        testStarted: (
             state,
             {
                 payload
@@ -58,7 +58,7 @@ export const { actions, reducer } = createUsecaseActions({
                 workingDirectoryPath
             });
         },
-        "testCompleted": (
+        testCompleted: (
             state,
             {
                 payload

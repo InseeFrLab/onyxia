@@ -30,7 +30,7 @@ function StoryWrapper(params: Params) {
     return (
         <>
             <SelectFormField
-                className={css({ "width": 300, "maxHeight": 400 })}
+                className={css({ width: 300, maxHeight: 400 })}
                 title="This is the title"
                 description="This is the description"
                 isReadonly={isReadonly}
@@ -50,27 +50,27 @@ function StoryWrapper(params: Params) {
 }
 
 export const Default: Story = {
-    "args": {
-        "isReadonly": false,
-        "options": ["Option 1", "Option 2", "Option 3"]
+    args: {
+        isReadonly: false,
+        options: ["Option 1", "Option 2", "Option 3"]
     }
 };
 
 export const ObjectOptions: Story = {
-    "args": {
-        "isReadonly": false,
-        "options": [
-            { "foo": "a", "bar": "b" },
-            { "foo": "c", "bar": "d" },
-            { "foo": "e", "bar": "f" }
+    args: {
+        isReadonly: false,
+        options: [
+            { foo: "a", bar: "b" },
+            { foo: "c", bar: "d" },
+            { foo: "e", bar: "f" }
         ]
     }
 };
 
 export const ArrayOptions: Story = {
-    "args": {
-        "isReadonly": false,
-        "options": [
+    args: {
+        isReadonly: false,
+        options: [
             ["a", "b", "c"],
             ["d", "e", "f"],
             ["g", "h", "i"],
@@ -80,8 +80,8 @@ export const ArrayOptions: Story = {
 };
 
 export const Disabled: Story = {
-    "args": {
-        "isReadonly": true,
-        "options": ["Option 1", "Option 2", "Option 3"]
+    args: {
+        isReadonly: true,
+        options: ["Option 1", "Option 2", "Option 3"]
     }
 };

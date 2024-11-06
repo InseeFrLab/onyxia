@@ -39,9 +39,9 @@ export const name = "secretsEditor";
 
 export const { reducer, actions } = createUsecaseActions({
     name,
-    "initialState": id<State | null>(null),
-    "reducers": {
-        "openStarted": (
+    initialState: id<State | null>(null),
+    reducers: {
+        openStarted: (
             _state,
             {
                 payload
@@ -57,11 +57,11 @@ export const { reducer, actions } = createUsecaseActions({
             return id<State>({
                 directoryPath,
                 basename,
-                "secretWithMetadata": undefined,
-                "isBeingUpdated": true
+                secretWithMetadata: undefined,
+                isBeingUpdated: true
             });
         },
-        "openCompleted": (
+        openCompleted: (
             state,
             {
                 payload
@@ -80,7 +80,7 @@ export const { reducer, actions } = createUsecaseActions({
             (state as State).secretWithMetadata = secretWithMetadata;
             state.isBeingUpdated = false;
         },
-        "editSecretStarted": (state_, { payload }: { payload: EditSecretParams }) => {
+        editSecretStarted: (state_, { payload }: { payload: EditSecretParams }) => {
             const { key } = payload;
 
             assert(state_ !== null);
@@ -139,7 +139,7 @@ export const { reducer, actions } = createUsecaseActions({
 
             state.isBeingUpdated = true;
         },
-        "editSecretCompleted": state => {
+        editSecretCompleted: state => {
             assert(state !== null);
 
             const { secretWithMetadata } = state;
@@ -153,7 +153,7 @@ export const { reducer, actions } = createUsecaseActions({
 
             state.isBeingUpdated = false;
         },
-        "closeSecret": () => null
+        closeSecret: () => null
     }
 });
 
@@ -161,7 +161,7 @@ export const thunks = {
     /**
      * NOTE: It IS possible to navigate to a secret currently being renamed or created.
      */
-    "openSecret":
+    openSecret:
         (params: { directoryPath: string; basename: string }) =>
         async (...args) => {
             const [dispatch] = args;
@@ -185,13 +185,13 @@ export const thunks = {
                 })
             );
         },
-    "closeSecret":
+    closeSecret:
         () =>
         (...args) => {
             const [dispatch] = args;
             dispatch(actions.closeSecret());
         },
-    "editCurrentlyShownSecret":
+    editCurrentlyShownSecret:
         (params: EditSecretParams) =>
         async (...args) => {
             const [dispatch] = args;
@@ -213,7 +213,7 @@ export const thunks = {
             const { secret } = state.secretWithMetadata;
 
             await loggedSecretClient.put({
-                "path": pathJoin(state.directoryPath, state.basename),
+                path: pathJoin(state.directoryPath, state.basename),
                 secret
             });
 

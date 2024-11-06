@@ -43,18 +43,18 @@ export const YamlCodeBlockFormField = memo((props: Props) => {
             string,
             "not valid yaml" | "not an array" | "not an object"
         >({
-            "throttleDelay": 500,
-            "serializedValue": YAML.stringify(value),
+            throttleDelay: 500,
+            serializedValue: YAML.stringify(value),
             onChange,
-            "parse": serializedValue => {
+            parse: serializedValue => {
                 let value: Record<string, Stringifyable> | Stringifyable[];
 
                 try {
                     value = YAML.parse(serializedValue);
                 } catch {
                     return {
-                        "isValid": false,
-                        "errorMessageKey": "not valid yaml"
+                        isValid: false,
+                        errorMessageKey: "not valid yaml"
                     };
                 }
 
@@ -62,30 +62,30 @@ export const YamlCodeBlockFormField = memo((props: Props) => {
                     case "array":
                         if (!(value instanceof Array)) {
                             return {
-                                "isValid": false,
-                                "errorMessageKey": "not an array"
+                                isValid: false,
+                                errorMessageKey: "not an array"
                             };
                         }
                         break;
                     case "object":
                         if (!(value instanceof Object) || value instanceof Array) {
                             return {
-                                "isValid": false,
-                                "errorMessageKey": "not an object"
+                                isValid: false,
+                                errorMessageKey: "not an object"
                             };
                         }
                         break;
                 }
 
                 return {
-                    "isValid": true,
+                    isValid: true,
                     value
                 };
             }
         });
 
     useEffect(() => {
-        onErrorChange({ "hasError": errorMessageKey !== undefined });
+        onErrorChange({ hasError: errorMessageKey !== undefined });
     }, [errorMessageKey]);
 
     const inputId = useId();
@@ -117,11 +117,11 @@ export const YamlCodeBlockFormField = memo((props: Props) => {
 });
 
 const useStyles = tss.withName({ YamlCodeBlockFormField }).create({
-    "suspenseFallback": {
-        "display": "flex",
-        "justifyContent": "center",
-        "alignItems": "center",
-        "height": DEFAULT_HEIGHT
+    suspenseFallback: {
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        height: DEFAULT_HEIGHT
     }
 });
 

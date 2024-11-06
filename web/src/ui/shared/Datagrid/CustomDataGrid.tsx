@@ -46,8 +46,8 @@ export const CustomDataGrid = <R extends GridValidRowModel = any>(
         () =>
             ({
                 ...props.classes,
-                "columnSeparator": classes.columnSeparator,
-                "iconSeparator": classes.iconSeparator
+                columnSeparator: classes.columnSeparator,
+                iconSeparator: classes.iconSeparator
             }) satisfies Partial<GridClasses>,
         [props.classes, classes]
     );
@@ -59,7 +59,7 @@ export const CustomDataGrid = <R extends GridValidRowModel = any>(
                       column =>
                           ({
                               ...column,
-                              "renderCell": ({ value, hasFocus }) => (
+                              renderCell: ({ value, hasFocus }) => (
                                   <>
                                       <div style={{ width: "100%" }}>{value}</div>
                                       <CopyToClipboardIconButton
@@ -82,7 +82,7 @@ export const CustomDataGrid = <R extends GridValidRowModel = any>(
         <DataGrid<R>
             {...propsRest}
             slots={{
-                "noRowsOverlay": CustomNoRowsOverlay,
+                noRowsOverlay: CustomNoRowsOverlay,
 
                 ...slots
             }}
@@ -92,10 +92,10 @@ export const CustomDataGrid = <R extends GridValidRowModel = any>(
             autosizeOnMount
             autosizeOptions={propsRest.autosizeOptions ?? autosizeOptions}
             localeText={{
-                "MuiTablePagination": {
-                    "labelRowsPerPage": t("label rows per page")
+                MuiTablePagination: {
+                    labelRowsPerPage: t("label rows per page")
                 },
-                "footerRowSelected": count => t("label rows count", { count })
+                footerRowSelected: count => t("label rows count", { count })
             }}
         />
     );
@@ -109,8 +109,8 @@ const { i18n } = declareComponentKeys<
 
 export type I18n = typeof i18n;
 const useStyles = tss.withName({ CustomDataGrid }).create(({ theme }) => ({
-    "columnSeparator": { "&&&&&": { opacity: "1" } }, //Ensures the column separator remains visible (opacity 1) when a column header is selected. By default, MUI reduces the opacity to 0 because an outline is applied to the selected column header
-    "iconSeparator": {
+    columnSeparator: { "&&&&&": { opacity: "1" } }, //Ensures the column separator remains visible (opacity 1) when a column header is selected. By default, MUI reduces the opacity to 0 because an outline is applied to the selected column header
+    iconSeparator: {
         "&&": { color: theme.colors.useCases.typography.textDisabled }
     }
 }));

@@ -53,7 +53,7 @@ function getNewlyRequestedOrCachedTokenWithoutParamsFactory<
 
         cache = {
             token,
-            "ttl": token.expirationTime - Date.now()
+            ttl: token.expirationTime - Date.now()
         };
 
         await persistance?.set(cache);
@@ -81,11 +81,11 @@ export function getNewlyRequestedOrCachedTokenFactory<
     const getNewlyRequestedOrCachedTokenFactory_memo = memoize(
         (...args: Args) =>
             getNewlyRequestedOrCachedTokenWithoutParamsFactory({
-                "requestNewToken": () => requestNewToken(...args),
+                requestNewToken: () => requestNewToken(...args),
                 returnCachedTokenIfStillValidForXPercentOfItsTTL,
                 persistance
             }),
-        { "length": requestNewToken.length }
+        { length: requestNewToken.length }
     );
 
     function getNewlyRequestedOrCachedToken(...args: Args) {
@@ -109,10 +109,10 @@ export function createSessionStorageTokenPersistance<T>(params: {
     const { sessionStorageKey } = params;
 
     return {
-        "set": async ({ token, ttl }) => {
+        set: async ({ token, ttl }) => {
             sessionStorage.setItem(sessionStorageKey, JSON.stringify({ token, ttl }));
         },
-        "get": async () => {
+        get: async () => {
             const item = sessionStorage.getItem(sessionStorageKey);
 
             if (item === null) {
@@ -123,7 +123,7 @@ export function createSessionStorageTokenPersistance<T>(params: {
 
             return { token, ttl };
         },
-        "clear": () => {
+        clear: () => {
             sessionStorage.removeItem(sessionStorageKey);
         }
     };

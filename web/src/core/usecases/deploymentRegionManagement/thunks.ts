@@ -4,7 +4,7 @@ import { actions } from "./state";
 
 export const thunks = {
     /** NOTE: We don't try to hot swap, if the region is changed, we reload the app */
-    "changeDeploymentRegion":
+    changeDeploymentRegion:
         (params: { deploymentRegionId: string; reload: () => never }) => (): never => {
             const { deploymentRegionId, reload } = params;
 
@@ -17,7 +17,7 @@ export const thunks = {
 } satisfies Thunks;
 
 export const protectedThunks = {
-    "initialize":
+    initialize:
         () =>
         async (...args) => {
             const [dispatch, , { onyxiaApi }] = args;
@@ -40,7 +40,7 @@ export const protectedThunks = {
             dispatch(
                 actions.initialize({
                     availableDeploymentRegions,
-                    "currentDeploymentRegionId":
+                    currentDeploymentRegionId:
                         previousRegionIdFromLocalStorage ??
                         availableDeploymentRegions[0].id
                 })

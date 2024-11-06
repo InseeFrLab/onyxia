@@ -121,13 +121,13 @@ export function validateValueAgainstJSONSchema_noEnumCheck(params: {
         switch (helmValuesSchemaType) {
             case "string":
                 if (!getIsStringValid(value)) {
-                    return { "isValid": false, "reasonableApproximation": undefined };
+                    return { isValid: false, reasonableApproximation: undefined };
                 }
 
-                return { "isValid": true };
+                return { isValid: true };
             case "array":
             case "object":
-                return { "isValid": false, "reasonableApproximation": undefined };
+                return { isValid: false, reasonableApproximation: undefined };
             case "boolean": {
                 const isValid = false;
 
@@ -136,29 +136,29 @@ export function validateValueAgainstJSONSchema_noEnumCheck(params: {
                 if (isAmong(["true", "false"], value_lowerCase)) {
                     return {
                         isValid,
-                        "reasonableApproximation": value_lowerCase === "true"
+                        reasonableApproximation: value_lowerCase === "true"
                     };
                 }
                 if (isAmong(["yes", "no"], value_lowerCase)) {
                     return {
                         isValid,
-                        "reasonableApproximation": value_lowerCase === "yes"
+                        reasonableApproximation: value_lowerCase === "yes"
                     };
                 }
                 if (isAmong(["1", "0"], value_lowerCase)) {
                     return {
                         isValid,
-                        "reasonableApproximation": value_lowerCase === "1"
+                        reasonableApproximation: value_lowerCase === "1"
                     };
                 }
                 if (isAmong(["on", "off"], value_lowerCase)) {
                     return {
                         isValid,
-                        "reasonableApproximation": value_lowerCase === "on"
+                        reasonableApproximation: value_lowerCase === "on"
                     };
                 }
 
-                return { isValid, "reasonableApproximation": undefined };
+                return { isValid, reasonableApproximation: undefined };
             }
             case "integer":
             case "number": {
@@ -166,14 +166,14 @@ export function validateValueAgainstJSONSchema_noEnumCheck(params: {
 
                 const x = parseFloat(value);
                 if (isNaN(x)) {
-                    return { isValid, "reasonableApproximation": undefined };
+                    return { isValid, reasonableApproximation: undefined };
                 }
 
                 if (!getIsNumberValid(x)) {
-                    return { isValid, "reasonableApproximation": undefined };
+                    return { isValid, reasonableApproximation: undefined };
                 }
 
-                return { isValid, "reasonableApproximation": x };
+                return { isValid, reasonableApproximation: x };
             }
         }
         assert<Equals<typeof helmValuesSchemaType, never>>();
@@ -185,32 +185,32 @@ export function validateValueAgainstJSONSchema_noEnumCheck(params: {
                 const reasonableApproximation = `${value}`;
 
                 if (!getIsStringValid(reasonableApproximation)) {
-                    return { "isValid": false, "reasonableApproximation": undefined };
+                    return { isValid: false, reasonableApproximation: undefined };
                 }
 
                 return {
-                    "isValid": false,
+                    isValid: false,
                     reasonableApproximation
                 };
             }
             case "array":
             case "object":
                 return {
-                    "isValid": false,
-                    "reasonableApproximation": undefined
+                    isValid: false,
+                    reasonableApproximation: undefined
                 };
             case "boolean":
                 return {
-                    "isValid": false,
-                    "reasonableApproximation": value !== 0
+                    isValid: false,
+                    reasonableApproximation: value !== 0
                 };
             case "integer":
             case "number":
                 if (!getIsNumberValid(value)) {
-                    return { "isValid": false, "reasonableApproximation": undefined };
+                    return { isValid: false, reasonableApproximation: undefined };
                 }
 
-                return { "isValid": true };
+                return { isValid: true };
         }
         assert<Equals<typeof helmValuesSchemaType, never>>();
     }
@@ -221,32 +221,32 @@ export function validateValueAgainstJSONSchema_noEnumCheck(params: {
                 const reasonableApproximation = value ? "true" : "false";
 
                 if (!getIsStringValid(reasonableApproximation)) {
-                    return { "isValid": false, "reasonableApproximation": undefined };
+                    return { isValid: false, reasonableApproximation: undefined };
                 }
 
                 return {
-                    "isValid": false,
+                    isValid: false,
                     reasonableApproximation
                 };
             }
             case "array":
             case "object":
                 return {
-                    "isValid": false,
-                    "reasonableApproximation": undefined
+                    isValid: false,
+                    reasonableApproximation: undefined
                 };
             case "boolean":
-                return { "isValid": true };
+                return { isValid: true };
             case "integer":
             case "number": {
                 const reasonableApproximation = value ? 1 : 0;
 
                 if (!getIsNumberValid(reasonableApproximation)) {
-                    return { "isValid": false, "reasonableApproximation": undefined };
+                    return { isValid: false, reasonableApproximation: undefined };
                 }
 
                 return {
-                    "isValid": false,
+                    isValid: false,
                     reasonableApproximation
                 };
             }
@@ -260,35 +260,35 @@ export function validateValueAgainstJSONSchema_noEnumCheck(params: {
                 const reasonableApproximation = "";
 
                 if (!getIsStringValid(reasonableApproximation)) {
-                    return { "isValid": false, "reasonableApproximation": undefined };
+                    return { isValid: false, reasonableApproximation: undefined };
                 }
 
                 return {
-                    "isValid": false,
+                    isValid: false,
                     reasonableApproximation
                 };
             }
             case "array":
             case "object":
                 return {
-                    "isValid": false,
-                    "reasonableApproximation": undefined
+                    isValid: false,
+                    reasonableApproximation: undefined
                 };
             case "boolean":
                 return {
-                    "isValid": false,
-                    "reasonableApproximation": false
+                    isValid: false,
+                    reasonableApproximation: false
                 };
             case "integer":
             case "number": {
                 const reasonableApproximation = 0;
 
                 if (!getIsNumberValid(reasonableApproximation)) {
-                    return { "isValid": false, "reasonableApproximation": undefined };
+                    return { isValid: false, reasonableApproximation: undefined };
                 }
 
                 return {
-                    "isValid": false,
+                    isValid: false,
                     reasonableApproximation
                 };
             }
@@ -298,7 +298,7 @@ export function validateValueAgainstJSONSchema_noEnumCheck(params: {
 
     if (value instanceof Array) {
         if (helmValuesSchemaType !== "array") {
-            return { "isValid": false, "reasonableApproximation": undefined };
+            return { isValid: false, reasonableApproximation: undefined };
         }
 
         if (
@@ -307,11 +307,11 @@ export function validateValueAgainstJSONSchema_noEnumCheck(params: {
                 value.length <= (helmValuesSchema.maxItems ?? Infinity)
             )
         ) {
-            return { "isValid": false, "reasonableApproximation": undefined };
+            return { isValid: false, reasonableApproximation: undefined };
         }
 
         if (helmValuesSchema.items === undefined) {
-            return { "isValid": true };
+            return { isValid: true };
         }
 
         let isreasonableApproximation = false;
@@ -319,8 +319,8 @@ export function validateValueAgainstJSONSchema_noEnumCheck(params: {
 
         for (const value_i of value) {
             const validationResult = validateValueAgainstJSONSchema({
-                "helmValuesSchema": helmValuesSchema.items,
-                "value": value_i,
+                helmValuesSchema: helmValuesSchema.items,
+                value: value_i,
                 xOnyxiaContext
             });
 
@@ -330,7 +330,7 @@ export function validateValueAgainstJSONSchema_noEnumCheck(params: {
             }
 
             if (validationResult.reasonableApproximation === undefined) {
-                return { "isValid": false, "reasonableApproximation": undefined };
+                return { isValid: false, reasonableApproximation: undefined };
             }
 
             isreasonableApproximation = true;
@@ -340,19 +340,19 @@ export function validateValueAgainstJSONSchema_noEnumCheck(params: {
 
         return isreasonableApproximation
             ? {
-                  "isValid": false,
-                  "reasonableApproximation": valueOrreasonableApproximation
+                  isValid: false,
+                  reasonableApproximation: valueOrreasonableApproximation
               }
-            : { "isValid": true };
+            : { isValid: true };
     }
 
     if (value instanceof Object) {
         if (helmValuesSchemaType !== "object") {
-            return { "isValid": false, "reasonableApproximation": undefined };
+            return { isValid: false, reasonableApproximation: undefined };
         }
 
         if (helmValuesSchema.properties === undefined) {
-            return { "isValid": true };
+            return { isValid: true };
         }
 
         let isreasonableApproximation = false;
@@ -360,8 +360,8 @@ export function validateValueAgainstJSONSchema_noEnumCheck(params: {
 
         for (const [key, value_i] of Object.entries(value)) {
             const validationResult = validateValueAgainstJSONSchema({
-                "helmValuesSchema": helmValuesSchema.properties[key],
-                "value": value_i,
+                helmValuesSchema: helmValuesSchema.properties[key],
+                value: value_i,
                 xOnyxiaContext
             });
 
@@ -371,7 +371,7 @@ export function validateValueAgainstJSONSchema_noEnumCheck(params: {
             }
 
             if (validationResult.reasonableApproximation === undefined) {
-                return { "isValid": false, "reasonableApproximation": undefined };
+                return { isValid: false, reasonableApproximation: undefined };
             }
 
             isreasonableApproximation = true;
@@ -382,10 +382,10 @@ export function validateValueAgainstJSONSchema_noEnumCheck(params: {
 
         return isreasonableApproximation
             ? {
-                  "isValid": false,
-                  "reasonableApproximation": valueOrreasonableApproximation
+                  isValid: false,
+                  reasonableApproximation: valueOrreasonableApproximation
               }
-            : { "isValid": true };
+            : { isValid: true };
     }
 
     assert(false);

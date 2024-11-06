@@ -1,10 +1,10 @@
 import { createRouter, defineRoute, createGroup, param, type Route } from "type-route";
 
 export const routeDefs = {
-    "mySecrets": defineRoute(
+    mySecrets: defineRoute(
         {
-            "path": param.path.trailing.optional.string,
-            "openFile": param.query.optional.string
+            path: param.path.trailing.optional.string,
+            openFile: param.query.optional.string
         },
         ({ path }) => `/my-secrets/${path}`
     )

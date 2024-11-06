@@ -63,7 +63,7 @@ export function useFormField<
 
     const { onChangeWithThrottle, cancelThrottle } = useConst(() => {
         const { waitForThrottle, cancelThrottle } = createWaitForThrottle({
-            "delay": throttleDelay
+            delay: throttleDelay
         });
 
         async function onChangeWithThrottle(newValue: TValue) {
@@ -93,7 +93,7 @@ export function useFormField<
         serializedValue,
         setSerializedValue,
         errorMessageKey,
-        "resetToDefault":
+        resetToDefault:
             serializedValue === serializedValue_default
                 ? undefined
                 : () => setSerializedValue(serializedValue_default)

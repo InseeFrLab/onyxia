@@ -43,16 +43,16 @@ export const SettingSectionHeader = memo((props: Props) => {
 });
 
 const useStyles = tss.withName({ SettingSectionHeader }).create(({ theme }) => ({
-    "root": {
-        "marginBottom": theme.spacing(4)
+    root: {
+        marginBottom: theme.spacing(4)
     },
-    "title": {
-        "display": "inline-block"
+    title: {
+        display: "inline-block"
     },
-    "helperText": {
-        "marginTop": theme.spacing(2)
+    helperText: {
+        marginTop: theme.spacing(2)
     },
-    "helpIcon": {
-        "marginLeft": theme.spacing(2)
+    helpIcon: {
+        marginLeft: theme.spacing(2)
     }
 }));

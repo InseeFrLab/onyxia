@@ -9,7 +9,7 @@ const state = (rootState: RootState) => rootState[name];
 const projectConfig = createSelector(state, state => state.currentProjectConfigs);
 
 export const protectedSelectors = {
-    "currentProject": createSelector(state, (state): Project => {
+    currentProject: createSelector(state, (state): Project => {
         const { projects, selectedProjectId } = state;
 
         const project = projects.find(({ id }) => id === selectedProjectId);
@@ -22,19 +22,19 @@ export const protectedSelectors = {
 };
 
 export const selectors = {
-    "projectSelect": createSelector(
+    projectSelect: createSelector(
         createSelector(state, state => state.projects),
         createSelector(state, state => state.selectedProjectId),
         (projects, selectedProjectId) => ({
-            "options": projects.map(({ id, name }) => ({ value: id, label: name })),
-            "selectedOptionValue": selectedProjectId
+            options: projects.map(({ id, name }) => ({ value: id, label: name })),
+            selectedOptionValue: selectedProjectId
         })
     ),
-    "servicePassword": createSelector(
+    servicePassword: createSelector(
         projectConfig,
         projectConfig => projectConfig.servicePassword
     ),
-    "groupProjectName": createSelector(
+    groupProjectName: createSelector(
         protectedSelectors.currentProject,
         currentProject => {
             if (currentProject.group == undefined) {
@@ -43,7 +43,7 @@ export const selectors = {
             return currentProject.name;
         }
     ),
-    "doesUserBelongToSomeGroupProject": createSelector(
+    doesUserBelongToSomeGroupProject: createSelector(
         state,
         state => state.projects.length !== 1
     )

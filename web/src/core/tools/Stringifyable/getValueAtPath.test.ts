@@ -4,7 +4,7 @@ import { symToStr } from "tsafe/symToStr";
 
 describe(symToStr({ getValueAtPath }), () => {
     it("works with base case", () => {
-        const got = getValueAtPath({ "a": [{ "b": 42 }] }, ["a", 0, "b"]);
+        const got = getValueAtPath({ a: [{ b: 42 }] }, ["a", 0, "b"]);
 
         expect(got).toBe(42);
     });

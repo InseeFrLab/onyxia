@@ -29,29 +29,29 @@ export function computeRootForm(params: {
         params;
 
     const rootForm: RootForm = {
-        "main": (() => {
+        main: (() => {
             const formFieldGroup_root = computeRootFormFieldGroup({
                 helmValuesSchema,
                 helmValues,
                 xOnyxiaContext
             });
 
-            mergeRangeSliders({ "formFieldGroup": formFieldGroup_root });
+            mergeRangeSliders({ formFieldGroup: formFieldGroup_root });
 
             return formFieldGroup_root.nodes;
         })(),
-        "disabledDependencies": helmDependencies
+        disabledDependencies: helmDependencies
             .filter(({ condition }) =>
                 condition === undefined
                     ? false
                     : getValueAtPathInObject({
-                          "obj": helmValues,
-                          "path": condition
+                          obj: helmValues,
+                          path: condition
                       }) !== true
             )
             .map(({ chartName }) => chartName),
-        "global": [],
-        "dependencies": {}
+        global: [],
+        dependencies: {}
     };
 
     const extractGroup = (params: {
@@ -74,8 +74,8 @@ export function computeRootForm(params: {
 
     rootForm.global =
         extractGroup({
-            "nodes": rootForm.main,
-            "groupName": "global"
+            nodes: rootForm.main,
+            groupName: "global"
         }) ?? [];
 
     helmDependencies
@@ -83,14 +83,14 @@ export function computeRootForm(params: {
         .forEach(({ chartName }) => {
             const main =
                 extractGroup({
-                    "nodes": rootForm.main,
-                    "groupName": chartName
+                    nodes: rootForm.main,
+                    groupName: chartName
                 }) ?? [];
 
             const global =
                 extractGroup({
-                    "nodes": rootForm.global,
-                    "groupName": chartName
+                    nodes: rootForm.global,
+                    groupName: chartName
                 }) ?? [];
 
             if (main.length === 0 && global.length === 0) {

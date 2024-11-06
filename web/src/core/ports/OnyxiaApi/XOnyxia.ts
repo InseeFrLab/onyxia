@@ -29,10 +29,10 @@ export const zXOnyxiaParams = (() => {
     type TargetType = XOnyxiaParams;
 
     const zTargetType = z.object({
-        "overwriteDefaultWith": z.string().optional(),
-        "overwriteListEnumWith": z.string().optional(),
-        "hidden": z.boolean().optional(),
-        "readonly": z.boolean().optional()
+        overwriteDefaultWith: z.string().optional(),
+        overwriteListEnumWith: z.string().optional(),
+        hidden: z.boolean().optional(),
+        readonly: z.boolean().optional()
     });
 
     assert<Equals<z.infer<typeof zTargetType>, TargetType>>();

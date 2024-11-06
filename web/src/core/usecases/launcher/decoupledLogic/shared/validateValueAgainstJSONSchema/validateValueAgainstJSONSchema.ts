@@ -59,8 +59,8 @@ export function validateValueAgainstJSONSchema(params: {
         }
 
         return {
-            "isValid": false,
-            "reasonableApproximation": undefined
+            isValid: false,
+            reasonableApproximation: undefined
         };
     }
 

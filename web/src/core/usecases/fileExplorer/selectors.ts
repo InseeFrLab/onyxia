@@ -28,11 +28,11 @@ const uploadProgress = createSelector(state, (state): UploadProgress => {
 
     return {
         s3FilesBeingUploaded,
-        "overallProgress": {
+        overallProgress: {
             completedFileCount,
-            "remainingFileCount": s3FilesBeingUploaded.length - completedFileCount,
-            "totalFileCount": s3FilesBeingUploaded.length,
-            "uploadPercent":
+            remainingFileCount: s3FilesBeingUploaded.length - completedFileCount,
+            totalFileCount: s3FilesBeingUploaded.length,
+            uploadPercent:
                 s3FilesBeingUploaded
                     .map(({ size, uploadPercent }) => size * uploadPercent)
                     .reduce((prev, curr) => prev + curr, 0) /
@@ -131,8 +131,8 @@ const currentWorkingDirectoryView = createSelector(
                 );
 
                 const common = {
-                    "basename": object.basename,
-                    "policy": object.policy,
+                    basename: object.basename,
+                    policy: object.policy,
                     isBeingDeleted,
                     isPolicyChanging
                 } satisfies CurrentWorkingDirectoryView.Item.Common;
@@ -142,13 +142,13 @@ const currentWorkingDirectoryView = createSelector(
                         const { size, lastModified } = object;
 
                         return id<CurrentWorkingDirectoryView.Item.File>({
-                            "kind": "file",
+                            kind: "file",
                             ...common,
                             size,
                             lastModified,
                             ...(isBeingCreated
                                 ? {
-                                      "isBeingCreated": true,
+                                      isBeingCreated: true,
                                       uploadPercent: (() => {
                                           const uploadEntry = s3FilesBeingUploaded.find(
                                               o =>
@@ -159,7 +159,7 @@ const currentWorkingDirectoryView = createSelector(
                                       })()
                                   }
                                 : {
-                                      "isBeingCreated": false
+                                      isBeingCreated: false
                                   })
                         });
                     }
@@ -222,7 +222,7 @@ const main = createSelector(
     ) => {
         if (currentWorkingDirectoryView === undefined) {
             return {
-                "isCurrentWorkingDirectoryLoaded": false as const,
+                isCurrentWorkingDirectoryLoaded: false as const,
                 isNavigationOngoing,
                 uploadProgress,
                 commandLogsEntries,
@@ -232,7 +232,7 @@ const main = createSelector(
         }
 
         return {
-            "isCurrentWorkingDirectoryLoaded": true as const,
+            isCurrentWorkingDirectoryLoaded: true as const,
             isNavigationOngoing,
             uploadProgress,
             commandLogsEntries,

@@ -12,7 +12,7 @@ export async function clearProjectConfigs(params: {
 
     const files = await secretsManager
         .list({
-            "path": projectVaultTopDirPath_reserved
+            path: projectVaultTopDirPath_reserved
         })
         .then(
             async ({ files }) => files,
@@ -39,7 +39,7 @@ export async function clearProjectConfigs(params: {
             }
 
             await secretsManager.delete({
-                "path": pathJoin(projectVaultTopDirPath_reserved, key)
+                path: pathJoin(projectVaultTopDirPath_reserved, key)
             });
         })
     );

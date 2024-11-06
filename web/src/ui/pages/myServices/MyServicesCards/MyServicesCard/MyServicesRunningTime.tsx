@@ -16,11 +16,11 @@ export const MyServicesRunningTime = memo((props: Props) => {
     const { className, startTime, doesHaveBeenRunningForTooLong } = props;
 
     const { classes, cx } = useStyles({
-        "isOvertime": doesHaveBeenRunningForTooLong
+        isOvertime: doesHaveBeenRunningForTooLong
     });
 
     const { fromNowText } = useFromNow({
-        "dateTime": startTime
+        dateTime: startTime
     });
 
     return (
@@ -44,11 +44,11 @@ const useStyles = tss
             : undefined;
 
         return {
-            "root": {
+            root: {
                 color,
-                "display": "flex",
-                "alignItems": "center"
+                display: "flex",
+                alignItems: "center"
             },
-            "icon": { color }
+            icon: { color }
         };
     });

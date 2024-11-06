@@ -11,6 +11,6 @@ export function bucketNameAndObjectNameFromS3Path(path: string) {
 
     return {
         bucketName,
-        "objectName": rest.join("/")
+        objectName: rest.join("/")
     };
 }

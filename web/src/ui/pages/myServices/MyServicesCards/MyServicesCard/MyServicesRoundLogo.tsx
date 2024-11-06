@@ -24,8 +24,8 @@ const useStyles = tss
     .withParams<{ severity: Props["severity"] }>()
     .withName({ MyServicesRoundLogo })
     .create(({ theme, severity }) => ({
-        "root": {
-            "borderColor": (() => {
+        root: {
+            borderColor: (() => {
                 switch (severity) {
                     case "pending":
                         return theme.colors.palette[
@@ -35,11 +35,11 @@ const useStyles = tss
                         return theme.colors.useCases.alertSeverity[severity].main;
                 }
             })(),
-            "borderStyle": "solid",
-            "borderWidth": 3,
-            "padding": 2,
-            "borderRadius": "50%",
-            "boxSizing": "border-box",
-            "display": "inline-block"
+            borderStyle: "solid",
+            borderWidth: 3,
+            padding: 2,
+            borderRadius: "50%",
+            boxSizing: "border-box",
+            display: "inline-block"
         }
     }));

@@ -145,41 +145,41 @@ const { i18n } = declareComponentKeys<
 export type I18n = typeof i18n;
 
 const useStyles = tss.withName({ PodLogsTab }).create(({ theme }) => ({
-    "root": {
-        "height": "100%",
-        "overflow": "visible",
-        "display": "flex",
-        "flexDirection": "column"
+    root: {
+        height: "100%",
+        overflow: "visible",
+        display: "flex",
+        flexDirection: "column"
     },
-    "circularProgressWrapper": {
-        "flex": 1,
-        "display": "flex",
-        "justifyContent": "center",
-        "alignItems": "center"
+    circularProgressWrapper: {
+        flex: 1,
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center"
     },
-    "controlsWrapper": {
-        "display": "flex",
-        "justifyContent": "space-between",
-        "paddingLeft": theme.spacing(1)
+    controlsWrapper: {
+        display: "flex",
+        justifyContent: "space-between",
+        paddingLeft: theme.spacing(1)
     },
-    "pageAnnotation": {
-        "position": "absolute",
-        "top": theme.spacing(2),
-        "right": theme.spacing(2),
-        "fontStyle": "italic"
+    pageAnnotation: {
+        position: "absolute",
+        top: theme.spacing(2),
+        right: theme.spacing(2),
+        fontStyle: "italic"
     },
-    "newLogsText": {
-        "marginTop": theme.spacing(4),
-        "fontStyle": "italic",
-        "color": theme.colors.useCases.typography.textSecondary
+    newLogsText: {
+        marginTop: theme.spacing(4),
+        fontStyle: "italic",
+        color: theme.colors.useCases.typography.textSecondary
     },
-    "pre": {
-        "padding": theme.spacing(5),
-        "backgroundColor": theme.colors.useCases.surfaces.background,
-        "borderRadius": theme.spacing(2),
-        "position": "relative",
-        "flex": 1,
-        "overflow": "auto",
-        "scrollBehavior": "smooth"
+    pre: {
+        padding: theme.spacing(5),
+        backgroundColor: theme.colors.useCases.surfaces.background,
+        borderRadius: theme.spacing(2),
+        position: "relative",
+        flex: 1,
+        overflow: "auto",
+        scrollBehavior: "smooth"
     }
 }));

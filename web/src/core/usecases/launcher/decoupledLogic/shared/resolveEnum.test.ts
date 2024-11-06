@@ -13,10 +13,10 @@ describe(symToStr({ resolveEnum }), () => {
         };
 
         const got = resolveEnum({
-            "helmValuesSchema": {
-                "type": "string",
+            helmValuesSchema: {
+                type: "string",
                 "x-onyxia": {
-                    "overwriteListEnumWith": "user.decodedIdToken.groups"
+                    overwriteListEnumWith: "user.decodedIdToken.groups"
                 }
             },
             xOnyxiaContext
@@ -37,10 +37,10 @@ describe(symToStr({ resolveEnum }), () => {
         };
 
         const got = resolveEnum({
-            "helmValuesSchema": {
-                "type": "number",
+            helmValuesSchema: {
+                type: "number",
                 "x-onyxia": {
-                    "overwriteListEnumWith": "user.decodedIdToken.groups"
+                    overwriteListEnumWith: "user.decodedIdToken.groups"
                 }
             },
             xOnyxiaContext
@@ -53,21 +53,21 @@ describe(symToStr({ resolveEnum }), () => {
 
     it("works recursively", () => {
         const xOnyxiaContext: XOnyxiaContextLike = {
-            "r": [
+            r: [
                 [1, 2, 3],
                 [4, "5", 6]
             ]
         };
 
         const got = resolveEnum({
-            "helmValuesSchema": {
-                "type": "array",
-                "items": {
-                    "type": "number",
-                    "enum": [1, 2, 3, 4, 5, 6]
+            helmValuesSchema: {
+                type: "array",
+                items: {
+                    type: "number",
+                    enum: [1, 2, 3, 4, 5, 6]
                 },
                 "x-onyxia": {
-                    "overwriteListEnumWith": "r"
+                    overwriteListEnumWith: "r"
                 }
             },
             xOnyxiaContext
@@ -83,25 +83,25 @@ describe(symToStr({ resolveEnum }), () => {
 
     it("keeps valid options from xOnyxia even if not all valid", () => {
         const xOnyxiaContext: XOnyxiaContextLike = {
-            "r": [
+            r: [
                 [1, 2, 3],
                 [4, "5", 6]
             ]
         };
 
         const got = resolveEnum({
-            "helmValuesSchema": {
-                "type": "array",
-                "items": {
-                    "type": "number",
-                    "enum": [2, 3, 4, 5, 6]
+            helmValuesSchema: {
+                type: "array",
+                items: {
+                    type: "number",
+                    enum: [2, 3, 4, 5, 6]
                 },
-                "listEnum": [
+                listEnum: [
                     [2, 2, 2],
                     [3, 3, 3]
                 ],
                 "x-onyxia": {
-                    "overwriteListEnumWith": "r"
+                    overwriteListEnumWith: "r"
                 }
             },
             xOnyxiaContext
@@ -121,18 +121,18 @@ describe(symToStr({ resolveEnum }), () => {
         };
 
         const got = resolveEnum({
-            "helmValuesSchema": {
-                "type": "array",
-                "items": {
-                    "type": "number",
-                    "enum": [2, 3, 4, 5, 6]
+            helmValuesSchema: {
+                type: "array",
+                items: {
+                    type: "number",
+                    enum: [2, 3, 4, 5, 6]
                 },
-                "listEnum": [
+                listEnum: [
                     [2, 2, 2],
                     [3, 3, 3]
                 ],
                 "x-onyxia": {
-                    "overwriteListEnumWith": "r"
+                    overwriteListEnumWith: "r"
                 }
             },
             xOnyxiaContext
@@ -150,12 +150,12 @@ describe(symToStr({ resolveEnum }), () => {
         const xOnyxiaContext: XOnyxiaContextLike = {};
 
         const got = resolveEnum({
-            "helmValuesSchema": {
-                "type": "string",
-                "listEnum": [1, 2, 3],
-                "enum": ["a", "b", "c"],
+            helmValuesSchema: {
+                type: "string",
+                listEnum: [1, 2, 3],
+                enum: ["a", "b", "c"],
                 "x-onyxia": {
-                    "overwriteListEnumWith": "user.decodedIdToken.groups"
+                    overwriteListEnumWith: "user.decodedIdToken.groups"
                 }
             },
             xOnyxiaContext
@@ -170,12 +170,12 @@ describe(symToStr({ resolveEnum }), () => {
         const xOnyxiaContext: XOnyxiaContextLike = {};
 
         const got = resolveEnum({
-            "helmValuesSchema": {
-                "type": "string",
-                "listEnum": [1, 2, 3],
-                "enum": ["a", "b", 3],
+            helmValuesSchema: {
+                type: "string",
+                listEnum: [1, 2, 3],
+                enum: ["a", "b", 3],
                 "x-onyxia": {
-                    "overwriteListEnumWith": "user.decodedIdToken.groups"
+                    overwriteListEnumWith: "user.decodedIdToken.groups"
                 }
             },
             xOnyxiaContext
@@ -191,11 +191,11 @@ describe(symToStr({ resolveEnum }), () => {
 
         expect(() => {
             resolveEnum({
-                "helmValuesSchema": {
-                    "type": "string",
-                    "render": "list",
-                    "listEnum": [1, 2, 3],
-                    "enum": ["a", "b", 3]
+                helmValuesSchema: {
+                    type: "string",
+                    render: "list",
+                    listEnum: [1, 2, 3],
+                    enum: ["a", "b", 3]
                 },
                 xOnyxiaContext
             });
@@ -206,9 +206,9 @@ describe(symToStr({ resolveEnum }), () => {
         const xOnyxiaContext: XOnyxiaContextLike = {};
 
         const got = resolveEnum({
-            "helmValuesSchema": {
-                "type": "number",
-                "enum": [1, 2, "not a number"]
+            helmValuesSchema: {
+                type: "number",
+                enum: [1, 2, "not a number"]
             },
             xOnyxiaContext
         });
@@ -222,9 +222,9 @@ describe(symToStr({ resolveEnum }), () => {
         const xOnyxiaContext: XOnyxiaContextLike = {};
 
         const got = resolveEnum({
-            "helmValuesSchema": {
-                "type": "number",
-                "enum": [1, 2, "3"]
+            helmValuesSchema: {
+                type: "number",
+                enum: [1, 2, "3"]
             },
             xOnyxiaContext
         });

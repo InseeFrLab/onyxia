@@ -49,7 +49,7 @@ function StoryWrapper(params: Params) {
     return (
         <>
             <RangeSliderFormField
-                className={css({ "width": 300, "maxHeight": 400 })}
+                className={css({ width: 300, maxHeight: 400 })}
                 title={title}
                 unit={unit}
                 step={step}
@@ -80,25 +80,25 @@ function StoryWrapper(params: Params) {
 }
 
 export const Default: Story = {
-    "args": {
-        "title": "memory",
-        "unit": "Gi",
-        "step": 1,
-        "lowEndRange": {
-            "isReadonly": false,
-            "rangeEndSemantic": "guaranteed",
-            "min": 1,
-            "max": 200,
-            "description": "The amount of memory guaranteed",
-            "defaultValue": 2
+    args: {
+        title: "memory",
+        unit: "Gi",
+        step: 1,
+        lowEndRange: {
+            isReadonly: false,
+            rangeEndSemantic: "guaranteed",
+            min: 1,
+            max: 200,
+            description: "The amount of memory guaranteed",
+            defaultValue: 2
         },
-        "highEndRange": {
-            "isReadonly": false,
-            "rangeEndSemantic": "maximum",
-            "min": 1,
-            "max": 200,
-            "description": "The maximum amount of memory",
-            "defaultValue": 50
+        highEndRange: {
+            isReadonly: false,
+            rangeEndSemantic: "maximum",
+            min: 1,
+            max: 200,
+            description: "The maximum amount of memory",
+            defaultValue: 50
         }
     }
 };

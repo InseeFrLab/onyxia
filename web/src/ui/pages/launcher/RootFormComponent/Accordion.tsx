@@ -59,8 +59,8 @@ export function Accordion(props: Props) {
         }
 
         const scrollableParent = getScrollableParent({
-            "element": rootElement,
-            "doReturnElementIfScrollable": false
+            element: rootElement,
+            doReturnElementIfScrollable: false
         });
 
         let isActive = true;
@@ -111,7 +111,7 @@ export function Accordion(props: Props) {
             expanded={isExpanded}
             onChange={(...[, isExpanded]) => setIsExpanded(isExpanded)}
             slotProps={{
-                "transition": {
+                transition: {
                     onEntered: () => {
                         evtAnimationEnd.post();
                     }
@@ -120,15 +120,15 @@ export function Accordion(props: Props) {
         >
             <MuiAccordionSummary
                 classes={{
-                    "root": classes.summary,
-                    "content": classes.summaryContent,
-                    "expanded": classes.summaryExpanded,
-                    "expandIconWrapper": classes.summaryExpandIconWrapper
+                    root: classes.summary,
+                    content: classes.summaryContent,
+                    expanded: classes.summaryExpanded,
+                    expandIconWrapper: classes.summaryExpandIconWrapper
                 }}
                 expandIcon={<Icon icon={"ExpandMore" satisfies MuiIconComponentName} />}
                 aria-controls={contentId}
             >
-                <Text typo="label 1" componentProps={{ "lang": "und" }}>
+                <Text typo="label 1" componentProps={{ lang: "und" }}>
                     {(() => {
                         const lastSegment = helmValuesPath[helmValuesPath.length - 1];
 
@@ -137,7 +137,7 @@ export function Accordion(props: Props) {
                         return capitalize(lastSegment);
                     })()}
                 </Text>
-                <Text typo="caption" color="secondary" componentProps={{ "lang": "und" }}>
+                <Text typo="caption" color="secondary" componentProps={{ lang: "und" }}>
                     {description}
                 </Text>
             </MuiAccordionSummary>
@@ -159,34 +159,34 @@ const useStyles = tss
     .withName({ Accordion })
     .withNestedSelectors<"summary" | "summaryExpanded">()
     .create(({ theme, classes }) => ({
-        "root": {
-            "backgroundColor": theme.colors.useCases.surfaces.surface1
+        root: {
+            backgroundColor: theme.colors.useCases.surfaces.surface1
         },
-        "summaryExpanded": {},
-        "summary": {
-            "backgroundColor": theme.colors.useCases.surfaces.surface1,
+        summaryExpanded: {},
+        summary: {
+            backgroundColor: theme.colors.useCases.surfaces.surface1,
             [`&.${classes.summaryExpanded}`]: {
-                "borderBottom": `1px solid ${theme.colors.useCases.typography.textDisabled}`
+                borderBottom: `1px solid ${theme.colors.useCases.typography.textDisabled}`
             }
         },
-        "summaryContent": {
-            "display": "flex",
-            "alignItems": "baseline",
-            "gap": theme.spacing(2),
-            "paddingLeft": theme.spacing(4)
+        summaryContent: {
+            display: "flex",
+            alignItems: "baseline",
+            gap: theme.spacing(2),
+            paddingLeft: theme.spacing(4)
         },
-        "summaryExpandIconWrapper": {
-            "color": theme.colors.useCases.typography.textPrimary,
+        summaryExpandIconWrapper: {
+            color: theme.colors.useCases.typography.textPrimary,
             [`.${classes.summary}:hover &`]: {
-                "color": theme.colors.useCases.typography.textFocus
+                color: theme.colors.useCases.typography.textFocus
             }
         },
-        "details": {
-            "paddingTop": theme.spacing(4),
-            "backgroundColor": theme.colors.useCases.surfaces.surface1,
-            "paddingLeft": theme.spacing(4)
+        details: {
+            paddingTop: theme.spacing(4),
+            backgroundColor: theme.colors.useCases.surfaces.surface1,
+            paddingLeft: theme.spacing(4)
         },
-        "group": {
-            "padding": theme.spacing(2)
+        group: {
+            padding: theme.spacing(2)
         }
     }));

@@ -16,18 +16,18 @@ export const name = "sqlOlapShell";
 
 export const { reducer, actions } = createUsecaseActions({
     name,
-    "initialState": id<State>({
-        "isReady": false
+    initialState: id<State>({
+        isReady: false
     }),
-    "reducers": {
-        "ready": state => {
+    reducers: {
+        ready: state => {
             state.isReady = true;
         }
     }
 });
 
 export const thunks = {
-    "initialize":
+    initialize:
         () =>
         async (...args) => {
             const [dispatch, , rootContext] = args;
@@ -40,7 +40,7 @@ export const thunks = {
 
             dispatch(actions.ready());
         },
-    "getDb":
+    getDb:
         () =>
         (...args) => {
             const [, getState, extraArg] = args;

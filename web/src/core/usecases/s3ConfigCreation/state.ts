@@ -43,13 +43,13 @@ export const name = "s3ConfigCreation";
 
 export const { reducer, actions } = createUsecaseActions({
     name,
-    "initialState": id<State>(
+    initialState: id<State>(
         id<State.NotInitialized>({
-            "stateDescription": "not initialized"
+            stateDescription: "not initialized"
         })
     ),
-    "reducers": {
-        "initialized": (
+    reducers: {
+        initialized: (
             _state,
             {
                 payload
@@ -63,21 +63,21 @@ export const { reducer, actions } = createUsecaseActions({
             const { s3ConfigIdToEdit, initialFormValues } = payload;
 
             return id<State.Ready>({
-                "stateDescription": "ready",
-                "formValues": initialFormValues,
-                "action":
+                stateDescription: "ready",
+                formValues: initialFormValues,
+                action:
                     s3ConfigIdToEdit === undefined
                         ? {
-                              "type": "create new config",
-                              "creationTime": Date.now()
+                              type: "create new config",
+                              creationTime: Date.now()
                           }
                         : {
-                              "type": "update existing config",
-                              "s3ConfigId": s3ConfigIdToEdit
+                              type: "update existing config",
+                              s3ConfigId: s3ConfigIdToEdit
                           }
             });
         },
-        "formValueChanged": (
+        formValueChanged: (
             state,
             {
                 payload
@@ -93,9 +93,9 @@ export const { reducer, actions } = createUsecaseActions({
 
             Object.assign(state.formValues, { [payload.key]: payload.value });
         },
-        "stateResetToNotInitialized": () =>
+        stateResetToNotInitialized: () =>
             id<State.NotInitialized>({
-                "stateDescription": "not initialized"
+                stateDescription: "not initialized"
             })
     }
 });

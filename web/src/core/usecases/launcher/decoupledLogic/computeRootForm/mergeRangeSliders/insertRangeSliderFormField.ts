@@ -30,8 +30,8 @@ export function insertRangeSliderFormField(params: {
     const { formFieldGroup, rangeSliderFormField } = params;
 
     const helmValuesPathToGroup = getHelmValuesPathDeeperCommonSubpath({
-        "helmValuesPath1": rangeSliderFormField.lowEndRange.helmValuesPath,
-        "helmValuesPath2": rangeSliderFormField.highEndRange.helmValuesPath
+        helmValuesPath1: rangeSliderFormField.lowEndRange.helmValuesPath,
+        helmValuesPath2: rangeSliderFormField.highEndRange.helmValuesPath
     });
 
     const formFieldPath = helmValuesPathToFormFieldPath({
@@ -42,7 +42,7 @@ export function insertRangeSliderFormField(params: {
     const formFieldGroup_target = getFormFieldAtPath({
         formFieldGroup,
         formFieldPath,
-        "doExtract": false
+        doExtract: false
     });
 
     assert(formFieldGroup_target.type === "group");

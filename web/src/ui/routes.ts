@@ -30,8 +30,8 @@ export function urlToLink(url: string): Link & { target?: "_blank" } {
     const isLocalUrl = url.startsWith("/");
 
     return {
-        "href": url,
-        "onClick": !isLocalUrl
+        href: url,
+        onClick: !isLocalUrl
             ? () => {
                   /* nothing */
               }
@@ -39,6 +39,6 @@ export function urlToLink(url: string): Link & { target?: "_blank" } {
                   e.preventDefault();
                   session.push(url);
               },
-        ...(isLocalUrl ? {} : { "target": "_blank" })
+        ...(isLocalUrl ? {} : { target: "_blank" })
     };
 }

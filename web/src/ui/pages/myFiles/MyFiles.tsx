@@ -56,8 +56,8 @@ function MyFiles(props: Props) {
 
     useEffect(() => {
         const { cleanup } = fileExplorer.initialize({
-            "directoryPath": route.params.path,
-            "viewMode": route.params.mode
+            directoryPath: route.params.path,
+            viewMode: route.params.mode
         });
         return cleanup;
     }, []);
@@ -67,8 +67,8 @@ function MyFiles(props: Props) {
         console.log(viewMode);
         routes[route.name]({
             ...route.params,
-            "path": currentWorkingDirectoryView.directoryPath,
-            "mode": viewMode
+            path: currentWorkingDirectoryView.directoryPath,
+            mode: viewMode
         }).push();
     }, [currentWorkingDirectoryView?.directoryPath, viewMode]);
 
@@ -77,7 +77,7 @@ function MyFiles(props: Props) {
     const onCreateDirectory = useConstCallback(
         ({ basename }: Param0<ExplorerProps["onCreateDirectory"]>) =>
             fileExplorer.create({
-                "createWhat": "directory",
+                createWhat: "directory",
                 basename
             })
     );
@@ -111,7 +111,7 @@ function MyFiles(props: Props) {
 
     useEffect(() => {
         if (currentWorkingDirectoryView === undefined) {
-            showSplashScreen({ "enableTransparency": true });
+            showSplashScreen({ enableTransparency: true });
         } else {
             hideSplashScreen();
         }
@@ -123,8 +123,8 @@ function MyFiles(props: Props) {
 
     const titleCollapseParams = useMemo(
         (): CollapseParams => ({
-            "behavior": "controlled",
-            "isCollapsed": false
+            behavior: "controlled",
+            isCollapsed: false
             // "scrollTopThreshold": 100,
             // "scrollableElementRef": scrollableDivRef
         }),
@@ -133,10 +133,10 @@ function MyFiles(props: Props) {
 
     const helpCollapseParams = useMemo(
         (): CollapseParams => ({
-            "behavior": "controlled",
+            behavior: "controlled",
             //"scrollTopThreshold": 50,
             //"scrollableElementRef": scrollableDivRef,
-            "isCollapsed": true
+            isCollapsed: true
         }),
         []
     );
@@ -149,7 +149,7 @@ function MyFiles(props: Props) {
 
             routes
                 .dataExplorer({
-                    "source": `s3://${path.replace(/\/*$/g, "")}/${basename}`
+                    source: `s3://${path.replace(/\/*$/g, "")}/${basename}`
                 })
                 .push();
             return;
@@ -162,9 +162,9 @@ function MyFiles(props: Props) {
         ({ files }) =>
             files.forEach(file =>
                 fileExplorer.create({
-                    "createWhat": "file",
-                    "basename": file.name,
-                    "blob": file
+                    createWhat: "file",
+                    basename: file.name,
+                    blob: file
                 })
             )
     );
@@ -180,8 +180,8 @@ function MyFiles(props: Props) {
                 title={t("page title - my files")}
                 helpTitle={t("what this page is used for - my files")}
                 helpContent={t("help content", {
-                    "docHref": env.S3_DOCUMENTATION_LINK,
-                    "accountTabLink": routes.account({ "tabId": "storage" }).link
+                    docHref: env.S3_DOCUMENTATION_LINK,
+                    accountTabLink: routes.account({ tabId: "storage" }).link
                 })}
                 helpIcon="sentimentSatisfied"
                 titleCollapseParams={titleCollapseParams}
@@ -229,14 +229,14 @@ const { i18n } = declareComponentKeys<
 export type I18n = typeof i18n;
 
 const useStyles = tss.withName({ MyFiles }).create({
-    "root": {
-        "height": "100%",
-        "display": "flex",
-        "flexDirection": "column"
+    root: {
+        height: "100%",
+        display: "flex",
+        flexDirection: "column"
     },
-    "explorer": {
-        "overflow": "hidden",
-        "flex": 1,
-        "width": "100%"
+    explorer: {
+        overflow: "hidden",
+        flex: 1,
+        width: "100%"
     }
 });

@@ -148,13 +148,13 @@ export async function v0ToV1(params: {
 
                     legacyValue.forEach(restorableServiceConfig_legacy => {
                         newValue.push({
-                            "friendlyName": restorableServiceConfig_legacy.friendlyName,
-                            "isShared": restorableServiceConfig_legacy.isShared,
-                            "catalogId": restorableServiceConfig_legacy.catalogId,
-                            "chartName": restorableServiceConfig_legacy.chartName,
-                            "chartVersion": restorableServiceConfig_legacy.chartVersion,
-                            "s3ConfigId": undefined,
-                            "helmValuesPatch": (() => {
+                            friendlyName: restorableServiceConfig_legacy.friendlyName,
+                            isShared: restorableServiceConfig_legacy.isShared,
+                            catalogId: restorableServiceConfig_legacy.catalogId,
+                            chartName: restorableServiceConfig_legacy.chartName,
+                            chartVersion: restorableServiceConfig_legacy.chartVersion,
+                            s3ConfigId: undefined,
+                            helmValuesPatch: (() => {
                                 const helmValuesPatch: {
                                     path: (string | number)[];
                                     value: StringifyableAtomic | undefined;
@@ -202,7 +202,7 @@ export async function v0ToV1(params: {
                                                         }
 
                                                         helmValuesPatch.push({
-                                                            "path": newPath,
+                                                            path: newPath,
                                                             value
                                                         });
                                                     }
@@ -213,8 +213,8 @@ export async function v0ToV1(params: {
                                         }
 
                                         helmValuesPatch.push({
-                                            "path": formFieldValue.path,
-                                            "value": formFieldValue.value
+                                            path: formFieldValue.path,
+                                            value: formFieldValue.value
                                         });
                                     }
                                 );
@@ -226,7 +226,7 @@ export async function v0ToV1(params: {
 
                     await secretsManager.put({
                         path,
-                        "secret": valueToSecret(newValue)
+                        secret: valueToSecret(newValue)
                     });
                 }
                 break;
@@ -244,32 +244,32 @@ export async function v0ToV1(params: {
                         );
 
                     const newValue: v1.ProjectConfigs[typeof key] = {
-                        "s3Configs": [],
-                        "s3ConfigId_defaultXOnyxia": undefined,
-                        "s3ConfigId_explorer": undefined
+                        s3Configs: [],
+                        s3ConfigId_defaultXOnyxia: undefined,
+                        s3ConfigId_explorer: undefined
                     };
 
                     legacyValue.customConfigs.forEach((customS3Config_legacy, i) => {
                         newValue.s3Configs.push({
-                            "creationTime": Date.now() + i,
-                            "friendlyName": customS3Config_legacy.accountFriendlyName,
-                            "url": customS3Config_legacy.url,
-                            "region": customS3Config_legacy.region,
-                            "workingDirectoryPath":
+                            creationTime: Date.now() + i,
+                            friendlyName: customS3Config_legacy.accountFriendlyName,
+                            url: customS3Config_legacy.url,
+                            region: customS3Config_legacy.region,
+                            workingDirectoryPath:
                                 customS3Config_legacy.workingDirectoryPath,
-                            "pathStyleAccess": customS3Config_legacy.pathStyleAccess,
-                            "credentials": customS3Config_legacy.credentials
+                            pathStyleAccess: customS3Config_legacy.pathStyleAccess,
+                            credentials: customS3Config_legacy.credentials
                         });
                     });
 
                     {
                         const s3Configs = getS3Configs({
-                            "projectConfigsS3": newValue,
-                            "s3RegionConfigs": [],
-                            "configTestResults": [],
-                            "ongoingConfigTests": [],
-                            "username": "johndoe",
-                            "projectGroup": undefined
+                            projectConfigsS3: newValue,
+                            s3RegionConfigs: [],
+                            configTestResults: [],
+                            ongoingConfigTests: [],
+                            username: "johndoe",
+                            projectGroup: undefined
                         });
 
                         for (const [propertyName_legacy, propertyName] of [
@@ -300,7 +300,7 @@ export async function v0ToV1(params: {
 
                     await secretsManager.put({
                         path,
-                        "secret": valueToSecret(newValue)
+                        secret: valueToSecret(newValue)
                     });
                 }
                 break;

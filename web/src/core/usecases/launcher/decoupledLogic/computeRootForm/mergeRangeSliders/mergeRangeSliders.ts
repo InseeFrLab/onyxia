@@ -35,17 +35,17 @@ export function mergeRangeSliders(params: { formFieldGroup: FormFieldGroupLike }
     while (true) {
         const lowerBoundPath = getFormFieldPath({
             formFieldGroup,
-            "predicate": formField => {
+            predicate: formField => {
                 if (formField.fieldType !== "range slider") {
                     return false;
                 }
 
-                if (!getIsTemporaryRangeSlider({ "rangeSlider": formField })) {
+                if (!getIsTemporaryRangeSlider({ rangeSlider: formField })) {
                     return false;
                 }
 
                 const { sliderExtremity } = getTemporaryRangeSliderPayload({
-                    "temporaryRangeSlider": formField
+                    temporaryRangeSlider: formField
                 });
 
                 return sliderExtremity === "down";
@@ -58,31 +58,31 @@ export function mergeRangeSliders(params: { formFieldGroup: FormFieldGroupLike }
 
         const temporaryRangeSlider_lowerBound = getFormFieldAtPath({
             formFieldGroup,
-            "formFieldPath": lowerBoundPath,
-            "doExtract": true
+            formFieldPath: lowerBoundPath,
+            doExtract: true
         });
 
         assert(temporaryRangeSlider_lowerBound.type === "field");
         assert(temporaryRangeSlider_lowerBound.fieldType === "range slider");
 
         const { sliderRangeId } = getTemporaryRangeSliderPayload({
-            "temporaryRangeSlider": temporaryRangeSlider_lowerBound
+            temporaryRangeSlider: temporaryRangeSlider_lowerBound
         });
 
         const higherBoundPath = getFormFieldPath({
             formFieldGroup,
-            "predicate": formField => {
+            predicate: formField => {
                 if (formField.fieldType !== "range slider") {
                     return false;
                 }
 
-                if (!getIsTemporaryRangeSlider({ "rangeSlider": formField })) {
+                if (!getIsTemporaryRangeSlider({ rangeSlider: formField })) {
                     return false;
                 }
 
                 const { sliderExtremity, sliderRangeId: sliderRangeId_i } =
                     getTemporaryRangeSliderPayload({
-                        "temporaryRangeSlider": formField
+                        temporaryRangeSlider: formField
                     });
 
                 return sliderExtremity === "up" && sliderRangeId_i === sliderRangeId;
@@ -93,8 +93,8 @@ export function mergeRangeSliders(params: { formFieldGroup: FormFieldGroupLike }
 
         const temporaryRangeSlider_higherBound = getFormFieldAtPath({
             formFieldGroup,
-            "formFieldPath": higherBoundPath,
-            "doExtract": true
+            formFieldPath: higherBoundPath,
+            doExtract: true
         });
 
         assert(temporaryRangeSlider_higherBound.type === "field");
@@ -107,9 +107,9 @@ export function mergeRangeSliders(params: { formFieldGroup: FormFieldGroupLike }
 
         insertRangeSliderFormField({
             formFieldGroup,
-            "rangeSliderFormField": rangeSlider
+            rangeSliderFormField: rangeSlider
         });
     }
 
-    removeFormFieldGroupWithNoNodes({ "nodes": formFieldGroup.nodes });
+    removeFormFieldGroupWithNoNodes({ nodes: formFieldGroup.nodes });
 }

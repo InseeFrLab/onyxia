@@ -33,19 +33,19 @@ export const name = "serviceManagement";
 
 export const { reducer, actions } = createUsecaseActions({
     name,
-    "initialState": id<State>(
+    initialState: id<State>(
         id<State.NotInitialized>({
-            "stateDescription": "not initialized",
-            "isUpdating": false,
-            "commandLogsEntries": []
+            stateDescription: "not initialized",
+            isUpdating: false,
+            commandLogsEntries: []
         })
     ),
-    "reducers": (() => {
+    reducers: (() => {
         const reducers = {
-            "updateStarted": state => {
+            updateStarted: state => {
                 state.isUpdating = true;
             },
-            "updateCompleted": (
+            updateCompleted: (
                 state,
                 {
                     payload
@@ -66,12 +66,12 @@ export const { reducer, actions } = createUsecaseActions({
                 } = payload;
 
                 return id<State.Ready>({
-                    "stateDescription": "ready",
-                    "isUpdating": false,
+                    stateDescription: "ready",
+                    isUpdating: false,
                     helmReleases,
                     kubernetesNamespace,
-                    "commandLogsEntries": state.commandLogsEntries,
-                    "lockedHelmReleaseNames":
+                    commandLogsEntries: state.commandLogsEntries,
+                    lockedHelmReleaseNames:
                         state.stateDescription === "ready"
                             ? state.lockedHelmReleaseNames
                             : [],
@@ -79,7 +79,7 @@ export const { reducer, actions } = createUsecaseActions({
                     username
                 });
             },
-            "helmReleaseLocked": (
+            helmReleaseLocked: (
                 state,
                 {
                     payload
@@ -96,7 +96,7 @@ export const { reducer, actions } = createUsecaseActions({
 
                 state.lockedHelmReleaseNames.push(helmReleaseName);
             },
-            "helmReleaseUnlocked": (
+            helmReleaseUnlocked: (
                 state,
                 { payload }: { payload: { helmReleaseName: string } }
             ) => {
@@ -108,7 +108,7 @@ export const { reducer, actions } = createUsecaseActions({
                     lockedHelmReleaseName => lockedHelmReleaseName !== helmReleaseName
                 );
             },
-            "changeServiceFriendlyNameStarted": (
+            changeServiceFriendlyNameStarted: (
                 state,
                 {
                     payload
@@ -119,7 +119,7 @@ export const { reducer, actions } = createUsecaseActions({
                 assert(state.stateDescription === "ready");
 
                 reducers.helmReleaseLocked(state, {
-                    "payload": { helmReleaseName, reason: "other" }
+                    payload: { helmReleaseName, reason: "other" }
                 });
 
                 const helmRelease = state.helmReleases.find(
@@ -130,15 +130,15 @@ export const { reducer, actions } = createUsecaseActions({
 
                 helmRelease.friendlyName = friendlyName;
             },
-            "changeServiceFriendlyNameCompleted": (
+            changeServiceFriendlyNameCompleted: (
                 state,
                 { payload }: { payload: { helmReleaseName: string } }
             ) => {
                 const { helmReleaseName } = payload;
 
-                reducers.helmReleaseUnlocked(state, { "payload": { helmReleaseName } });
+                reducers.helmReleaseUnlocked(state, { payload: { helmReleaseName } });
             },
-            "changeServiceSharedStatusStarted": (
+            changeServiceSharedStatusStarted: (
                 state,
                 { payload }: { payload: { helmReleaseName: string; isShared: boolean } }
             ) => {
@@ -147,7 +147,7 @@ export const { reducer, actions } = createUsecaseActions({
                 assert(state.stateDescription === "ready");
 
                 reducers.helmReleaseLocked(state, {
-                    "payload": { helmReleaseName, reason: "other" }
+                    payload: { helmReleaseName, reason: "other" }
                 });
 
                 const helmRelease = state.helmReleases.find(
@@ -158,15 +158,15 @@ export const { reducer, actions } = createUsecaseActions({
 
                 helmRelease.isShared = isShared;
             },
-            "changeServiceSharedStatusCompleted": (
+            changeServiceSharedStatusCompleted: (
                 state,
                 { payload }: { payload: { helmReleaseName: string } }
             ) => {
                 const { helmReleaseName } = payload;
 
-                reducers.helmReleaseUnlocked(state, { "payload": { helmReleaseName } });
+                reducers.helmReleaseUnlocked(state, { payload: { helmReleaseName } });
             },
-            "commandLogsEntryAdded": (
+            commandLogsEntryAdded: (
                 state,
                 {
                     payload
@@ -184,7 +184,7 @@ export const { reducer, actions } = createUsecaseActions({
 
                 state.commandLogsEntries.push(commandLogsEntry);
             },
-            "commandLogsRespUpdated": (
+            commandLogsRespUpdated: (
                 state,
                 {
                     payload

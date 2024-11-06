@@ -186,22 +186,22 @@ const submittableFormValuesAsProjectS3Config = createSelector(
         assert(formattedFormValuesWorkingDirectoryPath !== undefined);
 
         return id<ProjectConfigs.S3Config>({
-            "creationTime": (() => {
+            creationTime: (() => {
                 switch (action.type) {
                     case "create new config":
                         return action.creationTime;
                     case "update existing config":
-                        return parseProjectS3ConfigId({ "s3ConfigId": action.s3ConfigId })
+                        return parseProjectS3ConfigId({ s3ConfigId: action.s3ConfigId })
                             .creationTime;
                 }
                 assert<Equals<typeof action, never>>(false);
             })(),
-            "friendlyName": formValues.friendlyName.trim(),
-            "url": formattedFormValuesUrl,
-            "region": formValues.region?.trim(),
-            "workingDirectoryPath": formattedFormValuesWorkingDirectoryPath,
-            "pathStyleAccess": formValues.pathStyleAccess,
-            "credentials": (() => {
+            friendlyName: formValues.friendlyName.trim(),
+            url: formattedFormValuesUrl,
+            region: formValues.region?.trim(),
+            workingDirectoryPath: formattedFormValuesWorkingDirectoryPath,
+            pathStyleAccess: formValues.pathStyleAccess,
+            credentials: (() => {
                 if (formValues.isAnonymous) {
                     return undefined;
                 }
@@ -210,9 +210,9 @@ const submittableFormValuesAsProjectS3Config = createSelector(
                 assert(formValues.secretAccessKey !== undefined);
 
                 return {
-                    "accessKeyId": formValues.accessKeyId,
-                    "secretAccessKey": formValues.secretAccessKey,
-                    "sessionToken": formValues.sessionToken
+                    accessKeyId: formValues.accessKeyId,
+                    secretAccessKey: formValues.secretAccessKey,
+                    sessionToken: formValues.sessionToken
                 };
             })()
         });
@@ -234,11 +234,11 @@ const paramsOfCreateS3Client = createSelector(
         }
 
         return id<ParamsOfCreateS3Client.NoSts>({
-            "url": submittableFormValuesAsProjectS3Config.url,
-            "pathStyleAccess": submittableFormValuesAsProjectS3Config.pathStyleAccess,
-            "isStsEnabled": false,
-            "region": submittableFormValuesAsProjectS3Config.region,
-            "credentials": submittableFormValuesAsProjectS3Config.credentials
+            url: submittableFormValuesAsProjectS3Config.url,
+            pathStyleAccess: submittableFormValuesAsProjectS3Config.pathStyleAccess,
+            isStsEnabled: false,
+            region: submittableFormValuesAsProjectS3Config.region,
+            credentials: submittableFormValuesAsProjectS3Config.credentials
         });
     }
 );
@@ -273,7 +273,7 @@ const connectionTestStatus = createSelector(
         assert(workingDirectoryPath !== null);
 
         if (!isFormSubmittable) {
-            return { "status": "not tested" };
+            return { status: "not tested" };
         }
 
         assert(paramsOfCreateS3Client !== undefined);
@@ -286,7 +286,7 @@ const connectionTestStatus = createSelector(
                     e.workingDirectoryPath === workingDirectoryPath
             ) !== undefined
         ) {
-            return { "status": "test ongoing" };
+            return { status: "test ongoing" };
         }
 
         has_result: {
@@ -302,11 +302,11 @@ const connectionTestStatus = createSelector(
             }
 
             return result.isSuccess
-                ? { "status": "test succeeded" }
-                : { "status": "test failed", "errorMessage": result.errorMessage };
+                ? { status: "test succeeded" }
+                : { status: "test failed", errorMessage: result.errorMessage };
         }
 
-        return { "status": "not tested" } as ConnectionTestStatus;
+        return { status: "not tested" } as ConnectionTestStatus;
     }
 );
 
@@ -340,8 +340,8 @@ const urlStylesExamples = createSelector(
             .replace(/\/$/, "");
 
         return {
-            "pathStyle": `${domain}/${bucketName}/${objectNamePrefix}`,
-            "virtualHostedStyle": `${bucketName}.${domain}/${objectNamePrefix}`
+            pathStyle: `${domain}/${bucketName}/${objectNamePrefix}`,
+            virtualHostedStyle: `${bucketName}.${domain}/${objectNamePrefix}`
         };
     }
 );
@@ -375,7 +375,7 @@ const main = createSelector(
     ) => {
         if (!isReady) {
             return {
-                "isReady": false as const
+                isReady: false as const
             };
         }
 
@@ -387,7 +387,7 @@ const main = createSelector(
         assert(connectionTestStatus !== null);
 
         return {
-            "isReady": true,
+            isReady: true,
             formValues,
             formValuesErrors,
             isFormSubmittable,

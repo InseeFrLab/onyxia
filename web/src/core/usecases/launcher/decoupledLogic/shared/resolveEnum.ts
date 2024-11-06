@@ -53,7 +53,7 @@ export function resolveEnum(params: {
 
         const options_unchecked = resolveXOnyxiaValueReference({
             xOnyxiaContext,
-            "expression": helmValuesSchema["x-onyxia"].overwriteListEnumWith
+            expression: helmValuesSchema["x-onyxia"].overwriteListEnumWith
         });
 
         if (options_unchecked === undefined) {
@@ -70,7 +70,7 @@ export function resolveEnum(params: {
             const validationResult = validateValueAgainstJSONSchema_noEnumCheck({
                 helmValuesSchema,
                 xOnyxiaContext,
-                "value": option_unchecked
+                value: option_unchecked
             });
 
             if (validationResult.isValid) {
@@ -109,7 +109,7 @@ export function resolveEnum(params: {
             const validationResult = validateValueAgainstJSONSchema_noEnumCheck({
                 helmValuesSchema,
                 xOnyxiaContext,
-                "value": option_unchecked
+                value: option_unchecked
             });
 
             if (!validationResult.isValid) {

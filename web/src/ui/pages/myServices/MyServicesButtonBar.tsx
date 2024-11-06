@@ -33,7 +33,7 @@ export const MyServicesButtonBar = memo((props: Props) => {
         (): ButtonBarProps<ButtonId>["buttons"] =>
             buttonIds.map(buttonId => ({
                 buttonId,
-                "icon": (() => {
+                icon: (() => {
                     switch (buttonId) {
                         case "refresh":
                             return id<MuiIconComponentName>("Cached");
@@ -45,8 +45,8 @@ export const MyServicesButtonBar = memo((props: Props) => {
                             return id<MuiIconComponentName>("ManageSearch");
                     }
                 })(),
-                "isDisabled": buttonId === "trash" && !isThereDeletableServices,
-                "label": (() => {
+                isDisabled: buttonId === "trash" && !isThereDeletableServices,
+                label: (() => {
                     if (buttonId === "events") {
                         return (
                             <Badge
@@ -54,7 +54,7 @@ export const MyServicesButtonBar = memo((props: Props) => {
                                 color="primary"
                                 sx={{
                                     ".MuiBadge-badge": {
-                                        "transform": "translate(20px, -50%)"
+                                        transform: "translate(20px, -50%)"
                                     }
                                 }}
                             >

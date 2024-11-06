@@ -43,85 +43,85 @@ export const LeftBar = memo((props: Props) => {
                     ...(env.DISABLE_HOMEPAGE
                         ? ({} as never)
                         : {
-                              "home": {
-                                  "icon": customIcons.homeSvgUrl,
-                                  "label": t("home"),
-                                  "link": routes.home().link
+                              home: {
+                                  icon: customIcons.homeSvgUrl,
+                                  label: t("home"),
+                                  link: routes.home().link
                               } as const
                           }),
-                    "account": {
-                        "icon": customIcons.accountSvgUrl,
-                        "label": t("account"),
-                        "link": routes.account().link
+                    account: {
+                        icon: customIcons.accountSvgUrl,
+                        label: t("account"),
+                        link: routes.account().link
                     },
-                    "projectSettings": {
-                        "icon": id<MuiIconComponentName>("DisplaySettings"),
-                        "label": t("projectSettings"),
-                        "link": routes.projectSettings().link,
-                        "belowDivider": t("divider: services features")
+                    projectSettings: {
+                        icon: id<MuiIconComponentName>("DisplaySettings"),
+                        label: t("projectSettings"),
+                        link: routes.projectSettings().link,
+                        belowDivider: t("divider: services features")
                     },
-                    "catalog": {
-                        "icon": customIcons.catalogSvgUrl,
-                        "label": t("catalog"),
-                        "link": routes.catalog().link
+                    catalog: {
+                        icon: customIcons.catalogSvgUrl,
+                        label: t("catalog"),
+                        link: routes.catalog().link
                     },
-                    "myServices": {
-                        "icon": customIcons.servicesSvgUrl,
-                        "label": t("myServices"),
-                        "link": routes.myServices().link,
-                        "belowDivider": t("divider: external services features")
+                    myServices: {
+                        icon: customIcons.servicesSvgUrl,
+                        label: t("myServices"),
+                        link: routes.myServices().link,
+                        belowDivider: t("divider: external services features")
                     },
                     ...(!secretExplorer.getIsEnabled()
                         ? ({} as never)
                         : {
-                              "mySecrets": {
-                                  "icon": customIcons.secretsSvgUrl,
-                                  "label": t("mySecrets"),
-                                  "link": routes.mySecrets().link
+                              mySecrets: {
+                                  icon: customIcons.secretsSvgUrl,
+                                  label: t("mySecrets"),
+                                  link: routes.mySecrets().link
                               } as const
                           }),
-                    "myFiles": {
-                        "icon": customIcons.filesSvgUrl,
-                        "label": t("myFiles"),
-                        "link": routes.myFiles().link
+                    myFiles: {
+                        icon: customIcons.filesSvgUrl,
+                        label: t("myFiles"),
+                        link: routes.myFiles().link
                     },
                     ...(!isDevModeEnabled
                         ? ({} as never)
                         : {
-                              "sqlOlapShell": {
-                                  "icon": "Terminal",
-                                  "label": t("sqlOlapShell"),
-                                  "link": routes.sqlOlapShell().link
+                              sqlOlapShell: {
+                                  icon: "Terminal",
+                                  label: t("sqlOlapShell"),
+                                  link: routes.sqlOlapShell().link
                               } as const
                           }),
-                    "dataExplorer": {
-                        "icon": id<MuiIconComponentName>("DocumentScanner"),
-                        "label": t("dataExplorer"),
-                        "link": routes.dataExplorer().link,
-                        "belowDivider":
+                    dataExplorer: {
+                        icon: id<MuiIconComponentName>("DocumentScanner"),
+                        label: t("dataExplorer"),
+                        link: routes.dataExplorer().link,
+                        belowDivider:
                             env.LEFTBAR_LINKS.length === 0
                                 ? true
                                 : t("divider: onyxia instance specific features")
                     } as const,
                     ...Object.fromEntries(
                         env.LEFTBAR_LINKS.map(({ url, ...rest }) => ({
-                            "link": urlToLink(url),
+                            link: urlToLink(url),
                             ...rest
                         }))
                             .map(({ icon, startIcon, ...rest }) => ({
                                 ...rest,
-                                "icon": icon ?? startIcon
+                                icon: icon ?? startIcon
                             }))
                             .map(({ link, icon, label }, i) => [
                                 `extraItem${i}`,
                                 id<LeftBarProps.Item>({
-                                    "icon":
+                                    icon:
                                         (assert(
                                             icon !== undefined,
                                             "We should have validated that when parsing the env"
                                         ),
                                         icon),
-                                    "label": (
+                                    label: (
                                         <LocalizedMarkdown inline>
                                             {label}
                                         </LocalizedMarkdown>

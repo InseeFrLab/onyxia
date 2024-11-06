@@ -19,15 +19,15 @@ const onErrorChangeAction = action("onErrorChange");
 
 function StoryWrapper() {
     const [value, setValue] = useState<Stringifyable[] | Record<string, Stringifyable>>({
-        "key1": "value1",
-        "key2": 42,
-        "arr": ["a", "b", "c"],
-        "obj": {
-            "isSomething": true,
-            "name": "John",
-            "nested": {
-                "a": 1,
-                "b": 2
+        key1: "value1",
+        key2: 42,
+        arr: ["a", "b", "c"],
+        obj: {
+            isSomething: true,
+            name: "John",
+            nested: {
+                a: 1,
+                b: 2
             }
         }
     });
@@ -35,7 +35,7 @@ function StoryWrapper() {
     return (
         <>
             <YamlCodeBlockFormField
-                className={css({ "width": 400, "maxHeight": 400 })}
+                className={css({ width: 400, maxHeight: 400 })}
                 title="This is the title"
                 description="This is the description"
                 expectedDataType="object"

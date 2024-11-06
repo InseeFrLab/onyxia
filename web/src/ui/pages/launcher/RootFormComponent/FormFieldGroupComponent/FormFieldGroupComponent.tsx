@@ -40,7 +40,7 @@ export function FormFieldGroupComponent(props: Props) {
         ([helmValuesPathStr]: [string], [params]: [{ hasError: boolean }]) => {
             const { hasError } = params;
             onFieldErrorChange({
-                "helmValuesPath": JSON.parse(helmValuesPathStr),
+                helmValuesPath: JSON.parse(helmValuesPathStr),
                 hasError
             });
         }
@@ -49,8 +49,8 @@ export function FormFieldGroupComponent(props: Props) {
     const getOnChange_checkbox = useCallbackFactory(
         ([helmValuesPathStr]: [string], [value]: [boolean]) =>
             onChange({
-                "fieldType": "checkbox",
-                "helmValuesPath": JSON.parse(helmValuesPathStr),
+                fieldType: "checkbox",
+                helmValuesPath: JSON.parse(helmValuesPathStr),
                 value
             })
     );
@@ -61,8 +61,8 @@ export function FormFieldGroupComponent(props: Props) {
             [value]: [Record<string, Stringifyable> | Stringifyable[]]
         ) =>
             onChange({
-                "fieldType": "yaml code block",
-                "helmValuesPath": JSON.parse(helmValuesPathStr),
+                fieldType: "yaml code block",
+                helmValuesPath: JSON.parse(helmValuesPathStr),
                 value
             })
     );
@@ -70,8 +70,8 @@ export function FormFieldGroupComponent(props: Props) {
     const getOnChange_number = useCallbackFactory(
         ([helmValuesPathStr]: [string], [value]: [number]) =>
             onChange({
-                "fieldType": "number field",
-                "helmValuesPath": JSON.parse(helmValuesPathStr),
+                fieldType: "number field",
+                helmValuesPath: JSON.parse(helmValuesPathStr),
                 value
             })
     );
@@ -79,8 +79,8 @@ export function FormFieldGroupComponent(props: Props) {
     const getOnChange_select = useCallbackFactory(
         ([helmValuesPathStr]: [string], [selectedOptionIndex]: [number]) =>
             onChange({
-                "fieldType": "select",
-                "helmValuesPath": JSON.parse(helmValuesPathStr),
+                fieldType: "select",
+                helmValuesPath: JSON.parse(helmValuesPathStr),
                 selectedOptionIndex
             })
     );
@@ -88,8 +88,8 @@ export function FormFieldGroupComponent(props: Props) {
     const getOnChange_text = useCallbackFactory(
         ([helmValuesPathStr]: [string], [value]: [string]) =>
             onChange({
-                "fieldType": "text field",
-                "helmValuesPath": JSON.parse(helmValuesPathStr),
+                fieldType: "text field",
+                helmValuesPath: JSON.parse(helmValuesPathStr),
                 value
             })
     );
@@ -97,8 +97,8 @@ export function FormFieldGroupComponent(props: Props) {
     const getOnChange_slider = useCallbackFactory(
         ([helmValuesPathStr]: [string], [value]: [number]) =>
             onChange({
-                "fieldType": "slider",
-                "helmValuesPath": JSON.parse(helmValuesPathStr),
+                fieldType: "slider",
+                helmValuesPath: JSON.parse(helmValuesPathStr),
                 value
             })
     );
@@ -112,14 +112,14 @@ export function FormFieldGroupComponent(props: Props) {
             [params]: [{ highEndRangeValue: number; lowEndRangeValue: number }]
         ) =>
             onChange({
-                "fieldType": "range slider",
-                "highEndRange": {
-                    "helmValuesPath": JSON.parse(helmValuesPathStr_highEndRange),
-                    "value": params.highEndRangeValue
+                fieldType: "range slider",
+                highEndRange: {
+                    helmValuesPath: JSON.parse(helmValuesPathStr_highEndRange),
+                    value: params.highEndRangeValue
                 },
-                "lowEndRange": {
-                    "helmValuesPath": JSON.parse(helmValuesPathStr_lowEndRange),
-                    "value": params.lowEndRangeValue
+                lowEndRange: {
+                    helmValuesPath: JSON.parse(helmValuesPathStr_lowEndRange),
+                    value: params.lowEndRangeValue
                 }
             })
     );
@@ -289,21 +289,20 @@ export function FormFieldGroupComponent(props: Props) {
                                 unit={node.unit}
                                 step={node.step}
                                 lowEndRange={{
-                                    "isReadonly": node.lowEndRange.isReadonly,
-                                    "rangeEndSemantic": node.lowEndRange.rangeEndSemantic,
-                                    "min": node.lowEndRange.min,
-                                    "max": node.lowEndRange.max,
-                                    "description": node.lowEndRange.description,
-                                    "value": node.lowEndRange.value
+                                    isReadonly: node.lowEndRange.isReadonly,
+                                    rangeEndSemantic: node.lowEndRange.rangeEndSemantic,
+                                    min: node.lowEndRange.min,
+                                    max: node.lowEndRange.max,
+                                    description: node.lowEndRange.description,
+                                    value: node.lowEndRange.value
                                 }}
                                 highEndRange={{
-                                    "isReadonly": node.highEndRange.isReadonly,
-                                    "rangeEndSemantic":
-                                        node.highEndRange.rangeEndSemantic,
-                                    "min": node.highEndRange.min,
-                                    "max": node.highEndRange.max,
-                                    "description": node.highEndRange.description,
-                                    "value": node.highEndRange.value
+                                    isReadonly: node.highEndRange.isReadonly,
+                                    rangeEndSemantic: node.highEndRange.rangeEndSemantic,
+                                    min: node.highEndRange.min,
+                                    max: node.highEndRange.max,
+                                    description: node.highEndRange.description,
+                                    value: node.highEndRange.value
                                 }}
                                 onChange={getOnChange_rangeSlider(
                                     JSON.stringify(node.lowEndRange.helmValuesPath),
@@ -333,23 +332,23 @@ const useStyles_inner = tss.withName({ FormFieldGroupComponent }).create(({ them
     const gap = theme.spacing(6);
 
     return {
-        "root": {
-            "display": "flex",
-            "flexWrap": "wrap",
+        root: {
+            display: "flex",
+            flexWrap: "wrap",
             gap
         },
-        "group": {
-            "flex": "0 0 100%"
+        group: {
+            flex: "0 0 100%"
         },
-        "field_text": {
-            "flex": "0 0 300px"
+        field_text: {
+            flex: "0 0 300px"
         },
-        "field_yamlCodeBlock": {
-            "flex": "0 0 100%"
+        field_yamlCodeBlock: {
+            flex: "0 0 100%"
         },
-        "field_slider": {
-            "flex": `0 0 calc(50% - ${gap / 2}px)`,
-            "boxSizing": "border-box"
+        field_slider: {
+            flex: `0 0 calc(50% - ${gap / 2}px)`,
+            boxSizing: "border-box"
         }
     };
 });

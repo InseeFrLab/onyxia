@@ -36,10 +36,10 @@ export function CatalogSwitcherButton(props: Props) {
 }
 
 const useStyles = tss.withName({ CatalogSwitcherButton }).create(({ theme }) => ({
-    "root": {
-        "padding": theme.spacing({ "topBottom": 2, "rightLeft": 3 }),
-        "display": "flex",
-        "alignItems": "center",
-        "cursor": "pointer"
+    root: {
+        padding: theme.spacing({ topBottom: 2, rightLeft: 3 }),
+        display: "flex",
+        alignItems: "center",
+        cursor: "pointer"
     }
 }));

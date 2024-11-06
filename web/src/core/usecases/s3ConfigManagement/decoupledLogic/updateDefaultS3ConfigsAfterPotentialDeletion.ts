@@ -26,18 +26,18 @@ export function updateDefaultS3ConfigsAfterPotentialDeletion(params: {
     const s3Configs = getS3Configs({
         projectConfigsS3,
         s3RegionConfigs,
-        "configTestResults": [],
-        "ongoingConfigTests": [],
-        "username": "johndoe",
-        "projectGroup": undefined
+        configTestResults: [],
+        ongoingConfigTests: [],
+        username: "johndoe",
+        projectGroup: undefined
     });
 
     const actions: R = {
-        "s3ConfigId_defaultXOnyxia": {
-            "isUpdateNeeded": false
+        s3ConfigId_defaultXOnyxia: {
+            isUpdateNeeded: false
         },
-        "s3ConfigId_explorer": {
-            "isUpdateNeeded": false
+        s3ConfigId_explorer: {
+            isUpdateNeeded: false
         }
     };
 
@@ -60,8 +60,8 @@ export function updateDefaultS3ConfigsAfterPotentialDeletion(params: {
         )?.id;
 
         actions[propertyName] = {
-            "isUpdateNeeded": true,
-            "s3ConfigId": s3ConfigId_toUseAsDefault
+            isUpdateNeeded: true,
+            s3ConfigId: s3ConfigId_toUseAsDefault
         };
     }
 

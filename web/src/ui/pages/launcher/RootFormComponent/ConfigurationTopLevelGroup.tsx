@@ -48,53 +48,53 @@ export function ConfigurationTopLevelGroup(props: Props) {
                 ? []
                 : [
                       {
-                          "helmValuesPath": ["Global"],
-                          "description": "configuration that applies to all charts",
-                          "canAdd": false,
-                          "canRemove": false,
-                          "nodes": global
+                          helmValuesPath: ["Global"],
+                          description: "configuration that applies to all charts",
+                          canAdd: false,
+                          canRemove: false,
+                          nodes: global
                       }
                   ]),
             ...(main_formFields.length === 0
                 ? []
                 : [
                       {
-                          "helmValuesPath": ["Miscellaneous"],
+                          helmValuesPath: ["Miscellaneous"],
                           // TODO: i18n
-                          "description": "Top level configuration values",
-                          "canAdd": false,
-                          "canRemove": false,
-                          "nodes": main_formFields
+                          description: "Top level configuration values",
+                          canAdd: false,
+                          canRemove: false,
+                          nodes: main_formFields
                       }
                   ]),
             ...main_formFieldGroups.map(node => {
                 if (node.type === "field") {
                     return {
-                        "helmValuesPath": [node.title],
-                        "description": node.description,
-                        "canAdd": false,
-                        "canRemove": false,
-                        "nodes": [
+                        helmValuesPath: [node.title],
+                        description: node.description,
+                        canAdd: false,
+                        canRemove: false,
+                        nodes: [
                             id<FormField.YamlCodeBlock>({
-                                "type": "field",
-                                "fieldType": "yaml code block",
-                                "description": "",
-                                "expectedDataType": node.expectedDataType,
-                                "helmValuesPath": node.helmValuesPath,
-                                "isReadonly": node.isReadonly,
-                                "title": "",
-                                "value": node.value
+                                type: "field",
+                                fieldType: "yaml code block",
+                                description: "",
+                                expectedDataType: node.expectedDataType,
+                                helmValuesPath: node.helmValuesPath,
+                                isReadonly: node.isReadonly,
+                                title: "",
+                                value: node.value
                             })
                         ]
                     };
                 }
 
                 return {
-                    "helmValuesPath": node.helmValuesPath,
-                    "description": node.description,
-                    "canAdd": node.canAdd,
-                    "canRemove": node.canRemove,
-                    "nodes": node.nodes
+                    helmValuesPath: node.helmValuesPath,
+                    description: node.description,
+                    canAdd: node.canAdd,
+                    canRemove: node.canRemove,
+                    nodes: node.nodes
                 };
             })
         ];
@@ -122,9 +122,9 @@ export function ConfigurationTopLevelGroup(props: Props) {
 }
 
 const useStyles = tss.withName({ ConfigurationTopLevelGroup }).create(({ theme }) => ({
-    "root": {
-        "marginBottom": theme.spacing(4),
-        "borderRadius": theme.spacing(2),
-        "overflow": "hidden"
+    root: {
+        marginBottom: theme.spacing(4),
+        borderRadius: theme.spacing(2),
+        overflow: "hidden"
     }
 }));

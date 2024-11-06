@@ -25,7 +25,7 @@ function getValueAtPathInObjectRec<T>(params: {
     const newObj = obj[key];
 
     return getValueAtPathInObjectRec({
-        "path": newPath,
-        "obj": newObj
+        path: newPath,
+        obj: newObj
     });
 }

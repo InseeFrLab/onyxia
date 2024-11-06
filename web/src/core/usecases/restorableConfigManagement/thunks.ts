@@ -5,7 +5,7 @@ import { actions, type State } from "./state";
 import { getAreSameRestorableConfig } from "./decoupledLogic/getAreSameRestorableConfig";
 
 export const protectedThunks = {
-    "initialize":
+    initialize:
         () =>
         (...args) => {
             const [dispatch, , { onyxiaApi }] = args;
@@ -31,7 +31,7 @@ export const protectedThunks = {
 } satisfies Thunks;
 
 export const thunks = {
-    "saveRestorableConfig":
+    saveRestorableConfig:
         (params: {
             restorableConfig: projectManagement.ProjectConfigs.RestorableServiceConfig;
         }) =>
@@ -84,12 +84,12 @@ export const thunks = {
 
             await dispatch(
                 projectManagement.protectedThunks.updateConfigValue({
-                    "key": "restorableConfigs",
-                    "value": newRestorableConfigs
+                    key: "restorableConfigs",
+                    value: newRestorableConfigs
                 })
             );
         },
-    "deleteRestorableConfig":
+    deleteRestorableConfig:
         (params: {
             restorableConfig: projectManagement.ProjectConfigs.RestorableServiceConfig;
         }) =>
@@ -117,8 +117,8 @@ export const thunks = {
 
             await dispatch(
                 projectManagement.protectedThunks.updateConfigValue({
-                    "key": "restorableConfigs",
-                    "value": newRestorableConfigs
+                    key: "restorableConfigs",
+                    value: newRestorableConfigs
                 })
             );
         }

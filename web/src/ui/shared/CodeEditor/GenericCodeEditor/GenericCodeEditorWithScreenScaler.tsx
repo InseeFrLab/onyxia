@@ -3,16 +3,16 @@ import { performActionWithoutScreenScaler } from "screen-scaler";
 import GenericCodeEditor, { type Props } from "./GenericCodeEditor";
 
 injectDomDependencies({
-    "getResizeObserver": () => performActionWithoutScreenScaler(() => ResizeObserver),
-    "getBoundingClientRect_Element": element =>
+    getResizeObserver: () => performActionWithoutScreenScaler(() => ResizeObserver),
+    getBoundingClientRect_Element: element =>
         performActionWithoutScreenScaler(() => element.getBoundingClientRect()),
-    "getBoundingClientRect_Range": range =>
+    getBoundingClientRect_Range: range =>
         performActionWithoutScreenScaler(() => range.getBoundingClientRect()),
-    "getClientRects_Element": element =>
+    getClientRects_Element: element =>
         performActionWithoutScreenScaler(() => element.getClientRects()),
-    "getClientRects_Range": range =>
+    getClientRects_Range: range =>
         performActionWithoutScreenScaler(() => range.getClientRects()),
-    "getMouseEventClientXOrY": (event, axis) =>
+    getMouseEventClientXOrY: (event, axis) =>
         performActionWithoutScreenScaler(() => {
             switch (axis) {
                 case "x":

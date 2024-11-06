@@ -61,7 +61,7 @@ export function computeHelmValues(params: {
 
     const helmValues = computeHelmValues_rec({
         helmValuesSchema,
-        "helmValuesYaml_parsed": (() => {
+        helmValuesYaml_parsed: (() => {
             const helmValuesYaml_parsed = YAML.parse(helmValuesYaml);
 
             assert(
@@ -71,7 +71,7 @@ export function computeHelmValues(params: {
 
             return helmValuesYaml_parsed;
         })(),
-        "xOnyxiaContext": (() => {
+        xOnyxiaContext: (() => {
             const s3PropertyName = "s3";
 
             assert<
@@ -79,7 +79,7 @@ export function computeHelmValues(params: {
             >();
 
             return new Proxy(xOnyxiaContext, {
-                "get": (...args) => {
+                get: (...args) => {
                     const [, prop] = args;
                     if (prop === s3PropertyName) {
                         isChartUsingS3 = true;
@@ -118,7 +118,7 @@ export function computeHelmValues_rec(params: {
         const { isValid } = validateValueAgainstJSONSchema({
             helmValuesSchema,
             xOnyxiaContext,
-            "value": constValue
+            value: constValue
         });
 
         assert(isValid);
@@ -134,7 +134,7 @@ export function computeHelmValues_rec(params: {
         }
 
         const resolvedValue = resolveXOnyxiaValueReference({
-            "expression": overwriteDefaultWith,
+            expression: overwriteDefaultWith,
             xOnyxiaContext
         });
 
@@ -145,7 +145,7 @@ export function computeHelmValues_rec(params: {
         const validationResult = validateValueAgainstJSONSchema({
             helmValuesSchema,
             xOnyxiaContext,
-            "value": resolvedValue
+            value: resolvedValue
         });
 
         if (!validationResult.isValid) {
@@ -168,7 +168,7 @@ export function computeHelmValues_rec(params: {
         const { isValid } = validateValueAgainstJSONSchema({
             helmValuesSchema,
             xOnyxiaContext,
-            "value": defaultValue
+            value: defaultValue
         });
 
         if (!isValid) {
@@ -195,8 +195,8 @@ export function computeHelmValues_rec(params: {
             Object.entries(properties).map(([propertyName, propertySchema]) => [
                 propertyName,
                 computeHelmValues_rec({
-                    "helmValuesSchema": propertySchema,
-                    "helmValuesYaml_parsed":
+                    helmValuesSchema: propertySchema,
+                    helmValuesYaml_parsed:
                         helmValuesYaml_parsed instanceof Object &&
                         !(helmValuesYaml_parsed instanceof Array)
                             ? helmValuesYaml_parsed[propertyName]
@@ -215,7 +215,7 @@ export function computeHelmValues_rec(params: {
         const { isValid } = validateValueAgainstJSONSchema({
             helmValuesSchema,
             xOnyxiaContext,
-            "value": helmValuesYaml_parsed
+            value: helmValuesYaml_parsed
         });
 
         assert(isValid);
@@ -248,8 +248,8 @@ export function computeHelmValues_rec(params: {
 
                 try {
                     defaultItem = computeHelmValues_rec({
-                        "helmValuesSchema": items,
-                        "helmValuesYaml_parsed": undefined,
+                        helmValuesSchema: items,
+                        helmValuesYaml_parsed: undefined,
                         xOnyxiaContext
                     });
                 } catch {

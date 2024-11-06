@@ -135,7 +135,7 @@ export type I18n = typeof i18n;
 const useStyles = tss
     .withName({ CustomDataGridToolbarDensitySelector })
     .create(({ theme }) => ({
-        "icon": {
+        icon: {
             color: theme.colors.useCases.typography.textPrimary
         }
     }));

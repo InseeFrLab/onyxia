@@ -11,7 +11,7 @@ import * as projectManagement from "core/usecases/projectManagement";
 import * as userAuthentication from "core/usecases/userAuthentication";
 
 export const thunks = {
-    "changeSelectedCatalogId":
+    changeSelectedCatalogId:
         (params: { catalogId: string | undefined }) =>
         async (...args) => {
             const [dispatch, getState, { onyxiaApi }] = args;
@@ -30,7 +30,7 @@ export const thunks = {
 
                 dispatch(
                     actions.selectedCatalogChanged({
-                        "selectedCatalogId": params.catalogId
+                        selectedCatalogId: params.catalogId
                     })
                 );
 
@@ -75,17 +75,17 @@ export const thunks = {
             dispatch(
                 actions.catalogsFetched({
                     catalogs,
-                    "chartsByCatalogId": (() => {
+                    chartsByCatalogId: (() => {
                         const out: State.Ready["chartsByCatalogId"] = {};
 
                         Object.keys(chartsByCatalogId).forEach(
                             catalogId =>
                                 (out[catalogId] = chartsByCatalogId[catalogId].map(
                                     chart => ({
-                                        "name": chart.name,
-                                        "description": chart.description ?? "",
-                                        "iconUrl": chart.iconUrl,
-                                        "projectHomepageUrl": chart.projectHomepageUrl
+                                        name: chart.name,
+                                        description: chart.description ?? "",
+                                        iconUrl: chart.iconUrl,
+                                        projectHomepageUrl: chart.projectHomepageUrl
                                     })
                                 ))
                         );
@@ -100,7 +100,7 @@ export const thunks = {
                 dispatch(actions.defaultCatalogSelected());
             }
         },
-    "setSearch":
+    setSearch:
         (params: { search: string }) =>
         async (...args) => {
             const { search } = params;
@@ -123,7 +123,7 @@ export const thunks = {
             dispatch(actions.searchChanged({ search }));
 
             if (search === "") {
-                dispatch(actions.searchResultChanged({ "searchResults": undefined }));
+                dispatch(actions.searchResultChanged({ searchResults: undefined }));
                 return;
             }
 
@@ -135,14 +135,14 @@ export const thunks = {
 
             dispatch(
                 actions.searchResultChanged({
-                    "searchResults": await flexSearch({ search })
+                    searchResults: await flexSearch({ search })
                 })
             );
         }
 } satisfies Thunks;
 
 const { getContext } = createUsecaseContextApi(() => {
-    const { waitForDebounce } = waitForDebounceFactory({ "delay": 200 });
+    const { waitForDebounce } = waitForDebounceFactory({ delay: 200 });
 
     const getFlexSearch = memoize(
         (
@@ -153,16 +153,16 @@ const { getContext } = createUsecaseContextApi(() => {
                 catalogIdChartName: `${string}/${string}`;
                 chartNameAndDescription: `${string} ${string}`;
             }>({
-                "document": {
-                    "id": "catalogIdChartName",
-                    "field": ["chartNameAndDescription"]
+                document: {
+                    id: "catalogIdChartName",
+                    field: ["chartNameAndDescription"]
                 },
-                "cache": 100,
-                "tokenize": "full",
-                "context": {
-                    "resolution": 9,
-                    "depth": 2,
-                    "bidirectional": true
+                cache: 100,
+                tokenize: "full",
+                context: {
+                    resolution: 9,
+                    depth: 2,
+                    bidirectional: true
                 }
             });
 
@@ -174,8 +174,8 @@ const { getContext } = createUsecaseContextApi(() => {
                 .forEach(([catalogId, charts]) =>
                     charts.forEach(chart =>
                         index.add({
-                            "catalogIdChartName": `${catalogId}/${chart.name}`,
-                            "chartNameAndDescription": `${chart.name} ${chart.description}`
+                            catalogIdChartName: `${catalogId}/${chart.name}`,
+                            chartNameAndDescription: `${chart.name} ${chart.description}`
                         })
                     )
                 );
@@ -186,9 +186,9 @@ const { getContext } = createUsecaseContextApi(() => {
                 const { search } = params;
 
                 const flexSearchResults = await index.searchAsync(search, {
-                    "bool": "or",
-                    "suggest": true,
-                    "enrich": true
+                    bool: "or",
+                    suggest: true,
+                    enrich: true
                 });
 
                 if (flexSearchResults.length === 0) {
@@ -206,13 +206,13 @@ const { getContext } = createUsecaseContextApi(() => {
                         return {
                             catalogId,
                             chartName,
-                            "chartNameHighlightedIndexes": getMatchPositions({
+                            chartNameHighlightedIndexes: getMatchPositions({
                                 search,
-                                "text": chartName
+                                text: chartName
                             }),
-                            "chartDescriptionHighlightedIndexes": getMatchPositions({
+                            chartDescriptionHighlightedIndexes: getMatchPositions({
                                 search,
-                                "text": chartsByCatalogId[catalogId].find(
+                                text: chartsByCatalogId[catalogId].find(
                                     chart => chart.name === chartName
                                 )!.description
                             })
@@ -223,11 +223,11 @@ const { getContext } = createUsecaseContextApi(() => {
 
             return { flexSearch };
         },
-        { "max": 1 }
+        { max: 1 }
     );
 
     return {
-        "waitForSearchDebounce": waitForDebounce,
+        waitForSearchDebounce: waitForDebounce,
         getFlexSearch
     };
 });

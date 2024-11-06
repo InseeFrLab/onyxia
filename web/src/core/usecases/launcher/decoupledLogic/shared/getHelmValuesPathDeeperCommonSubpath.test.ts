@@ -5,8 +5,8 @@ import { getHelmValuesPathDeeperCommonSubpath } from "./getHelmValuesPathDeeperC
 describe(symToStr({ getHelmValuesPathDeeperCommonSubpath }), () => {
     it("base case", () => {
         const got = getHelmValuesPathDeeperCommonSubpath({
-            "helmValuesPath1": ["a", 1, "b", "c"],
-            "helmValuesPath2": ["a", 1, "d", "e"]
+            helmValuesPath1: ["a", 1, "b", "c"],
+            helmValuesPath2: ["a", 1, "d", "e"]
         });
 
         const expected = ["a", 1];

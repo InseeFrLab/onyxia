@@ -21,37 +21,37 @@ const onFieldErrorChange = action("onFieldErrorChange");
 const helmValuesPath = ["foo", "title"];
 
 export const Default: Story = {
-    "args": {
+    args: {
         helmValuesPath,
-        "canAdd": true,
-        "canRemove": true,
-        "nodes": [
+        canAdd: true,
+        canRemove: true,
+        nodes: [
             id<FormField.TextField>({
-                "type": "field",
-                "fieldType": "text field",
-                "title": "Title 1",
-                "isReadonly": false,
-                "helmValuesPath": [1],
-                "description": "Description 1",
-                "doRenderAsTextArea": false,
-                "isSensitive": false,
-                "pattern": undefined,
-                "value": "value 1"
+                type: "field",
+                fieldType: "text field",
+                title: "Title 1",
+                isReadonly: false,
+                helmValuesPath: [1],
+                description: "Description 1",
+                doRenderAsTextArea: false,
+                isSensitive: false,
+                pattern: undefined,
+                value: "value 1"
             }),
             id<FormField.TextField>({
-                "type": "field",
-                "fieldType": "text field",
-                "title": "Title 2",
-                "isReadonly": false,
-                "helmValuesPath": [2],
-                "description": "Description 2",
-                "doRenderAsTextArea": false,
-                "isSensitive": false,
-                "pattern": undefined,
-                "value": "value 2"
+                type: "field",
+                fieldType: "text field",
+                title: "Title 2",
+                isReadonly: false,
+                helmValuesPath: [2],
+                description: "Description 2",
+                doRenderAsTextArea: false,
+                isSensitive: false,
+                pattern: undefined,
+                value: "value 2"
             })
         ],
-        "callbacks": {
+        callbacks: {
             onChange,
             onAdd,
             onRemove,

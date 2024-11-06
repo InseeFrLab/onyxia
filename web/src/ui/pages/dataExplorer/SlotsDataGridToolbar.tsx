@@ -29,9 +29,9 @@ export const SlotsDataGridToolbar = memo(() => {
 const useStyles = tss
     .withName({ CustomDataGridToolbar: SlotsDataGridToolbar })
     .create(({ theme }) => ({
-        "root": {
-            "flex": 1,
-            "marginBottom": theme.spacing(2)
+        root: {
+            flex: 1,
+            marginBottom: theme.spacing(2)
         }
     }));
 

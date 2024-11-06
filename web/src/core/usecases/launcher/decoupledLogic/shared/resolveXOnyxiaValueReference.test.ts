@@ -5,11 +5,11 @@ import { symToStr } from "tsafe/symToStr";
 describe(symToStr({ resolveXOnyxiaValueReference }), () => {
     it("PASS 1", () => {
         const got = resolveXOnyxiaValueReference({
-            "expression": "{{a.b.c}}",
-            "xOnyxiaContext": {
-                "a": {
-                    "b": {
-                        "c": 42
+            expression: "{{a.b.c}}",
+            xOnyxiaContext: {
+                a: {
+                    b: {
+                        c: 42
                     }
                 }
             }
@@ -22,11 +22,11 @@ describe(symToStr({ resolveXOnyxiaValueReference }), () => {
 
     it("PASS 2", () => {
         const got = resolveXOnyxiaValueReference({
-            "expression": "a.b.c",
-            "xOnyxiaContext": {
-                "a": {
-                    "b": {
-                        "c": 42
+            expression: "a.b.c",
+            xOnyxiaContext: {
+                a: {
+                    b: {
+                        c: 42
                     }
                 }
             }
@@ -39,11 +39,11 @@ describe(symToStr({ resolveXOnyxiaValueReference }), () => {
 
     it("PASS 3", () => {
         const got = resolveXOnyxiaValueReference({
-            "expression": "a.b.c",
-            "xOnyxiaContext": {
-                "a": {
-                    "b": {
-                        "c": ["x", "y", "z"]
+            expression: "a.b.c",
+            xOnyxiaContext: {
+                a: {
+                    b: {
+                        c: ["x", "y", "z"]
                     }
                 }
             }
@@ -56,19 +56,19 @@ describe(symToStr({ resolveXOnyxiaValueReference }), () => {
 
     it("PASS 4", () => {
         const got = resolveXOnyxiaValueReference({
-            "expression": "a",
-            "xOnyxiaContext": {
-                "a": {
-                    "b": {
-                        "c": ["x", "y", "z"]
+            expression: "a",
+            xOnyxiaContext: {
+                a: {
+                    b: {
+                        c: ["x", "y", "z"]
                     }
                 }
             }
         });
 
         const expected = {
-            "b": {
-                "c": ["x", "y", "z"]
+            b: {
+                c: ["x", "y", "z"]
             }
         };
 
@@ -77,11 +77,11 @@ describe(symToStr({ resolveXOnyxiaValueReference }), () => {
 
     it("PASS 5", () => {
         const got = resolveXOnyxiaValueReference({
-            "expression": "a.b.c",
-            "xOnyxiaContext": {
-                "a": {
-                    "b": {
-                        "c": "foo"
+            expression: "a.b.c",
+            xOnyxiaContext: {
+                a: {
+                    b: {
+                        c: "foo"
                     }
                 }
             }
@@ -94,12 +94,12 @@ describe(symToStr({ resolveXOnyxiaValueReference }), () => {
 
     it("PASS 6", () => {
         const got = resolveXOnyxiaValueReference({
-            "expression": "{{a.b.c}}-{{a.b.c1}}",
-            "xOnyxiaContext": {
-                "a": {
-                    "b": {
-                        "c": "foo",
-                        "c1": "bar"
+            expression: "{{a.b.c}}-{{a.b.c1}}",
+            xOnyxiaContext: {
+                a: {
+                    b: {
+                        c: "foo",
+                        c1: "bar"
                     }
                 }
             }
@@ -112,11 +112,11 @@ describe(symToStr({ resolveXOnyxiaValueReference }), () => {
 
     it("PASS 7", () => {
         const got = resolveXOnyxiaValueReference({
-            "expression": "{{a.b.c}}-postfix",
-            "xOnyxiaContext": {
-                "a": {
-                    "b": {
-                        "c": 42
+            expression: "{{a.b.c}}-postfix",
+            xOnyxiaContext: {
+                a: {
+                    b: {
+                        c: 42
                     }
                 }
             }
@@ -129,11 +129,11 @@ describe(symToStr({ resolveXOnyxiaValueReference }), () => {
 
     it("PASS 8", () => {
         const got = resolveXOnyxiaValueReference({
-            "expression": "a['b'].c",
-            "xOnyxiaContext": {
-                "a": {
-                    "b": {
-                        "c": 42
+            expression: "a['b'].c",
+            xOnyxiaContext: {
+                a: {
+                    b: {
+                        c: 42
                     }
                 }
             }
@@ -146,11 +146,11 @@ describe(symToStr({ resolveXOnyxiaValueReference }), () => {
 
     it("PASS 9", () => {
         const got = resolveXOnyxiaValueReference({
-            "expression": 'a["b"].c',
-            "xOnyxiaContext": {
-                "a": {
-                    "b": {
-                        "c": 42
+            expression: 'a["b"].c',
+            xOnyxiaContext: {
+                a: {
+                    b: {
+                        c: 42
                     }
                 }
             }
@@ -163,11 +163,11 @@ describe(symToStr({ resolveXOnyxiaValueReference }), () => {
 
     it("PASS 10", () => {
         const got = resolveXOnyxiaValueReference({
-            "expression": "a.b.c[1]",
-            "xOnyxiaContext": {
-                "a": {
-                    "b": {
-                        "c": ["", "yes", ""]
+            expression: "a.b.c[1]",
+            xOnyxiaContext: {
+                a: {
+                    b: {
+                        c: ["", "yes", ""]
                     }
                 }
             }
@@ -180,13 +180,13 @@ describe(symToStr({ resolveXOnyxiaValueReference }), () => {
 
     it("PASS 11", () => {
         const got = resolveXOnyxiaValueReference({
-            "expression": "a.b[1].c",
-            "xOnyxiaContext": {
-                "a": {
-                    "b": [
+            expression: "a.b[1].c",
+            xOnyxiaContext: {
+                a: {
+                    b: [
                         "",
                         {
-                            "c": "yes"
+                            c: "yes"
                         },
                         ""
                     ]
@@ -201,9 +201,9 @@ describe(symToStr({ resolveXOnyxiaValueReference }), () => {
 
     it("PASS 12", () => {
         const got = resolveXOnyxiaValueReference({
-            "expression": "a.notExisting.c[1]",
-            "xOnyxiaContext": {
-                "a": {}
+            expression: "a.notExisting.c[1]",
+            xOnyxiaContext: {
+                a: {}
             }
         });
 
@@ -214,9 +214,9 @@ describe(symToStr({ resolveXOnyxiaValueReference }), () => {
 
     it("PASS 13", () => {
         const got = resolveXOnyxiaValueReference({
-            "expression": "{{a.notExisting.c[1]}}-postfix",
-            "xOnyxiaContext": {
-                "a": {}
+            expression: "{{a.notExisting.c[1]}}-postfix",
+            xOnyxiaContext: {
+                a: {}
             }
         });
 
@@ -227,11 +227,11 @@ describe(symToStr({ resolveXOnyxiaValueReference }), () => {
 
     it("PASS 14", () => {
         const got = resolveXOnyxiaValueReference({
-            "expression": 'a["b.c"].d',
-            "xOnyxiaContext": {
-                "a": {
+            expression: 'a["b.c"].d',
+            xOnyxiaContext: {
+                a: {
                     "b.c": {
-                        "d": 42
+                        d: 42
                     }
                 }
             }

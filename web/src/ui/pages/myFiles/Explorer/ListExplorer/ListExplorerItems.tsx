@@ -143,12 +143,12 @@ export const ListExplorerItems = memo((props: ListExplorerItemsProps) => {
                                     switch (params.row.kind) {
                                         case "directory":
                                             return onNavigate({
-                                                "basename": params.row.basename
+                                                basename: params.row.basename
                                             });
 
                                         case "file":
                                             return onOpenFile({
-                                                "basename": params.row.basename
+                                                basename: params.row.basename
                                             });
                                     }
                                 }}
@@ -196,16 +196,16 @@ export const ListExplorerItems = memo((props: ListExplorerItemsProps) => {
                                     switch (params.row.policy) {
                                         case "public":
                                             onPolicyChange({
-                                                "basename": params.row.basename,
-                                                "policy": "private",
-                                                "kind": params.row.kind
+                                                basename: params.row.basename,
+                                                policy: "private",
+                                                kind: params.row.kind
                                             });
                                             break;
                                         case "private":
                                             onPolicyChange({
-                                                "basename": params.row.basename,
-                                                "policy": "public",
-                                                "kind": params.row.kind
+                                                basename: params.row.basename,
+                                                policy: "public",
+                                                kind: params.row.kind
                                             });
                                             break;
                                     }
@@ -242,7 +242,7 @@ export const ListExplorerItems = memo((props: ListExplorerItemsProps) => {
                 switch (action) {
                     case "DELETE SELECTED ITEM": {
                         assert(selectedItems !== undefined);
-                        onDeleteItems({ "items": selectedItems }, () =>
+                        onDeleteItems({ items: selectedItems }, () =>
                             selectedItems.forEach(item =>
                                 apiRef.current.updateRows([
                                     { id: item.id, _action: "delete" }
@@ -254,7 +254,7 @@ export const ListExplorerItems = memo((props: ListExplorerItemsProps) => {
                     case "COPY SELECTED ITEM PATH":
                         assert(selectedItems !== undefined && selectedItems.length === 1);
                         onCopyPath({
-                            "basename": selectedItems[0].basename
+                            basename: selectedItems[0].basename
                         });
                         break;
                 }
@@ -287,10 +287,10 @@ export const ListExplorerItems = memo((props: ListExplorerItemsProps) => {
 
         switch (params.row.kind) {
             case "directory":
-                return onNavigate({ "basename": params.row.basename });
+                return onNavigate({ basename: params.row.basename });
 
             case "file":
-                return onOpenFile({ "basename": params.row.basename });
+                return onOpenFile({ basename: params.row.basename });
         }
     };
 
@@ -346,37 +346,37 @@ const { i18n } = declareComponentKeys<
 export type I18n = typeof i18n;
 
 const useStyles = tss.withName({ ListExplorerItems }).create(({ theme }) => ({
-    "root": {
-        "borderRadius": theme.spacing(1),
-        "boxShadow": theme.shadows[1],
-        "height": "100%"
+    root: {
+        borderRadius: theme.spacing(1),
+        boxShadow: theme.shadows[1],
+        height: "100%"
     },
-    "nameIcon": {
-        "width": "30px",
-        "height": "30px",
-        "marginRight": theme.spacing(2),
-        "flexShrink": 0
+    nameIcon: {
+        width: "30px",
+        height: "30px",
+        marginRight: theme.spacing(2),
+        flexShrink: 0
     },
-    "circularProgressInnerWrapper": {
-        "position": "relative",
-        "display": "inline-flex"
+    circularProgressInnerWrapper: {
+        position: "relative",
+        display: "inline-flex"
     },
-    "basenameCell": {
-        "cursor": "pointer",
-        "display": "flex",
-        "alignItems": "center"
+    basenameCell: {
+        cursor: "pointer",
+        display: "flex",
+        alignItems: "center"
     },
-    "percentageWrapper": {
-        "position": "absolute",
-        "top": 0,
-        "left": 0,
-        "bottom": 0,
-        "right": 0,
-        "display": "flex",
-        "alignItems": "center",
-        "justifyContent": "center"
+    percentageWrapper: {
+        position: "absolute",
+        top: 0,
+        left: 0,
+        bottom: 0,
+        right: 0,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center"
     },
-    "textUploadProgress": {
-        "fontSize": theme.typography.rootFontSizePx * 0.6
+    textUploadProgress: {
+        fontSize: theme.typography.rootFontSizePx * 0.6
     }
 }));

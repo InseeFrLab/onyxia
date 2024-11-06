@@ -36,21 +36,21 @@ export const name = "fileExplorer";
 
 export const { reducer, actions } = createUsecaseActions({
     name,
-    "initialState": id<State>({
-        "directoryPath": undefined,
-        "objects": [],
-        "viewMode": "list",
-        "isNavigationOngoing": false,
-        "ongoingOperations": [],
-        "s3FilesBeingUploaded": [],
-        "commandLogsEntries": [],
-        "bucketPolicy": {
+    initialState: id<State>({
+        directoryPath: undefined,
+        objects: [],
+        viewMode: "list",
+        isNavigationOngoing: false,
+        ongoingOperations: [],
+        s3FilesBeingUploaded: [],
+        commandLogsEntries: [],
+        bucketPolicy: {
             Version: "2012-10-17",
             Statement: []
         }
     }),
-    "reducers": {
-        "fileUploadStarted": (
+    reducers: {
+        fileUploadStarted: (
             state,
             {
                 payload
@@ -68,10 +68,10 @@ export const { reducer, actions } = createUsecaseActions({
                 directoryPath,
                 basename,
                 size,
-                "uploadPercent": 0
+                uploadPercent: 0
             });
         },
-        "uploadProgressUpdated": (
+        uploadProgressUpdated: (
             state,
             {
                 payload
@@ -104,10 +104,10 @@ export const { reducer, actions } = createUsecaseActions({
 
             state.s3FilesBeingUploaded = [];
         },
-        "navigationStarted": state => {
+        navigationStarted: state => {
             state.isNavigationOngoing = true;
         },
-        "navigationCompleted": (
+        navigationCompleted: (
             state,
             {
                 payload
@@ -135,8 +135,8 @@ export const { reducer, actions } = createUsecaseActions({
                         case "delete":
                             o.objects.forEach(object => {
                                 removeIfPresent(state.objects, {
-                                    "kind": object.kind,
-                                    "basename": object.basename
+                                    kind: object.kind,
+                                    basename: object.basename
                                 });
                             });
                             break;
@@ -146,7 +146,7 @@ export const { reducer, actions } = createUsecaseActions({
                     }
                 });
         },
-        "operationStarted": (
+        operationStarted: (
             state,
             {
                 payload
@@ -163,7 +163,7 @@ export const { reducer, actions } = createUsecaseActions({
             assert(state.directoryPath !== undefined);
 
             state.ongoingOperations.push({
-                "directoryPath": state.directoryPath,
+                directoryPath: state.directoryPath,
                 operationId,
                 objects,
                 operation
@@ -186,7 +186,7 @@ export const { reducer, actions } = createUsecaseActions({
                     break;
             }
         },
-        "operationCompleted": (
+        operationCompleted: (
             state,
             {
                 payload
@@ -228,7 +228,7 @@ export const { reducer, actions } = createUsecaseActions({
                     break;
             }
         },
-        "commandLogIssued": (
+        commandLogIssued: (
             state,
             {
                 payload
@@ -244,10 +244,10 @@ export const { reducer, actions } = createUsecaseActions({
             state.commandLogsEntries.push({
                 cmdId,
                 cmd,
-                "resp": undefined
+                resp: undefined
             });
         },
-        "commandLogCancelled": (
+        commandLogCancelled: (
             state,
             {
                 payload
@@ -267,7 +267,7 @@ export const { reducer, actions } = createUsecaseActions({
 
             state.commandLogsEntries.splice(index, 1);
         },
-        "commandLogResponseReceived": (
+        commandLogResponseReceived: (
             state,
             {
                 payload
@@ -286,19 +286,19 @@ export const { reducer, actions } = createUsecaseActions({
 
             entry.resp = resp;
         },
-        "workingDirectoryChanged": state => {
+        workingDirectoryChanged: state => {
             state.directoryPath = undefined;
             state.objects = [];
             state.isNavigationOngoing = false;
         },
-        "viewModeChanged": (
+        viewModeChanged: (
             state,
             { payload }: { payload: { viewMode: "list" | "block" } }
         ) => {
             const { viewMode } = payload;
             state.viewMode = viewMode;
         },
-        "bucketPolicyModified": (
+        bucketPolicyModified: (
             state,
             {
                 payload

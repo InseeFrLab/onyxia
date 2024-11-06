@@ -83,32 +83,32 @@ const useStyles = tss
     .withParams<Props>()
     .withName({ Footer })
     .create(({ theme }) => ({
-        "root": {
-            "backgroundColor": theme.colors.useCases.surfaces.background,
-            "display": "flex",
-            "alignItems": "center",
+        root: {
+            backgroundColor: theme.colors.useCases.surfaces.background,
+            display: "flex",
+            alignItems: "center",
             "& a": {
-                "textDecoration": "none",
+                textDecoration: "none",
                 "&:hover": {
-                    "textDecoration": "underline",
-                    "textDecorationColor": theme.colors.useCases.typography.textPrimary
+                    textDecoration: "underline",
+                    textDecorationColor: theme.colors.useCases.typography.textPrimary
                 }
             }
         },
-        "icon": {
-            "fill": theme.colors.useCases.typography.textPrimary
+        icon: {
+            fill: theme.colors.useCases.typography.textPrimary
         },
-        "contribute": {
-            "display": "flex",
-            "alignItems": "center"
+        contribute: {
+            display: "flex",
+            alignItems: "center"
         },
-        "sep": {
-            "flex": 1
+        sep: {
+            flex: 1
         },
-        "spacing": {
-            "width": theme.spacing(4)
+        spacing: {
+            width: theme.spacing(4)
         },
-        "darkModeSwitch": {
-            "padding": 0
+        darkModeSwitch: {
+            padding: 0
         }
     }));

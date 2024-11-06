@@ -10,19 +10,19 @@ describe(symToStr({ removeFormFieldGroupWithNoNodes }), () => {
     it("simple case", () => {
         const nodes: FormFieldGroupLike["nodes"] = [
             {
-                "type": "field"
+                type: "field"
             },
             {
-                "type": "group",
-                "nodes": [],
-                "canAdd": false
+                type: "group",
+                nodes: [],
+                canAdd: false
             }
         ];
 
         const got = structuredClone(nodes);
 
         removeFormFieldGroupWithNoNodes({
-            "nodes": got
+            nodes: got
         });
 
         const expected = nodes.filter(node => node.type === "field");
@@ -33,19 +33,19 @@ describe(symToStr({ removeFormFieldGroupWithNoNodes }), () => {
     it("doesn't remove empty arrays", () => {
         const nodes: FormFieldGroupLike["nodes"] = [
             {
-                "type": "field"
+                type: "field"
             },
             {
-                "type": "group",
-                "nodes": [],
-                "canAdd": true
+                type: "group",
+                nodes: [],
+                canAdd: true
             }
         ];
 
         const got = structuredClone(nodes);
 
         removeFormFieldGroupWithNoNodes({
-            "nodes": got
+            nodes: got
         });
 
         const expected = nodes;
@@ -56,27 +56,27 @@ describe(symToStr({ removeFormFieldGroupWithNoNodes }), () => {
     it("more than one removal", () => {
         const nodes: FormFieldGroupLike["nodes"] = [
             {
-                "type": "field"
+                type: "field"
             },
             {
-                "type": "group",
-                "nodes": [],
-                "canAdd": false
+                type: "group",
+                nodes: [],
+                canAdd: false
             },
             {
-                "type": "field"
+                type: "field"
             },
             {
-                "type": "group",
-                "nodes": [],
-                "canAdd": false
+                type: "group",
+                nodes: [],
+                canAdd: false
             }
         ];
 
         const got = structuredClone(nodes);
 
         removeFormFieldGroupWithNoNodes({
-            "nodes": got
+            nodes: got
         });
 
         const expected = nodes.filter(node => node.type === "field");
@@ -87,30 +87,30 @@ describe(symToStr({ removeFormFieldGroupWithNoNodes }), () => {
     it("nested case", () => {
         const nodes: FormFieldGroupLike["nodes"] = [
             {
-                "type": "group",
-                "nodes": [
+                type: "group",
+                nodes: [
                     {
-                        "type": "group",
-                        "nodes": [],
-                        "canAdd": false
+                        type: "group",
+                        nodes: [],
+                        canAdd: false
                     },
                     {
-                        "type": "group",
-                        "nodes": [],
-                        "canAdd": false
+                        type: "group",
+                        nodes: [],
+                        canAdd: false
                     }
                 ],
-                "canAdd": false
+                canAdd: false
             },
             {
-                "type": "field"
+                type: "field"
             }
         ];
 
         const got = structuredClone(nodes);
 
         removeFormFieldGroupWithNoNodes({
-            "nodes": got
+            nodes: got
         });
 
         const expected = nodes.filter(node => node.type === "field");
@@ -121,32 +121,32 @@ describe(symToStr({ removeFormFieldGroupWithNoNodes }), () => {
     it("case nothing to remove", () => {
         const nodes: FormFieldGroupLike["nodes"] = [
             {
-                "type": "field"
+                type: "field"
             },
             {
-                "type": "group",
-                "nodes": [
+                type: "group",
+                nodes: [
                     {
-                        "type": "group",
-                        "nodes": [
+                        type: "group",
+                        nodes: [
                             {
-                                "type": "field"
+                                type: "field"
                             }
                         ],
-                        "canAdd": false
+                        canAdd: false
                     },
                     {
-                        "type": "field"
+                        type: "field"
                     }
                 ],
-                "canAdd": false
+                canAdd: false
             }
         ];
 
         const got = structuredClone(nodes);
 
         removeFormFieldGroupWithNoNodes({
-            "nodes": got
+            nodes: got
         });
 
         const expected = nodes;

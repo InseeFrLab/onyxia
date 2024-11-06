@@ -76,7 +76,7 @@ export const MyServicesCard = memo((props: Props) => {
                 return "pending";
             case "running":
                 return getDoesHaveBeenRunningForTooLong({
-                    "startTime": service.startedAt
+                    startTime: service.startedAt
                 })
                     ? "warning"
                     : "success";
@@ -89,7 +89,7 @@ export const MyServicesCard = memo((props: Props) => {
         service.state === "running" && !service.areInteractionLocked;
 
     const { classes, cx, theme } = useStyles({
-        "hasBeenRunningForTooLong": severity === "warning",
+        hasBeenRunningForTooLong: severity === "warning",
         isServiceTitleALink
     });
 
@@ -161,7 +161,7 @@ export const MyServicesCard = memo((props: Props) => {
                         onClick={() => setIsEditingFriendlyName(true)}
                     />
                 )}
-                <div style={{ "flex": 1 }} />
+                <div style={{ flex: 1 }} />
                 {(() => {
                     if (groupProjectName === undefined) {
                         return null;
@@ -171,10 +171,9 @@ export const MyServicesCard = memo((props: Props) => {
                         return (
                             <Tooltip
                                 title={t("share tooltip - belong to someone else", {
-                                    "ownerUsername": service.ownership.ownerUsername,
-                                    "projectName": groupProjectName,
-                                    "focusColor":
-                                        theme.colors.useCases.typography.textFocus
+                                    ownerUsername: service.ownership.ownerUsername,
+                                    projectName: groupProjectName,
+                                    focusColor: theme.colors.useCases.typography.textFocus
                                 })}
                             >
                                 <Icon icon={id<MuiIconComponentName>("Diversity3")} />
@@ -186,9 +185,8 @@ export const MyServicesCard = memo((props: Props) => {
                         return (
                             <Tooltip
                                 title={t("share tooltip - belong to you, shared", {
-                                    "projectName": groupProjectName,
-                                    "focusColor":
-                                        theme.colors.useCases.typography.textFocus
+                                    projectName: groupProjectName,
+                                    focusColor: theme.colors.useCases.typography.textFocus
                                 })}
                             >
                                 <IconButton
@@ -203,8 +201,8 @@ export const MyServicesCard = memo((props: Props) => {
                     return (
                         <Tooltip
                             title={t("share tooltip - belong to you, not shared", {
-                                "projectName": groupProjectName,
-                                "focusColor": theme.colors.useCases.typography.textFocus
+                                projectName: groupProjectName,
+                                focusColor: theme.colors.useCases.typography.textFocus
                             })}
                         >
                             <IconButton
@@ -272,7 +270,7 @@ export const MyServicesCard = memo((props: Props) => {
                                     return (
                                         <MyServicesRunningTime
                                             doesHaveBeenRunningForTooLong={getDoesHaveBeenRunningForTooLong(
-                                                { "startTime": service.startedAt }
+                                                { startTime: service.startedAt }
                                             )}
                                             startTime={service.startedAt}
                                         />
@@ -305,7 +303,7 @@ export const MyServicesCard = memo((props: Props) => {
                             </span>
                         </Tooltip>
                     )}
-                    <div style={{ "flex": 1 }} />
+                    <div style={{ flex: 1 }} />
                     {service.state === "suspended" && (
                         <Tooltip title={t("resume service tooltip")}>
                             <span>
@@ -389,72 +387,72 @@ const useStyles = tss
     }>()
     .withName({ MyServicesCard })
     .create(({ theme, hasBeenRunningForTooLong, isServiceTitleALink }) => ({
-        "root": {
-            "borderRadius": 8,
-            "boxShadow": theme.shadows[1],
-            "backgroundColor": theme.colors.useCases.surfaces.surface1,
+        root: {
+            borderRadius: 8,
+            boxShadow: theme.shadows[1],
+            backgroundColor: theme.colors.useCases.surfaces.surface1,
             "&:hover": {
-                "boxShadow": theme.shadows[6]
+                boxShadow: theme.shadows[6]
             },
-            "display": "flex",
-            "flexDirection": "column"
+            display: "flex",
+            flexDirection: "column"
         },
-        "aboveDivider": {
-            "padding": theme.spacing({ "topBottom": 3, "rightLeft": 4 }),
-            "borderBottom": `1px solid ${theme.colors.useCases.typography.textTertiary}`,
-            "boxSizing": "border-box",
-            "display": "flex",
-            "alignItems": "center",
-            "color": "inherit",
-            "textDecoration": "none"
+        aboveDivider: {
+            padding: theme.spacing({ topBottom: 3, rightLeft: 4 }),
+            borderBottom: `1px solid ${theme.colors.useCases.typography.textTertiary}`,
+            boxSizing: "border-box",
+            display: "flex",
+            alignItems: "center",
+            color: "inherit",
+            textDecoration: "none"
         },
-        "title": {
-            "marginLeft": theme.spacing(3),
+        title: {
+            marginLeft: theme.spacing(3),
             "&:hover": {
-                "color": isServiceTitleALink
+                color: isServiceTitleALink
                     ? theme.colors.useCases.typography.textFocus
                     : undefined
             }
         },
-        "errorOutlineIcon": !hasBeenRunningForTooLong
-            ? { "display": "none" }
+        errorOutlineIcon: !hasBeenRunningForTooLong
+            ? { display: "none" }
             : {
-                  "marginLeft": theme.spacing(3),
-                  "color": theme.colors.useCases.alertSeverity.warning.main
+                  marginLeft: theme.spacing(3),
+                  color: theme.colors.useCases.alertSeverity.warning.main
               },
-        "belowDivider": {
-            "padding": theme.spacing(4),
-            "paddingTop": theme.spacing(3),
-            "flex": 1
+        belowDivider: {
+            padding: theme.spacing(4),
+            paddingTop: theme.spacing(3),
+            flex: 1
         },
-        "timeAndStatusContainer": {
-            "flex": 1,
-            "paddingLeft": theme.spacing(6)
+        timeAndStatusContainer: {
+            flex: 1,
+            paddingLeft: theme.spacing(6)
         },
-        "circularProgress": {
-            "color": "inherit",
-            "position": "relative",
-            "top": 3,
-            "left": theme.spacing(2)
+        circularProgress: {
+            color: "inherit",
+            position: "relative",
+            top: 3,
+            left: theme.spacing(2)
         },
-        "belowDividerTop": {
-            "display": "flex",
-            "marginBottom": theme.spacing(4)
+        belowDividerTop: {
+            display: "flex",
+            marginBottom: theme.spacing(4)
         },
-        "captions": {
-            "display": "inline-block",
-            "marginBottom": theme.spacing(2)
+        captions: {
+            display: "inline-block",
+            marginBottom: theme.spacing(2)
         },
-        "packageNameWrapper": {
+        packageNameWrapper: {
             "& > *": {
-                "display": "inline-block"
+                display: "inline-block"
             }
         },
-        "belowDividerBottom": {
-            "display": "flex",
-            "alignItems": "center"
+        belowDividerBottom: {
+            display: "flex",
+            alignItems: "center"
         },
-        "friendlyNameTextField": {
-            "marginLeft": theme.spacing(3)
+        friendlyNameTextField: {
+            marginLeft: theme.spacing(3)
         }
     }));

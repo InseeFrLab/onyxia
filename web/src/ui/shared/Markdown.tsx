@@ -5,10 +5,10 @@ import { type LocalizedString, useResolveLocalizedString } from "ui/i18n";
 
 // eslint-disable-next-line react-refresh/only-export-components
 export const { Markdown } = createMarkdown({
-    "getLinkProps": ({ href }) => ({
+    getLinkProps: ({ href }) => ({
         href,
-        "target": !href.startsWith("/") ? "_blank" : undefined,
-        "onClick": !href.startsWith("/")
+        target: !href.startsWith("/") ? "_blank" : undefined,
+        onClick: !href.startsWith("/")
             ? undefined
             : e => {
                   e.preventDefault();
@@ -25,7 +25,7 @@ export function LocalizedMarkdown(
     const { children, ...rest } = props;
 
     const { resolveLocalizedStringDetailed } = useResolveLocalizedString({
-        "labelWhenMismatchingLanguage": true
+        labelWhenMismatchingLanguage: true
     });
 
     const { langAttrValue, str } = resolveLocalizedStringDetailed(children);

@@ -51,7 +51,7 @@ function removeFormFieldGroupLeafWithNoNodes_rec(params: {
             hasRemoved = true;
         } else {
             const { hasRemoved: hasRemoved_i } = removeFormFieldGroupLeafWithNoNodes_rec({
-                "nodes": node.nodes
+                nodes: node.nodes
             });
 
             if (hasRemoved_i) {

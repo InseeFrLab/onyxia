@@ -59,7 +59,7 @@ export const AddCustomS3ConfigDialog = memo((props: Props) => {
             subtitle={t("dialog subtitle")}
             maxWidth="md"
             classes={{
-                "buttons": classes.buttons
+                buttons: classes.buttons
             }}
             fullWidth={true}
             isOpen={isReady}
@@ -80,8 +80,8 @@ AddCustomS3ConfigDialog.displayName = symToStr({
 });
 
 const useStyles = tss.withName({ AddCustomS3ConfigDialog }).create({
-    "buttons": {
-        "display": "flex"
+    buttons: {
+        display: "flex"
     }
 });
 
@@ -118,7 +118,7 @@ const Buttons = memo((props: ButtonsProps) => {
                     !isFormSubmittable ? undefined : s3ConfigCreation.testConnection
                 }
             />
-            <div className={css({ "flex": 1 })} />
+            <div className={css({ flex: 1 })} />
             <Button onClick={onCloseCancel} variant="secondary">
                 {t("cancel")}
             </Button>
@@ -154,7 +154,7 @@ const Body = memo(() => {
             <FormGroup className={classes.serverConfigFormGroup}>
                 <TextField
                     className={css({
-                        "marginBottom": theme.spacing(6)
+                        marginBottom: theme.spacing(6)
                     })}
                     label={t("friendlyName textField label")}
                     helperText={t("friendlyName textField helper text")}
@@ -167,7 +167,7 @@ const Body = memo(() => {
                     doOnlyShowErrorAfterFirstFocusLost
                     onValueBeingTypedChange={({ value }) =>
                         s3ConfigCreation.changeValue({
-                            "key": "friendlyName",
+                            key: "friendlyName",
                             value
                         })
                     }
@@ -184,7 +184,7 @@ const Body = memo(() => {
                     doOnlyShowErrorAfterFirstFocusLost
                     onValueBeingTypedChange={({ value }) =>
                         s3ConfigCreation.changeValue({
-                            "key": "url",
+                            key: "url",
                             value
                         })
                     }
@@ -201,7 +201,7 @@ const Body = memo(() => {
                     doOnlyShowErrorAfterFirstFocusLost
                     onValueBeingTypedChange={({ value }) =>
                         s3ConfigCreation.changeValue({
-                            "key": "region",
+                            key: "region",
                             value
                         })
                     }
@@ -209,7 +209,7 @@ const Body = memo(() => {
                 <TextField
                     label={t("workingDirectoryPath textField label")}
                     className={css({
-                        "marginBottom": theme.spacing(4)
+                        marginBottom: theme.spacing(4)
                     })}
                     helperText={t("workingDirectoryPath textField helper text")}
                     helperTextError={
@@ -221,7 +221,7 @@ const Body = memo(() => {
                     doOnlyShowErrorAfterFirstFocusLost
                     onValueBeingTypedChange={({ value }) =>
                         s3ConfigCreation.changeValue({
-                            "key": "workingDirectoryPath",
+                            key: "workingDirectoryPath",
                             value
                         })
                     }
@@ -229,8 +229,8 @@ const Body = memo(() => {
                 <FormControl
                     className={css({
                         "& code": {
-                            "fontSize": "0.9rem",
-                            "color": theme.colors.useCases.typography.textSecondary
+                            fontSize: "0.9rem",
+                            color: theme.colors.useCases.typography.textSecondary
                         }
                     })}
                 >
@@ -239,7 +239,7 @@ const Body = memo(() => {
                         typo="caption"
                         color="secondary"
                         className={css({
-                            "marginBottom": theme.spacing(2)
+                            marginBottom: theme.spacing(2)
                         })}
                     >
                         {t("url style helper text")}
@@ -249,8 +249,8 @@ const Body = memo(() => {
                         value={formValues.pathStyleAccess ? "path" : "virtual-hosted"}
                         onChange={(_, value) =>
                             s3ConfigCreation.changeValue({
-                                "key": "pathStyleAccess",
-                                "value": value === "path"
+                                key: "pathStyleAccess",
+                                value: value === "path"
                             })
                         }
                     >
@@ -258,14 +258,14 @@ const Body = memo(() => {
                             value="path"
                             control={<Radio />}
                             label={t("path style label", {
-                                "example": urlStylesExamples?.pathStyle
+                                example: urlStylesExamples?.pathStyle
                             })}
                         />
                         <FormControlLabel
                             value="virtual-hosted"
                             control={<Radio />}
                             label={t("virtual-hosted style label", {
-                                "example": urlStylesExamples?.virtualHostedStyle
+                                example: urlStylesExamples?.virtualHostedStyle
                             })}
                         />
                     </RadioGroup>
@@ -274,14 +274,14 @@ const Body = memo(() => {
             <FormGroup className={classes.accountCredentialsFormGroup}>
                 <FormLabel
                     className={css({
-                        "marginBottom": theme.spacing(3)
+                        marginBottom: theme.spacing(3)
                     })}
                 >
                     {t("account credentials")}
                 </FormLabel>
                 <FormControl
                     className={css({
-                        "marginBottom": theme.spacing(6)
+                        marginBottom: theme.spacing(6)
                     })}
                     component="fieldset"
                     variant="standard"
@@ -293,8 +293,8 @@ const Body = memo(() => {
                                     checked={formValues.isAnonymous}
                                     onChange={(...[, isChecked]) =>
                                         s3ConfigCreation.changeValue({
-                                            "key": "isAnonymous",
-                                            "value": isChecked
+                                            key: "isAnonymous",
+                                            value: isChecked
                                         })
                                     }
                                 />
@@ -308,7 +308,7 @@ const Body = memo(() => {
                     <>
                         <TextField
                             className={css({
-                                "marginBottom": theme.spacing(6)
+                                marginBottom: theme.spacing(6)
                             })}
                             label={t("accessKeyId textField label")}
                             helperText={t("accessKeyId textField helper text")}
@@ -321,14 +321,14 @@ const Body = memo(() => {
                             doOnlyShowErrorAfterFirstFocusLost
                             onValueBeingTypedChange={({ value }) =>
                                 s3ConfigCreation.changeValue({
-                                    "key": "accessKeyId",
-                                    "value": value || undefined
+                                    key: "accessKeyId",
+                                    value: value || undefined
                                 })
                             }
                         />
                         <TextField
                             className={css({
-                                "marginBottom": theme.spacing(6)
+                                marginBottom: theme.spacing(6)
                             })}
                             type="sensitive"
                             selectAllTextOnFocus
@@ -342,14 +342,14 @@ const Body = memo(() => {
                             doOnlyShowErrorAfterFirstFocusLost
                             onValueBeingTypedChange={({ value }) =>
                                 s3ConfigCreation.changeValue({
-                                    "key": "secretAccessKey",
-                                    "value": value || undefined
+                                    key: "secretAccessKey",
+                                    value: value || undefined
                                 })
                             }
                         />
                         <TextField
                             className={css({
-                                "marginBottom": theme.spacing(6)
+                                marginBottom: theme.spacing(6)
                             })}
                             type="sensitive"
                             selectAllTextOnFocus
@@ -364,8 +364,8 @@ const Body = memo(() => {
                             doOnlyShowErrorAfterFirstFocusLost
                             onValueBeingTypedChange={({ value }) =>
                                 s3ConfigCreation.changeValue({
-                                    "key": "sessionToken",
-                                    "value": value || undefined
+                                    key: "sessionToken",
+                                    value: value || undefined
                                 })
                             }
                         />
@@ -379,21 +379,21 @@ const Body = memo(() => {
 const useBodyStyles = tss
     .withName(`${symToStr({ AddCustomS3ConfigDialog })}${symToStr({ Body })}`)
     .create(({ theme }) => ({
-        "serverConfigFormGroup": {
-            "display": "flex",
-            "flexDirection": "column",
-            "overflow": "visible",
-            "gap": theme.spacing(6),
-            "marginBottom": theme.spacing(4)
+        serverConfigFormGroup: {
+            display: "flex",
+            flexDirection: "column",
+            overflow: "visible",
+            gap: theme.spacing(6),
+            marginBottom: theme.spacing(4)
         },
-        "accountCredentialsFormGroup": {
-            "borderRadius": 5,
-            "padding": theme.spacing(3),
+        accountCredentialsFormGroup: {
+            borderRadius: 5,
+            padding: theme.spacing(3),
 
-            "backgroundColor": theme.colors.useCases.surfaces.surface1,
-            "boxShadow": theme.shadows[3],
+            backgroundColor: theme.colors.useCases.surfaces.surface1,
+            boxShadow: theme.shadows[3],
             "&:hover": {
-                "boxShadow": theme.shadows[6]
+                boxShadow: theme.shadows[6]
             }
         }
     }));

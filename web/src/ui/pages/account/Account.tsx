@@ -44,7 +44,7 @@ export default function Account(props: Props) {
                 .filter(accountTabId =>
                     accountTabId !== "vault" ? true : vaultCredentials.isAvailable()
                 )
-                .map(id => ({ id, "title": t(id) })),
+                .map(id => ({ id, title: t(id) })),
         [t]
     );
 
@@ -101,13 +101,13 @@ const { i18n } = declareComponentKeys<
 export type I18n = typeof i18n;
 
 const useStyles = tss.withName({ Account }).create(({ theme }) => ({
-    "root": {
-        "height": "100%",
-        "overflow": "auto"
+    root: {
+        height: "100%",
+        overflow: "auto"
     },
-    "tabs": {
-        "borderRadius": 8,
-        "overflow": "hidden",
-        "boxShadow": theme.shadows[1]
+    tabs: {
+        borderRadius: 8,
+        overflow: "hidden",
+        boxShadow: theme.shadows[1]
     }
 }));

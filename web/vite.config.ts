@@ -13,35 +13,35 @@ import * as fs from "fs/promises";
 
 // https://vitejs.dev/config/
 export default defineConfig({
-    "plugins": [
+    plugins: [
         react(),
         tsconfigPaths(),
         commonjs(),
         keycloakify({
-            "themeName": "onyxia",
-            "environmentVariables": [
+            themeName: "onyxia",
+            environmentVariables: [
                 {
-                    "name": "ONYXIA_RESOURCES_ALLOWED_ORIGINS",
-                    "default": "*"
+                    name: "ONYXIA_RESOURCES_ALLOWED_ORIGINS",
+                    default: "*"
                 },
                 {
-                    "name": "ONYXIA_HEADER_TEXT_BOLD",
-                    "default": ""
+                    name: "ONYXIA_HEADER_TEXT_BOLD",
+                    default: ""
                 },
                 {
-                    "name": "ONYXIA_HEADER_TEXT_FOCUS",
-                    "default": ""
+                    name: "ONYXIA_HEADER_TEXT_FOCUS",
+                    default: ""
                 },
                 {
-                    "name": "ONYXIA_PALETTE_OVERRIDE",
-                    "default": ""
+                    name: "ONYXIA_PALETTE_OVERRIDE",
+                    default: ""
                 },
                 {
-                    "name": "ONYXIA_TAB_TITLE",
-                    "default": "Onyxia"
+                    name: "ONYXIA_TAB_TITLE",
+                    default: "Onyxia"
                 }
             ],
-            "postBuild": async () => {
+            postBuild: async () => {
                 await fs.rm(
                     pathJoin(
                         "theme",
@@ -51,29 +51,29 @@ export default defineConfig({
                         "build",
                         "material-icons"
                     ),
-                    { "recursive": true }
+                    { recursive: true }
                 );
             }
         }),
         viteEnvs({
-            "computedEnv": async ({ resolvedConfig }) => ({
-                "WEB_VERSION": JSON.parse(
+            computedEnv: async ({ resolvedConfig }) => ({
+                WEB_VERSION: JSON.parse(
                     (await fs.readFile(pathJoin(__dirname, "package.json"))).toString(
                         "utf8"
                     )
                 ).version,
                 // Only so that html substitution can work (after rendering of the EJS).
                 // Do not use in the TS code.
-                "PUBLIC_URL": (() => {
+                PUBLIC_URL: (() => {
                     const { BASE_URL } = resolvedConfig.env;
 
                     return BASE_URL === "/" ? "" : BASE_URL.replace(/\/$/, "");
                 })()
             }),
-            "indexAsEjs": true
+            indexAsEjs: true
         })
     ],
-    "build": {
-        "sourcemap": true
+    build: {
+        sourcemap: true
     }
 });

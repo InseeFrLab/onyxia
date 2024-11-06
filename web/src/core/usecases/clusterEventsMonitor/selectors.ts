@@ -12,7 +12,7 @@ const clusterEvents = createSelector(
     (state, currentProject, currentProjectConfig) =>
         (state.clusterEventsByProjectId[currentProject.id] ?? []).map(clusterEvent => ({
             ...clusterEvent,
-            "isHighlighted":
+            isHighlighted:
                 clusterEvent.severity !== "info" &&
                 clusterEvent.timestamp >
                     currentProjectConfig.clusterNotificationCheckoutTime

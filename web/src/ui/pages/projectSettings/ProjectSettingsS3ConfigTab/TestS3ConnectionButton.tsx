@@ -52,9 +52,8 @@ export function TestS3ConnectionButton(props: Props) {
                                 className={cx(
                                     classes.icon,
                                     css({
-                                        "color":
-                                            theme.colors.useCases.alertSeverity.success
-                                                .main
+                                        color: theme.colors.useCases.alertSeverity.success
+                                            .main
                                     })
                                 )}
                                 icon={id<MuiIconComponentName>("DoneOutline")}
@@ -65,14 +64,13 @@ export function TestS3ConnectionButton(props: Props) {
                             <>
                                 <Tooltip
                                     title={t("test connection failed", {
-                                        "errorMessage": connectionTestStatus.errorMessage
+                                        errorMessage: connectionTestStatus.errorMessage
                                     })}
                                 >
                                     <Icon
                                         className={css({
-                                            "color":
-                                                theme.colors.useCases.alertSeverity.error
-                                                    .main
+                                            color: theme.colors.useCases.alertSeverity
+                                                .error.main
                                         })}
                                         icon={id<MuiIconComponentName>("ErrorOutline")}
                                     />
@@ -87,16 +85,16 @@ export function TestS3ConnectionButton(props: Props) {
 }
 
 const useStyles = tss.withName({ TestS3ConnectionButton }).create(({ theme }) => ({
-    "root": {
-        "display": "flex",
-        "alignItems": "center",
-        "gap": theme.spacing(3)
+    root: {
+        display: "flex",
+        alignItems: "center",
+        gap: theme.spacing(3)
     },
-    "icon": {
-        "fontSize": "inherit",
+    icon: {
+        fontSize: "inherit",
         ...(() => {
             const factor = 1.6;
-            return { "width": `${factor}em`, "height": `${factor}em` };
+            return { width: `${factor}em`, height: `${factor}em` };
         })()
     }
 }));

@@ -33,7 +33,7 @@ export function FormFieldWrapper(props: Props) {
     } = props;
 
     const { classes } = useStyles({
-        "isErrored": error !== undefined
+        isErrored: error !== undefined
     });
 
     const { t } = useTranslation({ FormFieldWrapper });
@@ -56,7 +56,7 @@ export function FormFieldWrapper(props: Props) {
                         </label>
                     }
                 </Text>
-                <div style={{ "flex": 1 }} />
+                <div style={{ flex: 1 }} />
                 {onResetToDefault !== undefined && (
                     <ToolTip title={t("reset to default")} placement="bottom">
                         <IconButton
@@ -93,38 +93,34 @@ const useStyles = tss
     .withName({ FormFieldWrapper })
     .withParams<{ isErrored: boolean }>()
     .create(({ theme, isErrored }) => ({
-        "title": {
-            "color": !isErrored
-                ? undefined
-                : theme.colors.useCases.alertSeverity.error.main
+        title: {
+            color: !isErrored ? undefined : theme.colors.useCases.alertSeverity.error.main
         },
-        "description": {
-            "color": !isErrored
-                ? undefined
-                : theme.colors.useCases.alertSeverity.error.main
+        description: {
+            color: !isErrored ? undefined : theme.colors.useCases.alertSeverity.error.main
         },
-        "header": {
-            "display": "flex",
-            "alignItems": "center",
-            "position": "relative",
-            "overflow": "visible"
+        header: {
+            display: "flex",
+            alignItems: "center",
+            position: "relative",
+            overflow: "visible"
         },
-        "removeButton": {
-            "position": "absolute",
-            "left": -theme.typography.rootFontSizePx * 2.5
+        removeButton: {
+            position: "absolute",
+            left: -theme.typography.rootFontSizePx * 2.5
         },
-        "removeButtonIcon": {
-            "color": theme.colors.useCases.alertSeverity.error.main
+        removeButtonIcon: {
+            color: theme.colors.useCases.alertSeverity.error.main
         },
-        "childrenWrapper": {
-            "marginTop": theme.spacing(4)
+        childrenWrapper: {
+            marginTop: theme.spacing(4)
         },
-        "errorWrapper": {
-            "marginTop": theme.spacing(3),
-            "minHeight": theme.typography.rootFontSizePx * 1.5
+        errorWrapper: {
+            marginTop: theme.spacing(3),
+            minHeight: theme.typography.rootFontSizePx * 1.5
         },
-        "error": {
-            "color": theme.colors.useCases.alertSeverity.error.main
+        error: {
+            color: theme.colors.useCases.alertSeverity.error.main
         }
     }));
 

@@ -297,7 +297,7 @@ export const SettingField = memo((props: Props): ReturnType<FunctionComponent> =
                 return props.helperText;
             case "service password":
                 return t("service password helper text", {
-                    "groupProjectName": props.groupProjectName
+                    groupProjectName: props.groupProjectName
                 });
             case "reset helper dialogs":
                 return t("reset helper dialogs helper text");
@@ -498,38 +498,38 @@ const useStyles = tss
     .withName({ SettingField })
     .withParams<{ isFlashing: boolean }>()
     .create(({ theme, isFlashing }) => ({
-        "root": {
-            "marginBottom": theme.spacing(3)
+        root: {
+            marginBottom: theme.spacing(3)
         },
-        "mainLine": {
-            "display": "flex",
+        mainLine: {
+            display: "flex",
             "& > div": {
-                "display": "flex",
-                "alignItems": "center"
+                display: "flex",
+                alignItems: "center"
             },
-            "marginBottom": theme.spacing(2)
+            marginBottom: theme.spacing(2)
         },
-        "cellTitle": {
-            "width": 360
+        cellTitle: {
+            width: 360
         },
-        "cellMiddle": {
-            "flex": 1,
-            "overflow": "hidden",
+        cellMiddle: {
+            flex: 1,
+            overflow: "hidden",
             "& .MuiTextField-root": {
-                "width": "100%",
-                "top": 2
+                width: "100%",
+                top: 2
             }
         },
-        "cellMiddleText": {
-            "overflow": "hidden",
-            "whiteSpace": "nowrap",
-            "textOverflow": "ellipsis",
-            "color": !isFlashing ? undefined : theme.colors.useCases.buttons.actionActive
+        cellMiddleText: {
+            overflow: "hidden",
+            whiteSpace: "nowrap",
+            textOverflow: "ellipsis",
+            color: !isFlashing ? undefined : theme.colors.useCases.buttons.actionActive
         },
-        "cellActions": {
-            "marginRight": theme.spacing(2)
+        cellActions: {
+            marginRight: theme.spacing(2)
         },
-        "noText": {
-            "color": theme.colors.useCases.typography.textDisabled
+        noText: {
+            color: theme.colors.useCases.typography.textDisabled
         }
     }));

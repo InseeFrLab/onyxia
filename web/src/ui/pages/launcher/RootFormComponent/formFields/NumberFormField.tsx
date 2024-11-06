@@ -38,15 +38,15 @@ export const NumberFormField = memo((props: Props) => {
     const { serializedValue, setSerializedValue, errorMessageKey, resetToDefault } =
         useFormField<number, string, "below minimum" | "not a number" | "not an integer">(
             {
-                "serializedValue": `${value}`,
-                "throttleDelay": 500,
+                serializedValue: `${value}`,
+                throttleDelay: 500,
                 onChange,
-                "parse": serializedValue => {
+                parse: serializedValue => {
                     if (!/^[0-9.]+$/.test(serializedValue)) {
                         console.log("not a number");
                         return {
-                            "isValid": false,
-                            "errorMessageKey": "not a number"
+                            isValid: false,
+                            errorMessageKey: "not a number"
                         };
                     }
 
@@ -54,15 +54,15 @@ export const NumberFormField = memo((props: Props) => {
 
                     if (isNaN(value)) {
                         return {
-                            "isValid": false,
-                            "errorMessageKey": "not a number"
+                            isValid: false,
+                            errorMessageKey: "not a number"
                         };
                     }
 
                     if (isInteger && !Number.isInteger(value)) {
                         return {
-                            "isValid": false,
-                            "errorMessageKey": "not an integer"
+                            isValid: false,
+                            errorMessageKey: "not an integer"
                         };
                     }
 
@@ -73,22 +73,22 @@ export const NumberFormField = memo((props: Props) => {
 
                         if (value < minimum) {
                             return {
-                                "isValid": false,
-                                "errorMessageKey": "below minimum"
+                                isValid: false,
+                                errorMessageKey: "below minimum"
                             };
                         }
                     }
 
                     return {
-                        "isValid": true,
-                        "value": value
+                        isValid: true,
+                        value: value
                     };
                 }
             }
         );
 
     useEffect(() => {
-        onErrorChange({ "hasError": errorMessageKey !== undefined });
+        onErrorChange({ hasError: errorMessageKey !== undefined });
     }, [errorMessageKey]);
 
     const inputId = useId();

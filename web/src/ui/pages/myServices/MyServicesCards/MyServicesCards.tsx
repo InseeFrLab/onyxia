@@ -60,7 +60,7 @@ export const MyServicesCards = memo((props: Props) => {
     } = props;
 
     const { classes, cx } = useStyles({
-        "isThereServices": services !== undefined && services.length !== 0
+        isThereServices: services !== undefined && services.length !== 0
     });
 
     const { t } = useTranslation({ MyServicesCards });
@@ -68,17 +68,16 @@ export const MyServicesCards = memo((props: Props) => {
     const getMyServicesFunctionProps = useMemo(
         () =>
             memoize((helmReleaseName: string) => ({
-                "onRequestLogHelmGetNotes": () =>
+                onRequestLogHelmGetNotes: () =>
                     onRequestLogHelmGetNotes({ helmReleaseName }),
-                "onRequestDelete": () => onRequestDelete({ helmReleaseName }),
-                "onRequestPauseOrResume": () =>
-                    onRequestPauseOrResume({ helmReleaseName }),
-                "onRequestChangeFriendlyName": (friendlyName: string) =>
+                onRequestDelete: () => onRequestDelete({ helmReleaseName }),
+                onRequestPauseOrResume: () => onRequestPauseOrResume({ helmReleaseName }),
+                onRequestChangeFriendlyName: (friendlyName: string) =>
                     onRequestChangeFriendlyName({ helmReleaseName, friendlyName }),
-                "myServiceLink": getMyServiceLink({ helmReleaseName }),
-                "onRequestChangeSharedStatus": (isShared: boolean) =>
+                myServiceLink: getMyServiceLink({ helmReleaseName }),
+                onRequestChangeSharedStatus: (isShared: boolean) =>
                     onRequestChangeSharedStatus({ helmReleaseName, isShared }),
-                "evtAction": Evt.create<"open readme dialog">()
+                evtAction: Evt.create<"open readme dialog">()
             })),
         [
             onRequestLogHelmGetNotes,
@@ -170,29 +169,29 @@ const useStyles = tss
     .withParams<{ isThereServices: boolean }>()
     .withName({ MyServicesCards })
     .create(({ theme, isThereServices }) => ({
-        "root": {
-            "overflow": "hidden",
-            "display": "flex",
-            "flexDirection": "column"
+        root: {
+            overflow: "hidden",
+            display: "flex",
+            flexDirection: "column"
         },
-        "header": {
+        header: {
             ...theme.spacing.topBottom("margin", 3)
         },
-        "wrapper": {
-            "overflow": "auto",
+        wrapper: {
+            overflow: "auto",
             ...(!isThereServices
                 ? {
-                      "flex": 1
+                      flex: 1
                   }
                 : {
-                      "paddingRight": theme.spacing(3),
-                      "display": "grid",
-                      "gridTemplateColumns": "repeat(2,1fr)",
-                      "gap": theme.spacing(4)
+                      paddingRight: theme.spacing(3),
+                      display: "grid",
+                      gridTemplateColumns: "repeat(2,1fr)",
+                      gap: theme.spacing(4)
                   }),
-            "paddingBottom": theme.spacing(4)
+            paddingBottom: theme.spacing(4)
         },
-        "noRunningServices": {
-            "height": "100%"
+        noRunningServices: {
+            height: "100%"
         }
     }));
