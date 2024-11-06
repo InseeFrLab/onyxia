@@ -54,14 +54,16 @@ export function Accordion(props: Props) {
             return;
         }
 
-        if (!isExpanded) {
-            return;
-        }
-
         const scrollableParent = getScrollableParent({
             element: rootElement,
             doReturnElementIfScrollable: false
         });
+
+        if (!isExpanded) {
+            scrollableParent.style.scrollBehavior = "smooth";
+            scrollableParent.scrollTop -= 30;
+            return;
+        }
 
         let isActive = true;
 
@@ -86,6 +88,7 @@ export function Accordion(props: Props) {
 
                 if (dOutOfView > 0) {
                     if (dOutOfView >= dSpaceLeft) {
+                        scrollableParent.style.scrollBehavior = "smooth";
                         scrollableParent.scrollTop += dSpaceLeft;
                         break;
                     }
@@ -115,6 +118,7 @@ export function Accordion(props: Props) {
                     onEntered: () => {
                         evtAnimationEnd.post();
                     }
+                    //timeout: 5_000
                 }
             }}
         >
