@@ -326,6 +326,10 @@ export const translations: Translations<"nl"> = {
         "cancel": "Annuleren",
         "go to settings": "Ga naar instellingen"
     },
+    "MyFilesShareDialog": {
+        "cancel": "Annuleren",
+        "create and copy link": "Creare e copiare il link"
+    },
     "MySecrets": {
         "page title - my secrets": "My Secrets",
         "what this page is used for - my secrets":
@@ -355,8 +359,10 @@ export const translations: Translations<"nl"> = {
         "copy path": "De naam van het S3-object kopiëren",
         "create directory": "Nieuwe map",
         "refresh": "vernieuwen",
-        "create what": ({ what }) => `Nieuw ${what}`,
-        "new": "Nieuw"
+        "new": "Nieuw",
+        "share": "Delen",
+        "alt list view": "Toon lijst",
+        "alt block view": "Toon blok"
     },
     "SecretsExplorerButtonBar": {
         "secret": "geheim",
@@ -388,6 +394,12 @@ export const translations: Translations<"nl"> = {
         "can't be empty": "Kan niet leeg zijn",
         "new directory": "Nieuwe map"
     },
+    "ListExplorerItems": {
+        "header name": "Naam",
+        "header modified date": "Gewijzigd",
+        "header size": "Grootte",
+        "header policy": "Beleid"
+    },
     "SecretsExplorer": {
         "file": "bestand",
         "secret": "geheim",
@@ -409,6 +421,7 @@ export const translations: Translations<"nl"> = {
     "ExplorerItems": {
         "empty directory": "Deze bestandenlijst is leeg"
     },
+
     "SecretsExplorerItems": {
         "empty directory": "Deze bestandenlijst is leeg"
     },
@@ -931,7 +944,8 @@ Voel je vrij om te verkennen en de controle over je Kubernetes-implementaties te
         ),
         "column": "kolom",
         "density": "dichtheid",
-        "download file": "bestand downloaden"
+        "download file": "bestand downloaden",
+        "resize table": "Formaat wijzigen"
     },
     "UrlInput": {
         "load": "Laden"
@@ -1026,6 +1040,23 @@ Voel je vrij om te verkennen en de controle over je Kubernetes-implementaties te
     "CopyToClipboardIconButton": {
         "copied to clipboard": "Gekopieerd!",
         "copy to clipboard": "Kopiëren naar klembord"
+    },
+    "CustomDataGridToolbarDensitySelector": {
+        "toolbarDensity": "Dichtheid",
+        "toolbarDensityStandard": "Standaard",
+        "toolbarDensityComfortable": "Comfortabel",
+        "toolbarDensityCompact": "Compact"
+    },
+    "CustomDataGridToolbarColumnsButton": {
+        "toolbarColumnsLabel": "Kolommen"
+    },
+    "CustomDataGrid": {
+        "empty directory": "Deze map is leeg",
+        "label rows count": ({ count }) => {
+            const plural = count > 1 ? "en" : "";
+            return `${count} item${plural} geselecteerd`;
+        },
+        "label rows per page": "Items per pagina"
     }
     /* spell-checker: enable */
 };

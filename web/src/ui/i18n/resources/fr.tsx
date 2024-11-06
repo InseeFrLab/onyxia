@@ -329,6 +329,10 @@ export const translations: Translations<"fr"> = {
         "cancel": "Annuler",
         "go to settings": "Aller aux paramètres"
     },
+    "MyFilesShareDialog": {
+        "cancel": "Annuler",
+        "create and copy link": "Créer et copier le lien"
+    },
     "MySecrets": {
         "page title - my secrets": "My Secrets",
         "what this page is used for - my secrets":
@@ -358,8 +362,10 @@ export const translations: Translations<"fr"> = {
         "copy path": "Copier le nom de l'objet S3",
         "create directory": "Nouveau dossier",
         "refresh": "rafraîchir",
-        "create what": ({ what }) => `Nouveau ${what}`,
-        "new": "Nouveau"
+        "new": "Nouveau",
+        "share": "Partager",
+        "alt list view": "Afficher la liste",
+        "alt block view": "Afficher en bloc"
     },
     "SecretsExplorerButtonBar": {
         "secret": "secret",
@@ -391,6 +397,12 @@ export const translations: Translations<"fr"> = {
         "can't be empty": "Ne peut être vide",
         "new directory": "Nouveau dossier"
     },
+    "ListExplorerItems": {
+        "header name": "Nom",
+        "header modified date": "Modifié",
+        "header size": "Taille",
+        "header policy": "Politique"
+    },
     "SecretsExplorer": {
         "file": "fichier",
         "secret": "secret",
@@ -412,6 +424,7 @@ export const translations: Translations<"fr"> = {
     "ExplorerItems": {
         "empty directory": "Ce répertoire est vide"
     },
+
     "SecretsExplorerItems": {
         "empty directory": "Ce répertoire est vide"
     },
@@ -940,7 +953,8 @@ N'hésitez pas à explorer et à prendre en main vos déploiements Kubernetes !
         ),
         "column": "colonne",
         "density": "densité",
-        "download file": "télécharger le fichier"
+        "download file": "télécharger le fichier",
+        "resize table": "Redimensionner"
     },
     "UrlInput": {
         "load": "Charger"
@@ -1035,6 +1049,23 @@ N'hésitez pas à explorer et à prendre en main vos déploiements Kubernetes !
     "CopyToClipboardIconButton": {
         "copied to clipboard": "Copié !",
         "copy to clipboard": "Copier dans le presse-papiers"
+    },
+    "CustomDataGridToolbarDensitySelector": {
+        "toolbarDensity": "Densité",
+        "toolbarDensityStandard": "Standard",
+        "toolbarDensityComfortable": "Confortable",
+        "toolbarDensityCompact": "Compact"
+    },
+    "CustomDataGridToolbarColumnsButton": {
+        "toolbarColumnsLabel": "Colonnes"
+    },
+    "CustomDataGrid": {
+        "empty directory": "Ce répertoire est vide",
+        "label rows count": ({ count }) => {
+            const plural = count > 1 ? "s" : "";
+            return `${count} élément${plural} sélectionnée${plural}`;
+        },
+        "label rows per page": "Éléments par page"
     }
     /* spell-checker: enable */
 };

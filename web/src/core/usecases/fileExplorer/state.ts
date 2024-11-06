@@ -3,21 +3,20 @@ import { relative as pathRelative } from "pathe";
 import { assert } from "tsafe/assert";
 import { createUsecaseActions } from "clean-architecture";
 import type { WritableDraft } from "clean-architecture/immer";
+import { S3BucketPolicy, S3Object } from "core/ports/S3Client";
 
 //All explorer path are expected to be absolute (start with /)
 
 export type State = {
     directoryPath: string | undefined;
-    directoryItems: {
-        kind: "file" | "directory";
-        basename: string;
-    }[];
+    viewMode: "list" | "block";
+    objects: S3Object[];
     isNavigationOngoing: boolean;
     ongoingOperations: {
         directoryPath: string;
-        basename: string;
-        kind: "file" | "directory";
-        operation: "create" | "delete";
+        operationId: string;
+        operation: "create" | "delete" | "modifyPolicy";
+        objects: S3Object[];
     }[];
     s3FilesBeingUploaded: {
         directoryPath: string;
@@ -30,6 +29,7 @@ export type State = {
         cmd: string;
         resp: string | undefined;
     }[];
+    bucketPolicy: S3BucketPolicy;
 };
 
 export const name = "fileExplorer";
@@ -38,11 +38,16 @@ export const { reducer, actions } = createUsecaseActions({
     name,
     "initialState": id<State>({
         "directoryPath": undefined,
-        "directoryItems": [],
+        "objects": [],
+        "viewMode": "list",
         "isNavigationOngoing": false,
         "ongoingOperations": [],
         "s3FilesBeingUploaded": [],
-        "commandLogsEntries": []
+        "commandLogsEntries": [],
+        "bucketPolicy": {
+            Version: "2012-10-17",
+            Statement: []
+        }
     }),
     "reducers": {
         "fileUploadStarted": (
@@ -109,32 +114,34 @@ export const { reducer, actions } = createUsecaseActions({
             }: {
                 payload: {
                     directoryPath: string;
-                    directoryItems: {
-                        kind: "file" | "directory";
-                        basename: string;
-                    }[];
+                    objects: S3Object[];
+                    bucketPolicy: S3BucketPolicy | undefined;
                 };
             }
         ) => {
-            const { directoryPath, directoryItems } = payload;
+            const { directoryPath, objects, bucketPolicy } = payload;
 
             state.directoryPath = directoryPath;
-            state.directoryItems = directoryItems;
+            state.objects = objects;
             state.isNavigationOngoing = false;
+            bucketPolicy && (state.bucketPolicy = bucketPolicy);
 
-            //Properly restore state when navigating back to
-            //a directory with ongoing operations.
+            // Properly restore state when navigating back to
+            // a directory with ongoing operations.
             state.ongoingOperations
                 .filter(o => pathRelative(o.directoryPath, directoryPath) === "")
                 .forEach(o => {
                     switch (o.operation) {
                         case "delete":
-                            removeIfPresent(state.directoryItems, {
-                                "kind": o.kind,
-                                "basename": o.basename
+                            o.objects.forEach(object => {
+                                removeIfPresent(state.objects, {
+                                    "kind": object.kind,
+                                    "basename": object.basename
+                                });
                             });
                             break;
                         case "create":
+                            state.objects.push(...o.objects);
                             break;
                     }
                 });
@@ -145,36 +152,39 @@ export const { reducer, actions } = createUsecaseActions({
                 payload
             }: {
                 payload: {
-                    kind: "file" | "directory";
-                    basename: string;
-                    operation: "create" | "delete";
+                    operationId: string;
+                    objects: S3Object[];
+                    operation: "create" | "delete" | "modifyPolicy";
                 };
             }
         ) => {
-            const { kind, basename } = payload;
+            const { objects, operation, operationId } = payload;
 
             assert(state.directoryPath !== undefined);
 
-            switch (payload.operation) {
-                case "delete":
-                    removeIfPresent(state.directoryItems, { kind, basename });
-                    break;
-            }
-
             state.ongoingOperations.push({
                 "directoryPath": state.directoryPath,
-                kind,
-                ...(() => {
-                    switch (payload.operation) {
-                        case "delete":
-                        case "create":
-                            return {
-                                "operation": payload.operation,
-                                basename
-                            };
-                    }
-                })()
+                operationId,
+                objects,
+                operation
             });
+
+            switch (payload.operation) {
+                case "delete":
+                    objects.forEach(object => {
+                        removeIfPresent(state.objects, {
+                            kind: object.kind,
+                            basename: object.basename
+                        });
+                    });
+                    break;
+                case "create":
+                    //Optimistic update
+                    state.objects.push(...objects);
+                    break;
+                case "modifyPolicy":
+                    break;
+            }
         },
         "operationCompleted": (
             state,
@@ -182,39 +192,39 @@ export const { reducer, actions } = createUsecaseActions({
                 payload
             }: {
                 payload: {
-                    kind: "file" | "directory";
-                    basename: string;
-                    directoryPath: string;
+                    operationId: string;
+                    objects: S3Object[];
                 };
             }
         ) => {
-            const { kind, basename, directoryPath } = payload;
+            const { operationId, objects } = payload;
 
             assert(state.directoryPath !== undefined);
 
             const { ongoingOperations } = state;
 
             const ongoingOperation = ongoingOperations.find(
-                o =>
-                    o.kind === kind &&
-                    o.basename === basename &&
-                    pathRelative(o.directoryPath, directoryPath) === ""
+                o => o.operationId === operationId
             );
 
             assert(ongoingOperation !== undefined);
 
             ongoingOperations.splice(ongoingOperations.indexOf(ongoingOperation), 1);
 
-            if (pathRelative(state.directoryPath, directoryPath) !== "") {
+            if (
+                pathRelative(state.directoryPath, ongoingOperation.directoryPath) !== ""
+            ) {
                 return;
             }
 
             switch (ongoingOperation.operation) {
                 case "create":
-                    state.directoryItems.push({
-                        "basename": ongoingOperation.basename,
-                        kind
-                    });
+                    state.objects = state.objects.map(
+                        obj =>
+                            objects.find(
+                                o => o.basename === obj.basename && o.kind === obj.kind
+                            ) ?? obj
+                    );
                     break;
             }
         },
@@ -278,26 +288,53 @@ export const { reducer, actions } = createUsecaseActions({
         },
         "workingDirectoryChanged": state => {
             state.directoryPath = undefined;
-            state.directoryItems = [];
+            state.objects = [];
             state.isNavigationOngoing = false;
         },
-        /** For evt */
-        "notifyDirectoryPath": () => {}
+        "viewModeChanged": (
+            state,
+            { payload }: { payload: { viewMode: "list" | "block" } }
+        ) => {
+            const { viewMode } = payload;
+            state.viewMode = viewMode;
+        },
+        "bucketPolicyModified": (
+            state,
+            {
+                payload
+            }: {
+                payload: {
+                    bucketPolicy: S3BucketPolicy;
+                    policy: "public" | "private";
+                    basename: string;
+                };
+            }
+        ) => {
+            state.objects = state.objects.map(o =>
+                o.basename === payload.basename
+                    ? {
+                          ...o,
+                          policy: payload.policy
+                      }
+                    : o
+            );
+            state.bucketPolicy = payload.bucketPolicy;
+        }
     }
 });
 
 function removeIfPresent(
-    directoryItems: WritableDraft<{
+    object: WritableDraft<{
         kind: "file" | "directory";
         basename: string;
     }>[],
     item: { kind: "file" | "directory"; basename: string }
 ): void {
-    const index = directoryItems.findIndex(
+    const index = object.findIndex(
         item_i => item_i.kind === item.kind && item_i.basename === item.basename
     );
 
     assert(index >= 0);
 
-    directoryItems.splice(index, 1);
+    object.splice(index, 1);
 }

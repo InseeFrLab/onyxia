@@ -323,6 +323,10 @@ export const translations: Translations<"fi"> = {
         "cancel": "Peruuta",
         "go to settings": "Siirry asetuksiin"
     },
+    "MyFilesShareDialog": {
+        "cancel": "Peruuta",
+        "create and copy link": "Luo ja kopioi linkki"
+    },
     "MySecrets": {
         "page title - my secrets": "Omat salaisuudet",
         "what this page is used for - my secrets":
@@ -363,12 +367,15 @@ export const translations: Translations<"fi"> = {
         "copy path": "Kopioi S3-objektin nimi",
         "create directory": "Luo hakemisto",
         "refresh": "päivitä",
-        "create what": ({ what }) => `Luo ${what}`,
-        "new": "Uusi"
+        "new": "Uusi",
+        "share": "Jaa",
+        "alt list view": "Näytä lista",
+        "alt block view": "Näytä lohko"
     },
     "ExplorerItems": {
         "empty directory": "Tämä hakemisto on tyhjä"
     },
+
     "SecretsExplorerItems": {
         "empty directory": "Tämä hakemisto on tyhjä"
     },
@@ -429,6 +436,12 @@ export const translations: Translations<"fi"> = {
                 Arvot lisätään ympäristömuuttujina.
             `,
         "use secret dialog ok": "Selvä"
+    },
+    "ListExplorerItems": {
+        "header name": "Nimi",
+        "header modified date": "Muokattu",
+        "header size": "Koko",
+        "header policy": "Käytäntö"
     },
     "MySecretsEditorRow": {
         "key input desc": "Ympäristömuuttujan nimi",
@@ -919,7 +932,8 @@ Tutustu vapaasti ja ota hallintaan Kubernetes-julkaisusi!
         ),
         "column": "sarake",
         "density": "tiheys",
-        "download file": "lataa tiedosto"
+        "download file": "lataa tiedosto",
+        "resize table": "Muuta taulukon kokoa"
     },
     "UrlInput": {
         "load": "Lataa"
@@ -1014,6 +1028,23 @@ Tutustu vapaasti ja ota hallintaan Kubernetes-julkaisusi!
     "CopyToClipboardIconButton": {
         "copied to clipboard": "Kopioitu!",
         "copy to clipboard": "Kopioi leikepöydälle"
+    },
+    "CustomDataGrid": {
+        "empty directory": "Tämä hakemisto on tyhjä",
+        "label rows count": ({ count }) => {
+            const plural = count > 1 ? "tta" : "";
+            return `${count} kohde${plural} valittu`;
+        },
+        "label rows per page": "Kohteet per sivu"
+    },
+    "CustomDataGridToolbarDensitySelector": {
+        "toolbarDensity": "Tiheys",
+        "toolbarDensityStandard": "Normaali",
+        "toolbarDensityComfortable": "Mukava",
+        "toolbarDensityCompact": "Tiivis"
+    },
+    "CustomDataGridToolbarColumnsButton": {
+        "toolbarColumnsLabel": "Sarakkeet"
     }
     /* spell-checker: enable */
 };

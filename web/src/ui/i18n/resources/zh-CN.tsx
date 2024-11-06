@@ -292,6 +292,10 @@ export const translations: Translations<"zh-CN"> = {
         "cancel": "取消",
         "go to settings": "前往设置"
     },
+    "MyFilesShareDialog": {
+        "cancel": "取消",
+        "create and copy link": "创建并复制链接"
+    },
     "MySecrets": {
         "page title - my secrets": "我的密钥",
         "what this page is used for - my secrets":
@@ -321,8 +325,10 @@ export const translations: Translations<"zh-CN"> = {
         "copy path": "复制 S3 对象名称",
         "create directory": "创建目录",
         "refresh": "刷新",
-        "create what": ({ what }) => `创建 ${what}`,
-        "new": "新建"
+        "new": "新建",
+        "share": "分享",
+        "alt list view": "显示列表",
+        "alt block view": "显示块"
     },
     "SecretsExplorerButtonBar": {
         "secret": "密码",
@@ -353,6 +359,12 @@ export const translations: Translations<"zh-CN"> = {
         "create": "建立",
         "new directory": "新建文件夹"
     },
+    "ListExplorerItems": {
+        "header name": "名称",
+        "header modified date": "修改日期",
+        "header size": "大小",
+        "header policy": "策略"
+    },
     "SecretsExplorer": {
         "file": "文档",
         "secret": "密码",
@@ -374,6 +386,7 @@ export const translations: Translations<"zh-CN"> = {
     "ExplorerItems": {
         "empty directory": "此目录为空"
     },
+
     "SecretsExplorerItems": {
         "empty directory": "此目录为空"
     },
@@ -865,7 +878,8 @@ ${
         ),
         "column": "列",
         "density": "密度",
-        "download file": "下载文件"
+        "download file": "下载文件",
+        "resize table": "调整大小"
     },
     "UrlInput": {
         "load": "加载"
@@ -960,6 +974,22 @@ ${
     "CopyToClipboardIconButton": {
         "copied to clipboard": "已复制！",
         "copy to clipboard": "复制到剪贴板"
+    },
+    "CustomDataGrid": {
+        "empty directory": "此目录为空",
+        "label rows count": ({ count }) => {
+            return `已选择 ${count} 项`;
+        },
+        "label rows per page": "每页项目数"
+    },
+    "CustomDataGridToolbarDensitySelector": {
+        "toolbarDensity": "密度",
+        "toolbarDensityStandard": "标准",
+        "toolbarDensityComfortable": "舒适",
+        "toolbarDensityCompact": "紧凑"
+    },
+    "CustomDataGridToolbarColumnsButton": {
+        "toolbarColumnsLabel": "列"
     }
     /* spell-checker: enable */
 };

@@ -1,11 +1,11 @@
 import type { State as RootState } from "core/bootstrap";
-import memoize from "memoizee";
 import { type State, name } from "./state";
 import { createSelector } from "clean-architecture";
 import * as userConfigs from "core/usecases/userConfigs";
 import * as s3ConfigManagement from "core/usecases/s3ConfigManagement";
 import { assert } from "tsafe/assert";
 import * as userAuthentication from "core/usecases/userAuthentication";
+import { id } from "tsafe/id";
 
 const state = (rootState: RootState): State => rootState[name];
 
@@ -50,60 +50,139 @@ const commandLogsEntries = createSelector(
         !userConfigs.isCommandBarEnabled ? undefined : state.commandLogsEntries
 );
 
-type CurrentWorkingDirectoryView = {
+export type CurrentWorkingDirectoryView = {
     directoryPath: string;
-    directories: string[];
-    files: string[];
-    directoriesBeingCreated: string[];
-    filesBeingCreated: string[];
+    items: CurrentWorkingDirectoryView.Item[];
 };
+
+export namespace CurrentWorkingDirectoryView {
+    export type Item = Item.File | Item.Directory;
+    export namespace Item {
+        export type Common = {
+            basename: string;
+            policy: "public" | "private";
+            isBeingDeleted: boolean;
+            isPolicyChanging: boolean;
+        };
+
+        export type File = Common & {
+            kind: "file";
+            size: number | undefined;
+            lastModified: Date | undefined;
+        } & (
+                | {
+                      isBeingCreated: false;
+                  }
+                | {
+                      isBeingCreated: true;
+                      uploadPercent: number;
+                  }
+            );
+
+        export type Directory = Common & {
+            kind: "directory";
+            isBeingCreated: boolean;
+        };
+    }
+}
 
 const currentWorkingDirectoryView = createSelector(
     createSelector(state, state => state.directoryPath),
-    createSelector(state, state => state.directoryItems),
+    createSelector(state, state => state.objects),
     createSelector(state, state => state.ongoingOperations),
+    createSelector(state, state => state.s3FilesBeingUploaded),
+
     (
         directoryPath,
-        directoryItems,
-        ongoingOperations
+        objects,
+        ongoingOperations,
+        s3FilesBeingUploaded
     ): CurrentWorkingDirectoryView | undefined => {
         if (directoryPath === undefined) {
             return undefined;
         }
+        const items = objects
+            .map((object): CurrentWorkingDirectoryView.Item => {
+                const isBeingDeleted = ongoingOperations.some(
+                    op =>
+                        op.directoryPath === directoryPath &&
+                        op.operation === "delete" &&
+                        op.objects.some(
+                            ongoingObject => ongoingObject.basename === object.basename
+                        )
+                );
+
+                const isPolicyChanging = ongoingOperations.some(
+                    op =>
+                        op.directoryPath === directoryPath &&
+                        op.operation === "modifyPolicy" &&
+                        op.objects.some(
+                            ongoingObject => ongoingObject.basename === object.basename
+                        )
+                );
+
+                const isBeingCreated = ongoingOperations.some(
+                    op =>
+                        op.directoryPath === directoryPath &&
+                        op.operation === "create" &&
+                        op.objects.some(
+                            ongoingObject => ongoingObject.basename === object.basename
+                        )
+                );
+
+                const common = {
+                    "basename": object.basename,
+                    "policy": object.policy,
+                    isBeingDeleted,
+                    isPolicyChanging
+                } satisfies CurrentWorkingDirectoryView.Item.Common;
+
+                switch (object.kind) {
+                    case "file": {
+                        const { size, lastModified } = object;
+
+                        return id<CurrentWorkingDirectoryView.Item.File>({
+                            "kind": "file",
+                            ...common,
+                            size,
+                            lastModified,
+                            ...(isBeingCreated
+                                ? {
+                                      "isBeingCreated": true,
+                                      uploadPercent: (() => {
+                                          const uploadEntry = s3FilesBeingUploaded.find(
+                                              o =>
+                                                  o.basename === object.basename &&
+                                                  o.directoryPath === directoryPath
+                                          );
+                                          return uploadEntry?.uploadPercent ?? 0;
+                                      })()
+                                  }
+                                : {
+                                      "isBeingCreated": false
+                                  })
+                        });
+                    }
+                    case "directory":
+                        return id<CurrentWorkingDirectoryView.Item.Directory>({
+                            kind: "directory",
+                            ...common,
+                            isBeingCreated
+                        });
+                }
+            })
+            .sort((a, b) => {
+                // Sort directories first
+                if (a.kind === "directory" && b.kind !== "directory") return -1;
+                if (a.kind !== "directory" && b.kind === "directory") return 1;
+
+                // Sort alphabetically by basename
+                return a.basename.localeCompare(b.basename);
+            });
 
         return {
             directoryPath,
-            ...(() => {
-                const selectOngoing = memoize(
-                    (kind: "directory" | "file", operation: "create" | "rename") =>
-                        ongoingOperations
-                            .filter(
-                                o =>
-                                    o.directoryPath === directoryPath &&
-                                    o.kind === kind &&
-                                    o.operation === operation
-                            )
-                            .map(({ basename }) => basename)
-                );
-
-                const select = (kind: "directory" | "file") =>
-                    [
-                        ...directoryItems
-                            .filter(item => item.kind === kind)
-                            .map(({ basename }) => basename),
-                        ...selectOngoing(kind, "create"),
-                        ...selectOngoing(kind, "rename")
-                    ].sort((a, b) => a.localeCompare(b));
-
-                return {
-                    "directories": select("directory"),
-                    "files": select("file"),
-                    "directoriesBeingCreated": selectOngoing("directory", "create"),
-                    "directoriesBeingRenamed": selectOngoing("directory", "rename"),
-                    "filesBeingCreated": selectOngoing("file", "create"),
-                    "filesBeingRenamed": selectOngoing("file", "rename")
-                };
-            })()
+            items
         };
     }
 );
@@ -132,12 +211,14 @@ const main = createSelector(
     currentWorkingDirectoryView,
     isNavigationOngoing,
     pathMinDepth,
+    createSelector(state, state => state.viewMode),
     (
         uploadProgress,
         commandLogsEntries,
         currentWorkingDirectoryView,
         isNavigationOngoing,
-        pathMinDepth
+        pathMinDepth,
+        viewMode
     ) => {
         if (currentWorkingDirectoryView === undefined) {
             return {
@@ -145,7 +226,8 @@ const main = createSelector(
                 isNavigationOngoing,
                 uploadProgress,
                 commandLogsEntries,
-                pathMinDepth
+                pathMinDepth,
+                viewMode
             };
         }
 
@@ -155,7 +237,8 @@ const main = createSelector(
             uploadProgress,
             commandLogsEntries,
             pathMinDepth,
-            currentWorkingDirectoryView
+            currentWorkingDirectoryView,
+            viewMode
         };
     }
 );
@@ -175,6 +258,8 @@ const isFileExplorerEnabled = (rootState: RootState) => {
     }
 };
 
-export const protectedSelectors = { workingDirectoryPath };
+const directoryPath = createSelector(state, state => state.directoryPath);
+
+export const protectedSelectors = { workingDirectoryPath, directoryPath };
 
 export const selectors = { main, isFileExplorerEnabled };

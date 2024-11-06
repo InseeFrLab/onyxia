@@ -323,6 +323,10 @@ export const translations: Translations<"no"> = {
         "cancel": "Avbryt",
         "go to settings": "Gå til innstillinger"
     },
+    "MyFilesShareDialog": {
+        "cancel": "Avbryt",
+        "create and copy link": "Opprett og kopier lenke"
+    },
     "MySecrets": {
         "page title - my secrets": "Mine hemmeligheter",
         "what this page is used for - my secrets":
@@ -366,8 +370,10 @@ export const translations: Translations<"no"> = {
         "copy path": "Kopier S3-objektnavnet",
         "create directory": "Opprett katalog",
         "refresh": "oppdater",
-        "create what": ({ what }) => `Opprett ${what}`,
-        "new": "Ny"
+        "new": "Ny",
+        "share": "Del",
+        "alt list view": "Vis liste",
+        "alt block view": "Vis blokk"
     },
     "ExplorerItems": {
         "empty directory": "Denne katalogen er tom"
@@ -412,6 +418,12 @@ export const translations: Translations<"no"> = {
             "Det finnes allerede en mappe med dette navnet",
         "can't be empty": "Kan ikke være tom",
         "new directory": "Ny katalog"
+    },
+    "ListExplorerItems": {
+        "header name": "Navn",
+        "header modified date": "Endret",
+        "header size": "Størrelse",
+        "header policy": "Retningslinje"
     },
     "MySecretsEditor": {
         "do not display again": "Ikke vis igjen",
@@ -926,7 +938,8 @@ Utforsk gjerne og ta kontroll over tjenestene du kjører på Kubernetes!
         ),
         "column": "kolonne",
         "density": "tetthet",
-        "download file": "last ned fil"
+        "download file": "last ned fil",
+        "resize table": "Endre størrelse"
     },
     "UrlInput": {
         "load": "Last"
@@ -1021,6 +1034,23 @@ Utforsk gjerne og ta kontroll over tjenestene du kjører på Kubernetes!
     "CopyToClipboardIconButton": {
         "copied to clipboard": "Kopiert!",
         "copy to clipboard": "Kopier til utklippstavlen"
+    },
+    "CustomDataGrid": {
+        "empty directory": "Denne mappen er tom",
+        "label rows count": ({ count }) => {
+            const plural = count > 1 ? "er" : "";
+            return `${count} element${plural} valgt`;
+        },
+        "label rows per page": "Elementer per side"
+    },
+    "CustomDataGridToolbarDensitySelector": {
+        "toolbarDensity": "Tetthet",
+        "toolbarDensityStandard": "Standard",
+        "toolbarDensityComfortable": "Komfortabel",
+        "toolbarDensityCompact": "Kompakt"
+    },
+    "CustomDataGridToolbarColumnsButton": {
+        "toolbarColumnsLabel": "Kolonner"
     }
     /* spell-checker: enable */
 };

@@ -48,7 +48,6 @@ export const thunks = {
             };
             extraRestorableStates: {
                 selectedRowIndex: number | undefined;
-                columnWidths: Record<string, number>;
                 columnVisibility: Record<string, boolean>;
             };
         }) =>

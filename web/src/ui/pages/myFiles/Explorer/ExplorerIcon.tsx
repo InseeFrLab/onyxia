@@ -26,6 +26,7 @@ export const ExplorerIcon = memo((props: Props) => {
                         return directorySvgUrl;
                 }
             })()}
+            key={iconId}
         />
     );
 });
@@ -48,7 +49,6 @@ const useStyles = tss
                             theme.isDarkModeEnabled ? "light" : "dark"
                         ].main;
                 }
-            })(),
-            "display": "block"
+            })()
         }
     }));

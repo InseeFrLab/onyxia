@@ -326,6 +326,10 @@ export const translations: Translations<"de"> = {
         "cancel": "Abbrechen",
         "go to settings": "Zu den Einstellungen gehen"
     },
+    "MyFilesShareDialog": {
+        "cancel": "Abbrechen",
+        "create and copy link": "Erstellen und kopieren"
+    },
     "MySecrets": {
         "page title - my secrets": "Meine Geheimnisse",
         "what this page is used for - my secrets":
@@ -359,8 +363,10 @@ export const translations: Translations<"de"> = {
         "copy path": "Den S3-Objektnamen kopieren",
         "create directory": "Neues Verzeichnis",
         "refresh": "aktualisieren",
-        "create what": ({ what }) => `Neu ${what}`,
-        "new": "Neu"
+        "new": "Neu",
+        "share": "Teilen",
+        "alt list view": "Liste anzeigen",
+        "alt block view": "Blockansicht anzeigen"
     },
     "SecretsExplorerButtonBar": {
         "secret": "Geheimnis",
@@ -391,6 +397,12 @@ export const translations: Translations<"de"> = {
             "Es gibt bereits ein Verzeichnis mit diesem Namen",
         "can't be empty": "Darf nicht leer sein",
         "new directory": "Neues Verzeichnis"
+    },
+    "ListExplorerItems": {
+        "header name": "Name",
+        "header modified date": "Geändert",
+        "header size": "Größe",
+        "header policy": "Richtlinie"
     },
     "SecretsExplorer": {
         "file": "Datei",
@@ -935,7 +947,8 @@ Fühlen Sie sich frei, Ihre Kubernetes-Bereitstellungen zu erkunden und die Kont
         ),
         "column": "Spalte",
         "density": "Dichte",
-        "download file": "Datei herunterladen"
+        "download file": "Datei herunterladen",
+        "resize table": undefined
     },
     "UrlInput": {
         "load": "Laden"
@@ -1030,6 +1043,23 @@ Fühlen Sie sich frei, Ihre Kubernetes-Bereitstellungen zu erkunden und die Kont
     "CopyToClipboardIconButton": {
         "copied to clipboard": "Kopiert!",
         "copy to clipboard": "In die Zwischenablage kopieren"
+    },
+    "CustomDataGrid": {
+        "empty directory": "Dieses Verzeichnis ist leer",
+        "label rows count": ({ count }) => {
+            const plural = count > 1 ? "n" : "";
+            return `${count} Element${plural} ausgewählt`;
+        },
+        "label rows per page": "Elemente pro Seite"
+    },
+    "CustomDataGridToolbarDensitySelector": {
+        "toolbarDensity": "Dichte",
+        "toolbarDensityStandard": "Standard",
+        "toolbarDensityComfortable": "Bequem",
+        "toolbarDensityCompact": "Kompakt"
+    },
+    "CustomDataGridToolbarColumnsButton": {
+        "toolbarColumnsLabel": "Spalten"
     }
     /* spell-checker: enable */
 };

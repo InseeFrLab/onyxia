@@ -327,6 +327,10 @@ export const translations: Translations<"en"> = {
         "cancel": "Cancelar",
         "go to settings": "Ir a configuración"
     },
+    "MyFilesShareDialog": {
+        "cancel": "Cancelar",
+        "create and copy link": "Crear y copiar enlace"
+    },
     "MySecrets": {
         "page title - my secrets": "Mis Secretos",
         "what this page is used for - my secrets":
@@ -367,12 +371,15 @@ export const translations: Translations<"en"> = {
         "copy path": "Copiar nombre del objeto S3",
         "create directory": "Crear directorio",
         "refresh": "actualizar",
-        "create what": ({ what }) => `Crear ${what}`,
-        "new": "Nuevo"
+        "new": "Nuevo",
+        "share": "Compartir",
+        "alt list view": "Mostrar lista",
+        "alt block view": "Mostrar bloque"
     },
     "ExplorerItems": {
         "empty directory": "Este directorio está vacío"
     },
+
     "SecretsExplorerItems": {
         "empty directory": "Este directorio está vacío"
     },
@@ -413,6 +420,12 @@ export const translations: Translations<"en"> = {
         "already a directory with this name": "Ya existe una carpeta con este nombre",
         "can't be empty": "No puede estar vacío",
         "new directory": "Nueva carpeta"
+    },
+    "ListExplorerItems": {
+        "header name": "Nombre",
+        "header modified date": "Modificado",
+        "header size": "Tamaño",
+        "header policy": "Política"
     },
     "MySecretsEditor": {
         "do not display again": "No mostrar de nuevo",
@@ -929,7 +942,8 @@ export const translations: Translations<"en"> = {
         ),
         "column": "columna",
         "density": "densidad",
-        "download file": "Descargar archivo"
+        "download file": "Descargar archivo",
+        "resize table": "Redimensionar"
     },
     "UrlInput": {
         "load": "Cargar"
@@ -1024,6 +1038,23 @@ export const translations: Translations<"en"> = {
     "CopyToClipboardIconButton": {
         "copied to clipboard": "¡Copiado!",
         "copy to clipboard": "Copiar al portapapeles"
+    },
+    "CustomDataGrid": {
+        "empty directory": "Este directorio está vacío",
+        "label rows count": ({ count }) => {
+            const plural = count > 1 ? "s" : "";
+            return `${count} elemento${plural} seleccionado${plural}`;
+        },
+        "label rows per page": "Elementos por página"
+    },
+    "CustomDataGridToolbarDensitySelector": {
+        "toolbarDensity": "Densidad",
+        "toolbarDensityStandard": "Estándar",
+        "toolbarDensityComfortable": "Cómodo",
+        "toolbarDensityCompact": "Compacto"
+    },
+    "CustomDataGridToolbarColumnsButton": {
+        "toolbarColumnsLabel": "Columnas"
     }
     /* spell-checker: enable */
 };

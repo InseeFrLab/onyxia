@@ -1,5 +1,5 @@
 import axios from "axios";
-import type { S3Client } from "core/ports/S3Client";
+import type { S3BucketPolicy, S3Client, S3Object } from "core/ports/S3Client";
 import {
     getNewlyRequestedOrCachedTokenFactory,
     createSessionStorageTokenPersistance
@@ -10,6 +10,14 @@ import type { Oidc } from "core/ports/Oidc";
 import { bucketNameAndObjectNameFromS3Path } from "./utils/bucketNameAndObjectNameFromS3Path";
 import { exclude } from "tsafe/exclude";
 import { fnv1aHashToHex } from "core/tools/fnv1aHashToHex";
+import { checkIfS3KeyIsPublic } from "core/tools/checkIfS3KeyIsPublic";
+import { s3BucketPolicySchema } from "./utils/policySchema";
+import {
+    addObjectNameToListBucketCondition,
+    addResourceArnInGetObjectStatement,
+    removeObjectNameFromListBucketCondition,
+    removeResourceArnInGetObjectStatement
+} from "./utils/bucketPolicy";
 
 export type ParamsOfCreateS3Client =
     | ParamsOfCreateS3Client.NoSts
@@ -302,7 +310,7 @@ export function createS3Client(
 
             return getNewlyRequestedOrCachedToken();
         },
-        "list": async ({ path }) => {
+        "listObjects": async ({ path }) => {
             const { bucketName, prefix } = (() => {
                 const { bucketName, objectName } =
                     bucketNameAndObjectNameFromS3Path(path);
@@ -324,6 +332,55 @@ export function createS3Client(
 
             const { awsS3Client } = await getAwsS3Client();
 
+            const { bucketPolicy, allowedPrefix } = await import("@aws-sdk/client-s3")
+                .then(({ GetBucketPolicyCommand }) =>
+                    awsS3Client
+                        .send(
+                            new GetBucketPolicyCommand({
+                                Bucket: bucketName
+                            })
+                        )
+                        .catch(() => {
+                            console.log("The error is ok, there is no bucket policy");
+                            return { Policy: undefined };
+                        })
+                )
+                .then(respPolicy => {
+                    if (respPolicy.Policy === undefined)
+                        return { bucketPolicy: undefined, allowedPrefix: [] };
+
+                    try {
+                        // Validate and parse the policy
+                        const parsedPolicy = s3BucketPolicySchema.parse(
+                            JSON.parse(respPolicy.Policy)
+                        );
+
+                        // Extract allowed prefixes based on the policy statements
+                        const allowedPrefix = parsedPolicy.Statement.filter(
+                            statement =>
+                                statement.Effect === "Allow" &&
+                                (statement.Action.includes("s3:GetObject") ||
+                                    statement.Action.includes("s3:*"))
+                        )
+                            .flatMap(statement =>
+                                Array.isArray(statement.Resource)
+                                    ? statement.Resource
+                                    : [statement.Resource]
+                            )
+                            .map(resource =>
+                                resource.replace(`arn:aws:s3:::${bucketName}/`, "")
+                            );
+
+                        return { bucketPolicy: parsedPolicy, allowedPrefix };
+                    } catch (e) {
+                        console.warn(
+                            "The best effort attempt failed to parse the policy",
+                            e
+                        );
+                        return { bucketPolicy: undefined, allowedPrefix: [] };
+                    }
+                });
+
             const Contents: import("@aws-sdk/client-s3")._Object[] = [];
             const CommonPrefixes: import("@aws-sdk/client-s3").CommonPrefix[] = [];
 
@@ -341,26 +398,92 @@ export function createS3Client(
                     );
 
                     Contents.push(...(resp.Contents ?? []));
+
                     CommonPrefixes.push(...(resp.CommonPrefixes ?? []));
 
                     continuationToken = resp.NextContinuationToken;
                 } while (continuationToken !== undefined);
             }
 
-            return {
-                "directories": CommonPrefixes.map(({ Prefix }) => Prefix)
-                    .filter(exclude(undefined))
-                    .map(directoryPath => {
-                        const split = directoryPath.split("/");
-                        return split[split.length - 2];
-                    }),
-                "files": Contents.map(({ Key }) => Key)
-                    .filter(exclude(undefined))
-                    .map(filePath => {
-                        const split = filePath.split("/");
-                        return split[split.length - 1];
-                    })
+            const isPathPublic = (path: string) => {
+                return checkIfS3KeyIsPublic(allowedPrefix, path);
             };
+
+            const directories = CommonPrefixes.filter(exclude(undefined))
+                .map(({ Prefix }) => Prefix)
+                .filter(exclude(undefined))
+                .map(directoryPath => {
+                    const split = directoryPath.split("/");
+                    return {
+                        kind: "directory",
+                        basename: split[split.length - 2],
+                        policy: isPathPublic(directoryPath) ? "public" : "private"
+                    } satisfies S3Object;
+                });
+
+            const files = Contents.filter(({ Key }) => Key !== undefined).map(
+                ({ Key, LastModified, Size }) => {
+                    assert(Key !== undefined);
+                    const split = Key.split("/");
+                    return {
+                        kind: "file",
+                        basename: split[split.length - 1],
+                        size: Size,
+                        lastModified: LastModified,
+                        policy: isPathPublic(Key) ? "public" : "private"
+                    } satisfies S3Object;
+                }
+            );
+
+            return { objects: [...directories, ...files], bucketPolicy };
+        },
+        "setPathAccessPolicy": async ({ currentBucketPolicy, policy, path }) => {
+            const { getAwsS3Client } = await prApi;
+            const { awsS3Client } = await getAwsS3Client();
+
+            const { bucketName, objectName } = bucketNameAndObjectNameFromS3Path(path);
+
+            const resourceArn = `arn:aws:s3:::${bucketName}/${objectName}*`;
+            const bucketArn = `arn:aws:s3:::${bucketName}`;
+
+            const updatedStatements = (() => {
+                switch (policy) {
+                    case "public":
+                        return addResourceArnInGetObjectStatement(
+                            addObjectNameToListBucketCondition(
+                                currentBucketPolicy.Statement,
+                                bucketArn,
+                                objectName
+                            ),
+                            resourceArn
+                        );
+                    case "private":
+                        return removeResourceArnInGetObjectStatement(
+                            removeObjectNameFromListBucketCondition(
+                                currentBucketPolicy.Statement,
+                                bucketArn,
+                                objectName
+                            ),
+                            resourceArn
+                        );
+                }
+            })();
+
+            const newBucketPolicy = {
+                ...currentBucketPolicy,
+                Statement: updatedStatements
+            } satisfies S3BucketPolicy;
+
+            const command = new (
+                await import("@aws-sdk/client-s3")
+            ).PutBucketPolicyCommand({
+                Bucket: bucketName,
+                Policy: JSON.stringify(newBucketPolicy)
+            });
+
+            await awsS3Client.send(command);
+
+            return newBucketPolicy;
         },
         "uploadFile": async ({ blob, path, onUploadProgress }) => {
             const { getAwsS3Client } = await prApi;
@@ -382,7 +505,6 @@ export function createS3Client(
                 "partSize": 5 * 1024 * 1024, // optional size of each part
                 "leavePartsOnError": false // optional manually handle dropped parts
             });
-
             upload.on("httpUploadProgress", ({ total, loaded }) => {
                 if (total === undefined || loaded === undefined) {
                     return;
@@ -394,6 +516,20 @@ export function createS3Client(
             });
 
             await upload.done();
+
+            const headObjectCommand = new (
+                await import("@aws-sdk/client-s3")
+            ).HeadObjectCommand({ Bucket: bucketName, Key: objectName });
+
+            const metadata = await awsS3Client.send(headObjectCommand);
+
+            return {
+                kind: "file",
+                basename: objectName,
+                size: metadata.ContentLength,
+                lastModified: metadata.LastModified,
+                policy: "private"
+            };
         },
         "deleteFile": async ({ path }) => {
             const { bucketName, objectName } = bucketNameAndObjectNameFromS3Path(path);
@@ -406,6 +542,29 @@ export function createS3Client(
                 new (await import("@aws-sdk/client-s3")).DeleteObjectCommand({
                     "Bucket": bucketName,
                     "Key": objectName
+                })
+            );
+        },
+        "deleteFiles": async ({ paths }) => {
+            //bucketName is the same for all paths
+            const { bucketName } = bucketNameAndObjectNameFromS3Path(paths[0]);
+
+            const { getAwsS3Client } = await prApi;
+
+            const { awsS3Client } = await getAwsS3Client();
+
+            await awsS3Client.send(
+                new (await import("@aws-sdk/client-s3")).DeleteObjectsCommand({
+                    "Bucket": bucketName,
+                    Delete: {
+                        "Objects": paths.map(path => {
+                            const { objectName } =
+                                bucketNameAndObjectNameFromS3Path(path);
+                            return {
+                                "Key": objectName
+                            };
+                        })
+                    }
                 })
             );
         },
@@ -431,6 +590,29 @@ export function createS3Client(
 
             return downloadUrl;
         }
+
+        // "getPresignedUploadUrl": async ({ path, validityDurationSecond }) => {
+        //     const { bucketName, objectName } = bucketNameAndObjectNameFromS3Path(path);
+
+        //     const { getAwsS3Client } = await prApi;
+
+        //     const { awsS3Client } = await getAwsS3Client();
+
+        //     const updloadUrl = await (
+        //         await import("@aws-sdk/s3-request-presigner")
+        //     ).getSignedUrl(
+        //         awsS3Client,
+        //         new (await import("@aws-sdk/client-s3")).PutObjectCommand({
+        //             "Bucket": bucketName,
+        //             "Key": objectName
+        //         }),
+        //         {
+        //             "expiresIn": validityDurationSecond
+        //         }
+        //     );
+
+        //     return updloadUrl;
+        // }
     };
 
     return s3Client;

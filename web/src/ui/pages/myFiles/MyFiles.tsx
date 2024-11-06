@@ -17,7 +17,6 @@ import { declareComponentKeys } from "i18nifty";
 import { useConst } from "powerhooks/useConst";
 import type { Link } from "type-route";
 import type { PageRoute } from "./route";
-import { useEvt } from "evt/hooks";
 import { customIcons } from "ui/theme";
 import { MyFilesDisabledDialog } from "./MyFilesDisabledDialog";
 import { assert } from "tsafe/assert";
@@ -49,40 +48,29 @@ function MyFiles(props: Props) {
         isNavigationOngoing,
         uploadProgress,
         currentWorkingDirectoryView,
-        pathMinDepth
+        pathMinDepth,
+        viewMode
     } = useCoreState("fileExplorer", "main");
 
     const { fileExplorer } = useCore().functions;
 
-    const { evtFileExplorer } = useCore().evts;
+    useEffect(() => {
+        const { cleanup } = fileExplorer.initialize({
+            "directoryPath": route.params.path,
+            "viewMode": route.params.mode
+        });
+        return cleanup;
+    }, []);
 
     useEffect(() => {
-        fileExplorer.setCurrentDirectory({ "directoryPath": route.params.path });
-    }, [route.params.path]);
-
-    useEvt(
-        ctx => {
-            evtFileExplorer.$attach(
-                data =>
-                    data.action !== "set directory path" ? null : [data.directoryPath],
-                ctx,
-                directoryPath =>
-                    routes[route.name]({
-                        ...route.params,
-                        "path": directoryPath
-                    }).replace()
-            );
-        },
-        [evtFileExplorer]
-    );
-
-    const onNavigate = useConstCallback(
-        ({ directoryPath }: Param0<ExplorerProps["onNavigate"]>) =>
-            routes[route.name]({
-                ...route.params,
-                "path": directoryPath
-            }).push()
-    );
+        if (currentWorkingDirectoryView === undefined) return;
+        console.log(viewMode);
+        routes[route.name]({
+            ...route.params,
+            "path": currentWorkingDirectoryView.directoryPath,
+            "mode": viewMode
+        }).push();
+    }, [currentWorkingDirectoryView?.directoryPath, viewMode]);
 
     const onRefresh = useConstCallback(() => fileExplorer.refreshCurrentDirectory());
 
@@ -95,15 +83,26 @@ function MyFiles(props: Props) {
     );
 
     const onDeleteItem = useConstCallback(
-        ({ kind, basename }: Param0<ExplorerProps["onDeleteItem"]>) =>
+        (params: Param0<ExplorerProps["onDeleteItem"]>) =>
             fileExplorer.delete({
-                "deleteWhat": kind,
-                basename
+                s3Object: params.item
             })
     );
 
-    const onCopyPath = useConstCallback(({ path }: Param0<ExplorerProps["onCopyPath"]>) =>
-        copyToClipboard(path.split("/").slice(2).join("/"))
+    const onDeleteItems = useConstCallback(
+        (params: Param0<ExplorerProps["onDeleteItems"]>) =>
+            fileExplorer.bulkDelete({
+                s3Objects: params.items
+            })
+    );
+
+    const onCopyPath = useConstCallback(
+        ({ path }: Param0<ExplorerProps["onCopyPath"]>) => {
+            assert(currentWorkingDirectoryView !== undefined);
+            return copyToClipboard(
+                path.split(currentWorkingDirectoryView.directoryPath.split("/")[0])[1] //get the path to object without <bucket-name>
+            );
+        }
     );
 
     const { classes, cx } = useStyles();
@@ -124,18 +123,20 @@ function MyFiles(props: Props) {
 
     const titleCollapseParams = useMemo(
         (): CollapseParams => ({
-            "behavior": "collapses on scroll",
-            "scrollTopThreshold": 100,
-            "scrollableElementRef": scrollableDivRef
+            "behavior": "controlled",
+            "isCollapsed": false
+            // "scrollTopThreshold": 100,
+            // "scrollableElementRef": scrollableDivRef
         }),
         []
     );
 
     const helpCollapseParams = useMemo(
         (): CollapseParams => ({
-            "behavior": "collapses on scroll",
-            "scrollTopThreshold": 50,
-            "scrollableElementRef": scrollableDivRef
+            "behavior": "controlled",
+            //"scrollTopThreshold": 50,
+            //"scrollableElementRef": scrollableDivRef,
+            "isCollapsed": true
         }),
         []
     );
@@ -195,20 +196,19 @@ function MyFiles(props: Props) {
                 isNavigating={isNavigationOngoing}
                 commandLogsEntries={commandLogsEntries}
                 evtAction={evtExplorerAction}
-                files={currentWorkingDirectoryView.files}
-                directories={currentWorkingDirectoryView.directories}
-                directoriesBeingCreated={
-                    currentWorkingDirectoryView.directoriesBeingCreated
-                }
-                filesBeingCreated={currentWorkingDirectoryView.filesBeingCreated}
-                onNavigate={onNavigate}
+                items={currentWorkingDirectoryView.items}
+                changePolicy={fileExplorer.changePolicy}
+                onNavigate={fileExplorer.changeCurrentDirectory}
                 onRefresh={onRefresh}
                 onDeleteItem={onDeleteItem}
+                onDeleteItems={onDeleteItems}
                 onCreateDirectory={onCreateDirectory}
                 onCopyPath={onCopyPath}
                 scrollableDivRef={scrollableDivRef}
                 pathMinDepth={pathMinDepth}
                 onOpenFile={onOpenFile}
+                viewMode={viewMode}
+                onViewModeChange={fileExplorer.changeViewMode}
             />
         </div>
     );

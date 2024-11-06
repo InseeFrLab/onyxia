@@ -1,13 +1,13 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { ExplorerItems } from "./ExplorerItems";
+import { ListExplorerItems } from "./ListExplorerItems";
 import { action } from "@storybook/addon-actions";
-import type { Item } from "../../shared/types";
 import { Evt } from "evt";
+import { Item } from "../../shared/types";
 
 const meta = {
-    title: "Pages/MyFiles/Explorer/ExplorerItems/ExplorerItems",
-    component: ExplorerItems
-} satisfies Meta<typeof ExplorerItems>;
+    title: "Pages/MyFiles/Explorer/ListExplorerItems",
+    component: ListExplorerItems
+} satisfies Meta<typeof ListExplorerItems>;
 
 export default meta;
 
@@ -69,23 +69,9 @@ export const Default: Story = {
         items: itemsSample,
         onNavigate: action("Navigate to directory"),
         onOpenFile: action("Open file"),
-        onDeleteItem: action("Delete item"),
-        onCopyPath: action("Copy path"),
-        onSelectedItemKindValueChange: action("Selected item kind changed"),
+        onDeleteItems: action("Delete items"),
         onPolicyChange: action("Policy change"),
-        evtAction: Evt.create<"DELETE SELECTED ITEM" | "COPY SELECTED ITEM PATH">()
-    }
-};
-
-export const EmptyDirectory: Story = {
-    args: {
-        isNavigating: false,
-        items: [],
-        onNavigate: action("Navigate to directory"),
-        onOpenFile: action("Open file"),
-        onDeleteItem: action("Delete item"),
         onCopyPath: action("Copy path"),
-        onPolicyChange: action("Policy change"),
         onSelectedItemKindValueChange: action("Selected item kind changed"),
         evtAction: Evt.create<"DELETE SELECTED ITEM" | "COPY SELECTED ITEM PATH">()
     }

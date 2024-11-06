@@ -325,6 +325,10 @@ export const translations: Translations<"it"> = {
         "cancel": "Annulla",
         "go to settings": "Vai alle impostazioni"
     },
+    "MyFilesShareDialog": {
+        "cancel": "Annulla",
+        "create and copy link": "Creare e copiare il link"
+    },
     "MySecrets": {
         "page title - my secrets": "I miei segreti",
         "what this page is used for - my secrets":
@@ -355,8 +359,10 @@ export const translations: Translations<"it"> = {
         "copy path": "Copia il nome dell'oggetto S3",
         "create directory": "Nuova cartella",
         "refresh": "aggiornare",
-        "create what": ({ what }) => `Nuovo ${what}`,
-        "new": "Nuovo"
+        "new": "Nuovo",
+        "share": "Condividi",
+        "alt list view": "Mostra lista",
+        "alt block view": "Mostra blocco"
     },
     "SecretsExplorerButtonBar": {
         "secret": "segreto",
@@ -388,6 +394,12 @@ export const translations: Translations<"it"> = {
         "can't be empty": "Non può essere vuoto",
         "new directory": "Nuova cartella"
     },
+    "ListExplorerItems": {
+        "header name": "Nome",
+        "header modified date": "Modificato",
+        "header size": "Dimensione",
+        "header policy": "Politica"
+    },
     "SecretsExplorer": {
         "file": "file",
         "secret": "segreto",
@@ -409,6 +421,7 @@ export const translations: Translations<"it"> = {
     "ExplorerItems": {
         "empty directory": "Questa cartella è vuota"
     },
+
     "SecretsExplorerItems": {
         "empty directory": "Questa cartella è vuota"
     },
@@ -930,7 +943,8 @@ Sentiti libero di esplorare e prendere il controllo dei tuoi deployment Kubernet
         ),
         "column": "colonna",
         "density": "densità",
-        "download file": "scarica file"
+        "download file": "scarica file",
+        "resize table": "Ridimensiona"
     },
     "UrlInput": {
         "load": "Carica"
@@ -1025,6 +1039,23 @@ Sentiti libero di esplorare e prendere il controllo dei tuoi deployment Kubernet
     "CopyToClipboardIconButton": {
         "copied to clipboard": "Copiato!",
         "copy to clipboard": "Copia negli appunti"
+    },
+    "CustomDataGrid": {
+        "empty directory": "Questa cartella è vuota",
+        "label rows count": ({ count }) => {
+            const plural = count > 1 ? "i" : "o";
+            return `${count} elemento${plural} selezionato${plural}`;
+        },
+        "label rows per page": "Elementi per pagina"
+    },
+    "CustomDataGridToolbarDensitySelector": {
+        "toolbarDensity": "Densità",
+        "toolbarDensityStandard": "Standard",
+        "toolbarDensityComfortable": "Confortevole",
+        "toolbarDensityCompact": "Compatto"
+    },
+    "CustomDataGridToolbarColumnsButton": {
+        "toolbarColumnsLabel": "Colonne"
     }
     /* spell-checker: enable */
 };
