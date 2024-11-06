@@ -42,7 +42,6 @@ export type ListExplorerItemsProps = {
         kind: Item["kind"];
     }) => void;
 
-    onDeleteItem: (params: { item: Item }, onDeleteConfirmed?: () => void) => void;
     onDeleteItems: (params: { items: Item[] }, onDeleteConfirmed?: () => void) => void;
     onCopyPath: (params: { basename: string }) => void;
     evtAction: NonPostableEvt<

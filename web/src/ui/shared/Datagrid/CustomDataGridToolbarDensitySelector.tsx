@@ -10,11 +10,10 @@ import { ButtonBarButton } from "onyxia-ui/ButtonBarButton";
 import { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
 import { id } from "tsafe";
 import { declareComponentKeys, useTranslation } from "ui/i18n";
-
 import { memo, useId, useState, useRef } from "react";
-import { MenuList } from "@mui/material";
-import { MenuItem } from "@mui/material";
-import { ListItemIcon } from "@mui/material";
+import MenuList from "@mui/material/MenuList";
+import MenuItem from "@mui/material/MenuItem";
+import ListItemIcon from "@mui/material/ListItemIcon";
 import { Icon } from "onyxia-ui/Icon";
 import { isHideMenuKey } from "@mui/x-data-grid/utils/keyboardUtils";
 import { tss } from "tss";

@@ -223,7 +223,7 @@ export const { reducer, actions } = createUsecaseActions({
                         obj =>
                             objects.find(
                                 o => o.basename === obj.basename && o.kind === obj.kind
-                            ) || obj
+                            ) ?? obj
                     );
                     break;
             }
