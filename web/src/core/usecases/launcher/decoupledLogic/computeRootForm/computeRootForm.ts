@@ -16,6 +16,7 @@ export type XOnyxiaContextLike = XOnyxiaContextLike_computeRootFormFieldGroup;
 assert<XOnyxiaContext extends XOnyxiaContextLike ? true : false>();
 
 export function computeRootForm(params: {
+    chartName: string;
     helmValuesSchema: JSONSchema;
     helmValues: Record<string, Stringifyable>;
     xOnyxiaContext: XOnyxiaContextLike;
@@ -24,7 +25,8 @@ export function computeRootForm(params: {
         condition: (string | number)[] | undefined;
     }[];
 }): RootForm {
-    const { helmValuesSchema, helmValues, xOnyxiaContext, helmDependencies } = params;
+    const { chartName, helmValuesSchema, helmValues, xOnyxiaContext, helmDependencies } =
+        params;
 
     const rootForm: RootForm = {
         "main": (() => {
@@ -97,6 +99,51 @@ export function computeRootForm(params: {
 
             rootForm.dependencies[chartName] = { main, global };
         });
+
+    extract_dependency_matching_chartName: {
+        const dependency = rootForm.dependencies[chartName];
+
+        if (dependency === undefined) {
+            break extract_dependency_matching_chartName;
+        }
+
+        (["main", "global"] as const).forEach(mainOrGlobal =>
+            [...dependency[mainOrGlobal]].forEach(node => {
+                {
+                    const conflictingNode = rootForm[mainOrGlobal].find(
+                        (() => {
+                            switch (node.type) {
+                                case "group":
+                                    return node_i =>
+                                        node_i.type === "group" &&
+                                        node_i.helmValuesPath.slice(-1)[0] ===
+                                            node.helmValuesPath.slice(-1)[0];
+                                case "field":
+                                    return node_i =>
+                                        node_i.type === "field" &&
+                                        node_i.title === node.title;
+                            }
+                        })()
+                    );
+
+                    if (conflictingNode !== undefined) {
+                        return;
+                    }
+                }
+
+                dependency[mainOrGlobal].splice(
+                    dependency[mainOrGlobal].indexOf(node),
+                    1
+                );
+
+                rootForm[mainOrGlobal].push(node);
+            })
+        );
+
+        if (dependency.global.length === 0 && dependency.main.length === 0) {
+            delete rootForm.dependencies[chartName];
+        }
+    }
 
     return rootForm;
 }

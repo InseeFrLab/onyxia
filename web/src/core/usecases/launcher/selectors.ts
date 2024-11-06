@@ -50,6 +50,7 @@ const helmValues = createSelector(readyState, state => {
 
 const rootForm = createSelector(
     isReady,
+    chartName,
     createSelector(readyState, state => {
         if (state === null) {
             return null;
@@ -72,17 +73,26 @@ const rootForm = createSelector(
 
         return state.xOnyxiaContext;
     }),
-    (isReady, helmValuesSchema, helmValues, helmDependencies, xOnyxiaContext) => {
+    (
+        isReady,
+        chartName,
+        helmValuesSchema,
+        helmValues,
+        helmDependencies,
+        xOnyxiaContext
+    ) => {
         if (!isReady) {
             return null;
         }
 
+        assert(chartName !== null);
         assert(helmValuesSchema !== null);
         assert(helmValues !== null);
         assert(helmDependencies !== null);
         assert(xOnyxiaContext !== null);
 
         return computeRootForm({
+            chartName,
             helmValuesSchema,
             helmValues,
             xOnyxiaContext,
