@@ -241,4 +241,89 @@ describe(symToStr({ resolveXOnyxiaValueReference }), () => {
 
         expect(got).toBe(expected);
     });
+
+    it("PASS 15", () => {
+        const got = resolveXOnyxiaValueReference({
+            expression: ["a", "b", "{{a.b.c}}"],
+            xOnyxiaContext: {
+                a: {
+                    b: {
+                        c: 42
+                    }
+                }
+            }
+        });
+
+        const expected = ["a", "b", 42];
+
+        expect(got).toStrictEqual(expected);
+    });
+
+    it("PASS 16", () => {
+        const got = resolveXOnyxiaValueReference({
+            expression: { a: "a", b: "b", c: "{{a.b.c}}" },
+            xOnyxiaContext: {
+                a: {
+                    b: {
+                        c: 42
+                    }
+                }
+            }
+        });
+
+        const expected = { a: "a", b: "b", c: 42 };
+
+        expect(got).toStrictEqual(expected);
+    });
+
+    it("PASS 17", () => {
+        const got = resolveXOnyxiaValueReference({
+            expression: { a: "a", b: "b", c: "a.b.c" },
+            xOnyxiaContext: {
+                a: {
+                    b: {
+                        c: 42
+                    }
+                }
+            }
+        });
+
+        const expected = { a: "a", b: "b", c: "a.b.c" };
+
+        expect(got).toStrictEqual(expected);
+    });
+
+    it("PASS 18", () => {
+        const got = resolveXOnyxiaValueReference({
+            expression: { a: "a", b: "b", c: "{{a.b.notExisting}}" },
+            xOnyxiaContext: {
+                a: {
+                    b: {
+                        c: 42
+                    }
+                }
+            }
+        });
+
+        const expected = undefined;
+
+        expect(got).toStrictEqual(expected);
+    });
+
+    it("PASS 15", () => {
+        const got = resolveXOnyxiaValueReference({
+            expression: ["a", "b", "{{a.b.notExisting}}"],
+            xOnyxiaContext: {
+                a: {
+                    b: {
+                        c: 42
+                    }
+                }
+            }
+        });
+
+        const expected = undefined;
+
+        expect(got).toStrictEqual(expected);
+    });
 });

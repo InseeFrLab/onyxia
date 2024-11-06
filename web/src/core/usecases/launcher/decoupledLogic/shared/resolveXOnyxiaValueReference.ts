@@ -2,6 +2,7 @@ import { getValueAtPathInObject } from "core/tools/getValueAtPathInObject";
 import { isAmong } from "tsafe/isAmong";
 import type { Stringifyable } from "core/tools/Stringifyable";
 import { assert } from "tsafe/assert";
+import { exclude } from "tsafe/exclude";
 import type { XOnyxiaContext } from "core/ports/OnyxiaApi";
 
 export type XOnyxiaContextLike = {};
@@ -9,12 +10,85 @@ export type XOnyxiaContextLike = {};
 assert<XOnyxiaContext extends XOnyxiaContextLike ? true : false>();
 
 type Params = {
-    expression: string;
+    expression: string | Stringifyable[] | Record<string, Stringifyable>;
     xOnyxiaContext: Record<string, unknown>;
 };
 
 export function resolveXOnyxiaValueReference(params: Params): Stringifyable | undefined {
-    const { expression, xOnyxiaContext } = params;
+    return resolveXOnyxiaValueReference_rec({
+        ...params,
+        isTopLevel: true
+    });
+}
+
+function resolveXOnyxiaValueReference_rec(
+    params: Params & { isTopLevel: boolean }
+): Stringifyable | undefined {
+    const { expression, xOnyxiaContext, isTopLevel } = params;
+
+    if (expression instanceof Array) {
+        const resolvedArray = expression.map(item => {
+            if (item === null) {
+                return null;
+            }
+
+            if (typeof item === "boolean") {
+                return item;
+            }
+
+            if (typeof item === "number") {
+                return item;
+            }
+
+            return resolveXOnyxiaValueReference_rec({
+                expression: item,
+                xOnyxiaContext,
+                isTopLevel: false
+            });
+        });
+
+        const resolvedArray_noUndefined = resolvedArray.filter(exclude(undefined));
+
+        if (resolvedArray_noUndefined.length !== resolvedArray.length) {
+            return undefined;
+        }
+
+        return resolvedArray_noUndefined;
+    }
+
+    if (expression instanceof Object) {
+        const resolvedRecord: Record<string, Stringifyable> = {};
+
+        for (const [key, value] of Object.entries(expression)) {
+            const resolvedValue = (() => {
+                if (value === null) {
+                    return null;
+                }
+
+                if (typeof value === "boolean") {
+                    return value;
+                }
+
+                if (typeof value === "number") {
+                    return value;
+                }
+
+                return resolveXOnyxiaValueReference_rec({
+                    expression: value,
+                    xOnyxiaContext,
+                    isTopLevel: false
+                });
+            })();
+
+            if (resolvedValue === undefined) {
+                return undefined;
+            }
+
+            resolvedRecord[key] = resolvedValue;
+        }
+
+        return resolvedRecord;
+    }
 
     full_substitution: {
         const match = expression.match(/^{{([^}]+)}}$/);
@@ -66,6 +140,10 @@ export function resolveXOnyxiaValueReference(params: Params): Stringifyable | un
         }
 
         return resolved;
+    }
+
+    if (!isTopLevel) {
+        return expression;
     }
 
     return resolveXOnyxiaValueReference({

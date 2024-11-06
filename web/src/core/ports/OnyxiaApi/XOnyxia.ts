@@ -4,6 +4,7 @@ import type { Language } from "./Language";
 import { id } from "tsafe/id";
 import { z } from "zod";
 import { assert, type Equals } from "tsafe/assert";
+import { type Stringifyable, zStringifyable } from "core/tools/Stringifyable";
 
 export const onyxiaReservedPropertyNameInFieldDescription = "x-onyxia";
 
@@ -17,10 +18,9 @@ export type XOnyxiaParams = {
      * "overwriteDefaultWith": "{{project.id}}-{{k8s.randomSubdomain}}.{{k8s.domain}}"
      * "overwriteDefaultWith": [ "a hardcoded value", "some other hardcoded value", "{{region.oauth2.clientId}}" ]
      * "overwriteDefaultWith": { "foo": "bar", "bar": "{{region.oauth2.clientId}}" }
-     *
      */
-    overwriteDefaultWith?: string;
-    overwriteListEnumWith?: string;
+    overwriteDefaultWith?: string | Stringifyable[] | Record<string, Stringifyable>;
+    overwriteListEnumWith?: string | Stringifyable[];
     hidden?: boolean;
     readonly?: boolean;
 };
@@ -29,8 +29,10 @@ export const zXOnyxiaParams = (() => {
     type TargetType = XOnyxiaParams;
 
     const zTargetType = z.object({
-        overwriteDefaultWith: z.string().optional(),
-        overwriteListEnumWith: z.string().optional(),
+        overwriteDefaultWith: z
+            .union([z.string(), z.array(zStringifyable), z.record(zStringifyable)])
+            .optional(),
+        overwriteListEnumWith: z.union([z.string(), z.array(zStringifyable)]).optional(),
         hidden: z.boolean().optional(),
         readonly: z.boolean().optional()
     });

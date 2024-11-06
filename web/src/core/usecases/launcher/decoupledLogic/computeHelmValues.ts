@@ -22,7 +22,7 @@ import {
 } from "./shared/getJSONSchemaType";
 
 type XOnyxiaParamsLike = {
-    overwriteDefaultWith?: string;
+    overwriteDefaultWith?: XOnyxiaParams["overwriteDefaultWith"];
 };
 
 assert<keyof XOnyxiaParamsLike extends keyof XOnyxiaParams ? true : false>();

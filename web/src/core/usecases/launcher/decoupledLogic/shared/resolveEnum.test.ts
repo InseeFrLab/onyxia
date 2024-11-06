@@ -27,6 +27,35 @@ describe(symToStr({ resolveEnum }), () => {
         expect(got).toStrictEqual(expected);
     });
 
+    it("resolves from the xOnyxiaContext with array", () => {
+        const xOnyxiaContext: XOnyxiaContextLike = {
+            user: {
+                decodedIdToken: {
+                    group1: "a",
+                    group2: "b"
+                }
+            }
+        };
+
+        const got = resolveEnum({
+            helmValuesSchema: {
+                type: "string",
+                "x-onyxia": {
+                    overwriteListEnumWith: [
+                        "{{user.decodedIdToken.group1}}",
+                        "{{user.decodedIdToken.group2}}",
+                        "c"
+                    ]
+                }
+            },
+            xOnyxiaContext
+        });
+
+        const expected = ["a", "b", "c"];
+
+        expect(got).toStrictEqual(expected);
+    });
+
     it("approximates values from xOnyxiaContext", () => {
         const xOnyxiaContext: XOnyxiaContextLike = {
             user: {

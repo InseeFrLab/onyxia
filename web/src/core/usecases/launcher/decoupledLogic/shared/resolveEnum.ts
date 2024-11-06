@@ -16,7 +16,7 @@ import {
 } from "./validateValueAgainstJSONSchema/validateValueAgainstJSONSchema_noEnumCheck";
 
 type XOnyxiaParamsLike = {
-    overwriteListEnumWith?: string;
+    overwriteListEnumWith?: XOnyxiaParams["overwriteListEnumWith"];
 };
 
 assert<keyof XOnyxiaParamsLike extends keyof XOnyxiaParams ? true : false>();
