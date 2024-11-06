@@ -52,7 +52,9 @@ const useStyles = tss
     .create(({ theme, headingWrapperBackgroundColor }) => ({
         "root": {
             "border": `1px solid ${theme.colors.useCases.typography.textTertiary}`,
-            "borderRadius": theme.spacing(3)
+            "borderRadius": theme.spacing(3),
+
+            "position": "relative"
         },
         "headingWrapper": {
             "marginBottom": theme.spacing(2),
@@ -68,7 +70,8 @@ const useStyles = tss
         },
         "removeButton": {
             "position": "absolute",
-            "left": -theme.typography.rootFontSizePx * 1
+            "left": -theme.typography.rootFontSizePx * 2.35,
+            "top": -theme.typography.rootFontSizePx * 0.1
         },
         "removeButtonIcon": {
             "color": theme.colors.useCases.alertSeverity.error.main
