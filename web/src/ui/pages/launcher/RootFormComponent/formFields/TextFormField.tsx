@@ -133,6 +133,7 @@ export const TextFormField = memo((props: Props) => {
                 })()}
                 value={serializedValue}
                 onChange={event => setSerializedValue(event.target.value)}
+                autoComplete="off"
             />
         </FormFieldWrapper>
     );

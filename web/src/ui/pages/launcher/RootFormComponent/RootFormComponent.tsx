@@ -19,7 +19,7 @@ export function RootFormComponent(props: Props) {
     const { classes, cx } = useStyles();
 
     return (
-        <div className={cx(classes.root, className)}>
+        <form className={cx(classes.root, className)} autoComplete="off">
             <ConfigurationTopLevelGroup
                 main={rootForm.main}
                 global={rootForm.global}
@@ -37,7 +37,7 @@ export function RootFormComponent(props: Props) {
                     />
                 </Fragment>
             ))}
-        </div>
+        </form>
     );
 }
 
