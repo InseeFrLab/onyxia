@@ -335,7 +335,8 @@ const useStyles_inner = tss.withName({ FormFieldGroupComponent }).create(({ them
         root: {
             display: "flex",
             flexWrap: "wrap",
-            gap
+            gap,
+            alignItems: "center"
         },
         group: {
             flex: "0 0 100%"
