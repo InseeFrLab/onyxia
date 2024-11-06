@@ -255,10 +255,7 @@ export const Explorer = memo((props: ExplorerProps) => {
     );
 
     const itemsOnDeleteItem = useConstCallback(
-        async (
-            { item }: Parameters<ItemsProps["onDeleteItem"]>[0],
-            onDeleteConfirmed?: () => void
-        ) => {
+        async ({ item }: Parameters<ItemsProps["onDeleteItem"]>[0]) => {
             if (doShowDeletionDialogNextTime) {
                 const dDoProceedToDeletion = new Deferred();
 
@@ -278,7 +275,6 @@ export const Explorer = memo((props: ExplorerProps) => {
             }
 
             onDeleteItem({ item });
-            onDeleteConfirmed?.();
         }
     );
 
@@ -430,7 +426,6 @@ export const Explorer = memo((props: ExplorerProps) => {
                                         }
                                         onPolicyChange={onItemsPolicyChange}
                                         onCopyPath={itemsOnCopyPath}
-                                        onDeleteItem={itemsOnDeleteItem}
                                         onDeleteItems={itemsOnDeleteItems}
                                         evtAction={evtItemsAction}
                                     />

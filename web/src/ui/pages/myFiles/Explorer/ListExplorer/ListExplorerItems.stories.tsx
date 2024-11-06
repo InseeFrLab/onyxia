@@ -69,7 +69,6 @@ export const Default: Story = {
         items: itemsSample,
         onNavigate: action("Navigate to directory"),
         onOpenFile: action("Open file"),
-        onDeleteItem: action("Delete item"),
         onDeleteItems: action("Delete items"),
         onPolicyChange: action("Policy change"),
         onCopyPath: action("Copy path"),
