@@ -408,14 +408,15 @@ export const translations: Translations<"en"> = {
         cancel: "cancelar",
         delete: "eliminar",
         "do not display again": "No mostrar de nuevo",
-
         "untitled what": ({ what }) => `sin_título_${what}`,
         directory: "carpeta",
-        "deletion dialog title": ({ deleteWhat }) => `¿Eliminar un ${deleteWhat} ?`,
-        "deletion dialog body": ({
-            deleteWhat
-        }) => `Estás a punto de eliminar ${deleteWhat}.
-            Esta acción no se puede revertir.`,
+        multiple: "elementos",
+        "deletion dialog title": ({ deleteWhat, isPlural }) =>
+            `¿Eliminar ${isPlural ? "estos" : "este"} ${deleteWhat}?`,
+        "deletion dialog body": ({ deleteWhat, isPlural }) => `
+        Está a punto de eliminar ${isPlural ? "estos" : "este"} ${deleteWhat}.
+        Esta acción puede resultar en la pérdida de datos asociados a ${isPlural ? "estos" : "este"} ${deleteWhat}.
+        `,
         "already a directory with this name": "Ya existe una carpeta con este nombre",
         "can't be empty": "No puede estar vacío",
         "new directory": "Nueva carpeta"

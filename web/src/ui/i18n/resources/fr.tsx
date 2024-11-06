@@ -384,13 +384,14 @@ export const translations: Translations<"fr"> = {
         cancel: "annuler",
         delete: "supprimer",
         "do not display again": "Ne plus afficher",
-
         "untitled what": ({ what }) => `${what}_sans_nom`,
+        multiple: "éléments",
         directory: "dossier",
-        "deletion dialog title": ({ deleteWhat }) => `Supprimer un ${deleteWhat} ?`,
-        "deletion dialog body": ({ deleteWhat }) => `
-            Vous êtes sur le point de supprimer un ${deleteWhat}. 
-            Cette action entraînera la perte potentielle des données liées à ce ${deleteWhat}.
+        "deletion dialog title": ({ deleteWhat, isPlural }) =>
+            `Supprimer ${isPlural ? "des" : "un"} ${deleteWhat} ?`,
+        "deletion dialog body": ({ deleteWhat, isPlural }) => `
+            Vous êtes sur le point de supprimer ${isPlural ? "des" : "un"} ${deleteWhat}. 
+            Cette action entraînera la perte potentielle des données liées à ${isPlural ? "ces" : "ce"} ${deleteWhat}.
             `,
         "already a directory with this name": "Il y a déjà un dossier avec ce nom",
         "can't be empty": "Ne peut être vide",

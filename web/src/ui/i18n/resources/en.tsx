@@ -397,14 +397,15 @@ export const translations: Translations<"en"> = {
         cancel: "cancel",
         delete: "delete",
         "do not display again": "Don't display again",
-
         "untitled what": ({ what }) => `untitled_${what}`,
         directory: "folder",
-        "deletion dialog title": ({ deleteWhat }) => `Delete a ${deleteWhat} ?`,
-        "deletion dialog body": ({
-            deleteWhat
-        }) => `You are about to delete ${deleteWhat}.
-            This action can't be reverted.`,
+        multiple: "items",
+        "deletion dialog title": ({ deleteWhat, isPlural }) =>
+            `Delete ${isPlural ? "these" : "this"} ${deleteWhat}?`,
+        "deletion dialog body": ({ deleteWhat, isPlural }) => `
+        You are about to delete ${isPlural ? "these" : "this"} ${deleteWhat}.
+        This action may result in the loss of data associated with ${isPlural ? "these" : "this"} ${deleteWhat}.
+        `,
         "already a directory with this name":
             "There is already a directory with this name",
         "can't be empty": "Can't be empty",

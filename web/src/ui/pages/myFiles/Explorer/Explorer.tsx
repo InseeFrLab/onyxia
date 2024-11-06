@@ -223,8 +223,7 @@ export const Explorer = memo((props: ExplorerProps) => {
 
     const [deletionDialogState, setDeletionDialogState] = useState<
         | {
-              kind: "file" | "directory";
-              basename: string;
+              kind: "file" | "directory" | "multiple";
               resolveDoProceedToDeletion: (doProceedToDeletion: boolean) => void;
           }
         | undefined
@@ -261,7 +260,6 @@ export const Explorer = memo((props: ExplorerProps) => {
 
                 setDeletionDialogState({
                     kind: item.kind,
-                    basename: item.basename,
                     resolveDoProceedToDeletion: dDoProceedToDeletion.resolve
                 });
 
@@ -287,9 +285,7 @@ export const Explorer = memo((props: ExplorerProps) => {
                 const dDoProceedToDeletion = new Deferred();
 
                 setDeletionDialogState({
-                    //TODO : handle multiple deletion in dialog
-                    kind: items[0].kind,
-                    basename: items[0].basename,
+                    kind: items.length === 1 ? items[0].kind : "multiple",
                     resolveDoProceedToDeletion: dDoProceedToDeletion.resolve
                 });
 
@@ -447,10 +443,14 @@ export const Explorer = memo((props: ExplorerProps) => {
                         deletionDialogState === undefined
                             ? ""
                             : t(deletionDialogState.kind);
+                    const isPlural =
+                        deletionDialogState === undefined
+                            ? false
+                            : deletionDialogState.kind === "multiple";
 
                     return {
-                        title: t("deletion dialog title", { deleteWhat }),
-                        body: t("deletion dialog body", { deleteWhat })
+                        title: t("deletion dialog title", { deleteWhat, isPlural }),
+                        body: t("deletion dialog body", { deleteWhat, isPlural })
                     };
                 })()}
                 isOpen={deletionDialogState !== undefined}
@@ -489,11 +489,12 @@ const { i18n } = declareComponentKeys<
     | { K: "untitled what"; P: { what: string } }
     | "directory"
     | "file"
+    | "multiple"
     | "secret"
     | "cancel"
     | "delete"
-    | { K: "deletion dialog title"; P: { deleteWhat: string } }
-    | { K: "deletion dialog body"; P: { deleteWhat: string } }
+    | { K: "deletion dialog title"; P: { deleteWhat: string; isPlural: boolean } }
+    | { K: "deletion dialog body"; P: { deleteWhat: string; isPlural: boolean } }
     | "do not display again"
     | "already a directory with this name"
     | "can't be empty"

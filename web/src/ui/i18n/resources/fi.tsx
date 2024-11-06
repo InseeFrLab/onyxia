@@ -402,12 +402,15 @@ export const translations: Translations<"fi"> = {
         cancel: "peruuta",
         delete: "poista",
         "do not display again": "Älä näytä uudelleen",
-
         "untitled what": ({ what }) => `nimetön_${what}`,
         directory: "hakemisto",
-        "deletion dialog title": ({ deleteWhat }) => `Poista ${deleteWhat}?`,
-        "deletion dialog body": ({ deleteWhat }) => `Olet poistamassa ${deleteWhat}.
-            Tätä toimintoa ei voi peruuttaa.`,
+        multiple: "kohteet",
+        "deletion dialog title": ({ deleteWhat, isPlural }) =>
+            `Poistetaanko ${isPlural ? "nämä" : "tämä"} ${deleteWhat}?`,
+        "deletion dialog body": ({ deleteWhat, isPlural }) => `
+        Olet poistamassa ${isPlural ? "näitä" : "tätä"} ${deleteWhat}.
+        Tämä toiminto voi johtaa näihin liittyvien tietojen menetykseen ${isPlural ? "näihin" : "tähän"} ${deleteWhat}.
+        `,
         "already a directory with this name": "Tämän niminen hakemisto on jo olemassa",
         "can't be empty": "Ei voi olla tyhjä",
         "new directory": "Uusi hakemisto"
