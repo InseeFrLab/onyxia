@@ -1,8 +1,11 @@
 import { tss } from "tss";
+import { Fragment } from "react";
 import type { RootForm } from "core/usecases/launcher/decoupledLogic/formTypes";
 import type { FormCallbacks } from "./FormCallbacks";
 import { ConfigurationTopLevelGroup } from "./ConfigurationTopLevelGroup";
-import { DependencyTabs } from "./DependenciesTabs";
+import { Text } from "onyxia-ui/Text";
+import { objectEntries } from "tsafe/objectEntries";
+import { capitalize } from "tsafe/capitalize";
 
 type Props = {
     className?: string;
@@ -18,25 +21,29 @@ export function RootFormComponent(props: Props) {
     return (
         <div className={cx(classes.root, className)}>
             <ConfigurationTopLevelGroup
-                className={classes.mainCard}
                 main={rootForm.main}
                 global={rootForm.global}
                 callbacks={callbacks}
             />
-            <DependencyTabs
-                className={classes.dependencyTabs}
-                dependencies={rootForm.dependencies}
-                disabledDependencies={rootForm.disabledDependencies}
-                callbacks={callbacks}
-            />
+            {objectEntries(rootForm.dependencies).map(([dependencyName, dependency]) => (
+                <Fragment key={dependencyName}>
+                    <Text className={classes.dependencyTitle} typo="navigation label">
+                        {capitalize(dependencyName)}
+                    </Text>
+                    <ConfigurationTopLevelGroup
+                        main={dependency.main}
+                        global={dependency.global}
+                        callbacks={callbacks}
+                    />
+                </Fragment>
+            ))}
         </div>
     );
 }
 
 const useStyles = tss.withName({ RootFormComponent }).create(({ theme }) => ({
-    "root": {},
-    "mainCard": {},
-    "dependencyTabs": {
-        "marginTop": theme.spacing(4)
+    root: {},
+    dependencyTitle: {
+        marginBottom: theme.spacing(3)
     }
 }));
