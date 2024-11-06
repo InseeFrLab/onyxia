@@ -79,11 +79,21 @@ spec:
           volumeMounts:
             {{- if .Values.api.schemas.enabled }}
             {{- $path := .Values.api.schemas.rootPath -}}
+            {{- $subpath := .Values.api.schemas.subPathDefault -}}
             {{- $fullname := include "onyxia.fullname" . -}}
             {{- range .Values.api.schemas.files }}
-            - name: {{ $fullname }}-{{ .relativePath | sha256sum | trunc 8 }}
-              mountPath: {{ $path }}{{ .relativePath }}
+            - name: {{ $fullname }}-{{ printf "%s %s" .relativePath "default" | sha256sum | trunc 8 }}
+              mountPath: {{ printf "%s%s/%s" $path $subpath .relativePath }}
               subPath: {{ .relativePath | base }}
+            {{- end }}
+            {{- $subpath := .Values.api.schemas.subPathRole -}}
+            {{- range .Values.api.schemas.roles }}
+            {{- $role := .roleName -}}
+            {{- range .files }}           
+            - name: {{ $fullname }}-{{ printf "%s %s %s" .relativePath "role" $role | sha256sum | trunc 8 }}
+              mountPath: {{ printf "%s%s/%s/%s" $path $subpath $role .relativePath }}
+              subPath: {{ .relativePath | base }}    
+            {{- end }}
             {{- end }}
             {{- end }}
             {{- if .Values.api.extraVolumeMounts }}
@@ -107,9 +117,17 @@ spec:
         {{- if .Values.api.schemas.enabled }}
         {{- $fullname := include "onyxia.fullname" . -}}
         {{- range .Values.api.schemas.files }}
-        - name: {{ $fullname }}-{{ .relativePath | sha256sum | trunc 8 }}
+        - name: {{ $fullname }}-{{ printf "%s %s" .relativePath "default" | sha256sum | trunc 8 }}
           configMap:
-            name: {{ $fullname }}-{{ .relativePath | sha256sum | trunc 8 }}
+            name: {{ $fullname }}-{{ printf "%s %s" .relativePath "default" | sha256sum | trunc 8 }}
+        {{- end }}
+        {{- range .Values.api.schemas.roles }}
+        {{- $role := .roleName -}}
+        {{- range .files }}
+        - name: {{ $fullname }}-{{ printf "%s %s %s" .relativePath "role" $role | sha256sum | trunc 8 }}
+          configMap:
+            name: {{ $fullname }}-{{ printf "%s %s %s" .relativePath "role" $role | sha256sum | trunc 8 }}        
+        {{- end }}
         {{- end }}
         {{- end }}
         {{- if .Values.api.extraVolumes }}
