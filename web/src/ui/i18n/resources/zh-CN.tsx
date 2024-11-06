@@ -349,11 +349,13 @@ export const translations: Translations<"zh-CN"> = {
         "do not display again": "不要再显示",
         "untitled what": ({ what }) => `untitled_${what}`,
         directory: "目录",
-        "deletion dialog title": ({ deleteWhat }) => `删除 ${deleteWhat} ?`,
-        "deletion dialog body": ({ deleteWhat }) => `
-            您即将删除 ${deleteWhat} 服务.
-            此操作将导致与此 ${deleteWhat} 服务相关的数据的潜在丢失
-            `,
+        multiple: "项目",
+        "deletion dialog title": ({ deleteWhat, isPlural }) =>
+            `删除${isPlural ? "这些" : "此"}${deleteWhat}？`,
+        "deletion dialog body": ({ deleteWhat, isPlural }) => `
+        您将要删除${isPlural ? "这些" : "此"}${deleteWhat}。
+        此操作可能导致与${isPlural ? "这些" : "此"}${deleteWhat}相关的数据丢失。
+        `,
         "already a directory with this name": "已经有一个同名的文件夹",
         "can't be empty": "不能为空",
         create: "建立",

@@ -64,7 +64,7 @@ function MyFiles(props: Props) {
 
     useEffect(() => {
         if (currentWorkingDirectoryView === undefined) return;
-        console.log(viewMode);
+
         routes[route.name]({
             ...route.params,
             path: currentWorkingDirectoryView.directoryPath,

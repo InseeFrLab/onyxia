@@ -384,11 +384,13 @@ export const translations: Translations<"it"> = {
 
         "untitled what": ({ what }) => `${what}_senza_nome`,
         directory: "cartella",
-        "deletion dialog title": ({ deleteWhat }) => `Eliminare un ${deleteWhat}?`,
-        "deletion dialog body": ({ deleteWhat }) => `
-            Stai per eliminare un ${deleteWhat}. 
-            Questa azione potrebbe comportare la potenziale perdita dei dati associati a questo ${deleteWhat}.
-            `,
+        multiple: "elementi",
+        "deletion dialog title": ({ deleteWhat, isPlural }) =>
+            `Eliminare ${isPlural ? "questi" : "questo"} ${deleteWhat}?`,
+        "deletion dialog body": ({ deleteWhat, isPlural }) => `
+        Stai per eliminare ${isPlural ? "questi" : "questo"} ${deleteWhat}.
+        Questa azione potrebbe comportare la perdita dei dati associati a ${isPlural ? "questi" : "questo"} ${deleteWhat}.
+        `,
         "already a directory with this name": "Esiste già una cartella con questo nome",
         "can't be empty": "Non può essere vuoto",
         "new directory": "Nuova cartella"

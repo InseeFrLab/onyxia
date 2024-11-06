@@ -387,11 +387,13 @@ export const translations: Translations<"de"> = {
         "do not display again": "Nicht mehr anzeigen",
         "untitled what": ({ what }) => `${what}_namenlos`,
         directory: "Verzeichnis",
-        "deletion dialog title": ({ deleteWhat }) => `Einen ${deleteWhat} löschen?`,
-        "deletion dialog body": ({ deleteWhat }) => `
-            Sie sind dabei, einen ${deleteWhat} zu löschen. 
-            Durch diese Aktion können Daten verloren gehen, die mit diesem ${deleteWhat} verknüpft sind.
-            `,
+        multiple: "Elemente",
+        "deletion dialog title": ({ deleteWhat, isPlural }) =>
+            `Möchten Sie ${isPlural ? "mehrere" : "ein"} ${deleteWhat} löschen?`,
+        "deletion dialog body": ({ deleteWhat, isPlural }) => `
+        Sie sind dabei, ${isPlural ? "mehrere" : "ein"} ${deleteWhat} zu löschen.
+        Diese Aktion könnte zum Verlust der mit ${isPlural ? "diesen" : "diesem"} ${deleteWhat} verbundenen Daten führen.
+        `,
         "already a directory with this name":
             "Es gibt bereits ein Verzeichnis mit diesem Namen",
         "can't be empty": "Darf nicht leer sein",

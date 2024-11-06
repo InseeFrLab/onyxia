@@ -184,7 +184,6 @@ export const thunks = {
         (...args): { cleanup: () => void } => {
             const { directoryPath, viewMode } = params;
 
-            console.log("initialize", viewMode);
             const [dispatch, getState, { evtAction }] = args;
 
             const ctx = Evt.newCtx();

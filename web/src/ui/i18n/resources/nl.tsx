@@ -384,11 +384,13 @@ export const translations: Translations<"nl"> = {
 
         "untitled what": ({ what }) => `${what}_naamloos`,
         directory: "map",
-        "deletion dialog title": ({ deleteWhat }) => `Een ${deleteWhat} verwijderen ?`,
-        "deletion dialog body": ({ deleteWhat }) => `
-            Je staat op het punt om een ${deleteWhat} te verwijderen. 
-            Deze actie zal resulteren in het mogelijke verlies van de gegevens gekoppeld aan deze ${deleteWhat}.
-            `,
+        multiple: "items",
+        "deletion dialog title": ({ deleteWhat, isPlural }) =>
+            `${isPlural ? "Deze" : "Dit"} ${deleteWhat} verwijderen?`,
+        "deletion dialog body": ({ deleteWhat, isPlural }) => `
+        U staat op het punt om ${isPlural ? "deze" : "dit"} ${deleteWhat} te verwijderen.
+        Deze actie kan leiden tot het verlies van gegevens die gekoppeld zijn aan ${isPlural ? "deze" : "dit"} ${deleteWhat}.
+        `,
         "already a directory with this name": "Er bestaat al een map met deze naam",
         "can't be empty": "Kan niet leeg zijn",
         "new directory": "Nieuwe map"

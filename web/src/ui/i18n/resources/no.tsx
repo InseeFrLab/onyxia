@@ -409,10 +409,13 @@ export const translations: Translations<"no"> = {
 
         "untitled what": ({ what }) => `uten tittel_${what}`,
         directory: "mappe",
-        "deletion dialog title": ({ deleteWhat }) => `Slett ${deleteWhat}?`,
-        "deletion dialog body": ({ deleteWhat }) =>
-            `Du er i ferd med å slette ${deleteWhat}.
-      Denne handlingen kan ikke reverseres.`,
+        multiple: "elementer",
+        "deletion dialog title": ({ deleteWhat, isPlural }) =>
+            `Slett ${isPlural ? "disse" : "denne"} ${deleteWhat}?`,
+        "deletion dialog body": ({ deleteWhat, isPlural }) => `
+        Du er i ferd med å slette ${isPlural ? "disse" : "denne"} ${deleteWhat}.
+        Denne handlingen kan føre til tap av data knyttet til ${isPlural ? "disse" : "dette"} ${deleteWhat}.
+        `,
         "already a directory with this name":
             "Det finnes allerede en mappe med dette navnet",
         "can't be empty": "Kan ikke være tom",
