@@ -33,7 +33,8 @@ export function FormFieldWrapper(props: Props) {
     } = props;
 
     const { classes } = useStyles({
-        isErrored: error !== undefined
+        isErrored: error !== undefined,
+        isResetToDefaultButtonVisible: onResetToDefault !== undefined
     });
 
     const { t } = useTranslation({ FormFieldWrapper });
@@ -57,14 +58,13 @@ export function FormFieldWrapper(props: Props) {
                     }
                 </Text>
                 <div style={{ flex: 1 }} />
-                {onResetToDefault !== undefined && (
-                    <ToolTip title={t("reset to default")} placement="bottom">
-                        <IconButton
-                            onClick={onResetToDefault}
-                            icon={SettingsBackupRestoreIcon}
-                        />
-                    </ToolTip>
-                )}
+                <ToolTip title={t("reset to default")} placement="bottom">
+                    <IconButton
+                        className={classes.resetToDefaultButton}
+                        onClick={onResetToDefault ?? (() => {})}
+                        icon={SettingsBackupRestoreIcon}
+                    />
+                </ToolTip>
             </div>
             {description !== undefined && (
                 <Text typo="caption" className={classes.description}>
@@ -91,8 +91,8 @@ export function FormFieldWrapper(props: Props) {
 
 const useStyles = tss
     .withName({ FormFieldWrapper })
-    .withParams<{ isErrored: boolean }>()
-    .create(({ theme, isErrored }) => ({
+    .withParams<{ isErrored: boolean; isResetToDefaultButtonVisible: boolean }>()
+    .create(({ theme, isErrored, isResetToDefaultButtonVisible }) => ({
         title: {
             color: !isErrored ? undefined : theme.colors.useCases.alertSeverity.error.main
         },
@@ -121,6 +121,9 @@ const useStyles = tss
         },
         error: {
             color: theme.colors.useCases.alertSeverity.error.main
+        },
+        resetToDefaultButton: {
+            opacity: isResetToDefaultButtonVisible ? 1 : 0
         }
     }));
 
