@@ -500,7 +500,8 @@ export function createS3Client(
                 params: {
                     Bucket: bucketName,
                     Key: objectName,
-                    Body: blob
+                    Body: blob,
+                    ContentType: blob.type
                 },
                 partSize: 5 * 1024 * 1024, // optional size of each part
                 leavePartsOnError: false // optional manually handle dropped parts
