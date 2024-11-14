@@ -739,5 +739,41 @@ export const thunks = {
             );
 
             return downloadUrl;
+        },
+    openShare:
+        (params: { fileBasename: string }) =>
+        async (...args) => {
+            const { fileBasename } = params;
+
+            const [dispatch, getState] = args;
+
+            const { directoryPath, objects } = getState()[name];
+
+            assert(directoryPath !== undefined);
+
+            const { s3Config } = await dispatch(
+                s3ConfigManagement.protectedThunks.getS3ConfigAndClientForExplorer()
+            ).then(r => {
+                assert(r !== undefined);
+                return r;
+            });
+
+            const url = (() => {
+                const currentObj = objects.find(
+                    o => o.basename === fileBasename && o.kind === "file"
+                );
+
+                assert(currentObj !== undefined);
+            })();
+
+            dispatch(
+                actions.shareOpened({
+                    fileBasename,
+                    url:
+                        currentObj.policy === "private"
+                            ? undefined
+                            : `${s3Config.paramsOfCreateS3Client.url}/${pathJoin(directoryPath, fileBasename)}`
+                })
+            );
         }
 } satisfies Thunks;

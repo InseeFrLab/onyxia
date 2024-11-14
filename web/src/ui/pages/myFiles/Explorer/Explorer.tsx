@@ -29,7 +29,7 @@ import { Dialog } from "onyxia-ui/Dialog";
 import { useCallbackFactory } from "powerhooks/useCallbackFactory";
 import { Deferred } from "evt/tools/Deferred";
 import { useConst } from "powerhooks/useConst";
-import type { Param0 } from "tsafe";
+import type { Equals, Param0 } from "tsafe";
 import { TextField } from "onyxia-ui/TextField";
 import type { TextFieldProps } from "onyxia-ui/TextField";
 import { useRerenderOnStateChange } from "evt/hooks/useRerenderOnStateChange";
@@ -44,6 +44,7 @@ import {
 import type { Item } from "../shared/types";
 import { ViewMode } from "../shared/types";
 import { isDirectory } from "../shared/tools";
+import { ShareDialog } from "../ShareFile/ShareDialog";
 
 export type ExplorerProps = {
     /**
@@ -169,21 +170,21 @@ export const Explorer = memo((props: ExplorerProps) => {
         onNavigate({ directoryPath: pathJoin(directoryPath, "..") });
     });
 
-    const { evtItemsAction } = useConst(() => ({
-        evtItemsAction: Evt.create<UnpackEvt<ItemsProps["evtAction"]>>()
-    }));
+    const evtExplorerItemsAction = useConst(() =>
+        Evt.create<UnpackEvt<ItemsProps["evtAction"]>>()
+    );
 
     const buttonBarCallback = useConstCallback<ButtonBarProps["callback"]>(buttonId => {
         switch (buttonId) {
             case "refresh":
                 onRefresh();
-                break;
+                return;
             case "delete":
-                evtItemsAction.post("DELETE SELECTED ITEM");
-                break;
+                evtExplorerItemsAction.post("DELETE SELECTED ITEM");
+                return;
             case "copy path":
-                evtItemsAction.post("COPY SELECTED ITEM PATH");
-                break;
+                evtExplorerItemsAction.post("COPY SELECTED ITEM PATH");
+                return;
             case "create directory":
                 setCreateS3DirectoryDialogState({
                     directories: items
@@ -191,12 +192,16 @@ export const Explorer = memo((props: ExplorerProps) => {
                         .map(({ basename }) => basename),
                     resolveBasename: basename => onCreateDirectory({ basename })
                 });
-                break;
+                return;
 
             case "new":
                 setIsUploadModalOpen(true);
-                break;
+                return;
+            case "share":
+                evtExplorerItemsAction.post("SHARE");
+                return;
         }
+        assert<Equals<typeof buttonId, never>>();
     });
 
     useEvt(
@@ -273,6 +278,12 @@ export const Explorer = memo((props: ExplorerProps) => {
             }
 
             onDeleteItem({ item });
+        }
+    );
+
+    const onShare = useConstCallback(
+        async ({ basename }: Param0<ItemsProps["onShare"]>) => {
+            assert(false, "TODO");
         }
     );
 
@@ -384,13 +395,11 @@ export const Explorer = memo((props: ExplorerProps) => {
                 </div>
                 <div
                     ref={scrollableDivRef}
-                    className={cx(
-                        css({
-                            flex: 1,
-                            paddingRight: theme.spacing(2),
-                            overflow: "auto"
-                        })
-                    )}
+                    className={css({
+                        flex: 1,
+                        paddingRight: theme.spacing(2),
+                        overflow: "auto"
+                    })}
                 >
                     {(() => {
                         switch (viewMode) {
@@ -407,10 +416,11 @@ export const Explorer = memo((props: ExplorerProps) => {
                                         onPolicyChange={onItemsPolicyChange}
                                         onCopyPath={itemsOnCopyPath}
                                         onDeleteItem={itemsOnDeleteItem}
-                                        evtAction={evtItemsAction}
+                                        onShare={onShare}
+                                        evtAction={evtExplorerItemsAction}
                                     />
                                 );
-                            case "list": {
+                            case "list":
                                 return (
                                     <ListExplorerItems
                                         isNavigating={isNavigating}
@@ -423,13 +433,11 @@ export const Explorer = memo((props: ExplorerProps) => {
                                         onPolicyChange={onItemsPolicyChange}
                                         onCopyPath={itemsOnCopyPath}
                                         onDeleteItems={itemsOnDeleteItems}
-                                        evtAction={evtItemsAction}
+                                        evtAction={evtExplorerItemsAction}
                                     />
                                 );
-                            }
-                            default:
-                                return null;
                         }
+                        assert<Equals<typeof viewMode, never>>();
                     })()}
                 </div>
             </div>
@@ -473,6 +481,12 @@ export const Explorer = memo((props: ExplorerProps) => {
                         </Button>
                     </>
                 }
+            />
+
+            <ShareDialog
+                file={selectedFile}
+                onClose={onShareDialogClose}
+                isOpen={isShareDialogOpen}
             />
 
             <ExplorerUploadModal

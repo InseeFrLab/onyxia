@@ -10,19 +10,72 @@ import { tss } from "tss";
 import { id } from "tsafe";
 import { SelectTime } from "./SelectTime";
 import { FileItem } from "../shared/types";
-import { TextField } from "@mui/material";
+import TextField from "@mui/material/TextField";
 import { CopyToClipboardIconButton } from "ui/shared/CopyToClipboardIconButton";
 
-export type ShareDialogProps = {
-    file: FileItem;
-    url: string | undefined; //undefined if file.policy is public
+/*
+{
+
+    import { useShareDialog } from "./ShareDialog";
+
+    const { ShareDialog, onOpenShareDialog } = useShareDialog();
+
+    return (
+        <MyComponent onShare={()=> onOpenShareDialog({
+            file, url
+        })} ></MyComponent>
+        <ShareDialog />
+    );
+
+}
+
+{
+    import { ShareDialog, useShareDialog } from "./ShareDialog";
+
+
+    const { shareDialogState, onOpenShareDialog } = useShareDialog();
+
+    return (
+
+        <MyComponent onShare={()=> onOpenShareDialog({
+            file, url
+        })} ></MyComponent>
+
+        <ShareDialog state={shareDialogState} />
+    );
+
+}
+*/
+
+type ShareDialogState = {
     isOpen: boolean;
     onClose: () => void;
-    createSignedLink: (expirationTime: number) => Promise<string>;
+    file: FileItem;
+    url: string | undefined; //undefined if file.policy is public
+    isRequestingUrl: boolean;
+    onRequestUrl: (params: { expirationTime: number }) => void;
+};
+
+export function useShareDialog(params: {
+    requestUrl: (params: { file: FileItem }) => Promise<string>;
+}): {
+    shareDialogSate: ShareDialogState;
+    onOpenShareDialog: (params: {
+        file: FileItem;
+        url: string | undefined; //undefined if file.policy is public
+    }) => void;
+} {
+    return null as any;
+}
+
+export type ShareDialogProps = {
+    state: ShareDialogState;
 };
 
 export const ShareDialog = memo((props: ShareDialogProps) => {
-    const { file, url } = props;
+    const {
+        state: { file, url }
+    } = props;
     const { t } = useTranslation({ ShareDialog });
 
     const { classes } = useStyles();
@@ -68,7 +121,9 @@ export const ShareDialog = memo((props: ShareDialogProps) => {
                             slotProps={{
                                 input: {
                                     endAdornment: (
-                                        <CopyToClipboardIconButton textToCopy={url} />
+                                        <CopyToClipboardIconButton
+                                            textToCopy={url ?? ""}
+                                        />
                                     )
                                 }
                             }}

@@ -30,6 +30,13 @@ export type State = {
         resp: string | undefined;
     }[];
     bucketPolicy: S3BucketPolicy;
+    share:
+        | {
+              fileBasename: string;
+              url: string | undefined;
+              isSignedUrlBeingRequested: boolean;
+          }
+        | undefined;
 };
 
 export const name = "fileExplorer";
@@ -47,7 +54,8 @@ export const { reducer, actions } = createUsecaseActions({
         bucketPolicy: {
             Version: "2012-10-17",
             Statement: []
-        }
+        },
+        share: undefined
     }),
     reducers: {
         fileUploadStarted: (
@@ -105,6 +113,7 @@ export const { reducer, actions } = createUsecaseActions({
             state.s3FilesBeingUploaded = [];
         },
         navigationStarted: state => {
+            assert(state.share === undefined);
             state.isNavigationOngoing = true;
         },
         navigationCompleted: (
@@ -319,6 +328,48 @@ export const { reducer, actions } = createUsecaseActions({
                     : o
             );
             state.bucketPolicy = payload.bucketPolicy;
+        },
+        shareOpened: (
+            state,
+            {
+                payload
+            }: {
+                payload: {
+                    fileBasename: string;
+                    url: string | undefined;
+                };
+            }
+        ) => {
+            const { fileBasename, url } = payload;
+
+            state.share = {
+                fileBasename,
+                url,
+                isSignedUrlBeingRequested: false
+            };
+        },
+        shareClosed: state => {
+            state.share = undefined;
+        },
+        requestSignedUrlStarted: state => {
+            assert(state.share !== undefined);
+            state.share.isSignedUrlBeingRequested = true;
+        },
+        requestSignedUrlCompleted: (
+            state,
+            {
+                payload
+            }: {
+                payload: {
+                    url: string;
+                };
+            }
+        ) => {
+            const { url } = payload;
+
+            assert(state.share !== undefined);
+            state.share.isSignedUrlBeingRequested = false;
+            state.share.url = url;
         }
     }
 });

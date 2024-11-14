@@ -97,9 +97,9 @@ const currentWorkingDirectoryView = createSelector(
         objects,
         ongoingOperations,
         s3FilesBeingUploaded
-    ): CurrentWorkingDirectoryView | undefined => {
+    ): CurrentWorkingDirectoryView | null => {
         if (directoryPath === undefined) {
-            return undefined;
+            return null;
         }
         const items = objects
             .map((object): CurrentWorkingDirectoryView.Item => {
@@ -187,6 +187,38 @@ const currentWorkingDirectoryView = createSelector(
     }
 );
 
+export type ShareView = ShareView.PublicFile | ShareView.PrivateFile;
+
+export namespace ShareView {
+    type Common = {
+        file: CurrentWorkingDirectoryView.Item.File;
+    };
+
+    export type PublicFile = Common & {
+        isPublic: true;
+        url: string;
+    };
+
+    export type PrivateFile = Common & {
+        isPublic: false;
+        signedUrl: string | undefined;
+        isSignedUrlBeingRequested: boolean;
+    };
+}
+
+const shareView = createSelector(
+    createSelector(state, state => state.directoryPath),
+    createSelector(state, state => state.objects),
+
+    (directoryPath, objects): ShareView | undefined | null => {
+        if (directoryPath === undefined) {
+            return null;
+        }
+
+        assert(false, "TODO");
+    }
+);
+
 const isNavigationOngoing = createSelector(state, state => state.isNavigationOngoing);
 
 const workingDirectoryPath = createSelector(
@@ -206,21 +238,25 @@ const pathMinDepth = createSelector(workingDirectoryPath, workingDirectoryPath =
 });
 
 const main = createSelector(
+    createSelector(state, state => state.directoryPath),
     uploadProgress,
     commandLogsEntries,
     currentWorkingDirectoryView,
     isNavigationOngoing,
     pathMinDepth,
     createSelector(state, state => state.viewMode),
+    shareView,
     (
+        directoryPath,
         uploadProgress,
         commandLogsEntries,
         currentWorkingDirectoryView,
         isNavigationOngoing,
         pathMinDepth,
-        viewMode
+        viewMode,
+        shareView
     ) => {
-        if (currentWorkingDirectoryView === undefined) {
+        if (directoryPath === null) {
             return {
                 isCurrentWorkingDirectoryLoaded: false as const,
                 isNavigationOngoing,
@@ -231,6 +267,9 @@ const main = createSelector(
             };
         }
 
+        assert(currentWorkingDirectoryView !== null);
+        assert(shareView !== null);
+
         return {
             isCurrentWorkingDirectoryLoaded: true as const,
             isNavigationOngoing,
@@ -238,7 +277,8 @@ const main = createSelector(
             commandLogsEntries,
             pathMinDepth,
             currentWorkingDirectoryView,
-            viewMode
+            viewMode,
+            shareView
         };
     }
 );

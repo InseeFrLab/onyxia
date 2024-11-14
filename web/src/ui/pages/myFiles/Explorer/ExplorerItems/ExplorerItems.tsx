@@ -5,7 +5,7 @@ import { useTranslation } from "ui/i18n";
 import { useCallbackFactory } from "powerhooks/useCallbackFactory";
 import { tss } from "tss";
 import { Text } from "onyxia-ui/Text";
-import { assert } from "tsafe/assert";
+import { assert, type Equals } from "tsafe/assert";
 import { declareComponentKeys } from "i18nifty";
 import type { Item } from "../../shared/types";
 import type { NonPostableEvt } from "evt";
@@ -32,7 +32,10 @@ export type ExplorerItemsProps = {
     }) => void;
     onDeleteItem: (params: { item: Item }) => void;
     onCopyPath: (params: { basename: string }) => void;
-    evtAction: NonPostableEvt<"DELETE SELECTED ITEM" | "COPY SELECTED ITEM PATH">;
+    onShare: (params: { basename: string }) => void;
+    evtAction: NonPostableEvt<
+        "DELETE SELECTED ITEM" | "COPY SELECTED ITEM PATH" | "SHARE"
+    >;
 };
 
 export const ExplorerItems = memo((props: ExplorerItemsProps) => {
@@ -46,7 +49,8 @@ export const ExplorerItems = memo((props: ExplorerItemsProps) => {
         evtAction,
         onPolicyChange,
         onCopyPath,
-        onDeleteItem
+        onDeleteItem,
+        onShare
     } = props;
     const isEmpty = items.length === 0;
 
@@ -106,14 +110,21 @@ export const ExplorerItems = memo((props: ExplorerItemsProps) => {
                     case "DELETE SELECTED ITEM":
                         assert(selectedItem.kind !== "none");
                         onDeleteItem({ item: selectedItem });
-                        break;
+                        return;
                     case "COPY SELECTED ITEM PATH":
                         assert(selectedItem.kind !== "none");
                         onCopyPath({
                             basename: selectedItem.basename
                         });
-                        break;
+                        return;
+                    case "SHARE":
+                        assert(selectedItem.kind === "file");
+                        onShare({
+                            basename: selectedItem.basename
+                        });
+                        return;
                 }
+                assert<Equals<typeof action, never>>();
             }),
         [evtAction, onDeleteItem, onCopyPath, selectedItem]
     );
