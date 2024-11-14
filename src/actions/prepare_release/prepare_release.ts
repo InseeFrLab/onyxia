@@ -15,6 +15,7 @@ import { getShaBranchName } from "../../tools/getShaBranchName";
 import { getWebDockerhubRepository } from "./getWebDockerhubRepository";
 import { updateChartReadme } from "./updateChartReadme";
 import { readVersions, type Versions } from "./readVersions";
+import { assert } from "tsafe/assert";
 
 const { getActionParams } = getActionParamsFactory({
     "inputNameSubset": [
@@ -291,6 +292,9 @@ export async function _run(
         }
     });
 
+    // NOTE: We must have made a commit.
+    assert(target_commit !== undefined);
+
     return {
         "new_chart_version": SemVer.stringify(targetChartVersion),
         "new_web_docker_image_tags":
@@ -316,7 +320,7 @@ export async function _run(
                 "new": currentVersions.webVersion
             },
         }),
-        "target_commit": target_commit ?? sha,
+        "target_commit": target_commit,
         "web_tag_name": SemVer.compare(previousReleaseVersions.webVersion, currentVersions.webVersion) === 0 ?
             "":
             getWebTagName(currentVersions.webVersion)

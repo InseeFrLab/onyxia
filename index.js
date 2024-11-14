@@ -455,6 +455,7 @@ const getShaBranchName_1 = __nccwpck_require__(1474);
 const getWebDockerhubRepository_1 = __nccwpck_require__(4533);
 const updateChartReadme_1 = __nccwpck_require__(3742);
 const readVersions_1 = __nccwpck_require__(9086);
+const assert_1 = __nccwpck_require__(8078);
 const { getActionParams } = (0, inputHelper_1.getActionParamsFactory)({
     "inputNameSubset": [
         "owner",
@@ -619,6 +620,8 @@ function _run(params) {
                 };
             })
         });
+        // NOTE: We must have made a commit.
+        (0, assert_1.assert)(target_commit !== undefined);
         return {
             "new_chart_version": SemVer_1.SemVer.stringify(targetChartVersion),
             "new_web_docker_image_tags": SemVer_1.SemVer.compare(previousReleaseVersions.webVersion, currentVersions.webVersion) === 0 ?
@@ -643,7 +646,7 @@ function _run(params) {
                     "new": currentVersions.webVersion
                 },
             }),
-            "target_commit": target_commit !== null && target_commit !== void 0 ? target_commit : sha,
+            "target_commit": target_commit,
             "web_tag_name": SemVer_1.SemVer.compare(previousReleaseVersions.webVersion, currentVersions.webVersion) === 0 ?
                 "" :
                 (0, generateReleaseMessageBody_1.getWebTagName)(currentVersions.webVersion)
