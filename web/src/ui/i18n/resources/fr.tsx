@@ -317,9 +317,23 @@ export const translations: Translations<"fr"> = {
             </>
         )
     },
-    MyFilesShareDialog: {
-        cancel: "Annuler",
-        "create and copy link": "Créer et copier le lien"
+    ShareDialog: {
+        title: "Partager vos données",
+        close: "Fermer",
+        "create and copy link": "Créer et copier le lien",
+        "paragraph current policy": ({
+            policy
+        }) => `Votre fichier est public, toute personne ayant le lien peut
+                        télécharger votre fichier`,
+        "paragraph change policy": ({
+            policy
+        }) => `Pour restreindre son accès, changez le statut de diffusion de
+                        votre fichier.`,
+        "hint link access": ({ policy, expirationDate }) =>
+            policy === "private"
+                ? `Votre lien ....`
+                : "Votre lien est disponible tant que le fichier est publique",
+        "label input link": "Lien d'accès"
     },
     MySecrets: {
         "page title - my secrets": "My Secrets",

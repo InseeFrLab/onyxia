@@ -10,13 +10,14 @@ type Props = {
 };
 
 const expirationOptions = [
+    { id: "1 heure", name: "1 heure" },
     { id: "12 heures", name: "12 heures" },
     { id: "24 heures", name: "24 heures" },
     { id: "48 heures", name: "48 heures" },
     { id: "7 jours", name: "7 jours" }
 ];
 
-export function MyFilesShareSelectTime(props: Props) {
+export function SelectTime(props: Props) {
     const { className } = props;
 
     const labelId = useId();
@@ -41,7 +42,7 @@ export function MyFilesShareSelectTime(props: Props) {
         </FormControl>
     );
 }
-const useStyles = tss.withName({ MyFilesShareSelectTime }).create(() => ({
+const useStyles = tss.withName({ MyFilesShareSelectTime: SelectTime }).create(() => ({
     timeSelectWrapper: {
         minWidth: 200
     }

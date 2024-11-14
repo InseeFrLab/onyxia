@@ -281,7 +281,7 @@ export const translations: Translations<"zh-CN"> = {
             </>
         )
     },
-    MyFilesShareDialog: {
+    ShareDialog: {
         cancel: "取消",
         "create and copy link": "创建并复制链接"
     },

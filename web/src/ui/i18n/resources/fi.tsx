@@ -311,7 +311,7 @@ export const translations: Translations<"fi"> = {
             </>
         )
     },
-    MyFilesShareDialog: {
+    ShareDialog: {
         cancel: "Peruuta",
         "create and copy link": "Luo ja kopioi linkki"
     },

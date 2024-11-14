@@ -310,7 +310,7 @@ export const translations: Translations<"no"> = {
             </>
         )
     },
-    MyFilesShareDialog: {
+    ShareDialog: {
         cancel: "Avbryt",
         "create and copy link": "Opprett og kopier lenke"
     },

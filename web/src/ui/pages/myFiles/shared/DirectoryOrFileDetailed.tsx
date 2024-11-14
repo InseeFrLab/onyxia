@@ -3,6 +3,7 @@ import { ExplorerIcon } from "../Explorer/ExplorerIcon";
 import { Text } from "onyxia-ui/Text";
 import { Icon } from "onyxia-ui/Icon";
 import { getIconUrlByName } from "lazy-icons";
+import { declareComponentKeys } from "i18nifty";
 
 type Props = {
     className?: string;
@@ -41,7 +42,14 @@ export function DirectoryOrFileDetailed(props: Props) {
                             )}
                         />
                         &nbsp;
-                        {isPublic ? "Dossier public" : "Dossier privé"}
+                        {(() => {
+                            switch (kind) {
+                                case "directory":
+                                    return isPublic ? "Dossier public" : "Dossier privé";
+                                case "file":
+                                    return isPublic ? "Fichier public" : "Fichier privé";
+                            }
+                        })()}
                     </Text>
                 </div>
             </div>
@@ -53,7 +61,6 @@ const useStyles = tss.withName({ DirectoryOrFileDetailed }).create(({ theme }) =
     root: {
         display: "flex",
         alignItems: "center"
-        //"margin": theme.spacing(2)
     },
     iconWrapper: {
         paddingRight: theme.spacing(4)
@@ -75,3 +82,9 @@ const useStyles = tss.withName({ DirectoryOrFileDetailed }).create(({ theme }) =
         marginRight: theme.spacing(1)
     }
 }));
+
+const { i18n } = declareComponentKeys<{
+    K: "policy item";
+    P: { isPublic: boolean; kind: Props["kind"] };
+}>()({ DirectoryOrFileDetailed });
+export type I18n = typeof i18n;

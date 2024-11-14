@@ -303,7 +303,7 @@ export const translations: Translations<"en"> = {
             </>
         )
     },
-    MyFilesShareDialog: {
+    ShareDialog: {
         cancel: "Cancel",
         "create and copy link": "Create and copy link"
     },
