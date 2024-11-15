@@ -97,7 +97,6 @@
         "@storybook/react-vite": "^8.2.9",
         "@storybook/test": "^8.2.9",
         "@types/bytes": "^3.1.4",
-        "@types/color": "^3.0.3",
         "@types/file-saver": "^2.0.2",
         "@types/flexsearch": "^0.7.3",
         "@types/memoizee": "^0.4.4",

@@ -5,7 +5,7 @@ import { useConstCallback } from "powerhooks/useConstCallback";
 import { TextField } from "onyxia-ui/TextField";
 import type { TextFieldProps } from "onyxia-ui/TextField";
 import { useClick } from "powerhooks/useClick";
-import Color from "color";
+import { alpha } from "@mui/material/styles";
 import { useTranslation } from "ui/i18n";
 import type { NonPostableEvt } from "evt";
 import { useEvt } from "evt/hooks";
@@ -223,15 +223,10 @@ const useStyles = tss
         text: {
             //"color": theme.palette.text[isSelected ? "primary" : "secondary"]
             //"color": !isSelected ? "rgba(0, 0, 0, 0.62)" : undefined
-            color: (() => {
-                const color = new Color(
-                    theme.colors.useCases.typography.textPrimary
-                ).rgb();
-
-                return color
-                    .alpha((color as any).valpha * (isSelected ? 1.2 : 0.8))
-                    .string();
-            })(),
+            color: alpha(
+                theme.colors.useCases.typography.textPrimary,
+                isSelected ? 1.2 : 0.8
+            ),
             wordBreak: /[_\- ]/.test(basename) ? undefined : "break-all"
         },
         hiddenSpan: {
