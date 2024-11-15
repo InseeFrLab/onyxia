@@ -88,7 +88,7 @@ export const LeftBar = memo((props: Props) => {
                         ? ({} as never)
                         : {
                               sqlOlapShell: {
-                                  icon: "Terminal",
+                                  icon: getIconUrlByName("Terminal"),
                                   label: t("sqlOlapShell"),
                                   link: routes.sqlOlapShell().link
                               } as const
