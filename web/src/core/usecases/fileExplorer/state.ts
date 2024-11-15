@@ -34,7 +34,9 @@ export type State = {
         | {
               fileBasename: string;
               url: string | undefined;
-              isSignedUrlBeingRequested: boolean;
+              validityDurationSecond: number | undefined;
+              validityDurationSecondOptions: number[] | undefined;
+              isSignedUrlBeingRequested: boolean | undefined;
           }
         | undefined;
 };
@@ -337,16 +339,31 @@ export const { reducer, actions } = createUsecaseActions({
                 payload: {
                     fileBasename: string;
                     url: string | undefined;
+                    validityDurationSecondOptions: number[] | undefined;
                 };
             }
         ) => {
-            const { fileBasename, url } = payload;
+            const { fileBasename, url, validityDurationSecondOptions } = payload;
 
-            state.share = {
-                fileBasename,
-                url,
-                isSignedUrlBeingRequested: false
-            };
+            if (url !== undefined) {
+                state.share = {
+                    fileBasename,
+                    url,
+                    isSignedUrlBeingRequested: undefined,
+                    validityDurationSecondOptions: undefined,
+                    validityDurationSecond: undefined
+                };
+            } else {
+                assert(validityDurationSecondOptions !== undefined);
+
+                state.share = {
+                    fileBasename,
+                    url,
+                    isSignedUrlBeingRequested: false,
+                    validityDurationSecondOptions,
+                    validityDurationSecond: validityDurationSecondOptions[0]
+                };
+            }
         },
         shareClosed: state => {
             state.share = undefined;

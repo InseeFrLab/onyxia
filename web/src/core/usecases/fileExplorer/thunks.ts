@@ -692,9 +692,9 @@ export const thunks = {
             );
         },
     getFileDownloadUrl:
-        (params: { basename: string }) =>
+        (params: { basename: string; validityDurationSecond: number }) =>
         async (...args): Promise<string> => {
-            const { basename } = params;
+            const { basename, validityDurationSecond } = params;
 
             const [dispatch, getState] = args;
 
@@ -711,7 +711,7 @@ export const thunks = {
             dispatch(
                 actions.commandLogIssued({
                     cmdId,
-                    cmd: `mc share download --expire 1h ${pathJoin("s3", path)}`
+                    cmd: `mc share download --expire ${validityDurationSecond}s ${pathJoin("s3", path)}`
                 })
             );
 
@@ -724,7 +724,7 @@ export const thunks = {
 
             const downloadUrl = await s3Client.getFileDownloadUrl({
                 path,
-                validityDurationSecond: 3600
+                validityDurationSecond
             });
 
             dispatch(
@@ -732,7 +732,8 @@ export const thunks = {
                     cmdId,
                     resp: [
                         `URL: ${downloadUrl.split("?")[0]}`,
-                        `Expire: 0 days 1 hours 0 minutes 0 seconds`,
+                        // TODO: Pretty print
+                        `Expire: ${validityDurationSecond} seconds`,
                         `Share: ${downloadUrl}`
                     ].join("\n")
                 })
@@ -751,29 +752,75 @@ export const thunks = {
 
             assert(directoryPath !== undefined);
 
-            const { s3Config } = await dispatch(
+            const { s3Client, s3Config } = await dispatch(
                 s3ConfigManagement.protectedThunks.getS3ConfigAndClientForExplorer()
             ).then(r => {
                 assert(r !== undefined);
                 return r;
             });
 
-            const url = (() => {
-                const currentObj = objects.find(
-                    o => o.basename === fileBasename && o.kind === "file"
-                );
+            const currentObj = objects.find(
+                o => o.basename === fileBasename && o.kind === "file"
+            );
 
-                assert(currentObj !== undefined);
-            })();
+            assert(currentObj !== undefined);
+
+            if (currentObj.policy === "public") {
+                dispatch(
+                    actions.shareOpened({
+                        fileBasename,
+                        url: `${s3Config.paramsOfCreateS3Client.url}/${pathJoin(directoryPath, fileBasename)}`,
+                        validityDurationSecondOptions: undefined
+                    })
+                );
+                return;
+            }
+
+            const tokens = await s3Client.getToken({ doForceRenew: false });
+
+            assert(tokens !== undefined);
+
+            const { expirationTime = Infinity } = tokens;
+
+            const validityDurationSecondOptions = [
+                3_600,
+                12 * 3_600,
+                24 * 3_600,
+                48 * 3_600,
+                7 * 24 * 3_600
+            ].filter(validityDuration => validityDuration < expirationTime - Date.now());
 
             dispatch(
                 actions.shareOpened({
                     fileBasename,
-                    url:
-                        currentObj.policy === "private"
-                            ? undefined
-                            : `${s3Config.paramsOfCreateS3Client.url}/${pathJoin(directoryPath, fileBasename)}`
+                    url: undefined,
+                    validityDurationSecondOptions
                 })
             );
+        },
+    closeShare:
+        () =>
+        (...args) => {
+            const [dispatch, getState] = args;
+
+            if (getState()[name].share === undefined) {
+                return;
+            }
+
+            dispatch(actions.shareClosed());
+        },
+    requestShareSignedUrl:
+        (params: {}) =>
+        async (...args) => {
+            const [dispatch, getState] = args;
+
+            {
+                const state = getState()[name];
+
+                assert(state.share !== undefined);
+                assert(state.share.url === undefined);
+            }
+
+            dispatch(actions.requestSignedUrlStarted());
         }
 } satisfies Thunks;

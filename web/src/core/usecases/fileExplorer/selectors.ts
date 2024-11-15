@@ -6,6 +6,7 @@ import * as s3ConfigManagement from "core/usecases/s3ConfigManagement";
 import { assert } from "tsafe/assert";
 import * as userAuthentication from "core/usecases/userAuthentication";
 import { id } from "tsafe/id";
+import type { S3Object } from "core/ports/S3Client";
 
 const state = (rootState: RootState): State => rootState[name];
 
@@ -190,8 +191,8 @@ const currentWorkingDirectoryView = createSelector(
 export type ShareView = ShareView.PublicFile | ShareView.PrivateFile;
 
 export namespace ShareView {
-    type Common = {
-        file: CurrentWorkingDirectoryView.Item.File;
+    export type Common = {
+        file: S3Object.File;
     };
 
     export type PublicFile = Common & {
@@ -201,6 +202,8 @@ export namespace ShareView {
 
     export type PrivateFile = Common & {
         isPublic: false;
+        validityDurationSecond: number;
+        validityDurationSecondOptions: number[];
         signedUrl: string | undefined;
         isSignedUrlBeingRequested: boolean;
     };
@@ -209,13 +212,60 @@ export namespace ShareView {
 const shareView = createSelector(
     createSelector(state, state => state.directoryPath),
     createSelector(state, state => state.objects),
-
-    (directoryPath, objects): ShareView | undefined | null => {
+    createSelector(state, state => state.share),
+    (directoryPath, objects, share): ShareView | undefined | null => {
         if (directoryPath === undefined) {
             return null;
         }
 
-        assert(false, "TODO");
+        if (share === undefined) {
+            return undefined;
+        }
+
+        const common: ShareView.Common = {
+            file: (() => {
+                const file = objects.find(
+                    obj => obj.basename === share.fileBasename && obj.kind === "file"
+                );
+
+                assert(file !== undefined);
+                assert(file.kind === "file");
+
+                return file;
+            })()
+        };
+
+        const isPublic = share.isSignedUrlBeingRequested === undefined;
+
+        if (isPublic) {
+            assert(share.url !== undefined);
+
+            return id<ShareView.PublicFile>({
+                ...common,
+                isPublic: true,
+                url: share.url
+            });
+        }
+
+        const {
+            url,
+            isSignedUrlBeingRequested,
+            validityDurationSecond,
+            validityDurationSecondOptions
+        } = share;
+
+        assert(isSignedUrlBeingRequested !== undefined);
+        assert(validityDurationSecond !== undefined);
+        assert(validityDurationSecondOptions !== undefined);
+
+        return id<ShareView.PrivateFile>({
+            ...common,
+            isPublic: false,
+            isSignedUrlBeingRequested,
+            signedUrl: url,
+            validityDurationSecond,
+            validityDurationSecondOptions
+        });
     }
 );
 
