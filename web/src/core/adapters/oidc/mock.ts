@@ -7,7 +7,10 @@ export async function createOidc(params: {
     const { isUserInitiallyLoggedIn } = params;
 
     const oidc = await createMockOidc({
-        isUserInitiallyLoggedIn
+        isUserInitiallyLoggedIn,
+        mockedTokens: {
+            decodedIdToken: {}
+        }
     });
 
     return oidc;
