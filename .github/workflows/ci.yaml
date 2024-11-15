@@ -22,8 +22,8 @@ jobs:
         with: 
           action_name: checkout
           sub_directory: web
-      - uses: actions/setup-node@v3.8.1
-      - uses: bahmutov/npm-install@v1.8.35
+      - uses: actions/setup-node@v4.1.0
+      - uses: bahmutov/npm-install@v1.10.4
         env:
           XDG_CACHE_HOME: "/home/runner/.cache/yarn"
       - run: yarn test
@@ -37,9 +37,7 @@ jobs:
         with: 
           action_name: checkout
           sub_directory: helm-chart
-      - uses: azure/setup-helm@v3.5
-        with:
-          token: ${{github.token}}
+      - uses: azure/setup-helm@v4.2.0
       - run: helm lint .
   
   prepare_release:
@@ -95,8 +93,8 @@ jobs:
           action_name: checkout
           sub_directory: web
           sha: ${{needs.prepare_release.outputs.target_commit}}
-      - uses: actions/setup-node@v3.8.1
-      - uses: bahmutov/npm-install@v1.8.35
+      - uses: actions/setup-node@v4.1.0
+      - uses: bahmutov/npm-install@v1.10.4
         env:
           XDG_CACHE_HOME: "/home/runner/.cache/yarn"
       - run: yarn build-keycloak-theme
