@@ -69,8 +69,10 @@ export const thunks = {
             })();
 
             const selectedCatalogId =
-                params.catalogId ??
-                catalogs.filter(({ isProduction }) => isProduction)[0].id;
+                params.catalogId !== undefined &&
+                catalogs.some(({ id }) => id === params.catalogId)
+                    ? params.catalogId
+                    : catalogs.filter(({ isProduction }) => isProduction)[0].id;
 
             dispatch(
                 actions.catalogsFetched({
@@ -96,7 +98,10 @@ export const thunks = {
                 })
             );
 
-            if (params.catalogId === undefined) {
+            if (
+                params.catalogId === undefined ||
+                params.catalogId !== selectedCatalogId
+            ) {
                 dispatch(actions.defaultCatalogSelected());
             }
         },
