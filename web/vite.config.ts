@@ -49,7 +49,7 @@ export default defineConfig({
                         "login",
                         "resources",
                         "build",
-                        "material-icons"
+                        "mui-icons-material"
                     ),
                     { recursive: true }
                 );

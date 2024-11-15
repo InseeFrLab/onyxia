@@ -1,8 +1,17 @@
 import { createGetIconUrl } from "mui-icons-material-lazy";
+import { getOnyxiaInstancePublicUrl } from "keycloak-theme/login/onyxiaInstancePublicUrl";
 import { env } from "env";
 
 export const { getIconUrl, getIconUrlByName } = createGetIconUrl({
-    BASE_URL: env.PUBLIC_URL
+    BASE_URL: (() => {
+        // NOTE: We delete the icons in the Keycloak theme not increasing the payload too much
+        // so we fetch the icons from the onyxia instance if needed.
+        if (window.kcContext !== undefined) {
+            return getOnyxiaInstancePublicUrl();
+        }
+
+        return env.PUBLIC_URL;
+    })()
 });
 
 export const customIcons = {

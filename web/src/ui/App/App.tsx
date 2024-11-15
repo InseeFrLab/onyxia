@@ -20,6 +20,7 @@ import { LeftBar } from "./LeftBar";
 import { GlobalAlert } from "./GlobalAlert";
 import { Main } from "./Main";
 import { AutoLogoutCountdown } from "./AutoLogoutCountdown";
+import { onyxiaInstancePublicUrlKey } from "keycloak-theme/login/onyxiaInstancePublicUrl";
 import { useDomRect } from "powerhooks/useDomRect";
 
 loadThemedFavicon();
@@ -33,6 +34,14 @@ const { CoreProvider } = createCoreProvider({
         [url]
             .map(injectTransferableEnvsInQueryParams)
             .map(injectGlobalStatesInSearchParams)
+            .map(
+                url =>
+                    addParamToUrl({
+                        url,
+                        name: onyxiaInstancePublicUrlKey,
+                        value: `${window.location.origin}${env.PUBLIC_URL}`
+                    }).newUrl
+            )
             .map(
                 url =>
                     addParamToUrl({

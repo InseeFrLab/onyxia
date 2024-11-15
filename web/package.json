@@ -9,7 +9,7 @@
         "install-git-hooks": "cd .. && husky web/.husky",
         "dev": "tsx scripts/unyamlify-env-local.ts && vite",
         "build": "tsc && vite build",
-        "build-keycloak-theme": "yarn build && keycloakify",
+        "build-keycloak-theme": "yarn build && keycloakify build",
         "_format": "prettier '**/*.{ts,tsx,json,md}'",
         "format": "yarn _format --write",
         "format:check": "yarn _format --list-different",
