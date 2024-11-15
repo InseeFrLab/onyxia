@@ -1,10 +1,9 @@
 import { memo } from "react";
-import { id } from "tsafe/id";
-import { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
 import { Item } from "../shared/types";
 import { type IconProps } from "onyxia-ui/Icon";
 import { IconButton } from "onyxia-ui/IconButton";
 import { tss } from "tss";
+import { getIconUrlByName } from "lazy-icons";
 
 type Props = {
     className?: string;
@@ -29,11 +28,7 @@ export const PolicySwitch = memo((props: Props) => {
             onClick={changePolicy} // Prevent click if loading
             disabled={isPolicyChanging}
             size={size}
-            icon={
-                isPublic
-                    ? id<MuiIconComponentName>("Visibility")
-                    : id<MuiIconComponentName>("VisibilityOff")
-            }
+            icon={getIconUrlByName(isPublic ? "Visibility" : "VisibilityOff")}
             aria-label={ariaLabel ?? "Policy switch"}
         />
     );

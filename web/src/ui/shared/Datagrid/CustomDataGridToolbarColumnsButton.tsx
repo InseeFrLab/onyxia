@@ -6,11 +6,10 @@ import {
     useGridSelector
 } from "@mui/x-data-grid";
 import { ButtonBarButton } from "onyxia-ui/ButtonBarButton";
-import { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
-import { id } from "tsafe";
 import { declareComponentKeys, useTranslation } from "ui/i18n";
 import { memo, useEffect } from "react";
 import { autosizeOptions } from "./CustomDataGrid";
+import { getIconUrlByName } from "lazy-icons";
 
 /**
  * CustomDataGridToolbarColumnsButton is a component that provides a toolbar button
@@ -52,10 +51,7 @@ export const CustomDataGridToolbarColumnsButton = memo(() => {
     };
 
     return (
-        <ButtonBarButton
-            onClick={showColumns}
-            startIcon={id<MuiIconComponentName>("ViewColumn")}
-        >
+        <ButtonBarButton onClick={showColumns} startIcon={getIconUrlByName("ViewColumn")}>
             {t("toolbarColumnsLabel")}
         </ButtonBarButton>
     );

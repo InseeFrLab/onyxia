@@ -15,8 +15,8 @@ import { useCallbackFactory } from "powerhooks/useCallbackFactory";
 import type { Stringifyable } from "core/tools/Stringifyable";
 import type { FormCallbacks } from "../FormCallbacks";
 import { Button } from "onyxia-ui/Button";
-import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
 import { declareComponentKeys, useTranslation } from "ui/i18n";
+import { getIconUrlByName } from "lazy-icons";
 
 export type Props = {
     className?: string;
@@ -314,7 +314,7 @@ export function FormFieldGroupComponent(props: Props) {
             })}
             {canAdd && (
                 <Button
-                    startIcon={"AddCircleOutline" satisfies MuiIconComponentName}
+                    startIcon={getIconUrlByName("AddCircleOutline")}
                     variant="ternary"
                     onClick={() => onAdd({ helmValuesPath })}
                 >

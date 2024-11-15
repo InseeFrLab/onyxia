@@ -2,8 +2,7 @@ import type { ReactNode } from "react";
 import { tss } from "tss";
 import { Text } from "onyxia-ui/Text";
 import { IconButton } from "onyxia-ui/IconButton";
-import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
-import { id } from "tsafe/id";
+import { getIconUrlByName } from "lazy-icons";
 import ToolTip from "@mui/material/Tooltip";
 import { declareComponentKeys, useTranslation } from "ui/i18n";
 import { capitalize } from "tsafe/capitalize";
@@ -47,7 +46,7 @@ export function FormFieldWrapper(props: Props) {
                         className={classes.removeButton}
                         iconClassName={classes.removeButtonIcon}
                         onClick={onRemove}
-                        icon={id<MuiIconComponentName>("RemoveCircleOutline")}
+                        icon={getIconUrlByName("RemoveCircleOutline")}
                     />
                 )}
                 <Text typo="label 1" className={classes.title}>

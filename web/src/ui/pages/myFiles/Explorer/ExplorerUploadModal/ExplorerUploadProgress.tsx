@@ -10,8 +10,7 @@ import { Icon } from "onyxia-ui/Icon";
 import { useCallbackFactory } from "powerhooks/useCallbackFactory";
 import { assert } from "tsafe/assert";
 import { declareComponentKeys } from "i18nifty";
-import { id } from "tsafe/id";
-import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
+import { getIconUrlByName } from "lazy-icons";
 
 export type Props = {
     className?: string;
@@ -87,22 +86,19 @@ export const ExplorerUploadProgress = memo((props: Props) => {
             {props.isFailed && (
                 <div className={classes.iconButtonWrapper}>
                     <IconButton
-                        icon={id<MuiIconComponentName>("Close")}
+                        icon={getIconUrlByName("Close")}
                         className={classes.closeIconButton}
                         onClick={onClickFactory("clear")}
                     />
                     <IconButton
-                        icon={id<MuiIconComponentName>("Refresh")}
+                        icon={getIconUrlByName("Refresh")}
                         onClick={onClickFactory("restart")}
                     />
                 </div>
             )}
             {percentUploaded === 100 && (
                 <div className={classes.checkWrapper}>
-                    <Icon
-                        icon={id<MuiIconComponentName>("Check")}
-                        className={classes.check}
-                    />
+                    <Icon icon={getIconUrlByName("Check")} className={classes.check} />
                 </div>
             )}
         </div>

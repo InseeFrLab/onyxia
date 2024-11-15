@@ -2,8 +2,7 @@ import MuiLink from "@mui/material/Link";
 import type { Translations } from "../types";
 import { Markdown } from "ui/shared/Markdown";
 import { Icon } from "onyxia-ui/Icon";
-import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
-import { id } from "tsafe/id";
+import { getIconUrlByName } from "lazy-icons";
 import { capitalize } from "tsafe/capitalize";
 import { MaybeLink } from "ui/shared/MaybeLink";
 
@@ -278,12 +277,9 @@ export const translations: Translations<"fi"> = {
                 Kun käynnistät palvelun, turvallisuusvälilehden salasanakenttä täytetään
                 automaattisesti tällä salasanalla. <br />
                 Napsauttamalla{" "}
-                <Icon
-                    size="extra small"
-                    icon={id<MuiIconComponentName>("Refresh")}
-                />{" "}
-                -kuvaketta luodaan uusi satunnainen salasana. Huomaa kuitenkin, että se ei
-                päivitä salasanaa palveluille, jotka ovat parhaillaan käynnissä. <br />
+                <Icon size="extra small" icon={getIconUrlByName("Refresh")} /> -kuvaketta
+                luodaan uusi satunnainen salasana. Huomaa kuitenkin, että se ei päivitä
+                salasanaa palveluille, jotka ovat parhaillaan käynnissä. <br />
                 Palvelusalasana on se, jonka Onyxia pyytää sinua kopioimaan
                 leikepöydällesi ennen käynnissä olevan palvelun käyttöä. <br />
                 {groupProjectName !== undefined && (

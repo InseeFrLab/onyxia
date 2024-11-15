@@ -8,8 +8,8 @@ import { CircularUsage } from "./CircularUsage";
 import { CollapsibleSectionHeader } from "onyxia-ui/CollapsibleSectionHeader";
 import { Icon } from "onyxia-ui/Icon";
 import { Text } from "onyxia-ui/Text";
-import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
 import { declareComponentKeys, useTranslation } from "ui/i18n";
+import { getIconUrlByName } from "lazy-icons";
 
 type Props = {
     className?: string;
@@ -101,9 +101,7 @@ export function Quotas(props: Props) {
                                     <Text typo="body 1">
                                         <Icon
                                             className={classes.checkIcon}
-                                            icon={
-                                                "CheckCircle" satisfies MuiIconComponentName
-                                            }
+                                            icon={getIconUrlByName("CheckCircle")}
                                         />
                                         &nbsp;{t("current resource usage is reasonable")}
                                     </Text>

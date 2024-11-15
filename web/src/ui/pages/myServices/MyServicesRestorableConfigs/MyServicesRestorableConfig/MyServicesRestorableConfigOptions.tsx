@@ -11,8 +11,7 @@ import MenuItem from "@mui/material/MenuItem";
 import { useTranslation } from "ui/i18n";
 import { declareComponentKeys } from "i18nifty";
 import { symToStr } from "tsafe/symToStr";
-import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
-import { id } from "tsafe/id";
+import { getIconUrlByName } from "lazy-icons";
 
 const actions = ["edit", "copy link", "delete"] as const;
 
@@ -56,10 +55,7 @@ export const MyServicesRestorableConfigOptions = memo((props: Props) => {
                 data-ga-event-category="header"
                 data-ga-event-action="language"
             >
-                <Icon
-                    icon={id<MuiIconComponentName>("MoreVert")}
-                    className={classes.icon}
-                />
+                <Icon icon={getIconUrlByName("MoreVert")} className={classes.icon} />
             </MuiButton>
             <Menu
                 id={menuId}
@@ -81,11 +77,11 @@ export const MyServicesRestorableConfigOptions = memo((props: Props) => {
                                 icon={(() => {
                                     switch (action) {
                                         case "edit":
-                                            return id<MuiIconComponentName>("Edit");
+                                            return getIconUrlByName("Edit");
                                         case "copy link":
-                                            return id<MuiIconComponentName>("Link");
+                                            return getIconUrlByName("Link");
                                         case "delete":
-                                            return id<MuiIconComponentName>("Delete");
+                                            return getIconUrlByName("Delete");
                                     }
                                 })()}
                             />

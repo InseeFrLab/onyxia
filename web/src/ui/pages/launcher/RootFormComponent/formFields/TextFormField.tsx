@@ -5,8 +5,7 @@ import { FormFieldWrapper } from "./shared/FormFieldWrapper";
 import { useFormField } from "./shared/useFormField";
 import { declareComponentKeys, useTranslation } from "ui/i18n";
 import { assert } from "tsafe/assert";
-import { id } from "tsafe/id";
-import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
+import { getIconUrlByName } from "lazy-icons";
 import { tss } from "tss";
 import { IconButton } from "onyxia-ui/IconButton";
 
@@ -122,7 +121,7 @@ export const TextFormField = memo((props: Props) => {
                                 onClick={() =>
                                     setIsSensitiveTextDisclosed(!isSensitiveTextDisclosed)
                                 }
-                                icon={id<MuiIconComponentName>(
+                                icon={getIconUrlByName(
                                     isSensitiveTextDisclosed
                                         ? "VisibilityOff"
                                         : "Visibility"

@@ -2,8 +2,7 @@ import type { Translations } from "../types";
 import MuiLink from "@mui/material/Link";
 import { Markdown } from "ui/shared/Markdown";
 import { Icon } from "onyxia-ui/Icon";
-import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
-import { id } from "tsafe/id";
+import { getIconUrlByName } from "lazy-icons";
 import { capitalize } from "tsafe/capitalize";
 import { MaybeLink } from "ui/shared/MaybeLink";
 
@@ -281,12 +280,9 @@ export const translations: Translations<"de"> = {
                 Wenn Sie einen Dienst starten, wird das Passwortfeld im Sicherheitstab
                 automatisch mit diesem Passwort ausgefüllt. <br />
                 Ein Klick auf das{" "}
-                <Icon
-                    size="extra small"
-                    icon={id<MuiIconComponentName>("Refresh")}
-                />{" "}
-                Symbol generiert ein neues zufälliges Passwort. Beachten Sie jedoch, dass
-                es das Passwort für bereits laufende Dienste nicht aktualisiert. <br />
+                <Icon size="extra small" icon={getIconUrlByName("Refresh")} /> Symbol
+                generiert ein neues zufälliges Passwort. Beachten Sie jedoch, dass es das
+                Passwort für bereits laufende Dienste nicht aktualisiert. <br />
                 Das Dienstpasswort ist das, was Onyxia Sie auffordert, in Ihre
                 Zwischenablage zu kopieren, bevor Sie auf einen laufenden Dienst
                 zugreifen. <br />

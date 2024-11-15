@@ -15,8 +15,7 @@ import { useTranslation } from "ui/i18n";
 import { useConst } from "powerhooks/useConst";
 import { Evt } from "evt";
 import { useEvt } from "evt/hooks";
-import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
-import { id } from "tsafe/id";
+import { getIconUrlByName } from "lazy-icons";
 import { useClickAway } from "powerhooks/useClickAway";
 
 export type CommandBarProps = {
@@ -159,7 +158,7 @@ export const CommandBar = memo((props: CommandBarProps) => {
                     <div className={classes.dollarContainer}>
                         <Icon
                             className="dollarSign"
-                            icon={id<MuiIconComponentName>("AttachMoney")}
+                            icon={getIconUrlByName("AttachMoney")}
                             size="small"
                         />
                     </div>
@@ -170,7 +169,7 @@ export const CommandBar = memo((props: CommandBarProps) => {
 
                     {helpDialog !== undefined && (
                         <IconButton
-                            icon={id<MuiIconComponentName>("Help")}
+                            icon={getIconUrlByName("Help")}
                             className={classes.iconButton}
                             onClick={() => setIsHelpDialogOpen(true)}
                         />
@@ -179,7 +178,7 @@ export const CommandBar = memo((props: CommandBarProps) => {
                     {downloadButton !== undefined && (
                         <Tooltip title={downloadButton.tooltipTitle}>
                             <IconButton
-                                icon={id<MuiIconComponentName>("GetApp")}
+                                icon={getIconUrlByName("GetApp")}
                                 className={classes.iconButton}
                                 onClick={downloadButton.onClick}
                             />
@@ -187,7 +186,7 @@ export const CommandBar = memo((props: CommandBarProps) => {
                     )}
 
                     <IconButton
-                        icon={id<MuiIconComponentName>("ExpandMore")}
+                        icon={getIconUrlByName("ExpandMore")}
                         className={cx(classes.iconButton, classes.expandIconButton)}
                         onClick={() => setIsExpended(!isExpended)}
                     />
@@ -202,7 +201,7 @@ export const CommandBar = memo((props: CommandBarProps) => {
                         <div key={cmdId} className={classes.entryRoot}>
                             <div className={classes.dollarContainer}>
                                 <Icon
-                                    icon={id<MuiIconComponentName>("AttachMoney")}
+                                    icon={getIconUrlByName("AttachMoney")}
                                     size="small"
                                     className={classes.dollarIcon}
                                 />

@@ -4,8 +4,7 @@ import { Tooltip } from "onyxia-ui/Tooltip";
 import { Text } from "onyxia-ui/Text";
 import { Icon } from "onyxia-ui/Icon";
 import { tss } from "tss";
-import { id } from "tsafe/id";
-import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
+import { getIconUrlByName } from "lazy-icons";
 
 export type Props = {
     className?: string;
@@ -28,7 +27,7 @@ export const SettingSectionHeader = memo((props: Props) => {
                 <Tooltip title={tooltipText}>
                     <Icon
                         className={classes.helpIcon}
-                        icon={id<MuiIconComponentName>("Help")}
+                        icon={getIconUrlByName("Help")}
                         size="small"
                     />
                 </Tooltip>

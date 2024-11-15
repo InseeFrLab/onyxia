@@ -3,8 +3,7 @@ import type { S3Config } from "core/usecases/s3ConfigManagement";
 import { tss } from "tss";
 import { declareComponentKeys, useTranslation } from "ui/i18n";
 import { CircularProgress } from "onyxia-ui/CircularProgress";
-import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
-import { id } from "tsafe/id";
+import { getIconUrlByName } from "lazy-icons";
 import { Icon } from "onyxia-ui/Icon";
 import Tooltip from "@mui/material/Tooltip";
 import { assert, type Equals } from "tsafe/assert";
@@ -30,7 +29,7 @@ export function TestS3ConnectionButton(props: Props) {
                     assert(onTestConnection !== undefined);
                     onTestConnection();
                 }}
-                startIcon={id<MuiIconComponentName>("SettingsEthernet")}
+                startIcon={getIconUrlByName("SettingsEthernet")}
                 disabled={
                     onTestConnection === undefined ||
                     connectionTestStatus.status === "test ongoing"
@@ -56,7 +55,7 @@ export function TestS3ConnectionButton(props: Props) {
                                             .main
                                     })
                                 )}
-                                icon={id<MuiIconComponentName>("DoneOutline")}
+                                icon={getIconUrlByName("DoneOutline")}
                             />
                         );
                     case "test failed":
@@ -72,7 +71,7 @@ export function TestS3ConnectionButton(props: Props) {
                                             color: theme.colors.useCases.alertSeverity
                                                 .error.main
                                         })}
-                                        icon={id<MuiIconComponentName>("ErrorOutline")}
+                                        icon={getIconUrlByName("ErrorOutline")}
                                     />
                                 </Tooltip>
                             </>

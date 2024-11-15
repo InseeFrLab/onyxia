@@ -6,11 +6,10 @@ import { declareComponentKeys } from "i18nifty";
 import { BaseBar } from "onyxia-ui/BaseBar";
 import { ButtonBarButton } from "onyxia-ui/ButtonBarButton";
 import { useCallbackFactory } from "powerhooks/useCallbackFactory";
-import { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
-import { id } from "tsafe";
 import { IconButton } from "onyxia-ui/IconButton";
 import { useStyles } from "tss";
 import { ViewMode } from "../shared/types";
+import { getIconUrlByName } from "lazy-icons";
 
 export type Props = {
     selectedItemKind: "file" | "directory" | "multiple" | "none";
@@ -38,17 +37,17 @@ export const ExplorerButtonBar = memo((props: Props) => {
                 icon: (() => {
                     switch (buttonId) {
                         case "refresh":
-                            return "cached" as const;
+                            return getIconUrlByName("Cached");
                         case "copy path":
-                            return "filterNone";
+                            return getIconUrlByName("FilterNone");
                         case "create directory":
-                            return "add";
+                            return getIconUrlByName("Add");
                         case "new":
-                            return "add";
+                            return getIconUrlByName("Add");
                         case "delete":
-                            return "delete";
+                            return getIconUrlByName("Delete");
                         case "share":
-                            return "share";
+                            return getIconUrlByName("Share");
                     }
                 })(),
                 isDisabled: (() => {
@@ -88,7 +87,7 @@ export const ExplorerButtonBar = memo((props: Props) => {
                           }
                         : {}
                 )}
-                icon={id<MuiIconComponentName>("Sort")}
+                icon={getIconUrlByName("Sort")}
                 aria-label={t("alt list view")}
             />
             <IconButton
@@ -102,7 +101,7 @@ export const ExplorerButtonBar = memo((props: Props) => {
                           }
                         : {}
                 )}
-                icon={id<MuiIconComponentName>("ViewCompact")}
+                icon={getIconUrlByName("ViewCompact")}
                 aria-label={t("alt block view")}
             />
 

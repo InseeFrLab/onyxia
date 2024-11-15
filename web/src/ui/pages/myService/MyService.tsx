@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { tss } from "tss";
 import { PageHeader } from "onyxia-ui/PageHeader";
 import type { PageRoute } from "./route";
-import { customIcons } from "ui/theme";
+import { customIcons } from "lazy-icons";
 import { routes } from "ui/routes";
 import { MyServiceButtonBar } from "./MyServiceButtonBar";
 import { Tabs } from "onyxia-ui/Tabs";

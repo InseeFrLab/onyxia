@@ -5,8 +5,7 @@ import Input from "@mui/material/Input";
 import { declareComponentKeys, useTranslation } from "ui/i18n";
 import { assert } from "tsafe/assert";
 import { IconButton } from "onyxia-ui/IconButton";
-import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
-import { id } from "tsafe/id";
+import { getIconUrlByName } from "lazy-icons";
 
 type Props = {
     className?: string;
@@ -125,13 +124,13 @@ export const NumberFormField = memo((props: Props) => {
             {isInteger && (
                 <>
                     <IconButton
-                        icon={id<MuiIconComponentName>("RemoveCircleOutline")}
+                        icon={getIconUrlByName("RemoveCircleOutline")}
                         onClick={() =>
                             setSerializedValue(`${parseInt(serializedValue) - 1}`)
                         }
                     />
                     <IconButton
-                        icon={id<MuiIconComponentName>("AddCircleOutline")}
+                        icon={getIconUrlByName("AddCircleOutline")}
                         onClick={() =>
                             setSerializedValue(`${parseInt(serializedValue) + 1}`)
                         }

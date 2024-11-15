@@ -15,8 +15,7 @@ import { assert, type Equals } from "tsafe/assert";
 import { useStateRef } from "powerhooks/useStateRef";
 import { declareComponentKeys } from "i18nifty";
 import { symToStr } from "tsafe/symToStr";
-import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
-import { id } from "tsafe/id";
+import { getIconUrlByName } from "lazy-icons";
 
 export type Props = {
     className?: string;
@@ -69,10 +68,7 @@ export const MyServicesRestorableConfig = memo((props: Props) => {
     return (
         <div className={cx(classes.root, className)}>
             {!isShortVariant && (
-                <IconButton
-                    icon={id<MuiIconComponentName>("Delete")}
-                    onClick={onRequestDelete}
-                />
+                <IconButton icon={getIconUrlByName("Delete")} onClick={onRequestDelete} />
             )}
             <RoundLogo url={chartIconUrl} className={classes.logo} size="medium" />
             <div className={classes.friendlyNameWrapper}>
@@ -83,7 +79,7 @@ export const MyServicesRestorableConfig = memo((props: Props) => {
             <div className={classes.linkAndEditButtonWrapper}>
                 <IconButton
                     className={classes.linkIcon}
-                    icon={id<MuiIconComponentName>("Link")}
+                    icon={getIconUrlByName("Link")}
                     onClick={() => configOptionsCallback("copy link")}
                 />
                 <Button

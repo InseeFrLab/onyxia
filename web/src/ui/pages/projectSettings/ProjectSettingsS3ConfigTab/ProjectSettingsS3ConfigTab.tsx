@@ -5,8 +5,7 @@ import { useConst } from "powerhooks/useConst";
 import { Evt, type UnpackEvt } from "evt";
 import { S3ConfigCard } from "./S3ConfigCard";
 import { Button } from "onyxia-ui/Button";
-import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
-import { id } from "tsafe/id";
+import { getIconUrlByName } from "lazy-icons";
 import { tss } from "tss";
 import {
     MaybeAcknowledgeConfigVolatilityDialog,
@@ -111,7 +110,7 @@ export const ProjectSettingsS3ConfigTab = memo((props: Props) => {
                         marginRight: theme.spacing(3),
                         marginBottom: theme.spacing(4)
                     })}
-                    startIcon={id<MuiIconComponentName>("Add")}
+                    startIcon={getIconUrlByName("Add")}
                     onClick={async () => {
                         const dDoProceed = new Deferred<boolean>();
 

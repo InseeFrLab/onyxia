@@ -4,7 +4,7 @@ import { Text } from "onyxia-ui/Text";
 import { capitalize } from "tsafe/capitalize";
 import { useBackgroundColor } from "ui/tools/useBackgroundColor";
 import { IconButton } from "onyxia-ui/IconButton";
-import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
+import { getIconUrlByName } from "lazy-icons";
 
 export function FormFieldGroupComponentWrapper(props: {
     className?: string;
@@ -38,7 +38,7 @@ export function FormFieldGroupComponentWrapper(props: {
                     className={classes.removeButton}
                     iconClassName={classes.removeButtonIcon}
                     onClick={onRemove}
-                    icon={"RemoveCircleOutline" as MuiIconComponentName}
+                    icon={getIconUrlByName("RemoveCircleOutline")}
                 />
             )}
             {children}

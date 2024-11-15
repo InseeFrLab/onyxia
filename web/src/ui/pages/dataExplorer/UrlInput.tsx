@@ -1,8 +1,7 @@
 import { useState } from "react";
 import { Button } from "onyxia-ui/Button";
 import { tss } from "tss";
-import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
-import { id } from "tsafe/id";
+import { getIconUrlByName } from "lazy-icons";
 import { SearchBar } from "onyxia-ui/SearchBar";
 import { useEffectOnValueChange } from "powerhooks/useEffectOnValueChange";
 import { declareComponentKeys } from "ui/i18n";
@@ -52,7 +51,7 @@ export function UrlInput(props: Props) {
             </div>
             <Button
                 className={classes.loadButton}
-                startIcon={id<MuiIconComponentName>("CloudDownload")}
+                startIcon={getIconUrlByName("CloudDownload")}
                 onClick={onButtonClick}
             >
                 Load

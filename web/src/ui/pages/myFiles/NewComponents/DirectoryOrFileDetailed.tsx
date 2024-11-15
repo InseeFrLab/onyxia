@@ -2,8 +2,7 @@ import { tss } from "tss";
 import { ExplorerIcon } from "../Explorer/ExplorerIcon";
 import { Text } from "onyxia-ui/Text";
 import { Icon } from "onyxia-ui/Icon";
-import { id } from "tsafe";
-import { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
+import { getIconUrlByName } from "lazy-icons";
 
 type Props = {
     className?: string;
@@ -15,10 +14,6 @@ type Props = {
 export function DirectoryOrFileDetailed(props: Props) {
     const { name, kind, isPublic, className } = props;
     const { classes, cx } = useStyles();
-
-    const shareIconId = id<MuiIconComponentName>(
-        isPublic ? "Visibility" : "VisibilityOff" //Language in figma but do not found the off icon
-    );
 
     return (
         <div className={cx(classes.root, className)}>
@@ -40,7 +35,11 @@ export function DirectoryOrFileDetailed(props: Props) {
                 <Text typo="navigation label">{name}</Text>
                 <div className={classes.detailsWrapper}>
                     <Text typo="label 2" className={classes.visibility}>
-                        <Icon icon={shareIconId} />
+                        <Icon
+                            icon={getIconUrlByName(
+                                isPublic ? "Visibility" : "VisibilityOff" //Language in figma but do not found the off icon
+                            )}
+                        />
                         &nbsp;
                         {isPublic ? "Dossier public" : "Dossier privé"}
                     </Text>
@@ -74,8 +73,5 @@ const useStyles = tss.withName({ DirectoryOrFileDetailed }).create(({ theme }) =
         display: "flex",
         alignItems: "center",
         marginRight: theme.spacing(1)
-    },
-    icon: {
-        marginRight: theme.spacing(0.5)
     }
 }));

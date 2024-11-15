@@ -20,7 +20,7 @@ import { declareComponentKeys } from "i18nifty";
 import type { Link } from "type-route";
 import type { PageRoute } from "./route";
 import { useEvt } from "evt/hooks";
-import { customIcons } from "ui/theme";
+import { getIconUrlByName, customIcons } from "lazy-icons";
 import { env } from "env";
 
 export type Props = {
@@ -233,7 +233,7 @@ export default function MySecrets(props: Props) {
                     docHref: env.VAULT_DOCUMENTATION_LINK,
                     accountTabLink: routes.account({ tabId: "vault" }).link
                 })}
-                helpIcon="sentimentSatisfied"
+                helpIcon={getIconUrlByName("SentimentSatisfied")}
                 titleCollapseParams={titleCollapseParams}
                 helpCollapseParams={helpCollapseParams}
             />

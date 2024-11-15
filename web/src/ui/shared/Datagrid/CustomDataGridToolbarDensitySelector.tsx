@@ -7,8 +7,7 @@ import {
     useGridSelector
 } from "@mui/x-data-grid";
 import { ButtonBarButton } from "onyxia-ui/ButtonBarButton";
-import { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
-import { id } from "tsafe";
+import { getIconUrlByName } from "lazy-icons";
 import { declareComponentKeys, useTranslation } from "ui/i18n";
 import { memo, useId, useState, useRef } from "react";
 import MenuList from "@mui/material/MenuList";
@@ -64,17 +63,17 @@ export const CustomDataGridToolbarDensitySelector = memo(() => {
 
     const densityOptions = [
         {
-            icon: id<MuiIconComponentName>("ViewHeadline"),
+            icon: getIconUrlByName("ViewHeadline"),
             label: t("toolbarDensityCompact"),
             value: "compact" as const
         },
         {
-            icon: id<MuiIconComponentName>("TableRows"),
+            icon: getIconUrlByName("TableRows"),
             label: t("toolbarDensityStandard"),
             value: "standard" as const
         },
         {
-            icon: id<MuiIconComponentName>("ViewStreamSharp"),
+            icon: getIconUrlByName("ViewStreamSharp"),
             label: t("toolbarDensityComfortable"),
             value: "comfortable" as const
         }
@@ -82,7 +81,7 @@ export const CustomDataGridToolbarDensitySelector = memo(() => {
     return (
         <>
             <ButtonBarButton
-                startIcon={id<MuiIconComponentName>("DensityMediumTwoTone")}
+                startIcon={getIconUrlByName("DensityMediumTwoTone")}
                 //htmlId={densityButtonId}
                 ref={buttonRef}
                 aria-controls={open ? "basic-menu" : undefined}

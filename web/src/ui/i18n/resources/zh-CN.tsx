@@ -2,8 +2,7 @@ import type { Translations } from "../types";
 import MuiLink from "@mui/material/Link";
 import { Markdown } from "ui/shared/Markdown";
 import { Icon } from "onyxia-ui/Icon";
-import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
-import { id } from "tsafe/id";
+import { getIconUrlByName } from "lazy-icons";
 import { capitalize } from "tsafe/capitalize";
 import { MaybeLink } from "ui/shared/MaybeLink";
 
@@ -254,11 +253,7 @@ export const translations: Translations<"zh-CN"> = {
             <>
                 这是用来保护您正在运行的服务的默认密码。 <br />
                 当您启动一个服务时，安全标签页中的密码字段将自动填充此密码。 <br />
-                点击{" "}
-                <Icon
-                    size="extra small"
-                    icon={id<MuiIconComponentName>("Refresh")}
-                />{" "}
+                点击 <Icon size="extra small" icon={getIconUrlByName("Refresh")} />{" "}
                 图标将生成一个新的随机密码。
                 但是，请注意，它不会更新当前正在运行的服务的密码。 <br />
                 服务密码是Onyxia在您访问正在运行的服务之前让您复制到剪贴板的密码。 <br />

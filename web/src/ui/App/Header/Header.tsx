@@ -11,6 +11,7 @@ import { RegionSelect } from "./RegionSelect";
 import { useCore, useCoreState } from "core";
 import { urlToLink } from "ui/routes";
 import { LocalizedMarkdown } from "ui/shared/Markdown";
+import { getIconUrl } from "lazy-icons";
 
 export type Props = {
     className?: string;
@@ -48,7 +49,7 @@ export function Header(props: Props) {
                     <ButtonBarButton
                         key={index}
                         className={classes.button}
-                        startIcon={startIcon ?? icon}
+                        startIcon={getIconUrl(startIcon) ?? getIconUrl(icon)}
                         href={link.href}
                         doOpenNewTabIfHref={link.target === "_blank"}
                         onClick={link.onClick}

@@ -1,8 +1,7 @@
 import { memo } from "react";
 import { GridToolbarContainer, useGridApiContext } from "@mui/x-data-grid";
 import { ButtonBarButton } from "onyxia-ui/ButtonBarButton";
-import { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
-import { id } from "tsafe";
+import { getIconUrlByName } from "lazy-icons";
 import { tss } from "tss";
 import { useTranslation } from "ui/i18n";
 import DataExplorer from "./DataExplorer";
@@ -41,7 +40,7 @@ function ResizeButton() {
 
     return (
         <ButtonBarButton
-            startIcon={id<MuiIconComponentName>("AspectRatio")}
+            startIcon={getIconUrlByName("AspectRatio")}
             onClick={() => {
                 apiRef.current.autosizeColumns(autosizeOptions);
             }}
@@ -57,7 +56,7 @@ function DownloadButton() {
 
     return (
         <ButtonBarButton
-            startIcon={id<MuiIconComponentName>("Download")}
+            startIcon={getIconUrlByName("Download")}
             href={fileDownloadUrl}
             doOpenNewTabIfHref={true}
         >

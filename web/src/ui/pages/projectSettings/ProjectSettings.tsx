@@ -9,8 +9,8 @@ import { tss } from "tss";
 import { declareComponentKeys } from "i18nifty";
 import { assert, type Equals } from "tsafe/assert";
 import type { PageRoute } from "./route";
-import { customIcons } from "ui/theme";
 import { useCoreState } from "core";
+import { getIconUrlByName, customIcons } from "lazy-icons";
 
 export type Props = {
     route: PageRoute;
@@ -40,7 +40,7 @@ export default function ProjectSettings(props: Props) {
                     groupProjectName,
                     doesUserBelongToSomeGroupProject
                 })}
-                helpIcon="sentimentSatisfied"
+                helpIcon={getIconUrlByName("SentimentSatisfied")}
             />
             <Tabs
                 className={classes.tabs}

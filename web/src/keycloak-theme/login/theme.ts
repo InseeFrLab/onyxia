@@ -4,7 +4,6 @@ import { targetWindowInnerWidth } from "ui/theme/targetWindowInnerWidth";
 import { env } from "env";
 import { loadThemedFavicon as loadThemedFavicon_base } from "ui/theme/loadThemedFavicon";
 import { Evt } from "evt";
-import { getOnyxiaInstancePublicUrl } from "./onyxiaInstancePublicUrl";
 
 const { OnyxiaUi, evtTheme } = createOnyxiaUi({
     getTypographyDesc: params => ({
@@ -16,8 +15,7 @@ const { OnyxiaUi, evtTheme } = createOnyxiaUi({
         fontFamily: `'${env.FONT.fontFamily}', 'Roboto', sans-serif`
     }),
     palette,
-    splashScreenParams: undefined,
-    BASE_URL: getOnyxiaInstancePublicUrl()
+    splashScreenParams: undefined
 });
 
 export { OnyxiaUi };

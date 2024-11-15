@@ -9,8 +9,7 @@ import { assert, type Equals } from "tsafe/assert";
 import { useEvt } from "evt/hooks";
 import { UrlInput } from "./UrlInput";
 import { PageHeader } from "onyxia-ui/PageHeader";
-import { id } from "tsafe/id";
-import { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
+import { getIconUrlByName } from "lazy-icons";
 import { declareComponentKeys, useTranslation } from "ui/i18n";
 import type { Link } from "type-route";
 import { useOnOpenBrowserSearch } from "ui/tools/useOnOpenBrowserSearch";
@@ -103,7 +102,7 @@ export default function DataExplorer(props: Props) {
                 classes={{
                     helpMiddle: classes.pageHeaderHelpMiddle
                 }}
-                mainIcon={id<MuiIconComponentName>("DocumentScanner")}
+                mainIcon={getIconUrlByName("DocumentScanner")}
                 title={t("page header title")}
                 helpTitle={t("page header help title")}
                 helpContent={t("page header help content", {
@@ -111,7 +110,7 @@ export default function DataExplorer(props: Props) {
                         source: env.SAMPLE_DATASET_URL
                     }).link
                 })}
-                helpIcon={id<MuiIconComponentName>("SentimentSatisfied")}
+                helpIcon={getIconUrlByName("SentimentSatisfied")}
                 titleCollapseParams={{
                     behavior: "controlled",
                     isCollapsed: rows !== undefined

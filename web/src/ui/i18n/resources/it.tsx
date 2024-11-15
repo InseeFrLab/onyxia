@@ -2,8 +2,7 @@ import type { Translations } from "../types";
 import MuiLink from "@mui/material/Link";
 import { Markdown } from "ui/shared/Markdown";
 import { Icon } from "onyxia-ui/Icon";
-import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
-import { id } from "tsafe/id";
+import { getIconUrlByName } from "lazy-icons";
 import { capitalize } from "tsafe/capitalize";
 import { MaybeLink } from "ui/shared/MaybeLink";
 
@@ -280,13 +279,9 @@ export const translations: Translations<"it"> = {
                 Quando avvii un servizio, il campo password nella scheda di sicurezza è
                 pre-riempito con questa password. <br />
                 Cliccando sull'icona{" "}
-                <Icon
-                    size="extra small"
-                    icon={id<MuiIconComponentName>("Refresh")}
-                />{" "}
-                verrà generata una nuova password casuale. Tuttavia, tieni presente che
-                non aggiornerà la password per i servizi che sono già in esecuzione.{" "}
-                <br />
+                <Icon size="extra small" icon={getIconUrlByName("Refresh")} /> verrà
+                generata una nuova password casuale. Tuttavia, tieni presente che non
+                aggiornerà la password per i servizi che sono già in esecuzione. <br />
                 La password del servizio è quella che Onyxia ti fa copiare negli appunti
                 prima di accedere a un servizio in esecuzione. <br />
                 {groupProjectName !== undefined && (

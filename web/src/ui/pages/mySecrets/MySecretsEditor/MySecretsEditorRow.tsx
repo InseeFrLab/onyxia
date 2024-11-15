@@ -17,8 +17,7 @@ import type { Parameters } from "tsafe";
 import { useDomRect } from "powerhooks/useDomRect";
 import type { Param0 } from "tsafe";
 import { declareComponentKeys } from "i18nifty";
-import { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
-import { id } from "tsafe/id";
+import { getIconUrlByName } from "lazy-icons";
 
 export type Props = {
     isLocked: boolean;
@@ -270,8 +269,8 @@ export const MySecretsEditorRow = memo((props: Props) => {
                     <IconButton
                         icon={
                             isInEditingState
-                                ? id<MuiIconComponentName>("Check")
-                                : id<MuiIconComponentName>("Edit")
+                                ? getIconUrlByName("Check")
+                                : getIconUrlByName("Edit")
                         }
                         disabled={isInEditingState ? isSubmitButtonDisabled : isLocked}
                         onClick={
@@ -281,15 +280,15 @@ export const MySecretsEditorRow = memo((props: Props) => {
                     />
                     <IconButton
                         disabled={isLocked}
-                        icon={id<MuiIconComponentName>("Delete")}
+                        icon={getIconUrlByName("Delete")}
                         onClick={onDelete}
                         size="small"
                     />
                     <IconButton
                         icon={
                             isTextHidden
-                                ? id<MuiIconComponentName>("Visibility")
-                                : id<MuiIconComponentName>("VisibilityOff")
+                                ? getIconUrlByName("Visibility")
+                                : getIconUrlByName("VisibilityOff")
                         }
                         onClick={() => setIsTextHidden(!isTextHidden)}
                     />

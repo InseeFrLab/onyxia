@@ -18,10 +18,8 @@ import { CatalogNoSearchMatches } from "./CatalogNoSearchMatches";
 import { assert } from "tsafe/assert";
 import { useCallbackFactory } from "powerhooks/useCallbackFactory";
 import { CatalogChartCard } from "./CatalogChartCard";
-import { customIcons } from "ui/theme";
-import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
 import { LocalizedMarkdown } from "ui/shared/Markdown";
-import { id } from "tsafe/id";
+import { customIcons, getIconUrlByName } from "lazy-icons";
 
 export type Props = {
     route: PageRoute;
@@ -124,7 +122,7 @@ export default function Catalog(props: Props) {
                         </LocalizedMarkdown>
                     )
                 }
-                helpIcon={id<MuiIconComponentName>("SentimentSatisfied")}
+                helpIcon={getIconUrlByName("SentimentSatisfied")}
                 titleCollapseParams={{
                     behavior: "collapses on scroll",
                     scrollTopThreshold: 650,

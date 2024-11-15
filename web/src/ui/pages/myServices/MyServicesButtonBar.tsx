@@ -2,8 +2,7 @@ import { memo, useMemo } from "react";
 import { useTranslation } from "ui/i18n";
 import { ButtonBar, type ButtonBarProps } from "onyxia-ui/ButtonBar";
 import { declareComponentKeys } from "i18nifty";
-import { id } from "tsafe/id";
-import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
+import { getIconUrlByName } from "lazy-icons";
 import { Badge } from "@mui/material";
 
 const buttonIds = ["refresh", "launch", "trash", "events"] as const;
@@ -36,13 +35,13 @@ export const MyServicesButtonBar = memo((props: Props) => {
                 icon: (() => {
                     switch (buttonId) {
                         case "refresh":
-                            return id<MuiIconComponentName>("Cached");
+                            return getIconUrlByName("Cached");
                         case "launch":
-                            return id<MuiIconComponentName>("Add");
+                            return getIconUrlByName("Add");
                         case "trash":
-                            return id<MuiIconComponentName>("Delete");
+                            return getIconUrlByName("Delete");
                         case "events":
-                            return id<MuiIconComponentName>("ManageSearch");
+                            return getIconUrlByName("ManageSearch");
                     }
                 })(),
                 isDisabled: buttonId === "trash" && !isThereDeletableServices,

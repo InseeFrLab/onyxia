@@ -9,10 +9,9 @@ import { env } from "env";
 import { declareComponentKeys } from "i18nifty";
 import { useCore, useCoreState } from "core";
 import { assert, type Equals } from "tsafe/assert";
-import { customIcons } from "ui/theme";
 import { symToStr } from "tsafe/symToStr";
 import { LocalizedMarkdown } from "ui/shared/Markdown";
-import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
+import { customIcons, getIconUrlByName } from "lazy-icons";
 
 type Props = {
     className?: string;
@@ -55,7 +54,7 @@ export const LeftBar = memo((props: Props) => {
                         link: routes.account().link
                     },
                     projectSettings: {
-                        icon: id<MuiIconComponentName>("DisplaySettings"),
+                        icon: getIconUrlByName("DisplaySettings"),
                         label: t("projectSettings"),
                         link: routes.projectSettings().link,
                         belowDivider: t("divider: services features")
@@ -95,7 +94,7 @@ export const LeftBar = memo((props: Props) => {
                               } as const
                           }),
                     dataExplorer: {
-                        icon: id<MuiIconComponentName>("DocumentScanner"),
+                        icon: getIconUrlByName("DocumentScanner"),
                         label: t("dataExplorer"),
                         link: routes.dataExplorer().link,
                         belowDivider:

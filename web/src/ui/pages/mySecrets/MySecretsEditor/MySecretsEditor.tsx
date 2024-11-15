@@ -26,6 +26,7 @@ import TableHead from "@mui/material/TableHead";
 import TableBody from "@mui/material/TableBody";
 import { Dialog } from "onyxia-ui/Dialog";
 import { declareComponentKeys } from "i18nifty";
+import { getIconUrlByName } from "lazy-icons";
 
 export type Props = {
     isBeingUpdated: boolean;
@@ -250,13 +251,13 @@ export const MySecretsEditor = memo((props: Props) => {
             </TableContainer>
 
             <div className={classes.buttonWrapper}>
-                <Button startIcon="add" onClick={onClick}>
+                <Button startIcon={getIconUrlByName("Add")} onClick={onClick}>
                     {t("add an entry")}
                 </Button>
                 <Button
                     onClick={dialogCallbackFactory("open")}
                     variant="secondary"
-                    startIcon="filterNone"
+                    startIcon={getIconUrlByName("FilterNone")}
                 >
                     {t("use this secret")}
                 </Button>

@@ -17,10 +17,10 @@ import { declareComponentKeys } from "i18nifty";
 import { useConst } from "powerhooks/useConst";
 import type { Link } from "type-route";
 import type { PageRoute } from "./route";
-import { customIcons } from "ui/theme";
 import { MyFilesDisabledDialog } from "./MyFilesDisabledDialog";
 import { assert } from "tsafe/assert";
 import { env } from "env";
+import { getIconUrlByName, customIcons } from "lazy-icons";
 
 export type Props = {
     route: PageRoute;
@@ -183,7 +183,7 @@ function MyFiles(props: Props) {
                     docHref: env.S3_DOCUMENTATION_LINK,
                     accountTabLink: routes.account({ tabId: "storage" }).link
                 })}
-                helpIcon="sentimentSatisfied"
+                helpIcon={getIconUrlByName("SentimentSatisfied")}
                 titleCollapseParams={titleCollapseParams}
                 helpCollapseParams={helpCollapseParams}
             />

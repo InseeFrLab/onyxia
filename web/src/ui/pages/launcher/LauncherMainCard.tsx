@@ -23,8 +23,7 @@ import { symToStr } from "tsafe/symToStr";
 import type { Link } from "type-route";
 import { assert, type Equals } from "tsafe/assert";
 import { useResolveLocalizedString, type LocalizedString } from "ui/i18n";
-import { id } from "tsafe/id";
-import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
+import { getIconUrlByName } from "lazy-icons";
 import { same } from "evt/tools/inDepth/same";
 import SaveIcon from "@mui/icons-material/Save";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -173,7 +172,7 @@ export const LauncherMainCard = memo((props: Props) => {
                                 isCopyFeedbackOn ? (
                                     <>
                                         <Icon
-                                            icon={id<MuiIconComponentName>("Check")}
+                                            icon={getIconUrlByName("Check")}
                                             size="extra small"
                                             className={classes.copyCheckmark}
                                         />
@@ -187,7 +186,7 @@ export const LauncherMainCard = memo((props: Props) => {
                         >
                             <Button
                                 className={classes.copyAutoLaunchButton}
-                                startIcon={id<MuiIconComponentName>("Link")}
+                                startIcon={getIconUrlByName("Link")}
                                 onClick={() => {
                                     onRequestCopyLaunchUrl();
                                     triggerCopyFeedback();
@@ -212,7 +211,7 @@ export const LauncherMainCard = memo((props: Props) => {
                             <Button
                                 className={classes.saveButton}
                                 variant="ternary"
-                                startIcon="save"
+                                startIcon={getIconUrlByName("Save")}
                                 onClick={onRequestToggleBookmark}
                             >
                                 {t("save changes")}
@@ -221,7 +220,9 @@ export const LauncherMainCard = memo((props: Props) => {
                             <Button
                                 className={classes.saveButton}
                                 variant="ternary"
-                                startIcon={isBookmarked ? "delete" : "save"}
+                                startIcon={getIconUrlByName(
+                                    isBookmarked ? "Delete" : "Save"
+                                )}
                                 onClick={onRequestToggleBookmark}
                             >
                                 {t("bookmark button", { isBookmarked })}
@@ -258,7 +259,7 @@ export const LauncherMainCard = memo((props: Props) => {
                             >
                                 <Icon
                                     className={classes.versionSelectHelpIcon}
-                                    icon={id<MuiIconComponentName>("Help")}
+                                    icon={getIconUrlByName("Help")}
                                     size="small"
                                 />
                             </Tooltip>
@@ -295,7 +296,7 @@ export const LauncherMainCard = memo((props: Props) => {
                                 >
                                     <Icon
                                         className={classes.versionSelectHelpIcon}
-                                        icon={id<MuiIconComponentName>("Help")}
+                                        icon={getIconUrlByName("Help")}
                                         size="small"
                                     />
                                 </Tooltip>

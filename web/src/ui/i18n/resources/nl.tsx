@@ -2,8 +2,7 @@ import type { Translations } from "../types";
 import MuiLink from "@mui/material/Link";
 import { Markdown } from "ui/shared/Markdown";
 import { Icon } from "onyxia-ui/Icon";
-import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
-import { id } from "tsafe/id";
+import { getIconUrlByName } from "lazy-icons";
 import { capitalize } from "tsafe/capitalize";
 import { MaybeLink } from "ui/shared/MaybeLink";
 
@@ -281,13 +280,10 @@ export const translations: Translations<"nl"> = {
                 Wanneer u een dienst start, wordt het wachtwoordveld in het
                 beveiligingstabblad automatisch ingevuld met dit wachtwoord. <br />
                 Door te klikken op het{" "}
-                <Icon
-                    size="extra small"
-                    icon={id<MuiIconComponentName>("Refresh")}
-                />{" "}
-                icoon wordt een nieuw willekeurig wachtwoord gegenereerd. Wees u er echter
-                van bewust dat het niet het wachtwoord voor diensten die al draaien zal
-                bijwerken. <br />
+                <Icon size="extra small" icon={getIconUrlByName("Refresh")} /> icoon wordt
+                een nieuw willekeurig wachtwoord gegenereerd. Wees u er echter van bewust
+                dat het niet het wachtwoord voor diensten die al draaien zal bijwerken.{" "}
+                <br />
                 Het service wachtwoord is wat Onyxia u laat kopiëren naar uw klembord
                 voordat u toegang krijgt tot een draaiende dienst. <br />
                 {groupProjectName !== undefined && (

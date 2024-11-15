@@ -5,9 +5,8 @@ import { memo, useState } from "react";
 import { useTranslation } from "ui/i18n";
 import { DirectoryOrFileDetailed } from "./DirectoryOrFileDetailed";
 import { Text } from "onyxia-ui/Text";
-import { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
 import { tss } from "tss";
-import { id } from "tsafe";
+import { getIconUrlByName } from "lazy-icons";
 import { MyFilesShareSelectTime } from "./MyFilesShareSelectTime";
 
 export type Props = { isPublic: boolean; kind: "directory" | "file" };
@@ -19,9 +18,6 @@ export const MyFilesShareDialog = memo((props: Props) => {
     const [isOpen, setIsOpen] = useState(true);
     const onClose = () => setIsOpen(false);
 
-    const shareIconId = id<MuiIconComponentName>(
-        isPublic ? "VisibilityOff" : "Visibility" //Language in figma but do not found the off icon
-    );
     return (
         <Dialog
             isOpen={isOpen}
@@ -39,7 +35,12 @@ export const MyFilesShareDialog = memo((props: Props) => {
                         <Text typo="body 1" className={classes.expirationText}>
                             ou
                         </Text>
-                        <Button variant="ternary" startIcon={shareIconId}>
+                        <Button
+                            variant="ternary"
+                            startIcon={getIconUrlByName(
+                                isPublic ? "VisibilityOff" : "Visibility" //Language in figma but do not found the off icon
+                            )}
+                        >
                             {isPublic
                                 ? "Rendre le dossier privé"
                                 : "Rendre le dossier public"}
@@ -81,13 +82,6 @@ const useStyles = tss.withName({ MyFilesShareDialog }).create(({ theme }) => ({
     shareContainer: {
         display: "flex",
         justifyContent: "space-between"
-    },
-    switchContainer: {
-        display: "flex",
-        alignItems: "center"
-    },
-    shareInput: {
-        width: "100%"
     },
     expirationText: {
         display: "flex",

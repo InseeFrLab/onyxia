@@ -8,7 +8,6 @@ import MuiAccordionSummary from "@mui/material/AccordionSummary";
 import MuiAccordionDetails from "@mui/material/AccordionDetails";
 import { tss } from "tss";
 import { Icon } from "onyxia-ui/Icon";
-import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
 import { Text } from "onyxia-ui/Text";
 import { FormFieldGroupComponent } from "./FormFieldGroupComponent";
 import type { FormCallbacks } from "./FormCallbacks";
@@ -17,6 +16,7 @@ import { assert } from "tsafe/assert";
 import { getScrollableParent } from "powerhooks/getScrollableParent";
 import { useConst } from "powerhooks/useConst";
 import { Evt } from "evt";
+import { getIconUrlByName } from "lazy-icons";
 
 type Props = {
     className?: string;
@@ -129,7 +129,7 @@ export function Accordion(props: Props) {
                     expanded: classes.summaryExpanded,
                     expandIconWrapper: classes.summaryExpandIconWrapper
                 }}
-                expandIcon={<Icon icon={"ExpandMore" satisfies MuiIconComponentName} />}
+                expandIcon={<Icon icon={getIconUrlByName("ExpandMore")} />}
                 aria-controls={contentId}
             >
                 <Text typo="label 1" componentProps={{ lang: "und" }}>

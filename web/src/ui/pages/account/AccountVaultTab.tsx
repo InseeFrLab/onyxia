@@ -18,8 +18,7 @@ import { useFromNow } from "ui/shared/useMoment";
 import type { Link } from "type-route";
 import { routes } from "ui/routes";
 import { capitalize } from "tsafe/capitalize";
-import { id } from "tsafe/id";
-import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
+import { getIconUrlByName } from "lazy-icons";
 
 const CodeBlock = lazy(() => import("ui/shared/CodeBlock"));
 
@@ -80,7 +79,7 @@ export const AccountVaultTab = memo((props: Props) => {
                         <strong>{t("expires in", { howMuchTime: fromNowText })} </strong>
                         <IconButton
                             size="extra small"
-                            icon={id<MuiIconComponentName>("Refresh")}
+                            icon={getIconUrlByName("Refresh")}
                             onClick={onRefreshIconButtonClick}
                             disabled={uiState.isRefreshing}
                         />
@@ -113,7 +112,7 @@ export const AccountVaultTab = memo((props: Props) => {
             <div className={classes.codeBlockHeaderWrapper}>
                 <div style={{ flex: 1 }} />
                 <IconButton
-                    icon={id<MuiIconComponentName>("GetApp")}
+                    icon={getIconUrlByName("GetApp")}
                     onClick={onGetAppIconButtonClick}
                     size="small"
                 />

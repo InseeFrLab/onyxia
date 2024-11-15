@@ -32,8 +32,7 @@ const {
               assetUrl: env.SPLASHSCREEN_LOGO,
               assetScaleFactor: env.SPLASHSCREEN_LOGO_SCALE_FACTOR,
               minimumDisplayDuration: 0
-          },
-    BASE_URL: env.PUBLIC_URL
+          }
 });
 
 pluginSystemInitTheme({
@@ -57,12 +56,3 @@ export type Theme = typeof ofTypeTheme;
 
 export const loadThemedFavicon = () =>
     loadThemedFavicon_base({ evtTheme: Evt.loosenType(evtTheme) });
-
-export const customIcons = {
-    servicesSvgUrl: `${env.PUBLIC_URL}/icons/services.svg?v=2`,
-    secretsSvgUrl: `${env.PUBLIC_URL}/icons/secrets.svg?v=2`,
-    accountSvgUrl: `${env.PUBLIC_URL}/icons/account.svg?v=2`,
-    homeSvgUrl: `${env.PUBLIC_URL}/icons/home.svg?v=2`,
-    filesSvgUrl: `${env.PUBLIC_URL}/icons/files.svg?v=2`,
-    catalogSvgUrl: `${env.PUBLIC_URL}/icons/catalog.svg?v=2`
-};

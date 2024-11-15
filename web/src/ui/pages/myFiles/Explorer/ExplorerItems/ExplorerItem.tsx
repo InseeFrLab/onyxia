@@ -2,8 +2,7 @@ import { tss } from "tss";
 import { Text } from "onyxia-ui/Text";
 import { memo } from "react";
 import { Icon } from "onyxia-ui/Icon";
-import { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
-import { id } from "tsafe";
+import { getIconUrlByName } from "lazy-icons";
 import Tooltip from "@mui/material/Tooltip";
 import { fileSizePrettyPrint } from "ui/tools/fileSizePrettyPrint";
 import { ExplorerIcon } from "../ExplorerIcon";
@@ -132,10 +131,7 @@ export const ExplorerItem = memo((props: ExplorerItemProps) => {
                     {prettySize ? `${prettySize.value} ${prettySize.unit}` : ""}
                 </Text>
                 {kind === "directory" && (
-                    <Icon
-                        size="extra small"
-                        icon={id<MuiIconComponentName>("ChevronRight")}
-                    />
+                    <Icon size="extra small" icon={getIconUrlByName("ChevronRight")} />
                 )}
             </div>
         </div>

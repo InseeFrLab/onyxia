@@ -2,8 +2,7 @@ import type { Translations } from "../types";
 import MuiLink from "@mui/material/Link";
 import { Markdown } from "ui/shared/Markdown";
 import { Icon } from "onyxia-ui/Icon";
-import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
-import { id } from "tsafe/id";
+import { getIconUrlByName } from "lazy-icons";
 import { capitalize } from "tsafe/capitalize";
 import { MaybeLink } from "ui/shared/MaybeLink";
 
@@ -284,13 +283,10 @@ export const translations: Translations<"fr"> = {
                 Lorsque vous lancez un service, le champ de mot de passe dans l'onglet
                 sécurité est pré-rempli avec ce mot de passe. <br />
                 Cliquer sur l'icône{" "}
-                <Icon
-                    size="extra small"
-                    icon={id<MuiIconComponentName>("Refresh")}
-                />{" "}
-                générera un nouveau mot de passe aléatoire. Cependant, soyez conscient que
-                cela ne mettra pas à jour le mot de passe pour les services qui sont déjà
-                en cours d'exécution. <br />
+                <Icon size="extra small" icon={getIconUrlByName("Refresh")} /> générera un
+                nouveau mot de passe aléatoire. Cependant, soyez conscient que cela ne
+                mettra pas à jour le mot de passe pour les services qui sont déjà en cours
+                d'exécution. <br />
                 Le mot de passe du service est ce qu'Onyxia vous fait copier dans votre
                 presse-papiers avant d'accéder à un service en cours d'exécution. <br />
                 {groupProjectName !== undefined && (

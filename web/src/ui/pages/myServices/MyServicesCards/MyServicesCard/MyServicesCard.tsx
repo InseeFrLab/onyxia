@@ -14,8 +14,7 @@ import { ReadmeDialog } from "./ReadmeDialog";
 import { Evt, NonPostableEvt } from "evt";
 import { useConst } from "powerhooks/useConst";
 import { useEvt } from "evt/hooks";
-import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
-import { id } from "tsafe/id";
+import { getIconUrlByName } from "lazy-icons";
 import { CircularProgress } from "onyxia-ui/CircularProgress";
 import type { Link } from "type-route";
 import type { Service } from "core/usecases/serviceManagement";
@@ -149,14 +148,14 @@ export const MyServicesCard = memo((props: Props) => {
                 )}
                 {isEditingFriendlyName ? (
                     <IconButton
-                        icon={id<MuiIconComponentName>("Check")}
+                        icon={getIconUrlByName("Check")}
                         onClick={() =>
                             evtFriendlyNameTextFieldAction.post("TRIGGER SUBMIT")
                         }
                     />
                 ) : (
                     <IconButton
-                        icon={id<MuiIconComponentName>("Edit")}
+                        icon={getIconUrlByName("Edit")}
                         disabled={service.areInteractionLocked}
                         onClick={() => setIsEditingFriendlyName(true)}
                     />
@@ -176,7 +175,7 @@ export const MyServicesCard = memo((props: Props) => {
                                     focusColor: theme.colors.useCases.typography.textFocus
                                 })}
                             >
-                                <Icon icon={id<MuiIconComponentName>("Diversity3")} />
+                                <Icon icon={getIconUrlByName("Diversity3")} />
                             </Tooltip>
                         );
                     }
@@ -192,7 +191,7 @@ export const MyServicesCard = memo((props: Props) => {
                                 <IconButton
                                     disabled={service.areInteractionLocked}
                                     onClick={() => onRequestChangeSharedStatus(false)}
-                                    icon={id<MuiIconComponentName>("Diversity3")}
+                                    icon={getIconUrlByName("Diversity3")}
                                 />
                             </Tooltip>
                         );
@@ -208,7 +207,7 @@ export const MyServicesCard = memo((props: Props) => {
                             <IconButton
                                 disabled={service.areInteractionLocked}
                                 onClick={() => onRequestChangeSharedStatus(true)}
-                                icon={id<MuiIconComponentName>("AdminPanelSettings")}
+                                icon={getIconUrlByName("AdminPanelSettings")}
                             />
                         </Tooltip>
                     );
@@ -221,7 +220,7 @@ export const MyServicesCard = memo((props: Props) => {
                     }
                 >
                     <Icon
-                        icon={id<MuiIconComponentName>("ErrorOutline")}
+                        icon={getIconUrlByName("ErrorOutline")}
                         className={classes.errorOutlineIcon}
                     />
                 </Tooltip>
@@ -284,7 +283,7 @@ export const MyServicesCard = memo((props: Props) => {
                     {onRequestDelete !== undefined && (
                         <IconButton
                             disabled={service.areInteractionLocked}
-                            icon={id<MuiIconComponentName>("Delete")}
+                            icon={getIconUrlByName("Delete")}
                             onClick={onRequestDelete}
                         />
                     )}
@@ -293,7 +292,7 @@ export const MyServicesCard = memo((props: Props) => {
                             <span>
                                 <IconButton
                                     disabled={service.areInteractionLocked}
-                                    icon={id<MuiIconComponentName>("Pause")}
+                                    icon={getIconUrlByName("Pause")}
                                     onClick={event => {
                                         onRequestPauseOrResume();
                                         event.stopPropagation();
@@ -309,7 +308,7 @@ export const MyServicesCard = memo((props: Props) => {
                             <span>
                                 <IconButton
                                     disabled={service.areInteractionLocked}
-                                    icon={id<MuiIconComponentName>("PlayArrow")}
+                                    icon={getIconUrlByName("PlayArrow")}
                                     onClick={onRequestPauseOrResume}
                                 />
                             </span>

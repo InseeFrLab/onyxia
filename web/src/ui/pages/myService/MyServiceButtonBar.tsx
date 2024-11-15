@@ -1,7 +1,6 @@
 import { memo } from "react";
 import { ButtonBar } from "onyxia-ui/ButtonBar";
-import { id } from "tsafe/id";
-import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
+import { getIconUrlByName } from "lazy-icons";
 import { Icon } from "onyxia-ui/Icon";
 import { assert } from "tsafe/assert";
 import { declareComponentKeys, useTranslation } from "ui/i18n";
@@ -31,7 +30,7 @@ export const MyServiceButtonBar = memo((props: Props) => {
             buttons={[
                 {
                     buttonId: "back",
-                    icon: id<MuiIconComponentName>("ArrowBack"),
+                    icon: getIconUrlByName("ArrowBack"),
                     label: t("back")
                 },
                 ...(monitoringUrl === undefined
@@ -39,13 +38,13 @@ export const MyServiceButtonBar = memo((props: Props) => {
                     : [
                           {
                               buttonId: "monitoring",
-                              icon: id<MuiIconComponentName>("Equalizer"),
+                              icon: getIconUrlByName("Equalizer"),
                               label: (
                                   <span>
                                       {t("external monitoring")}&nbsp;
                                       <Icon
                                           size="extra small"
-                                          icon={id<MuiIconComponentName>("OpenInNew")}
+                                          icon={getIconUrlByName("OpenInNew")}
                                       />{" "}
                                   </span>
                               )
@@ -53,7 +52,7 @@ export const MyServiceButtonBar = memo((props: Props) => {
                       ]),
                 {
                     buttonId: "helmValues",
-                    icon: id<MuiIconComponentName>("Code"),
+                    icon: getIconUrlByName("Code"),
                     label: areHelmValuesShown ? t("reduce") : t("helm values")
                 }
             ]}

@@ -4,8 +4,7 @@ import { tss } from "tss";
 import { Text } from "onyxia-ui/Text";
 import { Icon } from "onyxia-ui/Icon";
 import { declareComponentKeys } from "i18nifty";
-import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
-import { id } from "tsafe/id";
+import { getIconUrlByName } from "lazy-icons";
 
 export type Props = {
     className?: string;
@@ -22,7 +21,7 @@ export const PortraitModeUnsupported = memo((props: Props) => {
         <div className={cx(classes.root, className)}>
             <div className={classes.wrapper}>
                 <Icon
-                    icon={id<MuiIconComponentName>("ScreenRotation")}
+                    icon={getIconUrlByName("ScreenRotation")}
                     className={classes.icon}
                 />
                 <Text typo="body 1" className={classes.instructions}>

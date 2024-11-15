@@ -9,8 +9,7 @@ import { tss } from "tss";
 import { declareComponentKeys } from "i18nifty";
 import { Text } from "onyxia-ui/Text";
 import { Icon } from "onyxia-ui/Icon";
-import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
-import { id } from "tsafe/id";
+import { getIconUrlByName } from "lazy-icons";
 
 export type Props = {
     className?: string;
@@ -53,7 +52,7 @@ export const AccountInfoTab = memo((props: Props) => {
                 onRequestCopy={onRequestCopyFactory(user.email)}
             />
             <Text typo="body 2" className={classes.howToChangePasswordInfo}>
-                <Icon icon={id<MuiIconComponentName>("Info")} />
+                <Icon icon={getIconUrlByName("Info")} />
                 &nbsp;
                 {t("instructions about how to change password")}
             </Text>

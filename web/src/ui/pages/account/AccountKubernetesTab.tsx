@@ -15,8 +15,7 @@ import { IconButton } from "onyxia-ui/IconButton";
 import { CircularProgress } from "onyxia-ui/CircularProgress";
 import { useCoreState, useCore } from "core";
 import { useFromNow } from "ui/shared/useMoment";
-import { id } from "tsafe/id";
-import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
+import { getIconUrlByName } from "lazy-icons";
 
 const CodeBlock = lazy(() => import("ui/shared/CodeBlock"));
 
@@ -81,7 +80,7 @@ export const AccountKubernetesTab = memo((props: Props) => {
                         <strong>{t("expires in", { howMuchTime: fromNowText })} </strong>
                         <IconButton
                             size="extra small"
-                            icon={id<MuiIconComponentName>("Refresh")}
+                            icon={getIconUrlByName("Refresh")}
                             onClick={() => k8sCodeSnippets.refresh()}
                             disabled={isRefreshing}
                         />
@@ -143,7 +142,7 @@ export const AccountKubernetesTab = memo((props: Props) => {
             <div className={classes.codeBlockHeaderWrapper}>
                 <div style={{ flex: 1 }} />
                 <IconButton
-                    icon={id<MuiIconComponentName>("GetApp")}
+                    icon={getIconUrlByName("GetApp")}
                     onClick={onGetAppIconButtonClick}
                     size="small"
                 />

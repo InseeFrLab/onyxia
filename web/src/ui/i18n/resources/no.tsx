@@ -2,8 +2,7 @@ import MuiLink from "@mui/material/Link";
 import type { Translations } from "../types";
 import { Markdown } from "ui/shared/Markdown";
 import { Icon } from "onyxia-ui/Icon";
-import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
-import { id } from "tsafe/id";
+import { getIconUrlByName } from "lazy-icons";
 import { capitalize } from "tsafe/capitalize";
 import { MaybeLink } from "ui/shared/MaybeLink";
 
@@ -278,13 +277,9 @@ export const translations: Translations<"no"> = {
                 Når du starter en tjeneste, blir passordfeltet i sikkerhetsfanen
                 forhåndsutfylt med dette passordet. <br />
                 Ved å klikke på{" "}
-                <Icon
-                    size="extra small"
-                    icon={id<MuiIconComponentName>("Refresh")}
-                />{" "}
-                ikonet vil generere et nytt tilfeldig passord. Vær imidlertid oppmerksom
-                på at det ikke vil oppdatere passordet for tjenester som allerede kjører.{" "}
-                <br />
+                <Icon size="extra small" icon={getIconUrlByName("Refresh")} /> ikonet vil
+                generere et nytt tilfeldig passord. Vær imidlertid oppmerksom på at det
+                ikke vil oppdatere passordet for tjenester som allerede kjører. <br />
                 Tjenestepassordet er det Onyxia får deg til å kopiere til utklippstavlen
                 din før du får tilgang til en kjørende tjeneste. <br />
                 {groupProjectName !== undefined && (

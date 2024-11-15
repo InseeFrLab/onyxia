@@ -5,8 +5,7 @@ import { NonPostableEvt } from "evt";
 import { useEvt } from "evt/hooks";
 import { tss } from "tss";
 import { IconButton } from "onyxia-ui/IconButton";
-import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
-import { id } from "tsafe/id";
+import { getIconUrlByName } from "lazy-icons";
 
 export type ClusterEventsSnackbarProps = {
     evtAction: NonPostableEvt<{
@@ -73,7 +72,7 @@ export const ClusterEventsSnackbar = memo((props: ClusterEventsSnackbarProps) =>
                             setOpenState(undefined);
                             onOpenClusterEventsDialog();
                         }}
-                        icon={id<MuiIconComponentName>("ManageSearch")}
+                        icon={getIconUrlByName("ManageSearch")}
                     />
                 </div>
             </Alert>

@@ -22,8 +22,7 @@ import type { Equals } from "tsafe";
 import { IconButton } from "onyxia-ui/IconButton";
 import { CircularProgress } from "onyxia-ui/CircularProgress";
 import { capitalize } from "tsafe/capitalize";
-import { id } from "tsafe/id";
-import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
+import { getIconUrlByName } from "lazy-icons";
 
 const CodeBlock = lazy(() => import("ui/shared/CodeBlock"));
 
@@ -107,7 +106,7 @@ export const AccountStorageTab = memo((props: Props) => {
                         <strong>{t("expires in", { howMuchTime: fromNowText })} </strong>
                         <IconButton
                             size="extra small"
-                            icon={id<MuiIconComponentName>("Refresh")}
+                            icon={getIconUrlByName("Refresh")}
                             onClick={onRefreshIconButtonClick}
                             disabled={isRefreshing}
                         />
@@ -167,7 +166,7 @@ export const AccountStorageTab = memo((props: Props) => {
                 </FormControl>
                 <div style={{ flex: 1 }} />
                 <IconButton
-                    icon={id<MuiIconComponentName>("GetApp")}
+                    icon={getIconUrlByName("GetApp")}
                     onClick={onGetAppIconButtonClick}
                     size="small"
                 />

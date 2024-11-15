@@ -25,7 +25,6 @@ import {
     type Props as MyServicesConfirmDeleteDialogProps
 } from "./MyServicesConfirmDeleteDialog";
 import { Deferred } from "evt/tools/Deferred";
-import { customIcons } from "ui/theme";
 import { Quotas } from "./Quotas";
 import { assert, type Equals } from "tsafe/assert";
 import { ClusterEventsDialog } from "./ClusterEventsDialog";
@@ -34,6 +33,7 @@ import {
     type ClusterEventsSnackbarProps
 } from "./ClusterEventsSnackbar";
 import { useEvt } from "evt/hooks";
+import { getIconUrlByName, customIcons } from "lazy-icons";
 
 export type Props = {
     route: PageRoute;
@@ -311,7 +311,7 @@ export default function MyServices(props: Props) {
                     title={t("text1")}
                     helpTitle={t("text2")}
                     helpContent={t("text3")}
-                    helpIcon="sentimentSatisfied"
+                    helpIcon={getIconUrlByName("SentimentSatisfied")}
                 />
                 <div className={classes.belowHeader} ref={belowHeaderRef}>
                     <div ref={buttonBarRef}>

@@ -1,7 +1,6 @@
 import { Text } from "onyxia-ui/Text";
 import Switch from "@mui/material/Switch";
-import type { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
-import { id } from "tsafe/id";
+import { getIconUrlByName } from "lazy-icons";
 import { Button } from "onyxia-ui/Button";
 import { tss } from "tss";
 import { TestS3ConnectionButton } from "./TestS3ConnectionButton";
@@ -77,10 +76,7 @@ export function S3ConfigCard(props: Props) {
             <div className={classes.line}>
                 <Text typo="label 1">{t("use in services")}</Text>
                 <Tooltip title={t("use in services helper")}>
-                    <Icon
-                        className={classes.helpIcon}
-                        icon={id<MuiIconComponentName>("Help")}
-                    />
+                    <Icon className={classes.helpIcon} icon={getIconUrlByName("Help")} />
                 </Tooltip>
                 &nbsp;
                 <Switch
@@ -92,10 +88,7 @@ export function S3ConfigCard(props: Props) {
             <div className={classes.line}>
                 <Text typo="label 1">{t("use for onyxia explorers")}</Text>
                 <Tooltip title={t("use for onyxia explorers helper")}>
-                    <Icon
-                        className={classes.helpIcon}
-                        icon={id<MuiIconComponentName>("Help")}
-                    />
+                    <Icon className={classes.helpIcon} icon={getIconUrlByName("Help")} />
                 </Tooltip>
                 &nbsp;
                 <Switch
@@ -129,7 +122,7 @@ export function S3ConfigCard(props: Props) {
                     {onEdit !== undefined && (
                         <Button
                             variant="secondary"
-                            startIcon={id<MuiIconComponentName>("Edit")}
+                            startIcon={getIconUrlByName("Edit")}
                             onClick={() => onEdit()}
                         >
                             {t("edit")}
@@ -138,7 +131,7 @@ export function S3ConfigCard(props: Props) {
                     {onDelete !== undefined && (
                         <Button
                             variant="secondary"
-                            startIcon={id<MuiIconComponentName>("Delete")}
+                            startIcon={getIconUrlByName("Delete")}
                             onClick={() => onDelete()}
                         >
                             {t("delete")}
