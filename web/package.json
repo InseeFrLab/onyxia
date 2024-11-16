@@ -62,7 +62,7 @@
         "minimal-polyfills": "^2.2.3",
         "moment": "^2.29.1",
         "oidc-spa": "^5.5.3",
-        "onyxia-ui": "^6.0.2",
+        "onyxia-ui": "^6.1.0",
         "pathe": "^1.1.2",
         "powerhooks": "^1.0.18",
         "react": "^18.3.1",
