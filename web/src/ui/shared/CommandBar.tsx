@@ -71,7 +71,6 @@ export const CommandBar = memo((props: CommandBarProps) => {
 
         const setIsExpended = useConstCallback((isExpended_new: boolean) => {
             if (isExpended_new === isExpended) {
-                console.log("cancel, no change");
                 return;
             }
             setIsExpended_internalState(isExpended_new);
