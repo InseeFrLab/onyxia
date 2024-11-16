@@ -105,19 +105,18 @@ export const ExplorerButtonBar = memo((props: Props) => {
                 aria-label={t("alt block view")}
             />
 
-            {buttons.map(button => (
+            {buttons.map((button, i) => (
                 <ButtonBarButton
+                    key={i}
                     startIcon={button.icon}
                     disabled={button.isDisabled ?? false}
                     {...("link" in button
                         ? {
-                              key: button.link.href,
                               href: button.link.href,
                               onClick: button.link.onClick,
                               doOpenNewTabIfHref: button.link.target === "_blank"
                           }
                         : {
-                              key: button.buttonId,
                               onClick: onClickFactory(button.buttonId)
                           })}
                 >
