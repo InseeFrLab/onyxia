@@ -1,5 +1,5 @@
 import { tss } from "tss";
-import { memo, useState, useEffect, type ReactNode } from "react";
+import { memo, useState, useReducer, useEffect, type ReactNode } from "react";
 import { useDomRect } from "powerhooks/useDomRect";
 import { CircularProgress } from "onyxia-ui/CircularProgress";
 import { Button } from "onyxia-ui/Button";
@@ -17,6 +17,7 @@ import { Evt } from "evt";
 import { useEvt } from "evt/hooks";
 import { getIconUrlByName } from "lazy-icons";
 import { useClickAway } from "powerhooks/useClickAway";
+import { useEffectOnValueChange } from "powerhooks/useEffectOnValueChange";
 
 export type CommandBarProps = {
     className?: string;
@@ -70,11 +71,11 @@ export const CommandBar = memo((props: CommandBarProps) => {
 
         const setIsExpended = useConstCallback((isExpended_new: boolean) => {
             if (isExpended_new === isExpended) {
+                console.log("cancel, no change");
                 return;
             }
-
             setIsExpended_internalState(isExpended_new);
-            onIsExpendedChange_props?.(isExpended);
+            onIsExpendedChange_props?.(isExpended_new);
         });
 
         return { isExpended, setIsExpended };
@@ -113,9 +114,42 @@ export const CommandBar = memo((props: CommandBarProps) => {
         );
     }
 
-    const { ref: rootRef } = useClickAway({
-        onClickAway: () => setIsExpended(false)
-    });
+    const { rootRef } = (function useClosure() {
+        const [trigger, pullTrigger] = useReducer(() => ({}), {});
+
+        const { ref: rootRef } = useClickAway({
+            onClickAway: () => {
+                if (!isExpended) {
+                    return;
+                }
+
+                pullTrigger();
+            }
+        });
+
+        useEffectOnValueChange(() => {
+            if (isExpended_props === undefined) {
+                setIsExpended(false);
+                return;
+            }
+
+            let isActive = true;
+
+            setTimeout(() => {
+                if (!isActive) {
+                    return;
+                }
+
+                setIsExpended(false);
+            }, 300);
+
+            return () => {
+                isActive = false;
+            };
+        }, [trigger]);
+
+        return { rootRef };
+    })();
 
     const { cx, classes } = useStyles({
         maxHeight,
