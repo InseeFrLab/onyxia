@@ -82,7 +82,8 @@
         "mui-icons-material-lazy": "^1.0.2"
     },
     "resolutions": {
-        "@codemirror/view": "6.34.1"
+        "@codemirror/view": "6.34.1",
+        "tsafe": "1.7.2"
     },
     "devDependencies": {
         "@chromatic-com/storybook": "^1.8.0",

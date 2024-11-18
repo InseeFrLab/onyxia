@@ -332,54 +332,59 @@ export function createS3Client(
 
             const { awsS3Client } = await getAwsS3Client();
 
-            const { bucketPolicy, allowedPrefix } = await import("@aws-sdk/client-s3")
-                .then(({ GetBucketPolicyCommand }) =>
-                    awsS3Client
-                        .send(
-                            new GetBucketPolicyCommand({
-                                Bucket: bucketName
-                            })
-                        )
-                        .catch(() => {
-                            console.log("The error is ok, there is no bucket policy");
-                            return { Policy: undefined };
+            const bucketPolicyAndAllowedPrefix = await (async () => {
+                const { GetBucketPolicyCommand } = await import("@aws-sdk/client-s3");
+
+                let sendResp: import("@aws-sdk/client-s3").GetBucketPolicyCommandOutput;
+
+                try {
+                    sendResp = await awsS3Client.send(
+                        new GetBucketPolicyCommand({
+                            Bucket: bucketName
                         })
-                )
-                .then(respPolicy => {
-                    if (respPolicy.Policy === undefined)
-                        return { bucketPolicy: undefined, allowedPrefix: [] };
+                    );
+                } catch {
+                    console.log("The error is ok, there is no bucket policy");
+                    return undefined;
+                }
 
-                    try {
-                        // Validate and parse the policy
-                        const parsedPolicy = s3BucketPolicySchema.parse(
-                            JSON.parse(respPolicy.Policy)
-                        );
+                if (sendResp.Policy === undefined) {
+                    return undefined;
+                }
 
-                        // Extract allowed prefixes based on the policy statements
-                        const allowedPrefix = parsedPolicy.Statement.filter(
-                            statement =>
-                                statement.Effect === "Allow" &&
-                                (statement.Action.includes("s3:GetObject") ||
-                                    statement.Action.includes("s3:*"))
+                try {
+                    // Validate and parse the policy
+                    const parsedPolicy = s3BucketPolicySchema.parse(
+                        JSON.parse(sendResp.Policy)
+                    );
+
+                    // Extract allowed prefixes based on the policy statements
+                    const allowedPrefix = parsedPolicy.Statement.filter(
+                        statement =>
+                            statement.Effect === "Allow" &&
+                            (statement.Action.includes("s3:GetObject") ||
+                                statement.Action.includes("s3:*"))
+                    )
+                        .flatMap(statement =>
+                            Array.isArray(statement.Resource)
+                                ? statement.Resource
+                                : [statement.Resource]
                         )
-                            .flatMap(statement =>
-                                Array.isArray(statement.Resource)
-                                    ? statement.Resource
-                                    : [statement.Resource]
-                            )
-                            .map(resource =>
-                                resource.replace(`arn:aws:s3:::${bucketName}/`, "")
-                            );
-
-                        return { bucketPolicy: parsedPolicy, allowedPrefix };
-                    } catch (e) {
-                        console.warn(
-                            "The best effort attempt failed to parse the policy",
-                            e
+                        .map(resource =>
+                            resource.replace(`arn:aws:s3:::${bucketName}/`, "")
                         );
-                        return { bucketPolicy: undefined, allowedPrefix: [] };
-                    }
-                });
+
+                    return { bucketPolicy: parsedPolicy, allowedPrefix };
+                } catch (e) {
+                    console.warn("The best effort attempt failed to parse the policy", e);
+                    return undefined;
+                }
+            })();
+
+            const { allowedPrefix, bucketPolicy } = bucketPolicyAndAllowedPrefix ?? {
+                allowedPrefix: [],
+                bucketPolicy: undefined
+            };
 
             const Contents: import("@aws-sdk/client-s3")._Object[] = [];
             const CommonPrefixes: import("@aws-sdk/client-s3").CommonPrefix[] = [];
