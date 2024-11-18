@@ -5,8 +5,7 @@ import type {
     ReturnType as TsafeReturnType,
     Parameters as TsafeParameters
 } from "tsafe";
-import { is } from "tsafe/is";
-import { assert } from "tsafe/assert";
+import { assert, is } from "tsafe/assert";
 import memoize from "memoizee";
 
 export type CommandLogs = {

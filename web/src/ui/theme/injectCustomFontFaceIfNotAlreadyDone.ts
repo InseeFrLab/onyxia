@@ -1,6 +1,5 @@
 import { env } from "env";
-import { assert, type Equals } from "tsafe/assert";
-import { is } from "tsafe/is";
+import { assert, type Equals, is } from "tsafe/assert";
 import { exclude } from "tsafe/exclude";
 
 export function injectCustomFontFaceIfNotAlreadyDone(): void {

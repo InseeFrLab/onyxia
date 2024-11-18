@@ -5,10 +5,9 @@ import {
     addParamToUrl,
     updateSearchBarUrl
 } from "powerhooks/tools/urlSearchParams";
-import { assert, type Equals } from "tsafe/assert";
+import { assert, type Equals, is } from "tsafe/assert";
 import { isAmong } from "tsafe/isAmong";
 import { kcEnvNames } from "keycloak-theme/kc.gen";
-import { is } from "tsafe/is";
 import { typeGuard } from "tsafe/typeGuard";
 import { id } from "tsafe/id";
 import { objectKeys } from "tsafe/objectKeys";

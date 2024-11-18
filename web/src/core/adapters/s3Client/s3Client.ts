@@ -4,8 +4,7 @@ import {
     getNewlyRequestedOrCachedTokenFactory,
     createSessionStorageTokenPersistance
 } from "core/tools/getNewlyRequestedOrCachedToken";
-import { assert } from "tsafe/assert";
-import { is } from "tsafe/is";
+import { assert, is } from "tsafe/assert";
 import type { Oidc } from "core/ports/Oidc";
 import { bucketNameAndObjectNameFromS3Path } from "./utils/bucketNameAndObjectNameFromS3Path";
 import { exclude } from "tsafe/exclude";

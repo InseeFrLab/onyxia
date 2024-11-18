@@ -13,8 +13,7 @@ import {
 import axios from "axios";
 import type { AxiosResponse, AxiosRequestConfig } from "axios";
 import memoize from "memoizee";
-import { assert } from "tsafe/assert";
-import { is } from "tsafe/is";
+import { assert, is } from "tsafe/assert";
 import { compareVersions } from "compare-versions";
 import { exclude } from "tsafe/exclude";
 import type { ApiTypes } from "./ApiTypes";

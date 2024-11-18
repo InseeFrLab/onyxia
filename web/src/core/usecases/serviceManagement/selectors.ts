@@ -1,8 +1,7 @@
 import type { State as RootState } from "core/bootstrap";
 import { createSelector } from "clean-architecture";
 import { name } from "./state";
-import { assert } from "tsafe/assert";
-import { is } from "tsafe/is";
+import { assert, is } from "tsafe/assert";
 import { id } from "tsafe/id";
 import { exclude } from "tsafe/exclude";
 import * as projectManagement from "core/usecases/projectManagement";

@@ -1,6 +1,5 @@
 import type { FormField, FormFieldGroup } from "../../formTypes";
-import { assert, type Equals } from "tsafe/assert";
-import { is } from "tsafe/is";
+import { assert, type Equals, is } from "tsafe/assert";
 import { getFormFieldAtPath } from "./getFormFieldAtPath";
 import {
     helmValuesPathToFormFieldPath,
