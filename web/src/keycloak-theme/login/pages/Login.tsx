@@ -80,29 +80,31 @@ export default function Login(
             }
         >
             <div className={classes.root}>
-                {realm.password && social.providers !== undefined && (
-                    <>
-                        <div>
-                            <ul className={classes.providers}>
-                                {social.providers.map(p => (
-                                    <li key={p.providerId}>
-                                        {p.displayName
-                                            .toLocaleLowerCase()
-                                            .replace(/ /g, "")
-                                            .includes("agentconnect") ? (
-                                            <AgentConnectButton url={p.loginUrl} />
-                                        ) : (
-                                            <Button href={p.loginUrl}>
-                                                {p.displayName}
-                                            </Button>
-                                        )}
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
-                        <LoginDivider className={classes.divider} i18n={i18n} />
-                    </>
-                )}
+                {realm.password &&
+                    social?.providers !== undefined &&
+                    social.providers.length !== 0 && (
+                        <>
+                            <div>
+                                <ul className={classes.providers}>
+                                    {social.providers.map(p => (
+                                        <li key={p.providerId}>
+                                            {p.displayName
+                                                .toLocaleLowerCase()
+                                                .replace(/ /g, "")
+                                                .includes("agentconnect") ? (
+                                                <AgentConnectButton url={p.loginUrl} />
+                                            ) : (
+                                                <Button href={p.loginUrl}>
+                                                    {p.displayName}
+                                                </Button>
+                                            )}
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                            <LoginDivider className={classes.divider} i18n={i18n} />
+                        </>
+                    )}
                 <div>
                     {realm.password && (
                         <form onSubmit={onSubmit} action={url.loginAction} method="post">

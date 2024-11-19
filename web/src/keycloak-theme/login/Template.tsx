@@ -1,9 +1,7 @@
 import { useEffect } from "react";
-import { assert } from "keycloakify/tools/assert";
 import type { TemplateProps as TemplateProps_generic } from "keycloakify/login/TemplateProps";
 import { getKcClsx } from "keycloakify/login/lib/kcClsx";
-import { useInsertScriptTags } from "keycloakify/tools/useInsertScriptTags";
-import { useInsertLinkTags } from "keycloakify/tools/useInsertLinkTags";
+import { useInitialize } from "keycloakify/login/Template.useInitialize";
 import { useSetClassName } from "keycloakify/tools/useSetClassName";
 import type { KcContext } from "./KcContext";
 import type { I18n } from "./i18n";
@@ -23,6 +21,7 @@ import { getReferrerUrl } from "keycloak-theme/login/tools/getReferrerUrl";
 import { useConst } from "powerhooks/useConst";
 import { env } from "env";
 import { useThemedImageUrl } from "onyxia-ui/ThemedImage";
+import { kcSanitize } from "keycloakify/lib/kcSanitize";
 
 type TemplateProps = TemplateProps_generic<KcContext, I18n>;
 
@@ -47,8 +46,6 @@ export default function Template(props: TemplateProps) {
         classes: classes_props
     });
 
-    const { locale, url, authenticationSession, scripts } = kcContext;
-
     useEffect(() => {
         document.title = `${env.TAB_TITLE} - ${i18n.msgStr("tabTitleSuffix")}`;
     }, []);
@@ -63,71 +60,9 @@ export default function Template(props: TemplateProps) {
         className: bodyClassName ?? kcClsx("kcBodyClass")
     });
 
-    useEffect(() => {
-        const { currentLanguageTag } = locale ?? {};
+    const { isReadyToRender } = useInitialize({ kcContext, doUseDefaultCss });
 
-        if (currentLanguageTag === undefined) {
-            return;
-        }
-
-        const html = document.querySelector("html");
-        assert(html !== null);
-        html.lang = currentLanguageTag;
-    }, []);
-
-    const { areAllStyleSheetsLoaded } = useInsertLinkTags({
-        componentOrHookName: "Template",
-        hrefs: !doUseDefaultCss
-            ? []
-            : [
-                  `${url.resourcesCommonPath}/node_modules/@patternfly/patternfly/patternfly.min.css`,
-                  `${url.resourcesCommonPath}/node_modules/patternfly/dist/css/patternfly.min.css`,
-                  `${url.resourcesCommonPath}/node_modules/patternfly/dist/css/patternfly-additions.min.css`,
-                  `${url.resourcesCommonPath}/lib/pficon/pficon.css`,
-                  `${url.resourcesPath}/css/login.css`
-              ]
-    });
-
-    const { insertScriptTags } = useInsertScriptTags({
-        componentOrHookName: "Template",
-        scriptTags: [
-            {
-                type: "module",
-                src: `${url.resourcesPath}/js/menu-button-links.js`
-            },
-            ...(authenticationSession === undefined
-                ? []
-                : [
-                      {
-                          type: "module",
-                          textContent: [
-                              `import { checkCookiesAndSetTimer } from "${url.resourcesPath}/js/authChecker.js";`,
-                              ``,
-                              `checkCookiesAndSetTimer(`,
-                              `  "${authenticationSession.authSessionId}",`,
-                              `  "${authenticationSession.tabId}",`,
-                              `  "${url.ssoLoginInOtherTabsUrl}"`,
-                              `);`
-                          ].join("\n")
-                      } as const
-                  ]),
-            ...scripts.map(
-                script =>
-                    ({
-                        type: "text/javascript",
-                        src: script
-                    }) as const
-            )
-        ]
-    });
-
-    useEffect(() => {
-        if (areAllStyleSheetsLoaded) {
-            insertScriptTags();
-        }
-    }, [areAllStyleSheetsLoaded]);
-
-    if (!areAllStyleSheetsLoaded) {
+    if (!isReadyToRender) {
         return null;
     }
 
@@ -227,9 +162,7 @@ const { Page } = (() => {
         | "displayInfo"
         | "displayMessage"
         | "displayRequiredFields"
-        | "showAnotherWayIfPresent"
         | "headerNode"
-        | "showUsernameNode"
         | "infoNode"
         | "kcContext"
         | "i18n"
@@ -243,9 +176,7 @@ const { Page } = (() => {
             displayInfo = false,
             displayMessage = true,
             displayRequiredFields = false,
-            showAnotherWayIfPresent = true,
             headerNode,
-            showUsernameNode = null,
             infoNode = null,
             kcContext,
             doUseDefaultCss,
@@ -292,14 +223,12 @@ const { Page } = (() => {
                         kcContext={kcContext}
                         displayRequiredFields={displayRequiredFields}
                         headerNode={headerNode}
-                        showUsernameNode={showUsernameNode}
                         i18n={i18n}
                         doUseDefaultCss={doUseDefaultCss}
                     />
                     <Main
                         kcContext={kcContext}
                         displayMessage={displayMessage}
-                        showAnotherWayIfPresent={showAnotherWayIfPresent}
                         displayInfo={displayInfo}
                         infoNode={infoNode}
                         i18n={i18n}
@@ -343,7 +272,6 @@ const { Page } = (() => {
             TemplateProps,
             | "displayRequiredFields"
             | "headerNode"
-            | "showUsernameNode"
             | "i18n"
             | "classes"
             | "doUseDefaultCss"
@@ -355,7 +283,6 @@ const { Page } = (() => {
                 kcContext,
                 displayRequiredFields,
                 headerNode,
-                showUsernameNode,
                 i18n,
                 classes: classes_props,
                 doUseDefaultCss
@@ -412,7 +339,6 @@ const { Page } = (() => {
                                 </span>
                             </div>
                             <div className="col-md-10">
-                                {showUsernameNode}
                                 <div className={kcClsx("kcFormGroupClass")}>
                                     <div id="kc-username">
                                         <label id="kc-attempted-username">
@@ -437,7 +363,6 @@ const { Page } = (() => {
                         </div>
                     ) : (
                         <>
-                            {showUsernameNode}
                             <div className={kcClsx("kcFormGroupClass")}>
                                 <div id="kc-username">
                                     <label id="kc-attempted-username">
@@ -480,7 +405,6 @@ const { Page } = (() => {
             TemplateProps,
             | "displayMessage"
             | "children"
-            | "showAnotherWayIfPresent"
             | "displayInfo"
             | "infoNode"
             | "i18n"
@@ -492,7 +416,6 @@ const { Page } = (() => {
         const Main = memo((props: Props) => {
             const {
                 displayMessage,
-                showAnotherWayIfPresent,
                 displayInfo,
                 kcContext,
                 children,
@@ -531,7 +454,9 @@ const { Page } = (() => {
                                     <Text typo="label 2">
                                         <span
                                             dangerouslySetInnerHTML={{
-                                                __html: kcContext.message.summary
+                                                __html: kcSanitize(
+                                                    kcContext.message.summary
+                                                )
                                             }}
                                         />
                                     </Text>
@@ -539,8 +464,7 @@ const { Page } = (() => {
                             )}
                         {children}
                         {kcContext.auth !== undefined &&
-                            kcContext.auth.showTryAnotherWayLink &&
-                            showAnotherWayIfPresent && (
+                            kcContext.auth.showTryAnotherWayLink && (
                                 <form
                                     id="kc-select-try-another-way-form"
                                     action={kcContext.url.loginAction}

@@ -535,7 +535,7 @@ function CustomInputTag(
                                     {(() => {
 
                                         const { resolveLocalizedStringDetailed } = createResolveLocalizedString({
-                                            "currentLanguage": i18n.currentLanguageTag,
+                                            "currentLanguage": i18n.currentLanguage.languageTag,
                                             "fallbackLanguage": "en",
                                             "labelWhenMismatchingLanguage": true
                                         });

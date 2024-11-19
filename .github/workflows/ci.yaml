@@ -100,7 +100,6 @@ jobs:
       - run: yarn build-keycloak-theme
         env:
           KEYCLOAKIFY_THEME_VERSION: ${{needs.prepare_release.outputs.new_chart_version}}
-      - run: mv dist_keycloak/keycloak-theme-for-kc-22-and-above.jar dist_keycloak/keycloak-theme.jar
       - uses: yogeshlonkar/wait-for-jobs@v0.4.6
         with:
           ignore-skipped: true

@@ -19,6 +19,12 @@ export default defineConfig({
         commonjs(),
         keycloakify({
             themeName: "onyxia",
+            accountThemeImplementation: "none",
+            themeVersion: process.env.KEYCLOAKIFY_THEME_VERSION ?? "0.0.0",
+            keycloakVersionTargets: {
+                "22-to-25": "keycloak-theme-for-kc-22-to-25.jar",
+                "all-other-versions": "keycloak-theme.jar"
+            },
             environmentVariables: [
                 {
                     name: "ONYXIA_RESOURCES_ALLOWED_ORIGINS",

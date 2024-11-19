@@ -4,7 +4,7 @@ import { createRoot } from "react-dom/client";
 import { assert } from "tsafe/assert";
 const App = lazy(() => import("ui/App"));
 const AppWithoutScreenScaler = lazy(() => import("ui/App/App"));
-const KcLoginThemePage = lazy(() => import("keycloak-theme/login/KcPages"));
+const KcLoginThemePage = lazy(() => import("keycloak-theme/login/KcPage"));
 /*
 import { getKcContextMock } from "keycloak-theme/login/getKcContextMock";
 
