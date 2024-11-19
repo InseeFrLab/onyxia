@@ -16,9 +16,13 @@ const DefaultTemplate = lazy(() => import("keycloakify/login/Template"));
 const Template = lazy(() => import("./Template"));
 const DefaultPage = lazy(() => import("keycloakify/login/DefaultPage"));
 const UserProfileFormFields = lazy(() => import("./UserProfileFormFields"));
+const DefaultUserProfileFormFields = lazy(
+    () => import("keycloakify/login/UserProfileFormFields")
+);
 const Terms = lazy(() => import("./pages/Terms"));
 const Register = lazy(() => import("./pages/Register"));
 const Login = lazy(() => import("./pages/Login"));
+const IdpReviewUserProfile = lazy(() => import("./pages/IdpReviewUserProfile"));
 
 type Props = {
     kcContext: KcContext;
@@ -35,9 +39,11 @@ export default function KcApp(props: Props) {
 function ContextualizedKcApp(props: Props) {
     const { kcContext } = props;
 
+    //kcContext.realm.internationalizationEnabled = false;
+
     const backgroundUrl = useThemedImageUrl(env.BACKGROUND_ASSET);
 
-    const { classes: defaultPageClasses } = useStyles({
+    const { classes: defaultPageClasses, cx } = useStyles({
         backgroundUrl
     });
 
@@ -76,6 +82,17 @@ function ContextualizedKcApp(props: Props) {
                                 doUseDefaultCss={false}
                             />
                         );
+                    case "idp-review-user-profile.ftl":
+                        return (
+                            <IdpReviewUserProfile
+                                kcContext={kcContext}
+                                i18n={i18n}
+                                UserProfileFormFields={UserProfileFormFields}
+                                Template={Template}
+                                doMakeUserConfirmPassword={doMakeUserConfirmPassword}
+                                doUseDefaultCss={false}
+                            />
+                        );
                     default:
                         return (
                             <DefaultPage
@@ -83,9 +100,15 @@ function ContextualizedKcApp(props: Props) {
                                 i18n={i18n}
                                 Template={DefaultTemplate}
                                 doUseDefaultCss={true}
-                                UserProfileFormFields={UserProfileFormFields}
+                                UserProfileFormFields={DefaultUserProfileFormFields}
                                 doMakeUserConfirmPassword={doMakeUserConfirmPassword}
-                                classes={defaultPageClasses}
+                                classes={{
+                                    ...defaultPageClasses,
+                                    kcFormCardClass: cx(
+                                        defaultPageClasses.kcFormCardClass,
+                                        "card-pf"
+                                    )
+                                }}
                             />
                         );
                 }
@@ -133,7 +156,8 @@ const useStyles = tss
                     }
                 },
                 kcLocaleWrapperClass: {
-                    visibility: "hidden"
+                    //visibility: "hidden"
+                    display: "none"
                 },
                 kcFormHeaderClass: {
                     "&& h1": {

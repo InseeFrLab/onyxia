@@ -54,7 +54,7 @@ export default defineConfig({
                         "onyxia",
                         "login",
                         "resources",
-                        "build",
+                        "dist",
                         "mui-icons-material"
                     ),
                     { recursive: true }

@@ -4831,10 +4831,10 @@ jsonify@^0.0.1:
   resolved "https://registry.yarnpkg.com/jsonify/-/jsonify-0.0.1.tgz#2aa3111dae3d34a0f151c63f3a45d995d9420978"
   integrity sha512-2/Ki0GcmuqSrgFyelQq9M05y7PS0mEwuIzrf3f1fPqkVDVRvZrPZtVSMHxdgo8Aq0sxAOb/cr2aqqA3LeWHVPg==
 
-keycloakify@^11.3.26:
-  version "11.3.26"
-  resolved "https://registry.yarnpkg.com/keycloakify/-/keycloakify-11.3.26.tgz#522602c9fe83ff42c7d6d4f852757c02efd12f6f"
-  integrity sha512-hdwCYfwOrOpw7r8ohRoFdc9F/IbNZGQ6tXvIgfq8LagoWcHOXe25Hv2/iKJQwdpVj0fbeR1dN5LI0yazntOL0Q==
+keycloakify@^11.3.27:
+  version "11.3.27"
+  resolved "https://registry.yarnpkg.com/keycloakify/-/keycloakify-11.3.27.tgz#257d41ec73657070b534fee35e4e6084786cc01b"
+  integrity sha512-mLHnqCHQg6p1pY9W7bpeFwp0ow/2F90Y/gn4nNWIeTOdLT5Zus/DxZ4gh1/wgSA4D7ci+2MnPSx8IfoPWc5UZg==
   dependencies:
     tsafe "^1.8.5"
 
