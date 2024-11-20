@@ -11,7 +11,7 @@ import { useCore, useCoreState } from "core";
 import { assert, type Equals } from "tsafe/assert";
 import { symToStr } from "tsafe/symToStr";
 import { LocalizedMarkdown } from "ui/shared/Markdown";
-import { customIcons, getIconUrlByName } from "lazy-icons";
+import { customIcons, getIconUrl, getIconUrlByName } from "lazy-icons";
 
 type Props = {
     className?: string;
@@ -109,7 +109,7 @@ export const LeftBar = memo((props: Props) => {
                         }))
                             .map(({ icon, startIcon, ...rest }) => ({
                                 ...rest,
-                                icon: icon ?? startIcon
+                                icon: getIconUrl(icon) ?? getIconUrl(startIcon)
                             }))
                             .map(({ link, icon, label }, i) => [
                                 `extraItem${i}`,
