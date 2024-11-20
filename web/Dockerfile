@@ -31,8 +31,6 @@ if [ -n "$CUSTOM_RESOURCES" ]; then                                             
 fi                                                                                                             \n\
 npx vite-envs                                                                                                  \n\
 cd ..                                                                                                          \n\
-rm -rf html                                                                                                    \n\
-mkdir html                                                                                                     \n\
 mv tmp_html/* tmp_html/.* html/ 2>/dev/null                                                                    \n\
 rm -r tmp_html                                                                                                 \n\
 exec nginx -g "daemon off;"                                                                                    \n\
