@@ -2,12 +2,9 @@ import { useId } from "react";
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
-import Select from "@mui/material/Select";
+import Select, { SelectChangeEvent } from "@mui/material/Select";
 import { tss } from "tss";
-
-type Props = {
-    className?: string;
-};
+import { assert } from "tsafe/assert";
 
 const expirationOptions = [
     { id: "1 heure", name: "1 heure" },
@@ -16,26 +13,52 @@ const expirationOptions = [
     { id: "48 heures", name: "48 heures" },
     { id: "7 jours", name: "7 jours" }
 ];
+type Props = {
+    className?: string;
+    validityDurationSecondOptions: number[];
+    expirationValue: number;
+    onExpirationValueChange: (
+        value: Props["validityDurationSecondOptions"][number]
+    ) => void;
+};
 
 export function SelectTime(props: Props) {
-    const { className } = props;
+    const {
+        className,
+        validityDurationSecondOptions,
+        expirationValue,
+        onExpirationValueChange
+    } = props;
 
     const labelId = useId();
     const { classes, cx } = useStyles();
+
+    const handleChange = (event: SelectChangeEvent<number>) => {
+        const newValue = event.target.value;
+
+        assert(
+            typeof newValue === "number" &&
+                validityDurationSecondOptions.includes(newValue)
+        );
+        onExpirationValueChange(newValue);
+    };
+
     return (
         <FormControl
             variant="standard"
             className={cx(classes.timeSelectWrapper, className)}
         >
             <InputLabel id={labelId}>Durée de validité</InputLabel>
-            <Select
+            <Select<number>
                 labelId={labelId}
-                defaultValue={expirationOptions[0].id}
+                value={expirationValue}
+                onChange={handleChange}
                 label="Project"
             >
-                {expirationOptions.map(({ id, name }) => (
-                    <MenuItem key={id} value={id}>
-                        {name}
+                {validityDurationSecondOptions.map(validityDurationSecond => (
+                    <MenuItem key={validityDurationSecond} value={validityDurationSecond}>
+                        {/*  TODO : better format and translation */}
+                        {validityDurationSecond} secondes
                     </MenuItem>
                 ))}
             </Select>

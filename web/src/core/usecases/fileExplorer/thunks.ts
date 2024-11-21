@@ -692,9 +692,9 @@ export const thunks = {
             );
         },
     getFileDownloadUrl:
-        (params: { basename: string; validityDurationSecond: number }) =>
+        (params: { basename: string; validityDurationSecond?: number }) =>
         async (...args): Promise<string> => {
-            const { basename, validityDurationSecond } = params;
+            const { basename, validityDurationSecond = 3_600 } = params;
 
             const [dispatch, getState] = args;
 
@@ -810,17 +810,26 @@ export const thunks = {
             dispatch(actions.shareClosed());
         },
     requestShareSignedUrl:
-        (params: {}) =>
+        (params: { expirationTime: number }) =>
         async (...args) => {
+            const { expirationTime } = params;
             const [dispatch, getState] = args;
+            const state = getState()[name];
 
             {
-                const state = getState()[name];
-
                 assert(state.share !== undefined);
                 assert(state.share.url === undefined);
             }
 
-            dispatch(actions.requestSignedUrlStarted());
+            dispatch(actions.requestSignedUrlStarted({ expirationTime }));
+
+            const url = await dispatch(
+                thunks.getFileDownloadUrl({
+                    basename: state.share.fileBasename,
+                    validityDurationSecond: expirationTime
+                })
+            );
+
+            dispatch(actions.requestSignedUrlCompleted({ url }));
         }
 } satisfies Thunks;

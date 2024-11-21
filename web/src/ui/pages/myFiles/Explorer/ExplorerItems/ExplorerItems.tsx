@@ -32,9 +32,9 @@ export type ExplorerItemsProps = {
     }) => void;
     onDeleteItem: (params: { item: Item }) => void;
     onCopyPath: (params: { basename: string }) => void;
-    onShare: (params: { basename: string }) => void;
+    onShare: (params: { fileBasename: string }) => void;
     evtAction: NonPostableEvt<
-        "DELETE SELECTED ITEM" | "COPY SELECTED ITEM PATH" | "SHARE"
+        "DELETE SELECTED ITEM" | "COPY SELECTED ITEM PATH" | "SHARE SELECTED FILE"
     >;
 };
 
@@ -117,10 +117,10 @@ export const ExplorerItems = memo((props: ExplorerItemsProps) => {
                             basename: selectedItem.basename
                         });
                         return;
-                    case "SHARE":
+                    case "SHARE SELECTED FILE":
                         assert(selectedItem.kind === "file");
                         onShare({
-                            basename: selectedItem.basename
+                            fileBasename: selectedItem.basename
                         });
                         return;
                 }

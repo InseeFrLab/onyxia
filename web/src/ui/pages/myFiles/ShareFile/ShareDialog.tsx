@@ -5,90 +5,44 @@ import { memo, useState } from "react";
 import { useTranslation } from "ui/i18n";
 import { DirectoryOrFileDetailed } from "../shared/DirectoryOrFileDetailed";
 import { Text } from "onyxia-ui/Text";
-import { MuiIconComponentName } from "onyxia-ui/MuiIconComponentName";
+import { getIconUrlByName } from "lazy-icons";
 import { tss } from "tss";
-import { id } from "tsafe";
 import { SelectTime } from "./SelectTime";
 import { FileItem } from "../shared/types";
 import TextField from "@mui/material/TextField";
 import { CopyToClipboardIconButton } from "ui/shared/CopyToClipboardIconButton";
+import { CircularProgress } from "onyxia-ui/CircularProgress";
 
-/*
-{
-
-    import { useShareDialog } from "./ShareDialog";
-
-    const { ShareDialog, onOpenShareDialog } = useShareDialog();
-
-    return (
-        <MyComponent onShare={()=> onOpenShareDialog({
-            file, url
-        })} ></MyComponent>
-        <ShareDialog />
-    );
-
-}
-
-{
-    import { ShareDialog, useShareDialog } from "./ShareDialog";
-
-
-    const { shareDialogState, onOpenShareDialog } = useShareDialog();
-
-    return (
-
-        <MyComponent onShare={()=> onOpenShareDialog({
-            file, url
-        })} ></MyComponent>
-
-        <ShareDialog state={shareDialogState} />
-    );
-
-}
-*/
-
-type ShareDialogState = {
+type ShareDialogProps = {
     isOpen: boolean;
     onClose: () => void;
     file: FileItem;
     url: string | undefined; //undefined if file.policy is public
     isRequestingUrl: boolean;
+    validityDurationSecondOptions: number[];
     onRequestUrl: (params: { expirationTime: number }) => void;
-};
-
-export function useShareDialog(params: {
-    requestUrl: (params: { file: FileItem }) => Promise<string>;
-}): {
-    shareDialogSate: ShareDialogState;
-    onOpenShareDialog: (params: {
-        file: FileItem;
-        url: string | undefined; //undefined if file.policy is public
-    }) => void;
-} {
-    return null as any;
-}
-
-export type ShareDialogProps = {
-    state: ShareDialogState;
 };
 
 export const ShareDialog = memo((props: ShareDialogProps) => {
     const {
-        state: { file, url }
+        file,
+        url,
+        isOpen,
+        onClose,
+        isRequestingUrl,
+        onRequestUrl,
+        validityDurationSecondOptions
     } = props;
     const { t } = useTranslation({ ShareDialog });
 
     const { classes } = useStyles();
-    const [isOpen, setIsOpen] = useState(true);
-    const onClose = () => setIsOpen(false);
 
+    const [valueExpirationTime, setValueExpirationTime] = useState<number>(
+        validityDurationSecondOptions[0]
+    );
     const isPublic = file.policy === "public";
 
-    const shareIconId = id<MuiIconComponentName>(
-        isPublic ? "VisibilityOff" : "Visibility"
-    );
-
-    const [doCreateLink, setDoCreateLink] = useState(!isPublic); // If the file is private, we need to create a signed link
+    //const shareIconId = getIconUrlByName(isPublic ? "VisibilityOff" : "Visibility");
 
     return (
         <Dialog
@@ -104,15 +58,23 @@ export const ShareDialog = memo((props: ShareDialogProps) => {
                         {t("paragraph change policy", { policy: file.policy })}
                     </Text>
 
-                    {doCreateLink ? (
+                    {url === undefined ? (
                         <div className={classes.createLink}>
-                            <SelectTime />
+                            <SelectTime
+                                expirationValue={valueExpirationTime}
+                                validityDurationSecondOptions={
+                                    validityDurationSecondOptions
+                                }
+                                onExpirationValueChange={setValueExpirationTime}
+                            />
                             <Button
-                                startIcon={id<MuiIconComponentName>("Language")}
+                                startIcon={getIconUrlByName("Language")}
                                 variant="ternary"
-                                onClick={() => setDoCreateLink(false)}
+                                onClick={() => onRequestUrl({ expirationTime: 30_000 })} //TODO
                             >
                                 {t("create and copy link")}
+                                &nbsp;
+                                <CircularProgress />
                             </Button>
                         </div>
                     ) : (
@@ -121,15 +83,13 @@ export const ShareDialog = memo((props: ShareDialogProps) => {
                             slotProps={{
                                 input: {
                                     endAdornment: (
-                                        <CopyToClipboardIconButton
-                                            textToCopy={url ?? ""}
-                                        />
+                                        <CopyToClipboardIconButton textToCopy={url} />
                                     )
                                 }
                             }}
                             helperText={t("hint link access", {
                                 policy: file.policy,
-                                expirationDate: undefined
+                                expirationDate: undefined //TODO
                             })}
                             variant="standard"
                             value={url}
@@ -147,16 +107,14 @@ export const ShareDialog = memo((props: ShareDialogProps) => {
                 />
             }
             buttons={
-                <>
-                    <Button
-                        autoFocus
-                        doOpenNewTabIfHref={false}
-                        onClick={onClose}
-                        variant="primary"
-                    >
-                        {t("close")}
-                    </Button>
-                </>
+                <Button
+                    autoFocus
+                    doOpenNewTabIfHref={false}
+                    onClick={onClose}
+                    variant="primary"
+                >
+                    {t("close")}
+                </Button>
             }
         />
     );

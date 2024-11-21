@@ -45,6 +45,7 @@ import type { Item } from "../shared/types";
 import { ViewMode } from "../shared/types";
 import { isDirectory } from "../shared/tools";
 import { ShareDialog } from "../ShareFile/ShareDialog";
+import { on } from "events";
 
 export type ExplorerProps = {
     /**
@@ -70,7 +71,7 @@ export type ExplorerProps = {
     onRefresh: () => void;
     onDeleteItem: (params: { item: Item }) => void;
     onDeleteItems: (params: { items: Item[] }) => void;
-
+    onShareFile: (params: { fileBasename: string }) => void;
     onCreateDirectory: (params: { basename: string }) => void;
     onCopyPath: (params: { path: string }) => void;
     scrollableDivRef: RefObject<any>;
@@ -100,7 +101,8 @@ export const Explorer = memo((props: ExplorerProps) => {
         filesBeingUploaded,
         pathMinDepth,
         onViewModeChange,
-        viewMode
+        viewMode,
+        onShareFile
     } = props;
 
     const [items] = useMemo(
@@ -198,7 +200,7 @@ export const Explorer = memo((props: ExplorerProps) => {
                 setIsUploadModalOpen(true);
                 return;
             case "share":
-                evtExplorerItemsAction.post("SHARE");
+                evtExplorerItemsAction.post("SHARE SELECTED FILE");
                 return;
         }
         assert<Equals<typeof buttonId, never>>();
@@ -281,9 +283,9 @@ export const Explorer = memo((props: ExplorerProps) => {
         }
     );
 
-    const onShare = useConstCallback(
-        async ({ basename }: Param0<ItemsProps["onShare"]>) => {
-            assert(false, "TODO");
+    const onShareDialogOpen = useConstCallback(
+        async ({ fileBasename }: Param0<ItemsProps["onShare"]>) => {
+            onShareFile({ fileBasename });
         }
     );
 
@@ -416,7 +418,7 @@ export const Explorer = memo((props: ExplorerProps) => {
                                         onPolicyChange={onItemsPolicyChange}
                                         onCopyPath={itemsOnCopyPath}
                                         onDeleteItem={itemsOnDeleteItem}
-                                        onShare={onShare}
+                                        onShare={onShareDialogOpen}
                                         evtAction={evtExplorerItemsAction}
                                     />
                                 );
@@ -433,6 +435,7 @@ export const Explorer = memo((props: ExplorerProps) => {
                                         onPolicyChange={onItemsPolicyChange}
                                         onCopyPath={itemsOnCopyPath}
                                         onDeleteItems={itemsOnDeleteItems}
+                                        onShare={onShareDialogOpen}
                                         evtAction={evtExplorerItemsAction}
                                     />
                                 );
@@ -483,11 +486,7 @@ export const Explorer = memo((props: ExplorerProps) => {
                 }
             />
 
-            <ShareDialog
-                file={selectedFile}
-                onClose={onShareDialogClose}
-                isOpen={isShareDialogOpen}
-            />
+            <ShareDialog file={} onClose={} isOpen={} />
 
             <ExplorerUploadModal
                 isOpen={isUploadModalOpen}
