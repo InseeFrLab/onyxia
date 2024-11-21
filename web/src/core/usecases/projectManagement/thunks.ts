@@ -15,6 +15,8 @@ import { projectConfigsMigration } from "./decoupledLogic/projectConfigsMigratio
 import { symToStr } from "tsafe/symToStr";
 import { type ProjectConfigs, zProjectConfigs } from "./decoupledLogic/ProjectConfigs";
 import { clearProjectConfigs } from "./decoupledLogic/clearProjectConfigs";
+import { Mutex } from "async-mutex";
+import { createUsecaseContextApi } from "clean-architecture";
 
 export const thunks = {
     changeProject:
@@ -265,51 +267,59 @@ export const protectedThunks = {
         },
     updateConfigValue:
         <K extends keyof ProjectConfigs>(params: ChangeConfigValueParams<K>) =>
-        async (...args) => {
+        (...args) => {
             const [dispatch, getState, rootContext] = args;
 
-            const { secretsManager } = rootContext;
+            const { mutex } = getContext(rootContext);
 
-            const currentProjectConfig = protectedSelectors.projectConfig(getState());
+            mutex.runExclusive(async () => {
+                const { secretsManager } = rootContext;
 
-            const currentLocalValue = currentProjectConfig[params.key];
+                const currentProjectConfig = protectedSelectors.projectConfig(getState());
 
-            if (same(currentLocalValue, params.value)) {
-                return;
-            }
+                const currentLocalValue = currentProjectConfig[params.key];
 
-            dispatch(actions.configValueUpdated(params));
-
-            const path = pathJoin(
-                getProjectVaultTopDirPath_reserved({
-                    projectVaultTopDirPath:
-                        protectedSelectors.currentProject(getState()).vaultTopDir
-                }),
-                params.key
-            );
-
-            {
-                const currentRemoteValue = await secretsManager
-                    .get({
-                        path
-                    })
-                    .then(({ secret }) => secretToValue(secret) as ProjectConfigs[K]);
-
-                if (!same(currentLocalValue, currentRemoteValue)) {
-                    alert(
-                        [
-                            `Someone in the group has updated the value of ${params.key} to`,
-                            `${JSON.stringify(currentRemoteValue)}, reloading the page...`
-                        ].join(" ")
-                    );
-                    window.location.reload();
+                if (same(currentLocalValue, params.value)) {
                     return;
                 }
-            }
 
-            await secretsManager.put({
-                path,
-                secret: valueToSecret(params.value)
+                dispatch(actions.configValueUpdated(params));
+
+                const path = pathJoin(
+                    getProjectVaultTopDirPath_reserved({
+                        projectVaultTopDirPath:
+                            protectedSelectors.currentProject(getState()).vaultTopDir
+                    }),
+                    params.key
+                );
+
+                {
+                    const currentRemoteValue = await secretsManager
+                        .get({
+                            path
+                        })
+                        .then(({ secret }) => secretToValue(secret) as ProjectConfigs[K]);
+
+                    if (!same(currentLocalValue, currentRemoteValue)) {
+                        alert(
+                            [
+                                `Someone in the group has updated the value of ${params.key} to`,
+                                `${JSON.stringify(currentRemoteValue)}, reloading the page...`
+                            ].join(" ")
+                        );
+                        window.location.reload();
+                        return;
+                    }
+                }
+
+                await secretsManager.put({
+                    path,
+                    secret: valueToSecret(params.value)
+                });
             });
         }
 } satisfies Thunks;
+
+const { getContext } = createUsecaseContextApi(() => ({
+    mutex: new Mutex()
+}));
