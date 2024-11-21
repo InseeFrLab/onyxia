@@ -1,18 +1,13 @@
 
 [class$="-BrandHeaderSection-logoContainer"] {
-    width: 50px !important;
-    margin-right: 0.5em;
+    width: 130px !important;
+    margin-right: 0.25em;
 }
 [class$="-BrandHeaderSection-logo"] {
     width: 100% !important;
 }
 
-/* Hide Project Settings, divider, My Files, Data Explorer */
-nav div hr:nth-of-type(3), nav div a[ href="/project-settings"], nav div a[ href="/my-files"], nav div a[ href="/data-explorer"] {
-    display: none;
-}
-
-/* Hide terms of serivces link in footer, and redundant spacing */
-footer a[ href="/terms"], footer div:nth-of-type(3) {
+/* Hide Project Settings */
+nav div a[ href="/project-settings"] {
     display: none;
 }
