@@ -6641,10 +6641,10 @@ vfile@^6.0.0:
     "@types/unist" "^3.0.0"
     vfile-message "^4.0.0"
 
-vite-envs@^4.4.5:
-  version "4.4.5"
-  resolved "https://registry.yarnpkg.com/vite-envs/-/vite-envs-4.4.5.tgz#a8cfa780dbf7984ee28fa34f2c316ad1f9967c1f"
-  integrity sha512-/fFJB2fkUM8U/qb3AAf9H1tt6vltAiiqMZScoAzne4pm0WPivWKS6hyJV4ei64C5M869FyBQ00M7wkuRVCy/9Q==
+vite-envs@^4.4.6:
+  version "4.4.6"
+  resolved "https://registry.yarnpkg.com/vite-envs/-/vite-envs-4.4.6.tgz#b86fe970848021a4d9e3a97e983d14b1dd6c97ea"
+  integrity sha512-5FZSpN+SdWTEQEw9S64RXwSaz4P7MX04gt1cZ58Z2YmQokRhhz+/47+bPIJg8a6HxFM+84WpRxsk8CAkQMCZJw==
 
 vite-node@2.1.5:
   version "2.1.5"
