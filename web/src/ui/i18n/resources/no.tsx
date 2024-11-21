@@ -541,13 +541,13 @@ export const translations: Translations<"no"> = {
             labeledHelmChartSourceUrls
         }) => (
             <>
-                Helm-diagrammet{" "}
+                Du er i ferd med å starte{" "}
                 {
                     <MaybeLink href={labeledHelmChartSourceUrls.helmChartSourceUrl}>
                         {helmChartName}
                     </MaybeLink>
                 }{" "}
-                tilhører Helm-diagramlageret{" "}
+                fra tjenestekatalogen{" "}
                 {
                     <MaybeLink
                         href={labeledHelmChartSourceUrls.helmChartRepositorySourceUrl}
@@ -559,7 +559,7 @@ export const translations: Translations<"no"> = {
                 {labeledHelmChartSourceUrls.dockerImageSourceUrl !== undefined && (
                     <>
                         {" "}
-                        Det er basert på Docker-bildet{" "}
+                        Den er basert på Docker-malen{" "}
                         {
                             <MuiLink
                                 href={labeledHelmChartSourceUrls.dockerImageSourceUrl}
