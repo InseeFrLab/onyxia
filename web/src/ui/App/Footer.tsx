@@ -51,12 +51,14 @@ export const Footer = memo((props: Props) => {
                     changeLanguageText={t("change language")}
                 />
             )}
-            {env.TERMS_OF_SERVICES !== undefined && spacing}
             {env.TERMS_OF_SERVICES !== undefined && (
-                <a {...routes.terms().link}>
-                    {" "}
-                    <Text typo="body 2">{t("terms of service")}</Text>{" "}
-                </a>
+                <>
+                    {spacing}
+                    <a {...routes.terms().link}>
+                        {" "}
+                        <Text typo="body 2">{t("terms of service")}</Text>{" "}
+                    </a>
+                </>
             )}
             {spacing}
             {env.ONYXIA_VERSION !== undefined && (
