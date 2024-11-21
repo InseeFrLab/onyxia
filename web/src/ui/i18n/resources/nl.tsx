@@ -314,13 +314,6 @@ export const translations: Translations<"nl"> = {
             </>
         )
     },
-    MyFilesDisabledDialog: {
-        "dialog title": "Geen S3-server geconfigureerd",
-        "dialog body":
-            "Er is geen S3-server geconfigureerd voor deze instantie. Je kunt er echter handmatig een toevoegen om de S3-bestandsverkenner in te schakelen.",
-        cancel: "Annuleren",
-        "go to settings": "Ga naar instellingen"
-    },
     MyFilesShareDialog: {
         cancel: "Annuleren",
         "create and copy link": "Creare e copiare il link"

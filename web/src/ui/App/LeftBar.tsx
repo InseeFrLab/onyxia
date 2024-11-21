@@ -23,6 +23,7 @@ export const LeftBar = memo((props: Props) => {
     const { secretExplorer } = useCore().functions;
 
     const { isDevModeEnabled } = useCoreState("userConfigs", "userConfigs");
+    const isFileExplorerEnabled = useCoreState("fileExplorer", "isFileExplorerEnabled");
 
     const route = useRoute();
 
@@ -79,11 +80,26 @@ export const LeftBar = memo((props: Props) => {
                                   link: routes.mySecrets().link
                               } as const
                           }),
-                    myFiles: {
-                        icon: customIcons.filesSvgUrl,
-                        label: t("myFiles"),
-                        link: routes.myFiles().link
-                    },
+                    ...(!isFileExplorerEnabled
+                        ? ({} as never)
+                        : {
+                              myFiles: {
+                                  icon: customIcons.filesSvgUrl,
+                                  label: t("myFiles"),
+                                  link: routes.myFiles().link
+                              } as const,
+                              dataExplorer: {
+                                  icon: getIconUrlByName("DocumentScanner"),
+                                  label: t("dataExplorer"),
+                                  link: routes.dataExplorer().link,
+                                  belowDivider:
+                                      env.LEFTBAR_LINKS.length === 0
+                                          ? true
+                                          : t(
+                                                "divider: onyxia instance specific features"
+                                            )
+                              } as const
+                          }),
                     ...(!isDevModeEnabled
                         ? ({} as never)
                         : {
@@ -93,15 +109,6 @@ export const LeftBar = memo((props: Props) => {
                                   link: routes.sqlOlapShell().link
                               } as const
                           }),
-                    dataExplorer: {
-                        icon: getIconUrlByName("DocumentScanner"),
-                        label: t("dataExplorer"),
-                        link: routes.dataExplorer().link,
-                        belowDivider:
-                            env.LEFTBAR_LINKS.length === 0
-                                ? true
-                                : t("divider: onyxia instance specific features")
-                    } as const,
                     ...Object.fromEntries(
                         env.LEFTBAR_LINKS.map(({ url, ...rest }) => ({
                             link: urlToLink(url),

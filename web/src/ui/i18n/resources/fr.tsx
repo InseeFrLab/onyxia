@@ -317,13 +317,6 @@ export const translations: Translations<"fr"> = {
             </>
         )
     },
-    MyFilesDisabledDialog: {
-        "dialog title": "Aucun serveur S3 configuré",
-        "dialog body":
-            "Il n'y a aucun serveur S3 configuré pour cette instance. Mais vous pouvez en ajouter un manuellement pour activer l'explorateur de fichiers S3.",
-        cancel: "Annuler",
-        "go to settings": "Aller aux paramètres"
-    },
     MyFilesShareDialog: {
         cancel: "Annuler",
         "create and copy link": "Créer et copier le lien"

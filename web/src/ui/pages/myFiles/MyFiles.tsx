@@ -17,7 +17,6 @@ import { declareComponentKeys } from "i18nifty";
 import { useConst } from "powerhooks/useConst";
 import type { Link } from "type-route";
 import type { PageRoute } from "./route";
-import { MyFilesDisabledDialog } from "./MyFilesDisabledDialog";
 import { assert } from "tsafe/assert";
 import { env } from "env";
 import { getIconUrlByName, customIcons } from "lazy-icons";
@@ -27,17 +26,7 @@ export type Props = {
     className?: string;
 };
 
-export default function MyFilesMaybeDisabled(props: Props) {
-    const isFileExplorerEnabled = useCoreState("fileExplorer", "isFileExplorerEnabled");
-
-    if (!isFileExplorerEnabled) {
-        return <MyFilesDisabledDialog />;
-    }
-
-    return <MyFiles {...props} />;
-}
-
-function MyFiles(props: Props) {
+export default function MyFiles(props: Props) {
     const { className, route } = props;
 
     const { t } = useTranslation({ MyFiles });

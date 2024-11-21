@@ -311,13 +311,6 @@ export const translations: Translations<"fi"> = {
             </>
         )
     },
-    MyFilesDisabledDialog: {
-        "dialog title": "S3-palvelinta ei ole määritetty",
-        "dialog body":
-            "Tälle instanssille ei ole määritetty S3-palvelinta. Voit kuitenkin lisätä sellaisen manuaalisesti ottaaksesi käyttöön S3-tiedostonhallinnan.",
-        cancel: "Peruuta",
-        "go to settings": "Siirry asetuksiin"
-    },
     MyFilesShareDialog: {
         cancel: "Peruuta",
         "create and copy link": "Luo ja kopioi linkki"
