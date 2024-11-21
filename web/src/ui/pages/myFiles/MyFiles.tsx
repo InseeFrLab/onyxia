@@ -38,8 +38,7 @@ export default function MyFiles(props: Props) {
         uploadProgress,
         currentWorkingDirectoryView,
         pathMinDepth,
-        viewMode,
-        shareView
+        viewMode
     } = useCoreState("fileExplorer", "main");
 
     const { fileExplorer } = useCore().functions;

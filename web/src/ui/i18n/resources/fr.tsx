@@ -321,17 +321,26 @@ export const translations: Translations<"fr"> = {
         title: "Partager vos données",
         close: "Fermer",
         "create and copy link": "Créer et copier le lien",
-        "paragraph current policy": ({
-            policy
-        }) => `Votre fichier est public, toute personne ayant le lien peut
-                        télécharger votre fichier`,
-        "paragraph change policy": ({
-            policy
-        }) => `Pour restreindre son accès, changez le statut de diffusion de
-                        votre fichier.`,
-        "hint link access": ({ policy, expirationDate }) =>
-            policy === "private"
-                ? `Votre lien ....`
+        "paragraph current policy": ({ policy }) => {
+            switch (policy) {
+                case "public":
+                    return `Votre fichier est public, toute personne ayant le lien peut télécharger votre fichier.`;
+                case "private":
+                    return "Votre fichier est actuellement privé.";
+            }
+        },
+        "paragraph change policy": ({ policy }) => {
+            switch (policy) {
+                case "public":
+                    return `Pour restreindre son accès, changez le statut de diffusion de
+                        votre fichier.`;
+                case "private":
+                    return `Pour partager et donner accès à votre fichier, changez le statut de diffusion ou créez un lien d’accès temporaire.`;
+            }
+        },
+        "hint link access": params =>
+            params.policy === "private"
+                ? `Ce lien donnera un accès à vos données pendant ${params.expiration}.`
                 : "Votre lien est disponible tant que le fichier est publique",
         "label input link": "Lien d'accès"
     },

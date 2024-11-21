@@ -315,8 +315,30 @@ export const translations: Translations<"nl"> = {
         )
     },
     ShareDialog: {
-        cancel: "Annuleren",
-        "create and copy link": "Creare e copiare il link"
+        title: "Deel je gegevens",
+        close: "Sluiten",
+        "create and copy link": "Link maken en kopiëren",
+        "paragraph current policy": ({ policy }) => {
+            switch (policy) {
+                case "public":
+                    return "Je bestand is openbaar, iedereen met de link kan het downloaden.";
+                case "private":
+                    return "Je bestand is momenteel privé.";
+            }
+        },
+        "paragraph change policy": ({ policy }) => {
+            switch (policy) {
+                case "public":
+                    return "Om toegang te beperken, verander de deelstatus van je bestand.";
+                case "private":
+                    return "Om toegang te geven tot je bestand, verander de deelstatus of maak een tijdelijke toegangslink.";
+            }
+        },
+        "hint link access": params =>
+            params.policy === "private"
+                ? `Deze link geeft toegang tot je gegevens gedurende ${params.expiration}.`
+                : "Je link is beschikbaar zolang het bestand openbaar is",
+        "label input link": "Toegangslink"
     },
     MySecrets: {
         "page title - my secrets": "My Secrets",

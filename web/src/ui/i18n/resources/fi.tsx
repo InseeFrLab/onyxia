@@ -312,8 +312,30 @@ export const translations: Translations<"fi"> = {
         )
     },
     ShareDialog: {
-        cancel: "Peruuta",
-        "create and copy link": "Luo ja kopioi linkki"
+        title: "Jaa tietosi",
+        close: "Sulje",
+        "create and copy link": "Luo ja kopioi linkki",
+        "paragraph current policy": ({ policy }) => {
+            switch (policy) {
+                case "public":
+                    return "Tiedostosi on julkinen, kuka tahansa linkin omistava voi ladata sen.";
+                case "private":
+                    return "Tiedostosi on tällä hetkellä yksityinen.";
+            }
+        },
+        "paragraph change policy": ({ policy }) => {
+            switch (policy) {
+                case "public":
+                    return "Rajoittaaksesi pääsyä muuta tiedostosi jakamisen tilaa.";
+                case "private":
+                    return "Jaa tiedosto ja anna pääsy muuttamalla jakamisen tilaa tai luomalla väliaikainen linkki.";
+            }
+        },
+        "hint link access": params =>
+            params.policy === "private"
+                ? `Tämä linkki antaa pääsyn tietoihisi ${params.expiration} ajaksi.`
+                : "Linkkisi on käytettävissä niin kauan kuin tiedosto on julkinen",
+        "label input link": "Pääsylinkki"
     },
     MySecrets: {
         "page title - my secrets": "Omat salaisuudet",

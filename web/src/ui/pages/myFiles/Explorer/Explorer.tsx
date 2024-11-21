@@ -44,8 +44,6 @@ import {
 import type { Item } from "../shared/types";
 import { ViewMode } from "../shared/types";
 import { isDirectory } from "../shared/tools";
-import { ShareDialog } from "../ShareFile/ShareDialog";
-import { on } from "events";
 
 export type ExplorerProps = {
     /**
@@ -486,7 +484,7 @@ export const Explorer = memo((props: ExplorerProps) => {
                 }
             />
 
-            <ShareDialog file={} onClose={} isOpen={} />
+            {/* <ShareDialog file={} onClose={} isOpen={} /> */}
 
             <ExplorerUploadModal
                 isOpen={isUploadModalOpen}

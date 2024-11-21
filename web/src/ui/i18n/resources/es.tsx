@@ -316,8 +316,30 @@ export const translations: Translations<"en"> = {
         )
     },
     ShareDialog: {
-        cancel: "Cancelar",
-        "create and copy link": "Crear y copiar enlace"
+        title: "Compartir tus datos",
+        close: "Cerrar",
+        "create and copy link": "Crear y copiar enlace",
+        "paragraph current policy": ({ policy }) => {
+            switch (policy) {
+                case "public":
+                    return "Tu archivo es público, cualquier persona con el enlace puede descargarlo.";
+                case "private":
+                    return "Tu archivo está actualmente privado.";
+            }
+        },
+        "paragraph change policy": ({ policy }) => {
+            switch (policy) {
+                case "public":
+                    return "Para restringir su acceso, cambia el estado de difusión de tu archivo.";
+                case "private":
+                    return "Para compartir y dar acceso a tu archivo, cambia el estado de difusión o crea un enlace de acceso temporal.";
+            }
+        },
+        "hint link access": params =>
+            params.policy === "private"
+                ? `Este enlace otorgará acceso a tus datos durante ${params.expiration}.`
+                : "Tu enlace está disponible mientras el archivo sea público",
+        "label input link": "Enlace de acceso"
     },
     MySecrets: {
         "page title - my secrets": "Mis Secretos",

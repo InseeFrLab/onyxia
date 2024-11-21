@@ -11,7 +11,7 @@ import { SelectTime } from "./SelectTime";
 import { FileItem } from "../shared/types";
 import TextField from "@mui/material/TextField";
 import { CopyToClipboardIconButton } from "ui/shared/CopyToClipboardIconButton";
-import { CircularProgress } from "onyxia-ui/CircularProgress";
+import { CircularProgress } from "@mui/material";
 
 type ShareDialogProps = {
     isOpen: boolean;
@@ -42,8 +42,6 @@ export const ShareDialog = memo((props: ShareDialogProps) => {
     );
     const isPublic = file.policy === "public";
 
-    //const shareIconId = getIconUrlByName(isPublic ? "VisibilityOff" : "Visibility");
-
     return (
         <Dialog
             isOpen={isOpen}
@@ -67,15 +65,31 @@ export const ShareDialog = memo((props: ShareDialogProps) => {
                                 }
                                 onExpirationValueChange={setValueExpirationTime}
                             />
-                            <Button
-                                startIcon={getIconUrlByName("Language")}
-                                variant="ternary"
-                                onClick={() => onRequestUrl({ expirationTime: 30_000 })} //TODO
+                            <div
+                                style={{
+                                    display: "inline-flex",
+                                    alignItems: "center",
+                                    justifyContent: "center"
+                                }}
                             >
-                                {t("create and copy link")}
-                                &nbsp;
-                                <CircularProgress />
-                            </Button>
+                                <Button
+                                    startIcon={getIconUrlByName("Language")}
+                                    variant="ternary"
+                                    onClick={() =>
+                                        onRequestUrl({
+                                            expirationTime: valueExpirationTime
+                                        })
+                                    }
+                                    disabled={isRequestingUrl}
+                                >
+                                    {t("create and copy link")}
+                                </Button>
+                                {isRequestingUrl && (
+                                    <CircularProgress
+                                        className={classes.createLinkProgress}
+                                    />
+                                )}
+                            </div>
                         </div>
                     ) : (
                         <TextField
@@ -89,7 +103,7 @@ export const ShareDialog = memo((props: ShareDialogProps) => {
                             }}
                             helperText={t("hint link access", {
                                 policy: file.policy,
-                                expirationDate: undefined //TODO
+                                expiration: valueExpirationTime.toLocaleString() //TODO
                             })}
                             variant="standard"
                             value={url}
@@ -134,6 +148,9 @@ const useStyles = tss.withName({ ShareDialog }).create(({ theme }) => ({
         display: "flex",
         flexDirection: "row",
         justifyContent: "space-between"
+    },
+    createLinkProgress: {
+        position: "absolute"
     }
 }));
 const { i18n } = declareComponentKeys<
@@ -144,7 +161,7 @@ const { i18n } = declareComponentKeys<
     | { K: "paragraph change policy"; P: { policy: FileItem["policy"] } }
     | {
           K: "hint link access";
-          P: { policy: FileItem["policy"]; expirationDate: Date | undefined };
+          P: { policy: FileItem["policy"]; expiration: string | undefined };
       }
     | "label input link"
 >()({

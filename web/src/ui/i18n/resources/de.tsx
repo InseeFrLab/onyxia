@@ -315,8 +315,30 @@ export const translations: Translations<"de"> = {
         )
     },
     ShareDialog: {
-        cancel: "Abbrechen",
-        "create and copy link": "Erstellen und kopieren"
+        title: "Ihre Daten teilen",
+        close: "Schließen",
+        "create and copy link": "Link erstellen und kopieren",
+        "paragraph current policy": ({ policy }) => {
+            switch (policy) {
+                case "public":
+                    return "Ihre Datei ist öffentlich, jeder mit dem Link kann sie herunterladen.";
+                case "private":
+                    return "Ihre Datei ist derzeit privat.";
+            }
+        },
+        "paragraph change policy": ({ policy }) => {
+            switch (policy) {
+                case "public":
+                    return "Um den Zugriff einzuschränken, ändern Sie den Freigabestatus Ihrer Datei.";
+                case "private":
+                    return "Um Ihre Datei freizugeben und Zugriff zu gewähren, ändern Sie den Freigabestatus oder erstellen Sie einen temporären Zugriffslink.";
+            }
+        },
+        "hint link access": params =>
+            params.policy === "private"
+                ? `Dieser Link gewährt für ${params.expiration} Zugriff auf Ihre Daten.`
+                : "Ihr Link ist verfügbar, solange die Datei öffentlich ist",
+        "label input link": "Zugriffslink"
     },
     MySecrets: {
         "page title - my secrets": "Meine Geheimnisse",

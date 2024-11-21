@@ -204,7 +204,7 @@ export namespace ShareView {
         isPublic: false;
         validityDurationSecond: number;
         validityDurationSecondOptions: number[];
-        signedUrl: string | undefined;
+        url: string | undefined;
         isSignedUrlBeingRequested: boolean;
     };
 }
@@ -262,7 +262,7 @@ const shareView = createSelector(
             ...common,
             isPublic: false,
             isSignedUrlBeingRequested,
-            signedUrl: url,
+            url,
             validityDurationSecond,
             validityDurationSecondOptions
         });

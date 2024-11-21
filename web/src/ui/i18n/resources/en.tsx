@@ -304,8 +304,30 @@ export const translations: Translations<"en"> = {
         )
     },
     ShareDialog: {
-        cancel: "Cancel",
-        "create and copy link": "Create and copy link"
+        title: "Share your data",
+        close: "Close",
+        "create and copy link": "Create and copy link",
+        "paragraph current policy": ({ policy }) => {
+            switch (policy) {
+                case "public":
+                    return "Your file is public, anyone with the link can download it.";
+                case "private":
+                    return "Your file is currently private.";
+            }
+        },
+        "paragraph change policy": ({ policy }) => {
+            switch (policy) {
+                case "public":
+                    return "To restrict its access, change your file's sharing status.";
+                case "private":
+                    return "To share and provide access to your file, change the sharing status or create a temporary access link.";
+            }
+        },
+        "hint link access": params =>
+            params.policy === "private"
+                ? `This link will grant access to your data for ${params.expiration}.`
+                : "Your link is available as long as the file is public",
+        "label input link": "Access link"
     },
     MySecrets: {
         "page title - my secrets": "My Secrets",
